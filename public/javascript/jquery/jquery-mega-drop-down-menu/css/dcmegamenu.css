@@ -1,0 +1,115 @@
+.zdc-megamenu{ display:none; list-style:none;}
+
+/* Mega Menu Styles */
+.zdc-megamenu ul, .zdc-megamenu ul li {list-style: none;}
+.zdc-megamenu ul {position: relative; padding: 0; margin: 0;}
+.zdc-megamenu ul li ul {display: none;}
+.zdc-megamenu .zdc-sub {display: none;}
+.zdc-megamenu .zdc-sub ul {display: block;}
+
+#zdc-mega-menu-1 {
+font: normal 13px Arial, sans-serif; 
+list-style: none; 
+position: relative; 
+padding: 0; 
+margin: 0;
+}
+#zdc-mega-menu-1 .zdc-sub ul {
+display: block;
+}
+#zdc-mega-menu-1 {
+background: #222; 
+width: 100%; 
+height: 40px;
+position: relative;
+}
+#zdc-mega-menu-1 li {
+float: left; 
+margin: 0; 
+padding: 0; 
+font-weight: bold;
+}
+#zdc-mega-menu-1 li a {
+float: left; 
+display: block; 
+color: #fff; 
+padding: 12px 25px; 
+background: #222; 
+text-decoration: none;
+}
+#zdc-mega-menu-1 li.zdc-mega-hover a, #zdc-mega-menu-1 li a:hover {
+background: #CCC; 
+color: #000;
+}
+#zdc-mega-menu-1 li .zdc-sub-container {
+position: absolute;
+}
+#zdc-mega-menu-1 li .zdc-sub {
+background: #efefef; 
+padding: 15px; 
+border: 1px solid #ccc;
+}
+#zdc-mega-menu-1 li .zdc-sub .zdc-row {
+width: 100%; 
+overflow: hidden;
+clear: both;
+}
+#zdc-mega-menu-1 li .zdc-sub li {
+list-style: none; 
+float: none; 
+width: 170px; 
+font-size: 1em; 
+font-weight: normal;
+}
+#zdc-mega-menu-1 li .zdc-sub li.zdc-mega-hdr {
+margin: 0 10px 10px 0; 
+float: left;
+}
+#zdc-mega-menu-1 li .zdc-sub li.zdc-mega-hdr.zdc-last {
+margin-right: 0;
+}
+#zdc-mega-menu-1 li .zdc-sub a {
+background: none; 
+color: #111; 
+padding: 7px 10px; 
+display: block; 
+float: none; 
+font-size: 0.9em;
+}
+#zdc-mega-menu-1 li .zdc-sub li.zdc-mega-hdr a.zdc-mega-hdr-a {
+padding: 5px 15px; 
+margin-bottom: 5px; 
+background: #6B6B6B; 
+text-transform: uppercase; 
+font-weight: bold; 
+color: #fff;
+}
+#zdc-mega-menu-1 li .zdc-sub li.zdc-mega-hdr a.zdc-mega-hdr-a:hover {
+color: #000;
+}
+#zdc-mega-menu-1 .zdc-sub li.zdc-mega-hdr li a {
+padding: 4px 5px; 
+font-weight: normal;
+}
+#zdc-mega-menu-1 .zdc-sub li.zdc-mega-hdr li a:hover {
+color: #a32403; 
+background: #efefef;
+}
+#zdc-mega-menu-1 .zdc-sub ul li {
+padding-right: 0;
+}
+#zdc-mega-menu-1 li .zdc-sub-container.zdc-non-mega .zdc-sub {
+padding: 10px;
+}
+#zdc-mega-menu-1 li .zdc-sub-container.zdc-non-mega li {
+padding: 0; 
+width: 190px; 
+margin: 0;
+}
+#zdc-mega-menu-1 li .zdc-sub-container.zdc-non-mega li a {
+padding: 7px 5px 7px 22px;
+}
+#zdc-mega-menu-1 li .zdc-sub-container.zdc-non-mega li a:hover {
+color: #a32403; 
+background: #efefef;
+}

@@ -1,0 +1,32 @@
+.zdc-mega-menu ul, .zdc-mega-menu ul li {list-style: none;}
+.zdc-mega-menu ul {position: relative; padding: 0; margin: 0;}
+.zdc-mega-menu ul li ul {display: none;}
+.zdc-mega-menu .zdc-sub {display: none;}
+.zdc-mega-menu .zdc-sub ul {display: block;}
+
+.blue {font: normal 13px Arial, sans-serif; line-height: 16px;}
+.blue ul.zdc-mega-menu, .blue ul.zdc-mega-menu, .blue ul.zdc-mega-menu li {margin: 0; padding: 0; border: none;}
+.blue ul.zdc-mega-menu{background: #8998a8 url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/bg_blue.png) repeat-x 0 -80px; width: 100%; height: 40px; border-right: 1px solid #536573; border-left: 1px solid #536573; position: relative;}
+.blue ul.zdc-mega-menu li {float: left; margin: 0; padding: 0; font-size: 13px; font-weight: bold;}
+.blue ul.zdc-mega-menu li a {float: left; display: block; color: #fff; padding: 12px 38px 12px 25px; background: url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/bg_blue.png) repeat-x 100% 0; text-shadow: 1px 1px 1px #000; text-decoration: none;}
+.blue ul.zdc-mega-menu li a.zdc-mega {position: relative;}
+.blue ul.zdc-mega-menu li a .zdc-mega-icon {display: block; position: absolute; top: 18px; right: 15px; width: 8px; height: 6px; background: url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/arrow.png) no-repeat 0 0;}
+.blue ul.zdc-mega-menu li.zdc-mega-hover a, .blue ul.zdc-mega-menu li a:hover {background-position: 100% -40px; color: #000; text-shadow: none;}
+.blue ul.zdc-mega-menu li.zdc-mega-hover a .zdc-mega-icon {background-position: 0 100%;}
+.blue ul.zdc-mega-menu li .zdc-sub-container {position: absolute; background: url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/bg_sub_left.png) no-repeat 0 100%; padding-left: 20px; margin-left: -3px;}
+.blue ul.zdc-mega-menu li .zdc-sub {background: url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/bg_sub.png) no-repeat 100% 100%; padding: 20px 20px 20px 10px;}
+.blue ul.zdc-mega-menu li .zdc-sub-container.zdc-mega .zdc-sub {padding: 20px 20px 10px 0;}
+.blue ul.zdc-mega-menu li .zdc-sub .zdc-row {width: 100%; overflow: hidden; clear: both;}
+.blue ul.zdc-mega-menu li .zdc-sub li {list-style: none; float: none; width: 170px; font-size: 1em; font-weight: normal;}
+.blue ul.zdc-mega-menu li .zdc-sub li.zdc-mega-hdr {margin: 0 10px 10px 0; float: left;}
+.blue ul.zdc-mega-menu li .zdc-sub li.zdc-mega-hdr.zdc-last {margin-right: 0;}
+.blue ul.zdc-mega-menu li .zdc-sub a {background: none; border: none; text-shadow: none; color: #111; padding: 7px 10px; display: block; float: none; text-decoration: none; font-size: 0.9em;}
+.blue ul.zdc-mega-menu li .zdc-sub li.zdc-mega-hdr a.zdc-mega-hdr-a {padding: 5px 5px 5px 15px; margin-bottom: 5px; background: #304B73 url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/bg_mega_hdr.png) no-repeat 0 0; text-transform: uppercase; font-weight: bold; color: #fff; text-shadow: 1px 1px 1px #333;}
+.blue ul.zdc-mega-menu li .zdc-sub li.zdc-mega-hdr a.zdc-mega-hdr-a:hover {color: #A8B7CF; text-shadow: none;}
+.blue ul.zdc-mega-menu .zdc-sub li.zdc-mega-hdr li a {padding: 4px 5px 4px 20px; background: url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/arrow_off.png) no-repeat 5px 8px; font-weight: normal;}
+.blue ul.zdc-mega-menu .zdc-sub li.zdc-mega-hdr li a:hover {color: #a32403; background: #efefef url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/arrow_on.png) no-repeat 5px 8px;}
+.blue ul.zdc-mega-menu .zdc-sub ul li {padding-right: 0;}
+.blue ul.zdc-mega-menu li .zdc-sub-container.zdc-non-mega .zdc-sub {padding: 20px 20px 20px 0;}
+.blue ul.zdc-mega-menu li .zdc-sub-container.zdc-non-mega li {padding: 0; width: 190px; margin: 0;}
+.blue ul.zdc-mega-menu li .zdc-sub-container.zdc-non-mega li a {padding: 7px 5px 7px 22px; background: url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/arrow_off.png) no-repeat 7px 10px;}
+.blue ul.zdc-mega-menu li .zdc-sub-container.zdc-non-mega li a:hover {color: #a32403; background: #efefef url(/z/javascript/jquery/jquery-mega-drop-down-menu/css/skins/images/arrow_on.png) no-repeat 7px 10px;}

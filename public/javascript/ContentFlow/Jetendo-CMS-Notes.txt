@@ -1,0 +1,2 @@
+Image reflection was disabled in all versions of internet explorer.
+	Line 503 of contentflow_src.js

@@ -1,0 +1,47 @@
+// changes needed on each tinymce upgrade:
+below _mceInsertAnchor function on line 1011 of editor_template_src.js make a similar function to it, but calling our zsa2 image library.
+
+		_mceInsertZSAImage : function(ui, v) {
+			var ed = this.editor;
+
+			ed.windowManager.open({
+				url : tinymce.baseURL + '/test.htm',
+				width : 400 + parseInt(ed.getLang('advanced.anchor_delta_width', 0)),
+				height : 300 + parseInt(ed.getLang('advanced.anchor_delta_height', 0)),
+				inline : true
+			}, {
+				theme_url : this.url
+			});
+		},
+
+on line 52 of editor_template_src.js make a new option called zsaimage that maps to the new function
+
+			zsaimage : ['zsaimage_desc', 'mceInsertZSAImage'],
+
+on line 50 of tiny_mce/themes/advanced/langs/en.js
+make a description for our new button
+zsaimage_desc:"Open image library",
+
+
+on line 11 of tiny_mce/themes/advanced/langs/en_dlg.js
+make a title for our new dialog
+zsaimage_title:"Image Library",
+
+make sure to retain this file on upgrades
+tiny_mce/theme/advacned/img/icons.gif (has the old fck image icon)
+
+add a new class for zsaimage - line 149 - it points to the image offset
+\tiny_mce\themes\advanced\skins\default\ui.css
+.defaultSkin span.mce_zsaimage {background-position:-380px 0}
+
+// this is part of the /zsa2/a/fckeditor/fckeditor.cfc and not needed on each upgraded
+rename "image" to "zsaimage" where it has theme_advanced_buttons2 in tiny_mce.html (or wherever the editor is created with the init() function)
+
+// download spellchecker and unzip into plugins folder. 
+
+created these two files for the modal window:
+tiny_mce\themes\advanced\js\zsaimage.js
+tiny_mce\themes\advanced\zsaimage.htm
+
+// no change needed here. just a note
+s.onclick = function() { ed.execCommand(s.cmd on line 12464 of tiny_mce_src.js - version 3.2.6 - 2009-08-19 - this is where it runs the action

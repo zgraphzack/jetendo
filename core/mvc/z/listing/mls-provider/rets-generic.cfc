@@ -1,0 +1,935 @@
+<cfcomponent extends="zcorerootmapping.mvc.z.listing.mls-provider.base">
+<cfoutput>
+<cfscript>
+this.retsVersion="1.5";
+this.arrTypeLoop=arraynew(1);
+variables.typeStruct=structnew();
+variables.typeStruct["Tiny"]="int(11)";
+variables.typeStruct["Character"]="varchar";
+variables.typeStruct["Small"]="varchar";
+variables.typeStruct["Date"]="date";
+variables.typeStruct["DateTime"]="datetime"; 
+variables.typeStruct["Boolean"]="varchar"; 
+variables.typeStruct["Decimal"]="decimal(11,2)";
+variables.typeStruct["Int"]="int(11)";
+variables.typeStruct["Long"]="int(11)";
+variables.typeStruct["text"]="text";
+</cfscript>
+	
+<cffunction name="getRETSValue" localmode="modern" access="public" returntype="any">
+	<cfargument name="resource" type="string" required="yes">
+	<cfargument name="class" type="string" required="yes">
+	<cfargument name="field" type="string" required="yes">
+	<cfargument name="value" type="string" required="yes">
+	<cfscript>
+	var i=0;
+	var cur=0;
+	if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct,arguments.resource)){
+		local.ms=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource];
+		if(arraylen(this.arrTypeLoop) NEQ 0){
+			
+			if(structkeyexists(local.ms.tablefields, arguments.field) EQ false){
+				return false;
+			}
+			for(i=1;i LTE arraylen(this.arrTypeLoop);i++){
+				arguments.field=replacenocase(arguments.field,"_"&this.arrTypeLoop[i],"");
+			}
+			
+			if(structkeyexists(local.ms.fieldLookup, arguments.field&"_"&arguments.class)){
+				local.typeName=local.ms.fieldLookup[arguments.field&"_"&arguments.class];
+				if(structkeyexists(local.ms.typeStruct[local.typeName].valueStruct, arguments.value)){
+					return local.ms.typeStruct[local.typeName].valueStruct[arguments.value];
+				}else{
+					return "";
+				}
+			}
+					/*
+			for(i=1;i LTE arraylen(this.arrTypeLoop);i++){
+					if(structkeyexists(local.ms.fieldLookup, arguments.field&"_"&this.arrTypeLoop[i])){
+						local.typeName=local.ms.fieldLookup[arguments.field&"_"&this.arrTypeLoop[i]];
+						//structappend(rs, local.ms.typeStruct[local.ms.fieldLookup[arguments.field&"_"&this.arrTypeLoop[i]]].valueStruct);
+						if(structkeyexists(local.ms.typeStruct[local.typeName].valueStruct, arguments.value)){
+							return local.ms.typeStruct[local.typeName].valueStruct[arguments.value];
+						}else{
+							return "";
+						}
+					}
+			}
+			*/
+			
+			if(structkeyexists(local.ms.fieldLookup, arguments.field) EQ false){
+				return arguments.value;
+			}else{
+				return "";
+			}
+		}else{
+			if(structkeyexists(local.ms.fieldLookup, arguments.field)){
+				if(structkeyexists(local.ms.typeStruct[local.ms.fieldLookup[arguments.field]].valueStruct, arguments.value)){
+					return local.ms.typeStruct[local.ms.fieldLookup[arguments.field]].valueStruct[arguments.value];
+				}else{
+					return "";
+				}
+			}else if(structkeyexists(local.ms.tablefields, arguments.field) EQ false){
+				return false;
+			}else{
+				return arguments.value;
+			}
+		}
+	}else{
+		writeoutput('Invalid resource, "#arguments.resource#"');
+		application.zcore.functions.zabort();
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getRETSValues" localmode="modern" access="public" returntype="any">
+	<cfargument name="resource" type="string" required="yes">
+	<cfargument name="class" type="string" required="yes">
+	<cfargument name="field" type="string" required="yes">
+	<cfscript>
+	var rs=structnew();
+	var i=0;
+	var cur=0;
+	if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct,arguments.resource)){
+		if(arraylen(this.arrTypeLoop) NEQ 0){ 
+			if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].fieldLookup, arguments.field)){
+				structappend(rs, application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].typeStruct[application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].fieldLookup[arguments.field]].valueStruct);
+			} 
+			if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].fieldLookup, arguments.field&"_"&arguments.class)){ 
+				structappend(rs, application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].typeStruct[application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].fieldLookup[arguments.field&"_"&arguments.class]].valueStruct);
+			} 
+			return rs;
+		}else{
+			if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].fieldLookup, arguments.field)){
+				return application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].typeStruct[application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].fieldLookup[arguments.field]].valueStruct;
+			}else{
+				return false;
+			}
+		}
+	}else{
+		writeoutput('Invalid resource, "#arguments.resource#');
+		application.zcore.functions.zabort();
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getRetsDataObject" localmode="modern">
+	<cfscript>
+        if(structkeyexists(variables, 'retsDataCom') EQ false){
+            variables.retsDataCom=createobject("component","rets"&this.mls_id&"data");
+        }
+		return variables.retsDataCom;
+        </cfscript>
+</cffunction>
+
+<cffunction name="parseMetaData" localmode="modern" access="public" output="yes" returntype="any">
+	<cfargument name="metadataDateLastModified" type="date" required="yes">
+	<cfscript>
+	var path=0;
+	var qd=0;
+	var metadatapath=0;
+	var contents=0;
+	var xmlmeta=0;
+	var xmlbase=0;
+	var metalookupstruct=0;
+	var i=0;
+	var curtables=0;
+	var mk=0;
+	var curbase=0;
+	var n=0;
+	var lk=0;
+	var curlookup=0;
+	var g=0;
+	var f=0;
+	var curtable=0;
+	var ts=0;
+	var tempname=0;
+	var arrerror=0;
+	var alterstruct=0;
+	var g2=0;
+	var arrf=0;
+	var arrf2=0;
+	var fieldstruct=0;
+	var fieldnamestruct=0;
+	var columnstruct=0;
+	var columnnamestruct=0;
+	var db=request.zos.queryObject;
+	var nlow=0;
+	var type=0;
+	var field=0;
+	var qp=0;
+	var columnname=0;
+	var column=0;
+	var fieldname2=0;
+	var lastone=0;
+	var emailOut=0;
+	var diskMetaDataDate=0;
+	var db2=0;
+	var cfcatch=0;
+	var excpt=0;
+	var metastruct=structnew();
+	var curday=dateformat(now(),'yyyy-mm-dd');
+	if(request.zos.istestserver){
+		path="#request.zos.sharedPath#mls-data/#this.mls_id#/";
+	}else{
+		path="#request.zos.sharedPath#mls-data/#this.mls_id#/";
+	}
+	directory directory="#path#" filter="metadata*.xml" name="qD" sort="dateLastModified DESC";
+	if(qD.recordcount NEQ 0){
+		metadataPath=path&qd.name[1];
+		diskMetaDataDate=qD.dateLastModified[1];	
+	}
+	if(qD.recordcount EQ 0){
+		writeoutput('metadata cache is missing: #path#');
+		application.zcore.functions.zabort();
+		application.zcore.template.fail("metadatacache is missing.");	
+	}
+	if(not structkeyexists(form, 'forceMetaDataRebuild') and (datecompare(diskMetaDataDate, arguments.metadataDateLastModified) LTE 0)){
+		try{
+			return objectload(tobinary(application.zcore.functions.zreadfile(request.zos.globals.serverprivatehomedir&"_cache/listing/metadata/"&this.mls_id&".txt")));
+		}catch(Any excpt){
+			// ignore error and recreate metadata file	
+		}
+	}
+	contents=application.zcore.functions.zreadfile(metadataPath);
+	/*if(this.mls_id EQ 14){
+		// fix madness in RVAR
+		
+	}else if(this.mls_id EQ 13){
+		// fix subdivision madness for northeast florida
+		
+		// strip subdivision xml
+		// parse it
+		//xmlSub=xmlparse(subdivisions);
+		// add it back to original metadata or maybe database instead
+		//xmlMeta=xmlparse(contents);
+	}*/
+	xmlMeta=xmlparse(contents);
+	xmlBase=xmlMeta.rets.metadata["metadata-system"].system["metadata-resource"].resource;
+	structdelete(variables,"contents");
+	structdelete(variables,"xmlMeta");
+	
+	
+	metaLookupStruct=structnew();
+	for(i=1;i LTE arraylen(xmlBase);i++){
+		curTables=xmlBase[i]["METADATA-CLASS"].class;
+		mk=xmlBase[i]["METADATA-CLASS"].xmlattributes.resource;
+		metaStruct[mk]=structnew();
+		metaStruct[mk].typeStruct=structnew();
+		metaStruct[mk].tableFields=structnew();
+		metaStruct[mk].fieldLookup=structnew();
+		
+		if(this.retsVersion EQ "1.7"){
+			if(structkeyexists(xmlBase[i],"METADATA-LOOKUP")){
+				if(structkeyexists(xmlBase[i]["METADATA-LOOKUP"],"lookup")){
+					curBase=xmlBase[i]["METADATA-LOOKUP"]["lookup"];
+					for(n=1;n LTE arraylen(curBase);n++){
+						lk=curBase[n].LookupName.xmltext;
+						metaStruct[mk].typeStruct[lk]=structnew();
+						metaStruct[mk].typeStruct[lk].valueStruct=structnew();
+						if(structkeyexists(curBase[n], "METADATA-LOOKUP_TYPE")){
+							if(structkeyexists(curBase[n]["METADATA-LOOKUP_TYPE"],"lookup")){
+								curLookup=curBase[n]["METADATA-LOOKUP_TYPE"].lookup;
+								for(g=1;g LTE arraylen(curLookup);g++){
+									metaStruct[mk].typeStruct[lk].valueStruct[curLookup[g].value.xmltext]=curLookup[g].longvalue.xmltext;
+								}
+							}else if(structkeyexists(curBase[n]["METADATA-LOOKUP_TYPE"],"lookuptype")){
+								curLookup=curBase[n]["METADATA-LOOKUP_TYPE"].lookuptype;
+								for(g=1;g LTE arraylen(curLookup);g++){
+									metaStruct[mk].typeStruct[lk].valueStruct[curLookup[g].value.xmltext]=curLookup[g].longvalue.xmltext;
+								}
+								
+							}else{
+								writeoutput(n&' missing: curBase[n]["METADATA-LOOKUP_TYPE"]');
+								application.zcore.functions.zabort();
+							}
+						}
+					}
+				}
+			}
+		}else if(this.retsVersion EQ "1.5"){
+			
+			if(structkeyexists(xmlBase[i],"METADATA-LOOKUP")){
+				if(structkeyexists(xmlBase[i]["METADATA-LOOKUP"],"lookuptype")){
+					curBase=xmlBase[i]["METADATA-LOOKUP"]["lookuptype"];
+					for(n=1;n LTE arraylen(curBase);n++){
+						lk=curBase[n].LookupName.xmltext;
+						metaStruct[mk].typeStruct[lk]=structnew();
+						metaStruct[mk].typeStruct[lk].valueStruct=structnew();
+						if(structkeyexists(curBase[n], "METADATA-LOOKUP_TYPE")){
+							if(structkeyexists(curBase[n]["METADATA-LOOKUP_TYPE"],"lookup")){
+								curLookup=curBase[n]["METADATA-LOOKUP_TYPE"].lookup;
+								for(g=1;g LTE arraylen(curLookup);g++){
+									metaStruct[mk].typeStruct[lk].valueStruct[curLookup[g].value.xmltext]=curLookup[g].longvalue.xmltext;
+								}
+							}else{
+								curLookup=curBase[n]["METADATA-LOOKUP_TYPE"].lookuptype;
+								for(g=1;g LTE arraylen(curLookup);g++){
+									metaStruct[mk].typeStruct[lk].valueStruct[curLookup[g].value.xmltext]=curLookup[g].longvalue.xmltext;
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}else if(this.retsVersion EQ "1.1"){
+			if(structkeyexists(xmlBase[i],"METADATA-LOOKUP")){
+				if(structkeyexists(xmlBase[i]["METADATA-LOOKUP"],"lookuptype")){
+					curBase=xmlBase[i]["METADATA-LOOKUP"]["lookuptype"];
+					for(n=1;n LTE arraylen(curBase);n++){
+						lk=curBase[n].LookupName.xmltext;
+						metaStruct[mk].typeStruct[lk]=structnew();
+						metaStruct[mk].typeStruct[lk].valueStruct=structnew();
+						if(structkeyexists(curBase[n], "METADATA-LOOKUP_TYPE")){
+							if(structkeyexists(curBase[n]["METADATA-LOOKUP_TYPE"],"lookup")){
+								curLookup=curBase[n]["METADATA-LOOKUP_TYPE"].lookup;
+								for(g=1;g LTE arraylen(curLookup);g++){
+									metaStruct[mk].typeStruct[lk].valueStruct[curLookup[g].value.xmltext]=curLookup[g].longvalue.xmltext;
+								}
+							}else{
+								curLookup=curBase[n]["METADATA-LOOKUP_TYPE"].lookuptype;
+								for(g=1;g LTE arraylen(curLookup);g++){
+									metaStruct[mk].typeStruct[lk].valueStruct[curLookup[g].value.xmltext]=curLookup[g].longvalue.xmltext;
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}
+		if(structkeyexists(this,"useRetsFieldName") EQ false){
+			this.useRetsFieldName="standard";	
+		}
+		metaStruct[mk].table=structnew();
+		for(f=1;f LTE arraylen(curTables);f++){
+			curTable=curTables[f]["METADATA-TABLE"];
+			metaStruct[mk].table[curTable.xmlattributes.class]=structnew();
+			metaStruct[mk].table[curTable.xmlattributes.class].tableFields=structnew();
+			metaStruct[mk].table[curTable.xmlattributes.class].fieldLookup=structnew();
+			
+			// each class's fields can have a different lookupname even though the systemname is identical - this means, i must always keep the sub classes separate
+			/*if(this.mls_id EQ "22"){
+				writeoutput(curTable.xmlattributes.class&"<br>");
+			}*/
+			if(structkeyexists(curTable,'field')){
+				for(n=1;n LTE arraylen(curTable.field);n++){
+					ts=structnew();
+					ts.length=curTable.field[n].maximumlength.xmltext;
+					ts.type=curTable.field[n].datatype.xmltext;
+					ts.longname=curTable.field[n].LongName.xmltext;
+					if(this.useRetsFieldName EQ "long"){
+						tempName=curTable.field[n].LongName.xmltext;
+					}else{
+						tempName=curTable.field[n].SystemName.xmltext;
+						if(tempName EQ ""){
+							tempName=curTable.field[n].StandardName.xmltext;
+						}
+					}
+					tempName=replace(tempName," ","","ALL");
+					lk=curTable.field[n].LookupName.xmltext;
+					if(curTable.field[n].LookupName.xmltext NEQ ""){
+						if(structkeyexists(metaStruct[mk].typeStruct,lk)){
+							if(structkeyexists(this, 'arrTypeLoop') and arraylen(this.arrTypeLoop)){
+								local.tempname2=tempName&"_"&curTable.xmlattributes.class;
+							}else{
+								local.tempname2=tempName;
+							}
+							metaStruct[mk].fieldLookup[local.tempname2]=lk;
+							metaStruct[mk].table[curTable.xmlattributes.class].fieldLookup[local.tempname2]=lk;
+						}
+					}
+					metaStruct[mk].tableFields[tempName]=ts;
+					metaStruct[mk].table[curTable.xmlattributes.class].tableFields[tempName]=ts;
+				}
+			}
+		}
+	} 
+	metastruct["property"].primaryKey="rets#this.mls_id#_"&variables.resourceStruct["property"].id;
+	metaStruct["property"].tableFields[variables.resourceStruct["property"].id].type="character";
+	metaStruct["property"].tableFields[variables.resourceStruct["property"].id].length="15";
+	arrError=arraynew(1);
+	alterStruct=structnew();
+	db2=request.zos.noVerifyQueryObject;
+	for(g2 in metastruct){
+		if(structkeyexists(variables.resourceStruct, g2)){
+			g=variables.resourceStruct[g2].resource;
+			arrF=arraynew(1);
+			arrF2=arraynew(1);
+			alterStruct[g]=arraynew(1);
+			fieldStruct=structnew();
+			fieldNameStruct=structnew();
+			columnStruct=structnew();
+			columnNameStruct=structnew();
+			for(n in metastruct[g].tablefields){
+				if(trim(n) NEQ ""){
+					nlow="rets#this.mls_id#_"&application.zcore.functions.zescape(replace(lcase(n)," ","","ALL"));
+					type=variables.typeStruct[metaStruct[g].tableFields[n].type];
+					if(metaStruct[g].tableFields[n].length GT 79){
+						type="text";	
+						metaStruct[g].tableFields[n].type="text";
+					}
+					field='`#nlow#` #type#';
+					if(metaStruct[g].tableFields[n].type EQ "boolean"){
+						field&="(1)";
+					}else if(metaStruct[g].tableFields[n].type EQ "character" or metaStruct[g].tableFields[n].type EQ "small"){
+						field&="(#max(1,metaStruct[g].tableFields[n].length)#)";
+					}else if(metaStruct[g].tableFields[n].type EQ 'tiny' or metaStruct[g].tableFields[n].type EQ 'int' or metaStruct[g].tableFields[n].type EQ 'decimal'){
+						field&=" UNSIGNED";
+					}
+					fieldNameStruct[nlow]=true;
+					fieldStruct[field]=true;
+					arrayappend(arrF2,nlow);
+					arrayappend(arrF,field);
+				}
+			}
+			db2.sql="SHOW TABLES IN #request.zos.zcoreDatasource# LIKE 'rets#this.mls_id#_#lcase(g)#'";
+			local.qT=db2.execute("qT"); 
+			if(local.qT.recordcount EQ 0){
+				continue;
+			}
+			db2.sql="show fields from #db2.table("rets"&this.mls_id&"_"&lcase(g), request.zos.zcoreDatasource)#";
+			qP=db2.execute("qP"); 
+			if(isquery(qP) EQ false){
+				continue;
+			}
+			for(i=1;i LTE qP.recordcount;i++){
+				columnName=qP.field[i];
+				if(columnName NEQ "rets#this.mls_id#_"&g&"_id"){
+					column="`#columnName#` #qP.type[i]#";
+					columnStruct[column]=true;
+					columnNameStruct[columnName]=true;
+					fieldName2=replace(columnName,"rets#this.mls_id#_","");
+					if(structkeyexists(fieldNameStruct, columnName) EQ false){
+						ts=structnew();
+						ts.old="rets#this.mls_id#_#g#.#columnName#";
+						ts.new="deleted column";
+						arrayappend(alterStruct[g], "drop column `#columnName#`#chr(10)#");
+						arrayappend(arrError,ts);
+					}else if(structkeyexists(fieldStruct, column) EQ false){
+						nlow=application.zcore.functions.zescape(lcase(columnName));
+						fieldName2=replace(columnName,"rets#this.mls_id#_","");
+						type=variables.typeStruct[metaStruct[g].tableFields[fieldName2].type];
+						if(metaStruct[g].tableFields[fieldName2].length GT 79){
+							type="text";	
+							metaStruct[g].tableFields[fieldName2].type="text";
+						}
+						field='`#nlow#` #type#';
+						if(metaStruct[g].tableFields[fieldName2].type EQ "boolean"){
+							field&="(1) NOT NULL DEFAULT '0'";
+						}else if(metaStruct[g].tableFields[fieldName2].type EQ "character" or metaStruct[g].tableFields[fieldName2].type EQ "small"){
+							field&="(#max(1,metaStruct[g].tableFields[fieldName2].length)#) NOT NULL";
+						}else if( metaStruct[g].tableFields[fieldName2].type EQ 'tiny' or metaStruct[g].tableFields[fieldName2].type EQ 'int' or metaStruct[g].tableFields[fieldName2].type EQ 'decimal'){
+							field&=" UNSIGNED NOT NULL DEFAULT '0'";
+						}else{
+							field&=" NOT NULL ";
+						}
+						ts=structnew();
+						ts.old="#column#";
+						ts.new="#field#";
+						arrayappend(alterStruct[g], "change `#columnName#` #field##chr(10)#");
+						arrayappend(arrError,ts);
+					}
+				}
+			}
+			lastOne="";
+			for(n=1;n LTE arraylen(arrF);n++){
+				if(structkeyexists(columnNameStruct, arrF2[n]) EQ false){
+					ts=structnew();
+					ts.old="Column missing";
+					if(lastOne EQ ""){
+						ts.new="<strong>rets#this.mls_id#_#lcase(g)#.#arrF[n]#</strong>";
+						arrayappend(alterStruct[g], "add column #arrF[n]##chr(10)#");
+					}else{
+						ts.new="<strong>rets#this.mls_id#_#lcase(g)#.#arrF[n]#</strong> after #lastOne#";
+					arrayappend(alterStruct[g], "add column #arrF[n]# after `#lastOne#`#chr(10)#");
+					}
+					arrayappend(arrError,ts);
+				}
+				lastOne=arrF2[n];
+			}
+		}
+	}
+	</cfscript>
+	<cfif arraylen(arrError) NEQ 0>
+		<cfsavecontent variable="emailout"><span style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><!--- The latest RETS metadata is different from the current database schema.<br />
+		<br />
+		<table style="border-spacing:0px;font-family:Verdana, Geneva, sans-serif; font-size:11px;">
+			<tr>
+				<td>OLD</td>
+				<td>NEW</td>
+				<td></td>
+			</tr>
+			<cfscript>
+			for(i=1;i LTE arraylen(arrError);i++){
+				writeoutput('<tr><td>#arrError[i].old#</td><td>#arrError[i].new#</td><td></td></tr>');
+			}
+			</cfscript>
+		</table>
+		<br /> --->
+		Run these queries on the test server and make sure the application still works and then run on live server and then re-run import process.;
+		<hr />
+		<cfscript>
+		for(g2 in metaStruct){
+			if(structkeyexists(variables.resourceStruct, g2)){
+				g=variables.resourceStruct[g2].resource;
+				if(arraylen(alterStruct[g]) NEQ 0){
+					writeoutput("ALTER TABLE `#request.zos.zcoreDatasource#`.`rets#this.mls_id#_#lcase(g)#`<br /> #arraytolist(alterStruct[g],", <br />")#;<br /><hr size=""1""><br />");
+				}
+			}
+		}
+		</cfscript>
+		</span></cfsavecontent>
+		<cfif isDefined('server.rets#this.mls_id#metadatachangeemailsent') EQ false or application.zcore.functions.zso(application,'rets#this.mls_id#metadatachangeemailsent') NEQ curday>
+			<cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="URGENT ERROR: rets#this.mls_id# metadata may have changed." type="html">
+			#application.zcore.functions.zHTMLDoctype()#
+			<head>
+			<meta charset="utf-8" />
+			<title>Metadata</title>
+			</head>
+			
+			<body>
+			Changed metadata detected on #request.zos.currentHostName#. <br />
+			<br />
+			If I need to update the table structure, then I should first download the new metadata to the test server and then IMPORT MLS. <br />
+			<br />
+			IMPORT MLS ON TEST SERVER:<br />
+			<a href="#request.zOS.zcoreTestAdminDomain#/z/listing/tasks/importMLS/index?zforce=1">#request.zOS.zcoreTestAdminDomain#/z/listing/tasks/importMLS/index?zforce=1</a><br />
+			<br />
+			If valid, delete the old metadata file and update table structure on live server.<br />
+			<br />
+#emailout#
+			</body>
+			</html>
+			</cfmail>
+			<cfset application["rets#this.mls_id#metadatachangeemailsent"]=curday>
+		</cfif>
+#emailout#
+		<cfscript>
+		application.zcore.functions.zabort();
+		</cfscript>
+	</cfif>
+	<cfscript>
+	structdelete(application,"rets#this.mls_id#metadatachangeemailsent");
+	
+	//application.zcore.functions.zdump(metastruct);
+	//application.zcore.functions.zabort();
+	structdelete(variables,"xmlBase");
+	structdelete(variables,"curLookup");
+	structdelete(variables,"curTables");
+	structdelete(variables,"curTable");
+	structdelete(variables,"curBase");
+	
+	application.zcore.functions.zWriteFile(request.zos.globals.serverprivatehomedir&"_cache/listing/metadata/"&this.mls_id&".txt", toBase64(objectsave(metaStruct)));
+	
+	return metaStruct;
+	</cfscript>
+</cffunction>
+<cffunction name="convertRawDataToLookupValues" localmode="modern">
+	<cfargument name="idx" type="struct" required="yes">
+	<cfargument name="tableName" type="string" required="yes">
+	<cfargument name="tableId" type="string" required="yes">
+	<cfscript>
+	var curTableData=0;
+	var i10=0;
+	var column=0;
+	var value=0;
+	var shortColumn=0;
+	var arrV=0;
+	var arrV2=0;
+	var n=0;
+	var t1=0;
+	var t2=0;
+	var t3=0;
+	var t4=0;
+	var retsPrefix='rets'&this.mls_id&"_";
+	var retsPrefixLength=len(retsPrefix);
+	var idx=arguments.idx;
+	curTableData=false;
+	if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct,'metaStruct')){
+		curTableData=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct.property.table[arguments.tableName]; 
+	}
+	for(i10 in idx){
+		if(structkeyexists(idx, i10) EQ false){
+			idx[i10]="";	
+		}
+		if(left(i10, retsPrefixLength) EQ retsPrefix){
+			column=i10;
+			shortColumn=removechars(column, 1, retsPrefixLength);
+			value="";
+			value=idx[i10];
+			if(arrayLen(this.arrTypeLoop)){
+				shortColumn&="_"&arguments.tableName; // this was changed from arguments.tableId because it was wrong
+			}  
+			if(value NEQ ""){ 
+				if(left(i10,8) NEQ 'listing_' and isstruct(curTableData) and structkeyexists(curTableData.fieldLookup, shortColumn)){
+					arrV=listtoarray(trim(value),',',false);
+					arrV2=arraynew(1); 
+					for(n=1;n LTE arraylen(arrV);n++){
+						t2=arrV[n];//replace(arrV[n]," ","","ALL");
+						t4=curTableData.fieldLookup[shortColumn];
+						t3=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].typeStruct[t4].valueStruct; 
+						if(structkeyexists(t3, t2)){
+							t1=t3[t2];
+							arrayappend(arrV2,t1);
+						}
+					}
+					if(arraylen(arrV2)){
+						value=arraytolist(arrV2,", ");
+					}
+				} 
+				idx[column]=value;
+			}
+		}
+	}
+	return idx;
+	</cfscript>
+</cffunction>
+
+<cffunction name="setColumns" localmode="modern">
+	<cfargument name="arrColumns" type="array" required="yes">
+	<cfscript>
+	var i=0;
+	var sn=structnew();
+	var arrColumns2=arraynew(1);
+	application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxSkipDataIndexStruct=structnew();
+	for(i=1;i LTE arraylen(arguments.arrColumns);i++){
+		if(structkeyexists(sn, arguments.arrColumns[i]) EQ false){
+			sn[arguments.arrColumns[i]]=true;
+			arrayappend(arrColumns2, arguments.arrColumns[i]);
+		}else{
+			application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxSkipDataIndexStruct[i]=true;
+		}
+	}
+	arguments.arrColumns=arrColumns2;
+	application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxColumns="rets#this.mls_id#_"&replace(arraytolist(arguments.arrColumns),",",",rets#this.mls_id#_","ALL");
+	application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns=listtoarray(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxColumns);
+	//application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxColumns="`"&replace(replace(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxColumns,",","`,`","ALL"),"'","''","ALL")&"`";
+	</cfscript>
+</cffunction>
+
+<cffunction name="getImportFilePath" localmode="modern" output="no" returntype="any">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	var i=0;
+	var path=request.zos.sharedPath&"mls-data/"&arguments.ss.qMLS.mls_id[arguments.ss.query_row]&"/";
+	var qD=application.zcore.functions.zReadDirectory(path, "listings-*.txt");
+	for(i=1;i LTE qD.recordcount;i++){
+		if(left(qd.name[i], 14) EQ "listings-sold-" and this.mls_id NEQ "20"){
+			// store sold data in separate table
+		}else{
+			if(qd.size[i] NEQ 0 and datecompare(qD.dateLastModified[i],dateadd("n",-1,now())) LT 0){
+				return "mls-data/"&arguments.ss.qMLS.mls_id[arguments.ss.query_row]&"/"&qd.name[i];	
+			}
+		}
+	}
+	return false;	
+	</cfscript>
+</cffunction>
+
+<cffunction name="setMLS" localmode="modern" output="no" returntype="any">
+	<cfargument name="mls_id" type="numeric" required="yes">
+	<cfscript>
+	this.mls_id=arguments.mls_id;
+	</cfscript>
+</cffunction>
+
+<cffunction name="init" localmode="modern" output="yes" returntype="any">
+	<cfargument name="sharedStruct" type="struct" required="yes">
+	<cfscript>
+	var g=0;
+	var g2=0;
+	var path=0;
+	var arrim=0;
+	var arrunique=0;
+	var i=0;
+	var newpath=0;
+	var arrc=0;
+	var arrtf=0;
+	var type=0;
+	var nlow=0;
+	var ilow=0;
+	var qm=0;
+	var f=0;
+	var db=application.zcore.db.newQuery();
+	var firstline=0;
+	var offset=0;
+	var columns=0;
+	var qc=0;
+	var t44=0;
+	var n=0;
+	var e=0;
+	var cfcatch=0;
+	var newpath2=0;
+	var loadnewpath2=0;
+	var loadnewpath=0;
+	var db3=0;
+	var fieldOrderStruct=structnew();
+	var dbMLS=0;
+	var dbMLSData=0;
+	this.getRetsDataObject();
+	
+	local.c=application.zcore.db.getConfig();
+	local.c.verifyQueriesEnabled=false;
+	local.c.datasource=request.zos.zcoreDatasource;
+	local.c.autoReset=false;
+	dbMLS=application.zcore.db.newQuery(local.c);
+	local.c=application.zcore.db.getConfig();
+	local.c.verifyQueriesEnabled=false;
+	local.c.datasource=request.zos.zcoreDatasource;
+	local.c.autoReset=false;
+	dbMLSData=application.zcore.db.newQuery(local.c);
+	this.tablePrefix="rets#this.mls_id#_";
+	if((structkeyexists(form, 'forceMetaDataRebuild') and request.zos.isDeveloper) or structkeyexists(arguments.sharedStruct,'metastruct') EQ false or structkeyexists(arguments.sharedStruct,'metaStructUpdated') EQ false){
+		if(structkeyexists(arguments.sharedStruct, 'metadataDateLastModified') EQ false){
+			arguments.sharedStruct.metadataDateLastModified=createdate(2000,1,1);	
+		}
+		arguments.sharedStruct.metaStruct=this.parseMetaData(arguments.sharedStruct.metadataDateLastModified);	
+		arguments.sharedStruct.metaStructUpdated=true;
+	}
+	if(request.zos.istestserver){
+		path="#request.zos.sharedPath#mls-data/"&this.mls_id&"/";
+	}else{
+		path="#request.zos.sharedPath#mls-data/"&this.mls_id&"/";
+	}
+	for(g in variables.resourceStruct){
+		if(request.zos.isdeveloper and structkeyexists(form, 'debug')) writeoutput('mls_id: '&this.mls_id&' g:'&g&'<br />');
+		i=variables.resourceStruct[g].resource;
+		ilow=application.zcore.functions.zescape(replace(lcase(i)," ","","ALL"));
+		newPath=path&ilow&".txt";
+		if(request.zos.isdeveloper and structkeyexists(form, 'debug')) writeoutput('path: '&newPath&' exists:'&fileexists(newPath)&'<br />');
+		if(fileexists(newPath) or i EQ "property"){
+			if(i EQ "property"){
+				dbMLSData.sql="SHOW TABLE STATUS  WHERE NAME = '#request.zos.zcoreDatasourcePrefix#rets#this.mls_id#_property'";
+				qM=dbMLSData.execute("qM"); 
+				if(qM.recordcount NEQ 0){
+					continue;	
+				}
+			}
+			arrC=arraynew(1);
+			arrayappend(arrC, "`rets#this.mls_id#_#ilow#_id` int (11) UNSIGNED NOT NULL AUTO_INCREMENT");
+			offset=1;
+			fieldOrderStruct[i]=structnew();
+			arrTF=structkeyarray(arguments.sharedStruct.metaStruct[i].tableFields);
+			arraysort(arrTF,"textnocase","asc");
+			for(g2=1;g2 LTE arraylen(arrTF);g2++){
+				n=arrTF[g2];
+				nlow=application.zcore.functions.zescape(replace(lcase(n)," ","","ALL"));
+				type=variables.typeStruct[arguments.sharedStruct.metaStruct[i].tableFields[n].type];
+				if(arguments.sharedStruct.metaStruct[i].tableFields[n].length GT 79){
+					type="text";	
+					arguments.sharedStruct.metaStruct[i].tableFields[n].type="text";
+				}
+				arrayappend(arrC,", `rets#this.mls_id#_#nlow#` #type#");
+				
+				if(arguments.sharedStruct.metaStruct[i].tableFields[n].type EQ "boolean"){
+					arrayappend(arrC, "(1) NOT NULL DEFAULT '0'");
+					
+				}else if(arguments.sharedStruct.metaStruct[i].tableFields[n].type EQ "character" or arguments.sharedStruct.metaStruct[i].tableFields[n].type EQ "small"){
+					arrayappend(arrC,"(#arguments.sharedStruct.metaStruct[i].tableFields[n].length#) NOT NULL");
+				}else if(arguments.sharedStruct.metaStruct[i].tableFields[n].type EQ "tiny" or arguments.sharedStruct.metaStruct[i].tableFields[n].type EQ 'int' or arguments.sharedStruct.metaStruct[i].tableFields[n].type EQ 'decimal'){
+					arrayappend(arrC," UNSIGNED NOT NULL DEFAULT '0'");
+				}else{
+					arrayappend(arrC," NOT NULL ");
+				}
+				fieldOrderStruct[i][nlow]=offset;
+				offset++;
+			}
+			if(i EQ "property"){	
+				if(structkeyexists(this, 'sysidfield') and this.sysidfield NEQ ""){
+					local.sysidIndex=", KEY `NewIndex3` (`#this.sysidfield#`)";
+				}else{
+					local.sysidIndex="";
+				}
+				dbMLSData.sql="create table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#`(
+					"&arraytolist(arrC,"")&", 
+					PRIMARY KEY (`rets#this.mls_id#_#ilow#_id`), 
+					UNIQUE KEY `NewIndex2` (`rets#this.mls_id#_#variables.resourceStruct[g].id#`) #local.sysidIndex#
+				)  
+				Engine=INNODB comment=''  ";
+				dbMLSData.execute("q"); 
+			}else{
+				if(structkeyexists(variables.resourceStruct[g], 'extraPrimaryKey')){
+					t44=", "&variables.resourceStruct[g].extraPrimaryKey;
+				}else{
+					t44="";
+				}
+				try{
+					dbMLSData.sql="drop table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` ";
+					dbMLSData.execute("q"); 
+				}catch(Any local.e){
+				}
+				dbMLSData.sql="create table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe`("&arraytolist(arrC,"")&", 
+				PRIMARY KEY (`rets#this.mls_id#_#ilow#_id`), 
+				UNIQUE KEY `NewIndex2` (`rets#this.mls_id#_#variables.resourceStruct[g].id#`)  #t44#  )
+				Engine=INNODB comment=''  ";
+				dbMLSData.execute("q"); 
+				f=fileopen(newPath,"read");
+				try{
+					firstline=lcase(filereadline(f));
+					if(firstline EQ ""){
+						writeoutput("Data file empty");
+						application.zcore.functions.zabort();
+					}
+				}catch(Any excpt){
+					fileclose(f);
+					return;
+				}
+				fileclose(f);
+				columns=application.zcore.functions.zescape("rets#this.mls_id#_"&replace(firstline,chr(9),",rets#this.mls_id#_","ALL"));
+				newpath2=path&ilow&"-photos.txt";
+				if(request.zos.istestserver){
+					loadnewPath=replace(newPath,"#request.zos.sharedPath#", request.zos.sharedPathForDatabase);
+					loadnewpath2=replace(newpath2,"#request.zos.sharedPath#", request.zos.sharedPathForDatabase);
+				}else{
+					loadnewpath=newpath;
+					loadnewpath2=newpath2;	
+				}
+				dbMLSData.sql="LOAD DATA INFILE '#loadnewPath#' 
+				REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` 
+				FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
+				dbMLSData.execute("q"); 
+				for(local.i9=2;local.i9 LTE 10;local.i9++){
+					local.tempPath=replace(newPath, ".txt", local.i9&".txt");	
+					if(fileexists(local.tempPath)){
+						if(request.zos.istestserver){
+							local.tempPath2=replace(local.tempPath,"#request.zos.sharedPath#", request.zos.sharedPathForDatabase);
+						}else{
+							local.tempPath2=local.tempPath;
+						}
+						dbMLSData.sql="LOAD DATA INFILE '#local.tempPath2#' 
+						REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` 
+						FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
+						dbMLSData.execute("q"); 
+					}else{
+						break;
+					}
+					
+				}
+				if(fileexists(newpath2)){ // a hack added for ntreis which had way too many media records
+					dbMLSData.sql="LOAD DATA INFILE '#loadnewpath2#' REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
+					dbMLSData.execute("q"); 
+					application.zcore.functions.zRenameFile(newPath2,newPath2&"-imported");
+				}
+
+				dbMLSData.sql="SHOW TABLES IN #request.zos.zcoreDatasource# LIKE '#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#'";
+				qC=dbMLSData.execute("qC"); 
+				if(qC.recordcount NEQ 0){
+					dbMLSData.sql="rename table 
+					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` to `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safetemp`, 
+					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#` to `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe`, 
+					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safetemp` to 
+					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#`";
+					dbMLSData.execute("q"); 
+					dbMLSData.sql="drop table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` ";
+					dbMLSData.execute("q"); 
+				}else{
+					
+					dbMLSData.sql="rename table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` to `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#`";
+					dbMLSData.execute("q"); 
+				}
+				if(fileexists(newPath&"-imported")){
+					application.zcore.functions.zDeleteFile(newPath&"-imported");
+				}
+				application.zcore.functions.zRenameFile(newPath,newPath&"-imported");
+				for(local.i9=2;local.i9 LTE 10;local.i9++){
+					local.tempPath=replace(newPath, ".txt", local.i9&".txt");	
+					if(fileexists(local.tempPath)){
+						if(fileexists(local.tempPath&"-imported")){
+							application.zcore.functions.zDeleteFile(local.tempPath&"-imported");
+						}
+						application.zcore.functions.zRenameFile(local.tempPath,local.tempPath&"-imported");
+					}else{
+						break;
+					}
+				}
+			}
+		}
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="initImport" localmode="modern" output="no" returntype="any">
+	<cfargument name="resource" type="string" required="yes">
+	<cfargument name="sharedStruct" type="struct" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var qC=0;
+	var i=0;
+	var g=0;
+	var path=0;
+	var qdir=0;
+	var curday=dateformat(now(),'yyyy-mm-dd');
+	db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city";
+	qC=db.execute("qC"); 
+	
+	if(request.zos.istestserver){
+		path="#request.zos.sharedPath#mls-data/#this.mls_id#/";
+	}else{
+		path="#request.zos.sharedPath#mls-data/#this.mls_id#/";
+	}
+	arguments.sharedStruct.lookupStruct.table=db.table("rets#this.mls_id#_#lcase(arguments.resource)#", request.zos.zcoreDatasource);
+	arguments.sharedStruct.lookupStruct.primaryKey="rets#this.mls_id#_#variables.resourceStruct[arguments.resource].id#";
+	arguments.sharedStruct.lookupStruct.arrColumns=listtoarray(arguments.sharedStruct.lookupStruct.idxColumns);
+	arguments.sharedStruct.lookupStruct.idxsql="REPLACE INTO #arguments.sharedStruct.lookupStruct.table# (#arguments.sharedStruct.lookupStruct.idxColumns#) values";
+	request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
+	arguments.sharedStruct.lookupStruct.idColumnOffset=0;
+	
+	for(g=1;g LTE arraylen(arguments.sharedStruct.lookupStruct.arrColumns);g++){
+		if(arguments.sharedStruct.lookupStruct.arrColumns[g] EQ arguments.sharedStruct.lookupStruct.primaryKey){
+			arguments.sharedStruct.lookupStruct.idColumnOffset=g;
+			break;
+		}
+	}
+	for(local.row in qC){
+        	arguments.sharedStruct.lookupStruct.cityIDXStruct[local.row.city_id]=local.row.city_name&"|"&local.row.state_abbr;
+	}
+	directory directory="#path#" filter="metadata*.xml" name="qDir" sort="name DESC";
+	if(qDir.recordcount EQ 0){
+		if(structkeyexists(application.sitestruct[request.zos.globals.id], 'rets#this.mls_id#metadatachangeemailsent') EQ false or application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'rets#this.mls_id#metadatachangeemailsent') NEQ curday){
+			mail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="URGENT ERROR: rets#this.mls_id# metadata is missing."{
+				if(qDir.recordcount EQ 0){
+					writeoutput('Missing');
+				}else{
+					writeoutput('Changed');
+				}
+				writeoutput(' metadata detected.');
+				if(qDir.recordcount NEQ 0){
+					writeoutput(' If I need to update the table structure, then I should first download the new metadata to the test server and then IMPORT MLS. 
+
+IMPORT MLS ON TEST SERVER:#request.zOS.zcoreTestAdminDomain#/z/listing/tasks/importMLS/index?zforce=1
+
+If valid, delete the old metadata file and update table structure on live server.
+Metadata paths listed below (missing if there are none)#chr(10)#');
+					for(local.row in qDir){
+						writeoutput(local.row.path&local.row.name&chr(10));
+					}
+				}else{
+					writeoutput(' I must force a new download of the metadata to live server.');
+				}
+			}
+			application.sitestruct[request.zos.globals.id]["rets#this.mls_id#metadatachangeemailsent"]=curday;
+		}
+	}else{
+		structdelete(application.sitestruct[request.zos.globals.id],"rets#this.mls_id#metadatachangeemailsent");
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="processImport" localmode="modern" output="yes" returntype="any">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var r1=0;
+	if(arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows) EQ 0) return;
+	db.sql=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxsql&db.trustedsql(arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows));
+	r1=db.execute("r1"); 
+	 
+	if(r1 EQ false){ 
+		application.zcore.template.fail("Listings failed to import. See failed query in request.zos.arrQueryLog below. Columns Count: "&arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows)&" Rows Count: "&arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows));
+	}
+	request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
+	</cfscript>
+</cffunction>
+</cfoutput>
+</cfcomponent>

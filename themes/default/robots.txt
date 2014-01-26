@@ -1,0 +1,36 @@
+#image rules
+
+#zsa rules
+
+
+
+
+
+User-agent: *
+Disallow: /member/
+Disallow: /z/_a/member/
+Disallow: /z/_a/redirect
+Disallow: /z/_a/inquiry
+Disallow: /z/_a/listing/inquiry_property
+Disallow: /z/_a/listing/property/
+Disallow: /z/_a/listing/util/
+Disallow: /z/_a/listing/inquiry_property
+Disallow: /z/_a/listing/inquiry-pop
+Disallow: /z/_a/listing/cma-inquiry
+Disallow: /z/_a/listing/search-js
+Disallow: /z/_a/listing/instant-search
+Disallow: /z/_a/listing/search-form-js
+Disallow: /z/_a/listing/search-form
+Disallow: /z/_a/share-with-friend
+Disallow: /z/_a/listing/sl
+Disallow: /z/_a/listing/mls/
+Disallow: /templates/
+Disallow: /zsa2.cfm
+Disallow: /z/_a/blog/*.cfm
+Disallow: /z/_a/fckeditor/
+Disallow: /z/_e/
+Disallow: /z/_a/site-search
+Disallow: /z/_a/content
+Disallow: /z/_a/util/
+Disallow: /z/_a/templates/
+#site rules

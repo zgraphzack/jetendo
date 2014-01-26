@@ -1,0 +1,1 @@
+slider.tooltip.js was updated because it has invalid syntax that prevented yui minification.

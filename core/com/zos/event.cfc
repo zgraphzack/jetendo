@@ -1,0 +1,10 @@
+<cfcomponent>
+	<!--- 
+	
+	 --->
+	<cffunction name="myFunction" localmode="modern" access="public" returntype="string">
+		<cfargument name="myArgument" type="string" required="yes">
+		<cfset myResult="foo">
+		<cfreturn myResult>
+	</cffunction>
+</cfcomponent>

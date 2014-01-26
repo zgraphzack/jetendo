@@ -1,0 +1,13 @@
+#!/bin/bash
+
+reboot(){
+	/usr/bin/virsh stop windows7
+	/usr/sbin/service railo_ctl stop
+	/sbin/reboot
+}
+
+poweroff(){
+	/usr/bin/virsh stop windows7
+	/usr/sbin/service railo_ctl stop
+	/sbin/poweroff
+}

@@ -1,0 +1,44 @@
+<cfcomponent implements="zcorerootmapping.interface.view">
+<cfoutput>
+<cffunction name="init" access="public" returntype="string" localmode="modern">
+	<cfscript>
+	application.zcore.functions.zrequirejquery(); 
+	</cfscript>
+</cffunction>
+<cffunction name="render" access="public" returntype="string" localmode="modern">
+	<cfargument name="tagStruct" type="struct" required="yes">
+	<cfscript>
+	var tagStruct=arguments.tagStruct;
+	</cfscript>
+	<cfsavecontent variable="output">
+	<cfscript>
+	request.znotemplate=1;
+	if(application.zcore.functions.zIsTestServer() EQ false){
+		application.zcore.functions.zheader("X-UA-Compatible", "IE=edge,chrome=1");
+	}
+	</cfscript>#application.zcore.functions.zHTMLDoctype()#
+	<head>
+	    <meta charset="utf-8" />
+	    <title>#tagStruct.title ?: ""#</title>
+	#tagStruct.stylesheets ?: ""#
+	#tagStruct.meta ?: ""#<style type="text/css">/* <![CDATA[ */ body{ font-family:Verdana, Geneva, sans-serif; font-size:12px; line-height:18px;margin:0px; } h1{ font-size:18px; line-height:24px;} h2{ font-size: 14px; } /* ]]> */</style>
+	<cfif fileexists(request.zos.globals.homedir&"stylesheets/zblank.css")>
+	#application.zcore.skin.includeCSS("/stylesheets/zblank.css")#
+	</cfif>
+	</head>
+	<body class="zblanktemplatebody">
+	#tagStruct.topcontent ?: ""#
+	<cfif application.zcore.template.getTagContent("pagetitle") NEQ "">
+		<h1>#tagStruct.pagetitle ?: ""#</h1>
+	</cfif>
+	<div style="float:none;">
+	#tagStruct.content ?: ""#
+	#tagStruct.scripts ?: ""#</div>
+	#application.zcore.functions.zvarso('Visitor Tracking Code')#
+	</body>
+	</html>
+	</cfsavecontent>
+	<cfreturn output>
+</cffunction>
+</cfoutput>
+</cfcomponent>

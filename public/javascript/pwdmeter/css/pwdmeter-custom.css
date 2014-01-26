@@ -1,0 +1,25 @@
+#score {
+	color: #000;
+	font-size: 14px;
+	position:absolute;
+	text-align: center;
+	width: 100px;
+	z-index: 10;
+}
+
+#scorebar {
+	background-image: url(/z/javascript/pwdmeter/images/bg_strength_gradient.jpg);
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	position:absolute;
+	width: 100px;
+	z-index: 0;
+	height:16px;border-radius:4px;
+}
+#scorebarBorder {
+	border: 0px #000 solid;
+	height: 16px;
+	margin-bottom: 10px;
+	width: 100px;
+	
+}

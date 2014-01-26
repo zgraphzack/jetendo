@@ -1,0 +1,41 @@
+<cfcomponent>
+<cfoutput>
+<cffunction name="index" localmode="modern" access="remote">
+	<!--- this should be a scheduled task that runs every 15 minutes --->
+	<!--- grab 1 url that hasn't pinged since last update --->
+	<cfscript>
+	if(not request.zos.isServer and not request.zos.isDeveloper){
+		application.zcore.functions.z404("Only server and developer ip addresses can access this url.");	
+	}
+	var db=request.zos.queryObject;
+	setting requesttimeout="5000";
+	db.sql="SELECT blog.*, blog_config_url_article_id 
+	FROM (#request.zos.queryObject.table("blog", request.zos.zcoreDatasource)# blog,
+	#request.zos.queryObject.table("blog_config", request.zos.zcoreDatasource)# blog_config, 
+	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site) WHERE 
+	blog_config.site_id = blog.site_id and 
+	blog_config.site_id = site.site_id and 
+	site.site_active=#db.param('1')# and 
+	 (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd'))# or 
+	 blog_event =#db.param('1')#) and 
+	 blog_status <> #db.param(2)# and 
+	blog_update_datetime < #db.param(dateformat(dateadd("n",-15,now()),'yyyy-mm-dd')&' '&timeformat(dateadd("n",-15,now()),'HH:mm:ss'))# and 
+	 (blog_ping_datetime = #db.param('0000-00-00 00:00:00')# or 
+	 blog_ping_datetime < blog_update_datetime)  
+	LIMIT #db.param(0)#,#db.param(3)#";
+	qB=db.execute("qB");
+	loop query="qB"{
+		pingUrl=application.zcore.functions.zvar('domain',qB.site_id)&"/z/blog/blog/ping?blog_id=#qB.blog_id#&forceping=1";
+		writeoutput(pingUrl&"<br />");
+		http url="#pingUrl#" method="get" timeout="250" resolveurl="yes" throwonerror="no"{
+		}
+	}
+	if(qB.recordcount EQ 0){
+		writeoutput('All pings are complete.');
+	}else{
+		writeoutput('Ping executed. Waiting to ping again.');
+	}
+	</cfscript>
+</cffunction>
+</cfoutput>
+</cfcomponent>

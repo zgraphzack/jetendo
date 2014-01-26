@@ -1,0 +1,84 @@
+.zrental-box{ border:1px solid #CCC;  clear:both; margin-bottom:10px; }
+.zrental-box-inner{ padding:10px;}
+.zrental-subtitle{
+	background-color:#EEE; color:#666; display:block; padding:5px;  margin-bottom:10px; margin-top:0px;}
+	
+.zrental-main{
+	background-color:#660000;  color:#FFFFFF; float:left; clear:both; }
+.zrental-main-photo{float:left;border:1px solid #CCC; background-color:#FFF; text-align:center; padding:5px; width:450px; height:299px;} 
+.zrental-main-header {
+	display:block; float:left; padding:15px; font-size:12px;
+	color:#FFF;  overflow:auto; height:279px;
+}
+.zrental-main-header h2{
+	font-size:18px;
+	font-weight:normal;
+	margin-top:0px;
+	color:#FFF;
+}
+.zrental-main-header h2 a:link, .zrental-main-header h2 a:visited{
+	color:#FFFFFF;
+}
+.zrental-main-header h2 a:hover, .zrental-main-header h2 a:active{
+	color:#FFFF00;
+}
+.zrental-jumpbox{padding:10px; font-weight:bold; text-align:right; clear:both;}
+.zrental-alternaterowcolor{background-color:#F3F3F3;}
+.zrental-rowcolor{background-color:#FFFFFF;}
+.zrental-includerentalname{border-bottom:2px solid #999999;width:300px; font-size:14px; font-weight:bold; text-align:center;}
+.zrental-menu{ background-color:#CCC; float:left; width:100%;  clear:both;}
+.zrental-menu a:link, .zrental-menu a:visited{ background-color:#CCC; border-right:1px solid #BBB; color:#000; font-weight:bold; font-size:11px; text-decoration:none; display:block; float:left; padding:10px; padding-top:5px; padding-bottom:5px;}
+.zrental-menu a:hover{ background-color:#600;  color:#FFF;}
+.zrental-header { background-color:#EEE; color:#666; padding:20px; font-size:14px; line-height:21px; }
+
+.zrental-tbspace, .zrental-tbspace2{ border-spacing:0px; border:1px solid #CCC; background-color:#FFFFFF;}
+.zrental-tbspace td{ line-height:21px; padding:8px; padding-top:13px; } 
+.zrental-tbspace th{ text-align:left; padding:8px;}
+.zrental-tbspace2 td{ line-height:21px; padding:5px; } 
+.zrental-tbspace2 th{ text-align:left; padding:5px;}
+.zrental-tbspace2 td{ line-height:21px; border-right:1px solid #CCCCCC; } 
+.zrental-calendardiv, .zrental-calendardiv2{padding-right:5px; padding-bottom:5px; padding:10px; float:left; height:225px;}
+.zrental-calendardiv2{  height:310px;}
+.zrental-cal-outer {
+	border:1px solid #999999;
+	background-color:#EFEFEF;
+}
+.zrental-calendar td{ padding:4px; border-left:0px;  }
+.zrental-calendar {
+	text-align:center;
+	font-size:11px;
+	border-spacing:0px;
+	border:1px solid #AAA;
+	background-color:#FFFFFF;
+}
+.zrental-ratetypediv{ float:left; padding:5px; margin:5px; border:1px solid #CCC;background-color:#FFF; }
+.zrental-availabilitysearch{ background-color:#EEE; border:1px solid #CCC;}
+.zrental-ratetypecolordiv{ float:left; width:15px; height:15px; margin-right:10px; border:1px solid #999;}
+.zrental-calendaremptyday{
+	background-color:#FFF;
+	border-right:1px solid #EFEFEF;
+	border-bottom:1px solid #EFEFEF; }
+.zrental-cal-unavailable {
+	background-color:#900;
+	border-right:1px solid #999;
+	border-bottom:1px solid #999;
+	color:#FFFFFF;
+	font-weight:bold;
+	text-align:center;
+}
+.zrental-cal-available {
+	border-right:1px solid #DDDDDD;
+	border-bottom:1px solid #DDDDDD;
+	color:#000000;
+	text-align:center;
+}
+.zrental-cal-days td{
+	text-align:center;
+	font-size:10px;
+	font-weight:bold;
+	color:#666666;
+	border-right:1px solid #999;
+	border-bottom:1px solid #999;
+	border-top:1px solid #999;
+	background-color:#DDDDDD;
+}

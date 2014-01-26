@@ -1,0 +1,7 @@
+I modified this file replacing all occurences of +="/  with +=" so that slashes were not added to urls automatically.
+
+also had to change m.clearAllIntervals=function(){ to m.clearAllIntervals=function(){return;  because on ie7, the interval was being clear before it even ran when prevent hashchange events from firing.
+
+scripts/bundled/html4+html5/jquery.history.js
+and
+scripts/bundled/html4+html5/native.history.js

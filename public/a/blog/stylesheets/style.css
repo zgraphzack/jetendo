@@ -1,0 +1,62 @@
+.rss-summary-d, .rss-summary-box,.rss-summary-box-l,.rss-summary-ds{
+	
+}
+.rss-summary-d {
+	float:left;  width:99%; border:1px solid #CCCCCC; border-top:0px; border-right:0px; 
+}
+.rss-summary-thumbnail{float:left; padding-right:20px; padding-bottom:20px; padding-left:10px;}
+.rss-summary-ds-2{
+	display:block;  float:left; border:1px solid #CCCCCC; border-top:0px; border-right:0px;  padding:10px; padding-right:0px; font-size:14px;}
+.rss-summary-ds {
+	display:block;width:100%; float:left; padding:10px; padding-right:0px; font-size:14px;
+}
+.rss-summary-title {
+	display:block; font-size:18px; font-weight:normal; line-height:24px; padding-top:0px;
+}
+.rss-summary-date {
+	display:block; padding-bottom:5px; font-size:13px; font-weight:normal; color:#666666;
+}
+.rss-summary-box { width:100%; float:left; font-size:90%; line-height:normal;border-top:1px solid #CCC; padding-top:5px; padding-bottom:3px; margin-top:5px;}
+.rss-summary-box33 {
+	width:100%;float:left; padding:5px; background-color:#EEEEEE; border-bottom:1px solid #CCCCCC; font-size:10px; font-weight:bold; padding-right:20px;
+}
+.rss-summary-box-l {
+	float:left; 
+}
+.rss-menu-box {
+	float:left; width:180px; border:1px solid #CCCCCC; color:#000000; background-color:#FFFFFF; font-weight:bold; font-size:11px;text-align:left;
+}
+.rss-menu-box-inner {
+	padding:5px; width:170px;
+}
+.rss-menu-box h3{
+	margin:0px; border-bottom:1px solid #999999; color:#999999; margin-bottom:10px; font-size:14px;
+}
+.rss-menu-spacer {
+	padding-bottom:10px;
+}
+.rss-menu-box a,.rss-menu-box a:link{
+	text-decoration:none;
+	color:#336699;
+}
+.rss-menu-box a:visited{
+	text-decoration:none;
+	color:#663399;
+
+}
+.rss-menu-box a:hover{
+	text-decoration:underline;
+	color:#FF0000;
+}
+.rss-comments-box{width:100%;border:1px solid #EEEEEE; clear:both; float:left; margin-bottom:2%; }
+.rss-comments-subject{font-size:120%;width:99%; float:left; padding:1%; padding-top:10px; font-weight:bold; margin:0px;}
+.rss-comments-text{width:99%; float:left;padding:1%;}
+.rss-comments-posted a:link, .rss-comments-posted a:link{ color:#666; }
+.rss-comments-posted a:hover{color:#F00;}
+.rss-comments-posted{background-color:#EEEEEE;padding:1%; color:#666; border-bottom:1px solid #CCCCCC; font-size:90%; font-weight:700;width:98%; float:left;}
+.rss-calendar { width:100%; height:90px; border:none;  border-right:1px solid #999999; border-bottom:1px solid #999999; }
+.rss-calendar td,.rss-calendar th { text-align:center; padding:2px; font-size:10px; font-weight:bold; border:none; border-left:1px solid #999999; border-top:1px solid #999999; }
+.rss-calendar-noday { background-color:#DDDDDD;   }
+.rss-calendar-day { background-color:#FFFFFF; color:#999999; }
+.rss-calendar-current-day { background-color:#666666; color:#FFFFFF; }
+.rss-calendar-header{ background-color:#FFFFFF; color:#000000;  }

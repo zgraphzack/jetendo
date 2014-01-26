@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Jquery UI Tabs MegaMenu Examples</title>
+<link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/ui-lightness/jquery-ui.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+<script type="text/javascript" src="jquery-ui-tabs-megamenu.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#mainMegaMenuDefault").jqueryUITabsMegaMenu({});
+	$("#mainMegaMenu").jqueryUITabsMegaMenu({});
+});
+
+</script>
+<style type="text/css">
+/*ul,ol,h1,h2,h3,p{ padding:0px; margin:0px; padding-bottom:10px;}*/
+
+#mainMegaMenu .ui-tabs-panel, #mainMegaMenu .ui-widget-content {
+	padding:0px !important;
+}
+#mainMegaMenu .ui-tabs {
+	padding:0px !important;
+}
+#mainMegaMenu .ui-widget-header {
+	border:none !important;
+	background:none !important;
+}
+#mainMegaMenu .ui-state-default, #mainMegaMenu .ui-widget-content .ui-state-default, #mainMegaMenu .ui-widget-header .ui-state-default {
+	border:none !important;
+	background:none !important;
+}
+#mainMegaMenu .ui-widget-header a:link, #mainMegaMenu .ui-widget-header a:visited {
+	background-image:url(example-files/divider.jpg);
+	background-position:top right;
+	text-decoration:none;
+	background-repeat:no-repeat;
+	display:block;
+	padding:8px;
+	color:#FFF;
+	padding-left:2%;
+	padding-right:2%;
+	font-size:14px;
+	font-weight:normal;
+	line-height:18px;
+	padding-bottom:7px;
+	float:left;
+	margin-top: -3px;
+}
+#mainMegaMenu .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+	padding-bottom:0px !important;
+}
+#mainMegaMenu .ui-widget-header .ui-tabs-selected a {
+	color:#FFF;
+	background-color:#004061;
+	background-image:url(example-files/arrow.jpg);
+	background-position:bottom;
+	background-repeat:no-repeat;
+}
+#mainMegaMenu .ui-widget-header a{ position:relative; z-index:10;}
+.menuLinks {
+	width:85%;
+	height:41px;
+	float:left;
+	background-image:url(example-files/w_08.png);
+	background-repeat:repeat-x;
+}
+.sn-7 {
+	width:100%;
+	float:left;
+}
+.sn-8 {
+	width:65%;
+	position:relative;
+	z-index:2;
+	min-width:960px;
+	margin:0 auto;
+}
+.sn-9 {
+	width:7%;
+	height:41px;
+	float:left;
+	background-image:url(example-files/w_07.png);
+	background-repeat:no-repeat;
+	background-position:top right;
+}
+.sn-10 {
+	width:7%;
+	height:41px;
+	float:left;
+	background-image:url(example-files/w_11.png);
+	background-repeat:no-repeat;
+	background-position:top left;
+}
+</style>
+</head>
+
+<body>
+<h2>Jquery UI ui-lightness theme with default settings</h2>
+<div style="width: 719px;height: 418px;float: none;position: relative; margin: 0 auto;">
+	<div id="mainMegaMenuDefault">
+		<ul>
+			<li data-panelid="1"><a href="#mainMegaMenuPanelDefault1">Tab1</a></li>
+			<li data-panelid="2"><a href="#mainMegaMenuPanelDefault2">Tab2</a></li>
+			<li data-panelid="3"><a href="#mainMegaMenuPanelDefault3">Tab3</a></li>
+		</ul>
+		<div id="mainMegaMenuPanelDefault1" style="background-color:#900;color:#FFF;">
+			<h2>Test Panel 1</h2>
+		</div>
+		<div id="mainMegaMenuPanelDefault2" style="background-color:#090;color:#FFF;">
+			<h2>Test Panel 2</h2>
+		</div>
+		<div id="mainMegaMenuPanelDefault3" style="background-color:#009;color:#FFF;">
+			<h2>Test Panel 3</h2>
+		</div>
+	</div>
+</div>
+<h2>Jquery UI ui-lightness theme modified with custom css</h2>
+<div class="sn-7">
+	<div class="sn-8">
+		<div class="sn-9"></div>
+		<div id="mainMenuPositionDivId" class="menuLinks">
+			<div style="width: 100%;height: 418px;float: none;position: relative; margin: 0 auto;">
+				<div id="mainMegaMenu" style="padding:0px !important;position: relative;margin-top:1px;border:none !important;background:none !important; ">
+					<ul>
+						<li data-panelid="1" style="margin:0px !important;display:inline !important;float:none !important;top:0px !important;padding-bottom:0px !important;"><a href="#mainMegaMenuPanel1">Tab1</a></li>
+						<li data-panelid="2" style="margin:0px !important;display:inline !important;float:none !important;top:0px !important;padding-bottom:0px !important;"><a href="#mainMegaMenuPanel2">Tab2</a></li>
+						<li data-panelid="3" style="margin:0px !important;display:inline !important;float:none !important;top:0px !important;padding-bottom:0px !important;"><a href="#mainMegaMenuPanel3">Tab3</a></li>
+					</ul>
+					<div id="mainMegaMenuPanel1">
+						<div style="float:left;width:100%; height:300px;background-color:#900;color:#FFF;">
+							<h2>Test Panel 1</h2>
+						</div>
+					</div>
+					<div id="mainMegaMenuPanel2">
+						<div style="float:left;width:100%; height:300px;background-color:#090;color:#FFF;">
+							<h2>Test Panel 2</h2>
+						</div>
+					</div>
+					<div id="mainMegaMenuPanel3">
+						<div style="float:left;width:100%; height:300px;background-color:#009;color:#FFF;">
+							<h2>Test Panel 3</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="sn-10"></div>
+	</div>
+</div>
+</body>
+</html>

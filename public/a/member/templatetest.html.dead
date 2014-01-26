@@ -1,0 +1,180 @@
+<cfoutput><cfset request.disableShareThis=true><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title><z_title></title>
+<link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+<z_meta>
+</head>
+
+<body>
+<div id="ssh2"><div id="ssh3"><div id="ssh4"><div id="ssh5"><div id="ssh6"><div id="ssh7"><div class="topcontact"><div id="ssh8">#request.zos.functions.zVarSO("daytona beach florida real estate")#</div><div id="ssh9">#request.zos.functions.zVarSO("Florida-Licensed-Realtor")#<!--- Florida Licensed Realtor &nbsp;&nbsp;&nbsp;Phone: 386-682-8800 &nbsp;&nbsp;&nbsp;<a href="/z/_a/inquiry">Email Carlos</a> ---></div></div><div id="ssh10" ><!--- <span id="ssh11">#request.zos.functions.zVarSO("buyers: $8000 tax credit learn more expires 11/30/09")#</span> ---></div></div>
+<div style="padding-top:1px;padding-bottom:10px;"><!--- <a href="/">HOME</a>
+<a href="/Daytona-Beach-Featured-Listings.html">FEATURED LISTINGS</a>
+<a href="/Daytona-Beach-Communities.html">COMMUNITIES</a>
+<a href="/Daytona-Beach-Buyers.html">BUYERS</a>
+<a href="/Daytona-Beach-Sellers.html">SELLERS</a>
+<a href="/Daytona-Beach-Great-Deals.html">GREAT DEALS</a> --->
+
+	<cfscript>
+    ts=structnew();
+    ts.menu_name="Main Menu"; 
+    rs=request.zos.functions.zMenuInclude(ts);
+    writeoutput(rs.output);
+    </cfscript>
+</div>
+<cfif request.cgi_script_name eq '/index.cfm'>
+<div style="background-image:url(/images/shell/daytona.jpg); background-repeat:no-repeat; padding-left:16px; padding-top:8px; width:694px; height:315px;">
+	<div style="width:300px;">
+		<cfscript>ts=structnew();ts.slideshow_codename="home photo slideshow";request.zos.functions.zSlideShow(ts);</cfscript>
+    </div> 
+    <div style="width:140; float:right; padding-right:12px;">        
+            	<a href="http://www.carlosring.com/z/_a/listing/cma-inquiry"><img src="/images/shell/freecma.jpg"></a>
+    </div>   
+</div>
+<div style="background-image:url(/images/shell/daytona2.jpg); background-repeat:no-repeat; padding-left:16px; padding-top:8px; width:694px; height:199px;"><cfscript>ts=structnew();ts.slideshow_codename="homepage";request.zos.functions.zSlideShow(ts);</cfscript></div>
+</cfif>
+<cfif request.cgi_script_name eq '/index.cfm'><div id="ssh13">
+<!--- <div id="ssh17">SLIDESHOW</div>
+<div id="ssh18"></div> --->
+<!---<div id="ssh19">AJAX PROPERTY THUMBS</div>
+<div id="ssh20"></div>--->
+<div id="ssh21">CLICK A CITY TO BEGIN YOUR SEARCH</div>
+<div id="ssh22">WELCOME</div>
+</div></cfif></div>
+<cfif request.cgi_script_name eq '/index.cfm'>
+<div id="ssh23"><div id="ssh24"><img src="/images/shell/shell_r6_c3.jpg" alt="Volusia County Real Estate" usemap="##HomeMap"></div>
+<div id="ssh25"><div id="ssh26"><cfif request.zos.template.getTagContent('pagetitle') NEQ ''><h1><z_pagetitle></h1></cfif>
+<z_content></div></div></div><cfelse>
+<div id="ssh27"><z_topcontent><cfif request.zos.template.getTagContent('pagenav') NEQ ''><p id="sh-21" class="navlink"><z_pagenav></p></cfif><cfif request.zos.template.getTagContent('pagetitle') NEQ ''><h1><z_pagetitle></h1></cfif>
+<z_content>
+</div></cfif>
+<cfif request.CGI_SCRIPT_NAME NEQ '/z/_a/inquiry' and request.CGI_SCRIPT_NAME NEQ '/z/_a/listing/inquiry_property' and request.cgi_script_name NEQ '/z/_a/content/mortgage-quote' and request.CGI_SCRIPT_NAME NEQ '/z/_a/listing/cma-inquiry'>
+<div style="padding:15px; width:680px;">
+<cfif request.cgi_script_name eq '/index.cfm'>
+<cfscript>
+request.hideContentSeeMoreText=true;
+ts=structnew();
+ts.content_unique_name="/home-page-bottom-listings.html";
+ts.disableContentMeta=true;
+ts.disableLinks=true;
+request.zos.tempObj.contentInstance.configCom.includePageContentByName(ts);
+structdelete(request,'hideContentSeeMoreText');
+</cfscript>
+</cfif>
+</div>
+</cfif>	
+</div>
+        
+<div id="ssh14"><div id="ssh15"><a href="/"><img src="/images/shell/carlos.jpg" width="257" height="250" alt="Daytona Beach Florida Homes For Sale | Exit Realty | Carlos Ring" /></a> </div>
+<div class="sidebartext" style="font-size:15px; line-height:21px; padding-bottom:20px;">
+<div align="center" style="padding-left:35px;"><a href="/carlos-ring-1-17738.html">Read About Carlos<br />
+ and His Testimonials</a></div><br />
+<br /><br />
+
+<ul style="font-size:11px;"><li>Short Sale Foreclosure Specialist</li>
+<li>Rising Star of 2009</li>
+<li>Top producer for 2009</li></ul></div>
+
+<div class="sidebartab">#request.zos.functions.zVarSO("real estate search title")#</div>
+<div style="padding-left:10px; padding-top:10px;padding-bottom:10px;">
+    <cfif request.cgi_script_name EQ "/z/_a/listing/search-form" or request.cgi_script_name EQ "/z/_a/listing/map" or request.cgi_script_name EQ "/z/_a/listing/property/your-saved-searches">
+    <z_sidebar>
+    <cfelse>
+    <cfscript>
+	ts=structnew();
+	ts.output=true;
+	ts.searchFormLabelOnInput=true;
+	ts.searchFormEnabledDropDownMenus=true;
+	ts.searchFormHideCriteria=structnew();
+	/*
+	ts.searchFormHideCriteria["square_feet"]=true;
+	ts.searchFormHideCriteria["acreage"]=true;
+	ts.searchFormHideCriteria["view"]=true;
+	ts.searchFormHideCriteria["county"]=true;
+	ts.searchFormHideCriteria["style"]=true;
+	*/
+	ts.searchFormHideCriteria["more_options"]=true;
+	request.zos.listing.configCom.includeSearchForm(ts);
+	</cfscript></cfif></div>
+<div class="sidebartab">#request.zos.functions.zVarSO("buyers and sellers: sign up for free info:title")#</div>
+<div class="sidebartext">
+#request.zos.functions.zVarSO("buyers and sellers: sign up for free info:")#
+<hr />
+<!--- <form name="sideQuestionForm" action="/z/_a/inquiry?action=send" method="post">
+<div id="sh6">FIRST NAME:<br />
+LAST NAME:<br />
+EMAIL:<br />
+PHONE:
+</div>
+<div id="sh7"><input type="text" name="inquiries_first_name" value="" class="sideinput"><br />
+<input type="text" name="inquiries_last_name" value="" class="sideinput"><br />
+<input type="text" name="inquiries_email" value="" class="sideinput"><br />
+<input type="text" name="inquiries_phone1" value="" class="sideinput"><br />
+</div>
+<div id="sh8">Ask a question or describe what<br />you want to buy or sell:</div><br />
+<textarea name="inquiries_comments" id="sh9"></textarea><br />
+</form>--->
+<div class="buttonlink"><a href="/z/_a/inquiry?action=form&inquiries_comments=#URLEncodedformat('I''m interested in Florida Real Estate.  PLEASE TELL US WHAT TYPE/PRICE RANGE/VIEW/LOCATION OF PROPERTY YOU''RE INTERESTED IN BELOW:'&chr(10)&chr(10))#">CLICK HERE TO JOIN</a></div></div>
+<div class="sidebartab">#request.zos.functions.zVarSO("keyword search title")#</div>
+<div class="sidebartext">#request.zos.functions.zVarSO("keyword search")#
+<form name="sideQuestionForm" action="/z/_a/search-site" method="get"><input type="hidden" name="action" value="search">
+<input type="text" name="searchtext" value="Type Keyword Here" onclick="if(this.value == 'Type Keyword Here'){this.value='';}" onblur="if(this.value==''){this.value='Type Keyword Here';}" id="sh10">
+</form> 
+<div class="buttonlink"><a href="javascript:document.sideQuestionForm.submit();">SEARCH</a></div></div>
+<div class="sidebartab">#request.zos.functions.zVarSO("share this page title")#</div>
+<div class="sidebartext sidebar">#request.zos.template.getShareButton("font-size:12px;",true)#
+ #request.zos.functions.zVarSO("share this page")#
+ 
+</div>
+</div></div></div>	
+	
+<div class="bfooter"><div id="sh15"></div>
+<div class="sidebartab2">#request.zos.functions.zVarSO("contact us title")#</div>
+<div id="sh16"><div id="sh17">RECENT BLOG POSTS</div><div id="sh18"><a href="/Blog-Categories-3-1.html"><img src="/images/shell/rss.jpg" width="50" height="21"></a></div></div><div id="sh19">RESOURCES</div><div id="sh20">LOCAL WEATHER</div><br style="clear:both;" />
+<div id="sh21">#request.zos.functions.zVarSO("contact us")#</div>
+<div id="sh23">
+    <cfscript>
+blogArticleDisplayCount=6;
+blogArticleDisplayReturnStruct="rs";
+</cfscript>
+<cfinclude template="/zsa2/a/blog/article-include.cfm">
+
+<cfif arraylen(rs.arrBlog) NEQ 0>
+	<ul>
+<cfloop from="1" to="#arraylen(rs.arrBlog)#" index="i">
+<li><a href="#rs.arrBlog[i].link#" style="font-weight:bold;">#left(rs.arrBlog[i].title,50)#<cfif len(rs.arrBlog[i].title) GT 50>...</cfif></a><!--- <br />
+by #request.zos.functions.zEncodeEmail(rs.arrBlog[i].authorEmail,true,rs.arrBlog[i].author,true,false)# <!--- in <a href="#rs.arrBlog[i].categoryLink#">#rs.arrBlog[i].category#</a> ---> | <a href="#rs.arrBlog[i].commentLink#">Comments (#rs.arrBlog[i].commentCount#)</a> ---></li>
+</cfloop></ul>
+<cfelse>
+    <ul><li>Coming soon</li></ul>
+    </cfif>
+<a href="/Blog-3-3.html">Click here for more posts</a></div>
+<div id="sh24"><ul>
+<li><a href="http://www.Hud.gov/foreclosure/" rel="nofollow" target="_blank">Avoiding Foreclosure</a></li>
+<li><a href="http://www.Makinghomesaffordable.gov/" rel="nofollow" target="_blank">Making Home Affordable</a></li>
+<li><a href="http://www.USFN.org/" rel="nofollow" target="_blank">USFN Mortgage Banking News</a></li>
+<li><a href="http://www.Fanniemae.com/" rel="nofollow" target="_blank">Fannie Mae | FHA Loans</a></li>
+
+</ul></div>
+<div id="sh25"><div id="wx_module_6336"><a href="http://www.weather.com/weather/local/32114">Daytona Beach, Florida<br />Weather Forecast</a><br /><a href="http://www.volusia.org/beach/daytona.htm">Beach Cam</a></div></div>
+<div class="copyright">Copyright &copy; 2009 <a href="/">CarlosRing.com</a> - all rights reserved. | <a href="/z/_a/site-map">Site Map</a> <br />
+<z_pagetitle></div></div></div><div id="sh26"></div>
+<map name="HomeMap">
+  <area shape="rect" coords="143,8,268,33" alt="Ormond By The Sea Real Estate" href="/Ormond-By-The-Sea-Real-Estate.html">
+  <area shape="rect" coords="22,56,120,79" alt="Ormond Beach Real Estate" href="/Ormond-Beach-Real-Estate.html">
+  <area shape="rect" coords="115,118,190,142" alt="Holly Hill Real Estate" href="/Holly-Hill-Real-Estate.html">
+  <area shape="rect" coords="50,170,149,193" alt="Daytona Beach Real Estate" href="/Daytona-Beach-Real-Estate.html">
+  <area shape="rect" coords="140,202,242,222" alt="South Daytona Real Estate" href="/South-Daytona-Real-Estate.html">
+  <area shape="rect" coords="202,230,348,256" alt="Daytona Beach Shores Real Estate" href="/Daytona-Beach-Shores-Real-Estate.html">
+  <area shape="rect" coords="156,322,241,344" alt="Port Orange Real Estate" href="/Port-Orange-Real-Estate.html">
+  <area shape="rect" coords="268,310,350,334" alt="Ponce Inlet Real Estate" href="/Ponce-Inlet-Real-Estate.html">
+</map>
+  <cfscript>
+blogArticleDisplayCount=6;
+blogArticleDisplayReturnStruct="rs";
+</cfscript>
+#request.zos.functions.zvarso('Visitor Tracking Code')#
+
+</body>
+</html></cfoutput>
