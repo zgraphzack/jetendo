@@ -11,7 +11,10 @@ This project is currently in an ALPHA quality state.  We are actively redesignin
 
 In the future, there will be a virtual machine environment for Running Jetendo as well as documentation on how to install & configure it.   We don't suggest using the project until the test environment and basic setup documentation is available.
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 The database schema and required data is not included in the current project.  We're trying to build a implement a scripted database versioning & upgrade system before releasing it.
+=======
+>>>>>>> First commit
 =======
 >>>>>>> First commit

@@ -61,6 +61,7 @@ function exitWithLogNotification(){
 	exit;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 function getAvailableUpgradePackages(){
 	`/usr/bin/apt-get update`;
 	$r=`/usr/bin/apt-get -s upgrade`;
@@ -70,6 +71,8 @@ function getAvailableUpgradePackages(){
 		return true;
 	}
 }
+=======
+>>>>>>> First commit
 =======
 >>>>>>> First commit
 function verifySite($row){
@@ -282,7 +285,10 @@ function checkFilesystem(){
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 set_time_limit(2000);
+=======
+>>>>>>> First commit
 =======
 >>>>>>> First commit
 ini_set('default_socket_timeout', 5);
@@ -292,6 +298,7 @@ $arrError=array();
 $preview=false;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 if(getAvailableUpgradePackages()){
 	echo "Packages are available to be installed with apt-get.\n";
 	array_push($arrError, "Packages are available to be installed with apt-get.");
@@ -300,6 +307,9 @@ if(getAvailableUpgradePackages()){
 	//array_push($arrError, "No new packages are available to be installed with apt-get.");
 }
 
+=======
+set_time_limit(2000);
+>>>>>>> First commit
 =======
 set_time_limit(2000);
 >>>>>>> First commit
