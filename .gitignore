@@ -1,9 +1,10 @@
-*.sublime-workspace
+*.sublime-*
 _notes
 sites
 phptemp
 railovhosts
 share
+core/config.cfc
 execute/start/*
 execute/complete/*
 sites-writable
