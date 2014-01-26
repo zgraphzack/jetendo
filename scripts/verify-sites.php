@@ -60,6 +60,7 @@ function exitWithLogNotification(){
 	} 
 	exit;
 }
+<<<<<<< HEAD
 function getAvailableUpgradePackages(){
 	`/usr/bin/apt-get update`;
 	$r=`/usr/bin/apt-get -s upgrade`;
@@ -69,6 +70,8 @@ function getAvailableUpgradePackages(){
 		return true;
 	}
 }
+=======
+>>>>>>> First commit
 function verifySite($row){
 	global $cmysql2, $forcePermissions, $userStruct, $preview, $verifyHomePage, $userUnusedStruct, $isTestServer, $pathStruct, $checkDNS, $dnsServer, $wwwUser, $sitesPath, $ftpEnabled;
 	$siteHomedir=zGetDomainInstallPath($row["site_short_domain"]);
@@ -278,13 +281,17 @@ function checkFilesystem(){
 	return true;
 }
 
+<<<<<<< HEAD
 set_time_limit(2000);
+=======
+>>>>>>> First commit
 ini_set('default_socket_timeout', 5);
 $arrError=array();
 
 // when debugging, enable preview to prevent any permanent changes.
 $preview=false;
 
+<<<<<<< HEAD
 if(getAvailableUpgradePackages()){
 	echo "Packages are available to be installed with apt-get.\n";
 	array_push($arrError, "Packages are available to be installed with apt-get.");
@@ -293,6 +300,9 @@ if(getAvailableUpgradePackages()){
 	//array_push($arrError, "No new packages are available to be installed with apt-get.");
 }
 
+=======
+set_time_limit(2000);
+>>>>>>> First commit
 $host=`hostname`;
 if(!zCheckJetendoIniConfig($arrError)){
 	// prevent more checks until corrected...
