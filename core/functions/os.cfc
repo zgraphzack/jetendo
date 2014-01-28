@@ -590,7 +590,7 @@ if(not rs.success){
 		local.i=local.i2;
 		local.curPath=replace(expandpath('/'&replace(arrMvcPaths[local.i],'.','/','all')),"\","/","all");
 		</cfscript>
-		<cfdirectory action="list" recurse="yes" directory="#local.curPath#" name="local.qD" filter="*.cfc,*.html">
+		<cfdirectory action="list" recurse="yes" directory="#local.curPath#" name="local.qD" filter="*.cfc|*.html">
 		<cfloop query="local.qD">
 			<cfscript>
 			if(local.qD.type EQ "file"){

@@ -136,7 +136,7 @@
 		cfcFiles: 0,
 		cfmFiles:0 
 	};
-	directory action="list" recurse="yes" name="qDir" directory="#arguments.path#" filter="*.cfc,*.cfm";
+	directory action="list" recurse="yes" name="qDir" directory="#arguments.path#" filter="*.cfc|*.cfm";
 	for(row in qDir){
 		local.rs2=application.zcore.functions.zCountCFMLLinesInFile(row.directory&"/"&row.name);
 		rs.jsLines+=local.rs2.jsLines;

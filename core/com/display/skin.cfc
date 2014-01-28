@@ -272,7 +272,7 @@ todo: open source projects
 	var ds=0;
 	var fs=0; 
 	local.tempHomeDirPath=application.zcore.functions.zGetDomainInstallPath(application.zcore.functions.zvar("shortDomain", arguments.site_id));
-	directory name="qDir" directory="#local.tempHomeDirPath#" action="list" recurse="yes" type="file" filter="*js,*css";//,*html
+	directory name="qDir" directory="#local.tempHomeDirPath#" action="list" recurse="yes" type="file" filter="*js|*css";//,*html
 	for(i in arguments.ss.fileStruct){
 		arguments.ss.fileStruct[i].processed=false;
 	} 
@@ -393,7 +393,7 @@ todo: open source projects
 	var fs=0;
 	var ds=0;
 	application.zcore.functions.zCreateDirectory(request.zos.globals.serverPrivateHomedir&"zcache/global/");
-	directory name="qDir" directory="#request.zos.installPath#public/" action="list" recurse="yes" type="file" filter="*js,*css";//*html,
+	directory name="qDir" directory="#request.zos.installPath#public/" action="list" recurse="yes" type="file" filter="*js|*css";//*html,
 	for(ds in qDir){
 		if(ds.directory DOES NOT CONTAIN "/tiny_mce"){
 			if(structkeyexists(arguments.ss,'newestServerDateLastModified') EQ false or datecompare(ds.dateLastModified, arguments.ss.newestServerDateLastModified) EQ 1){
