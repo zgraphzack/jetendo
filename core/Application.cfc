@@ -41,6 +41,8 @@ this.charset.web="UTF-8";
 this.charset.resource="UTF-8";
 
 this.scopeCascading = "standard";
+
+
 // END override railo admin settings
 
 </cfscript>
@@ -79,6 +81,7 @@ this.scopeCascading = "standard";
 	ts.zos.importMlsStruct={};
 	
 	structappend(request, duplicate(ts));
+    structappend(this, configCom.getDatasources(arguments.tempCGI));
 	</cfscript>
 </cffunction>
 	 

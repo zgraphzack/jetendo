@@ -177,5 +177,15 @@
     return ts;
 	</cfscript>
 </cffunction>
+
+<cffunction name="getDatasources" localmode="modern" access="public" returntype="struct">
+	<cfscript>
+	ts={
+		datasources:{}
+	};
+	return ts;
+	</cfscript>
+</cffunction>
+
 </cfoutput>
 </cfcomponent>
