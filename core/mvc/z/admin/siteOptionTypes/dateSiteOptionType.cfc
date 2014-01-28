@@ -73,8 +73,13 @@
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfscript>
 	local.curDate="";
-	local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
-	arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_date"]=local.tempDate;
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date')){
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
+		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_date"]=local.tempDate;
+	}else{
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id]=local.tempDate;
+	}
 	if(local.tempDate NEQ "" and isdate(local.tempDate)){
 		try{
 			local.curDate=dateformat(local.tempDate, "yyyy-mm-dd");

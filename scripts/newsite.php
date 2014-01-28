@@ -135,18 +135,17 @@ for($i4=0;$i4 < 62;$i4++){
 		$row=$arrSite[$i];
 		$siteInstallPath=zGetDomainInstallPath($row["site_short_domain"]);
 		$siteWritableInstallPath=zGetDomainWritableInstallPath($row["site_short_domain"]);
-		$sitePath=$siteWritableInstallPath;
 		// only run on test
 		if($isTestServer){
-			if(file_exists($sitePath."__zdeploy-executed.txt")){ 
-				unlink($sitePath."__zdeploy-executed.txt"); 
-				@unlink($sitePath."__zdeploy-complete.txt.temp"); 
-				@unlink($sitePath."__zdeploy-complete.txt"); 
+			if(file_exists($siteWritableInstallPath."__zdeploy-executed.txt")){ 
+				unlink($siteWritableInstallPath."__zdeploy-executed.txt"); 
+				@unlink($siteWritableInstallPath."__zdeploy-complete.txt.temp"); 
+				@unlink($siteWritableInstallPath."__zdeploy-complete.txt"); 
 				
 				$preview="0";
-				if(file_exists($sitePath."__zdeploy-preview.txt")){ 
+				if(file_exists($siteWritableInstallPath."__zdeploy-preview.txt")){ 
 					$preview="1";
-					unlink($sitePath."__zdeploy-preview.txt"); 
+					unlink($siteWritableInstallPath."__zdeploy-preview.txt"); 
 				}
 				$siteId=$row["site_id"];
 				//$siteId=4000;
@@ -214,19 +213,19 @@ for($i4=0;$i4 < 62;$i4++){
 					$handle=fopen($siteWritableInstallPath."__zdeploy-changes.txt", "w");
 					fwrite($handle, $result);
 					fclose($handle);
-					$handle=fopen($sitePath."__zdeploy-complete.txt.temp", "w");
+					$handle=fopen($siteWritableInstallPath."__zdeploy-complete.txt.temp", "w");
 					fwrite($handle, "1");
 					fclose($handle); 
-					echo "wrote file: ".$sitePath."__zdeploy-complete.txt.temp\n";
-					$cmd='rsync -e "'.$sshCommand.'" '.$sitePath.'__zdeploy-complete.txt.temp '.$remoteUsername.'@'.$remoteHost.':'.$remotePath.'__zdeploy-complete.txt';
+					echo "wrote file: ".$siteWritableInstallPath."__zdeploy-complete.txt.temp\n";
+					$cmd='rsync -e "'.$sshCommand.'" '.$siteWritableInstallPath.'__zdeploy-complete.txt.temp '.$remoteUsername.'@'.$remoteHost.':'.$remotePath.'__zdeploy-complete.txt';
 					echo $cmd."\n";
 					`$cmd`; 
-					rename($sitePath."__zdeploy-complete.txt.temp", $sitePath."__zdeploy-complete.txt");
+					rename($siteWritableInstallPath."__zdeploy-complete.txt.temp", $siteWritableInstallPath."__zdeploy-complete.txt");
 				}
 			}
 		}else{
 			// only run on remote
-			if(file_exists($sitePath."__zdeploy-complete.txt")){
+			if(file_exists($siteInstallPath."__zdeploy-complete.txt")){
 				// fix file chown and chmod permissions
 				$preview=false;
 				$arrError=array();
@@ -237,8 +236,7 @@ for($i4=0;$i4 < 62;$i4++){
 				$result=zCheckDirectoryPermissions($siteWritableInstallPath."zupload/", get_cfg_var("jetendo_www_user"), get_cfg_var("jetendo_www_user"), "660", "770", false, $preview, $arrError, $isTestServer);
 				$result=zCheckDirectoryPermissions($siteWritableInstallPath, get_cfg_var("jetendo_www_user"), get_cfg_var("jetendo_www_user"), "660", "770", true, $preview, $arrError, $isTestServer);
 				
-				@unlink($sitePath."__zdeploy-executed.txt"); 
-				@unlink($sitePath."__zdeploy-complete.txt"); 
+				@unlink($siteInstallPath."__zdeploy-complete.txt"); 
 			}
 		}
 	} 

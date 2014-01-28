@@ -134,10 +134,16 @@
 	<cfscript>
 	local.curTime="";
 	local.curDate="";
-	local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
-	local.tempTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_time'); 
-	arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_date"]=local.tempDate;
-	arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_time"]=local.tempTime;
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date')){
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
+		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_date"]=local.tempDate;
+		local.tempTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_time'); 
+		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_time"]=local.tempTime;
+	}else{
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id]=local.tempDate;
+		local.tempTime="";
+	}
 	if(local.tempDate NEQ "" and isdate(local.tempDate)){
 		try{
 			local.curDate=dateformat(local.tempDate, "yyyy-mm-dd");

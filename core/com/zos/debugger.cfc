@@ -101,13 +101,14 @@
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('VerifyQueries','true');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Off</a>
                 </cfif>
-		<cfif request.zos.isTestServer>
 			<br />
-			Deploy: 
-			<a href="/z/server-manager/admin/deploy/index?sid=#request.zos.globals.id#" target="_blank">Site</a> | 
-			<a href="/z/server-manager/admin/deploy/deployCore" target="_blank">Core</a> | 
-			<a href="/z/server-manager/admin/deploy/deployPublic" target="_blank">Public</a>
-		</cfif>
+			<cfif request.zos.isTestServer>
+				Deploy: 
+				<a href="/z/server-manager/admin/deploy/index?sid=#request.zos.globals.id#" target="_blank">Site</a> | 
+				<a href="/z/server-manager/admin/deploy/deployCore" target="_blank">Core</a>
+			<cfelse>
+				Deploy: <a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index" target="_blank">Go to Test Server Deploy</a>
+			</cfif>
               </div>
             <div class="zOS_mode_td">
               <cfif isDefined('session.zos.tracking.track_user_hits')>Hits: #session.zos.tracking.track_user_hits#</cfif>

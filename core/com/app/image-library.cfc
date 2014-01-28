@@ -686,7 +686,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	tempPath=request.zos.globals.serverprivatehomedir&'_cache/temp_files/';
 	if(form.image_file CONTAINS getTempDirectory()){
 		fileName = application.zcore.functions.zUploadFile("image_file", tempPath);
-		ext=application.zcore.functions.zGetFileExt(filename);
+		ext=application.zcore.functions.zGetFileExt(filename); 
 	}else{ 
 		fileName=getfilefrompath(form.image_file);
 		application.zcore.functions.zcreatedirectory(tempPath);
@@ -702,7 +702,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 				application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - imageprocessform() failed to copy file.");
 			}
 		}
-		ext=application.zcore.functions.zGetFileExt(form.image_file);
+		ext=application.zcore.functions.zGetFileExt(form.image_file); 
 	}
 	if(ext EQ 'zip'){
 		if(fileName EQ false or left(fileName,6) EQ 'Error:'){

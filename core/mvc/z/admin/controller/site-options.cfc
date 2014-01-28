@@ -2404,7 +2404,8 @@ Define this function in another CFC to override the default email format
 			arrayAppend(local.arrSearch, application.zcore.functions.zInputSelectBox(ts));
 			arrayAppend(local.arrSearch, '</td>');
 		}
-		arrayAppend(local.arrSearch, '<td style="vertical-align:top;"><input type="submit" name="searchSubmit1" value="Search" /> <input type="button" onclick="window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, 'site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;clearSearch=1')#'';" name="searchSubmit1" value="Clear Search" /></td></tr></table></form>');
+		arrayAppend(local.arrSearch, '<td style="vertical-align:top;"><input type="submit" name="searchSubmit1" value="Search" /> 
+			<input type="button" onclick="window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, 'site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;clearSearch=1')#'';" name="searchSubmit1" value="Clear Search" /></td></tr></table></form>');
 		 
 	}
 	status=application.zcore.functions.zso(local.searchStruct, 'site_x_option_group_set_approved');
