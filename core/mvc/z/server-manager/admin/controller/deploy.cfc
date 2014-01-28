@@ -549,7 +549,7 @@
 	<cfscript>
 	var local=structnew();
 	if(request.zos.isTestServer EQ false){
-		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production. 
+		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production server. 
 			<a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index">Go to test server deploy page</a>.');
 		application.zcore.functions.zabort();
 	}
@@ -593,7 +593,7 @@
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	if(not request.zos.isTestServer){
-		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production. 
+		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production server. 
 			<a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index">Go to test server deploy page</a>');
 		application.zcore.functions.zabort();
 	}

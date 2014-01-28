@@ -1666,7 +1666,7 @@ add fields to set location of content (listing) on google map (using address or 
         <td class="zls2-9-2"><strong>#local.cityName# </strong><br />
         <cfif local.tempQueryName.content_property_bedrooms NEQ 0>#local.tempQueryName.content_property_bedrooms# beds, </cfif>
         <cfif local.tempQueryName.content_property_bathrooms NEQ 0>#local.tempQueryName.content_property_bathrooms# baths, </cfif>
-        <cfif local.tempQueryName.content_property_half_baths NEQ 0>#application.zcore.functions.zso(local.tempQueryName, 'content_property_half_baths',true)# half baths, </cfif>
+        <cfif local.tempQueryName.content_property_half_baths NEQ "" and local.tempQueryName.content_property_half_baths NEQ 0>#local.tempQueryName.content_property_half_baths# half baths, </cfif>
         <cfif local.tempQueryName.content_property_sqfoot neq '0' and local.tempQueryName.content_property_sqfoot neq ''>#local.tempQueryName.content_property_sqfoot# living sqft</cfif>
     	</td></tr></table><br style="clear:both;" />
                     
