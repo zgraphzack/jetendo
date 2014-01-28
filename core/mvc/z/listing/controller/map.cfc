@@ -104,7 +104,7 @@
 		}
 	}
 	if(noCoordinates){
-		if(application.zcore.functions.zo('primaryCityId',true) EQ 0){
+		if(application.zcore.functions.zso(form, 'primaryCityId',true) EQ 0){
 			primaryCityId=application.zcore.app.getAppData("listing").sharedStruct.mls_primary_city_id;
 		}
 		mapstageStruct.forceZoom=9;

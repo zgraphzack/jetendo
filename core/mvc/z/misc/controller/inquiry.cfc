@@ -143,7 +143,7 @@
 	}
 	form.mail_user_id=application.zcore.user.automaticAddUser(application.zcore.functions.zUserMapFormFields(structnew()));
 	if(form.inquiries_spam EQ 0){
-		if(application.zcore.functions.zo('application.zcore.app.getAppData("rental").optionstruct.rental_config_lodgix_email_to') NEQ ""){
+		if(application.zcore.app.siteHasApp("rental") and application.zcore.app.getAppData("rental").optionstruct.rental_config_lodgix_email_to NEQ ""){
 			local.rentalFrontCom=createobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
 			local.rentalFrontCom.lodgixInquiryTemplate();
 		}
@@ -260,17 +260,6 @@
             #application.zcore.functions.zFakeFormFields()#
             <input type="hidden" name="inquiries_referer" value="#HTMLEditFormat(request.zos.cgi.http_referer)#" />
             <table class="zinquiry-form-table">
-        <!--- <cfif application.zcore.functions.zo('application.zcore.app.getAppData("content").optionStruct.content_config_hide_inquiring_about',true,0) EQ 0 and form.selected_content_id NEQ "">
-        <tr id="zInquiryFormTRInquireAbout"><th style="vertical-align:top; ">
-        You are <br />inquiring about:</th>
-        <td>
-        <cfscript>
-        ts=structnew();
-        ts.content_id=form.selected_content_id;
-        ts.disableLinks=true;
-        ts.simpleFormat=true;
-        application.zcore.app.getAppCFC("content").includeContent(ts);
-        </cfscript></td></tr></cfif></cfif> --->
             <tr>
                 <th>First Name: *</th>
                 <td><input name="inquiries_first_name" id="inquiries_first_name" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(session, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" />
@@ -279,7 +268,7 @@
             if(application.zcore.functions.zso(form, 'content_id') NEQ ''){
                 form.selected_content_id=form.content_id;
             }else{
-                form.selected_content_id=application.zcore.functions.zso(form, 'selected_content_id',false,application.zcore.functions.zo('request.zos.zPrimaryContentId'));
+                form.selected_content_id=application.zcore.functions.zso(form, 'selected_content_id',false,application.zcore.functions.zso(request.zos, 'zPrimaryContentId'));
             }
             </cfscript>
              <cfif form.selected_content_id NEQ ""> <input type="hidden" name="selected_content_id" value="#form.selected_content_id#" /></cfif></cfif></td>
@@ -309,7 +298,7 @@
             <table class="zinquiry-form-table">
           <tr>	
             <td colspan="2"><h2>What type of property are you interested in?</h2>
-            <cfif application.zcore.functions.zo('qualifyRequired') EQ 1>You must enter at least property type and price range.<input type="hidden" name="qualifyRequired" value="1" /></cfif></td>
+            <cfif application.zcore.functions.zso(form, 'qualifyRequired') EQ 1>You must enter at least property type and price range.<input type="hidden" name="qualifyRequired" value="1" /></cfif></td>
             </tr>
             
             <cfscript>
@@ -554,7 +543,15 @@
           
         
         <tr><th style="vertical-align:top; width:90px; ">Comments:
-            <cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_comments_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_comments_required EQ 1>*</cfif></th><td><textarea name="inquiries_comments" cols="50" rows="5" style="width:96%; height:100px;"><cfif structkeyexists(form, 'inquiries_comments')>#htmleditformat(form.inquiries_comments)#<cfelseif isDefined('form.inquiries_comments')>#htmleditformat(form.inquiries_comments)#<cfelse>#htmleditformat(application.zcore.functions.zo('inquiries_comments'))#</cfif></textarea>
+            <cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_comments_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_comments_required EQ 1>*</cfif>
+        </th><td>
+		<cfsavecontent variable="content2">
+			<cfif structkeyexists(form, 'inquiries_comments')>#htmleditformat(form.inquiries_comments)#
+			<cfelseif isDefined('form.inquiries_comments')>#htmleditformat(form.inquiries_comments)#
+			<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'inquiries_comments'))#
+			</cfif>
+		</cfsavecontent>
+        <textarea name="inquiries_comments" cols="50" rows="5" style="width:96%; height:100px;">#trim(content2)#</textarea>
         
         </td></tr>
  

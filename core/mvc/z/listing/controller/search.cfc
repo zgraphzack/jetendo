@@ -3425,7 +3425,7 @@ sfSortStruct["search_acreage"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<!--- <cfif isDefined('searchFormHideCriteria.more_options') EQ false and application.zcore.functions.zo('application.sitestruct[request.zos.globals.id].zListingMapCheck',false,false)>
+<!--- <cfif isDefined('searchFormHideCriteria.more_options') EQ false and application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false)>
 <cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_city_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_near_address') EQ 1)>
 <div class="zmlsformdiv">
 <cfsavecontent variable="featureHTML2"> 
@@ -3837,7 +3837,7 @@ ts.name="search_map_coordinates_list2";
 ts.output=true;
 application.zcore.functions.zInput_Hidden(ts);
 */
-if(application.zcore.functions.zo('application.sitestruct[request.zos.globals.id].zListingMapCheck',false,false)){
+if(application.zcore.functions.zso(application.sitestruct[request.zos.globals.id], 'zListingMapCheck',false,false)){
 	ts = StructNew();
 	ts.name="search_map_coordinates_list";
 	ts.output=true;
@@ -4069,7 +4069,7 @@ WHERE mls_saved_search_id = #db.param(form.mls_saved_search_id)# and site_id = #
 </div>
 </cfif> --->
 <cfsavecontent variable="endFormTagHTML">
-<cfif application.zcore.functions.zo('request.zDisableSearchFormSubmit',false,false) EQ false>
+<cfif application.zcore.functions.zso(request, 'zDisableSearchFormSubmit',false,false) EQ false>
 <div class="zmlsformdiv">
 
 <cfscript>

@@ -984,7 +984,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		<cfif local.hideAllPrefFields EQ false>
 			<div class="zmember-openid-buttons" style="width:100%; float:left; padding-top:5px;">
 				<hr />
-				<input type="hidden" name="returnurl" value="<cfif application.zcore.functions.zo('returnurl') NEQ "">#htmleditformat(application.zcore.functions.zo('returnurl'))#<cfelseif request.zos.cgi.http_referer DOES NOT CONTAIN "/z/user/preference/index">#htmleditformat(request.zos.cgi.http_referer)#</cfif>" />
+				<input type="hidden" name="returnurl" value="<cfif application.zcore.functions.zso(form, 'returnurl') NEQ "">#htmleditformat(application.zcore.functions.zso(form, 'returnurl'))#<cfelseif request.zos.cgi.http_referer DOES NOT CONTAIN "/z/user/preference/index">#htmleditformat(request.zos.cgi.http_referer)#</cfif>" />
 				<button type="submit" name="submitPref" value="Update Communication Preferences" style="font-size:120%; padding:5px; margin-bottom:5px;">
 				<cfif form.e NEQ ''>
 					Save

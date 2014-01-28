@@ -329,11 +329,11 @@ zEmbedHTML5Video(ts);
 
 <cffunction name="zRequireFontFaceUrls" localmode="modern" output="no" returntype="any">
 	<cfscript>
-	if(application.zcore.functions.zo('request.zos.globals.fontsComURL') NEQ ""){
+	if(application.zcore.functions.zso(request.zos.globals, 'fontsComURL') NEQ ""){
 		application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */ var zFontsComURL="'&jsstringformat(application.zcore.functions.zso(request.zos.globals,'fontscomurl'))&'"; /* ]]> */</script>');
 		
 	}
-	if(application.zcore.functions.zo('request.zos.globals.typekitURL') NEQ ""){
+	if(application.zcore.functions.zso(request.zos.globals, 'typekitURL') NEQ ""){
 		application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */ var zTypeKitURL="'&jsstringformat(application.zcore.functions.zso(request.zos.globals,'typekiturl'))&'"; /* ]]> */</script>');
 		
 	}

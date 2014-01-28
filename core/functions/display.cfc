@@ -874,7 +874,7 @@ function zStopRollOverMessage(){
 		</cfscript>
 	</cfif>
 	<cfscript>
-	request.zROMessageCount = zo('Request.zROMessageCount',true)+1;
+	request.zROMessageCount = application.zcore.functions.zso(Request, 'zROMessageCount',true)+1;
 	application.zcore.template.prependContent('<script type="text/javascript">/* <![CDATA[ */arrROMessageText[#request.zROMessageCount#]= ''#JSStringFormat(ss.message)#'';/* ]]> */</script>');
 	</cfscript>
 	<cfif ss.returnStruct>

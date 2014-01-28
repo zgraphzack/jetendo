@@ -5,7 +5,7 @@
 make system to associate custom fields to another feature (site option group code) - but make it able to appear within the regular form as ajax modal window when you click on "Edit Custom Fields".
 
 
-application.zcore.siteOptionCom.activateSiteOptionAppId(application.zcore.functions.zo('content_site_option_app_id'));
+application.zcore.siteOptionCom.activateSiteOptionAppId(application.zcore.functions.zso(form, 'content_site_option_app_id'));
 
 blog is actually 3 or 4 different types - i don't want custom fields to be enabled for all of them always do i?
 

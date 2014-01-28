@@ -97,7 +97,8 @@
 	<cfscript>
 	variables.init();
 	if(request.zos.isTestServer EQ false){
-		writeoutput('Deploy can''t be run on a production server since it is designed to deploy an archive from the test server to the production.');
+		writeoutput('Deploy can''t be run on a production server since it is designed to deploy an archive from the test server to the production. 
+			<a href="#request.zos.testAdminDomain#/z/server-manager/admin/deploy/index">Go to test server deploy page</a>');
 		application.zcore.functions.zabort();
 	}
 	application.zcore.functions.zStatusHandler(request.zsid);

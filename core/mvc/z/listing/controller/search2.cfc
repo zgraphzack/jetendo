@@ -574,7 +574,7 @@
 			
 		};
 		// make the data builder have this logic for disabling formSubmitButton
-		if(application.zcore.functions.zo('request.zDisableSearchFormSubmit',false,false) EQ false){
+		if(application.zcore.functions.zso(request, 'zDisableSearchFormSubmit',false,false) EQ false){
 		}
 		local.formFieldTypeStruct={};
 		for(local.i in local.fieldStruct){
@@ -621,7 +621,7 @@
 				}
 			}
 		}
-		if((structkeyexists(form, 'zdisablesearchfilter') or application.zcore.functions.zo('application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable.search_city_id') EQ 1) and isDefined('searchFormHideCriteria.city') EQ false){
+		if((structkeyexists(form, 'zdisablesearchfilter') or (application.zcore.app.siteHasApp("listing") and application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable.search_city_id EQ 1)) and structkeyexists(searchFormHideCriteria, 'city') EQ false){
 			rs.city_id=this.getCity();
 		}
 		return {fieldStruct:local.fieldStruct, dataStruct:rs, formFieldTypeStruct:local.formFieldTypeStruct, formfieldStruct:{}};
@@ -773,7 +773,7 @@
 		if(request.zos.originalURL EQ request.zos.listing.functions.getSearchFormLink()){
 			request.zForceListingSidebar=true; 
 		}
-		if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_search',true) EQ 1 and application.zcore.functions.zo('request.contentEditor',false,false) EQ false){
+		if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_search',true) EQ 1 and application.zcore.functions.zso(request, 'contentEditor',false,false) EQ false){
 			application.zcore.functions.z301redirect('/');	
 		}
 		 

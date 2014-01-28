@@ -46,7 +46,7 @@ if(rental_id EQ 18 or rental_id EQ 42){
 	ted=dateadd("d",1,search_end_date);
 	writeoutput('<strong>Please note this rental must be available one day before and after your stay in order for it to be reserved.</strong><br /><br /><br />');
 }
-if(rental_id EQ 36 and zo('inquiries_adults',true) + zo('inquiries_children',true) GT 6){
+if(rental_id EQ 36 and zso(form, 'inquiries_adults',true) + zso(form, 'inquiries_children',true) GT 6){
 	ted=dateadd("d",1,search_end_date);
 	//writeoutput('Please note this rental must be available one day after your stay in order for it to be reserved.<br /><br /><br />');
 }

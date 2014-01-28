@@ -253,7 +253,7 @@
 application.zcore.template.setTag("title","Edit Saved Search");
 application.zcore.template.setTag("pagetitle","Edit Saved Search");
 
-		searchStr=request.zos.listing.functions.searchToStruct(saved_search_email,application.zcore.functions.zo('mls_saved_search_id'));
+		searchStr=request.zos.listing.functions.searchToStruct(saved_search_email,application.zcore.functions.zso(form, 'mls_saved_search_id'));
 		form.searchId = application.zcore.status.getNewId();
 		application.zcore.status.setStatus(form.searchid, false,searchStr,false);
 		

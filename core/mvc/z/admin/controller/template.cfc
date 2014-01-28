@@ -745,7 +745,7 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
 <cfif form.action EQ "edit" or form.action EQ "add">
 	<cfscript>
 	currentMethod=form.action;
-	file_id=zo('file_id');
+	file_id=application.zcore.functions.zso(form, 'file_id');
 	</cfscript>
     <cfsavecontent variable="db.sql">
     SELECT * FROM #request.zos.queryObject.table("file", request.zos.zcoreDatasource)# file, 

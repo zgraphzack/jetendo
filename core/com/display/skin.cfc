@@ -1149,12 +1149,12 @@ todo: open source projects
 
 <cffunction name="getSkinData" localmode="modern" access="remote" output="yes" returntype="any">
 	<cfscript>
-	writeoutput('{"cacheIndex":"#jsstringformat(application.zcore.functions.zo('cacheIndex'))#", "query1":[["rtitle","rdate","ruser","remail"],["rtitle2","rdate2","ruser2","remail2"]],  "query2":[["rsometitle2"]]');
+	writeoutput('{"cacheIndex":"#jsstringformat(application.zcore.functions.zso(form, 'cacheIndex'))#", "query1":[["rtitle","rdate","ruser","remail"],["rtitle2","rdate2","ruser2","remail2"]],  "query2":[["rsometitle2"]]');
 	for(i in form){
 		writeoutput(',"#i#": "#jsstringformat(form[i])#"');
 	}
 	writeoutput(' }');
-	header name="x_ajax_id" value="#x_ajax_id#";
+	header name="x_ajax_id" value="#form.x_ajax_id#";
 	application.zcore.functions.zabort();
 	</cfscript>
 </cffunction>

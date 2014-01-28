@@ -116,31 +116,11 @@ propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.contr
 		  
 		  newlistingcount=qMember.listingcount;
 		  </cfscript>
-      <!--- <cfif application.zcore.app.siteHasApp("listing") and qMember.member_mlsagentid NEQ '' and qMember.member_mlsagentid NEQ ',,'>
-        <cfscript>
-        
-        ts = StructNew();
-        ts.offset =0;
-        perpageDefault=10;
-        perpage=100;
-        perpage=max(1,min(perpage,100));
-        ts.perpage = perpage;
-        ts.distance = 30; // in miles
-        ts.onlyCount=true;
-        ts.searchCriteria=structnew();
-        ts.searchCriteria.search_agent=qMember.member_mlsagentid;
-        
-        //ts.debug=true;
-        returnStruct = propertyDataCom.getProperties(ts);
-        structdelete(variables,'ts');
-		newlistingcount+=returnstruct.count;
-        </cfscript>
-        </cfif> --->
       <cfif tmp NEQ ''>
         <div>#trim(left(tmp,250))#...</div>
         <br />
       </cfif>
-      <strong><!--- <cfif application.zcore.functions.zo('application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id',true) NEQ 0> --->
+      <strong>
       <cfif application.zcore.app.siteHasApp("content")>
         <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#qMember.user_id#.html">View my
         <cfif newlistingcount NEQ 0>
@@ -148,12 +128,10 @@ propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.contr
         </cfif>
         full bio</a>
         <cfelse>
-        <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-14-#user_id#.html">View my <!--- <cfif newlistingcount neq 0>#newlistingcount# listings and </cfif> --->full bio</a>
+        <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-14-#user_id#.html">View my full bio</a>
       </cfif>
       </strong> </div>
   </div>
-  <!--- <cfif qMember.recordcount NEQ currentRow>
-	  </cfif> ---> 
   </cfloop>
 </cffunction>
 </cfoutput>

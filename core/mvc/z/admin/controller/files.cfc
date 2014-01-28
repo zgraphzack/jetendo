@@ -32,7 +32,7 @@ ts.value="250x400";
 ArrayAppend(request.imageSizes, ts);
 ts=StructNew();
 ts.label="Large";
-if(application.zcore.functions.zo('request.zos.globals.maximagewidth',true) NEQ 0){
+if(application.zcore.functions.zso(request.zos.globals, 'maximagewidth',true) NEQ 0){
 	ts.value="#request.zos.globals.maximagewidth#x2000";
 }else{
 	ts.value="760x2000";
@@ -69,7 +69,7 @@ if(structkeyexists(request,'imageSizes') EQ false){
 		ArrayAppend(request.imageSizes, ts);
 		ts=StructNew();
 		ts.label="Large";
-		if(application.zcore.functions.zo('request.zos.globals.maximagewidth',true) NEQ 0){
+		if(application.zcore.functions.zso(request.zos.globals, 'maximagewidth',true) NEQ 0){
 			ts.value="#request.zos.globals.maximagewidth#x2000";
 		}else{
 			ts.value="760x2000";
@@ -81,7 +81,7 @@ if(structkeyexists(request,'imageSizes') EQ false){
 		ts.value="5000x5000";
 		ArrayAppend(request.imageSizes, ts);
 }
-	if(form.galleryMode EQ false and application.zcore.functions.zo('request.zos.fileImage.hideTitle',false,false) EQ false){
+	if(form.galleryMode EQ false and structkeyexists(request.zos, 'fileImage') and application.zcore.functions.zso(request.zos.fileImage, 'hideTitle',false,false) EQ false){
 	writeoutput('<h1>Files &amp; Images</h1>');
 	}
 if(isDefined('request.zos.fileImage.forceRootFolder')){ 
@@ -168,7 +168,7 @@ if(form.method NEQ 'index'){
 	ArrayAppend(request.imageSizes, ts);
 	ts=StructNew();
 	ts.label="Large";
-	if(application.zcore.functions.zo('request.zos.globals.maximagewidth',true) NEQ 0){
+	if(application.zcore.functions.zso(request.zos.globals, 'maximagewidth',true) NEQ 0){
 		ts.value="#request.zos.globals.maximagewidth#x2000";
 	}else{
 		ts.value="760x2000";
@@ -1091,14 +1091,14 @@ if(application.zcore.functions.zso(session, 'fileManagerSortDate',true) EQ 0){
 				<a href="/z/admin/files/#form.curListMethod#?d=#URLEncodedFormat(form.d&'/'&qDir.name)#" style="color:##000000;"><img src="/z/images/page/directory.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">#qDir.name#</a>
 			<cfelse>
 				<cfset fileext=application.zcore.functions.zGetFileExt(qDir.name)>
-				<cfif application.zcore.functions.zo('request.zos.fileImage.addDisabled',false,false) EQ false>
+				<cfif structkeyexists(request.zos, 'fileImage') and application.zcore.functions.zso(request.zos.fileImage, 'addDisabled',false,false) EQ false>
 					<cfif 'jpg' EQ fileext OR 'gif' EQ fileext or 'png' EQ fileext>
 						<a href="/z/admin/files/edit?d=#URLEncodedFormat(form.d)#&amp;f=#URLEncodedFormat(form.d&'/'&qDir.name)#" style="color:##000000;"><img class="zLazyImage" src="/z/a/images/loading.gif" style="max-width:100px; max-height:100px;vertical-align:bottom;padding-left:4px; padding-right:4px;" data-original="#variables.siteRootDir##urlencodedformat(form.d)&'/'&qDir.name#">#qDir.name#</a>
 					<cfelse>
 						<a href="/z/admin/files/editFile?d=#URLEncodedFormat(form.d)#&amp;f=#URLEncodedFormat(form.d&'/'&qDir.name)#" style="color:##000000;"><img src="/z/images/page/file.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">#qDir.name#</a>
 					</cfif>
 				<cfelse>
-					<cfif application.zcore.functions.zo('request.zos.fileImage.enableDownload',false,false)>
+					<cfif structkeyexists(request.zos, 'fileImage') and application.zcore.functions.zso(request.zos.fileImage, 'enableDownload',false,false)>
 						<cfif 'jpg' EQ fileext OR 'gif' EQ fileext or 'png' EQ fileext>
 							<a href="/z/admin/files/download?d=#URLEncodedFormat(form.d)#&amp;f=#URLEncodedFormat(form.d&'/'&qDir.name)#" style="color:##000000;"><img src="/z/images/page/image.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">#qDir.name#</a>
 						<cfelse>

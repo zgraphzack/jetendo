@@ -75,7 +75,7 @@
 	<cfscript>
 	var theSQL=0;
 	var local=structnew();
-	local.event_id=request.zos.functions.zo('event_id',false,-1);
+	local.event_id=request.zos.functions.zso(form, 'event_id',false,-1);
 	</cfscript>
 	<cfsavecontent variable="theMeta">
 	<meta name="robots" content="noindex,nofollow,noarchive" />

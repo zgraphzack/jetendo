@@ -2070,7 +2070,12 @@
 						| Updated #dateformat(qSite.content_updated_datetime,"m/d/yy")&" at "&timeformat(qSite.content_updated_datetime,"h:mm tt")# 
 					
 					</span>
-					<cfif qSite.content_unique_name NEQ ""><br /><span style="font-size:10px; color:##999999;">#qSite.content_unique_name#</span></cfif>
+					<cfif qSite.content_unique_name NEQ ""><br /><span style="font-size:10px; color:##999999;">#qSite.content_unique_name#
+						<cfif qSite.content_unique_name EQ "/">
+							(Home Page)
+						</cfif>
+						</span>
+					</cfif>
 					<cfif searchtext NEQ "">
 						<cfscript>
 						cT="";

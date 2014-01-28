@@ -846,7 +846,7 @@ add fields to set location of content (listing) on google map (using address or 
 					application.zcore.functions.zCookie(ts);
 					session.zUserInquiryInfoLoaded=true;
 				}
-			}else if(application.zcore.functions.zo('cookie.z_user_id') NEQ "" and application.zcore.functions.zo('cookie.z_user_key') NEQ ""){
+			}else if(application.zcore.functions.zso(cookie, 'z_user_id') NEQ "" and application.zcore.functions.zso(cookie, 'z_user_key') NEQ ""){
 				tmpUsrId=cookie.z_user_id;
 				db.sql="SELECT user_username, user_first_name, user_last_name, user_phone 
 				FROM #db.table("user", request.zos.zcoreDatasource)# user 
@@ -1492,7 +1492,7 @@ add fields to set location of content (listing) on google map (using address or 
 		local.includeLoopCount=0;
 		if(not structkeyexists(request.zos, 'thumbnailSizeStruct')){
 			this.setRequestThumbnailSize(0,0,0); 
-			if(contentConfig.contentEmailFormat or application.zcore.functions.zo('request.contentUseSmallThumbnails',false,false) NEQ false){
+			if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
 				request.zos.thumbnailSizeStruct.width=120;
 				request.zos.thumbnailSizeStruct.height=90;
 			}
@@ -1646,11 +1646,8 @@ add fields to set location of content (listing) on google map (using address or 
         
         <cfscript>
         local.link9='/z/listing/sl/index?saveAct=check&content_id=#local.tempQueryName.content_id#';
-        /*if(structkeyexists(form, request.zos.urlRoutingParameter) AND form[request.zos.urlRoutingParameter] NEQ ""){
-            local.link9&='&returnURL='&urlEncodedFormat(form[request.zos.urlRoutingParameter]);
-        }else{*/
-            local.link9&='&returnURL='&urlEncodedFormat(request.zos.originalURL&"?"&replacenocase(replacenocase(request.zos.cgi.QUERY_STRING,"searchid=","ztv=","ALL"),"__zcoreinternalroutingpath=","ztv=","ALL"));
-       // }
+        local.link9&='&returnURL='&urlEncodedFormat(request.zos.originalURL&"?"&replacenocase(replacenocase(request.zos.cgi.QUERY_STRING,"searchid=","ztv=","ALL"),"__zcoreinternalroutingpath=","ztv=","ALL"));
+       
         </cfscript>
             <cfif contentConfig.disableChildContentSummary> 
             <h2><a href="#local.propertyLink#">#local.tempQueryName.content_name#</a></h2>
@@ -1666,7 +1663,12 @@ add fields to set location of content (listing) on google map (using address or 
         writeoutput(trim(removechars(local.tempQueryName.content_address,1, p+5)));
         </cfscript></td>
         </cfif>
-        <td class="zls2-9-2"><strong>#local.cityName# </strong><br /><cfif local.tempQueryName.content_property_bedrooms NEQ 0>#local.tempQueryName.content_property_bedrooms# beds, </cfif><cfif local.tempQueryName.content_property_bathrooms NEQ 0>#local.tempQueryName.content_property_bathrooms# baths, </cfif><cfif local.tempQueryName.content_property_half_baths NEQ 0>#application.zcore.functions.zo('local.tempQueryName.content_property_half_baths',true)# half baths, </cfif><cfif local.tempQueryName.content_property_sqfoot neq '0' and local.tempQueryName.content_property_sqfoot neq ''>#local.tempQueryName.content_property_sqfoot# living sqft</cfif></td></tr></table><br style="clear:both;" />
+        <td class="zls2-9-2"><strong>#local.cityName# </strong><br />
+        <cfif local.tempQueryName.content_property_bedrooms NEQ 0>#local.tempQueryName.content_property_bedrooms# beds, </cfif>
+        <cfif local.tempQueryName.content_property_bathrooms NEQ 0>#local.tempQueryName.content_property_bathrooms# baths, </cfif>
+        <cfif local.tempQueryName.content_property_half_baths NEQ 0>#application.zcore.functions.zso(local.tempQueryName, 'content_property_half_baths',true)# half baths, </cfif>
+        <cfif local.tempQueryName.content_property_sqfoot neq '0' and local.tempQueryName.content_property_sqfoot neq ''>#local.tempQueryName.content_property_sqfoot# living sqft</cfif>
+    	</td></tr></table><br style="clear:both;" />
                     
                     <div class="zls-buttonlink">
                    <cfif request.cgi_script_name EQ '/z/listing/property/detail/index' or (local.tempQueryName.content_id EQ application.zcore.functions.zso(form, 'content_id') and request.cgi_script_name EQ '/z/content/content/viewPage')><cfelse><a href="#request.zos.globals.domain##local.propertyLink#">View Full Details<cfif lpc38 GT 1> &amp; Photos</cfif></a></cfif>
@@ -1750,8 +1752,10 @@ add fields to set location of content (listing) on google map (using address or 
             <cfif local.pci3891 EQ false>
 	    
         <table <cfif len(contentConfig.tablestyle)> #contentConfig.tablestyle#<cfelse> style="width:100%;"</cfif>>
-            <tr><cfif local.contentPhoto99 NEQ ""><td class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;  vertical-align:top;padding-right:20px;"><cfif contentConfig.contentDisableLinks EQ false><a href="#local.propertyLink#"></cfif><img src="#request.zos.globals.domain&local.contentPhoto99#" alt="#htmleditformat(local.tempQueryName.content_name)#" <cfif contentConfig.contentEmailFormat or application.zcore.functions.zo('request.contentUseSmallThumbnails',false,false) NEQ false>width="120"</cfif> style="border:none;" /><cfif contentConfig.contentDisableLinks EQ false></a></cfif></td></cfif>
-            <td style="vertical-align:top; "><cfif application.zcore.functions.zso(form, 'content_id') NEQ local.tempQueryName.content_id or contentConfig.contentForceOutput><cfif application.zcore.functions.zo('contentHideTitle',false,false) EQ false><h2><cfif contentConfig.contentDisableLinks EQ false><a href="#local.propertyLink#"></cfif>#htmleditformat(local.tempQueryName.content_name)#<cfif contentConfig.contentDisableLinks EQ false></a></cfif></h2></cfif></cfif>
+            <tr><cfif local.contentPhoto99 NEQ ""><td class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;  vertical-align:top;padding-right:20px;">
+            <cfif contentConfig.contentDisableLinks EQ false><a href="#local.propertyLink#"></cfif>
+            <img src="#request.zos.globals.domain&local.contentPhoto99#" alt="#htmleditformat(local.tempQueryName.content_name)#" <cfif contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false>width="120"</cfif> style="border:none;" /><cfif contentConfig.contentDisableLinks EQ false></a></cfif></td></cfif>
+            <td style="vertical-align:top; "><cfif application.zcore.functions.zso(form, 'content_id') NEQ local.tempQueryName.content_id or contentConfig.contentForceOutput><cfif application.zcore.functions.zso(form, 'contentHideTitle',false,false) EQ false><h2><cfif contentConfig.contentDisableLinks EQ false><a href="#local.propertyLink#"></cfif>#htmleditformat(local.tempQueryName.content_name)#<cfif contentConfig.contentDisableLinks EQ false></a></cfif></h2></cfif></cfif>
             
             
             <cfif contentConfig.disableChildContentSummary EQ false>
@@ -2246,7 +2250,7 @@ add fields to set location of content (listing) on google map (using address or 
     }else{
         local.ct1948=local.ts994824713.content_text;
     }
-    if(application.zcore.functions.zo('application.zcore.app.getAppData("content").optionStruct.content_config_contact_links',true) EQ 1 and local.ts994824713.content_disable_contact_links EQ 1){
+    if(application.zcore.app.siteHasApp("content") and application.zcore.app.getAppData("content").optionStruct.content_config_contact_links EQ 1 and local.ts994824713.content_disable_contact_links EQ 1){
         //local.ct1948=rereplacenocase(local.ct1948,"(\b)(call)(\b)",'\1<a href="##cjumpform" title="Call Us Today">\2</a>\3',"ALL");
         local.ct1948=rereplacenocase(local.ct1948,"(\b)(contact)(\b)",'\1<a href="/z/misc/inquiry/index" title="Contact Us">\2</a>\3',"ALL");
         local.ct1948=rereplacenocase(local.ct1948,"(\b)(email)(\b)",'\1<a href="/z/misc/inquiry/index" title="Email Us">\2</a>\3',"ALL");
@@ -2574,7 +2578,7 @@ add fields to set location of content (listing) on google map (using address or 
         <br style="clear:both;" />
         </cfif>
         
-    <cfif application.zcore.app.siteHasApp("listing") and local.contentSearchMLS EQ 1 and application.zcore.functions.zo('hidemls',true) EQ 0>
+    <cfif application.zcore.app.siteHasApp("listing") and local.contentSearchMLS EQ 1 and application.zcore.functions.zso(form, 'hidemls',true) EQ 0>
     
                
 		<cfscript>
@@ -2582,7 +2586,7 @@ add fields to set location of content (listing) on google map (using address or 
         if((local.returnPropertyDisplayStruct.mlsSearchSearchQuery.search_Rate_low NEQ 0 AND local.returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_high neq 0)){
             local.startPrice=local.returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_low;
             local.endPrice=local.returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_high;
-        }else if(application.zcore.functions.zo('local.ts994824713.content_price',true) NEQ 0){
+        }else if(application.zcore.functions.zso(local.ts994824713, 'content_price',true) NEQ 0){
             local.percent=local.ts994824713.content_price*0.25;
             local.startPrice=max(0,local.ts994824713.content_price-local.percent);
             local.endPrice=local.ts994824713.content_price+local.percent;

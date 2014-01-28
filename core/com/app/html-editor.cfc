@@ -56,7 +56,7 @@ remove_script_host : 0,
 relative_urls : 0,
 	mode : "none",
 	theme : "advanced",	
-	<cfif application.zcore.functions.zo('request.zos.globals.typekitURL') NEQ "" or application.zcore.functions.zo('request.zos.globals.fontsComURL') NEQ "">
+	<cfif application.zcore.functions.zso(request.zos.globals, 'typekitURL') NEQ "" or application.zcore.functions.zso(request.zos.globals, 'fontsComURL') NEQ "">
 	init_instance_callback: "forceCustomFontLoading",
 	</cfif>
 	<cfif isDefined('request.zos.globals.editorFonts') and request.zos.globals.editorFonts NEQ "">
