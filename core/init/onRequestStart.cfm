@@ -162,6 +162,8 @@
 		local.temphomedir=Request.zOSHomeDir;//replace(expandpath('/'),"\","/","all");
 		local.tempdomain="http://"&lcase(request.zos.cgi.server_name);
 		local.tempsecuredomain="https://"&lcase(request.zos.cgi.server_name); // need to be able to override this.
+
+		request.zos.originalFormScope=duplicate(form);
 		for(local.i in form){
 			if(isSimpleValue(form[local.i])){
 				form[local.i]=replace(replace(form[local.i], local.tempdomain, '', 'all'), local.tempsecuredomain, '', 'all');

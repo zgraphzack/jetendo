@@ -313,6 +313,9 @@
 	if(not structkeyexists(form, 'site_lock_theme')){
 		form.site_lock_theme=0;
 	}
+	form.site_domain=request.zos.originalFormScope.site_domain;
+	form.site_securedomain=request.zos.originalFormScope.site_securedomain;
+
 	form.site_short_domain=lcase(form.site_short_domain);
 	form.site_domain=lcase(form.site_domain);
 	form.site_domainaliases=lcase(form.site_domainaliases);
