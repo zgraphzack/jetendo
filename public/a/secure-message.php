@@ -1,8 +1,8 @@
 <?php
 // i'll need to grab some data from database to make this work on other sites.
 
-$devEmailTo=get_cfg_var("zdeveloperemailto");
-$devEmailFrom=get_cfg_var("zdeveloperemailfrom");
+$devEmailTo=get_cfg_var("jetendo_developer_email_to");
+$devEmailFrom=get_cfg_var("jetendo_developer_email_from");
 set_time_limit(3000);
 error_reporting(E_ALL);
 function zo($var, $default=''){
@@ -18,8 +18,9 @@ $action=zo('action','list');
 //request.zos.template.setTemplate("client.cfm");
 $npasscode=zo('npasscode','');
 $publicUser=true;	
-$shortDomain=str_replace(".", "_", str_replace("www.","",$_SERVER['HTTP_HOST']));
-if($_SERVER['SERVER_PORT'] != '443'){
+$shortDomain=str_replace(".", "_", str_replace("www.","", str_replace(".".get_cfg_var("jetendo_test_domain"), "", $_SERVER['HTTP_HOST'])));
+
+if($_SERVER['SERVER_PORT'] != '443' && strpos($_SERVER['HTTP_HOST'], ".".get_cfg_var("jetendo_test_domain")) === FALSE){
 	echo "Requires SSL";exit;
 }
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -146,7 +147,10 @@ Login to client upload area to download the file(s):
 		';
 		}
 	
-		mail($devEmailTo,"Secure message sent to ".$_SERVER['HTTP_HOST'], $eBody, "From: <".$devEmailFrom.">\nReply-To: \"Error\" <".$devEmailFrom.">\nX-Mailer: php" );
+		$r=mail($devEmailTo,"Secure message sent to ".$_SERVER['HTTP_HOST'], $eBody, "From: <".$devEmailFrom.">\nReply-To: \"Error\" <".$devEmailFrom.">\nX-Mailer: php" );
+		if(!$r){
+			echo '<h2>Email notification failed</h2><p>Please contact us via email to check our secure upload repository.</p>';
+		}
 		echo '<h1>Transfer complete<br /><br />Your secure message has been delivered.  ID:'.$dirName.'</h1><p>You can send another message below or close this window.</p>';
 		exit;
 	}

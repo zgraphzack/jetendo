@@ -265,7 +265,7 @@ function processImage($filesource, $filedestination){
 		return true;
 	}
 }
-if(strpos($_SERVER['HTTP_HOST'], ".".get_cfg_var("ztestdomain")) !== FALSE){
+if(strpos($_SERVER['HTTP_HOST'], ".".get_cfg_var("jetendo_test_domain")) !== FALSE){
 	$testserver=true;
 }else{
 	$testserver=false;
@@ -862,11 +862,11 @@ if(!is_dir($fpath)){
 $temp=".".rand(1,100000);
 $f=imagejpeg($thumb, $outputpath.$temp,80);
 if($f===FALSE){
-	$to      = get_cfg_var("zdeveloperemailto");
+	$to      = get_cfg_var("jetendo_developer_email_to");
 	$subject = 'PHP size.php failed to write image';
-	$headers = 'From: '.get_cfg_var("zdeveloperemailfrom") . "\r\n" .
+	$headers = 'From: '.get_cfg_var("jetendo_developer_email_from") . "\r\n" .
 	$message = 'PHP size.php failed to write image: '.$outputpath.$temp;
-		'Reply-To: '.get_cfg_var("zdeveloperemailfrom") . "\r\n" .
+		'Reply-To: '.get_cfg_var("jetendo_developer_email_from") . "\r\n" .
 		'X-Mailer: PHP/' . phpversion();
 
 	mail($to, $subject, $message, $headers);
