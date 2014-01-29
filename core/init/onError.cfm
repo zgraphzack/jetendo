@@ -33,6 +33,7 @@
 	}
 	application.zErrorMinuteCount++;
 	
+	structdelete(request.zos, 'originalFormScope');
 	if(structkeyexists(form, 'zpassword')){
 		form.zpassword='Password removed for security';
 	}
