@@ -57,7 +57,6 @@
 <cffunction name="copy" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
-	var newsitedir=0;
 	var sql=0;
 	var n=0;
 	var arrF=0;
@@ -123,24 +122,31 @@
 	<cfelse>
 		<cfscript>
 		if(application.zcore.user.checkServerAccess()){
-			form.newsiteid=application.zcore.functions.zso(form,'newsiteid', false);
-			if(form.newsiteid EQ ""){
+			form.newsiteid=application.zcore.functions.zso(form,'newsiteid', true);
+			if(form.newsiteid EQ 0){
 				form.newsiteid=request.zos.globals.id;
 			}
 		}else{
 			form.newsiteid=request.zos.globals.id;
 		}
-		form.newsitedir=application.zcore.functions.zGetDomainWritableInstallPath(application.zcore.functions.zvar("shortDomain", form.newsiteid));
-		
+		path=application.zcore.functions.zvar("shortDomain", form.newsiteid);
+		if(path EQ ""){
+			application.zcore.status.setStatus(request.zsid, "Failed to copy slideshow. Destination site was incorrectly configured.", form,true);
+			application.zcore.functions.zRedirect("/z/admin/slideshow/index?zsid=#request.zsid#");	
+		}
+		form.newsitedir=application.zcore.functions.zGetDomainWritableInstallPath(path);
+
 		db.sql="select * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow
 		where slideshow_id = #db.param(form.slideshow_id)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		qS=db.execute("qS");
 		db.sql="select * from #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab
-		where slideshow_id = #db.param(form.slideshow_id)# and site_id=#db.param(request.zos.globals.id)#";
+		where slideshow_id = #db.param(form.slideshow_id)# and 
+		site_id=#db.param(request.zos.globals.id)#";
 		qT=db.execute("qT");
 		db.sql="select * from #db.table("slideshow_image", request.zos.zcoreDatasource)# slideshow_image
-		where slideshow_id = #db.param(form.slideshow_id)# and site_id=#db.param(request.zos.globals.id)#";
+		where slideshow_id = #db.param(form.slideshow_id)# and 
+		site_id=#db.param(request.zos.globals.id)#";
 		qI=db.execute("qI");
 		
 		if(application.zcore.functions.zso(form, 'renameexisting') EQ 1){
@@ -280,9 +286,9 @@
 			db.sql=sql;
 			q=db.execute("q");
 		}
-		application.zcore.functions.zcreatedirectory(newsitedir&'zupload/slideshow/');
-		application.zcore.functions.zcreatedirectory(newsitedir&'zupload/slideshow/#newslideshowid#');
-		application.zcore.functions.zCopyDirectory(request.zos.globals.privatehomedir&'zupload/slideshow/#form.slideshow_id#', newsitedir&'zupload/slideshow/#newslideshowid#');
+		application.zcore.functions.zcreatedirectory(form.newsitedir&'zupload/slideshow/');
+		application.zcore.functions.zcreatedirectory(form.newsitedir&'zupload/slideshow/#newslideshowid#');
+		application.zcore.functions.zCopyDirectory(request.zos.globals.privatehomedir&'zupload/slideshow/#form.slideshow_id#', form.newsitedir&'zupload/slideshow/#newslideshowid#');
 		application.zcore.status.setStatus(request.zsid, "Slideshow copied");
 		application.zcore.functions.zRedirect("/z/admin/slideshow/index?zsid=#request.zsid#");
 		</cfscript>
