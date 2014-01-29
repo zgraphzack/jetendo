@@ -539,21 +539,7 @@
 		}
 		this.copyGroupRecursive(form.site_option_group_id, form.newSiteId, row, groupStruct, optionStruct);
 	}
-	/*writedump(groupStruct);
-	writedump(optionStruct);
-	application.zcore.functions.zabort();*/
-	/*
-	todo: implement copyData for site option groups
-	copy site_option_group
-	use site_option_group_id
-		copy site_option
-		
-	if(form.copyData EQ 1){
-		copy site_x_option_group_set
-		use site_x_option_group_set_id
-			copy site_x_option_group
-	}
-	*/
+	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
 		
 	application.zcore.status.setStatus(request.zsid, "Site Option Group Copied.");
 	application.zcore.functions.zRedirect("/z/admin/site-option-group/index?zsid=#request.zsid#");
