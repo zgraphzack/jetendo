@@ -129,9 +129,14 @@ function installThemeToSite($a){
 	if(substr($siteAbsolutePath, strlen($siteAbsolutePath)-1, 1) != "/"){
 		$siteAbsolutePath.="/";
 	}
-
 	$cmd='/bin/cp -rf '.escapeshellarg($themePath)."* ".escapeshellarg($siteAbsolutePath);
 	$r=`$cmd`;
+	$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").':'.get_cfg_var("jetendo_www_user").' '.escapeshellarg($siteAbsolutePath);
+	$r=`$cmd`;
+	$isTestServer=zIsTestServer();
+	$preview=false;
+	$arrError=array();
+	$result=zCheckDirectoryPermissions($siteAbsolutePath, get_cfg_var("jetendo_www_user"), get_cfg_var("jetendo_www_user"), "440", "550", true, $preview, $arrError, $isTestServer);
 	return "1";
 }
 function getNewerCoreMVCFiles(){
