@@ -165,8 +165,6 @@ writeoutput(application.zcore.functions.zLoadAndCropImage({id:"",width:140,heigh
 <cffunction name="zXSendFile" localmode="modern" output="no" returntype="any">
 	<cfargument name="p" type="string" required="yes">
 	<cfscript>
-	//writeoutput(arguments.p);
-	//application.zcore.functions.zabort();
 	if(cgi.SERVER_SOFTWARE EQ "" or cgi.SERVER_SOFTWARE CONTAINS "nginx"){
 		application.zcore.functions.zheader("X-Accel-Redirect",arguments.p);
 	}else{
@@ -902,7 +900,7 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 			admin action="getDebugData" returnVariable="q";
 			writeoutput('<table style="border-spacing:0px;" class="table-list"><tr><th>Template</th><th>Line</th><th>Scope</th><th>Count</th><th>Name</th></tr>');
 			for(row in q.implicitAccess){
-				if(row.scope NEQ "thread" or row.name NEQ "cfthread"){
+				if(row.template NEQ "/Dump.cfc" and row.scope NEQ "thread" and row.name NEQ "cfthread"){
 					count++;
 					uniqueStruct[row.template][row.scope][row.name]=true;
 					writeoutput('<tr><td>'&row.template&'</td><td>'&row.line&'</td><td>'&row.scope&'</td><td>'&row.count&'</td><td>'&row.name&'</td></tr>');
