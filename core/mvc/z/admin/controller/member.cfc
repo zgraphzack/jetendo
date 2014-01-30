@@ -58,7 +58,7 @@
 	var db=request.zos.queryObject;
 	variables.init();
 	x_ajax_id=application.zcore.functions.zso(form, 'x_ajax_id');
-	zmlsnum=trim(application.zcore.functions.zso(form, 'zmlsnum'));
+	form.zmlsnum=trim(application.zcore.functions.zso(form, 'zmlsnum'));
 	header name="x_ajax_id" value="#x_ajax_id#";
 	propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	ts = StructNew();
@@ -66,20 +66,11 @@
 	ts.perpage = 1;
 	ts.distance = 30; // in miles
 	ts.disableCount=true;
-	tempId = application.zcore.status.getNewId();	
-	tempStruct=StructNew();	
-	arrMM=arraynew(1);
-	arrM=arraynew(1);
-	arrayappend(arrM,zmlsnum);
-	for(i=1;i LTE arraylen(arrM);i++){
-		if(arrM[i] DOES NOT CONTAIN ' '){
-			arrayappend(arrMM,application.zcore.functions.zescape(arrM[i]));
-		}
-	}
-	tempStruct.mls_numbers="listing.listing_id LIKE '%-"&arraytolist(arrMM,"' or listing.listing_id LIKE '%-")&"'";
-	application.zcore.status.setStatus(tempId,false,tempStruct);
-	ts.searchId=tempId;
-		
+	tempId = application.zcore.status.getNewId();
+	ts9={
+		search_mls_number_list:form.zmlsnum
+	};
+	propertyDataCom.setSearchCriteria(ts9);
 	returnStruct = propertyDataCom.getProperties(ts);
 	
 	agentid="";
@@ -993,7 +984,7 @@
 					</cfif>
 					|
 				<cfelse>
-					<cfif qMember.member_public_profile and qMember.member_public_profile EQ 1>
+					<cfif qMember.member_public_profile EQ 1>
 						<cfif application.zcore.functions.zso(application.zcore.app.getAppData("content").optionstruct,'content_config_url_listing_user_id',true) NEQ 0>
 							<a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#qMember.user_id#.html" target="_blank">View</a> |
 						</cfif>
