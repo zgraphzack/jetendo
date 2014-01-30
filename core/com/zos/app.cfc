@@ -96,11 +96,12 @@
 			ts=structnew();
 			ts.link="/z/server-manager/admin/deploy/index";
 			curStruct.children["Deploy"]=ts;
-			/*ts=structnew();
-			ts.link="/z/_com/app/randomCopy?method=sentenceList";
-			curStruct.children["Random Copy"]=ts;
-			*/
-			
+			ts=structnew();
+			ts.link="/z/server-manager/admin/site-select/index?action=select&sid="&request.zos.globals.id;
+			curStruct.children["Edit This Site"]=ts;
+			ts=structnew();
+			ts.link="/z/server-manager/admin/deploy/index?sid="&request.zos.globals.id;
+			curStruct.children["Deploy This Site"]=ts;
 		}
 		
 		if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "agent"))){// or (structkeyexists(request.zos.userSession.groupAccess, "agent") EQ false)){
