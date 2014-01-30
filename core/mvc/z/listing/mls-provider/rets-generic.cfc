@@ -174,6 +174,7 @@ variables.typeStruct["text"]="text";
 	}else{
 		path="#request.zos.sharedPath#mls-data/#this.mls_id#/";
 	}
+	setting requesttimeout="500";
 	directory directory="#path#" filter="metadata*.xml" name="qD" sort="dateLastModified DESC";
 	if(qD.recordcount NEQ 0){
 		metadataPath=path&qd.name[1];
