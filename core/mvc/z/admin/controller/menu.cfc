@@ -11,13 +11,15 @@
 			variables.queueSortStruct.tableName = "menu_button_link";
 			variables.queueSortStruct.sortFieldName = "menu_button_link_sort";
 			variables.queueSortStruct.primaryKeyName = "menu_button_link_id";
-			variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(form.site_id)#' and menu_button_id='"&application.zcore.functions.zescape(form.menu_button_id)&"' ";
+			variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(form.site_id)#' and 
+			menu_button_id='"&application.zcore.functions.zescape(form.menu_button_id)&"' ";
 			
 		}else if(structkeyexists(form, 'menu_id')){
 			variables.queueSortStruct.tableName = "menu_button";
 			variables.queueSortStruct.sortFieldName = "menu_button_sort";
 			variables.queueSortStruct.primaryKeyName = "menu_button_id";
-			variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(form.site_id)#' and menu_id='"&application.zcore.functions.zescape(form.menu_id)&"' ";
+			variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(form.site_id)#' and 
+			menu_id='"&application.zcore.functions.zescape(form.menu_id)&"' ";
 		}
 		// optional
 		variables.queueSortStruct.disableRedirect=true;
@@ -352,7 +354,10 @@
 			application.zcore.functions.zRedirect('/z/admin/menu/index?zsid=#request.zsid#');
 		}
 	}
- 
+	if(not structkeyexists(form, 'menu_button_type_id')){
+ 		form.menu_button_type_id=0;
+ 		form.menu_button_type_tid=0;
+ 	}
 	if(form.menu_button_type_id EQ 1){
 		form.menu_button_type_tid=application.zcore.functions.zso(form, 'menu_button_type_tid1');
 	}else if(form.menu_button_type_id EQ 3){
@@ -895,11 +900,14 @@
 				<td style="vertical-align:top; ">#qMenuItems.menu_button_text#</td>
 				<td style="vertical-align:top;">#application.zcore.functions.zLimitStringLength(qMenuItems.menu_button_link, 80)#</td>
 				<td style="vertical-align:top; white-space:nowrap;">
-				#variables.queueSortCom.getLinks(qMenuItems.recordcount, qMenuItems.currentrow, '/z/admin/menu/manageMenu?menu_id=#qMenuItems.menu_id#&menu_button_id=#qMenuItems.menu_button_id#', "vertical-arrows")# 
-				<a href="/z/admin/menu/editItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit</a> | 
-				<a href="/z/admin/menu/manageItemLinks?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit Links</a> | 
+					#variables.queueSortCom.getLinks(qMenuItems.recordcount, qMenuItems.currentrow, '/z/admin/menu/manageMenu?menu_id=#qMenuItems.menu_id#&menu_button_id=#qMenuItems.menu_button_id#', "vertical-arrows")# 
+					<a href="/z/admin/menu/editItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit</a> | 
+					<cfif qMenu.menu_disable_popup EQ 0>
+		
+						<a href="/z/admin/menu/manageItemLinks?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit Links</a> | 
+					</cfif>
 					<a href="/z/admin/menu/deleteItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Delete</a> 
-					</td>
+				</td>
 			</tr>
 			</cfloop>
 		</table>
@@ -1074,151 +1082,154 @@
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript></td>
 			</tr>
-			<tr>
-				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Child Link Type","member.menu.editItem menu_button_type_id")#</th>
-				<td><script type="text/javascript">
-					 /* <![CDATA[ */
-					 function setLinkType(v){
-						var d1= document.getElementById("btiContentDiv");
-						var d3= document.getElementById("btiBlogCategoryDiv");
-						var d4= document.getElementById("btiBlogTagDiv");
-						var d5= document.getElementById("btiCountDiv");
-						d1.style.display="none";
-						d3.style.display="none";
-						d4.style.display="none";
-						d5.style.display="block";
-						if(v==0){
-							// hide other types	
-							d5.style.display="none";
-						}else if(v==1){
-							// show content select box
-							d1.style.display="block";
-						}else if(v==3){
-							// show blog category select box
-							d3.style.display="block";
-						}else if(v==4){
-							// show blog tag select box
-							d4.style.display="block";
-						}
-					 }
-					 /* ]]> */
-					 </script>
-					<cfscript>
-					ts = StructNew();
-					ts.name="menu_button_type_id";
-					ts.hideselect=true;
-					ts.listValuesDelimiter="|";
-					ts.listValues ="0";
-					ts.listLabels ="Manual Links";
-					if(application.zcore.app.siteHasApp("content")){
-						ts.listValues &="|1";
-						ts.listLabels &="|Content Links";
-					}
-					if(application.zcore.app.siteHasApp("blog")){
-						ts.listValues &="|2|5|3|4";
-						ts.listLabels &="|Recent Blog Links|Popular Blog Links|Blog Category|Blog Tag";
-					}
-					ts.listLabelsDelimiter="|";
-					ts.onchange="setLinkType(this.value);";
-					ts.output=true;
-					application.zcore.functions.zInputSelectBox(ts);
-					</cfscript>
-					<br />
-					<br />
-					<div id="btiCountDiv"> #application.zcore.functions.zOutputHelpToolTip("Maximum number of links to show?","member.menu.editItem menu_button_type_count")#
+			<cfif qMenu.menu_disable_popup EQ 0>
+	
+				<tr>
+					<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Child Link Type","member.menu.editItem menu_button_type_id")#</th>
+					<td><script type="text/javascript">
+						 /* <![CDATA[ */
+						 function setLinkType(v){
+							var d1= document.getElementById("btiContentDiv");
+							var d3= document.getElementById("btiBlogCategoryDiv");
+							var d4= document.getElementById("btiBlogTagDiv");
+							var d5= document.getElementById("btiCountDiv");
+							d1.style.display="none";
+							d3.style.display="none";
+							d4.style.display="none";
+							d5.style.display="block";
+							if(v==0){
+								// hide other types	
+								d5.style.display="none";
+							}else if(v==1){
+								// show content select box
+								d1.style.display="block";
+							}else if(v==3){
+								// show blog category select box
+								d3.style.display="block";
+							}else if(v==4){
+								// show blog tag select box
+								d4.style.display="block";
+							}
+						 }
+						 /* ]]> */
+						 </script>
 						<cfscript>
-						if(form.menu_button_type_count EQ ""){
-							form.menu_button_type_count=10;
-						}
 						ts = StructNew();
-						ts.name="menu_button_type_count";
+						ts.name="menu_button_type_id";
 						ts.hideselect=true;
 						ts.listValuesDelimiter="|";
-						ts.listValues ="0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20";
+						ts.listValues ="0";
+						ts.listLabels ="Manual Links";
+						if(application.zcore.app.siteHasApp("content")){
+							ts.listValues &="|1";
+							ts.listLabels &="|Content Links";
+						}
+						if(application.zcore.app.siteHasApp("blog")){
+							ts.listValues &="|2|5|3|4";
+							ts.listLabels &="|Recent Blog Links|Popular Blog Links|Blog Category|Blog Tag";
+						}
+						ts.listLabelsDelimiter="|";
+						ts.onchange="setLinkType(this.value);";
 						ts.output=true;
 						application.zcore.functions.zInputSelectBox(ts);
 						</cfscript>
 						<br />
 						<br />
-					</div>
-					<cfscript>
-					if(application.zcore.app.siteHasApp("content")){
-						db.sql="SELECT content_id, content_name FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE site_id =#db.param(request.zos.globals.id)# and content_deleted = #db.param(0)# ORDER BY content_name ASC";
-						qC=db.execute("qC");
-					}
-					if(application.zcore.app.siteHasApp("blog")){
-						db.sql="SELECT blog_category_id, blog_category_name FROM #db.table("blog_category", request.zos.zcoreDatasource)# blog_category WHERE site_id =#db.param(request.zos.globals.id)# ORDER BY blog_category_name ASC";
-						qB=db.execute("qB");
-						db.sql="SELECT blog_tag_id, blog_tag_name FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag WHERE site_id =#db.param(request.zos.globals.id)# ORDER BY blog_tag_name ASC";
-						qB2=db.execute("qB2");
-					}
-					</cfscript>
-					<cfif application.zcore.app.siteHasApp("content")>
-						<div id="btiContentDiv">#application.zcore.functions.zOutputHelpToolTip("Select a content parent page","member.menu.editItem menu_button_type_tid1")#:
+						<div id="btiCountDiv"> #application.zcore.functions.zOutputHelpToolTip("Maximum number of links to show?","member.menu.editItem menu_button_type_count")#
 							<cfscript>
-							if(form.menu_button_type_id EQ 1){
-								form.menu_button_type_tid1=form.menu_button_type_tid;
+							if(form.menu_button_type_count EQ ""){
+								form.menu_button_type_count=10;
 							}
 							ts = StructNew();
-							ts.name="menu_button_type_tid1";
-							ts.query=qC;
-							ts.queryLabelField="content_name";
-							ts.queryValueField="content_id";
+							ts.name="menu_button_type_count";
+							ts.hideselect=true;
+							ts.listValuesDelimiter="|";
+							ts.listValues ="0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20";
 							ts.output=true;
 							application.zcore.functions.zInputSelectBox(ts);
 							</cfscript>
+							<br />
+							<br />
 						</div>
-					</cfif>
-					<cfif application.zcore.app.siteHasApp("blog")>
-						<!--- blog category --->
-						<div id="btiBlogCategoryDiv">#application.zcore.functions.zOutputHelpToolTip("Select a blog category parent page","member.menu.editItem menu_button_type_tid3")#:
-							<cfscript>
-							if(form.menu_button_type_id EQ 3){
-								form.menu_button_type_tid3=form.menu_button_type_tid;
-							}
-							ts = StructNew();
-							ts.name="menu_button_type_tid3";
-							ts.query=qB;
-							ts.queryLabelField="blog_category_name";
-							ts.queryValueField="blog_category_id";
-							ts.output=true;
-							application.zcore.functions.zInputSelectBox(ts);
-							</cfscript>
-						</div>
-						
-						<!--- blog tags --->
-						<div id="btiBlogTagDiv">#application.zcore.functions.zOutputHelpToolTip("Select a blog tag parent page","member.menu.editItem menu_button_type_tid4")#:
-							<cfscript>
-							if(form.menu_button_type_id EQ 4){
-								form.menu_button_type_tid4=form.menu_button_type_tid;
-							}
-							ts = StructNew();
-							ts.name="menu_button_type_tid4";
-							ts.query=qB2;
-							ts.queryLabelField="blog_tag_name";
-							ts.queryValueField="blog_tag_id";
-							ts.output=true;
-							application.zcore.functions.zInputSelectBox(ts);
-							</cfscript>
-						</div>
-					</cfif>
-					<script type="text/javascript">setLinkType(#application.zcore.functions.zso(form, 'menu_button_type_id',true)#);</script><br />
-					#application.zcore.functions.zOutputHelpToolTip("Sorting Method","member.menu.editItem menu_button_sorting")#:
-					<cfscript>
-					if(form.menu_button_type_id EQ 4){
-						form.menu_button_type_tid4=form.menu_button_type_tid;
-					}
-					ts = StructNew();
-					ts.name="menu_button_sorting";
-					ts.hideSelect=true;
-					ts.listLabels="Manual (default),Alphanumeric,Date Descending,Date Ascending";
-					ts.listValues="0,1,2,3";
-					ts.queryValueField="blog_tag_id";
-					ts.output=true;
-					application.zcore.functions.zInputSelectBox(ts);
-					</cfscript>
-					(Note: Some link types are presorted and this setting won't have an effect.) </td>
-			</tr>
+						<cfscript>
+						if(application.zcore.app.siteHasApp("content")){
+							db.sql="SELECT content_id, content_name FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE site_id =#db.param(request.zos.globals.id)# and content_deleted = #db.param(0)# ORDER BY content_name ASC";
+							qC=db.execute("qC");
+						}
+						if(application.zcore.app.siteHasApp("blog")){
+							db.sql="SELECT blog_category_id, blog_category_name FROM #db.table("blog_category", request.zos.zcoreDatasource)# blog_category WHERE site_id =#db.param(request.zos.globals.id)# ORDER BY blog_category_name ASC";
+							qB=db.execute("qB");
+							db.sql="SELECT blog_tag_id, blog_tag_name FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag WHERE site_id =#db.param(request.zos.globals.id)# ORDER BY blog_tag_name ASC";
+							qB2=db.execute("qB2");
+						}
+						</cfscript>
+						<cfif application.zcore.app.siteHasApp("content")>
+							<div id="btiContentDiv">#application.zcore.functions.zOutputHelpToolTip("Select a content parent page","member.menu.editItem menu_button_type_tid1")#:
+								<cfscript>
+								if(form.menu_button_type_id EQ 1){
+									form.menu_button_type_tid1=form.menu_button_type_tid;
+								}
+								ts = StructNew();
+								ts.name="menu_button_type_tid1";
+								ts.query=qC;
+								ts.queryLabelField="content_name";
+								ts.queryValueField="content_id";
+								ts.output=true;
+								application.zcore.functions.zInputSelectBox(ts);
+								</cfscript>
+							</div>
+						</cfif>
+						<cfif application.zcore.app.siteHasApp("blog")>
+							<!--- blog category --->
+							<div id="btiBlogCategoryDiv">#application.zcore.functions.zOutputHelpToolTip("Select a blog category parent page","member.menu.editItem menu_button_type_tid3")#:
+								<cfscript>
+								if(form.menu_button_type_id EQ 3){
+									form.menu_button_type_tid3=form.menu_button_type_tid;
+								}
+								ts = StructNew();
+								ts.name="menu_button_type_tid3";
+								ts.query=qB;
+								ts.queryLabelField="blog_category_name";
+								ts.queryValueField="blog_category_id";
+								ts.output=true;
+								application.zcore.functions.zInputSelectBox(ts);
+								</cfscript>
+							</div>
+							
+							<!--- blog tags --->
+							<div id="btiBlogTagDiv">#application.zcore.functions.zOutputHelpToolTip("Select a blog tag parent page","member.menu.editItem menu_button_type_tid4")#:
+								<cfscript>
+								if(form.menu_button_type_id EQ 4){
+									form.menu_button_type_tid4=form.menu_button_type_tid;
+								}
+								ts = StructNew();
+								ts.name="menu_button_type_tid4";
+								ts.query=qB2;
+								ts.queryLabelField="blog_tag_name";
+								ts.queryValueField="blog_tag_id";
+								ts.output=true;
+								application.zcore.functions.zInputSelectBox(ts);
+								</cfscript>
+							</div>
+						</cfif>
+						<script type="text/javascript">setLinkType(#application.zcore.functions.zso(form, 'menu_button_type_id',true)#);</script><br />
+						#application.zcore.functions.zOutputHelpToolTip("Sorting Method","member.menu.editItem menu_button_sorting")#:
+						<cfscript>
+						if(form.menu_button_type_id EQ 4){
+							form.menu_button_type_tid4=form.menu_button_type_tid;
+						}
+						ts = StructNew();
+						ts.name="menu_button_sorting";
+						ts.hideSelect=true;
+						ts.listLabels="Manual (default),Alphanumeric,Date Descending,Date Ascending";
+						ts.listValues="0,1,2,3";
+						ts.queryValueField="blog_tag_id";
+						ts.output=true;
+						application.zcore.functions.zInputSelectBox(ts);
+						</cfscript>
+						(Note: Some link types are presorted and this setting won't have an effect.) </td>
+				</tr>
+			</cfif>
 			<tr>
 				<th>&nbsp; </th>
 				<td><cfif currentMethod EQ 'editItem'>
@@ -1419,6 +1430,13 @@
 			</tr>
 			<tr>
 				<th colspan="2">Pop-up Options</th>
+			</tr>
+			<tr>
+				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Disable pop-ups?","member.menu.edit menu_disable_popup")#</th>
+				<td style="vertical-align:top; "><input type="radio" name="menu_disable_popup" value="1" <cfif form.menu_disable_popup EQ 1>checked="checked"</cfif> style="border:none; background:none;" />
+					Yes
+					<input type="radio" name="menu_disable_popup" value="0" <cfif form.menu_disable_popup EQ 0 or form.menu_disable_popup EQ ''>checked="checked"</cfif> style="border:none; background:none;" />
+					No </td>
 			</tr>
 			<tr>
 				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Popup Font","member.menu.edit menu_popup_font")#</th>
