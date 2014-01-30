@@ -1972,7 +1972,26 @@
 	<div style="width:35%; text-align:right; float:right;">
 		<cfif qsortcom.getorderby(false) NEQ ''><a href="/z/content/admin/content-admin/index">Clear Sorting</a> | </cfif> 
 	
-		<cfif session.showinactive EQ 1><a href="/z/content/admin/content-admin/index?showinactive=0">Hide Inactive</a><cfelse><a href="/z/content/admin/content-admin/index?showinactive=1">Show Inactive</a></cfif> | <a href="/z/content/admin/content-admin/add?content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#&return=1">Add Page Here</a> | <a href="##" onclick="zToggleDisplay('contentHelpDiv'); return false;"><strong>Need Help?</strong></a></div>
+		<cfif session.showinactive EQ 1><a href="/z/content/admin/content-admin/index?showinactive=0">Hide Inactive</a>
+		<cfelse>
+			<a href="/z/content/admin/content-admin/index?showinactive=1">Show Inactive</a>
+		</cfif> | 
+<cfif application.zcore.functions.zso(form, 'content_parent_id', true) EQ 0>
+	<cfscript>
+	db.sql="select content_id from #db.table("content", request.zos.zcoreDatasource)# 
+	WHERE content_unique_name = #db.param("/")# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	qHome=db.execute("qHome");
+	if(qHome.recordcount EQ 1){
+		echo('<a href="/z/content/admin/content-admin/edit?content_id=#qHome.content_id#&return=1">Edit Home Page</a>');
+	}
+	</cfscript>
+<cfelse>
+	<a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&return=1">Edit This Page</a>
+</cfif>
+		| <a href="/z/content/admin/content-admin/add?content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#&return=1">Add Page Here</a> | 
+
+		 <a href="##" onclick="zToggleDisplay('contentHelpDiv'); return false;"><strong>Need Help?</strong></a></div>
 		
 		<div id="contentHelpDiv" style="display:none; border:1px solid ##999999; width:950px; padding:10px;float:left;clear:both; margin:10px; margin-left:0px; margin-right:0px;">
 		<h2>Page Manager Help</h2>
