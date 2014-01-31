@@ -915,6 +915,10 @@
 				<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
 			</tr>
 			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("Force Small Label Width","member.site-option-group.edit site_option_small_width")#</th>
+				<td>#application.zcore.functions.zInput_Boolean("site_option_small_width")# (With yes selected, public forms will force the label column to be as small as possible.)</td>
+			</tr>
+			<tr>
 				<th style="vertical-align:top; white-space:nowrap;">Hide Label?</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_hide_label")#</td>
 			</tr>
@@ -2867,9 +2871,13 @@ Define this function in another CFC to override the default email format
 					}
 					writeoutput('>');
 					if(rs.label and row.site_option_hide_label EQ 0){
-						writeoutput('<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">'&application.zcore.functions.zOutputToolTip(row.site_option_display_name, row.site_option_tooltip)&'<a name="soid_#row.site_option_id#" id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
+						tdOutput="";
+						if(row.site_option_small_width EQ 1){
+							tdOutput=' width:1%; white-space:nowrap; ';
+						}
+						writeoutput('<th style="vertical-align:top;#tdOutput#"><div style="padding-bottom:0px;float:left;">'&application.zcore.functions.zOutputToolTip(row.site_option_display_name, row.site_option_tooltip)&'<a name="soid_#row.site_option_id#" id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
 						</div></th>
-					<td style="vertical-align:top;white-space: nowrap;"><input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
+						<td style="vertical-align:top;white-space: nowrap;"><input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
 					}else{
 						writeoutput('<td style="vertical-align:top; padding-top:5px;" colspan="2">');
 						if(rs.label){
