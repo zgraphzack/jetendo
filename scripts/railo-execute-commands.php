@@ -69,7 +69,7 @@ function verifySitePaths(){
 				if(zIsTestServer()){
 					chmod($sitePath, 0777);
 				}else{
-					chmod($sitePath, 0550);
+					chmod($sitePath, 0660);
 				}
 				chown($sitePath, get_cfg_var("jetendo_www_user"));
 				chgrp($sitePath, get_cfg_var("jetendo_www_user"));

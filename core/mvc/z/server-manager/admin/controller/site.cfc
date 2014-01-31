@@ -641,17 +641,15 @@
 		}
 	}
 	application.zcore.functions.zSecureCommand("verifySitePaths", 20);
-	if(structkeyexists(form, 'site_short_domain_previous') EQ false and (currentMethod EQ "insert" or qCheck.site_short_domain EQ "")){
-		application.zcore.functions.zcreatedirectory(sdomain2&'zupload');
-		application.zcore.functions.zcreatedirectory(sdomain2&'zcache');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/html');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/sentenceData');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/skins');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/templates');
-		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/emailTemplates');
-	}
+	application.zcore.functions.zcreatedirectory(sdomain2&'zupload');
+	application.zcore.functions.zcreatedirectory(sdomain2&'zcache');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/html');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/sentenceData');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/skins');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/templates');
+	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/emailTemplates');
 	if(structkeyexists(form, 'createUserBlogContent')){
 		 db.sql="INSERT INTO #db.table("app_x_site", request.zos.zcoreDatasource)#  (`app_id`,`site_id`,`app_x_site_status`) VALUES #db.trustedSQL("( '10','#form.site_id#','1')")#";
 		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
