@@ -64,12 +64,12 @@ function verifySitePaths(){
 				chgrp($sitePath, get_cfg_var("jetendo_www_user"));
 				$sitePath=zGetDomainWritableInstallPath($row["site_short_domain"]);
 				if($sitePath != "" && !is_dir($sitePath)){
-					mkdir($sitePath, 0660);
+					mkdir($sitePath, 0770);
 				}
 				if(zIsTestServer()){
 					chmod($sitePath, 0777);
 				}else{
-					chmod($sitePath, 0660);
+					chmod($sitePath, 0770);
 				}
 				chown($sitePath, get_cfg_var("jetendo_www_user"));
 				chgrp($sitePath, get_cfg_var("jetendo_www_user"));
