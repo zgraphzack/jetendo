@@ -529,17 +529,15 @@
 				form.site_system_user_modified=1;
 			}    
 		}*/
-		if(qCheck.site_short_domain_previous EQ "" and qCheck.site_short_domain NEQ form.site_short_domain){
+		if(qCheck.site_short_domain_previous EQ "" and qCheck.site_short_domain NEQ "" and form.site_short_domain NEQ "" and qCheck.site_short_domain NEQ form.site_short_domain){
 			if(directoryexists(sdomain)){
 				application.zcore.status.setStatus(Request.zsid, "The new domain already exists. Please rename or remove the existing folders before renaming this domain.",form,true);
 				application.zcore.status.setFieldError(Request.zsid, "site_short_domain");
-			}			
-			solddomain=application.zcore.functions.zGetDomainInstallPath(qCheck.site_short_domain);
-			application.zcore.functions.zRenameDirectory(solddomain, sdomain);
-			if(directoryexists(sdomain) EQ false){
-				// try to update it as root...
-				form.site_short_domain_previous=qCheck.site_short_domain;
-				form.site_system_user_modified=1;
+			}
+			result=application.zcore.functions.zSecureCommand("renameSite"&chr(9)&qCheck.site_short_domain&chr(9)&form.site_short_domain, 10);
+			if(result EQ 0){
+				application.zcore.status.setStatus(Request.zsid, "Failed to rename domain.  The system may have a lock on the files.  Try restarting the web server.",form,true);
+				application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?sid=#form.sid#&zsid=#request.zsid#");
 			}
 		}
 	}
@@ -641,15 +639,17 @@
 		}
 	}
 	application.zcore.functions.zSecureCommand("verifySitePaths", 20);
-	application.zcore.functions.zcreatedirectory(sdomain2&'zupload');
-	application.zcore.functions.zcreatedirectory(sdomain2&'zcache');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/html');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/sentenceData');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/skins');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/templates');
-	application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/emailTemplates');
+	if(currentMethod EQ "insert"){
+		application.zcore.functions.zcreatedirectory(sdomain2&'zupload');
+		application.zcore.functions.zcreatedirectory(sdomain2&'zcache');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/html');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/sentenceData');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/skins');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/templates');
+		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/emailTemplates');
+	}
 	if(structkeyexists(form, 'createUserBlogContent')){
 		 db.sql="INSERT INTO #db.table("app_x_site", request.zos.zcoreDatasource)#  (`app_id`,`site_id`,`app_x_site_status`) VALUES #db.trustedSQL("( '10','#form.site_id#','1')")#";
 		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 

@@ -179,11 +179,11 @@ function zCheckDirectoryPermissions($dir, $user, $group, $fileChmodWithNoZeroPre
 }
 function zGetDomainInstallPath($p){
 	$testDomain=get_cfg_var("jetendo_test_domain");
-	return get_cfg_var("jetendo_sites_path").str_replace(".", "_", str_replace("www.", "", str_replace(".".$testDomain, "", $p)))."/";
+	return get_cfg_var("jetendo_sites_path").str_replace(".", "_", str_replace("www.", "", str_replace(".".$testDomain, "", str_replace("/", "", str_replace("\\", "", $p)))))."/";
 }
 function zGetDomainWritableInstallPath($p){
 	$testDomain=get_cfg_var("jetendo_test_domain");
-	return get_cfg_var("jetendo_sites_writable_path").str_replace(".", "_", str_replace("www.", "", str_replace(".".$testDomain, "", $p)))."/";
+	return get_cfg_var("jetendo_sites_writable_path").str_replace(".", "_", str_replace("www.", "", str_replace(".".$testDomain, "", str_replace("/", "", str_replace("\\", "", $p)))))."/";
 }
 function zGenerateStrongPassword($minLength, $maxLength){
 	$d='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_=!@##$%^&*()[]{}|;:,.<>/?`~ \'"+-';

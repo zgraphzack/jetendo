@@ -27,6 +27,8 @@ function processContents($contents){
 		return getScryptCheck($a);
 	}else if($contents =="getScryptEncrypt"){
 		return getScryptEncrypt($a);
+	}else if($contents =="renameSite"){
+		return renameSite($a);
 	}else if($contents =="verifySitePaths"){
 		return verifySitePaths();
 	}else if($contents =="installThemeToSite"){
@@ -34,6 +36,55 @@ function processContents($contents){
 	}
 	return "";
 }
+function renameSite($a){
+	if(count($a) != 2){
+		echo "2 arguments are required: siteShortDomainSource and siteShortDomainDestination.\n";
+		return "0";
+	}
+	if($a[0] == ""){
+		echo "The siteShortDomainSource is a required argument.\n";
+		return "0";
+	}
+	if($a[1] == ""){
+		echo "The siteShortDomainDestination is a required argument.\n";
+		return "0";
+	}
+	$siteShortDomainSource=zGetDomainInstallPath($a[0]);
+	$siteShortDomainDestination=zGetDomainInstallPath($a[1]);
+
+	if($siteShortDomainSource == "" || !is_dir($siteShortDomainSource)){
+		echo "The site absolute directory doesn't exist: ".$siteShortDomainSource."\n";
+		return "0";
+	}
+	$found=false;
+	if(substr($siteShortDomainSource, 0, strlen($p)) == $p){
+		$found=true;
+	}
+	if(!$found){
+		echo "An attempt to break out of the sites directory was detected: ".$siteShortDomainSource."\n";
+		return "0";
+	}
+
+
+	$siteWritableShortDomainSource=zGetDomainWritableInstallPath($a[0]);
+	$siteWritableShortDomainDestination=zGetDomainWritableInstallPath($a[1]);
+	if($siteShortDomainSource == "" || !is_dir($siteWritableShortDomainSource)){
+		echo "The sites-writable absolute directory doesn't exist: ".$siteWritableShortDomainSource."\n";
+		return "0";
+	}
+	$found=false;
+	if(substr($siteWritableShortDomainSource, 0, strlen($p)) == $p){
+		$found=true;
+	}
+	if(!$found){
+		echo "An attempt to break out of the sites directory was detected: ".$siteWritableShortDomainSource."\n";
+		return "0";
+	}
+	system("/bin/mv -f ".escapeshellarg($siteShortDomainSource)." ".escapeshellarg($siteShortDomainDestination));
+	system("/bin/mv -f ".escapeshellarg($siteWritableShortDomainSource)." ".escapeshellarg($siteWritableShortDomainDestination));
+	return "1";
+}
+
 function verifySitePaths(){
 	// forces site root directories to exist with correct permissions
 	$fail=false;
