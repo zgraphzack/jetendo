@@ -55,6 +55,176 @@ zMenu#variables.qView.menu_id#Vertical=true;/* ]]> */</script>');
 	</cfscript>
 </cffunction>
 
+
+
+<cffunction name="publishMenu" localmode="modern" output="no" returntype="any">
+	<cfargument name="menu_id" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
+    <cfscript>
+	var local=structnew();
+	var qview2=0;
+	var ts=structnew();
+	var theCSS=0;
+	var db=request.zos.queryObject;
+	var qView=0;
+	</cfscript>
+<cfsavecontent variable="theCSS">
+	<cfscript>
+	db.sql="SELECT *, menu.site_id FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
+	WHERE menu.menu_id = #db.param(arguments.menu_id)# AND 
+	menu.site_id = #db.param(arguments.site_id)#";
+	qView=db.execute("qView");
+	</cfscript> 
+
+<cfif qView.recordcount NEQ 0>
+.zMenuClear {clear: both;height: 0px;line-height: 0.0px; font-size:0px;}
+
+##zMenuDiv#qView.menu_id#, ##zMenuDiv#qView.menu_id# ul {
+	padding: 0px;
+	margin: 0px;
+	list-style: none;
+}
+##zMenuDiv#qView.menu_id# a {
+	display: block;
+	text-decoration: none;
+	padding: #qView.menu_padding_height#px <cfif qView.menu_enable_responsive EQ 1>0px<cfelse>#qView.menu_padding_width#px</cfif> 
+	#qView.menu_padding_height#px <cfif qView.menu_enable_responsive EQ 1>0px<cfelse>#qView.menu_padding_width#px</cfif>;
+	color: ###qview.menu_font_color#;
+}
+##zMenuDiv#qView.menu_id# a.trigger {
+	border-left: 1px solid ###qview.menu_divider_color#;
+	padding: #qView.menu_padding_height#px <cfif qView.menu_enable_responsive EQ 1>0px<cfelse>#qView.menu_padding_width#px</cfif> 
+	#qView.menu_padding_height#px <cfif qView.menu_enable_responsive EQ 1>0px<cfelse>#qView.menu_padding_width#px</cfif>;
+    <cfif qView.menu_bold EQ 1>font-weight:bold;</cfif>
+    font-family: #qView.menu_font#;
+    font-size:#qView.menu_button_font_size#px !important;
+    background:none;
+}
+##zMenuDiv#qView.menu_id# a.imagetrigger {
+	padding:0px;
+} 
+##zMenuDiv#qView.menu_id# li ul li  { 
+	width:100%;
+	<cfif qView.menu_popup_background_image NEQ "">
+	background-image: url(/zupload/menu/#qView.menu_id#/#qView.menu_popup_background_image#);
+    <cfelse>
+    background:none;
+    background-color: ###qView.menu_popup_background_color#;
+    </cfif>
+    opacity: #qView.menu_popup_opacity/100#; 
+  filter: alpha(opacity = #qView.menu_popup_opacity#);
+  
+  border-bottom:1px solid ###qView.menu_popup_divider_color#;
+
+    color:###qView.menu_popup_font_color# !important;
+}
+##zMenuDiv#qView.menu_id# li li{
+	float: left;
+	width:100%;
+	clear:both;
+}
+##zMenuDiv#qView.menu_id# li{
+	float: left;
+}
+##zMenuDiv#qView.menu_id# ul li a  {
+	background:none;
+	color: ###qView.menu_popup_font_color# !important;
+	border-right: 0;
+    font-size:#qView.menu_popup_font_size#px !important;
+    font-family: #qView.menu_popup_font#;
+    <cfif qView.menu_popup_bold EQ 1>font-weight:bold;</cfif>
+	padding: #qView.menu_popup_padding_height#px #qView.menu_popup_padding_width#px #qView.menu_popup_padding_height#px #qView.menu_popup_padding_width#px;
+}
+##zMenuDiv#qView.menu_id# li ul {
+	position: absolute;
+	display: none;
+	z-index:2000;
+    opacity: #qView.menu_popup_opacity/100#;
+  filter: alpha(opacity = #qView.menu_popup_opacity#);
+	background-color: ###qView.menu_popup_background_color#;
+	border-right: 1px solid ###qView.menu_popup_font_color#;
+	border-bottom: 1px solid ###qView.menu_popup_font_color#;
+}
+##zMenuDiv#qView.menu_id# li {position: relative;}
+
+/* hide from IE mac \*/
+##zMenuDiv#qView.menu_id# li {position: static; width: auto;}
+/* end hiding from IE5 mac */
+
+
+##zMenuDiv#qView.menu_id# li:hover ul, ##zMenuDiv#qView.menu_id# li.zMenuHvr ul {
+	display: block;
+}
+<!--- button links rollover --->
+##zMenuDiv#qView.menu_id# li:hover a, ##zMenuDiv#qView.menu_id# a:focus,
+##zMenuDiv#qView.menu_id# a:active, ##zMenuDiv#qView.menu_id# li.zMenuHvr a {
+	color: ###qView.menu_font_over_color#;
+	<cfif qView.menu_background_over_image NEQ ""> background-image:url(/zupload/menu/#qView.menu_id#/#qView.menu_background_over_image#); 
+	background-position:top; </cfif>
+    background-color: ###qView.menu_background_over_color#;
+}
+##zMenuDiv#qView.menu_id# li:hover ul a, ##zMenuDiv#qView.menu_id# li.zMenuHvr ul a {
+	color: ###qView.menu_font_over_color#;
+	background:none;
+}
+##zMenuDiv#qView.menu_id# ul a:hover {
+	<cfif qView.menu_popup_background_over_image NEQ ""> 
+		background-image:url(/zupload/menu/#qView.menu_id#/#qView.menu_popup_background_over_image#) !important; background-position:top; 
+	<cfelse>
+	    background:none;
+		background-color: ###qView.menu_popup_background_over_color# !important;
+    </cfif>
+	color: ###qView.menu_popup_font_over_color# !important;
+
+}
+##zMenuDiv#qView.menu_id#{ float:left;
+<cfif qView.menu_font_color NEQ "">color:###qView.menu_font_color#;<cfelse>color:##FFFFFF;</cfif>
+background-color:###qView.menu_background_color#;
+<cfif qView.menu_background_image NEQ "">background-image:url(/zupload/menu/#qview.menu_id#/#qview.menu_background_image#);
+background-position:top; </cfif>
+<cfif qView.menu_size_limit NEQ 0>width:#qView.menu_size_limit#px;</cfif> 
+} 
+##zMenuDiv#qView.menu_id# li li {font-size:#qView.menu_popup_font_size#px;} 
+##zMenuDiv#qView.menu_id# li {font-size:#qView.menu_button_font_size#px;}
+<cfif qView.menu_vertical EQ '1'>
+##zMenuDiv#qView.menu_id# a.trigger {<cfif qView.menu_vertical EQ 1 and qView.menu_size_limit NEQ 0>width:#qView.menu_size_limit#px;</cfif> }
+</cfif>
+##zMenuDiv#qView.menu_id# a.trigger-selected {
+	background-color:###qView.menu_selected_background_color# !important;
+	<cfif qView.menu_selected_background_image NEQ ""> 
+		background-image:url(/zupload/menu/#qView.menu_id#/#qView.menu_selected_background_image#) !important; background-position:top;
+	</cfif> 
+	color:###qView.menu_selected_font_color# !important;
+}
+.zMenuAppendTitle{ font-size:11px; }
+<cfsavecontent variable="db.sql">
+	SELECT * FROM (#db.table("menu", request.zos.zcoreDatasource)# menu, 
+	#db.table("menu_button", request.zos.zcoreDatasource)# menu_button) 
+	WHERE menu.menu_id = menu_button.menu_id and 
+	menu.menu_id = #db.param(arguments.menu_id)# AND 
+	menu.site_id = #db.param(arguments.site_id)# and 
+	menu.site_id = menu_button.site_id 
+    ORDER BY menu_button_sort
+</cfsavecontent><cfscript>qView2=db.execute("qView2");</cfscript> 
+<cfloop query="qView2">
+<cfif qView2.menu_button_url NEQ "">
+##zMenu#qView2.menu_id#_#qView2.menu_button_id#, ##zMenu#qView2.menu_id#_#qView2.menu_button_id#:link, ##zMenu#qView2.menu_id#_#qView2.menu_button_id#:visited{ cursor:pointer; background-repeat:no-repeat;  background-image:url(/zupload/menu/#qView2.menu_id#/#qView2.menu_button_url#) !important;} 
+##zMenu#qView2.menu_id#_#qView2.menu_button_id#:hover, ##zMenu#qView2.menu_id#_#qView2.menu_button_id#_preload{background-image:url(/zupload/menu/#qView2.menu_id#/#qView2.menu_button_over_url#) !important;}
+##zMenu#qView2.menu_id#_#qView2.menu_button_id#{ padding:0px !important; }
+##zMenu#qView2.menu_id#_#qView2.menu_button_id#Div{ width:#qView2.menu_button_width#px; height:#qView2.menu_button_height#px;clear:both; }
+</cfif></cfloop>
+</cfif>
+</cfsavecontent>
+<cfscript>
+ts=structnew();
+ts.uniquePhrase="zMenu#arguments.menu_id#";
+ts.code=theCSS;
+ts.site_id=arguments.site_id;
+application.zcore.functions.zPublishCss(ts);
+</cfscript>
+	
+</cffunction>
+
 <cffunction name="getMenuLinkArray" localmode="modern" returntype="array" access="public">
 	<cfscript>
 	rs={

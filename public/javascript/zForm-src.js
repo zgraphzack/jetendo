@@ -2966,7 +2966,14 @@ function zMenuInit(){ // modified version of v1.1.0.2 by PVII-www.projectseven.c
 	//return;
 	var i,k,g,lg,r=/\s*zMenuHvr/,nn='',c,bv='zMenuDiv';
 	 lg=document.getElementsByTagName("LI"); 
-	 $(".zMenuWrapper").show();
+	 $wrapper=$(".zMenuWrapper").show();
+
+	var arrButtons=$(".trigger", $wrapper);
+	arrButtons.each(function(){
+		if(this.href==window.location.href){
+			$(this).addClass("trigger-selected");
+		}
+	});
 	 $(".zMenuWrapper").each(function(){ 
 		 if(this.className.indexOf('zMenuEqualDiv') === -1){
 			 return; 

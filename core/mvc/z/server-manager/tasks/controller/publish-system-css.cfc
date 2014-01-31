@@ -12,8 +12,9 @@
 	site.site_id = menu.site_id and 
 	site.site_active=#db.param(1)#";
 	local.q=db.execute("q");
+	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
 	for(local.row in local.q){
-		application.zcore.functions.zPublishMenu(local.row.menu_id, local.row.site_id);
+		menuFunctionsCom.publishMenu(local.row.menu_id, local.row.site_id);
 	}
 	
 	db.sql="UPDATE #db.table("slideshow", request.zos.zcoreDatasource)# slideshow

@@ -232,7 +232,8 @@
 		if(directoryexists(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/menu/#form.menu_id#')){
 			application.zcore.functions.zCopyDirectory(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/menu/#form.menu_id#', application.zcore.functions.zvar('privatehomedir',form.newsiteid)&'zupload/menu/#newmenuid#');
 		}
-		application.zcore.functions.zPublishMenu(newmenuid, form.newsiteid);
+		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom.publishMenu(newmenuid, form.newsiteid);
 		application.zcore.status.setStatus(request.zsid, "Menu copied");
 		application.zcore.functions.zRedirect("/z/admin/menu/index?zsid=#request.zsid#");
 		</cfscript>
@@ -299,7 +300,8 @@
 			application.zcore.functions.zRedirect('/z/admin/menu/editItemLink?zsid=#request.zsid#&menu_button_id=#form.menu_button_id#');
 		}
 	}
-	application.zcore.functions.zPublishMenu(form.menu_id);
+	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuFunctionsCom.publishMenu(form.menu_id);
 	application.zcore.functions.zMenuClearCache({all=true});
 
 	if(form.method EQ 'insertItemLink'){
@@ -468,7 +470,8 @@
 	}
 	variables.queueSortCom.sortAll();
 	
-	application.zcore.functions.zPublishMenu(form.menu_id);
+	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuFunctionsCom.publishMenu(form.menu_id);
 	application.zcore.functions.zMenuClearCache({all=true});
 	
 	if(form.method EQ 'insertItem'){
@@ -613,6 +616,24 @@
 		StructDelete(form,'menu_background_over_image');
 		StructDelete(variables,'menu_background_over_image');
 	}
+
+
+	arrList=ArrayNew(1);
+	if(form.method EQ 'insert'){
+		arrList = application.zcore.functions.zUploadResizedImagesToDb("menu_selected_background_image", request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', "#max(request.zos.globals.maximagewidth, form.menu_size_limit)#x500","","","",request.zos.zcoreDatasource);
+	}else{
+		arrList = application.zcore.functions.zUploadResizedImagesToDb("menu_selected_background_image", request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', "#max(request.zos.globals.maximagewidth, form.menu_size_limit)#x500", 'menu', 'menu_id', "menu_selected_background_image_delete",request.zos.zcoreDatasource);
+	}
+	if(isarray(arrList) EQ false){
+		application.zcore.status.setStatus(request.zsid, '<strong>PHOTO ERROR:</strong> invalid background over image format or corrupted file.  Please upload a small to medium size JPEG (i.e. a file that ends with ".jpg").');	
+		StructDelete(form,'menu_selected_background_image');
+		StructDelete(variables,'menu_selected_background_image');
+	}else if(ArrayLen(arrList) NEQ 0){
+		form.menu_selected_background_image=arrList[1];
+	}else{
+		StructDelete(form,'menu_selected_background_image');
+		StructDelete(variables,'menu_selected_background_image');
+	}
 	
 	
 	ts=StructNew();
@@ -624,7 +645,8 @@
 		application.zcore.functions.zRedirect('/z/admin/menu/edit?zsid=#request.zsid#&menu_id=#form.menu_id#');
 	}
 	
-	application.zcore.functions.zPublishMenu(form.menu_id);
+	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuFunctionsCom.publishMenu(form.menu_id);
 	application.zcore.functions.zMenuClearCache({all=true});
 	if(form.method EQ 'insert'){
 		application.zcore.status.setStatus(request.zsid, "Menu added.");
@@ -661,7 +683,8 @@
 		qMenuItemLinkDel=db.execute("qMenuItemLinkDel");
 		application.zcore.status.setStatus(request.zsid, 'Button deleted.');
 		variables.queueSortCom.sortAll();
-		application.zcore.functions.zPublishMenu(form.menu_id);
+		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom.publishMenu(form.menu_id);
 		application.zcore.functions.zMenuClearCache({all=true});
 		application.zcore.functions.zRedirect('/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&menu_button_id=#form.menu_button_id#&zsid=#request.zsid#');
 		</cfscript>
@@ -718,7 +741,8 @@
 			application.zcore.functions.zDeleteFile(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/' & qCheck.menu_button_over_url);
 		}
 		variables.queueSortCom.sortAll();
-		application.zcore.functions.zPublishMenu(form.menu_id);
+		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom.publishMenu(form.menu_id);
 		application.zcore.functions.zMenuClearCache({all=true});
 		application.zcore.status.setStatus(request.zsid, 'Menu button deleted.');
 		application.zcore.functions.zRedirect('/z/admin/menu/manageMenu?menu_id=#form.menu_id#&zsid=#request.zsid#');
@@ -777,7 +801,8 @@
 		if (DirectoryExists(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/')) {
 			application.zcore.functions.zdeletedirectory(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/');
 		}
-		application.zcore.functions.zPublishMenu(form.menu_id);
+		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom.publishMenu(form.menu_id);
 		application.zcore.functions.zMenuClearCache({all=true});
 		application.zcore.status.setStatus(request.zsid, 'Menu deleted.');
 		application.zcore.functions.zRedirect('/z/admin/menu/index?zsid=#request.zsid#');
@@ -1364,7 +1389,7 @@
 					ts = structNew();
 					ts.name = "menu_padding_height";
 					ts.hideSelect=true;
-					ts.listValues = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30";
+					ts.listValues = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30";
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript></td>
 			</tr>
@@ -1377,7 +1402,7 @@
 					ts = structNew();
 					ts.name = "menu_padding_width";
 					ts.hideSelect=true;
-					ts.listValues = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30";
+					ts.listValues = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30";
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript></td>
 			</tr>
@@ -1427,6 +1452,20 @@
 					<br />
 					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_background_over_image")#:<br />
 					#application.zcore.functions.zInputImage('menu_background_over_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
+			</tr>
+			<tr>
+				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Selected Font Color","member.menu.edit menu_selected_font_color")#</th>
+				<td>##
+					<input class="zColorInput" type="text" name="menu_selected_font_color" value="<cfif form.menu_selected_font_color EQ "">000000<cfelse>#HTMLEditFormat(form.menu_selected_font_color)#</cfif>" style="width:10%;">
+					* Required </td>
+			</tr>
+			<tr>
+				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Selected Background","member.menu.edit menu_selected_background_over_color")#</th>
+				<td>#application.zcore.functions.zOutputHelpToolTip("Color","member.menu.edit menu_selected_background_color")#: ##
+					<input class="zColorInput" type="text" name="menu_selected_background_color" value="<cfif form.menu_selected_background_color EQ "">FFFFFF<cfelse>#HTMLEditFormat(form.menu_selected_background_color)#</cfif>" style="width:10%;">
+					<br />
+					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_selected_background_image")#:<br />
+					#application.zcore.functions.zInputImage('menu_selected_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
 			</tr>
 			<tr>
 				<th colspan="2">Pop-up Options</th>
