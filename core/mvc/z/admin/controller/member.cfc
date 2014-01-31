@@ -570,7 +570,11 @@
 			</tr>
 			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") and (session.zos.user.id NEQ form.user_id or session.zos.user.site_id NEQ request.zos.globals.id)>
 				<cfscript>
-				db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group WHERE site_id = #db.param(request.zos.globals.id)# ORDER BY user_group_name ASC";
+				db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group WHERE site_id = #db.param(request.zos.globals.id)#";
+				if(not application.zcore.app.siteHasApp("listing")){ 
+					db.sql&=" and user_group_name NOT IN (#db.param('broker')#, #db.param('agent')#)";
+				}
+				db.sql&=" ORDER BY user_group_name ASC";
 				qUserGroups=db.execute("qUserGroups");
 				</cfscript>
 				<tr>
