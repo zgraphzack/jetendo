@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput> 
-<cffunction name="calculateEventLength" output="no" returntype="struct">
+<cffunction name="calculateEventLength" output="no" localmode="modern" returntype="struct">
 	<cfargument name="startDate" type="date" required="yes">
 	<cfargument name="endDate" type="date" required="yes">
 	<cfargument name="newDate" type="date" required="yes">

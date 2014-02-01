@@ -147,11 +147,11 @@
 	</cftry>
 	<cfreturn />
 </cffunction>
-<cffunction name="_zTempEscape" returntype="any" output="false">
+<cffunction name="_zTempEscape" localmode="modern" returntype="any" output="false">
 	<cfargument name="string" type="string" required="yes">
 	<cfreturn replace(replace(arguments.string, "\", "\\", "ALL"), "'", "''", "ALL")>
 </cffunction>
-<cffunction name="_zTempErrorHandlerDump" output="true" returntype="any">
+<cffunction name="_zTempErrorHandlerDump" localmode="modern" output="true" returntype="any">
 	<cfargument name="varName" type="any" required="yes">
 	<cfargument name="label" type="string" required="no" default="">
 	<cfargument name="nodumpcode" type="boolean" required="no" default="#false#">
@@ -162,7 +162,7 @@
     </cftry>
 </cffunction>
 
-<cffunction name="_handleError">
+<cffunction name="_handleError" localmode="modern">
 	<cfargument name="cferror" type="struct" required="yes">
 	 <cfscript>
 	var percentAllocated=0;

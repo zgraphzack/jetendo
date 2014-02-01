@@ -1,27 +1,40 @@
 <cfcomponent>
-<cfscript>
-
-function initSession(k){
+<cffunction name="initSession" localmode="modern">
+	<cfargument name="k" type="string" required="yes">
+	<cfscript>
 	// var c= grab from kv store(k);
 	// loop the groups and set the struct or array:
 	// set the group struct
 	sessionGroups["member"]=true;
 	sessionGroups["user"]=true;
-}
-function setKvStoreValue(k, v){
-	kvStore[k]=v;
-}
-function getKvStoreValue(k){
+	</cfscript>
+</cffunction>
+
+<cffunction name="initSession" localmode="modern">
+	<cfargument name="k" type="string" required="yes">
+	<cfargument name="v" type="any" required="yes">
+	<cfscript>
+	kvStore[arguments.k]=arguments.v;
+	</cfscript>
+</cffunction>
+
+<cffunction name="getKvStoreValue" localmode="modern">
+	<cfargument name="k" type="string" required="yes">
+	<cfscript>
 	if(structkeyexists(kvStore, k)){
 		return kvStore[k];
 	}else{
 		return "";
 	}
-}
-function getAllKvStoreValues(){
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getAllKvStoreValues" localmode="modern">
+	<cfscript>
 	return kvStore;	
-}
-</cfscript>
+	</cfscript>
+</cffunction>
+	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	disabled until i work on it again.<cfscript>application.zcore.functions.zabort();application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);</cfscript><script type="text/javascript">
 var zSkinApp={};
