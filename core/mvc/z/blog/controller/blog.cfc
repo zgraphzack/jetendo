@@ -270,11 +270,10 @@ this.app_id=10;
 	var pingData3='';
 	request.znotemplate=1;
 	
-	if(structkeyexists(form,'forceping')){
-		if(not request.zos.isDeveloper and not request.zos.isServer){
+	if(not request.zos.isDeveloper and not request.zos.isServer){
 			application.zcore.functions.z404("Force ping can only be run by developers and the server itself.");
-		}
 	}
+	writeoutput('Remote ping doesn''t actually execute on test server<br />');
 	// The key numbers are hardcoded unique ids for each ping server url  Don't re-number the keys when adding/deleting from pingStruct.
 	//pingStruct[1]="http://api.moreover.com/ping";
 	pingStruct[2]="http://blogsearch.google.com/ping/RPC2";
@@ -303,14 +302,14 @@ this.app_id=10;
 	</cfif>
 	<cfloop query="qR">
 		<cfscript>
-		arrPingResult=listtoarray(blog_ping_result,',');
+		arrPingResult=listtoarray(qR.blog_ping_result,',');
 		for(i2=1;i2 LTE arraylen(arrPingResult);i2++){
 			if(structkeyexists(pingStruct,arrPingResult[i2])){
 				pingDoneStruct[arrPingResult[i2]]=1;
 			}
 		}
-		if(blog_unique_name NEQ ""){
-			pageURL=request.zos.globals.domain&blog_unique_name;
+		if(qR.blog_unique_name NEQ ""){
+			pageURL=request.zos.globals.domain&qR.blog_unique_name;
 		}else{
 			pageURL=request.zOS.globals.domain&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,form.blog_id,"html",qR.blog_title,qR.blog_datetime);
 		}
@@ -330,9 +329,9 @@ this.app_id=10;
 		<!--- URL of site or RSS feed (string, limited to 255 characters)  --->
 		<cfscript>
 		if(application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url EQ "{default}"){
-		link=request.zOS.globals.domain&'/#application.zcore.functions.zurlencode(application.zcore.app.getAppData("blog").optionStruct.blog_config_title,"-")#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-3.html';
+			link=request.zOS.globals.domain&'/#application.zcore.functions.zurlencode(application.zcore.app.getAppData("blog").optionStruct.blog_config_title,"-")#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-3.html';
 		}else{
-		link=request.zOS.globals.domain&application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url;
+			link=request.zOS.globals.domain&application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url;
 		}
 		</cfscript>
 		<value>#xmlformat(link)#</value>
