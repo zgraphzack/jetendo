@@ -106,57 +106,88 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	</cffunction>
 	
 	
-	<cffunction name="runQuery" localmode="modern" access="private" returntype="any" output="no">
-		<cfargument name="configStruct" type="struct" required="yes">
-		<cfargument name="name" type="variablename" required="yes" hint="A variable name for the query result.  Helps to identify query when debugging.">
-		<cfargument name="sql" type="string" required="yes">
-		<cfscript>
-		var running=true;
-		var queryStruct={
-			lazy=arguments.configStruct.lazy,
-			datasource=arguments.configStruct.datasource	
-		};
-		var cfquery=0;
-		var cfcatch=0;
-		var db=structnew();
-		var startIndex=1;
-		var tempSQL=0;
-		var paramCount=arraylen(arguments.configStruct.arrParam);
-		var questionMarkPosition=0;
-		var paramIndex=1;
-		var paramDump=0;
-		if(arguments.configStruct.dbtype NEQ "" and arguments.configStruct.dbtype NEQ "datasource"){
-			queryStruct.dbtype=arguments.configStruct.dbtype;	
-			structdelete(queryStruct, 'datasource');
-		}else if(isBoolean(queryStruct.datasource)){
-			throw("dbQuery.init({datasource:datasource}) must be set before running dbQuery.execute() by either using dbQuery.table() or db.datasource=""myDatasource"";", "database");
-		} 
-		if((left(arguments.sql, 20)) DOES NOT CONTAIN "select "){
-			queryStruct.lazy=false;
-		} 
-		queryStruct.name="db."&arguments.name;
-		</cfscript>
-		<cfif paramCount>
-			<cfquery attributeCollection="#queryStruct#"><cfloop condition="#running#"><cfscript>
-				questionMarkPosition=find("?", arguments.sql, startIndex);
-				</cfscript><cfif questionMarkPosition EQ 0><cfscript>
-		if(paramCount and paramIndex-1 GT paramCount){
-			throw("dbQuery.execute() failed: There were more question marks then parameters in the current sql statement.  You must use dbQuery.param() to specify parameters.  A literal question mark is not allowed.<br /><br />SQL Statement:<br />"&arguments.sql, "database");
-		}
-		running=false;
-		</cfscript><cfelse><cfset tempSQL=mid(arguments.sql, startIndex, questionMarkPosition-startIndex)>#preserveSingleQuotes(tempSQL)#<cfif isnull(arguments.configStruct.arrParam[paramIndex].value)><cfset arguments.configStruct.arrParam[paramIndex].null=true></cfif><cfqueryparam attributeCollection="#arguments.configStruct.arrParam[paramIndex]#"><cfscript>
-		startIndex=questionMarkPosition+1;
-		paramIndex++;
-		</cfscript></cfif></cfloop><cfscript>
+<cffunction name="runQuery" localmode="modern" access="private" returntype="any" output="no">
+	<cfargument name="configStruct" type="struct" required="yes">
+	<cfargument name="name" type="variablename" required="yes" hint="A variable name for the query result.  Helps to identify query when debugging.">
+	<cfargument name="sql" type="string" required="yes">
+	<cfscript>
+	var running=true;
+	var queryStruct={
+		lazy=arguments.configStruct.lazy,
+		datasource=arguments.configStruct.datasource	
+	};
+	var cfquery=0;
+	var cfcatch=0;
+	var db=structnew();
+	var startIndex=1;
+	var tempSQL=0;
+	var paramCount=arraylen(arguments.configStruct.arrParam);
+	var questionMarkPosition=0;
+	var paramIndex=1;
+	var paramDump=0;
+	if(arguments.configStruct.dbtype NEQ "" and arguments.configStruct.dbtype NEQ "datasource"){
+		queryStruct.dbtype=arguments.configStruct.dbtype;	
+		structdelete(queryStruct, 'datasource');
+	}else if(isBoolean(queryStruct.datasource)){
+		throw("dbQuery.init({datasource:datasource}) must be set before running dbQuery.execute() by either using dbQuery.table() or db.datasource=""myDatasource"";", "database");
+	} 
+	if((left(arguments.sql, 20)) DOES NOT CONTAIN "select "){
+		queryStruct.lazy=false;
+	} 
+	queryStruct.name="db."&arguments.name;
+	retryCount=0;
+	retryLimit=3;
+	retrySleep=500;
+	enableRetry=false;
+	try{
+		if(paramCount){
+			query attributeCollection="#queryStruct#"{
+				while(running){
+					questionMarkPosition=find("?", arguments.sql, startIndex);
+					if(questionMarkPosition EQ 0){
+						if(paramCount and paramIndex-1 GT paramCount){
+							throw("dbQuery.execute() failed: There were more question marks then parameters in the current sql statement.  You must use dbQuery.param() to specify parameters.  A literal question mark is not allowed.<br /><br />SQL Statement:<br />"&arguments.sql, "database");
+						}
+						running=false;
+					}else{
+						tempSQL=mid(arguments.sql, startIndex, questionMarkPosition-startIndex);
+						echo(preserveSingleQuotes(tempSQL));
+						if(isnull(arguments.configStruct.arrParam[paramIndex].value)){
+							arguments.configStruct.arrParam[paramIndex].null=true;
+						}
+						queryparam attributeCollection="#arguments.configStruct.arrParam[paramIndex]#";
+						startIndex=questionMarkPosition+1;
+						paramIndex++;
+					}
+				}
 				if(paramCount GT paramIndex-1){ 
 					variables.throwErrorForTooManyParameters(arguments.configStruct);
 				}
-		tempSQL=mid(arguments.sql, startIndex, len(arguments.sql)-(startIndex-1));
-		</cfscript>#preserveSingleQuotes(tempSQL)#</cfquery>
-		<cfelse>
-			<cfquery attributeCollection="#queryStruct#">#preserveSingleQuotes(arguments.sql)#</cfquery>
-		</cfif>
-		<cfscript>
+				tempSQL=mid(arguments.sql, startIndex, len(arguments.sql)-(startIndex-1));
+				echo(preserveSingleQuotes(tempSQL));
+			}
+		}else{
+			query attributeCollection="#queryStruct#"{
+				echo(preserveSingleQuotes(arguments.sql));
+			}
+		}
+	}catch(Any e){
+		if(retryCount EQ retryLimit){
+			rethrow;
+		}
+		if(e.message CONTAINS "Communications link failure"){
+			enableRetry=true;
+			application.zcore.databaseRestarted=true; 
+		}else if(e.message CONTAINS "Deadlock found when trying to get lock"){
+			enableRetry=true;
+		}
+		if(enableRetry){
+			retryCount++;
+			sleep(retrySleep);
+			retrySleep*=2;
+			retry;
+		}
+	}
 	request.zos.lastDBResult=cfquery;
 	if(structkeyexists(db, arguments.name)){
 		return db[arguments.name];
