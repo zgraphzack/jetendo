@@ -10,6 +10,7 @@
 	<cfargument name="tagStruct" type="struct" required="yes">
 	<cfscript>
 	var tagStruct=arguments.tagStruct;
+	db=request.zos.queryObject;
 	</cfscript>
 	<cfsavecontent variable="output">
 	<cfscript>
@@ -56,7 +57,7 @@
 	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id))>
 		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id]#
 	<cfelse>
-		<cfsavecontent variable="local.templateMenuOutput">
+		<cfsavecontent variable="templateMenuOutput">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="table-list" style="margin-bottom:10px; ">
 	<tr>
 	<td style="font-size:18px;line-height:normal;padding:10px;background-color:##336699; color:##DFDFDF; width:654px;">
@@ -71,27 +72,36 @@
 	
 		<cfscript>
 		if(request.zos.isDeveloper and session.zos.user.site_id EQ request.zos.globals.serverId and application.zcore.user.checkServerAccess()){
-			local.siteIdSQL=" and site_id <> -1";
+			siteIdSQL=" and site_id <> -1";
 		}else{
 			if(session.zos.user.site_id NEQ request.zos.globals.id and application.zcore.user.checkGroupAccess("administrator")){
 				if(request.zos.globals.parentID NEQ 0){
-					local.siteIdSQL=" and (site_id = '"&request.zos.globals.parentID&"' or site_parent_id ='"&request.zos.globals.parentID&"')";
+					siteIdSQL=" and (site_id = '"&request.zos.globals.parentID&"' or site_parent_id ='"&request.zos.globals.parentID&"')";
 				}else{
-					local.siteIdSQL=" and (site_id = '"&request.zos.globals.id&"' or site_parent_id ='"&request.zos.globals.id&"')";
+					siteIdSQL=" and (site_id = '"&request.zos.globals.id&"' or site_parent_id ='"&request.zos.globals.id&"')";
 				}
 			}else{
-				local.qUser=application.zcore.functions.zexecutesql("select * from #application.zcore.functions.zTableSQL("user", "user", request.zos.zcoreDatasource)# WHERE user_id='"&application.zcore.functions.zescape(session.zos.user.id)&"' and site_id='"&application.zcore.functions.zescape(session.zos.user.site_id)&"'", request.zos.zcoredatasource);
+				db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
+				WHERE user_id=#db.param(session.zos.user.id)# and 
+				site_id=#db.param(session.zos.user.site_id)#";
+				qUser=db.execute("qUser");
 				
-				local.arrSiteId=listtoarray(local.qUser.user_sync_site_id_list, ",",false);
-				arrayappend(local.arrSiteId, session.zos.user.site_id);
-				local.siteIdSQL=" and site_id IN ('"&arraytolist(local.arrSiteId, "','")&"')";
+				arrSiteId=listtoarray(qUser.user_sync_site_id_list, ",",false);
+				arrayappend(arrSiteId, session.zos.user.site_id);
+				siteIdSQL=" and site_id IN ('"&arraytolist(arrSiteId, "','")&"')";
 			}
 		}
-		local.qSite=application.zcore.functions.zexecutesql("select replace(replace(site_short_domain, 'www.',''), '.#request.zos.testDomain#','') shortDomain, site_domain from #application.zcore.functions.zTableSQL("site", "site", request.zos.zcoreDatasource)# WHERE site_active='1' "&local.siteIdSQL&" and site_id <> '"&request.zos.globals.id&"' order by shortDomain asc", request.zos.zcoredatasource);
-		if(local.qSite.recordcount NEQ 0){
+		db.sql="select replace(replace(site_short_domain, #db.param('www.')#, #db.param('')#), #db.param('.#request.zos.testDomain#')#,#db.param('')#) shortDomain, 
+		site_domain 
+		from #db.table("site", request.zos.zcoreDatasource)# site
+		WHERE site_active=#db.param(1)# "&db.trustedSQL(siteIdSQL)&" and 
+		site_id <> #db.param(request.zos.globals.id)#
+		order by shortDomain asc";
+		qSite=db.execute("qSite");
+		if(qSite.recordcount NEQ 0){
 			selectStruct = StructNew();
 			selectStruct.name = "changeSiteID";
-			selectStruct.query = local.qSite;
+			selectStruct.query = qSite;
 			selectStruct.selectLabel="-- Change Site --";
 			selectStruct.onchange="var d1=this.options[this.selectedIndex].value;if(d1 !=''){window.location.href=d1+'/member/';}";
 			selectStruct.queryLabelField = "shortDomain";
@@ -123,29 +133,29 @@
 			}
 		}
 		// remove links to the old system
-		local.tmp=application.zcore.functions.zso(request, 'adminTemplateLinks');
-		if(trim(local.tmp) NEQ ""){
-			local.tmp='<li>'&rereplacenocase(local.tmp,'</a>(.*?)<a','</a></li> <li><a','ALL')&'</li>';
+		tmp=application.zcore.functions.zso(request, 'adminTemplateLinks');
+		if(trim(tmp) NEQ ""){
+			tmp='<li>'&rereplacenocase(tmp,'</a>(.*?)<a','</a></li> <li><a','ALL')&'</li>';
 		}
-		local.tmp=replacenocase(local.tmp,'<a ','<a class="trigger" ','ALL');
+		tmp=replacenocase(tmp,'<a ','<a class="trigger" ','ALL');
 		if(application.zcore.app.siteHasApp("content")){
-			local.tmp=replacenocase(local.tmp,">content<",' style="display:none;"><');
+			tmp=replacenocase(tmp,">content<",' style="display:none;"><');
 		}
 		if(application.zcore.app.siteHasApp('listing')){
-			local.tmp=replacenocase(local.tmp,">inquiries<",' style="display:none;"><');
-			local.tmp=replacenocase(local.tmp,">saved searches<",' style="display:none;"><');
-			local.tmp=replacenocase(local.tmp,">manage leads<",' style="display:none;"><');
+			tmp=replacenocase(tmp,">inquiries<",' style="display:none;"><');
+			tmp=replacenocase(tmp,">saved searches<",' style="display:none;"><');
+			tmp=replacenocase(tmp,">manage leads<",' style="display:none;"><');
 		}
-		application.zcore.app.outputAdminMenu(sharedMenuStruct, local.tmp);
+		application.zcore.app.outputAdminMenu(sharedMenuStruct, tmp);
 	  </cfscript>
 	</td>
 	</tr>
 	</cfif>
 	</table>
 	</cfsavecontent>
-	    #local.templateMenuOutput#
+	    #templateMenuOutput#
 		<cfif not request.zos.inServerManager>
-			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id]=local.templateMenuOutput>
+			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id]=templateMenuOutput>
 		</cfif>
 	</cfif>
 	<cfif request.zos.inServerManager>

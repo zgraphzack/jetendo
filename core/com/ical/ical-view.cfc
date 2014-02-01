@@ -43,6 +43,7 @@
 	<cfscript>
 	var theSQL=0;
 	var local=structnew();
+	db=request.zos.queryObject;
 	local.event_id=application.zcore.functions.zso(form, 'event_id',false,-1);
 	local.event_recur_id=application.zcore.functions.zso(form, 'event_recur_id',false,-1);
 	</cfscript>
@@ -51,9 +52,16 @@
 	</cfsavecontent>
 	<cfscript>
 	request.zos.template.appendTag("meta",theMeta);
-	</cfscript>
-	<cfsavecontent variable="theSQL">SELECT * FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)#, #request.zos.functions.zTableSQL("event_recur", "event_recur", request.zos.zcoreDatasource)# WHERE event_recur.event_id = event.event_id and event_recur_ical_rules<>'' and event_recur.site_id = event.site_id and event.event_id='#request.zos.functions.zescape(local.event_id)#' and event_recur.event_recur_id='#request.zos.functions.zescape(local.event_recur_id)#' and event.site_id = '#request.zos.globals.id#' ORDER BY event_recur_datetime ASC limit 0,20
-	</cfsavecontent><cfscript>local.qQuery=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event, 
+	#db.table("event_recur", request.zos.zcoreDatasource)# event_recur 
+	WHERE event_recur.event_id = event.event_id and 
+	event_recur_ical_rules<> #db.param('')# and 
+	event_recur.site_id = event.site_id and 
+	event.event_id=#db.param(local.event_id)# and 
+	event_recur.event_recur_id=#db.param(local.event_recur_id)# and 
+	event.site_id = #db.param(request.zos.globals.id)# 
+	ORDER BY event_recur_datetime ASC limit #db.param(0)#, #db.param(20)#";
+	local.qQuery=db.execute("qQuery");
 	
 	</cfscript>
 	<cfloop query="local.qquery">
@@ -75,6 +83,7 @@
 	<cfscript>
 	var theSQL=0;
 	var local=structnew();
+	db=request.zos.queryObject;
 	local.event_id=request.zos.functions.zso(form, 'event_id',false,-1);
 	</cfscript>
 	<cfsavecontent variable="theMeta">
@@ -82,9 +91,10 @@
 	</cfsavecontent>
 	<cfscript>
 	request.zos.template.appendTag("meta",theMeta);
-	</cfscript>
-	<cfsavecontent variable="theSQL">SELECT * FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)# WHERE event.event_id='#request.zos.functions.zescape(local.event_id)#' and event.site_id = '#request.zos.globals.id#' <!--- ORDER BY event_start_datetime ASC  --->
-	</cfsavecontent><cfscript>local.qQuery2=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
+	WHERE event.event_id=#db.param(local.event_id)# and 
+	event.site_id = #db.param(request.zos.globals.id)#";
+	local.qQuery2=db.execute("qQuery2");
 	</cfscript>
 	<cfloop query="local.qquery2">
 		<cfscript>
@@ -104,14 +114,20 @@
 	<cfscript>
 	var theSQL=0;
 	var local=structnew();
-	</cfscript>
-	<cfsavecontent variable="theSQL">SELECT min(event_recur_datetime) d FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)#, #request.zos.functions.zTableSQL("event_recur", "event_recur", request.zos.zcoreDatasource)# WHERE event_recur.event_id = event.event_id and event_recur.site_id = event.site_id AND event_recur_datetime >= '#dateformat(now(), 'yyyy-mm-dd')# 00:00:00' and event.site_id = '#request.zos.globals.id#' 
-	</cfsavecontent><cfscript>local.qQuery=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
-	</cfscript>
-	<cfsavecontent variable="theSQL">SELECT min(event_start_datetime) d FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)# WHERE event_start_datetime >= '#dateformat(now(), 'yyyy-mm-dd')# 00:00:00' and event_recur_ical_rules='' and event.site_id = '#request.zos.globals.id#' 
-	</cfsavecontent><cfscript>local.qQuery2=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
-	</cfscript>
-	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="SELECT min(event_recur_datetime) d FROM #db.table("event", request.zos.zcoreDatasource)# event, 
+	#db.table("event_recur", request.zos.zcoreDatasource)# event_recur
+	WHERE event_recur.event_id = event.event_id and 
+	event_recur.site_id = event.site_id AND 
+	event_recur_datetime >= #db.param(dateformat(now(), 'yyyy-mm-dd')&' 00:00:00')# and 
+	event.site_id = #db.param(request.zos.globals.id)# ";
+	local.qQuery=db.execute("qQuery");
+	db.sql="SELECT min(event_start_datetime) d 
+	FROM #db.table("event", request.zos.zcoreDatasource)# 
+	WHERE event_start_datetime >= #db.param(dateformat(now(), 'yyyy-mm-dd')&' 00:00:00')# and 
+	event_recur_ical_rules=#db.param('')# and 
+	event.site_id = #db.param(request.zos.globals.id)# ";
+	local.qQuery2=db.execute("qQuery2");
 	if(local.qQuery.recordcount NEQ 0 and isdate(local.qQuery.d)){
 		local.curDate=parsedatetime(local.qQuery.d);
 	}
@@ -125,12 +141,13 @@
 	}else{
 		local.curDate=now();
 	}
-	</cfscript>
-	<cfsavecontent variable="theSQL">SELECT * FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)# WHERE <!--- event_start_datetime <='#dateformat(local.curDate, 'yyyy-mm-dd')# 23:59:59' AND ---> event_start_datetime >= '#dateformat(local.curDate, 'yyyy-mm-dd')# 00:00:00' and event_recur_ical_rules='' and event.site_id = '#request.zos.globals.id#' <!--- ORDER BY event_start_datetime ASC  ---> limit 0,25
-	</cfsavecontent><cfscript>local.qQuery2=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
-	</cfscript>
-	
-	<cfscript>
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# 
+	WHERE event_start_datetime >= #db.param(dateformat(local.curDate, 'yyyy-mm-dd')&' 00:00:00')# and 
+	event_recur_ical_rules=#db.param('')# and 
+	event.site_id = #db.param(request.zos.globals.id)#
+	 limit #db.param(0)#, #db.param(25)#";
+	local.qQuery2=db.execute("qQuery2");
+
 	local.eventStruct=structnew();
 	</cfscript>
 	<style type="text/css">
@@ -178,8 +195,17 @@
 	}
 	</cfscript>
 	</cfloop>
-	<cfsavecontent variable="theSQL">SELECT * FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)#, #request.zos.functions.zTableSQL("event_recur", "event_recur", request.zos.zcoreDatasource)# WHERE event_recur.event_id = event.event_id and event_recur_ical_rules<>'' and event_recur.site_id = event.site_id and <!--- event_recur.event_recur_datetime <='#dateformat(local.curDate, 'yyyy-mm-dd')# 23:59:59' AND  ---> event_recur_datetime >= '#dateformat(local.curDate, 'yyyy-mm-dd')# 00:00:00' and event.site_id = '#request.zos.globals.id#' ORDER BY event_recur_datetime ASC limit 0,25
-	</cfsavecontent><cfscript>local.qQuery=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
+	<cfscript>
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event, 
+	#db.table("event_recur", request.zos.zcoreDatasource)# event_recur 
+	WHERE event_recur.event_id = event.event_id and 
+	event_recur_ical_rules<> #db.param('')# and 
+	event_recur.site_id = event.site_id and 
+	event_recur_datetime >= #db.param(dateformat(local.curDate, 'yyyy-mm-dd')&' 00:00:00')# and 
+	event.site_id = #db.param(request.zos.globals.id)# 
+	ORDER BY event_recur_datetime ASC 
+	limit #db.param(0)#, #db.param(25)#";
+	local.qQuery=db.execute("qQuery");
 	</cfscript>
 	<cfloop query="local.qQuery">
 	<cfscript>
@@ -273,6 +299,7 @@
 	var archives='';
 	var cal_month=CreateDate(year(NOW()), month(NOW()),1);
 	var local=structnew();
+	db=request.zos.queryObject;
 	//request.zos.template.setTemplate("no-sidebar.cfm",true,true);
 	ts=structnew();
 	ts.content_unique_name="/connect/";
@@ -322,19 +349,7 @@
 		request.zos.functions.z404("Invalid period");
 	}
 	local.endDate=local.futureDate;
-	</cfscript>
-	<!--- <cfsavecontent variable="theSQL">SELECT * FROM event WHERE event_recur_frequency <> ''
-	</cfsavecontent><cfscript>local.qQuery=request.zos.functions.zexecutesql(theSQL, request.zos.zcoredatasource);
-	writedump(local.qQuery);
-	</cfscript> --->
-	<!--- <cfsavecontent variable="theSQL">SELECT * FROM event WHERE (event_start_datetime <='#dateformat(local.endDate, 'yyyy-mm-dd')# 23:59:59' AND event_end_datetime >= '#dateformat(local.startDate, 'yyyy-mm-dd')# 00:00:00') and site_id = '#request.zos.globals.id#' ORDER BY event_start_datetime ASC LIMIT 0,10
-	</cfsavecontent><cfscript>local.qQuery=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
-	</cfscript>
-	<cfloop query="local.qQuery">
-	#dateformat(event_start_datetime,'yyyy-mm-dd')# #timeformat(event_end_datetime,'HH:mm:ss')#
-	<cfif event_summary NEQ "">#event_summary#</cfif>
-	<cfif event_location NEQ "">location: #event_location#<br /></cfif>
-	</cfloop> --->
+	</cfscript> 
 	<cfsavecontent variable="theMeta">
 	<style type="text/css">
 	.icalnav a:link, .icalnav a:visited{ padding:5px; display:block; font-size:16px; line-height:21px; float:left; border:1px solid ##EEE; background-color:##FFF; margin-right:5px; color:##666;}
@@ -403,12 +418,14 @@
 	</h3>
 	</div></div>
 	<hr />
-	<cfsavecontent variable="theSQL">SELECT * FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)# WHERE event_start_datetime <='#dateformat(local.endDate, 'yyyy-mm-dd')# 23:59:59' AND event_start_datetime >= '#dateformat(local.startDate, 'yyyy-mm-dd')# 00:00:00' and event_recur_ical_rules='' and event.site_id = '#request.zos.globals.id#'
-	<!--- 	group by event_summary, event_start_datetime --->
-	<!--- ORDER BY event_start_datetime ASC  --->
-	</cfsavecontent><cfscript>local.qQuery2=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
-	</cfscript>
 	<cfscript>
+	
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# 
+	WHERE event_start_datetime <=#db.param(dateformat(local.endDate, 'yyyy-mm-dd')&' 23:59:59')# AND 
+	event_start_datetime >= #db.param(dateformat(local.startDate, 'yyyy-mm-dd')&' 00:00:00')# and 
+	event_recur_ical_rules=#db.param('')# and 
+	event.site_id = #db.param(request.zos.globals.id)#";
+	local.qQuery2=db.execute("qQuery2");
 	local.eventStruct=structnew();
 	</cfscript>
 	<cfloop query="local.qQuery2">
@@ -446,12 +463,16 @@
 		}
 		</cfscript>
 	</cfloop>
-	<!---     <h2>Recurring Events</h2> --->
-	<cfsavecontent variable="theSQL">SELECT * FROM #request.zos.functions.zTableSQL("event", "event", request.zos.zcoreDatasource)#, #request.zos.functions.zTableSQL("event_recur", "event_recur", request.zos.zcoreDatasource)# WHERE event_recur.event_id = event.event_id and event_recur.site_id = event.site_id and event_recur.event_recur_datetime <='#dateformat(local.endDate, 'yyyy-mm-dd')# 23:59:59' and event_recur_ical_rules<>'' AND event_recur_datetime >= '#dateformat(local.startDate, 'yyyy-mm-dd')# 00:00:00' and event.site_id = '#request.zos.globals.id#' 
-	<!--- 	group by event_summary, event_recur_datetime --->
-	<!--- ORDER BY event_recur_datetime ASC  --->
-	
-	</cfsavecontent><cfscript>local.qQuery=request.zos.functions.zexecutesql(theSQL, request.zos.zcoreDatasource);
+	<cfscript>
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event, 
+	#db.table("event_recur", request.zos.zcoreDatasource)# event_recur 
+	WHERE event_recur.event_id = event.event_id and 
+	event_recur.site_id = event.site_id and 
+	event_recur.event_recur_datetime <=#db.param(dateformat(local.endDate, 'yyyy-mm-dd')&' 23:59:59')# and 
+	event_recur_ical_rules<> #db.param('')# AND 
+	event_recur_datetime >= #db.param(dateformat(local.startDate, 'yyyy-mm-dd')&' 00:00:00')# and 
+	event.site_id = #db.param(request.zos.globals.id)# ";
+	local.qQuery=db.execute("qQuery");
 	</cfscript>
 	<cfloop query="local.qQuery">
 	<cfscript>
@@ -535,45 +556,7 @@
     </cfscript>
 <!--- start display of calendar --->
 <div  class="zevent-calendar">
-    <table class="zevent-calendar-table">
-   <!---  <tr style="vertical-align:top;" class="zevent-calendar-header">
-	
-	    <td  style="text-align:center; ">
-	    <cfscript>
-	    /*if(isDefined('ztest')){
-		request.zos.functions.zdump(query);
-	    }*/
-	    </cfscript>
-	    <!--- <cfif query.recordcount NEQ 0 and isdate(query.blog_datetime)>
-		<cfset prevmonth = '/#request.zos.tempObj.blogInstance.optionStruct.blog_config_archive_name#-#dateformat(query.blog_datetime, "yyyy-mm")#-#request.zos.tempObj.blogInstance.optionStruct.blog_config_url_misc_id#-2.html'>
-		<a href="#prevmonth#">&lt;&lt;</a>
-		</cfif> --->
-		</td>
-	    <cfset monthspan = 5>
-	<!--- this header displays current month --->
-	<th colspan="#monthspan#">
-	    <strong>#monthasstring(month(viewmonth))# #year(viewmonth)#</strong>
-	</th>
-	    <td>
-	    <cfscript>
-	    try{
-	    nextMonth=dateformat(dateadd("m",1,curDate),'yyyy-mm-01')&' 00:00:00';
-	    }catch(Any excpt){
-		request.zos.functions.z301redirect('/');	
-	    }
-	    //query = request.zos.functions.zExecuteSQL("select blog_datetime from blog where site_id='#request.zos.globals.id#' and blog_datetime >= '#nextMonth#' and (blog_datetime<='#dateformat(now(),'yyyy-mm-dd')# 23:59:59' or blog_event='1') and blog_status <> '2'  ORDER BY blog_datetime ASC LIMIT 0,1 ","#request.zos.zcoreDatasource#",False);
-	    /*if(isDefined('ztest')){
-	    writeoutput(curDate&' | '&nextMonth& ' | '&viewmonth);
-	    request.zos.functions.zdump(archives);
-		request.zos.functions.zdump(query);
-	    }*/
-	    </cfscript><!--- 
-	    <cfif query.recordcount NEQ 0>
-		<cfset nextmonth = '/#request.zos.tempObj.blogInstance.optionStruct.blog_config_archive_name#-#dateformat(query.blog_datetime, "yyyy-mm")#-#request.zos.tempObj.blogInstance.optionStruct.blog_config_url_misc_id#-2.html'>
-		<a href="#nextmonth#">&gt;&gt;</a>
-		</cfif> --->
-	    </td>
-    </tr> --->
+    <table class="zevent-calendar-table"> 
     <cfif form.period EQ "day">
     <tr style="vertical-align:top;" class="zevent-calendar-dayheader"><th style="text-align:left;">#dateformat(curDate,'dddd')#</th></tr>
     <cfelseif form.period EQ "week" or form.period EQ "month">
