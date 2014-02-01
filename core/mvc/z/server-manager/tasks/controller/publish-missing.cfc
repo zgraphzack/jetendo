@@ -6,6 +6,10 @@
 	var row=0;
 	var r=0;
 	var qs=0;
+	
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
 	setting requesttimeout="5000";
 	request.ignoreSlowScript=true;
 	db.sql="select * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 

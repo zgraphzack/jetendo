@@ -141,6 +141,10 @@
 	var qDir=0;
 	var cfcatch=0;
 	var e=0;
+	
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
 	variables.init();
 	local.path=expandpath("/railo-context/")&"archives/";
 	admin action="getMappings" type="#form.adminType#" password="#form.pw#" returnVariable="local.mappings";

@@ -141,6 +141,10 @@ TODO: figure out why site backup doesn't get compressed.
 	var db=request.zos.noVerifyQueryObject;
 	setting requesttimeout="5000";
 	
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
+	
 	variables.tempPathName="-temp";
 	local.backupGlobal=1;
 	form.createNew=application.zcore.functions.zso(form, 'createNew', false, 0);

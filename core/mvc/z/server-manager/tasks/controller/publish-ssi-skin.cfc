@@ -7,6 +7,10 @@
 	var qC=0;
 	var a1=0;
 	var r1=0;
+	
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
 	request.ignoreSlowScript=true;
 	setting requesttimeout="5000";
 	db.sql="select site.site_id, site_domain, site_enable_ssi_publish

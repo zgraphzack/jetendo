@@ -4,8 +4,11 @@
 	<cfscript>
 	setting requesttimeout="4000";
 	var db=request.zos.queryObject;
-	db.sql="
-	SELECT menu.menu_id, menu.site_id 
+	
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
+	db.sql="SELECT menu.menu_id, menu.site_id 
 	FROM #db.table("menu", request.zos.zcoreDatasource)# menu,
 	#db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE

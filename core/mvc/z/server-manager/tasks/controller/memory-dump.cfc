@@ -3,6 +3,10 @@
 <cffunction name="index" localmode="modern" access="remote">
 	<cfscript>
 	var s=0;
+	
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
 	setting requesttimeout="350";
 	// lock all requests so that the object dumps are consistent
 	lock type="exclusive" timeout="300" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{
