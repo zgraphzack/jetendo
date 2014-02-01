@@ -53,9 +53,16 @@
 	<!--- 
 	A major system update is in progress. Please try again later.</body></html><cfscript>application.zcore.functions.zabort();</cfscript>
 	 ---> 
+	<cfscript>
+	if(structkeyexists(session.zos.user, 'group_id')){
+		userGroupId=session.zos.user.group_id;
+	}else{
+		userGroupId=0;
+	}
+	</cfscript>
 	<cfif not request.zos.inServerManager and (application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
-	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id))>
-		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id]#
+	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id&"_"&userGroupId))>
+		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&userGroupId]#
 	<cfelse>
 		<cfsavecontent variable="templateMenuOutput">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="table-list" style="margin-bottom:10px; ">
@@ -155,7 +162,7 @@
 	</cfsavecontent>
 	    #templateMenuOutput#
 		<cfif not request.zos.inServerManager>
-			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id]=templateMenuOutput>
+			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&userGroupId]=templateMenuOutput>
 		</cfif>
 	</cfif>
 	<cfif request.zos.inServerManager>
