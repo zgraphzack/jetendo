@@ -1,18 +1,5 @@
 <cfcomponent displayname="Queue Sorting System" hint="Provides an easy way to implement sorting records of a query with a url query string." output="no">
 <cfoutput>
-<cfscript>
-this.datasource = Request.zos.globals.datasource;
-this.tableName = "";
-this.sortFieldName = "";
-this.primaryKeyName = "";
-this.where = "";
-this.disableRedirect=false;
-//this.groupBy="";
-this.comName="queueSort.cfc";
-
-// prepend this var name for query string variable
-this.sortVarName = "zQueueSort";
-</cfscript>
  <!--- 
 <cfscript>
 inputStruct = StructNew();
@@ -32,6 +19,17 @@ queueSortCom.init(inputStruct);
  <cffunction name="init" localmode="modern" returntype="any" output="false">
 	<cfargument name="inputStruct" type="struct" required="yes">
 	<cfscript>
+	this.datasource = Request.zos.globals.datasource;
+	this.tableName = "";
+	this.sortFieldName = "";
+	this.primaryKeyName = "";
+	this.where = "";
+	this.disableRedirect=false;
+	//this.groupBy="";
+	this.comName="queueSort.cfc";
+
+	// prepend this var name for query string variable
+	this.sortVarName = "zQueueSort";
 	var ts=0;
 	StructAppend(this, arguments.inputStruct, true);
 	if(len(this.tableName) EQ 0){
