@@ -284,19 +284,22 @@ $arrError=array();
 // when debugging, enable preview to prevent any permanent changes.
 $preview=false;
 
+echo "Running apt-get update to check for new packages: ";
 if(getAvailableUpgradePackages()){
-	echo "Packages are available to be installed with apt-get.\n";
+	echo "New packages available.\n";
 	array_push($arrError, "Packages are available to be installed with apt-get.");
 }else{
-	echo "No new packages are available to be installed with apt-get.\n";
-	//array_push($arrError, "No new packages are available to be installed with apt-get.");
+	echo "No new packages are available.\n";
 }
 
 set_time_limit(2000);
 $host=`hostname`;
+echo "Checking PHP's jetendo.ini configuration: ";
 if(!zCheckJetendoIniConfig($arrError)){
 	// prevent more checks until corrected...
 	exitWithLogNotification();
+}else{
+	echo "valid\n";
 }
 $wwwUser=get_cfg_var("jetendo_www_user");
 
@@ -311,10 +314,13 @@ if(strpos($host, $testDomain) !== FALSE){
 	$isInstalledOnSambaMount=get_cfg_var("jetendo_server_uses_samba");
 }
 $ftpEnabled=zIsFtpEnabled();
+echo "Checking filesystem: ";
 $result=checkFilesystem();
 if(!$result){
 	// prevent more checks until corrected...
 	exitWithLogNotification();
+}else{
+	echo "valid\n";
 }
 
 $sitesPath=get_cfg_var("jetendo_sites_path");
@@ -353,6 +359,8 @@ for($i=0;$i<count($arrPasswd);$i++){
 		$userUnusedStruct[$arrTemp[0]]=true;
 	}
 }
+echo "Checking ssl certificates: ";
+$sslError=false;
 $mp=get_cfg_var("jetendo_nginx_ssl_path");
 $handle2 = opendir($mp);
 if($handle2 !== FALSE) {
@@ -365,19 +373,27 @@ if($handle2 !== FALSE) {
 			$out=trim(`/usr/bin/openssl x509 -in $curPath -noout -enddate`);
 			if($out === FALSE || $out == ""){
 				array_push($arrError, "Attention required:openssl certificate expiration check failed for ".$curPath.".");	
+				$sslError=true;
 			}else{
 				if(strpos($out, "notAfter=") === FALSE){
 					array_push($arrError, "Unexpected output with OpenSSL expiration date check ".$curPath.". Output: ".$out.".");
+					$sslError=true;
 				}else{
 					$out=str_replace("notAfter=", "", $out);
 					if(time()-(60*60*24*7) > strtotime($out)){
 						array_push($arrError, "OpenSSL Certificate for ".$curPath." expires on ".$out.".");	
+						$sslError=true;
 					}
 				}
 			}
 		}
 	}
 	closedir($handle2);
+}
+if($sslError){
+	echo "invalid\n";
+}else{
+	echo "valid\n";
 }
 
 $fail=false;

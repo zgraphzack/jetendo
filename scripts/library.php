@@ -134,22 +134,22 @@ function zCheckDirectoryPermissions($dir, $user, $group, $fileChmodWithNoZeroPre
 				}
 				$correct=false;
 			}
-		}
-		$r=system("find ".escapeshellarg($dir)." \! -user ".$user." -print -quit");
-		if($r!==""){
-			array_push($arrLog, "Self-healing notice: ownership reset recursively to ".$user.":".$group." for: ".$dir);
-			if(!$preview){
-				system("/bin/chown -R ".$user.":".$group." ".escapeshellarg($dir));
-			}
-			$correct=false;
-		}else{
-			$r=system("find ".escapeshellarg($dir)." \! -group ".$group." -print -quit");
+			$r=system("find ".escapeshellarg($dir)." \! -user ".$user." -print -quit");
 			if($r!==""){
 				array_push($arrLog, "Self-healing notice: ownership reset recursively to ".$user.":".$group." for: ".$dir);
 				if(!$preview){
 					system("/bin/chown -R ".$user.":".$group." ".escapeshellarg($dir));
 				}
 				$correct=false;
+			}else{
+				$r=system("find ".escapeshellarg($dir)." \! -group ".$group." -print -quit");
+				if($r!==""){
+					array_push($arrLog, "Self-healing notice: ownership reset recursively to ".$user.":".$group." for: ".$dir);
+					if(!$preview){
+						system("/bin/chown -R ".$user.":".$group." ".escapeshellarg($dir));
+					}
+					$correct=false;
+				}
 			}
 		}
 	}else{
@@ -160,17 +160,17 @@ function zCheckDirectoryPermissions($dir, $user, $group, $fileChmodWithNoZeroPre
 					chmod($dir, octdec("2".$dirChmodWithNoZeroPrefix));
 				}
 			}
-		}
-		if(filegroup($dir) != $group){
-			array_push($arrLog, "Self-healing notice: ownership reset to group: ".$group." for: ".$dir);
-			if(!$preview){
-				chgrp($dir, $group);
+			if(filegroup($dir) != $group){
+				array_push($arrLog, "Self-healing notice: ownership reset to group: ".$group." for: ".$dir);
+				if(!$preview){
+					chgrp($dir, $group);
+				}
 			}
-		}
-		if(fileowner($dir) != $user){
-			array_push($arrLog, "Self-healing notice: ownership reset to user: ".$user." for: ".$dir);
-			if(!$preview){
-				chown($dir, $user);
+			if(fileowner($dir) != $user){
+				array_push($arrLog, "Self-healing notice: ownership reset to user: ".$user." for: ".$dir);
+				if(!$preview){
+					chown($dir, $user);
+				}
 			}
 		}
 
