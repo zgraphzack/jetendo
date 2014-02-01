@@ -56,7 +56,7 @@ TODO: Help with layout builder: Building a feature that lets you visually connec
 	Then you are able to do visual programming for the entire front-end and back-end system.
 		
  --->
-<cffunction name="index" access="public" locamode="modern">
+<cffunction name="index" access="public" localmode="modern">
 
 </cffunction>
 </cfoutput>
