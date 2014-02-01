@@ -2165,6 +2165,7 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	var i=0;
 	var qMapCheck=0;
 	var tempSQL=0;
+
 	
 	if(request.zos.allowRequestCFC){
 		request.zos["listing"]=application.zcore.listingStruct;

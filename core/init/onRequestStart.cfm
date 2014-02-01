@@ -194,6 +194,12 @@
 		} 
 		request.zos.globals=application.sitestruct[local.site_id].globals; 
 		
+		if(structkeyexists(application.zcore, 'databaseRestarted')){
+			structdelete(application.zcore, 'databaseRestarted');
+			form.zforce=true;
+			form.zrebuildramtable=true;
+			application.zcore.listingCom.onApplicationStart();
+		}
 		
 		if(replace(replace(request.zos.globals.domain, "https://", ""),"http://", "") NEQ request.zos.cgi.http_host){
 			application.zcore.functions.zCheckDomainRedirect(); 

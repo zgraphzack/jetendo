@@ -142,6 +142,7 @@
 		<p><a href="/z/misc/system/index" target="_blank">Railo uptime and session clearing</a></p>
 		<p><a href="/z/server-manager/tasks/site-backup/index" target="_blank">Backup All Sites</a></p>
 		<p><a href="/z/server-manager/tasks/search-index/index">Re-index All Site Content</a></p>
+		<p><a href="/z/server-manager/tasks/verify-apps/index" target="_blank">Verify Apps</a></p>
 		<cfif request.zos.istestserver>
 			<h3>Unit Tests</h3>
 			<cfscript>
