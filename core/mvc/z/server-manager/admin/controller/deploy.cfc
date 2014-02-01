@@ -558,6 +558,7 @@
 	<p><a href="/z/server-manager/admin/deploy/index">Deploy</a> /</p>
 	<h2>Deploy Core Application</h2>
 	<p>Select the kind of cache to clear after deployment, and click "Submit".</p>
+	<p>When changing the core, it is recommended to verify conventions before deploying.  This helps retain integration and compatibility.</p>
 	<p>Clear Cache:
 		<input type="radio" class="clearCacheCoreDeploy" name="clearcache" value="" checked="checked" />
 		Code
@@ -578,6 +579,8 @@
 			<h2><a href="##" onclick="document.getElementById('deployLinkDiv').style.display='none';document.getElementById('pleaseWait').style.display='block'; window.location.href='/z/server-manager/admin/deploy/processDeployCore?clearcache='+$('.clearCacheCoreDeploy:checked').val(); return false;">Deploy Core</a>
 			&nbsp;&nbsp;&nbsp;
 			<a href="##" onclick="document.getElementById('deployLinkDiv').style.display='none';document.getElementById('pleaseWait').style.display='block'; window.location.href='/z/server-manager/admin/deploy/processDeployCore?preview=1&amp;clearcache='+$('.clearCacheCoreDeploy:checked').val(); return false;">Preview Changes</a>
+			&nbsp;&nbsp;&nbsp;
+			<a href="/z/server-manager/tasks/verify-conventions/index" target="_blank">Verify Conventions</a>
 			</h2>
 		</div>
 		<cfscript>
@@ -615,8 +618,11 @@
 		
 		<p>Configure excluded directories and files for this site on the <a href="/z/server-manager/admin/site/edit?sid=#form.sid#">globals</a> page.</p>
 		<cfif qDeploy.recordcount>
-			<p id="deployButtonsId"><a href="/z/server-manager/admin/deploy/deploySite?sid=#form.sid#" onclick="document.getElementById('deployButtonsId').style.display='none';document.getElementById('deployStatusId').style.display='block';">Deploy</a> | 
-			<a href="/z/server-manager/admin/deploy/deploySite?sid=#form.sid#&amp;preview=1" onclick="document.getElementById('deployButtonsId').style.display='none';document.getElementById('deployStatusId').style.display='block';">Preview Changes</a></p>
+			<p id="deployButtonsId"><a href="/z/server-manager/admin/deploy/deploySite?sid=#form.sid#" onclick="document.getElementById('deployButtonsId').style.display='none';document.getElementById('deployStatusId').style.display='block';">Deploy</a>
+			&nbsp;&nbsp;&nbsp;
+			<a href="/z/server-manager/admin/deploy/deploySite?sid=#form.sid#&amp;preview=1" onclick="document.getElementById('deployButtonsId').style.display='none';document.getElementById('deployStatusId').style.display='block';">Preview Changes</a>
+			&nbsp;&nbsp;&nbsp;
+			<a href="/z/server-manager/tasks/verify-conventions/verifySiteConventions?sid=#form.sid#" target="_blank">Verify Conventions</a></p>
 		</cfif>
 		<cfscript>
 		filePath=application.zcore.functions.zGetDomainWritableInstallPath(application.zcore.functions.zvar('shortDomain', form.sid))&"__zdeploy-changes.txt";
