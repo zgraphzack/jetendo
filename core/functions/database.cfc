@@ -1246,7 +1246,9 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	arguments.rs.siteTableStruct[arguments.ds]=structnew();
 	db2.sql="SHOW TABLE STATUS FROM `"&arguments.ds&"` WHERE ENGINE IS NOT NULL";
 	local.qC5=db2.execute("qC5");
-	db2.sql="SELECT t.table_name, CCSA.character_set_name FROM information_schema.`TABLES` T, information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA WHERE CCSA.collation_name = T.table_collation  AND T.table_schema = '"&arguments.ds&"'";
+	db2.sql="SELECT t.table_name, CCSA.character_set_name FROM information_schema.`TABLES` t, 
+	information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA 
+	WHERE CCSA.collation_name = t.table_collation  AND t.table_schema = '"&arguments.ds&"'";
 	local.qC6=db2.execute("qC6");
 	for(local.n2=1;local.n2 LTE local.qC5.recordcount;local.n2++){
 		arguments.rs.fieldStruct[arguments.ds&"."&local.qC5.name[local.n2]]={};
