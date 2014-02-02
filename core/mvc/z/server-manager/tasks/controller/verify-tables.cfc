@@ -1,5 +1,6 @@
 <cfcomponent>
 	<cffunction name="index" localmode="modern" access="remote">
+		<cfargument name="returnErrors" type="boolean" required="false" default="#false#">
 		<cfscript>
 		var i=0;
 		var q=0;
@@ -208,7 +209,12 @@
 			}else{
 				writeoutput('All tables verified successfully');
 			}
-			application.zcore.functions.zabort();
+			if(not arguments.returnErrors){
+				application.zcore.functions.zabort();
+			}
+		}
+		if(arguments.returnErrors){
+			return arrError;
 		}
 		</cfscript>
 	</cffunction>

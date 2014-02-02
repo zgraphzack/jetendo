@@ -429,9 +429,6 @@
 	ts.helpStruct=structnew();
 	local.datasourceUniqueStruct=structnew();
 	local.datasourceUniqueStruct[request.zos.zcoredatasource]=true;
-	local.datasourceUniqueStruct[request.zos.zcoreDatasource]=true;
-	local.datasourceUniqueStruct[request.zos.zcoreDatasource]=true;
-	local.datasourceUniqueStruct[request.zos.zcoreDatasource]=true;
 	ts.arrGlobalDatasources=structkeyarray(local.datasourceUniqueStruct);
 	ts.tableColumns=structnew();
 	ts.tablesWithSiteIdStruct=structnew();
@@ -568,11 +565,8 @@
 		try{
 			ts.zcore=objectload(local.coreDumpFile);
 			ts.siteStruct=objectload(local.coreDumpFile2);
-			application.sessionStruct=objectload(local.coreDumpFile3);
 			application.zcore=ts.zcore;
 			application.siteStruct=ts.siteStruct;
-			application.zcore.runOnCodeDeploy=true; 
-			application.zcore.runMemoryDatabaseStart=true; 
 			if(request.zos.allowRequestCFC){
 				request.zos.functions=application.zcore.functions;
 			}
@@ -580,12 +574,18 @@
 			application.zcore.functions.zdeletefile(local.coreDumpFile2);
 			if(request.zos.isJavaEnabled){
 				local.coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-sessions.bin";
+				application.sessionStruct=objectload(local.coreDumpFile3);
 				application.zcore.functions.zdeletefile(local.coreDumpFile3);
 			}
+			application.zcore.runOnCodeDeploy=true; 
+			application.zcore.runMemoryDatabaseStart=true; 
 		}catch(Any local.e){
 			local.dumpLoadFailed=true;
 		}
 	}
+	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+	dbUpgradeCom.checkVersion();
+
 	if(local.dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all"){
 		ts.zcore=structnew();
 		variables.setupAppGlobals1(ts.zcore);

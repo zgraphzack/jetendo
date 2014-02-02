@@ -46,14 +46,18 @@ this.scopeCascading = "standard";
 // END override railo admin settings
 
 </cfscript>
-	<!--- BEGIN GLOBAL SETTINGS - DO NOT REMOVE THIS COMMENT ---> 
 <cffunction name="setupGlobals" localmode="modern" output="no">
 	<cfargument name="tempCGI" type="struct" required="yes">
 	<cfscript>
+
 	configCom=createobject("component", "zcorerootmapping.config");
 	ts=configCom.getConfig(arguments.tempCGI);
+
+    ts.zos.databaseVersion=1; // increment manually when database structure changes
+
 	ts.zos.isServer=false;
 	ts.zos.isDeveloper=false;
+
 	// mail server options are here only for legacy sites at the moment
 	ts.zmailserver="mailserver";
 	ts.zmailserverusername="username";
@@ -61,6 +65,7 @@ this.scopeCascading = "standard";
 	ts.httpCompressionType="deflate;q=0.5";
 	ts.ramtableprefix=ts.zos.ramtableprefix;
 	ts.inMemberArea=false;
+
 	
 	ts.searchServerCollectionName="entiresite_verity";
 	ts.zos.disableSystemCaching=false;

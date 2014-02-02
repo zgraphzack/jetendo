@@ -8,69 +8,224 @@
 	variables.curBackupDate=dateformat(now(), 'yyyymmdd')&timeformat(now(),'HHmmss');
 	variables.databaseBackupPath="#request.zos.backupDirectory#upgrade/databaseBackup#variables.curBackupDate#/";
 	variables.mysqlDatabaseBackupPath="#request.zos.mysqlBackupDirectory#upgrade/databaseBackup#variables.curBackupDate#/";
-	
-	variables.databaseVersionCom=createobject("component", "zcorerootmapping.databaseVersion");
-	variables.tableVersionStruct=variables.databaseVersionCom.getTableVersionStruct();
+	variables.tableVersionStruct=getTableVersionStruct();
 	</cfscript>
 </cffunction>
 
-<cffunction name="changeSchemaForDebugging" localmode="modern" access="public"> 
-	<cfargument name="existingDsStruct" type="struct" required="yes">
-	<cfargument name="newDsStruct" type="struct" required="yes">
-	<cfscript>	
-	var i=0;
-	local.ds="zcore";
-	local.table="app";
-	
-	if(not request.zos.isTestServer){
-		throw("This shouldn't run in production environment.", "Exception");	
+
+<cffunction name="checkVersion" localmode="modern" access="public">
+	<cfscript>
+	try{
+		query name="qCheck" datasource="#request.zos.zcoreDatasource#"{
+			echo("SHOW TABLES IN `#request.zos.zcoreDatasource#` LIKE 'jetendo_setup'");
+		}
+	}catch(Any e){
+		throw("request.zos.zcoreDatasource, ""#request.zos.zcoreDatasource#"", must be a valid datasource.");
 	}
-	// force some changes for debugging the upgrade process
-	local.tt=duplicate(arguments.existingDsStruct.fieldStruct["#local.ds#.#local.table#"]);
-	local.tt.app2_id=local.tt.app_id;
-	local.tt.app2_name=local.tt.app_name;
-	//structdelete(local.tt, 'app_id');
-	structdelete(local.tt, 'app_name');
-	arguments.existingDsStruct.fieldStruct["#local.ds#.app2"]=local.tt;
-	
-	local.table1=(arguments.existingDsStruct.fieldStruct["#local.ds#.#local.table#"]);
-	local.table2=(arguments.newDsStruct.fieldStruct["#local.ds#.#local.table#"]);
-	local.table2.app_name.type="varchar(55)";
-	local.table1.app_deprecated_column={
-		columnIndex:structcount(local.table1)+1,
-		default:"",
-		extra:"",
-		key:"",
-		null:"NO",
-		type:"char(1)"
-	};
-	//structdelete(local.table2, 'app_id');
-	for(i in local.table2){
-		local.table2[i].columnIndex++;
+	if(qCheck.recordcount NEQ 0){
+		query name="qVersion" datasource="#request.zos.zcoreDatasource#"{
+			echo("SELECT * FROM jetendo_setup LIMIT 0,1");
+		}
+		if(qVersion.recordcount EQ 0){
+			query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
+				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
+			}
+			return true;
+		}else{
+			if(qVersion.jetendo_setup_database_version EQ request.zos.databaseVersion){
+				return true;
+			}else if(qVersion.jetendo_setup_database_version GT request.zos.databaseVersion){
+				throw("Jetendo database is a newer version then request.zos.databaseVersion.  Please check that source code version is the same or newer then database.");
+			}
+		}
 	}
-	local.table2.app_new_column={
-		columnIndex:1,
-		default:"default",
-		extra:"",
-		key:"",
-		null:"YES",
-		type:"varchar(10)"
-	}; 
-	local.table2.app_new_column_end={
-		columnIndex:structcount(local.table2)+1,
-		default:"default",
-		extra:"",
-		key:"",
-		null:"YES",
-		type:"varchar(1)"
-	};  
-	// detect new tables 
-	arguments.newDsStruct.tableStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.tableStruct["#local.ds#.app"]); 
-	arguments.newDsStruct.keyStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.keyStruct["#local.ds#.app"]); 
-	arguments.newDsStruct.fieldStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.fieldStruct["#local.ds#.app"]);
-	structdelete(arguments.newDsStruct.tableStruct, "#local.ds#.app_x_site");
+
+	// verify the rest of the config.cfc values before installing database & application.
+
+
+	// install database
+	if(qCheck.recordcount EQ 0){
+		installInitialDatabase();
+
+		query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
+			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
+		}
+		application[request.zos.installPath&":displaySetupScreen"]=true;
+	}else{
+		echo("upgrade");abort;
+		// upgrade database
+		index();
+
+		query name="qUpdate" datasource="#request.zos.zcoreDatasource#"{
+			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
+		}
+	}
+	// verify tables
+	verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
+	arrLog=verifyTablesCom.index(true);
+	/*if(arrayLen(arrLog)){
+		savecontent variable="output"{
+			echo("<h2>verify-tables failed.</h2>");
+			writedump(arrLog);
+
+		}
+		throw(output);
+	}*/
 	</cfscript>
 </cffunction>
+
+<cffunction name="getTableVersionStruct" localmode="modern" returntype="struct" access="public">
+	<cfscript>
+	// this file must be manually updated when you want change which tables are being tracked for versioning
+	
+	// later implement hooks so rental and listing apps register their tables with this component in a different CFC.
+	var tableVersionStruct={
+		zcoreDatasource: {
+			app: true,
+			app_db_offset: true,
+			app_reserve: true,
+			app_x_site: true,
+			blog: true,
+			blog_category: true,
+			blog_category_version: true,
+			blog_comment: true,
+			blog_config: true,
+			blog_tag: true,
+			blog_tag_version: true,
+			blog_version: true,
+			blog_x_category: true,
+			blog_x_tag: true,
+			cf_data_type: true,
+			content: true,
+			content_config: true,
+			content_permissions: true,
+			content_property_type: true,
+			content_version: true,
+			country: true,
+			event: true,
+			event_recur: true,
+			field_map: true,
+			file: true,
+			image: true,
+			image_arrangement: true,
+			image_cache: true,
+			image_library: true,
+			inquiries: true,
+			inquiries_feedback: true,
+			inquiries_lead_template: true,
+			inquiries_lead_template_x_site: true,
+			inquiries_log: true,
+			inquiries_routing: true,
+			inquiries_status: true,
+			inquiries_type: true,
+			ip_block: true,
+			lang_culture: true,
+			lang_script_global: true,
+			lang_script_site: true,
+			lang_table_global: true,
+			lang_table_site: true,
+			link_hardcoded: true,
+			link_verify_link: true,
+			link_verify_status: true,
+			log: true,
+			log404: true,
+			login_log: true,
+			mail_user: true,
+			menu: true,
+			menu_button: true,
+			menu_button_link: true,
+			office: true,
+			page: true,
+			queue: true,
+			rewrite_rule: true,
+			robots: true,
+			robots_global: true,
+			search: true,
+			search_keyword_log: true,
+			sentence: true,
+			sentence_type: true,
+			sentence_word: true,
+			site: true,
+			site_option: true,
+			site_option_app: true,
+			site_option_group: true,
+			site_option_group_map: true,
+			site_x_option: true,
+			site_x_option_group: true,
+			site_x_option_group_set: true,
+			slideshow: true,
+			slideshow_image: true,
+			slideshow_tab: true,
+			state: true,
+			tooltip: true,
+			tooltip_section: true,
+			track_convert: true,
+			track_page: true,
+			track_user: true,
+			track_user_x_convert: true,
+			user: true,
+			user_group: true,
+			user_group_x_group: true,
+			user_token: true,
+			video: true,
+			zemail: true,
+			zemail_account: true,
+			zemail_campaign: true,
+			zemail_campaign_click: true,
+			zemail_campaign_x_user: true,
+			zemail_data: true,
+			zemail_folder: true,
+			zemail_list: true,
+			zemail_list_x_campaign: true,
+			zemail_list_x_user: true,
+			zemail_signature: true,
+			zemail_template: true,
+			zemail_template_type: true,
+			zipcode: true,
+			app_x_mls: true,
+			city: true,
+			city_distance: true,
+			city_distance_safe_update: true,
+			city_rename: true,
+			city_x_mls: true,
+			county: true,
+			listing: true,
+			listing_data: true,
+			listing_latlong: true,
+			listing_latlong_original: true,
+			listing_lookup: true,
+			listing_track: true,
+			listing_type: true,
+			listing_x_site: true,
+			manual_listing: true,
+			mls: true,
+			mls_dir: true,
+			mls_filter: true,
+			mls_image_hash: true,
+			mls_option: true,
+			mls_saved_search: true,
+			saved_listing: true,
+			search_count: true,
+			'zram##city': true,
+			'zram##city_distance': true,
+			'zram##listing': true,
+			availability: true,
+			availability_type: true,
+			availability_type_calendar: true,
+			rental: true,
+			rental_amenity: true,
+			rental_category: true,
+			rental_config: true,
+			rental_x_amenity: true,
+			rental_x_category: true,
+			special_rate: true,
+			far_feature: true
+		}
+	};
+	return tableVersionStruct;
+	</cfscript>
+</cffunction>
+
 
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
@@ -166,6 +321,375 @@
 			}
 		}
 	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="importTableData" localmode="modern">
+	<cfargument name="filePath" type="string" required="yes">
+	<cfargument name="datasource" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
+	<cfargument name="columnList" type="string" required="yes">
+	<cfargument name="hasSiteId" type="boolean" required="yes">
+	<cfscript>
+	if(not fileexists(arguments.filePath)){
+		throw("importTableData failed because arguments.filePath, ""#arguments.filePath#"", doesn't exist.");
+	}
+	if(arguments.hasSiteId){
+		query name="qDelete" datasource="#arguments.datasource#"{
+			echo(preserveSingleQuotes("delete from `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#` 
+			where site_id = 0"));
+		}
+		query name="qDisableTrigger" datasource="#arguments.datasource#"{
+			echo(preserveSingleQuotes("set @zDisableTriggers=1"));
+		}
+	}else{
+		query name="qTruncate" datasource="#arguments.datasource#"{
+			echo("truncate table `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#`");
+		}
+	}
+
+	query name="qLoadData" datasource="#arguments.datasource#"{
+		echo(preserveSingleQuotes("LOAD DATA INFILE '#application.zcore.functions.zescape(arguments.filePath)#' 
+		REPLACE INTO TABLE `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#` 
+		FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
+	 	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''
+		IGNORE 1 LINES (#arguments.columnList#)"));
+	}
+	if(arguments.hasSiteId){
+		query name="qEnableTrigger" datasource="#arguments.datasource#"{
+			echo(preserveSingleQuotes("set @zDisableTriggers=NULL"));
+		}
+	}
+	</cfscript>
+	
+</cffunction>
+
+<cffunction name="dumpTableData" localmode="modern" access="private">
+	<cfargument name="filePath" type="string" required="yes">
+	<cfargument name="datasource" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
+	<cfargument name="columnList" type="string" required="yes">
+	<cfscript>
+	db=request.zos.noVerifyQueryObject;
+	application.zcore.functions.zdeletefile(arguments.filePath);
+	arrC=listToArray(arguments.columnList);
+	for(i=1;i LTE arrayLen(arrC);i++){
+		arrC[i]="'"&trim(arrC[i])&"'";
+	}
+	db.sql="SELECT "&arrayToList(arrC, ", ")&"
+	UNION ALL
+	SELECT #arguments.columnList#
+	INTO OUTFILE '#application.zcore.functions.zescape(arguments.filePath)#' 
+	FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
+ 	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''  
+ 	FROM `#arguments.datasource#`.`#request.zos.zcoreDatasourcePrefix##arguments.table#` ";
+	if(structkeyexists(application.zcore.tablesWithSiteIdStruct, arguments.datasource&"."&arguments.table)){
+		db.sql&=" WHERE site_id = '0' ";
+	}
+	d=db.execute("qSelect");
+	writedump(d);
+	</cfscript>
+	
+</cffunction>
+
+
+<cffunction name="getCreateTableSQL" localmode="modern" access="private">
+	<cfargument name="dsStruct" type="struct" required="yes">
+	<cfscript>
+	arrTableSQL=[];
+	datasourceStruct={};
+	for(i in arguments.dsStruct.tableStruct){
+		arrTemp=listToArray(i, ".");
+		if(arrTemp[1] EQ "zcore"){
+			arrTemp[1]=request.zos.zcoreDatasource;
+		}
+		query name="qTables" datasource="#arrTemp[1]#"{
+			echo("SHOW TABLES IN `"&arrTemp[1]&"`");
+		}
+		datasourceStruct[arrTemp[1]]={};
+		for(row in qTables){
+			table=row["Tables_in_"&arrTemp[1]];
+			datasourceStruct[arrTemp[1]][table]=true;
+		}
+	} 
+
+	for(i in arguments.dsStruct.tableStruct){
+		arrTemp=listToArray(i, ".");
+		if(arrTemp[1] EQ "zcore"){
+			arrTemp[1]=request.zos.zcoreDatasource;
+		}
+		currentTable=arrTemp[2];
+		if(not structkeyexists(datasourceStruct, arrTemp[1]) or structkeyexists(datasourceStruct[arrTemp[1]], arrTemp[2])){
+			continue;
+		}
+		arrSQL=["CREATE TABLE `#arrTemp[1]#`.`#arrTemp[2]#` ("];
+		fs=arguments.dsStruct.fieldStruct[i];
+		arrKeys=structsort(fs, "numeric", "asc", "columnIndex");
+		orderStruct={};
+		for(n=1;n LTE arrayLen(arrKeys);n++){
+			orderStruct[n]=arrKeys[n];
+		}
+		for(n=1;n LTE arrayLen(arrKeys);n++){
+			field=arrKeys[n];
+			if(n NEQ 1){
+				arrayAppend(arrSQL, ", ");
+			}
+			arrayAppend(arrSQL,  "`#field#` "&createColumnSQL(fs[field], orderStruct, false));	
+		}
+		// build indices here
+		for(n in arguments.dsStruct.keyStruct[i]){
+			index=", ";
+			if(arguments.dsStruct.keyStruct[i][n][1].index_type EQ "FULLTEXT"){
+				index&="FULLTEXT KEY `#n#` (";
+			}else if(n EQ "PRIMARY"){
+				index&="PRIMARY KEY (";
+			}else if(arguments.dsStruct.keyStruct[i][n][1].non_unique EQ "0"){
+				index&="UNIQUE INDEX `#n#` (";
+			}else{
+				index&="INDEX `#n#` (";
+			}
+			for(g=1;g LTE arraylen(arguments.dsStruct.keyStruct[i][n]);g++){
+				if(g NEQ 1){
+					index&=", ";
+				}
+				index&="`"&arguments.dsStruct.keyStruct[i][n][g].column_name&"`";
+			}
+			arrayAppend(arrSQL, index&")");
+		}
+		
+		arrayAppend(arrSQL, ") "&variables.createTableSQL(arguments.dsStruct.tableStruct[i])); 
+
+		tableSQL=arrayToList(arrSQL, " ");
+		query name="qCreateTable" datasource="#arrTemp[1]#"{
+			echo(preserveSingleQuotes(tableSQL));
+		}
+	}
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getDataTables" localmode="modern" access="private">
+	<cfscript>
+	dataTables={};
+	dataTables["zcoreDatasource"]={
+		"zemail_template_type": {
+			columnList: "zemail_template_type_id,zemail_template_type_name,site_id"
+		},
+		"zipcode": {
+			columnList: "city_name,city_type,state_abbr,country_code,zipcode_type,zipcode_zip,zipcode_latitude,zipcode_longitude"
+		},
+		"mls": {
+			columnList: "mls_id,mls_name,mls_disclaimer_name,mls_mls_id,mls_offset,mls_status,mls_update_date,
+			mls_download_date,mls_downloading,mls_frequency,mls_com,mls_skip_bytes,mls_delimiter,mls_csvquote,
+			mls_first_line_columns,mls_file,mls_current_file_path,mls_primary_city_id,
+			mls_login_url,mls_cleaned_date,mls_error_sent,mls_provider,mls_filelist"
+		},
+		"zemail_template": {
+			columnList: "zemail_template_id, zemail_template_html,zemail_template_text,zemail_template_script, 
+			zemail_template_subject,zemail_template_created_datetime,
+			zemail_template_type_id,zemail_template_default,zemail_campaign_id,
+			zemail_template_active,zemail_template_complete,site_id"
+		},
+		 "zemail_list": {
+			columnList: "zemail_list_id,zemail_list_name,site_id"
+		},
+		"zemail_folder": {
+			columnList: "zemail_folder_id,zemail_folder_name,site_id,user_id"
+		},
+		"track_convert": {
+			columnList: "track_convert_id,track_convert_name,track_convert_display_name"
+		},
+		"state": {
+			columnList: "state_code,state_state"
+		
+		},
+		"inquiries_type": {
+			columnList: "inquiries_type_id,inquiries_type_name,inquiries_type_sort,
+			inquiries_type_manual,inquiries_type_locked,inquiries_type_realestate,inquiries_type_rentals,site_id"
+		},
+		"inquiries_status": {
+			columnList: "inquiries_status_id,inquiries_status_name"
+		},
+		"inquiries_lead_template": {
+			columnList: "inquiries_lead_template_id,inquiries_lead_template_name,
+			inquiries_lead_template_subject,inquiries_lead_template_message,inquiries_lead_template_sort,
+			inquiries_lead_template_type,inquiries_lead_template_realestate,site_id"
+		},
+		"far_feature": {
+			columnList: "far_feature_code,far_feature_type,far_feature_description"
+		},
+		"country": {
+			columnList: "country_name,country_code"
+		},
+		"content_property_type": {
+			columnList: "content_property_type_id, content_property_type_name"
+		},
+		"city_distance": {
+			columnList: "city_parent_id,city_id,city_distance"
+		},
+		"city": {
+			columnList: "city_id,city_mls_id,city_name,state_abbr,country_code,city_county,
+			city_has_listings,city_region_id,city_destination_id,city_user_created,city_latitude,city_longitude"
+		},
+		"app": {
+			columnList: "app_id,app_name,app_built_in"
+		},
+		"tooltip": {
+			columnList: "tooltip_id,tooltip_html,tooltip_name,tooltip_section_id,tooltip_label"
+		},
+		"tooltip_section": {
+			columnList: "tooltip_section_id,tooltip_section_name"
+		}
+	};
+	return dataTables;
+	</cfscript>
+</cffunction>
+
+<cffunction name="dumpInitialDatabase" localmode="modern" access="remote">
+	<cfscript>
+	// dump json file or create sql
+	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database");
+	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database/data/");
+	curDSStruct={};
+	
+	curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
+	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
+	schemaStruct=siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct);
+	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema.json", serializeJson(schemaStruct.struct)); 
+	// these tables need a key that allows the infile to replace on unique values easily.
+
+	dataTables=getDataTables();
+	for(i in dataTables){
+		datasource=i;
+		datasource2=i;
+		if(i EQ "zcoreDatasource"){
+			datasource2="zcoreDatasource";
+			datasource=request.zos.zcoreDatasource;
+		}
+		for(n in dataTables[i]){
+			filePath=request.zos.sharedPath&"database/data/"&datasource2&"."&n&".csv";
+			dumpTableData(filePath, datasource, n, dataTables[datasource2][n].columnList);
+		}
+	}
+	echo("Initial database dumped");
+	abort;
+	</cfscript>
+</cffunction>
+
+<cffunction name="restoreDataDumps" localmode="modern" access="private">
+	<cfscript>
+	tablesWithSiteIdStruct={};
+	query name="qD" datasource="#request.zos.zcoredatasource#"{
+		writeoutput("SELECT concat(TABLE_SCHEMA, '.', TABLE_NAME) `table` 
+		FROM information_schema.COLUMNS 
+		WHERE COLUMN_NAME = 'site_id' AND 
+		TABLE_SCHEMA IN ('#preserveSingleQuotes(request.zos.zcoreDatasource)#') ");
+	}
+	for(row in qD){
+		tablesWithSiteIdStruct[row.table]=true;
+	}
+	dataTables=getDataTables();
+	for(i in dataTables){
+		datasource=i;
+		datasource2=i;
+		if(i EQ "zcoreDatasource"){
+			datasource2="zcoreDatasource";
+			datasource=request.zos.zcoreDatasource;
+		}
+		for(n in dataTables[i]){
+			filePath=request.zos.sharedPath&"database/data/"&datasource2&"."&n&".csv";
+			hasSiteId=structkeyexists(tablesWithSiteIdStruct, datasource&"."&n);
+			importTableData(filePath, datasource, n, dataTables[datasource2][n].columnList, hasSiteId);
+		}
+	}
+
+	</cfscript>
+	
+</cffunction>
+
+<cffunction name="installInitialDatabase" localmode="modern" access="remote">
+	<cfscript>
+	// load schema in json format
+	tempFile=request.zos.installPath&"share/database/jetendo-schema.json";
+	dsStruct=deserializeJson(application.zcore.functions.zreadfile(tempFile));
+
+	getCreateTableSQL(dsStruct);
+
+	restoreDataDumps();
+
+	// list of tables with global data:
+
+
+	//	mls table - needs rewrite so that the app creates the initial records instead of relying on manual entry.
+		
+		/*
+
+		maybe manually create these for first user, first site
+		user_group
+		site
+		user_group_x_group
+		user (initial server admin)
+	*/
+
+	</cfscript>
+</cffunction>
+	
+
+
+<cffunction name="changeSchemaForDebugging" localmode="modern" access="public"> 
+	<cfargument name="existingDsStruct" type="struct" required="yes">
+	<cfargument name="newDsStruct" type="struct" required="yes">
+	<cfscript>	
+	var i=0;
+	local.ds="zcore";
+	local.table="app";
+	
+	if(not request.zos.isTestServer){
+		throw("This shouldn't run in production environment.", "Exception");	
+	}
+	// force some changes for debugging the upgrade process
+	local.tt=duplicate(arguments.existingDsStruct.fieldStruct["#local.ds#.#local.table#"]);
+	local.tt.app2_id=local.tt.app_id;
+	local.tt.app2_name=local.tt.app_name;
+	//structdelete(local.tt, 'app_id');
+	structdelete(local.tt, 'app_name');
+	arguments.existingDsStruct.fieldStruct["#local.ds#.app2"]=local.tt;
+	
+	local.table1=(arguments.existingDsStruct.fieldStruct["#local.ds#.#local.table#"]);
+	local.table2=(arguments.newDsStruct.fieldStruct["#local.ds#.#local.table#"]);
+	local.table2.app_name.type="varchar(55)";
+	local.table1.app_deprecated_column={
+		columnIndex:structcount(local.table1)+1,
+		default:"",
+		extra:"",
+		key:"",
+		null:"NO",
+		type:"char(1)"
+	};
+	//structdelete(local.table2, 'app_id');
+	for(i in local.table2){
+		local.table2[i].columnIndex++;
+	}
+	local.table2.app_new_column={
+		columnIndex:1,
+		default:"default",
+		extra:"",
+		key:"",
+		null:"YES",
+		type:"varchar(10)"
+	}; 
+	local.table2.app_new_column_end={
+		columnIndex:structcount(local.table2)+1,
+		default:"default",
+		extra:"",
+		key:"",
+		null:"YES",
+		type:"varchar(1)"
+	};  
+	// detect new tables 
+	arguments.newDsStruct.tableStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.tableStruct["#local.ds#.app"]); 
+	arguments.newDsStruct.keyStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.keyStruct["#local.ds#.app"]); 
+	arguments.newDsStruct.fieldStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.fieldStruct["#local.ds#.app"]);
+	structdelete(arguments.newDsStruct.tableStruct, "#local.ds#.app_x_site");
 	</cfscript>
 </cffunction>
 
@@ -359,7 +883,7 @@
 				if(n NEQ 1){
 					arrayAppend(local.arrSQL, ", ");
 				}
-				arrayAppend(local.arrSQL,  "`#local.field#` "&variables.createColumnSQL(local.fs[local.field], local.orderStruct, false));	
+				arrayAppend(local.arrSQL,  "`#local.field#` "&createColumnSQL(local.fs[local.field], local.orderStruct, false));	
 			}
 			// build indices here
 			for(n in arguments.newDsStruct.keyStruct[i]){
@@ -428,7 +952,7 @@
 		if(isNumeric(arguments.columnStruct.default)){
 			local.column&=" DEFAULT "&arguments.columnStruct.default;
 		}else{
-			local.column&=" DEFAULT '"&arguments.columnStruct.default&"'";
+			local.column&=" DEFAULT '"&application.zcore.functions.zescape(arguments.columnStruct.default)&"'";
 		}
 	}
 	if(arguments.columnStruct.extra NEQ ""){

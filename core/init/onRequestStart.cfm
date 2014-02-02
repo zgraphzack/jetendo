@@ -610,6 +610,12 @@
 			}
 		} 
 	}
+
+	if(structkeyexists(application, request.zos.installPath&":displaySetupScreen")){
+		setupCom=createobject("zcorerootmapping.setup");
+		setupCom.index();
+	}
+
 	if(not request.zos.isServer and ((request.zos.globals.requireLogin EQ 1 and not structkeyexists(ipStruct, request.zos.cgi.remote_addr) and request.zos.cgi.HTTP_USER_AGENT DOES NOT CONTAIN "W3C_Validator") or local.requireMemberAreaLogin)){
 		if(request.cgi_script_name NEQ "/z/user/login/parentToken" and request.cgi_script_name NEQ "/z/user/login/serverToken" and request.cgi_script_name NEQ "/z/user/login/confirmToken"){
 			if(request.zos.migrationMode){
