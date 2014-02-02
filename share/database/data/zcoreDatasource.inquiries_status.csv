@@ -1,0 +1,7 @@
+"inquiries_status_id","inquiries_status_name"
+"1","New"
+"2","Assigned"
+"3","Assigned, Contacted"
+"4","Closed with No Sale"
+"5","Closed with Sale"
+"6","Contacted"

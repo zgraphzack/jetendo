@@ -1,0 +1,667 @@
+"far_feature_code","far_feature_type","far_feature_description"
+"A01","General","Handicap features"
+"A02","General","Smoke-free"
+"A03","General","Cats allowed"
+"A04","General","Dogs allowed"
+"A05","General","Pets allowed"
+"A06","General","Pets on approval"
+"A07","General","No pets allowed"
+"A08","General","Pet restrictions"
+"A09","General","Housing For Older Persons"
+"A10","General","Seasonal residence"
+"A11","General","Single Family (use if you can't map Property Type)"
+"A12","General","Condo/Townhome (use if you can't map Property Type)"
+"A13","General","Mobile home (use if you can't map Property Type)"
+"A14","General","MultiFamily (use if you can't map Property Type)"
+"A15","General","Farm (use if you can't map Property Type)"
+"A16","General","Land (use if you can't map Property Type)"
+"A17","General","Rental (use if you can't map Property Type)"
+"A18","General","Government subsidized"
+"B01","Condition","Sold \"As is\""
+"B02","Condition","Sold \"As Is\" - Fixer-upper"
+"B03","Condition","Fixer-upper"
+"B04","Condition","currently under construction"
+"B05","Condition","New construction"
+"B06","Condition","Remodeled"
+"B07","Condition","Home warranty (see agent for details)"
+"B08","Condition","Newer fixtures"
+"B09","Condition","Newer home (0-5 yrs)"
+"B10","Condition","Newly painted"
+"B11","Condition","Model"
+"B13","Condition","To be built"
+"C01","Community","Community laundry facilities"
+"C02","Community","Pool table(s)"
+"C03","Community","Community boat facilities"
+"C04","Community","Clubhouse kitchen facilities"
+"C05","Community","Community clubhouse(s)"
+"C06","Community","Community exercise area(s)"
+"C07","Community","Community golf"
+"C08","Community","Handball"
+"C09","Community","Community horse facilities"
+"C10","Community","Access to riding trails"
+"C11","Community","Community in-door swimming pool"
+"C12","Community","Community park(s)"
+"C13","Community","Picnic area(s)"
+"C14","Community","Community childrens play area'"
+"C15","Community","Community swimming pool(s)"
+"C16","Community","Putting green"
+"C17","Community","Community sauna(s)"
+"C18","Community","Community spa(s)"
+"C19","Community","Community tennis court(s)"
+"C20","Community","Biking/fitness trail"
+"C21","Community","Gated community"
+"C22","Community","On-site guard"
+"C23","Community","Community security features"
+"C24","Community","Extra storage available"
+"C25","Community","Courtesy bus"
+"C27","Community","Close to public transportation"
+"D01","Condo","First floor location"
+"D05","Condo","Outside entrance"
+"D06","Condo","End unit"
+"D07","Condo","Ground floor unit"
+"D09","Condo","Elevator(s)"
+"D10","Condo","Individual electric meter"
+"D11","Condo","Individual gas meter"
+"D12","Condo","Private yard"
+"D13","Mobile Homes","Includes foundation"
+"D15","Mobile Homes","Single-wide mobile"
+"D16","Mobile Homes","Double-wide mobile"
+"D17","Mobile Homes","Triple-wide mobile"
+"D18","Mobile Homes","Quadruple-wide mobile"
+"D19","Condo","Resident manager"
+"E01","Construction","Adobe construction"
+"E02","Construction","Brick exterior"
+"E03","Construction","Stucco and brick exterior"
+"E04","Construction","Cedar/redwood siding"
+"E05","Construction","Concrete block stucco"
+"E06","Construction","Pier or beam foundation"
+"E07","Construction","Frame and brick exterior"
+"E08","Construction","Frame and stone exterior"
+"E09","Construction","Frame and stucco exterior"
+"E10","Construction","Log construction"
+"E11","Construction","Modular construction"
+"E12","Construction","Stone exterior"
+"E13","Construction","Stucco exterior"
+"E14","Construction","Vinyl/metal siding"
+"E15","Construction","Vinyl siding"
+"E16","Construction","Wood siding"
+"E17","Construction","Wood shingle siding"
+"E18","Construction","Frame exterior"
+"E19","Roof","Composition roof"
+"E20","Roof","Metal roof"
+"E21","Roof","Slate roof"
+"E22","Roof","Tile roof"
+"E23","Roof","Shingle roof"
+"E23F","Roof","Wooden shake"
+"E24","Construction","Brick accent"
+"E25","Construction","Masonite siding"
+"F01","Energy","Water softner"
+"F02","Energy","Two or more water heaters"
+"F03","Energy","Solar water heater"
+"F04","Energy","Programmable thermostat"
+"F05","Energy","Zoned temperature control"
+"F06","Energy","Insulated door(s)"
+"F07","Energy","Insulated windows"
+"F08","Energy","Storm windows"
+"F09","Energy","Tinted windows"
+"F10","Energy","Energy efficient rated home"
+"F18","Energy","High energy furnace"
+"G01","Exterior","Aviary"
+"G02","Exterior","Balcony"
+"G03","Exterior","Carriage house"
+"G04","Exterior","Deck"
+"G05","Exterior","Dog run"
+"G06","Exterior","Gazebo"
+"G07","Exterior","Guest house"
+"G08","Exterior","Greenhouse"
+"G09","Exterior","Patio"
+"G10","Exterior","Covered patio"
+"G11","Exterior","Enclosed patio"
+"G12","Exterior","Covered porch"
+"G13","Exterior","Enclosed porch"
+"G14","Exterior","Storage/out-building(s)"
+"G15","Exterior","Outdoor lights"
+"G16","Fencing","Block fencing"
+"G17","Fencing","Fenced"
+"G18","Fencing","Partially fenced"
+"G19","Fencing","Wrought iron fencing"
+"G20","Fencing","Chain link fence"
+"G21","Fencing","Masonry fencing"
+"G22","Fencing","Security fence"
+"G23","Fencing","Wood fencing"
+"G25","Exterior","Barn"
+"G27","Exterior","Other farm buildings"
+"G29","Exterior","Porch"
+"H01","Financial","Corporate owned"
+"H02","Financial","See agent for details on association fees"
+"H03","Financial","Home owners fee"
+"H04","Financial","Hud owned"
+"H05","Financial","Licensed owner"
+"H06","Financial","Lender owned"
+"H07","Financial","Lease option"
+"H08","Financial","Lease/purchase"
+"H09","Financial","No rentals"
+"H10","Financial","Trade"
+"H11","Financial","Zero downpayment"
+"H12","Financial","Includes rental unit"
+"H13","Financial","Cooperative ownership"
+"H20","Financial","Foreclosure"
+"H21","Financial","Short Sale"
+"I01","Fireplaces","Master bedroom fireplace"
+"I02","Fireplaces","Bedroom fireplace"
+"I03","Fireplaces","Basement fireplace"
+"I04","Fireplaces","Great room fireplace"
+"I05","Fireplaces","Dining room fireplace"
+"I06","Fireplaces","Kitchen fireplace"
+"I07","Fireplaces","Living room fireplace"
+"I08","Fireplaces","Family room fireplace"
+"I09","Fireplaces","Re-circulating fireplace"
+"I10","Fireplaces","Electric fireplace"
+"I11","Fireplaces","Freestanding fireplace"
+"I12","Fireplaces","Gas fireplace"
+"I13","Fireplaces","Fireplace(s)"
+"I14","Fireplaces","Multi-sided fireplace"
+"I15","Fireplaces","Gas fireplace logs"
+"I16","Fireplaces","Den fireplace"
+"I17","Fireplaces","Game room fireplace"
+"I18","Fireplaces","Fireplace insert"
+"I19","Fireplaces","Marble fireplace"
+"I20","Fireplaces","Stone fireplace"
+"I21","Fireplaces","Woodburning fireplace"
+"I22","Fireplaces","2 fireplaces"
+"I23","Fireplaces","3 or more fireplaces"
+"J01","Flooring","Wall to wall carpeting"
+"J02","Flooring","Carpet"
+"J03","Flooring","Clay flooring"
+"J04","Flooring","Marble floors"
+"J05","Flooring","Parquet floors"
+"J06","Flooring","Terrazo floors"
+"J07","Flooring","Tile flooring"
+"J08","Flooring","Vinyl flooring"
+"J09","Flooring","Hardwood floors"
+"J10","Flooring","Newer carpet"
+"J11","Flooring","Dining room is carpeted"
+"J12","Flooring","Dining room has tile floor"
+"J13","Flooring","Dining room has wood floor"
+"J14","Flooring","Family room is carpeted"
+"J15","Flooring","Family room has tile floor"
+"J16","Flooring","Family room has wood floor"
+"J17","Flooring","Recreation room has brick floor"
+"J18","Flooring","Recreation room is carpeted"
+"J19","Flooring","Recreation room has tile floor"
+"J20","Flooring","Recreation room has wood floor"
+"J21","Flooring","Great room has brick floor"
+"J22","Flooring","Great room is carpeted"
+"J23","Flooring","Great room has tile floor"
+"J24","Flooring","Great room has wood floor"
+"J25","Flooring","Kitchen has brick floor"
+"J26","Flooring","Kitchen is carpeted"
+"J27","Flooring","Kitchen has tile floor"
+"J28","Flooring","Kitchen has vinyl floor"
+"J29","Flooring","Kitchen has wood floor"
+"J30","Flooring","Living room has carpeting"
+"J31","Flooring","Living room has tile floor"
+"J32","Flooring","Living room has wood floor"
+"J33","Flooring","Brick flooring"
+"J34","Flooring","Granite floors"
+"J35","Flooring","Slate floors"
+"J39","Flooring","Wood floors"
+"K01","Foundation","Cellar"
+"K02","Foundation","Slab foundation"
+"K03","Foundation","Partial basement"
+"K04","Foundation","Partially finished basement"
+"K05","Foundation","Finished basement"
+"K06","Foundation","Walk-out basement"
+"K07","Foundation","Basement"
+"K08","Foundation","Basement bedroom"
+"L01","Laundry","Electric laundry hookups"
+"L02","Laundry","Gas laundry hookups"
+"L03","Laundry","Washer/dryer hookups"
+"L04","Laundry","Laundry sink"
+"L05","Laundry","Laundry shute"
+"L06","Laundry","Laundry closet"
+"L07","Laundry","Laundry room/area"
+"L08","Laundry","Laundry area in garage/carport"
+"L09","Laundry","Laundry area in kitchen"
+"L10","Laundry","Main floor laundry"
+"L11","Laundry","Upper floor laundry"
+"M01","Heat/Cool","Central air conditioning"
+"M02","Heat/Cool","Swamp cooler"
+"M03","Heat/Cool","Wall or window air conditioner(s)"
+"M04","Heat/Cool","House fan"
+"M05","Heat/Cool","Central heat"
+"M06","Heat/Cool","Forced air heat"
+"M07","Heat/Cool","Floor furnace"
+"M08","Heat/Cool","Convection heating"
+"M09","Heat/Cool","Hot water heat"
+"M10","Heat/Cool","Radiators"
+"M11","Heat/Cool","Radiant heat"
+"M12","Heat/Cool","Baseboard heat"
+"M13","Heat/Cool","Wall heating unit(s)"
+"M14","Heat/Cool","Wood stove"
+"M15","Heat/Cool","Heat pump"
+"M16","Heat/Cool","Solar heating features"
+"M17","Heat/Cool","Electric heating"
+"M18","Heat/Cool","Gas heating"
+"M19","Heat/Cool","Propane heating"
+"M20","Heat/Cool","Electric air filter"
+"M21","Heat/Cool","Natural gas water heater"
+"M22","Heat/Cool","Humidifier"
+"M23","Heat/Cool","Oil heating"
+"M24","Heat/Cool","Multiple fuel sources"
+"M34","Heat/Cool","Central air conditioning in unit"
+"M35","Heat/Cool","Central air conditioning in building"
+"M36","Heat/Cool","Central heat in unit"
+"M37","Heat/Cool","Central heat in building"
+"N01","Inclusions","Gas range and oven"
+"N02","Inclusions","Electric range and oven"
+"N03","Inclusions","Self-cleaning oven"
+"N04","Inclusions","Double oven"
+"N05","Inclusions","Downdraft oven"
+"N06","Inclusions","Stove"
+"N07","Inclusions","Microwave oven"
+"N08","Inclusions","Cooktop range"
+"N09","Inclusions","Indoor grill"
+"N10","Inclusions","Disposal"
+"N11","Inclusions","Dishwasher"
+"N12","Inclusions","Ice maker line"
+"N13","Inclusions","Refrigerator"
+"N14","Inclusions","Sub-zero refrigerator"
+"N15","Inclusions","Bar refrigerator"
+"N16","Inclusions","Freezer"
+"N17","Inclusions","Trash compactor"
+"N18","Inclusions","Clothes washer"
+"N19","Inclusions","Clothes dryer"
+"N20","Inclusions","Water filtration system"
+"N21","Inclusions","Built-in oven"
+"N22","Inclusions","Stacked washer/dryer"
+"N23","Inclusions","Exhaust fan/hood"
+"N24","Inclusions","Range and oven"
+"N29","Inclusions","Furnished"
+"N30","Inclusions","Partially furnished"
+"O01","Interior","Country kitchen"
+"O02","Interior","Breakfast bar"
+"O03","Interior","Pantry"
+"O04","Interior","Kitchen isle"
+"O05","Interior","Jetted bathtub"
+"O06","Interior","Tub and separate shower"
+"O07","Interior","Dry bar"
+"O08","Interior","Wetbar"
+"O09","Interior","Ceiling fan(s)"
+"O10","Interior","Intercom system"
+"O11","Interior","Central vacuum system"
+"O12","Interior","Vaulted ceilings"
+"O13","Interior","Skylight(s)"
+"O14","Interior","Walk-in closet(s)"
+"O15","Interior","Window treatments"
+"O16","Interior","Security features"
+"O17","Interior","Fire sprinkler system"
+"O18","Interior","Open floor plan"
+"O19","Interior","Limited living area"
+"O20","Interior","Secondary bedrooms split from master bedroom"
+"O21","Interior","Built-in features"
+"O22","Interior","Cathedral ceilings"
+"O23","Interior","Cedar closet(s)"
+"O24","Interior","His & Hers closets"
+"O25","Interior","Closet organizer"
+"O26","Interior","Wall to wall closets"
+"O27","Interior","Decorator kitchen counters"
+"O28","Interior","Modern kitchen"
+"O29","Interior","Decorator lighting"
+"O30","Interior","Mirrored closet(s)"
+"O31","Interior","Built-in desk"
+"O32","Interior","Built-in bookcase(s)/shelve(s)"
+"O33","Interior","Entertainment center"
+"P01","LandUse","Farm land"
+"P02","LandUse","Farm or ranch"
+"P03","LandUse","Grove(s)"
+"P04","LandUse","Horse(s) allowed"
+"P05","LandUse","Orchard(s)"
+"P06","LandUse","Ranch land"
+"P07","LandUse","Resort land"
+"P08","LandUse","Water rights"
+"P09","LandUse","Tillable acres"
+"P10","LandUse","Pasture"
+"P11","LandUse","Timber acres"
+"P12","LandUse","Cattle farm"
+"P13","LandUse","Dairy farm"
+"P14","LandUse","Hobby farm"
+"P15","LandUse","Hog farm"
+"P16","LandUse","Horse farm"
+"P17","LandUse","Nursery farm"
+"P18","LandUse","Poultry farm"
+"P19","LandUse","Row crops farming"
+"P20","LandUse","Sheep farm"
+"P21","LandUse","Tree farm"
+"P24","LandUse","Auto watering system"
+"P28","LandUse","Other farm equipment"
+"P29","LandUse","Vineyard"
+"P30","LandUse","Grazing land"
+"P31","LandUse","Irrigated farmland"
+"Q01","Utilities","Public sewer service"
+"Q02","Utilities","Septic sewer system"
+"Q03","Utilities","Well pump"
+"Q04","Utilities","Public water supply"
+"Q05","Utilities","Private water supply"
+"Q06","Utilities","Water supply from well(s)"
+"Q07","Utilities","TV Antenna"
+"Q08","Utilities","TV cable available"
+"Q09","Utilities","Satellite dish"
+"Q10","Utilities","Water supply on-site"
+"Q11","Utilities","Water supply at street"
+"Q12","Utilities","Water supply near by"
+"Q13","Utilities","Private sewer service"
+"Q14","Utilities","Sewer service on-site"
+"Q15","Utilities","Sewer service at street"
+"Q16","Utilities","Sewer service near by"
+"Q17","Utilities","Sewer service available"
+"Q18","Utilities","Gas service on-site"
+"Q19","Utilities","Gas service at street"
+"Q20","Utilities","Gas service near by"
+"Q21","Utilities","Natural gas service available"
+"Q22","Utilities","Electric service on-site"
+"Q23","Utilities","Electric service at street"
+"Q24","Utilities","Electric service near by"
+"Q25","Utilities","Electric service underground"
+"Q26","Utilities","Electric service available"
+"Q27","Utilities","Telephone service available"
+"Q28","Utilities","Rent includes water"
+"Q29","Utilities","Rent includes gas"
+"Q30","Utilities","Rent includes electric"
+"Q31","Utilities","Rent includes sewer"
+"Q32","Utilities","Rent includes garbage"
+"R01","Location","Out of city limits"
+"R02","Location","Rural property"
+"R03","Location","Located in subdvision"
+"R04","Location","Eastern exposure"
+"R05","Location","Northeastern exposure"
+"R06","Location","Northern exposure"
+"R07","Location","Northwestern exposure"
+"R08","Location","Southeastern exposure"
+"R09","Location","Southern exposure"
+"R10","Location","Southwestern exposure"
+"R11","Location","Western exposure"
+"R12","Location","Located in historical district"
+"S01","Lot","Land lease"
+"S02","Lot","Level lot"
+"S03","Lot","Rolling lot"
+"S04","Lot","Sloped lot"
+"S05","Lot","Zero lot line"
+"S06","Lot","Patio home lot"
+"S07","Lot","Corner lot"
+"S08","Lot","Cul-de-sac"
+"S09","Lot","Trees"
+"S10","Lot","Wooded"
+"S11","Lot","Rock out-croppings"
+"S12","Lot","Pond(s)"
+"S13","Lot","Adjacent to farm land"
+"S14","Lot","Adjacent to National Forest"
+"S15","Lot","Adjacent to meadow"
+"S16","Lot","Adjacent to public or private open area"
+"S17","Lot","Adjacent to river/stream or creek"
+"S18","Lot","Landscape sprinklers"
+"S19","Lot","Professionally landscaped"
+"S20","Lot","Irrigation well"
+"S21","LotSize","Lot size is 1/4 acre or less"
+"S22","LotSize","Lot size between 1/4 and 1/2 acre"
+"S23","LotSize","Lot size between 1/2 and 3/4 acre"
+"S24","LotSize","Lots size between 3/4 and 1 acre"
+"S25","LotSize","Lot size between 3/4 and 1 1/2 acre"
+"S26","LotSize","Less than 1 acre"
+"S27","LotSize","Lot size is between 1 and 2 acres"
+"S28","LotSize","Lots size between 1 1/2 and 2 1/2 acres"
+"S29","LotSize","Lot size between 2 and 3 acres"
+"S30","LotSize","Lot size between 2 1/2 and 5 acres"
+"S31","LotSize","Lot size between 3 and 5 acres"
+"S32","LotSize","Lot size is between 1 and 5 acres"
+"S33","LotSize","Lot size is between 5 and 10 acres"
+"S34","LotSize","Lot size of 10 or more acres"
+"S35","LotSize","Lot size is between 10 and 20 acres"
+"S36","LotSize","Lot size is 20 or more acres"
+"S37","LotSize","Lot size between 20 and 35 acres"
+"S38","LotSize","Lot size is 35 or more acres"
+"S39","LotSize","Lot size is 5 or more acres"
+"S40","Lot","Landscaping"
+"S41","LotSize","Lot size is less than 1/2 acre"
+"S42","LotSize","Lot size is between 1/2 and 1 acre"
+"S43","LotSize","Lot size is between 1 and 3 acres"
+"S44","LotSize","Lot size is between 2 and 5 acres"
+"S45","LotSize","Lot size is between 2 and 3 acres"
+"S46","LotSize","Lot size is between 10 and 15 acres"
+"S47","Lot","Clear lot"
+"S48","Lot","Partially cleared lot"
+"S49","Lot","Oversized lot"
+"S58","Lot","Interior lot"
+"S59","Lot","Irregular"
+"S64","Lot","Curbs & gutters"
+"S65","Lot","Storm drains"
+"S66","Lot","Sidewalk"
+"S67","Lot","Rough graded lot"
+"S68","Lot","Finish graded lot"
+"S69","Lot","Staked lot"
+"S70","Lot","Elevated lot"
+"S71","Lot","Wetlands"
+"S72","Lot","Additional land available"
+"S73","Lot","Divisible lot"
+"T01","Parking","1 parking place"
+"T02","Parking","2 parking places"
+"T03","Parking","3 or more parking places"
+"T04","Parking","1 carport"
+"T05","Parking","2 car carport"
+"T06","Parking","3 or more car carport"
+"T07","Parking","1 car garage"
+"T08","Parking","2 car garage"
+"T09","Parking","3 car garage"
+"T10","Parking","4 or more car garage"
+"T11","Parking","Assigned parking"
+"T12","Parking","Attached parking"
+"T13","Parking","Detached parking"
+"T14","Parking","Parking garage"
+"T15","Parking","Circular driveway"
+"T16","Parking","Covered parking area"
+"T17","Parking","Guest parking"
+"T18","Parking","Parking pad"
+"T19","Parking","Underground parking"
+"T20","Parking","RV parking"
+"T21","Parking","Valet parking"
+"T22","Parking","Converted garage"
+"T23","Parking","Automatic garage door"
+"T24","Parking","Heated garage"
+"T25","Parking","Oversized garage"
+"T26","Parking","Carport"
+"T27","Parking","Garage"
+"T28","Parking","Space(s)"
+"T29","Parking","Storage in parking area"
+"T30","Parking","Garage apartment"
+"T31","Parking","Brick driveway"
+"T32","Parking","Paved driveway"
+"T33","Parking","Stone driveway"
+"T34","Parking","Basement garage"
+"T35","Parking","Tandem garage"
+"U01","Recreation","swimming pool"
+"U02","Recreation","Indoor swimming pool"
+"U03","Recreation","Heated pool"
+"U04","Recreation","In-ground swimming pool"
+"U05","Recreation","Saltwater swimming pool"
+"U06","Recreation","In-ground, screen enclosed swimming pool"
+"U07","Recreation","Solar heated pool"
+"U08","Recreation","Lap pool"
+"U09","Recreation","Above ground pool"
+"U10","Recreation","Automatic pool chlorination"
+"U11","Recreation","Automatic pool cleaner"
+"U12","Recreation","Fenced pool area"
+"U13","Recreation","Spa"
+"U14","Recreation","Indoor spa"
+"U15","Recreation","Outdoor spa"
+"U16","Recreation","Sauna"
+"U17","Recreation","Outdoor gas grill"
+"U18","Recreation","BBQ"
+"U19","Recreation","Boat facilities"
+"U20","Recreation","Boat dockage available"
+"U21","Recreation","Boat dockage"
+"U22","Recreation","Tennis court"
+"U23","Recreation","Horse facilities"
+"U24","Recreation","Cabana"
+"U25","Recreation","Private beach"
+"W01","Rooms","Family room"
+"W02","Rooms","Family room in basement"
+"W03","Rooms","Family room on lower level"
+"W04","Rooms","Family room on main floor"
+"W05","Rooms","Family room upstairs"
+"W06","Rooms","Formal dining room"
+"W07","Rooms","Formal living room"
+"W08","Rooms","L-shaped living/dining room combination"
+"W09","Rooms","Living/dining room combination"
+"W10","Rooms","Kitchen/dining room"
+"W11","Rooms","Breakfast area"
+"W12","Rooms","Master bedroom suite"
+"W13","Rooms","Master bathroom"
+"W14","Rooms","Master bedroom is downstairs"
+"W15","Rooms","Master bedroom on lower level"
+"W16","Rooms","Master bedroom on main floor"
+"W17","Rooms","Master bedroom upstairs"
+"W18","Rooms","2nd master bedroom"
+"W19","Rooms","Guest room"
+"W20","Rooms","In-law suite"
+"W21","Rooms","Convertible room"
+"W22","Rooms","Room addition"
+"W23","Rooms","Extra room"
+"W24","Rooms","Den"
+"W25","Rooms","Office"
+"W26","Rooms","Game room"
+"W27","Rooms","Great room"
+"W28","Rooms","Exercise room"
+"W29","Rooms","Loft"
+"W30","Rooms","Foyer"
+"W31","Rooms","Finished attic"
+"W32","Rooms","Attic"
+"W33","Rooms","Library"
+"W34","Rooms","Storage room"
+"W35","Rooms","Maid or guest suite"
+"W36","Rooms","Sun room"
+"W37","Rooms","Utility room"
+"W38","Rooms","Wine cellar"
+"W39","Rooms","Workshop"
+"W40","Rooms","Sewing room"
+"W41","Rooms","Play room"
+"W42","Rooms","Atrium"
+"W43","Rooms","Breezeway"
+"W44","Rooms","Dressing area"
+"W45","Rooms","Eat in kitchen"
+"W46","Rooms","His & Hers Master baths"
+"W47","Rooms","Music room"
+"W48","Rooms","Nursery"
+"W49","Rooms","Sitting room"
+"W54","Rooms","Dining area"
+"X01","Scenery","Lake access"
+"X02","Scenery","Lake view"
+"X03","Scenery","Lake frontage"
+"X04","Scenery","Lake or river view"
+"X05","Scenery","River frontage/Access"
+"X06","Scenery","River view"
+"X07","Scenery","Ocean view"
+"X08","Scenery","Ocean access"
+"X09","Scenery","Ocean frontage"
+"X10","Scenery","Bay or ocean frontage"
+"X11","Scenery","Bay view"
+"X12","Scenery","Waterfront property"
+"X13","Scenery","Canal view"
+"X14","Scenery","Canal waterfront property"
+"X15","Scenery","Lagoon view"
+"X16","Scenery","Intra-coastal"
+"X17","Scenery","Valley/canyon view"
+"X18","Scenery","Swimming pool view"
+"X19","Scenery","Clubhouse view"
+"X20","Scenery","Tennis Court view"
+"X21","Scenery","Golf course frontage"
+"X22","Scenery","Golf course view"
+"X23","Scenery","Garden view"
+"X24","Scenery","Greenbelt view"
+"X25","Scenery","Hill country"
+"X26","Scenery","Hill/mountain view"
+"X27","Scenery","Back range view"
+"X28","Scenery","Foothills view"
+"X29","Scenery","Panoramic Views"
+"X30","Scenery","Park-like views"
+"X31","Scenery","View of the plains"
+"X32","Scenery","Adjacent to park"
+"X33","Scenery","City lights view"
+"X34","Scenery","Scenic view"
+"X35","Scenery","Waterview"
+"X36F","Scenery","Gulf or Ocean frontage"
+"X37F","Scenery","Gulf or Ocean view"
+"X38F","Scenery","Gulf or Ocean access"
+"Y01","Stories","Single story"
+"Y02","Stories","Story and a half"
+"Y03","Stories","Two story"
+"Y04","Stories","Three story"
+"Y05","Stories","Four story"
+"Y06","Stories","Bi-level"
+"Y07","Stories","Multi-story"
+"Y08","Stories","Multi-level"
+"Y09","Stories","Tri-level with basement"
+"Y10","Stories","Tri-level"
+"Y11","Style","A-frame"
+"Y12","Style","Cabin"
+"Y13","Style","Cape Cod"
+"Y14","Style","Chalet style"
+"Y15","Style","Colonial"
+"Y16","Style","Contemporary"
+"Y17","Style","Cottage/bungalow style"
+"Y18","Style","Country style"
+"Y19","Style","Denver Square style"
+"Y20","Style","Duplex"
+"Y21","Style","Earth berm"
+"Y22","Style","Farm house style"
+"Y23","Style","Highrise"
+"Y24","Style","Penthouse"
+"Y25","Style","Ranch"
+"Y26","Style","Raised ranch style"
+"Y27","Style","Spanish"
+"Y28","Style","Studio/efficiency"
+"Y29","Style","Traditional"
+"Y30","Style","Tudor"
+"Y31","Style","Victorian"
+"Y32","Style","Townhouse style"
+"Y33","Style","Cluster style"
+"Y34","Style","Dutch colonial style"
+"Y35","Style","Split foyer style"
+"Y36","Style","Georgian style"
+"Y37","Style","Williamsburg style"
+"Y38","Style","Split-level"
+"Y39","Style","Bungalow style"
+"Y40","Style","Santa Fe style"
+"Y41","Style","Condo"
+"Y42","Style","C+C601oop condominium"
+"Y43","Style","English style"
+"Y44","Style","Mediterranean style"
+"Y45","Style","Oriental style"
+"Y46","Style","Western style"
+"Y48","Style","Time share"
+"Y50","Stories","Single level"
+"Y51","Stories","Two and a half story"
+"Y61","Style","Four-plex"
+"Y62","Style","French provincial"
+"Y63","Style","Historic"
+"Y67","Style","Multiunit"
+"Y71","Style","Triplex"
+"Y73","Style","Two family"
+"Y74","Style","Three family"
+"Y75","Style","Four family"
+"Y76","Style","Five or more family"
+"Y77","Style","Residential"
+"Y78","Style","Commercial"
+"Y79","Style","Agricultural"
+"Y80","Style","Industrial"
+"Y81","Style","Short term rental"
+"Z01","Win/Doors","Bay window(s)"
+"Z02","Win/Doors","French door(s)"
+"Z03","Win/Doors","Hurricane awnings"
+"Z04","Win/Doors","Plantation shutters"
+"Z05","Win/Doors","Awnings"
+"Z06","Win/Doors","Greenhouse window"
+"Z07","Win/Doors","Sliding glass door(s)"
+"Z08","Win/Doors","Stained glass window"
+"Z09","Win/Doors","Jalousie windows"
+"Z10","Win/Doors","Picture window"
+"Z20","Win/Doors","Shutters"

@@ -1,0 +1,418 @@
+"inquiries_lead_template_id","inquiries_lead_template_name","inquiries_lead_template_subject","inquiries_lead_template_message","inquiries_lead_template_sort","inquiries_lead_template_type","inquiries_lead_template_realestate","site_id"
+"1","Website Follow Up Script","Website Follow Up Script","This is {agent name} with {agent's company}. We noticed that you visited the website, and were searching homes in the area. Anyway, this is a customer service follow up call to make sure you were able to find your way around the site and to answer any questions you might have. For example, many of our visitors have a little trouble navigating the MLS. \
+\
+Is there anything I can do to help? \
+\
+I also wanted to let you know of a new service offered by the MLS that a lot of people don't know about. We can actually set you up to receive emails of listings that fit your criteria as soon as they come on the market so that you are able to look before most people even know they are on the market and you don't have to visit the web site again and again. The cool part is you don't have to be tied into a Realtor to use it. Would you be interested in that?\
+ \
+(If \"No, not now\"...) \
+Ok great. We want you to feel welcome to come back to the website to help you in your search, and we'd also love for you to call us with any questions you may have or for any assistance you might need.\
+\
+(If \"Yes\", set up listings by email.)\
+Oh this (their dream home description) sounds nice! I'll bet it won't be any trouble at all for you to find a home like you're describing.\
+\
+Thank you so much for speaking with me today. Feel free to call us here if you need anything at all, ok? Bye!","0","2","1","0"
+"3","Voicemail - No Message","Voicemail - No Message","Got voicemail. Did not leave a message.","0","1","0","0"
+"4","Spoke with them","Spoke with them","","0","1","0","0"
+"5","Voicemail - Left Message","Voicemail - Left Message","","0","1","0","0"
+"6","Talked","Talked","","0","1","0","0"
+"9","Follow up call competed","Follow up call competed","","0","1","0","0"
+"10","Criteria is set up on MLS","Criteria is set up on MLS","","0","1","1","0"
+"11","Gave Lead Out","Gave Lead Out","","0","1","0","0"
+"12","Bad phone number","Bad phone number","","0","1","0","0"
+"13","CMA Follow-up","CMA Follow-up","We wanted to drop you this quick note to let you know that we received your request to prepare a market valuation for your property. We are currently gathering data, using the information you submitted, and will be trying to select comparable properties that have sold recently, as reported in the Multiple Listing Service (MLS). \
+\
+We hope to finish the research within 24-48 hours and then contact you to review the results. After speaking briefly with you, we should be able to narrow down the valuation so as to be fairly accurate. In some cases it may be necessary for one of us to do a brief site inspection prior to finishing your valuation, but we will cross that bridge when and if we get to it.\
+\
+Thanks for this opportunity to be of service. We look forward to talking to you soon.","0","2","1","0"
+"14","CMA Follow-up (already listed)","CMA Follow-up (already listed)","I wanted to let you know that while gathering the necessary information to prepare your market valuation, I found that your home is currently listed with another agent. While I am happy to prepare the market valuation you requested, professional standards won't allow me to offer additional help or assistance while you are under contract with that other agent. I hope you understand.\
+\
+Nevertheless, I hope to finish your research within 24-48 hours and contact you to review the results. After briefly speaking we should be able to narrow the valuation down so as to be fairly accurate. In some cases it may be necessary for me to do a brief site inspection prior to finishing your valuation, but we will cross that bridge when and if we get to it.\
+\
+Thanks for this opportunity to be of service. I look forward to talking to you soon.","0","2","1","0"
+"15","CMA Follow-up (not the owner)","CMA Follow-up (not the owner)","We wanted to drop you this quick note to let you know that, while gathering the information necessary for preparing your market valuation, we found that the tax records are listing someone other than you as the owner. Don't worry! Sometimes the tax records aren't up to date, or information is improperly listed. I simply thought that it would be a good idea to let you know. \
+\
+By the way, if you aren't the owner but might be interested in buying this property, we are still willing to help you with the valuation. You may not be aware that, because we are buyer representatives, our services are free to our buyer clients. However, it's important to know whether we are trying to find you the most value possible (as a seller) or to protect you (as a buyer) from overpaying for the home. Either way, we are happy to help, but we need to understand your interest in the valuation.\
+\
+Thanks for this opportunity to be of service. We look forward to talking with you soon.","0","2","1","0"
+"18","Offer Free CMA","Offer Free CMA","I wanted to drop you this quick note to thank you for visiting my website. Many visitors like to have an idea of what their property is worth as they begin thinking about making a move. If you are interested, I would be happy to prepare a detailed market valuation for you at no cost or obligation. Just send me the basic information listed below and I should be able to do the research and have your value within 24 to 48 hours.\
+\
+___\
+\
+Type of property:\
+\
+Address:\
+\
+City:\
+\
+State:\
+\
+Zip Code:\
+\
+Bedrooms:\
+\
+Baths:\
+\
+Any additional features:\
+\
+___\
+\
+\
+Thanks for allowing me this opportunity to be of service. I look forward to talking to you soon.","0","2","1","0"
+"19","Update Search Criteria","Update Search Criteria","How are you? I just wanted to confirm that you are still receiving the updated home listings I have been sending to you.\
+\
+Now that you have seen quite a few properties, I would appreciate your feedback. Often I find that my clients need for me to adjust the search somewhat and I am happy to adjust the search so we can help you find exactly what you are looking for.\
+\
+It is truly no problem whatsoever, if we need to make an adjustment. It is my job to help you find your dream home. Eventually, you may find a home you would like to see in person. When you do, call me. I will be happy to set up a private showing.\
+\
+Thanks for this opportunity to be of service. I will touch base with you soon.","0","2","1","0"
+"48","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","24"
+"49","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","24"
+"50","left message","left message","","0","1","0","24"
+"51","Talked (H)","Talked (H)","","0","1","0","24"
+"52","Talked (O)","Talked (O)","","0","1","0","24"
+"53","Phone # no good","Phone # no good","","0","1","0","24"
+"71","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","27"
+"72","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","27"
+"73","left message","left message","","0","1","0","27"
+"74","Talked (H)","Talked (H)","","0","1","0","27"
+"75","Talked (O)","Talked (O)","","0","1","0","27"
+"76","Phone # no good","Phone # no good","","0","1","0","27"
+"25","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","28"
+"26","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","28"
+"16","How Credit Scoring Works","How Credit Scoring Works","After we spoke earlier, I thought it might be helpful to send you a copy of an article I found that explains how the credit scoring process works. It was written by a company called Mortgage 101, and I've found it to be extremely helpful. Here's the article: \
+Credit scoring is a statistical method that lenders use to quickly and objectively assess the credit risk of a loan applicant. The score is a number that rates the likelihood you will pay back a loan. Scores range from 350 (high-risk) to 950 (low- risk). There are a few types of credit scores; the most widely used are FICO scores, which were developed by Fair Isaac & Company, Inc., for each of the credit reporting agencies.\
+\
+Credit scores only consider the information contained in your credit profile. They do not consider your income, savings, down payment amount, or demographic factors like gender, race, nationality, or marital status. Past delinquencies, derogatory payment behavior, current debt level, length of credit history, types of credit, and number of inquiries are all considered in credit scores. Your score considers both positive and negative information in your credit report. Late payments will lower your score, but establishing or re-establishing a good track record of making payments on time will raise your score. Different portions of your credit file are given different weights. They are:\
+\
+35% - Previous credit performance (specific to your payment history)\
+\
+30% - Current level of indebtedness (current balance compared to high credit)\
+\
+15% - Time credit has been in use (opening date)\
+\
+15% - Types of credit available (installment loans, revolving and debit accounts)\
+\
+5% - Pursuit of new credit (number of inquiries)\
+\
+The most important factor for a good credit score is paying your bills on time. Even if the debt you owe is a small amount, it is crucial that you make payments on time. In addition, you may want to keep balances low on credit cards and other \"revolving credit\"; apply for and open new credit accounts only as needed; and pay off debt rather than moving it around. Also, don't close unused cards as a short-term strategy to raise your score. Owing the same amount but having fewer open accounts may lower your score.\
+\
+Recent changes minimize the negative effects that rate shopping can have on a mortgage applicant. If there is a consumer-originated inquiry within the past 365 days from mortgage or auto-related industries, these inquiries are ignored for scoring purposes for the first 30 calendar days; then multiple inquiries within the next 14 days are counted as one. Each inquiry will still appear on the credit report.\
+\
+Every score is accompanied by a maximum of four reason codes. Reason codes identify the most significant reason that you did not score higher. The reason codes can help a lender describe the reasons for higher-than-expected rates or loan denial. Scores are not part of the credit profile and are not covered by the Fair Credit Reporting Act.\
+\
+Your credit report must contain at least one account which has been open for six months or greater, and at least one account that has been updated in the past six months, for you to get a credit score. This ensures that there is enough information in your report to generate an accurate score. If you do not meet the minimum criteria for getting a score, you may need to establish a credit history prior to applying for a mortgage. \
+\
+\
+I hope this article helps. I look forward to talking to you soon.","0","2","1","0"
+"17","Listings Follow-up","Listings Follow-up","I wanted to drop you this quick note to confirm that you have received the email home listings that I have been sending you. If you have been unable to view them, let me know and I will be happy to resend the information by email or fax, or even to send you a printed copy if need be.\
+\
+After you've had a chance to look at these listings, I would appreciate your feedback. It is fairly common for my customers to begin receiving listings and realize that the search criteria is not quite right. I am happy to adjust the search so we can help you find exactly what you are looking for. Don't be embarrassed or hesitant to let me change your search—it is part of my service to you.\
+\
+By the way, when you find a home you would like to see in person, I am happy to arrange for a private viewing. Just give me a call or email me and I will set it up. In the mean time I will continue to send you more listings as they become available.\
+\
+Thanks for this opportunity to be of service. I look forward to talking to you soon.","0","2","1","0"
+"47","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","24"
+"27","left message","left message","","0","1","0","28"
+"28","Talked (H)","Talked (H)","","0","1","0","28"
+"29","Talked (O)","Talked (O)","","0","1","0","28"
+"30","Phone # no good","Phone # no good","","0","1","0","28"
+"55","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","29"
+"56","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","29"
+"57","left message","left message","","0","1","0","29"
+"58","Talked (H)","Talked (H)","","0","1","0","29"
+"59","Talked (O)","Talked (O)","","0","1","0","29"
+"60","Phone # no good","Phone # no good","","0","1","0","29"
+"61","Follow Up to Lead","Curri Properties Request","Thank you for contacting Curri Properties, your Brevard County Luxury Home specialist.  We have years of experience successfully buying and selling homes in the local market and look forward to assisting you with your request.  Through our knowledge of the neighborhoods, schools, market conditions, zoning regulations and local economy, we know we can help you make the right decision.\
+\
+\
+","0","2","0","29"
+"70","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","27"
+"24","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","28"
+"54","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","29"
+"32","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","31"
+"33","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","31"
+"34","left message","left message","","0","1","0","31"
+"35","Talked (H)","Talked (H)","","0","1","0","31"
+"36","Talked (O)","Talked (O)","","0","1","0","31"
+"37","Phone # no good","Phone # no good","","0","1","0","31"
+"85","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","32"
+"86","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","32"
+"87","left message","left message","","0","1","0","32"
+"88","Talked (H)","Talked (H)","","0","1","0","32"
+"89","Talked (O)","Talked (O)","","0","1","0","32"
+"90","Phone # no good","Phone # no good","","0","1","0","32"
+"41","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","33"
+"42","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","33"
+"43","left message","left message","","0","1","0","33"
+"44","Talked (H)","Talked (H)","","0","1","0","33"
+"45","Talked (O)","Talked (O)","","0","1","0","33"
+"46","Phone # no good","Phone # no good","","0","1","0","33"
+"63","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","36"
+"64","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","36"
+"65","left message","left message","","0","1","0","36"
+"66","Talked (H)","Talked (H)","","0","1","0","36"
+"67","Talked (O)","Talked (O)","","0","1","0","36"
+"68","Phone # no good","Phone # no good","","0","1","0","36"
+"31","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","31"
+"38","Follow with inquiry","North Georgia Real Estate Inquiry","Hello:\
+I wanted to follow up with you after your recent inquiry to see if I can send you any other information that might be helpful.  Please e-mail me back or call me at 706-455-3109 if you have any questions or concerns.  I can also help you find a place to stay while you are searching for that perfect paridise in the mountains.  \
+\
+I am a native of the area and have lived here all of my life.  I am very familiar with the real estate market and like to pride myself with excellent customer service.  I love my job and would love to help you in your search.  I would also be glad to recommend someone to help you in financing your home or land.  I look forward to hearing from you soon.\
+\
+Thank you and I hope you have a blessed day!\
+\
+Sincerely,\
+\
+Christal Davis\
+Century 21 in the Mountains\
+Four Seasons Realty Team\
+706-455-3109","0","2","0","31"
+"39","Folow up after Conversation","Follow up ","I just wanted to take a moment to let you know that I throughly enjoyed speaking with you and I hope that I can help in your search for real estate.  Please let me know if I can forward any other homes to you or help in your search for a mortgage broker or even a place to stay while looking for a cabin or land.  \
+\
+I also wanted to let you know that we are offering a special $500 gift certificate to a furniture store in the area when you purchase a cabin from us or we will pay for a free weekend in a cabin while you are looking for real estate if you purchase from us.  We offer excellent customer service and we also cater to \"buyers\" and represent our buyers to fullests extent.  We also recommend having a home inspection and making sure several other items are covered when buying from us.  Always remember we are native to the area and can answer many questions that others may not be able to answer.  I always say that being \"Homegrown we offer Hometown Service\"!!!\
+\
+I look forward to hearing from you in the near future and please don't hesitate to ask any questions or to give us a call.\
+\
+Thank you,\
+\
+Christal Davis\
+Century 21 in the Mountains\
+706-455-3109\
+christaldavis@tds.net ","0","2","0","31"
+"84","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","32"
+"78","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","38"
+"79","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","38"
+"80","left message","left message","","0","1","0","38"
+"81","Talked (H)","Talked (H)","","0","1","0","38"
+"82","Talked (O)","Talked (O)","","0","1","0","38"
+"83","Phone # no good","Phone # no good","","0","1","0","38"
+"98","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","41"
+"99","left message","left message","","0","1","0","41"
+"100","Talked (H)","Talked (H)","","0","1","0","41"
+"101","Talked (O)","Talked (O)","","0","1","0","41"
+"102","Phone # no good","Phone # no good","","0","1","0","41"
+"92","Voicemail","Voicemail","Got voicemail. Did not leave a message.","0","1","0","45"
+"93","s/w him","s/w him","sorry he didn't make it down before; still looking and will get down soon","0","1","0","45"
+"94","left message","left message","","0","1","0","45"
+"95","Talked (H)","Talked (H)","","0","1","0","45"
+"96","Talked (O)","Talked (O)","","0","1","0","45"
+"97","Phone # no good","Phone # no good","","0","1","0","45"
+"23","Dan","","Daniel E. Pettigrew\
+Sterling Chase Realty\
+Direct: (352) 404-4622\
+Fax:    (888) 243-5519\
+Email | Foreclosures | MLS Search | Mortgage Rates | Home Value\
+\
+     \
+\
+                    \
+ Eustis, Heathrow, Mount Dora, Lake Mary, Longwood, Sanford and Sorrento\
+\
+ \
+","0","2","0","63"
+"40","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","33"
+"62","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","36"
+"69","More information request","Require addition information to help you","Thank you for your inquiry looking for real estate in the North Georgia mountains. I am willing to assist you in finding the realestate that meets your needs. In order for me to assist you, I require additional information. Please ensure that you send me your full name, address and valid telephone number where I may reach you. Providing me with a description of the type of real estate you are looking for is vital to the search process. If you are looking for acreage, please tell me how many acres, what kind of view (Mountain, Lake, River, etc.) and how much per acre you can afford to spend. If you are looking for a home, please tell me how many bedrooms, bathrooms, construction type(log, cedar,stone,etc.) what typre of view, and how much you can afford to spend. All the information you provide me is strictly confidential!  The more information you can provide allows me to narrow my search and help you find the real estate of your dreams. I look forward to assisting you in getting the realestate you want! Thank you, Adam Brynes.  mountainlifeproperty.com ","0","2","0","36"
+"77","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","38"
+"91","Hotline Follow Up Script","Hotline Follow Up Script","This is {agent name} with {agent's company}.\
+\
+(Hotline Lead when you do not know the name of the person who called.) I wonder if you could help me?\
+\
+I got a message that someone from this number called our Hotline and I am supposed to do a customer service follow up call but I don't know the name of the person who called. You wouldn't happen to know who that was would you?\
+\
+(If you know the name of the person, then ask for them and start here.) I was paged to call you because you had accessed our 24-hour help line and we want to ask if you were able to get all the information you needed?\
+\
+Which house were you calling on?\
+\
+What is the most important feature that you look for in a house? Is it the number of bedrooms, the size, schools or something else?\
+\
+Let me ask you this - what tools do you find the most helpful in doing your house hunt? Is it the Internet, real estate magazines, newspaper or something else?\
+\
+The thing is, with thousands of homes for sale at any given time, it's almost impossible to sift through and find the really good deals. In fact most of the time, the best deals come on the market and sell long before they get printed in the newspapers and magazines.\
+\
+In fact, it generally takes over a month from the time a house first comes on the market before that house actually shows up in the home magazines. And, I'm willing to bet that you have found many houses you check on are already sold, haven't you? (Pause for response.)\
+\
+Our team is one of the top real estate teams in {agent's market}, and we try and let our buyer customers know of new listings BEFORE they get into the MLS, the magazines, and the Internet websites. Would you be interested in getting the inside track on any new listings that might fit your needs?\
+\
+Get home info and then make an appointment to get back with them with the new listings that may fit.","0","2","0","45"
