@@ -239,6 +239,9 @@
 	ts.serverGlobals.serverhomedir=request.zos.zcoreRootPath;
 	ts.serverGlobals.serverdatasource=request.zos.zcoreDatasource;
 	ts.serverGlobals.datasource=request.zos.zcoreDatasource;
+
+
+	
 	query name="qA" datasource="#ts.serverGlobals.serverdatasource#"{
 		writeoutput("SHOW DATABASES like '%#request.zos.zcoredatasource#%' ");
 	}
@@ -406,7 +409,14 @@
 	local.c.cacheDisabled=false;
 	local.c.autoReset=false;
 	request.zos.noVerifyQueryObject=ts.db.newQuery(local.c);
-	
+
+	if(structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
+		// verify tables
+		verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
+		arrLog=verifyTablesCom.index(true);
+		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
+	}
+
 	request.zos.queryObject.sql="SHOW VARIABLES LIKE #request.zos.queryObject.param('version')#";
 	
 	local.qV=request.zos.queryObject.execute("qV");
@@ -599,6 +609,8 @@
 	}
 	application.zcore.functions.zClearCFMLTemplateCache();
 	
+
+
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 4'});
 	if(structkeyexists(application, 'siteStruct') EQ false){
 		application.siteStruct=structnew();

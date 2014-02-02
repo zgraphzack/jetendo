@@ -30,15 +30,21 @@
 			query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
 				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
 			}
-			return true;
+			if(not structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
+				return true;
+			}
 		}else{
 			if(qVersion.jetendo_setup_database_version EQ request.zos.databaseVersion){
-				return true;
+				if(not structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
+					return true;
+				}
 			}else if(qVersion.jetendo_setup_database_version GT request.zos.databaseVersion){
 				throw("Jetendo database is a newer version then request.zos.databaseVersion.  Please check that source code version is the same or newer then database.");
 			}
 		}
 	}
+	setting requesttimeout="500";
+	application[request.zos.installPath&":dbUpgradeCheckVersion"]=true;
 
 	// verify the rest of the config.cfc values before installing database & application.
 
@@ -60,17 +66,6 @@
 			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
 		}
 	}
-	// verify tables
-	verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
-	arrLog=verifyTablesCom.index(true);
-	/*if(arrayLen(arrLog)){
-		savecontent variable="output"{
-			echo("<h2>verify-tables failed.</h2>");
-			writedump(arrLog);
-
-		}
-		throw(output);
-	}*/
 	</cfscript>
 </cffunction>
 
@@ -349,7 +344,7 @@
 	}
 
 	query name="qLoadData" datasource="#arguments.datasource#"{
-		echo(preserveSingleQuotes("LOAD DATA INFILE '#application.zcore.functions.zescape(arguments.filePath)#' 
+		echo(preserveSingleQuotes("LOAD DATA INFILE '#escape(arguments.filePath)#' 
 		REPLACE INTO TABLE `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#` 
 		FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
 	 	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''
@@ -362,6 +357,12 @@
 	}
 	</cfscript>
 	
+</cffunction>
+
+
+<cffunction name="escape" localmode="modern" returntype="any" output="false">
+	<cfargument name="string" type="string" required="yes">
+	<cfreturn replace(replace(arguments.string, "\", "\\", "ALL"), "'", "''", "ALL")>
 </cffunction>
 
 <cffunction name="dumpTableData" localmode="modern" access="private">
@@ -379,7 +380,7 @@
 	db.sql="SELECT "&arrayToList(arrC, ", ")&"
 	UNION ALL
 	SELECT #arguments.columnList#
-	INTO OUTFILE '#application.zcore.functions.zescape(arguments.filePath)#' 
+	INTO OUTFILE '#escape(arguments.filePath)#' 
 	FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
  	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''  
  	FROM `#arguments.datasource#`.`#request.zos.zcoreDatasourcePrefix##arguments.table#` ";
@@ -609,7 +610,8 @@
 	<cfscript>
 	// load schema in json format
 	tempFile=request.zos.installPath&"share/database/jetendo-schema.json";
-	dsStruct=deserializeJson(application.zcore.functions.zreadfile(tempFile));
+	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
+	dsStruct=deserializeJson(contents);
 
 	getCreateTableSQL(dsStruct);
 
@@ -951,7 +953,7 @@
 		if(isNumeric(arguments.columnStruct.default)){
 			local.column&=" DEFAULT "&arguments.columnStruct.default;
 		}else{
-			local.column&=" DEFAULT '"&application.zcore.functions.zescape(arguments.columnStruct.default)&"'";
+			local.column&=" DEFAULT '"&escape(arguments.columnStruct.default)&"'";
 		}
 	}
 	if(arguments.columnStruct.extra NEQ ""){

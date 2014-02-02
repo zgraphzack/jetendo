@@ -63,6 +63,7 @@
 
 <cffunction name="OnRequestStart" localmode="modern" access="public" returntype="any" output="true" hint="Fires at first part of page processing.">
   <cfargument name="TargetPage" type="string" required="true" /><cfscript>   
+
 	s=gettickcount('nano'); 
 	 
 	ts=structnew();

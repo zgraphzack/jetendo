@@ -441,7 +441,7 @@ rs=zGetHashPath(dir, id);
 		<cftry><!--- mode="#arguments.mode#" --->
             <cffile  addnewline="no" action="write" nameconflict="overwrite" charset="utf-8" file="#arguments.filePath##tempUnique#" output="#arguments.srcString#">
             <cfif compare(arguments.filePath&tempUnique , arguments.filePath) NEQ 0>
-                <cflock name="#request.zos.zcoremapping#|file|#arguments.filePath#" timeout="60" type="exclusive">
+                <cflock name="#request.zos.installPath#|file|#arguments.filePath#" timeout="60" type="exclusive">
                     <cffile action="rename" nameconflict="overwrite" source="#arguments.filePath##tempUnique#" destination="#arguments.filePath#">
                 </cflock>
             </cfif>
@@ -989,7 +989,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	</cfscript>
 	<cfif fileexists(arguments.filePath)>
 		<cftry>
-        	<cflock name="#request.zos.zcoremapping#|file|#arguments.filePath#" timeout="30" throwontimeout="yes" type="readonly">
+        	<cflock name="#request.zos.installPath#|file|#arguments.filePath#" timeout="30" throwontimeout="yes" type="readonly">
 			<cffile charset="utf-8" action="read" file="#arguments.filePath#" variable="returnString">
             </cflock>
 			<cfcatch type="any">
