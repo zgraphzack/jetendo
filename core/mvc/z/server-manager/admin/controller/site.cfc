@@ -651,184 +651,7 @@
 		application.zcore.functions.zcreatedirectory(sdomain2&'_cache/scripts/emailTemplates');
 	}
 	if(structkeyexists(form, 'createUserBlogContent')){
-		 db.sql="INSERT INTO #db.table("app_x_site", request.zos.zcoreDatasource)#  (`app_id`,`site_id`,`app_x_site_status`) VALUES #db.trustedSQL("( '10','#form.site_id#','1')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId1={id:local.rs.result};
-		}
-		db.sql="INSERT INTO #db.table("app_x_site", request.zos.zcoreDatasource)#  (`app_id`,`site_id`,`app_x_site_status`) VALUES #db.trustedSQL("( '12','#form.site_id#','1')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId2={id:local.rs.result};
-		}
-		 db.sql="INSERT INTO #db.table("content_config", request.zos.zcoreDatasource)#  (`content_config_url_article_id`,`content_config_sidebar_tag`,`content_config_url_listing_user_id`,`content_config_inquiry_qualify`,`content_config_override_stylesheet`,`content_config_phone_required`,`content_config_default_subpage_link_layout`,`content_config_default_parentpage_link_layout`,`content_config_hide_inquiring_about`,`content_config_email_required`,`app_x_site_id`,`site_id`) VALUES #db.trustedSQL("( '6','','5','0','0','1','0','7','0','1','#qId2.id#','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		
-		 db.sql="INSERT INTO #db.table("blog_config", request.zos.zcoreDatasource)#  (`blog_config_title`,`blog_config_subtitle`,`blog_config_stylesheet`,`blog_config_manager_stylesheet`,`blog_config_root_url`,`blog_config_url_article_id`,`blog_config_url_category_id`,`blog_config_url_misc_id`,`blog_config_url_tag_id`,`blog_config_recent_name`,`blog_config_url_format`,`blog_config_category_home_name`,`blog_config_recent_url`,`blog_config_category_home_url`,`blog_config_archive_name`,`blog_config_home_url`,`blog_config_include_sidebar`,`blog_config_show_detail`,`app_x_site_id`,`site_id`) VALUES 
-		 #db.trustedSQL("( 'Blog','A place to share thoughts','/z/a/blog/stylesheets/style.css','','{default}','1','2','3','4','Recent Articles','/##name##-##appid##-##id##.##ext##','Blog Categories','{default}','{default}','archive','/','0','0','#qId1.id#','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		 
-		db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '6','#form.site_id#', 12)")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '5','#form.site_id#', 10)")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '1','#form.site_id#', 10)")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '2','#form.site_id#', 10)")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '3','#form.site_id#', 10)")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '4','#form.site_id#', 10)")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'administrator','','#form.site_id#','0')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId1={id:local.rs.result};
-		}
-		db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'agent','','#form.site_id#','0')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId2={id:local.rs.result};
-		}
-		db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'broker','','#form.site_id#','0')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId3={id:local.rs.result};
-		}
-		 db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'member','','#form.site_id#','1')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId4={id:local.rs.result};
-		}
-		db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'user','','#form.site_id#','0')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}else{
-			qId5={id:local.rs.result};
-		}
-		//administrator
-		 db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId1.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId2.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId3.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		
-		//agent
-		 db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId2.id#','#qId2.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId2.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId2.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		//broker
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId3.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId2.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		
-		//member
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) 
-		VALUES #db.trustedSQL("( '#qId4.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) 
-		VALUES #db.trustedSQL("( '#qId4.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
-		
-		//user
-		db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) 
-		VALUES #db.trustedSQL("( '#qId5.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
-		local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
-		if(not local.rs.success){
-			application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
-		}
+		createUserBlogContent(form.site_id);
 		
 		if(structkeyexists(form, 'site_theme_sync_site_id') and form.site_theme_sync_site_id NEQ 0){ 
 		}else{
@@ -881,6 +704,192 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="createUserBlogContent" localmode="modern" access="public">
+	<cfargument name="site_id" type="numeric" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	form.site_id=arguments.site_id;
+
+	db.sql="INSERT INTO #db.table("app_x_site", request.zos.zcoreDatasource)#  (`app_id`,`site_id`,`app_x_site_status`) VALUES #db.trustedSQL("( '10','#form.site_id#','1')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId1={id:local.rs.result};
+	}
+	db.sql="INSERT INTO #db.table("app_x_site", request.zos.zcoreDatasource)#  (`app_id`,`site_id`,`app_x_site_status`) VALUES #db.trustedSQL("( '12','#form.site_id#','1')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId2={id:local.rs.result};
+	}
+	 db.sql="INSERT INTO #db.table("content_config", request.zos.zcoreDatasource)#  (`content_config_url_article_id`,`content_config_sidebar_tag`,`content_config_url_listing_user_id`,`content_config_inquiry_qualify`,`content_config_override_stylesheet`,`content_config_phone_required`,`content_config_default_subpage_link_layout`,`content_config_default_parentpage_link_layout`,`content_config_hide_inquiring_about`,`content_config_email_required`,`app_x_site_id`,`site_id`) VALUES #db.trustedSQL("( '6','','5','0','0','1','0','7','0','1','#qId2.id#','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	
+	 db.sql="INSERT INTO #db.table("blog_config", request.zos.zcoreDatasource)#  (`blog_config_title`,`blog_config_subtitle`,`blog_config_stylesheet`,`blog_config_manager_stylesheet`,`blog_config_root_url`,`blog_config_url_article_id`,`blog_config_url_category_id`,`blog_config_url_misc_id`,`blog_config_url_tag_id`,`blog_config_recent_name`,`blog_config_url_format`,`blog_config_category_home_name`,`blog_config_recent_url`,`blog_config_category_home_url`,`blog_config_archive_name`,`blog_config_home_url`,`blog_config_include_sidebar`,`blog_config_show_detail`,`app_x_site_id`,`site_id`) VALUES 
+	 #db.trustedSQL("( 'Blog','A place to share thoughts','/z/a/blog/stylesheets/style.css','','{default}','1','2','3','4','Recent Articles','/##name##-##appid##-##id##.##ext##','Blog Categories','{default}','{default}','archive','/','0','0','#qId1.id#','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	 
+	db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '6','#form.site_id#', 12)")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '5','#form.site_id#', 10)")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '1','#form.site_id#', 10)")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '2','#form.site_id#', 10)")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '3','#form.site_id#', 10)")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("app_reserve", request.zos.zcoreDatasource)#  (`app_reserve_url_id`,`site_id`, `app_id`) VALUES #db.trustedSQL("( '4','#form.site_id#', 10)")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'administrator','','#form.site_id#','0')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId1={id:local.rs.result};
+	}
+	db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'agent','','#form.site_id#','0')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId2={id:local.rs.result};
+	}
+	db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'broker','','#form.site_id#','0')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId3={id:local.rs.result};
+	}
+	 db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'member','','#form.site_id#','1')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId4={id:local.rs.result};
+	}
+	db.sql="INSERT INTO #db.table("user_group", request.zos.zcoreDatasource)#  (`user_group_name`,`user_group_friendly_name`,`site_id`,`user_group_primary`) VALUES #db.trustedSQL("( 'user','','#form.site_id#','0')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}else{
+		qId5={id:local.rs.result};
+	}
+	//administrator
+	 db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId1.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId2.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId3.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId1.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	
+	//agent
+	 db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId2.id#','#qId2.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId2.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId2.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	//broker
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId3.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId2.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) VALUES #db.trustedSQL("( '#qId3.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	
+	//member
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) 
+	VALUES #db.trustedSQL("( '#qId4.id#','#qId4.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) 
+	VALUES #db.trustedSQL("( '#qId4.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	
+	//user
+	db.sql="INSERT INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  (`user_group_id`,`user_group_child_id`,`user_group_login_access`,`user_group_modify_user`,`user_group_share_user`,`site_id`) 
+	VALUES #db.trustedSQL("( '#qId5.id#','#qId5.id#','1','0','0','#form.site_id#')")#";
+	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
+	if(not local.rs.success){
+		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
+	}
+	</cfscript>
+</cffunction>
 
 <cffunction name="newDomain" localmode="modern" access="remote" roles="serveradministrator">
 	<h2>Add Site</h2>
@@ -1006,43 +1015,18 @@
 		<tr>
 			<td class="table-list" style="vertical-align:top; width:140px;">IP Address:</td>
 			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_ip_address", "table-error","table-white")#>
-			
-		<cfscript>
-		d=application.zcore.functions.zSecureCommand("getSystemIpList", 10);
-		
-		arrD=listtoarray(d, chr(10));
-		arrIp=arraynew(1);
-		firstIp=false;
-		defaultIpSet=false;
-		defaultIp="";
-		for(i=1;i LTE arraylen(arrD);i++){
-			arrD[i]=trim(arrD[i]);
-			if((arrD[i] CONTAINS "eth0:" or arrD[i] CONTAINS "p4p1:") and defaultIpSet EQ false){
-				firstIp=true;
-			}
-			if(left(arrD[i], 4) EQ "inet"){
-				arrS=listtoarray(arrD[i], " ",false);
-				arrS2=listtoarray(arrS[2], "/", false);
-				arrayappend(arrIp, arrS2[1]);
-				if(firstIp){
-					defaultIp=arrS2[1];
-					firstIp=false;
-					defaultIpSet=true;
-				}
-			}
-		} 
-		if(not defaultIpSet){
-			defaultIp=arrIp[1];	
-		}
-		if(form.site_ip_address EQ ""){
-			form.site_ip_address=defaultIp;
-		}
+				<cfscript>
+				ipStruct=application.zcore.functions.getSystemIpStruct();
 
-		selectStruct = StructNew();
-		selectStruct.name = "site_ip_address";
-		selectStruct.listvalues=arraytolist(arrIp,",");
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript></td>
+				if(form.site_ip_address EQ ""){
+					form.site_ip_address=ipStruct.defaultIp;
+				}
+				selectStruct = StructNew();
+				selectStruct.name = "site_ip_address";
+				selectStruct.listvalues=arraytolist(ipStruct.arrIp,",");
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript>
+			</td>
 		</tr>
         <cfif request.zos.istestserver EQ false>
 		<tr>
