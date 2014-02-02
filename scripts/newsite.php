@@ -60,9 +60,8 @@ for($i4=0;$i4 < 62;$i4++){
 		if(file_exists($sharePath."__zdeploy-core-complete.txt")){ 
 			@unlink($sharePath."__zdeploy-core-complete.txt");
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_root_path")."core/", $wwwUser, $wwwUser, "440", "550", true, false, array(), $isTestServer);
-		}
-		if(file_exists($sharePath."__zdeploy-public-complete.txt")){ 
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_root_path")."public/", $wwwUser, $wwwUser, "440", "550", true, false, array(), $isTestServer);
+			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_share_path")."database/", $wwwUser, $wwwUser, "660", "770", true, false, array(), $isTestServer);
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_scripts_path"), "root", "root", "440", "550", true, false, array(), $isTestServer);
 		}
 	}
@@ -109,7 +108,7 @@ for($i4=0;$i4 < 62;$i4++){
 					$appendString=" 2>&1";
 				}
 				//-avz --chmod=Do=,Fo=,Du=rwx,Dg=rwx,Fu=rw,Fg=rw
-				$cmd='rsync -rtLvz '.$sourceOnlyList.' --exclude=\'.git*\' --exclude=\'settings.xml\' --exclude=\'.project\' --exclude=\'*.sublime-*\' --exclude=\'lost+found/\' --exclude=\'sites-writable/\' --exclude=\'sites/\' --exclude=\'share/\' --exclude=\'logs/\' --exclude=\'execute/\' --exclude=\'phptemp/\' --exclude=\'railovhosts/\' --exclude=\'compile/\' --exclude=\'.git/\' --exclude=_notes --exclude=\'*/_notes\' --delay-updates --delete -e "'.$sshCommand.'" '.$rootPath.' '.$remoteUsername.'@'.$remoteHost.':'.$rootPath.$appendString; 
+				$cmd='rsync -rtLvz '.$sourceOnlyList.'  --include=\'share/database/\' --exclude=\'.git*\' --exclude=\'settings.xml\' --exclude=\'.project\' --exclude=\'*.sublime-*\' --exclude=\'lost+found/\' --exclude=\'sites-writable/\' --exclude=\'sites/\' --exclude=\'share/*\' --exclude=\'logs/\' --exclude=\'execute/\' --exclude=\'phptemp/\' --exclude=\'railovhosts/\' --exclude=\'compile/\' --exclude=\'.git/\' --exclude=_notes --exclude=\'*/_notes\' --delay-updates --delete -e "'.$sshCommand.'" '.$rootPath.' '.$remoteUsername.'@'.$remoteHost.':'.$rootPath.$appendString; 
 				echo $cmd."\n";
 				$result=$cmd."\n".`$cmd`;
 
