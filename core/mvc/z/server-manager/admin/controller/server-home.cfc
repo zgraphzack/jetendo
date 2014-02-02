@@ -100,6 +100,19 @@
 </cffunction>
 
 
+<cffunction name="prepareForDistribution" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+	result=dbUpgradeCom.dumpInitialDatabase();
+	if(not result){
+		application.zcore.status.setStatus(request.zsid, "Failed to dump initial database.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	}
+	application.zcore.status.setStatus(request.zsid, "The current installation is ready for distribution.");
+	application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	</cfscript>
+</cffunction>
+
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -123,6 +136,7 @@
 		<p><a href="/z/server-manager/tasks/publish-system-css/index" target="_blank">Re-publish System CSS</a></p>
 		<p><a href="/z/server-manager/admin/site-import/index" target="_blank">Site Import</a></p>
 		<p><a href="/z/server-manager/admin/server-home/countLines">CFML Line Counter</a></p> 
+		<p><a href="/z/server-manager/admin/server-home/prepareForDistribution" target="_blank">Prepare For Distribution</a></p>
 		<h3>Scheduled Tasks</h3>
 		<p><a href="/z/server-manager/tasks/password-expiration/index" target="_blank">Delete passwords for inactive accounts</a></p>
 		<p><a href="/z/server-manager/tasks/verify-tables/index" target="_blank">Verify Table Structure</a></p>

@@ -570,8 +570,7 @@
 			dumpTableData(filePath, datasource, n, dataTables[datasource2][n].columnList);
 		}
 	}
-	echo("Initial database dumped");
-	abort;
+	return true;
 	</cfscript>
 </cffunction>
 
