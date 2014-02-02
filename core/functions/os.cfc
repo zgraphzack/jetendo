@@ -1,5 +1,40 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="getSystemIpStruct" localmode="modern" returntype="struct" access="public">
+
+	<cfscript>
+	d=application.zcore.functions.zSecureCommand("getSystemIpList", 10);
+	
+	arrD=listtoarray(d, chr(10));
+	arrIp=arraynew(1);
+	firstIp=false;
+	defaultIpSet=false;
+	defaultIp="";
+	for(i=1;i LTE arraylen(arrD);i++){
+		arrD[i]=trim(arrD[i]);
+		if((arrD[i] CONTAINS "eth0:" or arrD[i] CONTAINS "p4p1:") and defaultIpSet EQ false){
+			firstIp=true;
+		}
+		if(left(arrD[i], 4) EQ "inet"){
+			arrS=listtoarray(arrD[i], " ",false);
+			arrS2=listtoarray(arrS[2], "/", false);
+			arrayappend(arrIp, arrS2[1]);
+			if(firstIp){
+				defaultIp=arrS2[1];
+				firstIp=false;
+				defaultIpSet=true;
+			}
+		}
+	} 
+	if(not defaultIpSet){
+		defaultIp=arrIp[1];	
+	}
+	return {
+		defaultIp: defaultIp,
+		arrIp=arrIp
+	};
+	</cfscript>
+</cffunction>
 
  <!--- application.zcore.functions.zSecureCommand(command, timeoutInSeconds); --->
 <cffunction name="zSecureCommand" localmode="modern" access="public" returntype="string">
