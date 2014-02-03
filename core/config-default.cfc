@@ -8,8 +8,8 @@
 	// install path of this Application.cfc - It must end with a forward slash.
 	ts.zOS = StructNew();
 	// domain to append to ALL of your test domains.
-	ts.zos.testDomain="dev.com";
-	ts.zos.testManagerDomain="devsecure.com"; 
+	ts.zos.testDomain=".127.0.0.2.xip.io";
+	ts.zos.testManagerDomain="127.0.0.2.xip.io"; 
 	if(findnocase("."&ts.zos.testDomain, arguments.tempCgi.http_host) NEQ 0 or findnocase("."&ts.zos.testManagerDomain, arguments.tempCgi.http_host) NEQ 0){
 		ts.zos.installPath="/opt/jetendo/";
 		ts.zOS.istestserver=true;

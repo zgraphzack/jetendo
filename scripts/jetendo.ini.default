@@ -6,7 +6,7 @@ post_max_size = 2000M
 ; add to the end for jetendo scripts to work
 jetendo_developer_email_from="server@your-company.com";
 jetendo_developer_email_to="developer@your-company.com";
-jetendo_test_domain="dev.com";
+jetendo_test_domain=".127.0.0.2.xip.io";
 jetendo_mysql_default_host ="127.0.0.1"
 jetendo_mysql_default_user =mysql_user
 jetendo_mysql_default_password =mysql_password
@@ -19,7 +19,7 @@ jetendo_company_domain="https://www.farbeyondcode.com"
 jetendo_company_phone="123-555-1234"
 jetendo_company_upload_password="your_password"
 jetendo_admin_domain="https://jetendo.your-company.com"
-jetendo_test_admin_domain="http://jetendo.your-company.com.dev.com"
+jetendo_test_admin_domain="http://jetendo.your-company.com.127.0.0.2.xip.io"
 jetendo_sites_path="/opt/jetendo/sites/";
 jetendo_sites_writable_path="/opt/jetendo/sites-writable/";
 jetendo_log_path="/opt/jetendo/logs/";
