@@ -181,9 +181,10 @@ variables.typeStruct["text"]="text";
 		diskMetaDataDate=qD.dateLastModified[1];	
 	}
 	if(qD.recordcount EQ 0){
-		writeoutput('metadata cache is missing: #path#');
+		return false;
+		/*writeoutput('metadata cache is missing: #path#');
 		application.zcore.functions.zabort();
-		application.zcore.template.fail("metadatacache is missing.");	
+		application.zcore.template.fail("metadatacache is missing.");*/	
 	}
 	if(not structkeyexists(form, 'forceMetaDataRebuild') and (datecompare(diskMetaDataDate, arguments.metadataDateLastModified) LTE 0)){
 		try{
@@ -193,18 +194,6 @@ variables.typeStruct["text"]="text";
 		}
 	}
 	contents=application.zcore.functions.zreadfile(metadataPath);
-	/*if(this.mls_id EQ 14){
-		// fix madness in RVAR
-		
-	}else if(this.mls_id EQ 13){
-		// fix subdivision madness for northeast florida
-		
-		// strip subdivision xml
-		// parse it
-		//xmlSub=xmlparse(subdivisions);
-		// add it back to original metadata or maybe database instead
-		//xmlMeta=xmlparse(contents);
-	}*/
 	xmlMeta=xmlparse(contents);
 	xmlBase=xmlMeta.rets.metadata["metadata-system"].system["metadata-resource"].resource;
 	structdelete(variables,"contents");
@@ -310,10 +299,6 @@ variables.typeStruct["text"]="text";
 			metaStruct[mk].table[curTable.xmlattributes.class].tableFields=structnew();
 			metaStruct[mk].table[curTable.xmlattributes.class].fieldLookup=structnew();
 			
-			// each class's fields can have a different lookupname even though the systemname is identical - this means, i must always keep the sub classes separate
-			/*if(this.mls_id EQ "22"){
-				writeoutput(curTable.xmlattributes.class&"<br>");
-			}*/
 			if(structkeyexists(curTable,'field')){
 				for(n=1;n LTE arraylen(curTable.field);n++){
 					ts=structnew();
@@ -454,21 +439,7 @@ variables.typeStruct["text"]="text";
 	}
 	</cfscript>
 	<cfif arraylen(arrError) NEQ 0>
-		<cfsavecontent variable="emailout"><span style="font-family:Verdana, Geneva, sans-serif; font-size:11px;"><!--- The latest RETS metadata is different from the current database schema.<br />
-		<br />
-		<table style="border-spacing:0px;font-family:Verdana, Geneva, sans-serif; font-size:11px;">
-			<tr>
-				<td>OLD</td>
-				<td>NEW</td>
-				<td></td>
-			</tr>
-			<cfscript>
-			for(i=1;i LTE arraylen(arrError);i++){
-				writeoutput('<tr><td>#arrError[i].old#</td><td>#arrError[i].new#</td><td></td></tr>');
-			}
-			</cfscript>
-		</table>
-		<br /> --->
+		<cfsavecontent variable="emailout"><span style="font-family:Verdana, Geneva, sans-serif; font-size:11px;">
 		Run these queries on the test server and make sure the application still works and then run on live server and then re-run import process.;
 		<hr />
 		<cfscript>
@@ -527,6 +498,7 @@ variables.typeStruct["text"]="text";
 	return metaStruct;
 	</cfscript>
 </cffunction>
+
 <cffunction name="convertRawDataToLookupValues" localmode="modern">
 	<cfargument name="idx" type="struct" required="yes">
 	<cfargument name="tableName" type="string" required="yes">
