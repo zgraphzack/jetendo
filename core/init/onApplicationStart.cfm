@@ -494,7 +494,7 @@
 		t9.site_live=1;
 	}
 	t9.site_lock_theme=1;
-	t9.site_sitename=replace(replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.",""), "."&request.zos.testDomain);
+	t9.site_sitename=replace(replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.",""), "."&request.zos.testDomain, "");
 	t9.site_datasource=request.zos.zcoreDatasource;
 	t9.site_homelinktext='Home';
 	t9.site_email_campaign_from=request.zos.developerEmailFrom;
