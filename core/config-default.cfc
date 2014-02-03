@@ -44,10 +44,10 @@
 		ts.zos.sitesPath="/opt/jetendo/sites/";
 		
 		// The database name MUST match the datasource name.
-		ts.zos.zcoreDatasource="zcore"; 
+		ts.zos.zcoreDatasource="jetendo"; 
 		ts.zos.zcoreTempDatasource="ztemp"; 
 		ts.zOS.insertIDColumnForSiteIDTable="id2";
-		ts.zOS.railoUser="nginx";
+		ts.zOS.railoUser="www-data";
 		ts.zos.allowRequestCFC=true;
 		ts.zOS.railoAdminReadEnabled=true;
 	}else{ 
@@ -71,16 +71,16 @@
 		ts.zos.backupDirectory="/opt/jetendo/mysqlbackup/";
 		ts.zos.mysqlBackupDirectory="/opt/jetendo/mysqlbackup/";
 		// The database name MUST match the datasource name.
-		ts.zos.zcoreDatasource="zcore"; 
+		ts.zos.zcoreDatasource="jetendo"; 
 		ts.zos.zcoreTempDatasource="ztemp";
 		ts.zOS.insertIDColumnForSiteIDTable="id2";
-		ts.zOS.railoUser="nginx";
+		ts.zOS.railoUser="www-data";
 		ts.zOS.railoAdminReadEnabled=false;
 	};
 	ts.zOS.railoAdminWriteEnabled=false; // must be enabled to allow deploying railo archives.
 	ts.zos.errorEmailAlertsPerMinute=5;
 	
-	ts.zos.zcoreTestHost="test.your-company.com.dev.com";
+	ts.zos.zcoreTestHost="test.your-company.com.127.0.0.2.xip.io";
 		
 	ts.zos.scriptDirectory="/opt/jetendo/scripts/";
 	ts.zos.backupStructureOnlyTables={

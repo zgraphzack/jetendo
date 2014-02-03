@@ -29,7 +29,7 @@ jetendo_share_path="/opt/jetendo/share/"
 jetendo_scripts_path="/opt/jetendo/scripts/";
 jetendo_backup_path="/zbackup/";
 jetendo_nginx_ssl_path="/opt/nginx/ssl/";
-jetendo_www_user="nginx";
+jetendo_www_user="www-data";
 // requires creating a developer account at yelp.com
 jetendo_yelp_consumer_key="";
 jetendo_yelp_consumer_secret = "";
