@@ -126,7 +126,7 @@ if(strpos($status, "fatal: Not a git repository") !== FALSE){
 	}
 }
 
-if($status == "nothing to commit, working directory clean"){
+if(strpos($status, "nothing to commit, working directory clean") !== FALSE){
 	echo("Git repo is clean. All files match the ".$gitBranch." at ".$gitCloneURL.".\n");
 }else{
 	echo("Git repo is not clean: Ignore this if you are intentionally changing the Jetendo source code before installation.\n");
