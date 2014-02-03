@@ -399,7 +399,7 @@ if(table_id EQ false){
 		fieldsWithNoEnumeration: false,
 		forcePrimaryInsert={}
 	}
-	if(structkeyexists(Request.zOS.globals, 'datasource')){
+	if(structkeyexists(Request.zOS, 'globals') and structkeyexists(Request.zOS.globals, 'datasource')){
 		tempStruct.datasource = Request.zOS.globals.datasource;
 	}
 	var ss = "";
@@ -554,7 +554,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	tempStruct.enableTableFieldCache=true;
 	tempStruct.debug = false;
 	tempStruct.noRequestSQL=false;
-	if(structkeyexists(Request.zOS.globals, 'datasource')){
+	if(structkeyexists(Request.zOS, 'globals') and structkeyexists(Request.zOS.globals, 'datasource')){
 		tempStruct.datasource = Request.zOS.globals.datasource;
 	}
 	tempStruct.enumerate = ""; 
