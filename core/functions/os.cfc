@@ -2538,7 +2538,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 		}
 	}
 	application.zcore.functions.zWriteFile(local.curPrivatePath&'_cache/scripts/global.json', serializeJson(tempStruct));
-	local.curSiteId=request.zos.globals.id;
+	local.curSiteId=tempStruct.id;
 	request.zos.globals=duplicate(application.zcore.serverglobals);
 	structappend(Request.zos.globals, firstTempStruct, true);
 	structappend(Request.zos.globals, tempStruct, true);
