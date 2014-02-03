@@ -391,13 +391,16 @@ if(table_id EQ false){
 	var primary_key = "";
 	var tempStruct={
 		enableTableFieldCache: true,
-		debug = false,
+		debug: false,
 		enableReplace: false,
-		noRequestSQL=false,
-		datasource = Request.zOS.globals.datasource,
-		enumerate = "",
-		fieldsWithNoEnumeration = false,
+		noRequestSQL:false,
+		datasource:"",
+		enumerate: "",
+		fieldsWithNoEnumeration: false,
 		forcePrimaryInsert={}
+	}
+	if(structkeyexists(Request.zOS.globals, 'datasource')){
+		tempStruct.datasource = Request.zOS.globals.datasource;
 	}
 	var ss = "";
 	// set defaults
@@ -551,7 +554,9 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	tempStruct.enableTableFieldCache=true;
 	tempStruct.debug = false;
 	tempStruct.noRequestSQL=false;
-	tempStruct.datasource = Request.zOS.globals.datasource;
+	if(structkeyexists(Request.zOS.globals, 'datasource')){
+		tempStruct.datasource = Request.zOS.globals.datasource;
+	}
 	tempStruct.enumerate = ""; 
 	tempStruct.forceWhereFields = ""; // list
 	// override defaults
