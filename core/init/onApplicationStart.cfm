@@ -495,6 +495,7 @@
 	}
 	t9.site_lock_theme=1;
 	t9.site_sitename=replace(replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.",""), "."&request.zos.testDomain, "");
+	t9.site_short_domain= t9.site_sitename;
 	t9.site_datasource=request.zos.zcoreDatasource;
 	t9.site_homelinktext='Home';
 	t9.site_email_campaign_from=request.zos.developerEmailFrom;
@@ -518,6 +519,7 @@
 			site_live= '"&application.zcore.functions.zescape(t9.site_live)&"', 
 			site_lock_theme= '"&application.zcore.functions.zescape(t9.site_lock_theme)&"', 
 			site_sitename= '"&application.zcore.functions.zescape(t9.site_sitename)&"', 
+			site_short_domain= '"&application.zcore.functions.zescape(t9.site_short_domain)&"', 
 			site_datasource= '"&application.zcore.functions.zescape(t9.site_datasource)&"', 
 			site_homelinktext= '"&application.zcore.functions.zescape(t9.site_homelinktext)&"', 
 			site_email_campaign_from= '"&application.zcore.functions.zescape(t9.site_email_campaign_from)&"', 
@@ -535,6 +537,7 @@
 			site_live= '"&application.zcore.functions.zescape(t9.site_live)&"', 
 			site_lock_theme= '"&application.zcore.functions.zescape(t9.site_lock_theme)&"', 
 			site_sitename= '"&application.zcore.functions.zescape(t9.site_sitename)&"', 
+			site_short_domain= '"&application.zcore.functions.zescape(t9.site_short_domain)&"', 
 			site_datasource= '"&application.zcore.functions.zescape(t9.site_datasource)&"', 
 			site_homelinktext= '"&application.zcore.functions.zescape(t9.site_homelinktext)&"', 
 			site_email_campaign_from= '"&application.zcore.functions.zescape(t9.site_email_campaign_from)&"', 
