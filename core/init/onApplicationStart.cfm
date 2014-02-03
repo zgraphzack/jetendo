@@ -524,22 +524,22 @@
 			site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
 			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'"));
 		}
-		siteCom=createobject("zcorerootmapping.mvc.z.server-manager.admin.controller.site");
-		siteCom.createUserBlogContent(form.site_id);
 	}else{
-		echo(preserveSingleQuotes("UPDATE site SET 
-		site_domain= '"&application.zcore.functions.zescape(t9.site_domain)&"', 
-		site_live= '"&application.zcore.functions.zescape(t9.site_live)&"', 
-		site_lock_theme= '"&application.zcore.functions.zescape(t9.site_lock_theme)&"', 
-		site_sitename= '"&application.zcore.functions.zescape(t9.site_sitename)&"', 
-		site_datasource= '"&application.zcore.functions.zescape(t9.site_datasource)&"', 
-		site_homelinktext= '"&application.zcore.functions.zescape(t9.site_homelinktext)&"', 
-		site_email_campaign_from= '"&application.zcore.functions.zescape(t9.site_email_campaign_from)&"', 
-		site_admin_email= '"&application.zcore.functions.zescape(t9.site_admin_email)&"', 
-		site_active= '"&application.zcore.functions.zescape(t9.site_active)&"', 
-		site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
-		site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'
-		WHERE site_id = '"&qSite.site_id&"' "));
+		query name="qUpdate" datasource="#request.zos.zcoreDatasource#"{
+			echo(preserveSingleQuotes("UPDATE site SET 
+			site_domain= '"&application.zcore.functions.zescape(t9.site_domain)&"', 
+			site_live= '"&application.zcore.functions.zescape(t9.site_live)&"', 
+			site_lock_theme= '"&application.zcore.functions.zescape(t9.site_lock_theme)&"', 
+			site_sitename= '"&application.zcore.functions.zescape(t9.site_sitename)&"', 
+			site_datasource= '"&application.zcore.functions.zescape(t9.site_datasource)&"', 
+			site_homelinktext= '"&application.zcore.functions.zescape(t9.site_homelinktext)&"', 
+			site_email_campaign_from= '"&application.zcore.functions.zescape(t9.site_email_campaign_from)&"', 
+			site_admin_email= '"&application.zcore.functions.zescape(t9.site_admin_email)&"', 
+			site_active= '"&application.zcore.functions.zescape(t9.site_active)&"', 
+			site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
+			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'
+			WHERE site_id = '"&qSite.site_id&"' "));
+		}
 	}
 
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4'});
