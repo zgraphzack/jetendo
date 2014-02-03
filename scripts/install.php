@@ -110,12 +110,13 @@ if(zIsTestServer()){
 echo("Check git status\n");
 $gitCloneURL=get_cfg_var("jetendo_git_clone_url");
 $gitBranch=get_cfg_var("jetendo_git_branch");
+$rootPath=get_cfg_var("jetendo_root_path");
 chdir(get_cfg_var("jetendo_root_path"));
 $status=`/usr/bin/git status`;
 if(strpos($status, "fatal: Not a git repository") !== FALSE){
 	echo("Git repo doesn't exist. Running git clone.\n");
 	if(!$debug){
-		$r=`/usr/bin/git clone $gitCloneURL`;
+		$r=`/usr/bin/git clone $gitCloneURL $rootPath`;
 		$r=`/usr/bin/git checkout $gitBranch`;
 	}
 	$status=`/usr/bin/git status`;
@@ -125,7 +126,7 @@ if(strpos($status, "fatal: Not a git repository") !== FALSE){
 		$r=`/usr/bin/git remote add origin $gitCloneURL`;
 	}
 }
-if(strpos($status, "nothing to commit, working directory clean") !== FALSE){
+if(strpos($status, "nothing to commit") !== FALSE){
 	echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
 }else{
 	if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
