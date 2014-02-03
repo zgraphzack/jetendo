@@ -193,8 +193,8 @@
 	application.zcore.functions.zcreatedirectory(t9.site_privatehomedir&'_cache/scripts/emailTemplates');
 	application.zcore.functions.zSecureCommand("installThemeToSite"&chr(9)&"default"&chr(9)&t9.site_homedir, 20);
 
-	application.zcore.functions.zOS_cacheSitePaths();
 	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.site_id);
+	application.zcore.functions.zOS_cacheSitePaths();
 	application.zcore.app.appUpdateCache(form.site_id);
 	rs=application.zcore.functions.zGenerateNginxMap();
 
