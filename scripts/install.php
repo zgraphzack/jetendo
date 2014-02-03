@@ -125,16 +125,24 @@ if(strpos($status, "fatal: Not a git repository") !== FALSE){
 		$r=`/usr/bin/git remote add origin $gitCloneURL`;
 	}
 }
-
 if(strpos($status, "nothing to commit, working directory clean") !== FALSE){
-	echo("Git repo is clean. All files match the ".$gitBranch." at ".$gitCloneURL.".\n");
+	echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
 }else{
-	echo("Git repo is not clean: Ignore this if you are intentionally changing the Jetendo source code before installation.\n");
-	if(!$debug && $gitIntegrityCheck == "1"){
-		$r=`/usr/bin/git reset --hard origin/$gitBranch`;
-		$r=`/usr/bin/git pull origin $gitBranch`;
-		$r=`/usr/bin/git gc`;
-		echo("Current directory was hard reset back to the git origin (".$gitCloneURL.") branch: ".$gitBranch.".\n");
+	if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
+		echo "Igoring unclean git repo\n";
+	}else{
+		echo("Git repo is not clean.\n");
+		if(!$debug && $gitIntegrityCheck == "1"){
+			$r=`/usr/bin/git reset --hard origin/$gitBranch`;
+			$r=`/usr/bin/git pull origin $gitBranch`;
+			$r=`/usr/bin/git gc`;
+			echo("Current directory was hard reset back to the git origin (".$gitCloneURL.") branch: ".$gitBranch.".\n");
+		}else{
+			echo "\nINSTALL CANCELLED.\n";
+			echo "To force installation with an unclean copy of the source code, please run this script again with the following command arguments:\n\n";
+			echo "php ".get_cfg_var("jetendo_scripts_path")."install.php ignoreIntegrityCheck\n\n";
+			exit;
+		}
 	}
 }
 
