@@ -88,7 +88,7 @@
 	<cfscript>
 	success=true;
 	arrError=[];
-    // global site administration live domain - It must NOT end with a forward slash.
+	
     if(request.zOS.zcoreAdminDomain EQ "" or right(request.zos.zcoreAdminDomain, 1) EQ "/"){
     	throw("request.zOS.zcoreAdminDomain is required and must not end with a forward slash.");
     }
@@ -171,7 +171,6 @@
 		form.site_id=qSite.site_id;
 		application.zcore.functions.zUpdate(ts);
 	}
-	/*
 	
 	application.zcore.functions.zSecureCommand("verifySitePaths", 20);
 	application.zcore.functions.zcreatedirectory(t9.site_privatehomedir&'zupload');
@@ -183,13 +182,12 @@
 	application.zcore.functions.zcreatedirectory(t9.site_privatehomedir&'_cache/scripts/skins');
 	application.zcore.functions.zcreatedirectory(t9.site_privatehomedir&'_cache/scripts/templates');
 	application.zcore.functions.zcreatedirectory(t9.site_privatehomedir&'_cache/scripts/emailTemplates');
-	application.zcore.functions.zSecureCommand("installThemeToSite"&chr(9)&"default"&chr(9)&form.site_homedir, 20);
+	application.zcore.functions.zSecureCommand("installThemeToSite"&chr(9)&"default"&chr(9)&t9.site_homedir, 20);
 
 	application.zcore.functions.zOS_cacheSitePaths();
 	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.site_id);
 	application.zcore.app.appUpdateCache(form.site_id);
 	rs=application.zcore.functions.zGenerateNginxMap();
-	*/
 
 	inputStruct = structNew();
 	inputStruct.user_username = form.user_email; // make same as email to use email as login
