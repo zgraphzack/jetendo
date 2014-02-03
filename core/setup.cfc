@@ -148,7 +148,8 @@
 	}
 	t9.site_ip_address=form.site_ip_address;
 	t9.site_lock_theme=1;
-	t9.site_sitename=replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.","");
+	t9.site_sitename=replace(replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.",""), "."&request.zos.testDomain, "");
+	t9.site_short_domain=t9.site_sitename;
 	t9.site_homedir=application.zcore.functions.zGetDomainInstallPath(t9.site_sitename);
 	t9.site_privatehomedir=application.zcore.functions.zGetDomainWritableInstallPath(t9.site_sitename);
 	t9.site_datasource=request.zos.zcoreDatasource;
