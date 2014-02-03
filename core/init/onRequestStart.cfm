@@ -175,8 +175,10 @@
 				datasource: request.zos.zcoreDatasource
 			};
 			t9=application.zcore.functions.getSiteDBObjects(gs);
-			request.zos.queryObject=t9.cacheEnabledDB;
-			request.zos.noVerifyQueryObject=t9.cacheEnabledNoVerifyDB;
+			request.zos.db=t9.cacheEnabledDB;
+			request.zos.dbNoVerify=t9.cacheEnabledNoVerifyDB;
+			request.zos.queryObject=application.zcore.db.newQuery();
+			request.zos.noVerifyQueryObject=request.zos.dbNoVerify.newQuery();
 			setupCom=createobject("zcorerootmapping.setup");
 			setupCom.index();
 		}
