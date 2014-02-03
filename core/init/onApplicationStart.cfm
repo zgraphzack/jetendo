@@ -483,6 +483,65 @@
 		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
 	}
 
+
+	t9={};
+
+	if(request.zos.isTestServer){
+		t9.site_domain=request.zos.zcoreTestAdminDomain;
+		t9.site_live=0;
+	}else{
+		t9.site_domain=request.zos.zcoreAdminDomain;
+		t9.site_live=1;
+	}
+	t9.site_lock_theme=1;
+	t9.site_sitename=replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.","");
+	t9.site_datasource=request.zos.zcoreDatasource;
+	t9.site_homelinktext='Home';
+	t9.site_email_campaign_from=request.zos.developerEmailFrom;
+	t9.site_admin_email=request.zos.developerEmailTo;
+	t9.site_active='1';
+	t9.site_debug_enabled='1';
+	t9.site_editor_stylesheet='/stylesheets/style-manager.css';
+	if(not request.zos.isTestServer){
+		t9.site_username=replace(replace(listdeleteat(t9.site_sitename, listlen(t9.site_sitename, "."), "."),"www.",""),".","","all");
+		t9.site_password=application.zcore.functions.zGenerateStrongPassword();
+	}
+	query name="qSite" datasource="#request.zos.zcoreDatasource#"{
+		echo("SELECT site_id FROM `#request.zos.zcoreDatasourcePrefix#site` WHERE site_domain = '"&t9.site_domain&"' ");
+	}
+	if(qSite.recordcount EQ 0){
+		query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
+			echo(preserveSingleQuotes("INSERT INTO site SET 
+			site_domain= '"&application.zcore.functions.zescape(t9.site_domain)&"', 
+			site_live= '"&application.zcore.functions.zescape(t9.site_live)&"', 
+			site_lock_theme= '"&application.zcore.functions.zescape(t9.site_lock_theme)&"', 
+			site_sitename= '"&application.zcore.functions.zescape(t9.site_sitename)&"', 
+			site_datasource= '"&application.zcore.functions.zescape(t9.site_datasource)&"', 
+			site_homelinktext= '"&application.zcore.functions.zescape(t9.site_homelinktext)&"', 
+			site_email_campaign_from= '"&application.zcore.functions.zescape(t9.site_email_campaign_from)&"', 
+			site_admin_email= '"&application.zcore.functions.zescape(t9.site_admin_email)&"', 
+			site_active= '"&application.zcore.functions.zescape(t9.site_active)&"', 
+			site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
+			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'"));
+		}
+		siteCom=createobject("zcorerootmapping.mvc.z.server-manager.admin.controller.site");
+		siteCom.createUserBlogContent(form.site_id);
+	}else{
+		echo(preserveSingleQuotes("UPDATE site SET 
+		site_domain= '"&application.zcore.functions.zescape(t9.site_domain)&"', 
+		site_live= '"&application.zcore.functions.zescape(t9.site_live)&"', 
+		site_lock_theme= '"&application.zcore.functions.zescape(t9.site_lock_theme)&"', 
+		site_sitename= '"&application.zcore.functions.zescape(t9.site_sitename)&"', 
+		site_datasource= '"&application.zcore.functions.zescape(t9.site_datasource)&"', 
+		site_homelinktext= '"&application.zcore.functions.zescape(t9.site_homelinktext)&"', 
+		site_email_campaign_from= '"&application.zcore.functions.zescape(t9.site_email_campaign_from)&"', 
+		site_admin_email= '"&application.zcore.functions.zescape(t9.site_admin_email)&"', 
+		site_active= '"&application.zcore.functions.zescape(t9.site_active)&"', 
+		site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
+		site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'
+		WHERE site_id = '"&qSite.site_id&"' "));
+	}
+
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4'});
 	
 	ts.controllerComponentCache=structnew();

@@ -167,7 +167,7 @@
 		datasource: request.zos.zcoreDatasource,
 		struct: t9,
 		debug: true
-	}
+	};
 	query name="qSite" datasource="#request.zos.zcoreDatasource#"{
 		echo("SELECT site_id FROM `#request.zos.zcoreDatasourcePrefix#site` WHERE site_domain = '"&t9.site_domain&"' ");
 	}
