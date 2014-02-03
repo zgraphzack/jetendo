@@ -170,7 +170,7 @@
 				form[local.i]=replace(replace(form[local.i], local.tempdomain, '', 'all'), local.tempsecuredomain, '', 'all');
 			}
 		} 
-		if(1 EQ 1 or structkeyexists(application, request.zos.installPath&":displaySetupScreen")){
+		if(structkeyexists(application, request.zos.installPath&":displaySetupScreen")){
 			setupCom=createobject("zcorerootmapping.setup");
 			setupCom.index();
 		}
