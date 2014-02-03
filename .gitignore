@@ -4,6 +4,7 @@ sites
 phptemp
 railovhosts
 share/*
+share/task-log/*
 !share/database
 !share/database/data
 !share/database/jetendo-schema.json
