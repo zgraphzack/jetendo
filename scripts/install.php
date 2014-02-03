@@ -2,8 +2,6 @@
 require("library.php");
 $debug=false; // set to true to allow non-destructive debugging of this script
 
-//echo "Jetendo's automated installer is coming soon.";
-
 function installJetendoCronTabs(){
 	global $debug;
 	$isTestServer=zIsTestServer();
