@@ -336,7 +336,7 @@ if(isset($_GET['m']) == "7"){
 	exit;	
 }*/
 if($debug) echo "<h1>Thumbnail generator that removes white margins in MLS listing photos</h1><p>Scroll to the bottom to see the images.</p><h2>Debugging Output</h2>";
-$serverRootPath="/zbackup/jetendo/share/mls-images/";
+$serverRootPath=get_cfg_var("jetendo_share_path")."mls-images/";
 $newwidth=$_GET['w'];//230;
 $newheight=$_GET['h'];//230;
 if(isset($_GET['a']) && $_GET['a']=='1'){
@@ -358,12 +358,12 @@ if(isset($_GET['p']) && $_GET['p'] != ""){
 }
 
 $h=md5($_GET['m']."-".$_GET['f']);
-$filename="/".$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1)."/".$_GET['m']."-".$_GET['f'];
+$filename=$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1)."/".$_GET['m']."-".$_GET['f'];
 if($debug) echo "new path: ".$serverRootPath.$filename."<br />";
 if(!file_exists($serverRootPath.$filename)){
 	if($debug) echo "fail<br />";
 	$h=md5($_GET['f']);
-	$filename="/".$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1)."/".$_GET['f'];// /4/'resizetest/1.jpg';
+	$filename=$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1)."/".$_GET['f'];// /4/'resizetest/1.jpg';
 	if($debug) echo "old path: ".$serverRootPath.$filename." | exists: ".file_exists($serverRootPath.$filename)."<br />";
 }
 $f2=str_replace("/../","",str_replace("/./","",$filename));
@@ -374,6 +374,9 @@ if($f2 != $filename){
 	}
 	z404();	
 }
+$dir=dirname($serverRootPath.$filename);
+@mkdir($dir, 0770, true);
+
 $ext=substr($filename, strlen($filename)-5, 5);
 $filenamenoext=substr($filename, 0,strlen($filename)-5);
 if($debug) echo "filenamenoext: ".$filenamenoext." | ext: ".$ext."<br />";
@@ -502,7 +505,7 @@ try {
 					if($debug) echo "NO DOWNLOAD ERROR<br>";
 				}
 				$temp=".".rand(1,100000);
-				$r=@file_put_contents($serverRootPath.$filename.$temp, $a);
+				$r=file_put_contents($serverRootPath.$filename.$temp, $a);
 				if($r === FALSE || filesize($serverRootPath.$filename.$temp) == 0){
 					if($debug){
 						echo "fail:".$serverRootPath.$filename.$temp."<br />";
