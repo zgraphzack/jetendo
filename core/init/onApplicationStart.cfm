@@ -437,13 +437,7 @@
 	ts.tableColumns=structnew();
 	ts.tablesWithSiteIdStruct=structnew();
 
-	if(structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
-		// verify tables
-		verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
-		arrLog=verifyTablesCom.index(true);
-		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
-	}
-	
+
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-3'});
 
 	query name="local.qD" datasource="#request.zos.zcoredatasource#"{
@@ -476,7 +470,19 @@
 	}
 	//structdelete(ts.tablesWithSiteIdStruct, request.zos.zcoreDatasource&".manual_listing");
 	
-	
+	application.zcore.arrGlobalDatasources=ts.arrGlobalDatasources;
+	applicaiton.zcore.verifyTablesExcludeStruct=ts.verifyTablesExcludeStruct;
+	application.zcore.primaryKeyMapStruct=ts.primaryKeyMapStruct;
+	applicaiton.zcore.tableColumns=ts.tableColumns;
+	applicaiton.zcore.siteTableColumns=ts.siteTableColumns;
+	applicaiton.zcore.tablesWithSiteIdStruct=ts.tablesWithSiteIdStruct;
+	if(structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
+		// verify tables
+		verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
+		arrLog=verifyTablesCom.index(true);
+		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
+	}
+
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4'});
 	
 	ts.controllerComponentCache=structnew();
