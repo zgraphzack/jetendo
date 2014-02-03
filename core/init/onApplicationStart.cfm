@@ -471,11 +471,11 @@
 	//structdelete(ts.tablesWithSiteIdStruct, request.zos.zcoreDatasource&".manual_listing");
 	
 	application.zcore.arrGlobalDatasources=ts.arrGlobalDatasources;
-	applicaiton.zcore.verifyTablesExcludeStruct=ts.verifyTablesExcludeStruct;
+	application.zcore.verifyTablesExcludeStruct=ts.verifyTablesExcludeStruct;
 	application.zcore.primaryKeyMapStruct=ts.primaryKeyMapStruct;
-	applicaiton.zcore.tableColumns=ts.tableColumns;
-	applicaiton.zcore.siteTableColumns=ts.siteTableColumns;
-	applicaiton.zcore.tablesWithSiteIdStruct=ts.tablesWithSiteIdStruct;
+	application.zcore.tableColumns=ts.tableColumns;
+	application.zcore.siteTableColumns=ts.siteTableColumns;
+	application.zcore.tablesWithSiteIdStruct=ts.tablesWithSiteIdStruct;
 	if(structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
 		// verify tables
 		verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
