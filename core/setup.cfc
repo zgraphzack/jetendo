@@ -47,7 +47,16 @@
 							selectStruct = StructNew();
 							selectStruct.name = "site_ip_address";
 							selectStruct.listvalues=arraytolist(ipStruct.arrIp,",");
-							application.zcore.functions.zInputSelectBox(selectStruct);
+							echo('<select name="site_ip_address" size="1">');
+							for(i=1;i LTE arraylen(ipStruct.arrIp);i++){
+								if(form.site_ip_address EQ ipStruct.arrIp[i]){
+									echo('<option value="'&ipStruct.arrIp[i]&'" selected="selected">'&ipStruct.arrIp[i]&'</option>');
+								}else{
+									echo('<option value="'&ipStruct.arrIp[i]&'">'&ipStruct.arrIp[i]&'</option>');
+								}
+
+							}
+							echo('</select>');
 							</cfscript>
 						</td>
 					</tr>
@@ -88,7 +97,7 @@
 	<cfscript>
 	success=true;
 	arrError=[];
-	
+
     if(request.zOS.zcoreAdminDomain EQ "" or right(request.zos.zcoreAdminDomain, 1) EQ "/"){
     	throw("request.zOS.zcoreAdminDomain is required and must not end with a forward slash.");
     }
