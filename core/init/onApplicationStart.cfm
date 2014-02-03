@@ -494,7 +494,7 @@
 		t9.site_live=1;
 	}
 	t9.site_lock_theme=1;
-	t9.site_sitename=replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.","");
+	t9.site_sitename=replace(replace(replace(replace(t9.site_domain, "http://", ""), "https://", ""),"www.",""), "."&request.zos.testDomain);
 	t9.site_datasource=request.zos.zcoreDatasource;
 	t9.site_homelinktext='Home';
 	t9.site_email_campaign_from=request.zos.developerEmailFrom;
@@ -502,6 +502,8 @@
 	t9.site_active='1';
 	t9.site_debug_enabled='1';
 	t9.site_editor_stylesheet='/stylesheets/style-manager.css';
+	t9.site_username="";
+	t9.site_password="";
 	if(not request.zos.isTestServer){
 		t9.site_username=replace(replace(listdeleteat(t9.site_sitename, listlen(t9.site_sitename, "."), "."),"www.",""),".","","all");
 		t9.site_password=application.zcore.functions.zGenerateStrongPassword();
@@ -522,7 +524,9 @@
 			site_admin_email= '"&application.zcore.functions.zescape(t9.site_admin_email)&"', 
 			site_active= '"&application.zcore.functions.zescape(t9.site_active)&"', 
 			site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
-			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'"));
+			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"', 
+			site_username= '"&application.zcore.functions.zescape(t9.site_username)&"', 
+			site_password= '"&application.zcore.functions.zescape(t9.site_password)&"'"));
 		}
 	}else{
 		query name="qUpdate" datasource="#request.zos.zcoreDatasource#"{
@@ -537,7 +541,9 @@
 			site_admin_email= '"&application.zcore.functions.zescape(t9.site_admin_email)&"', 
 			site_active= '"&application.zcore.functions.zescape(t9.site_active)&"', 
 			site_debug_enabled= '"&application.zcore.functions.zescape(t9.site_debug_enabled)&"', 
-			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"'
+			site_editor_stylesheet= '"&application.zcore.functions.zescape(t9.site_editor_stylesheet)&"', 
+			site_username= '"&application.zcore.functions.zescape(t9.site_username)&"', 
+			site_password= '"&application.zcore.functions.zescape(t9.site_password)&"'
 			WHERE site_id = '"&qSite.site_id&"' "));
 		}
 	}
