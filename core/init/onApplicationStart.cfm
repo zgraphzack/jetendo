@@ -410,12 +410,6 @@
 	local.c.autoReset=false;
 	request.zos.noVerifyQueryObject=ts.db.newQuery(local.c);
 
-	if(structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
-		// verify tables
-		verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
-		arrLog=verifyTablesCom.index(true);
-		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
-	}
 
 	request.zos.queryObject.sql="SHOW VARIABLES LIKE #request.zos.queryObject.param('version')#";
 	
@@ -442,6 +436,14 @@
 	ts.arrGlobalDatasources=structkeyarray(local.datasourceUniqueStruct);
 	ts.tableColumns=structnew();
 	ts.tablesWithSiteIdStruct=structnew();
+
+	if(structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
+		// verify tables
+		verifyTablesCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
+		arrLog=verifyTablesCom.index(true);
+		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
+	}
+	
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-3'});
 
 	query name="local.qD" datasource="#request.zos.zcoredatasource#"{
