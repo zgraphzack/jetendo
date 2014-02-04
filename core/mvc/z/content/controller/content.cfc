@@ -2031,15 +2031,15 @@ add fields to set location of content (listing) on google map (using address or 
         local.ts.image_library_id=local.ts994824713.content_image_library_id;
         local.ts.size="#request.zos.globals.maximagewidth#x2000";
         local.ts.crop=0; 
-	local.ts.top=true;
+		local.ts.top=true;
         if(local.ts994824713.content_photo_hide_image EQ 1){
             local.ts.offset=0;
         }else{
             local.ts.offset=1;
         }
-	if(local.ts994824713.content_image_library_layout EQ 7){
-		local.ts.limit=1;
-	}
+		if(local.ts994824713.content_image_library_layout EQ 7){
+			local.ts.limit=1;
+		}
         local.ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(local.ts994824713.content_image_library_layout);
         application.zcore.imageLibraryCom.displayImages(local.ts);
        
@@ -2657,12 +2657,29 @@ add fields to set location of content (listing) on google map (using address or 
                 local.arrOrder=structsort(request.cOutStruct,"text","asc","name");
             }else if(local.parentChildSorting EQ 0){
                 local.arrOrder=structsort(request.cOutStruct,"numeric","asc","sort");
+            }else{
+	        	local.arrOrder=arraynew(1);
+	            for(local.i in request.cOutStruct){
+	                arrayappend(local.arrOrder, local.i);
+	            }
+	            arraysort(local.arrOrder, "numeric", "asc");
             }
-        }catch(Any excpt){local.arrOrder=arraynew(1);
+        }catch(Any excpt){
+        	local.arrOrder=arraynew(1);
             for(local.i in request.cOutStruct){
                 arrayappend(local.arrOrder, local.i);
             }
+	        arraysort(local.arrOrder, "numeric", "asc");
         }
+        /*
+        if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+        	echo("parentChildSorting: "&local.parentChildSorting&"<br />");
+        	echo('Initial sort order: <br />');
+        	writedump(structkeyarray(request.cOutStruct));
+        	echo('Final sort order: <br />');
+        	writedump(local.arrOrder);
+        	
+        }*/
         
         //application.zcore.functions.zdump(request.cOutStruct);
         local.uniqueChildStruct3838=structnew();
