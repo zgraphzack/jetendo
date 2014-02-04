@@ -1340,7 +1340,7 @@
         <cfif currentMethod EQ "add" or noGroupsOrApps>
 		<tr>
 			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="createUserBlogContent" type="checkbox" value="1" style="background:none; border:none;"> Install Default Apps? | Note: It is best to have an empty directory prior to installation.</td>
+			<td class="table-white"><input name="createUserBlogContent" type="checkbox" value="1" <cfif structkeyexists(form, 'createUserBlogContent')>checked="checked"</cfif> style="background:none; border:none;"> Install Default Apps? | Note: It is best to have an empty directory prior to installation.</td>
 		</tr>
 		<tr>
 			<td class="table-list" style="vertical-align:top; width:140px;">Theme:</td>
