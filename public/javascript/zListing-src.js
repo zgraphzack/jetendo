@@ -128,14 +128,17 @@ function createMarker(point, htmlText) {
 	
 	return marker;
 }
-function zlsOpenResultsMap(){
+function zlsOpenResultsMap(formName){
+	if(typeof formName == "undefined"){
+		formName="zMLSSearchForm";
+	}
 	var arrQ=[];
 	var d3=document.getElementById("resultCountAbsolute");
 	if(d3 && d3.innerHTML.substr(0,1) === 0){
 		alert('There are no matching listings, please revise your search before clicking to view the map');
 		return;	
 	}
-	var obj=zFormSubmit("zMLSSearchForm", false, true,false, true);
+	var obj=zFormSubmit(formName, false, true,false, true);
 	for(var i in obj){
 		if(typeof zlsSearchCriteriaMap[i] !== "undefined" && obj[i] !== ""){
 			arrQ.push(zlsSearchCriteriaMap[i]+"="+obj[i]);

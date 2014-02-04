@@ -3755,7 +3755,16 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 
 </cfscript>
 
-</td><td style="vertical-align:top; text-align:right; font-size:14px; font-weight:bold;">&nbsp;<cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false><cfif (isDefined('session.zListingHideMap') EQ false or session.zListingHideMap EQ false) and tempHideMap EQ false><a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a><cfelse><a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a></cfif></cfif></td></tr> 
+</td><td style="vertical-align:top; text-align:right; font-size:14px; font-weight:bold;">&nbsp;
+<cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
+	<cfif (isDefined('session.zListingHideMap') EQ false or session.zListingHideMap EQ false) and tempHideMap EQ false>
+		<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
+		<a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
+	<cfelse>
+		<a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
+	</cfif>
+</cfif>
+</td></tr> 
 </table> 
 <cfscript> 
 		ts = StructNew();

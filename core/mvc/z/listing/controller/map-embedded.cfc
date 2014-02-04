@@ -120,7 +120,7 @@ randcount=randrange(5,10);
 		}
 		mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
-		</cfscript>
+		</cfscript><br /><strong><a href="##" onclick="zlsOpenResultsMap('contentSearchHiddenForm'); return false;">View Fullscreen Map</a></strong>
 <cfsavecontent variable="theScript">
 <style type="text/css">
 body{ overflow:hidden; background:none !important; background-color:transparent !important;}

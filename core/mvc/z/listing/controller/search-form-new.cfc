@@ -443,7 +443,9 @@ listing_longitude<>'0'";
 					<td style="vertical-align:top; text-align:right; font-size:14px; font-weight:bold;">&nbsp;');
 						if(application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false){
 							if((isDefined('session.zListingHideMap') EQ false or session.zListingHideMap EQ false) and tempHideMap EQ false){
-								writeoutput('<a id="zHideMapSearchButton" href="#request.zos.listing.functions.getSearchFormLink()#?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>'); //class="zNoContentTransition" 
+								writeoutput('
+									<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
+									<a id="zHideMapSearchButton" href="#request.zos.listing.functions.getSearchFormLink()#?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>'); //class="zNoContentTransition" 
 							}else{
 								writeoutput('<a id="zHideMapSearchButton" href="#request.zos.listing.functions.getSearchFormLink()#?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>');// class="zNoContentTransition"
 							}

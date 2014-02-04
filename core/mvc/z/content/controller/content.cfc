@@ -2367,7 +2367,8 @@ add fields to set location of content (listing) on google map (using address or 
             </div>
             
             <div id="mapContentDivId" style="width:380px; float:right; margin-left:20px; margin-bottom:20px;">
-            <iframe id="embeddedmapiframe" src="/z/listing/map-embedded/index?content_id=#local.ts994824713.content_id#" width="100%" height="320" style="border:none; overflow:auto;" seamless="seamless"></iframe>
+            	<iframe id="embeddedmapiframe" src="/z/listing/map-embedded/index?content_id=#local.ts994824713.content_id#" width="100%" height="340" style="border:none; overflow:auto;" seamless="seamless"></iframe>
+
             </div>
             </div>
         </cfif>
