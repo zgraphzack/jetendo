@@ -390,6 +390,10 @@
 					curStatus="ZERO_RESULTS";
 				}else if(status == google.maps.GeocoderStatus.INVALID_REQUEST){
 					curStatus="INVALID_REQUEST";
+				}else if(status == 'ERROR'){
+					stopGeocoding=true;
+					// This is an undocumented problem with google's API. We must stop geocoding and wait for a new user with a fresh copy of google's API downloaded that hopefully works.
+					return;
 				}else{
 					curStatus=status;
 				}
