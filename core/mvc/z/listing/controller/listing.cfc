@@ -2294,8 +2294,10 @@ if(request.zos.globals.enableMinCat EQ 0 or structkeyexists(request.zos.tempObj,
 		}
 		if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_detail_layout',false,0) EQ 1){
 			application.zcore.functions.zRequireJQuery();
-			metaContent&=application.zcore.skin.includeCSS("/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.css");
-			metaContent2&=application.zcore.skin.includeJS("/z/javascript/jquery/jquery.easing.1.3.js")&application.zcore.skin.includeJS("/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.js")&application.zcore.skin.includeJS("/z/javascript/jquery/galleryview-1.1/jquery.timers-1.2.js");
+			application.zcore.skin.includeCSS("/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.css");
+			application.zcore.skin.includeJS("/z/javascript/jquery/jquery.easing.1.3.js");
+			application.zcore.skin.includeJS("/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.js");
+			application.zcore.skin.includeJS("/z/javascript/jquery/galleryview-1.1/jquery.timers-1.2.js");
 		}
 	}
 }
