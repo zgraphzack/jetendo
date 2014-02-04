@@ -77,6 +77,7 @@
 		ts.zOS.railoUser="www-data";
 		ts.zOS.railoAdminReadEnabled=false;
 	};
+	ts.zos.geocodeFrequency=1; // 1 is every request on a domain that has the listing app installed, set to a higher number to use a random interval
 	ts.zOS.railoAdminWriteEnabled=false; // must be enabled to allow deploying railo archives.
 	ts.zos.errorEmailAlertsPerMinute=5;
 	

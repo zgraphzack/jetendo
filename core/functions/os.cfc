@@ -1210,10 +1210,24 @@ if(not rs.success){
     </cfif>
 </cffunction>
 
+
+<!--- 
+ts={
+	type:"Custom",
+	errorHTML:'',
+	scriptName:'',
+	url:'',
+	exceptionMessage:'',
+	// optional
+	lineNumber:''
+}
+application.zcore.functions.zLogError(ts);
+ --->
 <cffunction name="zLogError" access="public" localmode="modern">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject; 
+	log_id=0;
 	
 	currentMinute=timeformat(now(), "m");
 	if(not structkeyexists(application, 'zErrorMinuteTime')){
@@ -1237,6 +1251,9 @@ if(not rs.success){
 	if(not structkeyexists(arguments.ss, 'url')){
 		throw("arguments.ss.url is required.");
 	}
+	if(not structkeyexists(arguments.ss, 'lineNumber')){
+		arguments.ss.lineNumber=0;
+	}
 	db.sql="INSERT INTO #db.table("log", request.zos.zcoreDatasource)# SET
         log_host = #db.param(request.zOS.CGI.http_host)#, 
         log_status = #db.param('New')#, 
@@ -1249,17 +1266,23 @@ if(not rs.success){
 	log_script_name=#db.param(arguments.ss.scriptName)#,
 	log_line_number=#db.param(arguments.ss.lineNumber)#, 
 	log_exception_message=#db.param(arguments.ss.exceptionMessage)# ";
-	rs=db.insert("qInsert", request.zos.insertIDColumnForSiteIDTable);
+	rs=db.insert("qInsert");
 	
 	if(rs.success){
 		log_id=rs.result;
 	}else{
-		throw("Failed to log javascript error");	
+		throw("Failed to log error");	
 	}
 	// send email alert
-	
-	/*
-	if(application.zErrorMinuteCount LTE request.zos.errorEmailAlertsPerMinute){
+	currentMinute=timeformat(now(), "m");
+	if(not structkeyexists(application, 'zErrorMinuteCurrent')){
+		application.zErrorMinuteTime=currentMinute;
+	}
+	if(application.zErrorMinuteTime NEQ currentMinute or not structkeyexists(application, 'zErrorMinuteCount')){
+		application.zErrorMinuteCount=0;
+		application.zErrorMinuteTime=currentMinute;
+	}
+	if(application.zErrorMinuteCount LTE request.zos.errorEmailAlertsPerMinute and arguments.ss.type NEQ "javascript-error"){
 		ts=StructNew();
 		
 		ts.to=request.zos.developerEmailTo;
@@ -1272,7 +1295,7 @@ if(not rs.success){
 			<body>
 			<span class="medium">#arguments.ss.type# on #request.zos.globals.domain#</span><br /><br />
 		
-			<a href="#request.zos.globals.serverDomain#/z/server-manager/admin/log/index?action=view&log_id=#log_id#&sid=#request.zos.globals.id#">Click here</a> to view detailed information on this error.<br><br>
+			<a href="#request.zos.globals.serverDomain#/z/server-manager/admin/log/index?action=view&log_id=#log_id#">Click here</a> to view detailed information on this error.<br><br>
 		
 			You will have to login using an account with Server Administrator access.<br /><br />
 			User''s IP: #request.zos.cgi.remote_addr# ');
@@ -1288,10 +1311,9 @@ if(not rs.success){
 			savecontent variable="errorHTML"{
 				rCom.setStatusErrors(request.zsid);
 			}
-			throw("Failed to send log email: "&errorHTML);
+			throw("Failed to send log error email: "&errorHTML);
 		}
-		
-	}*/
+	} 
 	</cfscript>
 </cffunction>
 

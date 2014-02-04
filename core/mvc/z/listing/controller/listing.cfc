@@ -2317,8 +2317,12 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			application.zcore.template.prependTag("topcontent","<div id=""sl894nsdh783"" style=""width:100%; float:left; clear:both;""></div><script type=""text/javascript"" src=""/z/listing/sl/index?saveAct=list&amp;zFPE=1""> </script>");
 		}
 	}
-	if (not request.zos.trackingspider and not request.zos.istestserver and request.zos.originalURL NEQ "/z/listing/ajax-geocoder/index" and (randrange(1,5) EQ 1)){// or isDefined('forcegeocoder'))){
-		application.zcore.template.appendTag("content",'<iframe src="/z/listing/ajax-geocoder/index" width="1" height="1" style="display:none;"></iframe>');
+	if (not request.zos.trackingspider and not request.zos.istestserver and request.zos.originalURL NEQ "/z/listing/ajax-geocoder/index" and (randrange(1, request.zos.geocodeFrequency) EQ 1)){
+		savecontent variable="geocodeOutput"{
+			geocodeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.ajax-geocoder");
+			geocodeCom.index();
+		}
+		application.zcore.template.appendTag("scripts", geocodeOutput);
 	}
 	if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_disable_image_enlarge EQ 2){
 		application.zcore.skin.addDeferredScript("zIImageClickLoad=true;");

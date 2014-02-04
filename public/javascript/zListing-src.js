@@ -3608,3 +3608,95 @@ function zListingDisplayHelpBox(){
 	'</div>');
 }*/
 
+if (typeof(Number.prototype.toRad) === "undefined") {
+  Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+  }
+}
+function zGetMapDistance(lat1, lon1, lat2, lon2){
+	var R = 6371; // km
+	var dLat = (lat2-lat1).toRad();
+	var dLon = (lon2-lon1).toRad();
+	var lat1 = lat1.toRad();
+	var lat2 = lat2.toRad();
+	
+	var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+			Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+	var d = R * c;	
+	return d;
+}
+function zGeocodeAddress() {
+	if(arrAddress.length <= curIndex) return;
+	if(debugajaxgeocoder) f1.value+="run geocode: "+arrAddress[curIndex]+" for listing_id="+arrListingId[curIndex]+"\n";
+	geocoder.geocode( { 'address': arrAddress[curIndex]+" "+arrAddressZip[curIndex]}, function(results, status) {
+		var r="";
+		if (status == google.maps.GeocoderStatus.OK) {
+			var a1=new Array();
+			for(var i=0;i<results.length;i++){
+				var a2=new Array();
+				a2[0]=results[i].types.join(",");
+				if(a2[0]=="street_address" && arrAddressZipLat[curIndex] != 0 && arrAddressZipLong[curIndex] != 0){
+					a2[1]=results[i].formatted_address;
+					a2[2]=results[i].geometry.location.lat()
+					a2[3]=results[i].geometry.location.lng();
+					a2[4]=results[i].geometry.location_type;
+					var a3=a2.join("\t");
+					var k=zGetMapDistance(arrAddressZipLat[curIndex], arrAddressZipLong[curIndex], a2[2], a2[3]);
+					if(k >= 50){
+						// the distance is beyond reasonable - this one is invalid
+					}else{
+						a1.push(a3);  
+					}
+					break;	
+				}
+			}
+			r=a1.join("\n");
+			if(debugajaxgeocoder) f1.value+=r+"\n";
+		} else if(status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT || status == google.maps.GeocoderStatus.REQUEST_DENIED){
+			// serious error condition
+			stopGeocoding=true; 
+		}
+		var curStatus="";
+		if(status == google.maps.GeocoderStatus.OK){
+			curStatus="OK";
+		}else if(status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+			curStatus="OVER_QUERY_LIMIT";
+		}else if(status == google.maps.GeocoderStatus.REQUEST_DENIED){
+			curStatus="REQUEST_DENIED";
+		}else if(status == google.maps.GeocoderStatus.ZERO_RESULTS){
+			curStatus="ZERO_RESULTS";
+		}else if(status == google.maps.GeocoderStatus.INVALID_REQUEST){
+			curStatus="INVALID_REQUEST";
+		}else if(status == 'ERROR'){
+			stopGeocoding=true;
+			// This is an undocumented problem with google's API. We must stop geocoding and wait for a new user with a fresh copy of google's API downloaded that hopefully works.
+			return;
+		}else{
+			curStatus=status;
+		}
+		if(debugajaxgeocoder) f1.value+='geocode done for listing_id='+arrListingId[curIndex]+" with status="+curStatus+"\n";
+		var debugurlstring="";
+		if(debugajaxgeocoder){
+			debugurlstring="&debugajaxgeocoder=1";
+		}
+		$.ajax({
+			type: "post",
+			url: "/z/listing/ajax-geocoder/index?action=save"+debugurlstring,
+			data:{ results: r, listing_id: arrListingId[curIndex], address: arrAddress[curIndex], originaladdress: arrAddressOriginal[curIndex], zip: arrAddressZip[curIndex], status: curStatus },
+			dataType:"text",
+			success: function(data){
+				if(debugajaxgeocoder) f1.value+="Data saved with status="+data+"\n";
+			}
+		}); 
+		curIndex++;
+		if(curIndex<arrAddress.length && !stopGeocoding){
+			setTimeout('zTimeoutGeocode();',1500);
+		}
+	});
+}
+function zTimeoutGeocode(){
+	if(stopGeocoding) return;
+	zGeocodeAddress();
+}
+
