@@ -1,12 +1,5 @@
 <?php
 require("library.php");
-$arrTask=array();
-
-$isTestServer=zIsTestServer();
-
-if($isTestServer){
-	echo "This is a test server - none of the tasks will actually be executed.\n";
-}
 function getTasks(){
 	$arrTask=array();
 	if(zIsTestServer()){
@@ -89,7 +82,7 @@ function getTasks(){
 	$t->logName="reindex-all-site-content.html";
 	$t->interval="daily";
 	$t->startTimeOffsetSeconds=1000;
-	$t->url=$adminDomain."";
+	$t->url=$adminDomain."/z/server-manager/tasks/search-index/index";
 	array_push($arrTask, $t);
 
 	$t=new stdClass();
@@ -125,6 +118,12 @@ function getTasks(){
 
 set_time_limit(18000);
 ini_set('default_socket_timeout', 18000);
+
+$isTestServer=zIsTestServer();
+
+if($isTestServer){
+	echo "This is a test server - none of the tasks will actually be executed.\n";
+}
 
 $taskLogPath=get_cfg_var("jetendo_share_path")."task-log/";
 $taskLogPathScheduler=get_cfg_var("jetendo_share_path")."task-log/scheduler.txt";
@@ -185,7 +184,7 @@ for($i=0;$i<count($arrTask);$i++){
 	}
 	array_push($arrS, $task->logName."\t".$nextTime);
 	if($run){
-		$arrRun[$task->logName]=true;
+		array_push($arrRun, $task);
 	}
 }
 if(count($arrRun) == 0){
@@ -198,24 +197,21 @@ if(file_exists($taskLogPathScheduler)){
 }
 file_put_contents($taskLogPathScheduler, $scheduleOutput);
 
-for($i=0;$i<count($arrTask);$i++){
-	if(array_key_exists($task->logName, $arrRun)){
-		$task=$arrTask[$i];
-		echo "Running task: ".$task->url.": ";
-		if($isTestServer){
-			echo " this is test server, skipping task\n";
+for($i=0;$i<count($arrRun);$i++){
+	$task=$arrRun[$i];
+	echo "Running task: ".$task->url.": ";
+	if($isTestServer){
+		echo " this is test server, skipping task\n";
+	}else{
+		$contents=file_get_contents($task->url);
+		if($contents === FALSE){
+			echo "failed\n";
+			$contents="Connection failure";
 		}else{
-			$contents=file_get_contents($task->url);
-			if($contents === FALSE){
-				echo "failed\n";
-				$contents="Connection failure";
-			}else{
-				echo "success\n";
-			}
-			@unlink($taskLogPath.$task->logName);
-			file_put_contents($taskLogPath.$task->logName, $contents);
-			exit;
+			echo "success\n";
 		}
+		@unlink($taskLogPath.$task->logName);
+		file_put_contents($taskLogPath.$task->logName, $contents);
 	}
 }
 
