@@ -513,7 +513,6 @@
 		}else{
 			form.site_system_user_modifed=1;
 		}*/
-		form.site_system_user_created=1;
 	}else{
 		db.sql="select * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 		WHERE site_id =#db.param(form.sid)#";
