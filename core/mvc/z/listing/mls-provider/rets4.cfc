@@ -281,9 +281,6 @@
 				break;
 			}
 		}
-		if(tmp NEQ ""){
-			local.listing_pool=1;
-		}
 		 
 		if(structkeyexists(variables.tableLookup,ts.rets4_propertytype)){
 			ts=this.convertRawDataToLookupValues(ts, variables.tableLookup[ts.rets4_propertytype], ts.rets4_propertytype);
