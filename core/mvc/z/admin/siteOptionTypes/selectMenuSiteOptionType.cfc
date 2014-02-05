@@ -465,32 +465,33 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 	selectStruct.onchange=arguments.onChangeJavascript;
 	if(local.enabled){
 		selectStruct.multiple=false;
-		if(application.zcore.functions.zso(ts, 'selectmenu_multipleselection', true, 0) EQ 1){
-			selectStruct.multiple=true;
-			application.zcore.functions.zRequireJqueryUI();
-			application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.css");
-			application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.filter.css");
-			application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.js", '', 2);
-			application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.filter.js", '', 2);
-			application.zcore.skin.addDeferredScript('
-				var newvalue#arguments.site_option_id#IgnoreId=#application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0)#;
-				$("##'&selectStruct.name&'").multiselect({
-					click: function(event, ui){
-						if(ui.checked && ui.value == newvalue#arguments.site_option_id#IgnoreId){
-							alert("You can''t select the same element you are editing.");
-							$(event.currentElement).each(function(){ this.checked=false; });
-							return false;
-						}else{
-							return true;
-						}
-				   }
-   				}).multiselectfilter();
-			');
-		}
-		
 		if(arguments.enableSearchView){
 			selectStruct.multiple=false;
 			selectStruct.selectedDelimiter=ts.selectmenu_delimiter;
+		}else{
+			if(application.zcore.functions.zso(ts, 'selectmenu_multipleselection', true, 0) EQ 1){
+				selectStruct.multiple=true;
+		
+				application.zcore.functions.zRequireJqueryUI();
+				application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.css");
+				application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.filter.css");
+				application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.js", '', 2);
+				application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.filter.js", '', 2);
+				application.zcore.skin.addDeferredScript('
+					var newvalue#arguments.site_option_id#IgnoreId=#application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0)#;
+					$("##'&selectStruct.name&'").multiselect({
+						click: function(event, ui){
+							if(ui.checked && ui.value == newvalue#arguments.site_option_id#IgnoreId){
+								alert("You can''t select the same element you are editing.");
+								$(event.currentElement).each(function(){ this.checked=false; });
+								return false;
+							}else{
+								return true;
+							}
+					   }
+	   				}).multiselectfilter();
+				');
+			}
 		}
 		selectStruct.output=false;
 		local.tempOutput=application.zcore.functions.zInputSelectBox(selectStruct);
