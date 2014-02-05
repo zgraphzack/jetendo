@@ -905,7 +905,7 @@
 <cffunction name="siteHasApp" localmode="modern"  returntype="boolean" output="no">
 	<cfargument name="app_name" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.zcore.appComName,arguments.app_name) and structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, application.zcore.appComName[arguments.app_name])){
+	if(structkeyexists(application.zcore.appComName,arguments.app_name) and structkeyexists(application.sitestruct, request.zos.globals.id) and structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, application.zcore.appComName[arguments.app_name])){
 		return true;
 	}else{
 		return false;
