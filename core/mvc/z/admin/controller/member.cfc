@@ -851,10 +851,36 @@
 				</cfif>
 			</cfif>
 			<cfif application.zcore.user.checkServerAccess()>
-			<tr>
-				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Enable Widget Builder?","member.member.edit user_enable_widget_builder")#</th>
-				<td style="vertical-align:top; ">#application.zcore.functions.zInput_Boolean("user_enable_widget_builder", form.user_enable_widget_builder)#</td>
-			</tr>
+				<tr>
+					<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Enable Widget Builder?","member.member.edit user_enable_widget_builder")#</th>
+					<td style="vertical-align:top; ">#application.zcore.functions.zInput_Boolean("user_enable_widget_builder", form.user_enable_widget_builder)#</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Limit Manager Features","member.member.edit user_limit_manager_features")#</th>
+					<td style="vertical-align:top; "> 
+				<cfscript>
+				application.zcore.functions.zRequireJqueryUI();
+				application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.css");
+				application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.filter.css");
+				application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.js", '', 2);
+				application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.filter.js", '', 2);
+				application.zcore.skin.addDeferredScript('
+					$("##user_limit_manager_features").multiselect().multiselectfilter();
+				');
+				arrLabel=[];
+				arrValue=[];
+				selectStruct = StructNew();
+				selectStruct.multiple=true;
+				selectStruct.size=10;
+				selectStruct.inlineStyle="width:300px;";
+				selectStruct.name = "user_limit_manager_features";
+				selectStruct.listLabelsDelimiter = ",";
+				selectStruct.listValuesDelimiter = ",";
+				selectStruct.listLabels=arrayToList(arrLabel, ",");
+				selectStruct.listValues=arrayToList(arrValue, ",");
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
+				</tr>
 			</cfif>
 		</table>
 		#tabCom.endFieldSet()# 

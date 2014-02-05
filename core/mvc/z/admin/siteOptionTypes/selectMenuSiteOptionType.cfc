@@ -435,7 +435,6 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 		selectStruct.listLabelsDelimiter = ts.selectmenu_delimiter;
 		selectStruct.listValuesDelimiter = ts.selectmenu_delimiter;
 		selectStruct.listLabels=ts.selectmenu_labels;
-		selectStruct.listLabels=ts.selectmenu_labels;
 		selectStruct.listValues=ts.selectmenu_values;
 		local.enabled=true;
 	}
