@@ -91,6 +91,7 @@
 			}
 		}
 		
+		request.zos.inMemberArea=false;
 		request.zos.inServerManager=false;
 		
 		if(left(request.zos.originalURL, len("/z/server-manager/")) EQ "/z/server-manager/" or left(request.zos.originalURL, len("/z/_com/zos/app")) EQ "/z/_com/zos/app"){
@@ -405,13 +406,13 @@
 	if(structkeyexists(form,'zlogout')){
 		application.zcore.user.logOut();
 	}
+	if(structkeyexists(cookie, 'ztoken')){
+		application.zcore.user.verifyToken();
+	}
 	if(application.zcore.user.checkGroupAccess("user") and structkeyexists(application.zcore, 'forceUserUpdateSession')){
 		if(structkeyexists(application.zcore.forceUserUpdateSession, session.zos.user.site_id&":"&session.zos.user.id)){
 			application.zcore.user.updateSession({site_id:request.zos.globals.id});
 		}
-	}
-	if(structkeyexists(cookie, 'ztoken')){
-		application.zcore.user.verifyToken();
 	}
 
 	if(form[request.zos.urlRoutingParameter] EQ "/z/user/login/confirmToken"){
