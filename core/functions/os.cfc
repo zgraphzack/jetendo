@@ -2923,6 +2923,11 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	var db=request.zos.queryObject;
 	var content = "";
 	var zsaHeader = "";
+
+	if(not application.zcore.user.checkServerAccess()){
+		application.zcore.status.setStatus(request.zsid, "You don't have access to the server manager.", form, true);
+		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+	}
 	</cfscript>
 	<cfif structkeyexists(form,'sid') EQ false>
     	<cfset form.sid=application.zcore.status.getField(arguments.zid, 'site_id')>

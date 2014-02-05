@@ -324,7 +324,10 @@ userCom.checkLogin(inputStruct);
 		WHERE user.user_username = #db.param(form.zUsername)# and 
 		(user.site_id = #db.param(ss.site_id)# or 
 		(user.user_server_administrator = #db.param('1')# and 
-		user.site_id = #db.param(Request.zos.globals.serverId)#)";
+		user.site_id = #db.param(Request.zos.globals.serverId)# and 
+		(	user_server_admin_site_id_list = #db.param('')# or 
+			concat(#db.param(',')#, user_server_admin_site_id_list, #db.param(',')#) LIKE #db.param('%'&ss.site_id&'%')# 
+		))";
 		if(request.zos.globals.parentid NEQ 0){
 			db.sql&=" or (user.site_id = #db.param(request.zos.globals.parentid)# and 
 			(user.user_access_site_children = #db.param(1)# or 
@@ -423,11 +426,6 @@ userCom.checkLogin(inputStruct);
 			}else{
 				if(ss.noRedirect EQ false){
 					tempId = application.zcore.status.getNewId();
-					StructDelete(url,  'zlogin');
-					StructDelete(url,  'zusername');
-					StructDelete(url,  'zpassword');
-					StructDelete(url,  'zreset');
-					StructDelete(url,  'fieldnames');
 					StructDelete(form, 'zlogin');
 					StructDelete(form, 'zusername');
 					StructDelete(form, 'zpassword');
@@ -746,6 +744,7 @@ userCom.checkLogin(inputStruct);
 	session.zOS[userSiteId].enableWidgetBuilder=qUser.user_enable_widget_builder;
 	session.zOS[userSiteId].intranet_administrator = qUser.user_intranet_administrator;
 	session.zOS[userSiteId].access_site_children = qUser.user_access_site_children;
+	session.zOS[userSiteId].server_admin_site_id_list = qUser.user_server_admin_site_id_list;
 	session.zOS[userSiteId].id = qUser.user_id;
 	session.zOS[userSiteId].site_id = qUser.site_id;
 	session.zOS[userSiteId].groupAccess = StructNew();
@@ -924,7 +923,11 @@ userCom.checkLogin(inputStruct);
 		userSiteId='user'&arguments.site_id;			
 	}
 	if(isDefined('session.zos') and structkeyexists(session.zos,userSiteId) and structkeyexists(session.zos[userSiteId],'server_administrator') and session.zos[userSiteId].server_administrator EQ 1){
-		return true;
+		if(not structkeyexists(session.zOS[userSiteId], 'server_admin_site_id_list') or session.zOS[userSiteId].server_admin_site_id_list NEQ ""){
+			return false;
+		}else{
+			return true;
+		}
 	}else{
 		return false;
 	}

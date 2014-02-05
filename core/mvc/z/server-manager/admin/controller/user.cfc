@@ -228,6 +228,7 @@
 			application.zcore.functions.zRedirect("/z/server-manager/admin/user/editUser?zid=#form.zid#&sid=#form.sid#"&"&returnId=#form.returnId#&user_id=#application.zcore.functions.zso(form, 'user_id')#&zsid=#Request.zsid#");
 		}
 	}
+
 	
 	inputStruct.user_openid_provider = application.zcore.functions.zso(form, 'user_openid_provider');
 	inputStruct.user_openid_id = application.zcore.functions.zso(form, 'user_openid_id');
@@ -240,6 +241,7 @@
 		inputStruct.user_site_administrator = application.zcore.functions.zso(form, 'user_site_administrator',true); // set to 1 to give user full access to all groups on a site
 		inputStruct.user_server_administrator = application.zcore.functions.zso(form, 'user_server_administrator',true); // set to 1 to give user full access to all sites & groups
 	}
+	inputStruct.user_server_admin_site_id_list=application.zcore.functions.zso(form, 'user_server_admin_site_id_list');
 	inputStruct.user_intranet_administrator = application.zcore.functions.zso(form, 'user_intranet_administrator',true);	
 	if(form.method EQ "insertUser"){
 		inputStruct.user_system = 1; // remove when used on any other app
@@ -516,6 +518,37 @@
 							<cfelse>
 							<input name="user_server_administrator" id="user_server_administrator" type="checkbox" onClick="checkUser(2);" value="1" <cfif form.user_server_administrator EQ 1>checked="checked"</cfif>>
 							(Full access to all sites on server)
+
+							<div style="padding:10px; width:90%;float:left; clear:both;<cfif form.user_server_administrator NEQ 1>display:none;</cfif>" id="serverAdminDiv">
+								Optionally, limit access to the following sites and disable access to server manager: <br />
+								<cfscript>
+								application.zcore.functions.zRequireJqueryUI();
+								application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.css");
+								application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.filter.css");
+								application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.js", '', 2);
+								application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.filter.js", '', 2);
+								application.zcore.skin.addDeferredScript('
+									$("##user_server_admin_site_id_list").multiselect().multiselectfilter();
+								');
+								db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
+								WHERE site_id <> #db.param(form.sid)# and 
+								site_active = #db.param(1)# 
+								ORDER BY site_sitename ASC";
+								qSites=db.execute("qSites");
+								selectStruct = StructNew();
+								selectStruct.multiple=true;
+								selectStruct.size=10;
+								selectStruct.inlineStyle="width:300px;";
+								selectStruct.name = "user_server_admin_site_id_list";
+								selectStruct.query = qSites;
+								selectStruct.queryLabelField = "site_sitename";
+								selectStruct.queryValueField = "site_id";
+								application.zcore.functions.zInputSelectBox(selectStruct);
+								</cfscript><br />
+								If no sites are selected, the user will have full access to all sites and features.
+							</div>
+
+
 						</cfif></td>
 				</tr>
 				<tr>
@@ -527,6 +560,11 @@
 			<script type="text/javascript">
 			/* <![CDATA[ */ 
 			function checkUser(num){
+				if(document.userForm.user_server_administrator.checked){
+					document.getElementById("serverAdminDiv").style.display='block';
+				}else{
+					document.getElementById("serverAdminDiv").style.display='none';
+				}
 			<cfif currentMethod EQ "editUser" and session.zOS.user.id EQ qUser.user_id>
 				if(num == 1){
 					if(document.userForm.user_site_administrator.checked == false){

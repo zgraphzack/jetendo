@@ -264,6 +264,10 @@
 		}
 		str.member_password=str.user_password;
 		str.member_email=str.user_username; 
+
+		if(structkeyexists(str, 'user_server_administrator') and str.user_server_administrator NEQ 1){
+			str.user_server_admin_site_id_list="";
+		}
 		
 		inputStruct2.table = "user";
 		inputStruct2.datasource=request.zos.zcoreDatasource;
@@ -580,6 +584,9 @@ To view more info about this new user, click the following link:
 				str.user_password_version =0;
 				str.member_password=str.user_password;
 			}
+		}
+		if(structkeyexists(str, 'user_server_administrator') and str.user_server_administrator NEQ 1){
+			str.user_server_admin_site_id_list="";
 		}
 		inputStruct2.table = "user";
 		inputStruct2.datasource="#request.zos.zcoreDatasource#";
