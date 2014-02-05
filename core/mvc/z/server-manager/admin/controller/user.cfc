@@ -72,6 +72,7 @@
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>		
 		variables.userAdminCom.setActive(application.zcore.functions.zso(form, 'user_id'), form.sid);	
+		application.zcore.forceUserUpdateSession[form.sid&":"&form.user_id]=true;
 		application.zcore.status.setStatus(Request.zsid, "User activated and IP was unblocked.");
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(application.zcore.status.getField(form.returnId, "url","/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#"), "zsid=#Request.zsid#"));
 		</cfscript>
@@ -114,6 +115,7 @@
 			variables.userAdminCom.setInactive(application.zcore.functions.zso(form, 'user_id'), form.sid);	
 			application.zcore.status.setStatus(Request.zsid, "User deactivated.");
 		}
+		application.zcore.forceUserUpdateSession[form.sid&":"&form.user_id]=true;
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(application.zcore.status.getField(form.returnId, "url","/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#"), "zsid=#Request.zsid#"));
 		</cfscript>
 	<cfelse>
@@ -260,6 +262,8 @@
 		}
 		application.zcore.status.setStatus(Request.zsid, "User updated.");
 	}
+
+	application.zcore.forceUserUpdateSession[form.sid&":"&form.user_id]=true;
 	application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(application.zcore.status.getField(form.returnId, "url","/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#"), "zsid=#Request.zsid#"));	
 	</cfscript>
 </cffunction>
