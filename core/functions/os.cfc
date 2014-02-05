@@ -1725,7 +1725,7 @@ application.zcore.functions.zLogError(ts);
 		
 	 }
 	 request.zos.tempObj.zVarSOIndex++;
-	if(arguments.disableEditing EQ false and structkeyexists(application.zcore,'user') and (structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and contentConfig.contentEmailFormat EQ false){
+	if(arguments.disableEditing EQ false and structkeyexists(application.zcore,'user') and structkeyexists(request.zos.userSession, 'groupAccess') and (structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and contentConfig.contentEmailFormat EQ false){
 		request.zos.tempObj.zVarSOIndex++;
 		start='<div style="display:inline;" id="zcidspan#request.zos.tempObj.zVarSOIndex#" onmouseover="zOverEditDiv(this,''/z/admin/site-options/index?return=1&amp;jumpto=soid_#application.zcore.functions.zURLEncode(arguments.name,"_")#'');">';
 		end='</div>';
