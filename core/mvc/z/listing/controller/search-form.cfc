@@ -3718,21 +3718,14 @@ propertyDataCom.setSearchCriteria(form);
 <cfif isDefined('request.contentEditor') EQ false and isDefined('request.hideMLSResults') EQ false><!---  and structkeyexists(form, 'searchId')> --->
 <!--- <textarea cols="100" rows="5" name="mytest333" id="mytest333"></textarea> --->
 <!---  <textarea name="testdebug" id="testdebug" cols="50" rows="3"></textarea> --->
+        <div style="font-size:130%; width:100%; float:left;" id="zls-searchformusemessage">Use the form on the sidebar to search.</div>
 <table style="width:100%;">
 <tr>
 <td id="mlsResults">
 <table style="width:100%;">
 <tr><td style="vertical-align:top;padding-right:10px;">
 <div id="zls-searchformhelpdiv">
-<a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a><br /><div id="zListingHelpDiv" style="display:none; border:1px solid ##990000; padding:10px; padding-top:0px;">
-<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
-<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Search MLS" and the results will load on the right. </p>
-<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>
-<p>After typing an entry, click "Update Results" to update your search. </p>
-<p>You can select or type as many options as you want.</p>
-<p>Your search will automatically show the ## of matching listings as you update each search field.</p>
-<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
-</div>
+<a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a>
 </div>
 <!--- <script type="text/javascript">/* <![CDATA[ */zListingDisplayHelpBox();/* ]]> */</script> --->
 
@@ -3755,7 +3748,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 
 </cfscript>
 
-</td><td style="vertical-align:top; text-align:right; font-size:14px; font-weight:bold;">&nbsp;
+</td><td style="vertical-align:top; text-align:right; font-size:110%; font-weight:bold;">&nbsp;
 <cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
 	<cfif (isDefined('session.zListingHideMap') EQ false or session.zListingHideMap EQ false) and tempHideMap EQ false>
 		<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
@@ -3766,6 +3759,15 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 </cfif>
 </td></tr> 
 </table> 
+<div id="zListingHelpDiv" style="display:none; margin-bottom:10px;border:1px solid ##990000; padding:10px; padding-top:10px;">
+<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
+<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Search MLS" and the results will load on the right. </p>
+<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>
+<p>After typing an entry, click "Update Results" to update your search. </p>
+<p>You can select or type as many options as you want.</p>
+<p>Your search will automatically show the ## of matching listings as you update each search field.</p>
+<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
+</div>
 <cfscript> 
 		ts = StructNew();
 		ts.offset = form.zIndex-1;
@@ -3831,7 +3833,6 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 			}
 		}
 		</cfscript>	
-        <h2 id="zls-searchformusemessage">Use the form on the sidebar to search.</h2>
 
         <cfif structkeyexists(application.sitestruct[request.zos.globals.id], 'zListingMapCheck') and isDefined('session.zListingHideMap') and session.zListingHideMap EQ false and tempHideMap EQ false>
         <cfscript>

@@ -37,7 +37,7 @@
 		if(request.cgi_script_name NEQ '/z/listing/property/detail/index' and request.cgi_script_name NEQ '/z/listing/property/detail-new/index'){
 			mapStageStruct=StructNew();
 			mapStageStruct.width=request.zos.globals.maximagewidth;
-			mapStageStruct.height=250;
+			mapStageStruct.height=350;
 			mapStageStruct.fullscreen.width=498;
 			mapStageStruct.fullscreen.height=302;
 		}

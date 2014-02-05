@@ -407,6 +407,7 @@ listing_longitude<>'0'";
 	var ms=0;
 	var mapCom=0;
 	var tempHideMap=0;
+			writeoutput('<h2 id="zls-searchformusemessage">Use the form on the sidebar to search.</h2>');
 	writeoutput('<table style="width:100%;">
 	<tr>
 		<td id="mlsResults"><table style="width:100%;">
@@ -512,7 +513,6 @@ listing_longitude<>'0'";
 					res=variables.propertyDisplayCom.display();
 				}
 			}
-			writeoutput('<h2 id="zls-searchformusemessage">Use the form on the sidebar to search.</h2>');
 			if(structkeyexists(application.sitestruct[request.zos.globals.id], 'zListingMapCheck') and isDefined('session.zListingHideMap') and session.zListingHideMap EQ false and tempHideMap EQ false){
 				ms={
 					mapQuery=mapQuery,
