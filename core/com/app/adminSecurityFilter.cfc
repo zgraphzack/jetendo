@@ -93,22 +93,6 @@
 	</cfscript><br />By default, a user has access to all features for the group they are assign to. Seleting one or more options here will limit them to the selected options only.  All other existing and future features will be hidden.
 </cffunction>
 
-
-<cffunction name="pageRequiresFeature" localmode="modern" returntype="boolean">
-	<cfscript>
-	// rather do this by removing manager links first
-	// then add attributes to cffunction everywhere like jetendo-admin-feature="Blog" and
-	//  upgrade the URL security filter in routing.cfc to call this cfc
-	
-	</cfscript>
-</cffunction>
-
-<cffunction name="page2" localmode="modern" jetendo-admin-feature="Slideshows" returntype="boolean">
-	// rather do this by removing manager links first
-	// then add attributes to cffunction everywhere like jetendo-admin-feature="Blog" and
-	//  upgrade the URL security filter in routing.cfc to call this cfc
-</cffunction>
-
 <cffunction name="checkFeatureAccess" localmode="modern" returntype="boolean">
 	<cfargument name="functionMetaData" type="struct" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
