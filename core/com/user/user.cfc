@@ -650,7 +650,7 @@ userCom.checkLogin(inputStruct);
 	request.zos.userSession.groupAccess=structnew();
 	
 	if(isdefined('session.zos.user.id')){
-		structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id&"_"&session.zos.user.group_id);
+		structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id);
 	}
 	</cfscript>
 	<cfif structkeyexists(session, 'zOS')>
@@ -686,7 +686,7 @@ userCom.checkLogin(inputStruct);
 	</cfif>
 </cffunction>
 
-<cffunction name="updateSession" localmode="modern" access="private" returntype="any" output="no" hint="This function should happen every page view once the user is logged in.">
+<cffunction name="updateSession" localmode="modern" access="public" returntype="any" output="no" hint="This function should happen every page view once the user is logged in.">
 	<cfargument name="inputStruct" required="yes" type="struct">
 	<cfscript>
 	var qUser = "";

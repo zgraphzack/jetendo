@@ -198,6 +198,7 @@ add fields to set location of content (listing) on google map (using address or 
 		if(structkeyexists(request.zos.userSession.groupAccess, "content_manager") or structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 			if(structkeyexists(arguments.linkStruct,"Content Manager") EQ false){
 				ts=structnew();
+				ts.featureName="Content Manager";
 				ts.link='/z/content/admin/content-admin/index';
 				ts.children=structnew();
 				arguments.linkStruct["Content Manager"]=ts;
@@ -205,72 +206,93 @@ add fields to set location of content (listing) on google map (using address or 
 			if(application.zcore.user.checkServerAccess()){
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Import iCalendar") EQ false){
 					ts=structnew();
+					ts.featureName="Import ICalendar";
 					ts.link='/z/admin/ical-import/index';
 					arguments.linkStruct["Content Manager"].children["Import iCalendar"]=ts;
 				} 
 			}
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Pages") EQ false){
 				ts=structnew();
+				ts.featureName="Pages";
 				ts.link='/z/content/admin/content-admin/index';
 				arguments.linkStruct["Content Manager"].children["Manage Pages"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Page") EQ false){
 				ts=structnew();
+				ts.featureName="Pages";
 				ts.link='/z/content/admin/content-admin/add';
 				arguments.linkStruct["Content Manager"].children["Add Page"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Files &amp; Images") EQ false){
 				ts=structnew();
+				ts.featureName="Files & Images";
 				ts.link="/z/admin/files/index";  
 				arguments.linkStruct["Content Manager"].children["Files &amp; Images"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Video Library") EQ false){
 				ts=structnew();
+				ts.featureName="Video Library";
 				ts.link="/z/_com/app/video-library?method=videoform";  
 				arguments.linkStruct["Content Manager"].children["Video Library"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Advanced Spell/Grammar Check") EQ false){
 				ts=structnew();
+				ts.featureName="Pages";
 				ts.link="/z/admin/admin-home/spellCheck";
 				arguments.linkStruct["Content Manager"].children["Advanced Spell/Grammar Check"]=ts;
 			}
 			if(request.minimalManagerDisabled){
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Site Options") EQ false){
 					ts=structnew();
+					ts.featureName="Site Options";
 					ts.link="/z/admin/site-options/index";
 					arguments.linkStruct["Content Manager"].children["Site Options"]=ts;
 				}  
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
 					ts=structnew();
+					ts.featureName="Slideshows";
 					ts.link="/z/admin/slideshow/index";
 					arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
 				}   
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Slideshow") EQ false){
 					ts=structnew();
+					ts.featureName="Slideshows";
 					ts.link="/z/admin/slideshow/add";
 					arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
 				}    
 			}
+			application.zcore.functions.zcreatedirectory(request.zos.globals.privatehomedir&"zupload/user/Shared Documents");
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Shared Documents") EQ false){
+				ts=structnew();
+				ts.featureName="Shared Documents";
+				ts.link="/z/admin/files/sharedDocuments";
+				ts.children=structnew();
+				arguments.linkStruct["Content Manager"].children["Shared Documents"]=ts;
+			}
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
 				ts=structnew();
+				ts.featureName="Menus";
 				ts.link="/z/admin/menu/index";
 				arguments.linkStruct["Content Manager"].children["Manage Menus"]=ts;
 			}   
 			if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Themes") EQ false){
 					ts=structnew();
+					ts.featureName="Themes";
 					ts.link="/z/admin/theme/index";
 					arguments.linkStruct["Content Manager"].children["Themes"]=ts;
 				}    
 			}
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Menu") EQ false){
 				ts=structnew();
+				ts.featureName="Menus";
 				ts.link="/z/admin/menu/add";
 				arguments.linkStruct["Content Manager"].children["Add Menu"]=ts;
 			}
 			if(request.minimalManagerDisabled){
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
 					ts=structnew();
+					ts.featureName="Problem Link Report";
 					ts.link="/z/admin/site-report/index";
 					arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 				}
@@ -278,6 +300,7 @@ add fields to set location of content (listing) on google map (using address or 
 			if(request.zos.istestserver){
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
 					ts=structnew();
+					ts.featureName="Manage Design & Layout";
 					ts.link="/z/admin/template/index";
 					arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
 				}

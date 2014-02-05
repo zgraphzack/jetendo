@@ -107,53 +107,54 @@
 		if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "agent"))){// or (structkeyexists(request.zos.userSession.groupAccess, "agent") EQ false)){
 			if(request.minimalManagerDisabled){
 				// ANYONE can access these
-				application.zcore.functions.zcreatedirectory(request.zos.globals.privatehomedir&"zupload/user/Shared Documents");
-				if(structkeyexists(arguments.sharedStruct,"Shared Documents") EQ false){
-					ts=structnew();
-					ts.link="/z/admin/files/sharedDocuments";
-					ts.children=structnew();
-					arguments.sharedStruct["Shared Documents"]=ts;
-				}
 				
 				if(structkeyexists(arguments.sharedStruct, "Manage Leads") EQ false){
 					ts=structnew();
+					ts.featureName="Leads";
 					ts.link="/z/inquiries/admin/manage-inquiries/index";
 					ts.children=structnew();
 					arguments.sharedStruct["Manage Leads"]=ts;
 				}
 				if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Manage Leads") EQ false){
 					ts=structnew();
+					ts.featureName="Manage Leads";
 					ts.link="/z/inquiries/admin/manage-inquiries/index";
 					arguments.sharedStruct["Manage Leads"].children["Manage Leads"]=ts;
 				}
 				if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Add Lead") EQ false){
 					ts=structnew();
+					ts.featureName="Manage Leads";
 					ts.link="/z/inquiries/admin/inquiry/add";
 					arguments.sharedStruct["Manage Leads"].children["Add Lead"]=ts;
 				}
 				if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Search Engine Keyword Lead Report") EQ false){
 					ts=structnew();
+					ts.featureName="Lead Reports";
 					ts.link="/z/inquiries/admin/search-engine-keyword-report/index";
 					arguments.sharedStruct["Manage Leads"].children["Search Engine Keyword Lead Report"]=ts;
 				} 
 				if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 					if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Manage Lead Template Emails") EQ false){
 						ts=structnew();
+						ts.featureName="Lead Templates";
 						ts.link="/z/inquiries/admin/lead-template/index";
 						arguments.sharedStruct["Manage Leads"].children["Manage Lead Template Emails"]=ts;
 					} 
 					if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Manage Lead Types") EQ false){
 						ts=structnew();
+						ts.featureName="Lead Types";
 						ts.link="/z/inquiries/admin/types/index";
 						arguments.sharedStruct["Manage Leads"].children["Manage Lead Types"]=ts;
 					} 
 					if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Manage Lead Routing") EQ false){
 						ts=structnew();
+						ts.featureName="Lead Routing";
 						ts.link="/z/inquiries/admin/routing/index";
 						arguments.sharedStruct["Manage Leads"].children["Manage Lead Routing"]=ts;
 					} 
 					if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Mailing List Export") EQ false){
 						ts=structnew();
+						ts.featureName="Mailing List Export";
 						ts.link="/z/admin/mailing-list-export/index";
 						arguments.sharedStruct["Manage Leads"].children["Mailing List Export"]=ts;
 					} 
@@ -161,11 +162,13 @@
 				
 				if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Lead Source Report") EQ false){
 					ts=structnew();
+					ts.featureName="Lead Reports"
 					ts.link="/z/inquiries/admin/lead-source-report/index";
 					arguments.sharedStruct["Manage Leads"].children["Lead Source Report"]=ts;
 				} 
 				if(structkeyexists(arguments.sharedStruct["Manage Leads"].children,"Export All Leads As CSV") EQ false){
 					ts=structnew();
+					ts.featureName="Lead Export";
 					ts.link="/z/inquiries/admin/export";
 					arguments.sharedStruct["Manage Leads"].children["Export All Leads As CSV"]=ts;
 				} 
@@ -173,27 +176,32 @@
 				if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 					if(structkeyexists(arguments.sharedStruct, "Users") EQ false){
 						ts=structnew();
+						ts.featureName="Users";
 						ts.link="/z/admin/member/index"; 
 						ts.children=structnew();
 						arguments.sharedStruct["Users"]=ts;
 					}
 					if(structkeyexists(arguments.sharedStruct["Users"].children,"Manage Users") EQ false){
 						ts=structnew();
+						ts.featureName="Users";
 						ts.link="/z/admin/member/index";
 						arguments.sharedStruct["Users"].children["Manage Users"]=ts;
 					}
 					if(structkeyexists(arguments.sharedStruct["Users"].children,"Manage Offices") EQ false){
 						ts=structnew();
+						ts.featureName="Offices";
 						ts.link="/z/admin/office/index";
 						arguments.sharedStruct["Users"].children["Manage Offices"]=ts;
 					}
 					if(structkeyexists(arguments.sharedStruct["Users"].children,"Add Office") EQ false){
 						ts=structnew();
+						ts.featureName="Offices";
 						ts.link="/z/admin/office/add";
 						arguments.sharedStruct["Users"].children["Add Office"]=ts;
 					}
 					if(structkeyexists(arguments.sharedStruct["Users"].children,"Add User") EQ false){
 						ts=structnew();
+						ts.featureName="Users";
 						ts.link="/z/admin/member/add";
 						arguments.sharedStruct["Users"].children["Add User"]=ts;
 					}
@@ -207,6 +215,7 @@
 				}else if(structkeyexists(request.zos.userSession.groupAccess, "agent") and application.zcore.app.siteHasApp("content")){ 
 					if(structkeyexists(arguments.sharedStruct,"Update Profile") EQ false){
 						ts=structnew();
+						ts.featureName="Users";
 						ts.link=application.zcore.functions.zvar('domain',session.zos.user.site_id)&"/z/admin/member/index";
 						ts.children=structnew();
 						arguments.sharedStruct["Update Profile"]=ts;
@@ -222,6 +231,7 @@
 				qSiteOptionGroup=db.execute("qSiteOptionGroup"); 
 				for(local.i=1;local.i LTE qSiteOptionGroup.recordcount;local.i++){
 					ts=structnew();
+					ts.featureName="Custom: "&qSiteOptionGroup.site_option_group_display_name[local.i];
 					ts.link="/z/admin/site-options/manageGroup?site_option_group_id="&qSiteOptionGroup.site_option_group_id[local.i];
 					ts.children=structnew();
 					if(qSiteOptionGroup.site_option_group_menu_name[local.i] EQ ""){
@@ -232,8 +242,9 @@
 					
 					if(structkeyexists(arguments.sharedStruct, local.curMenu) EQ false){
 						arguments.sharedStruct[local.curMenu]={
-							link="/z/admin/site-options/index",
-							children={}
+							featureName:"Custom",
+							link:"/z/admin/site-options/index",
+							children:{}
 						};
 					}
 					arguments.sharedStruct[local.curMenu].children["Manage "&qSiteOptionGroup.site_option_group_display_name[local.i]&"(s)"]=ts;
@@ -243,6 +254,7 @@
 		if(request.minimalManagerDisabled){
 			if(structkeyexists(request.zos.globals,'enableSSIPublish') and request.zos.globals.enableSSIPublish EQ 1){
 				ts=structnew();
+				ts.featureName="Pages";
 				ts.link="/z/admin/ssi-skin/index";
 				ts.children=structnew();
 				if(structkeyexists(arguments.sharedStruct, "Content Manager")){
@@ -280,6 +292,11 @@
 		arrKey=structkeyarray(arguments.sharedStruct);
 		arraysort(arrKey,"text","asc");
 		for(i=1;i LTE arraylen(arrKey);i++){
+			if(structkeyexists(arguments.sharedStruct[arrKey[i]], 'featureName')){
+				if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.sharedStruct[arrKey[i]].featureName)){
+					continue;
+				}
+			}
 			target="";
 			if(structkeyexists(arguments.sharedStruct[arrKey[i]],"target")){
 				target=arguments.sharedStruct[arrKey[i]].target;	
@@ -295,15 +312,20 @@
 			arrKey2=structkeyarray(arguments.sharedStruct[arrKey[i]].children);
 			arraysort(arrKey2,"text","asc");
 			for(n=1;n LTE arraylen(arrKey2);n++){
+				if(structkeyexists(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]], 'featureName')){
+					if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].featureName)){
+						continue;
+					}
+				}
 				target="";
 				if(structkeyexists(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]],"target")){
 					target=arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].target;	
 				}
 				writeoutput('<li><a href="'&htmleditformat(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].link)&'" ');
-			if(target EQ "_blank"){
-				writeoutput(' rel="external" onclick="window.open(''#htmleditformat(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].link)#''); return false;"');	
-			}
-			writeoutput('>'&arrKey2[n]&'</a></li> '&chr(10));
+				if(target EQ "_blank"){
+					writeoutput(' rel="external" onclick="window.open(''#htmleditformat(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].link)#''); return false;"');	
+				}
+				writeoutput('>'&arrKey2[n]&'</a></li> '&chr(10));
 			}
 			if(structcount(arguments.sharedStruct[arrKey[i]].children) NEQ 0){
 				writeoutput('</ul> '&chr(10));

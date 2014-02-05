@@ -509,9 +509,8 @@ if(not rs.success){
 	if(directoryexists(request.zos.globals.homedir&"templates/")){
 		ts.hasTemplates=true;
 	}
+	ts.administratorTemplateMenuCache={};
 
-
-	
 	request.zos.db=application.zcore.componentObjectCache.db;
 	ts.dbComponents=application.zcore.functions.getSiteDBObjects(ts.globals);
 	
@@ -520,7 +519,6 @@ if(not rs.success){
 	
 	ts.adminFeatureMapStruct=application.zcore.adminSecurityFilter.getFeatureMap();
 	
-	ts.administratorTemplateMenuCache=structnew();
 	ts.comCache=structnew();
 	ts.contentPageIDCache=structnew();
 	ts.contentPageCache=structnew();

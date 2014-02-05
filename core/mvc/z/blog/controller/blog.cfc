@@ -534,54 +534,64 @@ this.app_id=10;
 	if(structkeyexists(request.zos.userSession.groupAccess, "content_manager") or structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 		if(structkeyexists(arguments.linkStruct,"Blog") EQ false){
 			ts=structnew();
+			ts.featureName="Blog";
 			ts.link="/z/blog/admin/blog-admin/articleList";
 			ts.children=structnew();
 			arguments.linkStruct["Blog"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"View Blog Home Page") EQ false){
 			ts=structnew();
+			ts.featureName="Blog";
 			ts.link=homeLink;
 			ts.target="_blank";
 			arguments.linkStruct["Blog"].children["View Blog Home Page"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"View Blog RSS Feeds") EQ false){
 			ts=structnew();
+			ts.featureName="Blog";
 			ts.link=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 1,"html",application.zcore.app.getAppData("blog").optionStruct.blog_config_category_home_name);
 			ts.target="_blank";
 			arguments.linkStruct["Blog"].children["View Blog RSS Feeds"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Add Article") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Articles";
 			ts.link="/z/blog/admin/blog-admin/articleAdd";
 			arguments.linkStruct["Blog"].children["Add Article"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Add Event") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Articles";
 			ts.link="/z/blog/admin/blog-admin/articleAdd?blog_event=1";
 			arguments.linkStruct["Blog"].children["Add Blog Event"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Add Category") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Categories";
 			ts.link="/z/blog/admin/blog-admin/categoryAdd";
 			arguments.linkStruct["Blog"].children["Add Category"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Add Tag") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Tags";
 			ts.link="/z/blog/admin/blog-admin/tagAdd";
 			arguments.linkStruct["Blog"].children["Add Tag"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Manage Articles & Events") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Articles";
 			ts.link="/z/blog/admin/blog-admin/articleList";
 			arguments.linkStruct["Blog"].children["Manage Articles & Blog Events"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Manage Categories") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Categories";
 			ts.link="/z/blog/admin/blog-admin/categoryList";
 			arguments.linkStruct["Blog"].children["Manage Categories"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Blog"].children,"Manage Tags") EQ false){
 			ts=structnew();
+			ts.featureName="Blog Tags";
 			ts.link="/z/blog/admin/blog-admin/tagList";
 			arguments.linkStruct["Blog"].children["Manage Tags"]=ts;
 		} 

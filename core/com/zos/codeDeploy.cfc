@@ -101,6 +101,7 @@
 	componentObjectCache.hook=CreateObject("component","zcorerootmapping.com.zos.hook");
 	componentObjectCache.app=CreateObject("component","zcorerootmapping.com.zos.app");
 	componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db");
+	componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
 	if(request.zos.isdeveloper and structkeyexists(session, 'zos') and structkeyexists(session.zos, 'verifyQueries') and session.zos.verifyQueries){
 		local.verifyQueriesEnabled=true;
 	}else{

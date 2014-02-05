@@ -61,8 +61,8 @@
 	}
 	</cfscript>
 	<cfif not request.zos.inServerManager and (application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
-	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id&"_"&userGroupId))>
-		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&userGroupId]#
+	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id))>
+		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id]#
 	<cfelse>
 		<cfsavecontent variable="templateMenuOutput">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="table-list" style="margin-bottom:10px; ">
@@ -128,12 +128,14 @@
 		if(application.zcore.app.siteHasApp("content") EQ false){
 			if(structkeyexists(sharedMenuStruct,"Files &amp; Images") EQ false){
 				ts=structnew();
+				ts.featureName="Files & Images";
 				ts.link="/z/admin/files/index";  
 				ts.children=structnew();
 				sharedMenuStruct["Files &amp; Images"]=ts;
 			}
 			if(structkeyexists(sharedMenuStruct,"Site Options") EQ false){
 				ts=structnew();
+				ts.featureName="Site Options";
 				ts.link="/z/admin/site-options/index";
 				ts.children=structnew();
 				sharedMenuStruct["Site Options"]=ts;
@@ -162,7 +164,7 @@
 	</cfsavecontent>
 	    #templateMenuOutput#
 		<cfif not request.zos.inServerManager>
-			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id&"_"&userGroupId]=templateMenuOutput>
+			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id]=templateMenuOutput>
 		</cfif>
 	</cfif>
 	<cfif request.zos.inServerManager>

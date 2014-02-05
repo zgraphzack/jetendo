@@ -219,6 +219,7 @@
 	ts.uuidCacheStruct=structnew();
 	ts.imageLibraryLastDeleteDate="";
 	ts.compiledTemplatePathCache=structnew();
+	ts.forceUserUpdateSession={};
 	
 	ts.appComPathStruct=structnew();
 	ts.appComPathStruct[10]={name:"blog", cfcPath:"zcorerootmapping.mvc.z.blog.controller.blog", cache:true};

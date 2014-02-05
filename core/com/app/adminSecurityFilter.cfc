@@ -8,54 +8,71 @@
 	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_parent_id = #db.param('0')# and 
 	site_option_group_type =#db.param('1')# and 
-	site_option_group.site_option_group_appidlist like #db.param('%,,%')# and
 	site_option_group.site_option_group_disable_admin=#db.param(0)# 
 	ORDER BY site_option_group.site_option_group_display_name ASC ";
-	qGroup=db.execute("qGroup");
+	qGroup=db.execute("qGroup"); 
 
 	ms=structnew("linked");
-	ms["Blog"]="Blog";
-	ms["Blog Articles"]=chr(9)&"Blog Articles";
-	ms["Blog Categories"]=chr(9)&"Blog Categories";
-	ms["Blog Tags"]=chr(9)&"Blog Tags";
-	ms["Content Manager"]="Content Manager";
-	ms["Pages"]="Pages";
-	ms["Files & Images"]=chr(9)&"Files & Images";
-	ms["Menus"]=chr(9)&"Menus";
-	ms["Pages"]=chr(9)&"Pages";
-	ms["Problem Link Report"]=	chr(9)&"Problem Link Report";
-	ms["Slideshows"]=chr(9)&"Slideshows";
-	ms["Site Options"]=chr(9)&"Site Options";
-	ms["Video Library"]=chr(9)&"Video Library";
-	ms["Custom"]= "Custom";
-	// loop the groups
-	// get the code from manageoptions"
-	// site_option_group_disable_admin=0
-	for(row in qGroup){
-		ms["Custom: "&row.site_option_group_display_name]=chr(9)&row.site_option_group_display_name&chr(10);
+	if(application.zcore.app.siteHasApp("blog")){
+		ms["Blog"]={ parent:'', label:"Blog" };
+		ms["Blog Articles"]={ parent:'Blog', label:chr(9)&"Blog Articles"};
+		ms["Blog Categories"]={ parent:'Blog', label:chr(9)&"Blog Categories"};
+		ms["Blog Tags"]={ parent:'Blog', label:chr(9)&"Blog Tags"};
 	}
-	ms["Leads"]="Leads";
-	ms["Lead Types"]=chr(9)&"Lead Types";
-	ms["Lead Templates"]=chr(9)&"Lead Templates";
-	ms["Lead Reports"]=chr(9)&"Lead Reports";
-	ms["Lead Export"]=chr(9)&"Lead Export";
-	ms["Mailing List Export"]=chr(9)&"Mailing List Export";
-	ms["Lead Routing"]=chr(9)&"Lead Routing";
-	ms["Listings"]="Listings";
-	ms["Listings"]=chr(9)&"Listings";
-	ms["Research Tool"]=chr(9)&"Research Tool";
-	ms["Saved Searches"]=chr(9)&"Saved Searches";
-	ms["Search Filter"]=chr(9)&"Search Filter";
-	ms["Widgets For Other Sites"]=chr(9)&"Widgets For Other Sites";
-	ms["Rentals"]="Rentals";
-	ms["Rentals"]=chr(9)&"Rentals";
-	ms["Amenities"]=chr(9)&"Amenities";
-	ms["Rental Categories"]=chr(9)&"Rental Categories";
-	ms["Rental Calendars"]=	chr(9)&"Rental Calendars";
-	ms["Shared Documents"]=	"Shared Documents";
-	ms["Users"]="Users";
-	ms["Users"]=chr(9)&"Users";
-	ms["Offices"]=chr(9)&"Offices";
+	ms["Content Manager"]={ parent:'', label:"Content Manager"};
+	if(application.zcore.app.siteHasApp("content")){
+		ms["Pages"]={ parent:'Content Manager', label:chr(9)&"Pages"};
+	}
+	ms["Files & Images"]={ parent:'Content Manager', label:chr(9)&"Files & Images"};
+	ms["Menus"]={ parent:'Content Manager', label:chr(9)&"Menus"};
+	ms["Problem Link Report"]={ parent:'Content Manager', label:	chr(9)&"Problem Link Report"};
+	ms["Slideshows"]={ parent:'Content Manager', label:chr(9)&"Slideshows"};
+	ms["Site Options"]={ parent:'Content Manager', label:chr(9)&"Site Options"};
+	if(request.zos.isTestServer){
+		ms["Manage Design & Layout"]={ parent:'Content Manager', label:chr(9)&"Manage Design & Layout"};
+	}
+	ms["Shared Documents"]={ parent:'Content Manager', label:"Shared Documents"};
+	if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
+		ms["Themes"]={ parent:'Content Manager', label:chr(9)&"Themes"};
+	}
+	ms["Video Library"]={ parent:'Content Manager', label:chr(9)&"Video Library"};
+	if(qGroup.recordcount NEQ 0){
+		ms["Custom"]={ parent:'', label: "Custom"};
+		// loop the groups
+		// get the code from manageoptions"
+		// site_option_group_disable_admin=0
+		for(row in qGroup){
+			ms["Custom: "&row.site_option_group_display_name]={ parent:'Custom', label:chr(9)&row.site_option_group_display_name&chr(10)};
+		}
+	}
+	ms["Leads"]={ parent:'', label:"Leads"};
+	ms["Manage Leads"]={ parent:'Leads', label:chr(9)&"Manage Leads"};
+	ms["Lead Types"]={ parent:'Leads', label:chr(9)&"Lead Types"};
+	ms["Lead Templates"]={ parent:'Leads', label:chr(9)&"Lead Templates"};
+	ms["Lead Reports"]={ parent:'Leads', label:chr(9)&"Lead Reports"};
+	ms["Lead Export"]={ parent:'Leads', label:chr(9)&"Lead Export"};
+	ms["Mailing List Export"]={ parent:'Leads', label:chr(9)&"Mailing List Export"};
+	ms["Lead Routing"]={ parent:'Leads', label:chr(9)&"Lead Routing"};
+
+	if(application.zcore.app.siteHasApp("listing")){
+		ms["Listings"]={ parent:'', label:"Listings"};
+		ms["Manage Listings"]={ parent:'Listings', label:chr(9)&"Manage Listings"};
+		ms["Research Tool"]={ parent:'Listings', label:chr(9)&"Research Tool"};
+		ms["Saved Searches"]={ parent:'Listings', label:chr(9)&"Saved Searches"};
+		ms["Search Filter"]={ parent:'Listings', label:chr(9)&"Search Filter"};
+		ms["Widgets For Other Sites"]={ parent:'Listings', label:chr(9)&"Widgets For Other Sites"};
+	}
+
+	if(application.zcore.app.siteHasApp("rental")){
+		ms["Rentals"]={ parent:'', label:"Rentals"};
+		ms["Manage Rentals"]={ parent:'Rentals', label:chr(9)&"Manage Rentals"};
+		ms["Rental Amenities"]={ parent:'Rentals', label:chr(9)&"Rental Amenities"};
+		ms["Rental Categories"]={ parent:'Rentals', label:chr(9)&"Rental Categories"};
+		ms["Rental Calendars"]={ parent:'Rentals', label:	chr(9)&"Rental Calendars"};
+	}
+	ms["Users"]={ parent:'', label:"Users"};
+	ms["Manage Users"]={ parent:'Users', label:chr(9)&"Manage Users"};
+	ms["Offices"]={ parent:'Users', label:chr(9)&"Offices"};
 	return ms;
 	</cfscript>
 </cffunction>
@@ -68,7 +85,7 @@
 	arrValue=[];
 	arrLabel=[];
 	for(i in ms){
-		arrayAppend(arrLabel, replace(ms[i], chr(9), "__", "all"));
+		arrayAppend(arrLabel, replace(ms[i].label, chr(9), "__", "all"));
 		arrayAppend(arrValue, i);
 	}
 
@@ -93,27 +110,46 @@
 	</cfscript><br />By default, a user has access to all features for the group they are assign to. Seleting one or more options here will limit them to the selected options only.  All other existing and future features will be hidden.
 </cffunction>
 
+<cffunction name="validateFeatureAccessList" localmode="modern" returntype="string">
+	<cfargument name="featureList" type="string" required="yes">
+	<cfscript>
+	arrFeature=listToArray(arguments.featureList, ",");
+	fs={};
+	for(i=1;i LTE arraylen(arrFeature);i++){
+		if(not structkeyexists(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct, arrFeature[i])){
+			throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
+		}
+		fs[arrFeature[i]]=true;
+		currentFeature=application.siteStruct[request.zos.globals.id].adminFeatureMapStruct[arrFeature[i]];
+		if(currentFeature.parent NEQ ""){
+			fs[currentFeature.parent]=true;
+		}
+	}
+	return structkeylist(fs, ",");
+	</cfscript>
+</cffunction>
+
 <cffunction name="checkFeatureAccess" localmode="modern" returntype="boolean">
-	<cfargument name="functionMetaData" type="struct" required="yes">
+	<cfargument name="featureName" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
 	userSiteId='user';
 	if(arguments.site_id NEQ request.zos.globals.id){
-		userSiteId='user'&arguments.site_id;			
-	}
+		userSiteId='user'&arguments.site_id;
+	} 
 	if(structkeyexists(session, 'zos') and structkeyexists(session.zos,userSiteId)){
 		if(not structkeyexists(session.zOS[userSiteId], 'limitManagerFeatureStruct') or structcount(session.zOS[userSiteId].limitManagerFeatureStruct) EQ 0){
 			return true;
 		}else{
-			if(structkeyexists(arguments.functionMetaData, 'jetendo-admin-feature')){
-				arrFeature=listToArray(arguments.functionMetaData['jetendo-admin-feature'], ",");
-				for(i=1;i LTE arraylen(arrFeature);i++){
-					if(not structkeyexists(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct, arrFeature[i])){
-						throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
-					}
-					if(not structkeyexists(session.zOS[userSiteId].limitManagerFeatureStruct, arrFeature[i])){
-						return false;
-					}
+			//if(structkeyexists(arguments.functionMetaData, 'jetendo-admin-feature')){
+			arrFeature=listToArray(arguments.featureName, ",");
+			for(i=1;i LTE arraylen(arrFeature);i++){
+				if(not structkeyexists(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct, arrFeature[i])){
+					throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
+				}
+				if(not structkeyexists(session.zOS[userSiteId].limitManagerFeatureStruct, arrFeature[i])){
+					currentFeature=application.siteStruct[request.zos.globals.id].adminFeatureMapStruct[arrFeature[i]];
+					return false;
 				}
 			}
 			return true;

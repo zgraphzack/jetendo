@@ -308,6 +308,7 @@
 	}else if(form.method EQ "update"){
 		ts.user_group_id=qU2.user_group_id;
 	}
+	form.user_group_id=ts.user_group_id;
 	ts.sendConfirmOptIn=false;
 	userAdminCom = CreateObject("component","zcorerootmapping.com.user.user_admin");
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and structkeyexists(request.zos.userSession.groupAccess, "client")){
@@ -353,7 +354,9 @@
 		structdelete(variables,'member_password');		
 	}
 	ts.site_id=request.zos.globals.id;
-		
+	if(application.zcore.user.checkGroupAccess("administrator")){
+		form.user_limit_manager_features=application.zcore.adminSecurityFilter.validateFeatureAccessList(application.zcore.functions.zso(form,'user_limit_manager_features'));
+	}
 	if(form.method EQ "update"){
 		ts.user_id = form.user_id;
 		result = userAdminCom.update(ts);
@@ -414,7 +417,12 @@
 	}else{
 		application.zcore.status.setStatus(request.zsid, 'Member updated.');
 	}
+
+	structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, request.zos.globals.id&"_"&form.user_id);
 	
+	application.zcore.forceUserUpdateSession[request.zos.globals.id&":"&form.user_id]=true;
+	
+
 	if(application.zcore.app.siteHasApp("listing")){
 		db.sql="select site_domain from #db.table("site", request.zos.zcoreDatasource)# site, 
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site  

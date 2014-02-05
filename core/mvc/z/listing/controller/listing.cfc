@@ -256,6 +256,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 		qCheckExclusiveListingPage=db.execute("qCheckExclusiveListingPage"); 
 		if(qCheckExclusiveListingPage.recordcount NEQ 0){
 			ts=structnew();
+			ts.featureName="Manage Listings";
 			ts.link='/z/content/admin/content-admin/add?content_parent_id='&qCheckExclusiveListingPage.cid;
 			arguments.linkStruct["Real Estate"].children["Add New Listing"]=ts;
 			ts=structnew();
@@ -264,28 +265,33 @@ if(compare(arguments.photourl, local.c) NEQ 0){
     }
 		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Saved Searches") EQ false){
 			ts=structnew();
+			ts.featureName="Saved Searches";
 			ts.link='/z/listing/admin/saved-searches/index';
 			arguments.linkStruct["Real Estate"].children["Saved Searches"]=ts;
 		} 
 		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Search Filter") EQ false){
 			ts=structnew();
+			ts.featureName="Search Filter";
 			ts.link='/z/listing/admin/search-filter/index';
 			arguments.linkStruct["Real Estate"].children["Search Filter"]=ts;
 		}  
 		if(request.zos.istestserver){
 			if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Manual Listing") EQ false){
 				ts=structnew();
+				ts.featureName="Managed Listings";
 				ts.link='/z/listing/admin/manual-listing/index';
 				arguments.linkStruct["Real Estate"].children["Manual Listing"]=ts;
 			}  
 		}
 		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Research Tool") EQ false){
 			ts=structnew();
+			ts.featureName="Research Tool";
 			ts.link='/z/listing/admin/research-tool/index';
 			arguments.linkStruct["Real Estate"].children["Research Tool"]=ts;
 		}  
 		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Widgets For Other Sites") EQ false){
 			ts=structnew();
+			ts.featureName="Widgets For Other Sites";
 			ts.link='/z/listing/admin/real-estate-widgets/index';
 			arguments.linkStruct["Real Estate"].children["Widgets For Other Sites"]=ts;
 		}  

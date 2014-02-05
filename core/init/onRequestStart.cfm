@@ -405,9 +405,15 @@
 	if(structkeyexists(form,'zlogout')){
 		application.zcore.user.logOut();
 	}
+	if(application.zcore.user.checkGroupAccess("user") and structkeyexists(application.zcore, 'forceUserUpdateSession')){
+		if(structkeyexists(application.zcore.forceUserUpdateSession, session.zos.user.site_id&":"&session.zos.user.id)){
+			application.zcore.user.updateSession({site_id:request.zos.globals.id});
+		}
+	}
 	if(structkeyexists(cookie, 'ztoken')){
 		application.zcore.user.verifyToken();
 	}
+
 	if(form[request.zos.urlRoutingParameter] EQ "/z/user/login/confirmToken"){
 		loginCom=createobject("component", "zcorerootmapping.mvc.z.user.controller.login");
 		loginCom.confirmToken();

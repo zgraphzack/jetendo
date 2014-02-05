@@ -413,48 +413,57 @@
 		if(structkeyexists(request.zos.userSession.groupAccess, "content_manager") or structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 			if(structkeyexists(arguments.linkStruct,"Rentals") EQ false){
 				ts=structnew();
+				ts.featureName="Rentals";
 				ts.link='/z/rental/admin/rates/index';
 				ts.children=structnew();
 				arguments.linkStruct["Rentals"]=ts;
 			}
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"View Rental Home Page") EQ false){
 				ts=structnew();
+				ts.featureName="Rentals";
 				ts.link=application.zcore.app.getAppCFC("rental").getRentalHomeLink();
 				ts.target="_blank";
 				arguments.linkStruct["Rentals"].children["View Rental Home Page"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"Manage Amenities") EQ false){
 				ts=structnew();
+				ts.featureName="Rental Amenities";
 				ts.link='/z/rental/admin/rental-amenity/index';
 				arguments.linkStruct["Rentals"].children["Manage Amenities"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"Manage Categories") EQ false){
 				ts=structnew();
+				ts.featureName="Rental Categories";
 				ts.link='/z/rental/admin/rental-category/index';
 				arguments.linkStruct["Rentals"].children["Manage Categories"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"Manage Rentals") EQ false){
 				ts=structnew();
+				ts.featureName="Manage Rentals";
 				ts.link='/z/rental/admin/rates/index';
 				arguments.linkStruct["Rentals"].children["Manage Rentals"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"Add Amenity") EQ false){
 				ts=structnew();
+				ts.featureName="Rental Amenities";
 				ts.link='/z/rental/admin/rental-amenity/add';
 				arguments.linkStruct["Rentals"].children["Add Amenity"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"Add Category") EQ false){
 				ts=structnew();
+				ts.featureName="Rental Categories";
 				ts.link='/z/rental/admin/rental-category/add';
 				arguments.linkStruct["Rentals"].children["Add Category"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"Add Rental") EQ false){
 				ts=structnew();
+				ts.featureName="Manage Rentals";
 				ts.link='/z/rental/admin/rates/addRental';
 				arguments.linkStruct["Rentals"].children["Add Rental"]=ts;
 			} 
 			if(structkeyexists(arguments.linkStruct["Rentals"].children,"View All Calendars") EQ false){
 				ts=structnew();
+				ts.featureName="Rental Calendars";
 				ts.link='/z/rental/admin/combined-availability/index';
 				arguments.linkStruct["Rentals"].children["View All Calendars"]=ts;
 			}
