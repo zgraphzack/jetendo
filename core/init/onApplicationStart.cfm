@@ -367,6 +367,10 @@
 	ts.componentObjectCache.hook=CreateObject("component","zcorerootmapping.com.zos.hook");
 	ts.componentObjectCache.app=CreateObject("component","zcorerootmapping.com.zos.app");
 	ts.componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db");
+	ts.componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
+
+
+	
 	structappend(ts, ts.componentObjectCache);
 	if(request.zos.allowRequestCFC){
 		structappend(request.zos, ts.componentObjectCache, true);
@@ -409,7 +413,6 @@
 	local.c.cacheDisabled=false;
 	local.c.autoReset=false;
 	request.zos.noVerifyQueryObject=ts.db.newQuery(local.c);
-
 
 	request.zos.queryObject.sql="SHOW VARIABLES LIKE #request.zos.queryObject.param('version')#";
 	

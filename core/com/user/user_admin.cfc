@@ -108,6 +108,24 @@
         </cfscript>
     </cffunction>
         
+
+	<cffunction name="applyUserUpdateSecurityFilter" localmode="modern">
+		<cfargument name="str" type="struct" required="yes">
+		<cfscript>
+		str=arguments.str;
+		if(not application.zcore.user.checkSiteAccess() and not application.zcore.user.checkServerAccess()){
+			structdelete(str, 'user_limit_manager_features');
+			structdelete(str, 'user_enable_widget_builder');
+		}
+		if(not application.zcore.user.checkServerAccess()){
+			structdelete(str, 'user_server_admin_site_id_list');
+		}else{
+			if(structkeyexists(str, 'user_server_administrator') and str.user_server_administrator NEQ 1){
+				str.user_server_admin_site_id_list="";
+			}
+		}
+		</cfscript>
+	</cffunction>
     
 	<!--- To use a component, you create it as an object and call its methods like so...
 	userCom = CreateObject("component", "zcorerootmapping.com.user.user_admin");
@@ -265,10 +283,8 @@
 		str.member_password=str.user_password;
 		str.member_email=str.user_username; 
 
-		if(structkeyexists(str, 'user_server_administrator') and str.user_server_administrator NEQ 1){
-			str.user_server_admin_site_id_list="";
-		}
-		
+		applyUserUpdateSecurityFilter(str);
+	
 		inputStruct2.table = "user";
 		inputStruct2.datasource=request.zos.zcoreDatasource;
 		inputStruct2.struct = str;
@@ -585,9 +601,7 @@ To view more info about this new user, click the following link:
 				str.member_password=str.user_password;
 			}
 		}
-		if(structkeyexists(str, 'user_server_administrator') and str.user_server_administrator NEQ 1){
-			str.user_server_admin_site_id_list="";
-		}
+		applyUserUpdateSecurityFilter(str);
 		inputStruct2.table = "user";
 		inputStruct2.datasource="#request.zos.zcoreDatasource#";
 		inputStruct2.struct = str;

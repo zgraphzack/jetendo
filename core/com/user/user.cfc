@@ -744,6 +744,12 @@ userCom.checkLogin(inputStruct);
 	session.zOS[userSiteId].enableWidgetBuilder=qUser.user_enable_widget_builder;
 	session.zOS[userSiteId].intranet_administrator = qUser.user_intranet_administrator;
 	session.zOS[userSiteId].access_site_children = qUser.user_access_site_children;
+	arrLimitManagerFeatures=listToArray(qUser.user_limit_manager_features, ",");
+	featureStruct={};
+	for(i=1;i LTE arraylen(arrLimitManagerFeatures);i++){
+		featureStruct[arrLimitManagerFeatures[i]]=true;
+	}
+	session.zOS[userSiteId].limitManagerFeatureStruct = featureStruct;
 	session.zOS[userSiteId].server_admin_site_id_list = qUser.user_server_admin_site_id_list;
 	session.zOS[userSiteId].id = qUser.user_id;
 	session.zOS[userSiteId].site_id = qUser.site_id;
