@@ -163,25 +163,31 @@
 	form.saved_search_email=application.zcore.functions.zso(form, 'saved_search_email');
 	form.saved_search_format=application.zcore.functions.zso(form, 'saved_search_format', true, 1);
 	form.saved_search_frequency=application.zcore.functions.zso(form, 'saved_search_frequency', true, 0);
-	
+	if(application.zcore.user.checkGroupAccess("user")){
+		form.saved_search_email=session.zos.user.email;
+		form.inquiries_first_name=session.zos.user.first_name;
+		form.inquiries_last_name=session.zos.user.last_name;
+	}
+
+
 	local.myForm=structnew();  
 	local.myForm.saved_search_email.required = true;
 	local.myForm.saved_search_email.friendlyName = "Email Address";
 	local.myForm.saved_search_email.email = true; 
-        local.myForm.inquiries_first_name.required = true;
-        local.myForm.inquiries_first_name.friendlyName = "First Name";
-        //local.myForm.inquiries_last_name.required = true;
-        //local.myForm.inquiries_last_name.friendlyName = "Last Name";
+    local.myForm.inquiries_first_name.required = true;
+    local.myForm.inquiries_first_name.friendlyName = "First Name";
+    if(not application.zcore.user.checkGroupAccess("user")){
         if(application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1){
             local.myForm.inquiries_phone1.required = true;
             local.myForm.inquiries_phone1.friendlyName = "Phone";
         }
-        local.myForm.inquiries_datetime.createDateTime = true;  
-        local.result = application.zcore.functions.zValidateStruct(form, local.myForm, Request.zsid,true);
-        if(local.result){	
+    }
+    local.myForm.inquiries_datetime.createDateTime = true;  
+    local.result = application.zcore.functions.zValidateStruct(form, local.myForm, Request.zsid,true);
+    if(local.result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
 		application.zcore.functions.zRedirect("/z/listing/new-listing-email-signup/index?modalpopforced=#form.modalpopforced#&zsid=#Request.zsid#");
-        } 
+    } 
 	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
 		form.inquiries_spam=1;
 		//application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#");
