@@ -424,7 +424,7 @@
 
     // set button width
     _setButtonWidth: function() {
-      var width = this.element.outerWidth();
+      return; // disabled width changing
       var o = this.options;
 
       if(/\d/.test(o.minWidth) && width < o.minWidth) {
@@ -437,7 +437,7 @@
 
     // set menu width
     _setMenuWidth: function() {
-      var m = this.menu;
+      return; // disabled width changing
       m.outerWidth(this.button.outerWidth());
     },
 
