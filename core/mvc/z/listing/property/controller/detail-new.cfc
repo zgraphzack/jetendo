@@ -277,7 +277,7 @@ tempText=application.zcore.functions.zFixAbusiveCaps(replace(tempText,",",", ","
 
  
  <cfscript>
- topRightColSize=max(185,request.zos.globals.maximagewidth-506);
+ topRightColSize=max(275,request.zos.globals.maximagewidth-506);
  topLeftColSize=request.zos.globals.maximagewidth-topRightColSize;
  
  newTopHeight=round((342/506)*topLeftColSize);
@@ -320,14 +320,34 @@ infobar_opacity: 1<!--- 				//FLOAT - transparency for info bar --->
 }
     </cfsavecontent>
     <input type="hidden" name="zGalleryViewSlideshow1_data" id="zGalleryViewSlideshow1_data" value="#htmleditformat(theJS)#" />
-    <ul id="zGalleryViewSlideshow1" class="zGalleryViewSlideshow">
-<cfloop from="1" to="#form.listing_photocount#" index="i">
-<cfif structkeyexists(idx,'photo'&i)>
-<cfset curPhoto=application.zcore.listingCom.getThumbnail(idx['photo'&i], request.lastPhotoId, i, 10000, 10000, 0)> 
-<li><img id="zmlslistingphoto#i#" data-frame="#curPhoto#" src="#curPhoto#" alt="<cfif structkeyexists(idx, 'photo_description'&i)>#htmleditformat(idx['photo_description'&i])#<cfelse>Listing Photo #i#</cfif>" /></li>
-</cfif>
-</cfloop>
-</ul>
+	<ul id="zGalleryViewSlideshow1" class="zGalleryViewSlideshow">
+	<cfset hasPhotos=false>
+	<cfloop from="1" to="#form.listing_photocount#" index="i">
+		<cfif structkeyexists(idx,'photo'&i)>
+			<cfset hasPhotos=true>
+			<cfset curPhoto=application.zcore.listingCom.getThumbnail(idx['photo'&i], request.lastPhotoId, i, 10000, 10000, 0)> 
+			<li><img id="zmlslistingphoto#i#" data-frame="#curPhoto#" src="#curPhoto#" alt="<cfif structkeyexists(idx, 'photo_description'&i)>
+				#htmleditformat(idx['photo_description'&i])#<cfelse>Listing Photo #i#</cfif>" />
+			</li>
+		</cfif>
+	</cfloop>
+	</ul>
+
+	<div style="display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;">
+		<cfloop from="1" to="#form.listing_photocount#" index="i">
+			<cfif structkeyexists(idx,'photo'&i)>
+				<a href="#idx["photo"&i]#"  data-ajax="false" title="" rel="placeImageColorbox" class="placeImageColorbox">View larger images</a><br />
+			</cfif>
+		</cfloop>
+		<cfscript>
+		if(hasPhotos){
+			request.zos.skin.includeCSS("/z/javascript/jquery/colorbox/example3/colorbox.css");
+			request.zos.skin.includeJS("/z/javascript/jquery/colorbox/colorbox/jquery.colorbox-min.js");
+			request.zos.template.appendTag("meta", '<style type="text/css">##cboxNext, ##cboxPrevious{display:none !important;}</style>');
+			request.zos.skin.addDeferredScript('$("a[rel=placeImageColorbox]").colorbox({photo:true, slideshow: true});');
+		}
+		</cfscript>
+	</div>
 </div>
 
 
