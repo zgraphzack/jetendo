@@ -2799,7 +2799,6 @@ function zWindowOnResize(){
 	if(typeof windowSizeBackup === "function" && windowSizeBackup.width === zWindowSize.width && windowSizeBackup.height === zWindowSize.height){
 		return;	
 	}
-	zResizeModal();
 	if(typeof updateCountPosition !== "undefined"){
 		updateCountPosition();
 	}
@@ -3161,35 +3160,6 @@ function zGetClientWindowSize() {
   return zWindowSize;
 }
 
-function zResizeModal(){
-	return;
-	/*
-	var el = document.getElementById("zModalOverlayDiv");
-	if(el.style.display !== "block") return;
-	var windowSize=zWindowSize;
-    zModalScrollPosition = [
-	self.pageXOffset ||
-	document.documentElement.scrollLeft ||
-	document.body.scrollLeft
-	,
-	self.pageYOffset ||
-	document.documentElement.scrollTop ||
-	document.body.scrollTop
-	];
-	el.style.top=zModalScrollPosition[1]+"px";
-	el.style.left=zModalScrollPosition[0]+"px"; 
-	var el2 = document.getElementById("zModalOverlayDiv2"); 
-	var zModalWidthTemp=Math.min(zModalMaxWidth, Math.min(zModalWidth, windowSize.width+zScrollBarWidthCached));
-	var zModalHeightTemp=Math.min(zModalMaxHeight, Math.min(zModalHeight, windowSize.height));
-	var left=Math.round(((windowSize.width+zScrollBarWidthCached)-zModalWidthTemp)/2);
-	var top=Math.round((windowSize.height-zModalHeightTemp)/2);
-	el2.style.left=left+'px';
-	el2.style.top=top+'px';
-	el2.style.width=(zModalWidthTemp-32)+"px";
-	el2.style.height=(zModalHeightTemp-32)+"px";
-	*/
-}
-
 function zShowModalStandard(url, maxWidth, maxHeight){
 	var windowSize=zGetClientWindowSize();
 	if(url.indexOf("?") === -1){
@@ -3230,12 +3200,12 @@ function zFixModalPos(){
 	var windowSize=zWindowSize;
 	el.style.top=zModalScrollPosition[1]+"px";
 	el.style.left=zModalScrollPosition[0]+"px";
-	var left=Math.round(Math.max(0,((windowSize.width+zScrollBarWidthCached)-zModalWidth))/2);
-	var top=Math.round(Math.max(0, (windowSize.height-zModalHeight))/2);
+	var left=Math.round(Math.max(0,((windowSize.width+zScrollBarWidthCached)-(zModalMaxWidth-50)))/2);
+	var top=Math.round(Math.max(0, (windowSize.height-(zModalMaxHeight-50)))/2);
 	el2.style.left=left+'px';
 	el2.style.top=top+'px';
-	el2.style.width=Math.min(windowSize.width-32,(zModalWidth-32))+"px";
-	el2.style.height=Math.min(windowSize.height-32,(zModalHeight-32))+"px";
+	el2.style.width=Math.min(windowSize.width-32,((zModalMaxWidth-50)-32))+"px";
+	el2.style.height=Math.min(windowSize.height-32,((zModalMaxHeight-50)-32))+"px";
 }
 
 var zModalKeepOpen=false;
