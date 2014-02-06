@@ -2184,6 +2184,18 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	if(request.cgi_script_name EQ "/z/_a/listing/search-form" or request.cgi_script_name EQ "/z/_zcore-app/listing/search-form"){
 		application.zcore.functions.z301redirect(request.zos.listing.functions.getSearchFormLink()&"?"&replacenocase(replacenocase(request.zos.cgi.query_string, request.zos.urlRoutingParameter&"=", "ztv=", "all"),"method=", "method99=", "all"));
 	}
+
+	if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_detail_layout EQ 1){
+		request.zos.skin.includeCSS("/z/javascript/jquery/colorbox/example3/colorbox.css");
+		request.zos.skin.includeJS("/z/javascript/jquery/colorbox/colorbox/jquery.colorbox-min.js");
+		request.zos.template.appendTag("meta", '<style type="text/css">##cboxNext, ##cboxPrevious{display:none !important;}</style>');
+		request.zos.skin.addDeferredScript('
+			$("a[rel=placeImageColorbox]").colorbox({photo:true, slideshow: true});
+			zArrLoadFunctions.push({functionName:function(){
+				$("a[rel=placeImageColorbox]").colorbox({photo:true, slideshow: true});
+			}});
+		');
+	}
 	
 	
 	if(isDefined('session.zos.user.id') EQ false and (structkeyexists(cookie,"z_user_id") EQ false or cookie.z_user_id EQ "")){

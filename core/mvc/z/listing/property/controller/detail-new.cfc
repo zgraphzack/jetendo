@@ -336,17 +336,9 @@ infobar_opacity: 1<!--- 				//FLOAT - transparency for info bar --->
 	<div style="display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;">
 		<cfloop from="1" to="#form.listing_photocount#" index="i">
 			<cfif structkeyexists(idx,'photo'&i)>
-				<a href="#idx["photo"&i]#"  data-ajax="false" title="" rel="placeImageColorbox" class="placeImageColorbox">View larger images</a><br />
+				<a href="#idx["photo"&i]#"  data-ajax="false" title="" rel="placeImageColorbox" class="zNoContentTransition placeImageColorbox">View larger images</a><br />
 			</cfif>
 		</cfloop>
-		<cfscript>
-		if(hasPhotos){
-			request.zos.skin.includeCSS("/z/javascript/jquery/colorbox/example3/colorbox.css");
-			request.zos.skin.includeJS("/z/javascript/jquery/colorbox/colorbox/jquery.colorbox-min.js");
-			request.zos.template.appendTag("meta", '<style type="text/css">##cboxNext, ##cboxPrevious{display:none !important;}</style>');
-			request.zos.skin.addDeferredScript('$("a[rel=placeImageColorbox]").colorbox({photo:true, slideshow: true});');
-		}
-		</cfscript>
 	</div>
 </div>
 
