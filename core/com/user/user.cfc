@@ -307,7 +307,7 @@ userCom.checkLogin(inputStruct);
 			}else{
 				this.logOut(true); // log out and skip logging
 				overrideContent = "<strong>Your account has been temporarily disabled</strong> due to repeated login failures.<br />Your IP address and other information have been logged and the administrator has been notified.";//this.loginForm(arguments.inputStruct);
-				if(isDefined('ss.template')){
+				if(structkeyexists(ss, 'template')){
 					if(ss.template EQ false){
 						application.zcore.template.setTemplate("zcorerootmapping.templates.nothing",true,true);
 					}else{
@@ -322,6 +322,7 @@ userCom.checkLogin(inputStruct);
 		db.sql="SELECT *
 		FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user.user_username = #db.param(form.zUsername)# and 
+		user_active = #db.param(1)# and 
 		(user.site_id = #db.param(ss.site_id)# or 
 		(user.user_server_administrator = #db.param('1')# and 
 		user.site_id = #db.param(Request.zos.globals.serverId)# and 
@@ -712,6 +713,7 @@ userCom.checkLogin(inputStruct);
 	}
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(session.zOS[userSiteId].id)# and  
+	user_active = #db.param(1)# and 
 	user_username = #db.param(session.zOS[userSiteId].email)# and (site_id = #db.param(ss.site_id)# or 
 	(user_server_administrator = #db.param('1')# and 
 	site_id = #db.param(Request.zos.globals.serverId)#) ";
@@ -720,7 +722,7 @@ userCom.checkLogin(inputStruct);
 	}
 	db.sql&=" )";
 	qUser=db.execute("qUser");
-	if(qUser.recordcount EQ 0 or qUser.user_active EQ 0 or qUser.user_group_id EQ 0){
+	if(qUser.recordcount EQ 0 or qUser.user_group_id EQ 0){
 		this.logOut(true);
 		if(isDefined('session.zOS')){
 			StructDelete(session.zOS, "user");
