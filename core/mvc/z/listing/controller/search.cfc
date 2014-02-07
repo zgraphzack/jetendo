@@ -1153,21 +1153,25 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	<cffunction name="g" localmode="modern" access="remote" returntype="string" output="yes"><cfscript>
 		var db=request.zos.queryObject;application.zcore.tracking.backOneHit();
 		var n=0;
-var perpage=0;
-var returnStruct=0;
-var arrN=0;
-var jsonText=0;
-var start=0;
-var arrN2=0;
-var propertyDataCom=0;
-var qs=0;
-var out=0;
-var ts=0;
-var aobj=0;
-var offset=0;
-var i=0;
-var theQuerySQL=0;
-var propDisplayCom=0;
+        var perpage=0;
+        var returnStruct=0;
+        var arrN=0;
+        var jsonText=0;
+        var start=0;
+        var arrN2=0;
+        var propertyDataCom=0;
+        var qs=0;
+        var out=0;
+        var ts=0;
+        var aobj=0;
+        var offset=0;
+        var i=0;
+        var theQuerySQL=0;
+        var propDisplayCom=0;
+            
+        if(not application.zcore.app.siteHasApp("listing")){
+            application.zcore.functions.z404("Listing app is not enabled on this site.");
+        }
 	form.debugSearchForm=application.zcore.functions.zso(form, 'debugsearchForm',false,false);
 	if(structkeyexists(form,'x_ajax_id') EQ false){
 		form.x_ajax_id='';
