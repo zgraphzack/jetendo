@@ -1,5 +1,23 @@
 <cfcomponent>
 <cfoutput>
+
+<!--- application.zcore.functions.zSetPageHelpId("1.1"); --->
+<cffunction name="zSetPageHelpId" access="public" localmode="modern" roles="member">
+	<cfargument name="helpId" type="string" required="yes" hint="This is the numeric id for the help page resource.">
+	<cfscript>
+	if(not structkeyexists(request.zos, 'zPageHelpIdSet')){
+		request.zos.zPageHelpIdSet=true;
+
+		manualCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.manual");
+		manualCom.init();
+		cs=manualCom.getDocLink(arguments.helpid);
+		if(cs.success){
+			application.zcore.skin.addDeferredScript('zPageHelpId="'&jsStringFormat(cs.link)&'";');
+		}
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSystemIpStruct" localmode="modern" returntype="struct" access="public">
 
 	<cfscript>
@@ -1705,12 +1723,15 @@ application.zcore.functions.zLogError(ts);
 
 <cffunction name="zVarSO" localmode="modern" output="false" returntype="string">
 	<cfargument name="name" type="string" required="yes">
-	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
+	<cfargument name="site_id" type="string" required="no" default="">
 	<cfargument name="disableEditing" type="boolean" required="no" default="#false#">
 	<cfargument name="site_option_app_id" type="string" required="no" default="0">
      <cfscript>
 	 var start="";
 	 var end="";
+	 if(arguments.site_id EQ "" and structkeyexists(request.zos, 'globals') and structkeyexists(request.zos.globals, 'id')){
+	 	arguments.site_id=request.zos.globals.id;
+	 }
 	 var contentConfig=structnew();
 	 if(application.zcore.app.siteHasApp("content")){
 		 contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();

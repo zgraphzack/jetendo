@@ -11,7 +11,7 @@
 	}
 	safeLink=link&"/z/server-manager/api/site/getSiteById?sid=#row.site_x_deploy_server_remote_site_id#";
 	newLink=safeLink&"&zusername=#urlencodedformat(row.deploy_server_email)#&zpassword=#urlencodedformat(row.deploy_server_password)#"; 
-	r1=application.zcore.functions.zDownloadLink(newLink);
+	r1=application.zcore.functions.zDownloadLink(newLink, 30);
 	rs={success:true};
 	if(not r1.success){
 		rs.success=false;
@@ -246,7 +246,7 @@
 			link="http://"&row.deploy_server_host;
 		}
 		link=link&"/z/server-manager/api/server/getConfig?zusername=#urlencodedformat(row.deploy_server_email)#&zpassword=#urlencodedformat(row.deploy_server_password)#"; 
-		r1=application.zcore.functions.zDownloadLink(link);
+		r1=application.zcore.functions.zDownloadLink(link, 30);
 		writeoutput('<tr class="table-white">'); 
 		if(not r1.success){ 
 			writeoutput('<td colspan="2">Failed to download configuration.  <a href="/z/server-manager/admin/deploy-server/edit?deploy_server_id=#row.deploy_server_id#">Verify server configuration</a></td>');
@@ -391,7 +391,7 @@
 			link="http://"&row.deploy_server_host;
 		}
 		link=link&"/z/server-manager/api/server/getConfig?zusername=#urlencodedformat(row.deploy_server_email)#&zpassword=#urlencodedformat(row.deploy_server_password)#"; 
-		r1=application.zcore.functions.zDownloadLink(link);
+		r1=application.zcore.functions.zDownloadLink(link, 30);
 		writeoutput('<tr class="table-white"><td>#row.deploy_server_host#</td>
 		<td>#replace(replace(application.zcore.functions.zvar("shortDomain", form.sid), "."&request.zos.testDomain, ""), "www.", "")#</td>'); 
 		if(not r1.success){ 
@@ -526,10 +526,14 @@
 			}else if(form.clearcache EQ "all,skin"){
 				link=adminDomain&"&reset=all&zforce=1";
 			}
-			r1=application.zcore.functions.zdownloadlink(link);
+			r1=application.zcore.functions.zdownloadlink(link, 120);
 			if(r1.success EQ false or r1.cfhttp.statuscode NEQ "200 OK"){
 				savecontent variable="output"{
-					writedump(r1);
+					if(structkeyexists(r1, 'cfhttp') and structkeyexists(r1.cfhttp, 'filecontent')){
+						echo(r1.cfhttp.filecontent);
+					}else{
+						writedump(r1);
+					}
 				}
 				application.zcore.template.fail("#request.zos.installPath#core/ synced, but failed to clear cache: #form.clearcache# for <a href=""#link#"">#link#</a>   at #timeformat(now(), "h:mm:ss tt")#.  You should manually verify the web sites on the target server are still working. Output: #output#");
 			} 

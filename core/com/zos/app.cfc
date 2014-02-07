@@ -222,6 +222,42 @@
 					}
 				}
 			}
+
+			if(request.zos.isTestServer){
+				if(structkeyexists(arguments.sharedStruct, "Help") EQ false){
+					ts=structnew();
+					ts.link="/z/admin/help/index"; 
+					ts.children=structnew();
+					arguments.sharedStruct["Help"]=ts;
+				}
+				if(structkeyexists(arguments.sharedStruct["Help"].children,"Quick Start Guide") EQ false){
+					ts=structnew();
+					ts.link="/z/admin/help/quickStart";
+					arguments.sharedStruct["Help"].children["Quick Start Guide"]=ts;
+				} 
+				if(structkeyexists(arguments.sharedStruct["Help"].children,"Documentation") EQ false){
+					ts=structnew();
+					ts.link="/z/admin/help/index";
+					arguments.sharedStruct["Help"].children["Documentation"]=ts;
+				} 
+				if(structkeyexists(arguments.sharedStruct["Help"].children,"Support") EQ false){
+					ts=structnew();
+					ts.link="/z/admin/help/support";
+					arguments.sharedStruct["Help"].children["Support"]=ts;
+				} 
+				if(structkeyexists(arguments.sharedStruct["Help"].children,"Help for this page") EQ false){
+					ts=structnew();
+					ts.onclick="return zGetHelpForThisPage(this);";
+					ts.link="/z/admin/help/helpForThisPage";
+					ts.target="_blank";
+					arguments.sharedStruct["Help"].children["Help for this page"]=ts;
+				} 
+				if(structkeyexists(arguments.sharedStruct["Help"].children,"In-Context Help Features") EQ false){
+					ts=structnew();
+					ts.link="/z/admin/help/incontext";
+					arguments.sharedStruct["Help"].children["In-Context Help Features"]=ts;
+				} 
+			}
 			if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 				db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 				WHERE site_option_group_parent_id= #db.param(0)# and 
@@ -289,8 +325,17 @@
 		var target="";
 		var n=0;
 		writeoutput('<div class="zMenuWrapper"><ul id="zMenuDivDefault" class="zMenuBarDiv">');
-		arrKey=structkeyarray(arguments.sharedStruct);
+		arrKey2=structkeyarray(arguments.sharedStruct);
+		arrKey=[];
+		for(i=1;i LTE arraylen(arrKey2);i++){
+			if(arrKey2[i] NEQ "Help"){
+				arrayAppend(arrKey, arrKey2[i]);
+			}
+		}
 		arraysort(arrKey,"text","asc");
+		if(request.zos.isTestServer){
+			arrayAppend(arrKey, "Help");
+		}
 		for(i=1;i LTE arraylen(arrKey);i++){
 			if(structkeyexists(arguments.sharedStruct[arrKey[i]], 'featureName')){
 				if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.sharedStruct[arrKey[i]].featureName)){
@@ -320,12 +365,15 @@
 				target="";
 				if(structkeyexists(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]],"target")){
 					target=arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].target;	
+					if(target EQ "_blank"){
+						target='target="_blank"';
+					}
 				}
-				writeoutput('<li><a href="'&htmleditformat(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].link)&'" ');
-				if(target EQ "_blank"){
-					writeoutput(' rel="external" onclick="window.open(''#htmleditformat(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].link)#''); return false;"');	
+				onclick="";
+				if(structkeyexists(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]],"onclick")){
+					onclick=arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].onclick;	
 				}
-				writeoutput('>'&arrKey2[n]&'</a></li> '&chr(10));
+				writeoutput('<li><a href="'&htmleditformat(arguments.sharedStruct[arrKey[i]].children[arrKey2[n]].link)&'" #target# onclick="#htmleditformat(onclick)#">'&arrKey2[n]&'</a></li> '&chr(10));
 			}
 			if(structcount(arguments.sharedStruct[arrKey[i]].children) NEQ 0){
 				writeoutput('</ul> '&chr(10));
@@ -905,7 +953,7 @@
 <cffunction name="siteHasApp" localmode="modern"  returntype="boolean" output="no">
 	<cfargument name="app_name" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.zcore.appComName,arguments.app_name) and structkeyexists(application.sitestruct, request.zos.globals.id) and structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, application.zcore.appComName[arguments.app_name])){
+	if(structkeyexists(request.zos.globals, 'id') and structkeyexists(application.zcore.appComName,arguments.app_name) and structkeyexists(application.sitestruct, request.zos.globals.id) and structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, application.zcore.appComName[arguments.app_name])){
 		return true;
 	}else{
 		return false;

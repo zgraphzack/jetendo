@@ -66,6 +66,17 @@ var zModernizrLoadedRan=false;
 	})($);
 });
 
+var zPageHelpId='';
+function zGetHelpForThisPage(obj){
+	obj.id="getHelpForThisPageLinkId";
+	if(zPageHelpId==''){
+		alert("No help resources exist for this page yet.\n\nFeel free to browse the documentation or contact the web developer for further assistance.");
+		return false;
+	}
+	obj.href=zPageHelpId;
+	return true;
+}
+
 var zCookieTrackingObj={};
 var zCookieTrackingCount=0;
 var zCookieTrackingEnabled=false;
@@ -79,6 +90,7 @@ function zTrackCookieChanges(){
 		}
 	}
 }
+
 function zWatchCookie(key, callback){
 	zCookieTrackingObj[key]={
 		callback:callback,
@@ -3200,12 +3212,14 @@ function zFixModalPos(){
 	var windowSize=zWindowSize;
 	el.style.top=zModalScrollPosition[1]+"px";
 	el.style.left=zModalScrollPosition[0]+"px";
-	var left=Math.round(Math.max(0,((windowSize.width+zScrollBarWidthCached)-(zModalMaxWidth-50)))/2);
-	var top=Math.round(Math.max(0, (windowSize.height-(zModalMaxHeight-50)))/2);
+	var newWidth=Math.min(windowSize.width-132,((zModalMaxWidth)));
+	var newHeight=Math.min(windowSize.height-132,((zModalMaxHeight)));
+	var left=Math.round(Math.max(0, windowSize.width-newWidth)/2)-8;
+	var top=Math.round(Math.max(0, windowSize.height-newHeight)/2)-16;
 	el2.style.left=left+'px';
 	el2.style.top=top+'px';
-	el2.style.width=Math.min(windowSize.width-32,((zModalMaxWidth-50)-32))+"px";
-	el2.style.height=Math.min(windowSize.height-32,((zModalMaxHeight-50)-32))+"px";
+	el2.style.width=newWidth+"px";
+	el2.style.height=newHeight+"px";
 }
 
 var zModalKeepOpen=false;

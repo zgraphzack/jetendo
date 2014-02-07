@@ -1750,6 +1750,7 @@
 	var i=0;
 	var searchTextOriginal=0;
 	var contentphoto99=0;
+	application.zcore.functions.zSetPageHelpId("2.1");
 	this.init();
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 
 	searchText=trim(application.zcore.functions.zso(form, 'searchText'));
