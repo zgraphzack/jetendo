@@ -104,19 +104,10 @@ This is a global key. It will work across all domains. --->
 			application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */zArrDeferredFunctions.push(function(){zHelpTooltip.setupHelpTooltip();}); /* ]]> */</script>');
 		}
 		request.zos.tempObj.zOutputHelpToolTipIndex++;
-		if(application.zcore.user.checkServerAccess()){
-			dbclick='ondblclick="window.location.href=''#request.zos.globals.serversecuredomain#/z/server-manager/admin/tooltip/edit?return=1'&htmleditformat(application.zcore.helpStruct.tooltip[arguments.helpId].qs)&''';"';
-			if(application.zcore.helpStruct.tooltip[arguments.helpId].html EQ ""){
-				return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel" #dbclick#>'&application.zcore.helpStruct.tooltip[arguments.helpId].label&'</span> </span>';	
-			}else{
-				return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel" #dbclick#>'&application.zcore.helpStruct.tooltip[arguments.helpId].label&'</span> <span #dbclick# title="'&htmleditformat(application.zcore.helpStruct.tooltip[arguments.helpId].html)&'" id="zHelpToolTip'&request.zos.tempObj.zOutputHelpToolTipIndex&'" class="zHelpToolTip"></span></span>';	
-			}
+		if(application.zcore.helpStruct.tooltip[arguments.helpId].html EQ ""){
+			return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel">'&application.zcore.helpStruct.tooltip[arguments.helpId].label&'</span> </span>';
 		}else{
-			if(application.zcore.helpStruct.tooltip[arguments.helpId].html EQ ""){
-				return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel">'&application.zcore.helpStruct.tooltip[arguments.helpId].label&'</span> </span>';
-			}else{
-				return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel">'&application.zcore.helpStruct.tooltip[arguments.helpId].label&'</span> <span title="'&htmleditformat(application.zcore.helpStruct.tooltip[arguments.helpId].html)&'" id="zHelpToolTip'&request.zos.tempObj.zOutputHelpToolTipIndex&'" class="zHelpToolTip"></span></span>';
-			}
+			return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel">'&application.zcore.helpStruct.tooltip[arguments.helpId].label&'</span> <span title="'&htmleditformat(application.zcore.helpStruct.tooltip[arguments.helpId].html)&'" id="zHelpToolTip'&request.zos.tempObj.zOutputHelpToolTipIndex&'" class="zHelpToolTip"></span></span>';
 		}
 	}else{
 		return defaultLabel;
