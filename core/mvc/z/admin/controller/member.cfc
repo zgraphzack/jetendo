@@ -354,7 +354,7 @@
 		structdelete(variables,'member_password');		
 	}
 	ts.site_id=request.zos.globals.id;
-	if(application.zcore.user.checkGroupAccess("administrator")){
+	if(application.zcore.user.checkGroupAccess("administrator") and structcount(session.zos.user.limitManagerFeatureStruct) EQ 0){
 		form.user_limit_manager_features=application.zcore.adminSecurityFilter.validateFeatureAccessList(application.zcore.functions.zso(form,'user_limit_manager_features'));
 	}
 	if(form.method EQ "update"){
@@ -605,7 +605,7 @@
 		#tabCom.endFieldSet()# 
 		#tabCom.beginFieldSet("Advanced")#
 		<table style="  border-spacing:0px;" class="table-list">
-			<cfif application.zcore.user.checkServerAccess() or 1 EQ 1>
+			<cfif application.zcore.user.checkGroupAccess("administrator") and structcount(session.zos.user.limitManagerFeatureStruct) EQ 0>
 				<tr>
 					<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Limit Manager Features","member.member.edit user_limit_manager_features")#</th>
 					<td style="vertical-align:top; "> 

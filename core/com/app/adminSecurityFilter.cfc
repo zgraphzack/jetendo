@@ -73,6 +73,7 @@
 	ms["Users"]={ parent:'', label:"Users"};
 	ms["Manage Users"]={ parent:'Users', label:chr(9)&"Manage Users"};
 	ms["Offices"]={ parent:'Users', label:chr(9)&"Offices"};
+
 	return ms;
 	</cfscript>
 </cffunction>
