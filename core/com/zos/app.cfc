@@ -91,9 +91,6 @@
 			ts.link="/z/server-manager/admin/log/index?sid=";
 			curStruct.children["Logs"]=ts;
 			ts=structnew();
-			ts.link="/z/server-manager/admin/cfc-explorer/index";
-			curStruct.children["Docs"]=ts;
-			ts=structnew();
 			ts.link="/z/server-manager/admin/deploy/index";
 			curStruct.children["Deploy"]=ts;
 			ts=structnew();

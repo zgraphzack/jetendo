@@ -2959,7 +2959,6 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	 | <a href="/z/server-manager/admin/site-select/index?sid=">Sites</a> 
 	| <a href="/z/_com/zos/app?method=appList&zid=#arguments.zid#&sid=#form.sid#">Apps</a>
      | <a href="/z/server-manager/admin/log?sid=">Logs</a> 
-     | <a href="/z/server-manager/admin/cfc-explorer/index">Docs</a> 
      | <a href="/z/server-manager/admin/deploy/index">Deploy</a> 
     <!--- | <a href="/z/_com/app/randomCopy?method=sentenceList">Random Copy</a>--->
      
