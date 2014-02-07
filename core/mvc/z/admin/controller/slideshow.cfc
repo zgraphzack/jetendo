@@ -1054,7 +1054,7 @@
 		}
 		if(form.slideshow_tab_type_id EQ 2) {
 			form.mls_saved_search_id=request.zos.listing.functions.zMLSSearchOptionsUpdate('update', form.mls_saved_search_id, '', form);
-		} else if(mls_saved_search_id NEQ "") {
+		} else if(form.mls_saved_search_id NEQ "") {
 			form.mls_saved_search_id=request.zos.listing.functions.zMLSSearchOptionsUpdate('delete', form.mls_saved_search_id);
 			form.mls_saved_search_id="";
 		}
@@ -1758,9 +1758,9 @@
 	<a href="/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#">Manage Tabs</a><br />
 	<br />
 	<a href="/z/admin/slideshow/index">Manage Slideshows</a> / 
-	<a href="/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#">#qS.slideshow_name# Slideshow</a> / <br />
+	<a href="/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#">Manage Slideshow: #qS.slideshow_name#</a> / <br />
 	<br />
-	<h2>#qS.slideshow_name# Slideshow</h2>
+	<h2>Manage Slideshow Photos: #qS.slideshow_name#</h2>
 	<a href="/z/admin/slideshow/addPhoto?slideshow_id=#form.slideshow_id#&amp;slideshow_tab_id=#form.slideshow_tab_id#&amp;return=1">Add Photo</a><br />
 	<br />
 	<table style="border-spacing:0px; width:100%;" class="table-list">
@@ -1818,7 +1818,7 @@
 		<br />
 		<a href="/z/admin/slideshow/index">Manage Slideshows</a> / <br />
 		<br />
-		<h2>#qS.slideshow_name# Slideshow</h2>
+		<h2>Manage Slideshow Tabs: #qS.slideshow_name#</h2>
 	</cfif>
 	<a href="/z/admin/slideshow/addTab?slideshow_id=#form.slideshow_id#&amp;return=1">Add Tab</a> | You must create at least 1 tab to have a slideshow. Images or other information are associates with tabs<br />
 	<br />
@@ -1845,7 +1845,7 @@
 				<td>#qTabs.slideshow_tab_link#</td>
 				<td>#variables.queueSortCom.getLinks(qTabs.recordcount, qTabs.currentrow, '/z/admin/slideshow/manageTabs?slideshow_id=#qTabs.slideshow_id#&slideshow_tab_id=#qTabs.slideshow_tab_id#', "vertical-arrows")# <a href="/z/admin/slideshow/editTab?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Edit</a> |
 				<cfif qTabs.slideshow_tab_type_id EQ 1>
-					<a href="/z/admin/slideshow/managePhoto?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Edit Photos</a> |
+					<a href="/z/admin/slideshow/managePhoto?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Manage Photos</a> |
 				<cfelseif qTabs.slideshow_tab_type_id EQ 2>
 					Saved Search |
 				</cfif>
