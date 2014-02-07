@@ -506,8 +506,8 @@
 	ts.registeredControllerPathStruct=structnew();
 	ts.hookAppCom=structnew();
 	request.zos.functions.zUpdateGlobalMVCData(ts);
-	if(fileexists(ts.serverGlobals.serverprivatehomedir&"_cache/scripts/help.json")){
-		ts.helpStruct=deserializeJson(application.zcore.functions.zreadfile(ts.serverGlobals.serverprivatehomedir&"_cache/scripts/help.json"));
+	if(fileexists(request.zos.sharedPath&"tooltips.json")){
+		ts.helpStruct=deserializeJson(application.zcore.functions.zreadfile(request.zos.sharedPath&"tooltips.json"));
 	}
 	ts.railowebinfpath=expandpath("/railo-context/");
 	ts.railowebinfpath=listdeleteat(ts.railowebinfpath, listlen(ts.railowebinfpath,"/"),"/")&"/";

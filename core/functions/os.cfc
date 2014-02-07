@@ -2807,30 +2807,6 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	</cfscript>
 </cffunction>
 
-<cffunction name="zPublishHelp" localmode="modern" output="no" returntype="any">
-	<cfscript>
-	var qR='';
-	var db=request.zos.queryObject;
-	var ts={};
-	var row=0;
-	// publish server struct
-	db.sql="select * from #db.table("tooltip_section", request.zos.zcoreDatasource)# tooltip_section, 
-	#db.table("tooltip", request.zos.zcoreDatasource)# tooltip 
-	WHERE tooltip_section.tooltip_section_id = tooltip.tooltip_section_id ";
-	qR=db.execute("qR"); 
-	ts.tooltip=structnew();
-	for(row in qR){
-		ts.tooltip[row.tooltip_section_name&" "&row.tooltip_name]={
-			label: application.zcore.functions.zparagraphformat(row.tooltip_label),
-			html: row.tooltip_html,
-			qs:'&tooltip_id='&row.tooltip_id&'&tooltip_section_id='&row.tooltip_section_id
-		};
-	}
-	application.zcore.functions.zwritefile(request.zos.globals.serverprivatehomedir&'_cache/scripts/help.json', serializeJson(ts));
-	application.zcore.helpStruct=ts;
-	</cfscript>
-</cffunction>
-
 <cffunction name="zOS_rebuildCache" localmode="modern" output="no" returntype="any">
 	<cfscript>
 	var local=structnew();

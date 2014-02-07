@@ -90,7 +90,6 @@ This is a global key. It will work across all domains. --->
 	<cfargument name="helpId" type="string" required="yes">
     <cfscript>
 	var dbclick='';
-	var tooltip_label='';
 	var a2=0;
 	var qid=0;
 	var defaultLabel=0;
@@ -120,41 +119,6 @@ This is a global key. It will work across all domains. --->
 			}
 		}
 	}else{
-		a2=listtoarray(trim(arguments.helpId), " ");
-		if(arraylen(a2) EQ 2 and a2[1] NEQ "" and a2[2] NEQ ""){
-			db.sql="select * from #db.table("tooltip_section", request.zos.zcoreDatasource)# tooltip_section 
-			WHERE tooltip_section_name =#db.param(a2[1])#";
-			qid=db.execute("qid");
-			if(qid.recordcount EQ 0){
-				db.sql="insert into #db.table("tooltip_section", request.zos.zcoreDatasource)#  set tooltip_section_name =#db.param(a2[1])#";
-				db.execute("q");
-				db.sql="select * from #db.table("tooltip_section", request.zos.zcoreDatasource)# tooltip_section 
-				WHERE tooltip_section_name =#db.param(a2[1])#";
-				qid=db.execute("qid");
-			}
-			if(qid.recordcount NEQ 0){
-				db.sql="select tooltip_id as id from #db.table("tooltip", request.zos.zcoreDatasource)#  
-					 where tooltip_section_id =#db.param(qid.tooltip_section_id)# and  tooltip_name=#db.param(a2[2])#";
-				qid2=db.execute("qid2");
-				if(qid2.recordcount EQ 0){
-					 db.sql="insert into #db.table("tooltip", request.zos.zcoreDatasource)#  
-					 set tooltip_section_id =#db.param(qid.tooltip_section_id)#, 
-					 tooltip_name=#db.param(a2[2])#, 
-					 tooltip_label=#db.param(trim(arguments.defaultLabel))#, 
-					 tooltip_html=#db.param('')#";
-					 db.execute("q");
-					 db.sql="select last_insert_id() as id";
-					 qid2=db.execute("qid2");
-				}
-				ts.label=arguments.defaultLabel;
-				if(qid2.recordcount NEQ 0){
-					ts.qs='&tooltip_id='&qid2.id&'&tooltip_section_id='&qid.tooltip_section_id;
-				}
-				ts.html='';
-				application.zcore.helpStruct.tooltip[arguments.helpId]=ts;
-				request.zPublishHelpOnRequestEnd=true;
-			}
-		}
 		return defaultLabel;
 	}
 	</cfscript>

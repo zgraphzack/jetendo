@@ -152,8 +152,6 @@
 			slideshow_image: true,
 			slideshow_tab: true,
 			state: true,
-			tooltip: true,
-			tooltip_section: true,
 			track_convert: true,
 			track_page: true,
 			track_user: true,
@@ -533,12 +531,6 @@
 		},
 		"app": {
 			columnList: "app_id,app_name,app_built_in"
-		},
-		"tooltip": {
-			columnList: "tooltip_id,tooltip_html,tooltip_name,tooltip_section_id,tooltip_label"
-		},
-		"tooltip_section": {
-			columnList: "tooltip_section_id,tooltip_section_name"
 		}
 	};
 	return dataTables;
