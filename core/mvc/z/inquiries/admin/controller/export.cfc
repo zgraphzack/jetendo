@@ -13,6 +13,7 @@
 	var i=0;
 	var arrI=0;
 	var arrP=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Export");
 	if(application.zcore.user.checkGroupAccess("administrator") EQ false){
 		application.zcore.functions.z404();	
 	}

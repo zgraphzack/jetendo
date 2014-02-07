@@ -152,27 +152,9 @@
 		var p=0;
 		var fc2=fc;
 		// parse out function
-		fc=rereplace(fc,"(?s)<\!---.*?--->","","ALL");
-//			application.zcore.functions.zdump(fc);
-	//		application.zcore.functions.zabort();
-		/*
-		fc=rereplace(fc,"<"&"\!---(?:.(?!<\!---))*?--->","","ALL");
-		length=len(fc);
-		while(true){
-			fc=rereplace(fc,"<"&"\!---(?:.(?!<\!---))*?--->","","ALL");
-			if(len(fc) eq length){
-				break;
-			}
-			length=len(fc);
-		}
-		*/
+		fc=rereplace(fc,"(?s)<\!---.*?--->","","ALL"); 
 		fc=rereplace(fc,"/\*.*?\*/","","ALL");
-		fc=rereplace(fc,"//[^\n]*?\n",chr(10),"ALL");
-		//	application.zcore.functions.zdump(arguments);
-			//application.zcore.functions.zdump(fc);
-		//arr=rematchnocase('(?s)<cffunction localmode="modern" [^~]*?</cffunction>',fc);
-		//fc='testing the before <cffunction name="appConfirmDelete" localmode="modern" access="remote" roles="serveradministrator" returntype="void" hint="display confirmation dialog before deleting application.">  test </cffunction> testing the after';
-		//arr=rematchnocase('(?s)<cffunction localmode="modern" [^>]*?name\s*=\s*(''|")'&arguments.ss.function&'\1[^>]*?>[^~]*?</cffunction>',fc);
+		fc=rereplace(fc,"//[^\n]*?\n",chr(10),"ALL"); 
 		arr=rematchnocase('(?s)<cffunction localmode="modern" [^>]*?name\s*=\s*(''|")'&arguments.ss.function&'\1[^>]*?>.*?</cffunction>',fc); 
 		if(arraylen(arr) eq 0){
 			// function not found

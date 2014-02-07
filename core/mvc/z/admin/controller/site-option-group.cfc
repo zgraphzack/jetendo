@@ -5,10 +5,7 @@
 	<cfscript>
 	var theTitle=0;
 	variables.allowGlobal=false;
-	/*
-	variables.siteIdList="'"&request.zos.globals.id&"'";
-	variables.publicSiteIdList="'0','"&request.zos.globals.id&"'";
-	*/
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	if(application.zcore.user.checkServerAccess()){
 		variables.allowGlobal=true;
 		variables.siteIdList="'0','"&request.zos.globals.id&"'";
@@ -57,6 +54,7 @@
 	<cfargument name="sharedStruct" type="struct" required="yes"> 
 	<cfargument name="depth" type="numeric" required="yes"> 
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	ss=arguments.sharedStruct;
 	if(not structkeyexists(ss, 'curIndex')){
 		ss.curIndex=arguments.parentIndex;
@@ -132,6 +130,7 @@
 
 <cffunction name="displayGroupCode" access="remote" localmode="modern" roles="member"> 
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	request.zos.whiteSpaceEnabled=true;
 	application.zcore.template.setPlainTemplate();
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id', true, 0);
@@ -268,6 +267,7 @@
 <cffunction name="saveMapFields" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	for(local.i=1;local.i LTE form.fieldcount;local.i++){
 		form.site_option_id=application.zcore.functions.zso(form, 'siteOption'&local.i);
 		form.mapField=application.zcore.functions.zso(form, 'mapField'&local.i);
@@ -413,6 +413,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var ts=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where site_option_group_id = #db.param(form.site_option_group_id)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
@@ -460,7 +461,7 @@
 </cffunction>
 
 
-<cffunction name="copyGroupRecursive" localmode="modern" access="remote" roles="member">
+<cffunction name="copyGroupRecursive" localmode="modern" access="public" roles="member">
 	<cfargument name="site_option_group_id" type="numeric" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="rowStruct" type="struct" required="yes">
@@ -518,6 +519,7 @@
 	var ts=0;
 	var optionStruct={};
 	var groupStruct={};
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	form.newGroupName=application.zcore.functions.zso(form, 'newGroupName');
 	form.newSiteId=application.zcore.functions.zso(form, 'newSiteId', true, 0);
 	if(form.newSiteId EQ 0){
@@ -553,6 +555,7 @@
 	var row=0;
 	var row2=0;
 	var dbNoVerify=request.zos.noVerifyQueryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	local.arrSQL=[];
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# WHERE 
 	site_option_group_id = #db.param(arguments.site_option_group_id)# and 
@@ -905,6 +908,7 @@
 	var theTitle=0;
 	var tempLink=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	form.site_option_group_id=application.zcore.functions.zso(form,'site_option_group_id');
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE site_option_group_id = #db.param(form.site_option_group_id)# and site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
@@ -959,6 +963,7 @@
 	var redirecturl=0;
 	var rCom=0;
 	var myForm={};
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	myForm.site_option_group_display_name.required=true;
 	myForm.site_option_group_display_name.friendlyName="Display Name";
 	myForm.site_option_group_name.required=true;
@@ -1045,74 +1050,6 @@
 	</cfscript>
 </cffunction>
 
-<!--- 
-<cffunction name="dumpGroup" localmode="modern" access="remote" roles="member">
-	<h2>Testing group object creation and display</h2>
-	<cfscript>
-	
-	local=structnew();
-	local["groupId"]=request.zos.globals.soGroupData.siteOptionGroupIdLookup["0	Widget1"];
-	local["setId"]=1;
-	// recursively output everything
-	//zSiteOptionGroupDisplayAll(81, local["setId"], true);
-	
-	// need to be able to output a group within the loop of a set_id being output.
-	
-	writeoutput('<hr />');
-	
-	//writedump(request.zos.globals.soGroupData);
-	
-	// testing a site_option_app_id one...
-	arr1=zSiteOptionGroupStruct("WidgetContent1",1);
-	//writedump(arr1);
-	</cfscript>
-	<cfloop from="1" to="#arraylen(arr1)#" index="i">
-	<div style="width:200px;">
-		<h2>#arr1[i]["test field 1"]#</h2>
-	</div>
-	</cfloop>
-	<cfset arr1=zSiteOptionGroupStruct("Widget1")>
-	<cfloop from="1" to="#arraylen(arr1)#" index="i">
-	<div style="width:200px;">
-		<h2>#arr1[i].heading#</h2>
-		<cfset arr2=zSiteOptionGroupStruct("Column1",  0,81, arr1[i])>
-		<div style="width:100px; float:left;">
-			<h3>column 1</h3>
-			<p>
-				<cfloop from="1" to="#arraylen(arr2)#" index="n"> <a href="#arr2[n].url#">#arr2[n].label#</a><br />
-				</cfloop>
-			</p>
-		</div>
-		<div style="width:100px; float:left;">
-			<h3>column 2</h3>
-			<cfset arr3=zSiteOptionGroupStruct("Column2",0,  81, arr1[i])>
-			<p>
-				<cfloop from="1" to="#arraylen(arr3)#" index="n"> <a href="'&arr3[n].url&'">#arr3[n].label#</a><br />
-				</cfloop>
-			</p>
-		</div>
-	</div>
-	</cfloop>
-	
-	<!--- Future version based on skin engine - need to verify if % is correct for variables ---> 
-	<!-- z_widget groupName="Widget1" name="myWidget" -->
-	<div style="width:200px;">
-		<h2>$myWidget.heading$</h2>
-		<div style="width:100px; float:left;">
-			<h3>column 1</h3>
-			<p><!-- z_widget parentName="myWidget" groupName="Column1" name="myColumn1" --> 
-				<a href="$myColumn1.url$">$myColumn1.label$</a><br />
-				<!-- z_widgetEnd --></p>
-		</div>
-		<div style="width:100px; float:left;">
-			<h3>column 2</h3>
-			<p><!-- z_widget parentName="myWidget" groupName="Column1" name="myColumn2" --> 
-				<a href="$myColumn2.url$">$myColumn2.label$</a><br />
-				<!-- z_widgetEnd --></p>
-		</div>
-	</div>
-	<!-- z_widgetEnd -->
-</cffunction> --->
 
 <cffunction name="add" localmode="modern" access="remote" roles="member">
 	<cfscript>

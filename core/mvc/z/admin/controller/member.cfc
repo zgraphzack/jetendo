@@ -3,6 +3,7 @@
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users");	
 	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
 	form.zIndex=application.zcore.functions.zso(form,'zIndex',true,1);
 	form.searchtext=trim(application.zcore.functions.zso(form,'searchtext'));
@@ -90,6 +91,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users", true);	
 	db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 	SET user_active = #db.param('1')# 
 	WHERE user_id = #db.param(form.user_id)# and 
@@ -103,6 +105,7 @@
 <cffunction name="disable" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users", true);	
 	db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 	SET user_active = #db.param('0')# 
 	WHERE user_id = #db.param(form.user_id)# and 
@@ -181,6 +184,7 @@
 	var arrSite=0;
 	var arrSite2=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users", true);	
     arrSite2=arraynew(1);
 	form.user_sync_site_id_list=application.zcore.functions.zso(form,'user_sync_site_id_list');
 	if(form.member_website EQ "/"){
@@ -1035,6 +1039,7 @@
 
 <cffunction name="getImportUserFields" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users");	
 	rs={
 		arrRequired:listToArray("user_email	user_password", chr(9)),
 		arrOptional:listToArray("user_first_name	user_last_name	user_phone	user_fax	user_street	user_street2	user_city	user_state	user_country	user_zip	user_pref_html	user_pref_phone	user_pref_fax	user_pref_list	user_pref_mail	user_pref_email	user_pref_new	user_pref_sharing	user_googleplus_url	user_twitter_url	user_facebook_url	user_openid_id	user_openid_provider	user_openid_email	user_openid_required	user_birthday	user_gender	user_alternate_email	user_alternate_contact_name", chr(9))
@@ -1048,6 +1053,7 @@
 	var row=0;
 	var qOption=0;
 	var db=request.zos.queryObject;  
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users");	
 	rs=this.getImportUserFields();
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
@@ -1103,6 +1109,7 @@
 <cffunction name="processImport" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;  
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users", true);	
 	setting requesttimeout="30000";
 	defaultStruct={}; 
 	defaultStruct.user_group_id=application.zcore.functions.zso(form, 'user_group_id');

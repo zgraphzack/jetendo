@@ -1,5 +1,5 @@
 <cfcomponent>
-	<cffunction name="index" localmode="modern" access="remote">
+	<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 		<cfscript>
 		var absPath=request.zos.globals.serverHomeDir&"mvc/z/listing/mls-provider/"&form.mlsName&"data.cfc";
 		if(not fileexists(absPath)){

@@ -261,14 +261,6 @@ add fields to set location of content (listing) on google map (using address or 
 					arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
 				}    
 			}
-			application.zcore.functions.zcreatedirectory(request.zos.globals.privatehomedir&"zupload/user/Shared Documents");
-			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Shared Documents") EQ false){
-				ts=structnew();
-				ts.featureName="Shared Documents";
-				ts.link="/z/admin/files/sharedDocuments";
-				ts.children=structnew();
-				arguments.linkStruct["Content Manager"].children["Shared Documents"]=ts;
-			}
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
 				ts=structnew();
 				ts.featureName="Menus";

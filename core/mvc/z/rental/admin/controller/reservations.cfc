@@ -15,6 +15,7 @@
 	var r=0;
 	var qUpdate=0;
 	var qInquiry=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Reservations", true);
 	db.sql="SELECT * from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_id = #db.param(application.zcore.functions.zso(form, 'inquiries_id'))# and 
 	site_id = #db.param(request.zOS.globals.id)#";
@@ -56,6 +57,7 @@
 	var qprop=0;
 	var qinquiry=0;
 	var i=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Reservations");
 	writeoutput('disabled');
 	application.zcore.functions.zabort();
 	</cfscript>
@@ -178,6 +180,7 @@
 	var qinquiriesRange=0;
 	var searchStruct=0;
 	var qinquiriesLast=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Reservations");
 	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
 	db.sql=" select min(inquiries_datetime) as inquiries_start_date 
 	from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 

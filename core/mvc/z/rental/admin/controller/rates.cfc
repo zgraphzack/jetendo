@@ -25,6 +25,7 @@
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Rentals");
 	form.rental_tax=application.zcore.functions.zso(form, 'rental_tax',false,'0');
 	form.start=application.zcore.functions.zso(form, 'start',false,'');
 	
@@ -267,6 +268,7 @@
 	var qCheck=0;
 	var result=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Rentals", true);
     form.rental_id=application.zcore.functions.zso(form, 'rental_id');
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_id = #db.param(form.rental_id)# and 
@@ -318,6 +320,7 @@
 	var result=0;
 	var qCheck=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Rentals", true);
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rate", request.zos.zcoreDatasource)# rate 
 	LEFT JOIN #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental ON 
 	rental.rental_id = rate.rental_id and 
@@ -400,6 +403,7 @@
 	var ts=0;
 	var errors=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Rentals", true);
 	if(form.method EQ "update"){
 		db.sql=" SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 		WHERE rental_id = #db.param(form.rental_id)# and 
@@ -521,6 +525,7 @@
 	var arrD=0;
 	var tempLink=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Rentals", true);
 	form.rental_id=application.zcore.functions.zso(form, 'rental_id');
 	uniqueChanged=false;
 	if(form.method EQ 'insertRental' and application.zcore.functions.zso(form, 'rental_url') NEQ ""){

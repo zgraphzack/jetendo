@@ -3,6 +3,7 @@
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	form.site_id=request.zos.globals.id;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Menus");	
 	
 	if(structkeyexists(form, 'menu_button_id') or structkeyexists(form, 'menu_id')){
 		variables.queueSortStruct = StructNew();
@@ -111,6 +112,7 @@
 		</form>
 	<cfelse>
 		<cfscript>
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		if(application.zcore.user.checkServerAccess()){
 			form.newsiteid=application.zcore.functions.zso(form, 'newsiteid', false);
 			if(form.newsiteid EQ ""){
@@ -256,6 +258,7 @@
 	var myForm=structnew();
 	var qCheck=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 	if(form.method EQ 'updateItemLink'){
 		db.sql="SELECT * FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 		WHERE menu_button_link_id = #db.param(form.menu_button_link_id)# and 
@@ -342,6 +345,7 @@
 	var qCheck=0;
 	var qMenu2=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# and 
 	site_id = #db.param(form.site_id)#";
@@ -506,6 +510,7 @@
 	var myForm=structnew();
 	var errors=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 	if(form.method EQ 'update'){
 		db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 		WHERE menu_id = #db.param(form.menu_id)# and 
@@ -677,6 +682,7 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		db.sql="DELETE FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# 
 		WHERE menu_button_link_id = #db.param(form.menu_button_link_id)# and 
 		site_id = #db.param(request.zos.globals.id)#;";
@@ -726,6 +732,7 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		db.sql="DELETE FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# 
 		WHERE menu_button_id = #db.param(form.menu_button_id)# and 
 		site_id = #db.param(request.zos.globals.id)#;";
@@ -784,6 +791,7 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		db.sql="DELETE menu_button_link, menu_button 
 		FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link, #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 		WHERE menu_button.menu_button_id = menu_button_link.menu_button_id and 

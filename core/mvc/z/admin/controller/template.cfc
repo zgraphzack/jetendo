@@ -240,7 +240,7 @@ test=true;
 
 <!--- --->
 
-<cffunction name="index" localmode="modern" access="remote" roles="member">
+<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 <cfscript>
 db=request.zos.queryObject;
 request.zScriptName=request.cgi_script_name&'?ztv=1';

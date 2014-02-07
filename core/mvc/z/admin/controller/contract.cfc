@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="process" access="remote" localmode="modern">
+<cffunction name="process" access="remote" localmode="modern" roles="user">
 	<cfscript>
 	db=request.zos.queryObject;
 	// store the agreement
@@ -11,7 +11,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="printContract" access="remote" localmode="modern">
+<cffunction name="printContract" access="remote" localmode="modern" roles="user">
 	<cfscript>
 	application.zcore.template.setPlainTemplate();
 	request.zPageDebugDisabled=true;
@@ -28,7 +28,7 @@
 	</script> 
 </cffunction>
 	
-<cffunction name="displayContract" access="remote" localmode="modern">
+<cffunction name="displayContract" access="remote" localmode="modern" roles="user">
 	<cfscript>
 	application.zcore.template.setPlainTemplate();
 	request.zPageDebugDisabled=true;
@@ -151,7 +151,7 @@
 	</script> 
 </cffunction>
 	
-<cffunction name="index" access="remote" localmode="modern">
+<cffunction name="index" access="remote" localmode="modern" roles="user">
 	<script type="text/javascript">
 	zArrDeferredFunctions.push(function(){
 		var windowSize=zGetClientWindowSize();

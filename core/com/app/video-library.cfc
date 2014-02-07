@@ -73,6 +73,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	var queue_id=0;
 	var arrOut=arraynew(1);
 	var ts=structnew();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library", true);
 	if(structkeyexists(form, 'video_file') EQ false){
 		writeoutput('{"arrVideos":[{"success":false,"message":"A video must be uploaded."}]}');
 		application.zcore.functions.zabort();
@@ -122,6 +123,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	<cfscript>
 	var local=structnew();
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library");
 	local.arrQueue=listtoarray(application.zcore.functions.zescape(form.queue_id_list),",",false);
 	local.arrQueue2=arraynew(1);
 	local.arrQueue3=arraynew(1);
@@ -160,6 +162,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	local.arrQueue2=arraynew(1);
 	local.arrQueue3=arraynew(1);
 	local.result="";
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library");
 	if(arraylen(local.arrQueue) NEQ 0){
 			
 		for(local.i=1;local.i LTE arraylen(local.arrQueue);local.i++){
@@ -195,6 +198,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	var q=0;
 	local.result="";
 	local.ts=structnew();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library", true);
 	
 	db.sql="select * from #db.table("queue", request.zos.zcoreDatasource)# queue 
 	WHERE queue_id = #db.param(form.queue_id)# and 
@@ -244,6 +248,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	var local=structnew();
 	var qd=0;
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library", true);
 	db.sql="select * from #db.table("video", request.zos.zcoreDatasource)# video 
 	WHERE video_id = #db.param(form.video_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
@@ -289,6 +294,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	var embedCode=0;
 	var ts=0;
 	var qF=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library");
 
 	var db=request.zos.queryObject;
 	request.zos.inMemberArea=true;

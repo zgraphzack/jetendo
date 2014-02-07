@@ -1,11 +1,12 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private" roles="administrator">
-	<cfscript>
+	<cfscript>	
 	if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 1){
 		application.zcore.status.setStatus(request.zsid, "The theme is locked on this site.  You must contact the developer to make changes to the site design.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Themes");
 	</cfscript>
 </cffunction>
 
@@ -55,7 +56,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="disablePreview" localmode="modern" access="remote" roles="administrator">
+<cffunction name="disablePreview" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	structdelete(session, 'zCurrentTheme');
 	application.zcore.status.setStatus(request.zsid, "Preview theme mode disabled.");
@@ -63,7 +64,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="index" localmode="modern" access="remote" roles="administrator">
+<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	init();
 	application.zcore.functions.zStatusHandler(request.zsid);

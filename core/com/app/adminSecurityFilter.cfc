@@ -22,7 +22,9 @@
 	ms["Content Manager"]={ parent:'', label:"Content Manager"};
 	if(application.zcore.app.siteHasApp("content")){
 		ms["Pages"]={ parent:'Content Manager', label:chr(9)&"Pages"};
-	}
+		ms["Content Permissions"]={ parent:'Content Manager', label:chr(9)&"Content Permissions"};
+	}	
+	ms["Image Library"]={ parent:'Content Manager', label:chr(9)&"Images Library"};
 	ms["Files & Images"]={ parent:'Content Manager', label:chr(9)&"Files & Images"};
 	ms["Menus"]={ parent:'Content Manager', label:chr(9)&"Menus"};
 	ms["Problem Link Report"]={ parent:'Content Manager', label:	chr(9)&"Problem Link Report"};
@@ -31,7 +33,6 @@
 	if(request.zos.isTestServer){
 		ms["Manage Design & Layout"]={ parent:'Content Manager', label:chr(9)&"Manage Design & Layout"};
 	}
-	ms["Shared Documents"]={ parent:'Content Manager', label:"Shared Documents"};
 	if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
 		ms["Themes"]={ parent:'Content Manager', label:chr(9)&"Themes"};
 	}
@@ -57,9 +58,9 @@
 	if(application.zcore.app.siteHasApp("listing")){
 		ms["Listings"]={ parent:'', label:"Listings"};
 		ms["Manage Listings"]={ parent:'Listings', label:chr(9)&"Manage Listings"};
-		ms["Research Tool"]={ parent:'Listings', label:chr(9)&"Research Tool"};
-		ms["Saved Searches"]={ parent:'Listings', label:chr(9)&"Saved Searches"};
-		ms["Search Filter"]={ parent:'Listings', label:chr(9)&"Search Filter"};
+		ms["Listing Research Tool"]={ parent:'Listings', label:chr(9)&"Listing Research Tool"};
+		ms["Saved Listing Searches"]={ parent:'Listings', label:chr(9)&"Saved Listing Searches"};
+		ms["Listing Search Filter"]={ parent:'Listings', label:chr(9)&"Listing Search Filter"};
 		ms["Widgets For Other Sites"]={ parent:'Listings', label:chr(9)&"Widgets For Other Sites"};
 	}
 
@@ -69,6 +70,7 @@
 		ms["Rental Amenities"]={ parent:'Rentals', label:chr(9)&"Rental Amenities"};
 		ms["Rental Categories"]={ parent:'Rentals', label:chr(9)&"Rental Categories"};
 		ms["Rental Calendars"]={ parent:'Rentals', label:	chr(9)&"Rental Calendars"};
+		ms["Rental Reservations"]={parent:'Rentals', label: chr(9)&"Rental Reservations"};
 	}
 	ms["Users"]={ parent:'', label:"Users"};
 	ms["Manage Users"]={ parent:'Users', label:chr(9)&"Manage Users"};
@@ -127,6 +129,24 @@
 		}
 	}
 	return structkeylist(fs, ",");
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="requireFeatureAccess" localmode="modern" returntype="any">
+	<cfargument name="featureName" type="string" required="yes">
+	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
+	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
+	<cfscript>
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, arguments.site_id)){
+		application.zcore.status.setStatus(request.zsid, "You don't have permission to use that feature.", form, true);
+		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+	}
+	// check for write access
+	if(arguments.requiresWriteAccess and not application.zcore.user.checkServerAccess() and request.zos.globals.enableDemoMode EQ 1){
+		application.zcore.status.setStatus(request.zsid, "You don't have write access for the #arguments.featureName# feature because this web site is in demo mode.", form, true);
+		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+	}
 	</cfscript>
 </cffunction>
 

@@ -35,7 +35,7 @@
 	</cfscript>
 </cffunction>
 	
-<cffunction name="index" localmode="modern" access="remote" roles="member">
+<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	disabled until i work on it again.<cfscript>application.zcore.functions.zabort();application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);</cfscript><script type="text/javascript">
 var zSkinApp={};
 

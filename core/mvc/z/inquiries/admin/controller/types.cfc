@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Types");
 	var hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	</cfscript>
@@ -13,6 +14,8 @@
 	var qTypes=0;
 	var qInquiryCheck=0;
 	var qImages=0;
+	init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Types", true);
 	form.sid=application.zcore.functions.zGetSiteIdFromSiteIdType(form.siteIdType);
 	db.sql="SELECT * from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type  
 	WHERE inquiries_type_id = #db.param(form.inquiries_type_id)# and 
@@ -62,6 +65,8 @@
 	var qTypes=0;
 	var myForm={};
 	var inputStruct=0;
+	init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Types", true);
 	form.site_id=application.zcore.functions.zGetSiteIdFromSiteIdType(form.siteIdType);
 	if(form.method EQ 'update'){
 		db.sql="SELECT *, if(inquiries_type_locked = #db.param(1)#,#db.param(1)#,#db.param(0)#) locked 

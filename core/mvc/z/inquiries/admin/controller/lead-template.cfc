@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Templates");
 	var hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	</cfscript>
@@ -223,6 +224,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var r=0;
+	init();
 	form.sid=application.zcore.functions.zGetSiteIdFromSiteIdType(form.siteIdType);
 	if(form.method EQ 'hide'){
 		db.sql="REPLACE INTO #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)#  

@@ -3,6 +3,7 @@
 <cffunction name="init" localmode="modern" access="public" roles="member">
 	<cfscript>
 	form.site_id=request.zos.globals.id;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Pages");
 	if(structcount(application.zcore.app.getAppData("content")) EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Access denied");
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
@@ -55,6 +56,7 @@
 	var qParent=0;
 	var db=request.zos.queryObject;
 	this.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
 	if(structkeyexists(form, 'return')){
 		StructInsert(session, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
@@ -140,6 +142,7 @@
 	var csn=0;
 	var db=request.zos.queryObject;
 	this.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
 	for(i in form){
 		if(isSimpleValue(form[i])){
 			form[i]=trim(form[i]);	
@@ -1488,6 +1491,7 @@
 
 <cffunction name="processimport" localmode="modern" access="remote" roles="member">
 	<cfscript>
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
 	var db=request.zos.queryObject;
 	if(structkeyexists(form, 'filepath') EQ false or form.filepath EQ ""){
 		application.zcore.status.setStatus(request.zsid, "You must upload a CSV file", true);
@@ -1644,6 +1648,7 @@
 	var content_sort=0;
 	var css1=0;
 	var i=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
 	arrTitle=listtoarray(form.titlecontent,chr(10),false);
 	db.sql="SELECT max(content_sort) sortnum 
 	FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -1695,6 +1700,7 @@
 <cffunction name="import" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form);
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Pages");
 	</cfscript>
 	<h2>Import Pages</h2>
 	<p>You can upload a file with separate columns or enter titles to create new pages below.</p>

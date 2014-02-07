@@ -1798,20 +1798,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}
 	return qG;
 	</cfscript>
-</cffunction>
-<!--- 
-<cffunction name="testForm" localmode="modern" access="remote" roles="member" returntype="any" output="yes">
-	<cfscript>
-	var local=structnew();
-	var ts=structnew();
-	ts.name="site_option_app_id";
-	ts.app_id=11;
-	ts.value=1;
-	this.getSiteOptionForm(ts);
-		
-	</cfscript>
-</cffunction>
---->
+</cffunction> 
 
 <!--- application.zcore.siteOptionCom.deleteSiteOptionAppId(site_option_app_id); --->
 <cffunction name="deleteSiteOptionAppId" localmode="modern" returntype="any" output="no">

@@ -4,6 +4,9 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qCh=0;
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows");	
+
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	form.site_id=request.zos.globals.id;
 	if(application.zcore.functions.zso(form, 'slideshow_id') NEQ ""){
@@ -121,6 +124,7 @@
 		</form>
 	<cfelse>
 		<cfscript>
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 		if(application.zcore.user.checkServerAccess()){
 			form.newsiteid=application.zcore.functions.zso(form,'newsiteid', true);
 			if(form.newsiteid EQ 0){
@@ -301,6 +305,7 @@
 	var qCheck=0;
 	var tempURL=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	if(structkeyexists(form, 'return')){
 		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
@@ -355,6 +360,7 @@
 	var tempURL=0;
 	var qCheck=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	if(structkeyexists(form, 'return')){
 		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
@@ -431,6 +437,7 @@
 	var tempURL=0;
 	var qCheck=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	if(structkeyexists(form, 'return')){
 		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
@@ -525,6 +532,7 @@
 	var errors=0;
 	var myForm=structnew();
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	form.slideshow_updated_datetime=request.zos.mysqlnow;
 	if(form.method EQ 'update'){
 		db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow
@@ -974,6 +982,7 @@
 	var myForm=0;
 	var qCheck=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# s
 	LEFT JOIN #db.table("slideshow_tab", request.zos.zcoreDatasource)# st 
 	ON st.slideshow_id = s.slideshow_id and 
@@ -1302,6 +1311,7 @@
 	var overwrite=0;
 	var qM=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	form.slideshow_image_id=application.zcore.functions.zso(form, 'slideshow_image_id');
 	db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# s
 	LEFT JOIN #db.table("slideshow_image", request.zos.zcoreDatasource)# si ON 

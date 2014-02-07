@@ -3,6 +3,7 @@
 <cffunction name="delete" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Saved Listing Searches", true);
 	</cfscript>
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
@@ -34,6 +35,7 @@
 	var inputStruct=0;
 	var qCount=0;
 	var rollOverCode=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Saved Listing Searches");
 		var db=request.zos.queryObject;
     application.zcore.functions.zStatusHandler(Request.zsid);
     </cfscript>

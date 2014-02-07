@@ -16,6 +16,7 @@ enable round robin for users - need a new option to disable for staff.
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	var hCom=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Routing");
 	variables.queueSortStruct = StructNew();
 	variables.queueSortStruct.tableName = "inquiries_routing";
 	variables.queueSortStruct.sortFieldName = "inquiries_routing_sort";

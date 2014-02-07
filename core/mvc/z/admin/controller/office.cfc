@@ -18,6 +18,7 @@ enable round robin for offices - need a new option to disable for staff.
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices", true);	
 	db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office
 	WHERE office_id= #db.param(application.zcore.functions.zso(form,'office_id'))# and 
 	site_id = #db.param(request.zos.globals.id)#";
@@ -59,6 +60,7 @@ enable round robin for offices - need a new option to disable for staff.
 	var ts={};
 	var result=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices", true);	
 	form.site_id = request.zos.globals.id;
 	ts.office_name.required = true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
@@ -110,6 +112,7 @@ enable round robin for offices - need a new option to disable for staff.
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices");	
 	if(application.zcore.functions.zso(form,'office_id') EQ ''){
 		form.office_id = -1;
 	}
@@ -210,6 +213,7 @@ enable round robin for offices - need a new option to disable for staff.
 
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices");	
 	var queueSortStruct = StructNew();
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	queueSortStruct.tableName = "office";

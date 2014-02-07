@@ -32,6 +32,10 @@ This is a global key. It will work across all domains. --->
 <cffunction name="zCheckFormHashValue" localmode="modern" output="no" returntype="string">
     <cfargument name="hashValue" type="string" required="yes">
     <cfscript>
+    if(request.zos.globals.enableDemoMode EQ 1){
+    	writeoutput('<h2>Lead submission is disabled in demo mode.</h2><p>Please go back and continuing browsing the demo site.</p>');
+    	application.zcore.functions.zabort();
+    }
     if(structkeyexists(session.zos,'formHashUniqueStruct') EQ false or structkeyexists(session.zos.formHashUniqueStruct, arguments.hashValue) EQ false){
         return false;
     }else{

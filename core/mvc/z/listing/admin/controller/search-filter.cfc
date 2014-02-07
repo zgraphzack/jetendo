@@ -10,6 +10,7 @@
 	var arrFields=0;
 	var field=0;
 	var db=request.zos.queryObject;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Search Filter");
 	
 	arrFields=listtoarray(form.filterFields);
 	for(i=1;i LTE arraylen(arrFields);i++){
@@ -89,7 +90,8 @@
 	var i=0;
 	var cts=0;
 	var arrKeys=0;
-		var db=request.zos.queryObject;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Search Filter");
+	var db=request.zos.queryObject;
     if(application.zcore.app.siteHasApp("listing") EQ false){
         application.zcore.status.setStatus(request.zsid,"Access denied");
         application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
@@ -337,11 +339,11 @@ function zDropFilterTable(table, row, startIndex, endIndex){
 }
 tableDnD.init(table,zDropFilterTable);
 </script>
-        <br />
+    <br />
 
 
-		<button type="submit" name="submitPage" value="submitPage">Update Search Filter</button>
-        #application.zcore.functions.zEndForm()# 
+	<button type="submit" name="submitPage" value="submitPage">Update Search Filter</button>
+    #application.zcore.functions.zEndForm()# 
 
 </cffunction>
 </cfoutput>

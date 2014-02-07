@@ -263,17 +263,17 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 			ts.link='/z/content/admin/content-admin/index?content_parent_id='&qCheckExclusiveListingPage.cid;
 			arguments.linkStruct["Real Estate"].children["Manage Listings"]=ts;
     }
-		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Saved Searches") EQ false){
+		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Saved Listing Searches") EQ false){
 			ts=structnew();
-			ts.featureName="Saved Searches";
+			ts.featureName="Saved Listing Searches";
 			ts.link='/z/listing/admin/saved-searches/index';
 			arguments.linkStruct["Real Estate"].children["Saved Searches"]=ts;
 		} 
-		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Search Filter") EQ false){
+		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Listing Search Filter") EQ false){
 			ts=structnew();
-			ts.featureName="Search Filter";
+			ts.featureName="Listing Search Filter";
 			ts.link='/z/listing/admin/search-filter/index';
-			arguments.linkStruct["Real Estate"].children["Search Filter"]=ts;
+			arguments.linkStruct["Real Estate"].children["Listing Search Filter"]=ts;
 		}  
 		if(request.zos.istestserver){
 			if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Manual Listing") EQ false){
@@ -283,11 +283,11 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 				arguments.linkStruct["Real Estate"].children["Manual Listing"]=ts;
 			}  
 		}
-		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Research Tool") EQ false){
+		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Listing Research Tool") EQ false){
 			ts=structnew();
-			ts.featureName="Research Tool";
+			ts.featureName="Listing Research Tool";
 			ts.link='/z/listing/admin/research-tool/index';
-			arguments.linkStruct["Real Estate"].children["Research Tool"]=ts;
+			arguments.linkStruct["Real Estate"].children["Listing Research Tool"]=ts;
 		}  
 		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Widgets For Other Sites") EQ false){
 			ts=structnew();

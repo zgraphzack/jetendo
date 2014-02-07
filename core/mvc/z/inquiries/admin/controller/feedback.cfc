@@ -4,6 +4,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var hCom=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Leads");
 	form.zPageId=application.zcore.functions.zso(form, 'zPageId');
 	if(structkeyexists(form, 'inquiries_id') EQ false){
 		application.zcore.functions.zRedirect('/z/inquiries/admin/manage-inquiries/index');

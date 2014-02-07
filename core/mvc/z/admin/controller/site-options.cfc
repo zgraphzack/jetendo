@@ -5,6 +5,8 @@
 	var db=request.zos.queryObject;
 	var qSiteOptionApp=0; 
 	variables.allowGlobal=false;
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	form.site_id=request.zos.globals.id;
 	variables.siteIdList="'"&request.zos.globals.id&"'";
 	variables.publicSiteIdList="'0','"&request.zos.globals.id&"'";
@@ -142,6 +144,8 @@
 	var i=0;
 	var ts=0;
 	var ts2=0;
+	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	setting requesttimeout="10000";
 	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id');
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
@@ -377,6 +381,7 @@
 	var queueSortStruct=0;
 	var queueComStruct=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	siteIdSQL=" ";
 	if(form.site_option_group_id NEQ 0){
 		siteIdSQL=" and site_option.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"'";
@@ -545,6 +550,7 @@
 	var myForm=structnew();
 	var formaction=0;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	if(form.method EQ 'insert'){
 		formaction='add';	
 	}else{
@@ -1149,6 +1155,7 @@
 	var photoresize=0;
 	var nowDate=request.zos.mysqlnow;
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	local.arrSiteIdType=listtoarray(form.siteidtype);
 	local.arrSiteOptionId=listtoarray(form.site_option_id);
 	if(arraylen(local.arrSiteOptionId) NEQ arraylen(local.arrSiteIdType)){
@@ -3039,6 +3046,7 @@ Define this function in another CFC to override the default email format
 	structappend(arguments.struct, defaultStruct, false);
 	
 	variables.init();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 

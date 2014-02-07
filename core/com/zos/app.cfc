@@ -1181,7 +1181,7 @@
 	</cffunction>
     
     
-    <cffunction name="resetApplicationScope" localmode="modern" output="yes" access="remote" returntype="void" hint="publish the application cache">
+    <cffunction name="resetApplicationScope" localmode="modern" output="yes" roles="serveradministrator" access="remote" returntype="void" hint="publish the application cache">
        	<cfscript>
 		this.onSiteStart();
 		application.zcore.functions.zabort();

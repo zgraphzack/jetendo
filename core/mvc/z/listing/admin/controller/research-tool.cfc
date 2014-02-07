@@ -96,6 +96,7 @@ var c=0;
 var c3=0;
 var ts=0;
 var c2=0;
+application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Research Tool");
 form.action=application.zcore.functions.zso(form, 'action', false,'list');
 </cfscript>
 <cfif form.action EQ "download">

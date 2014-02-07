@@ -468,6 +468,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	var filePath='';
 	var oldFileName='';
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
 		application.zcore.functions.z404("No access to image_library_id");	
 	}
@@ -656,6 +657,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	var imageCount=0;
 	var returnValue=0;
 	var arrOut=arraynew(1);
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
 	form.disableImageProcessOutput=application.zcore.functions.zso(form, 'disableImageProcessOutput', false, false);
 	form.image_caption="";
 	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
@@ -1346,6 +1348,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var i=0;
 	var cffileresult=0;
 	var rd=gethttprequestdata();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library");
 	form.image_library_id=qLibrary.image_library_id;
 	request.zos.inMemberArea=true;
 	form.fieldId=application.zcore.functions.zso(form, 'fieldId');
@@ -1495,6 +1498,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var qCheck=0;
 	var i=0;
 	var arrImageId=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
 	if(isQuery(qLibrary) EQ false){
 		writeoutput('{"success":"0","errorMessage":"Invalid image_library_id"}');
 		application.zcore.functions.zabort();
@@ -1525,6 +1529,9 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qLibrary=0;
+	if(not request.zos.isDeveloper and not request.zos.isServer){
+		application.zcore.functions.z404("Only the developer and server can access this feature.");
+	}
 	var i=0; db.sql="SELECT * FROM #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)# image_library, 
 	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site.site_active = #db.param(1)# and 
@@ -1569,14 +1576,6 @@ application.zcore.imageLibraryCom.displayImages(ts);
 </cffunction>
 
 
-<!--- /z/_com/app/image-library?method=remoteDeleteImageId&image_id=#image_id# --->
-<cffunction name="remoteDeleteImageId" localmode="modern" access="remote" returntype="any" output="no">
-	<cfscript>
-	this.deleteImageId(application.zcore.functions.zso(form, 'image_id'));
-	writeoutput('{"success":"1"}');
-	application.zcore.functions.zabort();
-	</cfscript>
-</cffunction>
 
 <cffunction name="hasAccessToImageLibraryId" localmode="modern" returntype="boolean">
 	<cfargument name="image_library_id" type="string" required="yes">

@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 <cfscript>
+application.zcore.adminSecurityFilter.requireFeatureAccess("Widgets for other web sites");
 application.zcore.template.settag("title","Widgets for other web sites");
 </cfscript>
 <h1>Widgets for other web sites</h1>

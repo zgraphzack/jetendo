@@ -8,43 +8,44 @@
 	var arrLinks=0;
 	var currentfile=0;
 	var i=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images");	
 	application.zcore.template.appendTag("meta",'<style type="text/css">
-/* <![CDATA[ */
-	body, .fi-gallery-table{ background-color:##FFFFFF; color:##000000; }
-.fi-gallery-table a:link { color:##336699; }
-.fi-gallery-table a:visited { color:##225588; }
-.fi-gallery-table a:hover { color:##FF0000;} /* ]]> */
-</style>');
-form.galleryMode=application.zcore.functions.zso(form, 'galleryMode',false,false);
-if(form.galleryMode EQ false){
-	application.zcore.template.setTag("title","Files &amp; Images Manager");
-}
-request.zos.fileImage.absDir=application.zcore.functions.zvar('privatehomedir')&'zupload/user/'; 
-request.zos.fileImage.siteRootDir='/zupload/user';
-request.imageSizes=ArrayNew(1);
-ts=StructNew();
-ts.label="Small";
-ts.value="120x200";
-ArrayAppend(request.imageSizes, ts);
-ts=StructNew();
-ts.label="Medium";
-ts.value="250x400";
-ArrayAppend(request.imageSizes, ts);
-ts=StructNew();
-ts.label="Large";
-if(application.zcore.functions.zso(request.zos.globals, 'maximagewidth',true) NEQ 0){
-	ts.value="#request.zos.globals.maximagewidth#x2000";
-}else{
-	ts.value="760x2000";
-}
-ts.default=true;
-ArrayAppend(request.imageSizes, ts);
-ts=StructNew();
-ts.label="Keep Original Size";
-ts.value="10000x10000";
-ArrayAppend(request.imageSizes, ts);
-if(isDefined('request.zos.fileImage.absDir') EQ false or isDefined('request.zos.fileImage.siteRootDir') EQ false){
-	writeoutput('File &amp; Image Directories are undefined for this site.  Please alert the developer.');
+	/* <![CDATA[ */
+		body, .fi-gallery-table{ background-color:##FFFFFF; color:##000000; }
+	.fi-gallery-table a:link { color:##336699; }
+	.fi-gallery-table a:visited { color:##225588; }
+	.fi-gallery-table a:hover { color:##FF0000;} /* ]]> */
+	</style>');
+	form.galleryMode=application.zcore.functions.zso(form, 'galleryMode',false,false);
+	if(form.galleryMode EQ false){
+		application.zcore.template.setTag("title","Files &amp; Images Manager");
+	}
+	request.zos.fileImage.absDir=application.zcore.functions.zvar('privatehomedir')&'zupload/user/'; 
+	request.zos.fileImage.siteRootDir='/zupload/user';
+	request.imageSizes=ArrayNew(1);
+	ts=StructNew();
+	ts.label="Small";
+	ts.value="120x200";
+	ArrayAppend(request.imageSizes, ts);
+	ts=StructNew();
+	ts.label="Medium";
+	ts.value="250x400";
+	ArrayAppend(request.imageSizes, ts);
+	ts=StructNew();
+	ts.label="Large";
+	if(application.zcore.functions.zso(request.zos.globals, 'maximagewidth',true) NEQ 0){
+		ts.value="#request.zos.globals.maximagewidth#x2000";
+	}else{
+		ts.value="760x2000";
+	}
+	ts.default=true;
+	ArrayAppend(request.imageSizes, ts);
+	ts=StructNew();
+	ts.label="Keep Original Size";
+	ts.value="10000x10000";
+	ArrayAppend(request.imageSizes, ts);
+	if(isDefined('request.zos.fileImage.absDir') EQ false or isDefined('request.zos.fileImage.siteRootDir') EQ false){
+		writeoutput('File &amp; Image Directories are undefined for this site.  Please alert the developer.');
 		application.zcore.functions.zabort();
 	}else if(directoryexists(request.zos.fileImage.absDir) EQ false){
     application.zcore.functions.zCreateDirectory(request.zos.fileImage.absDir);
@@ -53,11 +54,11 @@ if(isDefined('request.zos.fileImage.absDir') EQ false or isDefined('request.zos.
 			application.zcore.functions.zabort();
 		}
 	}
-// shorthand dir
-variables.absDir=request.zos.fileImage.absDir; 
-variables.siteRootDir=request.zos.fileImage.siteRootDir;
-// image sizes can be overriden for each site.
-if(structkeyexists(request,'imageSizes') EQ false){
+	// shorthand dir
+	variables.absDir=request.zos.fileImage.absDir; 
+	variables.siteRootDir=request.zos.fileImage.siteRootDir;
+	// image sizes can be overriden for each site.
+	if(structkeyexists(request,'imageSizes') EQ false){
 		request.imageSizes=ArrayNew(1);
 		ts=StructNew();
 		ts.label="Small";
@@ -80,11 +81,11 @@ if(structkeyexists(request,'imageSizes') EQ false){
 		ts.label="Keep Original Size";
 		ts.value="5000x5000";
 		ArrayAppend(request.imageSizes, ts);
-}
-	if(form.galleryMode EQ false and structkeyexists(request.zos, 'fileImage') and application.zcore.functions.zso(request.zos.fileImage, 'hideTitle',false,false) EQ false){
-	writeoutput('<h1>Files &amp; Images</h1>');
 	}
-if(isDefined('request.zos.fileImage.forceRootFolder')){ 
+	if(form.galleryMode EQ false and structkeyexists(request.zos, 'fileImage') and application.zcore.functions.zso(request.zos.fileImage, 'hideTitle',false,false) EQ false){
+		writeoutput('<h1>Files &amp; Images</h1>');
+	}
+	if(isDefined('request.zos.fileImage.forceRootFolder')){ 
 		if(application.zcore.functions.zso(form, 'd') EQ ''){
 			form.d=request.zos.fileImage.forceRootFolder;
 		}
@@ -92,40 +93,40 @@ if(isDefined('request.zos.fileImage.forceRootFolder')){
 			application.zcore.status.setStatus(request.zsid,"Access denied to that folder. Now displaying the root folder.");
 			application.zcore.functions.zRedirect("/z/admin/files/index?zsid=#request.zsid#");	
 		}
-}
-if(structkeyexists(form,'d') EQ false or form.d EQ ''){
+	}
+	if(structkeyexists(form,'d') EQ false or form.d EQ ''){
 		form.d='';
 		variables.currentDir=variables.absDir;
-}else{
+	}else{
 		variables.currentDir=replacenocase(form.d,"../","","ALL");
 		variables.currentDir=variables.absDir&removeChars(variables.currentDir,1,1)&'/';
 		if(directoryexists(variables.currentDir) EQ false){
 			variables.currentDir=variables.absDir;
 		}
-}
-if(structkeyexists(form, 'f')){
+	}
+	if(structkeyexists(form, 'f')){
 		currentFile=replacenocase(form.f,"../","","ALL");
 		currentFile=variables.absDir&currentFile;
 		if(fileexists(currentFile) EQ false){
 			StructDelete(variables, 'currentFile');
 		}
-}
+	}
 	if(form.galleryMode EQ false){
 		form.curListMethod="index";
 	}else{
 		form.curListMethod="gallery";
 	}
-// creating links to the parent folders
-arrFolders = ListToArray(form.d,'/');
-cdir='';
-arrLinks=ArrayNew(1);
-if(form.d EQ ''){
-if(form.method EQ "index" or form.method EQ 'gallery'){
-    ArrayAppend(arrLinks, 'Root');
-}else{
-    ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=">Root</a>');
-}
-}else{
+	// creating links to the parent folders
+	arrFolders = ListToArray(form.d,'/');
+	cdir='';
+	arrLinks=ArrayNew(1);
+	if(form.d EQ ''){
+	if(form.method EQ "index" or form.method EQ 'gallery'){
+	    ArrayAppend(arrLinks, 'Root');
+	}else{
+	    ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=">Root</a>');
+	}
+	}else{
 		ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=">Root</a>');
 		for(i=1;i LTE arrayLen(arrFolders);i=i+1){
 			cdir=cdir&'/'&arrFolders[i];
@@ -135,23 +136,24 @@ if(form.method EQ "index" or form.method EQ 'gallery'){
 				ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=#URLEncodedFormat(cdir)#">#arrFolders[i]#</a> ');
 			}
 		}
-}
-if(isDefined('request.zos.fileImage.forceRootFolder')){
-	arrayDeleteAt(arrLinks,1);
-}
-writeoutput('<table style="border-spacing:0px; width:100%;" class="table-list"><tr><td>');
-writeoutput('Current Folder: '&ArrayToList(arrLinks,' / '));
-writeoutput('</td></tr></table>');
-if(form.method NEQ 'index'){
-	writeoutput('<hr />');
-}
-</cfscript>
+	}
+	if(isDefined('request.zos.fileImage.forceRootFolder')){
+		arrayDeleteAt(arrLinks,1);
+	}
+	writeoutput('<table style="border-spacing:0px; width:100%;" class="table-list"><tr><td>');
+	writeoutput('Current Folder: '&ArrayToList(arrLinks,' / '));
+	writeoutput('</td></tr></table>');
+	if(form.method NEQ 'index'){
+		writeoutput('<hr />');
+	}
+	</cfscript>
 </cffunction>
 
 
 <cffunction name="gallery" localmode="modern" access="remote" roles="member">
 <cfscript>
 	var ts=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images");	
 	application.zcore.template.setTemplate('zcorerootmapping.templates.blank',true,true);
 	form.galleryMode=true; 
 	request.zos.fileImage.absDir=application.zcore.functions.zvar('privatehomedir')&'zupload/user/'; 
@@ -198,29 +200,30 @@ if(form.method NEQ 'index'){
 	var ts=structnew();
 	var r1=0;
 	if(application.zcore.app.siteHasApp("content")){
-    ts=structnew();
-    ts.content_unique_name="/z/admin/files/sharedDocuments";
-    r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
+	    ts=structnew();
+	    ts.content_unique_name="/z/admin/files/sharedDocuments";
+	    r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
 	}else{
 		r1=false;
 	}
 	if(r1 EQ false){
-    application.zcore.template.setTag("title","Shared Documents");
-    application.zcore.template.setTag("pagetitle","Shared Documents");
+	    application.zcore.template.setTag("title","Shared Documents");
+	    application.zcore.template.setTag("pagetitle","Shared Documents");
 		writeoutput('<p>This files are provided for your convenience.</p>');
 	}
-request.zos.fileImage.forceRootFolder="/Shared Documents";
-request.zos.fileImage.editDisabled=true;
-request.zos.fileImage.deleteDisabled=true;
-request.zos.fileImage.enableDownload=true;
-request.zos.fileImage.addDisabled=true;
+	request.zos.fileImage.forceRootFolder="/Shared Documents";
+	request.zos.fileImage.editDisabled=true;
+	request.zos.fileImage.deleteDisabled=true;
+	request.zos.fileImage.enableDownload=true;
+	request.zos.fileImage.addDisabled=true;
 	this.index();
 </cfscript>
 </cffunction>
 
 <cffunction name="delete" localmode="modern" access="remote" roles="member">
-<cfscript>
+	<cfscript>
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 	</cfscript>
 	<cfif structkeyexists(form, 'confirm')>
     <cfscript>
@@ -245,6 +248,7 @@ request.zos.fileImage.addDisabled=true;
 <cfscript>
 	var qDirCheck=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 	</cfscript>
 	<cfif form.f NEQ ''>
     <cfdirectory directory="#variables.currentDir&removeChars(form.f,1,1)#" name="qDirCheck" action="list">
@@ -304,6 +308,7 @@ request.zos.fileImage.addDisabled=true;
 	var image_file=0;
 	var arrList=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 	local.returnMethod="edit";
 	if(form.method EQ "galleryInsert"){
 		local.returnMethod="galleryAdd";
@@ -532,6 +537,7 @@ request.zos.fileImage.addDisabled=true;
 <cfscript>
 	var oldFilePath=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 	
 if(trim(application.zcore.functions.zso(form, 'image_file')) EQ ''){
     application.zcore.status.setStatus(request.zsid,"No File was uploaded.");
@@ -577,6 +583,7 @@ if(form.image_file EQ false or left(form.image_file,6) EQ 'Error:'){
 	var e=0;
 	var newdir=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 	try{
 		newdir=application.zcore.functions.zDirectoryStringFormat(form.folder_name);
 	}catch(Any e){

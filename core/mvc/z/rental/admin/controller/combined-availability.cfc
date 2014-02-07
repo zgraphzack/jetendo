@@ -26,6 +26,7 @@
 	var tempDate=0;
 	var initDate=0;
 	var qLast=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Calendars");
 	var initdate = CreateDate(year(now()),month(now()),1);
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db.sql="SELECT max(availability_date) as availability_date

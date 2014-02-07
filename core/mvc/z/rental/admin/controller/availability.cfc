@@ -5,6 +5,7 @@
  	var db=request.zos.queryObject;
 	var selectStruct=0;
 	var qProperties=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Calendars");
 	</cfscript>
 	<h2 style="padding:5px; padding-left:0px; margin:0px;">Select a rental to edit its availability.</h2>
 	<cfscript>
@@ -38,6 +39,7 @@
 <cffunction name="submit" localmode="modern" access="remote" roles="member">
 	<cfscript>
  	var db=request.zos.queryObject;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Calendars", true);
 	if(structkeyexists(form, 'start_date') EQ false){
 		application.zcore.status.setStatus(request.zsid,"Please select a rental and start date to update availability.");
 		application.zcore.functions.zRedirect("/z/rental/admin/availability/index?zsid=#request.zsid#");
@@ -96,6 +98,7 @@
 	var tempDate=0;
 	var initDate=0;
 	var qLast=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Calendars");
 	if(structkeyexists(form, 'return')){
 		StructInsert(session, "rental_availability_return"&form.rental_id, request.zos.CGI.HTTP_REFERER, true);		
 	}

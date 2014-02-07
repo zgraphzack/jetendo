@@ -1,11 +1,12 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="update" localmode="modern" access="remote" roles="member">
+<cffunction name="update" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var q=0;
 	var i=0;
 	var ts=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Content Permissions", true); 
 	if(structkeyexists(form, 'groupcount')){
 		db.sql="DELETE FROM #request.zos.queryObject.table("content_permissions", request.zos.zcoreDatasource)#  WHERE site_id = #db.param(request.zos.globals.id)#";
 		q=db.execute("q");
@@ -25,13 +26,13 @@
 	</cfscript>
 </cffunction>
 		
-<cffunction name="index" localmode="modern" access="remote" roles="member">
+<cffunction name="index" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var local={};
 	var qpages=0;
 	var qgroups=0;
 	var selectStruct=0;
-	var 
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Content Permissions"); 
 	db=request.zos.queryObject;
 	if(structcount(application.zcore.app.getAppData("content")) EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Access denied");

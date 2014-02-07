@@ -4,6 +4,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var rateCom=0;
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Categories");
 	form.start=application.zcore.functions.zso(form, 'start',false,'');
 	if(not application.zcore.app.siteHasApp("rental")){
 		application.zcore.status.setStatus(request.zsid,"Access denied");
@@ -272,6 +273,7 @@
 	var qCheck=0;
 	var result=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Categories");
 	form.rental_category_id=application.zcore.functions.zso(form, 'rental_category_id');
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 	WHERE rental_category_id = #db.param(form.rental_category_id)# and 
@@ -330,6 +332,7 @@
 	var errors=0;
 	var qCheck=0;
 	variables.init();
+    application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Categories");
 	uniqueChanged=false;
 	if(form.method EQ 'insert' and application.zcore.functions.zso(form, 'rental_category_url') NEQ ""){
 		uniqueChanged=true;

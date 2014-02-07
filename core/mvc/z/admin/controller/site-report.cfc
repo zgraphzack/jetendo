@@ -817,6 +817,8 @@ more?
 	var searchNav=0;
 	var db=0;
 	var oneWeekAgo=0;
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Problem Link Report");	
 	db=request.zos.queryObject;
 	form.action=application.zcore.functions.zso(form,'action',false,'list');
 	if(request.zos.isDeveloper EQ false or structkeyexists(form, 'testnondev')){

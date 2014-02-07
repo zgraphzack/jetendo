@@ -90,6 +90,9 @@ todo: open source projects
 	var q=0;
 	var ts=0;
 	var ts1=0;
+	if(not request.zos.isDeveloper and not request.zos.isServer){
+		application.zcore.functions.z404("This feature requires developer or server access permissions.");
+	}
 	permanentStruct={
 		"zsystem.css":true,
 		"listing-search-form.js":true,
