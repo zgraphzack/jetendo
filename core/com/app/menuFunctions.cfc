@@ -236,6 +236,9 @@ application.zcore.functions.zPublishCss(ts);
 	db=request.zos.queryObject;
 	arrLink=[];
 	for(row in variables.qView){
+		if(row.menu_button_text EQ ""){
+			continue;
+		}
 		menuCharacterLength=max(1,row.menu_character_length);
 		buttonStruct={
 			id:"zMenu#row.menu_id#_#row.menu_button_id#",
