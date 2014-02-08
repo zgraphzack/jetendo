@@ -31,6 +31,8 @@
 	<style type="text/css">
 	</style>
 	<div class="zhelp-manager-div">
+		<h3>The documentation features were just added 2/8/2014, and we hope to fill them in over time.  
+		For now, if you need help that isn't here, please contact the web developer for assistance.</h3>
 		<div style="width:100%; float:left; text-align:right;"><a href="##" onclick="window.print();">Print</a></div>
 		<p>This guide attempts to introduce you to the most commonly used web site management features.</p>
 		<h2>Content Manager</h2>
@@ -101,7 +103,7 @@
 	// output information from the vendor record later
 	</cfscript>
 	<p>We are available to provide support for your web site.</p>
-
+	
 </cffunction>
 
 
@@ -110,15 +112,17 @@
 	application.zcore.template.setTag("title", "In-context Help Features");
 	application.zcore.template.setTag("pagetitle", "In-context Help Features");
 	</cfscript>
-	<p>We try to make the application intuitive by providing help as appropriate throughout the software and to make it consistent for all features.</p>
+	<p>We try to make the application intuitive by providing help tips directly next to the features throughout the software.</p>
 	<h2>Tooltips</h2>
-	<p>SCREENSHOT OF TOOLTIP ICON: You can rollover or click on a tooltip to display a description of what that feature is intended to do.</p>
-	<h2>Sorting</h2>
-	<p>SCREENSHOT OF SORT ICONS: These icons are used to move records up or down in their position.  
-	Use these arrows to change the order of photos in a slideshow, or the order of links on a menu depending on the feature you use them on.</p>
+	<p><!--- SCREENSHOT OF TOOLTIP ICON:  --->You can rollover or click on a tooltip to display a description of what that feature is intended to do.</p>
+	<!--- <h2>Sorting</h2>
+	<p><!--- SCREENSHOT OF SORT ICONS:  --->These icons are used to move records up or down in their position.  
+	Use these arrows to change the order of photos in a slideshow, or the order of links on a menu depending on the feature you use them on.</p> --->
 	<h2>Help for this page</h2>
-	<p>SCREENSHOT OF HELP FOR THIS PAGE MENU: To help you find the documentation for the page you are on, we have integrated the help system directly into the manager. 
-	If you see the Help For This Page image on a page, it has some documentation available that will describe just the features on that page or system.</p>
+	<p><!--- SCREENSHOT OF HELP FOR THIS PAGE MENU:  --->To help you find the documentation for the page you are on, we have integrated the help system directly into the manager. 
+	If you see go to Help -> Help For This Page, you will be taken directly to a new window with the documentation for that page.</p>
+	<h2>Descriptions on the page</h2>
+	<p>Make sure you read all the text on the page, we often write important tips for helping you understand how the features work.</p>
 </cffunction>
 
 </cfoutput>

@@ -709,6 +709,8 @@ zdoc css style documentation
         #manualStruct.html#
     <cfelse>
         <div class="zdoc-container ieWidthDivClass">
+		<h3>The documentation features were just added 2/8/2014, and we hope to fill them in over time.  
+		For now, if you need help that isn't here, please contact the web developer for assistance.</h3>
         <!--- <div class="zdoc-sidebar"> --->
         <!--- </div> --->
         <div class="zdoc-main-column ieWidthDivClass4">

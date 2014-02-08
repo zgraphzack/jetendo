@@ -241,26 +241,24 @@ add fields to set location of content (listing) on google map (using address or 
 				ts.link="/z/admin/admin-home/spellCheck";
 				arguments.linkStruct["Content Manager"].children["Advanced Spell/Grammar Check"]=ts;
 			}
-			if(request.minimalManagerDisabled){
-				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Site Options") EQ false){
-					ts=structnew();
-					ts.featureName="Site Options";
-					ts.link="/z/admin/site-options/index";
-					arguments.linkStruct["Content Manager"].children["Site Options"]=ts;
-				}  
-				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
-					ts=structnew();
-					ts.featureName="Slideshows";
-					ts.link="/z/admin/slideshow/index";
-					arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
-				}   
-				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Slideshow") EQ false){
-					ts=structnew();
-					ts.featureName="Slideshows";
-					ts.link="/z/admin/slideshow/add";
-					arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
-				}    
-			}
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Site Options") EQ false){
+				ts=structnew();
+				ts.featureName="Site Options";
+				ts.link="/z/admin/site-options/index";
+				arguments.linkStruct["Content Manager"].children["Site Options"]=ts;
+			}  
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
+				ts=structnew();
+				ts.featureName="Slideshows";
+				ts.link="/z/admin/slideshow/index";
+				arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
+			}   
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Slideshow") EQ false){
+				ts=structnew();
+				ts.featureName="Slideshows";
+				ts.link="/z/admin/slideshow/add";
+				arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
+			}    
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
 				ts=structnew();
 				ts.featureName="Menus";
@@ -281,13 +279,11 @@ add fields to set location of content (listing) on google map (using address or 
 				ts.link="/z/admin/menu/add";
 				arguments.linkStruct["Content Manager"].children["Add Menu"]=ts;
 			}
-			if(request.minimalManagerDisabled){
-				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
-					ts=structnew();
-					ts.featureName="Problem Link Report";
-					ts.link="/z/admin/site-report/index";
-					arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
-				}
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
+				ts=structnew();
+				ts.featureName="Problem Link Report";
+				ts.link="/z/admin/site-report/index";
+				arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 			}
 			if(request.zos.istestserver){
 				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
