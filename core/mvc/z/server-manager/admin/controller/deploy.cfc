@@ -665,7 +665,7 @@
 		<p><a href="/z/server-manager/admin/deploy-server/index">Manage Deploy Server(s)</a></p>
 		<p><a href="/z/server-manager/admin/deploy/editAllSites">Edit Deployment Configuration For All Sites</a></p>
 		<p><a href="/z/server-manager/admin/deploy/deployAllSites">Deploy All Sites</a></p>
-		<p><a href="/z/server-manager/admin/deploy/deployCore">Deploy #request.zos.installPath#core/</a></p> 
+		<p><a href="/z/server-manager/admin/deploy/deployCore">Deploy Core</a></p> 
 		<p>For site deployment, <a href="/z/server-manager/admin/site-select/index?sid=">select a site</a> and click deploy</p>
 		<cfif not request.zos.isExecuteEnabled or not request.zos.railoAdminWriteEnabled or not request.zos.railoAdminReadEnabled>
 			<p>Deploy Sourceless Archive: Disabled | This feature requires request.zos.isExecuteEnabled, request.zos.railoAdminWriteEnabled  and request.zos.railoAdminReadEnabled to be set to true in Application.cfc.</p>

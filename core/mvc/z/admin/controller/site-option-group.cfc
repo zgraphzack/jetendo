@@ -796,7 +796,9 @@
 	}
 	</cfscript>
 	<p><a href="/z/admin/site-option-group/add?site_option_group_parent_id=<cfif isquery(qgroup)>#qgroup.site_option_group_id#</cfif>">Add Group</a> 
-	| <a href="/z/admin/site-option-group/displayGroupCode?site_option_group_id=<cfif isquery(qgroup)>#qgroup.site_option_group_id#</cfif>" target="_blank">Display Group Code</a>
+	<cfif isquery(qgroup) and qgroup.site_option_group_id NEQ 0>
+		| <a href="/z/admin/site-option-group/displayGroupCode?site_option_group_id=<cfif isquery(qgroup)>#qgroup.site_option_group_id#</cfif>" target="_blank">Display Group Code</a>
+	</cfif>
 	<cfif isquery(qgroup)> | <a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#qgroup.site_option_group_id#&site_option_group_parent_id=#qgroup.site_option_group_parent_id#">Manage Options</a></cfif></p>
 	<table style="border-spacing:0px;" class="table-list" >
 		<tr>

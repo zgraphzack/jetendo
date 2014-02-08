@@ -67,6 +67,7 @@
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	init();
+	application.zcore.functions.zSetPageHelpId("2.10");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	
 	if(structkeyexists(session, 'zCurrentTheme')){

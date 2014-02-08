@@ -2942,7 +2942,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id = #db.param(form.sid)#
 	</cfsavecontent><cfscript>qSite=db.execute("qSite");</cfscript>
-	<!------><cfsavecontent variable="zsaHeader">
+	<cfsavecontent variable="zsaHeader">
 	<script type="text/javascript">/* <![CDATA[ */
     function zOSGoToSite(id){
         if(id != ''){
@@ -2959,27 +2959,10 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	 | <a href="/z/server-manager/admin/site-select/index?sid=">Sites</a> 
 	| <a href="/z/_com/zos/app?method=appList&zid=#arguments.zid#&sid=#form.sid#">Apps</a>
      | <a href="/z/server-manager/admin/log?sid=">Logs</a> 
-     | <a href="/z/server-manager/admin/deploy/index">Deploy</a> 
-    <!--- | <a href="/z/_com/app/randomCopy?method=sentenceList">Random Copy</a>--->
+     | <a href="/z/server-manager/admin/deploy/index">Deploy</a>
      
 	 </cfif>
 	 </td>
-	<!---<td style="text-align:right" class="tiny">
-	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>Switch Site: 
-    <cfscript>
-                selectStruct = StructNew();
-                selectStruct.name = "sidswitch";
-                // options for query data
-				selectStruct.style="tiny";
-                selectStruct.onChange="zOSGoToSite(this.options[this.selectedIndex].value);";
-                selectStruct.query = qSites;
-                selectStruct.queryLabelField = "site_domain";
-                selectStruct.queryValueField = "site_id";	
-                application.zcore.functions.zInputSelectBox(selectStruct);
-                </cfscript> | </cfif>
-    Logged in as: #application.zcore.functions.zso(session, 'zos.user.first_name')# 
-    #application.zcore.functions.zso(session, 'zos.user.last_name')# | 
-    <a href="#request.cgi_script_name#?zlogout=1">Log Out</a></td>--->
 	</tr>
 	</table>
 	</cfsavecontent>
@@ -3016,7 +2999,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	</tr>
 	</table></cfif>
 	</cfsavecontent>
-	<cfreturn zsaHeader&content><!--- --->
+	<cfreturn zsaHeader&content>
 </cffunction>
 
 

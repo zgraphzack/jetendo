@@ -49,6 +49,7 @@
 	ms["Leads"]={ parent:'', label:"Leads"};
 	ms["Manage Leads"]={ parent:'Leads', label:chr(9)&"Manage Leads"};
 	ms["Lead Types"]={ parent:'Leads', label:chr(9)&"Lead Types"};
+	ms["Lead Source Report"]={ parent:'Leads', label:chr(9)&"Lead Source Report"};
 	ms["Lead Templates"]={ parent:'Leads', label:chr(9)&"Lead Templates"};
 	ms["Lead Reports"]={ parent:'Leads', label:chr(9)&"Lead Reports"};
 	ms["Lead Export"]={ parent:'Leads', label:chr(9)&"Lead Export"};

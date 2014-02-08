@@ -237,7 +237,6 @@
 			value=urldecode(value);
 		}
 		</cfscript>
-		<p><a href="/z/server-manager/admin/site/downloadAllSTE?sid=#form.sid#">Click here to bulk generate all STE files.</a></p>
 		<table style="border-spacing:0px; padding:5px;">
 		<tr><td>
 		<h2>Download Dreamweaver STE File</h2>
@@ -259,6 +258,8 @@
 		</form>
 		</td></tr>
 		</table>
+		<hr />
+		<h2><a href="/z/server-manager/admin/site/downloadAllSTE?sid=#form.sid#">Generate All Dreamweaver STE Files</a></h2>
 		<script type="text/javascript">
 		/* <![CDATA[ */
 		function setInstallPath(){
