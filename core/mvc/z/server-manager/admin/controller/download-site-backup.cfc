@@ -24,6 +24,7 @@
 	var db=request.zos.queryObject;
 	var qSite=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.5");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id = #db.param(form.sid)#";
 	qSite=db.execute("qSite");

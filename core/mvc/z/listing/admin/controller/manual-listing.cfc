@@ -21,6 +21,7 @@ still need to add all the meta data fields and photo display
 	var selectStruct=0;
 	var arrImages=0;
 	var manual_listingphoto99=0;
+	application.zcore.functions.zSetPageHelpId("6.1");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Listings");
 	</cfscript>
 	<h2>Manage Manual Listings</h2>
@@ -468,6 +469,7 @@ still need to add all the meta data fields and photo display
 		var tabCom=0;
 		var ts=0;
 		var newAction=0; 
+		application.zcore.functions.zSetPageHelpId("6.2");
   		application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Listings");
 		form.manual_listing_unique_id=application.zcore.functions.zso(form, 'manual_listing_unique_id');
 		if(currentMethod EQ "add"){

@@ -1106,6 +1106,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	<cfscript> 
 	db=request.zos.queryObject; 
 	init();
+	application.zcore.functions.zSetPageHelpId("2.7.5");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	<h2>Sync Tool</h2>

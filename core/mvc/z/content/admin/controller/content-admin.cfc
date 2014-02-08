@@ -423,6 +423,7 @@
 	var selectStruct=0;
 	var currentMethod=form.method;
 	var db=request.zos.queryObject;
+	application.zcore.functions.zSetPageHelpId("2.2");
 	this.init();
 	if(currentMethod EQ 'Add Content'){
 		currentMethod='add';
@@ -1701,6 +1702,7 @@
 	<cfscript>
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form);
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages");
+	application.zcore.functions.zSetPageHelpId("2.1.1");
 	</cfscript>
 	<h2>Import Pages</h2>
 	<p>You can upload a file with separate columns or enter titles to create new pages below.</p>

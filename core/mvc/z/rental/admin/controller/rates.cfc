@@ -133,6 +133,7 @@
 	var arrImages=0;
 	var i=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("7.1");
 	// you must have a group by in your query or it may miss rows
 	ts=structnew();
 	ts.image_library_id_field="rental.rental_image_library_id";
@@ -977,6 +978,7 @@
 	var thisYear=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("7.2");
 	form.rental_id=application.zcore.functions.zso(form, 'rental_id');
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_id = #db.param(form.rental_id)# and 

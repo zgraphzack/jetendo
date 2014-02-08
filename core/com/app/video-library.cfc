@@ -294,6 +294,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	var embedCode=0;
 	var ts=0;
 	var qF=0;
+	application.zcore.functions.zSetPageHelpId("2.8");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library");
 
 	var db=request.zos.queryObject;

@@ -635,6 +635,7 @@ if(form.image_file EQ false or left(form.image_file,6) EQ 'Error:'){
 	var ts=0;
 	var width=0;
 	var currentMethod=form.method;
+	application.zcore.functions.zSetPageHelpId("2.5.2");
 	form.image_size_width=request.zos.globals.maxImageWidth;
 	form.image_size_height=5000;
 	variables.init();
@@ -756,6 +757,7 @@ Overwrite Existing Files? <input type="radio" name="image_overwrite" value="1" <
 
 <cffunction name="addFile" localmode="modern" access="remote" roles="member">
 <cfscript>
+	application.zcore.functions.zSetPageHelpId("2.5.1");
 	var currentMethod=form.method;
 	variables.init();
 if(structkeyexists(form, 'd') EQ false){
@@ -793,6 +795,7 @@ If you just want to add an file, <a href="/z/admin/files/addFile?d=#URLEncodedFo
 	var pos=0;
 	var fn=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.5.5");
 p=reverse(form.f);
 pos=find("/",p);
 if(pos NEQ 0){
@@ -847,6 +850,7 @@ Be careful not to delete files unless you have removed all links to them.<br />
 <cfscript>
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.5.3");
 if(structkeyexists(form, 'd') EQ false){
     form.d='';
 }
@@ -986,6 +990,7 @@ writeoutput('File Name: #getfilefrompath(form.f)# | Resolution: '&local.imageSiz
 	var arrImages=0;
 	var dirSortString=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.5");
 application.zcore.functions.zStatusHandler(request.zsid);
 application.zcore.template.appendTag("meta",'<style type="text/css">
 /* <![CDATA[ */ .fi-1 {

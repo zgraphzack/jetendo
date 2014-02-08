@@ -90,6 +90,7 @@
 	var i=0;
 	var cts=0;
 	var arrKeys=0;
+	application.zcore.functions.zSetPageHelpId("6.4");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Search Filter");
 	var db=request.zos.queryObject;
     if(application.zcore.app.siteHasApp("listing") EQ false){

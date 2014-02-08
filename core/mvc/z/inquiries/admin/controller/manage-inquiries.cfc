@@ -254,6 +254,7 @@
 	var qMember=0;
 	var arrId=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.1");
 	if(structkeyexists(form, 'leadcontactfilter')){
 		session.leadcontactfilter=form.leadcontactfilter;		
 	}else if(isDefined('session.leadcontactfilter') EQ false){

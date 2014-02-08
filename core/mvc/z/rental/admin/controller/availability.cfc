@@ -5,6 +5,7 @@
  	var db=request.zos.queryObject;
 	var selectStruct=0;
 	var qProperties=0;
+	application.zcore.functions.zSetPageHelpId("7.3");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Calendars");
 	</cfscript>
 	<h2 style="padding:5px; padding-left:0px; margin:0px;">Select a rental to edit its availability.</h2>

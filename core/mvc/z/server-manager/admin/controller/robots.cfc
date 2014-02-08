@@ -213,6 +213,7 @@
 	var qGroup=0;
 	var qin=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.9.1.1");
 	db.sql="SELECT * FROM #db.table("robots_global", request.zos.zcoreDatasource)# robots_global 
 	WHERE robots_global_id = #db.param('1')#";
 	qGroup=db.execute("qGroup");
@@ -255,6 +256,7 @@ Rules:</td>
 	var qSite=0;
 	var qin=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.9");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id = #db.param(form.sid)#";
 	qSite=db.execute("qSite");
@@ -305,6 +307,7 @@ Rules:</td>
 	var selectStruct=0;
 	var qSites=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.9.1");
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript> 
 	<table style="width:100%; border-spacing:0px;" class="table-white">

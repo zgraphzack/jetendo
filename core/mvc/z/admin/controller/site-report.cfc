@@ -817,6 +817,7 @@ more?
 	var searchNav=0;
 	var db=0;
 	var oneWeekAgo=0;
+	application.zcore.functions.zSetPageHelpId("2.6");
 
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Problem Link Report");	
 	db=request.zos.queryObject;

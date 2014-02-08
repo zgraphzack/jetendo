@@ -96,6 +96,7 @@
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.4.6"); 
 	if(request.zos.isTestServer EQ false){
 		writeoutput('Deploy can''t be run on a production server since it is designed to deploy an archive from the test server to the production server. 
 			<a href="#request.zos.testAdminDomain#/z/server-manager/admin/deploy/index">Go to test server deploy page</a>');

@@ -4,6 +4,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
+	application.zcore.functions.zSetPageHelpId("8.1.2");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	

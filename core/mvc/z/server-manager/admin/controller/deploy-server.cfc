@@ -221,6 +221,7 @@
 	var currentMethod=form.method;
 	var htmlEditor=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.4.2");
 	if(application.zcore.functions.zso(form,'deploy_server_id') EQ ''){
 		form.deploy_server_id = -1;
 	}
@@ -285,7 +286,8 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
-	variables.init(); 
+	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.4.1"); 
 	application.zcore.functions.zStatusHandler(request.zsid); 
 	db.sql="SELECT * 
 	FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server   

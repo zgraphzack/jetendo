@@ -32,6 +32,7 @@
 	var qpages=0;
 	var qgroups=0;
 	var selectStruct=0;
+	application.zcore.functions.zSetPageHelpId("2.1.2");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Content Permissions"); 
 	db=request.zos.queryObject;
 	if(structcount(application.zcore.app.getAppData("content")) EQ 0){

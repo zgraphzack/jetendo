@@ -441,6 +441,7 @@
 		var local=structnew();
 		var db=request.zos.queryObject;
 		var ___zr=0;
+		application.zcore.functions.zSetPageHelpId("8.1.1.7");
 		application.zcore.functions.zStatusHandler(request.zsid);
 		</cfscript>
 		<cfsavecontent variable="db.sql">
@@ -528,7 +529,7 @@
 		var db=request.zos.queryObject;
 		var ___zr=0;
 		var local=structnew();
-		
+		application.zcore.functions.zSetPageHelpId("8.2.2"); 
 		application.zcore.functions.zStatusHandler(request.zsid);
 		</cfscript>
 		<cfsavecontent variable="db.sql">
@@ -669,6 +670,7 @@
 		var db=request.zos.queryObject;
 		var local=structnew();
 		var pagenav=0;
+		application.zcore.functions.zSetPageHelpId("8.2.2.1"); 
 		form.app_x_site_id=application.zcore.functions.zso(form, 'app_x_site_id',true);
 		form.app_id=application.zcore.functions.zso(form, 'app_id',true);
 		form.sid=application.zcore.functions.zso(form, 'sid',true);
@@ -748,6 +750,7 @@
 		var enabledScript=0;
 		var d=0;
 		var cancelLink=0;
+		application.zcore.functions.zSetPageHelpId("8.2.2.1"); 
 		if(structkeyexists(form, 'configMethod') EQ false){
 			application.zcore.status.setStatus(request.zsid,"You must specify an application configuration method.",false,true);
 			application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
@@ -850,6 +853,7 @@
 		var qsites=0;
 		var db=request.zos.queryObject;
 		var local=structnew();
+		application.zcore.functions.zSetPageHelpId("8.2"); 
 		application.zcore.functions.zStatusHandler(request.zsid);
 		</cfscript>
         <cfsavecontent variable="db.sql">
@@ -1137,6 +1141,7 @@
 		var qdata=0;
 		var pagenav=0;
 		var db=request.zos.queryObject;
+		application.zcore.functions.zSetPageHelpId("8.2.1"); 
 		if(structkeyexists(form, 'app_id') EQ false){
 			form.app_id='0';
 		}

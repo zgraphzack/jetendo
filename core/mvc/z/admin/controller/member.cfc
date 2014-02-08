@@ -472,6 +472,7 @@
 	var openIdCom=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("5.2");
 	form.user_id=application.zcore.functions.zso(form, 'user_id');
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user  
 	WHERE user.user_id = #db.param(form.user_id)# and 
@@ -893,6 +894,7 @@
 	var searchNav=0;
 	var qCount=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("5.1");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db.sql="SELECT count(user_id) count FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE 
@@ -1053,6 +1055,7 @@
 	var row=0;
 	var qOption=0;
 	var db=request.zos.queryObject;  
+	application.zcore.functions.zSetPageHelpId("5.3");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users");	
 	rs=this.getImportUserFields();
 	application.zcore.functions.zStatusHandler(request.zsid);

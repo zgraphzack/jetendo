@@ -106,6 +106,7 @@
 	var hCom=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.2");
 	form.inquiries_id = application.zcore.functions.zso(form, 'inquiries_id',false,-1);
 	</cfscript>
 	<cfsavecontent variable="db.sql"> SELECT *

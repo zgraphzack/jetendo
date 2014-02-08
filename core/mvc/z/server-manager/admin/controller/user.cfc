@@ -59,6 +59,7 @@
 	var qUser=0;
 	var db=request.zos.queryObject;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.2");
 	db.sql="SELECT site_id, user_first_name, user_last_name, user_ip_blocked 
 	FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(application.zcore.functions.zso(form, 'user_id'))# and 
@@ -97,6 +98,7 @@
 	var db=request.zos.queryObject;
 	var qUser=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.2");
 	db.sql=" SELECT site_id, user_first_name, user_last_name FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(application.zcore.functions.zso(form, 'user_id'))# and 
 	site_id = #db.param(form.sid)# ";
@@ -345,6 +347,7 @@
 	var pid=0;
 	var i=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6.2");
 	db.sql="SELECT user_group.* 
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE 
@@ -435,6 +438,7 @@
 	var qGroup=0;
 	var openIdCom=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.1");
 	form.user_id = application.zcore.functions.zso(form, 'user_id',false,-1);
 	db.sql=" SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(form.user_id)# and 
@@ -614,6 +618,7 @@
 	var qGroup=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6.3");
 	form.user_group_id = application.zcore.functions.zso(form, 'user_group_id',false,-1);
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE user_group_id = #db.param(form.user_group_id)# and 
@@ -656,6 +661,7 @@
 	var usergroupfriendlyname=0;
 	var inputStruct=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6.1");
 	application.zcore.functions.zStatusHandler(Request.zsid);
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE user_group_id = #db.param(application.zcore.functions.zso(form, 'user_group_id'))# and 
@@ -751,6 +757,7 @@
 	var inputStruct=0;
 	var rolloverCode=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.6");
 	application.zcore.functions.zStatusHandler(Request.zsid);
 	db.sql=" SELECT *
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 

@@ -8,6 +8,7 @@
 	var arrLine=arraynew(1);
 	var filterSQL1="";
 	var filterSQL2="";
+	application.zcore.functions.zSetPageHelpId("4.9");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Mailing List Export");	
 	if(structkeyexists(form,'alldata') EQ false){
 		filterSQL1=" and user_pref_email='1'";

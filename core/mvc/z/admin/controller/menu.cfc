@@ -63,6 +63,7 @@
 	var arrS=0;
 	var qS=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3.6");
 	</cfscript>
 	<h2>Copy Menu</h2>
 	<cfif application.zcore.functions.zso(form, 'newname') EQ "">
@@ -832,6 +833,7 @@
 	var qMenuProps=0;
 	var qMenuItemLinks=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3.4");
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
@@ -895,6 +897,7 @@
 	var qMenuItems=0;
 	var qMenuProps=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3");
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
@@ -961,6 +964,7 @@
 	var qMenuItemLink=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3.5");
 	form.menu_button_id=application.zcore.functions.zso(form, 'menu_button_id');
 	form.menu_button_link_id=application.zcore.functions.zso(form, 'menu_button_link_id');	
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
@@ -1050,6 +1054,7 @@
 	var currentMethod=form.method;
 	var qMenuItem=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3.3");
 	form.menu_id=application.zcore.functions.zso(form, 'menu_id');
 	form.menu_button_id=application.zcore.functions.zso(form, 'menu_button_id');
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
@@ -1289,6 +1294,7 @@
 	var currentMethod=form.method;
 	var qMenu=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3.1");
 	form.menu_id=application.zcore.functions.zso(form, 'menu_id');
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE menu_id = #db.param(form.menu_id)# AND site_id = #db.param(request.zos.globals.id)#";
 	qMenu=db.execute("qMenu");
@@ -1638,6 +1644,7 @@
 	var db=request.zos.queryObject;
 	var qSite=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3");
 	</cfscript>
 	<h2>Manage Menus</h2>
 	<a href="/z/admin/menu/add">Add Menu</a><br />
@@ -1681,6 +1688,7 @@
 	var ts=0;
 	var qView=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.3.7");
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE menu.menu_id = #db.param(form.menu_id)# AND menu.site_id = #db.param(request.zos.globals.id)#";
 	qView=db.execute("qView");
 	</cfscript>

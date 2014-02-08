@@ -35,6 +35,7 @@
 	var inputStruct=0;
 	var qCount=0;
 	var rollOverCode=0;
+    application.zcore.functions.zSetPageHelpId("6.5");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Saved Listing Searches");
 		var db=request.zos.queryObject;
     application.zcore.functions.zStatusHandler(Request.zsid);

@@ -35,6 +35,7 @@
 	var db=request.zos.queryObject;
 	var qProp=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("7.6");
 	db.sql="SELECT *  FROM #request.zos.queryObject.table("rental_amenity", request.zos.zcoreDatasource)# rental_amenity 
 	WHERE
 	rental_amenity.site_id = #db.param(request.zOS.globals.id)# 
@@ -195,6 +196,7 @@
 	var qRate=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("7.7");
 	form.rental_amenity_id=application.zcore.functions.zso(form, 'rental_amenity_id',true);
 	db.sql="SELECT * FROM #request.zos.queryObject.table("rental_amenity", request.zos.zcoreDatasource)# rental_amenity 
 	WHERE rental_amenity_id = #db.param(form.rental_amenity_id)# and 

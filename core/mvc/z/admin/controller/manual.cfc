@@ -90,6 +90,14 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
 		arrayAppend(arrS, { id:"__2.1", url:"/manage-pages.html", title:"Manage Pages"});
 	}
+	if(showAll or application.zcore.user.checkServerAccess()){
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+			arrayAppend(arrS, { id:"___2.1.1", url:"/import-pages.html", title:"Import Pages"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+			arrayAppend(arrS, { id:"___2.1.2", url:"/manage-page-permissions.html", title:"Manage Page Permissions"});
+		}
+	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
 		arrayAppend(arrS, { id:"__2.2", url:"/add-edit-page.html", title:"Add/Edit Page"});
 	}
@@ -111,6 +119,12 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
 		arrayAppend(arrS, { id:"___2.3.5", url:"/add-edit-menu-button-links.html", title:"Add/Edit Menu Button Links"});
 	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.6", url:"/copy-menu.html", title:"Copy Menu"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.7", url:"/view-menu.html", title:"View Menu"});
+	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
 		arrayAppend(arrS, { id:"__2.4", url:"/manage-slideshows.html", title:"Manage Slideshows"});
 	}
@@ -129,11 +143,14 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
 		arrayAppend(arrS, { id:"___2.4.5", url:"/add-edit-slideshow-photo.html", title:"Add/Edit Slideshow Photo"});
 	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"___2.4.6", url:"/copy-slideshow.html", title:"Copy Slideshow"});
+	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
 		arrayAppend(arrS, { id:"__2.5", url:"/files-and-images.html", title:"Files And Images"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
-		arrayAppend(arrS, { id:"___2.5.1", url:"/add-edit-file.html", title:"Add/Edit File"});
+		arrayAppend(arrS, { id:"___2.5.1", url:"/add-file.html", title:"Add File"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
 		arrayAppend(arrS, { id:"___2.5.2", url:"/add-edit-image.html", title:"Add/Edit Image"});
@@ -158,9 +175,8 @@ zdoc css style documentation
 	}
 	if(showAll or application.zcore.user.checkServerAccess()){
 		arrayAppend(arrS, { id:"___2.7.1", url:"/manage-site-option-groups.html", title:"Manage Site Option Groups"});
-		arrayAppend(arrS, { id:"____2.7.1.1", url:"/manage-site-option-group-import.html", title:"Import"});
-		arrayAppend(arrS, { id:"____2.7.1.2", url:"/manage-site-option-group-options.html", title:"Manage Site Option Group Options"});
-		arrayAppend(arrS, { id:"____2.7.1.3", url:"/copy-site-option-group.html", title:"Copy Site Option Group"});
+		arrayAppend(arrS, { id:"____2.7.1.1", url:"/manage-site-option-group-import.html", title:"Import Site Option Group Data"});
+		arrayAppend(arrS, { id:"____2.7.1.2", url:"/copy-site-option-group.html", title:"Copy Site Option Group"});
 		arrayAppend(arrS, { id:"____2.7.1.3", url:"/manage-site-option-group-display-code.html", title:"Display Code"});
 		arrayAppend(arrS, { id:"___2.7.2", url:"/add-edit-site-option-group.html", title:"Add/Edit Site Option Group"});
 		arrayAppend(arrS, { id:"___2.7.3", url:"/manage-site-options.html", title:"Manage Site Options"});
@@ -187,6 +203,9 @@ zdoc css style documentation
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
 		arrayAppend(arrS, { id:"__3.3", url:"/manage-blog-comments.html", title:"Manage Comments"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		arrayAppend(arrS, { id:"___3.3.1", url:"/manage-blog-comments.html", title:"Review Comment"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Categories")){
 		arrayAppend(arrS, { id:"__3.4", url:"/manage-blog-categories.html", title:"Manage Blog Categories"});
@@ -219,25 +238,25 @@ zdoc css style documentation
 		arrayAppend(arrS, { id:"__4.3", url:"/manage-lead-types.html", title:"Manage Lead Types"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Types")){
-		arrayAppend(arrS, { id:"__4.3", url:"/add-edit-lead-type.html", title:"Add/Edit Lead Type"});
+		arrayAppend(arrS, { id:"__4.4", url:"/add-edit-lead-type.html", title:"Add/Edit Lead Type"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Templates")){
-		arrayAppend(arrS, { id:"__4.4", url:"/manage-lead-template-emails.html", title:"Manage Lead Template Emails"});
+		arrayAppend(arrS, { id:"__4.5", url:"/manage-lead-template-emails.html", title:"Manage Lead Template Emails"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Templates")){
-		arrayAppend(arrS, { id:"__4.5", url:"/add-edit-lead-template-email.html", title:"Add/Edit Lead Template Email"});
+		arrayAppend(arrS, { id:"__4.6", url:"/add-edit-lead-template-email.html", title:"Add/Edit Lead Template Email"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Export")){
-		arrayAppend(arrS, { id:"__4.6", url:"/export-all-leads-as-csv.html", title:"Export All Leads As CSV"});
+		arrayAppend(arrS, { id:"__4.7", url:"/export-all-leads-as-csv.html", title:"Export All Leads As CSV"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Source Report")){
-		arrayAppend(arrS, { id:"__4.7", url:"/lead-source-report.html", title:"Lead Source Report"});
+		arrayAppend(arrS, { id:"__4.8", url:"/lead-source-report.html", title:"Lead Source Report"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Mailing List Export")){
-		arrayAppend(arrS, { id:"__4.8", url:"/mailing-list-export.html", title:"Mailing List Export"});
+		arrayAppend(arrS, { id:"__4.9", url:"/mailing-list-export.html", title:"Mailing List Export"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Reports")){
-		arrayAppend(arrS, { id:"__4.9", url:"/search-engine-keyword-lead-report.html", title:"Search Engine Keyword Lead Report"});
+		arrayAppend(arrS, { id:"__4.10", url:"/search-engine-keyword-lead-report.html", title:"Search Engine Keyword Lead Report"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Users")){
 		arrayAppend(arrS, { id:"_5", url:"/users.html", title:"Users"});
@@ -248,11 +267,14 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Users")){
 		arrayAppend(arrS, { id:"__5.2", url:"/add-edit-user.html", title:"Add/Edit User"});
 	}
-	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
-		arrayAppend(arrS, { id:"__5.3", url:"/manage-offices.html", title:"Manage Offices"});
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Users")){
+		arrayAppend(arrS, { id:"__5.3", url:"/import-users.html", title:"Import Users"});
 	}
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
-		arrayAppend(arrS, { id:"__5.4", url:"/add-edit-office.html", title:"Add/Edit Office"});
+		arrayAppend(arrS, { id:"__5.4", url:"/manage-offices.html", title:"Manage Offices"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
+		arrayAppend(arrS, { id:"__5.5", url:"/add-edit-office.html", title:"Add/Edit Office"});
 	}
 	if(showAll or application.zcore.app.siteHasApp("listing")){
 		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Listings")){
@@ -308,30 +330,28 @@ zdoc css style documentation
 	}
 	if(showAll or application.zcore.user.checkServerAccess()){
 		arrayAppend(arrS, { id:"_8", url:"/server-manager.html", title:"Server Manager"});
-		arrayAppend(arrS, { id:"__8.1", url:"/server-manager-sites.html", title:"Manage Sites"});
-		arrayAppend(arrS, { id:"___8.1.1", url:"/server-manager-site-dashboard.html", title:"Select Site"});
-		arrayAppend(arrS, { id:"____8.1.1.1", url:"/server-manager-site-dashboard.html", title:"Dashboard"});
-		arrayAppend(arrS, { id:"____8.1.1.2", url:"/server-manager-site-globals.html", title:"Globals"});
-		arrayAppend(arrS, { id:"____8.1.1.3", url:"/server-manager-site-domain-redirects.html", title:"Domain Redirects"});
-		arrayAppend(arrS, { id:"_____8.1.1.3.1", url:"/server-manager-site-add-edit-domain-redirect.html", title:"Add/Edit Domain Redirect"});
-		arrayAppend(arrS, { id:"____8.1.1.4", url:"/server-manager-site-deploy.html", title:"Deploy"});
-		arrayAppend(arrS, { id:"_____8.1.1.4.1", url:"/server-manager-edit-site-deployment-configuration.html", title:"Edit Site Deployment Configuration"});
-		arrayAppend(arrS, { id:"____8.1.1.5", url:"/server-manager-site-dreamweaver-ste.html", title:"Dreamweaver STE"});
-		arrayAppend(arrS, { id:"_____8.1.1.5.1", url:"/server-manager-site-generate-all-dreamweaver-ste-files.html", title:"Generate All Dreamweaver STE Files"});
-		arrayAppend(arrS, { id:"____8.1.1.6", url:"/server-manager-site-backup.html", title:"Backup"});
-		arrayAppend(arrS, { id:"____8.1.1.7", url:"/server-manager-site-users.html", title:"Users"});
-		arrayAppend(arrS, { id:"_____8.1.1.7.1", url:"/server-manager-site-view-users-in-user-group.html", title:"View Users in User Group"});
-		arrayAppend(arrS, { id:"______8.1.1.7.1.1", url:"/server-manager-site-add-edit-user.html", title:"Add/Edit User"});
-		arrayAppend(arrS, { id:"______8.1.1.7.1.2", url:"/server-manager-site-activate-deactive-user.html", title:"Activate/Deactive User"});
-		arrayAppend(arrS, { id:"_____8.1.1.7.2", url:"/server-manager-site-permissions.html", title:"Permissions"});
-		arrayAppend(arrS, { id:"_____8.1.1.7.3", url:"/server-manager-site-manage-user-groups.html", title:"Manage User Groups"});
-		arrayAppend(arrS, { id:"_____8.1.1.7.4", url:"/server-manager-site-add-edit-user-group.html", title:"Add/Edit User Group"});
-		arrayAppend(arrS, { id:"____8.1.1.8", url:"/server-manager-site-applications.html", title:"Applications"});
-		arrayAppend(arrS, { id:"____8.1.1.9", url:"/server-manager-site-rewrite-rules.html", title:"Rewrite Rules"});
-		arrayAppend(arrS, { id:"____8.1.1.10", url:"/server-manager-site-robots-txt.html", title:"Robots.txt"});
-		arrayAppend(arrS, { id:"_____8.1.1.10.1", url:"/server-manager-site-robots-txt.html", title:"Manage Robots.txt"});
-		arrayAppend(arrS, { id:"______8.1.1.10.1.1", url:"/server-manager-edit-global-robots-txt.html", title:"Edit Server Manager Global Robots.txt"});
-		arrayAppend(arrS, { id:"____8.1.1.11", url:"/server-manager-site-hardcoded-urls.html", title:"Hardcoded URLs"});
+		arrayAppend(arrS, { id:"__8.1", url:"/server-manager-sites.html", title:"Sites"});
+		arrayAppend(arrS, { id:"___8.1.1", url:"/server-manager-site-dashboard.html", title:"Site Dashboard"});
+		arrayAppend(arrS, { id:"____8.1.1.1", url:"/server-manager-site-globals.html", title:"Globals"});
+		arrayAppend(arrS, { id:"____8.1.1.2", url:"/server-manager-site-domain-redirects.html", title:"Domain Redirects"});
+		arrayAppend(arrS, { id:"_____8.1.1.2.1", url:"/server-manager-site-add-edit-domain-redirect.html", title:"Add/Edit Domain Redirect"});
+		arrayAppend(arrS, { id:"____8.1.1.3", url:"/server-manager-site-deploy.html", title:"Deploy"});
+		arrayAppend(arrS, { id:"_____8.1.1.3.1", url:"/server-manager-edit-site-deployment-configuration.html", title:"Edit Site Deployment Configuration"});
+		arrayAppend(arrS, { id:"____8.1.1.4", url:"/server-manager-site-dreamweaver-ste.html", title:"Dreamweaver STE"});
+		arrayAppend(arrS, { id:"_____8.1.1.4.1", url:"/server-manager-site-generate-all-dreamweaver-ste-files.html", title:"Generate All Dreamweaver STE Files"});
+		arrayAppend(arrS, { id:"____8.1.1.5", url:"/server-manager-site-backup.html", title:"Backup"});
+		arrayAppend(arrS, { id:"____8.1.1.6", url:"/server-manager-site-users.html", title:"Users"});
+		arrayAppend(arrS, { id:"_____8.1.1.6.1", url:"/server-manager-site-view-users-in-user-group.html", title:"View Users in User Group"});
+		arrayAppend(arrS, { id:"______8.1.1.6.1.1", url:"/server-manager-site-add-edit-user.html", title:"Add/Edit User"});
+		arrayAppend(arrS, { id:"______8.1.1.6.1.2", url:"/server-manager-site-activate-deactivate-user.html", title:"Activate/Deactivate User"});
+		arrayAppend(arrS, { id:"_____8.1.1.6.2", url:"/server-manager-site-permissions.html", title:"Permissions"});
+		arrayAppend(arrS, { id:"_____8.1.1.6.3", url:"/server-manager-site-add-edit-user-group.html", title:"Add/Edit User Group"});
+		arrayAppend(arrS, { id:"____8.1.1.7", url:"/server-manager-site-applications.html", title:"Applications"});
+		arrayAppend(arrS, { id:"____8.1.1.8", url:"/server-manager-site-rewrite-rules.html", title:"Rewrite Rules"});
+		arrayAppend(arrS, { id:"____8.1.1.9", url:"/server-manager-site-robots-txt.html", title:"Robots.txt"});
+		arrayAppend(arrS, { id:"_____8.1.1.9.1", url:"/server-manager-site-robots-txt.html", title:"Manage Robots.txt"});
+		arrayAppend(arrS, { id:"______8.1.1.9.1.1", url:"/server-manager-edit-global-robots-txt.html", title:"Edit Server Manager Global Robots.txt"});
+		arrayAppend(arrS, { id:"____8.1.1.10", url:"/server-manager-site-hardcoded-urls.html", title:"Hardcoded URLs"});
 		arrayAppend(arrS, { id:"___8.1.2", url:"/server-manager-import-site.html", title:"Import Site"});
 		arrayAppend(arrS, { id:"___8.1.3", url:"/server-manager-import-global-database.html", title:"Import Global Database"});
 		arrayAppend(arrS, { id:"__8.2", url:"/server-manager-applications.html", title:"Applications"});
@@ -339,6 +359,7 @@ zdoc css style documentation
 		arrayAppend(arrS, { id:"___8.2.2", url:"/server-manager-manage-application-instances.html", title:"Manage Application Instances"});
 		arrayAppend(arrS, { id:"____8.2.2.1", url:"/server-manager-add-edit-application-instance.html", title:"Add/Edit Application Instance"});
 		arrayAppend(arrS, { id:"____8.2.2.2", url:"/server-manager-edit-application-options.html", title:"Edit Application Options"});
+		// add a options documentation page for each app
 		arrayAppend(arrS, { id:"__8.3", url:"/server-manager-logs.html", title:"Logs"});
 		arrayAppend(arrS, { id:"___8.3.1", url:"/server-manager-recent-request-history.html", title:"Recent Request History"});
 		arrayAppend(arrS, { id:"___8.3.2", url:"/server-manager-abusive-ips.html", title:"Abusive IPs"});

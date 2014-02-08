@@ -71,6 +71,7 @@
 	var qOption=0;
 	var db=request.zos.queryObject;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.7.1.1");
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
@@ -681,6 +682,7 @@
 	var qOptionGroup=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.7.4");
 	form.site_option_id=application.zcore.functions.zso(form, 'site_option_id');
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
@@ -1001,6 +1003,7 @@
 	var q1=0;
 	var curParentId=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.7.3");
     application.zcore.functions.zstatusHandler(request.zsid);
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id',true);
     db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
@@ -3163,6 +3166,7 @@ Define this function in another CFC to override the default email format
 	var ts=0;
 	var site_option_group_id=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.7");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	if(structkeyexists(form, 'return') and request.zos.CGI.HTTP_REFERER NEQ ""){
 		StructInsert(session, "siteoption_return", request.zos.CGI.HTTP_REFERER, true);		

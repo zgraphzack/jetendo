@@ -132,6 +132,7 @@
 	var qTypes=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.6");
 	form.sid=application.zcore.functions.zGetSiteIdFromSiteIdType(application.zcore.functions.zso(form, 'siteIdType',false,1));
 	</cfscript>
 	<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template 
@@ -248,6 +249,7 @@
 	var db=request.zos.queryObject;
 	var qTypes=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.5");
 	</cfscript>
 	<cfsavecontent variable="db.sql"> 
 	SELECT *, if(inquiries_lead_template_x_site.site_id IS NULL,#db.param(0)#,#db.param(1)#) hideTemplate 

@@ -744,6 +744,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	var db=request.zos.queryObject;
     	var searchNav=0;
 	this.init();
+    application.zcore.functions.zSetPageHelpId("3.1");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
 	if(structkeyexists(form, 'searchText')){
 		session.zos.blogSearchText=form.searchText;
@@ -1117,6 +1118,7 @@ ts.struct=form;
 	var searchStruct=0;
 	var searchNAV=0;
 	this.init();
+    application.zcore.functions.zSetPageHelpId("3.6");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
 	
 	if(application.zcore.functions.zso(form, 'ListTagID') EQ ''){ 
@@ -1257,6 +1259,7 @@ ts.struct=form;
     var newAction=0;
     var qEdit=0;
 	var db=request.zos.queryObject;
+    application.zcore.functions.zSetPageHelpId("3.7");
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
     form.blog_tag_id=application.zcore.functions.zso(form, 'blog_tag_id',false,-1);
@@ -1403,6 +1406,7 @@ tabCom.enableSaveButtons();
 	var cancelURL=0;
 	var currentMethod=form.method;
 	this.init();
+    application.zcore.functions.zSetPageHelpId("3.2");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
 	if(structkeyexists(form, 'blog_event')){
 		local.blogEventChecked=true;
@@ -1903,13 +1907,14 @@ tabCom.enableSaveButtons();
 	<cfscript>
     var local=structnew();
     var qc=0;
-var qCount=0;
-var viewlink=0;
-var db=request.zos.queryObject;
+    var qCount=0;
+    var viewlink=0;
+    var db=request.zos.queryObject;
     var qcomments=0;
     var qr=0;
     form.blog_id=application.zcore.functions.zso(form, 'blog_id');
 	this.init();
+    application.zcore.functions.zSetPageHelpId("3.3");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
   application.zcore.functions.zstatushandler(request.zsid, true, false, form);
     </cfscript>
@@ -2051,6 +2056,7 @@ local.blogIdBackup=form.blog_id;
 	var db=request.zos.queryObject;
 	var qlist=0;
 	this.init();
+    application.zcore.functions.zSetPageHelpId("3.4");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories"); 
 	</cfscript>
     <cfsavecontent variable="db.sql">
@@ -2106,6 +2112,7 @@ local.blogIdBackup=form.blog_id;
 	var cancelURL=0;
 	var tabcom=0;
 	var qedit=0;
+    application.zcore.functions.zSetPageHelpId("3.5");
     form.blog_category_id=application.zcore.functions.zso(form, 'blog_category_id');
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories"); 
@@ -2256,6 +2263,7 @@ tabCom.enableSaveButtons();
 	var db=request.zos.queryObject;
 	var start=0;
 	this.init();
+    application.zcore.functions.zSetPageHelpId("3.1");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
     form.blog_comment_id=application.zcore.functions.zso(form, 'blog_comment_id');
 	</cfscript>

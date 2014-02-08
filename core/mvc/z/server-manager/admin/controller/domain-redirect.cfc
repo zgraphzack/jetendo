@@ -109,6 +109,7 @@
 	var currentMethod=form.method;
 	var htmlEditor=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("8.1.1.2.1");
 	if(application.zcore.functions.zso(form,'domain_redirect_id') EQ ''){
 		form.domain_redirect_id = -1;
 	}
@@ -182,6 +183,7 @@
 	var i=0;
 	var rs=0;
 	variables.init(); 
+	application.zcore.functions.zSetPageHelpId("8.1.1.2");
 	application.zcore.functions.zStatusHandler(request.zsid); 
 	db.sql="SELECT * 
 	FROM #db.table("domain_redirect", request.zos.zcoreDatasource)# domain_redirect  

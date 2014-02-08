@@ -1348,6 +1348,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var i=0;
 	var cffileresult=0;
 	var rd=gethttprequestdata();
+	application.zcore.functions.zSetPageHelpId("2.9");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library");
 	form.image_library_id=qLibrary.image_library_id;
 	request.zos.inMemberArea=true;

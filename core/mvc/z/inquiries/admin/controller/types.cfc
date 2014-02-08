@@ -131,6 +131,7 @@
 	var qInquiryCheck=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.2");
 	form.siteIdType=application.zcore.functions.zso(form,'siteIdType',false,1);
 	form.sid=application.zcore.functions.zGetSiteIdFromSiteIdType(form.siteIdType);
 	db.sql="SELECT * from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
@@ -186,6 +187,7 @@
 	var siteIdType=0;
 	var qInquiryCheck=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.3");
 	</cfscript>
 	<cfsavecontent variable="db.sql"> 
 	SELECT * from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 

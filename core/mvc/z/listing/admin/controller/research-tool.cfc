@@ -84,21 +84,22 @@ qResult=zMLSGroupSearch(ts);
 
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 
-<cfscript>
-var arrTSVRow=0;
-var arrRow=0;
-var qResult=0;
-var arrTSV=0;
-var lookupStruct=0;
-var skiprow=0;
-var i=0;
-var c=0;
-var c3=0;
-var ts=0;
-var c2=0;
-application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Research Tool");
-form.action=application.zcore.functions.zso(form, 'action', false,'list');
-</cfscript>
+	<cfscript>
+	var arrTSVRow=0;
+	var arrRow=0;
+	var qResult=0;
+	var arrTSV=0;
+	var lookupStruct=0;
+	var skiprow=0;
+	var i=0;
+	var c=0;
+	var c3=0;
+	var ts=0;
+	var c2=0;
+	application.zcore.functions.zSetPageHelpId("6.3");
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Research Tool");
+	form.action=application.zcore.functions.zso(form, 'action', false,'list');
+	</cfscript>
 <cfif form.action EQ "download">
 	
 </cfif>

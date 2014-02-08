@@ -14,6 +14,7 @@
 	var selectStruct=0;
 	var db=request.zos.queryObject;
 	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+    application.zcore.functions.zSetPageHelpId("4.1.2");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Leads");
 	form.inquiries_id=application.zcore.functions.zso(form, 'inquiries_id');
 	form.zPageId=application.zcore.functions.zso(form, 'zPageId');

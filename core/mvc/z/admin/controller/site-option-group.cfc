@@ -130,6 +130,7 @@
 
 <cffunction name="displayGroupCode" access="remote" localmode="modern" roles="member"> 
 	<cfscript>
+	application.zcore.functions.zSetPageHelpId("2.7.1.3");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	request.zos.whiteSpaceEnabled=true;
 	application.zcore.template.setPlainTemplate();
@@ -413,6 +414,8 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var ts=0;
+
+	application.zcore.functions.zSetPageHelpId("2.7.1.2");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where site_option_group_id = #db.param(form.site_option_group_id)# and 
@@ -745,6 +748,7 @@
 	var q1=0;
 	var i=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.7.1");
 	application.zcore.functions.zstatushandler(request.zsid);
 	form.site_option_group_parent_id=application.zcore.functions.zso(form, 'site_option_group_parent_id',true);
 	if(form.site_option_group_parent_id NEQ 0){
@@ -1069,6 +1073,7 @@
 	var htmlEditor=0;
 	var selectStruct=0;
 	var ts=0;
+	application.zcore.functions.zSetPageHelpId("2.7.2");
 	
 	var currentMethod=form.method;
 	variables.init();

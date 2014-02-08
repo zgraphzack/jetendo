@@ -80,6 +80,7 @@
 	var qT=0;
 	var qS2=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.4.6");
 	</cfscript>
 	<h2>Copy Slideshow</h2>
 	<cfif application.zcore.functions.zso(form, 'newname') EQ "">
@@ -774,6 +775,7 @@
 	var newaction=0;
 	var qTabData=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.4.3");
     form.slideshow_tab_id=application.zcore.functions.zso(form, 'slideshow_tab_id');
     if(structkeyexists(form, 'return')){
     StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
@@ -1201,6 +1203,7 @@
 	var currentMethod=form.method;
 	var db=request.zos.queryObject;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.4.5");
     form.slideshow_image_id=application.zcore.functions.zso(form, 'slideshow_image_id');
     if(structkeyexists(form, 'return')){
     	StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
@@ -1441,6 +1444,7 @@
 	var qSlideshow=0;
 	var currentMethod=form.method;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.4.1");
 	form.slideshow_id=application.zcore.functions.zso(form,'slideshow_id');
 	db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 	WHERE slideshow_id = #db.param(form.slideshow_id)# and 
@@ -1741,6 +1745,7 @@
 	var qImages=0;
 	var qS=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.4.4");
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	db.sql="SELECT * FROM #db.table("slideshow_image", request.zos.zcoreDatasource)# slideshow_image
 	where slideshow_id=#db.param(form.slideshow_id)# and 
@@ -1795,6 +1800,7 @@
 	var qTabs=0;
 	var qS=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("2.4.2");
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	db.sql="SELECT * FROM #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab  
 	where slideshow_tab.site_id = #db.param(request.zos.globals.id)# AND 
@@ -1863,6 +1869,7 @@
 	var zSSId=0;
 	var zSSIndex=0;
 	variables.init(); 
+	application.zcore.functions.zSetPageHelpId("2.4");
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	qSortCom = CreateObject("component","zcorerootmapping.com.display.querySort");
 	zSSId = qSortCom.init("zSSId");

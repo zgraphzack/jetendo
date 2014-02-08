@@ -112,6 +112,7 @@ enable round robin for offices - need a new option to disable for staff.
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;
+	application.zcore.functions.zSetPageHelpId("5.5");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices");	
 	if(application.zcore.functions.zso(form,'office_id') EQ ''){
 		form.office_id = -1;
@@ -234,6 +235,7 @@ enable round robin for offices - need a new option to disable for staff.
 	var i=0;
 	var rs=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("5.4");
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false){
 		application.zcore.functions.zredirect('/member/');	
 	}

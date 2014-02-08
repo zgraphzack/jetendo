@@ -227,6 +227,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	var links=0;
 	var inquiryHTML=0;
 	variables.init();
+	application.zcore.functions.zSetPageHelpId("4.1.1");
 	if(application.zcore.functions.zso(form, 'inquiries_id') EQ ''){
 		application.zcore.functions.zRedirect("/z/inquiries/admin/manage-inquiries/index");
 	}

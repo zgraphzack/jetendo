@@ -14,6 +14,7 @@
 	var searchStruct=0;
 	var inquiryFirstDate=0;
 	var hCom=0;
+	application.zcore.functions.zSetPageHelpId("4.10");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Reports");
 	form.keywordsearch=application.zcore.functions.zso(form, 'keywordsearch');
 	form.negativekeywordsearch=application.zcore.functions.zso(form, 'negativekeywordsearch');

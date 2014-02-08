@@ -15,6 +15,7 @@
 	var data=0;
 	var pos2=0;
 	var i=0;
+	application.zcore.functions.zSetPageHelpId("8.3.1");
 	</cfscript>
 	<h2>Recent Request History</h2>
 	<!--- 

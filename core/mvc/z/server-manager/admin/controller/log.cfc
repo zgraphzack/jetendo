@@ -1,20 +1,20 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
-<cfscript>
-var db=request.zos.queryObject;
-var qSortCom=0;
-var i=0;
-var searchStruct=0;
-var qLogCount=0;
-var qLog=0;
-var searchNav=0;
-var qFix=0;
-var quser=0;
-var selectStruct=0; 
-var qUpdate=0;
-form.action=application.zcore.functions.zso(form, 'action',false,"list");
-</cfscript>
+	<cfscript>
+	var db=request.zos.queryObject;
+	var qSortCom=0;
+	var i=0;
+	var searchStruct=0;
+	var qLogCount=0;
+	var qLog=0;
+	var searchNav=0;
+	var qFix=0;
+	var quser=0;
+	var selectStruct=0; 
+	var qUpdate=0;
+	form.action=application.zcore.functions.zso(form, 'action',false,"list");
+	</cfscript>
 <cfif structkeyexists(form, 'action')>
 	<cfscript>
 	qSortCom = CreateObject("component","zcorerootmapping.com.display.querySort");
@@ -41,6 +41,7 @@ form.action=application.zcore.functions.zso(form, 'action',false,"list");
 
 <cfif form.action EQ "abusiveips">
 	<cfscript>
+	application.zcore.functions.zSetPageHelpId("8.3.2");
 	if(structkeyexists(form, 'removeip')){
 		structdelete(application.zcore.abusiveIPStruct[application.zcore.abusiveIPDate],removeip);
 		 db.sql="delete from #db.table("ip_block", request.zos.zcoreDatasource)#  
@@ -148,6 +149,9 @@ form.action=application.zcore.functions.zso(form, 'action',false,"list");
 
 
 <cfif form.action EQ "view">
+	<cfscript>
+	application.zcore.functions.zSetPageHelpId("8.3.3");
+	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("log", request.zos.zcoreDatasource)# log 
 	<cfif structkeyexists(form, 'log_id')>
@@ -201,6 +205,7 @@ form.action=application.zcore.functions.zso(form, 'action',false,"list");
 
 <cfif form.action EQ "list">
 	<cfscript>
+	application.zcore.functions.zSetPageHelpId("8.3");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	<cfsavecontent variable="db.sql">

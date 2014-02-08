@@ -125,6 +125,7 @@
 	var f4444=0;
 	var c=0;
 	var curDomain=0;
+	application.zcore.functions.zSetPageHelpId("8.1.1.4.1");
 	</cfscript>
 	<h2>Dreamweaver STE Generation</h2>
 
@@ -193,6 +194,7 @@
 	var db=request.zos.queryObject;
 	var qSite=0;
 	var curPath=0;
+	application.zcore.functions.zSetPageHelpId("8.1.1.4");
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
@@ -936,6 +938,7 @@
 	var arrD=0;
 	var arrIp=0;
 	var d=0;
+	application.zcore.functions.zSetPageHelpId("8.1.1.1");
 	form.sid=application.zcore.functions.zso(form, 'sid', false, '');
 	currentMethod=form.method;
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 

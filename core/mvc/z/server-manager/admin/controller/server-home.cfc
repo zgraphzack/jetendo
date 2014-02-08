@@ -117,6 +117,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
+	application.zcore.functions.zSetPageHelpId("8");
 	</cfscript>
 	<cfsavecontent variable="local.theMeta"> 
 		<style type="text/css">

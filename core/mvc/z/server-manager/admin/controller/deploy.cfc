@@ -87,6 +87,9 @@
 </cffunction>
 
 <cffunction name="deployAllSites" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	application.zcore.functions.zSetPageHelpId("8.4.4"); 
+	</cfscript>
 	<h2>Deploy All Sites</h2>
 	<p>Are you sure you want to deploy all the following sites?</p>
 	<p>WARNING: This process may take between minutes and hours depending on how much data has changed.</p>
@@ -215,7 +218,12 @@
 <cffunction name="editAllSites" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
-	application.zcore.functions.zStatusHandler(request.zsid); 
+	application.zcore.functions.zStatusHandler(request.zsid);
+	if(form.sid EQ ""){
+		application.zcore.functions.zSetPageHelpId("8.4.3"); 
+	}else{
+		application.zcore.functions.zSetPageHelpId("8.1.1.3.1");
+	}
 	db.sql="select * from 
 	#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
 	WHERE deploy_server_deploy_enabled = #db.param(1)#
@@ -552,6 +560,7 @@
 <cffunction name="deployCore" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var local=structnew();
+	application.zcore.functions.zSetPageHelpId("8.4.5"); 
 	if(request.zos.isTestServer EQ false){
 		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production server. 
 			<a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index">Go to test server deploy page</a>.');
@@ -599,6 +608,11 @@
 
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	if(form.sid EQ ""){
+		application.zcore.functions.zSetPageHelpId("8.4");
+	}else{
+		application.zcore.functions.zSetPageHelpId("8.1.1.3");
+	}
 	if(not request.zos.isTestServer){
 		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production server. 
 			<a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index">Go to test server deploy page</a>');

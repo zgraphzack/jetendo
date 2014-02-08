@@ -8,6 +8,7 @@
 	var i=0;
 	var qC=0;
 	var engineStruct=0;
+	application.zcore.functions.zSetPageHelpId("4.8");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Reports");
 
 	var db=request.zos.queryObject;
