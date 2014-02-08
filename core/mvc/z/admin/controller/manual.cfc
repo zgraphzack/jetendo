@@ -14,9 +14,15 @@
 	application.zcore.skin.includeJS("/z/javascript/prettify/src/prettify.js");
 	application.zcore.skin.includeJS("/z/javascript/zDocumentation.js");
 
-	/*if(request.zos.zreset NEQ "site" and request.zos.zreset NEQ "all" and structkeyexists(application.siteStruct[request.zos.globals.id], 'manual')){
-		return;	
-	}*/
+	if(request.zos.zreset EQ ""){
+		if(application.zcore.user.checkGroupAccess("user") and structkeyexists(session.zos, 'zManualStruct')){
+			request.zos.siteManagerManual=session.zos.zManualStruct;
+			return;
+		}else if(structkeyexists(application.zcore, 'manualStruct')){
+			request.zos.siteManagerManual=application.zcore.manualStruct;
+			return;
+		}
+	}
 	</cfscript>
 	<!--- This component will store the structure of all document files and their heirarchy by using meaningful whitespace to organize the docs
 	each project should have it's own navigation structure
@@ -71,50 +77,325 @@ zdoc css style documentation
 .zdoc-console
 		 --->
          
-	<cfsavecontent variable="s">
-	0 /index.html Full Documentation
-	_1 /intro.html Introduction
-	__1.1 /documentation-template.html Documentation Template
-	_2 /content-manager.html Content Manager
-	__2.1 /manage-pages.html Manage Pages
-	</cfsavecontent>
+    <!--- make this personalized to each user based on session.zos.user.limitManagerFeatureStruct --->
 	<cfscript>
-	ts={original:s, parentIdStruct:{}, idStruct:{}};
-	</cfscript>
-    <cfscript>
-	arrParent=arraynew(1);
-	arrLines=listtoarray(trim(replace(replace(ts.original, chr(9), "", "all"), chr(13),"","all")), chr(10));
-	for(i=1;i LTE arraylen(arrLines);i++){
-		spaceCount=refind("[0-9]", arrLines[i]);
-		arrC=listtoarray(removechars(arrLines[i],1, max(0,spaceCount-1)), " ");
-		if(arraylen(arrC) LT 3){
-			throw("Manual links must be tab separated and contain the document ID, url, and title.", "custom");	
+	showAll=false;
+	arrS=[];
+	arrayAppend(arrS, { id:"0", url:"/index.html", title:"Full Documentation"});
+	arrayAppend(arrS, { id:"_1", url:"/site-manager-dashboard.html", title:"Site Manager Dashboard"});
+	arrayAppend(arrS, { id:"__1.1", url:"/documentation-template.html", title:"Documentation Template"});
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Content Manager")){
+		arrayAppend(arrS, { id:"_2", url:"/content-manager.html", title:"Content Manager"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+		arrayAppend(arrS, { id:"__2.1", url:"/manage-pages.html", title:"Manage Pages"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+		arrayAppend(arrS, { id:"__2.2", url:"/add-edit-page.html", title:"Add/Edit Page"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"__2.3", url:"/manage-menus.html", title:"Manage Menus"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.1", url:"/add-edit-menu.html", title:"Add/Edit Menu"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.2", url:"/manage-menu-buttons.html", title:"Manage Menu Buttons"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.3", url:"/add-edit-menu-buttons.html", title:"Add/Edit Menu Button"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.4", url:"/manage-menu-button-links.html", title:"Manage Menu Button Links"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		arrayAppend(arrS, { id:"___2.3.5", url:"/add-edit-menu-button-links.html", title:"Add/Edit Menu Button Links"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"__2.4", url:"/manage-slideshows.html", title:"Manage Slideshows"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"___2.4.1", url:"/add-edit-slideshow.html", title:"Add/Edit Slideshow"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"___2.4.2", url:"/manage-slideshow-tabs.html", title:"Manage Slideshow Tabs"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"___2.4.3", url:"/add-edit-slideshow-tab.html", title:"Add/Edit Slideshow Tabs"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"___2.4.4", url:"/manage-slideshow-photos.html", title:"Manage Slideshow Photos"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Slideshows")){
+		arrayAppend(arrS, { id:"___2.4.5", url:"/add-edit-slideshow-photo.html", title:"Add/Edit Slideshow Photo"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"__2.5", url:"/files-and-images.html", title:"Files And Images"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"___2.5.1", url:"/add-edit-file.html", title:"Add/Edit File"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"___2.5.2", url:"/add-edit-image.html", title:"Add/Edit Image"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"___2.5.3", url:"/add-folder.html", title:"Add Folder"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"___2.5.4", url:"/delete-folder.html", title:"Delete Folder"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"___2.5.5", url:"/view-file.html", title:"View File"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Files & Images")){
+		arrayAppend(arrS, { id:"___2.5.6", url:"/delete-file.html", title:"Delete File"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Problem Link Report")){
+		arrayAppend(arrS, { id:"__2.6", url:"/problem-link-report.html", title:"Problem Link Report"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")){
+		arrayAppend(arrS, { id:"__2.7", url:"/site-options.html", title:"Site Options"});
+	}
+	if(showAll or application.zcore.user.checkServerAccess()){
+		arrayAppend(arrS, { id:"___2.7.1", url:"/manage-site-option-groups.html", title:"Manage Site Option Groups"});
+		arrayAppend(arrS, { id:"____2.7.1.1", url:"/manage-site-option-group-import.html", title:"Import"});
+		arrayAppend(arrS, { id:"____2.7.1.2", url:"/manage-site-option-group-options.html", title:"Manage Site Option Group Options"});
+		arrayAppend(arrS, { id:"____2.7.1.3", url:"/copy-site-option-group.html", title:"Copy Site Option Group"});
+		arrayAppend(arrS, { id:"____2.7.1.3", url:"/manage-site-option-group-display-code.html", title:"Display Code"});
+		arrayAppend(arrS, { id:"___2.7.2", url:"/add-edit-site-option-group.html", title:"Add/Edit Site Option Group"});
+		arrayAppend(arrS, { id:"___2.7.3", url:"/manage-site-options.html", title:"Manage Site Options"});
+		arrayAppend(arrS, { id:"___2.7.4", url:"/add-edit-site-options.html", title:"Add/Edit Site Options"});
+		arrayAppend(arrS, { id:"___2.7.5", url:"/sync-site-option-structure.html", title:"Sync Site Option Structure"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Video Library")){
+		arrayAppend(arrS, { id:"__2.8", url:"/video-library.html", title:"Video Library"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Image Library")){
+		arrayAppend(arrS, { id:"__2.9", url:"/image-library.html", title:"Image Library"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Themes")){
+		arrayAppend(arrS, { id:"__2.10", url:"/themes.html", title:"Themes"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		arrayAppend(arrS, { id:"_3", url:"/blog.html", title:"Blog"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		arrayAppend(arrS, { id:"__3.1", url:"/manage-blog-articles.html", title:"Manage Blog Articles"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		arrayAppend(arrS, { id:"__3.2", url:"/add-edit-blog-article.html", title:"Add/Edit Blog Article"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		arrayAppend(arrS, { id:"__3.3", url:"/manage-blog-comments.html", title:"Manage Comments"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Categories")){
+		arrayAppend(arrS, { id:"__3.4", url:"/manage-blog-categories.html", title:"Manage Blog Categories"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Categories")){
+		arrayAppend(arrS, { id:"__3.5", url:"/add-edit-blog-category.html", title:"Add/Edit Blog Category"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Tags")){
+		arrayAppend(arrS, { id:"__3.6", url:"/manage-blog-tags.html", title:"Manage Blog Tags"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Tags")){
+		arrayAppend(arrS, { id:"__3.7", url:"/add-edit-blog-tag.html", title:"Add/Edit Blog Tag"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Leads")){
+		arrayAppend(arrS, { id:"_4", url:"/leads.html", title:"Leads"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Leads")){
+		arrayAppend(arrS, { id:"__4.1", url:"/manage-leads.html", title:"Manage Leads"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Leads")){
+		arrayAppend(arrS, { id:"___4.1.1", url:"/view-lead.html", title:"View Lead"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Leads")){
+		arrayAppend(arrS, { id:"___4.1.2", url:"/assign-lead.html", title:"Assign Lead"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Leads")){
+		arrayAppend(arrS, { id:"__4.2", url:"/add-edit-lead.html", title:"Add/Edit Lead"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Types")){
+		arrayAppend(arrS, { id:"__4.3", url:"/manage-lead-types.html", title:"Manage Lead Types"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Types")){
+		arrayAppend(arrS, { id:"__4.3", url:"/add-edit-lead-type.html", title:"Add/Edit Lead Type"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Templates")){
+		arrayAppend(arrS, { id:"__4.4", url:"/manage-lead-template-emails.html", title:"Manage Lead Template Emails"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Templates")){
+		arrayAppend(arrS, { id:"__4.5", url:"/add-edit-lead-template-email.html", title:"Add/Edit Lead Template Email"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Export")){
+		arrayAppend(arrS, { id:"__4.6", url:"/export-all-leads-as-csv.html", title:"Export All Leads As CSV"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Source Report")){
+		arrayAppend(arrS, { id:"__4.7", url:"/lead-source-report.html", title:"Lead Source Report"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Mailing List Export")){
+		arrayAppend(arrS, { id:"__4.8", url:"/mailing-list-export.html", title:"Mailing List Export"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Lead Reports")){
+		arrayAppend(arrS, { id:"__4.9", url:"/search-engine-keyword-lead-report.html", title:"Search Engine Keyword Lead Report"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Users")){
+		arrayAppend(arrS, { id:"_5", url:"/users.html", title:"Users"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Users")){
+		arrayAppend(arrS, { id:"__5.1", url:"/manager-users.html", title:"Manage Users"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Users")){
+		arrayAppend(arrS, { id:"__5.2", url:"/add-edit-user.html", title:"Add/Edit User"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
+		arrayAppend(arrS, { id:"__5.3", url:"/manage-offices.html", title:"Manage Offices"});
+	}
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
+		arrayAppend(arrS, { id:"__5.4", url:"/add-edit-office.html", title:"Add/Edit Office"});
+	}
+	if(showAll or application.zcore.app.siteHasApp("listing")){
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Listings")){
+			arrayAppend(arrS, { id:"_6", url:"/listings.html", title:"Listings"});
 		}
-		ns={};
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Listings")){
+			arrayAppend(arrS, { id:"__6.1", url:"/manage-listings.html", title:"Manage Listings"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Listings")){
+			arrayAppend(arrS, { id:"__6.2", url:"/add-new-listing.html", title:"Add/Edit Listing"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Listing Research Tool")){
+			arrayAppend(arrS, { id:"__6.3", url:"/listing-research-tool.html", title:"Listing Research Tool"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Listing Search Filter")){
+			arrayAppend(arrS, { id:"__6.4", url:"/listing-search-filter.html", title:"Listing Search Filter"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Saved Listing Searches")){
+			arrayAppend(arrS, { id:"__6.5", url:"/managed-saved-searches.html", title:"Manage Saved Listing Searches"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Widgets For Other Sites")){
+			arrayAppend(arrS, { id:"__6.6", url:"/widget-for-other-sites.html", title:"Widgets For Other Sites"});
+		}
+	}
+	if(application.zcore.app.siteHasApp("rental")){
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rentals")){
+			arrayAppend(arrS, { id:"_7", url:"/rentals.html", title:"Rentals"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Rentals")){
+			arrayAppend(arrS, { id:"__7.1", url:"/manage-rentals.html", title:"Manage Rentals"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Rentals")){
+			arrayAppend(arrS, { id:"__7.2", url:"/add-edit-rental.html", title:"Add/Edit Rental"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rental Calendars")){
+			arrayAppend(arrS, { id:"__7.3", url:"/edit-rental-calendar.html", title:"Edit Rental Calendar"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rental Categories")){
+			arrayAppend(arrS, { id:"__7.4", url:"/manage-rental-categories.html", title:"Manage Rental Categories"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rental Categories")){
+			arrayAppend(arrS, { id:"__7.5", url:"/add-edit-rental-category.html", title:"Add/Edit Rental Category"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rental Amenities")){
+			arrayAppend(arrS, { id:"__7.6", url:"/manage-amenities.html", title:"Manage Amenities"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rental Amenities")){
+			arrayAppend(arrS, { id:"__7.7", url:"/add-edit-amenities.html", title:"Add/Edit Amenities"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Rental Calendars")){
+			arrayAppend(arrS, { id:"__7.8", url:"/view-all-calendars.html", title:"View All Calendars"});
+		}
+	}
+	if(showAll or application.zcore.user.checkServerAccess()){
+		arrayAppend(arrS, { id:"_8", url:"/server-manager.html", title:"Server Manager"});
+		arrayAppend(arrS, { id:"__8.1", url:"/server-manager-sites.html", title:"Manage Sites"});
+		arrayAppend(arrS, { id:"___8.1.1", url:"/server-manager-site-dashboard.html", title:"Select Site"});
+		arrayAppend(arrS, { id:"____8.1.1.1", url:"/server-manager-site-dashboard.html", title:"Dashboard"});
+		arrayAppend(arrS, { id:"____8.1.1.2", url:"/server-manager-site-globals.html", title:"Globals"});
+		arrayAppend(arrS, { id:"____8.1.1.3", url:"/server-manager-site-domain-redirects.html", title:"Domain Redirects"});
+		arrayAppend(arrS, { id:"_____8.1.1.3.1", url:"/server-manager-site-add-edit-domain-redirect.html", title:"Add/Edit Domain Redirect"});
+		arrayAppend(arrS, { id:"____8.1.1.4", url:"/server-manager-site-deploy.html", title:"Deploy"});
+		arrayAppend(arrS, { id:"_____8.1.1.4.1", url:"/server-manager-edit-site-deployment-configuration.html", title:"Edit Site Deployment Configuration"});
+		arrayAppend(arrS, { id:"____8.1.1.5", url:"/server-manager-site-dreamweaver-ste.html", title:"Dreamweaver STE"});
+		arrayAppend(arrS, { id:"_____8.1.1.5.1", url:"/server-manager-site-generate-all-dreamweaver-ste-files.html", title:"Generate All Dreamweaver STE Files"});
+		arrayAppend(arrS, { id:"____8.1.1.6", url:"/server-manager-site-backup.html", title:"Backup"});
+		arrayAppend(arrS, { id:"____8.1.1.7", url:"/server-manager-site-users.html", title:"Users"});
+		arrayAppend(arrS, { id:"_____8.1.1.7.1", url:"/server-manager-site-view-users-in-user-group.html", title:"View Users in User Group"});
+		arrayAppend(arrS, { id:"______8.1.1.7.1.1", url:"/server-manager-site-add-edit-user.html", title:"Add/Edit User"});
+		arrayAppend(arrS, { id:"______8.1.1.7.1.2", url:"/server-manager-site-activate-deactive-user.html", title:"Activate/Deactive User"});
+		arrayAppend(arrS, { id:"_____8.1.1.7.2", url:"/server-manager-site-permissions.html", title:"Permissions"});
+		arrayAppend(arrS, { id:"_____8.1.1.7.3", url:"/server-manager-site-manage-user-groups.html", title:"Manage User Groups"});
+		arrayAppend(arrS, { id:"_____8.1.1.7.4", url:"/server-manager-site-add-edit-user-group.html", title:"Add/Edit User Group"});
+		arrayAppend(arrS, { id:"____8.1.1.8", url:"/server-manager-site-applications.html", title:"Applications"});
+		arrayAppend(arrS, { id:"____8.1.1.9", url:"/server-manager-site-rewrite-rules.html", title:"Rewrite Rules"});
+		arrayAppend(arrS, { id:"____8.1.1.10", url:"/server-manager-site-robots-txt.html", title:"Robots.txt"});
+		arrayAppend(arrS, { id:"_____8.1.1.10.1", url:"/server-manager-site-robots-txt.html", title:"Manage Robots.txt"});
+		arrayAppend(arrS, { id:"______8.1.1.10.1.1", url:"/server-manager-edit-global-robots-txt.html", title:"Edit Server Manager Global Robots.txt"});
+		arrayAppend(arrS, { id:"____8.1.1.11", url:"/server-manager-site-hardcoded-urls.html", title:"Hardcoded URLs"});
+		arrayAppend(arrS, { id:"___8.1.2", url:"/server-manager-import-site.html", title:"Import Site"});
+		arrayAppend(arrS, { id:"___8.1.3", url:"/server-manager-import-global-database.html", title:"Import Global Database"});
+		arrayAppend(arrS, { id:"__8.2", url:"/server-manager-applications.html", title:"Applications"});
+		arrayAppend(arrS, { id:"___8.2.1", url:"/server-manager-add-edit-application.html", title:"Add/Edit Application"});
+		arrayAppend(arrS, { id:"___8.2.2", url:"/server-manager-manage-application-instances.html", title:"Manage Application Instances"});
+		arrayAppend(arrS, { id:"____8.2.2.1", url:"/server-manager-add-edit-application-instance.html", title:"Add/Edit Application Instance"});
+		arrayAppend(arrS, { id:"____8.2.2.2", url:"/server-manager-edit-application-options.html", title:"Edit Application Options"});
+		arrayAppend(arrS, { id:"__8.3", url:"/server-manager-logs.html", title:"Logs"});
+		arrayAppend(arrS, { id:"___8.3.1", url:"/server-manager-recent-request-history.html", title:"Recent Request History"});
+		arrayAppend(arrS, { id:"___8.3.2", url:"/server-manager-abusive-ips.html", title:"Abusive IPs"});
+		arrayAppend(arrS, { id:"___8.3.3", url:"/server-manager-view-log-entry.html", title:"View Log Entry"});
+		arrayAppend(arrS, { id:"__8.4", url:"/server-manager-deploy.html", title:"Deploy"});
+		arrayAppend(arrS, { id:"___8.4.1", url:"/server-manager-manage-deploy-servers.html", title:"Manage Deploy Servers"});
+		arrayAppend(arrS, { id:"___8.4.2", url:"/server-manager-add-edit-deploy-server.html", title:"Add/Edit Deploy Server"});
+		arrayAppend(arrS, { id:"___8.4.3", url:"/server-manager-edit-deployment-configuration-for-all-sites.html", title:"Edit Deployment Configuration For All Sites"});
+		arrayAppend(arrS, { id:"___8.4.4", url:"/server-manager-deploy-all-sites.html", title:"Deploy All Sites"});
+		arrayAppend(arrS, { id:"___8.4.5", url:"/server-manager-deploy-core.html", title:"Deploy Core"});
+		arrayAppend(arrS, { id:"___8.4.6", url:"/server-manager-deploy-sourceless-archive.html", title:"Deploy Sourceless Archive"});
+	}
+	/*
+	db=request.zos.queryObject;
+	db.sql="SELECT site_option_group.* 
+	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group  
+	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_parent_id = #db.param('0')# and 
+	site_option_group_type =#db.param('1')# and 
+	site_option_group.site_option_group_disable_admin=#db.param(0)# 
+	ORDER BY site_option_group.site_option_group_display_name ASC ";
+	qGroup=db.execute("qGroup"); 
+	if(qGroup.recordcount NEQ 0){
+		ms["Custom"]={ parent:'', label: "Custom"};
+		// loop the groups
+		// get the code from manageoptions"
+		// site_option_group_disable_admin=0
+		for(row in qGroup){
+			ms["Custom: "&row.site_option_group_display_name]={ parent:'Custom', label:chr(9)&row.site_option_group_display_name&chr(10)};
+		}
+	}*/
+	ts={parentIdStruct:{}, idStruct:{}};
+	arrParent=arraynew(1);
+	for(i=1;i LTE arraylen(arrS);i++){
+		ns=arrS[i];
+		spaceCount=refind("[0-9]", trim(ns.id));
 		if(spaceCount-1){ 
 			ns.parentId=arrParent[spaceCount-1];
 		}else{
 			ns.parentId="";
-		} 
-		ns.id=arrC[1];
-		arraydeleteat(arrC, 1);
-		ns.url=arrC[1];
-		arraydeleteat(arrC, 1);
-		if(arrC[arraylen(arrC)] EQ "_blank"){
-			ns.target=arrC[arraylen(arrC)];
-			arraydeleteat(arrC, arraylen(arrC));
-		}else{
+		}
+		if(not structkeyexists(ns, 'target')){
 			ns.target="_self";
 		}
-		ns.title=arraytolist(arrC, " ");
+		ns.id=replace(ns.id, "_", "", "all");
 		ts.idStruct[ns.id]=ns;
 		arrParent[spaceCount]=ns.id;
 		if(not structkeyexists(ts.parentIdStruct, ns.parentId)){
 			ts.parentIdStruct[ns.parentId]=[];
 		}
 		arrayappend(ts.parentIdStruct[ns.parentId], ns.id);
-	} 
-	//application.siteStruct[request.zos.globals.id].manual=ts;
+	}
+	if(application.zcore.user.checkGroupAccess("user")){
+		session.zos.zManualStruct=ts;
+	}else{
+		application.zcore.manualStruct=ts;
+	}
 	request.zos.siteManagerManual=ts;
 	
 	</cfscript>
@@ -410,7 +691,7 @@ zdoc css style documentation
         <!--- <div class="zdoc-sidebar"> --->
         <!--- </div> --->
         <div class="zdoc-main-column ieWidthDivClass4">
-            <cfsavecontent variable="theParent"><a href="/z/admin/help/index">Home</a> / #this.getParentLinks(manualStruct)#</cfsavecontent>
+            <cfsavecontent variable="theParent"><a href="/z/admin/help/index">Help</a> / #this.getParentLinks(manualStruct)#</cfsavecontent>
             <cfscript>request.zos.template.setTag("pagenav", theParent);</cfscript>
             
             #this.getContentsBox(manualStruct)#
