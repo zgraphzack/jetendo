@@ -19,6 +19,16 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	</cfscript>
 </cffunction>
 
+<!--- /z/_com/app/image-library?method=remoteDeleteImageId&image_id=#image_id# --->
+<cffunction name="remoteDeleteImageId" localmode="modern" access="remote" returntype="any" output="no">
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
+	this.deleteImageId(application.zcore.functions.zso(form, 'image_id'));
+	writeoutput('{"success":"1"}');
+	application.zcore.functions.zabort();
+	</cfscript>
+</cffunction>
+
 
 <cffunction name="getNewLibraryId" localmode="modern" access="public" returntype="any" output="no">
 	<cfscript>

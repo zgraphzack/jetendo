@@ -220,41 +220,39 @@
 				}
 			}
 
-			if(request.zos.isTestServer){
-				if(structkeyexists(arguments.sharedStruct, "Help") EQ false){
-					ts=structnew();
-					ts.link="/z/admin/help/index"; 
-					ts.children=structnew();
-					arguments.sharedStruct["Help"]=ts;
-				}
-				if(structkeyexists(arguments.sharedStruct["Help"].children,"Quick Start Guide") EQ false){
-					ts=structnew();
-					ts.link="/z/admin/help/quickStart";
-					arguments.sharedStruct["Help"].children["Quick Start Guide"]=ts;
-				} 
-				if(structkeyexists(arguments.sharedStruct["Help"].children,"Documentation") EQ false){
-					ts=structnew();
-					ts.link="/z/admin/help/index";
-					arguments.sharedStruct["Help"].children["Documentation"]=ts;
-				} 
-				if(structkeyexists(arguments.sharedStruct["Help"].children,"Support") EQ false){
-					ts=structnew();
-					ts.link="/z/admin/help/support";
-					arguments.sharedStruct["Help"].children["Support"]=ts;
-				} 
-				if(structkeyexists(arguments.sharedStruct["Help"].children,"Help for this page") EQ false){
-					ts=structnew();
-					ts.onclick="return zGetHelpForThisPage(this);";
-					ts.link="/z/admin/help/helpForThisPage";
-					ts.target="_blank";
-					arguments.sharedStruct["Help"].children["Help for this page"]=ts;
-				} 
-				if(structkeyexists(arguments.sharedStruct["Help"].children,"In-Context Help Features") EQ false){
-					ts=structnew();
-					ts.link="/z/admin/help/incontext";
-					arguments.sharedStruct["Help"].children["In-Context Help Features"]=ts;
-				} 
+			if(structkeyexists(arguments.sharedStruct, "Help") EQ false){
+				ts=structnew();
+				ts.link="/z/admin/help/index"; 
+				ts.children=structnew();
+				arguments.sharedStruct["Help"]=ts;
 			}
+			if(structkeyexists(arguments.sharedStruct["Help"].children,"Quick Start Guide") EQ false){
+				ts=structnew();
+				ts.link="/z/admin/help/quickStart";
+				arguments.sharedStruct["Help"].children["Quick Start Guide"]=ts;
+			} 
+			if(structkeyexists(arguments.sharedStruct["Help"].children,"Documentation") EQ false){
+				ts=structnew();
+				ts.link="/z/admin/help/index";
+				arguments.sharedStruct["Help"].children["Documentation"]=ts;
+			} 
+			if(structkeyexists(arguments.sharedStruct["Help"].children,"Support") EQ false){
+				ts=structnew();
+				ts.link="/z/admin/help/support";
+				arguments.sharedStruct["Help"].children["Support"]=ts;
+			} 
+			if(structkeyexists(arguments.sharedStruct["Help"].children,"Help for this page") EQ false){
+				ts=structnew();
+				ts.onclick="return zGetHelpForThisPage(this);";
+				ts.link="/z/admin/help/helpForThisPage";
+				ts.target="_blank";
+				arguments.sharedStruct["Help"].children["Help for this page"]=ts;
+			} 
+			if(structkeyexists(arguments.sharedStruct["Help"].children,"In-Context Help Features") EQ false){
+				ts=structnew();
+				ts.link="/z/admin/help/incontext";
+				arguments.sharedStruct["Help"].children["In-Context Help Features"]=ts;
+			} 
 			if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 				db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 				WHERE site_option_group_parent_id= #db.param(0)# and 
