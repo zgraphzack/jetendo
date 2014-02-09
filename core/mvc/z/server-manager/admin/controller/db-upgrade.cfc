@@ -166,8 +166,6 @@
 	<cfscript>
 	i=0; 
 	backupStruct={};
-	backupPath=request.zos.sharedPath&"database/backup/";
-	application.zcore.functions.zcreatedirectory(backupPath);
 
 	for(n=arguments.startVersion;n LTE arguments.endVersion;n++){
 		if(not fileexists(request.zos.installPath&"core/com/model/upgrade/db-"&n&".cfc")){
@@ -198,6 +196,8 @@
 	<cfargument name="table" type="string" required="yes">
 	<cfscript>
 	echo('Backing up table: #arguments.schema#.#arguments.table#<br />');
+	backupPath=request.zos.sharedPath&"database/backup/";
+	application.zcore.functions.zcreatedirectory(backupPath);
 	try{
 		result=application.zcore.functions.zSecureCommand("mysqlDumpTable#chr(9)##arguments.schema##chr(9)##arguments.table#", 200);
 	}catch(Any e){
