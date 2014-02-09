@@ -1,5 +1,27 @@
 <?php
 require("library.php");
+set_time_limit(70);
+/*
+Command reference:
+getDiskUsage#chr(9)#absolutePath
+getFileMD5Sum#chr(9)#absoluteFilePath
+getImageMagickIdentify#chr(9)#absoluteFilePath
+getImageMagickConvertResize#chr(9)&#resizeWidth#chr(9)#resizeHeight#chr(9)#cropWidth#chr(9)#cropHeight#chr(9)#cropXOffset#chr(9)#cropYOffset#chr(9)#absoluteSourceFilePath#chr(9)#absoluteDestinationFilePath
+getImageMagickConvertApplyMask#chr(9)#absoluteImageInputPath#chr(9)#absoluteImageOutputPath
+getUserList
+getScryptCheck#chr(9)#password#chr(9)#hashedPassword
+getScryptEncrypt#chr(9)#password
+getSystemIpList
+getNewerCoreMVCFiles
+gzipFilePath#chr(9)#absoluteFilePath
+installThemeToSite#chr(9)#themeName#chr(9)#absoluteSiteHomedir
+mysqlDumpTable#chr(9)#schema#chr(9)#table
+mysqlRestoreTable#chr(9)#schema#chr(9)#table
+renameSite#chr(9)#oldSiteShortDomain#chr(9)#newSiteShortDomain
+tarZipFilePath#chr(9)#tarAbsoluteFilePath#chr(9)#changeToAbsoluteDirectory#chr(9)#absolutePathToTar
+verifySitePaths
+*/
+
 function processContents($contents){
 	$a=explode("\t", $contents);
 	$contents=array_shift($a);
@@ -40,7 +62,9 @@ function processContents($contents){
 	}
 	return "";
 }
+
 function mysqlDumpTable($a){
+	set_time_limit(1000);
 	if(count($a) != 2){
 		echo "2 arguments are required: schema and table.\n";
 		return "0";
@@ -55,7 +79,10 @@ function mysqlDumpTable($a){
 	}
 	$schema=$a[0];
 	$table=$a[1];
-
+	
+	if(!checkMySQLPrivileges()){
+		return "0";
+	}
 	$path=get_cfg_var("jetendo_share_path")."database/backup/".$schema.".".$table.".sql";
 	@unlink($path);
 	$cmd="/usr/bin/mysqldump -h ".escapeshellarg(get_cfg_var("jetendo_mysql_default_host"))." -u ".
@@ -79,6 +106,7 @@ function mysqlDumpTable($a){
 	}
 }
 function mysqlRestoreTable($a){
+	set_time_limit(1000);
 	if(count($a) != 2){
 		echo "2 arguments are required: schema and table.\n";
 		return "0";
@@ -91,6 +119,10 @@ function mysqlRestoreTable($a){
 		echo "table is a required argument.\n";
 		return "0";
 	}
+	if(!checkMySQLPrivileges()){
+		return "0";
+	}
+
 	$schema=$a[0];
 	$table=$a[1];
 	$path=get_cfg_var("jetendo_share_path")."database/backup/".$schema.".".$table.".sql";
@@ -153,6 +185,7 @@ function renameSite($a){
 }
 
 function verifySitePaths(){
+	set_time_limit(300);
 	// forces site root directories to exist with correct permissions
 	$fail=false;
 	$cmysql2=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
@@ -196,6 +229,7 @@ function verifySitePaths(){
 	}
 }
 function installThemeToSite($a){
+	set_time_limit(100);
 	if(count($a) != 2){
 		echo "2 arguments are required: themeName and siteAbsolutePath.\n";
 		return "0";
@@ -263,6 +297,7 @@ function getNewerCoreMVCFiles(){
 	return `$cmd`;
 }
 function getScryptEncrypt($a){
+	set_time_limit(100);
 	$pw=implode("", $a);
 	$p=get_cfg_var("jetendo_root_path");
 	$cmd='/usr/bin/java -jar '.$p.'scripts/jetendo-scrypt.jar "encrypt" '.escapeshellarg($pw);
@@ -270,6 +305,7 @@ function getScryptEncrypt($a){
 	return $r;
 }
 function getScryptCheck($a){
+	set_time_limit(100);
 	if(count($a) != 2){
 		return "0";
 	}
@@ -286,6 +322,7 @@ function getSystemIpList(){
 	return `$cmd`;
 }
 function gzipFilePath($a){
+	set_time_limit(1000);
 	$path=implode("", $a);
 	if(file_exists($path)){
 		$path=realpath($path);
@@ -309,6 +346,7 @@ function gzipFilePath($a){
 	return "0";
 }
 function getImageMagickConvertApplyMask($a){
+	set_time_limit(100);
 	if(count($a) != 3){
 		echo "Incorrect number of arguments to getImageMagickConvertApplyMask.\n";
 		return "0";
@@ -419,6 +457,7 @@ function getImageMagickConvertApplyMask($a){
 }
 
 function getImageMagickConvertResize($a){
+	set_time_limit(100);
 	if(count($a) != 8){
 		echo "Incorrect number of arguments to getImageMagickConvertResize.\n";
 		return "0";
@@ -514,6 +553,7 @@ function getImageMagickConvertResize($a){
 }
 
 function getImageMagickIdentify($a){
+	set_time_limit(100);
 	$path=implode("", $a);
 	if(file_exists($path)){
 		$path=realpath($path);
@@ -537,6 +577,7 @@ function getImageMagickIdentify($a){
 }
 
 function tarZipFilePath($a){
+	set_time_limit(1000);
 	if(count($a) != 3){
 		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
 		return "0";
@@ -584,6 +625,7 @@ function tarZipFilePath($a){
 }
 
 function getDiskUsage($a){
+	set_time_limit(500);
 	$path=implode("", $a);
 	if(is_dir($path) || file_exists($path)){
 		$path=realpath($path);

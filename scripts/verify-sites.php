@@ -284,6 +284,7 @@ $arrError=array();
 // when debugging, enable preview to prevent any permanent changes.
 $preview=false;
 
+
 echo "Running apt-get update to check for new packages: ";
 if(getAvailableUpgradePackages()){
 	echo "New packages available.\n";
@@ -313,6 +314,16 @@ if(strpos($host, $testDomain) !== FALSE){
 	$checkDNS=true;
 	$isInstalledOnSambaMount=get_cfg_var("jetendo_server_uses_samba");
 }
+
+
+echo "Checking MySQL Privileges: ";
+if(!checkMySQLPrivileges()){
+	array_push($arrError, "You must correct mysql privileges and re-run this installation script");
+	exitWithLogNotification();
+}else{
+	echo "valid\n";
+}
+
 $ftpEnabled=zIsFtpEnabled();
 echo "Checking filesystem: ";
 $result=checkFilesystem();

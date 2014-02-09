@@ -9,6 +9,132 @@ function zRemoveEmptyValuesFromArray($arr){
 	}
 	return $arrNew;
 }
+
+function installJetendoCronTabs($debug){
+	$isTestServer=zIsTestServer();
+	$rootCronPath="/var/spool/cron/crontabs/root";
+	$scriptsPath=get_cfg_var("jetendo_scripts_path");
+	echo("Installing crontab\n");
+$crontabs="#every minute
+*/1 * * * * /usr/bin/php ".$scriptsPath."newsite.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php ".$scriptsPath."railo-execute-commands.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php ".$scriptsPath."zqueue/queue.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php ".$scriptsPath."zqueue/queue-check-running.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php ".$scriptsPath."cfml-tasks.php >/dev/null 2>&1
+
+# every hour at :00
+0 * * * * /usr/bin/php ".$scriptsPath."verify-sites.php >/dev/null 2>&1
+";
+if(!$isTestServer){
+$crontabs.="#every 5 minutes
+0-59/20 * * * * /usr/bin/php ".$scriptsPath."move-mls-images.php > /dev/null 2>&1
+
+# every day at 12:15am
+15 0 * * * /usr/bin/perl ".$scriptsPath."rsync_backup.pl >/dev/null 2>&1
+
+# every day at 1:30am
+30 1 * * * /usr/bin/php ".$scriptsPath."mysql-backup/backup_dbs.php >/dev/null 2>&1
+
+# every day at 12:20am
+20 0 * * * /usr/bin/php ".$scriptsPath."listing-image-cleanup.php > /dev/null 2>&1";
+}
+
+	$arr1=explode("\n", file_get_contents($rootCronPath));
+	for($i=0;$i<count($arr1);$i++){
+		if(trim($arr1[$i]) == "" || substr($arr1[$i], 0, 1) != "#"){
+			$arr1=array_slice($arr1, $i);
+			break;
+		}
+	}
+	$contents=implode("\n", $arr1);
+	$beginString="\n#jetendo-root-crontabs-begin\n";
+	$endString="\n#jetendo-root-crontabs-end\n";
+	$begin=strpos($contents, $beginString);
+	if($begin===FALSE){
+		$contents.=$beginString;
+		$begin=strpos($contents, $beginString);
+	}
+	$end=strpos($contents, $endString, $begin);
+	if($end===FALSE){
+		$contents.=$endString;
+		$end=strpos($contents, $endString);
+	}
+	$fileBeginContents=substr($contents, 0, $begin+strlen($beginString));
+	$fileContentsHosts=trim(substr($contents, $begin+strlen($beginString), $end-($begin+strlen($beginString))));
+	$fileEndContents=substr($contents, $end);
+	
+	$newFileContents=str_replace("\r", "", $fileBeginContents.$crontabs.$fileEndContents);
+	if(!$debug){
+		$fp=fopen($rootCronPath, "w");
+		fwrite($fp, $newFileContents);
+		fclose($fp);
+		chown($rootCronPath, "root");
+		chgrp($rootCronPath, "crontab");
+		chmod($rootCronPath, 0600);
+		// update cron with the new file
+		`/usr/bin/crontab /var/spool/cron/crontabs/root`;
+	}
+	echo("Crontab install complete\n");
+
+}
+
+function checkMySQLPrivileges(){
+	$cmysql2=@new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), "mysql");
+	if($cmysql2->connect_error != ""){ 
+		echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have access to SELECT on the \"mysql\" database and ".
+		"global SUPER privilege to enable restoring triggers.";
+		return false;
+	}
+	$r=$cmysql2->query("SELECT * FROM mysql.user WHERE Super_priv = 'Y' and User = '".get_cfg_var("jetendo_mysql_default_user")."'");
+	if($cmysql2->error != ""){ 
+		echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have access to SELECT on the \"mysql\" database and 
+		global SUPER privilege to enable restoring triggers.";
+		return false;
+	}
+	if($r->num_rows == 0){
+		echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have SUPER privilege to enable restoring triggers.";
+		return false;
+	}
+	$db=zGetDatasource();
+	// check for global privileges for user
+	$r=$cmysql2->query("select * from mysql.User WHERE 
+	User = '".$cmysql2->real_escape_string(get_cfg_var("jetendo_mysql_default_user"))."' and 
+	Select_priv='Y' and  Insert_priv='Y' and  Update_priv='Y' and  Delete_priv='Y' and  
+	Create_priv='Y' and  Drop_priv  ='Y' and  Grant_priv ='Y' and  References_priv       ='Y' and  
+	Index_priv ='Y' and  Alter_priv ='Y' and  Create_tmp_table_priv ='Y' and  
+	Lock_tables_priv      ='Y' and  Create_view_priv      ='Y' and  Show_view_priv        ='Y' and  
+	Create_routine_priv   ='Y' and  Alter_routine_priv    ='Y' and  Execute_priv          ='Y' and  
+	Event_priv ='Y' and  Trigger_priv     ='Y' ");
+	if($cmysql2->error != ""){ 
+		echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have access to SELECT on the \"mysql\" database and 
+		global SUPER privilege to enable restoring triggers.";
+		return false;
+	}
+	if($r->num_rows == 0){
+		// check db privileges
+		$r=$cmysql2->query("select * from mysql.db WHERE 
+		Db='".$cmysql2->real_escape_string($db)."' and 
+		User = '".$cmysql2->real_escape_string(get_cfg_var("jetendo_mysql_default_user"))."' and 
+		Select_priv='Y' and  Insert_priv='Y' and  Update_priv='Y' and  Delete_priv='Y' and  
+		Create_priv='Y' and  Drop_priv  ='Y' and  Grant_priv ='Y' and  References_priv       ='Y' and  
+		Index_priv ='Y' and  Alter_priv ='Y' and  Create_tmp_table_priv ='Y' and  
+		Lock_tables_priv      ='Y' and  Create_view_priv      ='Y' and  Show_view_priv        ='Y' and  
+		Create_routine_priv   ='Y' and  Alter_routine_priv    ='Y' and  Execute_priv          ='Y' and  
+		Event_priv ='Y' and  Trigger_priv     ='Y' ");
+		if($cmysql2->error != ""){ 
+			echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have access to SELECT on the \"mysql\" database and 
+			global SUPER privilege to enable restoring triggers.";
+			return false;
+		}
+		if($r->num_rows == 0){
+			echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have ALL PRIVILEGES GRANTED for database, \"".$db."\" or 
+			GLOBAL PRIVILEGES to all databases.";
+			return false;
+		}
+	}
+	return true;
+}
+
 function zGetSSHConnectCommand($remoteHost, $privateKeyPath){
 	$cmd='/usr/bin/ssh -O check -S "/root/.ssh/ctl/%L-%r@%h:%p" '.$remoteHost." 2>&1";
 	echo "\n\n\n\n".$cmd."\n";

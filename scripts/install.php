@@ -2,74 +2,6 @@
 require("library.php");
 $debug=false; // set to true to allow non-destructive debugging of this script
 
-function installJetendoCronTabs(){
-	global $debug;
-	$isTestServer=zIsTestServer();
-	$rootCronPath="/var/spool/cron/crontabs/root";
-	$scriptsPath=get_cfg_var("jetendo_scripts_path");
-	echo("Installing crontab\n");
-$crontabs="#every minute
-*/1 * * * * /usr/bin/php ".$scriptsPath."newsite.php >/dev/null 2>&1
-*/1 * * * * /usr/bin/php ".$scriptsPath."railo-execute-commands.php >/dev/null 2>&1
-*/1 * * * * /usr/bin/php ".$scriptsPath."zqueue/queue.php >/dev/null 2>&1
-*/1 * * * * /usr/bin/php ".$scriptsPath."zqueue/queue-check-running.php >/dev/null 2>&1
-*/1 * * * * /usr/bin/php ".$scriptsPath."cfml-tasks.php >/dev/null 2>&1
-
-# every hour at :00
-0 * * * * /usr/bin/php ".$scriptsPath."verify-sites.php >/dev/null 2>&1
-";
-if(!$isTestServer){
-$crontabs.="#every 5 minutes
-0-59/20 * * * * /usr/bin/php ".$scriptsPath."move-mls-images.php > /dev/null 2>&1
-
-# every day at 12:15am
-15 0 * * * /usr/bin/perl ".$scriptsPath."rsync_backup.pl >/dev/null 2>&1
-
-# every day at 1:30am
-30 1 * * * /usr/bin/php ".$scriptsPath."mysql-backup/backup_dbs.php >/dev/null 2>&1
-
-# every day at 12:20am
-20 0 * * * /usr/bin/php ".$scriptsPath."listing-image-cleanup.php > /dev/null 2>&1";
-}
-
-	$arr1=explode("\n", file_get_contents($rootCronPath));
-	for($i=0;$i<count($arr1);$i++){
-		if(trim($arr1[$i]) == "" || substr($arr1[$i], 0, 1) != "#"){
-			$arr1=array_slice($arr1, $i);
-			break;
-		}
-	}
-	$contents=implode("\n", $arr1);
-	$beginString="\n#jetendo-root-crontabs-begin\n";
-	$endString="\n#jetendo-root-crontabs-end\n";
-	$begin=strpos($contents, $beginString);
-	if($begin===FALSE){
-		$contents.=$beginString;
-		$begin=strpos($contents, $beginString);
-	}
-	$end=strpos($contents, $endString, $begin);
-	if($end===FALSE){
-		$contents.=$endString;
-		$end=strpos($contents, $endString);
-	}
-	$fileBeginContents=substr($contents, 0, $begin+strlen($beginString));
-	$fileContentsHosts=trim(substr($contents, $begin+strlen($beginString), $end-($begin+strlen($beginString))));
-	$fileEndContents=substr($contents, $end);
-	
-	$newFileContents=str_replace("\r", "", $fileBeginContents.$crontabs.$fileEndContents);
-	if(!$debug){
-		$fp=fopen($rootCronPath, "w");
-		fwrite($fp, $newFileContents);
-		fclose($fp);
-		chown($rootCronPath, "root");
-		chgrp($rootCronPath, "crontab");
-		chmod($rootCronPath, 0600);
-		// update cron with the new file
-		`/usr/bin/crontab /var/spool/cron/crontabs/root`;
-	}
-	echo("Crontab install complete\n");
-
-}
 
 $dir=__DIR__;
 if(!file_exists($dir."/jetendo.ini")){
@@ -99,6 +31,8 @@ if($r->num_rows == 0){
 		'" has permission to create the database or create it manually and re-run this script.';
 	}
 }
+
+
 
 // source code install & integrity checks
 
@@ -147,8 +81,12 @@ if(strpos($status, "nothing to commit") !== FALSE){
 	}
 }
 
+if(!checkMySQLPrivileges()){
+	echo "You must correct mysql privileges and re-run this installation script.\n";
+	exit;
+}
 
-installJetendoCronTabs();
+installJetendoCronTabs($debug);
 
 if(zIsTestServer()){
 	$adminDomain=get_cfg_var("jetendo_test_admin_domain");
