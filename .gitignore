@@ -8,6 +8,7 @@ share/task-log/*
 !share/database
 !share/database/data
 !share/database/jetendo-schema.json
+share/database/jetendo-schema-current.json
 !share/task-log
 !share/task-log/placeholder.txt
 !jetendo-schema.json

@@ -53,6 +53,12 @@
 			structclear(application.zcore.templateCFCCache[i]);
 		}
 	}
+
+	configCom=createobject("component", "zcorerootmapping.config");
+	ts=configCom.getConfig(request.zos.cgi);
+	structappend(request.zos, ts.zos, true);
+
+
 	variables.updateApplicationCFCFunctions();
 	
 	tempVar=createobject("component","zcorerootmapping.functionInclude");
@@ -179,6 +185,13 @@
 		}
 		application.zcore.functions.zUpdateCustomSiteFunctions(application.siteStruct[n]);
 	} 
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("jetendo_setup", request.zos.zcoreDatasource)# LIMIT #db.param(0)#, #db.param(1)#";
+	qSetup=db.execute("qSetup");
+	if(qSetup.recordcount EQ 0 or qSetup.jetendo_setup_database_version NEQ request.zos.databaseVersion){
+		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+		dbUpgradeCom.checkVersion();
+	}
 	structappend(request, backupStruct, true);
 	</cfscript>
 </cffunction>

@@ -593,7 +593,7 @@ userCom.checkLogin(inputStruct);
 <cffunction name="createSecurePasswordVersion2" localmode="modern" access="private" output="no" returntype="string">
 	<cfargument name="password" type="string" required="yes">
 	<cfscript>
-	return application.zcore.functions.zSecureCommand("getScryptEncrypt#chr(9)##replace(arguments.password, chr(9), "", "all")#", 10); 
+	return application.zcore.functions.zSecureCommand("getScryptEncrypt#chr(9)##replace(arguments.password, chr(9), "", "all")#", 20); 
 	</cfscript>
 </cffunction>
 
@@ -617,7 +617,7 @@ userCom.checkLogin(inputStruct);
 			return false;
 		}
 	}else if(arguments.version EQ 2){
-		return application.zcore.functions.zSecureCommand("getScryptCheck"&chr(9)&replace(arguments.password, chr(9), "", "all")&chr(9)&arguments.hashedPassword, 10);
+		return application.zcore.functions.zSecureCommand("getScryptCheck"&chr(9)&replace(arguments.password, chr(9), "", "all")&chr(9)&arguments.hashedPassword, 20);
 	}else{
 		throw("convertPlainTextToSecurePassword() error: Invalid arguments.version. Supported values are: 0,1 or 2. 2 is recommended if Java is enabled.");	
 	}

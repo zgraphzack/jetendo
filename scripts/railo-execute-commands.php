@@ -33,9 +33,76 @@ function processContents($contents){
 		return verifySitePaths();
 	}else if($contents =="installThemeToSite"){
 		return installThemeToSite($a);
+	}else if($contents =="mysqlDumpTable"){
+		return mysqlDumpTable($a);
+	}else if($contents =="mysqlRestoreTable"){
+		return mysqlRestoreTable($a);
 	}
 	return "";
 }
+function mysqlDumpTable($a){
+	if(count($a) != 2){
+		echo "2 arguments are required: schema and table.\n";
+		return "0";
+	}
+	if($a[0] == ""){
+		echo "schema is a required argument.\n";
+		return "0";
+	}
+	if($a[1] == ""){
+		echo "table is a required argument.\n";
+		return "0";
+	}
+	$schema=$a[0];
+	$table=$a[1];
+
+	$path=get_cfg_var("jetendo_share_path")."database/backup/".$schema.".".$table.".sql";
+	@unlink($path);
+	$cmd="/usr/bin/mysqldump -h ".escapeshellarg(get_cfg_var("jetendo_mysql_default_host"))." -u ".
+	escapeshellarg(get_cfg_var("jetendo_mysql_default_user"))." --password=".escapeshellarg(get_cfg_var("jetendo_mysql_default_password")).
+	" --quick --single-transaction --opt ".escapeshellarg($schema)." ".escapeshellarg($table)." 2>&1 > $path";
+	echo $cmd."\n";
+	$r=`$cmd`;
+	echo $r."\n";
+	if(file_exists($path)){
+		chown($path, get_cfg_var("jetendo_www_user"));
+		chgrp($path, get_cfg_var("jetendo_www_user"));
+		chmod($path, 0660);
+		if(filesize($path)){
+			return "1";
+		}else{
+			echo "Filesize was zero: ".$path." | There may be a permissions problem.\n";
+			return "0";
+		}
+	}else{
+		return "0";
+	}
+}
+function mysqlRestoreTable($a){
+	if(count($a) != 2){
+		echo "2 arguments are required: schema and table.\n";
+		return "0";
+	}
+	if($a[0] == ""){
+		echo "schema is a required argument.\n";
+		return "0";
+	}
+	if($a[1] == ""){
+		echo "table is a required argument.\n";
+		return "0";
+	}
+	$schema=$a[0];
+	$table=$a[1];
+	$path=get_cfg_var("jetendo_share_path")."database/backup/".$schema.".".$table.".sql";
+	$cmd="/usr/bin/mysql -h ".escapeshellarg(get_cfg_var("jetendo_mysql_default_host"))." -u ".
+	escapeshellarg(get_cfg_var("jetendo_mysql_default_user"))." --password=".escapeshellarg(get_cfg_var("jetendo_mysql_default_password")).
+	" -D ".escapeshellarg($schema)." < ".escapeshellarg($path);
+	$r=`$cmd`;
+	echo $r."\n";
+	echo $cmd;
+	return "1";
+}
+
 function renameSite($a){
 	if(count($a) != 2){
 		echo "2 arguments are required: siteShortDomainSource and siteShortDomainDestination.\n";

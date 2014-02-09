@@ -1,6 +1,5 @@
 <cfcomponent>
 <cfoutput>
-
 <cffunction name="init" localmode="modern" access="public">
 	<cfscript>
 	variables.siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
@@ -8,7 +7,7 @@
 	variables.curBackupDate=dateformat(now(), 'yyyymmdd')&timeformat(now(),'HHmmss');
 	variables.databaseBackupPath="#request.zos.backupDirectory#upgrade/databaseBackup#variables.curBackupDate#/";
 	variables.mysqlDatabaseBackupPath="#request.zos.mysqlBackupDirectory#upgrade/databaseBackup#variables.curBackupDate#/";
-	variables.tableVersionStruct=getTableVersionStruct();
+	//variables.tableVersionStruct=getTableVersionStruct();
 	</cfscript>
 </cffunction>
 
@@ -22,6 +21,12 @@
 	}catch(Any e){
 		throw("request.zos.zcoreDatasource, ""#request.zos.zcoreDatasource#"", must be a valid datasource.");
 	}
+	tempFile=request.zos.sharedPath&"database/jetendo-schema.json";
+	tempFile2=request.zos.sharedPath&"database/jetendo-schema-current.json";
+	if(not fileexists(tempFile2)){
+		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
+	}
+	currentVersion=0;
 	if(qCheck.recordcount NEQ 0){
 		query name="qVersion" datasource="#request.zos.zcoreDatasource#"{
 			echo("SELECT * FROM jetendo_setup LIMIT 0,1");
@@ -30,6 +35,7 @@
 			query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
 				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
 			}
+			currentVersion=request.zos.databaseVersion;
 			if(not structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
 				return true;
 			}
@@ -41,281 +47,234 @@
 			}else if(qVersion.jetendo_setup_database_version GT request.zos.databaseVersion){
 				throw("Jetendo database is a newer version then request.zos.databaseVersion.  Please check that source code version is the same or newer then database.");
 			}
+			currentVersion=qVersion.jetendo_setup_database_version;
 		}
 	}
 	setting requesttimeout="500";
 	application[request.zos.installPath&":dbUpgradeCheckVersion"]=true;
 
 	// verify the rest of the config.cfc values before installing database & application.
-
-
-	// install database
-	if(qCheck.recordcount EQ 0){
+	renameStruct={};
+	if(currentVersion EQ 0){
 		installInitialDatabase();
-
+		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
 		query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
 			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
 		}
 		application[request.zos.installPath&":displaySetupScreen"]=true;
 	}else{
-		echo("upgrade");abort;
-		// upgrade database
-		index();
+		if(not request.zos.isTestServer){
+			return true; // ignore upgrades for now.
+		}
+		init();
+		curDSStruct={};
+		// verify integrity of currentVersion to ensure upgrade will be successfull
+		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
+		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
+		newDsStruct=deserializeJson(application.zcore.functions.zreadfile(tempFile2));
+		
+		existingDsStruct=schemaStruct.struct; 
+		verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
+		if(not verifyStruct.success){
+			writeoutput('Upgrade aborted. The current database schema doesn''t match the installed version defined in #tempFile2#. 
+				The following differences were detected and 
+				they must be manually fixed before running the upgrade process again.');
+			writedump(verifyStruct.arrDiff);
+			return false;
+		}
+		backupStruct=backupAffectedTablesInVersionRange(currentVersion+1, request.zos.databaseVersion);
+
+		for(i=currentVersion+1;i LTE request.zos.databaseVersion;i++){
+			if(not fileexists(request.zos.installPath&"core/com/model/upgrade/db-"&i&".cfc")){
+				throw("No database upgrade CFC exists for version, #i#, in "&request.zos.installPath&"core/com/model/upgrade/");
+			} 
+			upgradeCom=createobject("component", "zcorerootmapping.com.model.upgrade.db-"&i);
+			result=upgradeCom.executeUpgrade(this);
+			if(not result){
+				echo("Upgrade aborted.");
+				restoreTables(backupStruct);
+				return false;
+			}else{
+				echo('Upgrade scripts completed successfully for version: #i#.<br />');
+			}
+		}
+		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
+		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
+		tempFile=request.zos.sharedPath&"database/jetendo-schema.json";
+		newDsStruct=deserializeJson(application.zcore.functions.zreadfile(tempFile));
+		existingDsStruct=schemaStruct.struct; 
+		verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
+		if(not verifyStruct.success){
+			writeoutput('Database schema validation failed post-upgrade. The upgrade scripts may be broken. 
+				The following differences were detected:<br />');
+			writedump(verifyStruct.arrDiff);
+			restoreTables(backupStruct);
+			return false;
+		}
+
+		writeoutput('Database upgraded successfully');
 
 		query name="qUpdate" datasource="#request.zos.zcoreDatasource#"{
-			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
+			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#arguments.version#' ");
 		}
+		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
+		echo("Upgrade complete.");
+		application.zcore.functions.zabort();
 	}
 	</cfscript>
 </cffunction>
 
-<cffunction name="getTableVersionStruct" localmode="modern" returntype="struct" access="public">
+
+<cffunction name="executeQuery" localmode="modern" access="public" returntype="boolean">
+	<cfargument name="sql" type="string" required="yes">
+	<cfargument name="datasource" type="string" required="yes">
 	<cfscript>
-	// this file must be manually updated when you want change which tables are being tracked for versioning
-	
-	// later implement hooks so rental and listing apps register their tables with this component in a different CFC.
-	var tableVersionStruct={
-		zcoreDatasource: {
-			app: true,
-			app_db_offset: true,
-			app_reserve: true,
-			app_x_site: true,
-			blog: true,
-			blog_category: true,
-			blog_category_version: true,
-			blog_comment: true,
-			blog_config: true,
-			blog_tag: true,
-			blog_tag_version: true,
-			blog_version: true,
-			blog_x_category: true,
-			blog_x_tag: true,
-			cf_data_type: true,
-			content: true,
-			content_config: true,
-			content_permissions: true,
-			content_property_type: true,
-			content_version: true,
-			country: true,
-			event: true,
-			event_recur: true,
-			field_map: true,
-			file: true,
-			image: true,
-			image_arrangement: true,
-			image_cache: true,
-			image_library: true,
-			inquiries: true,
-			inquiries_feedback: true,
-			inquiries_lead_template: true,
-			inquiries_lead_template_x_site: true,
-			inquiries_log: true,
-			inquiries_routing: true,
-			inquiries_status: true,
-			inquiries_type: true,
-			ip_block: true,
-			lang_culture: true,
-			lang_script_global: true,
-			lang_script_site: true,
-			lang_table_global: true,
-			lang_table_site: true,
-			link_hardcoded: true,
-			link_verify_link: true,
-			link_verify_status: true,
-			log: true,
-			log404: true,
-			login_log: true,
-			mail_user: true,
-			menu: true,
-			menu_button: true,
-			menu_button_link: true,
-			office: true,
-			page: true,
-			queue: true,
-			rewrite_rule: true,
-			robots: true,
-			robots_global: true,
-			search: true,
-			search_keyword_log: true,
-			sentence: true,
-			sentence_type: true,
-			sentence_word: true,
-			site: true,
-			site_option: true,
-			site_option_app: true,
-			site_option_group: true,
-			site_option_group_map: true,
-			site_x_option: true,
-			site_x_option_group: true,
-			site_x_option_group_set: true,
-			slideshow: true,
-			slideshow_image: true,
-			slideshow_tab: true,
-			state: true,
-			track_convert: true,
-			track_page: true,
-			track_user: true,
-			track_user_x_convert: true,
-			user: true,
-			user_group: true,
-			user_group_x_group: true,
-			user_token: true,
-			video: true,
-			zemail: true,
-			zemail_account: true,
-			zemail_campaign: true,
-			zemail_campaign_click: true,
-			zemail_campaign_x_user: true,
-			zemail_data: true,
-			zemail_folder: true,
-			zemail_list: true,
-			zemail_list_x_campaign: true,
-			zemail_list_x_user: true,
-			zemail_signature: true,
-			zemail_template: true,
-			zemail_template_type: true,
-			zipcode: true,
-			app_x_mls: true,
-			city: true,
-			city_distance: true,
-			city_distance_safe_update: true,
-			city_rename: true,
-			city_x_mls: true,
-			county: true,
-			listing: true,
-			listing_data: true,
-			listing_latlong: true,
-			listing_latlong_original: true,
-			listing_lookup: true,
-			listing_track: true,
-			listing_type: true,
-			listing_x_site: true,
-			manual_listing: true,
-			mls: true,
-			mls_dir: true,
-			mls_filter: true,
-			mls_image_hash: true,
-			mls_option: true,
-			mls_saved_search: true,
-			saved_listing: true,
-			search_count: true,
-			'zram##city': true,
-			'zram##city_distance': true,
-			'zram##listing': true,
-			availability: true,
-			availability_type: true,
-			availability_type_calendar: true,
-			rental: true,
-			rental_amenity: true,
-			rental_category: true,
-			rental_config: true,
-			rental_x_amenity: true,
-			rental_x_category: true,
-			special_rate: true,
-			far_feature: true
-		}
-	};
-	return tableVersionStruct;
+	db=request.zos.noVerifyQueryObject;
+	db.sql=arguments.sql;
+	try{
+		result=db.execute("qExecute", arguments.datasource);
+	}catch(Any e){
+		echo("Failed to execute query against datasource: "&arguments.datasource&"<br />sql;<br />"&arguments.sql&";<br /><br />");
+		writedump(e);
+		result=false;
+	}
+	if(not result){
+		return false;
+	}
+	return true;
 	</cfscript>
 </cffunction>
 
-
-<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
+<cffunction name="tableExistsInDatabase" localmode="modern" access="public" returntype="boolean">
+	<cfargument name="schema" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
 	<cfscript>
-	var i=0; 
-	var curDSStruct={};
-	var backupDatabaseStruct=structnew();
-	this.init();
-	if(not request.zos.isTestServer){
-		throw("This is not ready for the production environment yet.", "Exception");	
-	}
-	for(i=1;i LTE arraylen(application.zcore.arrGlobalDatasources);i++){
-		backupDatabaseStruct[application.zcore.arrGlobalDatasources[i]]=0; 
-	}
-	local.ds="zcore";
-	
-	// only backup tables that exist in the version struct for current installation
-	writedump(variables.tableVersionStruct);
-	abort;
-	
-	local.verifyStructureOnly=false;
-	 // generate dsStruct for current datasource
-	curDSStruct=application.zcore.functions.zGetDatabaseStructure(local.ds, curDSStruct);
-	local.schemaStruct=variables.siteBackupCom.generateSchemaBackup(local.ds, curDSStruct); 
-	
-	local.tempFile=request.zos.backupDirectory&"database-schema/#local.ds#.json";
-	local.newDsStruct=deserializeJson(application.zcore.functions.zreadfile(local.tempFile));
-	
-	local.existingDsStruct=local.schemaStruct.struct; 
-	
-	// version storage format
-	// 88kb zip of json schema files
-	/*
-	 
-	
-	store a separate json files that has
-	upgradeStruct={
-		version:"0.1.001",
-		renameStruct:{
-			schema: {
-				table: {
-					renameTable: "table2",
-					renameColumnStruct: {
-						"app2_id": "app_id",
-						"app2_name":"app_name"
-					}
-				}
-			}
-		},
-		upgradeCFC: 'db-0-01-001.cfc',
-		preProcessMethod: 'preProcess',
-		postProcessMethod: 'postProcess'
-	}
-	*/
-	// determine current version by the json file installed in jetendo root directory.
-	application.zcore.functions.zreadfile(request.zos.installPath&"version.json");
-	
-	
-	// determine new version
-	
-	// execute upgrades incrementally 1 version at a time until reaching the latest.
-	local.renameStruct={
-		"zcore": {
-			"app2": {
-				renameTable: "app",
-				renameColumnStruct: {
-					"app2_id": "app_id",
-					"app2_name":"app_name"
-				}
-			}
-		}
-	} 
-	
-	// uncomment to force db changes for testing purposes
-	//this.changeSchemaForDebugging(local.existingDsStruct, local.newDsStruct);
-	
-	local.rs=this.runDatabaseUpgrade(local.ds, local.renameStruct, local.existingDsStruct, local.newDsStruct, local.verifyStructureOnly);
-	if(local.verifyStructureOnly){
-		if(local.rs.success){
-			writeoutput('Database structure is valid.');
-		}else{
-			writeoutput('Database structure is not valid and had the following differences:');
-			writedump(local.rs.arrDiff); 
-		}
+	db=request.zos.noVerifyQueryObject;
+	db.sql="SHOW TABLES IN `#arguments.schema#` LIKE '#arguments.table#'";
+	qTable=db.execute("qTable", arguments.schema);
+	if(qTable.recordcount EQ 0){
+		return false;
 	}else{
-		if(local.rs.success){
-			// run again with verifyStructureOnly forced to true
-			local.rs2=this.runDatabaseUpgrade(local.ds, local.renameStruct, local.existingDsStruct, local.newDsStruct, true);
-			if(local.rs2.success){
-				writeoutput('Database upgraded successfully');
-			}else{
-				writeoutput('Database upgrade couldn''t be verified. The following differences were detected:');
-				writedump(local.rs2.arrDiff);
-			}
-		}
+		return true;
 	}
 	</cfscript>
 </cffunction>
+
+<cffunction name="backupAffectedTablesInVersionRange" localmode="modern" access="public" returntype="struct">
+	<cfargument name="startVersion" type="numeric" required="yes">
+	<cfargument name="endVersion" type="numeric" required="yes">
+	<cfscript>
+	i=0; 
+	backupStruct={};
+	backupPath=request.zos.sharedPath&"database/backup/";
+	application.zcore.functions.zcreatedirectory(backupPath);
+
+	for(n=arguments.startVersion;n LTE arguments.endVersion;n++){
+		if(not fileexists(request.zos.installPath&"core/com/model/upgrade/db-"&n&".cfc")){
+			throw("No database upgrade CFC exists for version, #n#, in "&request.zos.installPath&"core/com/model/upgrade/");
+		}
+		upgradeCom=createobject("component", "zcorerootmapping.com.model.upgrade.db-"&n);
+		arrChanged=upgradeCom.getChangedTableArray();
+
+		for(i=1;i LTE arrayLen(arrChanged);i++){
+			if(not structkeyexists(backupStruct, arrChanged[i].schema)){
+				backupStruct[arrChanged[i].schema]={};
+			}
+			if(tableExistsInDatabase(arrChanged[i].schema, arrChanged[i].table)){
+				backupTable(arrChanged[i].schema, arrChanged[i].table);
+				backupStruct[arrChanged[i].schema][arrChanged[i].table]=true;
+			}else{
+				backupStruct[arrChanged[i].schema][arrChanged[i].table]=false;
+			}
+		}
+	}
+	return backupStruct;
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="backupTable" localmode="modern" access="public" returntype="boolean">
+	<cfargument name="schema" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
+	<cfscript>
+	echo('Backing up table: #arguments.schema#.#arguments.table#<br />');
+	try{
+		result=application.zcore.functions.zSecureCommand("mysqlDumpTable#chr(9)##arguments.schema##chr(9)##arguments.table#", 200);
+	}catch(Any e){
+		savecontent variable="output"{
+			echo('Failed to backup table: #arguments.schema#.#arguments.table# | 
+				zSecureCommand timed out or failed: mysqlDumpTable#chr(9)##arguments.schema##chr(9)##arguments.table#<br />');
+			writedump(e);
+		}
+		throw(output); // prevent further execution
+	}
+	if(result NEQ "1"){
+		throw('Failed to backup table: #arguments.schema#.#arguments.table# | 
+			zSecureCommand failed: mysqlDumpTable#chr(9)##arguments.schema##chr(9)##arguments.table#<br />');
+	}
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="restoreTable" localmode="modern" access="public" returntype="boolean">
+	<cfargument name="schema" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
+	<cfscript>
+	echo('Restoring table: #arguments.schema#.#arguments.table#<br />');
+	try{
+		result=application.zcore.functions.zSecureCommand("mysqlRestoreTable#chr(9)##arguments.schema##chr(9)##arguments.table#", 200);
+	}catch(Any e){
+		echo('Failed to restore table: #arguments.schema#.#arguments.table# | 
+			zSecureCommand timed out or failed: mysqlRestoreTable#chr(9)##arguments.schema##chr(9)##arguments.table#<br />');
+		writedump(e);
+		return false;
+	}
+	if(result EQ "0"){
+		echo('Failed to restore table: #arguments.schema#.#arguments.table# | 
+			zSecureCommand failed: mysqlRestoreTable#chr(9)##arguments.schema##chr(9)##arguments.table#<br />');
+		return false;
+	}
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="restoreTables" localmode="modern" access="public" returntype="boolean">
+	<cfargument name="backupStruct" type="struct" required="yes">
+	<cfscript>
+	success=true;
+	for(schema in arguments.backupStruct){
+		for(table in arguments.backupStruct[schema]){
+			tableExists=arguments.backupStruct[schema][table];
+			if(tableExists){
+				try{
+					result=restoreTable(schema, table);
+				}catch(Any e){
+					result=false;
+					echo('Failed to restore: #arguments.schema#.#arguments.table#<br />');
+					writedump(e);
+				}
+				if(not result){
+					success=false;
+				}else{
+					echo('Restored: #arguments.schema#.#arguments.table#<br />');
+				}
+			}else{
+				db=request.zos.noVerifyQueryObject;
+				db.sql="DROP TABLE #db.table(arguments.table, arguments.schema)# ";
+				db.execute("qDrop", arguments.schema);
+				echo('Restoration dropped table that didn''t exist previously: #arguments.schema#.#arguments.table#<br />');
+			}
+		}
+	}
+	if(success){
+		echo('<h3>Database restored successfully.</h3>');
+	}
+	return success;
+	</cfscript>
+</cffunction>
+
+
+
 
 <cffunction name="importTableData" localmode="modern">
 	<cfargument name="filePath" type="string" required="yes">
@@ -537,7 +496,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="dumpInitialDatabase" localmode="modern" access="remote">
+<cffunction name="dumpInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	// dump json file or create sql
 	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database");
@@ -598,94 +557,15 @@
 	
 </cffunction>
 
-<cffunction name="installInitialDatabase" localmode="modern" access="remote">
+<cffunction name="installInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
-	// load schema in json format
 	tempFile=request.zos.installPath&"share/database/jetendo-schema.json";
 	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
 	dsStruct=deserializeJson(contents);
-
 	getCreateTableSQL(dsStruct);
-
 	restoreDataDumps();
-
-	// list of tables with global data:
-
-
-	//	mls table - needs rewrite so that the app creates the initial records instead of relying on manual entry.
-		
-		/*
-
-		maybe manually create these for first user, first site
-		user_group
-		site
-		user_group_x_group
-		user (initial server admin)
-	*/
-
 	</cfscript>
 </cffunction>
-	
-
-
-<cffunction name="changeSchemaForDebugging" localmode="modern" access="public"> 
-	<cfargument name="existingDsStruct" type="struct" required="yes">
-	<cfargument name="newDsStruct" type="struct" required="yes">
-	<cfscript>	
-	var i=0;
-	local.ds="zcore";
-	local.table="app";
-	
-	if(not request.zos.isTestServer){
-		throw("This shouldn't run in production environment.", "Exception");	
-	}
-	// force some changes for debugging the upgrade process
-	local.tt=duplicate(arguments.existingDsStruct.fieldStruct["#local.ds#.#local.table#"]);
-	local.tt.app2_id=local.tt.app_id;
-	local.tt.app2_name=local.tt.app_name;
-	//structdelete(local.tt, 'app_id');
-	structdelete(local.tt, 'app_name');
-	arguments.existingDsStruct.fieldStruct["#local.ds#.app2"]=local.tt;
-	
-	local.table1=(arguments.existingDsStruct.fieldStruct["#local.ds#.#local.table#"]);
-	local.table2=(arguments.newDsStruct.fieldStruct["#local.ds#.#local.table#"]);
-	local.table2.app_name.type="varchar(55)";
-	local.table1.app_deprecated_column={
-		columnIndex:structcount(local.table1)+1,
-		default:"",
-		extra:"",
-		key:"",
-		null:"NO",
-		type:"char(1)"
-	};
-	//structdelete(local.table2, 'app_id');
-	for(i in local.table2){
-		local.table2[i].columnIndex++;
-	}
-	local.table2.app_new_column={
-		columnIndex:1,
-		default:"default",
-		extra:"",
-		key:"",
-		null:"YES",
-		type:"varchar(10)"
-	}; 
-	local.table2.app_new_column_end={
-		columnIndex:structcount(local.table2)+1,
-		default:"default",
-		extra:"",
-		key:"",
-		null:"YES",
-		type:"varchar(1)"
-	};  
-	// detect new tables 
-	arguments.newDsStruct.tableStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.tableStruct["#local.ds#.app"]); 
-	arguments.newDsStruct.keyStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.keyStruct["#local.ds#.app"]); 
-	arguments.newDsStruct.fieldStruct["#local.ds#.drop_app_table"]=duplicate(arguments.newDsStruct.fieldStruct["#local.ds#.app"]);
-	structdelete(arguments.newDsStruct.tableStruct, "#local.ds#.app_x_site");
-	</cfscript>
-</cffunction>
-
 
 <!--- it would be more efficient to track the tables in schema that will be changed, and then only dump/restore those. --->
 <cffunction name="dumpTables" localmode="modern" access="public">
@@ -701,8 +581,6 @@
 	application.zcore.functions.zcreatedirectory("#request.zos.backupDirectory#upgrade");
 	application.zcore.functions.zdeletedirectory(variables.databaseBackupPath);
 	application.zcore.functions.zcreatedirectory(variables.databaseBackupPath);
-	// this may be efficient, but it's insecure to allow CFML to access mysqldump
-	// mysqldump --user= --password= --host=  --port= #arguments.schema# #arrayToList(arrTable, ' ')# > /path/to/#arguments.schema#-dump.sql
 	
 	db.sql="SHOW TABLES IN `#arguments.schema#`";
 	local.qTables=db.execute("qTables");
@@ -763,21 +641,6 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="restoreTables" localmode="modern" access="public">
-	<cfargument name="schema" type="string" required="yes">
-	<cfscript>
-	var db=this.getDbObject(arguments.schema);
-	var i=0;
-	// drop tables in database
-	var arrSql=listToArray(application.zcore.functions.zreadfile("#variables.databaseBackupPath##arguments.schema#-schema-backup.sql"), chr(10), false);
-	//writedump(arrSql);
-	for(i=1;i LTE arrayLen(arrSQL);i++){
-		db.sql=arrSQL[i];
-		local.result=db.execute("qRestore");
-		writeoutput(i&":"&local.result&"<br>");
-	}
-	</cfscript>
-</cffunction>
 	
 <cffunction name="runDatabaseUpgrade" localmode="modern" access="public">
 	<cfargument name="schema" type="string" required="yes">
@@ -806,33 +669,8 @@
 	if(arraylen(local.arrDiff)){
 		// backup tables
 		this.dumpTables(arguments.schema, structKeyArray(local.changedTableStruct), structKeyArray(local.newTableStruct));
-		
-		// run upgrade queries	
-		/*	
-		// disabled until I'm sure I want it to run
-		for(i=1;i LTE arraylen(local.arrDiff);i++){
-			db.sql=local.arrDiff[i].sql;
-			local.queryFailed=true;
-			local.currentError="";
-			try{
-				local.result=db.execute("q#i#");
-				local.queryFailed=false;
-			}catch(Any local.excpt){
-				local.currentError=local.excpt;
-			}
-			if(local.queryFailed){
-				writeoutput("Query failed:"&local.arrDiff[i]);
-				writedump(local.currentError);
-				
-				writeoutput('Reverting to previous database backup.');
-				this.restoreTables(arguments.schema);
-				writeoutput('Database upgrade cancelled and reverted successfully.');
-				return {success:false, arrDiff:local.arrDiff};
-			}
-		}*/
 	}
-	//writedump(local.existingDsStruct.fieldStruct);	abort;
-	return {success:true, arrDiff:local.arrDiff};
+	return {success:true, arrDiff:local.arrDiff, changedTableStruct: local.changedTableStruct};
 	</cfscript>
 </cffunction>
 
@@ -903,12 +741,6 @@
 			// check if I should alter table
 			local.alterEnabled=false;
 			local.arrAlterColumns=getTableDiffAsSQL(arguments.existingDsStruct.fieldStruct[i], arguments.newDsStruct.fieldStruct[i]);
-			/*if(i EQ 'zcore.app'){
-				writeoutput('test');
-				writedump(arguments.existingDsStruct.fieldStruct[i]);
-				writedump(local.newDsStruct.fieldStruct[i]);
-				writedump(local.arrAlterColumns);
-			}*/
 			if(arrayLen(local.arrAlterColumns)){
 				local.alterEnabled=true;
 			}

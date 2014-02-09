@@ -75,7 +75,7 @@
 		}else if(gettickcount()-startTime GTE arguments.timeoutInSeconds){
 			application.zcore.functions.zdeletefile(startPath);
 			application.zcore.functions.zdeletefile(completePath);
-			throw("Timeout occurred while running zSecureCommand.  The temporary files were automatically deleted. You may need to verify the PHP cron job is working correctly if this command continues to fail.");
+			throw("Timeout occurred while running zSecureCommand: #listGetAt(arguments.command, 1, chr(9))#.  The temporary files were automatically deleted. You may need to verify the PHP cron job is working correctly if this command continues to fail.");
 		}
 	}
 	</cfscript>
