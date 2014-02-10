@@ -1230,10 +1230,9 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	<cfargument name="ds" type="string" required="yes" hint="Database name">
 	<cfargument name="rs" type="struct" required="no" default="#structnew()#" hint="Send in an existing struct to add this database to it.">
 	<cfscript>
-	var db=request.zos.noverifyQueryObject;
-	var local=structnew();
 	var rs=structnew();
-	var db2=0;
+	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
+	ts=siteBackupCom.getExcludedTableStruct();
 	if(structcount(arguments.rs) EQ 0){
 		arguments.rs.allTableStruct=structnew();
 		arguments.rs.fieldStruct=structnew();
@@ -1243,70 +1242,83 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		arguments.rs.siteTableStruct=structnew();
 		arguments.rs.tableStruct=structnew();
 	}
-	db2=request.zos.noVerifyQueryObject;
-	db2.sql="show tables from `#arguments.ds#`";
-	local.q2=db.execute("q2");
+	query name="q2" datasource="#arguments.ds#"{
+		echo("show tables from `#arguments.ds#`");
+	}
 	arguments.rs.allTableStruct[arguments.ds]=structnew();
 	arguments.rs.globalTableStruct[arguments.ds]=structnew();
 	arguments.rs.siteTableStruct[arguments.ds]=structnew();
-	db2.sql="SHOW TABLE STATUS FROM `"&arguments.ds&"` WHERE ENGINE IS NOT NULL";
-	local.qC5=db2.execute("qC5");
-	db2.sql="SELECT t.table_name, CCSA.character_set_name FROM information_schema.`TABLES` t, 
-	information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA 
-	WHERE CCSA.collation_name = t.table_collation  AND t.table_schema = '"&arguments.ds&"'";
-	local.qC6=db2.execute("qC6");
-	for(local.n2=1;local.n2 LTE local.qC5.recordcount;local.n2++){
-		arguments.rs.fieldStruct[arguments.ds&"."&local.qC5.name[local.n2]]={};
-		arguments.rs.keyStruct[arguments.ds&"."&local.qC5.name[local.n2]]={};
-		arguments.rs.triggerStruct[arguments.ds&"."&local.qC5.name[local.n2]]={};
-		arguments.rs.tableStruct[arguments.ds&"."&local.qC5.name[local.n2]]={engine=local.qC5.engine[local.n2],create_options=local.qC5.create_options[local.n2],collation=local.qC5.collation[local.n2],charset=""};
+	query name="qC5" datasource="#arguments.ds#"{
+		echo("SHOW TABLE STATUS FROM `"&application.zcore.functions.zescape(arguments.ds)&"` WHERE ENGINE IS NOT NULL");
 	}
-	for(local.n2=1;local.n2 LTE local.qC6.recordcount;local.n2++){
-		arguments.rs.tableStruct[arguments.ds&"."&local.qC6.table_name[local.n2]].charset=local.qC6.character_set_name[local.n2];
+	query name="qC6" datasource="#arguments.ds#"{
+		echo("SELECT t.table_name, CCSA.character_set_name FROM information_schema.`TABLES` t, 
+		information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA 
+		WHERE CCSA.collation_name = t.table_collation  AND t.table_schema = '"&application.zcore.functions.zescape(arguments.ds)&"'");
 	}
-	db2.sql="SHOW TRIGGERS FROM "&arguments.ds;
-	local.qT=db2.execute("qT");
+	for(n2=1;n2 LTE qC5.recordcount;n2++){
+		if(not structkeyexists(ts, qC5.name[n2])){
+			arguments.rs.fieldStruct[arguments.ds&"."&qC5.name[n2]]={};
+			arguments.rs.keyStruct[arguments.ds&"."&qC5.name[n2]]={};
+			arguments.rs.triggerStruct[arguments.ds&"."&qC5.name[n2]]={};
+			arguments.rs.tableStruct[arguments.ds&"."&qC5.name[n2]]={engine=qC5.engine[n2],create_options=qC5.create_options[n2],collation=qC5.collation[n2],charset=""};
+		}
+	}
+	for(n2=1;n2 LTE qC6.recordcount;n2++){
+		if(not structkeyexists(ts, qC6.table_name[n2])){
+			arguments.rs.tableStruct[arguments.ds&"."&qC6.table_name[n2]].charset=qC6.character_set_name[n2];
+		}
+	}
+	query name="qT" datasource="#arguments.ds#"{
+		echo("SHOW TRIGGERS FROM `"&application.zcore.functions.zescape(arguments.ds)&"`");
+	}
 	arguments.rs.triggerStruct[arguments.ds]=structnew();
-	for(local.i=1;local.i LTE local.qT.recordcount;local.i++){
-		arguments.rs.triggerStruct[arguments.ds&"."&local.qT.table[local.i]][local.qT.trigger[local.i]]={event=local.qT.event[local.i],statement=local.qT.statement[local.i],timing=local.qT.timing[local.i]};
+	for(i=1;i LTE qT.recordcount;i++){
+		if(not structkeyexists(ts, qT.table[i])){
+			arguments.rs.triggerStruct[arguments.ds&"."&qT.table[i]][qT.trigger[i]]={event=qT.event[i],statement=qT.statement[i],timing=qT.timing[i]};
+		}
 	}
-	for(local.row in local.q2){
-		local.matchSiteId=false;
-		local.tableName=local.row['Tables_in_'&arguments.ds];
-		db2.sql="show fields from "&request.zos.noVerifyQueryObject.table(local.tableName, arguments.ds);
-		local.qC2=db2.execute("qC2");
-		arguments.rs.fieldArrayStruct[arguments.ds&"."&local.tableName]=[];
-		for(local.n2=1;local.n2 LTE local.qC2.recordcount;local.n2++){
-			if(local.qC2.field[local.n2] EQ "site_id"){
-				local.matchSiteId=true;
-				arguments.rs.siteTableStruct[arguments.ds][local.tableName]=true;
+	for(row in q2){
+		matchSiteId=false;
+		tableName=row['Tables_in_'&arguments.ds];
+		if(not structkeyexists(ts, tableName)){
+			query name="qC2" datasource="#arguments.ds#"{
+				echo("show fields from `#arguments.ds#`.`#tableName#`");
 			}
-			arrayAppend(arguments.rs.fieldArrayStruct[arguments.ds&"."&local.tableName], local.qc2.field[local.n2]);
-			arguments.rs.fieldStruct[arguments.ds&"."&local.tableName][local.qc2.field[local.n2]]={
-				type:local.qc2.type[local.n2],
-				null:local.qc2.null[local.n2],key=local.qc2.key[local.n2], 
-				default:local.qc2.default[local.n2],
-				extra:local.qc2.extra[local.n2],
-				columnIndex:local.n2
-			};
-		}
-		db2.sql="show keys from `"&arguments.ds&"`.`"&local.tableName&"`";
-		local.qC3=db2.execute("qC3");
-		for(local.n2=1;local.n2 LTE local.qC3.recordcount;local.n2++){
-			if(not structkeyexists(arguments.rs.keyStruct[arguments.ds&"."&local.tableName], local.qc3.key_name[local.n2])){
-				arguments.rs.keyStruct[arguments.ds&"."&local.tableName][local.qc3.key_name[local.n2]]=[];
+			arguments.rs.fieldArrayStruct[arguments.ds&"."&tableName]=[];
+			for(n2=1;n2 LTE qC2.recordcount;n2++){
+				if(qC2.field[n2] EQ "site_id"){
+					matchSiteId=true;
+					arguments.rs.siteTableStruct[arguments.ds][tableName]=true;
+				}
+				arrayAppend(arguments.rs.fieldArrayStruct[arguments.ds&"."&tableName], qc2.field[n2]);
+				arguments.rs.fieldStruct[arguments.ds&"."&tableName][qc2.field[n2]]={
+					type:qc2.type[n2],
+					null:qc2.null[n2],key=qc2.key[n2], 
+					default:qc2.default[n2],
+					extra:qc2.extra[n2],
+					columnIndex:n2
+				};
 			}
-			arrayAppend(arguments.rs.keyStruct[arguments.ds&"."&local.tableName][local.qc3.key_name[local.n2]], {
-				non_unique=local.qc3.non_unique[local.n2], 
-				seq_in_index=local.qc3.seq_in_index[local.n2],
-				column_name=local.qc3.column_name[local.n2], 
-				index_type=local.qc3.index_type[local.n2]
-			});
+			query name="qC3" datasource="#arguments.ds#"{
+				echo("show keys from `#arguments.ds#`.`#tableName#`");
+			}
+			for(n2=1;n2 LTE qC3.recordcount;n2++){
+				if(not structkeyexists(arguments.rs.keyStruct[arguments.ds&"."&tableName], qc3.key_name[n2])){
+					arguments.rs.keyStruct[arguments.ds&"."&tableName][qc3.key_name[n2]]=[];
+				}
+				arrayAppend(arguments.rs.keyStruct[arguments.ds&"."&tableName][qc3.key_name[n2]], {
+					non_unique=qc3.non_unique[n2], 
+					seq_in_index=qc3.seq_in_index[n2],
+					column_name=qc3.column_name[n2], 
+					index_type=qc3.index_type[n2]
+				});
+			}
+			if(matchSiteId EQ false){
+				arguments.rs.globalTableStruct[arguments.ds][tableName]=true;
+			}
+			arguments.rs.allTableStruct[arguments.ds][tableName]=true;
 		}
-		if(local.matchSiteId EQ false){
-			arguments.rs.globalTableStruct[arguments.ds][local.tableName]=true;
-		}
-		arguments.rs.allTableStruct[arguments.ds][local.tableName]=true;
 	}
 	return arguments.rs;
 	</cfscript>

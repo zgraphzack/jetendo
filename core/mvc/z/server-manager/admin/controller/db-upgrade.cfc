@@ -11,9 +11,53 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="verifyDatabaseStructure" localmode="modern" access="public">
+	<cfargument name="schemaFilePath" type="string" required="yes">
+	<cfscript>
+	init();
+	curDSStruct={};
+	renameStruct={};
+	query name="qVersion" datasource="#request.zos.zcoreDatasource#"{
+		echo("SELECT * FROM jetendo_setup LIMIT 0,1");
+	}
+	// verify integrity of currentVersion to ensure upgrade will be successfull
+	newDsStruct=deserializeJson(replace(application.zcore.functions.zreadfile(arguments.schemaFilePath), "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
+	if(newDsStruct.databaseVersion GTE qVersion.jetendo_setup_database_version){
+		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
+		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
+		
+		existingDsStruct=schemaStruct.struct; 
+		verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
+		if(not verifyStruct.success){
+			writeoutput('A database upgrade can''t be performed.<br />
+				The current database schema (#newDSStruct.databaseVersion#)  doesn''t match 
+				the installed version (#qVersion.jetendo_setup_database_version#) defined in #arguments.schemaFilePath#.<br />
+				The differences must be manually fixed before running the upgrade process again.<hr />');
+			return false;
+		}
+	}else{
+		// installed database is older version then schema json file
+		echo('Current database version ('&qVersion.jetendo_setup_database_version&') is older 
+			then the current schema version ('&newDSStruct.databaseVersion&').<br />
+			Schema can''t be validated.<br />
+			A database upgrade can be performed on the test server only.<br />');
+		if(not request.zos.isTestServer){
+			return false;
+		}
+	}
+	echo("Database structure verified successfully.<br />");
+	return true;
+	</cfscript>
+</cffunction>
 
 <cffunction name="checkVersion" localmode="modern" access="public">
 	<cfscript>
+	if(not structkeyexists(application.zcore, 'databaseVersion')){
+		versionCom=createobject("component", "zcorerootmapping.version");
+	    ts2=versionCom.getVersion();
+	    application.zcore.databaseVersion=ts2.databaseVersion;
+	    application.zcore.sourceVersion=ts2.sourceVersion;
+	}
 	try{
 		query name="qCheck" datasource="#request.zos.zcoreDatasource#"{
 			echo("SHOW TABLES IN `#request.zos.zcoreDatasource#` LIKE 'jetendo_setup'");
@@ -33,19 +77,19 @@
 		}
 		if(qVersion.recordcount EQ 0){
 			query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
-				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
+				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
 			}
-			currentVersion=request.zos.databaseVersion;
+			currentVersion=application.zcore.databaseVersion;
 			if(not structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
 				return true;
 			}
 		}else{
-			if(qVersion.jetendo_setup_database_version EQ request.zos.databaseVersion){
+			if(qVersion.jetendo_setup_database_version EQ application.zcore.databaseVersion){
 				if(not structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
 					return true;
 				}
-			}else if(qVersion.jetendo_setup_database_version GT request.zos.databaseVersion){
-				throw("Jetendo database is a newer version then request.zos.databaseVersion.  Please check that source code version is the same or newer then database.");
+			}else if(qVersion.jetendo_setup_database_version GT application.zcore.databaseVersion){
+				throw("Jetendo database is a newer version then application.zcore.databaseVersion.  Please check that source code version is the same or newer then database.");
 			}
 			currentVersion=qVersion.jetendo_setup_database_version;
 		}
@@ -54,71 +98,79 @@
 	application[request.zos.installPath&":dbUpgradeCheckVersion"]=true;
 
 	// verify the rest of the config.cfc values before installing database & application.
-	renameStruct={};
 	if(currentVersion EQ 0){
 		installInitialDatabase();
 		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
 		query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
-			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#request.zos.databaseVersion#' ");
+			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
 		}
 		application[request.zos.installPath&":displaySetupScreen"]=true;
+	}else if(currentVersion EQ application.zcore.databaseVersion){
+		return true;
 	}else{
 		if(not request.zos.isTestServer){
-			return true; // ignore upgrades for now.
+		//	return true; // ignore upgrades for now.
 		}
-		init();
-		curDSStruct={};
-		// verify integrity of currentVersion to ensure upgrade will be successfull
-		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
-		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
-		newDsStruct=deserializeJson(application.zcore.functions.zreadfile(tempFile2));
-		
-		existingDsStruct=schemaStruct.struct; 
-		verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
-		if(not verifyStruct.success){
-			writeoutput('Upgrade aborted. The current database schema doesn''t match the installed version defined in #tempFile2#. 
-				The following differences were detected and 
-				they must be manually fixed before running the upgrade process again.');
-			writedump(verifyStruct.arrDiff);
+		echo('<h2>Database Upgrade Executed.</h2>');
+
+		newDsStruct=deserializeJson(replace(application.zcore.functions.zreadfile(tempFile), "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
+		if(newDsStruct.databaseVersion NEQ application.zcore.databaseVersion){
+			if(not request.zos.isTestServer){
+				echo('Database upgrade aborted during pre-upgrade phase (no changes were made).<br />
+					Upgrading the database on a production server requires the schema version to match the source code version.<br />');
+				return false;
+			}
+		}
+		if(not verifyDatabaseStructure(tempFile2)){
 			return false;
 		}
-		backupStruct=backupAffectedTablesInVersionRange(currentVersion+1, request.zos.databaseVersion);
-
-		for(i=currentVersion+1;i LTE request.zos.databaseVersion;i++){
+		backupStruct=backupAffectedTablesInVersionRange(currentVersion+1, application.zcore.databaseVersion);
+		echo('Upgrading from database version: '&currentVersion&' to '&application.zcore.databaseVersion&'<br />');
+		for(i=currentVersion+1;i LTE application.zcore.databaseVersion;i++){
 			if(not fileexists(request.zos.installPath&"core/com/model/upgrade/db-"&i&".cfc")){
 				throw("No database upgrade CFC exists for version, #i#, in "&request.zos.installPath&"core/com/model/upgrade/");
 			} 
+			echo("Executing zcorerootmapping.com.model.upgrade.db-#i# executeUpgrade()<br />");
 			upgradeCom=createobject("component", "zcorerootmapping.com.model.upgrade.db-"&i);
 			result=upgradeCom.executeUpgrade(this);
 			if(not result){
-				echo("Upgrade aborted.");
+				echo("Database upgrade aborted during upgrade phase. Changes may have been made.");
 				restoreTables(backupStruct);
 				return false;
 			}else{
 				echo('Upgrade scripts completed successfully for version: #i#.<br />');
 			}
 		}
+		curDsStruct={};
+		renameStruct={};
 		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
 		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
 		tempFile=request.zos.sharedPath&"database/jetendo-schema.json";
-		newDsStruct=deserializeJson(application.zcore.functions.zreadfile(tempFile));
-		existingDsStruct=schemaStruct.struct; 
-		verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
-		if(not verifyStruct.success){
-			writeoutput('Database schema validation failed post-upgrade. The upgrade scripts may be broken. 
-				The following differences were detected:<br />');
-			writedump(verifyStruct.arrDiff);
-			restoreTables(backupStruct);
-			return false;
+		if(newDsStruct.databaseVersion NEQ application.zcore.databaseVersion){
+			writeoutput('Database schema validation can''t be executed post-upgrade because this is a new version of the database on the test server. 
+				It is safe to ignore this if you wanted to change the database structure with a newly written upgrade script.<br />');
+		}else{
+			existingDsStruct=schemaStruct.struct; 
+			verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
+			if(not verifyStruct.success){
+				writeoutput('Database schema validation failed post-upgrade. Changes were made. 
+				The upgrade scripts may be broken.  You must verify your installation is still working.');
+				restoreTables(backupStruct);
+				return false;
+			}
 		}
-
-		writeoutput('Database upgraded successfully');
 
 		query name="qUpdate" datasource="#request.zos.zcoreDatasource#"{
-			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#arguments.version#' ");
+			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
 		}
-		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
-		echo("Upgrade complete.");
+
+		jsonOutput=replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL");
+		if(newDsStruct.databaseVersion LT application.zcore.databaseVersion){
+			application.zcore.functions.zwritefile(tempFile, jsonOutput);
+		}
+		application.zcore.functions.zwritefile(tempFile2, jsonOutput);
+
+		echo("Database upgrade complete.");
 		application.zcore.functions.zabort();
 	}
 	</cfscript>
@@ -126,22 +178,23 @@
 
 
 <cffunction name="executeQuery" localmode="modern" access="public" returntype="boolean">
-	<cfargument name="sql" type="string" required="yes">
 	<cfargument name="datasource" type="string" required="yes">
+	<cfargument name="sql" type="string" required="yes">
 	<cfscript>
 	db=request.zos.noVerifyQueryObject;
 	db.sql=arguments.sql;
 	try{
 		result=db.execute("qExecute", arguments.datasource);
 	}catch(Any e){
-		echo("Failed to execute query against datasource: "&arguments.datasource&"<br />sql;<br />"&arguments.sql&";<br /><br />");
+		echo("Failed to execute query against datasource: "&arguments.datasource&"<br />sql;<br />"&arguments.sql&";<hr />");
 		writedump(e);
 		result=false;
 	}
-	if(not result){
+	if(isBoolean(result) and not result){
 		return false;
 	}
-	return true;
+	echo("executeQuery completed successfully: "&arguments.datasource&"<br />sql;<br />"&arguments.sql&";<hr />");
+	return result;
 	</cfscript>
 </cffunction>
 
@@ -250,24 +303,31 @@
 					result=restoreTable(schema, table);
 				}catch(Any e){
 					result=false;
-					echo('Failed to restore: #arguments.schema#.#arguments.table#<br />');
+					echo('Failed to restore: #schema#.#table#<br />');
 					writedump(e);
 				}
 				if(not result){
 					success=false;
 				}else{
-					echo('Restored: #arguments.schema#.#arguments.table#<br />');
+					echo('Restored: #schema#.#table#<br />');
 				}
 			}else{
-				db=request.zos.noVerifyQueryObject;
-				db.sql="DROP TABLE #db.table(arguments.table, arguments.schema)# ";
-				db.execute("qDrop", arguments.schema);
-				echo('Restoration dropped table that didn''t exist previously: #arguments.schema#.#arguments.table#<br />');
+				query name="qSelect" datasource="#schema#"{
+					echo("SHOW TABLES IN `#schema#` LIKE '#application.zcore.functions.zescape(table)#'");
+				}
+				if(qSelect.recordcount NEQ 0){
+					query name="qDrop" datasource="#schema#"{
+						echo("DROP TABLE `#schema#`.`#table#`");
+					}
+				}
+				echo('Restoration dropped table that didn''t exist previously: #schema#.#table#<br />');
 			}
 		}
 	}
 	if(success){
 		echo('<h3>Database restored successfully.</h3>');
+	}else{
+		echo('<h3>Database may have only been partially restored.  Warning: there may be serious problems.  Verify your installation is still working.</h3>');
 	}
 	return success;
 	</cfscript>
@@ -345,7 +405,6 @@
 		db.sql&=" WHERE site_id = '0' ";
 	}
 	d=db.execute("qSelect");
-	writedump(d);
 	</cfscript>
 	
 </cffunction>
@@ -506,7 +565,7 @@
 	curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
 	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
 	schemaStruct=siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct);
-	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema.json", serializeJson(schemaStruct.struct)); 
+	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema.json", replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL")); 
 	// these tables need a key that allows the infile to replace on unique values easily.
 
 	dataTables=getDataTables();
@@ -561,7 +620,7 @@
 	<cfscript>
 	tempFile=request.zos.installPath&"share/database/jetendo-schema.json";
 	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
-	dsStruct=deserializeJson(contents);
+	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
 	getCreateTableSQL(dsStruct);
 	restoreDataDumps();
 	</cfscript>
@@ -577,54 +636,54 @@
 	var i=0;
 	var table=0;
 	var row=0;
-	local.arrSQL=[]; 
+	arrSQL=[]; 
 	application.zcore.functions.zcreatedirectory("#request.zos.backupDirectory#upgrade");
 	application.zcore.functions.zdeletedirectory(variables.databaseBackupPath);
 	application.zcore.functions.zcreatedirectory(variables.databaseBackupPath);
 	
 	db.sql="SHOW TABLES IN `#arguments.schema#`";
-	local.qTables=db.execute("qTables");
-	local.tableExistsStruct={};
-	for(row in local.qTables){
-		local.tableExistsStruct[row["Tables_in_#arguments.schema#"]]=true;
+	qTables=db.execute("qTables");
+	tableExistsStruct={};
+	for(row in qTables){
+		tableExistsStruct[row["Tables_in_#arguments.schema#"]]=true;
 	}
 	for(i=1;i LTE arraylen(arguments.arrDropTable);i++){
 	 	table=arguments.arrDropTable[i];
-		arrayAppend(local.arrSQL, 'DROP TABLE IF EXISTS `#table#`');
+		arrayAppend(arrSQL, 'DROP TABLE IF EXISTS `#table#`');
 	}
 	for(i=1;i LTE arraylen(arguments.arrTable);i++){
 	 	table=arguments.arrTable[i];
-		if(structkeyexists(local.tableExistsStruct, table)){
+		if(structkeyexists(tableExistsStruct, table)){
 			db.sql="SHOW CREATE TABLE `#arguments.schema#`.`#table#`";
-			local.qCreate=db.execute("qCreate");
-			arrayAppend(local.arrSQL, 'DROP TABLE IF EXISTS `#table#`');
-			for(row in local.qCreate){
-				arrayAppend(local.arrSQL, replace(replace(row['Create Table'], chr(10), ' ', 'all'), chr(13), '', 'all'));
+			qCreate=db.execute("qCreate");
+			arrayAppend(arrSQL, 'DROP TABLE IF EXISTS `#table#`');
+			for(row in qCreate){
+				arrayAppend(arrSQL, replace(replace(row['Create Table'], chr(10), ' ', 'all'), chr(13), '', 'all'));
 			}
 			db.sql="SHOW TRIGGERS FROM `#arguments.schema#`";
-			local.qTrigger=db.execute("qTrigger");
-			for(row in local.qTrigger){
+			qTrigger=db.execute("qTrigger");
+			for(row in qTrigger){
 				if(row.table EQ table){
-					local.curTrigger=variables.siteBackupCom.getCreateTriggerSQLFromStruct(arguments.schema, row);
-					arrayAppend(local.arrSQL, replace(replace(local.curTrigger.dropTriggerSQL, chr(10), ' ', 'all'), chr(13), '', 'all'));
-					arrayAppend(local.arrSQL, replace(replace(local.curTrigger.createTriggerSQL, chr(10), ' ', 'all'), chr(13), '', 'all'));  
+					curTrigger=variables.siteBackupCom.getCreateTriggerSQLFromStruct(arguments.schema, row);
+					arrayAppend(arrSQL, replace(replace(curTrigger.dropTriggerSQL, chr(10), ' ', 'all'), chr(13), '', 'all'));
+					arrayAppend(arrSQL, replace(replace(curTrigger.createTriggerSQL, chr(10), ' ', 'all'), chr(13), '', 'all'));  
 				}
 			} 
-			local.mysqlTsvPath="#variables.mysqlDatabaseBackupPath##arguments.schema#-#application.zcore.functions.zURLEncode(table,"-")#-data-backup.tsv";
-			local.tsvPath="#variables.databaseBackupPath##arguments.schema#-#application.zcore.functions.zURLEncode(table,"-")#-data-backup.tsv";
+			mysqlTsvPath="#variables.mysqlDatabaseBackupPath##arguments.schema#-#application.zcore.functions.zURLEncode(table,"-")#-data-backup.tsv";
+			tsvPath="#variables.databaseBackupPath##arguments.schema#-#application.zcore.functions.zURLEncode(table,"-")#-data-backup.tsv";
 			db.sql="select * from `#table#` 
-			INTO OUTFILE '#local.mysqlTsvPath#'
+			INTO OUTFILE '#mysqlTsvPath#'
 			#variables.outfileOptions#";
-			local.result=db.execute("qOutfile");
-			if(not fileexists(local.tsvPath)){
+			result=db.execute("qOutfile");
+			if(not fileexists(tsvPath)){
 				throw("Failed to backup `#arguments.schema#`.`#table#`", "Exception");
 			}
-			arrayAppend(local.arrSQL, replace(replace("LOAD DATA INFILE '#local.mysqlTsvPath#' 
+			arrayAppend(arrSQL, replace(replace("LOAD DATA INFILE '#mysqlTsvPath#' 
 			REPLACE INTO TABLE `#arguments.schema#`.`#table#` 
 			#variables.outfileOptions#", chr(10), ' ', 'all'), chr(13), '', 'all'));
 		}
 	}
-	application.zcore.functions.zwritefile("#variables.databaseBackupPath##arguments.schema#-schema-backup.sql", arrayToList(local.arrSQL, chr(10)));  
+	application.zcore.functions.zwritefile("#variables.databaseBackupPath##arguments.schema#-schema-backup.sql", arrayToList(arrSQL, chr(10)));  
 	</cfscript>
 </cffunction>
 
@@ -650,27 +709,28 @@
 	<cfargument name="verifyStructureOnly" type="boolean" required="yes">
 	<cfscript> 
 	var i=0;
-	var db=request.zos.noVerifyQueryObject;
-	local.changedTableStruct={};
-	local.newTableStruct={};
-	local.arrDiff=this.getDatabaseDiffAsSQLArray(arguments.schema, local.changedTableStruct, local.newTableStruct, arguments.renameStruct, arguments.existingDsStruct, arguments.newDsStruct, arguments.verifyStructureOnly);
+	changedTableStruct={};
+	newTableStruct={};
+	arrDiff=this.getDatabaseDiffAsSQLArray(arguments.schema, changedTableStruct, newTableStruct, arguments.renameStruct, arguments.existingDsStruct, arguments.newDsStruct, arguments.verifyStructureOnly);
 	if(arguments.verifyStructureOnly){
-		writeoutput('Structure comparison ran successfully.');
-		if(arrayLen(local.arrDiff)){
-			local.success=false;
-			writeoutput('The follow SQL changes were generated.');
-			writedump(local.arrDiff);
+		writeoutput('Structure comparison executed.<br />');
+		if(arrayLen(arrDiff)){
+			success=false;
+			writeoutput('The follow SQL changes were generated.<hr />');
+			for(i=1;i LTE arraylen(arrDiff);i++){
+				echo(arrDiff[i]&"; <hr />");
+			}
 		}else{
-			local.success=true;
-			writeoutput('No database changes were detected.');
+			success=true;
+			writeoutput('No database changes were detected.<br />');
 		}
-		return {success:local.success, arrDiff:local.arrDiff};
+		return {success:success, arrDiff:arrDiff};
 	}
-	if(arraylen(local.arrDiff)){
+	if(arraylen(arrDiff)){
 		// backup tables
-		this.dumpTables(arguments.schema, structKeyArray(local.changedTableStruct), structKeyArray(local.newTableStruct));
+		this.dumpTables(arguments.schema, structKeyArray(changedTableStruct), structKeyArray(newTableStruct));
 	}
-	return {success:true, arrDiff:local.arrDiff, changedTableStruct: local.changedTableStruct};
+	return {success:true, arrDiff:arrDiff, changedTableStruct: changedTableStruct};
 	</cfscript>
 </cffunction>
 
@@ -686,77 +746,159 @@
 	var i=0;
 	var n=0;
 	var g=0;
-	local.rs={}; 
-	local.rs.arrSQL=[];
-	local.rs.arrSQL=this.generateRenameSQL(arguments.schema, arguments.changedTableStruct, arguments.newTableStruct, local.rs.arrSQL, arguments.existingDsStruct, arguments.newDsStruct, arguments.renameStruct, arguments.verifyStructureOnly);  
+	rs={}; 
+	rs.arrSQL=[];
+	rs.arrSQL=this.generateRenameSQL(arguments.schema, arguments.changedTableStruct, arguments.newTableStruct, rs.arrSQL, arguments.existingDsStruct, arguments.newDsStruct, arguments.renameStruct, arguments.verifyStructureOnly);  
 	 
 	for(i in arguments.existingDsStruct.tableStruct){
 		if(not structkeyexists(arguments.newDsStruct.tableStruct, i)){
-			local.arrTemp=listToArray(i, ".");
-			local.currentTable=local.arrTemp[2];
-			arguments.changedTableStruct[local.currentTable]=true;
-			arrayAppend(local.rs.arrSQL, "DROP TABLE `#replace(i, ".", "`.`")#`");
+			arrTemp=listToArray(i, ".");
+			currentTable=arrTemp[2];
+			arguments.changedTableStruct[currentTable]=true;
+			arrayAppend(rs.arrSQL, "DROP TABLE `#replace(i, ".", "`.`")#`");
 		}
 	}
+	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
+	excludeTableStruct=siteBackupCom.getExcludedTableStruct();
 	for(i in arguments.newDsStruct.tableStruct){
-		local.arrTemp=listToArray(i, ".");
-		local.currentTable=local.arrTemp[2];
+		arrTemp=listToArray(i, ".");
+		currentTable=arrTemp[2];
+		if(structkeyexists(excludeTableStruct, currentTable)){
+			continue;
+		}	
 		if(not structkeyexists(arguments.existingDsStruct.tableStruct, i)){
-			local.arrSQL=["CREATE TABLE `#replace(i, ".", "`.`")#` ("];
-			local.fs=arguments.newDsStruct.fieldStruct[i];
-			local.arrKeys=structsort(local.fs, "numeric", "asc", "columnIndex");
-			local.orderStruct={};
-			for(n=1;n LTE arrayLen(local.arrKeys);n++){
-				local.orderStruct[n]=local.arrKeys[n];
+			arrSQL=["CREATE TABLE `#replace(i, ".", "`.`")#` ("];
+			fs=arguments.newDsStruct.fieldStruct[i];
+			arrKeys=structsort(fs, "numeric", "asc", "columnIndex");
+			orderStruct={};
+			for(n=1;n LTE arrayLen(arrKeys);n++){
+				orderStruct[n]=arrKeys[n];
 			}
-			for(n=1;n LTE arrayLen(local.arrKeys);n++){
-				local.field=local.arrKeys[n];
+			for(n=1;n LTE arrayLen(arrKeys);n++){
+				field=arrKeys[n];
 				if(n NEQ 1){
-					arrayAppend(local.arrSQL, ", ");
+					arrayAppend(arrSQL, ", ");
 				}
-				arrayAppend(local.arrSQL,  "`#local.field#` "&createColumnSQL(local.fs[local.field], local.orderStruct, false));	
+				arrayAppend(arrSQL,  "`#field#` "&createColumnSQL(fs[field], orderStruct, false));	
 			}
 			// build indices here
 			for(n in arguments.newDsStruct.keyStruct[i]){
-				local.index=", ";
+				index=", ";
 				if(n EQ "PRIMARY"){
-					local.index&="PRIMARY KEY (";
+					index&="PRIMARY KEY (";
 				}else if(arguments.newDsStruct.keyStruct[i][n][1].non_unique EQ "0"){
-					local.index&="UNIQUE INDEX `#n#` (";
+					index&="UNIQUE INDEX `#n#` (";
 				}else{
-					local.index&="INDEX `#n#` (";
+					index&="INDEX `#n#` (";
 				}
 				for(g=1;g LTE arraylen(arguments.newDsStruct.keyStruct[i][n]);g++){
 					if(g NEQ 1){
-						local.index&=", ";
+						index&=", ";
 					}
-					local.index&="`"&arguments.newDsStruct.keyStruct[i][n][g].column_name&"`";
+					index&="`"&arguments.newDsStruct.keyStruct[i][n][g].column_name&"`";
 				}
-				arrayAppend(local.arrSQL, local.index&")");
+				arrayAppend(arrSQL, index&")");
 			}
 			
-			arrayAppend(local.arrSQL, ") "&variables.createTableSQL(arguments.newDsStruct.tableStruct[i])); 
-			arrayAppend(local.rs.arrSQL, arrayToList(local.arrSQL, " ")); 
+			arrayAppend(arrSQL, ") "&variables.createTableSQL(arguments.newDsStruct.tableStruct[i])); 
+			arrayAppend(rs.arrSQL, arrayToList(arrSQL, " ")); 
 		}else{
 			// check if I should alter table
-			local.alterEnabled=false;
-			local.arrAlterColumns=getTableDiffAsSQL(arguments.existingDsStruct.fieldStruct[i], arguments.newDsStruct.fieldStruct[i]);
-			if(arrayLen(local.arrAlterColumns)){
-				local.alterEnabled=true;
+			alterEnabled=false;
+			alterColumnStruct=getTableDiffAsSQL(arguments.existingDsStruct.fieldStruct[i], arguments.newDsStruct.fieldStruct[i]);
+			arrAlterColumns=[];
+			if(structcount(alterColumnStruct)){
+				arrKey=structkeyarray(alterColumnStruct);
+				arraySort(arrKey, "numeric", "asc");
+				for(i2=1;i2 LTE arraylen(arrKey);i2++){
+					arrayAppend(arrAlterColumns, alterColumnStruct[arrKey[i2]]);
+				}
+			}
+			for(n in arguments.existingDsStruct.keyStruct[i]){
+				if(not structkeyexists(arguments.newDsStruct.keyStruct[i], n)){
+					arrayAppend(arrAlterColumns, "DROP INDEX `"&n&"`");
+				}
+			}
+			for(n in arguments.newDsStruct.keyStruct[i]){
+				if(not structkeyexists(arguments.existingDsStruct.keyStruct[i], n)){
+					// add index
+					index="";
+					if(n EQ "PRIMARY"){
+						index&="ADD PRIMARY KEY (";
+					}else if(arguments.newDsStruct.keyStruct[i][n][1].non_unique EQ "0"){
+						index&="ADD UNIQUE INDEX `#n#` (";
+					}else{
+						index&="ADD INDEX `#n#` (";
+					}
+					for(g=1;g LTE arraylen(arguments.newDsStruct.keyStruct[i][n]);g++){
+						if(g NEQ 1){
+							index&=", ";
+						}
+						index&="`"&arguments.newDsStruct.keyStruct[i][n][g].column_name&"`";
+					}
+					arrayAppend(arrAlterColumns, index&")");
+				}else{
+					// CHANGED: drop and add new index
+					index="";
+					if(n EQ "PRIMARY"){
+						index&="DROP PRIMARY KEY, ADD PRIMARY KEY (";
+					}else{
+						if(arguments.newDsStruct.keyStruct[i][n][1].non_unique EQ "0"){
+							index&="DROP INDEX `#n#`, ADD UNIQUE INDEX `#n#` (";
+						}else{
+							index&="DROP INDEX `#n#`, ADD INDEX `#n#` (";
+						}
+					}
+					for(g=1;g LTE arraylen(arguments.newDsStruct.keyStruct[i][n]);g++){
+						if(g NEQ 1){
+							index&=", ";
+						}
+						index&="`"&arguments.newDsStruct.keyStruct[i][n][g].column_name&"`";
+					}
+					newIndex=index&")"
+					index="";
+					if(n EQ "PRIMARY"){
+						index&="DROP PRIMARY KEY, ADD PRIMARY KEY (";
+					}else{
+						if(arguments.existingDsStruct.keyStruct[i][n][1].non_unique EQ "0"){
+							index&="DROP INDEX `#n#`, ADD UNIQUE INDEX `#n#` (";
+						}else{
+							index&="DROP INDEX `#n#`, ADD INDEX `#n#` (";
+						}
+					}
+					for(g=1;g LTE arraylen(arguments.existingDsStruct.keyStruct[i][n]);g++){
+						if(g NEQ 1){
+							index&=", ";
+						}
+						index&="`"&arguments.existingDsStruct.keyStruct[i][n][g].column_name&"`";
+					}
+					oldIndex=index&")";
+					if(newIndex NEQ oldIndex){
+						arrayAppend(arrAlterColumns, newIndex);
+					}
+				}
+			}
+			if(arrayLen(arrAlterColumns)){
+				alterEnabled=true;
 			}
 			for(n in arguments.newDsStruct.tableStruct[i]){
 				if(arguments.existingDsStruct.tableStruct[i][n] NEQ arguments.newDsStruct.tableStruct[i][n]){ 
-					local.alterEnabled=true;
+					alterEnabled=true;
 					break;
 				}
 			}
-			if(local.alterEnabled){
-				arguments.changedTableStruct[local.currentTable]=true;
-				arrayAppend(local.rs.arrSQL, "ALTER TABLE `#replace(i, ".", "`.`")#` "&arrayToList(local.arrAlterColumns, ", ")&" "&variables.createTableSQL(arguments.newDsStruct.tableStruct[i]));
+			if(alterEnabled){
+				arguments.changedTableStruct[currentTable]=true;
+				comma=" ";
+				if(arrayLen(arrAlterColumns)){
+					//echo('Previous table: '&currentTable&'<hr />');
+					comma=", ";
+				}
+				arrayAppend(rs.arrSQL, "ALTER TABLE `#replace(i, ".", "`.`")#` "&arrayToList(arrAlterColumns, ", ")&comma&variables.createTableSQL(arguments.newDsStruct.tableStruct[i]));
 			}
 		}
 	} 
-	return local.rs.arrSQL;
+	return rs.arrSQL;
 	</cfscript>
 </cffunction>
  
@@ -767,70 +909,73 @@
 	<cfargument name="orderStruct" type="struct" required="yes">
 	<cfargument name="enableAfter" type="boolean" required="no" default="#true#">
 	<cfscript>
-	local.column=arguments.columnStruct.type;
+	column=arguments.columnStruct.type;
 	if(arguments.columnStruct.null EQ "NO"){
-		local.column&=" NOT NULL";
+		column&=" NOT NULL";
 	}else{
-		local.column&=" NULL";
+		column&=" NULL";
 	}
 	if(arguments.columnStruct.default NEQ ""){
 		if(isNumeric(arguments.columnStruct.default)){
-			local.column&=" DEFAULT "&arguments.columnStruct.default;
+			column&=" DEFAULT "&arguments.columnStruct.default;
 		}else{
-			local.column&=" DEFAULT '"&escape(arguments.columnStruct.default)&"'";
+			column&=" DEFAULT '"&escape(arguments.columnStruct.default)&"'";
 		}
 	}
 	if(arguments.columnStruct.extra NEQ ""){
-		local.column&=" "&arguments.columnStruct.extra;
+		column&=" "&arguments.columnStruct.extra;
 	}
 	if(arguments.enableAfter){
 		if(arguments.columnStruct.columnIndex-1 LT 1){
-			local.column&=" FIRST";
+			column&=" FIRST";
 		}else{ 
-			local.column&=" AFTER `"&arguments.orderStruct[arguments.columnStruct.columnIndex-1]&"`";
+			column&=" AFTER `"&arguments.orderStruct[arguments.columnStruct.columnIndex-1]&"`";
 		}
 	}
-	return local.column;
+	return column;
 	</cfscript>
 </cffunction>
 
-<cffunction name="getTableDiffAsSQL" localmode="modern" access="private" returntype="array">
+<cffunction name="getTableDiffAsSQL" localmode="modern" access="private" returntype="struct">
 	<cfargument name="oldTable" type="struct" required="yes">
 	<cfargument name="newTable" type="struct" required="yes">
 	<cfscript>
-	var n=0;
-	var i=0;
-	var arrSQL=[];
-	local.newOrderStruct={};
+	columnStruct={};
+	newOrderStruct={};
 	for(i in arguments.newTable){
-		local.newOrderStruct[arguments.newTable[i].columnIndex]=i;
+		newOrderStruct[arguments.newTable[i].columnIndex]=i;
 	}
+	dropIndex=10000;
 	for(i in arguments.newTable){
 		// find columns missing in new table, that exist in old table
 		if(not structkeyexists(arguments.oldTable, i)){
-			arrayAppend(arrSQL, "ADD COLUMN `#i#` "&variables.createColumnSQL(arguments.newTable[i], local.newOrderStruct));
+			columnStruct[arguments.newTable[i].columnIndex]="ADD COLUMN `#i#` "&variables.createColumnSQL(arguments.newTable[i], newOrderStruct);
 		}
 	}
 	for(i in arguments.oldTable){
 		// find columns missing in new table, that exist in old table
 		if(not structkeyexists(arguments.newTable, i)){
-			arrayAppend(arrSQL, "DROP COLUMN `#i#`");
+			columnStruct[dropIndex]="DROP COLUMN `#i#`";
+			dropIndex++;
 			continue;
 		}
 		// detect columns that have changed
 		for(n in arguments.oldTable[i]){
 			if(arguments.oldTable[i][n] NEQ arguments.newTable[i][n]){
-				local.changeOrder=false;
-				writeoutput(i&":"&arguments.oldTable[i].columnIndex&" NEQ "&arguments.newTable[i].columnIndex&"<br>");
-				if(arguments.oldTable[i].columnIndex NEQ arguments.newTable[i].columnIndex){
-					local.changeOrder=true;
+				if(structkeyexists(form, 'zdebug')){
+					writeoutput("Column struct is different: "&i&" for attribute '"&n&"' old:"&arguments.oldTable[i][n]&" new: "&arguments.newTable[i][n]&"<br>");
 				}
-				arrayAppend(arrSQL, "CHANGE COLUMN `#i#` `#i#` "&variables.createColumnSQL(arguments.newTable[i], local.newOrderStruct, local.changeOrder));
+				changeOrder=false;
+				if(arguments.oldTable[i].columnIndex NEQ arguments.newTable[i].columnIndex){
+					//writeoutput("Column order is different: "&i&":"&arguments.oldTable[i].columnIndex&" NEQ "&arguments.newTable[i].columnIndex&"<br>");
+					changeOrder=true;
+				}
+				columnStruct[arguments.newTable[i].columnIndex]="CHANGE COLUMN `#i#` `#i#` "&variables.createColumnSQL(arguments.newTable[i], newOrderStruct, changeOrder);
 				break;
 			}
 		} 
 	}
-	return arrSQL;
+	return columnStruct;
 	</cfscript>
 </cffunction>
 
@@ -857,19 +1002,19 @@
 		for(table in arguments.renameStruct[arguments.schema]){
 			if(structkeyexists(arguments.renameStruct[arguments.schema][table], 'renameColumnStruct') and structcount(arguments.renameStruct[arguments.schema][table].renameColumnStruct)){
 				arrAlter=[];
-				local.c=arguments.renameStruct[arguments.schema][table].renameColumnStruct;
-				for(column in local.c){
-					newColumnName=local.c[column];
-					local.newTableName=table;
+				c=arguments.renameStruct[arguments.schema][table].renameColumnStruct;
+				for(column in c){
+					newColumnName=c[column];
+					newTableName=table;
 					if(structkeyexists(arguments.renameStruct[arguments.schema][table], 'renameTable')){
 						// take on the new table's column structure during the rename field operation to reduce redundant work
-						local.newTableName=arguments.renameStruct[arguments.schema][table].renameTable;
+						newTableName=arguments.renameStruct[arguments.schema][table].renameTable;
 					}
-					columnDefinition=this.createColumnSQL(arguments.newTableStruct.fieldStruct[arguments.schema&"."&local.newTableName][newColumnName], {}, false);
+					columnDefinition=this.createColumnSQL(arguments.newTableStruct.fieldStruct[arguments.schema&"."&newTableName][newColumnName], {}, false);
 					
 					// rename column in the tableStruct so verifyStructure operates on the renamed data
 					
-					arguments.existingTableStruct.fieldStruct[arguments.schema&"."&table][newColumnName]=arguments.newTableStruct.fieldStruct[arguments.schema&"."&local.newTableName][newColumnName];
+					arguments.existingTableStruct.fieldStruct[arguments.schema&"."&table][newColumnName]=arguments.newTableStruct.fieldStruct[arguments.schema&"."&newTableName][newColumnName];
 					structdelete(arguments.existingTableStruct.fieldStruct[arguments.schema&"."&table], column);
 					
 					
@@ -883,10 +1028,10 @@
 				
 				arguments.newTableStruct[arguments.renameStruct[arguments.schema][table].renameTable]=true;
 				// rename table in the tableStruct so verifyStructure operates on the renamed data
-				local.newSchemaTableName=arguments.schema&"."&arguments.renameStruct[arguments.schema][table].renameTable;
+				newSchemaTableName=arguments.schema&"."&arguments.renameStruct[arguments.schema][table].renameTable;
 				for(i=1;i LTE arraylen(arrKey);i++){
 					if(structkeyexists(arguments.existingTableStruct[arrKey[i]], arguments.schema&"."&table)){
-						arguments.existingTableStruct[arrKey[i]][local.newSchemaTableName]=arguments.existingTableStruct[arrKey[i]][arguments.schema&"."&table]; 
+						arguments.existingTableStruct[arrKey[i]][newSchemaTableName]=arguments.existingTableStruct[arrKey[i]][arguments.schema&"."&table]; 
 						structdelete(arguments.existingTableStruct[arrKey[i]], arguments.schema&"."&table); 
 					}
 				}  
@@ -901,11 +1046,11 @@
 <cffunction name="createTableSQL" localmode="modern" access="private">
 	<cfargument name="tableStruct" type="struct" required="yes">
 	<cfscript>
-	local.tableSQL="ENGINE=#arguments.tableStruct.engine#, CHARSET=#arguments.tableStruct.charset#, COLLATE=#arguments.tableStruct.collation#";
+	tableSQL="ENGINE=#arguments.tableStruct.engine#, CHARSET=#arguments.tableStruct.charset#, COLLATE=#arguments.tableStruct.collation#";
 	if(arguments.tableStruct.create_options NEQ ""){
-		local.tableSQL&=", "&arguments.tableStruct.create_options;
+		tableSQL&=", "&arguments.tableStruct.create_options;
 	}
-	return local.tableSQL;
+	return tableSQL;
 	</cfscript>
 </cffunction>
 </cfoutput>

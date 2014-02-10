@@ -199,6 +199,15 @@
 			}
 			//break;
 		}
+
+		tempFile2=request.zos.sharedPath&"database/jetendo-schema-current.json";
+		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+		if(not dbUpgradeCom.verifyDatabaseStructure(tempFile2)){
+			arrayAppend(arrError, "<hr />Database schema didn't match source code schema file: #tempFile2#.  
+				This is a serious problem that must be manually fixed before performing an upgrade. 
+				The queries to run to fix the schema were generated above.");
+		}
+
 		if(request.zos.isDeveloper){
 			if(arraylen(arrError)){
 				writeoutput('<h2>The following errors were detected with the database table structure.</h2><ul>');

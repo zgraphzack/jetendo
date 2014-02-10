@@ -210,6 +210,13 @@
 	var _ztemp99_helpStruct=0;
 	var ts=arguments.ss;
 	var cfquery=0;
+
+
+    versionCom=createobject("component", "zcorerootmapping.version");
+    ts2=versionCom.getVersion();
+    ts.databaseVersion=ts2.databaseVersion;
+    ts.sourceVersion=ts2.sourceVersion;
+    
 	if(isDefined('session.zos.user')){
 		request.zos.userSession=duplicate(session.zos.user);
 	}else{
@@ -486,6 +493,14 @@
 		arrLog=verifyTablesCom.index(true);
 		structdelete(application, request.zos.installPath&":dbUpgradeCheckVersion");
 	}
+	query name="qVersion" datasource="#request.zos.zcoreDatasource#"{
+		echo("SELECT * FROM jetendo_setup LIMIT 0,1");
+	}
+	if(qVersion.recordcount NEQ 0){
+		ts.installedDatabaseVersion=qVersion.jetendo_setup_database_version;
+	}else{
+		ts.installedDatabaseVersion=0;
+	}
 
 
 
@@ -608,7 +623,12 @@
 		}
 	}
 	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-	dbUpgradeCom.checkVersion();
+	if(not dbUpgradeCom.checkVersion()){
+		if(request.zos.isTestServer or request.zos.isDeveloper){
+			echo('Database upgrade failed');
+			abort;
+		}
+	}
 
 	if(local.dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all"){
 		ts.zcore=structnew();

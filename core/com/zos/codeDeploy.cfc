@@ -57,6 +57,7 @@
 	configCom=createobject("component", "zcorerootmapping.config");
 	ts=configCom.getConfig(request.zos.cgi);
 	structappend(request.zos, ts.zos, true);
+    
 
 
 	variables.updateApplicationCFCFunctions();
@@ -185,14 +186,32 @@
 		}
 		application.zcore.functions.zUpdateCustomSiteFunctions(application.siteStruct[n]);
 	} 
-	db=request.zos.queryObject;
-	db.sql="select * from #db.table("jetendo_setup", request.zos.zcoreDatasource)# LIMIT #db.param(0)#, #db.param(1)#";
-	qSetup=db.execute("qSetup");
-	if(qSetup.recordcount EQ 0 or qSetup.jetendo_setup_database_version NEQ request.zos.databaseVersion){
-		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-		dbUpgradeCom.checkVersion();
-	}
 	structappend(request, backupStruct, true);
+
+	versionCom=createobject("component", "zcorerootmapping.version");
+    ts2=versionCom.getVersion();
+
+
+	runDatabaseUpgrade=false;
+    if(not structkeyexists(application.zcore, 'databaseVersion') or application.zcore.databaseVersion NEQ ts2.databaseVersion){
+    	// do database upgrade
+    	runDatabaseUpgrade=true;
+	}else{
+		db=request.zos.queryObject;
+		db.sql="select * from #db.table("jetendo_setup", request.zos.zcoreDatasource)# LIMIT #db.param(0)#, #db.param(1)#";
+		qSetup=db.execute("qSetup");
+	}
+    application.zcore.databaseVersion=ts2.databaseVersion;
+    application.zcore.sourceVersion=ts2.sourceVersion;
+	if(runDatabaseUpgrade or qSetup.recordcount EQ 0 or qSetup.jetendo_setup_database_version NEQ application.zcore.databaseVersion){
+		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+		if(not dbUpgradeCom.checkVersion()){
+			if(request.zos.isTestServer or request.zos.isDeveloper){
+				echo('Database upgrade failed');
+				abort;
+			}
+		}
+	}
 	</cfscript>
 </cffunction>
 </cfoutput>

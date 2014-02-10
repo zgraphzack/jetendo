@@ -47,11 +47,59 @@ TODO: figure out why site backup doesn't get compressed.
 	</cfscript>
 </cffunction>
 
+<cffunction name="getExcludedTableStruct" localmode="modern" access="public" returntype="struct">
+	<cfscript>
+	ts={
+		"far": true,
+		"ngm": true,
+		"rets11_agent": true,
+		"rets11_office": true,
+		"rets11_property": true,
+		"rets12_property": true,
+		"rets14_activeagent": true,
+		"rets14_office": true,
+		"rets14_property": true,
+		"rets16_property": true,
+		"rets17_agent": true,
+		"rets17_office": true,
+		"rets17_property": true,
+		"rets18_agent": true,
+		"rets18_media": true,
+		"rets18_office": true,
+		"rets18_property": true,
+		"rets19_property": true,
+		"rets20_agent": true,
+		"rets20_media": true,
+		"rets20_office": true,
+		"rets20_openhouse": true,
+		"rets20_property": true,
+		"rets21_property": true,
+		"rets22_activeagent": true,
+		"rets22_office": true,
+		"rets22_property": true,
+		"rets4_agent": true,
+		"rets4_office": true,
+		"rets4_property": true,
+		"rets7_property": true,
+		"zram##city": true,
+		"zram##city_distance": true,
+		"zram##listing": true,
+	};
+	if(request.zos.zcoreDatasourcePrefix NEQ ""){
+		ts2={};
+		for(i in ts){
+			ts2[request.zos.zcoreDatasourcePrefix&i]=true;
+		}
+		return ts2;
+	}
+	return ts;
+	</cfscript>
+</cffunction>
+
 <cffunction name="generateSchemaBackup" localmode="modern" output="no" access="public">
 	<cfargument name="datasource" type="string" required="yes">
 	<cfargument name="dsStruct" type="struct" required="yes">
 	<cfscript>
-	var db=request.zos.noVerifyQueryObject;
 	var i2=arguments.datasource;
 	var arrSchema=[];
 	var qT=0;
@@ -61,24 +109,34 @@ TODO: figure out why site backup doesn't get compressed.
 	var tempStruct=0;
 	var row=0; 
 	setting requesttimeout="5000";
-	db.sql="SHOW TABLES IN `"&i2&"`";
-	qT=db.execute("qT");
+	query name="qT" datasource="#i2#"{
+		echo("SHOW TABLES IN `"&application.zcore.functions.zescape(i2)&"`");
+	}
+	ts=getExcludedTableStruct();
 	for(local.row in qT){
 		n=local.row["Tables_in_"&i2];
-		arrayAppend(arrSchema, "drop table if exists `"&n&"`;");
-		db.sql="show create table `"&i2&"`.`"&n&"`";
-		qC=db.execute("qC"); 
-		arrayAppend(arrSchema, qC["Create Table"]&";");
+		if(not structkeyexists(ts, n)){
+			arrayAppend(arrSchema, "drop table if exists `"&n&"`;");
+			query name="qC" datasource="#i2#"{
+				echo("show create table `"&application.zcore.functions.zescape(i2)&"`.`"&application.zcore.functions.zescape(n)&"`");
+			}
+			arrayAppend(arrSchema, qC["Create Table"]&";");
+		}
 	} 
-	db.sql="SHOW TRIGGERS FROM "&i2;
-	qT=db.execute("qT");  
+	query name="qT" datasource="#i2#"{
+		echo("SHOW TRIGGERS FROM `"&application.zcore.functions.zescape(i2)&"`");
+	}
+
 	for(row in qT){
-		local.curTrigger=this.getCreateTriggerSQLFromStruct(i2, row);
-		arrayAppend(arrSchema, local.curTrigger.dropTriggerSQL);
-		arrayAppend(arrSchema, local.curTrigger.createTriggerSQL); 
+		if(not structkeyexists(ts, n)){
+			local.curTrigger=this.getCreateTriggerSQLFromStruct(i2, row);
+			arrayAppend(arrSchema, local.curTrigger.dropTriggerSQL);
+			arrayAppend(arrSchema, local.curTrigger.createTriggerSQL); 
+		}
 	} 
 	
 	tempStruct=structnew();
+	tempStruct.databaseVersion=application.zcore.databaseVersion;
 	tempStruct.fieldStruct=structnew();
 	tempStruct.keyStruct=structnew();
 	tempStruct.tableStruct=structnew();
