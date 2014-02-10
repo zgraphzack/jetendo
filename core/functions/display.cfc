@@ -11,8 +11,14 @@
 		local.fileExt=application.zcore.functions.zGetFileExt(local.row.name);
 		if(structkeyexists(local.imageFileExt, local.fileExt)){
 			local.s=imageinfo(local.row.directory&"/"&local.row.name);
-			arrayAppend(local.arrOutput, '<div style=" width:#local.s.width#px; height:#local.s.height#px; float:left; background-image:url(#arguments.relativePath##local.row.Name#); background-repeat:no-repeat;"></div>');
 			arrayAppend(local.arrOutput, '<img width="#local.s.width#" height="#local.s.height#" src="#arguments.relativePath##local.row.Name#" alt="#htmleditformat(application.zcore.functions.zgetfilename(local.row.name))#" />');
+		}
+	}
+	for(local.row in local.qDir){
+		local.fileExt=application.zcore.functions.zGetFileExt(local.row.name);
+		if(structkeyexists(local.imageFileExt, local.fileExt)){
+			local.s=imageinfo(local.row.directory&"/"&local.row.name);
+			arrayAppend(local.arrOutput, '<div style=" width:#local.s.width#px; height:#local.s.height#px; float:left; background-image:url(#arguments.relativePath##local.row.Name#); background-repeat:no-repeat;"></div>');
 		}
 	}
 	return arrayToList(local.arrOutput, chr(10));

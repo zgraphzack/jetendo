@@ -1348,11 +1348,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	for(row in local.qGroup){
 		local.arr1=application.zcore.functions.zSiteOptionGroupStruct(row.site_option_group_name, 0, row.site_id);
 		for(i=1;i LTE arraylen(local.arr1);i++){
-			local.t2=StructNew();
-			local.t2.groupName=row.site_option_group_display_name;
-			local.t2.url=request.zos.globals.domain&local.arr1[i].__url;
-			local.t2.title=local.arr1[i].__title;
-			arrayappend(arguments.arrUrl,local.t2);
+			if(local.arr1[i].__approved EQ 1){
+				local.t2=StructNew();
+				local.t2.groupName=row.site_option_group_display_name;
+				local.t2.url=request.zos.globals.domain&local.arr1[i].__url;
+				local.t2.title=local.arr1[i].__title;
+				arrayappend(arguments.arrUrl,local.t2);
+			}
 		}
 	}
 	return arguments.arrURL;
