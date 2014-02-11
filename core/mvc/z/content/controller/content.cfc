@@ -1000,7 +1000,11 @@ add fields to set location of content (listing) on google map (using address or 
 			if(isQuery(qc) and qc.recordcount NEQ 0){
 				arguments.ss.content_parent_id=qc.content_id;
 			}else{
-				return "";
+				if(arguments.ss.returnData){
+					return rs;
+				}else{
+					return "";
+				}
 			}
 		}
 		if(findnocase("##summary##",arguments.ss.template) EQ 0){
