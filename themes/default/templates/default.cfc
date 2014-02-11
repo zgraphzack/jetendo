@@ -3,13 +3,7 @@
 <cffunction name="init" access="public" returntype="string" localmode="modern">
 	<cfscript>
 	application.zcore.functions.zIncludeZOSFORMS();
-	savecontent variable="meta"{
-		echo(request.zos.skin.includeCSS("/zthemes/default/stylesheets/style.css"));
-	}
-	application.zcore.template.appendTag("stylesheets", meta);
-	savecontent variable="meta"{
-	}
-	application.zcore.template.appendTag("scripts", meta);
+	application.zcore.skin.includeCSS("/zthemes/default/stylesheets/style.css");
 	request.disablesharethis=true;
 	</cfscript>
 </cffunction>
