@@ -1793,6 +1793,7 @@ this.app_id=10;
 	<cfargument name="displayStruct" type="struct" required="yes">
 	<cfargument name="displayCount" type="numeric" required="yes">
 	<cfargument name="futureEventsOnly" type="boolean" required="no" default="#false#" hint="Returns only future events including the current day.">
+	<cfargument name="blog_category_id" type="numeric" required="no" default="#0#">
 	<cfscript>
 	var loadBlogArticleInclude='';
 	var content='';
@@ -1848,11 +1849,15 @@ this.app_id=10;
 		where blog.site_id=#db.param(request.zos.globals.id)# and 
 		(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 		blog_event =#db.param(1)#) and 
-		blog_status <> #db.param(2)# 
-		<cfif arguments.futureEventsOnly> 
-		and blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
-		blog_event =#db.param(1)#
+		<cfif arguments.blog_category_id NEQ 0>
+			blog_category.blog_category_id = #db.param(arguments.blog_category_id)# and 
 		</cfif>
+		<cfif arguments.futureEventsOnly> 
+			 blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
+			blog_event =#db.param(1)# and 
+		</cfif>
+
+		blog_status <> #db.param(2)#  
 		group by blog.blog_id
 		<cfif arguments.futureEventsOnly>
 		order by blog_datetime asc
