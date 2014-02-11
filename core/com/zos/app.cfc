@@ -217,7 +217,8 @@
 				db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 				WHERE site_option_group_parent_id= #db.param(0)# and 
 				site_id = #db.param(request.zos.globals.id)# and 
-				site_option_group.site_option_group_disable_admin=#db.param(0)#
+				site_option_group.site_option_group_disable_admin=#db.param(0)# and 
+				site_option_group_admin_app_only= #db.param(0)#
 				ORDER BY site_option_group_display_name ";
 				qSiteOptionGroup=db.execute("qSiteOptionGroup"); 
 				for(local.i=1;local.i LTE qSiteOptionGroup.recordcount;local.i++){

@@ -812,9 +812,13 @@
 		<cfloop query="qProp">
 		<tr <cfif qProp.currentrow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 			<td>#qProp.site_option_group_name#</td>
-			<td><a href="/z/admin/site-options/manageGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">List/Edit</a> | 
-			<a href="/z/admin/site-options/import?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Import</a> | 
-			<a href="/z/admin/site-options/addGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Add</a> | 
+			<td>
+				<cfif qProp.site_option_group_admin_app_only EQ "0">
+	
+					<a href="/z/admin/site-options/manageGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">List/Edit</a> | 
+					<a href="/z/admin/site-options/import?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Import</a> | 
+					<a href="/z/admin/site-options/addGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Add</a> | 
+				</cfif>
 			<cfif qProp.site_id NEQ 0 or variables.allowGlobal>
 					<a href="/z/admin/site-option-group/add?site_option_group_parent_id=#qProp.site_option_group_id#">Add Sub-Group</a> | 
 					<a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#qProp.site_option_group_id#&amp;site_option_group_parent_id=#qProp.site_option_group_parent_id#">Options</a> | 
@@ -1158,6 +1162,10 @@
 					selectStruct.queryValueField = "app_id";
 					application.zcore.functions.zInput_Checkbox(selectStruct);
 					</cfscript></td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Only Show App Admin?","member.site-option-group.edit site_option_group_admin_app_only")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_admin_app_only")#</td>
 				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Enable Sorting</th>

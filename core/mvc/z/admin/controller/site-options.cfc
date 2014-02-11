@@ -3185,7 +3185,8 @@ Define this function in another CFC to override the default email format
 	site_option_group.site_id = #db.param(request.zos.globals.id)# and 
 	(site_option_group.site_option_group_appidlist like #db.param('%,#variables.currentAppId#,%')#";
 	if(variables.currentAppId EQ 0){
-		db.sql&=" or site_option_group.site_option_group_appidlist like #db.param('%,,%')#";
+		db.sql&=" or site_option_group.site_option_group_appidlist like #db.param('%,,%')# and 
+		site_option_group_admin_app_only= #db.param(0)# ";
 	}
 	db.sql&=")
 	WHERE site_option.site_id IN (#db.trustedSQL(variables.publicSiteIdList)#) and 
@@ -3218,7 +3219,8 @@ Define this function in another CFC to override the default email format
 	site_option_group_type =#db.param('1')# and 
 	(site_option_group.site_option_group_appidlist like #db.param('%,#variables.currentAppId#,%')# ";
 	if(variables.currentAppId EQ 0){
-		db.sql&=" or site_option_group.site_option_group_appidlist like #db.param('%,,%')#";
+		db.sql&=" or site_option_group.site_option_group_appidlist like #db.param('%,,%')# and 
+		site_option_group_admin_app_only= #db.param(0)# ";
 	}
 	db.sql&=" )  and 
 	site_option_group.site_option_group_disable_admin=#db.param(0)#
