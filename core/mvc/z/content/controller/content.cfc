@@ -2041,7 +2041,6 @@ add fields to set location of content (listing) on google map (using address or 
         </cfscript>
         <cfsavecontent variable="local.theImageOutputHTML">
         <cfscript>
-        
         local.ts =structnew();
         local.ts.image_library_id=local.ts994824713.content_image_library_id;
         local.ts.size="#request.zos.globals.maximagewidth#x2000";
@@ -2233,7 +2232,7 @@ add fields to set location of content (listing) on google map (using address or 
         </cfscript>
         
         <cfif local.ts994824713.content_name2 NEQ ''><h2>#htmleditformat(local.ts994824713.content_name2)#</h2></cfif>
-                <cfif local.ts994824713.content_photo_hide_image EQ 0> <!---(local.ts994824713.content_group_photo_gallery NEQ 1 or  local.ts994824713.content_parent_id EQ 0)> --->
+                <cfif local.ts994824713.content_photo_hide_image EQ 0 and local.ts994824713.content_image_library_layout NEQ 8> <!---(local.ts994824713.content_group_photo_gallery NEQ 1 or  local.ts994824713.content_parent_id EQ 0)> --->
                 <cfscript>
                 local.ts =structnew();
                 local.ts.image_library_id=local.ts994824713.content_image_library_id;

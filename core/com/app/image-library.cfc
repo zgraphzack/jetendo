@@ -1020,6 +1020,8 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 		return "contentflow";
 	}else if(arguments.layout_type EQ "7"){
 		return "thumbnail-and-other-photos";
+	}else if(arguments.layout_type EQ "8"){
+		return "custom";
 	}else{
 		return "";
 	}
@@ -1042,8 +1044,8 @@ application.zcore.imageLibraryCom.getLayoutTypeForm(ts); --->
 	ts.selectedValues =  arguments.ss.value;
 	ts.selectedDelimiter = ","; // change if comma conflicts...
 	// options for list data
-	ts.listLabels = "Large Photos (1 Column),Gallery Slideshow At Bottom,Gallery Slideshow At Top,Thumbnails and Lightbox At Bottom,Thumbnails and Lightbox At Top,ContentFlow At Bottom,ContentFlow At Top,Thumbnail On Top Left - Other Large Photos At Bottom";
-	ts.listValues = "0,1,3,2,4,5,6,7";
+	ts.listLabels = "Large Photos (1 Column),Gallery Slideshow At Bottom,Gallery Slideshow At Top,Thumbnails and Lightbox At Bottom,Thumbnails and Lightbox At Top,ContentFlow At Bottom,ContentFlow At Top,Thumbnail On Top Left - Other Large Photos At Bottom,Custom";
+	ts.listValues = "0,1,3,2,4,5,6,7,8";
 	ts.listLabelsDelimiter = ","; // tab delimiter
 	ts.listValuesDelimiter = ",";
 	
@@ -1090,6 +1092,14 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	ts.limit=0;
 	structappend(arguments.ss,ts,false);
 	arrT=listtoarray(arguments.ss.size,"x");
+	if(arguments.ss.layoutType EQ "custom"){
+        request.zos.currentImageLibraryId=arguments.ss.image_library_id;
+		if(arguments.ss.output){
+			return;
+		}else{
+			return arrOutput;	
+		}
+    }
 	if(arguments.ss.image_library_id EQ 0){
 		if(arguments.ss.output){
 			return;
