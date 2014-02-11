@@ -575,8 +575,8 @@ add fields to set location of content (listing) on google map (using address or 
 		selectStruct = StructNew();
 		selectStruct.name = "content_config_default_subpage_link_layout";
 		selectStruct.hideSelect=true;
-		selectStruct.listLabels="Invisible,Bottom with summary (default),Bottom without summary,Top with numbered columns,Top with columns,Top on one line";//,Left Sidebar,Right Sidebar";
-		selectStruct.listValues = "7,0,1,2,3,4";//,5,6";
+		selectStruct.listLabels="Invisible,Bottom with summary (default),Bottom without summary,Top with numbered columns,Top with columns,Top on one line,Custom";//,Left Sidebar,Right Sidebar";
+		selectStruct.listValues = "7,0,1,2,3,4,13";//,5,6";
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript></td>
         </tr>
@@ -2532,7 +2532,14 @@ add fields to set location of content (listing) on google map (using address or 
         if(local.qContentChild.content_menu_title NEQ ""){
             local.t2.text=local.qContentChild.content_menu_title;	
         }
-		
+
+	    if(local.qContentChild.content_text EQ ''){
+	        local.t2.summary=local.qContentChild.content_summary;
+	    }else{
+	        local.t2.summary=local.qContentChild.content_text;
+	    }
+		local.t2.summary=application.zcore.email.convertHTMLToText(local.t2.summary);
+
         local.t2.isparent=false;
         local.t2.type="subtab";
         if(local.qContentChild.content_unique_name NEQ ''){local.t2.url=request.zos.globals.domain&local.qContentChild.content_unique_name;
@@ -2798,6 +2805,10 @@ add fields to set location of content (listing) on google map (using address or 
         structappend(arguments.ss, ts,false);
         if(arraylen(arguments.ss.arrLinks) EQ 0){
             return "";	
+        }
+        if(arguments.ss.link_layout EQ 13){
+        	request.zos.arrContentMenuLinks=arguments.ss.arrLinks;
+        	return '';
         }
         /*
                 selectStruct.listLabels="Invisible,Top with numbered columns,Top with columns,Top on one line,Bottom with numbered columns,Bottom with columns";//,Bottom with summary (default),Bottom without summary,Left Sidebar,Right Sidebar";

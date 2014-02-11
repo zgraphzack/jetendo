@@ -1268,7 +1268,7 @@
 				if(currentMethod EQ "add" and application.zcore.functions.zso(form, 'content_parentpage_link_layout') EQ ""){
 					if(local.cpi10 NEQ "0" and qparent.recordcount NEQ 0){
 						form.content_parentpage_link_layout=qparent.content_parentpage_link_layout;
-					}else if(application.zcore.functions.zso(form, 'application.zcore.app.getAppData("content").optionStruct.content_config_default_parentpage_link_layout') NEQ ""){
+					}else if(application.zcore.app.getAppData("content").optionStruct.content_config_default_parentpage_link_layout NEQ ""){
 						form.content_parentpage_link_layout=application.zcore.app.getAppData("content").optionStruct.content_config_default_parentpage_link_layout;
 					}
 				}
@@ -1289,7 +1289,7 @@
 			if(currentMethod EQ "add" and application.zcore.functions.zso(form, 'content_subpage_link_layout') EQ ""){
 				if(local.cpi10 NEQ "0" and qparent.recordcount NEQ 0){
 					form.content_subpage_link_layout=qparent.content_subpage_link_layout;
-				}else if(application.zcore.functions.zso(form, 'application.zcore.app.getAppData("content").optionStruct.content_config_default_subpage_link_layout') NEQ ""){
+				}else if(application.zcore.app.getAppData("content").optionStruct.content_config_default_subpage_link_layout NEQ ""){
 					form.content_subpage_link_layout=application.zcore.app.getAppData("content").optionStruct.content_config_default_subpage_link_layout;
 				}else{
 					form.content_subpage_link_layout=0;
@@ -1299,8 +1299,8 @@
 			selectStruct.name = "content_subpage_link_layout";
 			selectStruct.selectedValues=form.content_subpage_link_layout;
 			selectStruct.hideSelect=true;
-			selectStruct.listLabels="Invisible,Bottom with summary (default),Bottom without summary,Bottom with numbered columns,Bottom with columns,Bottom as thumbnails,Top with numbered columns,Top with columns,Top on one line,Find/replace keyword with line breaks,Find/replace keyword with bullets";
-			selectStruct.listValues = "7,0,1,8,9,10,2,3,4,11,12";
+			selectStruct.listLabels="Invisible,Bottom with summary (default),Bottom without summary,Bottom with numbered columns,Bottom with columns,Bottom as thumbnails,Top with numbered columns,Top with columns,Top on one line,Find/replace keyword with line breaks,Find/replace keyword with bullets,Custom";
+			selectStruct.listValues = "7,0,1,8,9,10,2,3,4,11,12,13";
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript> <br />(Note: If you select the "Find/replace" options, please insert %child_links% in the body text field 
 		WHERE you want the links to appear.)</td>
@@ -1363,7 +1363,7 @@
 			</td>
 		</tr>
 	</cfif>
-	<cfif application.zcore.functions.zso(form, 'application.zcore.app.getAppData("content").optionStruct.content_config_contact_links',true) EQ 1>
+	<cfif application.zcore.app.getAppData("content").optionStruct.content_config_contact_links EQ 1>
 		<tr> 
 			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Enable Contact Links?","member.content.edit content_disable_contact_links")#</th>
 			<td style="vertical-align:top; ">
