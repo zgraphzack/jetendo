@@ -60,6 +60,7 @@ for($i4=0;$i4 < 62;$i4++){
 		if(file_exists($sharePath."__zdeploy-core-complete.txt")){ 
 			@unlink($sharePath."__zdeploy-core-complete.txt");
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_root_path")."core/", $wwwUser, $wwwUser, "440", "550", true, false, array(), $isTestServer);
+			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_root_path")."database-upgrade/", $wwwUser, $wwwUser, "440", "550", true, false, array(), $isTestServer);
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_root_path")."public/", $wwwUser, $wwwUser, "440", "550", true, false, array(), $isTestServer);
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_share_path")."database/", $wwwUser, $wwwUser, "660", "770", true, false, array(), $isTestServer);
 			$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_scripts_path"), "root", "root", "440", "550", true, false, array(), $isTestServer);

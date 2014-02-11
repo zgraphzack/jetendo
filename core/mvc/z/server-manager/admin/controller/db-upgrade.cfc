@@ -127,11 +127,11 @@
 		backupStruct=backupAffectedTablesInVersionRange(currentVersion+1, application.zcore.databaseVersion);
 		echo('Upgrading from database version: '&currentVersion&' to '&application.zcore.databaseVersion&'<br />');
 		for(i=currentVersion+1;i LTE application.zcore.databaseVersion;i++){
-			if(not fileexists(request.zos.installPath&"core/com/model/upgrade/db-"&i&".cfc")){
-				throw("No database upgrade CFC exists for version, #i#, in "&request.zos.installPath&"core/com/model/upgrade/");
+			if(not fileexists(request.zos.installPath&"database-upgrade/db-"&i&".cfc")){
+				throw("No database upgrade CFC exists for version, #i#, in "&request.zos.installPath&"database-upgrade/");
 			} 
-			echo("Executing zcorerootmapping.com.model.upgrade.db-#i# executeUpgrade()<br />");
-			upgradeCom=createobject("component", "zcorerootmapping.com.model.upgrade.db-"&i);
+			echo("Executing jetendo-database-upgrade.db-#i# executeUpgrade()<br />");
+			upgradeCom=createobject("component", "jetendo-database-upgrade.db-"&i);
 			result=upgradeCom.executeUpgrade(this);
 			if(not result){
 				echo("Database upgrade aborted during upgrade phase. Changes may have been made.");
@@ -221,10 +221,10 @@
 	backupStruct={};
 
 	for(n=arguments.startVersion;n LTE arguments.endVersion;n++){
-		if(not fileexists(request.zos.installPath&"core/com/model/upgrade/db-"&n&".cfc")){
-			throw("No database upgrade CFC exists for version, #n#, in "&request.zos.installPath&"core/com/model/upgrade/");
+		if(not fileexists(request.zos.installPath&"database-upgrade/db-"&n&".cfc")){
+			throw("No database upgrade CFC exists for version, #n#, in "&request.zos.installPath&"database-upgrade/");
 		}
-		upgradeCom=createobject("component", "zcorerootmapping.com.model.upgrade.db-"&n);
+		upgradeCom=createobject("component", "jetendo-database-upgrade.db-"&n);
 		arrChanged=upgradeCom.getChangedTableArray();
 
 		for(i=1;i LTE arrayLen(arrChanged);i++){

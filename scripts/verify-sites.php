@@ -238,6 +238,7 @@ function checkFilesystem(){
 	$dir=get_cfg_var("jetendo_root_path");
 	$result=zCheckDirectoryPermissions($dir, "root", "root", "755", "755", false, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."core/", $wwwUser, $wwwUser, "440", "550", true, $preview, $arrError, $isTestServer);
+	$result=zCheckDirectoryPermissions($dir."database-upgrade/", $wwwUser, $wwwUser, "440", "550", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."public/", $wwwUser, $wwwUser, "440", "550", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."execute/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."execute/start/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
