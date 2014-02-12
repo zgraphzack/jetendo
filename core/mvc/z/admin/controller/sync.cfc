@@ -232,7 +232,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	// loop source site_option and check for select_menu group_id usage and any other fields that allow groupID
 	if(row.site_option_type_id EQ 7){
 		optionStruct=deserializeJson(row.site_option_type_json);
-		if(structkeyexists(optionStruct, 'selectmenu_groupid')){
+		if(structkeyexists(optionStruct, 'selectmenu_groupid') and optionStruct.selectmenu_groupid NEQ ""){
 			rs=getSiteOptionGroupById(sourceStruct, optionStruct.selectmenu_groupid);
 			
 			if(rs.success){
@@ -241,7 +241,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 				selectGroupStruct=getSiteOptionGroupByName(destinationStruct, groupNameList, true);
 				optionStruct.selectmenu_groupid=toString(selectGroupStruct.struct.site_option_group_id);
 			}else{
-				echo("Warning: selectmenu_groupid, ""#optionStruct.selectmenu_groupid#"", doesn't exist in source. The site option, #rs.struct.site_option_group_name#.#row.site_option_name# will be imported, but it must be manually corrected.");
+				echo("Warning: selectmenu_groupid, ""#optionStruct.selectmenu_groupid#"", doesn't exist in source. The site option, #row.site_option_name# will be imported, but it must be manually corrected.");
 				optionStruct.selectmenu_groupid='';
 			}
 		}
