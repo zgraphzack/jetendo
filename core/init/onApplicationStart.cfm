@@ -435,7 +435,6 @@
 	
 	ts.verifyTablesExcludeStruct={};
 	ts.verifyTablesExcludeStruct[request.zos.zcoreDatasource]={
-		"listing_x_site": true
 	};
 	
 	ts.primaryKeyMapStruct={};

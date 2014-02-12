@@ -841,7 +841,7 @@ structappend(arguments.ss,ts,false);
 		}
 	}
 	titleStruct.listing_x_site_description=arraytolist(arrDescription,", ");
-	if(isDefined('arguments.idx.listing_x_site_url') and arguments.idx.listing_x_site_url NEQ ""){
+	if(structkeyexists(arguments.idx, 'listing_x_site_url') and arguments.idx.listing_x_site_url NEQ ""){
 		titleStruct.listing_x_site_url=arguments.idx.listing_x_site_url;
 	}else{
 		titleStruct.listing_x_site_url=rereplace(application.zcore.functions.zurlencode(arraytolist(arrURL," "),"-"),"-(-*)","-","ALL");
@@ -852,7 +852,7 @@ structappend(arguments.ss,ts,false);
 	titleStruct.mapTitle=titleStruct.listing_x_site_title;
 	titleStruct.urlTitle=titleStruct.listing_x_site_url;
 	
-	if(structkeyexists(arguments.idx, 'listing_x_site_title') EQ false or arguments.idx.listing_x_site_title EQ ""){
+	if(structkeyexists(arguments.idx, 'listing_x_site_title') EQ false or isnull(arguments.idx.listing_x_site_title) or arguments.idx.listing_x_site_title EQ ""){
 		titleStruct.listing_id=arguments.idx.listing_id;
 		titleStruct.site_id=request.zos.globals.id;
 		// generate title
@@ -860,8 +860,8 @@ structappend(arguments.ss,ts,false);
 		ts.datasource="#request.zos.zcoreDatasource#";
 		ts.table="listing_x_site";
 		titleStruct.listing_x_site_datetime=request.zos.mysqlnow;
-		ts.struct=titleStruct;
-		if(structkeyexists(arguments.idx, 'listing_x_site_url') and arguments.idx.listing_x_site_url NEQ ""){
+		ts.struct=titleStruct; 
+		if(structkeyexists(arguments.idx, 'listing_x_site_url') and not isnull(arguments.idx.listing_x_site_url) and arguments.idx.listing_x_site_url NEQ ""){
 			ts.struct.listing_x_site_url=arguments.idx.listing_x_site_url;
 			ts.forceWhereFields="listing_id,site_id"; 
 			application.zcore.functions.zUpdate(ts);
@@ -873,7 +873,7 @@ structappend(arguments.ss,ts,false);
 				site_id = #db.param(request.zos.globals.id)#";
 				qListingXSite=db.execute("qListingXSite");
 				if(qListingXSite.recordcount EQ 0){
-					throw("Failed to insert listing_x_Site record and it doesn't exist in database.");
+					throw("Failed to insert listing_x_site record and it doesn't exist in database.");
 				}else{
 					for(row in qListingXSite){
 						titleStruct.listing_x_site_title=row.listing_x_site_title;
