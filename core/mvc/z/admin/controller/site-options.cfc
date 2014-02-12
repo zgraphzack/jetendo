@@ -6,7 +6,6 @@
 	var qSiteOptionApp=0; 
 	variables.allowGlobal=false;
 
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	form.site_id=request.zos.globals.id;
 	variables.siteIdList="'"&request.zos.globals.id&"'";
 	variables.publicSiteIdList="'0','"&request.zos.globals.id&"'";
@@ -38,6 +37,14 @@
 	}
 	
 	variables.recurseCount=0;
+	if(form.method EQ "autoDeleteGroup" or 
+		form.method EQ "publicAddGroup" or form.method EQ "publicEditGroup" or 
+		form.method EQ "internalGroupUpdate" or form.method EQ "publicMapInsertGroup" or 
+		form.method EQ "publicInsertGroup" or form.method EQ "publicUpdateGroup"){
+
+	}else{
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
+	}
 	</cfscript>
 	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
 		<table style="border-spacing:0px; width:100%; " class="table-list">
@@ -551,7 +558,8 @@
 	var myForm=structnew();
 	var formaction=0;
 	variables.init();
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	 
 	if(form.method EQ 'insert'){
 		formaction='add';	
 	}else{
@@ -1301,6 +1309,11 @@
 	if(methodBackup NEQ "publicMapInsertGroup" and methodBackup NEQ "importInsertGroup"){
 		variables.init();
 	}
+	if(form.method EQ "internalGroupUpdate" or form.method EQ "publicMapInsertGroup" or 
+		form.method EQ "publicInsertGroup" or form.method EQ "publicUpdateGroup"){
+	}else{
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);
+	}
 	local.errors=false;
 	var debug=false;
 	/*if(request.zos.isdeveloper){
@@ -2047,6 +2060,7 @@ Define this function in another CFC to override the default email format
 	form.site_option_group_id=ts.site_option_group_map_group_id;
 	form.site_x_option_group_set_id=0;
 	form.disableGroupEmail=arguments.disableEmail;
+
 	variables.publicMapInsertGroup(); 
 	structdelete(form, 'disableGroupEmail');
 	</cfscript>
@@ -3049,7 +3063,9 @@ Define this function in another CFC to override the default email format
 	structappend(arguments.struct, defaultStruct, false);
 	
 	variables.init();
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
+	if(form.method NEQ "autoDeleteGroup"){
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
+	}
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
