@@ -880,7 +880,7 @@ todo: open source projects
 		return zSkinHTMLContents99;
 	}else{
 		if(arguments.rerun){
-	    application.zcore.functions.zError("application.zcore.skin.includeSkin() Failed: file_path, ""#arguments.file_path#"" doesn't exist.  Check your spelling or append ?zreset=application to the current url to rebuild the skin cache and try again.");
+			application.zcore.functions.zError("application.zcore.skin.includeSkin() Failed: file_path, ""#arguments.file_path#"" doesn't exist.  Check your spelling or append ?zreset=application to the current url to rebuild the skin cache and try again.");
 		}else{
 			this.includeSkin(arguments.file_path, arguments.viewdata, true);	
 		}
