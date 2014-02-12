@@ -23,7 +23,7 @@
 	variables.queueSortStruct.tableName = "content";
 	variables.queueSortStruct.sortFieldName = "content_sort";
 	variables.queueSortStruct.primaryKeyName = "content_id";
-	// optional
+	// optional 
 	variables.queueSortStruct.datasource="#request.zos.zcoreDatasource#";
 	variables.queueSortWhere="site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#' and content_deleted=0 ";
 	variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#application.zcore.functions.zescape(form.content_parent_id)#' ";
