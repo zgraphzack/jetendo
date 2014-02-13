@@ -284,7 +284,7 @@ tempText=application.zcore.functions.zFixAbusiveCaps(replace(tempText,",",", ","
  </cfscript>
  
  <div class="zls-detail-box">
-     <div style="width:#topLeftColSize#px; height:#newTopHeight+70#px; float:left;">
+     <div style="width:#topLeftColSize#px; height:#newTopHeight+100#px; float:left;">
  
     <cfsavecontent variable="theJS">
 {
