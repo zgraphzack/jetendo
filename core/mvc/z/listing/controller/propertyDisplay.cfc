@@ -650,7 +650,7 @@ this.isPropertyDisplayCom=true;
 		request.arrEmailPhoto=ArrayNew(1);
 	}
 	ArrayAppend(arrOutput,this.checkNav());
-	t493.contentForceOutput=true;
+	//t493.contentForceOutput=true;
 	application.zcore.app.getAppCFC("content").setContentIncludeConfig(t493);
 	if(isDefined('this.optionStruct.mixSold') and this.optionStruct.mixSold){
 		db.sql="SELECT * FROM #request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content 

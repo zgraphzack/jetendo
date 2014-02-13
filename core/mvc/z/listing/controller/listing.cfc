@@ -34,7 +34,7 @@ this.app_id=11;
 		//ts.debug=true;
 		returnStruct = propertyDataCom.getProperties(ts);
 		if(returnStruct.query.recordcount NEQ 0){	
-			isListing=true;
+			arguments.isListing=true;
 			mlsPIncluded=true;
 			ts = StructNew();
 			ts.contentDetailView=false;
@@ -46,6 +46,9 @@ this.app_id=11;
 			propDisplayCom.init(ts);
 		
 			res=propDisplayCom.display();
+			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+				echo("<p>Child page layout: MLS contentTemplate: #row.content_id#</p>");
+			}
 			writeoutput('<table style="width:100%;"><tr><td>'&res&'</td></tr></table>');
 		}
 	}
@@ -64,6 +67,9 @@ this.app_id=11;
 		}
 	}
 	if(mlsPIncluded EQ false and (row.content_mls_number NEQ "" or row.content_is_listing EQ 1)){
+		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+			echo("<p>Child page layout: listing, not mls: #row.content_id#</p>");
+		}
 		statusMessage="";
 		if(row.content_diagonal_message NEQ ""){
 			statusMessage=row.content_diagonal_message;

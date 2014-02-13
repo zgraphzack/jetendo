@@ -1645,7 +1645,7 @@ configCom.includeContentByName(ts);
 <cffunction name="getPropertyInclude" localmode="modern" output="yes" returntype="boolean">
 	<cfargument name="argContentId" type="string" required="yes">
 	<cfargument name="query" type="any" required="no" default="#false#">
-	<cfargument name="arrOutputStruct" type="array" required="yes">
+	<cfargument name="arrOutputStruct" type="array" required="no" default="#[]#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
@@ -1680,6 +1680,9 @@ configCom.includeContentByName(ts);
 	}
 	index=0;
 	for(row in tempQueryName){
+		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+			echo('<p>Outputting child page: #row.content_id#</p>');
+		}
 		index++;
 		ts=structnew();
 		ts.image_library_id=row.content_image_library_id;
@@ -1695,10 +1698,8 @@ configCom.includeContentByName(ts);
 			contentPhoto99=(arrImages[1].link);
 		}
 		savecontent variable="output"{
-			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-				contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
-				writeoutput('<div style="display:inline; width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#row.content_id#&amp;return=1'');">');
-			}
+
+			beginEditLink(contentConfig, row.content_id);
 			if(structkeyexists(request.zos, 'propertyIncludeIndex') EQ false){
 				request.zos.propertyIncludeIndex=0;
 			}
@@ -1727,13 +1728,12 @@ configCom.includeContentByName(ts);
 				isListing=propertyIncludeStruct.isListing;
 			}
 			if(isListing EQ false){
+				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+					echo("<p>Child page layout: regular: #row.content_id#</p>");
+				}
 				getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
 			}
-			if((structkeyexists(request.zos.userSession.groupAccess, "administrator")) and 
-				contentConfig.contentEmailFormat EQ false and 
-				contentConfig.editLinksEnabled){
-				writeoutput('</div>');
-			}
+			endEditLink(contentConfig);
 		}
 		if(contentConfig.contentForceOutput EQ false){
 			ts=StructNew();
@@ -1749,6 +1749,9 @@ configCom.includeContentByName(ts);
 			application.zcore.app.getAppCFC("content").excludeContentId(row.content_id);
 			arrayAppend(arguments.arrOutputStruct, ts);
 		}else{
+			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+				echo("<p>Child page output forced: #row.content_id#</p>");
+			}
 			writeoutput(output);	
 		}
 		includeLoopCount++;	
@@ -1897,11 +1900,6 @@ configCom.includeContentByName(ts);
 					}
 				}
 			}
-		}
-		if((structkeyexists(request.zos.userSession.groupAccess, "administrator")) and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
-			writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
-			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
-			application.zcore.template.appendTag('pagetitle','</span>');
 		}
 		if(ts994824713.content_hide_modal EQ 1){
 			application.zcore.functions.zModalCancel();	
@@ -2081,7 +2079,6 @@ configCom.includeContentByName(ts);
 			}
 
 
-
 			childContentStruct=displayChildContent(ts994824713, contentConfig, ct1948);
 			ct1948=childContentStruct.bodyText;
 
@@ -2115,7 +2112,9 @@ configCom.includeContentByName(ts);
 				</div>');
 			}
 			if(ts994824713.content_text_position EQ 0){
+				beginEditLink(contentConfig, ts994824713.content_id);
 				echo(ct1948);
+				endEditLink(contentConfig);
 				if(ct1948 NEQ ""){
 					echo('<br style="clear:both;" />');
 				}
@@ -2141,10 +2140,6 @@ configCom.includeContentByName(ts);
 			}
 			if(ts994824713.content_html_text_bottom EQ 1 and ts994824713.content_html_text NEQ ""){
 				writeoutput(ts994824713.content_html_text&'<br style="clear:both;" /><br />');
-			}
-			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-				contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
-				writeoutput('</div>');
 			}
 			if(structkeyexists(request.zos,'listingApp') and structkeyexists(request.zos,'listingApp') and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_compliantidx',false,true) EQ true and ts994824713.content_firm_name NEQ ''){
 				echo('<br />Listing courtesy of #ts994824713.content_firm_name#');
@@ -2195,9 +2190,14 @@ configCom.includeContentByName(ts);
 	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 		echo("parentChildSorting: "&parentChildSorting&"<br />");
 		echo('Initial sort order: <br />');
-		writedump(structkeyarray(outputStruct));
-		echo('Final sort order: <br />');
-		writedump(arrOrder);
+		for(i in outputStruct){
+			echo('##'&i&' id:'&outputStruct[i].id&' | sort: '&outputStruct[i].sort&'<br />');
+		}
+		echo('<br />Final sort order: <br />');
+		for(i=1;i LTE arraylen(arrOrder);i++){
+			echo('##'&i&' id:'&outputStruct[arrOrder[i]].id&' | sort: '&outputStruct[arrOrder[i]].sort&'<br />');
+		}
+		echo('<br />');
 		
 	}
 	
@@ -2214,23 +2214,36 @@ configCom.includeContentByName(ts);
 	}
 
 	if(ts994824713.content_text_position EQ 1){
-		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-			contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
-			writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
-			application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
-			application.zcore.template.appendTag('pagetitle','</div>');
-		}
+		beginEditLink(contentConfig, ts994824713.content_id);
 		writeoutput(ct1948);
 		if(trim(ct1948) NEQ ""){writeoutput('<br style="clear:both;" />');}
-		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-			contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
-			writeoutput('</div>');
-		}
+		endEditLink(contentConfig);
 		this.resetContentIncludeConfig();
 	}
 	writeoutput(output);
 	//application.sitestruct[request.zos.globals.id].contentPageCache[cacheString]=output;
 	return returnCountTotal;
+	</cfscript>
+</cffunction>
+
+<cffunction name="beginEditLink" localmode="modern" access="public">
+	<cfargument name="contentConfig" type="struct" required="yes">
+	<cfargument name="content_id" type="numeric" required="yes">
+	<cfscript>
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
+		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1'');">');
+		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1'');">');
+		application.zcore.template.appendTag('pagetitle','</div>');
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="endEditLink" localmode="modern" access="public">
+	<cfargument name="contentConfig" type="struct" required="yes">
+	<cfscript>
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
+		writeoutput('</div>');
+	}
 	</cfscript>
 </cffunction>
 	
@@ -2659,16 +2672,22 @@ configCom.includeContentByName(ts);
 					ts43.disableChildContentSummary=true;
 					application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts43);
 				}
+				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+					echo('<p>Outputting children for page: #arguments.qContent.content_id#</p>');
+				}
 				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
-			if(arguments.qContent.content_include_listings NEQ ''){
-				echo('<br style="clear:both;" />');
-				arrListings=listToArray(arguments.qContent.content_include_listings, ",");
-				arguments.propertyCount+=arraylen(arrListings);
-				for(i=1;i LTE arraylen(arrListings);i++){
-					application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i], false, arguments.arrOutputStruct);
-				}
+		}
+		if(arguments.qContent.content_include_listings NEQ ''){
+			echo('<br style="clear:both;" />');
+			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+				echo('<p>Outputting content_include_listings: #arguments.qContent.content_include_listings#</p>');
+			}
+			arrListings=listToArray(arguments.qContent.content_include_listings, ",");
+			arguments.propertyCount+=arraylen(arrListings);
+			for(i=1;i LTE arraylen(arrListings);i++){
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i], false, arguments.arrOutputStruct);
 			}
 		}
 	}
