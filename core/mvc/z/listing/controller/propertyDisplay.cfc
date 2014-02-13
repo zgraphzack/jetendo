@@ -1669,7 +1669,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 			 request.zos.propertyIncludeIndex=0;
 		 }
 		 request.zos.propertyIncludeIndex++;
-		if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and contentConfig.contentEmailFormat EQ false){
+		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false){
 			writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.idx.content_id#&amp;return=1'');">');
 		}
 		if(arguments.idx.content_url_only NEQ ""){
@@ -2262,7 +2262,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 			<div class="zls2-divider"></div>
 		</cfif>
 		<cfscript>
-		if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and contentConfig.contentEmailFormat EQ false){
+		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false){
 			writeoutput('</div>');
 		}
 		</cfscript>

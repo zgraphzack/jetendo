@@ -410,7 +410,7 @@
     	<cfargument name="linkStruct" type="struct" required="yes">
     	<cfscript>
 		var ts=0;
-		if(structkeyexists(request.zos.userSession.groupAccess, "content_manager") or structkeyexists(request.zos.userSession.groupAccess, "administrator")){
+		if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 			if(structkeyexists(arguments.linkStruct,"Rentals") EQ false){
 				ts=structnew();
 				ts.featureName="Rentals";

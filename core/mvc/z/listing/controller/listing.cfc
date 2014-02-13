@@ -243,7 +243,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 	var db=request.zos.queryObject;
 	var ts=0;
 	var qCheckExclusiveListingPage=0;
-	if(structkeyexists(request.zos.userSession.groupAccess, "content_manager") or structkeyexists(request.zos.userSession.groupAccess, "administrator")){
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 		if(structkeyexists(arguments.linkStruct,"Real Estate") EQ false){
 			ts=structnew();
 			ts.link='##';

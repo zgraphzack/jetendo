@@ -235,7 +235,7 @@ application.zcore.template.setTag('pagetitle',rental_name);
 application.zcore.template.setTag('pagenav',temppagenav);
 
 
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1'');">');
 		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1'');">');
 		application.zcore.template.appendTag('pagetitle','</div>');
@@ -425,7 +425,7 @@ for(i=2;i LTE arraylen(arrImages);i=i+1){
 </div>
 </div>  
    <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
 	}
 	</cfscript>
@@ -764,7 +764,7 @@ this.includeRentalById(ts);
 </cfif>
 <cfscript>
 
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1'');">');
 		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1'');">');
 		application.zcore.template.appendTag('pagetitle','</div>');
@@ -997,7 +997,7 @@ WHERE site_id = #db.param(request.zos.globals.id)# ORDER BY availability_type_na
     </tr>
 	</table> 
    <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
 	}
 	</cfscript>
@@ -1648,7 +1648,7 @@ var tempMeta=0;
 var ts=0;
 		var db=request.zos.queryObject;
 application.zcore.app.getAppCFC("rental").onRentalPage();
-if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 	writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rates/editRental?rental_id=#arguments.query.rental_id#&amp;return=1'');">');
 }   
 </cfscript>
@@ -1781,7 +1781,7 @@ qXAmenity=db.execute("qXAmenity");
 <strong>Features:</strong><br />
 #arraytolist(arrAmen,", ")#</cfif></td></tr></table>
    <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
 	}
 	</cfscript>
@@ -1927,7 +1927,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 	</cfif>   
     <cfsavecontent variable="therentalHTMLSection">
 	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1'');">');
 		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1'');">');
 		application.zcore.template.appendTag('pagetitle','</div>');
@@ -1990,7 +1990,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 		writeoutput('<img src="#arrImages[i].link#" alt="#htmleditformat(arrImages[i].caption)#" /><br /><br />');
 	}
    
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
 	}
 	</cfscript>
@@ -2141,7 +2141,7 @@ Pet Friendly:  Yes  No
 			<cfloop query="qpar">
            <!---  <cfscript>
 			
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1'');">');
 	}   
 	
@@ -2170,7 +2170,7 @@ Pet Friendly:  Yes  No
         <li><h3><a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCategoryLink(qpar.rental_category_id, qpar.rental_category_name, qpar.rental_category_url)#"> 
 			#qpar.rental_category_name#</a></h3></li>  
   <!---  <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){ 
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
 	}
 	</cfscript> --->

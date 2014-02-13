@@ -188,7 +188,7 @@ var db=request.zos.queryObject;
 	<cfargument name="linkStruct" type="struct" required="yes">
 	<cfscript>
 	var ts=0;
-	if(structkeyexists(request.zos.userSession.groupAccess, "content_manager") or structkeyexists(request.zos.userSession.groupAccess, "administrator")){
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
 		if(structkeyexists(arguments.linkStruct,"Content Manager") EQ false){
 			ts=structnew();
 			ts.featureName="Content Manager";
@@ -1539,8 +1539,7 @@ configCom.includeContentByName(ts);
 			contentPhoto99=(arrImages[1].link);
 		}
 		savecontent variable="output"{
-			if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or 
-				structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and 
+			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
 				contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
 				writeoutput('<div style="display:inline; width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.argContentId#&amp;return=1'');">');
 			}
@@ -1953,8 +1952,7 @@ configCom.includeContentByName(ts);
 					echo('<hr />');
 				}
 			}
-			if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or 
-				structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and 
+			if((structkeyexists(request.zos.userSession.groupAccess, "administrator")) and 
 				contentConfig.contentEmailFormat EQ false and 
 				contentConfig.editLinksEnabled){
 				writeoutput('</div>');
@@ -2125,7 +2123,7 @@ configCom.includeContentByName(ts);
 				}
 			}
 		}
-		if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
+		if((structkeyexists(request.zos.userSession.groupAccess, "administrator")) and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
 			writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
 			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
 			application.zcore.template.appendTag('pagetitle','</span>');
@@ -2371,8 +2369,7 @@ configCom.includeContentByName(ts);
 			if(ts994824713.content_html_text_bottom EQ 1 and ts994824713.content_html_text NEQ ""){
 				writeoutput(ts994824713.content_html_text&'<br style="clear:both;" /><br />');
 			}
-			if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or 
-				structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and 
+			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
 				contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
 				writeoutput('</div>');
 			}
@@ -2392,8 +2389,8 @@ configCom.includeContentByName(ts);
 		 writeoutput(application.zcore.functions.zDisplayExternalComments(application.zcore.app.getAppData("content").optionstruct.app_x_site_id&"-"&ts994824713.content_id, ts994824713.content_name, request.zos.globals.domain&currentContentURL));
 	}
 
-	getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild);
-
+	menuLinkStruct=getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild, pcount);
+	pcount=menuLinkStruct.propertyCount;
 	if(pcount NEQ 0){
 		echo('<br style="clear:both;" />');
 	}
@@ -2447,8 +2444,7 @@ configCom.includeContentByName(ts);
 	}
 
 	if(ts994824713.content_text_position EQ 1){
-		if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or 
-			structkeyexists(request.zos.userSession.groupAccess, "content_manager")) and 
+		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
 			contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
 			writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
 			application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#ts994824713.content_id#&amp;return=1'');">');
@@ -2456,8 +2452,7 @@ configCom.includeContentByName(ts);
 		}
 		writeoutput(ct1948);
 		if(trim(ct1948) NEQ ""){writeoutput('<br style="clear:both;" />');}
-		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or
-			structkeyexists(request.zos.userSession.groupAccess, "content_manager") and 
+		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
 			contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
 			writeoutput('</div>');
 		}
@@ -2757,6 +2752,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="contentConfig" type="struct" required="yes">
 	<cfargument name="curParentSorting" type="numeric" required="yes">
 	<cfargument name="qContentChild" type="any" required="yes">
+	<cfargument name="propertyCount" type="numeric" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	subpageLinkLayoutBackup=arguments.qContent.content_subpage_link_layout;
@@ -2898,13 +2894,14 @@ configCom.includeContentByName(ts);
 			if(arguments.qContent.content_include_listings NEQ ''){
 				echo('<br style="clear:both;" />');
 				arrListings=listToArray(arguments.qContent.content_include_listings, ",");
-				pcount+=arraylen(arrListings);
+				arguments.propertyCount+=arraylen(arrListings);
 				for(i=1;i LTE arraylen(arrListings);i++){
 					application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i]);
 				}
 			}
 		}
 	}
+	return { propertyCount: propertyCount };
 	</cfscript>
 </cffunction>
 	
