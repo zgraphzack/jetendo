@@ -1,7 +1,7 @@
 <?php
-// usage: php /opt/jetendo/scripts/git-bitbucket.php "username" "password"
+// usage: php /opt/jetendo/scripts/git-bitbucket.php "username" "password" "ssh"
 $rootPath=get_cfg_var("jetendo_root_path");
-if(!isset($argv) || count($argv) <= 2){
+if(!isset($argv) || count($argv) <= 3){
 	echo "\nYou must specify a username and password for bitbucket.org. I.e. \n\nphp ".$rootPath."scripts/git-bitbucket.php \"username\" \"password\"\n\n";
 	exit;
 }
@@ -19,14 +19,18 @@ if($handle !== FALSE) {
 			echo $cmd."\n";
 			echo `$cmd`; 
 			
-			$cmd="/usr/bin/git remote add origin https://".$argv[1]."@bitbucket.org/".$argv[1]."/".$repo.".git";
+			$cmd="/usr/bin/git remote remove origin";
 			echo $cmd."\n";
 			echo `$cmd`; 
 			
-			/*$cmd="/usr/bin/git push -u origin --all";
+			if($argv[3]=="ssh"){
+				$cmd="/usr/bin/git remote add origin git@bitbucket.org:".$argv[1]."/".$repo.".git";
+			}else{
+				$cmd="/usr/bin/git remote add origin https://".$argv[1]."@bitbucket.org/".$argv[1]."/".$repo.".git";
+			}
 			echo $cmd."\n";
-			echo `$cmd`; */
-			//exit;
+			echo `$cmd`; 
+			
 		}
     }
 	closedir($handle);
