@@ -621,13 +621,6 @@
 			local.dumpLoadFailed=true;
 		}
 	}
-	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-	if(not dbUpgradeCom.checkVersion()){
-		if(request.zos.isTestServer or request.zos.isDeveloper){
-			echo('Database upgrade failed');
-			abort;
-		}
-	}
 
 	if(local.dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all"){
 		ts.zcore=structnew();
@@ -636,6 +629,13 @@
 		variables.setupAppGlobals2(ts.zcore);
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3'});
 		application.zcore=ts.zcore;
+	}
+	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+	if(not dbUpgradeCom.checkVersion()){
+		if(request.zos.isTestServer or request.zos.isDeveloper){
+			echo('Database upgrade failed');
+			abort;
+		}
 	}
 	if(request.zos.allowRequestCFC){
 		request.zos.functions=application.zcore.functions;
