@@ -777,6 +777,17 @@
 	// silenced output
 	savecontent variable="local.output"{
 		if(request.zos.inServerManager){
+			if(not application.zcore.user.checkServerAccess()){
+				ts = StructNew();
+				ts.secureLogin=true;
+				ts.noRedirect=true;
+				ts.noLoginForm=true;
+				ts.usernameLabel = "E-Mail Address";
+				ts.loginMessage = "Please login";
+				ts.template = "zcorerootmapping.templates.blank";
+				ts.user_group_name = "serveradministrator";
+				rs=application.zcore.user.checkLogin(ts);
+			}
 			application.zcore.template.setTag("stylesheet","/z/stylesheets/manager.css",false);
 			application.zcore.template.requireTag("title");
 			application.zcore.template.setTag("title","Server Manager");

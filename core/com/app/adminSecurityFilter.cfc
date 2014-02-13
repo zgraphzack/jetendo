@@ -139,7 +139,7 @@
 	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, arguments.site_id)){
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, arguments.site_id)){ 
 		application.zcore.status.setStatus(request.zsid, "You don't have permission to use that feature.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
