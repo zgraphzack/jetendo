@@ -2557,6 +2557,8 @@ configCom.includeContentByName(ts);
 			arguments.bodyText=rereplacenocase(arguments.bodyText,"%child_links%", theChildLinkHTML,"ONE");
 		
 		}
+	}else{
+		qContentChild={ recordcount:0};
 	}
 	return { bodyText: arguments.bodyText, qContentChild: qContentChild };
 	</cfscript>
@@ -2754,7 +2756,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="qContent" type="any" required="yes">
 	<cfargument name="contentConfig" type="struct" required="yes">
 	<cfargument name="curParentSorting" type="numeric" required="yes">
-	<cfargument name="qContentChild" type="query" required="yes">
+	<cfargument name="qContentChild" type="any" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	subpageLinkLayoutBackup=arguments.qContent.content_subpage_link_layout;
@@ -2828,76 +2830,78 @@ configCom.includeContentByName(ts);
 
 		ts.arrLinks=arraynew(1);
 		index=0;
-		for(row in arguments.qContentChild){
-			index++;
-			ts3=structnew();
-			ts3.image_library_id=row.content_image_library_id;
-			ts3.output=false;
-			ts3.query=arguments.qContentChild;
-			ts3.row=index;
-			ts3.size=request.zos.thumbnailSizeStruct.width&"x"&request.zos.thumbnailSizeStruct.height;
-			ts3.crop=request.zos.thumbnailSizeStruct.crop; 
-			ts3.count = 1;
-			arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts3);
-			t2=structnew();
-			t2.photo=""; 
-			if(arraylen(arrImages) NEQ 0){
-				t2.photo=(arrImages[1].link);
+		if(arguments.qContentChild.recordcount){
+			for(row in arguments.qContentChild){
+				index++;
+				ts3=structnew();
+				ts3.image_library_id=row.content_image_library_id;
+				ts3.output=false;
+				ts3.query=arguments.qContentChild;
+				ts3.row=index;
+				ts3.size=request.zos.thumbnailSizeStruct.width&"x"&request.zos.thumbnailSizeStruct.height;
+				ts3.crop=request.zos.thumbnailSizeStruct.crop; 
+				ts3.count = 1;
+				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts3);
+				t2=structnew();
+				t2.photo=""; 
+				if(arraylen(arrImages) NEQ 0){
+					t2.photo=(arrImages[1].link);
+				}
+				t2.text=row.content_name;
+				if(row.content_menu_title NEQ ""){
+					t2.text=row.content_menu_title;	
+				}
+
+				if(row.content_text EQ ''){
+					t2.summary=row.content_summary;
+				}else{
+					t2.summary=row.content_text;
+				}
+				t2.summary=application.zcore.email.convertHTMLToText(t2.summary);
+
+				t2.isparent=false;
+				t2.type="subtab";
+				if(row.content_unique_name NEQ ''){
+					t2.url=request.zos.globals.domain&row.content_unique_name;
+				}else{ 
+					t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
+				}
+				selectedIndex++;
+				if(arraylen(ts.arrLinks) LT selectedIndex){
+					arrayappend(ts.arrLinks,t2);
+				}else{
+					arrayinsertat(ts.arrLinks,selectedIndex,t2);
+				}
 			}
-			t2.text=row.content_name;
-			if(row.content_menu_title NEQ ""){
-				t2.text=row.content_menu_title;	
+			if(arguments.qContentChild.recordcount NEQ 0){
+				ts.link_layout=subpageLinkLayoutBackup;
+				out99&=this.displayMenuLinks(ts);
 			}
 
-			if(row.content_text EQ ''){
-				t2.summary=row.content_summary;
+			
+			if(subpageLinkLayoutBackup EQ 8 or subpageLinkLayoutBackup EQ 9 or subpageLinkLayoutBackup EQ 10){
+				writeoutput(out99);
+			}else if(application.zcore.app.getAppData("content").optionStruct.content_config_sidebar_tag NEQ ""){
+				application.zcore.template.setTag(application.zcore.app.getAppData("content").optionStruct.content_config_sidebar_tag,out99);
 			}else{
-				t2.summary=row.content_text;
+				application.zcore.template.prependtag("content",out99);
 			}
-			t2.summary=application.zcore.email.convertHTMLToText(t2.summary);
-
-			t2.isparent=false;
-			t2.type="subtab";
-			if(row.content_unique_name NEQ ''){
-				t2.url=request.zos.globals.domain&row.content_unique_name;
-			}else{ 
-				t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
+			if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0){
+				if(subpageLinkLayoutBackup EQ 1){
+					ts43=structnew();
+					ts43.disableChildContentSummary=true;
+					application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts43);
+				}
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild);
 			}
-			selectedIndex++;
-			if(arraylen(ts.arrLinks) LT selectedIndex){
-				arrayappend(ts.arrLinks,t2);
-			}else{
-				arrayinsertat(ts.arrLinks,selectedIndex,t2);
-			}
-		}
-		if(arguments.qContentChild.recordcount NEQ 0){
-			ts.link_layout=subpageLinkLayoutBackup;
-			out99&=this.displayMenuLinks(ts);
-		}
-
-		
-		if(subpageLinkLayoutBackup EQ 8 or subpageLinkLayoutBackup EQ 9 or subpageLinkLayoutBackup EQ 10){
-			writeoutput(out99);
-		}else if(application.zcore.app.getAppData("content").optionStruct.content_config_sidebar_tag NEQ ""){
-			application.zcore.template.setTag(application.zcore.app.getAppData("content").optionStruct.content_config_sidebar_tag,out99);
-		}else{
-			application.zcore.template.prependtag("content",out99);
-		}
-		if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0){
-			if(subpageLinkLayoutBackup EQ 1){
-				ts43=structnew();
-				ts43.disableChildContentSummary=true;
-				application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts43);
-			}
-			application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild);
-		}
-		structdelete(request.zos,'contentPropertyIncludeQueryName');
-		if(arguments.qContent.content_include_listings NEQ ''){
-			echo('<br style="clear:both;" />');
-			arrListings=listToArray(arguments.qContent.content_include_listings, ",");
-			pcount+=arraylen(arrListings);
-			for(i=1;i LTE arraylen(arrListings);i++){
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i]);
+			structdelete(request.zos,'contentPropertyIncludeQueryName');
+			if(arguments.qContent.content_include_listings NEQ ''){
+				echo('<br style="clear:both;" />');
+				arrListings=listToArray(arguments.qContent.content_include_listings, ",");
+				pcount+=arraylen(arrListings);
+				for(i=1;i LTE arraylen(arrListings);i++){
+					application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i]);
+				}
 			}
 		}
 	}
