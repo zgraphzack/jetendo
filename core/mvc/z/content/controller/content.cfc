@@ -2230,7 +2230,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="contentConfig" type="struct" required="yes">
 	<cfargument name="content_id" type="numeric" required="yes">
 	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1'');">');
 		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1'');">');
 		application.zcore.template.appendTag('pagetitle','</div>');
@@ -2241,7 +2241,7 @@ configCom.includeContentByName(ts);
 <cffunction name="endEditLink" localmode="modern" access="public">
 	<cfargument name="contentConfig" type="struct" required="yes">
 	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 		writeoutput('</div>');
 	}
 	</cfscript>
