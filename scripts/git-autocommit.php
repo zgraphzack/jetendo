@@ -9,12 +9,13 @@ if(!isset($argv) || count($argv) <= 1){
 $handle = opendir($rootPath."sites/");
 if($handle !== FALSE) {
     while (false !== ($entry = readdir($handle))) {
-		if($entry !="." && $entry !=".." && is_dir($rootPath."sites/".$entry)){
+		if($entry !="." && $entry !=".." && is_dir($rootPath."sites/".$entry) && is_dir($rootPath."sites/".$entry.'/.git')){
 			echo "Running autocommit on ".$entry."\n";
 			chdir($rootPath."sites/".$entry."/");
-			$cmd="git add .";
+			$cmd="/usr/bin/git add .";
 			`$cmd`; 
-			$cmd="git commit -am '".$argv[1]."'";
+			
+			$cmd="/usr/bin/git commit -am '".$argv[1]."'";
 			`$cmd`; 
 		}
     }
