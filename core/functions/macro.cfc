@@ -31,7 +31,7 @@
 	request.zos.debuggerEnabled=false;
 	application.zcore.template.setTemplate("zcorerootmapping.templates.plain",true,true);
 	application.zcore.functions.zRequireJquery();
-	application.zcore.template.appendTag("meta", '<style type="text/css">body{background:none !important;} h1{color:##000 !important;} body, table{ background-color:##FFF !important; color:##000 !important;} a:link, a:visited{ color:##369 !important; } a:hover{ color:##F00 !important; } ##zSearchJsToolNewDiv, ##zlsInstantPlaceholder{display:none !important;} </style>');
+	application.zcore.template.appendTag("stylesheets", '<style type="text/css">body{background:none !important;} h1{color:##000 !important;} body, table{ background-color:##FFF !important; color:##000 !important;} a:link, a:visited{ color:##369 !important; } a:hover{ color:##F00 !important; } ##zSearchJsToolNewDiv, ##zlsInstantPlaceholder{display:none !important;} </style>');
 	</cfscript>
 </cffunction>
 

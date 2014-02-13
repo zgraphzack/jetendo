@@ -20,11 +20,15 @@
 	<head>
 	    <meta charset="utf-8" />
 	    <title>#tagStruct.title ?: ""#</title>
-	#tagStruct.stylesheets ?: ""#
-	#tagStruct.meta ?: ""#<style type="text/css">/* <![CDATA[ */ body{ font-family:Verdana, Geneva, sans-serif; font-size:12px; line-height:18px;margin:0px; } h1{ font-size:18px; line-height:24px;} h2{ font-size: 14px; } /* ]]> */</style>
-	<cfif fileexists(request.zos.globals.homedir&"stylesheets/zblank.css")>
-	#application.zcore.skin.includeCSS("/stylesheets/zblank.css")#
-	</cfif>
+	 	<style type="text/css">/* <![CDATA[ */ 
+	 	body{ font-family:Verdana, Geneva, sans-serif; font-size:12px; line-height:18px;margin:0px; } 
+	 	h1{ font-size:18px; line-height:24px;} 
+	 	h2{ font-size: 14px; } /* ]]> */</style>
+		#tagStruct.stylesheets ?: ""#
+		#tagStruct.meta ?: ""#
+		<cfif fileexists(request.zos.globals.homedir&"stylesheets/zblank.css")>
+		#application.zcore.skin.includeCSS("/stylesheets/zblank.css")#
+		</cfif>
 	</head>
 	<body class="zblanktemplatebody">
 	#tagStruct.topcontent ?: ""#

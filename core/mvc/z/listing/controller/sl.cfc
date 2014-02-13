@@ -196,8 +196,7 @@ application.zcore.functions.zHeader("Content-type","text/javascript");
 	request.zpagedebugdisabled=true;
 	if(form.method NEQ "view"){
 		application.zcore.template.setTemplate("zcorerootmapping.templates.blank");
-		application.zcore.template.prependtag("meta",'
-<style type="text/css">body{background:none !important;} body, table{ background-color:##FFF !important; color:##000 !important;} a:link, a:visited{ color:##369 !important; } </style><meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />');
+		application.zcore.template.prependtag("stylesheets",'<style type="text/css">body{background:none !important;} body, table{ background-color:##FFF !important; color:##000 !important;} a:link, a:visited{ color:##369 !important; } </style><meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />');
 	}
 	propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	// get select properties based on mls_id and listing_id
