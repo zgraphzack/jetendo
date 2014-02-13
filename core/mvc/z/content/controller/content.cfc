@@ -1246,7 +1246,7 @@ configCom.includeContent(ts);
 	}
 	ts19156.contentForceOutput=true;
 	application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts19156);
-	r1=application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.ss.content_id, arguments.query);
+	r1=application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.ss.content_id, arguments.query, []);
 	return r1;
 	</cfscript>
 </cffunction>
@@ -1489,9 +1489,163 @@ configCom.includeContentByName(ts);
 	</cfscript>
 </cffunction>
 	
+	
+<cffunction name="getPropertyIncludeHTML" localmode="modern">
+	<cfargument name="contentConfig" type="struct" required="yes">
+	<cfargument name="contentPhoto99" type="string" required="yes">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="cityName" type="string" required="yes">
+	<cfargument name="propertyLink" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	contentConfig=arguments.contentConfig;
+	contentPhoto99=arguments.contentPhoto99;
+	row=arguments.row;
+	cityName=arguments.cityName;
+	propertyLink=arguments.propertyLink;
+	echo('<table ');
+	if(len(contentConfig.tablestyle)){
+		echo(contentConfig.tablestyle);
+	}else{
+		echo(' style="width:100%;"');
+	}
+	echo('><tr>');
+	if(contentPhoto99 NEQ ""){
+		echo('<td class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;  vertical-align:top;padding-right:20px;">');
+		if(contentConfig.contentDisableLinks EQ false){
+			echo('<a href="#propertyLink#">');
+		}
+		echo('<img src="#request.zos.globals.domain&contentPhoto99#" alt="#htmleditformat(row.content_name)#" ');
+		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
+			echo('width="120"');
+		}
+		echo(' style="border:none;" />');
+		if(contentConfig.contentDisableLinks EQ false){
+			echo('</a>');
+		}
+		echo('</td>');
+	}
+	echo('<td style="vertical-align:top; ">');
+	if(application.zcore.functions.zso(form, 'content_id') NEQ row.content_id or contentConfig.contentForceOutput){
+		if(application.zcore.functions.zso(form, 'contentHideTitle',false,false) EQ false){
+			echo('<h2>');
+			if(contentConfig.contentDisableLinks EQ false){
+				echo('<a href="#propertyLink#">');
+			}
+			echo(htmleditformat(row.content_name));
+			if(contentConfig.contentDisableLinks EQ false){
+				echo('</a>');
+			}
+			echo('</h2>');
+		}
+	}
+	if(contentConfig.disableChildContentSummary EQ false){
+		if(row.content_is_listing EQ 1){
+			echo('<table style="width:100%;">
+			<tr>
+			  <td>');
+			if(row.content_property_bedrooms NEQ 0){
+				echo('#row.content_property_bedrooms# Bedroom');
+			}
+			if(row.content_property_type_id NEQ 0 and row.content_property_type_id NEQ ""){
+				db.sql="SELECT * FROM #db.table("content_property_type", request.zos.zcoreDatasource)# content_property_type 
+				WHERE content_property_type_id = #db.param(row.content_property_type_id)#";
+				qCp3i2=db.execute("qCp3i2");
+				if(qCp3i2.recordcount NEQ 0){
+					echo('<br />#qCp3i2.content_property_type_name#');
+				}
+				echo('</td><td style="white-space:nowrap;">');
+				if(row.content_property_bathrooms NEQ 0 or row.content_property_half_baths NEQ 0){
+					echo('#row.content_property_bathrooms# Bath ');
+					if(row.content_property_half_baths NEQ 0){
+						echo('<br />#row.content_property_half_baths# half&nbsp;baths');
+					}
+				}
+				echo('</td><td style="white-space:nowrap;">');
+				if(row.content_property_sqfoot NEQ "" and row.content_property_sqfoot NEQ 0){
+					echo('#row.content_property_sqfoot# SQFT<br />');
+				}
+				arr1=arraynew(1);
+				if(row.content_address NEQ ""){ 
+					arrayappend(arr1,row.content_address);
+				}
+				if(cityName NEQ ""){ 
+					arrayappend(arr1,cityName);
+				}
+				if(row.content_property_state NEQ ""){ 
+					arrayappend(arr1,row.content_property_state);
+				}
+				if(arraylen(arr1) NEQ 0){
+					writeoutput(arraytolist(arr1, ", "));
+				}
+				if(row.content_property_zip NEQ ""){ 
+					writeoutput(" "&row.content_property_zip);
+				}
+				if(row.content_property_country NEQ "" and row.content_property_country NEQ "US"){ 
+					writeoutput(" "&row.content_property_country);
+				}
+				echo('</td></tr></table>');
+
+				if(row.content_price NEQ 0 and row.content_for_sale EQ 1){
+					echo('<span style="font-size:14px; font-weight:bold;">Priced at #dollarformat(row.content_price)#</span>');
+				}
+				if(row.content_for_sale EQ '3'){
+					echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is SOLD</span><br /><br />');
+				}else if(row.content_for_sale EQ '4'){
+					echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is UNDER CONTRACT</span><br /><br />');
+				}
+				if(row.content_datetime NEQ ''){
+					echo('<strong class="news-date">');
+					if(isdate(row.content_datetime)){
+						echo(DateFormat(row.content_datetime,'m/d/yyyy'));
+					}
+					if(row.content_datetime NEQ '' and Timeformat(row.content_datetime,'HH:mm:ss') NEQ '00:00:00'){
+						echo(" at "&TimeFormat(row.content_datetime,'h:mm tt'));
+					}
+				}
+				echo('</strong> <br />');
+			}
+		}
+		if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
+			if(row.content_summary EQ ""){
+				if(request.cgi_script_name EQ "/z/misc/search-site/results"){ 
+					shortSummary=left(rereplace(row.content_text,"<[^>]*>"," ","ALL"),250);  
+					writeoutput(shortSummary); 
+				}
+			}else{
+				echo(row.content_summary);
+			}
+		}
+		echo('<div style="font-weight:bold; font-size:13px;">');
+		detailShown=false;
+		if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id') and row.content_is_listing EQ 1){
+			echo('<a href="#propertyLink#">Read More</a>');
+			detailShown=true;
+		}
+		if(contentConfig.contentEmailFormat EQ false and row.content_is_listing EQ 1){
+			if(detailShown){
+				echo(' | ');
+			}
+			if(contentConfig.contentDisableLinks EQ false){
+				echo('<a href="#application.zcore.functions.zblockurl('/z/misc/inquiry/index?content_id=#row.content_id#')#" style="font-size:14px; font-weight:bold;">Inquire about this property</a>');
+			}
+		}
+		if( row.content_virtual_tour NEQ ''){
+			echo(' | <a href="#application.zcore.functions.zblockurl(row.content_virtual_tour)#" rel="nofollow" onclick="window.open(this.href); return false;">View 360&deg; Virtual Tour</a>');
+		}
+		echo('</div>');
+	}
+	echo('</td></tr></table>');
+	if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
+		echo('<hr />');
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="getPropertyInclude" localmode="modern" output="yes" returntype="boolean">
 	<cfargument name="argContentId" type="string" required="yes">
 	<cfargument name="query" type="any" required="no" default="#false#">
+	<cfargument name="arrOutputStruct" type="array" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
@@ -1524,12 +1678,14 @@ configCom.includeContentByName(ts);
 	}else{
 		tempQueryName=arguments.query;
 	}
-	loop query="tempQueryName"{
+	index=0;
+	for(row in tempQueryName){
+		index++;
 		ts=structnew();
-		ts.image_library_id=tempQueryName.content_image_library_id;
+		ts.image_library_id=row.content_image_library_id;
 		ts.output=false;
 		ts.query=tempQueryName;
-		ts.row=tempQueryName.currentrow;
+		ts.row=index;
 		ts.size=request.zos.thumbnailSizeStruct.width&"x"&request.zos.thumbnailSizeStruct.height;
 		ts.crop=request.zos.thumbnailSizeStruct.crop;
 		ts.count = 1; 
@@ -1541,19 +1697,19 @@ configCom.includeContentByName(ts);
 		savecontent variable="output"{
 			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
 				contentConfig.contentEmailFormat EQ false and contentConfig.editLinksEnabled){
-				writeoutput('<div style="display:inline; width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.argContentId#&amp;return=1'');">');
+				writeoutput('<div style="display:inline; width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#row.content_id#&amp;return=1'');">');
 			}
 			if(structkeyexists(request.zos, 'propertyIncludeIndex') EQ false){
 				request.zos.propertyIncludeIndex=0;
 			}
 			request.zos.propertyIncludeIndex++;
 			
-			if(tempQueryName.content_url_only NEQ ''){
-				propertyLink=tempQueryName.content_url_only;
-			}else if(tempQueryName.content_unique_name NEQ ''){
-				propertyLink=tempQueryName.content_unique_name;
+			if(row.content_url_only NEQ ''){
+				propertyLink=row.content_url_only;
+			}else if(row.content_unique_name NEQ ''){
+				propertyLink=row.content_unique_name;
 			}else{
-				propertyLink="/#application.zcore.functions.zURLEncode(tempQueryName.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#tempQueryName.content_id#.html";
+				propertyLink="/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#row.content_id#.html";
 			}
 			if(application.zcore.functions.zso(form, 'zsearchtexthighlight') NEQ ""){
 				if(propertyLink DOES NOT CONTAIN "?"){
@@ -1561,396 +1717,17 @@ configCom.includeContentByName(ts);
 				}
 				propertyLink&="&zsearchtexthighlight=#urlencodedformat(form.zsearchtexthighlight)#";
 			}
-			pci3891=false;
-			propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+			isListing=false;
 			
 			propertyLink=htmleditformat(propertyLink);
+			cityName="";
 			if(application.zcore.app.siteHasApp("listing")){
-				mlsPIncluded=false;
-				if(tempQueryName.content_mls_number NEQ "" and tempQueryName.content_mls_override  EQ 1){
-					propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-					
-					ts = StructNew();
-					ts.offset =0;
-					perpageDefault=10;
-					perpage=10;
-					perpage=max(1,min(perpage,100));
-					ts.perpage = perpage;
-					ts.distance = 30; 
-					ts.searchCriteria=structnew();
-					ts.arrMLSPID=arraynew(1);
-					ts.disableCount=true;
-					ts.arrMLSPID[1]=tempQueryName.content_mls_number; 
-					//ts.debug=true;
-					returnStruct = propertyDataCom.getProperties(ts);
-					if(returnStruct.query.recordcount NEQ 0){	
-						pci3891=true;
-						mlsPIncluded=true;
-						ts = StructNew();
-						ts.contentDetailView=false;
-						if(contentConfig.contentSimpleFormat){
-							ts.emailFormat=true;
-						}
-						ts.dataStruct = returnStruct; 
-						propDisplayCom.init(ts);
-					
-						res=propDisplayCom.display();
-						writeoutput('<table style="width:100%;"><tr><td>'&res&'</td></tr></table>');
-					}
-				}
-				if(contentConfig.showmlsnumber and application.zcore.app.siteHasApp("listing")){
-					tempMlsId=tempQueryName.content_mls_provider;
-					tempMlsPId=tempQueryName.content_mls_number;
-					if(tempMLSId NEQ "" and tempMlsPId NEQ ""){
-						tempMLSStruct=application.zcore.listingCom.getMLSStruct(tempMLSId);
-						if(isStruct(tempMLSStruct)){
-							if(tempMLSStruct.mls_login_url NEQ ''){
-								writeoutput('MLS ###tempMLSPid# found in #tempMLSStruct.mls_name# MLS, <a href="#tempMLSStruct.mls_login_url#" target="_blank">click here to login to MLS</a><br />');
-							}else{
-								writeoutput('MLS ###tempMLSPid# found in #tempMLSStruct.mls_name# MLS<br />');
-							}
-						}
-					}
-				}
-				if(mlsPIncluded EQ false and (tempQueryName.content_mls_number NEQ "" or tempQueryName.content_is_listing EQ 1)){
-					statusMessage="";
-					if(tempQueryName.content_diagonal_message NEQ ""){
-						statusMessage=tempQueryName.content_diagonal_message;
-					}else if(tempQueryName.content_for_sale EQ '4'){
-						statusMessage="UNDER#chr(10)#CONTRACT";	
-					}else if(tempQueryName.content_for_sale EQ '3'){
-						statusMessage="SOLD";	
-					}
-					for(i in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
-						mls_id=i;
-						break;
-					}
-					if(structkeyexists(request.zos.listing.cityNameStruct,tempQueryName.content_property_city)){
-						cityName=request.zos.listing.cityNameStruct[tempQueryName.content_property_city];
-					}else{
-						cityName="";	
-					}
-					pci3891=true;
-					lpc38=0;
-					application.zcore.listingCom.outputEnlargementDiv();
-					savecontent variable="thePaths"{
-						if(contentPhoto99 NEQ ""){
-							echo(contentPhoto99);
-						}
-					}
-					echo('<input type="hidden" name="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#_mlstempimagepaths" 
-						id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#_mlstempimagepaths" 
-						value="#htmleditformat(thePaths)#" />');
-					link9='/z/listing/sl/index?saveAct=check&content_id=#tempQueryName.content_id#';
-					link9&='&returnURL='&urlEncodedFormat(request.zos.originalURL&"?"&replacenocase(replacenocase(request.zos.cgi.QUERY_STRING,"searchid=","ztv=","ALL"),"__zcoreinternalroutingpath=","ztv=","ALL"));
-   					if(contentConfig.disableChildContentSummary){
-						echo('<h2><a href="#propertyLink#">#tempQueryName.content_name#</a></h2><hr />');
-					}else{
-						echo('<table class="zls2-1">
-						<tr><td class="zls2-15" colspan="3" style="padding-right:0px;">
-						 <table class="zls2-8" style="border-spacing:5px;">');
-						if(contentConfig.contentEmailFormat EQ false){
-							echo('<tr><td class="zls2-9"><span class="zls2-10">');
-							if(tempQueryName.content_price NEQ "" and tempQueryName.content_price NEQ "0"){
-								echo(dollarformat(tempQueryName.content_price));
-								if(tempQueryName.content_price LT 20){
-									echo(' per sqft');
-								}
-							}
-							echo('</span></td>');
-							if(tempQueryName.content_address CONTAINS "unit:"){
-								echo('<td class="zls2-9-3">UNIT ##');
-								p=findnocase("unit:",tempQueryName.content_address);
-								writeoutput(trim(removechars(tempQueryName.content_address,1, p+5)));
-								echo('</td>');
-							}
-							echo('<td class="zls2-9-2"><strong>#cityName# </strong><br />');
-							if(tempQueryName.content_property_bedrooms NEQ 0){
-								echo('#tempQueryName.content_property_bedrooms# beds, ');
-							}
-							if(tempQueryName.content_property_bathrooms NEQ 0){
-								echo('#tempQueryName.content_property_bathrooms# baths, ');
-							}
-							if(tempQueryName.content_property_half_baths NEQ "" and tempQueryName.content_property_half_baths NEQ 0){
-								echo('#tempQueryName.content_property_half_baths# half baths, ');
-							}
-							if(tempQueryName.content_property_sqfoot neq '0' and tempQueryName.content_property_sqfoot neq ''){
-								echo('#tempQueryName.content_property_sqfoot# living sqft');
-							}
-							echo('</td></tr></table><br style="clear:both;" /><div class="zls-buttonlink">');
-							if(request.cgi_script_name EQ '/z/listing/property/detail/index' or (tempQueryName.content_id EQ application.zcore.functions.zso(form, 'content_id') and request.cgi_script_name EQ '/z/content/content/viewPage')){
-							}else{
-								echo('<a href="#request.zos.globals.domain##propertyLink#">View Full Details');
-								if(lpc38 GT 1){
-									echo(' &amp; Photos');
-								}
-								echo('</a>');
-							}
-							if(request.cgi_script_name NEQ '/z/misc/inquiry/index' and application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1){
-								echo('<a href="##" onclick="zShowModalStandard(''/z/listing/inquiry/index?action=form&amp;modalpopforced=1&amp;content_id=#tempQueryName.content_id#&amp;inquiries_comments=#urlencodedformat('I''d like to apply to rent this property')#'', 540, 630);return false;" rel="nofollow">Apply Now</a>');
-							}
-						}
-						if(request.cgi_script_name NEQ '/z/listing/inquiry/index'){
-							echo('<a href="#request.zos.globals.domain&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>');
-						}
-						if(tempQueryName.content_virtual_tour NEQ ""){
-							echo('<a href="#application.zcore.functions.zblockurl(tempQueryName.content_virtual_tour)#" rel="nofollow" onclick="window.open(this.href); return false;">Virtual Tour</a>');
-							if(request.cgi_script_name NEQ '/z/listing/inquiry/index'){
-								echo('<div style="float:right;  width:110px;"><a href="##" onclick="zShowModalStandard(''/z/misc/inquiry/index?content_id=#tempQueryName.content_id#&modalpopforced=1'', 540, 630);return false;" rel="nofollow">Ask Question</a></div>');
-							}
-							echo('</div></td></tr>');
-						}
-						echo('<tr><td class="zls2-3" colspan="2"><table class="zls2-16">
-						<tr>
-						<td class="zls2-4" rowspan="4">');
-						if(structkeyexists(request.zos,'listingApp') and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0)  EQ 0){
-							echo('<div id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5" onmousemove="zImageMouseMove(''mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#'',event);" onmouseout="setTimeout(''zImageMouseReset(\''mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#\'')'',100);"><a href="#propertyLink#">');
-							if(contentPhoto99 NEQ ""){
-								echo('<img id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.globals.domain&contentPhoto99#"  alt="Listing Image" />');
-							}else{
-								echo('<img id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />');
-							}
-							echo('</a>
-							</div><a class="zls2-5-2" href="#propertyLink#" onmousemove="zImageMouseMove(''mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#'',event);" onmouseout="setTimeout(''zImageMouseReset(\''mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#\'')'',100);">');
-
-							if(statusMessage NEQ "" and contentConfig.contentEmailFormat EQ false){
-								echo('<div style="display:none;" class="zFlashDiagonalStatusMessage">#htmleditformat(statusMessage)#</div>');
-							}
-							echo('</a>');
-							if(lpc38 LTE 1 or ( structkeyexists(request.zos,'listingApp') and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 2)){
-								echo('<div class="zls2-6"></div>');
-							}else{
-								echo('<div class="zls2-7">');
-								if(lpc38 NEQ 0){
-									echo('ROLLOVER TO VIEW #lpc38# PHOTO');
-									if(lpc38 GT 1){
-										echo('S');
-									}
-								}
-								echo('</div>');
-							}
-						}else{
-							echo('<div id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5"><a href="#propertyLink#">');
-							if(contentPhoto99 NEQ ""){
-								echo('<img id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.globals.domain&contentPhoto99#"  alt="Listing Image" />');
-							}else{
-								echo('<img id="mc#tempQueryName.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />');
-							}
-							echo('</a>
-								</div>');
-						}
-						echo('</td><td class="zls2-17" style="vertical-align:top;padding:0px;">');
-						if(contentConfig.contentEmailFormat){
-							echo('<h2><a href="#propertyLink#">#tempQueryName.content_name#</a></h2>');
-						}else{
-							echo('<table style="width:100%;">');
-							if(tempQueryName.content_mls_number NEQ ""){
-								echo('<tr><td class="zls2-2">MLS ###listgetat(tempQueryName.content_mls_number,2,'-')# | Source: #request.zos.globals.shortdomain#</td></tr>');
-							}
-							echo('<tr>
-									<td><div class="zls2-11">
-										<h2><a href="#propertyLink#">#tempQueryName.content_name#</a></h2>
-						   				#tempQueryName.content_summary#</div>');
-							if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 0 and 
-								structkeyexists(request.zos,'listingApp') and 
-								application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_enable_mortgage_quote',true,1) EQ 1){
-								echo('<table class="zls2-13"><tr><td>Low interest financing available. <a href="##" onclick="zShowModalStandard(''/z/misc/mortgage-quote/index?modalpopforced=1'', 540, 630);return false;" rel="nofollow"><strong>Get Pre-Qualified</strong></a></td></tr></table>');
-							}
-							if(tempQueryName.content_for_sale EQ '3' or tempQueryName.content_for_sale EQ "4"){
-								echo('<table class="zls2-14"><tr><td>');
-								if(tempQueryName.content_for_sale EQ '3'){
-									echo('<span class="zls2-status">This listing is SOLD</span>');
-								}else if(tempQueryName.content_for_sale EQ '4'){
-									echo('<span class="zls2-status">This listing is UNDER CONTRACT</span>');
-								}
-								echo('</td></tr></table>');
-							}
-						}
-						echo('</td>');
-						newagentid="";
-						for(n in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
-							mls_id=n;
-							if(structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id],'userAgentIdStruct') and tempQueryName.content_listing_user_id NEQ 0){
-								if(structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].userAgentIdStruct, tempQueryName.content_listing_user_id) and structcount(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].userAgentIdStruct[tempQueryName.content_listing_user_id]) NEQ 0){
-									for(n in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].userAgentIdStruct[tempQueryName.content_listing_user_id]){
-										newagentid=n;
-										break;
-									}
-								}
-							}
-							if(newagentid NEQ ""){
-								break;
-							}
-						}
-						echo('</tr>
-						</table>
-						</td></tr></table></td>');
-						if(contentConfig.contentEmailFormat EQ false and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id], "agentIdStruct") and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].agentIdStruct, newagentid)){
-							agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].agentIdStruct[newagentid];
-							userGroupCom = CreateObject("component", "zcorerootmapping.com.user.user_group_admin");
-							userusergroupid = userGroupCom.getGroupId('user', request.zos.globals.id);
-							echo('<td class="zls2-agentPanel">
-							LISTING AGENT<br />');
-							if(fileexists(application.zcore.functions.zVar('privatehomedir', agentStruct.userSiteId)&removechars(request.zos.memberImagePath,1,1)&agentStruct.member_photo)){
-								echo('<img src="#application.zcore.functions.zvar('domain', agentStruct.userSiteId)##request.zos.memberImagePath##agentStruct.member_photo#" alt="Listing Agent" width="90" /><br />');
-							}
-							if(agentStruct.member_first_name NEQ ''){
-								echo(agentStruct.member_first_name);
-							}
-							if(agentStruct.member_last_name NEQ ''){
-								echo(agentStruct.member_last_name&'<br />');
-							}
-							if(agentStruct.member_phone NEQ ''){
-								echo('<strong>#agentStruct.member_phone#</strong><br />');
-							}
-							if(application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id NEQ "0" and agentStruct.member_public_profile EQ 1){
-								tempName=application.zcore.functions.zurlencode(lcase("#agentStruct.member_first_name# #agentStruct.member_last_name# "),'-');
-								echo('<a href="/#tempName#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#agentStruct.user_id#.html" target="_blank">Bio &amp; Listings</a>');
-							}
-							echo('</td>');
-						}
-						echo('</tr></table>
-						<div class="zls2-divider"></div>');
-					}
-				}
+				propertyIncludeStruct=application.zcore.app.getAppCFC("listing").getListingPropertyInclude(row, contentConfig, contentPhoto99, propertyLink, isListing);
+				cityname=propertyIncludeStruct.cityName;
+				isListing=propertyIncludeStruct.isListing;
 			}
-			if(pci3891 EQ false){
-				echo('<table ');
-				if(len(contentConfig.tablestyle)){
-					echo(contentConfig.tablestyle);
-				}else{
-					echo(' style="width:100%;"');
-				}
-				echo('><tr>');
-				if(contentPhoto99 NEQ ""){
-					echo('<td class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;  vertical-align:top;padding-right:20px;">');
-					if(contentConfig.contentDisableLinks EQ false){
-						echo('<a href="#propertyLink#">');
-					}
-					echo('<img src="#request.zos.globals.domain&contentPhoto99#" alt="#htmleditformat(tempQueryName.content_name)#" ');
-					if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
-						echo('width="120"');
-					}
-					echo(' style="border:none;" />');
-					if(contentConfig.contentDisableLinks EQ false){
-						echo('</a>');
-					}
-					echo('</td>');
-				}
-				echo('<td style="vertical-align:top; ">');
-				if(application.zcore.functions.zso(form, 'content_id') NEQ tempQueryName.content_id or contentConfig.contentForceOutput){
-					if(application.zcore.functions.zso(form, 'contentHideTitle',false,false) EQ false){
-						echo('<h2>');
-						if(contentConfig.contentDisableLinks EQ false){
-							echo('<a href="#propertyLink#">');
-						}
-						echo(htmleditformat(tempQueryName.content_name));
-						if(contentConfig.contentDisableLinks EQ false){
-							echo('</a>');
-						}
-						echo('</h2>');
-					}
-				}
-				if(contentConfig.disableChildContentSummary EQ false){
-					if(tempQueryName.content_is_listing EQ 1){
-						echo('<table style="width:100%;">
-						<tr>
-						  <td>');
-						if(tempQueryName.content_property_bedrooms NEQ 0){
-							echo('#tempQueryName.content_property_bedrooms# Bedroom');
-						}
-						if(tempQueryName.content_property_type_id NEQ 0 and tempQueryName.content_property_type_id NEQ ""){
-							db.sql="SELECT * FROM #db.table("content_property_type", request.zos.zcoreDatasource)# content_property_type 
-							WHERE content_property_type_id = #db.param(tempQueryName.content_property_type_id)#";
-							qCp3i2=db.execute("qCp3i2");
-							if(qCp3i2.recordcount NEQ 0){
-								echo('<br />#qCp3i2.content_property_type_name#');
-							}
-							echo('</td><td style="white-space:nowrap;">');
-							if(tempQueryName.content_property_bathrooms NEQ 0 or tempQueryName.content_property_half_baths NEQ 0){
-								echo('#tempQueryName.content_property_bathrooms# Bath ');
-								if(tempQueryName.content_property_half_baths NEQ 0){
-									echo('<br />#tempQueryName.content_property_half_baths# half&nbsp;baths');
-								}
-							}
-							echo('</td><td style="white-space:nowrap;">');
-							if(tempQueryName.content_property_sqfoot NEQ "" and tempQueryName.content_property_sqfoot NEQ 0){
-								echo('#tempQueryName.content_property_sqfoot# SQFT<br />');
-							}
-							arr1=arraynew(1);
-							if(tempQueryName.content_address NEQ ""){ 
-								arrayappend(arr1,tempQueryName.content_address);
-							}
-							if(cityName NEQ ""){ 
-								arrayappend(arr1,cityName);
-							}
-							if(tempQueryName.content_property_state NEQ ""){ 
-								arrayappend(arr1,tempQueryName.content_property_state);
-							}
-							if(arraylen(arr1) NEQ 0){
-								writeoutput(arraytolist(arr1, ", "));
-							}
-							if(tempQueryName.content_property_zip NEQ ""){ 
-								writeoutput(" "&tempQueryName.content_property_zip);
-							}
-							if(tempQueryName.content_property_country NEQ "" and tempQueryName.content_property_country NEQ "US"){ 
-								writeoutput(" "&tempQueryName.content_property_country);
-							}
-							echo('</td></tr></table>');
-	
-							if(tempQueryName.content_price NEQ 0 and tempQueryName.content_for_sale EQ 1){
-								echo('<span style="font-size:14px; font-weight:bold;">Priced at #dollarformat(tempQueryName.content_price)#</span>');
-							}
-							if(tempQueryName.content_for_sale EQ '3'){
-								echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is SOLD</span><br /><br />');
-							}else if(tempQueryName.content_for_sale EQ '4'){
-								echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is UNDER CONTRACT</span><br /><br />');
-							}
-							if(tempQueryName.content_datetime NEQ ''){
-								echo('<strong class="news-date">');
-								if(isdate(tempQueryName.content_datetime)){
-									echo(DateFormat(tempQueryName.content_datetime,'m/d/yyyy'));
-								}
-								if(tempQueryName.content_datetime NEQ '' and Timeformat(tempQueryName.content_datetime,'HH:mm:ss') NEQ '00:00:00'){
-									echo(" at "&TimeFormat(tempQueryName.content_datetime,'h:mm tt'));
-								}
-							}
-							echo('</strong> <br />');
-						}
-					}
-					if(tempQueryName.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
-						if(tempQueryName.content_summary EQ ""){
-							if(request.cgi_script_name EQ "/z/misc/search-site/results"){ 
-								shortSummary=left(rereplace(tempQueryName.content_text,"<[^>]*>"," ","ALL"),250);  
-								writeoutput(shortSummary); 
-							}
-						}else{
-							echo(tempQueryName.content_summary);
-						}
-					}
-					echo('<div style="font-weight:bold; font-size:13px;">');
-					detailShown=false;
-					if(tempQueryName.content_id NEQ application.zcore.functions.zso(form, 'content_id') and tempQueryName.content_is_listing EQ 1){
-						echo('<a href="#propertyLink#">Read More</a>');
-						detailShown=true;
-					}
-					if(contentConfig.contentEmailFormat EQ false and tempQueryName.content_is_listing EQ 1){
-						if(detailShown){
-							echo(' | ');
-						}
-						if(contentConfig.contentDisableLinks EQ false){
-							echo('<a href="#application.zcore.functions.zblockurl('/z/misc/inquiry/index?content_id=#tempQueryName.content_id#')#" style="font-size:14px; font-weight:bold;">Inquire about this property</a>');
-						}
-					}
-					if( tempQueryName.content_virtual_tour NEQ ''){
-						echo(' | <a href="#application.zcore.functions.zblockurl(tempQueryName.content_virtual_tour)#" rel="nofollow" onclick="window.open(this.href); return false;">View 360&deg; Virtual Tour</a>');
-					}
-					echo('</div>');
-				}
-				echo('</td></tr></table>');
-				if(tempQueryName.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
-					echo('<hr />');
-				}
+			if(isListing EQ false){
+				getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
 			}
 			if((structkeyexists(request.zos.userSession.groupAccess, "administrator")) and 
 				contentConfig.contentEmailFormat EQ false and 
@@ -1958,21 +1735,19 @@ configCom.includeContentByName(ts);
 				writeoutput('</div>');
 			}
 		}
-		if(contentConfig.contentForceOutput EQ false and structkeyexists(request,'cOutStruct') and structkeyexists(request,'contentCount')){
-			// add content
-			request.contentCount++;
+		if(contentConfig.contentForceOutput EQ false){
 			ts=StructNew();
 			ts.output=output;
-			if(tempQueryName.content_price EQ 0){
+			if(row.content_price EQ 0){
 				ts.price=1000000000;
 			}else{
-				ts.price=tempQueryName.content_price;
+				ts.price=row.content_price;
 			}
-			ts.id=tempQueryName.content_mls_number;
-			ts.name=tempQueryName.content_name;
-			ts.sort=tempQueryName.content_sort;
-			application.zcore.app.getAppCFC("content").excludeContentId(tempQueryName.content_id);
-			request.cOutStruct[request.contentCount]=ts;
+			ts.id=row.content_mls_number;
+			ts.name=row.content_name;
+			ts.sort=row.content_sort;
+			application.zcore.app.getAppCFC("content").excludeContentId(row.content_id);
+			arrayAppend(arguments.arrOutputStruct, ts);
 		}else{
 			writeoutput(output);	
 		}
@@ -2167,8 +1942,6 @@ configCom.includeContentByName(ts);
 				application.zcore.functions.zEmbedSlideShow(ts994824713.content_slideshow_id);
 				echo('</td></tr></table>');
 			}
-			request.contentCount=0;
-			request.cOutStruct=structnew();	
 			application.zcore.app.getAppCFC("content").excludeContentId(ts994824713.content_id);
 			curId = ts994824713.content_id;
 			if(curId EQ 0){
@@ -2388,55 +2161,52 @@ configCom.includeContentByName(ts);
 		 // display external comments
 		 writeoutput(application.zcore.functions.zDisplayExternalComments(application.zcore.app.getAppData("content").optionstruct.app_x_site_id&"-"&ts994824713.content_id, ts994824713.content_name, request.zos.globals.domain&currentContentURL));
 	}
-
-	menuLinkStruct=getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild, pcount);
+	arrOutputStruct=[];
+	menuLinkStruct=getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild, pcount, arrOutputStruct);
 	pcount=menuLinkStruct.propertyCount;
 	if(pcount NEQ 0){
 		echo('<br style="clear:both;" />');
 	}
 
 	displaySummaryAndMap(qContent, returnPropertyDisplayStruct);
+	outputStruct={};
+	for(i=1;i LTE arraylen(arrOutputStruct);i++){
+		outputStruct[i]=arrOutputStruct[i];
+	}
 	try{
 		if(isNumeric(parentChildSorting) EQ false){
-			arrOrder=structsort(request.cOutStruct,"numeric","desc","price");
+			arrOrder=structsort(outputStruct,"numeric","asc","sort");
 		}else if(parentChildSorting EQ 1){
-			arrOrder=structsort(request.cOutStruct,"numeric","desc","price");
+			arrOrder=structsort(outputStruct,"numeric","desc","price");
 		}else if(parentChildSorting EQ 2){
-			arrOrder=structsort(request.cOutStruct,"numeric","asc","price");
+			arrOrder=structsort(outputStruct,"numeric","asc","price");
 		}else if(parentChildSorting EQ 3){
-			arrOrder=structsort(request.cOutStruct,"text","asc","name");
+			arrOrder=structsort(outputStruct,"text","asc","name");
 		}else if(parentChildSorting EQ 0){
-			arrOrder=structsort(request.cOutStruct,"numeric","asc","sort");
+			arrOrder=structsort(outputStruct,"numeric","asc","sort");
 		}else{
-			arrOrder=arraynew(1);
-			for(i in request.cOutStruct){
-				arrayappend(arrOrder, i);
-			}
+			arrOrder=structkeyarray(outputStruct);
 			arraysort(arrOrder, "numeric", "asc");
 		}
 	}catch(Any excpt){
-		arrOrder=arraynew(1);
-		for(i in request.cOutStruct){
-			arrayappend(arrOrder, i);
-		}
+		arrOrder=structkeyarray(outputStruct);
 		arraysort(arrOrder, "numeric", "asc");
 	}
-	/*
 	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 		echo("parentChildSorting: "&parentChildSorting&"<br />");
 		echo('Initial sort order: <br />');
-		writedump(structkeyarray(request.cOutStruct));
+		writedump(structkeyarray(outputStruct));
 		echo('Final sort order: <br />');
 		writedump(arrOrder);
 		
-	}*/
+	}
 	
-	//application.zcore.functions.zdump(request.cOutStruct);
 	uniqueChildStruct3838=structnew();
 	for(i=1;i LTE arraylen(arrOrder);i++){
-		if(request.cOutStruct[arrOrder[i]].id EQ "" or structkeyexists(uniqueChildStruct3838, request.cOutStruct[arrOrder[i]].id) EQ false){
-		uniqueChildStruct3838[request.cOutStruct[arrOrder[i]].id]=true;
-			writeoutput(request.cOutStruct[arrOrder[i]].output);
+		c=outputStruct[arrOrder[i]];
+		if(c.id EQ "" or structkeyexists(uniqueChildStruct3838, c.id) EQ false){
+		uniqueChildStruct3838[c.id]=true;
+			writeoutput(c.output);
 		}
 	}
 	if(application.zcore.app.siteHasApp("listing") and contentSearchMLS EQ 1){
@@ -2753,6 +2523,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="curParentSorting" type="numeric" required="yes">
 	<cfargument name="qContentChild" type="any" required="yes">
 	<cfargument name="propertyCount" type="numeric" required="yes">
+	<cfargument name="arrOutputStruct" type="array" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	subpageLinkLayoutBackup=arguments.qContent.content_subpage_link_layout;
@@ -2888,7 +2659,7 @@ configCom.includeContentByName(ts);
 					ts43.disableChildContentSummary=true;
 					application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts43);
 				}
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild);
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 			if(arguments.qContent.content_include_listings NEQ ''){
@@ -2896,12 +2667,12 @@ configCom.includeContentByName(ts);
 				arrListings=listToArray(arguments.qContent.content_include_listings, ",");
 				arguments.propertyCount+=arraylen(arrListings);
 				for(i=1;i LTE arraylen(arrListings);i++){
-					application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i]);
+					application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i], false, arguments.arrOutputStruct);
 				}
 			}
 		}
 	}
-	return { propertyCount: propertyCount };
+	return { propertyCount: arguments.propertyCount };
 	</cfscript>
 </cffunction>
 	

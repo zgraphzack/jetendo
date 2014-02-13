@@ -783,7 +783,7 @@ this.isPropertyDisplayCom=true;
 					    local.arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(local.ts);
 					    idx.contentphoto99=""; 
 					    if(arraylen(local.arrImages) NEQ 0){
-						idx.contentphoto99=local.arrImages[1].link;
+							idx.contentphoto99=local.arrImages[1].link;
 					    }
 					    this.contentTemplate(idx);
 					</cfscript>
