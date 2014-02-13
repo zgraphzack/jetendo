@@ -565,7 +565,9 @@
 	curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
 	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
 	schemaStruct=siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct);
-	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema.json", replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL")); 
+	schemaString=replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL");
+	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema.json", schemaString); 
+	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema-current.json", schemaString); 
 	// these tables need a key that allows the infile to replace on unique values easily.
 
 	dataTables=getDataTables();
