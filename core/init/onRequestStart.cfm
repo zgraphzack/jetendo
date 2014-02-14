@@ -214,10 +214,10 @@
 			form.zrebuildramtable=true;
 			application.zcore.listingCom.onApplicationStart();
 		}
-		
+		/*
 		if(replace(replace(request.zos.globals.domain, "https://", ""),"http://", "") NEQ request.zos.cgi.http_host){
 			application.zcore.functions.zCheckDomainRedirect(); 
-		}
+		}*/
 		request.zos.site_id=local.site_id;
 		//structappend(request.zos.globals, application.zcore.serverGlobals, false);
 		if(request.zos.isdeveloper and isDefined('session.zos.verifyQueries') and session.zos.verifyQueries){
