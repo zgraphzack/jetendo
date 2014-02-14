@@ -16,6 +16,7 @@
 	blog_config.site_id = blog.site_id and 
 	blog_config.site_id = site.site_id and 
 	site.site_active=#db.param('1')# and 
+	site.site_live=#db.param('1')# and 
 	 (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd'))# or 
 	 blog_event =#db.param('1')#) and 
 	 blog_status <> #db.param(2)# and 
