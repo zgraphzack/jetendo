@@ -1614,9 +1614,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 	</cfscript>
 	<table style="width:100%; border-spacing:0px;">
 		<tr>
-			<td style="vertical-align:top;padding:5px;width:100px;"><a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.globals.domain,arguments.query.content_url_only)#<cfelse>#request.zos.globals.domain#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="   font-weight:normal;  ">
+			<td style="vertical-align:top;padding:5px;width:100px;"><a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.currentHostName,arguments.query.content_url_only)#<cfelse>#request.zos.currentHostName#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="   font-weight:normal;  ">
 				<cfif fileexists(request.zos.globals.homedir&'images/content/'&arguments.query.content_thumbnail)>
-					<img src="#request.zos.globals.domain&'/images/content/'##arguments.query.content_thumbnail#" class="listing-d-img" id="zclistingdimg#arguments.query.content_id#" width="100" height="78">
+					<img src="#request.zos.currentHostName&'/images/content/'##arguments.query.content_thumbnail#" class="listing-d-img" id="zclistingdimg#arguments.query.content_id#" width="100" height="78">
 				<cfelse>
 					Image N/A
 				</cfif>
@@ -1624,13 +1624,13 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 				<cfif contentConfig.showmlsnumber EQ false and arguments.query.content_mls_number NEQ "">
 					ID ###listgetat(arguments.query.content_mls_number,2,'-')#
 				</cfif></td>
-			<td style="vertical-align:top;padding:5px;text-align:left;"><h2><a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.globals.domain,arguments.query.content_url_only)#<cfelse>#request.zos.globals.domain#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="text-decoration:none;">#arguments.query.content_name#</a>
+			<td style="vertical-align:top;padding:5px;text-align:left;"><h2><a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.currentHostName,arguments.query.content_url_only)#<cfelse>#request.zos.currentHostName#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="text-decoration:none;">#arguments.query.content_name#</a>
 					<cfif arguments.query.content_price NEQ 0>
 						<br />
 						$#numberformat(arguments.query.content_price)#
 					</cfif>
 				</h2>
-				<a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.globals.domain,arguments.query.content_url_only)#<cfelse>#request.zos.globals.domain#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="margin-right:3px; display:block;  font-weight:bold; float:left; padding:4px; line-height:20px; text-decoration:none; 	border-bottom:1px solid ##CCCCCC; ">Read More</a></td>
+				<a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.currentHostName,arguments.query.content_url_only)#<cfelse>#request.zos.currentHostName#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="margin-right:3px; display:block;  font-weight:bold; float:left; padding:4px; line-height:20px; text-decoration:none; 	border-bottom:1px solid ##CCCCCC; ">Read More</a></td>
 		</tr>
 	</table>
 	<hr />
@@ -1673,7 +1673,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 			writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.idx.content_id#&amp;return=1'');">');
 		}
 		if(arguments.idx.content_url_only NEQ ""){
-			propertyLink=application.zcore.functions.zForceAbsoluteURL(request.zos.globals.domain, arguments.idx.content_url_only);
+			propertyLink=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName, arguments.idx.content_url_only);
 		}else if(arguments.idx.content_unique_name NEQ ''){
 			propertyLink=arguments.idx.content_unique_name;
 		}else{

@@ -1277,7 +1277,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		
 		pause_on_hover: true,
 		transition_speed: 1000, 		//INT - duration of panel/frame transition (in milliseconds)
-		transition_interval: 3000, 		//INT - delay between panel/frame transitions (in milliseconds)
+		transition_interval: 4000, 		//INT - delay between panel/frame transitions (in milliseconds)
 		easing: 'swing', 				//STRING - easing method to use for animations (jQuery provides 'swing' or 'linear', more available with jQuery UI or Easing plugin)
 	
 	<cfif arguments.ss.forceSize>
