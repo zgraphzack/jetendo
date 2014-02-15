@@ -83,16 +83,16 @@ var db=request.zos.queryObject;
 		t2=StructNew();
 		t2.groupName="Content";
 		if(childStruct.arrContentUrlOnly[i] NEQ ''){
-			t2.url=application.zcore.functions.zForceAbsoluteURL(request.zos.globals.domain, childStruct.arrContentUrlOnly[i]);
+			t2.url=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName, childStruct.arrContentUrlOnly[i]);
 		}else if(childStruct.arrContentUniqueName[i] NEQ ''){
-			t2.url=request.zos.globals.domain&childStruct.arrContentUniqueName[i];
+			t2.url=request.zos.currentHostName&childStruct.arrContentUniqueName[i];
 		}else{
 			if(childStruct.arrIndent[i] NEQ ""){
 				c1=replace(childStruct.arrContentName[i], childStruct.arrIndent[i],"","one");
 			}else{
 				c1=childStruct.arrContentName[i];
 			}
-			t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(c1,'-')#-#ts.optionStruct.content_config_url_article_id#-#childStruct.arrContentId[i]#.html";
+			t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(c1,'-')#-#ts.optionStruct.content_config_url_article_id#-#childStruct.arrContentId[i]#.html";
 		}
 		if(isdate(childStruct.arrContentUpdatedDatetime[i])){
 			t2.lastmod=dateformat(childStruct.arrContentUpdatedDatetime[i],'yyyy-mm-dd');//2005-05-10T17:33:30+08:00
@@ -1048,9 +1048,9 @@ if(isQuery(qContent)){
 			ts.size="250x187";
 			ts.count = 1;
 			arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts);
-			parseStruct.image=request.zos.globals.domain&"/z/a/images/s.gif";
+			parseStruct.image=request.zos.currentHostName&"/z/a/images/s.gif";
 			if(arraylen(arrImages) NEQ 0){
-				parseStruct.image=request.zos.globals.domain&arrImages[1].link;
+				parseStruct.image=request.zos.currentHostName&arrImages[1].link;
 			}
 			if(qpar.content_menu_title NEQ ""){
 				parseStruct.linktext=qpar.content_menu_title;
@@ -1171,9 +1171,9 @@ if(isQuery(qContent)){
 			ts.size="250x187";
 			ts.count = 1;
 			arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts);
-			parseStruct.image=request.zos.globals.domain&"/z/a/images/s.gif";
+			parseStruct.image=request.zos.currentHostName&"/z/a/images/s.gif";
 			if(arraylen(arrImages) NEQ 0){
-				parseStruct.image=request.zos.globals.domain&arrImages[1].link;
+				parseStruct.image=request.zos.currentHostName&arrImages[1].link;
 			}
 			parseStruct.linktext="Click here for more";
 			parseStruct.link=htmleditformat(parseStruct.link);
@@ -1515,7 +1515,7 @@ configCom.includeContentByName(ts);
 		if(contentConfig.contentDisableLinks EQ false){
 			echo('<a href="#propertyLink#">');
 		}
-		echo('<img src="#request.zos.globals.domain&contentPhoto99#" alt="#htmleditformat(row.content_name)#" ');
+		echo('<img src="#request.zos.currentHostName&contentPhoto99#" alt="#htmleditformat(row.content_name)#" ');
 		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
 			echo('width="120"');
 		}
@@ -2317,9 +2317,9 @@ configCom.includeContentByName(ts);
 					t2.isparent=false;
 					t2.type="subtab";
 					if(row.content_unique_name NEQ ''){
-						t2.url=request.zos.globals.domain&row.content_unique_name;
+						t2.url=request.zos.currentHostName&row.content_unique_name;
 					}else{ 
-						t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
+						t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
 					}
 					if(subpageLinkLayoutBackup EQ "11"){
 						writeoutput('<a href="#t2.url#">#t2.text#</a><br />');
@@ -2409,9 +2409,9 @@ configCom.includeContentByName(ts);
 		t2.type="tab";
 		t2.text=qpar.content_name;
 		if(qpar.content_unique_name NEQ ''){
-			t2.url=request.zos.globals.domain&qpar.content_unique_name;
+			t2.url=request.zos.currentHostName&qpar.content_unique_name;
 		}else{ 
-			t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(qpar.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qpar.content_id#.html"; 
+			t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(qpar.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qpar.content_id#.html"; 
 		}
 		arrayprepend(arrParentLinks, t2);
 		if(g GT 200){
@@ -2595,9 +2595,9 @@ configCom.includeContentByName(ts);
 					t2.type="tab";
 				}
 				if(qParent5.content_unique_name NEQ ''){
-					t2.url=request.zos.globals.domain&qParent5.content_unique_name;
+					t2.url=request.zos.currentHostName&qParent5.content_unique_name;
 				}else{ 
-					t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(qParent5.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qParent5.content_id#.html"; 
+					t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(qParent5.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qParent5.content_id#.html"; 
 				}
 				arrayappend(ts.arrLinks,t2);
 			}
@@ -2642,9 +2642,9 @@ configCom.includeContentByName(ts);
 				t2.isparent=false;
 				t2.type="subtab";
 				if(row.content_unique_name NEQ ''){
-					t2.url=request.zos.globals.domain&row.content_unique_name;
+					t2.url=request.zos.currentHostName&row.content_unique_name;
 				}else{ 
-					t2.url=request.zos.globals.domain&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
+					t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
 				}
 				selectedIndex++;
 				if(arraylen(ts.arrLinks) LT selectedIndex){

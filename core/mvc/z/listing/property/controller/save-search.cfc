@@ -76,7 +76,7 @@
 		#arraytolist(request.zos.listing.functions.getSearchCriteriaDisplay(form),", ")#
 		</p>
 		<p>You may want to contact the person as if they are a lead, but they didn't directly ask a question yet, so they may be unlikely to respond.</p>
-		<p><a href="#request.zos.globals.domain#/z/listing/admin/saved-searches/index">Login and view all saved searches</a></p>
+		<p><a href="#request.zos.currentHostName#/z/listing/admin/saved-searches/index">Login and view all saved searches</a></p>
 		</body></html>
 		</cfmail>
 		<cfscript>

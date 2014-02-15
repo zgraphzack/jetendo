@@ -188,7 +188,7 @@
     arrSite2=arraynew(1);
 	form.user_sync_site_id_list=application.zcore.functions.zso(form,'user_sync_site_id_list');
 	if(form.member_website EQ "/"){
-		form.member_website=request.zos.globals.domain&"/";	
+		form.member_website=request.zos.currentHostName&"/";	
 	}
 	form.member_password=trim(form.member_password);
 	form.member_password_confirm=trim(form.member_password_confirm);

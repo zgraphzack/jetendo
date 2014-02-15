@@ -335,7 +335,7 @@
 			</tr>
 			<td>&nbsp;</td>
 				<td><button type="submit" name="submit">Send Inquiry</button>
-					&nbsp;&nbsp;<a href="#request.zos.globals.domain#/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;">Privacy Policy</a>
+					&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;">Privacy Policy</a>
 					<input type="hidden" name="listing_id" value="#form.listing_id#" />
 					<cfif application.zcore.app.siteHasApp("listing")>
 						<input type="hidden" name="content_id" value="#variables.contentIdList#" />

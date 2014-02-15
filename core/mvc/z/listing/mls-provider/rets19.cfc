@@ -520,7 +520,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		request.lastPhotoId="";
 		if(qId.recordcount NEQ 0){
 			request.lastPhotoId=this.mls_id&"-"&qId.rets19_sysid;
-			photo=request.zos.globals.domain&'/zretsphotos/19/'&qId.rets19_sysid&"-"&arguments.num&".jpeg";
+			photo=request.zos.currentHostName&'/zretsphotos/19/'&qId.rets19_sysid&"-"&arguments.num&".jpeg";
 		}
 		return photo;*/
 		</cfscript>

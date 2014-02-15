@@ -330,7 +330,7 @@
  	<cfscript>
 		t2=StructNew();
 		t2.groupName="Rental";
-		t2.url=request.zos.globals.domain&this.getRentalHomeLink();
+		t2.url=request.zos.currentHostName&this.getRentalHomeLink();
 		t2.title=application.zcore.app.getAppData("rental").optionStruct.rental_config_home_page_title;
 		arrayappend(arguments.arrUrl,t2);
         </cfscript>
@@ -344,7 +344,7 @@
         <cfloop query="qrental"><cfscript>
 		t2=StructNew();
 		t2.groupName="Rental";
-		t2.url=request.zos.globals.domain&this.getRentalLink(qrental.rental_id,qrental.rental_name,qrental.rental_url);
+		t2.url=request.zos.currentHostName&this.getRentalLink(qrental.rental_id,qrental.rental_name,qrental.rental_url);
 		if(isdate(qrental.rental_updated_datetime)){
 			t2.lastmod=dateformat(qrental.rental_updated_datetime,'yyyy-mm-dd');
 		}else{
@@ -357,7 +357,7 @@
 		if(application.zcore.app.getAppData("rental").optionstruct.rental_config_availability_calendar EQ 1 and qrental.rental_enable_calendar EQ '1'){
 			t2=StructNew();
 			t2.groupName="Rental Availability Calendars";
-			t2.url=request.zos.globals.domain&this.getCalendarLink(qrental.rental_id,qrental.rental_name,qrental.rental_url);
+			t2.url=request.zos.currentHostName&this.getCalendarLink(qrental.rental_id,qrental.rental_name,qrental.rental_url);
 			if(isdate(qrental.rental_updated_datetime)){
 				t2.lastmod=dateformat(qrental.rental_updated_datetime,'yyyy-mm-dd');
 			}else{
@@ -377,7 +377,7 @@
 			for(i=1;i LTE arraylen(childStruct.arrCategoryId);i++){
 			t2=StructNew();
 			t2.groupName="Rental Category";
-			t2.url=request.zos.globals.domain&this.getCategoryLink(childStruct.arrCategoryId[i],childStruct.arrCategoryName[i],childStruct.arrCategoryUrl[i]);
+			t2.url=request.zos.currentHostName&this.getCategoryLink(childStruct.arrCategoryId[i],childStruct.arrCategoryName[i],childStruct.arrCategoryUrl[i]);
 			if(isdate(childStruct.arrCategoryUpdatedDatetime[i])){
 				t2.lastmod=dateformat(childStruct.arrCategoryUpdatedDatetime[i],'yyyy-mm-dd');
 			}else{
@@ -391,7 +391,7 @@
         <cfloop query="qrentalcat"><cfscript>
 		t2=StructNew();
 		t2.groupName="rental category";
-		t2.url=request.zos.globals.domain&this.getCategoryLink(rental_category_id,rental_category_name,rental_category_url);
+		t2.url=request.zos.currentHostName&this.getCategoryLink(rental_category_id,rental_category_name,rental_category_url);
 		if(isdate(rental_category_updated_datetime)){
 			t2.lastmod=dateformat(rental_category_updated_datetime,'yyyy-mm-dd');
 		}else{

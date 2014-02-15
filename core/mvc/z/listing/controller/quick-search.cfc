@@ -15,7 +15,7 @@ application.zcore.tracking.backOneHit();</cfscript>
 .quicksearchrow1 td{padding:3px; vertical-align:top;}
 .quicksearchrow2 td{padding:3px; vertical-align:top;}
 </style>
-<form name="quickSearchForm" id="quickSearchForm" action="#request.zos.globals.domain###searchFormSubmitURL##" target="_blank" method="post">
+<form name="quickSearchForm" id="quickSearchForm" action="#request.zos.currentHostName###searchFormSubmitURL##" target="_blank" method="post">
 <script type="text/javascript">/* <![CDATA[ */ zArrDeferredFunctions.push(function(){zFormData["zMLSSearchForm"]=new Object(); zFormData["zMLSSearchForm"].arrFields=[]; });/* ]]> */</script>
 <table class="quicksearchtable">
 <tr>

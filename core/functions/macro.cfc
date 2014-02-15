@@ -274,13 +274,13 @@ writeoutput(application.zcore.functions.zLoadAndCropImage({id:"",width:140,heigh
 ts=structnew();
 ts.id = "VideoElement1"; // optional
 // mp4 format is required.
-ts.mp4AbsoluteUrl="#request.zos.globals.domain#/images/shell/Foster.mp4"; // mp4 codec
+ts.mp4AbsoluteUrl="#request.zos.currentHostName#/images/shell/Foster.mp4"; // mp4 codec
 // optional html 5 video formats
 ts.webmAbsoluteUrl=""; // webm codec
 ts.ogvAbsoluteUrl=""; // ogg vorbis codec
 ts.width="560";
 ts.height="285";
-ts.posterImageAbsoluteUrl="#request.zos.globals.domain#/images/shell/foster-care.jpg";
+ts.posterImageAbsoluteUrl="#request.zos.currentHostName#/images/shell/foster-care.jpg";
 ts.description = "Video"; // for seo image alt tag.
 zEmbedHTML5Video(ts);
 </cfscript>
@@ -313,8 +313,8 @@ zEmbedHTML5Video(ts);
     <cfif arguments.ss.mp4AbsoluteURL NEQ ""><source src="#arguments.ss.mp4AbsoluteURL#" type="video/mp4; codecs='avc1.42E01E, mp4a.40.2'" /></cfif>
     <cfif arguments.ss.webmAbsoluteURL NEQ ""><source src="#arguments.ss.webmAbsoluteURL#" type="video/webm; codecs='vp8, vorbis'" /></cfif>
     <cfif arguments.ss.ogvAbsoluteURL NEQ ""><source src="#arguments.ss.ogvAbsoluteURL#" type="video/ogg; codecs='theora, vorbis'" /></cfif>
-      <object id="zHTML5VideoFlash#request.zos.tempObj.embedHTML5videoIndex#" class="zHTML5Video-vjs-flash-fallback" width="#arguments.ss.width#" height="#arguments.ss.height#" type="application/x-shockwave-flash" data="#request.zos.globals.domain#/z/javascript/flowplayer/flowplayer-3.2.7.swf">
-        <param name="movie" value="#request.zos.globals.domain#/z/javascript/flowplayer/flowplayer-3.2.7.swf" />
+      <object id="zHTML5VideoFlash#request.zos.tempObj.embedHTML5videoIndex#" class="zHTML5Video-vjs-flash-fallback" width="#arguments.ss.width#" height="#arguments.ss.height#" type="application/x-shockwave-flash" data="#request.zos.currentHostName#/z/javascript/flowplayer/flowplayer-3.2.7.swf">
+        <param name="movie" value="#request.zos.currentHostName#/z/javascript/flowplayer/flowplayer-3.2.7.swf" />
         <param name="allowfullscreen" value="true" />
         <param name="flashvars" value="config={'playlist':['#arguments.ss.posterImageAbsoluteURL#', {'url': '#arguments.ss.mp4AbsoluteURL#','autoPlay':false,'autoBuffering':true}]}" />
         <img src="#arguments.ss.posterImageAbsoluteURL#" width="#arguments.ss.width#" height="#arguments.ss.height#" alt="#htmleditformat(arguments.ss.description)#" title="No video playback capabilities." />

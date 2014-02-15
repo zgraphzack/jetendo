@@ -987,7 +987,7 @@ this.isPropertyDisplayCom=true;
 			if(arguments.bottom EQ false or ArrayLen(this.navOutput.arrData) LTE 1){
 				return '';
 			}else if(isDefined('this.optionStruct.saved_search_email') and isDefined('this.optionStruct.saved_search_id') and isDefined('this.optionStruct.saved_search_key')){
-				return '---------------------------------------------------------'&chr(10)&'View More Results: #request.zos.globals.domain#/property/your-saved-searches.cfm?action=viewsearch&saved_search_email=#this.optionStruct.saved_search_email#&saved_search_key=#this.optionStruct.saved_search_key#&saved_search_id=#this.optionStruct.saved_search_id#&zindex=2'&chr(10);
+				return '---------------------------------------------------------'&chr(10)&'View More Results: #request.zos.currentHostName#/property/your-saved-searches.cfm?action=viewsearch&saved_search_email=#this.optionStruct.saved_search_email#&saved_search_key=#this.optionStruct.saved_search_key#&saved_search_id=#this.optionStruct.saved_search_id#&zindex=2'&chr(10);
 			}else{
 				return '';
 			}
@@ -1010,7 +1010,7 @@ this.isPropertyDisplayCom=true;
 			<cfscript>
 			if(this.optionStruct.emailFormat){
 				if(arguments.bottom){
-					writeoutput('<a href="'&htmleditformat(request.zos.globals.domain&'/property/your-saved-searches.cfm?action=viewsearch&saved_search_email=#this.optionStruct.saved_search_email#&saved_search_key=#this.optionStruct.saved_search_key#&saved_search_id=#this.optionStruct.saved_search_id#&zindex=2')&'" rel="nofollow">See More Results</a>');
+					writeoutput('<a href="'&htmleditformat(request.zos.currentHostName&'/property/your-saved-searches.cfm?action=viewsearch&saved_search_email=#this.optionStruct.saved_search_email#&saved_search_key=#this.optionStruct.saved_search_key#&saved_search_id=#this.optionStruct.saved_search_id#&zindex=2')&'" rel="nofollow">See More Results</a>');
 				}
 			}else{
 				for(i=1;i LTE ArrayLen(this.navOutput.arrData);i=i+1){
@@ -1847,7 +1847,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 						<div class="zls-buttonlink">
 							<cfif request.cgi_script_name EQ '/z/listing/property/detail/index' or (arguments.idx.content_id EQ application.zcore.functions.zso(form, 'content_id') and application.zcore.app.getAppCFC("content").isContentPage())>
 							<cfelse>
-								<a href="#request.zos.globals.domain##propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>View Full Details &amp; Photos</a>
+								<a href="#request.zos.currentHostName##propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>View Full Details &amp; Photos</a>
 							</cfif>
 							<cfif request.cgi_script_name NEQ '/z/listing/inquiry/index'>
 								<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only NEQ 0>
@@ -1855,7 +1855,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 								</cfif>
 							</cfif>
 							<cfif request.cgi_script_name NEQ '/z/listing/inquiry/index'>
-								<a href="#request.zos.globals.domain&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
+								<a href="#request.zos.currentHostName&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
 							</cfif>
 							<cfif arguments.idx.virtualtoururl neq '' and findnocase("http://",arguments.idx.virtualtoururl) NEQ 0>
 								<a href="#application.zcore.functions.zblockurl(arguments.idx.virtualtoururl)#" rel="nofollow" onclick="window.open(this.href); return false;">Virtual Tour</a>
@@ -1874,9 +1874,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 										<div id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5" onmousemove="zImageMouseMove('mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#',event);" onmouseout="setTimeout('zImageMouseReset(\'mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#\')',100);">
 												<a href="#propertyLink#">
 											<cfif arguments.idx.contentphoto99 NEQ "">
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.globals.domain&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.currentHostName&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
 												<cfelse>
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />
 											</cfif>
 												</a>
 										</div>
@@ -1901,9 +1901,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 										<div id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5">
 											<a href="#propertyLink#">
 											<cfif arguments.idx.contentphoto99 NEQ "">
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.globals.domain&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.currentHostName&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
 											<cfelse>
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />
 											</cfif>
 											</a>
 										</div>
@@ -2043,7 +2043,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 					<td class="zls2-15" colspan="2" style="padding-right:0px;"><div class="zls-buttonlink">
 							<cfif request.cgi_script_name EQ '/z/listing/property/detail/index' or (arguments.idx.content_id EQ application.zcore.functions.zso(form, 'content_id') and application.zcore.app.getAppCFC("content").isContentPage())>
 								<cfelse>
-								<a href="#request.zos.globals.domain##propertyLink#">View Full Details &amp; Photos</a>
+								<a href="#request.zos.currentHostName##propertyLink#">View Full Details &amp; Photos</a>
 							</cfif>
 							<cfif request.cgi_script_name NEQ '/z/listing/inquiry/index'>
 								<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 0>
@@ -2052,7 +2052,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 								</cfif>
 							</cfif>
 							<cfif request.cgi_script_name NEQ '/z/listing/inquiry/index'>
-								<a href="#request.zos.globals.domain&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
+								<a href="#request.zos.currentHostName&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
 							</cfif>
 							<cfif arguments.idx.virtualtoururl neq '' and findnocase("http://",arguments.idx.virtualtoururl) NEQ 0>
 								<a href="#application.zcore.functions.zblockurl(arguments.idx.virtualtoururl)#" rel="nofollow" onclick="window.open(this.href); return false;">Virtual Tour</a>
@@ -2071,9 +2071,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 										<div id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5" onmousemove="zImageMouseMove('mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#',event);" onmouseout="setTimeout('zImageMouseReset(\'mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#\')',100);">
 												<a href="#propertyLink#">
 											<cfif arguments.idx.contentphoto99 NEQ "">
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img"  class="zlsListingImage" src="#request.zos.globals.domain&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img"  class="zlsListingImage" src="#request.zos.currentHostName&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
 												<cfelse>
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available"  />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available"  />
 											</cfif>
 												</a>
 										</div>
@@ -2097,9 +2097,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 									<cfelse>
 										<div id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5"><a href="#propertyLink#">
 											<cfif arguments.idx.contentphoto99 NEQ "">
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&arguments.idx.contentphoto99#" <cfif contentConfig.contentEmailFormat>width="120"<cfelse>width="221"</cfif> alt="Listing Image" />
 											<cfelse>
-												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />
+												<img id="mc#arguments.idx.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />
 											</cfif>
 											</a> </div>
 									</cfif></td>
@@ -2325,7 +2325,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 		sr=removechars(sr,1,pos2);
 	}
 	</cfscript>
-	<a href="#request.zos.globals.domain#/#titleStruct.urlTitle#-#arguments.idx.urlMlsId#-#arguments.idx.urlMLSPId#.html" target="_parent" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>
+	<a href="#request.zos.currentHostName#/#titleStruct.urlTitle#-#arguments.idx.urlMlsId#-#arguments.idx.urlMLSPId#.html" target="_parent" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>
 	<cfif sr EQ "">
 		#htmleditformat(titleStruct.title)#
 	<cfelse>
@@ -2346,11 +2346,11 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 	var bgstyle=0;
 	var propertyLink=0;
 	if(arguments.idx.arrayindex MOD 2 EQ 0){
-		bgstyle=" padding-bottom:5px; margin-bottom:15px; float:left; border-bottom:0px solid ##CCCCCC; background-image:url(#request.zos.globals.domain#/images/property-gradient.jpg); background-repeat:repeat-x; width:99%;";
+		bgstyle=" padding-bottom:5px; margin-bottom:15px; float:left; border-bottom:0px solid ##CCCCCC; background-image:url(#request.zos.currentHostName#/images/property-gradient.jpg); background-repeat:repeat-x; width:99%;";
 	}else{
-		bgstyle=" padding-bottom:5px; margin-bottom:15px; float:left; border-bottom:0px solid ##CCCCCC; background-image:url(#request.zos.globals.domain#/images/property-gradient.jpg); background-repeat:repeat-x; width:99%;";
+		bgstyle=" padding-bottom:5px; margin-bottom:15px; float:left; border-bottom:0px solid ##CCCCCC; background-image:url(#request.zos.currentHostName#/images/property-gradient.jpg); background-repeat:repeat-x; width:99%;";
 	}
-	propertyLink = request.zos.globals.domain&'/#titleStruct.urlTitle#-#arguments.idx.urlMlsId#-#arguments.idx.urlMLSPId#.html';
+	propertyLink = request.zos.currentHostName&'/#titleStruct.urlTitle#-#arguments.idx.urlMlsId#-#arguments.idx.urlMLSPId#.html';
 	if(isDefined('request.temp_saved_search_id')){
 		propertyLink&='?saved_search_id=#request.temp_saved_search_id#&saved_search_email=#request.temp_saved_search_email#';
 	}
@@ -2393,7 +2393,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 	var titleStruct = request.zos.listing.functions.zListinggetTitle(arguments.idx);
 	var tempTitle = titleStruct.title;
 	var urlTempTitle = titleStruct.urlTitle;
-	var propertyLink = '#request.zos.globals.domain#/#urlTempTitle#-#arguments.idx.listing_id#.html';
+	var propertyLink = '#request.zos.currentHostName#/#urlTempTitle#-#arguments.idx.listing_id#.html';
 	if(isDefined('request.temp_saved_search_id')){
 		propertyLink=propertyLink&'?saved_search_id=#request.temp_saved_search_id#&saved_search_email=#request.temp_saved_search_email#';
 	}
@@ -2474,10 +2474,10 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 	var titleStruct = request.zos.listing.functions.zListinggetTitle(arguments.idx);
 	var tempTitle = titleStruct.title;
 	var urlTempTitle = titleStruct.urlTitle;
-	var commentlink="#request.zos.globals.domain##request.cgi_script_name#?action=form&mls_id=#arguments.idx.mls_id#&listing_id=#arguments.idx.listing_id#";
+	var commentlink="#request.zos.currentHostName##request.cgi_script_name#?action=form&mls_id=#arguments.idx.mls_id#&listing_id=#arguments.idx.listing_id#";
 	
-	imagelink=request.zos.globals.domain&application.zcore.listingCom.getThumbnail(arguments.idx.photo1, request.lastPhotoId, 1, 221, 165, 1);
-	propertyLink = '#request.zos.globals.domain#/#urlTempTitle#-#arguments.idx.listing_id#.html';
+	imagelink=request.zos.currentHostName&application.zcore.listingCom.getThumbnail(arguments.idx.photo1, request.lastPhotoId, 1, 221, 165, 1);
+	propertyLink = '#request.zos.currentHostName#/#urlTempTitle#-#arguments.idx.listing_id#.html';
 	date = dateformat(arguments.idx.listing_track_updated_datetime, "ddd, dd mmm yyyy");
 	time = timeformat(arguments.idx.listing_track_updated_datetime, "HH:mm:ss") & " EST";
 	</cfscript>
@@ -2607,7 +2607,7 @@ if(arguments.idx.listingPropertyType CONTAINS 'multi'){
 <property_type>#pt1#<!--- use one of these: home, office, condo, land, business, apartment, vacation, multi-family ---></property_type>
 
 <!--- optional --->
-<company_logo>#request.zos.globals.domain#/images/exit-classifiedflyerads-logo.jpg<!--- http://www.fullpathtologo/logofile.jpg ---></company_logo>
+<company_logo>#request.zos.currentHostName#/images/exit-classifiedflyerads-logo.jpg<!--- http://www.fullpathtologo/logofile.jpg ---></company_logo>
 <!--- query member for agent photo, phone --->
 <cfsavecontent variable="db.sql">
 SELECT member_photo, user.site_id userSiteId 
@@ -2624,10 +2624,10 @@ user.site_id = #db.param(request.zos.globals.id)#
 <cfif arguments.idx.listing_data_remarks NEQ ''><description>#xmlformat(arguments.idx.listing_data_remarks)#</description> </cfif>
 <cfif arguments.idx.listing_year_built NEQ '0' and arguments.idx.listing_year_built NEQ ''><year_built>#arguments.idx.listing_year_built#</year_built></cfif>
 <cfif arguments.idx.listing_square_feet NEQ '0' and arguments.idx.listing_square_feet NEQ ''><sqfeet>#arguments.idx.listing_square_feet#<!--- 2000 ---></sqfeet></cfif>
-<website>#xmlformat(request.zos.globals.domain&'/'&titleStruct.urlTitle&'-'&arguments.idx.urlMlsId&'-'&arguments.idx.urlMLSPId&'.html')#<!--- http://www.linktolistingdetails.com ---></website>
+<website>#xmlformat(request.zos.currentHostName&'/'&titleStruct.urlTitle&'-'&arguments.idx.urlMlsId&'-'&arguments.idx.urlMLSPId&'.html')#<!--- http://www.linktolistingdetails.com ---></website>
 <website_title>#xmlformat(titleStruct.title)#<!--- http://www.linktolistingdetails.com ---></website_title>
 <cfif arguments.idx.virtualtoururl NEQ '' and findnocase("http://",arguments.idx.virtualtoururl) NEQ 0><virtual_tour>#xmlformat(arguments.idx.virtualtoururl)#<!--- http://www.linktovirtualtour.com ---></virtual_tour> </cfif>
-<other_link1>#xmlformat(request.zos.globals.domain&'/')#<!--- http://www.otherlinkurl.com ---></other_link1>
+<other_link1>#xmlformat(request.zos.currentHostName&'/')#<!--- http://www.otherlinkurl.com ---></other_link1>
 <other_link1_title>#xmlformat(request.zos.globals.homelinktext)#</other_link1_title>
 <!--- <other_link2>other_link2</other_link2> 
 <other_link2_title>other_link2_title</other_link2_title> --->

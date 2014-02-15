@@ -337,7 +337,7 @@ User E-Mail Address: #str.user_username#
 This user has signed up for a service on your web site.   This is not a direct sales inquiry.
 
 To view more info about this new user, click the following link:
-#request.zos.globals.domain#/z/admin/member/edit?user_id=#str.user_id#
+#request.zos.currentHostName#/z/admin/member/edit?user_id=#str.user_id#
 </cfmail>	
 <cfcatch type="any">
 <cfmail   charset="utf-8" from="#request.zos.developerEmailTo#" to="#request.zos.developerEmailTo#" subject="Failed: New User on #request.zos.globals.shortdomain#">
@@ -352,7 +352,7 @@ User E-Mail Address: #str.user_username#
 This user has signed up for a service on your web site.   This is not a direct sales inquiry.
 
 To view more info about this new user, click the following link:
-#request.zos.globals.domain#/z/admin/member/edit?user_id=#str.user_id#
+#request.zos.currentHostName#/z/admin/member/edit?user_id=#str.user_id#
 </cfmail>	
 </cfcatch></cftry>
 		</cfif>

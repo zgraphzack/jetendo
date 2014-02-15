@@ -327,7 +327,7 @@
 			<tr>
 				<td>&nbsp;</td>
 				<td><button type="submit" name="submit">Submit CMA Request</button>
-					&nbsp;&nbsp;<a href="#request.zos.globals.domain#/z/user/privacy/index" target="_blank">Privacy Policy</a></td>
+					&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" target="_blank">Privacy Policy</a></td>
 			</tr>
 			<tr id="zcma-row19">
 				<td colspan="2">#application.zcore.functions.zvarso("Form Privacy Message")#</td>

@@ -438,7 +438,7 @@ for(i=2;i LTE arraylen(arrImages);i=i+1){
 application.zcore.app.getAppCFC("rental").onRentalPage();
 </cfscript>
         <table style="width:100%; border-spacing:10px;"> <tr>
-              <td rowspan="2" style="vertical-align:top; text-align:center;font-size:12px;font-weight:bold;border-bottom:2px solid ##999999;"><a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getRentalLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)#">
+              <td rowspan="2" style="vertical-align:top; text-align:center;font-size:12px;font-weight:bold;border-bottom:2px solid ##999999;"><a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getRentalLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)#">
 			  <cfscript>
 			var ts=structnew();
 			ts.image_library_id=arguments.query.rental_image_library_id;
@@ -451,7 +451,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 			//zdump(ts);
 			var arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
 			for(var i=1;i LTE arraylen(arrImages);i++){
-				writeoutput('<img src="#request.zos.globals.domain#'&arrImages[i].link&'" width="150" height="100" alt="#htmleditformat(arrImages[i].caption)#" style="border:none;" />');
+				writeoutput('<img src="#request.zos.currentHostName#'&arrImages[i].link&'" width="150" height="100" alt="#htmleditformat(arrImages[i].caption)#" style="border:none;" />');
 			}
 			</cfscript>
 <span style="padding-bottom:10px;display:block;">#arguments.query.rental_name#</span></a></td>
@@ -490,16 +490,16 @@ if(arguments.query.rental_display_regular EQ 0){
 <cfif mrate NEQ 0>From #dollarformat(mrate)#/night<br /></cfif>
 <cfif preg-mrate GT 0><strong style="color:##FF0000; font-size:12px;">Save up to $#(preg-mrate)#/night</strong></cfif></span></td>
                 <td style="text-align:right;">
-                <a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getRentalLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)#">View Rental</a><br />
+                <a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getRentalLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)#">View Rental</a><br />
                 
     <cfif application.zcore.app.getAppData("rental").optionstruct.rental_config_availability_calendar EQ 1 and arguments.query.rental_enable_calendar EQ '1' and structkeyexists(form,'method') and form.method NEQ "calendarTemplate">
-<a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCalendarLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)#">Availability Calendar</a><br />
+<a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCalendarLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)#">Availability Calendar</a><br />
     </cfif>
     <cfif structkeyexists(form, 'method') EQ false or form.method NEQ "inquiryTemplate">
     <cfif application.zcore.app.getAppData("rental").optionstruct.rental_config_reserve_online EQ 1>
-<a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getRentalLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)###zrental-calendar"><strong>Reserve Now</strong></a>
+<a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getRentalLink(arguments.query.rental_id, arguments.query.rental_name, arguments.query.rental_url)###zrental-calendar"><strong>Reserve Now</strong></a>
 <cfelse>
-<a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getRentalInquiryLink()#?rental_id=#arguments.query.rental_id#" rel="nofollow">Inquire Now</a>
+<a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getRentalInquiryLink()#?rental_id=#arguments.query.rental_id#" rel="nofollow">Inquire Now</a>
     </cfif>
 </cfif>
            </td>
@@ -1336,7 +1336,7 @@ application.zcore.template.appendTag("meta",tempMeta);
 	</tr>	  
 	<tr>
 	  <td>&nbsp;</td>
-		<td><button type="submit" name="submit">Send Inquiry</button>&nbsp;&nbsp;<a href="#request.zos.globals.domain#/z/user/privacy/index" target="_blank">Privacy Policy</a>
+		<td><button type="submit" name="submit">Send Inquiry</button>&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" target="_blank">Privacy Policy</a>
 		<input type="hidden" name="rental_id" value="#application.zcore.functions.zso(form, 'rental_id')#" /></td>
 	</tr>
 	<tr><td colspan="2">By submitting this form, you agree to receive future mailings from us.</td></tr>
@@ -1883,7 +1883,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
         </cfif>
         <cfscript>
         ArrayAppend(arrName, qpar.rental_category_name);
-        arrayappend(arrNav, '<a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCategoryLink(qpar.rental_category_id,qpar.rental_category_name,qpar.rental_category_url)#">#qPar.rental_category_name#</a> / ');
+        arrayappend(arrNav, '<a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(qpar.rental_category_id,qpar.rental_category_name,qpar.rental_category_url)#">#qPar.rental_category_name#</a> / ');
         cpi=qpar.rental_category_parent_id;
 		categoryUnique[cpi]=true;
         </cfscript>
@@ -1955,7 +1955,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 			<select name="jumpToCategory" onchange="var link=this.options[this.selectedIndex].value; if(link != ''){window.location.href = link;}" size="1">
 			<option value="">-- Select --</option>
 			<cfloop query="qchild">
-				<option value="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCategoryLink(qchild.rental_category_id, qchild.rental_category_name, qchild.rental_category_url)#">#qchild.rental_category_name#</option>
+				<option value="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(qchild.rental_category_id, qchild.rental_category_name, qchild.rental_category_url)#">#qchild.rental_category_name#</option>
 			</cfloop></select> 
 		 </cfif> 
 		 <cfif qchild.recordcount NEQ 0 and hasInquiryLink>
@@ -2013,7 +2013,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
    	  <h2>Further narrow your rental search or scroll down to view the rentals in this category.</h2>
         <ul>
     <cfloop query="qchild">
-    <li><a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCategoryLink(qchild.rental_category_id, qchild.rental_category_name, qchild.rental_category_url)#">#qchild.rental_category_name#</a></li>
+    <li><a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(qchild.rental_category_id, qchild.rental_category_name, qchild.rental_category_url)#">#qchild.rental_category_name#</a></li>
     </cfloop>
     </ul>
     <hr />
@@ -2159,7 +2159,7 @@ Pet Friendly:  Yes  No
 			arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
 			</cfscript> --->
 <!--- <div style="float:left; width:#arrThumbSize[1]#px; height:#arrThumbSize[2]+45#px; padding:5px; border:1px solid ##CCC; text-align:center; <cfif currentrow MOD 2 EQ 1>margin-right:20px;</cfif> margin-bottom:20px;">
-        <h2 style="padding:0px; margin:0px; "><a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCategoryLink(rental_category_id,rental_category_name,rental_category_url)#"> 
+        <h2 style="padding:0px; margin:0px; "><a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(rental_category_id,rental_category_name,rental_category_url)#"> 
         <cfscript>
 			for(i=1;i LTE arraylen(arrImages);i++){
 				writeoutput('<div style="margin-bottom:5px;"><img src="'&arrImages[i].link&'"></div>');
@@ -2167,7 +2167,7 @@ Pet Friendly:  Yes  No
 			</cfscript>
 					#rental_category_name#</a></h2>  
                     </div> --->
-        <li><h3><a href="#request.zos.globals.domain##application.zcore.app.getAppCFC("rental").getCategoryLink(qpar.rental_category_id, qpar.rental_category_name, qpar.rental_category_url)#"> 
+        <li><h3><a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(qpar.rental_category_id, qpar.rental_category_name, qpar.rental_category_url)#"> 
 			#qpar.rental_category_name#</a></h3></li>  
   <!---  <cfscript>
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 

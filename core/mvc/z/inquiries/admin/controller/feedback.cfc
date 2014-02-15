@@ -123,7 +123,7 @@
 			mail  to="#qCheck.user_email#" from="#request.fromemail#" subject="Your lead has been updated by the administrator."{
 writeoutput('The administrator has added feedback to your lead.
 
-Please login in and view your lead by clicking the following link: #request.zos.globals.domain#/z/inquiries/admin/feedback/view?inquiries_id=#form.inquiries_id# Do not reply to this email. ');
+Please login in and view your lead by clicking the following link: #request.zos.currentHostName#/z/inquiries/admin/feedback/view?inquiries_id=#form.inquiries_id# Do not reply to this email. ');
 			}
 		}
 	}

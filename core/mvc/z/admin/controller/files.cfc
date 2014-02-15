@@ -662,7 +662,7 @@ application.zcore.functions.zStatusHandler(request.zsid,true);
     <br />
     
     <h2>URL to force download of image file:</h2>
-    <textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.globals.domain#/z/misc/download/index?fp=#urlencodedformat(variables.siteRootDir&form.f)#</textarea><br />
+    <textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.currentHostName#/z/misc/download/index?fp=#urlencodedformat(variables.siteRootDir&form.f)#</textarea><br />
     <br />
     </cfif>
 
@@ -805,10 +805,10 @@ if(pos NEQ 0){
 }
 </cfscript>
 <h2>URL to embed/view file using browser default settings:</h2>
-<textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.globals.domain##variables.siteRootDir&form.f#</textarea><br />
+<textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.currentHostName##variables.siteRootDir&form.f#</textarea><br />
 <br />
 <h2>URL to force download of file:</h2>
-<textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.globals.domain#/z/misc/download/index?fp=#urlencodedformat(variables.siteRootDir&form.f)#</textarea><br />
+<textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.currentHostName#/z/misc/download/index?fp=#urlencodedformat(variables.siteRootDir&form.f)#</textarea><br />
 <br />
 
 Copy and Paste the above link into the URL field of the content manager to link to this file on any page of the site. <br />

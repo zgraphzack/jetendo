@@ -120,7 +120,7 @@
 			</cfif>
 			<cfif isDefined('request.noleadsystemlinks') EQ false>
 				You should leave feedback on the lead's status: <br />
-				<a href="#request.zos.globals.domain#/z/inquiries/admin/feedback/view?inquiries_id=<cfif structkeyexists(form, 'groupemail') and form.groupEmail>#form.inquiries_parent_id#<cfelse>#form.inquiries_id#</cfif>"><strong>Click here to login and leave feedback</strong></a> <br />
+				<a href="#request.zos.currentHostName#/z/inquiries/admin/feedback/view?inquiries_id=<cfif structkeyexists(form, 'groupemail') and form.groupEmail>#form.inquiries_parent_id#<cfelse>#form.inquiries_id#</cfif>"><strong>Click here to login and leave feedback</strong></a> <br />
 				<br />
 			</cfif>
 			<cfscript>
@@ -146,8 +146,8 @@
 		tempText = replace(tempText, '  ', ' ','ALL');
 		tempText=replace(temptext,"<th ",'<th style="text-align:left; vertical-align:top;" ',"ALL");
 		tempText=replace(temptext,"<th>",'<th style="text-align:left;">',"ALL");
-		tempText=replace(temptext,'href="/','href="#request.zos.globals.domain#/"',"ALL");
-		tempText=replace(temptext,'src="/','src="#request.zos.globals.domain#/"',"ALL");
+		tempText=replace(temptext,'href="/','href="#request.zos.currentHostName#/"',"ALL");
+		tempText=replace(temptext,'src="/','src="#request.zos.currentHostName#/"',"ALL");
 		tempText=replace(temptext,' class="',' classdis="',"ALL");
 		tempText=replace(temptext,'<table ','<table style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px; line-height:18px;"',"ALL");
 		tt2="<!-- beginplaintext -->";

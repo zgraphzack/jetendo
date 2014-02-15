@@ -573,7 +573,7 @@ search sql generator has to be able to search on child group data for paging to 
 		
 		</cfscript>
     <cfsavecontent variable="temppageNav">
-        <a href="#request.zos.globals.domain#">Home</a> / 
+        <a href="#request.zos.currentHostName#">Home</a> / 
 </cfsavecontent>
     <cfscript>
 	application.zcore.template.setTag("title","Search Entire Site");
@@ -727,7 +727,7 @@ search sql generator has to be able to search on child group data for paging to 
 	application.zcore.template.setTag("pagetitle", "Site Search");
 	</cfscript>
 	<cfsavecontent variable="temppageNav">
-	<a href="#request.zos.globals.domain#">Home</a> / 
+	<a href="#request.zos.currentHostName#">Home</a> / 
 	</cfsavecontent>
 	<cfscript>
 	this.searchForm();

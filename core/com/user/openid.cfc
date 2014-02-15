@@ -90,13 +90,13 @@ WHERE site_id <>'16'
         */
         
 		if(application.zcore.user.checkGroupAccess("member") EQ false){
-			local.returnToURL=request.zos.globals.domain&"/z/user/preference/form";
+			local.returnToURL=request.zos.currentHostName&"/z/user/preference/form";
 		}else{
-			local.returnToURL=request.zos.globals.domain&"/z/admin/member/edit?user_id="&arguments.user_id;
+			local.returnToURL=request.zos.currentHostName&"/z/admin/member/edit?user_id="&arguments.user_id;
 		}
 		if(arguments.site_id EQ request.zos.globals.id){
 			if(arguments.site_id EQ request.zos.globals.serverid){
-				local.returnToURL=request.zos.globals.domain&'/z/server-manager/admin/user/editUser?sid='&request.zos.globals.serverid&'&user_id='&arguments.user_id;
+				local.returnToURL=request.zos.currentHostName&'/z/server-manager/admin/user/editUser?sid='&request.zos.globals.serverid&'&user_id='&arguments.user_id;
 			}
 		}else if(arguments.site_id EQ request.zos.globals.parentid){
 			return 'You must login to the parent site first. <a href="'&application.zcore.functions.zvar("domain", request.zos.globals.parentid)&"/z/admin/member/edit?user_id="&arguments.user_id&'" target="_blank">Click here</a>';
@@ -177,7 +177,7 @@ WHERE site_id <>'16'
             	<div class="zmember-openid-buttons"><input type="text" name="openidurl" id="openidurl" value="<cfif isDefined('cookie.zopenidurl')>#htmleditformat(urldecode(cookie.zopenidurl))#</cfif>" /></div>
                 <div class="zmember-openid-buttons"><button type="button" name="openidsubmit" onclick="<cfif structkeyexists(request.zos, 'inMemberArea') and request.zos.inMemberArea and application.zcore.user.checkGroupAccess("user")>zLogin.zOpenidLogin(false);<cfelse>openidAutoConfirm(false);</cfif>" value="">Login with <cfif variables.arrOpenIdProvider[n].icon NEQ ""><img src="#variables.arrOpenIdProvider[n].icon#" alt="Login with OpenID" width="80" style="vertical-align:middle;margin-top:-3px;" /></cfif></button> 
                 
-                <input type="hidden" name="openidhiddenurl" id="openidhiddenurl" value="?openid.return_to=#urlencodedformat(local.curReturnTo)#&amp;#arraytolist(arrURL,"&amp;")#&amp;openid.realm=#urlencodedformat(request.zos.globals.domain&"/")#" />
+                <input type="hidden" name="openidhiddenurl" id="openidhiddenurl" value="?openid.return_to=#urlencodedformat(local.curReturnTo)#&amp;#arraytolist(arrURL,"&amp;")#&amp;openid.realm=#urlencodedformat(request.zos.currentHostName&"/")#" />
                 </div>
                 <!--- <cfif request.zos.isdeveloper and request.zos.globals.id NEQ request.zos.globals.serverid and (request.zos.inMemberArea EQ false or application.zcore.user.checkGroupAccess("user") EQ false) and variables.disableDeveloperLinks EQ false>
                     <cfscript>
@@ -196,7 +196,7 @@ WHERE site_id <>'16'
                 
             <cfelse>
 				<cfscript>
-				local.curLink="#variables.arrOpenIdProvider[n].url#?openid.return_to=#urlencodedformat(local.curReturnTo)#&amp;#arraytolist(arrURL,"&amp;")#&amp;openid.realm=#urlencodedformat(request.zos.globals.domain&"/")#";
+				local.curLink="#variables.arrOpenIdProvider[n].url#?openid.return_to=#urlencodedformat(local.curReturnTo)#&amp;#arraytolist(arrURL,"&amp;")#&amp;openid.realm=#urlencodedformat(request.zos.currentHostName&"/")#";
                 </cfscript>
                 <div class="zmember-openid-buttons"><a href="##" <cfif isDefined('cookie.zopenidprovider') and structkeyexists(variables.providerStruct, cookie.zopenidprovider) and variables.providerStruct[cookie.zopenidprovider] EQ variables.arrOpenIdProvider[n].name>style="padding:3px;border:2px solid ##900;"</cfif> onclick="<cfif structkeyexists(request.zos, 'inMemberArea') and (request.zos.inMemberArea and application.zcore.user.checkGroupAccess("user"))>zLogin.zOpenidLogin3('#local.curLink#');<cfelse>zLogin.openidAutoConfirm2('#local.curLink#');</cfif>return false;"><cfif variables.arrOpenIdProvider[n].icon NEQ ""><img src="#variables.arrOpenIdProvider[n].icon#" alt="Login with #variables.arrOpenIdProvider[n].name#" width="30" style="vertical-align:middle;" /></cfif> #variables.arrOpenIdProvider[n].name#</a>
                 </div>
@@ -251,7 +251,7 @@ WHERE site_id <>'16'
 					form["openid.return_to"]=request.zos.globals.serverdomain&"/?zOpenIdDomain="&urlencodedformat(form.zOpenIdDomainOriginal);
 				}else{
 					if(left(form["openid.return_to"], 4) NEQ "http"){
-						form["openid.return_to"]=request.zos.globals.domain&form["openid.return_to"];
+						form["openid.return_to"]=request.zos.currentHostName&form["openid.return_to"];
 					}
 				}
 				local.arrUrlKeys=structkeyarray(form);
@@ -477,7 +477,7 @@ WHERE site_id <>'16'
 							}
 						}
 					}else{
-						local.body="Please setup OpenID for my account at "&request.zos.globals.domain&". My OpenID Identity is: """&form["openid.identity"]&""" without quotes. My CMS Email Username is: ";
+						local.body="Please setup OpenID for my account at "&request.zos.currentHostName&". My OpenID Identity is: """&form["openid.identity"]&""" without quotes. My CMS Email Username is: ";
 						local.webdeveloperemail=request.zos.developerEmailTo;
 						if(request.zos.globals.parentId NEQ 0){
 							 db.sql="select site_developer_email 
@@ -526,11 +526,11 @@ WHERE site_id <>'16'
                 <cfscript>
 				// the return_to url must be identical to the original request or it will fail.  Because form variables automatically have the current host name removed from them, we must recreate the return_to url here.
 				if(arguments.site_id EQ request.zos.globals.serverId){
-					form["openid.return_to"]=request.zos.globals.domain&'/z/server-manager/admin/user/editUser?sid='&arguments.site_id&'&user_id='&arguments.user_id&"&providerId="&form.providerId;
+					form["openid.return_to"]=request.zos.currentHostName&'/z/server-manager/admin/user/editUser?sid='&arguments.site_id&'&user_id='&arguments.user_id&"&providerId="&form.providerId;
 				}else if(application.zcore.user.checkGroupAccess("member") EQ false){
-					form["openid.return_to"]=request.zos.globals.domain&"/z/user/home/index?providerId="&form.providerId;
+					form["openid.return_to"]=request.zos.currentHostName&"/z/user/home/index?providerId="&form.providerId;
 				}else{
-					form["openid.return_to"]=request.zos.globals.domain&"/z/admin/member/edit?user_id="&arguments.user_id&"&providerId="&form.providerId;
+					form["openid.return_to"]=request.zos.currentHostName&"/z/admin/member/edit?user_id="&arguments.user_id&"&providerId="&form.providerId;
 				}
 				local.arrUrlKeys=structkeyarray(form);
                 local.formNew=structnew();
@@ -636,11 +636,11 @@ WHERE site_id <>'16'
 					
 					<cfscript>
 					if(request.zos.globals.serverID EQ request.zos.globals.id){
-						local.curURL=request.zos.globals.domain&'/z/server-manager/admin/user/editUser?sid='&arguments.user_id&'&removeOpenId=1&user_id='&arguments.user_id;
+						local.curURL=request.zos.currentHostName&'/z/server-manager/admin/user/editUser?sid='&arguments.user_id&'&removeOpenId=1&user_id='&arguments.user_id;
 					}else if(application.zcore.user.checkGroupAccess("member") EQ false){
-						local.curURL=request.zos.globals.domain&"/z/user/preference/form?removeOpenId=1";
+						local.curURL=request.zos.currentHostName&"/z/user/preference/form?removeOpenId=1";
 					}else{
-						local.curURL=request.zos.globals.domain&"/z/admin/member/edit?removeOpenId=1&user_id="&arguments.user_id;
+						local.curURL=request.zos.currentHostName&"/z/admin/member/edit?removeOpenId=1&user_id="&arguments.user_id;
 					}
 					</cfscript>
 					<a href="#local.curURL#">Disconnect account</a>

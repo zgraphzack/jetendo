@@ -633,7 +633,7 @@ newId=0;
 <head>
 <title>Sorry, this page has generated an error.</title>
 <meta charset="utf-8" />
-<META HTTP-EQUIV=Refresh CONTENT="25; URL=<cfif isDefined('Request.zOS.globals.domain')>#Request.zOS.globals.domain#<cfelse>http://#request.zos.CGI.HTTP_HOST#</cfif>">
+<META HTTP-EQUIV=Refresh CONTENT="25; URL=<cfif structkeyexists(Request.zOS, 'currentHostName')>#Request.zOS.currentHostName#<cfelse>http://#request.zos.CGI.HTTP_HOST#</cfif>">
 <style type="text/css">
 <!--
 .style1 {

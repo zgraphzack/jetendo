@@ -54,7 +54,7 @@ if(rental_id EQ 36 and zso(form, 'inquiries_adults',true) + zso(form, 'inquiries
 </cfscript>
 <cfsavecontent variable="zpagenav">
 
-<a href="#request.zos.globals.domain#/">Home</a> / <a href="#request.zos.globals.domain#/cabin_rentals/index.html">Cabin Rentals</a> /
+<a href="#request.zos.currentHostName#/">Home</a> / <a href="#request.zos.currentHostName#/cabin_rentals/index.html">Cabin Rentals</a> /
 </cfsavecontent>
 <cfparam name="security_deposit" type="any" default="">
 <cfif application.zcore.functions.zso(form, 'action') EQ "search">
@@ -195,7 +195,7 @@ availability_date <= #db.param(DateFormat(search_end_date, 'yyyy-mm-dd')&' 00:00
                   </cfif> ---> initial
                 down payment will be required to reserve the cabin.<br />
                 The total booking amount is due at check-in. <br />
-                Refer to our <a href="#request.zos.globals.domain#/reservation-information-policies.html" target="_blank">cabin rental policies</a> for more information.</strong></td>
+                Refer to our <a href="#request.zos.currentHostName#/reservation-information-policies.html" target="_blank">cabin rental policies</a> for more information.</strong></td>
             </tr>
           </table>
           <table style="border-spacing:5px; width:100%;">

@@ -152,7 +152,7 @@ application.zcore.functions.zEnableContentTransition(); --->
 	site_id = #db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qS=db.execute("qS");</cfscript>
     <cfif qS.recordcount NEQ 0>
-    <iframe class="zEmbeddedSlideshow" src="<cfif request.zos.cgi.server_port EQ "443">#request.zos.globals.securedomain#<cfelse>#request.zos.globals.domain#</cfif>/z/misc/slideshow/embed?action=slideshow&amp;slideshow_id=#arguments.slideshow_id#" width="#qs.slideshow_width#" height="#qs.slideshow_height#" style="margin:0 auto; border:none; overflow:auto;" seamless="seamless"></iframe>
+    <iframe class="zEmbeddedSlideshow" src="#request.zos.currentHostName#/z/misc/slideshow/embed?action=slideshow&amp;slideshow_id=#arguments.slideshow_id#" width="#qs.slideshow_width#" height="#qs.slideshow_height#" style="margin:0 auto; border:none; overflow:auto;" seamless="seamless"></iframe>
     </cfif>
 </cffunction>
 

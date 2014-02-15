@@ -142,9 +142,9 @@
 						type:"Custom",
 						errorHTML:"#qCheck.recordcount# errors have occured. First error status code: #qcheck.listing_latlong_status# 
 						(note: 620 is google's 2500 per day per ip limit error) 
-						<a href=""#request.zos.globals.domain#/z/listing/ajax-geocoder/index?resetErrors=1"">Click here to remove errors and try again.</a>",
-						scriptName:request.zos.globals.domain&'/z/listing/ajax-geocoder/index',
-						url:request.zos.globals.domain&'/z/listing/ajax-geocoder/index',
+						<a href=""#request.zos.currentHostName#/z/listing/ajax-geocoder/index?resetErrors=1"">Click here to remove errors and try again.</a>",
+						scriptName:request.zos.currentHostName&'/z/listing/ajax-geocoder/index',
+						url:request.zos.currentHostName&'/z/listing/ajax-geocoder/index',
 						exceptionMessage:'Geocoder failed.',
 						// optional
 						lineNumber:'0'

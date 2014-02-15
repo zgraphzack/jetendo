@@ -352,11 +352,11 @@
 	mail  charset="utf-8" to="#form.e#" from="#variables.emailfrom1#" subject="Reset Password for #application.zcore.functions.zvar('shortdomain')#"{
 		writeoutput('Hello,
 
-A request to reset the password for #form.e# has been made from #request.zos.globals.domain#.
+A request to reset the password for #form.e# has been made from #request.zos.currentHostName#.
 
 If you agree to reset the password, please click the link below. 
 
-#request.zos.globals.domain#/z/-erp#variables.qcheckemail.user_id#.#variables.qcheckemail.user_key# 
+#request.zos.currentHostName#/z/-erp#variables.qcheckemail.user_id#.#variables.qcheckemail.user_key# 
 
 If the link does not work, please copy and paste the entire link in your browser''s address bar and hit enter.    If you did not make this request, you can ignore this email.');
 	}
@@ -567,7 +567,7 @@ If the link does not work, please copy and paste the entire link in your browser
 
 To view more info about this new user, click the following link: 
 
-#request.zos.globals.domain#/z/admin/member/edit?user_id=#form.user_id#');
+#request.zos.currentHostName#/z/admin/member/edit?user_id=#form.user_id#');
 		}
 	}
 	if(variables.qcheckemail.recordcount eq 0){
@@ -586,7 +586,7 @@ To view more info about this new user, click the following link:
 
 You''ve asked to change your email address from #form.user_email# to #form.user_email_new#.  In order to ensure your privacy, we request that you confirm your change by clicking the link below. 
 
-#request.zos.globals.domain#/z/-ece#form.user_id#.#form.user_key# 
+#request.zos.currentHostName#/z/-ece#form.user_id#.#form.user_key# 
 
 If the link does not work, please copy and paste the entire link in your browser''s address bar and hit enter.  If you did not make this request, you can ignore this email.');
 		}
@@ -597,7 +597,7 @@ If the link does not work, please copy and paste the entire link in your browser
 
 Thank you for you interest in joining our mailing list.  In order to ensure your privacy, we request that you confirm your request by clicking the link below. 
 
-#request.zos.globals.domain#/z/-ein#form.user_id#.#form.user_key# 
+#request.zos.currentHostName#/z/-ein#form.user_id#.#form.user_key# 
 
 If the link does not work, please copy and paste the entire link in your browser''s address bar and hit enter.    If you did not make this request, you can ignore this email.');
 		}
@@ -707,7 +707,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		</div>
 		<div style="width:300px; float:left;">
 			<cfscript>
-		      writeoutput(loginCom.displayOpenIdLoginForm(request.zos.globals.domain&"/z/user/preference/index?disableOpenIDLoginRedirect=1"));
+		      writeoutput(loginCom.displayOpenIdLoginForm(request.zos.currentHostName&"/z/user/preference/index?disableOpenIDLoginRedirect=1"));
 		      </cfscript>
 		</div>
 	</div>
@@ -1080,7 +1080,7 @@ If the link does not work, please copy and paste the entire link in your browser
 				local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
 				local.openIdCom.disableDeveloperLoginLinks();
 				local.openIdCom.enableRegistrationLoginLinks();
-				writeoutput(local.openIdCom.displayProviderLinks(request.zos.globals.domain&"/z/user/preference/register?disableOpenIDLoginRedirect=1"));
+				writeoutput(local.openIdCom.displayProviderLinks(request.zos.currentHostName&"/z/user/preference/register?disableOpenIDLoginRedirect=1"));
 				if(structkeyexists(form, 'zRegisterAccount')){
 					if(request.zos.globals.disableOpenID EQ 1){
 						application.zcore.functions.z404("OpenID login is disabled in server manager for this site.");

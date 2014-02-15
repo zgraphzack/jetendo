@@ -179,7 +179,7 @@
 			if(qI.content_id NEQ 0 and qI.content_id NEQ ""){
 				arrF2n28=listtoarray(qI.content_id);
 				for(i328=1;i328 LTE arraylen(arrF2n28);i328++){
-					arrayappend(arrLink,request.zos.globals.domain&"/c-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#arrF2n28[i328]#.html");
+					arrayappend(arrLink,request.zos.currentHostName&"/c-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#arrF2n28[i328]#.html");
 				}
 			}
 		}
@@ -190,14 +190,14 @@
 				if(arraylen(arrI) EQ 2){
 					urlMlsId=application.zcore.listingCom.getURLIdForMLS(arrI[1]);
 					urlMLSPId=arrI[2];
-					arrayappend(arrLink,request.zos.globals.domain&"/c-#urlMlsId#-#urlMLSPId#.html");
+					arrayappend(arrLink,request.zos.currentHostName&"/c-#urlMlsId#-#urlMLSPId#.html");
 				}
 			}
 		}
-		if(qI.inquiries_referer NEQ "" and qI.inquiries_referer DOES NOT CONTAIN request.zos.globals.domain&'/inquiry'){
+		if(qI.inquiries_referer NEQ "" and qI.inquiries_referer DOES NOT CONTAIN request.zos.currentHostName&'/inquiry'){
 			arrayappend(arrLink,qI.inquiries_referer);	
 		}
-		if(qI.inquiries_referer2 NEQ "" and qI.inquiries_referer2 DOES NOT CONTAIN request.zos.globals.domain&'/inquiry'){
+		if(qI.inquiries_referer2 NEQ "" and qI.inquiries_referer2 DOES NOT CONTAIN request.zos.currentHostName&'/inquiry'){
 			arrayappend(arrLink, qI.inquiries_referer2);	
 		}
 		if(form.format EQ 'html'){

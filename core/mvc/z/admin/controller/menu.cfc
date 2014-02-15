@@ -1098,11 +1098,11 @@
 			</tr>
 			<tr>
 				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Image","member.menu.editItem menu_button_url")#</th>
-				<td>#application.zcore.functions.zInputImage('menu_button_url', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# </td>
+				<td>#application.zcore.functions.zInputImage('menu_button_url', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# </td>
 			</tr>
 			<tr>
 				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Over Image","member.menu.editItem menu_button_over_url")#</th>
-				<td>#application.zcore.functions.zInputImage('menu_button_over_url', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# </td>
+				<td>#application.zcore.functions.zInputImage('menu_button_over_url', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# </td>
 			</tr>
 			<tr>
 				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("URL","member.menu.editItem menu_button_link")#</th>
@@ -1445,7 +1445,7 @@
 					<input class="zColorInput" type="text" name="menu_background_color" value="<cfif form.menu_background_color EQ "">000000<cfelse>#HTMLEditFormat(form.menu_background_color)#</cfif>" style="width:10%;">
 					<br />
 					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_background_image")#:<br />
-					#application.zcore.functions.zInputImage('menu_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
+					#application.zcore.functions.zInputImage('menu_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# 					</td>
 			</tr>
 			<tr>
 				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Divider Color","member.menu.edit menu_divider_color")#</th>
@@ -1465,7 +1465,7 @@
 					<input class="zColorInput" type="text" name="menu_background_over_color" value="<cfif form.menu_background_over_color EQ "">FFFFFF<cfelse>#HTMLEditFormat(form.menu_background_over_color)#</cfif>" style="width:10%;">
 					<br />
 					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_background_over_image")#:<br />
-					#application.zcore.functions.zInputImage('menu_background_over_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
+					#application.zcore.functions.zInputImage('menu_background_over_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# 					</td>
 			</tr>
 			<tr>
 				<th style="width:50px;">#application.zcore.functions.zOutputHelpToolTip("Selected Font Color","member.menu.edit menu_selected_font_color")#</th>
@@ -1479,7 +1479,7 @@
 					<input class="zColorInput" type="text" name="menu_selected_background_color" value="<cfif form.menu_selected_background_color EQ "">FFFFFF<cfelse>#HTMLEditFormat(form.menu_selected_background_color)#</cfif>" style="width:10%;">
 					<br />
 					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_selected_background_image")#:<br />
-					#application.zcore.functions.zInputImage('menu_selected_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
+					#application.zcore.functions.zInputImage('menu_selected_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# 					</td>
 			</tr>
 			<tr>
 				<th colspan="2">Pop-up Options</th>
@@ -1591,7 +1591,7 @@
 					<input class="zColorInput" type="text" name="menu_popup_background_color" value="<cfif form.menu_popup_background_color EQ "">FFFFFF<cfelse>#HTMLEditFormat(form.menu_popup_background_color)#</cfif>" style="width:10%;">
 					<br />
 					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_popup_background_image")#:<br />
-					#application.zcore.functions.zInputImage('menu_popup_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
+					#application.zcore.functions.zInputImage('menu_popup_background_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# 					</td>
 			</tr>
 			<tr>
 				<th style="width:50px;"> #application.zcore.functions.zOutputHelpToolTip("Pop-up Rollover<br />Font Color","member.menu.edit menu_popup_font_over_color")#</th>
@@ -1608,7 +1608,7 @@
 					<br />
 					or #application.zcore.functions.zOutputHelpToolTip("Image","member.menu.edit menu_popup_background_over_image")#:<br />
 					#application.zcore.functions.zInputImage('menu_popup_background_over_image', request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/', 
-					request.zos.globals.domain&'/zupload/menu/#form.menu_id#/')# 					</td>
+					request.zos.currentHostName&'/zupload/menu/#form.menu_id#/')# 					</td>
 			</tr>
 			<tr>
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Layout:","member.menu.edit menu_vertical")#</th>

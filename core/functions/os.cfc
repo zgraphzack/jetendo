@@ -1312,7 +1312,7 @@ application.zcore.functions.zLogError(ts);
 			<head><title>Error</title>
 			</head>
 			<body>
-			<span class="medium">#arguments.ss.type# on #request.zos.globals.domain#</span><br /><br />
+			<span class="medium">#arguments.ss.type# on #request.zos.currentHostName#</span><br /><br />
 		
 			<a href="#request.zos.globals.serverDomain#/z/server-manager/admin/log/index?action=view&log_id=#log_id#">Click here</a> to view detailed information on this error.<br><br>
 		

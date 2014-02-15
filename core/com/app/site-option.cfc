@@ -1351,7 +1351,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			if(local.arr1[i].__approved EQ 1){
 				local.t2=StructNew();
 				local.t2.groupName=row.site_option_group_display_name;
-				local.t2.url=request.zos.globals.domain&local.arr1[i].__url;
+				local.t2.url=request.zos.currentHostName&local.arr1[i].__url;
 				local.t2.title=local.arr1[i].__title;
 				arrayappend(arguments.arrUrl,local.t2);
 			}

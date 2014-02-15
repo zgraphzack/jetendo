@@ -4,8 +4,8 @@
 		local.splitToken='~SSISPLIT~';
 		writeoutput('<h2>Manual Skin Update</h2>
 		<p>This script is run once per day, so it only needs to be run when you want it to update faster.</p>
-		<p>Downloading: <a href="'&request.zos.globals.domain&'/z/misc/system/getSplitTemplate">'&request.zos.globals.domain&"/z/misc/system/getSplitTemplate</a></p>");
-		local.r1=application.zcore.functions.zdownloadlink(request.zos.globals.domain&"/z/misc/system/getSplitTemplate");
+		<p>Downloading: <a href="'&request.zos.currentHostName&'/z/misc/system/getSplitTemplate">'&request.zos.currentHostName&"/z/misc/system/getSplitTemplate</a></p>");
+		local.r1=application.zcore.functions.zdownloadlink(request.zos.currentHostName&"/z/misc/system/getSplitTemplate");
 		if(local.r1.success){
 			
 			local.pBeginHead=find('<!-- ssibeginhead -->', local.r1.cfhttp.FileContent);

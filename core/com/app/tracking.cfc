@@ -183,7 +183,7 @@ USER WAS PERMANENTLY BLOCKED.');
 			if(structkeyexists(form, 'zsource')){
 				t4.track_user_source=form.zsource;
 			}
-			if(request.zos.cgi.http_referer NEQ "" and findNoCase(request.zos.globals.domain, request.zos.cgi.http_referer) EQ 0){
+			if(request.zos.cgi.http_referer NEQ "" and findNoCase(request.zos.globals.domain, request.zos.cgi.http_referer) EQ 0 and findnocase(request.zos.currentHostName, request.zos.cgi.http_referer) EQ 0){
 				t4.track_user_keywords=getSearchTerms(request.zos.cgi.http_referer);
 			}else{
 				t4.track_user_keywords="";

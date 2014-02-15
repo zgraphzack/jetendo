@@ -53,7 +53,7 @@
 	local.myForm=structnew();
 	form.inquiries_referer=application.zcore.functions.zso(form, 'inquiries_referer');
 	if(left(form.inquiries_referer, 1) EQ "/"){
-		form.inquiries_referer=request.zos.globals.domain&form.inquiries_referer;
+		form.inquiries_referer=request.zos.currentHostName&form.inquiries_referer;
 	}
 	form.inquiries_referer2=request.zos.cgi.http_referer;
 	if(structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_email_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_email_required EQ 1){

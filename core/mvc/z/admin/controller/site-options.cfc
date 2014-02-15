@@ -2086,7 +2086,7 @@ Define this function in another CFC to override the default email format
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qD=db.execute("qD");
 	rs.subject='New '&local.qd.site_option_group_display_name&' submitted on '&request.zos.globals.shortDomain;
-	local.editLink=request.zos.globals.domain&"/z/admin/site-options/editGroup?site_option_group_id=#ts.site_option_group_id#&site_x_option_group_set_id=#ts.site_x_option_group_set_id#";
+	local.editLink=request.zos.currentHostName&"/z/admin/site-options/editGroup?site_option_group_id=#ts.site_option_group_id#&site_x_option_group_set_id=#ts.site_x_option_group_set_id#";
 	savecontent variable="local.output"{
 		writeoutput('New '&local.qd.site_option_group_display_name&' submitted'&chr(10)&chr(10));
 		for(i=1;i LTE arraylen(arguments.arrKey);i++){

@@ -161,7 +161,7 @@ text=eCom.forceAbsoluteURLs(text);
 			// ignore existing content ids
 			if(trim(u) EQ '' or left(trim(u),4) EQ 'cid:' or left(trim(u),7) EQ 'mailto:') continue;
 			// convert u to absolute url
-			up=application.zcore.functions.zForceAbsoluteURL(request.zos.globals.domain,u);
+			up=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName,u);
 			np=find(ru,newhtml,n);
 			if(np EQ 0) continue;
 			if(up EQ ''){
@@ -210,7 +210,7 @@ text=eCom.forceAbsoluteURLs(text);
 	var n3=0;
 	var matched=false;
 	var arrU=arraynew(1);
-	var curDomain=replacenocase(request.zos.globals.domain, "http://www.","http://","one");
+	var curDomain=replacenocase(request.zos.currentHostName, "http://www.","http://","one");
 	rs.html=arguments.html;
 	rs.newhtml=arguments.html;
 	rs.arrCID=arraynew(1); 
@@ -1407,7 +1407,7 @@ Password:#zemail.password#</p></td></tr>
 We respect your privacy. <cfif structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0>Unsubscribe will stop our newsletters.</cfif><br />
 This email was sent to: #zemail.protectedData.emailStruct.to#
 </td></tr><tr><td style="border-top:1px solid ##CCCCCC;padding:5px;vertical-align:top;padding-top:5px;">
-<a href="#request.zos.globals.domain#/z/user/privacy/index">Privacy Policy</a>
+<a href="#request.zos.currentHostName#/z/user/privacy/index">Privacy Policy</a>
 <!--- <cfif structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0> --->
 <cfif zemail.preferencesURL NEQ "" and arguments.ss.user_id NEQ 0>
  | <a href="#zemail.preferencesURL#" style=" line-height:24px;">Contact Preferences</a>

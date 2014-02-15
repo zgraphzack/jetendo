@@ -313,7 +313,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	<cfsavecontent variable="theMeta">
 	<script type="text/javascript">
 	/* <![CDATA[ */
-	var zVideoJSDomain="#request.zos.globals.domain#";
+	var zVideoJSDomain="#request.zos.currentHostName#";
 	// this could be done with zGetCookie 
 	
 	zArrDeferredFunctions.push(function(){

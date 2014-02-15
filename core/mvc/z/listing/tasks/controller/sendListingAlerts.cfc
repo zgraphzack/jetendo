@@ -114,7 +114,7 @@
 					user_id: t9.user_id, 
 					user_id_siteIDType: t9.user_id_siteIDType, 
 					criteria: 'Criteria: '&ArrayToList(request.zos.listing.functions.getSearchCriteriaDisplay(t9),', '),
-					link: "#request.zos.globals.domain#/z/listing/property/your-saved-searches/view?newonly=1&mls_saved_search_id=#t9.mls_saved_search_id#&saved_search_email=#t9.saved_search_email#&saved_search_key=#t9.saved_search_key#"
+					link: "#request.zos.currentHostName#/z/listing/property/your-saved-searches/view?newonly=1&mls_saved_search_id=#t9.mls_saved_search_id#&saved_search_email=#t9.saved_search_email#&saved_search_key=#t9.saved_search_key#"
 				});
 			}
 			local.rowIndex++;
@@ -129,11 +129,11 @@
 				arrayAppend(local.arrHTML, '<h3 style="font-size:18px;"><a href="#htmleditformat(local.arrSearch[i].link)#">###i# | #numberformat(local.arrSearch[i].count)# new listings (click to view)</a></h3>'&chr(10)&'<p style="font-size:14px;">'&htmleditformat(local.arrSearch[i].criteria)&'</p><hr />'&chr(10));
 				arrayAppend(local.arrText, '###i# | #numberformat(local.arrSearch[i].count)# new listings'&chr(10)&chr(10)&local.arrSearch[i].link&chr(10)&chr(10)&local.arrSearch[i].criteria&chr(10)&chr(10)&"--------------"&chr(10)&chr(10));
 			}
-			link2="#request.zos.globals.domain#/z/listing/property/your-saved-searches/index";
+			link2="#request.zos.currentHostName#/z/listing/property/your-saved-searches/index";
 			request.zTempNewEmailListingAlertHTML='<h1 style="font-size:24px;">New Listing Email Alert</h1>';
 			savecontent variable="request.zTempNewEmailListingAlertHTMLFooter"{
 				writeoutput('<h2 style="font-size:18px;">New listings match your saved real estate listing search.</h2>
-				<p style="font-size:14px;">Click the links below to view these listings on our web site, <a href="#request.zos.globals.domain#">#request.zos.globals.shortDomain#</a>.</p>
+				<p style="font-size:14px;">Click the links below to view these listings on our web site, <a href="#request.zos.currentHostName#">#request.zos.globals.shortDomain#</a>.</p>
 				#arrayToList(local.arrHTML, '')#
 				
 				<p style="font-size:14px; font-weight:bold;"><a href="#(link2)#">Click here to manage your saved searches.</a></p>');

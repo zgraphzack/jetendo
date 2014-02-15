@@ -666,7 +666,7 @@
 			if(qId.count NEQ "" and qId.count NEQ 0){
 				if(qId.count GT 6000 and structkeyexists(form, 'forceBigIdxDelete') EQ false){
 					application.zcore.template.fail("#qId.count# listings are going to be deleted.  Please check system for an error. component: idx.cfc function: cleanInactive()<br />select COUNT(listing_id) count, cast(group_concat(listing_id SEPARATOR ""','"") AS CHAR) idlist from #db.table("listing_track", request.zos.zcoreDatasource)# listing_track where listing_track_deleted='0' and listing_track_processed_datetime < #db.param(oneDayAgo)# and 
-listing_track_hash<>'' #mlsPSQL#;<br /><br /><a href=""#request.zos.globals.domain#/z/listing/tasks/importMLS/index?zforce=1&forceBigIdxDelete=1"">Click here to force them to be deleted</a>");
+listing_track_hash<>'' #mlsPSQL#;<br /><br /><a href=""#request.zos.currentHostName#/z/listing/tasks/importMLS/index?zforce=1&forceBigIdxDelete=1"">Click here to force them to be deleted</a>");
 				}
 				// delete listings inactive for more then a day
 				// loop all providers

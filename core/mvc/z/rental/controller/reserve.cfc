@@ -423,7 +423,7 @@ Balance Due: #DollarFormat(inquiries_balance_due)##chr(10)#
 </cfif>
 
 Login and view inquiry:
-#request.zos.globals.domain#/member/inquiries/<cfif isDefined('inquiries_reservation_status') and inquiries_reservation_status EQ 1>index<cfelse>feedback</cfif>.cfm?action=view&inquiries_id=#inquiries_id#
+#request.zos.currentHostName#/member/inquiries/<cfif isDefined('inquiries_reservation_status') and inquiries_reservation_status EQ 1>index<cfelse>feedback</cfif>.cfm?action=view&inquiries_id=#inquiries_id#
 </cfmail>
 
 		
@@ -510,7 +510,7 @@ Login and view inquiry:
 				zPageTitle = "Reservation Confirmation";
 			</cfscript>
       <cfsavecontent variable="zpagenav">
-      <a href="#request.zos.globals.domain#/">Home</a> / <a href="#request.zos.globals.domain#/cabin_rentals/index.html">Cabin Rentals</a> /
+      <a href="#request.zos.currentHostName#/">Home</a> / <a href="#request.zos.currentHostName#/cabin_rentals/index.html">Cabin Rentals</a> /
       </cfsavecontent>
       <h2>Thank you! Your reservation has been made successfully.</h2>
       <br />
@@ -601,7 +601,7 @@ inquiries_email = #db.param(application.zcore.functions.zo('inquiries_email'))#
 			}
 			</cfscript>
     <cfsavecontent variable="zpagenav">
-    <a href="#request.zos.globals.domain#/">Home</a> / <a href="#request.zos.globals.domain#/cabin_rentals/index.html">Cabin Rentals</a> /
+    <a href="#request.zos.currentHostName#/">Home</a> / <a href="#request.zos.currentHostName#/cabin_rentals/index.html">Cabin Rentals</a> /
     </cfsavecontent>
     <cfif structkeyexists(form, 'reserve')>
       <h2>Thank you! Your reservation request has been sent.</h2>
@@ -644,7 +644,7 @@ inquiries_email = #db.param(application.zcore.functions.zo('inquiries_email'))#
 			}
 			</cfscript>
       <cfsavecontent variable="zpagenav">
-      <a href="#request.zos.globals.domain#/">Home</a> / <a href="#request.zos.globals.domain#/cabin_rentals/index.html">Cabin Rentals</a> /
+      <a href="#request.zos.currentHostName#/">Home</a> / <a href="#request.zos.currentHostName#/cabin_rentals/index.html">Cabin Rentals</a> /
       </cfsavecontent>
       <cfscript>
 	  if(structkeyexists(form, 'ifmdisable')){
@@ -775,7 +775,7 @@ $250
                     </cfif>
                     security deposit will be required to reserve the cabin.<br />
                     The total booking amount is due at check-in.<br />
-                    Refer to our <a href="#request.zos.globals.domain#/reservation-information-policies.html" target="_blank">cabin rental policies</a> for more information.</strong></td>
+                    Refer to our <a href="#request.zos.currentHostName#/reservation-information-policies.html" target="_blank">cabin rental policies</a> for more information.</strong></td>
                 </tr>
               </table>
               <table style="border-spacing:5px; width:100%;">

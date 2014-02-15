@@ -103,7 +103,7 @@
 		}else if(left(nv, '7') EQ 'http://' or left(nv, '8') EQ 'https://'){
 			return {success:true};
 		}else{
-			return { success:false, message: arguments.row.site_option_display_name&" must be a valid URL, such as ""#request.zos.globals.domain#/"", ""/z/misc/inquiry/index"" or ""##namedAnchor"". Current value was: "&nv };
+			return { success:false, message: arguments.row.site_option_display_name&" must be a valid URL, such as ""#request.zos.currentHostName#/"", ""/z/misc/inquiry/index"" or ""##namedAnchor"". Current value was: "&nv };
 		}
 	}
 	return {success:true};

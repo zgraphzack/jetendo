@@ -840,7 +840,7 @@
 		<cfelse>
 		<tr>
 			<th style="width:130px;">#application.zcore.functions.zOutputHelpToolTip("Select File","member.slideshow.editTab slideshow_tab_url")#</th>
-			<td>#application.zcore.functions.zInputImage('slideshow_tab_url', request.zos.globals.privatehomedir&'zupload/slideshow/'& form.slideshow_id &'/tabs/', request.zos.globals.domain&'/zupload/slideshow/'& form.slideshow_id & '/tabs/')#</td>
+			<td>#application.zcore.functions.zInputImage('slideshow_tab_url', request.zos.globals.privatehomedir&'zupload/slideshow/'& form.slideshow_id &'/tabs/', request.zos.currentHostName&'/zupload/slideshow/'& form.slideshow_id & '/tabs/')#</td>
 		</tr>
 	</cfif>
 	<tr>
@@ -1264,7 +1264,7 @@
 	<table class="table-list">
 		<tr>
 			<th>#application.zcore.functions.zOutputHelpToolTip("Select File","member.slideshow.editPhoto slideshow_image_thumbnail_url")#</th>
-			<td>#application.zcore.functions.zInputImage('slideshow_image_thumbnail_url', request.zos.globals.privatehomedir & 'zupload/slideshow/' & form.slideshow_id & '/', request.zos.globals.domain & '/zupload/slideshow/' & form.slideshow_id & '/')#</td>
+			<td>#application.zcore.functions.zInputImage('slideshow_image_thumbnail_url', request.zos.globals.privatehomedir & 'zupload/slideshow/' & form.slideshow_id & '/', request.zos.currentHostName & '/zupload/slideshow/' & form.slideshow_id & '/')#</td>
 		</tr>
 		<tr>
 			<th>#application.zcore.functions.zOutputHelpToolTip("Photo Caption","member.slideshow.editPhoto slideshow_image_caption")#</th>
@@ -1596,15 +1596,15 @@
 				<table id="tabimagetable" <cfif form.slideshow_tabistext EQ 1 or form.slideshow_tabistext EQ ''>style="display:none;"</cfif>>
 					<tr>
 						<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Back Image","member.slideshow.edit slideshow_back_image")#</th>
-						<td style="vertical-align:top; ">#application.zcore.functions.zInputImage('slideshow_back_image', request.zos.globals.privatehomedir&'zupload/slideshow/' & form.slideshow_id & '/', request.zos.globals.domain&'/zupload/slideshow/' & form.slideshow_id & '/')# </td>
+						<td style="vertical-align:top; ">#application.zcore.functions.zInputImage('slideshow_back_image', request.zos.globals.privatehomedir&'zupload/slideshow/' & form.slideshow_id & '/', request.zos.currentHostName&'/zupload/slideshow/' & form.slideshow_id & '/')# </td>
 					</tr>
 					<tr>
 						<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Forward Image","member.slideshow.edit slideshow_forward_image")#</th>
-						<td style="vertical-align:top; ">#application.zcore.functions.zInputImage('slideshow_forward_image', request.zos.globals.privatehomedir&'zupload/slideshow/' & form.slideshow_id & '/', request.zos.globals.domain&'/zupload/slideshow/' & form.slideshow_id & '/')# </td>
+						<td style="vertical-align:top; ">#application.zcore.functions.zInputImage('slideshow_forward_image', request.zos.globals.privatehomedir&'zupload/slideshow/' & form.slideshow_id & '/', request.zos.currentHostName&'/zupload/slideshow/' & form.slideshow_id & '/')# </td>
 					</tr>
 					<tr>
 						<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Background Image","member.slideshow.edit slideshow_background_image")#</th>
-						<td style="vertical-align:top; ">#application.zcore.functions.zInputImage('slideshow_background_image', request.zos.globals.privatehomedir&'zupload/slideshow/' & form.slideshow_id & '/', request.zos.globals.domain&'/zupload/slideshow/' & form.slideshow_id & '/')# </td>
+						<td style="vertical-align:top; ">#application.zcore.functions.zInputImage('slideshow_background_image', request.zos.globals.privatehomedir&'zupload/slideshow/' & form.slideshow_id & '/', request.zos.currentHostName&'/zupload/slideshow/' & form.slideshow_id & '/')# </td>
 					</tr>
 				</table></td>
 		</tr>
@@ -1937,7 +1937,7 @@
 	qS=db.execute("qS");
 	</cfscript>
 	<cfsavecontent variable="theEmbed">
-	<iframe src="#request.zos.globals.domain#/z/misc/slideshow/embed?action=slideshow&slideshow_id=#form.slideshow_id#" width="#qs.slideshow_width#" height="#qs.slideshow_height#"  style="border:none; overflow:auto;" seamless="seamless"></iframe>
+	<iframe src="#request.zos.currentHostName#/z/misc/slideshow/embed?action=slideshow&slideshow_id=#form.slideshow_id#" width="#qs.slideshow_width#" height="#qs.slideshow_height#"  style="border:none; overflow:auto;" seamless="seamless"></iframe>
 	</cfsavecontent>
 	<h2>View Slideshow</h2>
 #theEmbed# 	<br />

@@ -445,7 +445,7 @@ zdoc css style documentation
 			
             t2=StructNew();
             t2.groupName="Documentation";
-            t2.url=request.zos.globals.domain&'/z/admin/manual/view/'&cs.id&cs.url;
+            t2.url=request.zos.currentHostName&'/z/admin/manual/view/'&cs.id&cs.url;
             t2.title=curTitle;
 			if(indentCount){
 				t2.indent=ljustify("", indentCount);
@@ -721,7 +721,7 @@ zdoc css style documentation
             
             #manualStruct.html#
             <cfif structkeyexists(form, 'generateDocs')>
-            <p>For the latest info, vist this page on the web: <a href="#request.zos.globals.domain##form[request.zos.urlRoutingParameter]#">#request.zos.globals.domain##form[request.zos.urlRoutingParameter]#</a></p>
+            <p>For the latest info, vist this page on the web: <a href="#request.zos.currentHostName##form[request.zos.urlRoutingParameter]#">#request.zos.currentHostName##form[request.zos.urlRoutingParameter]#</a></p>
             </cfif><!--- 
 	        <cfscript>
 	        if(request.zos.functions.zIsExternalCommentsEnabled()){

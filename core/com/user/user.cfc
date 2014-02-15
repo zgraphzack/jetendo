@@ -1058,7 +1058,7 @@ formString = userCom.loginForm(inputStruct);
 			</cfif>
 		</div>
 		<cfscript>
-			writeoutput(local.loginCom.displayOpenIdLoginForm(request.zos.globals.domain&local.actionVar&returnStruct.cgiFormString));
+			writeoutput(local.loginCom.displayOpenIdLoginForm(request.zos.currentHostName&local.actionVar&returnStruct.cgiFormString));
 			</cfscript>
 	</div> 
 	<cfif request.zos.globals.parentID EQ 0 or application.zcore.functions.zvar("disableGlobalLoginMessage", request.zos.globals.parentID) NEQ 1>

@@ -2069,7 +2069,7 @@
 				<td style="vertical-align:top; width:30px; ">#qSite.content_id#</td>
 				<td style="vertical-align:top; width:100px; ">
 					<cfif contentphoto99 NEQ "">
-						<img alt="Image" src="#request.zos.globals.domain&contentphoto99#" width="100" height="70" /></a>
+						<img alt="Image" src="#request.zos.currentHostName&contentphoto99#" width="100" height="70" /></a>
 					<cfelse>
 						&nbsp;
 					</cfif></td>

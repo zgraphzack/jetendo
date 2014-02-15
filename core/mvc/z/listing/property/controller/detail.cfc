@@ -346,7 +346,7 @@ d3=application.zcore.listingCom.listingLookupValue("listing_type",variables.list
     <cfscript>
 	metaKey=rereplacenocase(titleStruct.title&" "&idx.features,"<.*?>"," ","ALL");
 	</cfscript>
-    <link rel="canonical" href="#request.zos.globals.domain##propertyLink#" />
+    <link rel="canonical" href="#request.zos.currentHostName##propertyLink#" />
     <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>
     <meta name="robots" content="noindex,nofollow,noarchive" />
     </cfif>

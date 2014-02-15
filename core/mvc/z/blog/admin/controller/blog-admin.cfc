@@ -39,10 +39,10 @@
     //link=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 4, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
     
     if(application.zcore.app.getAppData("blog").optionstruct.blog_config_root_url NEQ "{default}"){
-        homelink=request.zos.globals.domain&application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url;
+        homelink=request.zos.currentHostName&application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url;
     }else{
         // default home url
-        homelink=request.zos.globals.domain&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id,3,"html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
+        homelink=request.zos.currentHostName&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id,3,"html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
     }
     //homelink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 3, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
     </cfscript>
@@ -919,7 +919,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
             <td>#qList.blog_id#</td>
 	<td style="vertical-align:top; width:100px; ">
 		<cfif contentphoto99 NEQ "">
-			<img alt="Image" src="#request.zos.globals.domain&contentphoto99#" width="100" height="70" /></a>
+			<img alt="Image" src="#request.zos.currentHostName&contentphoto99#" width="100" height="70" /></a>
 		<cfelse>
 			&nbsp;
 		</cfif></td>
@@ -928,7 +928,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
             <td style="width:145px;">#dateformat(qList.blog_datetime, 'm/d/yyyy')# @ #timeformat(qList.blog_datetime, 'h:mm tt')#</td>
             <td style="width:200px;">
             <a href="<cfif qList.blog_unique_name NEQ ''>#qList.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qList.blog_id,"html",qList.blog_title,qList.blog_datetime)#</cfif><cfif qList.blog_status EQ 2 or (qList.blog_status EQ 1 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)>?preview=1</cfif>" target="_blank"><cfif qList.blog_status EQ 2 or (qList.blog_status EQ 1 and qList.blog_event EQ 0 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)>(Inactive, Click to Preview)<cfelse>View</cfif></a> | 
-            <cfif qList.blog_search_mls EQ 1><a href="#request.zos.globals.domain##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_bid=#qList.blog_id#")#">Search Results Only</a> | </cfif>
+            <cfif qList.blog_search_mls EQ 1><a href="#request.zos.currentHostName##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_bid=#qList.blog_id#")#">Search Results Only</a> | </cfif>
             <a href="/z/blog/admin/blog-admin/commentList?blog_id=#qList.blog_id#">
 	<cfif application.zcore.functions.zIsExternalCommentsEnabled()>Comments<cfelse><cfif qList.cc1 NEQ 0> #qList.cc1# Comment<cfif qList.cc1 GT 1>s</cfif><cfif qList.cc2 NEQ 0> <strong>(#qList.cc2# New)</strong></cfif><cfelse>Comments</cfif></cfif></a> |
             <a href="/z/blog/admin/blog-admin/articleEdit?blog_id=#qList.blog_id#">Edit</a> | <a href="/z/blog/admin/blog-admin/blogDelete?blog_id=#qList.blog_id#">Delete</a></td>

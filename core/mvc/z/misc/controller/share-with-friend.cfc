@@ -20,7 +20,7 @@
 	form.title=application.zcore.functions.zso(form, 'title');
 	form.link=application.zcore.functions.zso(form, 'link');
 	if(left(form.link, 4) NEQ "http"){
-		form.link=request.zos.globals.domain&form.link;
+		form.link=request.zos.currentHostName&form.link;
 	}
 	if(form.title EQ "" and form.link EQ ""){
 		application.zcore.functions.z301redirect("/");	
@@ -171,10 +171,10 @@ if(structkeyexists(form, 'title') EQ false){
 	form.title="View Web Site";
 }
 if(structkeyexists(form, 'link') EQ false){
-	form.link=request.zos.globals.domain&"/";
+	form.link=request.zos.currentHostName&"/";
 }
 if(left(form.link, 4) NEQ "http"){
-	form.link=request.zos.globals.domain&form.link;
+	form.link=request.zos.currentHostName&form.link;
 }
 </cfscript>
 </head>

@@ -359,9 +359,9 @@ application.zcore.functions.zPublishCss(ts);
 					arrChildren:[]
 				}
 				if(row2.blog_unique_name NEQ ""){
-					subButtonStruct.url=request.zos.globals.domain&row2.blog_unique_name;
+					subButtonStruct.url=request.zos.currentHostName&row2.blog_unique_name;
 				}else{
-					subButtonStruct.url=request.zos.globals.domain&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,row2.blog_id,"html",row2.blog_title,row2.blog_datetime);
+					subButtonStruct.url=request.zos.currentHostName&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,row2.blog_id,"html",row2.blog_title,row2.blog_datetime);
 				}
 				if(len(row2.blog_title) GT menuCharacterLength){
 					subButtonStruct.text=htmleditformat(left(row2.blog_title,menuCharacterLength)&"...");

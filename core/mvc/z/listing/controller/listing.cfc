@@ -137,7 +137,7 @@ this.app_id=11;
 				echo('</td></tr></table><br style="clear:both;" /><div class="zls-buttonlink">');
 				if(request.cgi_script_name EQ '/z/listing/property/detail/index' or (row.content_id EQ application.zcore.functions.zso(form, 'content_id') and request.cgi_script_name EQ '/z/content/content/viewPage')){
 				}else{
-					echo('<a href="#request.zos.globals.domain##propertyLink#">View Full Details');
+					echo('<a href="#request.zos.currentHostName##propertyLink#">View Full Details');
 					if(lpc38 GT 1){
 						echo(' &amp; Photos');
 					}
@@ -148,7 +148,7 @@ this.app_id=11;
 				}
 			}
 			if(request.cgi_script_name NEQ '/z/listing/inquiry/index'){
-				echo('<a href="#request.zos.globals.domain&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>');
+				echo('<a href="#request.zos.currentHostName&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>');
 			}
 			if(row.content_virtual_tour NEQ ""){
 				echo('<a href="#application.zcore.functions.zblockurl(row.content_virtual_tour)#" rel="nofollow" onclick="window.open(this.href); return false;">Virtual Tour</a>');
@@ -163,9 +163,9 @@ this.app_id=11;
 			if(structkeyexists(request.zos,'listingApp') and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0)  EQ 0){
 				echo('<div id="mc#row.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5" onmousemove="zImageMouseMove(''mc#row.content_id#_#request.zos.propertyIncludeIndex#'',event);" onmouseout="setTimeout(''zImageMouseReset(\''mc#row.content_id#_#request.zos.propertyIncludeIndex#\'')'',100);"><a href="#propertyLink#">');
 				if(contentPhoto99 NEQ ""){
-					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.globals.domain&contentPhoto99#"  alt="Listing Image" />');
+					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.currentHostName&contentPhoto99#"  alt="Listing Image" />');
 				}else{
-					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />');
+					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />');
 				}
 				echo('</a>
 				</div><a class="zls2-5-2" href="#propertyLink#" onmousemove="zImageMouseMove(''mc#row.content_id#_#request.zos.propertyIncludeIndex#'',event);" onmouseout="setTimeout(''zImageMouseReset(\''mc#row.content_id#_#request.zos.propertyIncludeIndex#\'')'',100);">');
@@ -189,9 +189,9 @@ this.app_id=11;
 			}else{
 				echo('<div id="mc#row.content_id#_#request.zos.propertyIncludeIndex#" class="zls2-5"><a href="#propertyLink#">');
 				if(contentPhoto99 NEQ ""){
-					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.globals.domain&contentPhoto99#"  alt="Listing Image" />');
+					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" class="zlsListingImage" src="#request.zos.currentHostName&contentPhoto99#"  alt="Listing Image" />');
 				}else{
-					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.globals.domain&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />');
+					echo('<img id="mc#row.content_id#_#request.zos.propertyIncludeIndex#_img" src="#request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif'#" alt="Image Not Available" />');
 				}
 				echo('</a>
 					</div>');
@@ -1288,7 +1288,7 @@ Primary Cities:</th>
 <cfscript>
 	var propCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.propertyData");
 	var ts=propCom.getSearchFilter(application.zcore.app.getAppData("listing").sharedStruct);
-	application.zcore.functions.zdownloadlink(request.zos.globals.domain&"/z/listing/tasks/generateData/index");
+	application.zcore.functions.zdownloadlink(request.zos.currentHostName&"/z/listing/tasks/generateData/index");
 	</cfscript>
 </cffunction>
 
@@ -2562,7 +2562,7 @@ if(structkeyexists(application.zcore.app.getAppData("listing"),'checkSearchFormJ
 	application.zcore.app.getAppData("listing").checkSearchFormJs=true;
 	if(fileexists(request.zos.globals.privatehomedir&"zcache/listing-search-form.js") EQ false){
 		if(request.cgi_script_name NEQ "/z/listing/tasks/generateData/index"){
-			application.zcore.functions.zdownloadlink(request.zos.globals.domain&"/z/listing/tasks/generateData/index");
+			application.zcore.functions.zdownloadlink(request.zos.currentHostName&"/z/listing/tasks/generateData/index");
 		}
 	}
 }
