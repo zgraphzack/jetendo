@@ -326,9 +326,9 @@ TODO: figure out why site backup doesn't get compressed.
 		application.zcore.functions.zwritefile(request.zos.backupDirectory&"database-schema/"&i2&".json", serializeJson(local.schemaStruct.struct)); 
 	}
 	for(i2 in curDSStruct.globalTableStruct){
-		if(i2 EQ request.zos.zcoreDatasource){
+		/*if(i2 EQ request.zos.zcoreDatasource){
 			continue; // this is a structure only database - skip it
-		}
+		}*/
 		local.curSiteId=backupDatabaseStruct[i2];
 		if(local.curSiteId NEQ 0){
 			if(structkeyexists(form, 'zdebug')){
