@@ -13,13 +13,13 @@ $timeStart = microtime(true);
 if(str_replace($testDomain,"",$host) != $host || str_replace($testDomain,"",$host) != $host){
 	// test server
 	$testserver=true;
-	$mlsDatasource="zsa2_data";
-	$mlsDataDatasource="zsa2_data";
+	$mlsDatasource=zGetDatasource();
+	$mlsDataDatasource=zGetDatasource();
 	$cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), $mlsDatasource);
 }else{
 	$testserver=false;
-	$mlsDatasource="zsa2_data";
-	$mlsDataDatasource="zsa2_data";
+	$mlsDatasource=zGetDatasource();
+	$mlsDataDatasource=zGetDatasource();
 	$cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), $mlsDatasource);
 }
 $mysqldate = date("Y-m-d H:i:s");
