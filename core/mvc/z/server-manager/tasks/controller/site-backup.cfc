@@ -243,31 +243,32 @@ TODO: figure out why site backup doesn't get compressed.
 		local.tempPath=request.zos.backupDirectory&"site-archives#variables.tempPathName#/"&curDomain&"/";
 		if(form.createNew EQ 0){
 			if(form.backupType EQ 1){
-				if(fileexists(request.zos.backupDirectory&"site-archives#variables.tempPathname#/"&curDomainOriginal&'.tar')){
-					variables.downloadSite(form.sid, curDomainOriginal);
+				if(fileexists(request.zos.backupDirectory&"site-archives#variables.tempPathname#/"&curDomain&'.tar')){
+					variables.downloadSite(form.sid, curDomain);
 				}
 			}
 		}
 		if(form.backupType EQ 2){
-			local.tempPathUpload=request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomainOriginal&'-zupload.tar.gz';
+			local.tempPathUpload=request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'-zupload.tar.gz';
 			if(form.createNew EQ 1 or not fileexists(local.tempPathUpload)){
-				application.zcore.functions.zdeletefile(local.tempPathUpload);
-				// isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/opt/jetendo/sites/", "/opt/jetendo/sites/basicdemo_farbeyondcode_com/", 20);
-				//('/bin/tar', '-cvzf  "#local.tempPathUpload#" -C "#request.zos.installPath#sites/#curDomain#/zupload/" * ', 3600);
+				application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain, 3600);
 			}
-			variables.downloadSiteUpload(form.sid, curDomainOriginal);
+			variables.downloadSiteUpload(form.sid, curDomain);
 		}
 		if(variables.tempPathName EQ ""){
 			application.zcore.functions.zdeletedirectory(local.tempPath);
 		}
 		local.sitePathStruct[local.row.site_id]=local.tempPath;
 		local.sitePathMySQLStruct[local.row.site_id]=request.zos.mysqlBackupDirectory&"site-archives#variables.tempPathName#/"&curDomain&"/";
+		if(structkeyexists(form, 'zdebug')){
+			echo('Creating: '&local.tempPath&'<br />');
+			echo('Creating: '&local.tempPath&'database/'&'<br />');
+		}
 		application.zcore.functions.zcreatedirectory(local.tempPath);
 		application.zcore.functions.zcreatedirectory(local.tempPath&"database/");
 		local.siteRestoreStruct[local.row.site_id]=[];
 		application.zcore.functions.zwritefile(local.tempPath&"globals.json", serializeJSON(local.row));
 	}
-	
 	db.sql="SELECT site_id, site_datasource FROM `#request.zos.zcoreDatasource#`.`site`  site
 	WHERE site_active='1' AND
 	site_id <> -1 AND 
@@ -313,15 +314,16 @@ TODO: figure out why site backup doesn't get compressed.
 	}else{
 		limitSQL="";	
 	}
-	
 	arrayClear(request.zos.arrQueryLog);
 	
 	local.zeroSiteIdTableBackupCacheStruct={};
 	
+	application.zcore.functions.zcreatedirectory("#request.zos.backupDirectory#database-global-backup/");
+	application.zcore.functions.zCreateDirectory(request.zos.backupDirectory&"database-schema/");
 	for(i2 in backupDatabaseStruct){
 		local.schemaStruct=this.generateSchemaBackup(i2, curDSStruct);
 		application.zcore.functions.zwritefile(request.zos.backupDirectory&"database-schema/"&i2&".sql", local.schemaStruct.sql);
-		application.zcore.functions.zwritefile(request.zos.backupDirectory&"database-schema/"&i2&".json", local.schemaStruct.struct); 
+		application.zcore.functions.zwritefile(request.zos.backupDirectory&"database-schema/"&i2&".json", serializeJson(local.schemaStruct.struct)); 
 	}
 	for(i2 in curDSStruct.globalTableStruct){
 		if(i2 EQ request.zos.zcoreDatasource){
@@ -329,8 +331,14 @@ TODO: figure out why site backup doesn't get compressed.
 		}
 		local.curSiteId=backupDatabaseStruct[i2];
 		if(local.curSiteId NEQ 0){
+			if(structkeyexists(form, 'zdebug')){
+				echo('Creating: '&local.sitePathStruct[local.curSiteId]&"database/"&i2&"/<br />");
+			}
 			application.zcore.functions.zcreatedirectory(local.sitePathStruct[local.curSiteId]&"database/"&i2&"/");
 		}else if(local.backupGlobal EQ 1){
+			if(structkeyexists(form, 'zdebug')){
+				echo('Creating: '&"#request.zos.backupDirectory#database-global-backup/"&i2&"/");
+			}
 			application.zcore.functions.zcreatedirectory("#request.zos.backupDirectory#database-global-backup/"&i2&"/");
 		}
 		for(n in curDSStruct.globalTableStruct[i2]){
@@ -463,24 +471,23 @@ TODO: figure out why site backup doesn't get compressed.
 			arrayappend(arr7z, '"database-schema/#i2#.json" ');
 		}
 		if(local.backupGlobal EQ 1){
-			application.zcore.functions.zdeletefile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomainOriginal&'-zupload.tar.gz');
-			// isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/opt/jetendo/sites/", "/opt/jetendo/sites/basicdemo_farbeyondcode_com/", 20);
-			//('/bin/tar', '-cvzf  "#request.zos.backupDirectory#site-archives#variables.tempPathName#/#curDomainOriginal#-zupload.tar.gz" -C "#request.zos.installPath#sites/#curDomain#/zupload/" * ', 3600);
+			application.zcore.functions.zdeletefile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'-zupload.tar.gz');
+			application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain, 3600);
 		}
-		application.zcore.functions.zDeleteFile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomainOriginal&'.tar.gz');
-		
-		// isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/opt/jetendo/sites/", "/opt/jetendo/sites/basicdemo_farbeyondcode_com/", 20);
-		//('/bin/tar', '-cvzf  "#request.zos.backupDirectory#site-archives#variables.tempPathName#/#curDomainOriginal#.tar.gz"  -C "#request.zos.backupDirectory#" #arraytolist(arr7z, " ")# -C "#request.zos.backupDirectory#site-archives#variables.tempPathName#/#curDomain#/"  restore-site-database.sql database globals.json -C "#request.zos.installPath#/sites/" --exclude=zupload --transform "s/^#curDomain#/files/" #curDomain#', 3600);
+		application.zcore.functions.zDeleteFile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'.tar.gz');
+
+		tarAbsoluteFilePath="#request.zos.backupDirectory#site-archives#variables.tempPathName#/#curDomain#.tar.gz";
+		application.zcore.functions.zSecureCommand("tarZipSitePath"&chr(9)&curDomain, 3600);
 		application.zcore.functions.zDeleteDirectory(request.zos.backupDirectory&'site-archives#variables.tempPathName#/#curDomain#/');
 		if(request.zos.istestserver){
 			break; // uncomment for faster debugging of backup script.
 		}
 	}
 	if(local.backupGlobal EQ 1){
-		application.zcore.functions.zDeleteFile("#request.zos.backupDirectory#global-database.tar.gz");
-		
-		// isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/opt/jetendo/sites/", "/opt/jetendo/sites/basicdemo_farbeyondcode_com/", 20);
-		//('/bin/tar', '-cvzf  "#request.zos.backupDirectory#global-database.tar.gz" -C "#request.zos.backupDirectory#" restore-global-database.sql database-global-backup/ database-schema/', 3600);
+		changeToAbsoluteDirectory=request.zos.backupDirectory;
+		absolutePathToTar=request.zos.backupDirectory&"restore-global-database.sql"; // other paths to tar: database-global-backup/ database-schema/
+		tarAbsoluteFilePath=request.zos.backupDirectory&"global-database.tar.gz";
+		application.zcore.functions.zSecureCommand("tarZipGlobalDatabase", 7200);
 		application.zcore.functions.zDeleteDirectory("#request.zos.backupDirectory#database-schema/");
 		application.zcore.functions.zDeleteDirectory("#request.zos.backupDirectory#database-global-backup/");
 		application.zcore.functions.zDeleteFile("#request.zos.backupDirectory#restore-global-database.sql");
@@ -494,9 +501,9 @@ TODO: figure out why site backup doesn't get compressed.
 	}
 	
 	if(form.backupType EQ 1){
-		variables.downloadSite(form.sid, curDomainOriginal);
+		downloadSite(form.sid, curDomain);
 	}else if(form.backupType EQ 3){
-		variables.downloadGlobal();
+		downloadGlobal();
 	}else{
 		writeoutput('Done');
 	}
