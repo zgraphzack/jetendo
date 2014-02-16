@@ -51,6 +51,8 @@
 	var row=0;
 	var debug=false;
 	setting requesttimeout="3600";
+	throw("This feature is disabled until it is updated to work again.");
+	
 	form.ignoreDBErrors=application.zcore.functions.zso(form,'ignoreDBErrors', false, false);
 	
 	application.zcore.functions.zCreateDirectory(request.zos.backupDirectory&"import/");
