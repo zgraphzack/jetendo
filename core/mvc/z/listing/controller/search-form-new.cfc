@@ -1,5 +1,5 @@
 <cfcomponent>
-<!--- testing is done here: http://www.carlosring.com.fbc.com/newsearch.cfc?method=index --->
+<!--- testing is done here: http://www.carlosring.com.192.168.56.104.xip.io/newsearch.cfc?method=index --->
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private">
 	<cfscript>
