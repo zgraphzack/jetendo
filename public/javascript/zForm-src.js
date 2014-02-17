@@ -2386,7 +2386,9 @@ function zCheckboxOnChange(obj,zv){
 	if(zv!==-1){
 		zExpOptionSetValue(zv,"<br />"+arrL.join("<br />"));
 	}
-	d1.onchange();
+	if(d1.onchange != null){
+		d1.onchange();
+	}
 }
 
 function zEnableTextSelection(target){
