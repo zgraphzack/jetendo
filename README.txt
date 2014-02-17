@@ -9,4 +9,8 @@ If LICENSE.txt is missing, please refer to https://www.jetendo.com/license/index
 
 This project is currently in an ALPHA quality state.  We are actively redesigning how it works, and it's not wise to build new projects based on the current features until we have written documentation and the project has become more stable with its API changes.
 
-In the future, there will be a virtual machine environment for running Jetendo as well as documentation on how to install & configure it.   We don't suggest using the project until the test environment and basic setup documentation is available.
+Installing Jetendo CMS
+	
+Make sure you follow the instructions in the jetendo-server project README so you have the pre-requisite software installed and configured prior to using Jetendo CMS.  The jetendo-server README includes the instructions for installing Jetendo CMS.
+
+You can also download a preconfigured virtual machine at Jetendo.com.
