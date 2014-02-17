@@ -12,6 +12,7 @@ share/database/jetendo-schema-current.json
 !share/task-log
 !share/task-log/placeholder.txt
 !jetendo-schema.json
+themes/*
 core/config.cfc
 execute/start/*
 execute/complete/*
