@@ -1931,10 +1931,10 @@ configCom.includeContentByName(ts);
 			ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(ts994824713.content_image_library_layout);
 			application.zcore.imageLibraryCom.displayImages(ts);
 		}
-		if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 3 or ts994824713.content_image_library_layout EQ 4 or ts994824713.content_image_library_layout EQ 6){
-			echo(theImageOutputHTML);
-		}
 		savecontent variable="theContentHTMLSection"{
+			if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 3 or ts994824713.content_image_library_layout EQ 4 or ts994824713.content_image_library_layout EQ 6){
+				echo(theImageOutputHTML);
+			}
 			if(ts994824713.content_slideshow_id NEQ 0){
 				echo('<table style="width:100%;" class="zContentSlideShowDiv"><tr><td style="text-align:center;">');
 				application.zcore.functions.zEmbedSlideShow(ts994824713.content_slideshow_id);
