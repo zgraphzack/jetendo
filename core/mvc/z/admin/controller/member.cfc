@@ -385,7 +385,7 @@
 		application.zcore.functions.zCreateDirectory(application.zcore.functions.zVar('privatehomedir')&removechars(request.zos.memberImagePath,1,1));	
 	}
 	if(structkeyexists(request.zos,'listing')){
-		arrM=listtoarray(form.mls_id);
+		arrM=listtoarray(application.zcore.functions.zso(form, 'mls_id'));
 		arrM2=arraynew(1);
 		for(i=1;i LTE arraylen(arrM);i++){
 			m1=arrM[i];
