@@ -343,9 +343,9 @@
 	}
 	fileName=application.zcore.functions.zuploadfile('image_file', application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/');
 	ext=lcase(application.zcore.functions.zGetFileExt(fileName));
-	if(ext NEQ "png" and ext NEQ "jpg" and ext NEQ "jpeg" and ext NEQ "png" and ext NEQ "zip"){
+	if(ext NEQ "png" and ext NEQ "jpg" and ext NEQ "jpeg" and ext NEQ "gif" and ext NEQ "zip"){
 		application.zcore.functions.zDeleteFile(application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName);
-		application.zcore.status.setStatus(request.zsid, "You must upload a supported image type including png, jpg, png or a zip file contain 1 or more of these file types.", form, true);
+		application.zcore.status.setStatus(request.zsid, "You must upload a supported image type including gif, jpg, png or a zip file contain 1 or more of these file types.", form, true);
 		application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 	}
 	deletePath=application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName;
