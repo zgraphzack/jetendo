@@ -90,8 +90,8 @@ if(strpos($status, "nothing to commit") !== FALSE){
 	}
 }
 
-mkdir(get_cfg_var("jetendo_root_path")."themes/", 0550);
-mkdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme", 0550);
+@mkdir(get_cfg_var("jetendo_root_path")."themes/", 0550);
+@mkdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme", 0550);
 chdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme");
 $themePath=get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme";
 $status=`/usr/bin/git status`;

@@ -249,6 +249,14 @@
 	ts.serverGlobals.datasource=request.zos.zcoreDatasource;
 
 
+	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+	if(not dbUpgradeCom.checkVersion()){
+		if(request.zos.isTestServer or request.zos.isDeveloper){
+			echo('Database upgrade failed');
+			abort;
+		}
+	}
+
 	
 	query name="qA" datasource="#ts.serverGlobals.serverdatasource#"{
 		writeoutput("SHOW DATABASES like '%#request.zos.zcoredatasource#%' ");
