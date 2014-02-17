@@ -12,8 +12,10 @@ if(get_cfg_var("jetendo_scripts_path") == ""){
 	echo("Error: You must create a symbolic link using this command: /bin/ln -sf ".$dir."/jetendo.ini /etc/php5/mods-available/jetendo.ini\n");
 	exit;
 }
+$arrLog=array();
 
-if(!zCheckJetendoIniConfig()){
+if(!zCheckJetendoIniConfig($arrLog)){
+	var_dump($arrLog);
 	echo 'Error: you must configure and install jetendo.ini before running this script.\n';
 	exit;
 }
