@@ -105,6 +105,7 @@
 			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
 		}
 		application[request.zos.installPath&":displaySetupScreen"]=true;
+		return true;
 	}else if(currentVersion EQ application.zcore.databaseVersion){
 		return true;
 	}else{
