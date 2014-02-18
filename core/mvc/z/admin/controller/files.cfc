@@ -309,18 +309,18 @@
 	var arrList=0;
 	variables.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
-	local.returnMethod="edit";
+	returnMethod="edit";
 	if(form.method EQ "galleryInsert"){
-		local.returnMethod="galleryAdd";
-		local.successMethod="gallery";
+		returnMethod="galleryAdd";
+		successMethod="gallery";
 	}else{
-		local.returnMethod="add";
-		local.successMethod="index";
+		returnMethod="add";
+		successMethod="index";
 	}
 	if(structkeyexists(form, 'image_file') EQ false or trim(form.image_file) EQ ''){
 		application.zcore.status.setStatus(request.zsid,"No File was uploaded.");
 		if(form.method EQ 'insert'){
-			application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');	
+			application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');	
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/files/edit?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 		}
@@ -329,12 +329,12 @@
 		photoResize=max(10,min(2000,form.image_size_width))&'x'&max(10,min(2000,form.image_size_height));
 	}else{
 		application.zcore.status.setStatus(request.zsid,"Invalid image size");
-		application.zcore.functions.zRedirect('/z/admin/files/#local.successMethod#?zsid=#request.zsid#');
+		application.zcore.functions.zRedirect('/z/admin/files/#successMethod#?zsid=#request.zsid#');
 	}
 	if(form.image_size_width EQ 5000 and form.image_size_height EQ 5000){
-		local.disableResize=true;
+		disableResize=true;
 	}else{
-		local.disableResize=false;
+		disableResize=false;
 	}
 	if(application.zcore.functions.zso(form, 'image_overwrite') EQ 1){
 		overwrite=true;
@@ -346,7 +346,7 @@
 	if(ext NEQ "png" and ext NEQ "jpg" and ext NEQ "jpeg" and ext NEQ "gif" and ext NEQ "zip"){
 		application.zcore.functions.zDeleteFile(application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName);
 		application.zcore.status.setStatus(request.zsid, "You must upload a supported image type including gif, jpg, png or a zip file contain 1 or more of these file types.", form, true);
-		application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+		application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 	}
 	deletePath=application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName;
 	if(request.zos.lastCFFileResult.clientfileext EQ 'zip'){
@@ -360,7 +360,7 @@
 		if(fileName EQ false or left(fileName,6) EQ 'Error:'){
 			application.zcore.status.setStatus(request.zsid,"File Upload Failed.");
 			if(form.method EQ 'insert'){
-				application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+				application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 			}else{
 				application.zcore.functions.zRedirect('/z/admin/files/edit?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');		
 			}	
@@ -374,40 +374,42 @@
 		if(isSimpleValue(qDir) and qDir EQ false){
 			application.zcore.status.setStatus(request.zsid,"Failed to uncompress zip archive.",false,true);
 			if(form.method EQ 'insert'){
-				application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+				application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 			}else{
 				application.zcore.functions.zRedirect('/z/admin/files/edit?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');		
 			}
 		}
 		arrE=arraynew(1);
 		loop query="qDir"{
+			form.imagePath=tPath&qDir.name;
+			fileext=application.zcore.functions.zgetfileext(qDir.name);
+			ext=fileext;
+			filename=application.zcore.functions.zgetfilename(qDir.name);
 			if(left(qDir.name,2) EQ "._" or qDir.name EQ ".DS_Store" or qDir.type NEQ "file"){
+				echo('skipping 1: '&qDir.name&'<br />');
 				continue;
 			}
-			ext=lcase(application.zcore.functions.zGetFileExt(fileName));
-			if(ext NEQ "png" and ext NEQ "jpg" and ext NEQ "jpeg" and ext NEQ "png" and ext NEQ "zip"){
+			if(ext NEQ "png" and ext NEQ "jpg" and ext NEQ "jpeg" and ext NEQ "gif"){
+				echo('skipping 2: '&qDir.name&" | "&fileName&' with ext: '&ext&'<br />');
 				continue; // skip non image files
 			}
 			// upload image...
-			form.imagePath=tPath&qDir.name;
-			local.fileext=application.zcore.functions.zgetfileext(qDir.name);
-			local.filename=application.zcore.functions.zgetfilename(qDir.name);
-			local.curFileName=variables.currentDir&local.fileName&"."&local.fileext;
-			if(local.fileext EQ 'gif' or local.disableResize){
+			curFileName=variables.currentDir&fileName&"."&fileext;
+			if(fileext EQ 'gif' or disableResize){
 				if(overwrite){
 					// overwrite existing files
-					application.zcore.functions.zDeleteFile(local.curFileName);
-				}else if(fileexists(local.curFileName)){
-					local.curIndex=1;
+					application.zcore.functions.zDeleteFile(curFileName);
+				}else if(fileexists(curFileName)){
+					curIndex=1;
 					while(true){
-						local.curFileName=variables.currentDir&local.fileName&local.curIndex&"."&local.fileExt;
-						if(fileexists(local.curFileName) EQ false){
+						curFileName=variables.currentDir&fileName&curIndex&"."&fileExt;
+						if(fileexists(curFileName) EQ false){
 							break;
 						}
-						local.curIndex++;
+						curIndex++;
 					}
 				}
-				local.r1=application.zcore.functions.zRenameFile(form.imagePath, local.curFileName);
+				r1=application.zcore.functions.zRenameFile(form.imagePath, curFileName);
 			}else{
 				arrList = application.zcore.functions.zUploadResizedImage("imagePath", variables.currentDir, photoresize);
 				if(isArray(arrList) and ArrayLen(arrList) NEQ 0){
@@ -432,50 +434,48 @@
 						application.zcore.functions.zRenameFile(variables.currentDir&form.image_file,variables.currentDir&n2);
 						form.image_file=n2;
 					}
-					if(application.zcore.functions.zgetfileext(form.image_file) NEQ 'jpg' and fExt NEQ ".png"){
-						application.zcore.functions.zRenameFile(variables.currentDir&form.image_file, variables.currentDir&application.zcore.functions.zgetfilename(form.image_file)&'.jpg');
-					}
 				}
 			}
 		}
+		// echo('stop');abort; // uncomment to debug zip image uploading
 		application.zcore.functions.zdeletedirectory(tPath);
 		if(arraylen(arrE) NEQ 0){
 			application.zcore.status.setStatus(request.zsid,"#qdir.recordcount-arraylen(arrE)# Images Uploaded Successfully.");
 			
 			application.zcore.status.setStatus(request.zsid,"Uploaded images must be .jpg, .png or .gif. #arraylen(arrE)# of #qdir.recordcount# images failed to be resiapplication.zcore.functions.zed:<br />"&arraytolist(arrE,""),false,true);
 			if(form.method EQ 'insert' or form.method EQ 'galleryInsert'){
-				application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+				application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 			}else{
 				application.zcore.functions.zRedirect('/z/admin/files/edit?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');		
 			}
 		}
 		application.zcore.status.setStatus(request.zsid,"ZIP Image Archive Uploaded Successfully");
-		application.zcore.functions.zRedirect('/z/admin/files/#local.successMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');
+		application.zcore.functions.zRedirect('/z/admin/files/#successMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');
 	}else{
 		form.image_file=application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName;
 		
-		local.fileext=application.zcore.functions.zgetfileext(fileName);
-		local.filename=application.zcore.functions.zgetfilename(fileName);
-		local.curFileName=variables.currentDir&local.fileName&"."&local.fileext;
-		if(local.fileext EQ 'gif' or local.disableResize){
+		fileext=application.zcore.functions.zgetfileext(fileName);
+		filename=application.zcore.functions.zgetfilename(fileName);
+		curFileName=variables.currentDir&fileName&"."&fileext;
+		if(fileext EQ 'gif' or disableResize){
 			if(overwrite){
 				// overwrite existing files
-				application.zcore.functions.zDeleteFile(local.curFileName);
-			}else if(fileexists(local.curFileName)){
-				local.curIndex=1;
+				application.zcore.functions.zDeleteFile(curFileName);
+			}else if(fileexists(curFileName)){
+				curIndex=1;
 				while(true){
-					local.curFileName=variables.currentDir&local.fileName&local.curIndex&"."&local.fileExt;
-					if(fileexists(local.curFileName) EQ false){
+					curFileName=variables.currentDir&fileName&curIndex&"."&fileExt;
+					if(fileexists(curFileName) EQ false){
 						break;
 					}
-					local.curIndex++;
+					curIndex++;
 				}
 			}
-			local.r1=application.zcore.functions.zRenameFile(form.image_file, local.curFileName);
-			if(local.r1 EQ false){
+			r1=application.zcore.functions.zRenameFile(form.image_file, curFileName);
+			if(r1 EQ false){
 				application.zcore.status.setStatus(request.zsid, "Failed to upload image file.");
 				if(form.method EQ 'insert'){
-					application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+					application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 				}else{
 					application.zcore.functions.zRedirect('/z/admin/files/edit?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');		
 				}	
@@ -492,7 +492,7 @@
 			if(fileexists(variables.currentDir&form.image_file) EQ false){
 				application.zcore.status.setStatus(request.zsid,"Image failed to be resized.  Try another image or format.",false,true);
 				if(form.method EQ 'insert'){
-					application.zcore.functions.zRedirect('/z/admin/files/#local.returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+					application.zcore.functions.zRedirect('/z/admin/files/#returnMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
 				}else{
 					application.zcore.functions.zRedirect('/z/admin/files/edit?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');		
 				}
@@ -522,7 +522,7 @@
 		}else{
 			application.zcore.status.setStatus(request.zsid,"Image Uploaded Successfully");
 		}
-		application.zcore.functions.zRedirect('/z/admin/files/#local.successMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');
+		application.zcore.functions.zRedirect('/z/admin/files/#successMethod#?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');
 	}
 	</cfscript>	
 </cffunction>
@@ -877,8 +877,8 @@ Type folder name:
 <cfscript>
 	variables.init();
 form.fp=variables.siteRootDir&form.f;
-local.d=createobject("component", "zcorerootmapping.mvc.z.misc.controller.download");
-local.d.index();
+d=createobject("component", "zcorerootmapping.mvc.z.misc.controller.download");
+d.index();
 </cfscript>
 </cffunction>
 
@@ -942,8 +942,8 @@ function setImage(){
 	<td style="text-align:center;">
 <img src="#variables.siteRootDir##urlencodedformat(form.f)#" height="150" /><br />
 <cfscript> 
-local.imageSize=application.zcore.functions.zGetImageSize(variables.absDir&(form.f));  
-writeoutput('File Name: #getfilefrompath(form.f)# | Resolution: '&local.imageSize.width&'x'&local.imageSize.height);
+imageSize=application.zcore.functions.zGetImageSize(variables.absDir&(form.f));  
+writeoutput('File Name: #getfilefrompath(form.f)# | Resolution: '&imageSize.width&'x'&imageSize.height);
 </cfscript>
 <br />
 
