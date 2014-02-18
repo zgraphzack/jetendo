@@ -4,14 +4,25 @@ Copyright 2014 Far Beyond Code LLC
 
 Jetendo CMS is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
 Jetendo CMS is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with Jetendo CMS. If not, see http://gnu.org/licenses/gpl.html
+You should have received a copy of the GNU General Public License (GPLv3-LICENSE.txt) along with Jetendo CMS. If not, see http://gnu.org/licenses/gpl.html
+
+Special exception for certain customizations
+	We allow developers to develop proprietary closed source solutions if they follow these requirements:
+	You must distribute the customized work separately from Jetendo CMS under the license of your choice.
+	Your customizations cannot alter the Jetendo CMS database.
+	Your customizations cannot alter files in the specified sub-directories of the "jetendo" project:
+		core
+		database-upgrade
+		public
+		scripts
+	This special exception only applies if you wish to license your work under a more restrictive license then GNU GPLv3 or later license.
 
 For more information about the license, included third party software, special exceptions and/or commercial licensing inquiries, visit: 
 https://www.jetendo.com/license/index
 
 Jetendo CMS should contain the license files for all included software when being redistributed.
 
-This project includes a copy of the following third party open source software.  Their respective licenses are listed below and the licenses must be obeyed.
+This project includes a copy of the following third party open source software.  Their respective licenses are listed below and the licenses must be obeyed.  This list is provided for convenience and may be incomplete, but we do make an effort to include the licenses provided by third party projects.  Please review the individual directories throughout the project for additional license information.
 
 PHP scripts:
 TTLoanCalc - GPL - loan.php - and the hyperlinks must be intact or license is invalid.
