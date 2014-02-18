@@ -120,7 +120,7 @@
     ts.zOS.zcoreAdminDomain="https://jetendo.your-company.com";
     
     // global site administration test domain - It must NOT end with a forward slash.
-    ts.zOS.zcoreTestAdminDomain="http://jetendo.your-company.com.dev.com";
+    ts.zOS.zcoreTestAdminDomain="http://jetendo.your-company.com.127.0.0.2.xip.io";
 	ts.zOS.zcoreTestAdminRailoPassword="your_railo_password";
     
     
