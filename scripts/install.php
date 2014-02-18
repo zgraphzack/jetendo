@@ -55,76 +55,79 @@ $gitCloneURL=get_cfg_var("jetendo_git_clone_url");
 $gitBranch=get_cfg_var("jetendo_git_branch");
 $rootPath=get_cfg_var("jetendo_root_path");
 chdir(get_cfg_var("jetendo_root_path"));
-$status=`/usr/bin/git status`;
-if(strpos($status, "fatal: Not a git repository") !== FALSE){
-	echo("Git repo doesn't exist. Running git clone.\n");
-	if(!$debug){
-		$r=`/usr/bin/git clone $gitCloneURL $rootPath`;
-		$r=`/usr/bin/git checkout $gitBranch`;
-	}
+if($argv[1] =="disableGitIntegration"){
 	$status=`/usr/bin/git status`;
-}else{
-	if(!$debug){
-		$r=`/usr/bin/git checkout $gitBranch`;
-		$r=`/usr/bin/git remote add origin $gitCloneURL`;
-	}
-}
-if(strpos($status, "nothing to commit") !== FALSE){
-	echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
-}else{
-	if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
-		echo "Igoring unclean git repo\n";
+	if(strpos($status, "fatal: Not a git repository") !== FALSE){
+		echo("Git repo doesn't exist. Running git clone.\n");
+		if(!$debug){
+			$r=`/usr/bin/git clone $gitCloneURL $rootPath`;
+			$r=`/usr/bin/git checkout $gitBranch`;
+		}
+		$status=`/usr/bin/git status`;
 	}else{
-		echo("Git repo is not clean.\n");
-		if(!$debug && $gitIntegrityCheck == "1"){
-			$r=`/usr/bin/git reset --hard origin/$gitBranch`;
-			$r=`/usr/bin/git pull origin $gitBranch`;
-			$r=`/usr/bin/git gc`;
-			echo("Current directory was hard reset back to the git origin (".$gitCloneURL.") branch: ".$gitBranch.".\n");
+		if(!$debug){
+			$r=`/usr/bin/git checkout $gitBranch`;
+			$r=`/usr/bin/git remote add origin $gitCloneURL`;
+		}
+	}
+	if(strpos($status, "nothing to commit") !== FALSE){
+		echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
+	}else{
+		if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
+			echo "Igoring unclean git repo\n";
 		}else{
-			echo "\nINSTALL CANCELLED.\n";
-			echo "To force installation with an unclean copy of the source code, please run this script again with the following command arguments:\n\n";
-			echo "php ".get_cfg_var("jetendo_scripts_path")."install.php ignoreIntegrityCheck\n\n";
-			exit;
+			echo("Git repo is not clean.\n");
+			if(!$debug && $gitIntegrityCheck == "1"){
+				$r=`/usr/bin/git reset --hard origin/$gitBranch`;
+				$r=`/usr/bin/git pull origin $gitBranch`;
+				$r=`/usr/bin/git gc`;
+				echo("Current directory was hard reset back to the git origin (".$gitCloneURL.") branch: ".$gitBranch.".\n");
+			}else{
+				echo "\nINSTALL CANCELLED.\n";
+				echo "To force installation with an unclean copy of the source code, please run this script again with the following command arguments:\n\n";
+				echo "php ".get_cfg_var("jetendo_scripts_path")."install.php ignoreIntegrityCheck\n\n";
+				exit;
+			}
 		}
 	}
 }
-
 @mkdir(get_cfg_var("jetendo_root_path")."themes/", 0550);
 @mkdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme", 0550);
 chdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme");
 $themePath=get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme";
-$status=`/usr/bin/git status`;
-if(strpos($status, "fatal: Not a git repository") !== FALSE){
-	echo("Git repo doesn't exist. Running git clone.\n");
-	if(!$debug){
-		$r=`/usr/bin/git clone $gitThemeCloneURL $themePath`;
-		$r=`/usr/bin/git checkout $gitThemeBranch`;
-	}
+if($argv[1] == "disableGitIntegration"){
 	$status=`/usr/bin/git status`;
-}else{
-	if(!$debug){
-		$r=`/usr/bin/git checkout $gitThemeBranch`;
-		$r=`/usr/bin/git remote add origin $gitThemeCloneURL`;
-	}
-}
-if(strpos($status, "nothing to commit") !== FALSE){
-	echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
-}else{
-	if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
-		echo "Igoring unclean git repo\n";
+	if(strpos($status, "fatal: Not a git repository") !== FALSE){
+		echo("Git repo doesn't exist. Running git clone.\n");
+		if(!$debug){
+			$r=`/usr/bin/git clone $gitThemeCloneURL $themePath`;
+			$r=`/usr/bin/git checkout $gitThemeBranch`;
+		}
+		$status=`/usr/bin/git status`;
 	}else{
-		echo("Git repo is not clean.\n");
-		if(!$debug && $gitIntegrityCheck == "1"){
-			$r=`/usr/bin/git reset --hard origin/$gitThemeBranch`;
-			$r=`/usr/bin/git pull origin $gitThemeBranch`;
-			$r=`/usr/bin/git gc`;
-			echo("Current directory was hard reset back to the git origin (".$gitThemeCloneURL.") branch: ".$gitThemeBranch.".\n");
+		if(!$debug){
+			$r=`/usr/bin/git checkout $gitThemeBranch`;
+			$r=`/usr/bin/git remote add origin $gitThemeCloneURL`;
+		}
+	}
+	if(strpos($status, "nothing to commit") !== FALSE){
+		echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
+	}else{
+		if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
+			echo "Igoring unclean git repo\n";
 		}else{
-			echo "\nINSTALL CANCELLED.\n";
-			echo "To force installation with an unclean copy of the source code, please run this script again with the following command arguments:\n\n";
-			echo "php ".get_cfg_var("jetendo_scripts_path")."install.php ignoreIntegrityCheck\n\n";
-			exit;
+			echo("Git repo is not clean.\n");
+			if(!$debug && $gitIntegrityCheck == "1"){
+				$r=`/usr/bin/git reset --hard origin/$gitThemeBranch`;
+				$r=`/usr/bin/git pull origin $gitThemeBranch`;
+				$r=`/usr/bin/git gc`;
+				echo("Current directory was hard reset back to the git origin (".$gitThemeCloneURL.") branch: ".$gitThemeBranch.".\n");
+			}else{
+				echo "\nINSTALL CANCELLED.\n";
+				echo "To force installation with an unclean copy of the source code, please run this script again with the following command arguments:\n\n";
+				echo "php ".get_cfg_var("jetendo_scripts_path")."install.php ignoreIntegrityCheck\n\n";
+				exit;
+			}
 		}
 	}
 }
