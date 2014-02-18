@@ -345,6 +345,8 @@
 	 
 	if(fileexists(ts.serverglobals.serverprivatehomedir&"_cache/scripts/sites.json")){
 		ts.sitePaths=deserializeJson(application.zcore.functions.zreadfile(ts.serverglobals.serverprivatehomedir&"_cache/scripts/sites.json"));
+	}else{
+		application[request.zos.installPath&":displaySetupScreen"]=true;
 	}
 	query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
 		writeoutput("SELECT site_id, site_short_domain FROM `#request.zos.zcoreDatasourcePrefix#site` WHERE site_active='1' ");
@@ -638,13 +640,13 @@
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3'});
 		application.zcore=ts.zcore;
 	}
-	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+	/*dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
 	if(not dbUpgradeCom.checkVersion()){
 		if(request.zos.isTestServer or request.zos.isDeveloper){
 			echo('Database upgrade failed');
 			abort;
 		}
-	}
+	}*/
 	if(request.zos.allowRequestCFC){
 		request.zos.functions=application.zcore.functions;
 	}
