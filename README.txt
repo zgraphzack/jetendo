@@ -11,7 +11,7 @@ This project is currently in an ALPHA quality state.  We are actively redesignin
 
 Installing Jetendo CMS
 	
-Make sure you follow the README files in the jetendo-server project so you have the pre-requisite software installed and configured prior to using Jetendo CMS.  The jetendo-server README includes the instructions for installing Jetendo CMS.
+Make sure you follow the README files in the jetendo-server project (https://github.com/jetendo/jetendo-server) so you have the pre-requisite software installed and configured prior to using Jetendo CMS.  The jetendo-server README includes the instructions for installing Jetendo CMS.
 
 Virtual Machine
 
