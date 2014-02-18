@@ -659,6 +659,9 @@ variables.typeStruct["text"]="text";
 			arguments.sharedStruct.metadataDateLastModified=createdate(2000,1,1);	
 		}
 		arguments.sharedStruct.metaStruct=this.parseMetaData(arguments.sharedStruct.metadataDateLastModified);	
+		if(not isStruct(arguments.sharedStruct.metaStruct)){
+			return;
+		}
 		arguments.sharedStruct.metaStructUpdated=true;
 	}
 	if(request.zos.istestserver){
