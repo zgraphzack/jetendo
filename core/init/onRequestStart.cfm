@@ -17,7 +17,7 @@
 		reset:application.zcore.functions.zso(form, 'reset')
 	};
 	request.zos.zreset=ts.reset;
-	
+	backupGlobals=duplicate(request.zos.globals);
 	// make sure file permissions are updated
 	if(fileexists(request.zos.globals.privatehomedir&'__zdeploy-complete.txt')){
 		while(true){
@@ -43,7 +43,9 @@
 		local.temp34.globals=application.zcore.siteGlobals[request.zos.globals.id];//request.zos.globals;  
 		local.temp34=application.zcore.functions.zGetSite(local.temp34);
 		application.sitestruct[request.zos.globals.id]=local.temp34; 
-	} 
+	}else{
+		request.zos.globals=backupGlobals;
+	}
 	if(request.zos.zreset EQ "all" or request.zos.zreset EQ "site" or request.zos.zreset EQ "app"){
 		lock name="#request.zos.zcoreRootPath#-compilePackage" type="exclusive" timeout="30" throwontimeout="yes"{
 			application.zcore.skin.compilePackage();

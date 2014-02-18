@@ -59,15 +59,15 @@ todo: open source projects
 </cffunction>
 	
 <cffunction name="onApplicationStart" localmode="modern" returntype="any" output="no">
-    	<cfargument name="ss" type="struct" required="yes">
-        <cfscript>
-	if(not structkeyexists(form, 'zforce') and structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'skinObj')){
-		arguments.ss.skinObj=application.zcore.skinObj;
+	<cfargument name="ss" type="struct" required="yes">
+    <cfscript>
+	if(not structkeyexists(form, 'zforce') and structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'skinObj') and structkeyexists(application.zcore.skinObj, 'fileStruct')){
+		arguments.ss.skinObj=application.zcore.skinObj; 
 		return arguments.ss;
 	}
 	arguments.ss.skinObj=structnew();
 	variables.rebuildServerCache(arguments.ss.skinObj);
-	local.threadName="zcore_skin_onApplicationStart"&gettickcount();
+	//local.threadName="zcore_skin_onApplicationStart"&gettickcount();
 	//if(structkeyexists(form, 'zdisablethread') or request.zos.istestserver){
 		variables.verifyServerCache(arguments.ss.skinObj);
 	/*}else{

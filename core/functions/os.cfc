@@ -2708,7 +2708,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	}
 	if(not request.zos.isTestServer or structkeyexists(form, 'zforce')){
 		mvcFilesChanged=true;
-	} 
+	}
 	
 	if(mvcFilesChanged or (not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'controllerComponentCache'))){
 		for(i2=1;i2 LTE arraylen(arrFile);i2++){
@@ -2803,6 +2803,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 		ts.controllerComponentCache=application.zcore.controllerComponentCache;
 		ts.registeredControllerPathStruct=application.zcore.registeredControllerPathStruct;
 		ts.registeredControllerStruct=application.zcore.registeredControllerStruct;
+		structappend(arguments.ss, ts, true);
 	}
 	</cfscript>
 </cffunction>
