@@ -401,6 +401,7 @@ userCom.checkLogin(inputStruct);
 			session.zOS[userSiteId]=StructNew();
 			session.zOS[userSiteId].id = qUserCheck.user_id;
 			session.zOS[userSiteId].email = qUserCheck.user_username;
+			session.zOS[userSiteId].login_site_id = request.zos.globals.id;
 			this.updateSession(arguments.inputStruct);
 			db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 			SET user_updated_ip = #db.param(request.zos.cgi.remote_addr)#, 
@@ -488,7 +489,6 @@ userCom.checkLogin(inputStruct);
 		if(ss.checkServerAdministrator and request.zos.isServer EQ false and this.checkServerAccess() EQ false){
 			// no access
 		}else{
-			//this.updateSession(arguments.inputStruct);
 			if(isDefined('session.zos.secureLogin') and session.zos.secureLogin EQ false and arguments.inputStruct.secureLogin and isDefined('session.zos.user.email')){
 				// insecure user has moved to a secure area, require password entry!
 				form.zusername=session.zos.user.email;
@@ -714,10 +714,11 @@ userCom.checkLogin(inputStruct);
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(session.zOS[userSiteId].id)# and  
 	user_active = #db.param(1)# and 
-	user_username = #db.param(session.zOS[userSiteId].email)# and (site_id = #db.param(ss.site_id)# or 
+	user_username = #db.param(session.zOS[userSiteId].email)# and 
+	(site_id = #db.param(ss.site_id)# or 
 	(user_server_administrator = #db.param('1')# and 
 	site_id = #db.param(Request.zos.globals.serverId)#) ";
-	if(isDefined('request.zos.globals.parentid') and request.zos.globals.parentid NEQ 0){
+	if(request.zos.globals.parentid NEQ 0){
 		db.sql&=" or site_id = #db.param(request.zos.globals.parentid)#";
 	}
 	db.sql&=" )";
@@ -756,6 +757,7 @@ userCom.checkLogin(inputStruct);
 	session.zOS[userSiteId].id = qUser.user_id;
 	session.zOS[userSiteId].site_id = qUser.site_id;
 	session.zOS[userSiteId].groupAccess = StructNew();
+	session.zOS[userSiteId].login_site_id = request.zos.globals.id;
 	
 	// have to use query for other site group access
 	if(ss.site_id NEQ request.zos.globals.id){
@@ -864,10 +866,13 @@ userCom.checkLogin(inputStruct);
 		userSiteId='user'&arguments.site_id;			
 	}
 	
-	if(isDefined('session.zOS.#userSiteId#') EQ false){
+	if(not structkeyexists(session, 'zOS') or not structkeyexists(session.zos, userSiteId)){
 		return false;
 	}else{
 		c=session.zOS[userSiteId];
+		if(not structkeyexists(c, 'login_site_id') or c.login_site_id NEQ arguments.site_id){
+			return false;
+		}
 		if((structkeyexists(c,'groupAccess') and structkeyexists(c.groupAccess, arguments.user_group_name)) or ((structkeyexists(c,'user_administrator') and c.user_administrator EQ 1) and c.site_id EQ arguments.site_id) or (structkeyexists(c,'user_server_administrator') and c.user_server_administrator EQ 1)){
 			return true;
 		}else{
