@@ -9,7 +9,7 @@
 	ts.zOS = StructNew();
 	// domain to append to ALL of your test domains.
 	ts.zos.testDomain="127.0.0.2.xip.io";
-	ts.zos.testManagerDomain="127.0.0.2.xip.io"; 
+	ts.zos.testManagerDomain="127.0.0.2.xip.io";  // xip.io is much slower then using your local hosts file or a local dns server, but it works without additional configuration.  Learn more about xip.io: http://xip.io/  - You can also host your own xip daemon using node.js.
 	if(findnocase("."&ts.zos.testDomain, arguments.tempCgi.http_host) NEQ 0 or findnocase("."&ts.zos.testManagerDomain, arguments.tempCgi.http_host) NEQ 0){
 		ts.zos.installPath="/opt/jetendo/";
 		ts.zOS.istestserver=true;
