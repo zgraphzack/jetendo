@@ -315,6 +315,9 @@ application.zcore.functions.zPublishCss(ts);
 			 db.sql="SELECT *
 			 from #db.table("blog", request.zos.zcoreDatasource)# blog 
 			WHERE blog.site_id = #db.param(request.zos.globals.id)# 
+			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+			blog_event =#db.param(1)#) and 
+			blog_status <> #db.param(2)# 
 			ORDER BY blog_datetime desc, #blogSort# 
 			LIMIT #db.param(0)#,#db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
@@ -327,6 +330,9 @@ application.zcore.functions.zPublishCss(ts);
 			blog_x_category.blog_id = blog.blog_id and 
 			blog_x_category.blog_category_id = #db.param(row.menu_button_type_tid)# and 
 			blog.site_id = #db.param(request.zos.globals.id)# 
+			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+			blog_event =#db.param(1)#) and 
+			blog_status <> #db.param(2)# 
 			ORDER BY #blogSort# 
 			LIMIT #db.param(0)#, #db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
@@ -339,6 +345,9 @@ application.zcore.functions.zPublishCss(ts);
 			blog_x_tag.blog_id = blog.blog_id and 
 			blog_x_tag.blog_tag_id = #db.param(row.menu_button_type_tid)# and 
 			blog.site_id = #db.param(request.zos.globals.id)# 
+			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+			blog_event =#db.param(1)#) and 
+			blog_status <> #db.param(2)# 
 			ORDER BY #blogSort# 
 			LIMIT #db.param(0)#,#db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
@@ -347,6 +356,9 @@ application.zcore.functions.zPublishCss(ts);
 			 db.sql="SELECT *
 			 from #db.table("blog", request.zos.zcoreDatasource)# blog 
 			WHERE blog.site_id = #db.param(request.zos.globals.id)# 
+			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+			blog_event =#db.param(1)#) and 
+			blog_status <> #db.param(2)# 
 			ORDER BY blog_views DESC, #blogSort# 
 			LIMIT #db.param(0)#,#db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
