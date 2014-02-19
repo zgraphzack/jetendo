@@ -19,8 +19,15 @@ this.clientTimeout = createTimeSpan( 1, 0, 0, 0 );
 this.clientStorage = "cookie";
 
 // using domain cookies or not
-this.setDomainCookies = true; 
-this.setClientCookies = true;
+this.setDomainCookies = false; 
+this.setClientCookies = false;
+
+// disable sessions and cookies when using ab.exe benchmarking to prevent timeouts of this failed request type: length
+if(structkeyexists(form,'zab')){
+    this.SessionManagement = false;
+    this.setDomainCookies = false; 
+    this.setClientCookies = false;
+}
 
 // prefer the local scope at unscoped write
 this.localMode = "classic"; 
@@ -198,8 +205,6 @@ request.zos.cgi=local.tempCGI;
         this.ApplicationTimeout = CreateTimeSpan( 30, 0, 0, 0 );
         this.SessionTimeout=CreateTimeSpan(0,0,60,0); 
         this.SessionManagement = true;
-        this.SetClientCookies = "Yes";
-        this.setDomainCookies="Yes";
         return;
     }
     
@@ -254,13 +259,6 @@ request.zos.cgi=local.tempCGI;
     ts.Name = "zcore_"&request.zos.installPath;
     ts.ApplicationTimeout = CreateTimeSpan( 30, 0, 0, 0 );
     ts.SessionTimeout=CreateTimeSpan(0,0,60,0); 
-    // disable sessions and cookies when using ab.exe benchmarking to prevent timeouts of this failed request type: length
-    if(structkeyexists(form,'zab') EQ false){
-        ts.SessionManagement = true;
-        ts.SetClientCookies = false;
-        ts.SessionType= "cfml";
-        ts.setDomainCookies=false;
-    }
 	
     server["zcore_"&request.zos.installPath&"_cache"]=ts;
     structappend(this, ts, true);
