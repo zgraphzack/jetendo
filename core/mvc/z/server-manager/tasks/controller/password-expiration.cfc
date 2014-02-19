@@ -7,6 +7,16 @@
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
 	}
 	pastDate=application.zcore.functions.zAddTimespanToDate(-request.zos.passwordExpirationTimeSpan, now());
+
+	db.sql="SELECT site_id FROM #db.table("site", request.zos.zcoreDatasource)# 
+	WHERE site_id <> #db.param(-1)# and 
+	site_enable_demo_mode=#db.param('1')#";
+	qDemo=db.execute("qDemo");
+	arrSite=[];
+	for(row in qDemo){
+		arrayAppend(arrSite, "'"&row.site_id&"'");
+	}
+	siteIdList=arrayToList(arrSite, ",");
 	db=request.zos.queryObject;
 	db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# 
 	SET 
@@ -24,8 +34,11 @@
 	user_security_answer2  = #db.param('')#,  
 	user_security_question3  = #db.param('')#,  
 	user_security_answer3  = #db.param('')# 
-	WHERE 
-	user_password <> #db.param('')# and 
+	WHERE ";
+	if(arraylen(arrSite)){
+		db.sql&=" site_id NOT IN ("&siteIdList&") and ";
+	}
+	db.sql&=" user_password <> #db.param('')# and 
 	user_updated_datetime <= #db.param(dateformat(pastDate, "yyyy-mm-dd")&" "&timeformat(pastDate, "HH:mm:ss"))# and 
 	user_encrypted_key = #db.param('')# and 
 	site_id <> #db.param(-1)#";
