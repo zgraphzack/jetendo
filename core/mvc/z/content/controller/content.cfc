@@ -2422,7 +2422,7 @@ configCom.includeContentByName(ts);
 		}
 	}
 	savecontent variable="pagenav"{
-		echo('<a href="/">#application.zcore.functions.zvar('homelinktext')#</a> /');
+		echo(' <a href="/">#application.zcore.functions.zvar('homelinktext')#</a> / ');
 		for(i=arraylen(arrNav);i GTE 1;i=i-1){
 			writeoutput(arrNav[i]);
 		}
