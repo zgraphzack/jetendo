@@ -892,7 +892,7 @@
 	var qMember=0;
 	var searchStruct=0;
 	var searchNav=0;
-	var qCount=0;
+	var qCount=0;  
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("5.1");
 	application.zcore.functions.zStatusHandler(request.zsid);
