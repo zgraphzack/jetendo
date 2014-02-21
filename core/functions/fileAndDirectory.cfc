@@ -88,7 +88,7 @@
 	</cfscript>
 	<cfif directoryExists(arguments.dirName) EQ false>
 		<cftry>
-			<cfdirectory action="create" directory="#arguments.dirName#"><!---  mode="770" --->
+			<cfdirectory action="create" directory="#arguments.dirName#" mode="770">
 			<cfcatch type="any"><cfreturn false></cfcatch>
 		</cftry>
 	</cfif>
