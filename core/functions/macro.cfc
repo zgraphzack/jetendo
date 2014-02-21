@@ -367,6 +367,9 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 <cffunction name="zSendUserAutoresponder" localmode="modern" output="no" returntype="any">
 	<cfargument name="user_id" type="string" required="no" default="">
     <cfscript>
+	if(application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) NEQ 1){
+		return;
+	}
     var ts=0;
     var rCom=0;
     var qCheck=0;
@@ -480,6 +483,9 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 <cffunction name="zSendMailUserAutoresponder" localmode="modern" output="no" returntype="any">
 	<cfargument name="mail_user_id" type="string" required="no" default="">
     <cfscript>
+	if(application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) NEQ 1){
+		return;
+	}
 	var qcheck=0;
 	var ts=0;
 	var rcom=0;
@@ -508,12 +514,12 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
     <cfloop query="qCheck">
         <cfscript>			
         ts=StructNew();
-	ts.force=1;
+		ts.force=1;
         ts.site_id=qCheck.site_id;
         ts.zemail_template_type_name="confirm opt-in";
-	//ts.debug=1;
+		//ts.debug=1;
         ts.mail_user_id=qCheck.mail_user_id;
-	ts.mail_user_key=qCheck.mail_user_key;
+		ts.mail_user_key=qCheck.mail_user_key;
         rCom=emailCom.sendEmailTemplate(ts);
         </cfscript>
         <cfif rCom.isOK() EQ false>
