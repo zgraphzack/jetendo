@@ -1322,7 +1322,7 @@ this.app_id=10;
 
 <!--- application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogTag(blog_tag_id); --->
 <cffunction name="searchIndexDeleteBlogTag" localmode="modern" output="no" returntype="any">
-	<cfargument name="id" type="numeric" required="yes">
+	<cfargument name="id" type="string" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
@@ -1335,7 +1335,7 @@ this.app_id=10;
 
 <!--- application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogArticle(blog_id); --->
 <cffunction name="searchIndexDeleteBlogArticle" localmode="modern" output="no" returntype="any">
-	<cfargument name="id" type="numeric" required="yes">
+	<cfargument name="id" type="string" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
@@ -1348,7 +1348,7 @@ this.app_id=10;
 
 <!--- application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogCategory(blog_category_id); --->
 <cffunction name="searchIndexDeleteBlogCategory" localmode="modern" output="no" returntype="any">
-	<cfargument name="id" type="numeric" required="yes">
+	<cfargument name="id" type="string" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 

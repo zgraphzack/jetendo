@@ -662,6 +662,13 @@ function tarZipSiteUploadPath($a){
 	echo $cmd."\n";
 	`$cmd`;
 
+	$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
+	echo $cmd."\n";
+	`$cmd`;
+	$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
+	echo $cmd."\n";
+	`$cmd`;
+
 	if(file_exists($tarPath)){
 		return "1";
 	}else{
@@ -737,6 +744,13 @@ function tarZipSitePath($a){
 	echo $cmd."\n";
 	`$cmd`;
 
+	$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
+	echo $cmd."\n";
+	`$cmd`;
+	$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
+	echo $cmd."\n";
+	`$cmd`;
+
 	if(file_exists($tarPath)){
 		return "1";
 	}else{
@@ -749,6 +763,13 @@ function tarZipGlobalDatabase($a){
 	$tarPath=get_cfg_var("jetendo_backup_path")."backup/global-database.tar.gz";
 	@unlink($tarPath);
 	$cmd='/bin/tar -cvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg($backupPath).'  restore-global-database.sql database-global-backup/ database-schema/';
+	echo $cmd."\n";
+	`$cmd`;
+
+	$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
+	echo $cmd."\n";
+	`$cmd`;
+	$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
 	echo $cmd."\n";
 	`$cmd`;
 
@@ -799,6 +820,13 @@ function tarZipFilePath($a){
 		$cmd="/bin/tar -cvzf ".escapeshellarg($tarDirectory."/".$tarFilename)." *";
 		`$cmd`;
 		if(file_exists($tarDirectory."/".$tarFilename)){
+			$tarPath=$tarDirectory."/".$tarFilename;
+			$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
+			echo $cmd."\n";
+			`$cmd`;
 			echo "Created tar/gzip successfully\n";
 			return "1";
 		}
