@@ -538,8 +538,7 @@ To view more info about this new user, click the following link:
 			if(application.zcore.functions.zvar('sendConfirmOptIn',str.site_id) EQ 1){
 				if(((structkeyexists(str, 'user_pref_list') and str.user_pref_list EQ 1) or (structkeyexists(str, 'user_pref_sharing') and str.user_pref_sharing EQ 1)) and qCheck.user_confirm EQ 0){
 					str.user_confirm_count=0;
-					str.user_sent_datetime='0000-00-00 00:00:00';
-					writeoutput('here i am');
+					str.user_sent_datetime='0000-00-00 00:00:00'; 
 					str.sendConfirmOptIn=true;
 				}
 			}else{
