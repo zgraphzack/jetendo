@@ -632,7 +632,7 @@
 		}
 	}
 
-	if(local.dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all"){
+	if(local.dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all" or not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'functions')){
 		ts.zcore=structnew();
 		variables.setupAppGlobals1(ts.zcore);
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 2'});
