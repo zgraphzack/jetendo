@@ -215,6 +215,9 @@
 	var curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
 	if(curDate EQ ""){
 		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		if(curDate EQ ""){
+			return { success: true, value: "", dateValue: "" };
+		}
 	}
 	try{
 		var nvdate=dateformat(curDate, "yyyy-mm-dd")&" 00:00:00";

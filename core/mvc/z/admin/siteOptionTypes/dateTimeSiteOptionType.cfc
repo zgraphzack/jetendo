@@ -257,6 +257,9 @@
 	if(curDate EQ ""){
 		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
 		curTime=curDate;
+		if(curDate EQ ""){
+			return { success: true, value: "", dateValue: "" };
+		}
 	}
 	arguments.dataStruct.site_x_option_group_disable_time=0;
 	if(curTime EQ ""){

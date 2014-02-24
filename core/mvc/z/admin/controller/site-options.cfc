@@ -1529,7 +1529,7 @@
 		}
 		nv=rs.value;
 		nvDate=rs.dateValue; 
-		if(nvDate NEQ ""){
+		if(nvDate NEQ "" and trim(nvDate) NEQ "00:00:00" and isdate(nvDate)){
 			if(timeformat(nvDate, 'h:mm tt') EQ "12:00 am"){
 				local.newDataStruct[row.site_option_name]=dateformat(nvDate, 'm/d/yyyy');
 			}else{
