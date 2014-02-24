@@ -4,7 +4,7 @@
 	// increment manually when database schema changes or source release version changes
 	return {
 		databaseVersion: 7,
-		sourceVersion: "0.1.001"
+		sourceVersion: "0.1.005"
 	};
 	</cfscript>
 </cffunction>
