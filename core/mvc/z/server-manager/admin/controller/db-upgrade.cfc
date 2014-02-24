@@ -489,6 +489,15 @@
 	<cfscript>
 	dataTables={};
 	dataTables["zcoreDatasource"]={
+		"site_option": {
+			columnList: "site_option_id, site_option_name, site_option_display_name, site_option_default_value, 
+			site_option_type_id, site_id, site_option_line_breaks, site_option_edit_enabled, site_option_listing_only, 
+			site_option_group_id, site_option_sort, site_option_primary_field, site_option_appidlist, site_option_admin_searchable, 
+			site_option_required, site_option_validator_cfc, site_option_validator_method, site_option_url_title_field, 
+			site_option_admin_search_default, site_option_admin_sort_field, site_option_allow_public, site_option_hide_label, 
+			site_option_tooltip, site_option_public_searchable, site_option_search_summary_field, site_option_enable_search_index, 
+			site_option_type_json, site_option_small_width"
+		},
 		"zemail_template_type": {
 			columnList: "zemail_template_type_id,zemail_template_type_name,site_id"
 		},
