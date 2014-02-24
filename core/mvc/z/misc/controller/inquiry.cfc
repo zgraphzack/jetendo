@@ -205,7 +205,7 @@
 	
 	<cfset inquiryTextMissing=true>
 	<cfscript>
-	structappend(form, application.zcore.functions.zNewRecord(request.zos.zcoreDatasource, "inquiries"));
+	structappend(form, application.zcore.functions.zNewRecord(request.zos.zcoreDatasource, "inquiries"), false);
 	application.zcore.functions.zStatusHandler(request.zsid, true);
 	for(i in url){
 		if(left(i,10) EQ "inquiries_"){
