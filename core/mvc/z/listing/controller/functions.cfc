@@ -867,7 +867,7 @@ structappend(arguments.ss,ts,false);
 			application.zcore.functions.zUpdate(ts);
 		}else{
 			listing_x_site_id=application.zcore.functions.zInsert(ts);
-			if(listing_x_site_id EQ false){
+			if(listing_x_site_id NEQ false){
 				db.sql="select * from #db.table("listing_x_site", request.zos.zcoreDatasource)# 
 				WHERE listing_id = #db.param(arguments.idx.listing_id)# and 
 				site_id = #db.param(request.zos.globals.id)#";
