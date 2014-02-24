@@ -193,7 +193,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	</cfscript>
 </cffunction>
 
-<cffunction name="processSearchArray" access="private" output="no" returntype="boolean" localmode="modern">
+<cffunction name="processSearchArray" access="private" output="yes" returntype="boolean" localmode="modern">
 	<cfargument name="arrSearch" type="array" required="yes">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="site_option_group_id" type="string" required="yes">
@@ -204,19 +204,14 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	if(length EQ 0){
 		return true;
 	}
-	/*if(not structkeyexists(request.zos, 'siteOptionSearchSubGroupCache')){
-		request.zos.siteOptionSearchSubGroupCache={};
-	}*/
-	//application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);writedump(arguments.arrSearch);abort;
 	debugOn=false;
-	/*if(arguments.row.title CONTAINS "3 wishes"){
-		application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);
-		debugOn=true;
-	}*/
 	for(i=1;i LTE length;i++){
 		c=arguments.arrSearch[i]; 
 		if(debugOn){ echo('<hr>');	writedump(c);	}
 		if(isArray(c)){
+			if(debugOn){
+				echo("before processSearchArray<br>");
+			}
 			lastMatch=this.processSearchArray(c, row, arguments.site_option_group_id); 
 			if(debugOn){
 				echo("processSearchArray lastMatch:"&lastMatch&"<br>");
@@ -225,6 +220,9 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 			if(i NEQ 1 and not isSimpleValue(arguments.arrSearch[i])){
 				if(not lastMatch){
 					// the entire group must be valid or we return false.
+					if(debugOn){
+						echo("continue prevented struct matching from running<br>");
+					}
 					continue;
 				}
 			}
@@ -283,23 +281,39 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 					delimiter='';
 				}
 				
+				if(debugOn){
+					echo("before processSearchGroup:<br />");
+				}
 				lastMatch=this.processSearchGroup(c, row, multipleValues, delimiter); 
 				if(debugOn){
 					echo("processSearchGroup lastMatch:"&lastMatch&"<br>");
 				}
 			}
 		}else if(c EQ "OR"){
+			if(debugOn){
+				echo("OR<br />");
+			}
 			if(i EQ 1 or i EQ length){
 				throw("""OR"" must be between an array or struct, not at the beginning or end or the array.");
 			}
 			if(lastMatch){
+				if(debugOn){
+					echo("returning in OR<br />");
+				}
 				return true;
 			}
+			lastMatch=true;
 		}else if(c EQ "AND"){
+			if(debugOn){
+				echo("AND<br />");
+			}
 			if(i EQ 1 or i EQ length){
 				throw("""AND"" must be between an array or struct, not at the beginning or end or the array.");
 			}
 			if(not lastMatch){
+				if(debugOn){
+					echo("returning in AND<br />");
+				}
 				return false;
 			}
 		}else{
@@ -309,10 +323,10 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 			throw("Invalid data type.  Dump of object:"&c);
 		}
 	}
-				if(debugOn){
-					echo('final lastMatch:'&lastMatch);
-					abort;
-				}
+	if(debugOn){
+		echo('final lastMatch:'&lastMatch&'<hr />');
+		//abort;
+	}
 	return lastMatch;
 	</cfscript>
 </cffunction>
@@ -347,8 +361,6 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				}
 			}
 		}
-		/*if(arguments.row.__setID EQ 751){	writedump(arguments);	writedump(match);abort;
-		}*/
 	}else if(type EQ "<>"){
 		for(g=1;g LTE length;g++){
 			for(n=1;n LTE rowLength;n++){
@@ -445,7 +457,34 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	return match;
 	</cfscript>
 </cffunction>
-			
+
+
+<!--- 
+used to do search for a list of values
+ --->
+<cffunction name="getSearchListAsArray" localmode="modern" access="public">
+	<cfargument name="fieldName" type="string" required="true">
+	<cfargument name="valueList" type="string" required="true">
+	<cfargument name="compareOperator" type="string" required="true" hint="Valid values are =, !=, <, <=, >, >=, LIKE, NOT LIKE">
+	<cfargument name="groupOperator" type="string" required="true" hint="Valid values are AND or OR">
+	<cfscript>
+	arrValue=listToArray(arguments.valueList, ',', false);
+	count=arrayLen(arrValue);
+	arrSearch=[];
+	for(i=1;i LTE count;i++){
+		t9={
+			type=arguments.compareOperator,
+			field: arguments.fieldName,
+			arrValue:[arrValue[i]]	
+		}
+		arrayAppend(arrSearch, t9);
+		if(i NEQ count){
+			arrayAppend(arrSearch, arguments.groupOperator);
+		}
+	}
+	return arrSearch;
+	</cfscript>
+</cffunction>
  
 <!--- 
 // nested in-memory search is WORKING for all types.
@@ -487,9 +526,13 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
 	<cfargument name="offset" type="string" required="no" default="0">
 	<cfargument name="limit" type="string" required="no" default="10">
+	<cfargument name="orderBy" type="string" required="no" default="">
+	<cfargument name="orderByDataType" type="string" required="no" default="">
+	<cfargument name="orderByDirection" type="string" required="no" default="">
+	<cfargument name="getCount" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
-	rs={arrResult:[], hasMoreRecords:false};
+	rs={count:0, arrResult:[], hasMoreRecords:false};
 	arguments.offset=application.zcore.functions.zso(arguments, 'offset', true, 0);
 	arguments.limit=application.zcore.functions.zso(arguments, 'limit', true, 10); 
 	var t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
@@ -499,31 +542,71 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 		var groupStruct=t9.siteOptionGroupLookup[siteOptionGroupId];
 		if(groupStruct.site_option_group_enable_cache EQ 1){
 			arrGroup=application.zcore.functions.zSiteOptionGroupStruct(arguments.groupName);
-			
+			if(arguments.orderBy NEQ ""){
+				if(arguments.orderByDataType EQ ""){
+					arguments.orderByDataType="text";
+				}
+				if(arguments.orderByDataType NEQ "text" and arguments.orderByDataType NEQ "numeric"){
+					throw("Invalid value for arguments.orderByDataType, ""#arguments.orderByDataType#"".");
+				}
+				if(arguments.orderByDirection EQ ""){
+					arguments.orderByDirection="asc";
+				}
+				if(arguments.orderByDirection NEQ "asc" and arguments.orderByDirection NEQ "desc"){
+					throw("Invalid value for arguments.orderByDirection, ""#arguments.orderByDirection#"".");
+				}
+				tempStruct={};
+				for(i=1;i LTE arrayLen(arrGroup);i++){
+					tempStruct[i]=arrGroup[i];
+				}
+				arrTempKey=structsort(tempStruct, arguments.orderByDataType, arguments.orderByDirection, arguments.orderBy);
+				arrGroup2=[];
+				for(i=1;i LTE arrayLen(arrTempKey);i++){
+					arrayAppend(arrGroup2, tempStruct[arrTempKey[i]]);
+				}
+				arrGroup=arrGroup2;
+			}
 			//writedump(arraylen(arrGroup));
 			// return rows in an array.
+			//writedump(arguments.arrSearch);
+			stopStoring=false;
+			rs.count=0;
 			for(i=1;i LTE arrayLen(arrGroup);i++){
 				row=arrGroup[i];
 				match=variables.processSearchArray(arguments.arrSearch, row, groupStruct.site_option_group_id);
 				if(match){
-					if(currentOffset LT arguments.offset){
-						//echo('skip<br>');
-						currentOffset++;
-						continue;
-					}else{
-						//echo('match and store: #arrGroup[i].title#<br />');
-						// to avoid having to generate a total count, we just see if there is 1 more matching record.
-						if(arguments.limit+1 EQ arrayLen(rs.arrResult)){
-							rs.hasMoreRecords=true;
-							break;
+					rs.count++;
+					if(not stopStoring){
+						if(currentOffset LT arguments.offset){
+							//echo('skip<br>');
+							currentOffset++;
+							continue;
+						}else{
+							//echo('match and store: #arrGroup[i].title#<br />');
+							// to avoid having to generate a total count, we just see if there is 1 more matching record.
+							if(arguments.getCount){
+								arrayAppend(rs.arrResult, arrGroup[i]);
+								if(arguments.limit EQ arrayLen(rs.arrResult)){
+									stopStoring=true;
+								}
+							}else{
+								if(arguments.limit+1 EQ arrayLen(rs.arrResult)){
+									rs.hasMoreRecords=true;
+									break;
+								}
+								arrayAppend(rs.arrResult, arrGroup[i]);
+							}
 						}
-						arrayAppend(rs.arrResult, arrGroup[i]);
 					}
+				//}else{
+				//	echo('not match: #arrGroup[i].title#<br />');
 				}
 			}
 			//abort;
 		}else{
 			fieldStruct={};
+			// TODO: add support for query based order by statement.
+
 			sql=variables.processSearchArraySQL(arguments.arrSearch, fieldStruct, 1, groupStruct.site_option_group_id);
 			/*if(sql EQ ""){
 				return rs;
