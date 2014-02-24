@@ -1,0 +1,1 @@
+select * from `db`.`:ztablesql:user` where id=? and site_id IN (:ztrustedsql:'1','2','3':ztrustedsql:)

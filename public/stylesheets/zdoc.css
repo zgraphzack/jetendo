@@ -40,7 +40,7 @@ border-bottom: 1px dotted #999;}
 .zdoc-warning{ width:auto; border:2px solid #CCC; border-left:10px solid #d62121; border-top:5px solid #f62121; border-bottom:none; background-color:#F9F9F9; padding:10px; margin-bottom:15px; border-radius:10px;}
 .zdoc-warning h3{ font-weight:700; border:none !important; padding:0px !important; color:#d62121; }
 .zdoc-container pre{ width:98%; overflow:auto; margin-top:2px;  padding:1% !important; margin-bottom:20px !important; border:1px solid #CCC !important; background-color:#F9F9F9 !important; font-family:monospace !important;  }
-.zdoc-container .prettyprint{border-radius:5px;background-color:#000 !important; color:#CCC; overflow:auto; line-height: 140%;font-size: 78%; }
+.zdoc-container .prettyprint{border-radius:5px;background-color:#000 !important; color:#CCC; overflow:auto; line-height: 140%;font-size: 14px; }
 .zdoc-container a:link, .zdoc-container a:visited{ }
 .zdoc-table{width:100%;   border-spacing:0px; margin-bottom:15px; }
 .zdoc-table tr:last-child td:first-child {

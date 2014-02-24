@@ -1,0 +1,3 @@
+rewrite ^(.*\.php)$ $1 last;
+rewrite ^(/wp/wp-(admin|includes|content)/)$ $1index.php last;
+rewrite ^(.*/)$ /wp/index.php?q=$1 last;

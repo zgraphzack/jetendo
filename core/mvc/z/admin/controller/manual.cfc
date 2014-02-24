@@ -372,6 +372,20 @@ zdoc css style documentation
 		arrayAppend(arrS, { id:"___8.4.5", url:"/server-manager-deploy-core.html", title:"Deploy Core"});
 		arrayAppend(arrS, { id:"___8.4.6", url:"/server-manager-deploy-sourceless-archive.html", title:"Deploy Sourceless Archive"});
 	}
+	if(showAll or application.zcore.user.checkServerAccess()){
+		arrayAppend(arrS, { id:"_9", url:"/jetendeo-cms-developer-documentation.html", title:"Jetendo CMS Developer Documentation"});
+		arrayAppend(arrS, { id:"__9.1", url:"/intro.html", title:"Introduction"});
+		arrayAppend(arrS, { id:"___9.1.1", url:"/documentation-template.html", title:"Jetendo CMS Documentation Template"});
+		arrayAppend(arrS, { id:"__9.2", url:"/standalone-projects.html", title:"Standalone Projects"});
+		arrayAppend(arrS, { id:"___9.2.1", url:"/db-dot-cfc.html db-dot-cfc", title:"Documentation"});
+		arrayAppend(arrS, { id:"___9.2.2", url:"/cssSpriteMap-dot-cfc.html", title:"cssSpriteMap-dot-cfc Documentation"});
+		arrayAppend(arrS, { id:"___9.2.3", url:"/status-dot-cfc.html", title:"status-dot-cfc Documentation"});
+		arrayAppend(arrS, { id:"___9.2.4", url:"/jquery-parallax-slider.html", title:"jQuery Parallax Slider Documentation"});
+		arrayAppend(arrS, { id:"____9.2.4.1", url:"/jquery-parallax-slider-examples.html", title:"jQuery Parallax Slider Examples", target:"_blank"});
+		arrayAppend(arrS, { id:"__9.3", url:"/integration.html", title:"Integration"});
+		arrayAppend(arrS, { id:"___9.3.1", url:"/wordpress-integration.html", title:"Wordpress Integration with SSI and Proxy"});
+		arrayAppend(arrS, { id:"__9.4", url:"/security.html", title:"Security"});
+	}
 	/*
 	db=request.zos.queryObject;
 	db.sql="SELECT site_option_group.* 
@@ -487,10 +501,10 @@ zdoc css style documentation
 	}
 	tempIdFS=replace(arguments.id,".","-","all");
 	dirFS=replace(dir,".","-","all");
-	
-	request.examplePath=request.zos.globals.homedir&"manual-files/"&dirFS&"/"&tempIdFS&"/examples/";
-	if(fileexists(request.zos.globals.homedir&"manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc")){
-		temppath=request.zRootCFCPath&"manual-files."&dirFS&"."&tempIdFS&"."&tempIdFS;
+	request.examplePath=request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/examples/";
+	//echo(request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc");
+	if(fileexists(request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc")){
+		temppath="zcorerootmapping.manual-files."&dirFS&"."&tempIdFS&"."&tempIdFS;
 		savecontent variable="rs.html"{
 			tempCom=createobject("component", tempPath);
 			request.manual=this;
