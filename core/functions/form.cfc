@@ -877,7 +877,6 @@ ts.queryParseLabelVars = false; // set to true if you want to have a custom form
 ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
 ts.queryParseStatusVars = false;
 ts.queryValueField = "table_value";
-ts.queryStatusField = "table_status";
 // options for list data
 ts.listLabels = "value1|value2|value3";
 ts.listValues = "1|2|3";
@@ -1007,7 +1006,22 @@ writeoutput(application.zcore.functions.zInput_Checkbox(ts));
 		}
 	}
 	</cfscript>
-    <input <cfif structkeyexists(arguments.ss,'listStatus')> onmouseover="window.status='#arrS[i]#';" onmouseout="window.status='';" title="#arrS[i]#" </cfif> type="<cfif arguments.ss.radio>radio<cfelse>checkbox</cfif>" name="#arguments.ss.name#_name" id="#arguments.ss.name#_name#i#" value="#htmleditformat(arrV[i])#"  style="border:none;background:none;<cfif arguments.ss.style NEQ ''>#arguments.ss.style#</cfif> " <cfif arguments.ss.className NEQ ''>class="#arguments.ss.className#"</cfif> <cfif arguments.ss.onclick NEQ ""> onclick="#arguments.ss.onclick#" </cfif> <cfif curChecked><cfset arrayappend(arrLOut, curL)>checked="checked"</cfif> /> <label style="cursor:pointer;" for="#arguments.ss.name#_name#i#" id="#arguments.ss.name#_namelabel#i#">#htmleditformat(curL)#</label>#arguments.ss.separator#
+    <input 
+    type="<cfif arguments.ss.radio>radio<cfelse>checkbox</cfif>" name="#arguments.ss.name#_name" id="#arguments.ss.name#_name#i#" 
+    value="#htmleditformat(arrV[i])#"  style="border:none;background:none;<cfif arguments.ss.style NEQ ''>#arguments.ss.style#</cfif> " 
+    <cfif arguments.ss.className NEQ ''>class="#arguments.ss.className#"</cfif> 
+    <!--- <cfif arguments.ss.onclick NEQ ""> onclick="#arguments.ss.onclick#" </cfif>  --->
+    <cfif curChecked><cfset arrayappend(arrLOut, curL)>checked="checked"</cfif> /> 
+    	<label style="cursor:pointer;" for="#arguments.ss.name#_name#i#" id="#arguments.ss.name#_namelabel#i#">#htmleditformat(curL)#</label>
+    	#arguments.ss.separator#
+    	<cfif arguments.ss.onclick NEQ "">
+	    	<script type="text/javascript">
+	    	zArrDeferredFunctions.push(function(){
+	    		$("###arguments.ss.name#_name#i#").bind("click", function(){ 
+		    		#arguments.ss.onclick# });
+	    	});
+	    	</script>
+		</cfif>
     </cfloop>
     </cfif>
     
@@ -1015,13 +1029,6 @@ writeoutput(application.zcore.functions.zInput_Checkbox(ts));
 	<cfif structkeyexists(arguments.ss,'query') and structkeyexists(arguments.ss,'queryLabelField')>
 		<cfloop query="arguments.ss.query">
 			<cfscript>
-            if(structkeyexists(arguments.ss,'queryStatusField')){
-                if(arguments.ss.queryParseStatusVars){
-                    curSt=application.zcore.functions.zParseVariables(arguments.ss.queryStatusField, false, arguments.ss.query);
-                }else{
-                    curSt=arguments.ss.query[arguments.ss.queryStatusField];
-                }
-            }
             if(structkeyexists(arguments.ss,'queryValueField')){
                 if(arguments.ss.queryParseValueVars){
                     curV=application.zcore.functions.zParseVariables(arguments.ss.queryValueField, false, arguments.ss.query);
@@ -1042,9 +1049,24 @@ writeoutput(application.zcore.functions.zInput_Checkbox(ts));
 				arrayappend(arrSelected, curV);
 			}
             </cfscript>
-    <input <cfif structkeyexists(arguments.ss,'queryStatusField')> onmouseover="window.status= '#curSt#';" onmouseout="window.status='';" title="#curSt#" </cfif> 
-    type="<cfif arguments.ss.radio>radio<cfelse>checkbox</cfif>" name="#arguments.ss.name#_name" id="#arguments.ss.name#_name#arguments.ss.query.currentrow+arrayLen(arrV)#" value="#curV#"  
-    style="border:none;background:none;height:15px;<cfif arguments.ss.style NEQ ''>#arguments.ss.style#</cfif> " <cfif arguments.ss.className NEQ ''>class="#arguments.ss.className#"</cfif> <cfif arguments.ss.onclick NEQ ""> onclick="#arguments.ss.onclick#" </cfif> <cfif curChecked><cfset arrayappend(arrLOut, curL)>checked="checked"</cfif> /> <label style="cursor:pointer;" for="#arguments.ss.name#_name#arguments.ss.query.currentrow+arrayLen(arrV)#" id="#arguments.ss.name#_namelabel#arguments.ss.query.currentrow+arrayLen(arrV)#">#htmleditformat(curL)#</label>#arguments.ss.separator#
+		    <input 
+		    type="<cfif arguments.ss.radio>radio<cfelse>checkbox</cfif>" name="#arguments.ss.name#_name" 
+		    id="#arguments.ss.name#_name#arguments.ss.query.currentrow+arrayLen(arrV)#" value="#curV#"  
+		    style="border:none;background:none;height:15px;<cfif arguments.ss.style NEQ ''>#arguments.ss.style#</cfif> " 
+		    <cfif arguments.ss.className NEQ ''>class="#arguments.ss.className#"</cfif> 
+		    <!--- <cfif arguments.ss.onclick NEQ ""> onclick="#arguments.ss.onclick#" </cfif>  --->
+		    <cfif curChecked><cfset arrayappend(arrLOut, curL)>checked="checked"</cfif> /> 
+		    <label style="cursor:pointer;" for="#arguments.ss.name#_name#arguments.ss.query.currentrow+arrayLen(arrV)#" 
+		    id="#arguments.ss.name#_namelabel#arguments.ss.query.currentrow+arrayLen(arrV)#">#htmleditformat(curL)#</label>
+		    #arguments.ss.separator#
+	    	<cfif arguments.ss.onclick NEQ "">
+		    	<script type="text/javascript">
+		    	zArrDeferredFunctions.push(function(){
+		    		$("###arguments.ss.name#_name#arguments.ss.query.currentrow+arrayLen(arrV)#").bind("click", function(){ 
+		    			#arguments.ss.onclick# });
+		    	});
+		    	</script>
+			</cfif>
 		</cfloop>
         </cfif>
     <input type="hidden" name="#arguments.ss.name#" id="#arguments.ss.name#" onchange="#arguments.ss.onchange#" value="#htmleditformat(arraytolist(arrSelected, ','))#" />
