@@ -86,7 +86,7 @@ this.app_id=10;
 		// recent xml feed link
 		local.t2=StructNew();
 		local.t2.groupName="Blog";
-		if(application.zcore.functions.zo('application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url') NEQ ''){
+		if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url') NEQ ''){
 			local.t2.url=application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url;
 		}else if(ts.optionStruct.blog_config_recent_url NEQ "{default}"){
 			local.t2.url=request.zos.currentHostName&ts.optionStruct.blog_config_recent_url;
@@ -1103,7 +1103,7 @@ this.app_id=10;
 	}
 	
 	if(form[request.zos.urlRoutingParameter] EQ "/"){
-		if(application.zcore.functions.zo('application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url') NEQ ''){
+		if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url') NEQ ''){
 			local.curLink=application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url;
 		}else if(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_url EQ '{default}'){
 			local.curLink=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name,'-')#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-0.xml";
@@ -1596,7 +1596,7 @@ this.app_id=10;
 	}
 	</cfscript>
 	<span style="font-size:100%; font-weight:700; clear:both; ">Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
-	<cfset local.curFeedLink=application.zcore.functions.zo('application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url')> 
+	<cfset local.curFeedLink=application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url')> 
 	<cfif qArticle.user_googleplus_url NEQ "" or qArticle.user_twitter_url NEQ "" or qArticle.user_facebook_url NEQ "">
 		&nbsp; Follow me: 
 	</cfif>
@@ -2712,7 +2712,7 @@ this.app_id=10;
 			<div class="rss-menu-rss">
 			<h3>RSS Subscription</h3>
 			<cfscript>
-			if(application.zcore.functions.zo('application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url') NEQ ''){
+			if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url') NEQ ''){
 				xmlLink=application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url;
 			}else if(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_url EQ '{default}'){
 				xmlLink= request.zOS.currentHostName&'/#application.zcore.functions.zURLEncode(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name,'-')#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-0.xml';
@@ -2943,13 +2943,8 @@ this.app_id=10;
 
 	We offer the following RSS 2.0 XML feeds for our blog.  Get the  latest #application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name# from #request.zos.globals.shortdomain# syndicated with My Yahoo&reg;, Mozilla Firefox or other RSS readers<!--- <a href="http://my.yahoo.com">My Yahoo&reg;</a> or <a href="http://www.mozilla.org/products/firefox/">Mozilla Firefox</a> --->.<br /><br />
 	
-	<!--- <div style="padding-bottom:15px; width:250px; float:left; font-size:11px; font-weight:bold;">RSS XML Feed</div>
-	<div style="padding-bottom:15px; width:120px; float:left; font-size:11px; font-weight:bold;">Add to My Yahoo</div>
-	<div style="padding-bottom:15px; width:85px; float:left; font-size:11px; font-weight:bold;">Add to My MSN</div>
-	<br style="clear:both;" /> --->
-	
 	<cfscript>
-	if(application.zcore.functions.zo('application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url') NEQ ''){
+	if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url') NEQ ''){
 		xmlLink=application.zcore.app.getAppData("blog").optionStruct.blog_config_feedburner_url;
 	}else if(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_url EQ '{default}'){
 		xmlLink= request.zOS.currentHostName&'/#application.zcore.functions.zURLEncode(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name,'-')#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-0.xml';
@@ -2958,18 +2953,6 @@ this.app_id=10;
 	}
 	htmlLink= request.zOS.currentHostName&'/';
 	</cfscript>
-	<!--- 
-	#asc("")#
-	<cfscript>
-	s='ng  not';
-	s=rereplace(s, "[^\w\ \.@-]","", "ALL");
-	writeoutput(s);
-	application.zcore.functions.zabort();
-	for(i=1;i LTE len(s);i++){
-	writeoutput(asc(mid(s,i,1))&'-'&mid(s,i,1)&'<br />');
-	}
-	application.zcore.functions.zabort();
-	</cfscript> --->
     
 	<div style="padding-bottom:10px; width:240px; float:left; "><a class="#application.zcore.functions.zGetLinkClasses()#" href="#xmlLink#" target="_blank" style="text-decoration:none; "><img src="/z/a/blog/images/rss-xml.gif" alt="RSS: #htmleditformat(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name)#"  style="padding-right:10px; padding-bottom:2px; border:none;  text-align:middle; " />#application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name#</a></div>
 	
