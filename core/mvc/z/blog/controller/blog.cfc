@@ -2464,7 +2464,7 @@ this.app_id=10;
 	<description>Get the latest #application.zcore.functions.zXmlFormat(q_blog_feed.blog_category_name)# from #request.zos.globals.shortdomain#</description>
 	<language>en-us</language>
 	<copyright>#year(now())#</copyright>
-	<lastBuildDate>#dateformat(now(), "ddd, dd mmm yyyy")# #timeformat(now(), "HH:mm:ss")# EST</lastBuildDate>
+	<lastBuildDate>#gethttptimestring()#</lastBuildDate>
 	<cfloop from="1" to="#q_blog_feed.recordcount#" index="count">
 		<cfif q_blog_feed.blog_id[count] NEQ ''>
 			<cfscript>	
@@ -2516,7 +2516,7 @@ this.app_id=10;
 				//tempText = application.zcore.functions.zXMLFormat(tempText);
 				</cfscript><!--- 
 				<description>#tempText#</description> --->
-				<description><![CDATA[ <p><img src="#local.image#" /></p> #tempText# ]]></description>
+				<description><![CDATA[ <cfif local.image NEQ ""><p><img src="#local.image#" /></p></cfif> #tempText# ]]></description>
 				<pubDate>#date# #time#</pubDate>
 				<author><cfif user_username EQ "">#application.zcore.functions.zvarso("zofficeemail")#<cfelse>#user_username#</cfif><cfif blog_author NEQ ""> (#blog_author#)<cfelse> (Site Admin)</cfif></author>
 				<comments>#tempLink###comments</comments>
@@ -2527,6 +2527,10 @@ this.app_id=10;
 	</channel>
 	</rss>
 	</cfsavecontent>
+	<cfscript>
+	blog_feed=replace(blog_feed, ' href="/', ' href="#request.zos.currentHostName#/', 'all');
+	blog_feed=replace(blog_feed, ' src="/', ' src="#request.zos.currentHostName#/', 'all');
+	</cfscript>
 	<!--- <cfcontent type="text/xml"> --->
 	<cfcontent type="text/xml; utf-8">
 	#blog_feed#
@@ -2607,7 +2611,7 @@ this.app_id=10;
 	<description>This feed contains recent stories from #request.zOS.currentHostName#.</description>
 	<language>en-us</language>
 	<copyright>#year(now())#</copyright>
-	<lastBuildDate>#dateformat(now(), "ddd, dd mmm yyyy")# #timeformat(now(), "HH:mm:ss")# EST</lastBuildDate><cfloop from="1" to="#q_blog_feed.recordcount#" index="count"><cfscript>
+	<lastBuildDate>#gethttptimestring()#</lastBuildDate><cfloop from="1" to="#q_blog_feed.recordcount#" index="count"><cfscript>
 	blog_title = application.zcore.functions.zXMLFormat(q_blog_feed.blog_title[count]);
 	blog_author = application.zcore.functions.zXMLFormat(q_blog_feed.user_first_name[count]&" "&q_blog_feed.user_last_name[count]);
 	blog_summary = q_blog_feed.blog_summary[count];
@@ -2654,12 +2658,16 @@ this.app_id=10;
 	}
 	//tempText = application.zcore.functions.zXMLFormat(tempText);
 	</cfscript>
-	<description><![CDATA[ <p><img src="#local.image#" /></p> #tempText# ]]></description>
+	<description><![CDATA[ <cfif local.image NEQ ""><p><img src="#local.image#" /></p></cfif> #tempText# ]]></description>
 	<pubDate>#date# #time#</pubDate>
 	<author><cfif user_username EQ "">#application.zcore.functions.zvarso("zofficeemail")#<cfelse>#user_username#</cfif><cfif blog_author NEQ ""> (#blog_author#)<cfelse> (Site Admin)</cfif></author>
 	<comments>#tempLink###comments</comments>
 	<guid isPermaLink="false">#q_blog_feed.blog_guid[count]#</guid>
-	</item></cfloop></channel></rss></cfsavecontent><cfcontent type="text/xml; utf-8">#blog_feed#<cfscript>application.zcore.functions.zabort();</cfscript>
+	</item></cfloop></channel></rss></cfsavecontent><cfcontent type="text/xml; utf-8">
+	<cfscript>
+	blog_feed=replace(blog_feed, ' href="/', ' href="#request.zos.currentHostName#/', 'all');
+	blog_feed=replace(blog_feed, ' src="/', ' src="#request.zos.currentHostName#/', 'all');
+	</cfscript>#blog_feed#<cfscript>application.zcore.functions.zabort();</cfscript>
 </cffunction>
 
 
