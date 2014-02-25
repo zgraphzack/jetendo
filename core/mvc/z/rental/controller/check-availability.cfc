@@ -18,10 +18,10 @@ zArrDeferredFunctions.push(function(){
 });
 </script>
 
-<cfif application.zcore.functions.zo('rental_id') NEQ "">
+<cfif application.zcore.functions.zso(form, 'rental_id') NEQ "">
 <cfsavecontent variable="db.sql">
 SELECT * FROM rental 
-WHERE rental_id = #db.param(application.zcore.functions.zo('rental_id'))# and 
+WHERE rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
 rental_active=#db.param(1)#
 </cfsavecontent><cfscript>qrental=db.execute("qrental");
 calendarInclude=true;
@@ -156,7 +156,7 @@ function getCalendar(val){
 		<cfsavecontent variable="db.sql">
 			SELECT left(availability_date,#db.param(10)#) as availability_date
 			FROM availability 
-			WHERE availability.rental_id = #db.param(application.zcore.functions.zo('rental_id'))# and 
+			WHERE availability.rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
 			availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
 			availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')# 
 		</cfsavecontent><cfscript>qAvailList=db.execute("qAvailList");</cfscript>

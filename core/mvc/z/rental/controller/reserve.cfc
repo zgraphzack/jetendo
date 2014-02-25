@@ -82,7 +82,7 @@ application.zcore.status.setStatus(request.zsid, 'At least 1 adult is required t
 //add fields to inquiry table. 
 inquiries_reservation='1';
 inquiries_reservation_status=0; // (unauthorized) | 1 (authorized) | 2 (cancelled)
-inquiries_company=application.zcore.functions.zo('inquiries_company');
+inquiries_company=application.zcore.functions.zso(form, 'inquiries_company');
 inquiries_c_card4digit=right(c_cardnumber,4);
 inquiries_c_name=c_name;
 inquiries_c_address=c_address;
@@ -93,33 +93,33 @@ inquiries_c_state=c_state;
 inquiries_c_zip=c_zip;
 
 		
-C_ADDRESS=application.zcore.functions.zo('c_address');
-C_ADDRESS2=application.zcore.functions.zo('c_address2');
-C_CARDNUMBER=application.zcore.functions.zo('C_CARDNUMBER');
-C_CITY=application.zcore.functions.zo('C_CITY');
-C_COUNTRY=application.zcore.functions.zo('C_COUNTRY');
-C_CVV=application.zcore.functions.zo('C_CVV');
-C_NAME=application.zcore.functions.zo('C_NAME');
-C_STATE=application.zcore.functions.zo('C_STATE');
-C_ZIP=application.zcore.functions.zo('C_ZIP');
-/*INQUIRIES_ADULTS=application.zcore.functions.zo('INQUIRIES_ADULTS');
-INQUIRIES_CHILDREN=application.zcore.functions.zo('INQUIRIES_CHILDREN');
-INQUIRIES_CHILDREN_AGE=application.zcore.functions.zo('INQUIRIES_CHILDREN_AGE');*/
-INQUIRIES_COMMENTS=application.zcore.functions.zo('INQUIRIES_COMMENTS');
-INQUIRIES_EMAIL=application.zcore.functions.zo('INQUIRIES_EMAIL');
-INQUIRIES_FIRST_NAME=application.zcore.functions.zo('INQUIRIES_FIRST_NAME');
-INQUIRIES_LAST_NAME=application.zcore.functions.zo('INQUIRIES_LAST_NAME');
-INQUIRIES_PHONE1=application.zcore.functions.zo('INQUIRIES_PHONE1');
-INQUIRIES_RESERVATION=application.zcore.functions.zo('INQUIRIES_RESERVATION');
-inquiries_start_date=application.zcore.functions.zo('inquiries_start_date');
-inquiries_end_date=application.zcore.functions.zo('inquiries_end_date');
-INQUIRIES_TYPE_ID=application.zcore.functions.zo('INQUIRIES_TYPE_ID');
+C_ADDRESS=application.zcore.functions.zso(form, 'c_address');
+C_ADDRESS2=application.zcore.functions.zso(form, 'c_address2');
+C_CARDNUMBER=application.zcore.functions.zso(form, 'C_CARDNUMBER');
+C_CITY=application.zcore.functions.zso(form, 'C_CITY');
+C_COUNTRY=application.zcore.functions.zso(form, 'C_COUNTRY');
+C_CVV=application.zcore.functions.zso(form, 'C_CVV');
+C_NAME=application.zcore.functions.zso(form, 'C_NAME');
+C_STATE=application.zcore.functions.zso(form, 'C_STATE');
+C_ZIP=application.zcore.functions.zso(form, 'C_ZIP');
+/*INQUIRIES_ADULTS=application.zcore.functions.zso(form, 'INQUIRIES_ADULTS');
+INQUIRIES_CHILDREN=application.zcore.functions.zso(form, 'INQUIRIES_CHILDREN');
+INQUIRIES_CHILDREN_AGE=application.zcore.functions.zso(form, 'INQUIRIES_CHILDREN_AGE');*/
+INQUIRIES_COMMENTS=application.zcore.functions.zso(form, 'INQUIRIES_COMMENTS');
+INQUIRIES_EMAIL=application.zcore.functions.zso(form, 'INQUIRIES_EMAIL');
+INQUIRIES_FIRST_NAME=application.zcore.functions.zso(form, 'INQUIRIES_FIRST_NAME');
+INQUIRIES_LAST_NAME=application.zcore.functions.zso(form, 'INQUIRIES_LAST_NAME');
+INQUIRIES_PHONE1=application.zcore.functions.zso(form, 'INQUIRIES_PHONE1');
+INQUIRIES_RESERVATION=application.zcore.functions.zso(form, 'INQUIRIES_RESERVATION');
+inquiries_start_date=application.zcore.functions.zso(form, 'inquiries_start_date');
+inquiries_end_date=application.zcore.functions.zso(form, 'inquiries_end_date');
+INQUIRIES_TYPE_ID=application.zcore.functions.zso(form, 'INQUIRIES_TYPE_ID');
 if(rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 49 or rental_id EQ 52){
-	inquiries_pets=zo('inquiries_pets',true);
-	inquiries_pet_total_fee=zo('inquiries_pet_total_fee');
+	inquiries_pets=zso(form, 'inquiries_pets',true);
+	inquiries_pet_total_fee=zso(form, 'inquiries_pet_total_fee');
 }
 cardexpmonth=application.zcore.functions.zso(form, 'month');
-rental_ID=application.zcore.functions.zo('rental_ID');
+rental_ID=application.zcore.functions.zso(form, 'rental_ID');
 form.rental_id=rental_id;
 cardexpyear=application.zcore.functions.zso(form, 'year');
 
@@ -191,7 +191,7 @@ ts.startDate=inquiries_start_date;
 ts.endDate=inquiries_end_date;
 ts.adults=inquiries_adults;
 ts.children=inquiries_children;
-ts.pets=zo('inquiries_pets',true);
+ts.pets=zso(form, 'inquiries_pets',true);
 ts.couponCode=inquiries_coupon_code;
 rs=application.zcore.app.getAppCFC("rental").rateCalc(ts);
 if(rs.error){
@@ -204,7 +204,7 @@ for(i in rs){
 	structInsert(variables,i,rs[i],true);
 }
 if(rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 49 or rental_id EQ 52){
-	inquiries_pets=zo('inquiries_pets',true);
+	inquiries_pets=zso(form, 'inquiries_pets',true);
 	inquiries_pet_total_fee=rs.inquiries_pet_total_fee;
 }
 ordertype = "SALE"; // also PREAUTH POSTAUTH VOID CREDIT CALCSHIPPING CALCTAX
@@ -303,7 +303,7 @@ if(r_approved EQ 'APPROVED'){
         <!--- Display inquiry form --->
         
         <cfsavecontent variable="db.sql">
-		SELECT * FROM rental WHERE rental_id = #db.param(application.zcore.functions.zo('rental_id'))#
+		SELECT * FROM rental WHERE rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))#
         </cfsavecontent><cfscript>qprop=db.execute("qprop");
 			myForm=StructNew();
 			myForm.inquiries_email.required = true;
@@ -333,7 +333,7 @@ if(r_approved EQ 'APPROVED'){
 		application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#Request.zsid#&action=form");
 	}
 			if(error){
-				application.zcore.functions.zRedirect(request.cgi_script_name&'?rental_id='&application.zcore.functions.zo('rental_id')&'&zsid=#request.zsid#');
+				application.zcore.functions.zRedirect(request.cgi_script_name&'?rental_id='&application.zcore.functions.zso(form, 'rental_id')&'&zsid=#request.zsid#');
 			}
 			if(inquiries_start_date NEQ false){
 				inquiries_start_date=DateFormat(inquiries_start_date,'yyyy-mm-dd');
@@ -390,17 +390,17 @@ inquiries_start_date=DateFormat(inquiries_start_date,'m/d/yyyy');
 inquiries_end_date=DateFormat(inquiries_end_date,'m/d/yyyy');
 </cfscript>
 Cabin Rental:<cfif isDefined('rental_id') and trim(rental_id) NEQ ''>#qprop.rental_name#<cfelse>No rental Selected</cfif>
-Start Date:#application.zcore.functions.zo('inquiries_start_date')#
-End Date:#application.zcore.functions.zo('inquiries_end_date')#
-Name:#inquiries_first_name##application.zcore.functions.zo('inquiries_last_name')#
+Start Date:#application.zcore.functions.zso(form, 'inquiries_start_date')#
+End Date:#application.zcore.functions.zso(form, 'inquiries_end_date')#
+Name:#inquiries_first_name##application.zcore.functions.zso(form, 'inquiries_last_name')#
 company:#inquiries_company#
-Email:#application.zcore.functions.zo('inquiries_email')#
-Phone:#application.zcore.functions.zo('inquiries_phone1')#
-Adults:#application.zcore.functions.zo('inquiries_adults')#
-Children Age 3+:#application.zcore.functions.zo('inquiries_children')#
-Children Under 3:#application.zcore.functions.zo('inquiries_children_age')##chr(10)#
-<cfif zo('inquiries_pets',true) NEQ '0' and (rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 52)>## of Pets:#inquiries_pets##chr(10)#Pet Fees:#dollarformat(rs.inquiries_pet_total_fee)##chr(10)#</cfif>
-Comments:#application.zcore.functions.zo('inquiries_comments')#
+Email:#application.zcore.functions.zso(form, 'inquiries_email')#
+Phone:#application.zcore.functions.zso(form, 'inquiries_phone1')#
+Adults:#application.zcore.functions.zso(form, 'inquiries_adults')#
+Children Age 3+:#application.zcore.functions.zso(form, 'inquiries_children')#
+Children Under 3:#application.zcore.functions.zso(form, 'inquiries_children_age')##chr(10)#
+<cfif zso(form, 'inquiries_pets',true) NEQ '0' and (rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 52)>## of Pets:#inquiries_pets##chr(10)#Pet Fees:#dollarformat(rs.inquiries_pet_total_fee)##chr(10)#</cfif>
+Comments:#application.zcore.functions.zso(form, 'inquiries_comments')#
 Email Opt-in: <cfif isDefined('inquiries_email_opt_in')>Yes</cfif>#chr(10)##chr(10)#
 
 
@@ -531,8 +531,8 @@ SELECT * FROM (inquiries_status, inquiries)
 	  user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))#
       WHERE inquiries.site_id = #db.param(request.zOS.globals.id)#  and 		
 	  inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
-      inquiries_id = #db.param(application.zcore.functions.zo('inquiries_id'))# and 
-inquiries_email = #db.param(application.zcore.functions.zo('inquiries_email'))#
+      inquiries_id = #db.param(application.zcore.functions.zso(form, 'inquiries_id'))# and 
+inquiries_email = #db.param(application.zcore.functions.zso(form, 'inquiries_email'))#
       </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");
 			if(qInquiry.recordcount EQ 0){
 				application.zcore.status.setStatus(request.zsid, 'Invalid request');
@@ -663,7 +663,7 @@ endDateFieldName="inquiries_end_date";
 
 sd2=inquiries_start_date;
 ed2=inquiries_end_date;
-if(application.zcore.functions.zo('sd2') EQ '' or isdate(sd2) EQ false or zo('ed2') EQ '' or isdate(ed2) EQ false){
+if(application.zcore.functions.zso(form, 'sd2') EQ '' or isdate(sd2) EQ false or zso(form, 'ed2') EQ '' or isdate(ed2) EQ false){
 	application.zcore.status.setStatus(request.zsid, 'Please enter a valid date range.');
 	zstatushandler(request.zsid);
 	/	application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(replacenocase(request.zos.cgi.http_referer,'zsid=','z1sid=','ALL'),'zsid=#request.zsid#'));
@@ -717,7 +717,7 @@ if(rental_id EQ 18 or rental_id EQ 42){
 	ted=dateadd("d",1,inquiries_end_date);
 	writeoutput('Please note this cabin must be available one day before and after your stay in order for it to be reserved.<br /><br /><br />');
 }
-if(rental_id EQ 36 and zo('inquiries_adults',true) + zo('inquiries_children',true) GT 6){
+if(rental_id EQ 36 and zso(form, 'inquiries_adults',true) + zso(form, 'inquiries_children',true) GT 6){
 	na=1;
 	ted=dateadd("d",1,inquiries_end_date);
 }
@@ -830,8 +830,8 @@ application.zcore.app.getAppCFC("content").includePageContent(ts);
 	ts.endDate=inquiries_end_date;
 	ts.adults=inquiries_adults;
 	ts.children=inquiries_children;
-	ts.pets=application.zcore.functions.zo('inquiries_pets');
-	ts.couponCode=application.zcore.functions.zo('inquiries_coupon_code');
+	ts.pets=application.zcore.functions.zso(form, 'inquiries_pets');
+	ts.couponCode=application.zcore.functions.zso(form, 'inquiries_coupon_code');
 	rs=application.zcore.app.getAppCFC("rental").rateCalc(ts);
 	if(rs.error){
 		application.zcore.status.setStatus(request.zsid, 'Invalid Date Range');
@@ -840,7 +840,7 @@ application.zcore.app.getAppCFC("content").includePageContent(ts);
 		/	application.zcore.functions.zRedirect(request.cgi_script_name&'?zsid=#request.zsid#');
 	}
 if(rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 49 or rental_id EQ 52){
-	inquiries_pets=zo('inquiries_pets',true);
+	inquiries_pets=zso(form, 'inquiries_pets',true);
 	inquiries_pet_total_fee=rs.inquiries_pet_total_fee;
 }
 	</cfscript>
@@ -893,7 +893,7 @@ if(rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 49 or rental_id EQ 52){
         <td style="width:90px;" >#inquiries_children_age# (under age 3)</td>
       </tr>
 	  </cfif>
-	  <cfif zo('inquiries_pets',true) NEQ '0'>
+	  <cfif zso(form, 'inquiries_pets',true) NEQ '0'>
       <tr>
         <td style="width:120px;">## of pets:</td>
         <td style="width:90px;" >#inquiries_pets#</td>
@@ -992,7 +992,7 @@ application.zcore.functions.zInputSelectBox(selectStruct);
       <input type="hidden" name="inquiries_adults" value= "#inquiries_adults#"> 
 	  <input type="hidden" name="inquiries_children" value= "#inquiries_children#">
       <input type="hidden" name="inquiries_children_age" value= "#inquiries_children_age#">
-      <input type="hidden" name="inquiries_coupon_code" value= "#zo('inquiries_coupon_code')#">
+      <input type="hidden" name="inquiries_coupon_code" value= "#zso(form, 'inquiries_coupon_code')#">
     </cfif>
   <script language="javascript">
 function updateOffset(val,type){
@@ -1026,7 +1026,7 @@ function updateOffset2(){
         <td>Check-Out Date:</td>
         <td><cfscript>	
 		/*	
-		if(application.zcore.functions.zo('inquiries_end_date') EQ ''){
+		if(application.zcore.functions.zso(form, 'inquiries_end_date') EQ ''){
 			inquiries_end_date = application.zcore.functions.zGetDateSelect("inquiries_end_date");
 			if(inquiries_end_date EQ false){
 				inquiries_end_date = dateFormat(dateadd("d",3,now()), "yyyy-mm-dd");
@@ -1042,32 +1042,32 @@ function updateOffset2(){
     </cfif>
     <tr>
       <td style="width:90px;">First Name:</td>
-      <td><input name="inquiries_first_name" type="text" size="30" maxlength="50" value="#application.zcore.functions.zo('inquiries_first_name')#">
+      <td><input name="inquiries_first_name" type="text" size="30" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_first_name')#">
         <span class="highlight">* Required</span></td>
     </tr>
     <tr>
       <td>Last Name:</td>
-      <td><input name="inquiries_last_name" type="text" size="30" maxlength="50" value="#application.zcore.functions.zo('inquiries_last_name')#"></td>
+      <td><input name="inquiries_last_name" type="text" size="30" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_last_name')#"></td>
     </tr>
     <tr>
       <td>Company:</td>
-      <td><input name="inquiries_company" type="text" size="30" maxlength="50" value="#application.zcore.functions.zo('inquiries_company')#"></td>
+      <td><input name="inquiries_company" type="text" size="30" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_company')#"></td>
     </tr>
     <tr>
       <td>Email:</td>
-      <td><input name="inquiries_email" type="text" size="30" maxlength="50" value="#application.zcore.functions.zo('inquiries_email')#">
+      <td><input name="inquiries_email" type="text" size="30" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_email')#">
         <span class="highlight">* Required</span></td>
     </tr>
     <tr>
       <td>Home Phone:</td>
-      <td><input name="inquiries_phone1" type="text" size="30" maxlength="50" value="#application.zcore.functions.zo('inquiries_phone1')#">
+      <td><input name="inquiries_phone1" type="text" size="30" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_phone1')#">
         <span class="highlight">* Required</span></td>
     </tr>
     <tr>
       <td>Work Phone:</td>
-      <td><input name="inquiries_phone2" type="text" size="30" maxlength="50" value="#application.zcore.functions.zo('inquiries_phone2')#">
+      <td><input name="inquiries_phone2" type="text" size="30" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_phone2')#">
         Ext.
-        <input name="inquiries_phone2ext" type="text" size="5" maxlength="50" value="#application.zcore.functions.zo('inquiries_phone2ext')#"></td>
+        <input name="inquiries_phone2ext" type="text" size="5" maxlength="50" value="#application.zcore.functions.zso(form, 'inquiries_phone2ext')#"></td>
     </tr>
     <cfif isDefined('inquiries_adults') eq false>
       <tr>
@@ -1102,12 +1102,12 @@ selectStruct = StructNew();
     </cfif>
     <tr>
       <td style="vertical-align:top; ">Comments:</td>
-      <td><textarea name="inquiries_comments" cols="50" rows="5">#application.zcore.functions.zo('inquiries_comments')#</textarea>
+      <td><textarea name="inquiries_comments" cols="50" rows="5">#application.zcore.functions.zso(form, 'inquiries_comments')#</textarea>
         <input type="hidden" name="inquiries_type_id" value="1"></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
-      <td><input type="checkbox" name="inquiries_email_opt_in" value="1"   <cfif application.zcore.functions.zo('inquiries_email_opt_in') EQ 1>checked="checked"</cfif>>
+      <td><input type="checkbox" name="inquiries_email_opt_in" value="1"   <cfif application.zcore.functions.zso(form, 'inquiries_email_opt_in') EQ 1>checked="checked"</cfif>>
         Yes! Send me periodic news and specials from kaylormtncabins.com.</td>
     </tr>
     <cfif structkeyexists(form, 'reserve')>
@@ -1121,19 +1121,19 @@ selectStruct = StructNew();
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Cardholder Name<span class="highlight">*</span></td>
-            <td><input type="text" name="C_name" value="#zo('C_name')#"></td>
+            <td><input type="text" name="C_name" value="#zso(form, 'C_name')#"></td>
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Billing Address<span class="highlight">*</span></td>
-            <td><input type="text" name="C_address" value="#zo('C_address')#"></td>
+            <td><input type="text" name="C_address" value="#zso(form, 'C_address')#"></td>
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Address 2</td>
-            <td><input type="text" name="C_address2" value="#zo('C_address2')#"></td>
+            <td><input type="text" name="C_address2" value="#zso(form, 'C_address2')#"></td>
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">City<span class="highlight">*</span></td>
-            <td><input type="text" name="C_city" value="#zo('C_city')#"></td>
+            <td><input type="text" name="C_city" value="#zso(form, 'C_city')#"></td>
           </tr>
           <cfsavecontent variable="db.sql">
 			SELECT * FROM state ORDER BY state_state ASC
@@ -1151,7 +1151,7 @@ selectStruct = StructNew();
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Zip<span class="highlight">*</span></td>
-            <td><input type="text" name="C_zip" size="6" value="#zo('C_zip')#"></td>
+            <td><input type="text" name="C_zip" size="6" value="#zso(form, 'C_zip')#"></td>
             <td rowspan="4" style="text-align:left;"><img src="/images/cvv.gif" style="padding-left:5px; padding-right:5px;"><span class="highlight">What is a CVV code?</span><br />
               <br />
               <span class="tiny" style="line-height:normal; ">The CVV code is the last group of 3 or 4 digits found printed on the signature strip on the reverse (amex is on front) side of the card. On some cards, the complete credit card number is shown on the signature strip, followed by the CVV code.</span></td>
@@ -1172,34 +1172,34 @@ selectStruct = StructNew();
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Credit Card Number<span class="highlight">*</span></td>
-            <td><input type="text" name="C_cardnumber" value="#zo('C_cardnumber')#"></td>
+            <td><input type="text" name="C_cardnumber" value="#zso(form, 'C_cardnumber')#"></td>
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Security Code (CVV)<span class="highlight">*</span></td>
-            <td><input type="text" name="C_cvv" value="#zo('C_cvv')#" size="5"></td>
+            <td><input type="text" name="C_cvv" value="#zso(form, 'C_cvv')#" size="5"></td>
           </tr>
           <tr>
             <td class="table-highlight" style="width:120px;">Card Exp. Date<span class="highlight">*</span></td>
             <td style="white-space:nowrap;">Month
               <select size="1" name="Month">
-                <option <cfif zo('Month') EQ "01">selected="selected"</cfif>>01</option>
-                <option <cfif zo('Month') EQ "02">selected="selected"</cfif>>02</option>
-                <option <cfif zo('Month') EQ "03">selected="selected"</cfif>>03</option>
-                <option <cfif zo('Month') EQ "04">selected="selected"</cfif>>04</option>
-                <option <cfif zo('Month') EQ "05">selected="selected"</cfif>>05</option>
-                <option <cfif zo('Month') EQ "06">selected="selected"</cfif>>06</option>
-                <option <cfif zo('Month') EQ "07">selected="selected"</cfif>>07</option>
-                <option <cfif zo('Month') EQ "08">selected="selected"</cfif>>08</option>
-                <option <cfif zo('Month') EQ "09">selected="selected"</cfif>>09</option>
-                <option <cfif zo('Month') EQ "10">selected="selected"</cfif>>10</option>
-                <option <cfif zo('Month') EQ "11">selected="selected"</cfif>>11</option>
-                <option <cfif zo('Month') EQ "12">selected="selected"</cfif>>12</option>
+                <option <cfif zso(form, 'Month') EQ "01">selected="selected"</cfif>>01</option>
+                <option <cfif zso(form, 'Month') EQ "02">selected="selected"</cfif>>02</option>
+                <option <cfif zso(form, 'Month') EQ "03">selected="selected"</cfif>>03</option>
+                <option <cfif zso(form, 'Month') EQ "04">selected="selected"</cfif>>04</option>
+                <option <cfif zso(form, 'Month') EQ "05">selected="selected"</cfif>>05</option>
+                <option <cfif zso(form, 'Month') EQ "06">selected="selected"</cfif>>06</option>
+                <option <cfif zso(form, 'Month') EQ "07">selected="selected"</cfif>>07</option>
+                <option <cfif zso(form, 'Month') EQ "08">selected="selected"</cfif>>08</option>
+                <option <cfif zso(form, 'Month') EQ "09">selected="selected"</cfif>>09</option>
+                <option <cfif zso(form, 'Month') EQ "10">selected="selected"</cfif>>10</option>
+                <option <cfif zso(form, 'Month') EQ "11">selected="selected"</cfif>>11</option>
+                <option <cfif zso(form, 'Month') EQ "12">selected="selected"</cfif>>12</option>
               </select>
               Year
               <select size="1" name="Year">
                 <cfset currentYear = year(now())>
                 <cfloop from="#currentYear#" to="#currentYear+6#" step="1" index="i">
-                  <option value="#right(i,2)#" <cfif zo('Year') EQ i>selected="selected"</cfif>>#i#</option>
+                  <option value="#right(i,2)#" <cfif zso(form, 'Year') EQ i>selected="selected"</cfif>>#i#</option>
                 </cfloop>
               </select></td>
           </tr>
@@ -1212,7 +1212,7 @@ selectStruct = StructNew();
     <script type="text/javascript">
 	<cfif structkeyexists(form, 'secure') and DateCompare(inquiries_end_date,now()) EQ 1>
 	//calculateCost();
-	<cfelseif application.zcore.functions.zo('inquiries_end_date') EQ ''>
+	<cfelseif application.zcore.functions.zso(form, 'inquiries_end_date') EQ ''>
 	updateOffset();
 	</cfif>
 	</script>

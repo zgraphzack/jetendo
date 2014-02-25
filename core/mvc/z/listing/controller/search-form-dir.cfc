@@ -9,12 +9,12 @@ if(structkeyexists(request.zos.userSession.groupAccess, "member") EQ false){
 form.action=application.zcore.functions.zso(form, 'action');
 start48=gettickcount();
  //request.znotemplate=1;
-mls_dir_id=zo('mls_dir_id',true,0);
+mls_dir_id=zso(form, 'mls_dir_id',true,0);
 		//test = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.dir");
 		//test.test();
 		//zAbort();
 redXEnabled=false;
-debugSearchDir=false;//true;//zo('debugSearchDir',false,false);
+debugSearchDir=false;//true;//zso(form, 'debugSearchDir',false,false);
 form.action=application.zcore.functions.zso(form, 'action',false,'form');
 propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 propertyDataCom.enableFiltering=true;
@@ -64,10 +64,10 @@ form.zIndex=max(form.zIndex,1);
 	for(i=1;i LTE arraylen(propertyDataCom.arrSearchFields);i++){
 		label=propertyDataCom.arrShortSearchFields[i]&":";
 		if(structkeyexists(propertyDataCom.ignoreFieldStruct,propertyDataCom.arrSearchFields[i]) EQ false){
-			value=zo(propertyDataCom.arrSearchFields[i]);
+			value=zso(form, propertyDataCom.arrSearchFields[i]);
 			if(structkeyexists(propertyDataCom.rangeFieldStruct,propertyDataCom.arrSearchFields[i])){
 				lowField=value;
-				highField=zo(propertyDataCom.rangeFieldStruct[propertyDataCom.arrSearchFields[i]]);
+				highField=zso(form, propertyDataCom.rangeFieldStruct[propertyDataCom.arrSearchFields[i]]);
 				if(lowField NEQ "" and highField NEQ "" and isNumeric(lowField) and isNumeric(highField) and (propertyDataCom.defaultSearchCriteria[propertyDataCom.arrSearchFields[i]] NEQ lowField or propertyDataCom.defaultSearchCriteria[propertyDataCom.rangeFieldStruct[propertyDataCom.arrSearchFields[i]]] NEQ highField)){
 					//arrayappend(arr2332,label&lowField&"-"&highvalue);
 					arrayappend(arr1,lowField&"-"&highfield);
@@ -207,7 +207,7 @@ form.zIndex=max(form.zIndex,1);
 <!--- <cfscript>
 primaryCityId=application.zcore.app.getAppData("listing").sharedStruct.mls_primary_city_id;
 selectedCityCount=1;
-if(application.zcore.functions.zo('search_city_id') NEQ ""){
+if(application.zcore.functions.zso(form, 'search_city_id') NEQ ""){
     cityIdList="'"&replace(search_city_id,",","','","ALL")&"'";
 	g=listgetat(search_city_id,1);
 	selectedCityCount=listlen(search_city_id);
@@ -812,7 +812,7 @@ zExpOption(ts);
 		ts = StructNew();
 		ts.offset = zIndex-1;
 		perpageDefault=10;
-		perpage=10;//zo('perpage',true,perpagedefault);
+		perpage=10;//zso(form, 'perpage',true,perpagedefault);
 		perpage=max(1,min(perpage,100));
 		ts.perpage = perpage;
 		ts.distance = 10; // in miles

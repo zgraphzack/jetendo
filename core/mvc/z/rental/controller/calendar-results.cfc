@@ -102,7 +102,7 @@ nights=datediff("d",search_start_date,search_end_date);
     <cfset required7Night=false>
     <cfsavecontent variable="db.sql">
     SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
-	WHERE rental_id=#db.param(application.zcore.functions.zo('rental_id'))# and 
+	WHERE rental_id=#db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
 	rental_active=#db.param('1')#
     </cfsavecontent><cfscript>qPPPP=db.execute("qPPPP");</cfscript>
     <!---  <cfif qPPPP.recordcount NEQ 0 and qPPPP.rental_7nightmin EQ 1 and nights lt 7>
@@ -381,7 +381,7 @@ ts.rental_id=rental_id;
 ts.startDate=search_start_date;
 ts.endDate=search_end_date;
 ts.adults=inquiries_adults;
-ts.pets=zo('inquiries_pets',true);
+ts.pets=zso(form, 'inquiries_pets',true);
 ts.children=inquiries_children;
 ts.couponCode=inquiries_coupon;
 rs=application.zcore.app.getAppCFC("rental").rateCalc(ts);
