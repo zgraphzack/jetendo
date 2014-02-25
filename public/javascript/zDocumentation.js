@@ -134,5 +134,6 @@ zArrDeferredFunctions.push(function(){
 	doResponsiveCheck();
 	$(".zdoc-section-box").show();
 	setTimeout(doResponsiveCheck, 20);
-	makeCodePretty();
 });
+zArrLoadFunctions.push({"functionName":doResponsiveCheck});
+zArrLoadFunctions.push({"functionName":makeCodePretty});
