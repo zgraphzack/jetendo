@@ -393,7 +393,7 @@ zdoc css style documentation
 		arrayAppend(arrS, { id:"__9.1", url:"/intro.html", title:"Introduction"});
 		arrayAppend(arrS, { id:"___9.1.1", url:"/documentation-template.html", title:"Jetendo CMS Documentation Template"});
 		arrayAppend(arrS, { id:"__9.2", url:"/standalone-projects.html", title:"Standalone Projects"});
-		arrayAppend(arrS, { id:"___9.2.1", url:"/db-dot-cfc.html db-dot-cfc", title:"Documentation"});
+		arrayAppend(arrS, { id:"___9.2.1", url:"/db-dot-cfc.html", title:"db-dot-cfc Documentation"});
 		arrayAppend(arrS, { id:"___9.2.2", url:"/cssSpriteMap-dot-cfc.html", title:"cssSpriteMap-dot-cfc Documentation"});
 		arrayAppend(arrS, { id:"___9.2.3", url:"/status-dot-cfc.html", title:"status-dot-cfc Documentation"});
 		arrayAppend(arrS, { id:"___9.2.4", url:"/jquery-parallax-slider.html", title:"jQuery Parallax Slider Documentation"});

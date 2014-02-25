@@ -86,7 +86,12 @@ function pageChangeCallback(newUrl){
 	zContentTransition.manuallyProcessTransition();
 }
 
+var codeMadePretty="";
 function makeCodePretty(){
+	if(codeMadePretty == window.location.href){
+		return;
+	}
+	codeMadePretty=window.location.href;
 	$(".zdoc-toggle-ul").bind("click", function(e){ $('ul', e.target.parentNode).toggle(200);return false; });
 	if(zMSIEVersion != -1 && zMSIEVersion <= 8){
 		return;
@@ -134,6 +139,7 @@ zArrDeferredFunctions.push(function(){
 	doResponsiveCheck();
 	$(".zdoc-section-box").show();
 	setTimeout(doResponsiveCheck, 20);
+	makeCodePretty();
 });
 zArrLoadFunctions.push({"functionName":doResponsiveCheck});
 zArrLoadFunctions.push({"functionName":makeCodePretty});
