@@ -1,10 +1,27 @@
 <cfcomponent output="yes">
 <cfoutput>
-<cffunction name="init" access="public" localmode="modern" output="no">
+<cffunction name="init" access="public" localmode="modern" output="yes">
 	<cfscript>
 	var local=structnew();
 	var s=0;
-	var ts=structnew();
+	ts={parentIdStruct:{}, idStruct:{}};
+	showAll=application.zcore.functions.zso(form, 'showAllJetendoDocumentation', false, false);
+	if(showAll EQ false){
+		if(not application.zcore.user.checkGroupAccess("user")){
+			structdelete(session.zos, 'zManualStruct');
+			ts = StructNew();
+			ts.secureLogin=true;
+			ts.usernameLabel = "E-Mail Address";
+			ts.loginMessage = "Please login";
+			ts.template = "zcorerootmapping.templates.blank";
+			ts.user_group_name = "user";
+			rs=application.zcore.user.checkLogin(ts);
+		}
+		application.zcore.template.setTemplate("zcorerootmapping.templates.administrator",true,true);
+		request.zos.inMemberArea=true;
+		application.zcore.skin.disableMinCat();
+		application.zcore.template.appendtag("meta",'<script type="text/javascript">zContentTransitionDisabled=true;</script>');
+	}
 	//application.zcore.skin.includeCSS("/stylesheets/fontkit/stylesheet.css");
 	application.zcore.skin.includeCSS("/z/javascript/prettify/src/sons-of-oblivion.css");
 	application.zcore.skin.includeCSS("/z/stylesheets/zdoc.css"); 
@@ -18,7 +35,7 @@
 		if(application.zcore.user.checkGroupAccess("user") and structkeyexists(session.zos, 'zManualStruct')){
 			request.zos.siteManagerManual=session.zos.zManualStruct;
 			return;
-		}else if(structkeyexists(application.zcore, 'manualStruct')){
+		}else if(showAll and structkeyexists(application.zcore, 'manualStruct')){
 			request.zos.siteManagerManual=application.zcore.manualStruct;
 			return;
 		}
@@ -70,7 +87,7 @@ zdoc css style documentation
 	padding: 3px;
 	padding-bottom: 1px;
 	padding-right:12px;
-	background-image:url(/images/doc/rightarrow.jpg);
+	background-image:url(/z/images/doc/rightarrow.jpg);
 	background-position:top right;
 	background-repeat:no-repeat;
 }
@@ -79,9 +96,8 @@ zdoc css style documentation
          
     <!--- make this personalized to each user based on session.zos.user.limitManagerFeatureStruct --->
 	<cfscript>
-	showAll=false;
 	arrS=[];
-	arrayAppend(arrS, { id:"0", url:"/index.html", title:"Full Documentation"});
+	arrayAppend(arrS, { id:"0", url:"/index.html", title:"Documentation"});
 	arrayAppend(arrS, { id:"_1", url:"/site-manager-dashboard.html", title:"Site Manager Dashboard"});
 	arrayAppend(arrS, { id:"__1.1", url:"/documentation-template.html", title:"Documentation Template"});
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Content Manager")){
@@ -405,7 +421,6 @@ zdoc css style documentation
 			ms["Custom: "&row.site_option_group_display_name]={ parent:'Custom', label:chr(9)&row.site_option_group_display_name&chr(10)};
 		}
 	}*/
-	ts={parentIdStruct:{}, idStruct:{}};
 	arrParent=arraynew(1);
 	for(i=1;i LTE arraylen(arrS);i++){
 		ns=arrS[i];
@@ -597,7 +612,7 @@ zdoc css style documentation
 		throw("The file, "&absPath&", doesn't exist.", "custom");
 	}
 	t=request.zos.functions.zreadfile(absPath);
-	writeoutput('<div style="width:100%; float:left; margin-top:-25px;"><div style="float:right; width:100px; background-color:##FFF; font-size:70%; text-align:right;"><a href="##" data-codeexample="'&htmleditformat(t)&'" onclick="copyToClipboard(this.getAttribute(''data-codeexample'')); return false;">Copy '&ucase(ext)&' Example</a></div>');
+	writeoutput('<div style="width:100%; float:left; margin-top:-25px;"><div style="float:right; width:120px; background-color:##FFF; font-size:11px; text-align:right;"><a href="##" data-codeexample="'&htmleditformat(t)&'" onclick="copyToClipboard(this.getAttribute(''data-codeexample'')); return false;">Copy '&ucase(ext)&' Example</a></div>');
 	if(ext EQ 'cfm' or ext EQ 'cfc'){
 		writeoutput('<pre class="prettyprint lang-html linenums prettyprinted"><code>');
 	}else if(ext EQ 'php'){
@@ -701,7 +716,7 @@ zdoc css style documentation
 	</cfscript>
  </cffunction>
 
-<cffunction name="view" access="remote" output="yes" roles="member" localmode="modern">
+<cffunction name="view" access="remote" output="yes" localmode="modern">
     <cfargument name="id" type="string" required="no" default="">
     <cfargument name="docLink" type="string" required="no" default=""><cfscript>
 	var manualStruct=0;
@@ -723,11 +738,11 @@ zdoc css style documentation
         #manualStruct.html#
     <cfelse>
         <div class="zdoc-container ieWidthDivClass">
-		<h3>The documentation features were just added 2/8/2014, and we hope to fill them in over time.  
-		For now, if you need help that isn't here, please contact the web developer for assistance.</h3>
         <!--- <div class="zdoc-sidebar"> --->
         <!--- </div> --->
         <div class="zdoc-main-column ieWidthDivClass4">
+		<h3>The documentation features were just added 2/8/2014, and we hope to fill them in over time.  
+		For now, if you need help that isn't here, please contact the web developer for assistance.</h3>
             <cfsavecontent variable="theParent"><a href="/z/admin/help/index">Help</a> / #this.getParentLinks(manualStruct)#</cfsavecontent>
             <cfscript>request.zos.template.setTag("pagenav", theParent);</cfscript>
             

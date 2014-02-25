@@ -1,5 +1,6 @@
 function copyToClipboard (text) {
-	zShowModal('<div style="width:100%; float:left;"><h3>Copy the textarea below by pressing Ctrl+C or Command+C on Mac, then close this popup window.</h3><p><textarea name="copyClipboardTextarea1" id="copyClipboardTextarea1" cols="60" rows="10">'+text+'</textarea></p></div>',{'width':509,'height':331});
+	zShowModal('<div style="width:100%; float:left;"><h3>Copy the textarea below by pressing Ctrl+C or Command+C on Mac, then close this popup window.</h3><p><textarea name="copyClipboardTextarea1" id="copyClipboardTextarea1" cols="60" rows="10">'+text+'</textarea></p></div>',
+		{'maxWidth':509,'maxHeight':331, 'width':509,'height':331});
 	document.getElementById('copyClipboardTextarea1').select();
 }
 function doResponsiveCheck() {		
@@ -99,6 +100,7 @@ function makeCodePretty(){
 			codeElements[i].innerHTML = codeElements[i].innerHTML.replace(/\t/g,'<span class="zdoc-tab">&##9;</span>');
 		}
 	}
+	
 	if(typeof prettyPrint != "undefined"){
 		prettyPrint(); 
 	}
@@ -132,6 +134,5 @@ zArrDeferredFunctions.push(function(){
 	doResponsiveCheck();
 	$(".zdoc-section-box").show();
 	setTimeout(doResponsiveCheck, 20);
+	makeCodePretty();
 });
-zArrLoadFunctions.push({"functionName":doResponsiveCheck});
-zArrLoadFunctions.push({"functionName":makeCodePretty});

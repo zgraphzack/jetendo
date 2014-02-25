@@ -3214,10 +3214,10 @@ function zFixModalPos(){
 	var windowSize=zWindowSize;
 	el.style.top=zModalScrollPosition[1]+"px";
 	el.style.left=zModalScrollPosition[0]+"px";
-	var newWidth=Math.min(windowSize.width-132,((zModalMaxWidth)));
-	var newHeight=Math.min(windowSize.height-132,((zModalMaxHeight)));
-	var left=Math.round(Math.max(0, windowSize.width-newWidth)/2)-8;
-	var top=Math.round(Math.max(0, windowSize.height-newHeight)/2)-16;
+	var newWidth=Math.min(zModalWidth, Math.min(windowSize.width-100,((zModalMaxWidth))));
+	var newHeight=Math.min(zModalHeight, Math.min(windowSize.height-100,((zModalMaxHeight))));
+	var left=Math.round(Math.max(0, windowSize.width-newWidth)/2);
+	var top=Math.round(Math.max(0, windowSize.height-newHeight)/2);
 	el2.style.left=left+'px';
 	el2.style.top=top+'px';
 	el2.style.width=newWidth+"px";
@@ -3240,7 +3240,7 @@ function zShowModal(content, obj){
 	var windowSize=zWindowSize;
 	zModalWidth=obj.width;
 	zModalHeight=obj.height;
-	obj.width=Math.min(zModalMaxWidth, Math.min(obj.width, windowSize.width+zScrollBarWidthCached));
+	obj.width=Math.min(zModalMaxWidth, Math.min(obj.width, windowSize.width));
 	obj.height=Math.min(zModalMaxHeight, Math.min(obj.height, windowSize.height));
 	if(typeof obj.maxWidth !== "undefined"){
 		zModalMaxWidth=obj.maxWidth;
@@ -3305,12 +3305,12 @@ function zShowModal(content, obj){
 	el.style.left=zModalScrollPosition[0]+"px";
 	el.style.height="100%";
 	el.style.width="100%";
-	var left=Math.round(Math.max(0,((windowSize.width+zScrollBarWidthCached)-obj.width))/2);
+	var left=Math.round(Math.max(0,((windowSize.width)-obj.width))/2);
 	var top=Math.round(Math.max(0, (windowSize.height-obj.height))/2);
 	el2.style.left=left+'px';
 	el2.style.top=top+'px';
-	el2.style.width=(obj.width-32)+"px";
-	el2.style.height=(obj.height-32)+"px";
+	el2.style.width=(obj.width)+"px";
+	el2.style.height=(obj.height)+"px";
 	zModalPosIntervalId=setInterval(zFixModalPos,500);
 }
 var zArrModalCloseFunctions=[];
@@ -4077,7 +4077,7 @@ var zLogin={
 			document.getElementById("submitForm").style.display="block";
 		}
 	},
-	setAutoLogin:function(r){
+	setAutoLogin:function(r){ 
 		if (r===true){
 			zLogin.autoLoginValue="1";
 			zSetCookie({key:"zautologin",value:"1",futureSeconds:60,enableSubdomains:false}); 
@@ -4126,6 +4126,7 @@ var zLogin={
 		var tempObj={};
 		tempObj.id="zAjaxUserLogin"; 
 		tempObj.url="/z/user/login/process";
+		zLogin.zShowLoginError("Processing login credentials...");
 		if(document.getElementById('z_tmpusername2').value.length==="" || document.getElementById('z_tmppassword2').value.length===""){
 			zLogin.zShowLoginError("Email and password are required.");
 			return;
