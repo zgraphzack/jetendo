@@ -1603,6 +1603,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	}else{
 		ts.perpage=arguments.ss.perpage;
 	}
+	ts.inputArguments=arguments;
 	//ts.queryColumnStruct=local.queryColumnStruct;
 	ts.arrQuery=arraynew(1);
 	ts.orderStruct=structnew();

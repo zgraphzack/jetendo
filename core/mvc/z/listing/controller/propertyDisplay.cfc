@@ -2633,8 +2633,8 @@ user.site_id = #db.param(request.zos.globals.id)#
 <other_link2_title>other_link2_title</other_link2_title> --->
 <!--- <video_link1>video_link1</video_link1> <!--- .wmv format --->
 <video_link2>video_link2</video_link2>  --->
-<cfloop from="1" to="#min(6,arguments.idx.listing_photocount)#" index="i"><cfif isDefined('photo#i#')>
-<image_path#i#>#xmlformat(application.zcore.functions.zo('photo#i#'))#</image_path#i#>
+<cfloop from="1" to="#min(6,arguments.idx.listing_photocount)#" index="i"><cfif structkeyexists(variables, 'photo#i#')>
+<image_path#i#>#xmlformat(application.zcore.functions.zso(variables, 'photo#i#'))#</image_path#i#>
 </cfif>
 </cfloop>
 
