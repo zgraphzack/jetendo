@@ -781,7 +781,12 @@
 	// silenced output
 	savecontent variable="local.output"{
 		if(request.zos.inServerManager){
-			if(not application.zcore.user.checkServerAccess()){
+			runningTask=false;
+			if(left(request.cgi_script_name, 24) EQ '/z/server-manager/tasks/' and request.zos.isServer){
+				runningTask=true;
+			}
+			if(not runningTask and not application.zcore.user.checkServerAccess()){
+				echo('what');abort;
 				ts = StructNew();
 				ts.secureLogin=true;
 				ts.noRedirect=true;
@@ -812,9 +817,9 @@
 				if(form.zIndex EQ ""){
 					form.zIndex = 1;
 				}
-			}	
+			}
 			Request.zScriptName = request.cgi_script_name&"?zid=#form.zid#";
-			if((isDefined('session.zos.user.id') or left(request.cgi_script_name, 24) NEQ '/z/server-manager/tasks/') and structkeyexists(form, 'zhidetopnav') eq false){
+			if((isDefined('session.zos.user.id') and not runningTask) and structkeyexists(form, 'zhidetopnav') eq false){
 				application.zcore.template.setTag("secondnav",application.zcore.functions.zOS_getSiteNav(form.zid));
 			}else if(not request.zos.isServer and not request.zos.isDeveloperIPMatch){
 				application.zcore.functions.z404("Only logged on developer users or the server itself can access this url.");	
