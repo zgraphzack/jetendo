@@ -197,9 +197,17 @@ if(file_exists($taskLogPathScheduler)){
 }
 file_put_contents($taskLogPathScheduler, $scheduleOutput);
 
+function logEntry($message){
+	$fp=fwrite(get_cfg_var("jetendo_share_path")."task-log/cfml-tasks.log", "a");
+	fwrite($fp, $now=date('l jS \of F Y h:i:s A').": ".$message."\n");
+	fclose($fp);
+}
+
 for($i=0;$i<count($arrRun);$i++){
 	$task=$arrRun[$i];
 	echo "Running task: ".$task->url.": ";
+	logEntry("Running task: ".$task->url);
+	
 	if($isTestServer){
 		echo " this is test server, skipping task\n";
 	}else{
@@ -207,8 +215,10 @@ for($i=0;$i<count($arrRun);$i++){
 		if($contents === FALSE){
 			echo "failed\n";
 			$contents="Connection failure";
+			logEntry("Task connection failure: ".$task->url);
 		}else{
 			echo "success\n";
+			logEntry("Task completed successfully: ".$task->url);
 		}
 		@unlink($taskLogPath.$task->logName);
 		file_put_contents($taskLogPath.$task->logName, $contents);
