@@ -394,7 +394,7 @@ zSlideShow(ts);
 	}
 	rsBackup=rs;
 	rs=structnew();
-	rs.output=theBigSlideshowOutput;
+	rs.output=application.zcore.functions.zRemoveHostName(theBigSlideshowOutput);
 	rs.javascriptoutput="";
 	rs.lastUpdated=td22;
 	rs.codename=local.qss.slideshow_codename;
@@ -406,7 +406,6 @@ zSlideShow(ts);
 	application.sitestruct[arguments.ss.site_id].slideshowNameCacheStruct[local.qss.slideshow_codename]=local.qss.slideshow_id;
 	application.sitestruct[arguments.ss.site_id].slideshowIdCacheStruct[local.qss.slideshow_id]=rs;
 	
-	//structappend(variables, rs, true);
 	writeoutput(rs.output);
 	if(structkeyexists(form, 'debugsearchresults') and form.debugsearchresults){
 		echo(theSlideshowResultHTML);

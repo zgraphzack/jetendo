@@ -518,7 +518,7 @@ application.zcore.functions.zPublishCss(ts);
 			echo('</div>');
 		}
 	}
-	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].htmlOutput=output;
+	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].htmlOutput=application.zcore.functions.zRemoveHostName(output);
 	return output;
 	</cfscript>
 </cffunction>

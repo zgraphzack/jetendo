@@ -1,5 +1,12 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="zRemoveHostName" access="public" localmode="modern">
+	<cfargument name="str" type="string" required="yes">
+	<cfscript>
+	return replace(arguments.str, request.zos.currentHostName, '', 'all');
+	</cfscript>
+</cffunction>
+
 <cffunction name="zCheckIfPageAlreadyLoadedOnce" access="public" localmode="modern">
 	<cfscript>
 	if(structkeyexists(request.zos, 'zCheckIfPageAlreadyLoadedOnceRan')){
