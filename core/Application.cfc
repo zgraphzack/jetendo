@@ -7,10 +7,6 @@
 // BEGIN override railo admin settings
 // regional
 // default locale used for formating dates, numbers ...
-this.locale = "en_US"; 
-// default timezone used
-this.timezone = "SystemV/EST5EDT"; 
-
 this.sessionStorage = "memory";
 
 // client scope enabled or not
@@ -59,7 +55,12 @@ this.scopeCascading = "standard";
 
 	configCom=createobject("component", "zcorerootmapping.config");
 	ts=configCom.getConfig(arguments.tempCGI);
-
+	if(structkeyexists(ts, 'timezone')){
+		this.timezone=ts.timezone;
+	}
+	if(structkeyexists(ts, 'locale')){
+		this.locale=ts.locale;
+	}
     ts.zos.databaseVersion=1; // increment manually when database structure changes
 
 	ts.zos.isServer=false;

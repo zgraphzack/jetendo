@@ -5,6 +5,8 @@
 	<cfscript>
 	
 	var ts=structnew();
+    ts.timezone="America/New_York";
+	ts.locale = "en_US"; 
 	// install path of this Application.cfc - It must end with a forward slash.
 	ts.zOS = StructNew();
 	// domain to append to ALL of your test domains.
