@@ -112,7 +112,10 @@ application.zcore.functions.zEnableContentTransition(); --->
     var zContentTransitionEnabled=true;
     var zLocalDomains=["#request.zos.globals.domain#","#replace(request.zos.globals.domain,"www.","")#"<cfif request.zos.globals.securedomain NEQ "">,"#request.zos.globals.securedomain#","#replace(request.zos.globals.securedomain,"www.","")#"</cfif><cfscript>
     if(request.zos.globals.domainAliases NEQ ""){
-        for(i=0;i LTE arraylen(request.zos.arrDomainAliases);i++){
+    	if(not structkeyexists(request.zos, 'arrDomainAliases')){
+	    	request.zos.arrDomainAliases=listtoarray(request.zos.globals.domainaliases,",");
+	    }
+        for(i=1;i LTE arraylen(request.zos.arrDomainAliases);i++){
             writeoutput(', "http://'&request.zos.arrDomainAliases[i]&'"');	
         }
     }
