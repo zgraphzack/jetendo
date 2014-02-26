@@ -24,7 +24,7 @@
 	local.searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
 	local.searchIndexCom.searchReindex();
 	
-	eho('Done.');
+	echo('Done.');
 	abort;
 	</cfscript>
 </cffunction>
