@@ -474,6 +474,13 @@
 			if(replace(replace(request.zos.globals.securedomain,"http://",""),"https://","") NEQ request.zos.cgi.http_host){
 				application.zcore.functions.z404("Secure domain doesn't match http_host.");	
 			}
+			request.zos.currentHostName='http://'&lcase(request.zos.cgi.http_host); 
+		    request.zRootDomain=replace(replace(lcase(replace(replace(request.zos.globals.domain, "http://",""), "https://", "")),"www.",""),"."&request.zos.testDomain,"");
+		    request.zCookieDomain=replace(lcase(request.zRootDomain),"www.","");
+		    request.zRootPath="/"&replace(request.zRootDomain,".","_","all")&"/";
+		    request.zOSHomeDir=request.zos.sitesPath&replace(request.zRootDomain,".","_","all")&"/"; 
+		    request.zRootSecureCfcPath="jetendo-sites-writable."&replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
+		    request.zRootCfcPath=replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";  
 		}else if(replace(replace(request.zos.globals.domain,"http://",""),"https://","") NEQ request.zos.cgi.http_host){
 			if(request.zos.globals.domainaliases NEQ ""){
 				request.zos.arrDomainAliases=listtoarray(request.zos.globals.domainaliases,",");
