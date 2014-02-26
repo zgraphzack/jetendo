@@ -2507,7 +2507,7 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
     </cfsavecontent><cfscript>qMapCheck=db.execute("qMapCheck");</cfscript>
     <cfif qMapCheck.recordcount EQ 0><cfset application.sitestruct[request.zos.globals.id].zListingMapCheck=false><cfelse><cfset application.sitestruct[request.zos.globals.id].zListingMapCheck=true></cfif>
 </cfif>
-	<cfif isDefined('session.inquiries_email') EQ false and structkeyexists(form, 'mls_saved_search_id') and structkeyexists(form, 'saved_search_email') and structkeyexists(form, 'saved_search_key')>
+	<cfif structkeyexists(session, 'inquiries_email') EQ false and structkeyexists(form, 'mls_saved_search_id') and structkeyexists(form, 'saved_search_email') and structkeyexists(form, 'saved_search_key')>
 		<cfsavecontent variable="db.sql">
 		SELECT * FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE mls_saved_search_id =#db.param(form.mls_saved_search_id)# and 
@@ -2623,8 +2623,8 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 		application.zcore.template.appendTag("content",'<input type="hidden" name="zListingEnableInstantSearch" id="zListingEnableInstantSearch" value="1" />');	
 	}
 	//if(request.zos.cgi.http_referer NEQ "" and 
-	if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled NEQ 0 and request.zos.templateData.template EQ "default" and request.cgi_script_name NEQ "/z/listing/inquiry-pop/index" and request.cgi_script_name NEQ "/z/user/privacy/index"){
-		if(isDefined('session.zlistingpageviewcount') EQ false){
+	if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled NEQ 0 and left(request.zos.templateData.template, 3) NEQ "/z/" and request.cgi_script_name NEQ "/z/listing/inquiry-pop/index" and request.cgi_script_name NEQ "/z/user/privacy/index"){
+		if(structkeyexists(session, 'zlistingpageviewcount') EQ false){
 			session.zlistingpageviewcount=1;
 		}else{
 			session.zlistingpageviewcount++;
@@ -2638,24 +2638,24 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 		if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 1){
 			if(session.zlistingpageviewcount GTE hitCount){
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and isDefined('session.zPopinquiryPopSent') EQ false){
+					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(session, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;
 					}
 				}else{
-					if(isDefined('session.zPopinquiryPopCompleted') EQ false){
+					if(structkeyexists(session, 'zPopinquiryPopCompleted') EQ false){
 						showModalForm=true;
 					}
 				}
 			}
 		}else if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 2){
 			// show on Xth listing detail page
-			if(isDefined('session.zlistingdetailhitcount') and session.zlistingdetailhitcount GTE hitCount){
+			if(structkeyexists(session, 'zlistingdetailhitcount') and session.zlistingdetailhitcount GTE hitCount){
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and isDefined('session.zPopinquiryPopSent') EQ false){
+					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(session, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;
 					}
 				}else{
-					if(isDefined('session.zPopinquiryPopCompleted') EQ false){
+					if(not structkeyexists(session, 'zPopinquiryPopCompleted')){
 						showModalForm=true;
 					}
 				}
@@ -2667,12 +2667,12 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			if(request.zos.originalURL EQ searchFormURL){
 				// check if cookie was set
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and isDefined('session.zPopinquiryPopSent') EQ false){
+					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(session, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;
 					}
 				}else{
 					// if i want it to be permanently not shown again, i could add cookie to inquiry-pop.cfc at the top and check for it to not exist.
-					if(isDefined('session.zPopinquiryPopCompleted') EQ false){
+					if(structkeyexists(session, 'zPopinquiryPopCompleted') EQ false){
 						showModalForm=true;
 					}
 				}
@@ -2684,10 +2684,14 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			if(structkeyexists(form, 'zajaxdownloadcontent') EQ false){
 				funcType=" zArrDeferredFunctions.push(function(){listingShowModalWin();}); ";
 			}
+			customformurl=application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_customurl;
+			if(customformurl EQ ""){
+				customformurl="/z/listing/inquiry-pop/index";
+			}
 			if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-				writeoutput('<script type="text/javascript">/* <![CDATA[ */function listingShowModalWin(){ if(!zModalCancelFirst){var modalContent1=''<iframe src="/z/listing/inquiry-pop/index" width="100%" height="98%" style="margin:0px; border:none; overflow:auto;" seamless="seamless"><\/iframe>'';var winId=false;zShowModal(modalContent1,{''width'':520,''height'':428,''disableResize'':true, ''disableClose'':true});}} '&funcType&' /* ]]> */</script>');
+				writeoutput('<script type="text/javascript">/* <![CDATA[ */function listingShowModalWin(){ if(!zModalCancelFirst){var modalContent1=''<iframe src="#customformurl#" width="100%" height="98%" style="margin:0px; border:none; overflow:auto;" seamless="seamless"><\/iframe>'';var winId=false;zShowModal(modalContent1,{''width'':520,''height'':428,''disableResize'':true, ''disableClose'':true});}} '&funcType&' /* ]]> */</script>');
 			}else{
-				writeoutput('<script type="text/javascript">/* <![CDATA[ */function listingShowModalWin(){ if(!zModalCancelFirst){var modalContent1=''<iframe src="/z/listing/inquiry-pop/index" width="100%" height="98%" style="margin:0px; border:none; overflow:auto;" seamless="seamless"><\/iframe>'';var winId=false;zShowModal(modalContent1,{''width'':520,''height'':428,''disableResize'':true});}} '&funcType&' /* ]]> */</script>');
+				writeoutput('<script type="text/javascript">/* <![CDATA[ */function listingShowModalWin(){ if(!zModalCancelFirst){var modalContent1=''<iframe src="#customformurl#" width="100%" height="98%" style="margin:0px; border:none; overflow:auto;" seamless="seamless"><\/iframe>'';var winId=false;zShowModal(modalContent1,{''width'':520,''height'':428,''disableResize'':true});}} '&funcType&' /* ]]> */</script>');
 			}
 		}
 	}
