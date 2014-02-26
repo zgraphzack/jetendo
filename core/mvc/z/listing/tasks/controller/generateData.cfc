@@ -116,8 +116,9 @@
 			}
 		}
 	}
+	echo('Done.');
+	abort;
 	</cfscript>
-	Done.
 </cffunction>
 </cfoutput>
 </cfcomponent>

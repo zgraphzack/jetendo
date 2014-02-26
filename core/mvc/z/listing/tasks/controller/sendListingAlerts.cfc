@@ -204,6 +204,7 @@
 		}
 	}
 	writeoutput('Successfully completed');
+	abort;
 	</cfscript>
 </cffunction>
 
@@ -243,20 +244,21 @@
 	db.sql&=" LIMIT #db.param(0)#, #db.param(1)# ";
 	local.qM=db.execute("qM");  
 	for(row in local.qM){
-            // send email with zDownloadLink(); to run the alert on the correct domain
-            local.link=row.site_domain&'/z/listing/tasks/sendListingAlerts/send';
-            local.r1=application.zcore.functions.zDownloadLink(local.link);
-            /*if(local.r1.success EQ false){
-                writeoutput('Send Listing Alert failed');
-                application.zcore.functions.zdump(cfhttp);
-                application.zcore.functions.zabort();
-            }*/
+        // send email with zDownloadLink(); to run the alert on the correct domain
+        local.link=row.site_domain&'/z/listing/tasks/sendListingAlerts/send';
+        local.r1=application.zcore.functions.zDownloadLink(local.link);
+        /*if(local.r1.success EQ false){
+            writeoutput('Send Listing Alert failed');
+            application.zcore.functions.zdump(cfhttp);
+            application.zcore.functions.zabort();
+        }*/
 	    if(request.zos.isTestServer){
-            	writeoutput(local.r1.cfhttp.FileContent&'<br /><br />');
-		application.zcore.functions.zabort();
+            writeoutput(local.r1.cfhttp.FileContent&'<br /><br />');
+			application.zcore.functions.zabort();
 	    }
 	}
 	writeoutput('Complete');
+	abort;
 	</cfscript>
 </cffunction>
 </cfoutput>

@@ -44,6 +44,7 @@
 	site_id <> #db.param(-1)#";
 	db.execute("qUpdate");
 	writeoutput("Old passwords were expired.");
+	abort;
 	</cfscript>
 </cffunction>
 </cfoutput>

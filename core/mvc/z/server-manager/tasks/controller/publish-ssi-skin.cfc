@@ -30,6 +30,7 @@
 		}
 	}
 	writeoutput('Done');
+	abort;
 	</cfscript>
 </cffunction>
 </cfoutput>

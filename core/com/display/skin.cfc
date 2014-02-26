@@ -139,8 +139,9 @@ todo: open source projects
 			}
 		}
 	}
+	echo('Done.');
+	abort;
 	</cfscript>
-	Done.
 </cffunction>
     
 <cffunction name="rebuildCache" localmode="modern" access="private" returntype="any" output="no">

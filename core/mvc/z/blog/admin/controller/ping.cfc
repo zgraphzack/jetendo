@@ -36,6 +36,7 @@
 	}else{
 		writeoutput('Ping executed. Waiting to ping again.');
 	}
+	abort;
 	</cfscript>
 </cffunction>
 </cfoutput>

@@ -24,6 +24,7 @@
 		}
 	}
 	writeoutput('missing published');
+	abort;
 	</cfscript>
 </cffunction>
 </cfoutput>
