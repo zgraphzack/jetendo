@@ -1,0 +1,36 @@
+TODO: Re-create all external projects as git submodules that can be updated.  Update the docs below to be accurate afterwards:
+
+Note the following information is NOT ACCURATE YET:
+
+Important: Change path to main directory of Jetendo before running git commands
+
+# jetendo git documentation
+
+	# pull changes from upstream
+	
+	# push changes to remote
+	
+	# how to create a pull request
+
+
+#sub tree module git documentation
+	Note: At least one commit must exist in a new project before using the subtree feature.
+
+	# subtree modules created like this:
+		git subtree add --prefix modules/cssSpriteMap-dot-cfc git@github.com:jetendo/cssSpriteMap-dot-cfc.git master --squash
+		git subtree add --prefix modules/status-dot-cfc git@github.com:jetendo/status-dot-cfc.git master --squash
+
+	# updating subtree from remote:
+		git subtree pull --prefix modules/cssSpriteMap-dot-cfc git@github.com:jetendo/cssSpriteMap-dot-cfc.git master --squash
+		git subtree pull --prefix modules/status-dot-cfc git@github.com:jetendo/status-dot-cfc.git master --squash
+
+	# push change to remote
+		git subtree push --prefix modules/cssSpriteMap-dot-cfc git@github.com:jetendo/cssSpriteMap-dot-cfc.git master
+		git subtree push --prefix modules/status-dot-cfc git@github.com:jetendo/status-dot-cfc.git master
+
+	# how to create pull request for individual subtree modules:
+		1. Create repo on github on your account for the module.
+		2. Push the repo to YOUR_ACCOUNT:
+		git subtree push --prefix modules/status-dot-cfc git@github.com:YOUR_ACCOUNT/status-dot-cfc.git master --squash
+		3. Create pull request on github.com by visiting the pulls url and click "New pull request":
+			https://github.com/YOUR_ACCOUNT/status-dot-cfc/pulls
