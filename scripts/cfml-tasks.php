@@ -187,6 +187,13 @@ for($i=0;$i<count($arrTask);$i++){
 		array_push($arrRun, $task);
 	}
 }
+function logEntry($message){
+	global $taskLogPath;
+	$fp=fopen($taskLogPath."cfml-tasks.log", "a");
+	$m=date('l jS \of F Y h:i:s A').": ".$message."\n";
+	$r=fwrite($fp, $m);
+	fclose($fp);
+}
 if(count($arrRun) == 0){
 	echo("No tasks needed to run, exiting.\n");
 	exit;
@@ -197,11 +204,6 @@ if(file_exists($taskLogPathScheduler)){
 }
 file_put_contents($taskLogPathScheduler, $scheduleOutput);
 
-function logEntry($message){
-	$fp=fwrite(get_cfg_var("jetendo_share_path")."task-log/cfml-tasks.log", "a");
-	fwrite($fp, $now=date('l jS \of F Y h:i:s A').": ".$message."\n");
-	fclose($fp);
-}
 
 for($i=0;$i<count($arrRun);$i++){
 	$task=$arrRun[$i];
@@ -210,6 +212,7 @@ for($i=0;$i<count($arrRun);$i++){
 	
 	if($isTestServer){
 		echo " this is test server, skipping task\n";
+		logEntry("Test server, skipping task: ".$task->url);
 	}else{
 		$contents=file_get_contents($task->url);
 		if($contents === FALSE){
