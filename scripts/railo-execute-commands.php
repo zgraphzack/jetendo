@@ -887,37 +887,33 @@ function microtimeFloat()
     list($usec, $sec) = explode(" ", microtime());
     return ((float)$usec + (float)$sec);
 }
-$debug=false;
-$timeout=60; // seconds
-$timeStart=microtimeFloat();
-$completePath="/opt/jetendo/execute/complete/";
-$startPath="/opt/jetendo/execute/start/";
+function runCommand($argv){
+	if(count($argv) != 2){
+		echo "Invalid argument count.";
+		exit;
+	}	
+	$debug=false;
+	$timeout=60; // seconds
+	$timeStart=microtimeFloat();
+	$completePath="/opt/jetendo/execute/complete/";
+	$startPath="/opt/jetendo/execute/start/";
 
-while(true){
-	$handle=opendir($startPath);
-	if($handle){
-		while (false !== ($entry = readdir($handle))) {
-			if(substr($entry, strlen($entry)-4, 4) !=".txt"){
-				continue;
-			}
-			echo "Started: ".$entry."\n";
-			$curPath=$startPath.$entry;
-			$contents=file_get_contents($curPath);
-			unlink($curPath);
-			$results=processContents($contents);
-			$fp=fopen($completePath.$entry, "w");
-			echo "Completed: ".$entry."\n";
-			fwrite($fp, $results);
-			fclose($fp);
-			
-		}
-		closedir($handle);
-	}
-	usleep(100000); // wait tenth of second
-
-	if(microtimeFloat() - $timeStart > $timeout-3){
-		echo "Timeout reached";
+	$startFile=$startPath.$argv[1];
+	$completeFile=$completePath.$argv[1];
+	if(!file_exists($startFile)){
+		echo "Start file was missing: ".$startFile."\n";
 		exit;
 	}
+
+	$contents=file_get_contents($startFile);
+	unlink($startFile);
+	$results=processContents($contents);
+	$fp=fopen($completeFile, "w");
+	echo "Completed: ".$argv[1]."\n";
+	fwrite($fp, $results);
+	fclose($fp);
+			
 }
+runCommand($argv);
+
 ?>
