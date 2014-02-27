@@ -645,6 +645,7 @@ userCom.checkLogin(inputStruct);
 
 <cffunction name="logOut" localmode="modern" returntype="any" output="false">
 	<cfargument name="skipLog" type="boolean" required="no" default="#false#">
+	<cfargument name="retainToken" type="boolean" required="no" default="#false#">
 	<cfscript>
 	var ts=0;
 	request.zos.userSession=structnew();
@@ -679,7 +680,9 @@ userCom.checkLogin(inputStruct);
 		<cfcookie name="z_user_key" value="" expires="now" domain=".#request.zCookieDomain#">
 		<cfcookie name="z_tmpusername2" value="" expires="now" domain=".#request.zCookieDomain#">
 		<cfcookie name="z_tmppassword2" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="ztoken" value="" expires="now" domain=".#request.zCookieDomain#">
+		<cfif not arguments.retainToken>
+			<cfcookie name="ztoken" value="" expires="now" domain=".#request.zCookieDomain#">	
+		</cfif>
 		<cfcookie name="inquiries_email" value="" expires="now" domain=".#request.zCookieDomain#">
 		<cfcookie name="inquiries_first_name" value="" expires="now" domain=".#request.zCookieDomain#">
 		<cfcookie name="inquiries_last_name" value="" expires="now" domain=".#request.zCookieDomain#">
@@ -1167,15 +1170,21 @@ formString = userCom.loginForm(inputStruct);
 	}
 	
 	if(not structkeyexists(cookie, 'ztoken') or len(cookie.ztoken) EQ 0){
+		if(local.debug){ 
+			writeoutput('cookie.ztoken is not defined.<br />'); 
+			abort;
+		}
 		return false;
-	}
-	if(local.debug){ 
-		writeoutput('permanent login token exists<br />'); 
+	}else{
+		if(local.debug){ 
+			writeoutput('Verifying cookie.ztoken: #cookie.ztoken#<br />'); 
+		}
 	}
 	if(isDefined('session.zos.ztoken') and isDefined('session.zos.user')){
 		if(compare(session.zos.ztoken, cookie.ztoken) NEQ 0){
 			if(local.debug){ 
 				writeoutput('current login doesn''t match the cookie, override it<br />'); 
+				abort;
 			}
 			local.ts9=structnew();
 			local.ts9.name="ztoken";
@@ -1185,7 +1194,9 @@ formString = userCom.loginForm(inputStruct);
 			return false;
 		}else{
 			if(local.debug){ 
-				writeoutput('user is logged in and ztoken matches - do no further work.<br />'); 
+				writeoutput('user is logged in and ztoken matches - do no further work.<br />Dumping session:'); 
+				writedump(session);
+				abort;
 			}
 			return true;
 		}
@@ -1206,7 +1217,8 @@ formString = userCom.loginForm(inputStruct);
 	if(local.qUserToken.recordcount EQ 0){
 		if(local.debug){ 
 			writedump(request.zos.arrQueryLog);
-			writeoutput('no token exists<br />'); 
+			writeoutput('no token exists<br />');
+			abort; 
 		}
 		local.ts9=structnew();
 		local.ts9.name="ztoken";
@@ -1237,21 +1249,24 @@ formString = userCom.loginForm(inputStruct);
 	}
 	keyIsValid=application.zcore.user.verifySecurePassword(local.arrToken[4], local.qUserToken.user_token_salt, local.qUserToken.user_token_key, local.arrToken[1]);
 	if(keyIsValid){
-		if(local.debug){ writeoutput('token is valid, perform an insecure user login<br />'); }
+		if(local.debug){ 
+			writeoutput('token is valid, perform an secure user login<br />'); 
+		}
 		form.zpassword="password";
 		inputStruct = StructNew();
 		inputStruct.user_group_name = "user";
 		inputStruct.noRedirect=true;
 		inputStruct.noLoginForm=true;
 		inputStruct.tokenLoginEnabled=true;
-		inputStruct.secureLogin=false;
+		inputStruct.disableSecurePassword=true;
+		inputStruct.secureLogin=true;
 		inputStruct.site_id = request.zos.globals.id;
 		application.zcore.user.checkLogin(inputStruct); 
 		if(application.zcore.user.checkGroupAccess("user")){ 
 			structdelete(form,'zpassword');
 			structdelete(form,'zusername');
 			if(local.debug){ 
-				writeoutput('token insecure login was successful.  issuing new token.<br />');
+				writeoutput('token secure login was successful.  issuing new token.<br />');
 				writedump(session.zos.user);
 			}
 			local.uniqueTokenTemp=hash(application.zcore.functions.zGenerateStrongPassword(156,256), 'sha-256');
@@ -1279,7 +1294,7 @@ formString = userCom.loginForm(inputStruct);
 			local.ts9.expires="never";
 			application.zcore.functions.zcookie(local.ts9);
 			if(local.debug){
-				application.zcore.functions.zabort();	
+				abort;	
 			}
 			return true;
 		}else{
@@ -1290,6 +1305,7 @@ formString = userCom.loginForm(inputStruct);
 			application.zcore.functions.zcookie(local.ts9);
 			if(local.debug){ 
 				writeoutput('invalid login - account may be throttled or inactive.<br />'); 
+				abort;
 			}
 			return false;
 		}
@@ -1312,10 +1328,10 @@ formString = userCom.loginForm(inputStruct);
 	local.ts9.expires="now";
 	application.zcore.functions.zcookie(local.ts9);
 	if(local.debug){
-		application.zcore.functions.zabort();	
+		abort;
 	}
 	return false;
-        </cfscript>
+    </cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

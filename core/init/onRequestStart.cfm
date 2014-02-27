@@ -55,7 +55,7 @@
 		application.zcore.functions.zOS_rebuildCache(); 
 	}
 	if(request.zos.zreset EQ "session" or request.zos.zreset EQ "all"){
-		application.zcore.user.logOut();
+		application.zcore.user.logOut(false, true);
 		structclear(session);
 	}
 	
@@ -295,8 +295,8 @@
 </cffunction>
 
 <cffunction name="onRequestStart1" localmode="modern" output="yes"><cfscript>
-	if(isDefined('session.zos') EQ false or (request.zos.zreset EQ "session" or request.zos.zreset EQ "all")){
-		application.zcore.user.logOut();
+	if(not structkeyexists(session, 'zos') or (request.zos.zreset EQ "session" or request.zos.zreset EQ "all")){
+		application.zcore.user.logOut(false, true);
 		structclear(session);
 	}
 	variables.site_id=application.sitestruct[request.zos.globals.id].site_id; 
