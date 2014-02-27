@@ -777,7 +777,7 @@ userCom.checkLogin(inputStruct);
 		if(not hasAllGroups){
 			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE user_group_id = #db.param(qUser.user_group_id)# and 
-			site_id = #db.param(qSite.site_id)# ";
+			site_id = #db.param(qUser.site_id)# ";
 			qGroupCheck=db.execute("qGroupCheck");
 			db.sql&=" user_group.user_group_name = #db.param(qGroupCheck.user_group_name)# ";
 		}
