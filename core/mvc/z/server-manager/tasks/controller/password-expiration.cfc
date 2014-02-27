@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="index" access="remote" localmode="modern">
 	<cfscript>
+	db=request.zos.queryObject;
 	
 	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
@@ -17,7 +18,6 @@
 		arrayAppend(arrSite, "'"&row.site_id&"'");
 	}
 	siteIdList=arrayToList(arrSite, ",");
-	db=request.zos.queryObject;
 	db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# 
 	SET 
 	user_password = #db.param('')#,
