@@ -675,18 +675,18 @@ userCom.checkLogin(inputStruct);
 		ts.expires="now";
 		application.zcore.functions.zCookie(ts); 
 		</cfscript>
-		<cfcookie name="z_user_id" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="z_user_siteIdType" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="z_user_key" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="z_tmpusername2" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="z_tmppassword2" value="" expires="now" domain=".#request.zCookieDomain#">
+		<cfcookie name="z_user_id" value="" expires="now">
+		<cfcookie name="z_user_siteIdType" value="" expires="now">
+		<cfcookie name="z_user_key" value="" expires="now">
+		<cfcookie name="z_tmpusername2" value="" expires="now">
+		<cfcookie name="z_tmppassword2" value="" expires="now">
 		<cfif not arguments.retainToken>
-			<cfcookie name="ztoken" value="" expires="now" domain=".#request.zCookieDomain#">	
+			<cfcookie name="ztoken" value="" expires="now">	
 		</cfif>
-		<cfcookie name="inquiries_email" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="inquiries_first_name" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="inquiries_last_name" value="" expires="now" domain=".#request.zCookieDomain#">
-		<cfcookie name="inquiries_phone1" value="" expires="now" domain=".#request.zCookieDomain#">
+		<cfcookie name="inquiries_email" value="" expires="now">
+		<cfcookie name="inquiries_first_name" value="" expires="now">
+		<cfcookie name="inquiries_last_name" value="" expires="now">
+		<cfcookie name="inquiries_phone1" value="" expires="now">
 	</cfif>
 </cffunction>
 
@@ -763,15 +763,27 @@ userCom.checkLogin(inputStruct);
 	session.zOS[userSiteId].login_site_id = request.zos.globals.id;
 	
 	// have to use query for other site group access
-	if(ss.site_id NEQ request.zos.globals.id){
+	if(qUser.site_id NEQ request.zos.globals.id){
+		hasAllGroups=false
+		if(session.zOS[userSiteId].server_administrator EQ 1 or session.zOS[userSiteId].site_administrator EQ 1 or (session.zOS[userSiteId].site_id NEQ ss.site_id and session.zOS[userSiteId].access_site_children EQ 1)){
+			hasAllGroups=true;
+		}
 		db.sql="SELECT * FROM 
 		#db.table("user_group", request.zos.zcoreDatasource)# user_group, 
 		#db.table("user_group_x_group", request.zos.zcoreDatasource)# user_group_x_group 
 		WHERE user_group.user_group_id = user_group_x_group.user_group_id and 
-		user_group.site_id = #db.param(ss.site_id)# 
-		ORDER BY user_group_primary DESC";
+		user_group.site_id = user_group_x_group.site_id and 
+		user_group.site_id = #db.param(request.zos.globals.id)# ";
+		if(not hasAllGroups){
+			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
+			WHERE user_group_id = #db.param(qUser.user_group_id)# and 
+			site_id = #db.param(qSite.site_id)# ";
+			qGroupCheck=db.execute("qGroupCheck");
+			db.sql&=" user_group.user_group_name = #db.param(qGroupCheck.user_group_name)# ";
+		}
+		db.sql&=" ORDER BY user_group_primary DESC";
 		qUserGroup=db.execute("qUserGroup"); 
-		if(session.zOS[userSiteId].server_administrator EQ 1 or session.zOS[userSiteId].site_administrator EQ 1 or (session.zOS[userSiteId].site_id NEQ ss.site_id and session.zOS[userSiteId].access_site_children EQ 1)){
+		if(hasAllGroups){
 			// give access to all groups for server administrator or site administrator
 			if(qUserGroup.recordcount EQ 0 or qUserGroup.user_group_primary EQ 0){
 				application.zcore.template.fail("#this.comName#: updateSession: This site is missing a primary user group<br /><br /><a href=""#request.zOS.globals.serverDomain#/z/server-manager/admin/user/editSitePermissions?sid=#ss.site_id#"" target=""_blank"">Edit Site Permissions</a>",true);
@@ -781,14 +793,9 @@ userCom.checkLogin(inputStruct);
 				session.zOS[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
 			}
 		}else{
-			session.zOS[userSiteId].group_id = qUser.user_group_id;
-			try{
-				for(i=1;i LTE qusergroup.recordcount;i=i+1){
-					session.zOS[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
-				}
-			}catch(Any excpt){
-				application.zcore.template.fail("User Group ID is missing from database, #qUser.user_group_id#.  This id came from the user table 
-				WHERE user_id = #db.param(qUser.user_id)#",true);
+			session.zOS[userSiteId].group_id = qGroupCheck.user_group_id;
+			for(i=1;i LTE qusergroup.recordcount;i=i+1){
+				session.zOS[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
 			}
 		}
 		

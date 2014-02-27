@@ -147,10 +147,10 @@ if(isDefined('session.zos.listing.savedContentStruct') eq false){
 }
 </cfscript>
 <cfif isDefined('cookie.savedListingCount') eq false>
-	<cfcookie name="savedListingCount" value="0" expires="never" domain=".#request.zCookieDomain#">
+	<cfcookie name="savedListingCount" value="0" expires="never">
 </cfif>
 <cfif isDefined('cookie.savedContentCount') eq false>
-	<cfcookie name="savedContentCount" value="0" expires="never" domain=".#request.zCookieDomain#">
+	<cfcookie name="savedContentCount" value="0" expires="never">
 </cfif>
 <cfif form.saveAct EQ 'list'><cfscript>
 application.zcore.tracking.backOneHit();

@@ -108,15 +108,15 @@
     
     
 	</form></cfsavecontent>
-    <cfcookie name="z_user_id" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="z_user_siteIdType" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="z_user_key" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="z_tmpusername2" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="z_tmppassword2" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="inquiries_email" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="inquiries_first_name" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="inquiries_last_name" value="" expires="now" domain=".#request.zCookieDomain#">
-    <cfcookie name="inquiries_phone1" value="" expires="now" domain=".#request.zCookieDomain#">
+    <cfcookie name="z_user_id" value="" expires="now">
+    <cfcookie name="z_user_siteIdType" value="" expires="now">
+    <cfcookie name="z_user_key" value="" expires="now">
+    <cfcookie name="z_tmpusername2" value="" expires="now">
+    <cfcookie name="z_tmppassword2" value="" expires="now">
+    <cfcookie name="inquiries_email" value="" expires="now">
+    <cfcookie name="inquiries_first_name" value="" expires="now">
+    <cfcookie name="inquiries_last_name" value="" expires="now">
+    <cfcookie name="inquiries_phone1" value="" expires="now">
     <cfreturn theHTMLContent>
 </cffunction>
 
@@ -190,7 +190,6 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var inputStruct=0;
-	var local=structnew();
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
 	/*if(isdefined('request.zos.requestData.headers.origin')){
 	application.zcore.functions.zHeader("Access-Control-Allow-Origin",request.zos.requestData.headers.origin);
@@ -209,23 +208,24 @@
 	if(structkeyexists(form, 'tempToken')){
 		if(structkeyexists(application.zcore.tempTokenCache, form.tempToken)){
 			// force login for the token user_id
-			local.user_id=application.zcore.tempTokenCache[form.tempToken].user_id;
-			local.site_id=application.zcore.tempTokenCache[form.tempToken].site_id;
+			user_id=application.zcore.tempTokenCache[form.tempToken].user_id;
+			site_id=application.zcore.tempTokenCache[form.tempToken].site_id;
 			structdelete(application.zcore.tempTokenCache, form.tempToken); // this was a one time use cache
 			
 			
 			db.sql="select * from #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user 
-			WHERE user_id = #db.param(local.user_id)# and 
-			site_id = #db.param(local.site_id)#";
-			local.qUser=db.execute("qUser"); 
-			if(local.qUser.recordcount EQ 0){
+			WHERE user_id = #db.param(user_id)# and 
+			site_id = #db.param(site_id)#";
+			qUser=db.execute("qUser"); 
+			if(qUser.recordcount EQ 0){
 				writeoutput('{"success":false,"s":4}');
 			}else{
-				form.zUsername=local.qUser.user_username;
-				form.zPassword=local.qUser.user_password;
+				form.zUsername=qUser.user_username;
+				form.zPassword=qUser.user_password;
 				inputStruct = StructNew();
 				inputStruct.user_group_name = "user";
 				inputStruct.noRedirect=true;
+				inputStruct.secureLogin=true;
 				inputStruct.noLoginForm=true;
 				inputStruct.disableSecurePassword=true;
 				inputStruct.site_id = request.zos.globals.id;

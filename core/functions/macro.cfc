@@ -367,7 +367,7 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 	ts.expires="never";
 	structappend(arguments.ss,ts,false);
 	</cfscript>
-    <cfcookie name="#arguments.ss.name#" value="#arguments.ss.value#" expires="#arguments.ss.expires#" domain=".#request.zCookieDomain#">
+    <cfcookie name="#arguments.ss.name#" value="#arguments.ss.value#" expires="#arguments.ss.expires#">
 </cffunction>
 
 
