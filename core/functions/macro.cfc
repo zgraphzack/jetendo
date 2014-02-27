@@ -53,7 +53,7 @@
 		}
 		zArrDeferredFunctions.push(function(){
 			$("head").append('<meta name="google-translate-customization" content="8318d1ceea381a83-2a60f5eea54548f0-g68615e51ccfbcbfa-17" />');
-			zLoadFile("http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit","js");
+			zLoadFile("//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit","js");
 		});
 		</script>
 	</cfif>
