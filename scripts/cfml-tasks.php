@@ -116,8 +116,7 @@ function getTasks(){
 	return $arrTask;
 }
 
-set_time_limit(18000);
-ini_set('default_socket_timeout', 18000);
+set_time_limit(70);
 
 $isTestServer=zIsTestServer();
 
@@ -187,13 +186,6 @@ for($i=0;$i<count($arrTask);$i++){
 		array_push($arrRun, $task);
 	}
 }
-function logEntry($message){
-	global $taskLogPath;
-	$fp=fopen($taskLogPath."cfml-tasks.log", "a");
-	$m=date('l jS \of F Y h:i:s A').": ".$message."\n";
-	$r=fwrite($fp, $m);
-	fclose($fp);
-}
 if(count($arrRun) == 0){
 	echo("No tasks needed to run, exiting.\n");
 	exit;
@@ -204,27 +196,18 @@ if(file_exists($taskLogPathScheduler)){
 }
 file_put_contents($taskLogPathScheduler, $scheduleOutput);
 
+$script='/usr/bin/php "'.get_cfg_var("jetendo_scripts_path").'cfml-task-execute.php" ';
+$background=" > /dev/null 2>/dev/null &";
 
 for($i=0;$i<count($arrRun);$i++){
 	$task=$arrRun[$i];
-	echo "Running task: ".$task->url.": ";
-	logEntry("Running task: ".$task->url);
+	echo "Running task: ".$task->url."\n";
 	
 	if($isTestServer){
 		echo " this is test server, skipping task\n";
-		logEntry("Test server, skipping task: ".$task->url);
 	}else{
-		$contents=file_get_contents($task->url);
-		if($contents === FALSE){
-			echo "failed\n";
-			$contents="Connection failure";
-			logEntry("Task connection failure: ".$task->url);
-		}else{
-			echo "success\n";
-			logEntry("Task completed successfully: ".$task->url);
-		}
-		@unlink($taskLogPath.$task->logName);
-		file_put_contents($taskLogPath.$task->logName, $contents);
+		$phpCmd=$script.escapeshellarg($task->url)." ".$escapeshellarg($task->logName).$background;
+		`$phpCmd`;
 	}
 }
 
