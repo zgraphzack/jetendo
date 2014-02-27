@@ -135,7 +135,7 @@ if(file_exists($taskLogPathScheduler)){
 	$arrSchedule=explode("\n", trim(file_get_contents($taskLogPathScheduler)));
 	for($i=0;$i<count($arrSchedule);$i++){
 		$arr1=explode("\t", $arrSchedule[$i]);
-		if(count($arr1) == 2){
+		if(count($arr1) >= 2){
 			$arrScheduleMap[$arr1[0]]=$arr1[1];
 		}
 	}
@@ -181,7 +181,7 @@ for($i=0;$i<count($arrTask);$i++){
 			}
 		}
 	}
-	array_push($arrS, $task->logName."\t".$nextTime);
+	array_push($arrS, $task->logName."\t".$nextTime."\t".date('l jS \of F Y h:i:s A', $nextTime));
 	if($run){
 		array_push($arrRun, $task);
 	}
@@ -206,7 +206,7 @@ for($i=0;$i<count($arrRun);$i++){
 	if($isTestServer){
 		echo " this is test server, skipping task\n";
 	}else{
-		$phpCmd=$script.escapeshellarg($task->url)." ".$escapeshellarg($task->logName).$background;
+		$phpCmd=$script.escapeshellarg($task->url)." ".escapeshellarg($task->logName).$background;
 		`$phpCmd`;
 	}
 }
