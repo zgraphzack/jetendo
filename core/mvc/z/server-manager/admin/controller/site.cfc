@@ -1219,7 +1219,7 @@
 		</tr>
 		<tr>
 			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_mincat" id="site_enable_mincat" type="checkbox" value="1" <cfif form.site_enable_mincat EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Minify &amp; Concat of CSS/JS files?</td>
+			<td class="table-white"><input name="site_enable_mincat" id="site_enable_mincat" type="checkbox" value="1" <cfif form.site_enable_mincat EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Minify &amp; Concat of CSS/JS files? (Not working - needs rewrite)</td>
 		</tr>
 		<tr>
 			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
