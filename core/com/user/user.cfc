@@ -768,7 +768,7 @@ userCom.checkLogin(inputStruct);
 		if(session.zOS[userSiteId].server_administrator EQ 1 or session.zOS[userSiteId].site_administrator EQ 1 or (session.zOS[userSiteId].site_id NEQ ss.site_id and session.zOS[userSiteId].access_site_children EQ 1)){
 			hasAllGroups=true;
 		}
-		if(not hasAllGroups){
+		//if(not hasAllGroups){
 			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE user_group_id = #db.param(qUser.user_group_id)# and 
 			site_id = #db.param(qUser.site_id)# ";
@@ -786,7 +786,7 @@ userCom.checkLogin(inputStruct);
 			user_group.site_id = #db.param(request.zos.globals.id)# and 
 			user_group_x_group.user_group_id = #db.param(qGroupCheck2.user_group_id)# 
 			ORDER BY user_group_primary DESC";
-		}else{
+		/*}else{
 			db.sql="SELECT * FROM 
 			#db.table("user_group", request.zos.zcoreDatasource)# user_group, 
 			#db.table("user_group_x_group", request.zos.zcoreDatasource)# user_group_x_group 
@@ -795,7 +795,7 @@ userCom.checkLogin(inputStruct);
 			user_group.site_id = #db.param(request.zos.globals.id)# and 
 			user_group_x_group.user_group_id = #db.param(qUser.user_group_id)#  ";
 			db.sql&=" ORDER BY user_group_primary DESC";
-		}
+		}*/
 		qUserGroup=db.execute("qUserGroup"); 
 		if(hasAllGroups){
 			// give access to all groups for server administrator or site administrator
