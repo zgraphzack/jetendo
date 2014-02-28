@@ -354,6 +354,9 @@
 	if(structkeyexists(form, 'site_login_iframe_enabled') EQ false){
 		form.site_login_iframe_enabled=0;
 	}
+	if(structkeyexists(form, 'site_require_ssl_for_user') EQ false){
+		form.site_require_ssl_for_user=0;
+	}
 	if(structkeyexists(form, 'site_widget_builder_enabled') EQ false){
 		form.site_widget_builder_enabled=0;
 	}
@@ -1059,6 +1062,15 @@
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_domain", "table-error","table-white")#><input name="site_domain" type="text" size="70" maxlength="255" value="#form.site_domain#"></td>
 		</tr>
 		<tr >
+			<td class="table-list" style="vertical-align:top; width:140px;">Secure Domain:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_securedomain", "table-error","table-white")#><input name="site_securedomain" type="text" size="70" maxlength="255" value="#form.site_securedomain#"></td>
+		</tr>
+		
+		<tr >
+			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_require_ssl_for_user", "table-error","table-white")#><input name="site_require_ssl_for_user" type="checkbox" value="1" <cfif form.site_require_ssl_for_user EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require SSL for user logins? (Only works if Secure Domain field is not empty)</td>
+		</tr>
+		<tr >
 			<td class="table-list" style="vertical-align:top; width:140px;">Domain Aliases:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_domainaliases", "table-error","table-white")#><input name="site_domainaliases" type="text" size="70" maxlength="255" value="#form.site_domainaliases#"> (Enter a comma separated list of all allowed domain aliases. Example: test.client1.com,newsite.client2.com)</td>
 		</tr> 
@@ -1073,10 +1085,6 @@
 		<tr >
 			<td class="table-list" style="vertical-align:top; width:140px;">Bulk Email Signature:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_signature", "table-error","table-white")#><textarea name="site_email_signature" type="text" cols="70" rows="6">#form.site_email_signature#</textarea><br />Note: Don't use html here.</td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Secure Domain:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_securedomain", "table-error","table-white")#><input name="site_securedomain" type="text" size="70" maxlength="255" value="#form.site_securedomain#"></td>
 		</tr>
 		<tr>
 			<td class="table-list" style="vertical-align:top; width:140px;">Site Root:</td>
@@ -1148,6 +1156,7 @@
 			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_login_iframe_enabled", "table-error","table-white")#><input name="site_login_iframe_enabled" type="checkbox" value="1" <cfif form.site_login_iframe_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Iframe Login?</td>
 		</tr>
+
         
 		<tr >
 			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
