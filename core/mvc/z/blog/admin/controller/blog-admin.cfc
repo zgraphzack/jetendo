@@ -2244,7 +2244,7 @@ tabCom.enableSaveButtons();
     </tr>
     <!--- <tr> 
     <th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.blog.formcat blog_category_enable_events")#</th>
-    <td style="vertical-align:top; ">#application.zcore.functions.zInput_Boolean("blog_category_enable_events", form.blog_category_enable_events)# (Events will not appear on blog home page)</td>
+    <td style="vertical-align:top; ">#application.zcore.functions.zInput_Boolean("blog_category_enable_events")# (Events will not appear on blog home page)</td>
     </tr> --->
     </table>
 

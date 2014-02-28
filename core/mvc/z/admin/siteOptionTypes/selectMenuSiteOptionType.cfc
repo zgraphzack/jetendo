@@ -266,7 +266,10 @@
 		<div id="typeOptions7" style="display:none;padding-left:30px;"> 
 			<table style="border-spacing:0px;">
 			<tr><td>Multiple Selections: </td><td>
-			#application.zcore.functions.zInput_Boolean("selectmenu_multipleselection", application.zcore.functions.zso(arguments.optionStruct, "selectmenu_multipleselection", true, 0))#</td></tr>
+			<cfscript>
+			form.selectmenu_multipleselection=application.zcore.functions.zso(arguments.optionStruct, "selectmenu_multipleselection", true, 0);
+			echo(application.zcore.functions.zInput_Boolean("selectmenu_multipleselection"));
+			</cfscript></td></tr>
 			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> (Makes more options visible for easier multiple selection)</td></tr>
 			<tr><td colspan="2">Configure a manually entered list of values: </td></tr>
 			<tr>
@@ -480,6 +483,9 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 					var newvalue#arguments.site_option_id#IgnoreId=#application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0)#;
 					$("##'&selectStruct.name&'").multiselect({
 						click: function(event, ui){
+							if(ui.value==''''){
+								return false;
+							}
 							if(ui.checked && ui.value == newvalue#arguments.site_option_id#IgnoreId){
 								alert("You can''t select the same element you are editing.");
 								$(event.currentElement).each(function(){ this.checked=false; });
@@ -494,9 +500,6 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 		}
 		selectStruct.output=false;
 		local.tempOutput=application.zcore.functions.zInputSelectBox(selectStruct);
-		if(selectStruct.multiple){
-			local.tempOutput='<p>Press and hold CTRL or Command key to select multiple options.</p>'&local.tempOutput;
-		}
 		return replace(local.tempOutput, "_", "&nbsp;", "all");
 	}else{
 		return "";
