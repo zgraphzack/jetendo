@@ -1403,7 +1403,7 @@
 		qD=curCache.qD;
 	}
 	local.newDataStruct={};
-	
+	local.newDataMappedStruct={};
 	var optionStructCache={};
 	form.siteOptionTitle="";
 	form.siteOptionSummary="";
@@ -1445,12 +1445,13 @@
 			continue;
 		}
 		dataStruct=currentCFC.onBeforeListView(row, optionStruct, form);
+		local.newDataMappedStruct[row.site_option_name]=currentCFC.getListValue(dataStruct, optionStruct, nv);
 		if(hasSummaryField){
 			if(row.site_option_search_summary_field EQ 1){
 				if(len(form.siteOptionSummary)){
-					form.siteOptionSummary&=" "&currentCFC.getListValue(dataStruct, optionStruct, nv);
+					form.siteOptionSummary&=" "&local.newDataMappedStruct[row.site_option_name];
 				}else{
-					form.siteOptionSummary=currentCFC.getListValue(dataStruct, optionStruct, nv);
+					form.siteOptionSummary=local.newDataMappedStruct[row.site_option_name];
 				}
 			}
 		}
@@ -1458,21 +1459,21 @@
 		if(hasTitleField){
 			if(row.site_option_url_title_field EQ 1){
 				if(len(form.siteOptionTitle)){
-					form.siteOptionTitle&=" "&currentCFC.getListValue(dataStruct, optionStruct, nv);
+					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
 				}else{
-					form.siteOptionTitle=currentCFC.getListValue(dataStruct, optionStruct, nv);
+					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
 				}
 			}
 		}else{
 			if(not hasPrimaryField){
 				if(form.siteOptionTitle EQ ""){
-					form.siteOptionTitle=currentCFC.getListValue(dataStruct, optionStruct, nv); 
+					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name]; 
 				}
 			}else if(row.site_option_primary_field EQ 1){
 				if(len(form.siteOptionTitle)){
-					form.siteOptionTitle&=" "&currentCFC.getListValue(dataStruct, optionStruct, nv);
+					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
 				}else{
-					form.siteOptionTitle=currentCFC.getListValue(dataStruct, optionStruct, nv);
+					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
 				}
 			}
 		}
@@ -1760,10 +1761,10 @@
 	}
 	if(local.mapRecord){
 		if(local.qCheck.site_option_group_map_fields_type EQ 1){ 
-			local.newDataStruct.site_option_group_id =form.site_option_group_id;
+			local.newDataMappedStruct.site_option_group_id =form.site_option_group_id;
 			form.inquiries_type_id =local.qCheck.inquiries_type_id;
-			local.newDataStruct.inquiries_type_id =local.qCheck.inquiries_type_id;
-			variables.mapDataToInquiries(local.newDataStruct, form, local.sendEmail); 
+			local.newDataMappedStruct.inquiries_type_id =local.qCheck.inquiries_type_id;
+			variables.mapDataToInquiries(local.newDataMappedStruct, form, local.sendEmail); 
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_map_group_id NEQ 0){
 				local.groupIdBackup2=local.qCheck.site_option_group_map_group_id;
@@ -1874,17 +1875,17 @@ Define this function in another CFC to override the default email format
  
 <!--- variables.mapDataToInquiries(form); --->
 <cffunction name="mapDataToInquiries" localmode="modern" access="public">
-	<cfargument name="newDataStruct" type="struct" required="yes">
+	<cfargument name="newDataMappedStruct" type="struct" required="yes">
 	<cfargument name="sourceStruct" type="struct" required="yes">
 	<cfargument name="disableEmail" type="boolean" required="no" default="#false#">
 	<cfscript>
-	var ts=arguments.newDataStruct;
+	var ts=arguments.newDataMappedStruct;
 	var rs=0;
 	var row=0;
-	var db=request.zos.queryObject;  
+	var db=request.zos.queryObject; 
 	form.inquiries_spam=application.zcore.functions.zso(form, 'inquiries_spam', false, 0);
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
-	WHERE site_option_group_id = #db.param(arguments.newDataStruct.site_option_group_id)# and 
+	WHERE site_option_group_id = #db.param(ts.site_option_group_id)# and 
 	site_id = #db.param(request.zos.globals.id)# "; 
 	local.qGroup=db.execute("qGroup"); 
 	db.sql="select site_option_group_map.*, s2.site_option_display_name, s2.site_option_name originalFieldName from 
