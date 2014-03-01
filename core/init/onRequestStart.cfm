@@ -786,7 +786,6 @@
 				runningTask=true;
 			}
 			if(not runningTask and not application.zcore.user.checkServerAccess()){
-				echo('what');abort;
 				ts = StructNew();
 				ts.secureLogin=true;
 				ts.noRedirect=true;
