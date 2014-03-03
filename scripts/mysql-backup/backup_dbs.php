@@ -259,16 +259,13 @@ while ($db_row = mysql_fetch_object($db_result)) {
 		$table=$row2['Tables_in_'.$db];
 		$tableFileName=preg_replace('/[^A-Za-z0-9_\-]/', '_', $table);
 		unset( $output ); 
-		echo "Dumping DB: " . $db." Table: ".$table.": ";
-		writeLog( "Dumping DB: " . $db." Table: ".$table );
-		$cmd="/usr/bin/mysqldump $db_auth --quick --no-create-db --no-create-info --single-transaction --opt ".escapeshellarg($db)." ".escapeshellarg($table)." 2>&1 >$BACKUP_TEMP/$db/$tableFileName.sql";
+		$cmd="/usr/bin/mysqldump $db_auth --quick --no-create-db --no-create-info --single-transaction --opt --skip-lock-tables  ".escapeshellarg($db)." ".escapeshellarg($table)." 2>&1 >$BACKUP_TEMP/$db/$tableFileName.sql";
 		echo $cmd."\n";
+		writeLog( "Dumping DB: " . $db." Table: ".$table );
 		exec($cmd, $output, $res);
 		if( $res > 0 ) {
-			echo "Failed\n";
 			error( true, "Failed: ".implode( "\n", $output) );
 		} else {
-			echo	"Success\n";
 			writeLog( "Success\n" );
 		} // if
 	}
