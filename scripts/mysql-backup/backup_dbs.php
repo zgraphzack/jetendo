@@ -241,31 +241,48 @@ while ($db_row = mysql_fetch_object($db_result)) {
 		continue;
 	}
 
-	// dump db
+	$cmd="/bin/rm -rf ".escapeshellarg($BACKUP_TEMP."/".$db);
+	echo $cmd."\n";
+	`$cmd`;
+	@mkdir($BACKUP_TEMP."/".$db, 0600);
 	unset( $output ); 
-	/*if($db == "zmlsdata" || $db == "mls_data"){
-		exec( "mysqldump -d $db_auth --quick --single-transaction --opt $db 2>&1 >$BACKUP_TEMP/$db.sql", $output, $res);
-	}else{*/
-		echo "mysqldump $db_auth --quick --single-transaction --opt $db 2>&1 >$BACKUP_TEMP/$db.sql\n";
-		exec( "mysqldump $db_auth --quick --single-transaction --opt $db 2>&1 >$BACKUP_TEMP/$db.sql", $output, $res);
-//	}
+	// dump db schema
+	$cmd = "/usr/bin/mysqldump --no-data --triggers $db_auth ".escapeshellarg($db)." 2>&1 >$BACKUP_TEMP/$db/schema.sql";
+	echo $cmd."\n";
+	exec($cmd, $output, $res);
 	if( $res > 0 ) {
-		error( true, "DUMP FAILED\n".implode( "\n", $output) );
-	} else {
-		writeLog( "Dumped DB: " . $db );
-
-		if( $OPTIMIZE ) {
-			unset( $output );
-			exec( "mysqlcheck $db_auth --optimize $db 2>&1", $output, $res);
-			if( $res > 0 ) {
-				error( true, "OPTIMIZATION FAILED\n".implode( "\n", $output) );
-			} else {
-				writeLog( "Optimized DB: " . $db );
-			}
+		error( true, "Schema dump failed for $db\n".implode( "\n", $output) );
+	}
+	
+	$result= mysql_query('show tables in `'.$db.'`', $db_conn);
+	while ($row2 = mysql_fetch_array($result)) {
+		$table=$row2['Tables_in_'.$db];
+		$tableFileName=preg_replace('/[^A-Za-z0-9_\-]/', '_', $table);
+		unset( $output ); 
+		echo "Dumping DB: " . $db." Table: ".$table.": ";
+		writeLog( "Dumping DB: " . $db." Table: ".$table );
+		$cmd="/usr/bin/mysqldump $db_auth --quick --no-create-db --no-create-info --single-transaction --opt ".escapeshellarg($db)." ".escapeshellarg($table)." 2>&1 >$BACKUP_TEMP/$db/$tableFileName.sql";
+		echo $cmd."\n";
+		exec($cmd, $output, $res);
+		if( $res > 0 ) {
+			echo "Failed\n";
+			error( true, "Failed: ".implode( "\n", $output) );
+		} else {
+			echo	"Success\n";
+			writeLog( "Success\n" );
 		} // if
-	} // if
+	}
 
-	// compress db
+	if( $OPTIMIZE ) {
+		unset( $output );
+		exec( "/usr/bin/mysqlcheck $db_auth --optimize ".escapeshellarg($db)." 2>&1", $output, $res);
+		if( $res > 0 ) {
+			error( true, "OPTIMIZATION FAILED\n".implode( "\n", $output) );
+		} else {
+			writeLog( "Optimized DB: " . $db );
+		}
+	} // if
+		
 	unset( $output );
 	/*if( $os == 'unix' ) {
 		exec( "$USE_NICE $COMPRESSOR $BACKUP_TEMP/$db.sql 2>&1" , $output, $res );
