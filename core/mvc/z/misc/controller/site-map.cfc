@@ -47,6 +47,9 @@
 			writeoutput('<li><a href="'&replace(arrUrl[i].url,request.zos.globals.domain, request.zos.currentHostName)&'">'&htmleditformat(arrUrl[i].title)&'</a></li>');
 		}
 	}
+	writeoutput('<li><a href="/z/user/privacy/index" target="_blank">Privacy Policy & Cookies</a></li>');
+	writeoutput('<li><a href="/z/user/terms-of-use/index" target="_blank">Terms of Use</a></li>');
+	writeoutput('<li><a href="/z/misc/system/legal" target="_blank">Legal Notices</a></li>');
 	writeoutput('<li><a href="/sitemap.xml.gz" target="_blank">XML Site Map</a></li>');
 	writeoutput('</ul>');
 	</cfscript>
