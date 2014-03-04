@@ -498,6 +498,15 @@ USER WAS PERMANENTLY BLOCKED.');
 user ip: #request.zos.cgi.remote_addr#<br />
 user agent: #request.zos.cgi.HTTP_USER_AGENT#<br />
 <br />
+<cfscript>	
+if(structkeyexists(request.zos, 'arrRunTime')){
+	writeoutput('<h2>Script Run Time Measurements</h2>');
+	arrayprepend(request.zos.arrRunTime, {time:request.zos.startTime, name:'Application.cfc onCoreRequest Start'});
+	for(i=2;i LTE arraylen(request.zos.arrRunTime);i++){
+		writeoutput(((request.zos.arrRunTime[i].time-request.zos.arrRunTime[i-1].time)/1000000000)&' seconds | '&request.zos.arrRunTime[i].name&'<br />');	
+	}
+}
+</cfscript>
 <a href="#request.zos.globals.serverDomain#/z/server-manager/admin/recent-requests/index?force=1">Click here to view recent request history.</a>
 
 </body>
