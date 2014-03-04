@@ -144,8 +144,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 		if(row.site_option_group_user_group_id_list NEQ ""){
 			arrGroup=listToArray(row.site_option_group_user_group_id_list, ",");
 			groupNameStruct={};
-			for(n=1;n LTE arraylen(arrGroupName);n++){
-				arrayAppend(groupNameStruct, variables.userGroupCom.getGroupName(user_group_id, request.zos.globals.id)); 
+			for(n=1;n LTE arraylen(arrGroup);n++){
+				arrayAppend(groupNameStruct, variables.userGroupCom.getGroupName(arrGroup[n], request.zos.globals.id)); 
 			}
 			row.userGroupNameJSON=serializeJson(groupNameStruct);
 		}
@@ -673,6 +673,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 
 <cffunction name="exportData" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript>
+	variables.userGroupCom=createobject("component", "zcorerootmapping.com.user.user_group_admin");
 	header name="Content-Type" value="text/plain" charset="utf-8";
 	if(structkeyexists(form, 'download')){
 		header name="Content-Disposition" value="attachment; filename=json.txt" charset="utf-8";
