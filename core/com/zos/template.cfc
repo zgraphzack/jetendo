@@ -662,6 +662,9 @@ for(local.row in local.qSite){
 	var cfcCreatePath="";
 	var sp=request.zos.globals.privateHomeDir&"_cache/scripts/templates"; 
 	application.zcore.functions.zIncludeZOSFORMS();
+
+	appendTag("stylesheets", "<!-- This is a copyrighted work. The owner of this web site reserves all rights to the content of this web site. #chr(10)#"&
+	"Review the legal notices at the following url for more information: #request.zos.globals.domain#/z/misc/system/legal  -->");
 	request.zos.templateData.building=true;
 	if(not structkeyexists(application.zcore, 'templateCFCCache')){
 		application.zcore.templateCFCCache={};
