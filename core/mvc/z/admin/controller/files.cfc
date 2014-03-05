@@ -154,7 +154,6 @@
 <cfscript>
 	var ts=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images");	
-	application.zcore.template.setTemplate('zcorerootmapping.templates.blank',true,true);
 	form.galleryMode=true; 
 	request.zos.fileImage.absDir=application.zcore.functions.zvar('privatehomedir')&'zupload/user/'; 
 	request.zos.fileImage.siteRootDir='/zupload/user';
@@ -187,6 +186,7 @@
 	if(form.method EQ "gallery"){
 		this.index();
 	}
+	application.zcore.template.setTemplate('zcorerootmapping.templates.blank',true,true);
 	</cfscript>
 	<script type="text/javascript">
 	if(window.parent.Sizer){
