@@ -266,16 +266,21 @@
 		}
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0simple stuff<br />');	local.s=gettickcount('nano');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0<br />');	local.s=gettickcount('nano');
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart1'});
 		variables.onRequestStart1();
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart12'});
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds1<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart12();
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart2'});
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds12<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart2();
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart3'});
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds2<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart3();
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart4'});
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds3<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart4();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart end'});
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart after onRequestStart4'});
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds4<br />');	local.s=gettickcount('nano');
 	}
 	if(request.zos.isDeveloper and structkeyexists(form, 'displayRunTime')){
