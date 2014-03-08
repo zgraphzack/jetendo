@@ -81,7 +81,7 @@ if(zo('zlogout',false) !== false){
 }
 
 if($npasscode != get_cfg_var("jetendo_company_upload_password")){
-	echo '<h2>Send Secure Message to Far Beyond Code LLC</h2>
+	echo '<h2>Send Secure Message to '.get_cfg_var("jetendo_company_name").'</h2>
 <h2>Please Login:</h2>
 <form action="/z/index.php?method=secure-message" method="post">
 Password: <input type="password" name="npasscode" autocomplete="off" value="" /> <input type="submit" name="Submit1" value="Login" />
@@ -143,13 +143,20 @@ File Count: '.count($arrFiles).' file(s).
 Login to client upload area to download the file(s):
 ';
 		for($i=0;$i < count($arrFiles);$i++){
-			$eBody.='File '.$i.': '.$arrFiles[$i].'
+			$eBody.='File '.($i+1).': '.$arrFiles[$i].'
 		';
 		}
 	
 		$r=mail($devEmailTo,"Secure message sent to ".$_SERVER['HTTP_HOST'], $eBody, "From: <".$devEmailFrom.">\nReply-To: \"Error\" <".$devEmailFrom.">\nX-Mailer: php" );
 		if(!$r){
 			echo '<h2>Email notification failed</h2><p>Please contact us via email to check our secure upload repository.</p>';
+		}
+		$cEmail=zo('content_client_email');
+		if($cEmail != ''){
+			$r=mail($cEmail,"Secure message sent to ".$_SERVER['HTTP_HOST'], $eBody, "From: <".$devEmailFrom.">\nReply-To: \"Error\" <".$devEmailFrom.">\nX-Mailer: php" );
+			if(!$r){
+				echo '<h2>Email confirmation to yourself failed</h2><p>Please contact us via email to verify your upload was successful.</p>';
+			}
 		}
 		echo '<h1>Transfer complete<br /><br />Your secure message has been delivered.  ID:'.$dirName.'</h1><p>You can send another message below or close this window.</p>';
 		exit;
@@ -180,7 +187,7 @@ Please do not close your browser until the confirmation message is displayed.</p
 		</tr>
 		<tr>
 		<th>Your Email</th>
-		<td><input type="text" size="50" name="content_client_email" value="'.htmlentities(zo('content_client_email')).'">
+		<td><input type="text" size="50" name="content_client_email" value="'.htmlentities(zo('content_client_email')).'"> (Used to identify you and send you a confirmation email)
 		</td>
 		</tr>
 		<tr>
