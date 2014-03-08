@@ -637,14 +637,24 @@ if(not rs.success){
 	for(local.i=1;local.i LTE arraylen(arrMvcPaths);local.i++){
 		arrMvcPaths[local.i]=request.zRootCFCPath&arrMvcPaths[local.i];
 	} 
+	if(directoryexists(request.zos.installPath&"themes/"&arguments.ss.globals.themeName&"/mvc/")){
+		arrayAppend(arrMvcPaths, "jetendo-themes."&arguments.ss.globals.themeName&".mvc");
+	}
 	</cfscript>
 	<!--- get all models, controllers and views in the mvc path and precache or precompile them into the application scope --->
 	<cfloop from="1" to="#arraylen(arrMvcPaths)#" index="local.i2">
 		<cfscript>
 		local.i=local.i2;
-		local.curPath=replace(expandpath('/'&replace(arrMvcPaths[local.i],'.','/','all')),"\","/","all");
+		if(left(arrMvcPaths[local.i], 15) EQ "jetendo-themes."){
+			local.curPath=replace(expandpath(request.zos.installPath&"themes/"&replace(removechars(arrMvcPaths[local.i], 1, 15),'.','/','all')),"\","/","all");
+		}else{
+			local.curPath=replace(expandpath('/'&replace(arrMvcPaths[local.i],'.','/','all')),"\","/","all");
+		}
 		</cfscript>
 		<cfdirectory action="list" recurse="yes" directory="#local.curPath#" name="local.qD" filter="*.cfc|*.html">
+			<!--- <cfif qd.recordcount>
+	<cfdump var="#qD#"><cfabort>
+</cfif> --->
 		<cfloop query="local.qD">
 			<cfscript>
 			if(local.qD.type EQ "file"){
@@ -665,7 +675,6 @@ if(not rs.success){
 				if(local.lastFolderName EQ "controller"){
 					if(local.curExt EQ "cfc"){
 						local.comPath=arrMvcPaths[local.i]&"."&local.curPath3&"."&local.curName;
-						
 						local.tempCom=createobject("component", local.comPath);
 						
 						ts.controllerComponentCache[local.comPath]=local.tempCom;
