@@ -267,6 +267,7 @@
 		}
 		if(request.zos.routingIsCFC and structkeyexists(form,'method')){
 			this.checkCFCSecurity(request.zos.scriptNameTemplate, form.method);
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'routing.cfc after checkCFCSecurity'});
 			request.zos.currentController=request.zos.scriptNameTemplate;
 			//writeoutput('in isCFC'&request.zos.routingDisableComponentInvoke);
 			if(request.zos.routingDisableComponentInvoke EQ false){
@@ -307,7 +308,9 @@
 			if(compare(request.zos.globals.id, request.zos.globals.serverid) EQ 0){
 				comPath="zcorerootmapping."&comPath;
 			}else{
-				comPath=request.zRootCFCPath&comPath;	
+				if(left(comPath, 15) NEQ "jetendo-themes."){
+					comPath=request.zRootCFCPath&comPath;	
+				}
 			}
 		}
 		if(comPath CONTAINS ".test."){
