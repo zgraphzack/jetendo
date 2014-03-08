@@ -493,7 +493,7 @@ USER WAS PERMANENTLY BLOCKED.');
 
 <body>
 <strong style="font-size:14px;">Jetendo CMS Slow Script Alert</strong><br /><br />
-<a href="#request.zos.cgi.HTTP_HOST##request.zos.cgi.SCRIPT_NAME#?#request.zos.cgi.QUERY_STRING#">#request.zos.cgi.HTTP_HOST##request.zos.cgi.SCRIPT_NAME#?#request.zos.cgi.QUERY_STRING#</a><br />
+<a href="http://#request.zos.cgi.HTTP_HOST##request.zos.originalURL#?#request.zos.cgi.QUERY_STRING#">http://#request.zos.cgi.HTTP_HOST##request.zos.originalURL#?#request.zos.cgi.QUERY_STRING#</a><br />
 #(gettickcount('nano')-request.zos.startTime)/1000000000# seconds to complete<br />
 user ip: #request.zos.cgi.remote_addr#<br />
 user agent: #request.zos.cgi.HTTP_USER_AGENT#<br />
