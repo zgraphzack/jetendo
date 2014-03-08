@@ -218,7 +218,7 @@ this.remapFieldStruct=t5;
 	curLat=ts["rets22_list_46"];
 	curLong=ts["rets22_list_47"];
 	if(curLat EQ "" and trim(address) NEQ ""){
-		rs5=this.baseGetLatLong(address,ts['State/Province'],ts['zip code']);
+		rs5=this.baseGetLatLong(address,ts['State/Province'],ts['zip code'], arguments.ss.listing_id);
 		curLat=rs5.latitude;
 		curLong=rs5.longitude;
 	}

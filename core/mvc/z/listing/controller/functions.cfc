@@ -243,28 +243,16 @@ ts.address="";
 zGetLatLong(ts);
  --->
 <cffunction name="zGetLatLong" localmode="modern">
-<cfargument name="ss" type="struct" required="yes">
-<cfscript>
-var qCC2=0;
-		var db=request.zos.queryObject;
-var r1=0;
-var r2=0;
-var curF=0;
-var arrLines=0;
-var curStatus=0;
-var i=0;
-var arrF=0;
-var theLink="";
-var errorMsg="";
-var sql=0;
-var rs=structnew();
-var ts=structnew();
-rs.latitude="0";
-rs.longitude="0";
-rs.error=false;
-rs.errorMessage="";
-ts.debug=false;
-structappend(arguments.ss,ts,false);
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	var rs=structnew();
+	var ts=structnew();
+	rs.latitude="0";
+	rs.longitude="0";
+	rs.error=false;
+	rs.errorMessage="";
+	ts.debug=false;
+	structappend(arguments.ss,ts,false);
 
 	if(arguments.ss.debug EQ false){
 		theLink='http://maps.google.com/maps/geo?q=#urlencodedformat(arguments.ss.address)#&output=csv&oe=utf8&sensor=false&key=#request.zos.globals.googlemapsapikey#';
@@ -306,18 +294,6 @@ structappend(arguments.ss,ts,false);
 			rs.error=true;
 			rs.errorMessage="Google maps geocoder had an unknown error: #arrLines[i]#";
 		}
-	}
-	sql="REPLACE INTO #db.table("listing_latlong", request.zos.zcoreDatasource)#  
-	SET listing_latlong_latitude=#db.param(rs.latitude)#,
-	listing_latlong_longitude=#db.param(rs.longitude)#, 
-	listing_latlong_address=#db.param(arguments.ss.address)#, 
-	listing_latlong_accuracy=#db.param(rs.accuracy)#,
-	listing_latlong_status=#db.param(curStatus)# ";
-	if(arguments.ss.debug){
-		writeoutput(sql&"<br />");
-		application.zcore.functions.zabort();
-	}else{
-		//db.sql=sql;db.execute("q"); 
 	}
 	</cfscript><cfif rs.errorMessage NEQ ""><cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" charset="utf-8" subject="zGetLatLong error">Address: #arguments.ss.address#
     URL: #theLink#

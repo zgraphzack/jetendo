@@ -317,7 +317,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 		curLat='';
 		curLong='';
 		if(trim(address) NEQ ""){
-			rs5=this.baseGetLatLong(address,ts['state id'],ts['zip code']);
+			rs5=this.baseGetLatLong(address,ts['state id'],ts['zip code'], arguments.ss.listing_id);
 			curLat=rs5.latitude;
 			curLong=rs5.longitude;
 		}

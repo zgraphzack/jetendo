@@ -144,7 +144,7 @@
 		curLat="";
 		curLong="";
 		if(trim(address) NEQ ""){
-			rs5=this.baseGetLatLong(address,application.zcore.functions.zso(ts, 'rets4_stateorprovince'),application.zcore.functions.zso(ts, 'rets4_postalcode'));
+			rs5=this.baseGetLatLong(address,application.zcore.functions.zso(ts, 'rets4_stateorprovince'),application.zcore.functions.zso(ts, 'rets4_postalcode'), arguments.ss.listing_id);
 			curLat=rs5.latitude;
 			curLong=rs5.longitude;
 		}

@@ -89,7 +89,7 @@
 		curLong='';
 		address=listing_data_address;
 		if(trim(address) NEQ ""){
-			rs5=this.baseGetLatLong(address,ts['rets14_stateorprovince'],ts['rets14_zip']);
+			rs5=this.baseGetLatLong(address,ts['rets14_stateorprovince'],ts['rets14_zip'], arguments.ss.listing_id);
 			curLat=rs5.latitude;
 			curLong=rs5.longitude;
 		}

@@ -268,61 +268,28 @@
 	<cfargument name="address" type="string" required="yes">
 	<cfargument name="state" type="string" required="yes">
 	<cfargument name="zip" type="string" required="yes">
+	<cfargument name="listing_id" type="string" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var rs=structnew();
-	var r2="";
-	var curLat="";
-	var local=structnew();
-	var curLong="";
-	var arrF=0;
-	var i=0;
-	var arrLines=0;
-	var curF=0;
-	var status="";
-	var maxAccuracy=0;
-	var qd=0;
-	var ad1="";
-	var r1=0;
-	var pos=0;
 	rs.latitude="";
 	rs.longitude="";
 	rs.accuracy="";
-	ad1=trim(arguments.address);
-	if(left(ad1,1) EQ "##"){
-		ad1=trim(removechars(ad1,1,1));	
-	}
-	pos=findnocase(" unit",ad1);
-	if(pos NEQ 0){
-		ad1=left(ad1,pos);
-	}
-	pos=findnocase(" bldg",ad1);
-	if(pos NEQ 0){
-		ad1=left(ad1,pos);
-	}
-	pos=findnocase("##",ad1);
-	if(pos GTE 2){
-		ad1=left(ad1,pos-1);
-	}
-	if(trim(ad1) EQ ""){
-		return rs;
-	}
-	arguments.address=arraytolist(listtoarray(replace(replace(lcase(trim(ad1)),'"',' ',"ALL"),chr(9)," ","all")," ",false)," ");
-	rs.address=arguments.address;
-	arguments.address&=", "&arguments.state;
-	db.sql="SELECT * FROM #db.table("listing_latlong", request.zos.zcoreDatasource)# listing_latlong 
-	WHERE listing_latlong_address = #db.param(arguments.address)# and 
-	listing_latlong_zip = #db.param(arguments.zip)# and 
-	listing_latlong_latitude<>#db.param('')# and 
-	listing_latlong_status=#db.param('OK')# and 
-	listing_latlong_accuracy=#db.param('ROOFTOP')# ";
+	db.sql="SELECT * FROM #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates 
+	WHERE listing_id = #db.param(arguments.listing_id)# and 
+	listing_coordinates_address = #db.param(arguments.address)# and 
+	listing_coordinates_zip = #db.param(arguments.zip)# and 
+	listing_coordinates_latitude<>#db.param('')# and 
+	listing_coordinates_status=#db.param('OK')# and 
+	listing_coordinates_accuracy=#db.param('ROOFTOP')# ";
 	qD=db.execute("qD");
-        if(qD.recordcount NEQ 0){
-		rs.latitude=qD.listing_latlong_latitude;
-		rs.longitude=qD.listing_latlong_longitude;
-        }
-        return rs;
-        </cfscript>
+	if(qD.recordcount NEQ 0){
+		rs.latitude=qD.listing_coordinates_latitude;
+		rs.longitude=qD.listing_coordinates_longitude;
+		rs.accuracy=qD.listing_coordinates_accuracy;
+	}
+	return rs;
+	</cfscript>
 </cffunction>
 
 <cffunction name="baseInitImport" localmode="modern" output="no" returntype="any">

@@ -543,9 +543,9 @@
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-6'});
 	if(request.zos.zreset EQ "app" and structkeyexists(application, 'zcore') and structkeyexists(form, 'zforcelisting') EQ false and structkeyexists(application.zcore,'listing') and structkeyexists(application.zcore,'listingStruct')){
 		ts.listingStruct=application.zcore.listingStruct;
-		ts.listingCom=application.zcore.listing;
+		ts.listingCom=application.zcore.listingCom;
 		if(request.zos.allowRequestCFC){
-			request.zos["listingCom"]=ts.listing;
+			request.zos["listingCom"]=ts.listingCom;
 		}
 	}else{
 		ts.listingCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.listing");

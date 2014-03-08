@@ -3639,23 +3639,23 @@ function zGeocodeAddress() {
 			for(var i=0;i<results.length;i++){
 				var a2=new Array();
 				a2[0]=results[i].types.join(",");
-				if(a2[0]=="street_address" && arrAddressZipLat[curIndex] != 0 && arrAddressZipLong[curIndex] != 0){
+				if(a2[0]=="street_address"){// && arrAddressZipLat[curIndex] != 0 && arrAddressZipLong[curIndex] != 0){
 					a2[1]=results[i].formatted_address;
 					a2[2]=results[i].geometry.location.lat()
 					a2[3]=results[i].geometry.location.lng();
 					a2[4]=results[i].geometry.location_type;
 					var a3=a2.join("\t");
-					var k=zGetMapDistance(arrAddressZipLat[curIndex], arrAddressZipLong[curIndex], a2[2], a2[3]);
+					/*var k=zGetMapDistance(arrAddressZipLat[curIndex], arrAddressZipLong[curIndex], a2[2], a2[3]);
 					if(k >= 50){
 						// the distance is beyond reasonable - this one is invalid
-					}else{
+					}else{*/
 						a1.push(a3);  
-					}
+					//}
 					break;	
 				}
 			}
 			r=a1.join("\n");
-			if(debugajaxgeocoder) f1.value+=r+"\n";
+			if(debugajaxgeocoder) f1.value+="Result:"+r+"\n";
 		} else if(status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT || status == google.maps.GeocoderStatus.REQUEST_DENIED){
 			// serious error condition
 			stopGeocoding=true; 
@@ -3686,7 +3686,7 @@ function zGeocodeAddress() {
 		$.ajax({
 			type: "post",
 			url: "/z/listing/ajax-geocoder/index?action=save"+debugurlstring,
-			data:{ results: r, listing_id: arrListingId[curIndex], address: arrAddress[curIndex], originaladdress: arrAddressOriginal[curIndex], zip: arrAddressZip[curIndex], status: curStatus },
+			data:{ results: r, listing_id: arrListingId[curIndex], address: arrAddress[curIndex], zip: arrAddressZip[curIndex], status: curStatus },
 			dataType:"text",
 			success: function(data){
 				if(debugajaxgeocoder) f1.value+="Data saved with status="+data+"\n";

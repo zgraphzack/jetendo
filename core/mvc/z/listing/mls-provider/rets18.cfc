@@ -127,7 +127,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 		curLat='';
 		curLong='';
 		if(trim(address) NEQ ""){
-			rs5=this.baseGetLatLong(address,application.zcore.functions.zso(ts, 'rets18_state'),application.zcore.functions.zso(ts, 'rets18_zipcode'));
+			rs5=this.baseGetLatLong(address,application.zcore.functions.zso(ts, 'rets18_state'),application.zcore.functions.zso(ts, 'rets18_zipcode'), arguments.ss.listing_id);
 			curLat=rs5.latitude;
 			curLong=rs5.longitude;
 		}

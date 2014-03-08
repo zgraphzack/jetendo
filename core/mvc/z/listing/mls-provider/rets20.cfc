@@ -181,7 +181,7 @@ unlimited between 7pm and 5am hawaii time
 			curLat="";
 			curLong="";
 				if(trim(address) NEQ ""){// and cityName NEQ ""){
-					rs5=this.baseGetLatLong(address,ts.rets20_stateorprovince,ts.rets20_postalcode);
+					rs5=this.baseGetLatLong(address,ts.rets20_stateorprovince,ts.rets20_postalcode, arguments.ss.listing_id);
 					curLat=rs5.latitude;
 					curLong=rs5.longitude;
 				}

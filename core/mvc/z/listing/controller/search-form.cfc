@@ -2969,18 +2969,6 @@ Click &quot;Set&quot; to recenter<br />
 
 <input type="button" name="setNearAddress" onclick="zAjaxSetNearAddress();" value="Set" /> <input type="button" name="cancelNearAddress" onclick="zAjaxCancelNearAddress();" value="Cancel" />
 </div>
-<!--- <cfif application.zcore.functions.zso(form, 'search_near_address') NEQ "">
-<cfsavecontent variable="db.sql">
-SELECT * FROM #db.table("listing_latlong", request.zos.zcoreDatasource)# listing_latlong 
-WHERE listing_latlong_address = #db.param(form.search_near_address)#
-</cfsavecontent><cfscript>qCC2=db.execute("qCC2");
-if(qCC2.recordcount NEQ 0){
-    lat=qCC2.listing_latlong_latitude;
-    long=qCC2.listing_latlong_longitude;
-	writeoutput('<script type="text/javascript">/* <![CDATA[ */zAjaxNearAddressMarker=[#lat#,#long#]; /* ]]> */</script>');
-}
-</cfscript>
-</cfif> --->
 </cfsavecontent>
 <cfscript>
 if(form.searchFormEnabledDropDownMenus){

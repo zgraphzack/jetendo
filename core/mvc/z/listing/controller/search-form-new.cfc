@@ -46,9 +46,6 @@
 <cffunction name="nearAddress" localmode="modern" access="remote">
 	<cfscript>
 	application.zcore.tracking.backOneHit();
-	db.sql="SELECT * FROM #db.table("listing_latlong", request.zos.zcoreDatasource)# 
-	WHERE listing_latlong_address = #db.param(form.search_near_address)#";
-	qCC2=db.execute("qCC2");
 	// /z/listing/search-form/nearAddress?search_near_address=113 Mariners Dr, Ormond Beach, FL&seach_near_radius=0.5
 	lat=0;
 	long=0;
