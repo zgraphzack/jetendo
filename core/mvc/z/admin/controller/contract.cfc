@@ -145,6 +145,7 @@
  		});
 	}
 	zArrDeferredFunctions.push(function(){
+		$('body').css('overflow','hidden');
 		setupContractEvents();
 		zArrResizeFunctions.push(resizeContractDiv);
 	});
