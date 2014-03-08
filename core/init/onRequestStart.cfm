@@ -801,6 +801,7 @@
 				ts.user_group_name = "serveradministrator";
 				rs=application.zcore.user.checkLogin(ts);
 			}
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart4 after checkLogin'});
 			application.zcore.template.setTag("stylesheet","/z/stylesheets/manager.css",false);
 			application.zcore.template.requireTag("title");
 			application.zcore.template.setTag("title","Server Manager");
@@ -854,6 +855,7 @@
 			local.roles="";
 		}
 	}
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart4 before processRequestURL'});
 	application.zcore.routing.processRequestURL(request.zos.cgi.SCRIPT_NAME);
 	</cfscript>
 </cffunction>

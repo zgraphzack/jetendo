@@ -1853,6 +1853,7 @@ configCom.includeContentByName(ts);
 	}else{
 		request.zos.zcontentshowinactive=false;
 	}
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 1'});
 	savecontent variable="output"{
 		// you must have a group by in your query or it may miss rows
 		ts =structnew();
@@ -1914,6 +1915,7 @@ configCom.includeContentByName(ts);
 	
 		form.content_parent_id = ts994824713.content_parent_id;
 
+		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 2'});
 		savecontent variable="theImageOutputHTML"{
 			ts =structnew();
 			ts.image_library_id=ts994824713.content_image_library_id;
@@ -1979,6 +1981,7 @@ configCom.includeContentByName(ts);
 					curId=qParent.content_parent_id;
 				}
 			}
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 3'});
 			if(hasAccess or forceLogin){
 				returnStruct9 = application.zcore.functions.zGetRepostStruct();
 				if(structkeyexists(form,  request.zos.urlRoutingParameter)){
@@ -2079,9 +2082,10 @@ configCom.includeContentByName(ts);
 			}
 
 
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 4'});
 			childContentStruct=displayChildContent(ts994824713, contentConfig, ct1948);
 			ct1948=childContentStruct.bodyText;
-
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 5'});
 			if(arraylen(contentConfig.arrContentReplaceKeywords)){
 				for(i=1;i LTE arraylen(contentConfig.arrContentReplaceKeywords);i++){
 					if(isDefined(contentConfig.arrContentReplaceKeywords[i])){
