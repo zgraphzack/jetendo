@@ -567,7 +567,7 @@ todo: open source projects
 				local.out=application.zcore.functions.zreadfile(local.curTempPath); 
 				application.zcore.functions.zwritefile(rs.tempFilePath, local.out); 	
 			//}
-		}else{
+		}else{ 
 			arrayappend(rs.arrErrors,"Failed to run yuicompressor because file is missing: #arguments.ss.file_path#<br /><br />#local.curTempPath#");
 			rs.success=false;
 			return rs;

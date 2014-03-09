@@ -6,7 +6,7 @@
 		var cfcMethodForced=false;
 		var arrURL="";
 		var inputStruct=""; 
-		var local=structnew();
+		var local=structnew();  
 		request.zos.currentController="";
 		request.zos.routingIsCFC=false;
 		request.zos.routingCurrentComponentObject="";
