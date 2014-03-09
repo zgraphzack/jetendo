@@ -43,8 +43,16 @@
 					if(request.zos.globals.id EQ request.zos.globals.serverid){
 						request.zos.scriptNameTemplate=replace(request.zos.scriptNameTemplate, '/'&request.zos.globals.servershortdomain,'/zcorerootmapping/');	
 					}
-					if(right(request.zos.scriptNameTemplate, 4) NEQ ".cfm"){
-						application.zcore.functions.z404("onRequest missing include. "&request.zos.scriptNameTemplate);	
+					var ext=right(request.zos.scriptNameTemplate, 4);
+					if(ext NEQ ".cfm"){
+						if(ext EQ ".xml"){
+							var p=request.zos.globals.homedir&removechars(request.zos.originalURL, 1, 1);
+							if(fileexists(p)){
+								echo(application.zcore.functions.zReadFile(p));
+								abort;
+							}
+						}
+						application.zcore.functions.z404("onRequest missing include. "&request.zos.scriptNameTemplate);
 					}
 					try{
 						include template="#request.zos.scriptNameTemplate#";
