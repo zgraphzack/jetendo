@@ -1468,109 +1468,88 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         </cfif>
     <cfelse>
 	
-    <!--- #countsql#
-    <br /><br />
-    #propSQL#
-    <cfscript>application.zcore.functions.zabort();</cfscript> --->
-    <!--- <cfset variables.tempThreadHash = createUUID() /> --->
-    <cfif arguments.ss.disableCount EQ false>
-    	<cfif arguments.ss.enableThreading>
-		<!--- <cfthread action="run" name="zThread#variables.tempThreadHash#"> --->
-        <cfsavecontent variable="db2.sql">
-        #(countSQL)#
-        </cfsavecontent><cfscript>qPropertyCount=db2.execute("qPropertyCount");</cfscript>
-        <!--- </cfthread> --->
-        <cfelse>
-        <cfsavecontent variable="db2.sql">
-        #(countSQL)#
-        </cfsavecontent><cfscript>qPropertyCount=db2.execute("qPropertyCount");</cfscript>
-        </cfif>
-    </cfif>
-        <cfif arguments.ss.debug>
-    <span style="border:1px solid ##999999; padding:5px;font-size:10px; line-height:11px; display:block; ">
-    </cfif>
-   		<cfif arguments.ss.onlyCount EQ false>
-            <cfsavecontent variable="db2.sql">
-            #propSQL#
-            </cfsavecontent><cfscript>qProperty=db2.execute("qProperty");
-            </cfscript>
-            <cfif qProperty.recordcount NEQ 0>
-            	<cfscript>
-		mlsStruct=structnew();
-		arrQuery=arraynew(1);
-		orderStruct=structnew();
-		n22=1;
-		</cfscript>
-		<cfloop query="qProperty">
-			<cfscript> 
-			mls_id=listgetat(qProperty.listing_id,1,"-");
-			if(structkeyexists(mlsStruct,mls_id) EQ false){
-				mlsStruct[mls_id]=arraynew(1);	
+    <cfscript>
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc before qPropertyCount'});
+	if(arguments.ss.disableCount EQ false){
+    	if(arguments.ss.enableThreading){
+	        db2.sql=countSQL;
+	        qPropertyCount=db2.execute("qPropertyCount");
+        }else{
+	        db2.sql=countSQL;
+	        qPropertyCount=db2.execute("qPropertyCount");
+        }
+    }
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc after qPropertyCount'});
+    if(arguments.ss.debug){
+    	echo('<span style="border:1px solid ##999999; padding:5px;font-size:10px; line-height:11px; display:block; ">');
+    }
+    if(arguments.ss.onlyCount EQ false){
+    	db2.sql=propSQL;
+    	qProperty=db2.execute("qProperty");
+        if(qProperty.recordcount NEQ 0){
+			mlsStruct=structnew();
+			arrQuery=arraynew(1);
+			orderStruct=structnew();
+			n22=1;
+			for(row in qProperty){
+				mls_id=listgetat(row.listing_id,1,"-");
+				if(structkeyexists(mlsStruct,mls_id) EQ false){
+					mlsStruct[mls_id]=arraynew(1);	
+				}
+				orderStruct[row.listing_id]=n22;
+				n22++;
+				
+				arrayappend(mlsStruct[mls_id], row.listing_id);
 			}
-			orderStruct[qProperty.listing_id]=n22;
-			n22++;
-			
-			arrayappend(mlsStruct[mls_id],qProperty.listing_id);
-			</cfscript>
-		</cfloop>
-		<cfscript>
-		// you must have a group by in your query or it may miss rows
-		ts=structnew();
-		ts.image_library_id_field="content.content_image_library_id";
-		ts.count =  1; // how many images to get
-		rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
-		local.queryColumnStruct=structnew();
-		for(i654 in mlsStruct){
-			if(i654 EQ 0){
-				ts=structnew();
-				ts.image_library_id_field="manual_listing.manual_listing_image_library_id";
-				ts.count =  1; // how many images to get
-				local.rs3=application.zcore.imageLibraryCom.getImageSQL(ts);
-			}else{
-				local.rs3={select:"", leftJoin:""};
+			// you must have a group by in your query or it may miss rows
+			ts=structnew();
+			ts.image_library_id_field="content.content_image_library_id";
+			ts.count =  1; // how many images to get
+			rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
+			local.queryColumnStruct=structnew();
+			for(i654 in mlsStruct){
+				if(i654 EQ 0){
+					ts=structnew();
+					ts.image_library_id_field="manual_listing.manual_listing_image_library_id";
+					ts.count =  1; // how many images to get
+					local.rs3=application.zcore.imageLibraryCom.getImageSQL(ts);
+				}else{
+					local.rs3={select:"", leftJoin:""};
+				}
+				idlist22=arraytolist(mlsstruct[i654],"','");
+				tsql232="select * #db.trustedSQL(rs2.select)# #db.trustedSQL(rs3.select)# from (
+				#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
+				#db.table("listing_data", request.zos.zcoreDatasource)# listing_data) 				
+				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL())#  
+				#db.trustedSQL(local.rs3.leftJoin)#
+				LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
+				listing.listing_id = listing_track.listing_id
+				LEFT JOIN #db.table("content", request.zos.zcoreDatasource)# content ON 
+				content.content_mls_number = listing.listing_id and 
+				content_mls_override=#db.param('1')# and 
+				content_for_sale <> #db.param('2')# and 
+				content_deleted=#db.param('0')# and 
+				content.site_id = #db.param(request.zos.globals.id)# 
+				#db.trustedSQL(rs2.leftJoin)#
+				LEFT JOIN #db.table("listing_x_site", request.zos.zcoreDatasource)# listing_x_site ON 
+				listing_x_site.site_id = #db.param(request.zos.globals.id)# and 
+				listing_x_site.listing_id = listing.listing_id 
+				WHERE listing.listing_id IN (#db.trustedSQL("'#idlist22#'")#) and 
+				listing.listing_id = listing_data.listing_id 
+				GROUP BY listing.listing_id ";
+			    if(arguments.ss.debug){
+					writeoutput('mls '&i654&';'&tsql232&';<hr />');
+				}
+				db.sql=tsql232;
+				r1=db.execute("r1");
+				local.a1=listtoarray(r1.columnlist, ",");
+				arrayappend(arrQuery,r1);
 			}
-			idlist22=arraytolist(mlsstruct[i654],"','");
-			tsql232="select * #db.trustedSQL(rs2.select)# #db.trustedSQL(rs3.select)# from (
-			#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
-			#db.table("listing_data", request.zos.zcoreDatasource)# listing_data) 				
-			#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL())#  
-			#db.trustedSQL(local.rs3.leftJoin)#
-			LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
-			listing.listing_id = listing_track.listing_id
-			LEFT JOIN #db.table("content", request.zos.zcoreDatasource)# content ON 
-			content.content_mls_number = listing.listing_id and 
-			content_mls_override=#db.param('1')# and 
-			content_for_sale <> #db.param('2')# and 
-			content_deleted=#db.param('0')# and 
-			content.site_id = #db.param(request.zos.globals.id)# 
-			#db.trustedSQL(rs2.leftJoin)#
-			LEFT JOIN #db.table("listing_x_site", request.zos.zcoreDatasource)# listing_x_site ON 
-			listing_x_site.site_id = #db.param(request.zos.globals.id)# and 
-			listing_x_site.listing_id = listing.listing_id 
-			WHERE listing.listing_id IN (#db.trustedSQL("'#idlist22#'")#) and 
-			listing.listing_id = listing_data.listing_id 
-			GROUP BY listing.listing_id ";
-		    if(arguments.ss.debug){
-				writeoutput('mls '&i654&';'&tsql232&';<hr />');
-			}
-			db.sql=tsql232;
-			r1=db.execute("r1");
-			local.a1=listtoarray(r1.columnlist, ",");
-			/*local.queryColumnStruct[i654]=structnew();
-			for(local.i2=1;local.i2 LTE arraylen(local.a1);local.i2++){
-				local.queryColumnStruct[i654][local.a1[local.i2]]="";	
-			}*/
-			/*if(isQuery(r1) EQ false){
-				application.zcore.template.fail("Failed to select data for mls_id = '#i654#'");
-			}*/
-			arrayappend(arrQuery,r1);
-			/*try{
-			}catch(Any excpt){}*/
 		}
-                </cfscript>
-            </cfif>
-        </cfif>
-        
+	}
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc after getProperties'});
+	</cfscript>
+	   
     <cfif arguments.ss.disableCount EQ false>
     	<cfif arguments.ss.enableThreading>
         <!--- <cfthread action="join" name="zThread#variables.tempThreadHash#" /> --->

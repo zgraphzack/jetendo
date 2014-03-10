@@ -2103,6 +2103,7 @@ configCom.includeContentByName(ts);
 				returnPropertyDisplayStruct=request.zos.listing.functions.zMLSSearchOptionsDisplay(ts994824713.content_saved_search_id);
 				pcount+=returnPropertyDisplayStruct.returnStruct.count;
 			}
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 6'});
 		
 			if(ts994824713.content_show_map EQ 1 and pcount NEQ 0){
 				echo('<div style="width:100%; clear:both; float:left;">
