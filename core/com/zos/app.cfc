@@ -1332,7 +1332,7 @@
 		
 		// check for manual site override
 		fail=false;
-		arrIgnoreIds=listtoarray(application.zcore.functions.zvar("reservedURLAppIds", form.sid));
+		arrIgnoreIds=listtoarray(application.zcore.functions.zvar("reservedURLAppIds", arguments.ss.site_id));
 		for(i=1;i LTE arraylen(arguments.ss.arrId);i++){
 			for(n=1;n LTE arraylen(arrIgnoreIds);n++){
 				if(arguments.ss.arrId[i] EQ arrIgnoreIds[n]){
@@ -1343,7 +1343,7 @@
 		}
 		db.sql="SELECT app_reserve_url_id FROM #db.table("app_reserve", request.zos.zcoreDatasource)# app_reserve 
 		WHERE app_reserve_url_id IN (#db.trustedSQL("'#(list)#'")#) and 
-		site_id = #db.param(form.sid)# and 
+		site_id = #db.param(arguments.ss.site_id)# and 
 		app_id <> #db.param(arguments.ss.app_id)# ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0 and fail EQ false){
@@ -1352,14 +1352,14 @@
 				ts.struct=structnew();
 				ts.struct.app_reserve_url_id=arguments.ss.arrId[i];
 				ts.struct.app_id=arguments.ss.app_id;
-				ts.struct.site_id=form.sid;
+				ts.struct.site_id=arguments.ss.site_id;
 				ts.table="app_reserve";
 				ts.datasource=request.zos.zcoreDatasource;
 				application.zcore.functions.zInsert(ts);
 			}
 			db.sql="DELETE FROM #db.table("app_reserve", request.zos.zcoreDatasource)#  
 			WHERE app_reserve_url_id NOT IN (#db.trustedSQL("'#(list)#'")#) and 
-			site_id = #db.param(form.sid)# and 
+			site_id = #db.param(arguments.ss.site_id)# and 
 			app_id = #db.param(arguments.ss.app_id)# ";
 			qCheck=db.execute("qCheck");
 			return rCom;
