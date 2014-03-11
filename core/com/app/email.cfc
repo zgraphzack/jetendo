@@ -7,23 +7,33 @@ text=eCom.convertHTMLToText(text);
 --->
 <cffunction name="convertHTMLToText" localmode="modern" output="yes" returntype="any">
 	<cfargument name="text" type="string" required="yes">
+	<cfargument name="enableSlowMethod" type="boolean" required="no" default="#false#">
 	<cfscript>
-	var links="";
-	var badTagList="style|link|head|script|embed|base|input|textarea|button|object|iframe|form";
-	arguments.text=lcase(arguments.text);
-	// convert all whitespace to space
-	arguments.text=rereplacenocase(arguments.text,"\s", " ", 'ALL');
-	// remove consequtive spaces
-	arguments.text=rereplacenocase(arguments.text,"\s*(\S*)", " \1", 'ALL');
-	// convert break tags to newlines
-	arguments.text=rereplacenocase(arguments.text,"<br.*?>", chr(10), 'ALL');
-	// remove tags that have useless contents nested in them
-	arguments.text=rereplacenocase(arguments.text,"<(#badTagList#)[^>]*?>.*?</\1>", " ", 'ALL');	
-	// remove all html tags
-	arguments.text=rereplacenocase(arguments.text,"<.*?>", " ", 'ALL');
-	// trim and return
-	arguments.text=trim(arguments.text);
-	return arguments.text;
+	if(not arguments.enableSlowMethod){
+		str=arguments.text;
+	    str = reReplaceNoCase(str, "<style[^>]*?>(.*?)</style>","","all");
+	    str = reReplaceNoCase(str, "<script[^>]*?>(.*?)</script>","","all");
+
+	    str = reReplaceNoCase(str, "<[^>]*>","","all");
+	    str=replace(replace(replace(replace(replace(replace(str, '&ndash;', '-', 'all'), '&nbsp;', ' ', 'all'), '&rsquo;', "'", 'all'), '&lsquo;', "'", 'all'), '&rdquo;', '"', 'all'), '&ldquo;', '"', 'all');
+	    return str;
+    }else{
+		var badTagList="style|link|head|script|embed|base|input|textarea|button|object|iframe|form";
+		arguments.text=lcase(arguments.text);
+		// convert all whitespace to space
+		arguments.text=rereplacenocase(arguments.text,"\s", " ", 'ALL');
+		// remove consequtive spaces
+		arguments.text=rereplacenocase(arguments.text,"\s*(\S*)", " \1", 'ALL');
+		// convert break tags to newlines
+		arguments.text=rereplacenocase(arguments.text,"<br.*?>", chr(10), 'ALL');
+		// remove tags that have useless contents nested in them
+		arguments.text=rereplacenocase(arguments.text,"<(#badTagList#)[^>]*?>.*?</\1>", " ", 'ALL');
+		// remove all html tags
+		arguments.text=rereplacenocase(arguments.text,"<.*?>", " ", 'ALL');
+		// trim and return
+		arguments.text=trim(arguments.text);
+		return arguments.text;
+	}
 	</cfscript>
 </cffunction>
 

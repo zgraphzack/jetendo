@@ -15,6 +15,7 @@ this.app_id=12;
 <cffunction name="onSiteStart" localmode="modern" output="no" access="public"  returntype="struct" hint="Runs on application start and should return arguments.sharedStruct">
 	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">
 	<cfscript>
+	updateContentAccessCache(arguments.sharedStruct);
 	return arguments.sharedStruct;
 	</cfscript>
 </cffunction>
@@ -774,6 +775,7 @@ var db=request.zos.queryObject;
 			db.execute("qInsert");
 		}
 	}
+	updateContentAccessCache(application.siteStruct[request.zos.globals.id]);
 	</cfscript>
 </cffunction>
 
@@ -1943,46 +1945,9 @@ configCom.includeContentByName(ts);
 				echo('</td></tr></table>');
 			}
 			application.zcore.app.getAppCFC("content").excludeContentId(ts994824713.content_id);
-			curId = ts994824713.content_id;
-			if(curId EQ 0){
-				curId = ts994824713.content_parent_id;
-			}
-			hasAccess=false;
-			arrAllowGroupIds=ArrayNew(1);
-			if(ts994824713.content_user_group_id NEQ "0" and 
-				application.zcore.user.checkGroupIdAccess(ts994824713.content_user_group_id) EQ false){
-				hasAccess=true;
-			}
-			forceLogin=false;
-			if(curId NEQ 0 and hasAccess EQ false){
-				for(i=1;i LTE 100;i++){
-					db.sql="SELECT content_user_group_id, content_parent_id 
-					FROM #db.table("content", request.zos.zcoreDatasource)# content 
-					WHERE content_id = #db.param(curId)# and 
-					site_id = #db.param(request.zos.globals.id)# and 
-					content_deleted=#db.param(0)# ";
-					if(structkeyexists(form,'preview') EQ false and request.zos.zcontentshowinactive EQ false){
-						db.sql&=" and content_for_sale <> #db.param(2)# ";
-					}
-					if(contentConfig.hideContentSold){
-						db.sql&=" and content_for_sale =#db.param(1)# ";
-					}
-					qParent=db.execute("qParent");
-					ArrayAppend(arrAllowGroupIds, curId);		
-					if(qParent.recordcount EQ 0){
-						break;
-					}else if(qParent.content_user_group_id EQ 0){
-						continue;
-					}else if(application.zcore.user.checkGroupIdAccess(qParent.content_user_group_id) EQ false){
-						hasAccess=true;
-						forceLogin=true;
-						break;
-					}
-					curId=qParent.content_parent_id;
-				}
-			}
+			rs=hasAccessToContentId(ts994824713.content_id); 
 			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 3'});
-			if(hasAccess or forceLogin){
+			if(not rs.hasAccess or rs.forceLogin){
 				returnStruct9 = application.zcore.functions.zGetRepostStruct();
 				if(structkeyexists(form,  request.zos.urlRoutingParameter)){
 					actionVar=form[request.zos.urlRoutingParameter];
@@ -2251,6 +2216,67 @@ configCom.includeContentByName(ts);
 	}
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="updateContentAccessCache" localmode="modern" access="public">
+	<cfargument name="sharedStruct" type="struct" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="SELECT content_id, content_user_group_id, content_parent_id 
+	FROM #db.table("content", request.zos.zcoreDatasource)# content 
+	WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	(content_parent_id <> #db.param(0)# or 
+	content_user_group_id<>#db.param(0)#
+	) and 
+	content_deleted=#db.param(0)# ";
+	qParent=db.execute("qParent");
+	ts={};
+	for(row in qParent){
+		ts[row.content_id]={
+			content_user_group_id: row.content_user_group_id,
+			content_parent_id: row.content_parent_id
+		};
+	}
+	arguments.sharedStruct.contentAccessCache=ts;
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="hasAccessToContentId" localmode="modern" access="public">
+	<cfargument name="content_id" type="string" required="yes">
+	<cfscript>
+	if(not structkeyexists(application.siteStruct[request.zos.globals.id], 'contentAccessCache')){
+		updateContentAccessCache(application.siteStruct[request.zos.globals.id]);
+	}
+	ts=application.siteStruct[request.zos.globals.id].contentAccessCache;
+	cid=arguments.content_id;
+	count=0;
+	arrAllowGroupIds=[];
+	while(true){
+		count++;
+		if(count EQ 100){
+			throw("Infinite loop detected for arguments.content_id parent ids.");
+		}
+		if(structkeyexists(ts, cid)){
+			curStruct=ts[cid];
+			ArrayAppend(arrAllowGroupIds, cid);	
+			cid=curStruct.content_parent_id;	
+			if(curStruct.content_user_group_id EQ 0){
+				continue;
+			}else if(not application.zcore.user.checkGroupIdAccess(curStruct.content_user_group_id)){
+				return { hasAccess:true, forceLogin:true, arrAllowGroupIds:arrAllowGroupIds  };
+			}
+			if(cid EQ 0){
+				return { hasAccess:true, forceLogin:false, arrAllowGroupIds:arrAllowGroupIds };
+			}
+		}else{
+			return { hasAccess:true, forceLogin:false, arrAllowGroupIds:arrAllowGroupIds };
+		}
+	}
+	</cfscript>
+</cffunction>
+
 	
 <cffunction name="displayChildContent" localmode="modern" access="private">
 	<cfargument name="qContent" type="any" required="yes">
@@ -2560,7 +2586,7 @@ configCom.includeContentByName(ts);
 	if(arguments.contentConfig.disableChildContent EQ false){
 		if(arguments.qContent.content_parent_id NEQ 0){
 			db.sql="SELECT * ";
-			if(curParentSorting EQ "3"){
+			if(arguments.curParentSorting EQ "3"){
 				db.sql&=" , if(content.content_menu_title = #db.param('')#, content.content_name, content.content_menu_title) as _sortName";
 			}
 			db.sql&=" FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -2643,7 +2669,6 @@ configCom.includeContentByName(ts);
 					t2.summary=row.content_text;
 				}
 				t2.summary=application.zcore.email.convertHTMLToText(t2.summary);
-
 				t2.isparent=false;
 				t2.type="subtab";
 				if(row.content_unique_name NEQ ''){
