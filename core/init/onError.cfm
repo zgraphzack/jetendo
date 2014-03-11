@@ -467,6 +467,7 @@ for(i in cookie){
 </cfif>
 
 <cfscript>
+/*
 if(isDefined('application.zcore.abusiveIPStruct')){
 	if(isDefined('arguments.cferror.message') and arguments.cferror.message CONTAINS 'run into a timeout'){
 		for(i in application.zcore.abusiveIPStruct){
@@ -474,7 +475,7 @@ if(isDefined('application.zcore.abusiveIPStruct')){
 		}
 		//writedump(application.zcore.abusiveIPStruct);
 	}
-}
+}*/
 if(isDefined('request.zos.arrRunTime')){
 	writeoutput('<h2>Script Run Time Measurements</h2>');
 	arrayprepend(request.zos.arrRunTime, {time:request.zos.startTime, name:'Application.cfc onCoreRequest Start'});

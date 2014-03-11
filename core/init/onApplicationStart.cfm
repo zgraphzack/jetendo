@@ -303,7 +303,7 @@
 	
 	local.zTempGlobalStruct=StructNew();
 	local.zTempCurrentPath="";
-	ts.abusiveIPStruct=structnew();
+	/*ts.abusiveIPStruct=structnew();
 	for(local.i=0;local.i LTE 59;local.i++){
 		ts.abusiveIPStruct[local.i]=structnew();
 	}
@@ -318,7 +318,7 @@
 		for(local.i=1;local.i LTE local.qs.recordcount;local.i++){
 		ts.abusiveBlockedIpStruct[local.qs.ip_block_ip[local.i]]=true;	
 		}
-	}
+	}*/
 	ts.processList=structnew(); 
 	ts.serverglobals.serveremail = request.zos.developerEmailTo;
 	ts.serverglobals.serverpass = "";

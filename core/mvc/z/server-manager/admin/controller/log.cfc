@@ -34,11 +34,11 @@
 <cfif form.action NEQ "abusiveips">
 	<table style="border-spacing:0px;width:100%;" class="table-list">
 	<tr>
-	<td><h2 style="display:inline;">Logs |</h2> <a href="/z/server-manager/admin/recent-requests/index">Recent Request History</a> | <a href="#request.cgi_script_name#?action=abusiveips">Abusive IPs</a> </td>
+	<td><h2 style="display:inline;">Logs |</h2> <a href="/z/server-manager/admin/recent-requests/index">Recent Request History</a> <!--- | <a href="#request.cgi_script_name#?action=abusiveips">Abusive IPs</a> ---> </td>
 	</tr>
 	</table>
 </cfif>
-
+<!--- 
 <cfif form.action EQ "abusiveips">
 	<cfscript>
 	application.zcore.functions.zSetPageHelpId("8.3.2");
@@ -69,7 +69,7 @@
 	</cfscript>
 	</table>
 
-</cfif>
+</cfif> --->
 
 <cfif form.action EQ "addHostFilter">
 	<cfscript>

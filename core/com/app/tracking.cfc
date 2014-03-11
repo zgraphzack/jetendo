@@ -74,6 +74,7 @@
 		application.zcore.runningScriptStruct['r'&request.zos.trackingrunningScriptIndex]=tempVar;
 		
 		local.skipAbuseTracking=false;
+		/*
 		if(structkeyexists(request.zos.adminIpStruct, request.zos.cgi.remote_addr) EQ false){
 			local.tempMinute=application.zcore.abusiveIPDate;
 			if(local.tempMinute and local.tempMinute NEQ curminute){
@@ -110,12 +111,12 @@ USER WAS PERMANENTLY BLOCKED.');
 				header statuscode="403" statustext="Forbidden";
 				application.zcore.functions.zabort();
 			}
-		}
+		}*/
 		if(cgi.HTTP_USER_AGENT EQ "" or replacelist(tempUserAgent, application.zcore.spiderList, application.zcore.spiderListReplace) NEQ tempUserAgent){
-			if(cgi.HTTP_USER_AGENT CONTAINS "baiduspider"){
+			/*if(cgi.HTTP_USER_AGENT CONTAINS "baiduspider"){
 				header statuscode="404" statustext="Page not found";
 				application.zcore.functions.zabort();
-			}
+			}*/
 			request.zos.trackingspider=true;
 			//this.checkForSpamTrap();
 			if(request.zos.trackingspider and structkeyexists(application.zcore.spiderTrapScripts, request.cgi_script_name)){
