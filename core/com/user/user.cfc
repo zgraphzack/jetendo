@@ -1355,6 +1355,25 @@ formString = userCom.loginForm(inputStruct);
     </cfscript>
 </cffunction>
 
+<cffunction name="getUserById" localmode="modern" access="public">
+	<cfargument name="user_id" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
+	user_id = #db.param(arguments.user_id)# and 
+	site_id = #db.param(arguments.site_id)#";
+	qUser=db.execute("qUser");
+	row={};
+	if(qUser.recordcount){
+		for(row2 in qUser){
+			row=row2;
+		}
+	}
+	return row;
+	</cfscript>
+</cffunction>
+
 <cffunction name="requireLogin" localmode="modern" access="public">
 	<cfscript>
 	inputStruct = StructNew();
