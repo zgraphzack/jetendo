@@ -52,12 +52,12 @@
 
 <cffunction name="checkVersion" localmode="modern" access="public">
 	<cfscript>
-	if(not structkeyexists(application.zcore, 'databaseVersion')){
+	//if(not structkeyexists(application.zcore, 'databaseVersion')){
 		versionCom=createobject("component", "zcorerootmapping.version");
 	    ts2=versionCom.getVersion();
 	    application.zcore.databaseVersion=ts2.databaseVersion;
 	    application.zcore.sourceVersion=ts2.sourceVersion;
-	}
+	//}
 	try{
 		query name="qCheck" datasource="#request.zos.zcoreDatasource#"{
 			echo("SHOW TABLES IN `#request.zos.zcoreDatasource#` LIKE 'jetendo_setup'");
@@ -89,7 +89,7 @@
 					return true;
 				}
 			}else if(qVersion.jetendo_setup_database_version GT application.zcore.databaseVersion){
-				throw("Jetendo database is a newer version then application.zcore.databaseVersion.  Please check that source code version is the same or newer then database.");
+				throw("Jetendo database is a newer version (#qVersion.jetendo_setup_database_version#) then application.zcore.databaseVersion (#application.zcore.databaseVersion#).  Please check that source code version is the same or newer then database.");
 			}
 			currentVersion=qVersion.jetendo_setup_database_version;
 		}
