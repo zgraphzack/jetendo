@@ -1426,6 +1426,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	site_option_group_search_index_cfc_method <> #db.param('')# and 
 	site_option_group_parent_id = #db.param('0')# and 
 	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_disable_site_map = #db.param(0)# and 
 	site_option_group.site_option_group_enable_unique_url = #db.param(1)# ";
 	local.qGroup=db.execute("qGroup");
 	for(row in local.qGroup){
@@ -1467,6 +1468,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option_group_search_index_cfc_path <> #db.param('')# and 
 		site_option_group_search_index_cfc_method <> #db.param('')# and 
 		site_option_group_parent_id = #db.param('0')# and 
+		site_option_group_disable_site_map = #db.param(0)# and 
 		site.site_active=#db.param(1)# and 
 		site.site_id <> #db.param(-1)# 
 		LIMIT #db.param(offset)#, #db.param(limit)#";

@@ -1258,6 +1258,10 @@
 					<td><input type="text" name="site_option_group_view_cfc_method" id="site_option_group_view_cfc_method" value="#htmleditformat(form.site_option_group_view_cfc_method)#" /> (A function name in the CFC with access="remote")</td>
 				</tr>
 				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Site Map?","member.site-option-group.edit site_option_group_disable_site_map")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_site_map")#</td>
+				</tr>
+				<tr>
 					<th>Searchable (public):</th>
 					<td>
 					<input name="site_option_group_public_searchable" id="site_option_group_public_searchable1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_group_public_searchable', true, 0) EQ 1>checked="checked"</cfif>  /> Yes
