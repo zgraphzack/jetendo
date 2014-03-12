@@ -28,6 +28,38 @@ This is a global key. It will work across all domains. --->
     <cfreturn false>
 </cffunction>
 
+<cffunction name="zSetupMultipleSelect" localmode="modern" output="no" returntype="string">
+    <cfargument name="id" type="string" required="yes">
+    <cfargument name="value" type="string" required="yes">
+    <cfscript>
+	if(not structkeyexists(request.zos, 'zSetupMultipleSelectInit')){
+		request.zos.zSetupMultipleSelectIndex=0;
+		application.zcore.functions.zRequireJqueryUI();
+		application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.css");
+		application.zcore.skin.includeCSS("/z/javascript/jquery/jquery-ui-multiselect-widget/jquery.multiselect.filter.css");
+		application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.js", '', 2);
+		application.zcore.skin.includeJS("/z/javascript/jquery/jquery-ui-multiselect-widget/src/jquery.multiselect.filter.js", '', 2);
+	}
+	request.zos.zSetupMultipleSelectIndex++;
+	application.zcore.skin.addDeferredScript('
+		$("##'&arguments.id&'").multiselect({
+			click: function(event, ui){
+				if(ui.value==''''){
+					return false;
+				}
+				if(ui.checked && ui.value == "#jsstringformat(arguments.value)#"){
+					alert("You can''t select the same element you are editing.");
+					$(event.currentElement).each(function(){ this.checked=false; });
+					return false;
+				}else{
+					return true;
+				}
+		   }
+			}).multiselectfilter();
+	');
+	</cfscript>
+</cffunction>
+	
 
 <cffunction name="zCheckFormHashValue" localmode="modern" output="no" returntype="string">
     <cfargument name="hashValue" type="string" required="yes">

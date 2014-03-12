@@ -141,6 +141,10 @@
 	db.sql&=" ORDER BY user_first_name, user_last_name, user_username";
 	qUser=db.execute("qUser");
 	selectStruct = StructNew();
+	if(application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection') EQ 'Yes'){
+		selectStruct.multiple=true;
+		selectStruct.size=5;
+	}
 	selectStruct.name = arguments.prefixString&arguments.row.site_option_id;
 	selectStruct.query = qUser;
 	selectStruct.selectedValues=application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row.site_option_id#');
@@ -156,6 +160,8 @@
 	selectStruct.queryValueField = "##user_id##|##siteIdType##";
 	selectStruct.output=false;
 	value=application.zcore.functions.zInputSelectBox(selectStruct);
+	application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
+	
 	
 	return { label: true, hidden: false, value:value};  
 	</cfscript>
@@ -237,7 +243,8 @@
 	}
 	ts={
 		user_group_id_list:application.zcore.functions.zso(arguments.dataStruct, 'user_group_id_list'),
-		user_displaytype:application.zcore.functions.zso(form, 'user_displaytype')
+		user_displaytype:application.zcore.functions.zso(form, 'user_displaytype'),
+		user_multipleselection:application.zcore.functions.zso(form, 'user_multipleselection')
 	};
 	arguments.dataStruct.site_option_type_json=serializeJson(ts);
 	return { success:true};
@@ -262,7 +269,7 @@
 			<table style="border-spacing:0px;">
 			<tr><td>Display Type: </td><td>
 			<cfscript>
-			arguments.optionStruct.user_displaytype=application.zcore.functions.zso(arguments.optionStruct, 'user_displaytype', true, 0);
+			form.user_displaytype=application.zcore.functions.zso(arguments.optionStruct, 'user_displaytype', true, 0);
 			var ts = StructNew();
 			ts.name = "user_displaytype";
 			ts.style="border:none;background:none;";
@@ -290,6 +297,22 @@
 			ts.queryValueField = "user_group_id";
 			writeoutput(application.zcore.functions.zInput_Checkbox(ts));
 			</cfscript></td></tr>
+			<tr><td>Multiple Selections: </td><td>
+			<cfscript>
+			form.user_multipleselection=application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection', false, "No");
+			if(form.user_multipleselection EQ ""){
+				form.user_multipleselection="No";
+			}
+			var ts = StructNew();
+			ts.name = "user_multipleselection";
+			ts.style="border:none;background:none;";
+			ts.labelList = "Yes,No";
+			ts.valueList = "Yes,No";
+			ts.hideSelect=true;
+			ts.struct=arguments.optionStruct;
+			writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
+			</cfscript>
+			</td></tr>
 			</table>
 		</div>
 	</cfsavecontent>
