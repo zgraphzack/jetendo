@@ -276,7 +276,7 @@
 			<tr><td style="vertical-align:top;">Limit User Groups: </td>
 			<td>
 			<cfscript>
-			form.user_group_id_list=application.zcore.functions.zso(arguments.optionStruct, 'user_group_id_list', true, 0);
+			form.user_group_id_list=application.zcore.functions.zso(arguments.optionStruct, 'user_group_id_list');
 			db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE site_id = #db.param(request.zos.globals.id)#  
 			ORDER BY user_group_name asc"; 
