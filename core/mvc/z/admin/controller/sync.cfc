@@ -870,9 +870,12 @@ This allows avoiding remaps more easily.  Less code when importing.
 					site_id = #db.param(request.zos.globals.id)#";
 					db.execute("qDelete");
 				}else{
-					db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)#
-					where site_option_id = #db.param(siteOptionId)# and 
-					site_id = #db.param(request.zos.globals.id)#";
+					db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group, 
+					#db.table("site_option", request.zos.zcoreDatasource)# site_option 
+					where site_x_option_group.site_option_id = #db.param(siteOptionId)# and 
+					site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
+					site_x_option_group.site_option_id = site_option.site_option_id and 
+					site_x_option_group.site_id = site_option.site_id ";
 					qSiteXOptionGroup=db.execute("qSiteXOptionGroup");
 					for(row in qSiteXOptionGroup){
 						optionStruct=deserializeJson(row.site_option_type_json); 
