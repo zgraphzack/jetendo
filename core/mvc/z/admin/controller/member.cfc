@@ -532,6 +532,10 @@
 				<td><input type="text" name="member_last_name" value="<cfif form.member_last_name EQ ''>#form.user_last_name#<cfelse>#form.member_last_name#</cfif>" size="30" /></td>
 			</tr>
 			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("Company","member.member.edit member_company")#</th>
+				<td><input type="text" name="member_company" value="#form.member_company#" size="30" /></td>
+			</tr>
+			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Title","member.member.edit member_title")#</th>
 				<td><input type="text" name="member_title" value="#form.member_title#" size="30" /></td>
 			</tr>
@@ -914,6 +918,9 @@
 	user.user_group_id = user_group.user_group_id and 
 	user.site_id = #db.param(request.zos.globals.id)# and 
 	user_server_administrator = #db.param('0')#";
+	if(structkeyexists(form, 'user_group_id') and trim(form.user_group_id) NEQ ''){
+		db.sql&=" and user.user_group_id = #db.param(form.user_group_id)# ";
+	}
 	if(session.showallusers EQ false){
 		db.sql&=" and user.user_group_id <> #db.param(variables.userUserGroupId)#";
 	}
@@ -923,6 +930,11 @@
 	db.sql&=" ORDER BY member_sort asc, user_first_name, user_last_name 
 	LIMIT #db.param((form.zIndex-1)*30)#,#db.param(30)# ";
 	qMember=db.execute("qMember");
+
+	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
+	WHERE site_id = #db.param(request.zos.globals.id)# 
+	ORDER BY user_group_name";
+	qUserGroup=db.execute("qUserGroup");
     </cfscript>
 	<h2 style="display:inline; ">Users | </h2>
 	<cfif not request.zos.globals.enableDemoMode>
@@ -943,10 +955,23 @@
 	<form action="/z/admin/member/index" method="post" enctype="multipart/form-data">
 		<table style="width:100%;" class="table-list">
 			<tr>
-				<td>Search Name or Email:
+				<th style="vertical-align:middle;">Search Name or Email: 
 					<input type="text" name="searchtext" value="#application.zcore.functions.zso(form, 'searchtext')#" size="30" />
+				</th>
+				<th style="vertical-align:middle;">
+					Access Rights:  
+					<cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "user_group_id";
+					selectStruct.query = qUserGroup;
+					selectStruct.queryLabelField = "user_group_name";
+					selectStruct.queryValueField = "user_group_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript>
+				</th>
+				<th>
 					<input type="submit" name="submitForm" value="Search" />
-					<input type="button" name="cancel" value="Clear Search" onclick="window.location.href='/z/admin/member/index';" /></td>
+					<input type="button" name="cancel" value="Clear Search" onclick="window.location.href='/z/admin/member/index';" /></th>
 			</tr>
 		</table>
 	</form>
