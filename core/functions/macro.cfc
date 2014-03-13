@@ -172,6 +172,7 @@ writeoutput(application.zcore.functions.zLoadAndCropImage({id:"",width:140,heigh
 <cffunction name="zXSendFile" localmode="modern" output="no" returntype="any">
 	<cfargument name="p" type="string" required="yes">
 	<cfscript>
+	application.zcore.functions.zheader("Content-type", "");
 	if(cgi.SERVER_SOFTWARE EQ "" or cgi.SERVER_SOFTWARE CONTAINS "nginx"){
 		application.zcore.functions.zheader("X-Accel-Redirect",arguments.p);
 	}else{

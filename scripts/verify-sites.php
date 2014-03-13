@@ -111,6 +111,10 @@ function verifySite($row){
 		if(!$result){
 			$siteHasError=true;
 		}
+		$result=zCheckDirectoryPermissions($siteHomedirWritable."zuploadsecure/", get_cfg_var("jetendo_www_user"), get_cfg_var("jetendo_www_user"), "660", "770", false, $preview, $arrError, $isTestServer);
+		if(!$result){
+			$siteHasError=true;
+		}
 		$result=zCheckDirectoryPermissions($siteHomedirWritable, get_cfg_var("jetendo_www_user"), get_cfg_var("jetendo_www_user"), "660", "770", true, $preview, $arrError, $isTestServer);
 		if(!$result){
 			$siteHasError=true;

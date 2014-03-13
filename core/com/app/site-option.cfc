@@ -999,7 +999,11 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		typeId=t9.siteOptionLookup[arguments.row.site_option_id].type;
 		if(typeId EQ 3 or typeId EQ 9){
 			if(arguments.row.site_x_option_group_value NEQ "" and arguments.row.site_x_option_group_value NEQ "0"){
-				tempValue="/zupload/site-options/"&arguments.row.site_x_option_group_value;
+				if(application.zcore.functions.zso(t9.siteOptionLookup[arguments.row.site_option_id].optionStruct, 'file_securepath') EQ "Yes"){
+					tempValue="/zuploadsecure/site-options/"&arguments.row.site_x_option_group_value;
+				}else{
+					tempValue="/zupload/site-options/"&arguments.row.site_x_option_group_value;
+				}
 			}else{
 				tempValue="";
 			}
@@ -1254,7 +1258,12 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}
 		if(row.typeId EQ 3 or row.typeId EQ 9){
 			if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
-				tempValue="/zupload/site-options/"&row.groupSetValue;
+				optionStruct=tempStruct.soGroupData.siteOptionLookup[row.groupSetOptionId].optionStruct;
+				if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
+					tempValue="/zuploadsecure/site-options/"&row.groupSetValue;
+				}else{
+					tempValue="/zupload/site-options/"&row.groupSetValue;
+				}
 			}else{
 				tempValue="";
 			}
@@ -1892,7 +1901,6 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfargument name="site_option_app_id" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	var local=structnew();
 	var q=0;
 	var db=request.zos.queryObject;
 	if(arguments.site_option_app_id NEQ 0 and arguments.site_option_app_id NEQ ""){
@@ -1902,11 +1910,22 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option.site_id=#db.param(arguments.site_id)# and  
 		site_x_option.site_option_id = site_option.site_option_id and 
 		site_x_option.site_option_app_id=#db.param(arguments.site_option_app_id)# and 
+		site_option_type_id IN (#db.param(3)#, #db.param(9)#) and 
+		site_x_option_value <> #db.param('')# and 
 		site_option_type_id=#db.param('3')#";
-		local.qS=db.execute("qS");
-		for(local.i=1;local.i LTE local.qS.recordcount;local.i++){
-			if((local.qS.site_option_type_id[local.i] EQ '9' or local.qS.site_option_type_id[local.i] EQ '3') and fileexists(application.zcore.functions.zvar('privatehomedir',local.qS.site_id[local.i])&'zupload/site-options/'&local.qS.site_x_option_value[local.i])){
-				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',local.qS.site_id[local.i])&'zupload/site-options/'&local.qS.site_x_option_value[local.i]);
+		path=application.zcore.functions.zvar('privatehomedir',arguments.site_id)&'zupload/site-options/';
+		securepath=application.zcore.functions.zvar('privatehomedir',arguments.site_id)&'zuploadsecure/site-options/';
+		qS=db.execute("qS");
+		for(i=1;i LTE qS.recordcount;i++){
+			optionStruct=tempStruct.soGroupData.siteOptionLookup[row.site_option_id].optionStruct;
+			if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ 'Yes'){
+				if(fileexists(securepath&qS.site_x_option_value[i])){
+					application.zcore.functions.zdeletefile(securepath&qS.site_x_option_value[i]);
+				}
+			}else{
+				if(fileexists(path&qS.site_x_option_value[i])){
+					application.zcore.functions.zdeletefile(path&qS.site_x_option_value[i]);
+				}
 			}
 		}
 		db.sql="SELECT * FROM #request.zos.queryObject.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group, 
@@ -1915,11 +1934,20 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option.site_id=#db.param(arguments.site_id)# and  
 		site_x_option_group.site_option_id = site_option.site_option_id and 
 		site_x_option_group.site_option_app_id=#db.param(arguments.site_option_app_id)# and 
+		site_option_type_id IN (#db.param(3)#, #db.param(9)#) and 
+		site_x_option_group_value <> #db.param('')# and 
 		site_option_type_id=#db.param('3')#";
-		local.qS=db.execute("qS");
-		for(local.i=1;local.i LTE local.qS.recordcount;local.i++){
-			if((local.qS.site_option_type_id[local.i] EQ '9' or local.qS.site_option_type_id[local.i] EQ '3') and fileexists(application.zcore.functions.zvar('privatehomedir',local.qS.site_id[local.i])&'zupload/site-options/'&local.qS.site_x_option_group_value[local.i])){
-				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',local.qS.site_id[local.i])&'zupload/site-options/'&local.qS.site_x_option_group_value[local.i]);
+		qS=db.execute("qS");
+		for(i=1;i LTE qS.recordcount;i++){
+			optionStruct=tempStruct.soGroupData.siteOptionLookup[row.site_option_id].optionStruct;
+			if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ 'Yes'){
+				if(fileexists(securepath&qS.site_x_option_group_value[i])){
+					application.zcore.functions.zdeletefile(securepath&qS.site_x_option_group_value[i]);
+				}
+			}else{
+				if(fileexists(path&qS.site_x_option_group_value[i])){
+					application.zcore.functions.zdeletefile(path&qS.site_x_option_group_value[i]);
+				}
 			}
 		}
 		

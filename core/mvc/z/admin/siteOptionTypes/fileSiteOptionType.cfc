@@ -117,13 +117,14 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
+	uploadPath=getUploadPath(arguments.optionStruct);
 	if(structkeyexists(arguments.row, 'site_x_option_group_value')){
-		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_value)){
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);
+		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_group_value)){
+			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_group_value);
 		}
 	}else{
-		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_value)){
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_value);
+		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_value)){
+			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_value);
 		}
 	}
 	</cfscript>
@@ -142,7 +143,14 @@
 			allowDelete=false;
 		}
 		if(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id] NEQ ""){
-			writeoutput('<p><a href="/zupload/site-options/#arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]#" target="_blank" title="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])#">Download File</a></p>');
+			uploadPath=getUploadPath(arguments.optionStruct);
+			if(uploadPath EQ "zuploadsecure"){
+				echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&' | Securely stored, can''t be downloaded.</p>');
+			}else{
+				writeoutput('<p><a href="/'&uploadPath&'/site-options/#arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]#" 
+				target="_blank" 
+				title="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])#">Download File</a></p>');
+			}
 		}
 		var ts3=StructNew();
 		ts3.name=arguments.prefixString&arguments.row.site_option_id;
@@ -161,7 +169,8 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
 	if(arguments.value NEQ ""){
-		return ('<a href="/zupload/site-options/#arguments.value#" target="_blank">Download File</a>');
+		uploadPath=getUploadPath(arguments.optionStruct);
+		return ('<a href="/'&uploadPath&'/site-options/#arguments.value#" target="_blank">Download File</a>');
 	}else{
 		return ('N/A');
 	}
@@ -177,6 +186,17 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getUploadPath" localmode="modern" access="private">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	uploadPath="zupload";
+	if(application.zcore.functions.zso(arguments.optionStruct, 'file_securepath') EQ 'Yes'){
+		uploadPath='zuploadsecure';
+	}
+	return uploadPath;
+	</cfscript>
+</cffunction>
+
 <cffunction name="onBeforeUpdate" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes"> 
@@ -184,6 +204,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
 	var nv=0;
+	uploadPath=getUploadPath(arguments.optionStruct);
 	arguments.dataStruct.site_x_option_group_id=arguments.row.site_x_option_group_id;
 	form[arguments.prefixString&arguments.row.site_option_id]=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
 	nv=form[arguments.prefixString&arguments.row.site_option_id];
@@ -191,11 +212,11 @@
 	if(nv NEQ ""){
 		if((len(nv) LTE len(tempDir) or left(nv, len(tempDir)) NEQ tempDir or not fileexists(nv))){
 			if(len(nv) LTE len(request.zos.installPath) or left(nv, len(request.zos.installPath)) NEQ request.zos.installPath or not fileexists(nv)){
-				return {success:true, value:replace(nv, '/zupload/site-options/', ''), dateValue:""};
+				return {success:true, value:replace(nv, '/'&uploadPath&'/site-options/', ''), dateValue:""};
 			}
 		}
 	}
-	var fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', 'site_x_option_group', 'site_x_option_group_id', arguments.prefixString&arguments.row.site_option_id&'_delete', request.zos.zcoredatasource, 'site_x_option_group_value');	
+	var fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', 'site_x_option_group', 'site_x_option_group_id', arguments.prefixString&arguments.row.site_option_id&'_delete', request.zos.zcoredatasource, 'site_x_option_group_value');	
 	if(isNull(fileName)){
 		arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]=arguments.row.site_x_option_group_value;
 		nv=arguments.row.site_x_option_group_value;
@@ -242,7 +263,10 @@
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
-	arguments.dataStruct.site_option_type_json="{}";
+	ts={
+		file_securepath:form.file_securepath
+	};
+	arguments.dataStruct.site_option_type_json=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -261,6 +285,24 @@
 	<input type="radio" name="site_option_type_id" value="9" onClick="setType(9);" <cfif value EQ 9>checked="checked"</cfif>/>
 	File<br />
 	<div id="typeOptions9" style="display:none;padding-left:30px;">
+		<table style="border-spacing:0px;">
+		<tr><td>Secure Path: </td><td>
+		<cfscript>
+		arguments.optionStruct.file_securepath=application.zcore.functions.zso(arguments.optionStruct, 'file_securepath', false, "No");
+		if(arguments.optionStruct.file_securepath EQ ""){
+			arguments.optionStruct.file_securepath="No";
+		}
+		var ts = StructNew();
+		ts.name = "file_securepath";
+		ts.style="border:none;background:none;";
+		ts.labelList = "Yes,No";
+		ts.valueList = "Yes,No";
+		ts.hideSelect=true;
+		ts.struct=arguments.optionStruct;
+		writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
+		</cfscript>
+		</td></tr>
+		</table>
 	</div>
 	</cfsavecontent>
 	<cfreturn output>

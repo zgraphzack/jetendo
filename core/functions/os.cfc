@@ -581,6 +581,16 @@ if(not rs.success){
 		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zupload/site-options");
 		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zupload/member");
 	}
+	if(not directoryexists(ts.globals.privatehomedir&"zuploadsecure")){
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/user");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/library");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/slideshow");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/video");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/ssi");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/site-options");
+		application.zcore.functions.zcreatedirectory(ts.globals.privatehomedir&"zuploadsecure/member");
+	}
 	
 	
 	application.zcore.functions.zUpdateSiteMVCData(ts);

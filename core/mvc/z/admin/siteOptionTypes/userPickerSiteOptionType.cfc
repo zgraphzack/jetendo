@@ -269,7 +269,7 @@
 			<table style="border-spacing:0px;">
 			<tr><td>Display Type: </td><td>
 			<cfscript>
-			form.user_displaytype=application.zcore.functions.zso(arguments.optionStruct, 'user_displaytype', true, 0);
+			arguments.optionStruct.user_displaytype=application.zcore.functions.zso(arguments.optionStruct, 'user_displaytype', true, 0);
 			var ts = StructNew();
 			ts.name = "user_displaytype";
 			ts.style="border:none;background:none;";
@@ -299,9 +299,9 @@
 			</cfscript></td></tr>
 			<tr><td>Multiple Selections: </td><td>
 			<cfscript>
-			form.user_multipleselection=application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection', false, "No");
-			if(form.user_multipleselection EQ ""){
-				form.user_multipleselection="No";
+			arguments.optionStruct.user_multipleselection=application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection', false, "No");
+			if(arguments.optionStruct.user_multipleselection EQ ""){
+				arguments.optionStruct.user_multipleselection="No";
 			}
 			var ts = StructNew();
 			ts.name = "user_multipleselection";

@@ -423,7 +423,7 @@
 				inputStruct.site_id = request.zos.globals.id;
 				application.zcore.user.checkLogin(inputStruct); 
 				
-			}
+			} 
 		}
 		if(structkeyexists(tempcommeta,'roles') and tempcommeta.roles NEQ ""){
 			if(tempcommeta.roles NEQ "user"){

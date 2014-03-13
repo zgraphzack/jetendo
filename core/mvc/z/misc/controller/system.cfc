@@ -50,7 +50,7 @@
 	but users of those search engines have no right to copy the images, text, videos or other data they find from our web site through search engines.</p>
 	<h3>When in doubt, you must assume your rights to the information on this web site are limited to viewing, printing and 
 	caching the information using a web browser for your non-commercial personal use only.</p>
-	<p>We reserve all other rights for ourselves except where explicitedly noted otherwise.</h3>
+	<p>We reserve all other rights for ourselves except where explicitly noted otherwise.</h3>
 	
 	<h2>Reporting Abuse of Copyright.</h2>
 	<p>If you have found that our web site is violating copyright law, the terms of a license agreement or misusing trademarks, 

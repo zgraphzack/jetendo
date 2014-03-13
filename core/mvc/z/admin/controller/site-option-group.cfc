@@ -876,14 +876,24 @@
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)#, 
 	#db.table("site_x_option_group", request.zos.zcoreDatasource)#  
 	WHERE  site_x_option_group.site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_option_type_id in (#db.param(3)#, #db.param(4)#) and 
+	site_option_type_id in (#db.param(3)#, #db.param(9)#) and 
 	site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
 	site_option.site_id = site_x_option_group.site_id and 
+	site_x_option_group_value <> #db.param('')# and 
 	site_option.site_option_id = site_x_option_group.site_option_id ";
 	local.qOptions=db.execute("qOptions");
+	path=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zupload/site-options/';
+	securepath=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zuploadsecure/site-options/';
 	for(row in local.qOptions){
-		if(row.site_x_option_group_value NEQ ""){
-			application.zcore.functions.zDeleteFile(request.zos.globals.privateHomeDir&"zupload/site-options/"&row.site_x_option_group_value);
+		ts=deserializeJson(row.site_option_type_json);
+		if(application.zcore.functions.zso(ts, 'file_securepath') EQ 'Yes'){
+			if(fileexists(securepath&row.site_x_option_group_value)){
+				application.zcore.functions.zdeletefile(securepath&row.site_x_option_group_value);
+			}
+		}else{
+			if(fileexists(path&row.site_x_option_group_value)){
+				application.zcore.functions.zdeletefile(path&row.site_x_option_group_value);
+			}
 		}
 	}
 	db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  

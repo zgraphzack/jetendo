@@ -16,7 +16,7 @@
 		}
 	}
 	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id',false,0);
-	if(form.site_option_app_id NEQ 0){//left(request.cgi_script_name, 21) EQ '/z/_com/app/site-option'){
+	if(form.site_option_app_id NEQ 0){
 		application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
 		db.sql="select * FROM #db.table("site_option_app", request.zos.zcoreDatasource)# site_option_app 
 		where site_option_app_id=#db.param(form.site_option_app_id)# and 
@@ -3082,7 +3082,7 @@ Define this function in another CFC to override the default email format
 		if(form.method EQ "autoDeleteGroup"){
 			return false;
 		}else{
-			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.errorURL, "zsid="&request.zsid));
+			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id="&form.site_option_app_id&"&site_option_group_id="&form.site_option_group_id&"&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid="&request.zsid));
 		}
 	}
 	</cfscript>
@@ -3152,7 +3152,7 @@ Define this function in another CFC to override the default email format
 		if(form.method EQ "autoDeleteGroup"){
 			return true;
 		}else{
-			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id="&form.site_option_group_id&"&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid="&request.zsid));
+			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id="&form.site_option_app_id&"&site_option_group_id="&form.site_option_group_id&"&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid="&request.zsid));
 		}
         	</cfscript>
 	<cfelse>

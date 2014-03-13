@@ -17,7 +17,9 @@
 			ts.user_group_name = "user";
 			rs=application.zcore.user.checkLogin(ts);
 		}
-		application.zcore.template.setTemplate("zcorerootmapping.templates.administrator",true,true);
+		if(left(request.cgi_script_name, 16) EQ "/z/admin/manual/"){
+			application.zcore.template.setTemplate("zcorerootmapping.templates.administrator",true,true);
+		}
 		request.zos.inMemberArea=true;
 		application.zcore.skin.disableMinCat();
 		application.zcore.template.appendtag("meta",'<script type="text/javascript">zContentTransitionDisabled=true;</script>');
