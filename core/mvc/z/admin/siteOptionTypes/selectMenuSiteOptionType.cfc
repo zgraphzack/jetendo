@@ -473,7 +473,7 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 		}else{
 			if(application.zcore.functions.zso(ts, 'selectmenu_multipleselection', true, 0) EQ 1){
 				selectStruct.multiple=true;
-		
+				selectStruct.hideSelect=true;
 				application.zcore.functions.zSetupMultipleSelect(selectStruct.name, application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0));
 			}
 		}

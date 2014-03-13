@@ -141,10 +141,6 @@
 	db.sql&=" ORDER BY user_first_name, user_last_name, user_username";
 	qUser=db.execute("qUser");
 	selectStruct = StructNew();
-	if(application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection') EQ 'Yes'){
-		selectStruct.multiple=true;
-		selectStruct.size=5;
-	}
 	selectStruct.name = arguments.prefixString&arguments.row.site_option_id;
 	selectStruct.query = qUser;
 	selectStruct.selectedValues=application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row.site_option_id#');
@@ -159,10 +155,13 @@
 	}
 	selectStruct.queryValueField = "##user_id##|##siteIdType##";
 	selectStruct.output=false;
+	if(application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection') EQ 'Yes'){
+		selectStruct.multiple=true;
+		selectStruct.size=5;
+		selectStruct.hideSelect=true;
+		application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
+	}
 	value=application.zcore.functions.zInputSelectBox(selectStruct);
-	application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
-	
-	
 	return { label: true, hidden: false, value:value};  
 	</cfscript>
 </cffunction>
