@@ -166,7 +166,11 @@ this.remapFieldStruct=t5;
 		//ts[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=ts[col];
 		columnIndex[col]=i;
 	}
-	ts["list price"]=replace(ts["list price"],",","","ALL");
+	if(not structkeyexists(ts, "list price")){
+		ts["list price"]=replace(ts["original list price"],",","","ALL");
+	}else{
+		ts["list price"]=replace(ts["list price"],",","","ALL");
+	}
 	// need to clean this data - remove not in subdivision, 0 , etc.
 	
 	local.listing_subdivision=this.getRetsValue("property", ts["rets22_list_8"], "LIST_77",ts['Subdivision/Condo Nm']);
