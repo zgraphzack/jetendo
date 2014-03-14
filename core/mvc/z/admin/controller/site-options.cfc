@@ -2900,7 +2900,7 @@ Define this function in another CFC to override the default email format
 						if(row.site_option_small_width EQ 1){
 							tdOutput=' width:1%; white-space:nowrap; ';
 						}
-						writeoutput('<th style="vertical-align:top;#tdOutput#"><div style="padding-bottom:0px;float:left;">'&application.zcore.functions.zOutputToolTip(row.site_option_display_name, row.site_option_tooltip)&'<a name="soid_#row.site_option_id#" id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
+						writeoutput('<th style="vertical-align:top;#tdOutput#"><div style="padding-bottom:0px;float:left;">'&application.zcore.functions.zOutputToolTip(row.site_option_display_name, row.site_option_tooltip)&'<a id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
 						</div></th>
 						<td style="vertical-align:top;white-space: nowrap;"><input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
 					}else{
@@ -3345,7 +3345,7 @@ Define this function in another CFC to override the default email format
 					writeoutput('class="row1"');
 				}
 				writeoutput('>
-				<td style="vertical-align:top;" colspan="2" style="padding-bottom:10px;"><a name="soid_#row.site_option_id#" id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
+				<td style="vertical-align:top;" colspan="2" style="padding-bottom:10px;"><a id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
 					<div style="padding-bottom:5px;float:left; width:99%;">#row.site_option_display_name# <a href="##" onclick="document.myForm.submit();return false;" style="font-size:11px; text-decoration:none; font-weight:bold; padding:4px; display:block; float:right; border:1px solid ##999;">Save</a></div>
 					<input type="hidden" name="site_option_id" value="#row.site_option_id#" />
 					<input type="hidden" name="siteidtype" value="#application.zcore.functions.zGetSiteIdType(row.site_id)#" />
