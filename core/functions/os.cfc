@@ -2424,7 +2424,12 @@ User's IP: #request.zos.cgi.remote_addr#
 			var typeId=tempStruct.soGroupData.siteOptionLookup[row.groupSetOptionId].type;
 			if(typeId EQ 3 or typeId EQ 9){
 				if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
-					local.tempValue="/zupload/site-options/"&row.groupSetValue;
+					optionStruct=tempStruct.soGroupData.siteOptionLookup[row.groupSetOptionId].optionStruct;
+					if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
+						tempValue="/zuploadsecure/site-options/"&row.groupSetValue;
+					}else{
+						tempValue="/zupload/site-options/"&row.groupSetValue;
+					}
 				}else{
 					local.tempValue="";
 				}
@@ -2434,63 +2439,6 @@ User's IP: #request.zos.cgi.remote_addr#
 			tempStruct.soGroupData.siteOptionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
 		}
 	}
-	
-	/*
-	db.sql="SELECT s1.*, s3.site_option_id groupSetOptionId, 
-	s3.site_x_option_group_value groupSetValue 
-	FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1  
-	LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3  ON 
-	s1.site_option_group_id = s3.site_option_group_id AND 
-	s1.site_x_option_group_set_id = s3.site_x_option_group_set_id and 
-	s1.site_id = s3.site_id
-	WHERE s1.site_id = #db.param(arguments.site_id)#  and 
-	s1.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) 
-	ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC ";
-	//s1.site_x_option_group_set_approved=#db.param(1)# and 
-	qS=db.execute("qS"); 
-	tempUniqueStruct=structnew();
-	
-	tempStruct.soGroupData.siteOptionGroupSetId[0&"_groupId"]=0;
-	tempStruct.soGroupData.siteOptionGroupSetId[0&"_parentId"]=0;
-	tempStruct.soGroupData.siteOptionGroupSetId[0&"_appId"]=0;
-	tempStruct.soGroupData.siteOptionGroupSetId[0&"_childGroup"]=structnew();
-	for(row in qS){
-		id=row.site_x_option_group_set_id;
-		if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, id) EQ false){
-			if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, id&"_appId") EQ false){
-				tempStruct.soGroupData.siteOptionGroupLookup[row.site_option_group_id].count++;
-				tempStruct.soGroupData.siteOptionGroupSetId[id&"_groupId"]=row.site_option_group_id;
-				tempStruct.soGroupData.siteOptionGroupSetId[id&"_appId"]=row.site_option_app_id;
-				tempStruct.soGroupData.siteOptionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
-				tempStruct.soGroupData.siteOptionGroupSetId[id&"_childGroup"]=structnew();
-			}
-			if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
-				if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
-					tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
-				}
-				// used for looping all sets in the group
-				if(structkeyexists(tempUniqueStruct, row.site_x_option_group_set_parent_id&"_"&id) EQ false){
-					//arrayappend(tempStruct.soGroupData.siteOptionSetByGroupId[row.site_option_group_id], id);
-					arrayappend(tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id], id);
-					tempUniqueStruct[row.site_x_option_group_set_parent_id&"_"&id]=true;
-				}
-			}
-			if(structkeyexists(tempStruct.soGroupData.siteOptionLookup, row.groupSetOptionId)){
-				var typeId=tempStruct.soGroupData.siteOptionLookup[row.groupSetOptionId].type;
-				if(typeId EQ 3 or typeId EQ 9){
-					if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
-						local.tempValue="/zupload/site-options/"&row.groupSetValue;
-					}else{
-						local.tempValue="";
-					}
-				}else{
-					local.tempValue=row.groupSetValue;
-				}
-				tempStruct.soGroupData.siteOptionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
-			}
-		}
-	}
-	*/
 	 db.sql="SELECT * FROM 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 	 #db.table("site_option_group", request.zos.zcoreDatasource)# s2

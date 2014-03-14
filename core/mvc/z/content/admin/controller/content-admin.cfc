@@ -93,9 +93,9 @@
 		variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#qcheck.content_parent_id#' ";
 		variables.queueSortCom.init(variables.queueSortStruct);
 		variables.queueSortCom.sortAll();
-		res=application.zcore.app.getAppCFC("content").updateRewriteRules(application.siteStruct[request.zos.globals.id]);
+		res=application.zcore.app.getAppCFC("content").updateRewriteRules();
 		application.zcore.functions.zMenuClearCache({content=true});
-		application.zcore.app.getAppCFC("content").updateContentAccessCache();
+		application.zcore.app.getAppCFC("content").updateContentAccessCache(application.siteStruct[request.zos.globals.id]);
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(qcheck.content_parent_id)# and 
 		site_id = #db.param(request.zos.globals.id)#";
@@ -1696,7 +1696,7 @@
 		site_id=#db.param(request.zos.globals.id)# ";
 		db.execute("q");
 	}
-	application.zcore.app.getAppCFC("content").updateContentAccessCache();
+	application.zcore.app.getAppCFC("content").updateContentAccessCache(application.siteStruct[request.zos.globals.id]);
 	application.zcore.status.setStatus(request.zsid, "Pages created successfully.");
 	application.zcore.functions.zRedirect("/z/content/admin/content-admin/index?zsid=#request.zsid#");
 	</cfscript>
