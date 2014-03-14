@@ -690,8 +690,7 @@ notes: optionally delete an existing image that has a field in the specified dat
     this.arrImageWidth=arraynew(1);
     this.arrImageHeight=arraynew(1);
     // prevent hacking the command line
-    arguments.source = replace(arguments.source, '"',"","ALL");
-    
+    arguments.source = replace(arguments.source, '"',"","ALL"); 
     // throw critical errors
     if(ArrayLen(arrSizes) EQ 0){
         application.zcore.template.fail("resizeImage: sizeList must contain one of more sizes (i.e. 150x120) as comma seperated values.",true); 
@@ -792,7 +791,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	resizeCMD='-resize "#nw#x#nh#>" ';
 	cs={};
 	cs.resizeWidth=nw;
-	cs.resizeHeight=nw;
+	cs.resizeHeight=nh;
 	cs.cropWidth=0;
 	cs.cropHeight=0;
 	cs.cropXOffset=0;
