@@ -48,7 +48,9 @@ userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_ad
 user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
 user_group_id2 = userGroupCom.getGroupId('broker',request.zos.globals.id);
 user_group_id3 = userGroupCom.getGroupId('administrator',request.zos.globals.id);
+user_group_id22 = userGroupCom.getGroupId('member',request.zos.globals.id);
 if(request.zos.globals.parentid NEQ 0){
+  user_group_id44 = userGroupCom.getGroupId('member',request.zos.globals.parentid);
 	user_group_id4 = userGroupCom.getGroupId('agent',request.zos.globals.parentid);
 	user_group_id5 = userGroupCom.getGroupId('broker',request.zos.globals.parentid);
 	user_group_id6 = userGroupCom.getGroupId('administrator',request.zos.globals.parentid);/**/
@@ -68,9 +70,9 @@ if(request.zos.globals.parentid NEQ 0){
   WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
 member_public_profile=#db.param('1')# 
   
-  and user.user_group_id IN (#db.param(user_group_id)#,#db.param(user_group_id2)#,#db.param(user_group_id3)#
+  and user.user_group_id IN (#db.param(user_group_id)#,#db.param(user_group_id2)#,#db.param(user_group_id22)#,#db.param(user_group_id3)#
   <cfif request.zos.globals.parentid NEQ 0>
-    ,#db.param(user_group_id4)#,#db.param(user_group_id5)#,#db.param(user_group_id6)#
+    ,#db.param(user_group_id44)#,#db.param(user_group_id4)#,#db.param(user_group_id5)#,#db.param(user_group_id6)#
   </cfif>
   )
   GROUP BY user_id 

@@ -1764,7 +1764,7 @@ configCom.includeContentByName(ts);
 
 <cffunction name="searchCurrentParentLinks" localmode="modern" output="no" returntype="boolean" access="public">
 	<cfargument name="theURL" type="string" required="yes">
-	<cfscript>
+	<cfscript> 
 	if(structkeyexists(request.zos,'arrContentParentURLStruct')){
 		for(i=arraylen(request.zos.arrContentParentURLStruct);i GTE 1;i--){
 			if(compare(arguments.theURL, request.zos.arrContentParentURLStruct[i]) EQ 0 and request.zos.arrContentParentURLStruct[i] NEQ "/"){
