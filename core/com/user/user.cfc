@@ -1249,6 +1249,8 @@ formString = userCom.loginForm(inputStruct);
 		return false;
 	}
 	form.zusername=local.qUserToken.user_token_username;
+	/*
+	removed user agent validation until it can be made more specific so constant browser upgrades don't invalidate session.
 	if(local.qUserToken.user_token_user_agent NEQ request.zos.cgi.http_user_agent){
 		if(local.debug){ 
 			writeoutput('token is valid, but user agent changed.  Removing ztoken for this id and clearing cookie. User will have to login again.<br />'); 
@@ -1267,7 +1269,7 @@ formString = userCom.loginForm(inputStruct);
 		local.ts9.expires="now";
 		application.zcore.functions.zcookie(local.ts9);
 		this.setLoginLog(0);
-	}
+	}*/
 	keyIsValid=application.zcore.user.verifySecurePassword(local.arrToken[4], local.qUserToken.user_token_salt, local.qUserToken.user_token_key, local.arrToken[1]);
 	if(keyIsValid){
 		if(local.debug){ 
