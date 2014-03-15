@@ -488,10 +488,7 @@
 <cffunction name="deleteListings" localmode="modern" output="no" returntype="any">
 	<cfargument name="idlist" type="string" required="yes">
 	<cfscript>
-	var db=request.zos.queryObject;
-	// NOT GENERIC
-	db.sql="DELETE FROM #db.table("listing_x_site", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL(arguments.idlist)#) and site_id <> #db.param(-1)#";
-	db.execute("q"); 
+	//var db=request.zos.queryObject;
 	</cfscript>
 </cffunction>
 </cfoutput>

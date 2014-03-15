@@ -178,7 +178,7 @@
 </cffunction>
 
 
-<cffunction name="executeQuery" localmode="modern" access="public" returntype="boolean">
+<cffunction name="executeQuery" localmode="modern" access="public" returntype="any">
 	<cfargument name="datasource" type="string" required="yes">
 	<cfargument name="sql" type="string" required="yes">
 	<cfscript>

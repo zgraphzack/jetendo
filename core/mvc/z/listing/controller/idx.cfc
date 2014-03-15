@@ -486,13 +486,6 @@
 			WHERE listing_id IN (#db.trustedSQL(sql)#)";
 			db.execute("q"); 
 		 }
-		 if(arraylen(arrD) NEQ 0){
-		 	sql="'"&arraytolist(arrD,"','")&"'";
-			 db.sql="DELETE FROM #db.table("listing_x_site", request.zos.zcoreDatasource)#  
-			 WHERE listing_id IN (#db.trustedSQL(sql)#) and 
-			 site_id <> #db.param(-1)#";	
-			 db.execute("q");
-		 }
 		arrayClear(request.zos.arrQueryLog);
 		 this.datastruct=structnew();
 		 return true;

@@ -870,6 +870,18 @@ LEFT JOIN #db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls ON
 </table>
 </td>
 </tr>
+
+<cfscript>
+if(form.mls_option_listing_title_format EQ ""){
+	arrK=listToArray("city,remarks,address,subdivision,bedrooms,bathrooms,type,subtype,style,view,frontage,pool,condo");
+	arrK=application.zcore.functions.zRandomizeArray(arrK);
+	form.mls_option_listing_title_format=arrayToList(arrK, ",");
+}
+</cfscript>
+<tr><th>Title Format:</th>
+<td><input type="text" name="mls_option_listing_title_format" value="#htmleditformat(form.mls_option_listing_title_format)#" /> 
+</td></tr>
+
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
 	WHERE site_id=#db.param(this.site_id)#

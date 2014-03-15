@@ -88,7 +88,6 @@
 	ts.zos.scriptDirectory="/opt/jetendo/scripts/";
 	ts.zos.backupStructureOnlyTables={
 		ts.zos.zcoreDatasource&".site":true, // the site table shouldn't be able to be imported at all since this could cause sites to be lost.  That kind of migration should replace entire database manually.
-		ts.zos.zcoreDatasource&".listing_x_site":true, // this table is too large to backup all the time.
 		// these tables contain data that is temporary in nature and shouldn't need to be migrated between servers
 		ts.zos.zcoreDatasource&".login_log":true,
 		ts.zos.zcoreDatasource&".user_token":true, 

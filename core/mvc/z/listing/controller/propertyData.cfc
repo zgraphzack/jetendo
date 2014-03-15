@@ -1531,9 +1531,6 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				content_deleted=#db.param('0')# and 
 				content.site_id = #db.param(request.zos.globals.id)# 
 				#db.trustedSQL(rs2.leftJoin)#
-				LEFT JOIN #db.table("listing_x_site", request.zos.zcoreDatasource)# listing_x_site ON 
-				listing_x_site.site_id = #db.param(request.zos.globals.id)# and 
-				listing_x_site.listing_id = listing.listing_id 
 				WHERE listing.listing_id IN (#db.trustedSQL("'#idlist22#'")#) and 
 				listing.listing_id = listing_data.listing_id 
 				GROUP BY listing.listing_id ";

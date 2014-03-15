@@ -591,163 +591,148 @@ zGetLatLong(ts);
 		titleStruct.urlTitle=titleStruct.listing_x_site_url;
 		titleStruct.propertyType=arguments.idx.listingPropertyType;
 		return titleStruct;	
-	}
+	} 
 	// set the above struct if the value exists.
 	appendStruct=structnew();
-	appendStruct.listingBedrooms=listtoarray("BR,bedrooms,beds",",");
-	seolistingBathrooms=listtoarray("BA,bathrooms,baths",",");
-	seocommercial=listtoarray("Commercial Real Estate,Commercial Property,Commercial Listing",",");
+	appendStruct.listingBedrooms=["beds"];
+	seolistingBathrooms=["baths"];
+	seocommercial=["Commercial Real Estate"];
 	
 	// flag the available fields
-	avs=structnew();
-	avs.cityName=false;
-	avs.listing_remarks=false;
-	avs.listing_address=false;
-	avs.listing_subdivision=false;
-	avs.listingBedrooms=false;
-	avs.listingBathrooms=false;
-	avs.listingType=false;
-	avs.listingSubType=false;
-	avs.listingStyle=false;
-	avs.listingView=false;
-	avs.listingFrontage=false;
-	avs.listingPool=false;
-	avs.listingstatus=false;
-	avs.listingFrontageName=false;
-	avs.listingCondoName=false;
+	avs={
+		city:false,
+		remarks:false,
+		address:false,
+		subdivision:false,
+		bedrooms:false,
+		bathrooms:false,
+		type:false,
+		subtype:false,
+		style:false,
+		view:false,
+		frontage:false,
+		pool:false,
+		condo:false
+	};
 	d2="";
 	d2="Real Estate";
 	if(arguments.idx.listingPropertyType neq ''){
-		avs.listingType=arguments.idx.listingPropertyType;
-		if(avs.listingType EQ "Single Family"){
-			avs.listingType="Home";
-		}else if(avs.listingType EQ "Residential"){
-			avs.listingType="Home";
-		}else if(avs.listingType CONTAINS "commercial"){
-			avs.listingType=seocommercial[randRange(1,arraylen(seocommercial))];
+		avs.type=arguments.idx.listingPropertyType;
+		if(avs.type EQ "Single Family"){
+			avs.type="Home";
+		}else if(avs.type EQ "Residential"){
+			avs.type="Home";
+		}else if(avs.type CONTAINS "commercial"){
+			avs.type=seocommercial[1];
 		}
-		d2=avs.listingtype;
-		if((avs.listingType EQ "land" or avs.listingType EQ "vacant land") and arguments.idx.listing_acreage NEQ ""){
-			avs.listingtype=arguments.idx.listing_acreage&" acres of "&avs.listingtype;
+		d2=avs.type;
+		if((avs.type EQ "land" or avs.type EQ "vacant land") and arguments.idx.listing_acreage NEQ ""){
+			avs.type=arguments.idx.listing_acreage&" acres of "&avs.type;
 		}
-		if(avs.listingType DOES NOT CONTAIN "commercial"){
+		if(avs.type DOES NOT CONTAIN "commercial"){
 			if(arguments.idx.listing_price GT 500000){
-				avs.listingType="Luxury "&avs.listingType;
+				avs.type="Luxury "&avs.type;
 			}else if(arguments.idx.listing_price GT 1000000){
-				avs.listingType="Million Dollar "&avs.listingType;
+				avs.type="Million Dollar "&avs.type;
 			}else if(arguments.idx.listing_price GT 2000000){
-				avs.listingType="Multi-Million Dollar "&avs.listingType;
+				avs.type="Multi-Million Dollar "&avs.type;
 			}
 		}
-		if(avs.listingType EQ request.zos.zcoreDatasource){
-			avs.listingtype&=" For Rent";
+		if(avs.type EQ "rental"){
+			avs.type&=" For Rent";
 		}else{
-			avs.listingtype&=" "&application.zcore.functions.zfirstlettercaps(arguments.idx.listingstatus);
+			avs.type&=" "&application.zcore.functions.zfirstlettercaps(arguments.idx.listingstatus);
 		}
 	}else{
-		avs.listingtype=listgetat("Real Estate ,Property ,Listing ",randrange(1,3),",")&application.zcore.functions.zfirstlettercaps(arguments.idx.listingstatus);
-	}
-	if(structkeyexists(arguments.idx, 'listing_x_site_title') and arguments.idx.listing_x_site_title NEQ ""){
-		titleStruct.listing_x_site_title=arguments.idx.listing_x_site_title;
-		titleStruct.listing_x_site_url=arguments.idx.listing_x_site_url;
-		titleStruct.listing_x_site_description=arguments.idx.listing_x_site_description;
-		titleStruct.flashTitle=titleStruct.listing_x_site_title;
-		titleStruct.title=titleStruct.listing_x_site_title;
-		titleStruct.mapTitle=titleStruct.listing_x_site_title;
-		titleStruct.urlTitle=titleStruct.listing_x_site_url;
-		titleStruct.propertyType=d2;
-		return titleStruct;
-	}
-	if(arguments.idx.listingFrontage NEQ ""){
-		avs.listingFrontageName=arguments.idx.listingFrontage;
-	}
+		avs.type="Real Estate "&application.zcore.functions.zfirstlettercaps(arguments.idx.listingstatus);
+	} 
 	if(arguments.idx.listing_condoname NEQ "" and arguments.idx.listing_condoname NEQ "Other"){
-		avs.listingCondoName=arguments.idx.listing_condoname&" Condominium";
+		avs.condo=arguments.idx.listing_condoname&" Condominium";
 	}
-	if(arguments.idx.listingView neq ''){
-		//avs.listingView=listingView;
+	if(arguments.idx.listingView neq ''){ 
 		c=listlen(arguments.idx.listingView,",");
-		avs.listingView=trim(listgetat(arguments.idx.listingView,randrange(1,c),","));
+		avs.view=trim(listgetat(arguments.idx.listingView, 1,","));
 	}
-	if(arguments.idx.listingFrontage neq ''){
-		//avs.listingFrontage=listingFrontage;
+	if(arguments.idx.listingFrontage neq ''){ 
 		c=listlen(arguments.idx.listingFrontage,",");
-		avs.listingFrontage=trim(listgetat(arguments.idx.listingFrontage,randrange(1,c),","));
+		avs.frontage=trim(listgetat(arguments.idx.listingFrontage, 1,","));
 	}
 	if(arguments.idx.listing_pool EQ 1){
-		avs.listingPool="Pool";
+		avs.pool="Pool";
 	}
 	if(arguments.idx.listingStyle neq ''){
-		avs.listingStyle=arguments.idx.listingStyle;
+		avs.style=arguments.idx.listingStyle;
 	}
 	if(arguments.idx.listing_beds neq '' and arguments.idx.listing_beds NEQ 0){
-		avs.listingBedrooms=arguments.idx.listing_beds;
+		avs.bedrooms=arguments.idx.listing_beds;
 	}
 	if(arguments.idx.listing_baths neq '' and arguments.idx.listing_baths NEQ 0){
-		avs.listingBathrooms=arguments.idx.listing_baths;
+		avs.bathrooms=arguments.idx.listing_baths;
 		if(arguments.idx.listing_halfbaths neq '' and arguments.idx.listing_halfbaths neq '0'){
 			if(arguments.idx.listing_halfbaths EQ 1){
-				avs.listingBathrooms&=".5 "&seolistingBathrooms[randrange(1,arraylen(seolistingBathrooms))];
+				avs.bathrooms&=".5 "&seolistingBathrooms[1];
 			}else{
-				avs.listingBathrooms=avs.listingBathrooms&" bath "&arguments.idx.listing_halfbaths&" half baths";
+				avs.bathrooms=avs.bathrooms&" bath "&arguments.idx.listing_halfbaths&" half baths";
 			}
 		}else{
-			avs.listingBathrooms&=" "&seolistingBathrooms[randrange(1,arraylen(seolistingBathrooms))];
+			avs.bathrooms&=" "&seolistingBathrooms[1];
 		}
 	}
 	if(arguments.idx.cityName neq ''){
-		avs.cityName=arguments.idx.cityName;
+		avs.city=arguments.idx.cityName;
 	}
-	if(arguments.idx.listing_subdivision neq 'Not In Subdivision' AND arguments.idx.listing_subdivision neq 'Not On The List' AND arguments.idx.listing_subdivision neq 'n/a' and isDefined('arguments.idx.listing_subdivision') and arguments.idx.listing_subdivision neq ''){
-		avs.listing_subdivision=arguments.idx.listing_subdivision;
+	if(arguments.idx.listing_subdivision neq 'Not In Subdivision' AND arguments.idx.listing_subdivision neq 'Not On The List' AND arguments.idx.listing_subdivision neq 'n/a' and arguments.idx.listing_subdivision neq ''){
+		avs.subdivision=arguments.idx.listing_subdivision;
 	}
 	if(arguments.idx.listing_data_remarks NEQ ""){
-		avs.listing_data_remarks=trim(lcase(rereplace(arguments.idx.listing_data_remarks,"\*\**"," ","ALL")));
+		avs.remarks=trim(lcase(rereplace(arguments.idx.listing_data_remarks,"\*\**"," ","ALL")));
 	}
 	if(trim(arguments.idx.listing_address) NEQ ""){
-		avs.listing_address=application.zcore.functions.zFirstLetterCaps(arguments.idx.listing_address);
+		avs.address=application.zcore.functions.zFirstLetterCaps(arguments.idx.listing_address);
 	}
 	// remove false values
 	lbackup23=false;
-	if(isDefined('avs.listing_address')){
-		lbackup23=avs.listing_address;
+	if(structkeyexists(avs, 'address')){
+		lbackup23=avs.address;
 	}
 	if(trim(lbackup23) EQ "" or lbackup23 EQ false){
-		if(avs.listing_subdivision NEQ false){
-			lbackup23=avs.listing_subdivision;
-			structdelete(avs,'listing_subdivision');	
-		}else if(avs.cityName NEQ false){
-			lbackup23=avs.cityName;
-			structdelete(avs,'cityName');	
+		if(avs.subdivision NEQ false){
+			lbackup23=avs.subdivision;
+			structdelete(avs,'subdivision');	
+		}else if(avs.city NEQ false){
+			lbackup23=avs.city;
+			structdelete(avs,'city');	
 		}
 	}
-	structdelete(avs,"listing_address");
+	structdelete(avs,"address");
 	for(i in avs){
 		if(avs[i] EQ false){
 			structdelete(avs,i);
 			continue;
 		}
 		if(structkeyexists(appendStruct, i)){
-			avs[i]&=" "&appendStruct[i][randrange(1,arraylen(appendStruct[i]))];	
+			avs[i]&=" "&appendStruct[i][1];	
 		}
-	}
-	// randomize struct key order
+	} 
 	arrK=structkeyarray(avs);
-	
-	// randomize the array
-	arrK=application.zcore.functions.zRandomizeArray(arrK);
 	if(trim(lbackup23) NEQ "" and lbackup23 NEQ false){
-		arrayprepend(arrK,"listing_address");
-		avs.listing_address=lbackup23;
-	}
+		arrayprepend(arrK,"address");
+		avs.address=lbackup23;
+	} 
+	arrK2=listToArray(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_listing_title_format, ",");
+	
 	// build description
-	for(i=1;i LTE arraylen(arrK);i++){
-		if(arrK[i] EQ "listing_data_remarks"){
-			remarkIndex=i;
+	for(n=1;n LTE arraylen(arrK2);n++){
+		i=arrK2[n];
+		if(not structkeyexists(avs, i)){
+			continue;
+		}
+		if(i EQ "remarks"){
+			remarkIndex=n;
 			if(descriptionLength LT 200){
-				ct=lcase(left(avs[arrK[i]],max(25,min(remainingDescriptionLength,170))));
-				if(avs[arrK[i]] NEQ ""){
-					if(len(avs[arrK[i]]) GT max(25,min(remainingDescriptionLength,170))){
+				ct=lcase(left(avs[i],max(25,min(remainingDescriptionLength,170))));
+				if(avs[i] NEQ ""){
+					if(len(avs[i]) GT max(25,min(remainingDescriptionLength,170))){
 						ct=reverse(ct);
 						p=find(" ",ct);
 						if(p NEQ 0){
@@ -755,16 +740,16 @@ zGetLatLong(ts);
 						}
 					}
 					ct=ucase(left(ct,1))&removeChars(ct,1,1);
-					if(len(avs[arrK[i]]) GT max(25,min(remainingDescriptionLength,170))){
+					if(len(avs[i]) GT max(25,min(remainingDescriptionLength,170))){
 						ct&="...";	
 					}
 				}
 				arrayappend(arrDescription, ct);	
 			}
 			if(titleLength LT 66){		
-				ct=lcase(left(avs[arrK[i]],max(25,min(remainingTitleLength,66))));
-				if(avs[arrK[i]] NEQ ""){
-					if(len(avs[arrK[i]]) GT max(25,min(remainingTitleLength,66))){
+				ct=lcase(left(avs[i],max(25,min(remainingTitleLength,66))));
+				if(avs[i] NEQ ""){
+					if(len(avs[i]) GT max(25,min(remainingTitleLength,66))){
 						ct=reverse(ct);
 						p=find(" ",ct);
 						if(p NEQ 0){
@@ -772,7 +757,7 @@ zGetLatLong(ts);
 						}
 					}
 					ct=ucase(left(ct,1))&removeChars(ct,1,1);
-					if(len(avs[arrK[i]]) GT max(25,min(remainingTitleLength,66))){
+					if(len(avs[i]) GT max(25,min(remainingTitleLength,66))){
 						ct&="...";	
 					}
 				}
@@ -780,13 +765,13 @@ zGetLatLong(ts);
 			}
 		}else{
 			if(descriptionLength LT 150){		
-				arrayappend(arrDescription, avs[arrK[i]]);
+				arrayappend(arrDescription, avs[i]);
 			}
 			if(titleLength LT 66){		
-				arrayappend(arrTitle, avs[arrK[i]]);
+				arrayappend(arrTitle, avs[i]);
 			}
 			if(urlLength LT 66){	
-				arrayappend(arrURL, avs[arrK[i]]);	
+				arrayappend(arrURL, avs[i]);	
 			}
 		}
 		if(descriptionLength GTE 150){
@@ -826,46 +811,7 @@ zGetLatLong(ts);
 	titleStruct.flashTitle=titleStruct.listing_x_site_title;
 	titleStruct.title=titleStruct.listing_x_site_title;
 	titleStruct.mapTitle=titleStruct.listing_x_site_title;
-	titleStruct.urlTitle=titleStruct.listing_x_site_url;
-	
-	if(structkeyexists(arguments.idx, 'listing_x_site_title') EQ false or isnull(arguments.idx.listing_x_site_title) or arguments.idx.listing_x_site_title EQ ""){
-		titleStruct.listing_id=arguments.idx.listing_id;
-		titleStruct.site_id=request.zos.globals.id;
-		// generate title
-		ts=structnew();
-		ts.datasource="#request.zos.zcoreDatasource#";
-		ts.table="listing_x_site";
-		titleStruct.listing_x_site_datetime=request.zos.mysqlnow;
-		ts.struct=titleStruct; 
-		if(structkeyexists(arguments.idx, 'listing_x_site_url') and not isnull(arguments.idx.listing_x_site_url) and arguments.idx.listing_x_site_url NEQ ""){
-			ts.struct.listing_x_site_url=arguments.idx.listing_x_site_url;
-			ts.forceWhereFields="listing_id,site_id"; 
-			application.zcore.functions.zUpdate(ts);
-		}else{
-			listing_x_site_id=application.zcore.functions.zInsert(ts);
-			if(listing_x_site_id NEQ false){
-				db.sql="select * from #db.table("listing_x_site", request.zos.zcoreDatasource)# 
-				WHERE listing_id = #db.param(arguments.idx.listing_id)# and 
-				site_id = #db.param(request.zos.globals.id)#";
-				qListingXSite=db.execute("qListingXSite");
-				if(qListingXSite.recordcount EQ 0){
-					throw("Failed to insert listing_x_site record and it doesn't exist in database.");
-				}else{
-					for(row in qListingXSite){
-						titleStruct.listing_x_site_title=row.listing_x_site_title;
-						titleStruct.listing_x_site_url=row.listing_x_site_url;
-						titleStruct.listing_x_site_description=row.listing_x_site_description;
-						titleStruct.flashTitle=row.listing_x_site_title;
-						titleStruct.title=row.listing_x_site_title;
-						titleStruct.mapTitle=row.listing_x_site_title;
-						titleStruct.urlTitle=row.listing_x_site_url;
-						titleStruct.propertyType=arguments.idx.listingPropertyType;
-						return titleStruct;	
-					}
-				}
-			}
-		}
-	}
+	titleStruct.urlTitle=titleStruct.listing_x_site_url; 
 	titleStruct.propertyType=d2;
 	return titleStruct;
 	</cfscript>

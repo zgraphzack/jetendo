@@ -65,7 +65,10 @@
 				}
 			}
 			if(arraylen(rs.arrSQL) NEQ 0){
-				db.sql="INSERT INTO #db.table("listing_lookup", request.zos.zcoreDatasource)#  (listing_lookup_mls_provider, listing_lookup_type, listing_lookup_value, listing_lookup_oldid, listing_lookup_datetime, listing_lookup_oldid_unchanged) VALUES"&db.trustedSQL(arraytolist(rs.arrSQL))&" ON DUPLICATE KEY UPDATE 
+				db.sql="INSERT INTO #db.table("listing_lookup", request.zos.zcoreDatasource)#  
+				(listing_lookup_mls_provider, listing_lookup_type, listing_lookup_value, listing_lookup_oldid, 
+					listing_lookup_datetime, listing_lookup_oldid_unchanged) VALUES"&db.trustedSQL(arraytolist(rs.arrSQL))&" 
+				ON DUPLICATE KEY UPDATE 
 				listing_lookup_mls_provider=VALUES(listing_lookup_mls_provider), 
 				listing_lookup_type=VALUES(listing_lookup_type), 
 				listing_lookup_value=VALUES(listing_lookup_value), 
