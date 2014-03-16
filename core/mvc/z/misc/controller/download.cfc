@@ -10,7 +10,7 @@
         fp=replacenocase(fp,"../","","ALL");
         fp=replacenocase(fp,"..\","","ALL");
         fp=replacenocase(fp,":","","ALL");
-        if(left(fp, 9) EQ "/zuploadsecure/" and not application.zcore.user.checkGroupAccess("administrator")){
+        if(left(fp, 15) EQ "/zuploadsecure/" and not application.zcore.user.checkGroupAccess("administrator")){
             application.zcore.user.requireLogin("administrator");
         }
         if(fp EQ "" or ext EQ "" or fp NEQ fp_backup or (left(fp, 9) NEQ "/zupload/" and left(fp, 15) NEQ "/zuploadsecure/")){
