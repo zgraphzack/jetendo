@@ -1178,10 +1178,6 @@
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_admin_app_only")#</td>
 				</tr>
 				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">Enable Sorting</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
-				</tr>
-				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Enable Unique URL</th>
 					<td>
 				<cfif request.zos.globals.optionGroupURLID NEQ 0>
@@ -1189,15 +1185,6 @@
 				<cfelse>
 					Option group URL ID must be set in server manager to use this feature.
 				</cfif></td>
-				</tr>
-				<cfscript>
-				if(form.site_option_group_admin_paging_limit EQ ""){
-					form.site_option_group_admin_paging_limit=0;
-				}
-				</cfscript>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">Admin Paging Limit</th>
-					<td><input name="site_option_group_admin_paging_limit" id="site_option_group_admin_paging_limit" type="text" value="#htmleditformat(form.site_option_group_admin_paging_limit)#"  /> (Number of records to display in admin until showing page navigation)</td>
 				</tr>
 				
 				<tr>
@@ -1218,6 +1205,16 @@
 					<td><input name="site_option_group_public_form_title" id="site_option_group_public_form_title" size="50" type="text" value="#htmleditformat(form.site_option_group_public_form_title)#" maxlength="100" />
 							</td></tr>
 				
+			</cfif>
+				<cfscript>
+				if(form.site_option_group_admin_paging_limit EQ ""){
+					form.site_option_group_admin_paging_limit=0;
+				}
+				</cfscript>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">Admin Paging Limit</th>
+					<td><input name="site_option_group_admin_paging_limit" id="site_option_group_admin_paging_limit" type="text" value="#htmleditformat(form.site_option_group_admin_paging_limit)#"  /> (Number of records to display in admin until showing page navigation)</td>
+				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Form Description:","member.site-option-group.edit site_option_group_form_description")#</th>
 					<td>
@@ -1242,7 +1239,10 @@
 					<th>#application.zcore.functions.zOutputHelpToolTip("Embed HTML Code:","member.site-option-group.edit site_option_group_code")#</th>
 					<td><textarea name="site_option_group_code" id="site_option_group_code" cols="100" rows="10">#htmleditformat(form.site_option_group_code)#</textarea></td>
 				</tr>
-			</cfif>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">Enable Sorting</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
+				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Help Description:","member.site-option-group.edit site_option_group_help_description")#</th>
 					<td>

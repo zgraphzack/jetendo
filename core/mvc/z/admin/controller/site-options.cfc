@@ -1218,6 +1218,8 @@
 		site_option_id=#db.param(row.site_option_id)#, 
 		site_x_option_updated_datetime=#db.param(nowDate)# ";
 		qD2=db.execute("qD2");
+
+
 	}
 	db.sql="DELETE FROM #db.table("site_x_option", request.zos.zcoreDatasource)#  
 	WHERE site_x_option.site_option_app_id = #db.param(form.site_option_app_id)# and 
@@ -1403,7 +1405,6 @@
 		qD=curCache.qD;
 	}
 	local.newDataStruct={};
-	local.newDataMappedStruct={};
 	var optionStructCache={};
 	form.siteOptionTitle="";
 	form.siteOptionSummary="";
@@ -1422,8 +1423,6 @@
 		if(row.site_option_primary_field EQ 1){
 			hasPrimaryField=true;
 		}
-	}
-	for(row in qD){
 		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
 		if(structkeyexists(form, row.site_option_name)){
 			form['newvalue'&row.site_option_id]=form[row.site_option_name];
@@ -1443,39 +1442,6 @@
 			application.zcore.status.setStatus(request.zsid, rs.message, form, true);
 			local.errors=true;
 			continue;
-		}
-		dataStruct=currentCFC.onBeforeListView(row, optionStruct, form);
-		local.newDataMappedStruct[row.site_option_name]=currentCFC.getListValue(dataStruct, optionStruct, nv);
-		if(hasSummaryField){
-			if(row.site_option_search_summary_field EQ 1){
-				if(len(form.siteOptionSummary)){
-					form.siteOptionSummary&=" "&local.newDataMappedStruct[row.site_option_name];
-				}else{
-					form.siteOptionSummary=local.newDataMappedStruct[row.site_option_name];
-				}
-			}
-		}
-		
-		if(hasTitleField){
-			if(row.site_option_url_title_field EQ 1){
-				if(len(form.siteOptionTitle)){
-					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
-				}else{
-					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
-				}
-			}
-		}else{
-			if(not hasPrimaryField){
-				if(form.siteOptionTitle EQ ""){
-					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name]; 
-				}
-			}else if(row.site_option_primary_field EQ 1){
-				if(len(form.siteOptionTitle)){
-					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
-				}else{
-					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
-				}
-			}
 		}
 	}  
 	if(application.zcore.functions.zso(form,'site_x_option_group_set_override_url') CONTAINS "?"){
@@ -1509,6 +1475,7 @@
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1<br>'); startTime=gettickcount();
 	var row=0; 
 	var arrTempData=[];
+	local.newDataMappedStruct={};
 	for(row in qD){
 		nv=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
 		nvdate="";
@@ -1543,6 +1510,39 @@
 			nv=row.site_option_default_value;
 			nvdate=nv;
 		} 
+		dataStruct=currentCFC.onBeforeListView(row, optionStruct, form);
+		local.newDataMappedStruct[row.site_option_name]=currentCFC.getListValue(dataStruct, optionStruct, nv);
+		if(hasSummaryField){
+			if(row.site_option_search_summary_field EQ 1){
+				if(len(form.siteOptionSummary)){
+					form.siteOptionSummary&=" "&local.newDataMappedStruct[row.site_option_name];
+				}else{
+					form.siteOptionSummary=local.newDataMappedStruct[row.site_option_name];
+				}
+			}
+		}
+		
+		if(hasTitleField){
+			if(row.site_option_url_title_field EQ 1){
+				if(len(form.siteOptionTitle)){
+					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
+				}else{
+					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
+				}
+			}
+		}else{
+			if(not hasPrimaryField){
+				if(form.siteOptionTitle EQ ""){
+					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name]; 
+				}
+			}else if(row.site_option_primary_field EQ 1){
+				if(len(form.siteOptionTitle)){
+					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
+				}else{
+					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
+				}
+			}
+		}
 		var tempData={
 			site_option_app_id:form.site_option_app_id,
 			site_option_id_siteIDType:1,
@@ -1764,13 +1764,13 @@
 			local.newDataMappedStruct.site_option_group_id =form.site_option_group_id;
 			form.inquiries_type_id =local.qCheck.inquiries_type_id;
 			local.newDataMappedStruct.inquiries_type_id =local.qCheck.inquiries_type_id;
-			variables.mapDataToInquiries(local.newDataMappedStruct, form, local.sendEmail); 
+			mapDataToInquiries(local.newDataMappedStruct, form, local.sendEmail); 
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_map_group_id NEQ 0){
 				local.groupIdBackup2=local.qCheck.site_option_group_map_group_id;
 				local.newDataStruct.site_option_group_id =form.site_option_group_id;
 				local.newDataStruct.site_option_group_map_group_id=local.qCheck.site_option_group_map_group_id;
-				variables.mapDataToGroup(local.newDataStruct, form, local.sendEmail); 
+				mapDataToGroup(local.newDataStruct, form, local.sendEmail); 
 			}
 		}
 		local.setIdBackup2=form.site_x_option_group_set_id; 
