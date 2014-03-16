@@ -1377,9 +1377,10 @@ formString = userCom.loginForm(inputStruct);
 </cffunction>
 
 <cffunction name="requireLogin" localmode="modern" access="public">
+	<cfargument name="user_group_name" type="string" required="no" default="user">
 	<cfscript>
 	inputStruct = StructNew();
-	inputStruct.user_group_name = "user";
+	inputStruct.user_group_name = arguments.user_group_name;
 	inputStruct.secureLogin=true;
 	inputStruct.site_id = request.zos.globals.id;
 	application.zcore.user.checkLogin(inputStruct); 
