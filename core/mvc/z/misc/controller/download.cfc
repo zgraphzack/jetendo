@@ -10,7 +10,10 @@
         fp=replacenocase(fp,"../","","ALL");
         fp=replacenocase(fp,"..\","","ALL");
         fp=replacenocase(fp,":","","ALL");
-        if(fp EQ "" or ext EQ "" or fp NEQ fp_backup or left(fp, 9) NEQ "/zupload/"){
+        if(left(fp, 9) EQ "/zuploadsecure/" and not application.zcore.user.checkGroupAccess("administrator")){
+            application.zcore.user.requireLogin("administrator");
+        }
+        if(fp EQ "" or ext EQ "" or fp NEQ fp_backup or (left(fp, 9) NEQ "/zupload/" and left(fp, 15) NEQ "/zuploadsecure/")){
             application.zcore.functions.z404();
         }
         filepath=application.zcore.functions.zvar('privatehomedir')&removechars(fp,1,1);
