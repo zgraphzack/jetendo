@@ -1753,6 +1753,22 @@ tabCom.enableSaveButtons();
                 </script>
                 </td>
             </tr>
+            <tr>
+                <th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Office","member.blog.edit office_id")#</th>
+                <td><cfscript>
+                    db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
+                    WHERE site_id = #db.param(request.zos.globals.id)# 
+                    ORDER BY office_name";
+                    qOffice=db.execute("qOffice");
+                    selectStruct = StructNew();
+                    selectStruct.name = "office_id";
+                    selectStruct.query = qOffice;
+                    selectStruct.queryParseLabelVars=true;
+                    selectStruct.queryLabelField = "##office_name## (##office_address##)";
+                    selectStruct.queryValueField = "office_id";
+                    application.zcore.functions.zInputSelectBox(selectStruct);
+                    </cfscript></td>
+            </tr>
             <cfscript>
              db.sql="select min(blog_datetime) mindate from #db.table("blog", request.zos.zcoreDatasource)# blog 
 			WHERE site_id=#db.param(request.zos.globals.id)# ";
@@ -2170,7 +2186,7 @@ tabCom.enableSaveButtons();
         <tr>
             <th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Name","member.blog.formcat blog_category_name")# (Required)</th>
             <td>
-                <input type="text" name="blog_category_name" value="#form.blog_category_name#" />
+                <input type="text" name="blog_category_name" value="#form.blog_category_name#" style="width:90%;" />
             </td>
         </tr>
         <tr>
