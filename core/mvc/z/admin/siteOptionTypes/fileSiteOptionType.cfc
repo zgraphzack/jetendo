@@ -145,7 +145,11 @@
 		if(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id] NEQ ""){
 			uploadPath=getUploadPath(arguments.optionStruct);
 			if(uploadPath EQ "zuploadsecure"){
-				echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&' | Securely stored, can''t be downloaded.</p>');
+				if(application.zcore.user.checkGroupAccess("administrator")){
+					echo('<p><a href="#request.zos.globals.domain#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&'" target="_blank">Download File</a></p>');
+				}else{
+					echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&' | You must be an administrator to download the file.</p>');
+				}
 			}else{
 				writeoutput('<p><a href="/'&uploadPath&'/site-options/#arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]#" 
 				target="_blank" 
@@ -170,7 +174,11 @@
 	<cfscript>
 	if(arguments.value NEQ ""){
 		uploadPath=getUploadPath(arguments.optionStruct);
-		return ('<a href="/'&uploadPath&'/site-options/#arguments.value#" target="_blank">Download File</a>');
+		if(uploadPath EQ "zuploadsecure"){
+			return '<a href="#request.zos.globals.domain#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.value)&'" target="_blank">Download File</a>';
+		}else{
+			return '<a href="#request.zos.globals.domain#/'&uploadPath&'/site-options/#arguments.value#" target="_blank">Download File</a>';
+		}
 	}else{
 		return ('N/A');
 	}
@@ -222,7 +230,7 @@
 		nv=arguments.row.site_x_option_group_value;
 	}else{
 		arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]=fileName;
-		nv=local.fileName;
+		nv=fileName;
 	}
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
