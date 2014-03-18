@@ -7,7 +7,7 @@
 	var zpagenav=0;
 	var r1=0;
 	var ts=0;
-    form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');
+    form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', true, 0);
     if(form.modalpopforced EQ 1){
 		application.zcore.functions.zSetModalWindow();
     }
