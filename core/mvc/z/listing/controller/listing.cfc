@@ -872,7 +872,7 @@ LEFT JOIN #db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls ON
 </tr>
 
 <cfscript>
-if(form.mls_option_listing_title_format EQ ""){
+if(application.zcore.functions.zso(form, 'mls_option_listing_title_format') EQ ""){
 	arrK=listToArray("city,remarks,address,subdivision,bedrooms,bathrooms,type,subtype,style,view,frontage,pool,condo");
 	arrK=application.zcore.functions.zRandomizeArray(arrK);
 	form.mls_option_listing_title_format=arrayToList(arrK, ",");
