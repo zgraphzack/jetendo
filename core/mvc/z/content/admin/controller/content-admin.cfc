@@ -1278,8 +1278,8 @@
 				selectStruct.name = "content_parentpage_link_layout";
 				selectStruct.selectedValues=form.content_parentpage_link_layout;
 				selectStruct.hideSelect=true;
-				selectStruct.listLabels="Invisible,Top with numbered columns,Top with columns,Top on one line";
-				selectStruct.listValues = "7,2,3,4";
+				selectStruct.listLabels="Invisible,Top with numbered columns,Top with columns,Top on one line,Custom";
+				selectStruct.listValues = "7,2,3,4,13";
 				application.zcore.functions.zInputSelectBox(selectStruct);
 				</cfscript></td>
 		</tr>
