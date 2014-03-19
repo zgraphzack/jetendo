@@ -359,7 +359,7 @@ rs=zGetHashPath(dir, id);
 <cffunction name="zUploadFile" localmode="modern" returntype="any" output="yes">
 	<cfargument name="fieldName" required="true" type="string">
 	<cfargument name="destination" required="true" type="string">
-	<cfargument name="overwrite" required="false" type="boolean" hint="true/false value">
+	<cfargument name="overwrite" required="false" type="boolean" default="#false#" hint="true/false value">
 	<cfscript>
 	var fileName = "";
 	var i = 0;	
@@ -369,9 +369,6 @@ rs=zGetHashPath(dir, id);
 	var invalidStruct=structnew();
 	var arrInvalidfiletypes=listtoarray("asp,aspx,asa,ini,htaccess,cfm,cfc,php,php3,vbs,bat,exe,js,shtml,reg,inc,perl,pl,cgi,php5,php4,php1,php2,phtml,ssi,xhtm");//,html
 	request.zUploadFileErrorCause="";
-	/*
-	IntegrityHealthCoachingSolutions".pdf
-	*/
 	if(isDefined('session.zos.user') EQ false or (structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and application.zcore.user.checkServerAccess() EQ false)){
 		arrayappend(arrInvalidfiletypes,'html');		
 		arrayappend(arrInvalidfiletypes,'htm');
@@ -380,51 +377,29 @@ rs=zGetHashPath(dir, id);
 		invalidStruct[arrInvalidFileTypes[i]]=true;
 	}
 	application.zcore.functions.zCreateDirectory(arguments.destination);
-	</cfscript> 
-	<cfif structkeyexists(form, arguments.fieldName) and trim(form[arguments.fieldName]) NEQ "">
-		<cfif isDefined('arguments.overwrite') and arguments.overwrite EQ true>
-			<cfset arguments.overwrite = "overwrite">
-		<cfelse>
-			<cfset arguments.overwrite = "makeunique">
-		</cfif>
-		<cftry>
-			<cffile action="upload" result="cffileresult" destination="#arguments.destination#" nameconflict="#arguments.overwrite#" filefield="#form[arguments.fieldName]#" charset="utf-8">
-            		<cfset request.zos.lastCFFileResult=cffileresult>
-		 	<cfcatch type="any"><cfset request.zUploadFileErrorCause="cffile upload exception: "&cfcatch.message><cfreturn false></cfcatch>
-		</cftry>
-	<cfelse>
-    		<cfset request.zUploadFileErrorCause="Error: FieldName was not set.">
-		<cfreturn false>
-	</cfif>
-    <cfscript>
+	if(structkeyexists(form, arguments.fieldName) and trim(form[arguments.fieldName]) NEQ ""){
+		if(arguments.overwrite){
+			arguments.overwrite = "overwrite";
+		}else{
+			arguments.overwrite = "makeunique";
+		}
+		try{
+			file action="upload" result="cffileresult" destination="#arguments.destination#" nameconflict="#arguments.overwrite#" filefield="#form[arguments.fieldName]#" charset="utf-8";
+			request.zos.lastCFFileResult=cffileresult;
+		}catch(Any e){
+			request.zUploadFileErrorCause="cffile upload exception: "&e.message;
+			return false;
+		}
+	}else{
+		request.zUploadFileErrorCause="Error: FieldName was not set.";
+		return false;
+	}
 	if(structkeyexists(invalidStruct, cffileresult.clientFileExt)){
 		application.zcore.functions.zdeletefile("#arguments.destination##cffileresult.serverfile#");
-		application.zcore.template.fail("Extreme dangerous file upload attempted with name: #cffileresult.serverfile#<br /><br />It has been automatically deleted with a 500 error displayed to the user.");
+		application.zcore.template.fail("Extremely dangerous file upload attempted with name: #cffileresult.serverfile#<br /><br />It has been automatically deleted with a 500 error displayed to the user.");
 	}
+	return cffileresult.serverfile;
 	</cfscript>
-	<cfset fileName = application.zcore.functions.zFileStringFormat(cffileresult.serverFileName)>
-	<cfif fileName NEQ "">
-		<cfscript>
-		if(right(arguments.destination, 1) NEQ "/"){
-			arguments.destination = arguments.destination & "/";
-		}
-		i=1;
-		backupfilename=filename;
-		if(cffileresult.serverFileName CONTAINS "neot" and compare(cffileresult.serverFileName,cffileresult.clientFileName) NEQ 0){
-			while(fileexists(arguments.destination&fileName&i&"."&cffileresult.serverFileExt) EQ true){
-				i++;
-				fileName = backupfileName&i;
-			}
-		}
-		</cfscript>
-		<cfif (request.zos.istestserver and fileName NEQ cffileresult.serverFileName) or (request.zos.istestserver EQ false and compare(fileName, cffileresult.serverFileName) NEQ 0)>
-				<cffile action="rename" source="#arguments.destination##cffileresult.serverfile#" destination="#arguments.destination##fileName#.#cffileresult.serverFileExt#">
-		</cfif>
-	<cfelse>
-    		<cfset request.zUploadFileErrorCause="fileName is empty after formatting. upload name was #cffileresult.serverFileName#">
-		<cfreturn false>
-	</cfif>    
-	<cfreturn '#fileName#.#cffileresult.serverFileExt#'>
 </cffunction>
 
 
@@ -502,7 +477,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 			db.sql&=" and site_id = #db.param(request.zos.globals.id)# ";
 		}
 		qImage=db.execute("qImage");
-		if(structkeyexists(arguments, 'delete') and structkeyexists(form, arguments.delete)){
+		if(structkeyexists(arguments, 'delete') and structkeyexists(form, arguments.delete) and qImage[arguments.fieldNameOverride] NEQ ""){
 			application.zcore.functions.zDeleteFile(arguments.destination & qImage[arguments.fieldNameOverride]);
 			fileNewName = "";
 		}else if(qImage.recordcount NEQ 0){
@@ -510,10 +485,12 @@ notes: optionally delete an existing image that has a field in the specified dat
 		}else{
 			fileNewName='';
 		}
-		if(structkeyexists(form, arguments.fieldName)){
-			fileName = application.zcore.functions.zUploadFile(arguments.fieldName, arguments.destination);
+		if(structkeyexists(form, arguments.fieldName) and form[arguments.fieldName] NEQ ""){
+			fileName = application.zcore.functions.zUploadFile(arguments.fieldName, arguments.destination, false);
 			if(fileName NEQ false){
-				application.zcore.functions.zDeleteFile(arguments.destination & qImage[arguments.fieldNameOverride]);
+				if(qImage[arguments.fieldNameOverride] NEQ ""){
+					application.zcore.functions.zDeleteFile(arguments.destination & qImage[arguments.fieldNameOverride]);
+				}
 				return fileName;
 			}else{
 				return fileNewName;
@@ -522,8 +499,8 @@ notes: optionally delete an existing image that has a field in the specified dat
 			return fileNewName;
 		}
 	}else{
-		if(structkeyexists(form, arguments.fieldName)){
-			fileName = application.zcore.functions.zUploadFile(arguments.fieldName, arguments.destination);
+		if(structkeyexists(form, arguments.fieldName) and form[arguments.fieldName] NEQ ""){
+			fileName = application.zcore.functions.zUploadFile(arguments.fieldName, arguments.destination, false);
 			if(fileName NEQ false){
 				return fileName;
 			}else{
