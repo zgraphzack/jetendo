@@ -201,7 +201,7 @@
 		}
 	}
 	var currentMarker=0;
-	zArrDeferredFunctions.push(function(){ 
+	function onGMAPLoad(){
 	
 		$("##centerMapButton").bind("click", centerMapButtonClick);
 		$("##setMarkerButton").bind("click", markerButtonClick);
@@ -222,7 +222,7 @@
 		var mapData=zCreateMapWithAddress("mapDivId", currentMapAddress, optionsObj, mapSuccessCallback, markerObj);  
 		currentMarker=mapData.marker;
 		currentGoogleMap=mapData.map;
-	});
+	}
 	/* ]]> */
 	</script> 
 	</cfsavecontent>
