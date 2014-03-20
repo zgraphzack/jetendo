@@ -269,7 +269,7 @@ zSlideShow(ts);
 		}else{
 			application.zcore.template.fail("Flash slideshow was permanently disabled");
 		}
-		if(local.useNewFormat and isDefined('local.qss') and local.qss.slideshow_custom_include EQ ""){
+		if(local.useNewFormat and structkeyexists(local, 'qss') and local.qss.slideshow_custom_include EQ ""){
 		
 			g="";
 			for(i in local.slideshowConfig){

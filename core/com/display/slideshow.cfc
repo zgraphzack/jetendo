@@ -96,7 +96,8 @@
 	imgid2="zslideshow-"&gettickcount()&'-2-'&ts.slideIndex;
 	</cfscript>
 	<cfif variables.qslideshow.slideshow_large_image EQ 0>
-		<cfsavecontent variable="theSlidePhoto"> <a id="#imgid2#" style="width:100%;" href="<cfif ts.arrLink[ts.slideIndex] EQ "">##<cfelse>#htmleditformat(ts.arrLink[ts.slideIndex])#</cfif>" target="_parent" title="#ts.arrImages[ts.slideIndex]#"><span style="display:block;position:relative; width:100%; height:#ts.qss.slideshow_height-ts.qss.slideshow_thumbbar_margin-ts.qss.slideshow_thumb_height-ts.qss.slideshow_thumb_text_height-25#px; text-align:center; float:left; z-index:1;"><img id="#imgid2#" width="100%" height="100%" src="/z/a/images/s.gif" alt="#htmleditformat(ts.arrText[ts.slideIndex])#" /></span><span style="display:block; position:relative; z-index:3; font-size:16px; line-height:18px; text-align:center; width:100%; height:20px;color:##FFF; float:left; padding-top:10px; padding-bottom:10px; top:-45px; overflow:auto;">#ts.arrFullText[ts.slideIndex]#</span><span style="display:block; position:relative; background-color:##000; width:100%; height:25px; float:left; top:-90px; z-index:2; padding-top:10px; padding-bottom:10px; opacity:0.7">&nbsp;</span></a><script type="text/javascript">/* <![CDATA[ */
+		<cfsavecontent variable="theSlidePhoto"> <a id="#imgid2#" style="width:100%;" href="<cfif ts.arrLink[ts.slideIndex] EQ "">##<cfelse>#htmleditformat(ts.arrLink[ts.slideIndex])#</cfif>" target="_parent" title="#ts.arrImages[ts.slideIndex]#"><span style="display:block;position:relative; width:100%; height:#ts.qss.slideshow_height-ts.qss.slideshow_thumbbar_margin-ts.qss.slideshow_thumb_height-ts.qss.slideshow_thumb_text_height-25#px; text-align:center; float:left; z-index:1;"><img id="#imgid2#" width="100%" height="100%" src="/z/a/images/s.gif" alt="#htmleditformat(ts.arrText[ts.slideIndex])#" /></span><span style="display:block; position:relative; z-index:3; font-size:16px; line-height:18px; text-align:center; width:100%; height:20px;color:##FFF; float:left; padding-top:10px; padding-bottom:10px; top:-45px; overflow:auto;">#ts.arrFullText[ts.slideIndex]#</span><span style="display:block; position:relative; background-color:##000; width:100%; height:25px; float:left; top:-90px; z-index:2; padding-top:10px; padding-bottom:10px; opacity:0.7">&nbsp;</span></a>
+		<script type="text/javascript">/* <![CDATA[ */
 document.getElementById("#imgid2#_img").onerror=function(){zImageOnError(this);};
 /* ]]> */</script> 
 		</cfsavecontent>
@@ -106,7 +107,8 @@ document.getElementById("#imgid2#_img").onerror=function(){zImageOnError(this);}
 		<div class="zslideshowitem#request.zos.tempobj.zSlideShowUniqueIdIndex# zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-38-1">
 			<cfif ts.arrLink[ts.slideIndex] NEQ "">
 				<div onclick="zSlideshowClickLink('#htmleditformat(ts.arrLink[ts.slideIndex])#');" class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-1">
-					<div style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"><img id="#imgid#" src="#ts.arrThumb[ts.slideIndex]#" alt="#htmleditformat(ts.arrFullText[ts.slideIndex])#" /><script type="text/javascript">/* <![CDATA[ */
+					<div style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"><img id="#imgid#" src="#ts.arrThumb[ts.slideIndex]#" alt="#htmleditformat(ts.arrFullText[ts.slideIndex])#" />
+					<script type="text/javascript">/* <![CDATA[ */
 document.getElementById("#imgid#").onerror=function(){zImageOnError(this);};
 /* ]]> */</script></div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-41-1-2">
@@ -125,7 +127,8 @@ document.getElementById("#imgid#").onerror=function(){zImageOnError(this);};
 		<div class="zslideshowitem#request.zos.tempobj.zSlideShowUniqueIdIndex# zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-38-1">
 			<cfif ts.arrLink[ts.slideIndex] NEQ "">
 				<div onclick="zSlideshowClickLink('#htmleditformat(ts.arrLink[ts.slideIndex])#');" class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-1">
-					<div style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"><img id="#imgid#" src="#ts.arrThumb[ts.slideIndex]#"  alt="#htmleditformat(ts.arrFullText[ts.slideIndex])#" /><script type="text/javascript">/* <![CDATA[ */
+					<div style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"><img id="#imgid#" src="#ts.arrThumb[ts.slideIndex]#"  alt="#htmleditformat(ts.arrFullText[ts.slideIndex])#" />
+					<script type="text/javascript">/* <![CDATA[ */
 document.getElementById("#imgid#").onerror=function(){zImageOnError(this);};
 /* ]]> */</script></div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-41-1-2">
