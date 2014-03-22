@@ -497,6 +497,8 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 		ts.name = "video_embed_viewing_method";
 		ts.radio=true;
 		ts.separator=" ";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
 		ts.listLabels="Play In Place";
 		ts.listValues="0";
 		//ts.listLabels="Lightbox Popup	Play In Place";

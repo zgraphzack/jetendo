@@ -48,12 +48,13 @@ result=zHTTPtoFile(source, destinationFile);
 <cffunction name="zHTTPtoFile" localmode="modern" output="false" returntype="boolean">
 	<cfargument name="source" required="yes" type="string">
 	<cfargument name="destinationFile" required="yes" type="string">
+	<cfargument name="timeout" type="string" required="no" default="#30#">
 	<cfscript>
 	var content = "";
     var tempUnique='###getTickCount()#';
 	var cfhttpresult=0;
 	</cfscript>
-		<CFHTTP METHOD="GET" URL="#arguments.source#" result="cfhttpresult" redirect="yes" resolveurl="no" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" getasbinary="auto">
+		<CFHTTP METHOD="GET" URL="#arguments.source#" result="cfhttpresult" redirect="yes" timeout="#arguments.timeout#" resolveurl="no" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" getasbinary="auto">
 		<cfhttpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#">
 		<cfhttpparam type="Header" name="TE" value="#request.httpCompressionType#">
 		</CFHTTP>

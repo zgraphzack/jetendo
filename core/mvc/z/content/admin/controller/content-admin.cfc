@@ -306,6 +306,10 @@
 			}
 		}
 	}
+	if(application.zcore.functions.zso(form, 'convertLinks') EQ 1){
+		form.content_text=application.zcore.functions.zProcessAndStoreLinksInHTML(form.content_name, form.content_text);
+		form.content_summary=application.zcore.functions.zProcessAndStoreLinksInHTML(form.content_name, form.content_summary);
+	}
 	
 	ts=StructNew();
 	ts.table="content";
@@ -534,6 +538,24 @@
 				htmlEditor.height		= 400;
 				htmlEditor.create();
 				</cfscript>  
+			</td>
+		</tr>
+
+		<tr>
+			<th style="width:1%; white-space:nowrap;">Convert Links:</th>
+			<td>
+			<cfscript>
+			form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
+			ts = StructNew();
+			ts.name = "convertLinks";
+			ts.radio=true;
+			ts.separator=" ";
+			ts.listValuesDelimiter="|";
+			ts.listLabelsDelimiter="|";
+			ts.listLabels="Yes|No";
+			ts.listValues="1|0";
+			application.zcore.functions.zInput_Checkbox(ts);
+			</cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
 			</td>
 		</tr>
 		<tr>
@@ -1137,8 +1159,10 @@
 		ts.name = "content_thumbnail_crop";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		</cfscript> (Default is 250x250, uncropped).</td>
         </tr>

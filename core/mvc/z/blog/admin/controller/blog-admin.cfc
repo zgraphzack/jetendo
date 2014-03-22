@@ -170,6 +170,10 @@ if(form.blog_category_unique_name CONTAINS "?"){
     }
     form.site_id=request.zos.globals.id;
 
+    if(application.zcore.functions.zso(form, 'convertLinks') EQ 1){
+        form.blog_category_description=application.zcore.functions.zProcessAndStoreLinksInHTML(form.blog_category_name, form.blog_category_description);
+    }
+
 	inputStruct = StructNew();
 	inputStruct.struct=form;
 	inputStruct.table = "blog_category";
@@ -562,6 +566,9 @@ if(arraylen(arrUser) EQ 1){
 	}else{
 		form.blog_search=application.zcore.functions.zCleanSearchText(form.blog_title&' '&form.blog_summary&' '&form.blog_story);
 	}
+    if(application.zcore.functions.zso(form, 'convertLinks') EQ 1){
+        form.blog_story=application.zcore.functions.zProcessAndStoreLinksInHTML(form.blog_title, form.blog_story);
+    }
 	form.site_id=request.zos.globals.id;
 	inputStruct = StructNew();
 	inputStruct.struct=form;
@@ -1045,6 +1052,9 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
     }
 
 
+    if(application.zcore.functions.zso(form, 'convertLinks') EQ 1){
+        form.blog_tag_description=application.zcore.functions.zProcessAndStoreLinksInHTML(form.blog_tag_name, form.blog_tag_description);
+    }
     
         form.blog_tag_search=application.zcore.functions.zCleanSearchText(form.blog_tag_name&' '&form.blog_tag_description);
         
@@ -1334,6 +1344,23 @@ tabCom.enableSaveButtons();
                     </cfscript>
                 </td>
             </tr>
+        <tr>
+            <th style="width:1%; white-space:nowrap;">Convert Links:</th>
+            <td>
+            <cfscript>
+            form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
+            ts = StructNew();
+            ts.name = "convertLinks";
+            ts.radio=true;
+            ts.separator=" ";
+            ts.listValuesDelimiter="|";
+            ts.listLabelsDelimiter="|";
+            ts.listLabels="Yes|No";
+            ts.listValues="1|0";
+            application.zcore.functions.zInput_Checkbox(ts);
+            </cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
+            </td>
+        </tr>
             </table>
         #tabCom.endFieldSet()#
         #tabCom.beginFieldSet("Advanced")# 
@@ -1528,6 +1555,23 @@ tabCom.enableSaveButtons();
                     htmlEditor.height		= 400;
                     htmlEditor.create();
                     </cfscript>
+                </td>
+            </tr>
+            <tr>
+                <th style="width:1%; white-space:nowrap;">Convert Links:</th>
+                <td>
+                <cfscript>
+                form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
+                ts = StructNew();
+                ts.name = "convertLinks";
+                ts.radio=true;
+                ts.separator=" ";
+                ts.listValuesDelimiter="|";
+                ts.listLabelsDelimiter="|";
+                ts.listLabels="Yes|No";
+                ts.listValues="1|0";
+                application.zcore.functions.zInput_Checkbox(ts);
+                </cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
                 </td>
             </tr>
             <tr>
@@ -2202,6 +2246,23 @@ tabCom.enableSaveButtons();
 				htmlEditor.height		= 400;
 				htmlEditor.create();
                 </cfscript>
+            </td>
+        </tr>
+        <tr>
+            <th style="width:1%; white-space:nowrap;">Convert Links:</th>
+            <td>
+            <cfscript>
+            form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
+            ts = StructNew();
+            ts.name = "convertLinks";
+            ts.radio=true;
+            ts.separator=" ";
+            ts.listValuesDelimiter="|";
+            ts.listLabelsDelimiter="|";
+            ts.listLabels="Yes|No";
+            ts.listValues="1|0";
+            application.zcore.functions.zInput_Checkbox(ts);
+            </cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
             </td>
         </tr>
         </table>

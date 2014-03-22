@@ -263,6 +263,17 @@
     </cfscript>
 </cffunction>
 
+<cffunction name="zExtractLinksFromHTML" localmode="modern" output="no" returntype="string">
+	<cfargument name="text" type="string" required="yes">
+    <cfscript>
+	var links=replace(arguments.text,chr(9),' ','ALL');	
+	links=rereplacenocase(links,"[^>^<]*<a .*?href\s*=\s*(""|')([^""^']*)(""|')[^>]*>[^>^<]*",chr(9)&'\2'&chr(9),'ALL');
+	if(find(chr(9),links) EQ 0) links="";
+	links=rereplacenocase(links,"[^\t]*?\t([^\t]*)\t?[^\t]*", "\1"&chr(9), 'ALL');
+	return links;
+	</cfscript>
+</cffunction>
+
 <cffunction name="zExtractImagesFromHTML" localmode="modern" output="no" returntype="string">
 	<cfargument name="text" type="string" required="yes">
     <cfscript>
@@ -461,6 +472,100 @@
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="zProcessAndStoreLinksInHTML" localmode="modern" returntype="string">
+	<cfargument name="directoryName" type="string" required="yes">
+	<cfargument name="t" type="string" required="yes">
+	<cfscript>
+	setting requesttimeout="300";
+	t=arguments.t;
+	fileTypes={
+		"pdf":true,
+		"doc":true,
+		"docx":true,
+		"xlsx":true,
+		"xls":true,
+		"jpg":true,
+		"jpeg":true,
+		"gif":true,
+		"png":true,
+		"bmp":true,
+		"tiff":true,
+		"zip":true,
+		"rtf":true,
+		"csv":true
+	};
+	linkStruct={};
+	a=listToArray(application.zcore.functions.zExtractLinksFromHTML(t), chr(9));
+	for(i=1;i LTE arraylen(a);i++){
+		ext=application.zcore.functions.zGetFileExt(a[i]);
+		if(structkeyexists(fileTypes, ext)){
+			linkStruct[a[i]]=true;
+		}
+	}
+	a=listToArray(application.zcore.functions.zExtractImagesFromHTML(t), chr(9));
+	for(i=1;i LTE arraylen(a);i++){
+		ext=application.zcore.functions.zGetFileExt(a[i]);
+		if(structkeyexists(fileTypes, ext)){
+			linkStruct[a[i]]=true;
+		}
+	}
+	a=structkeyarray(linkStruct);
+	arraysort(a, "text", "desc"); // sort descending ensures similar urls are kept separate.
+	arrFinal=[];
+
+	dirName=lcase(application.zcore.functions.zURLEncode(application.zcore.functions.zLimitStringLength(arguments.directoryName, 30, false), "-"));
+	if(not arraylen(a)){
+		return t;
+	}
+	application.zcore.functions.zCreateDirectory("#request.zos.globals.privatehomedir#zupload/user/auto-cached/");
+	dirPath="#request.zos.globals.privatehomedir#zupload/user/auto-cached/#dirName#/";
+	application.zcore.functions.zCreateDirectory(dirPath);
+	//echo("create dir:"&dirPath&chr(10)&"<br>");
+	for(i=1;i LTE arraylen(a);i++){
+		//echo('processing: '&a[i]&chr(10)&'<br />');
+		fileName=getfilefrompath(a[i]);
+		absoluteLink=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName&"/", a[i]);
+		if(left(absoluteLink, len(request.zos.currentHostName&"/")) EQ request.zos.currentHostName&"/"){
+			continue;
+		}
+		count=0;
+		ext=application.zcore.functions.zGetFileExt(fileName);
+		theName=application.zcore.functions.zURLEncode(application.zcore.functions.zGetFileName(fileName), '-');
+		newFileName=theName&"."&ext;
+		if(fileexists(dirPath&newFileName)){
+			while(true){
+				count++;
+				if(count EQ 100){
+					throw("Detected infinite loop");
+				}
+				if(not fileexists(dirPath&theName&count&"."&ext)){
+					newFileName=theName&count&"."&ext;
+					break;
+				}
+			}
+		}
+		success=true;
+		//echo("newFileName:"&newFileName&"<br>");
+		try{
+			http url="#a[i]#" timeout="30" path="#dirPath#" file="#newFileName#"{
+
+			};
+		}catch(Any e){
+			success=false;
+		}
+		if(success){
+			arrayAppend(arrFinal, {originalURL: a[i], newURL: "/zupload/user/auto-cached/#dirName#/#newFileName#" });
+		}
+	}
+
+	for(i=1;i LTE arraylen(arrFinal);i++){
+		t=replace(t, arrFinal[i].originalURL, arrFinal[i].newURL, 'all'); 
+	}
+	return t;
+	</cfscript>
+</cffunction>
+
 <!--- 
 
 application.zcore.functions.zLimitStringLength("long text", 5);
@@ -468,6 +573,7 @@ application.zcore.functions.zLimitStringLength("long text", 5);
 <cffunction name="zLimitStringLength" localmode="modern">
 	<cfargument name="text" type="string" required="yes">
 	<cfargument name="length" type="numeric" required="yes">
+	<cfargument name="enableEllipsis" type="boolean" required="no" default="#true#">
 	<cfscript>
  	textLength=len(arguments.text);   
 	if(arguments.length GT textLength){
@@ -475,10 +581,14 @@ application.zcore.functions.zLimitStringLength("long text", 5);
 	}
 	newText=left(arguments.text, arguments.length);
 	spacePosition=find(" ", reverse(newText));
-	if(spacePosition EQ 0){
-		return newText&"...";
+	affix="...";
+	if(not arguments.enableEllipsis){
+		affix="";
 	}
-	return left(newText, arguments.length-spacePosition)&"...";
+	if(spacePosition EQ 0){
+		return newText&affix;
+	}
+	return left(newText, arguments.length-spacePosition)&affix;
 	</cfscript>
 </cffunction>
 
@@ -695,55 +805,6 @@ application.zcore.functions.zLimitStringLength("long text", 5);
 	return "'"&replace(replace(arguments.text,"##","####","ALL"),"'","''","ALL")&"'";
 	</cfscript>
 </cffunction>
-<!--- 
- <cffunction name="zParseVariables" localmode="modern" returntype="any" output="false">
- 	<cfargument name="str" type="string" required="yes">
-	<cfargument name="escapeWith" type="any" required="no" default="#false#">
-	<cfargument name="varStruct" type="any" required="no" default="#false#">
-	<cfscript>
-	var tempString = "";
-	var i = 0;
-	var opened = false;
-	var currentVariable = "";
-	var hasVarStruct=isQuery(arguments.varStruct);
-	var v=Len(arguments.str);
-	if(hasVarStruct EQ false){
-		hasVarStruct=isStruct(arguments.varStruct);
-	}
-	for(i=1;i LTE v;i++){
-		if(mid(arguments.str, i,1) EQ "##"){
-			if(opened){
-				if(arguments.escapeWith NEQ false){
-					if(hasVarStruct){
-						tempString &= application.zcore.functions.zURLEncode(arguments.varStruct[currentVariable], arguments.escapeWith);		
-					}else{
-						tempString &= application.zcore.functions.zURLEncode(evaluate(currentVariable), arguments.escapeWith);				
-					}
-				}else{
-					if(hasVarStruct){
-						tempString &= arguments.varStruct[currentVariable];
-					}else{
-						tempString &= evaluate(currentVariable);
-					}
-				}
-				currentVariable = "";
-				opened = false;			
-			}else{
-				opened = true;
-			}
-		}else if(opened){
-			currentVariable &= mid(arguments.str, i,1);
-		}else{
-			tempString &= mid(arguments.str, i,1);
-		}
-	}
-	</cfscript> 
-	<cfif opened>
-		<cfthrow message="ZFUNCTION: zParseVariables: The input string is missing a ## symbol. input string = '#arguments.str#'" type="exception">
-	<cfelse>
-		<cfreturn tempString>
-	</cfif>
- </cffunction> --->
 
 <cffunction name="zParseVariables" localmode="modern" returntype="any" output="no">
  	<cfargument name="str" type="string" required="yes">
@@ -988,23 +1049,7 @@ USUAGE
     }
     
     </cfscript>
-</cffunction>
-<!--- 
-<cffunction name="zEmailValidate" localmode="modern" returntype="boolean" output="false">
-	<cfargument name="email" type="string" required="yes">
-	<cfscript>
-		var class="\!\##\$\%&'\*\-\?\^_`\.\{\|\}~";
-		var reg = "^[a-zA-Z#class#][#class#\+/=\w\.-]*[#class#a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$";
-		if(arguments.email EQ ""){
-			return false;
-		}
-		if(REFind(reg, arguments.email) EQ 1){
-			return true;
-		}else{
-			return false;
-		}
-	</cfscript>
-</cffunction> --->
+</cffunction> 
 
 
 <!--- 

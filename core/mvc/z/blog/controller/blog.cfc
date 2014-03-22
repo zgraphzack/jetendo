@@ -1079,8 +1079,10 @@ this.app_id=10;
 		ts.name = "blog_config_thumbnail_crop";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		</cfscript> (Default is 250x250).</td>
 		</tr>

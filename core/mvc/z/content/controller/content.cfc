@@ -583,8 +583,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_contact_links";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' (No, Removes the options from entire site)</td>
 		</tr>
@@ -596,8 +598,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_inquiry_qualify";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' (On sites with listing application, it will display additional fields on inquiry form to qualify the lead.)</td>
 		</tr>
@@ -609,8 +613,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_override_stylesheet";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' Note: Checking yes will disable the built-in listing stylesheet.</td>
 		</tr>
@@ -623,8 +629,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_hide_inquiring_about";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' (Affects all contact forms).</td>
 		</tr>
@@ -636,8 +644,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_phone_required";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' (Affects all contact forms).</td>
 		</tr>
@@ -649,8 +659,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_comments_required";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' (Affects all contact forms).</td>
 		</tr>
@@ -665,8 +677,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_email_required";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo(' (Affects all contact forms).</td>
 		</tr>
@@ -683,8 +697,10 @@ var db=request.zos.queryObject;
 		ts.name = "content_config_thumbnail_crop";
 		ts.radio=true;
 		ts.separator=" ";
-		ts.listLabels="Yes	No";
-		ts.listValues="1	0";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 		echo('(Default is 250x250, uncropped).</td>
 		</tr>
