@@ -42,8 +42,8 @@ function processContents($contents){
 		return tarZipSitePath($a);
 	}else if($contents =="tarZipSiteUploadPath"){
 		return tarZipSiteUploadPath($a);
-	}else if($contents =="untarZipSitePath"){
-		return untarZipSitePath($a);
+	}else if($contents =="untarZipSiteImportPath"){
+		return untarZipSiteImportPath($a);
 	}else if($contents =="untarZipSiteUploadPath"){
 		return untarZipSiteUploadPath($a);
 	}else if($contents =="importSite"){
@@ -590,7 +590,7 @@ function getImageMagickIdentify($a){
 }
 
 
-function untarZipSitePath($a){
+function untarZipSiteImportPath($a){
 	if(count($a) != 2){
 		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
 		return "0";
@@ -614,37 +614,11 @@ function untarZipSitePath($a){
 	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' --exclude=sites --exclude=sites-writable -C '.escapeshellarg($untarPath);
 	echo $cmd."\n";
 	`$cmd`;
+
 	return "1";
 }
-/*
-function untarZipSiteUploadPath($a){
-	if(count($a) != 2){
-		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
-		return "0";
-	}
-	$tarFileName=$a[0];
-	$importDirName=$a[1];
-	if(strpos($importDirName, ".") !== FALSE){
-		echo "Import directory name must be a date as a number: ".$importDirName."\n";
-		return "0";
-	}
-	if(!is_dir(get_cfg_var("jetendo_sites_writable_path")."import/".$importDirName)){
-		echo "Import directory doesn't exist: ".get_cfg_var("jetendo_backup_path")."import/".$importDirName."\n";
-		return "0";
-	}
-	$tarPath=get_cfg_var("jetendo_backup_path")."import/".$importDirName."/upload/".$tarFileName;
-	if(!file_exists($tarPath)){
-		echo "Tar file name doesn't exist: ".$tarPath."\n";
-		return "0";
-	}
-	$untarPath=get_cfg_var("jetendo_sites_writable_path")."import/".$importDirName."/temp/";
-	mkdir($untarPath."sites-writable", 0660);
-	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg($untarPath."sites-writable/");
-	echo $cmd."\n";
-	`$cmd`;
-	return "1";
-}
-*/
+
+
 function tarZipSiteUploadPath($a){
 	if(count($a) != 1){
 		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
@@ -681,6 +655,7 @@ function importSite($a){
 		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
 		return "0";
 	}
+
 	$siteDomain=$a[0];
 	$importDirName=$a[1];
 	$tarFileName=$a[2];
@@ -702,15 +677,19 @@ function importSite($a){
 	@mkdir(get_cfg_var("jetendo_sites_path").$siteDomain, 0400);
 	@mkdir(get_cfg_var("jetendo_sites_writable_path").$siteDomain, 0400);
 
-	$cmd='/bin/tar -xvzf '.escapeshellarg($tarUploadPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' zupload';
-	echo $cmd."\n";
-	`$cmd`;
-
 	if($tarUploadFileName != ""){
-		$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' --transform="s,^sites-writable,," sites-writable';
+		$cmd='/bin/tar -xvzf '.escapeshellarg($tarUploadPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' zupload';
 		echo $cmd."\n";
 		`$cmd`;
 	}
+	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' --transform="s,^sites-writable,," sites-writable';
+	echo $cmd."\n";
+	`$cmd`;
+
+	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_path").$siteDomain).' --transform="s,^sites,," sites';
+	echo $cmd."\n";
+	`$cmd`;
+
 	verifySitePaths();
 
 	if(file_exists($tarPath)){
