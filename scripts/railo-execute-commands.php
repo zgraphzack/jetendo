@@ -17,8 +17,11 @@ $startPath="/opt/jetendo/execute/start/";
 $runningThreads=0;
 
 $script='/usr/bin/php "'.get_cfg_var("jetendo_scripts_path").'railo-execute-commands-process.php" ';
-$background=" > /dev/null 2>/dev/null &";
-
+if($debug){
+	$background='';
+}else{
+	$background=" > /dev/null 2>/dev/null &";
+}
 $arrEntry=array();
 while(true){
 	$handle=opendir($startPath);

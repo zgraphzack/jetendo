@@ -14,12 +14,14 @@ getScryptEncrypt#chr(9)#password
 getSystemIpList
 getNewerCoreMVCFiles
 gzipFilePath#chr(9)#absoluteFilePath
+importSite#chr(9)#siteDomain#chr(9)#importDirName#chr(9)#tarFileName#chr(9)#tarUploadFileName
 installThemeToSite#chr(9)#themeName#chr(9)#absoluteSiteHomedir
 mysqlDumpTable#chr(9)#schema#chr(9)#table
 mysqlRestoreTable#chr(9)#schema#chr(9)#table
 renameSite#chr(9)#oldSiteShortDomain#chr(9)#newSiteShortDomain
 tarZipFilePath#chr(9)#tarAbsoluteFilePath#chr(9)#changeToAbsoluteDirectory#chr(9)#absolutePathToTar
-tarZipSitePath#chr(9)#siteDomain
+tarZipSitePath#chr(9)#siteDomain#chr(9)#curDate
+tarZipSiteUploadPath#chr(9)#siteDomain#chr(9)#curDate
 verifySitePaths
 */
 
@@ -44,8 +46,6 @@ function processContents($contents){
 		return tarZipSiteUploadPath($a);
 	}else if($contents =="untarZipSiteImportPath"){
 		return untarZipSiteImportPath($a);
-	}else if($contents =="untarZipSiteUploadPath"){
-		return untarZipSiteUploadPath($a);
 	}else if($contents =="importSite"){
 		return importSite($a);
 	}else if($contents =="tarZipGlobalDatabase"){
@@ -620,7 +620,7 @@ function untarZipSiteImportPath($a){
 
 
 function tarZipSiteUploadPath($a){
-	if(count($a) != 1){
+	if(count($a) != 2){
 		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
 		return "0";
 	}
@@ -629,20 +629,23 @@ function tarZipSiteUploadPath($a){
 		echo "Site path doesn't exist: ".get_cfg_var("jetendo_sites_writable_path").$siteDomain."\n";
 		return "0";
 	}
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/site-archives/".$siteDomain."-zupload.tar.gz";
-
-	@unlink($tarPath);
-	$cmd='/bin/tar -cvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' zupload';
+	$tarPath=get_cfg_var("jetendo_backup_path")."backup/site-archives/".$siteDomain."-zupload-".$a[1].".tar.gz";
+	if(file_exists($tarPath)){
+		@unlink($tarPath);
+	}
+	$cmd='/bin/tar -cvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' zupload zuploadsecure';
 	echo $cmd."\n";
 	`$cmd`;
 
-	$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
-	echo $cmd."\n";
-	`$cmd`;
-	$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
-	echo $cmd."\n";
-	`$cmd`;
+	if(!zIsTestServer()){
 
+		$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
+		echo $cmd."\n";
+		`$cmd`;
+		$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
+		echo $cmd."\n";
+		`$cmd`;
+	}
 	if(file_exists($tarPath)){
 		return "1";
 	}else{
@@ -678,7 +681,7 @@ function importSite($a){
 	@mkdir(get_cfg_var("jetendo_sites_writable_path").$siteDomain, 0400);
 
 	if($tarUploadFileName != ""){
-		$cmd='/bin/tar -xvzf '.escapeshellarg($tarUploadPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' zupload';
+		$cmd='/bin/tar -xvzf '.escapeshellarg($tarUploadPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' zupload zuploadsecure';
 		echo $cmd."\n";
 		`$cmd`;
 	}
@@ -700,7 +703,7 @@ function importSite($a){
 }
 
 function tarZipSitePath($a){
-	if(count($a) != 1){
+	if(count($a) != 2){
 		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
 		return "0";
 	}
@@ -710,26 +713,28 @@ function tarZipSitePath($a){
 		return "0";
 	}
 	$backupPath=get_cfg_var("jetendo_backup_path")."backup/";
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/site-archives/".$siteDomain.".tar.gz";
+	$tarPath=get_cfg_var("jetendo_backup_path")."backup/site-archives/".$siteDomain."-".$a[1].".tar.gz";
 
+	if(file_exists($tarPath)){
+		@unlink($tarPath);
+	}
 	// figure out which database files to include based on the cfml code.
 	$arr7z=array();
 	array_push($arr7z, "database-schema/");
 	$tempPathName='';
 	$siteBackupPath=$backupPath."site-archives".$tempPathName."/".$siteDomain."/";
-	$transformPath=substr(get_cfg_var("jetendo_sites_writable_path").$siteDomain, 1);
-	@unlink($tarPath);
+	$transformPath=substr(get_cfg_var("jetendo_sites_writable_path").$siteDomain, 1); 
 	$cmd='/bin/tar -cvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg($backupPath).' '.implode(' ', $arr7z).' -C '.escapeshellarg($siteBackupPath).'  restore-site-database.sql database globals.json -C '.escapeshellarg(get_cfg_var("jetendo_sites_path")).' --exclude=.git --transform "s,^'.$siteDomain.',sites," '.$siteDomain.' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain."/").' --exclude=zupload --exclude=__zdeploy-changes.txt --transform "s,^'.$transformPath.',sites-writable," '.get_cfg_var("jetendo_sites_writable_path").$siteDomain."/";
 	echo $cmd."\n";
 	`$cmd`;
-
-	$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
-	echo $cmd."\n";
-	`$cmd`;
-	$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
-	echo $cmd."\n";
-	`$cmd`;
-
+	if(!zIsTestServer()){
+		$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($tarPath);
+		echo $cmd."\n";
+		`$cmd`;
+		$cmd='/bin/chmod 440 '.escapeshellarg($tarPath);
+		echo $cmd."\n";
+		`$cmd`;
+	}
 	if(file_exists($tarPath)){
 		return "1";
 	}else{

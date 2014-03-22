@@ -7,8 +7,9 @@ TODO: figure out why site backup doesn't get compressed.
 <cffunction name="downloadSite" localmode="modern" access="private">
 	<cfargument name="site_id" type="string" required="yes">
 	<cfargument name="domainPath" type="string" required="yes">
+	<cfargument name="tempPathName" type="string" required="yes">
 	<cfscript>
-	var fp=request.zos.backupDirectory&"site-archives/"&arguments.domainPath&'.tar.gz';
+	var fp=request.zos.backupDirectory&"site-archives/"&arguments.domainPath&"-"&arguments.tempPathName&'.tar.gz';
 	header name="Content-Disposition" value="attachment; filename=#getfilefrompath(fp)#" charset="utf-8";
 	content type="application/binary" deletefile="no" file="#fp#";
 	application.zcore.functions.zabort();
@@ -18,8 +19,9 @@ TODO: figure out why site backup doesn't get compressed.
 <cffunction name="downloadSiteUpload" localmode="modern" access="private">
 	<cfargument name="site_id" type="string" required="yes">
 	<cfargument name="domainPath" type="string" required="yes">
+	<cfargument name="tempPathName" type="string" required="yes">
 	<cfscript>
-	var fp=request.zos.backupDirectory&"site-archives/"&arguments.domainPath&'-zupload.tar.gz';
+	var fp=request.zos.backupDirectory&"site-archives/"&arguments.domainPath&"-zupload-"&arguments.tempPathName&'.tar.gz';
 	header name="Content-Disposition" value="attachment; filename=#getfilefrompath(fp)#" charset="utf-8";
 	content type="application/binary" deletefile="no" file="#fp#";
 	application.zcore.functions.zabort();
@@ -202,6 +204,7 @@ TODO: figure out why site backup doesn't get compressed.
 	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
 	}
+	curDate=dateformat(now(), "yyyymmdd")&"-"&timeformat(now(),"HHmmss");
 	
 	variables.tempPathName="-temp";
 	local.backupGlobal=1;
@@ -244,16 +247,15 @@ TODO: figure out why site backup doesn't get compressed.
 		if(form.createNew EQ 0){
 			if(form.backupType EQ 1){
 				if(fileexists(request.zos.backupDirectory&"site-archives#variables.tempPathname#/"&curDomain&'.tar')){
-					variables.downloadSite(form.sid, curDomain);
+					variables.downloadSite(form.sid, curDomain, curDate);
 				}
 			}
 		}
 		if(form.backupType EQ 2){
-			local.tempPathUpload=request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'-zupload.tar.gz';
 			if(form.createNew EQ 1 or not fileexists(local.tempPathUpload)){
-				application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain, 3600);
+				result=application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain&chr(9)&curDate, 3600);
 			}
-			variables.downloadSiteUpload(form.sid, curDomain);
+			variables.downloadSiteUpload(form.sid, curDomain, curDate);
 		}
 		if(variables.tempPathName EQ ""){
 			application.zcore.functions.zdeletedirectory(local.tempPath);
@@ -310,7 +312,7 @@ TODO: figure out why site backup doesn't get compressed.
 	outfileOptions="FIELDS TERMINATED BY '\t' ENCLOSED BY '""' ESCAPED BY '\\' LINES TERMINATED BY '\n' ";
 	if(request.zos.istestserver){
 		limitSQL="";
-		limitSQL=" LIMIT 0,10"; // comment to test all data
+		//	limitSQL=" LIMIT 0,10"; // comment to test all data
 	}else{
 		limitSQL="";	
 	}
@@ -470,14 +472,11 @@ TODO: figure out why site backup doesn't get compressed.
 			arrayappend(arr7z, '"database-schema/#i2#.sql" ');
 			arrayappend(arr7z, '"database-schema/#i2#.json" ');
 		}
-		if(local.backupGlobal EQ 1){
-			application.zcore.functions.zdeletefile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'-zupload.tar.gz');
+		/*if(local.backupGlobal EQ 1){
+			application.zcore.functions.zdeletefile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'-#variables.tempPathName#-global.tar.gz');
 			application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain, 3600);
-		}
-		application.zcore.functions.zDeleteFile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'.tar.gz');
-
-		tarAbsoluteFilePath="#request.zos.backupDirectory#site-archives#variables.tempPathName#/#curDomain#.tar.gz";
-		application.zcore.functions.zSecureCommand("tarZipSitePath"&chr(9)&curDomain, 3600);
+		}*/
+		application.zcore.functions.zSecureCommand("tarZipSitePath"&chr(9)&curDomain&chr(9)&curDate, 3600);
 		application.zcore.functions.zDeleteDirectory(request.zos.backupDirectory&'site-archives#variables.tempPathName#/#curDomain#/');
 		if(request.zos.istestserver){
 			break; // uncomment for faster debugging of backup script.
@@ -501,7 +500,7 @@ TODO: figure out why site backup doesn't get compressed.
 	}
 	
 	if(form.backupType EQ 1){
-		downloadSite(form.sid, curDomain);
+		downloadSite(form.sid, curDomain, curDate);
 	}else if(form.backupType EQ 3){
 		downloadGlobal();
 	}else{

@@ -2477,17 +2477,26 @@ User's IP: #request.zos.cgi.remote_addr#
 			}
 		}
 		t9=tempStruct.soGroupData;
-		local.fieldStruct=t9.siteOptionGroupFieldLookup[t9.siteOptionGroupSetId[ts.__setId&"_groupId"]];
-		
-		local.defaultStruct=t9.siteOptionGroupDefaults[row.site_option_group_id];
-		for(local.i2 in local.fieldStruct){
-			local.cf=t9.siteOptionLookup[local.i2];
-			if(structkeyexists(t9.siteOptionGroupSetId, ts.__setId&"_f"&local.i2)){
-				ts[local.cf.name]=t9.siteOptionGroupSetId[ts.__setId&"_f"&local.i2];
-			}else if(structkeyexists(local.defaultStruct, local.cf.name)){
-				ts[local.cf.name]=local.defaultStruct[local.cf.name];
-			}else{
-				ts[local.cf.name]="";
+		if(structkeyexists(t9.siteOptionGroupDefaults, row.site_option_group_id)){
+			local.defaultStruct=t9.siteOptionGroupDefaults[row.site_option_group_id];
+		}else{
+			local.defaultStruct={};
+		}
+		if(structkeyexists(t9.siteOptionGroupSetId, ts.__setId&"_groupId")){
+			groupId=t9.siteOptionGroupSetId[ts.__setId&"_groupId"];
+			if(structkeyexists(t9.siteOptionGroupFieldLookup, groupId)){
+				local.fieldStruct=t9.siteOptionGroupFieldLookup[groupId];
+			
+				for(local.i2 in local.fieldStruct){
+					local.cf=t9.siteOptionLookup[local.i2];
+					if(structkeyexists(t9.siteOptionGroupSetId, ts.__setId&"_f"&local.i2)){
+						ts[local.cf.name]=t9.siteOptionGroupSetId[ts.__setId&"_f"&local.i2];
+					}else if(structkeyexists(local.defaultStruct, local.cf.name)){
+						ts[local.cf.name]=local.defaultStruct[local.cf.name];
+					}else{
+						ts[local.cf.name]="";
+					}
+				}
 			}
 		}
 		tempStruct.soGroupData.siteOptionGroupSet[row.site_x_option_group_set_id]= ts;
