@@ -304,6 +304,21 @@ function zAddMapMarkerByLatLng(mapObj, markerObj, latitude, longitude, successCa
 	}
 	return marker;
 }
+function zGetLatLongByAddress(address, successCallback, delayMilliseconds){ 
+	var geocoder = new google.maps.Geocoder(); 
+	if(typeof delayMilliseconds === 'undefined'){
+		delayMilliseconds=0;
+	}
+	setTimeout(function(){
+		geocoder.geocode( { 'address': address}, function(results, status) {
+			if (status === google.maps.GeocoderStatus.OK) { 
+				successCallback(results[0].geometry.location);
+			} else {
+				console.log('Geocode was not successful for address, "'+address+'", for the following reason: ' + status);
+			}
+		});
+	}, delayMilliseconds);
+}
 function zAddMapMarkerByAddress(mapObj, markerObj, address, successCallback, delayMilliseconds){ 
 	var marker=zCreateMapMarker(markerObj);
 	var geocoder = new google.maps.Geocoder(); 
