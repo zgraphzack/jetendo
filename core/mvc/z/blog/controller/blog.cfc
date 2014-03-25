@@ -1916,6 +1916,29 @@ this.app_id=10;
 	</cfif>
 </cffunction>
 
+<cffunction name="getBlogCategories" localmode="modern" access="public" returntype="array">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	blog_category_parent_id = #db.param(0)#";
+	qCategory=db.execute("qCategory");
+	arrCategory=[];
+	appData=application.zcore.app.getAppData("blog");
+	for(row in qCategory){
+		if(row.blog_category_unique_name NEQ ""){
+			theLink=row.blog_category_unique_name;
+		}else{
+			theLink =getBlogLink(appData.optionStruct.blog_config_url_category_id, row.blog_category_id,"html", row.blog_category_name, '');
+		}
+		arrayAppend(arrCategory, {
+			name: row.blog_category_name,
+			link: theLink
+		});
+	}
+	return arrCategory;
+	</cfscript>
+</cffunction>
 
 <cffunction name="calendarTemplate" localmode="modern" access="public" output="yes" returntype="any">
 	<cfscript>
