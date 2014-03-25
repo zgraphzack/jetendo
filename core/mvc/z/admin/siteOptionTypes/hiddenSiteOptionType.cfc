@@ -137,7 +137,11 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
-	return '';
+	if(structkeyexists(arguments.dataStruct, arguments.value)){
+		return arguments.dataStruct[arguments.value];
+	}else{
+		return arguments.value; 
+	}
 	</cfscript>
 </cffunction>
 
