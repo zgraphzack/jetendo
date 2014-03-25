@@ -278,8 +278,10 @@ application.zcore.functions.zPublishCss(ts);
 			}
 			arrayAppend(buttonStruct.arrChildren, subButtonStruct);
 		}
+		escapeEnabled=true;
 		if(row.menu_button_type_id EQ 1){
 			// content
+			escapeEnabled=false;
 			ts=structnew();
 			if(row.menu_button_sorting EQ 0){
 				// default
@@ -376,9 +378,12 @@ application.zcore.functions.zPublishCss(ts);
 					subButtonStruct.url=request.zos.currentHostName&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,row2.blog_id,"html",row2.blog_title,row2.blog_datetime);
 				}
 				if(len(row2.blog_title) GT menuCharacterLength){
-					subButtonStruct.text=htmleditformat(left(row2.blog_title,menuCharacterLength)&"...");
+					subButtonStruct.text=left(row2.blog_title,menuCharacterLength)&"...";
 				}else{
-					subButtonStruct.text=htmleditformat(row2.blog_title);
+					subButtonStruct.text=row2.blog_title;
+				}
+				if(escapeEnabled){
+					subButtonStruct.text=htmleditformat(subButtonStruct.text);
 				}
 				arrayAppend(buttonStruct.arrChildren, subButtonStruct);
 			}

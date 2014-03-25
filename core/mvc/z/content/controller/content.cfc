@@ -1333,7 +1333,7 @@ configCom.includePageContentByName(ts);
 	content_for_sale <> #db.param(2)# and 
 	content_unique_name = #db.param(arguments.ss.content_unique_name)# and 
 	site_id=#db.param(request.zos.globals.id)# ";
-	qC=db.execute("qC");
+	qC=db.execute("qC"); 
 	if(qC.recordcount NEQ 0){
 		structappend(arguments.ss, ts19156, false);
 		arguments.ss.content_id=qc.content_id;
@@ -1862,8 +1862,8 @@ configCom.includeContentByName(ts);
 		}
 	}
 	if(structkeyexists(request.zos.userSession.groupAccess, "member")){
-		if(isDefined('zcontentshowinactive')){
-			session.zcontentshowinactive=zcontentshowinactive;
+		if(structkeyexists(form, 'zcontentshowinactive')){
+			session.zcontentshowinactive=form.zcontentshowinactive;
 		}else{
 			session.zcontentshowinactive=application.zcore.functions.zso(session, 'zcontentshowinactive',true);	
 		}
@@ -1879,7 +1879,8 @@ configCom.includeContentByName(ts);
 		ts.count =  1; // how many images to get
 		rs=application.zcore.imageLibraryCom.getImageSQL(ts);
 		db.sql="SELECT * #db.trustedsql(rs.select)# 
-		FROM #db.table("content", request.zos.zcoreDatasource)# content  #db.trustedsql(rs.leftJoin)#  
+		FROM #db.table("content", request.zos.zcoreDatasource)# content  
+		#db.trustedsql(rs.leftJoin)#  
 		WHERE content.site_id = #db.param(request.zos.globals.id)#
 		and content.content_id = #db.param(content_id)# ";
 		if(structkeyexists(form, 'preview') EQ false and request.zos.zcontentshowinactive EQ false){
