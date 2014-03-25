@@ -40,7 +40,8 @@
 	if(form.method EQ "autoDeleteGroup" or 
 		form.method EQ "publicAddGroup" or form.method EQ "publicEditGroup" or 
 		form.method EQ "internalGroupUpdate" or form.method EQ "publicMapInsertGroup" or 
-		form.method EQ "publicInsertGroup" or form.method EQ "publicUpdateGroup"){
+		form.method EQ "publicInsertGroup" or form.method EQ "publicUpdateGroup" or 
+		form.method EQ "publicAjaxInsertGroup"){
 
 	}else{
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
@@ -1269,6 +1270,14 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="publicAjaxInsertGroup" localmode="modern" access="public" roles="member">
+	<cfargument name="struct" type="struct" required="no" default="#{}#">
+	<cfscript>
+	form.method="publicAjaxInsertGroup";
+	this.updateGroup(arguments.struct);
+	</cfscript>
+</cffunction>
+
 <cffunction name="publicUpdateGroup" localmode="modern" access="public" roles="member">
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
@@ -1308,11 +1317,12 @@
 	var nowDate=request.zos.mysqlnow;
 	var methodBackup=form.method;
 	request.zos.siteOptionInsertGroupCache={};
+	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id', true, 0);
 	if(methodBackup NEQ "publicMapInsertGroup" and methodBackup NEQ "importInsertGroup"){
 		variables.init();
 	}
 	if(form.method EQ "internalGroupUpdate" or form.method EQ "publicMapInsertGroup" or 
-		form.method EQ "publicInsertGroup" or form.method EQ "publicUpdateGroup"){
+		form.method EQ "publicInsertGroup" or form.method EQ "publicAjaxInsertGroup" or form.method EQ "publicUpdateGroup"){
 	}else{
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);
 	}
@@ -1343,7 +1353,7 @@
 	if(local.qCheck.site_option_group_enable_approval EQ 0){
 		form.site_x_option_group_set_approved=1;
 	}
-	if(methodBackup EQ "publicInsertGroup"){
+	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup"){
 		 
 		if(local.qCheck.site_option_group_enable_public_captcha EQ 1){
 			if(not application.zcore.functions.zVerifyRecaptcha()){
@@ -1386,7 +1396,7 @@
 		site_x_option_group.site_option_group_id = site_option.site_option_group_id and 
 		site_x_option_group.site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# 
 		WHERE ";
-		if(local.methodBackup EQ "publicInsertGroup" or local.methodBackup EQ "publicUpdateGroup"){
+		if(local.methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or local.methodBackup EQ "publicUpdateGroup"){
 			db.sql&=" (site_option_allow_public=#db.param(1)#";
 			if(structkeyexists(arguments.struct, 'arrForceFields')){
 				for(i=1;i LTE arraylen(arguments.struct.arrForceFields);i++){
@@ -1450,7 +1460,7 @@
 	}
 	if(local.errors){
 		application.zcore.status.setStatus(request.zsid, false, form, true);
-		if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
+		if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
 			return {success:false, zsid:request.zsid};
 		}else if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicUpdateGroup"){
 			
@@ -1558,8 +1568,8 @@
 		arrayAppend(arrTempData, tempData); 
 	}
 	form.site_x_option_group_set_approved=application.zcore.functions.zso(form, 'site_x_option_group_set_approved', false, 1);
-	if(methodBackup EQ "publicUpdateGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
-		if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicUpdateGroup") and (local.qCheck.recordcount EQ 0 or local.qCheck.site_option_group_allow_public NEQ 1)){
+	if(methodBackup EQ "publicUpdateGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
+		if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicUpdateGroup") and (local.qCheck.recordcount EQ 0 or local.qCheck.site_option_group_allow_public NEQ 1)){
 			hasAccess=false;
 			if(local.qCheck.recordcount NEQ 0){
 				arrUserGroup=listToArray(local.qCheck.site_option_group_user_group_id_list, ",");
@@ -1591,7 +1601,7 @@
 			}
 		}
 	}
-	if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
+	if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
 		if(not structkeyexists(curCache, 'sortValue')){
 			db.sql="select max(site_x_option_group_set_sort) sortid 
 			from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set 
@@ -1673,7 +1683,7 @@
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds2<br>'); startTime=gettickcount();
 	local.arrDataStructKeys=structkeyarray(local.newDataStruct);
-	if(methodBackup NEQ "publicInsertGroup" and methodBackup NEQ "publicMapInsertGroup" and methodBackup NEQ "importInsertGroup"){
+	if(methodBackup NEQ "publicInsertGroup" and methodBackup NEQ "publicAjaxInsertGroup" and methodBackup NEQ "publicMapInsertGroup" and methodBackup NEQ "importInsertGroup"){
 		db.sql="update #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 		set site_x_option_group_set_override_url=#db.param(application.zcore.functions.zso(form,'site_x_option_group_set_override_url'))#,
 		site_x_option_group_set_datetime=#db.param(request.zos.mysqlnow)#, 
@@ -1718,7 +1728,7 @@
 	if(not structkeyexists(form, 'disableSiteOptionGroupMap')){
 		form.disableSiteOptionGroupMap=true;
 		if(local.qCheck.site_option_group_map_insert_type EQ 1){
-			if(methodBackup EQ "publicInsertGroup"){
+			if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup"){
 				local.mapRecord=true;
 			}
 		}else if(local.qCheck.site_option_group_map_insert_type EQ 2){
@@ -1732,7 +1742,7 @@
 	local.sendEmail=false;
 	local.setIdBackup2=form.site_x_option_group_set_id;
 	local.groupIdBackup2=local.qCheck.site_option_group_id;
-	if(methodBackup EQ "publicInsertGroup" and local.qCheck.site_option_group_lead_routing_enabled EQ 1 and not structkeyexists(form, 'disableGroupEmail')){
+	if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup") and local.qCheck.site_option_group_lead_routing_enabled EQ 1 and not structkeyexists(form, 'disableGroupEmail')){
 		local.newDataStruct.site_x_option_group_set_id=local.setIdBackup2; 
 		local.newDataStruct.site_option_group_id=local.groupIdBackup2;
 		
@@ -1822,7 +1832,7 @@
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds5<br>'); startTime=gettickcount();
 	if(debug) application.zcore.functions.zabort();
-	if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
+	if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
 		return {success:true, zsid:request.zsid, site_x_option_group_set_id:local.setIdBackup};
 	}else if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicUpdateGroup"){ 
 		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');

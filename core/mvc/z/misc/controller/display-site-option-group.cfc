@@ -6,6 +6,14 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="ajaxInsert" localmode="modern" access="remote">
+	<cfscript>
+	local.soCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	rs=local.soCom.publicAjaxInsertGroup();
+	application.zcore.functions.zReturnJson(rs);
+	</cfscript>
+</cffunction>
+
 <cffunction name="add" localmode="modern" access="remote">
 	<cfscript>
 	local.soCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
