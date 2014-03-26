@@ -573,6 +573,9 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			rs.count=0;
 			for(i=1;i LTE arrayLen(arrGroup);i++){
 				row=arrGroup[i];
+				if(structkeyexists(row, '__approved') and row.__approved NEQ 1){
+					continue;
+				}
 				match=variables.processSearchArray(arguments.arrSearch, row, groupStruct.site_option_group_id);
 				if(match){
 					rs.count++;
@@ -629,7 +632,8 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			db=request.zos.noVerifyQueryObject;
 			db.sql="select s1.site_x_option_group_set_id 
 			from #arrayToList(arrTable, ", ")# 
-			WHERE #arrayToList(arrWhere, " and ")#
+			WHERE #arrayToList(arrWhere, " and ")# 
+			and site_x_option_group_set_approved='1' 
 			GROUP BY s1.site_x_option_group_set_id ";
 			if(structkeyexists(request.zos, 'siteOptionSearchDateRangeSortEnabled')){
 				db.sql&=" ORDER BY s1.site_x_option_group_set_start_date ASC ";
@@ -1168,10 +1172,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var row=0;
 	var tempValue=0;
 	var db=request.zos.queryObject;
-	 var debug=false;
+	var debug=false;
+	var startTime=gettickcount();
 	/* if(request.zos.isdeveloper){
 		 debug=true;
-		 var startTime=gettickcount();
 	 }*/
 	var tempStruct=application.zcore.siteGlobals[arguments.site_id];
 	db.sql="SELECT s1.*, s3.site_option_id groupSetOptionId, s4.site_option_type_id typeId, s3.site_x_option_group_value groupSetValue 
@@ -1285,7 +1289,6 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	WHERE s1.site_id = #db.param(arguments.site_id)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
-	s1.site_x_option_group_set_approved=#db.param(1)# and
 	s1.site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# 
 	ORDER BY s1.site_x_option_group_set_sort asc";
 	var qS=db.execute("qS"); 
@@ -1415,11 +1418,11 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			}
 		}
 	}  
-	if(debug) writedump(arrChild);
+	if(debug and structkeyexists(local, 'arrChild')) writedump(arrChild);
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1-4<br>'); startTime=gettickcount();
-	if(debug) application.zcore.functions.zabort();
 	application.zcore.functions.zCacheJsonSiteAndUserGroup(arguments.site_id, tempStruct); 
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1-5<br>'); startTime=gettickcount();
+	if(debug) application.zcore.functions.zabort();
 	</cfscript>
 </cffunction>
  
