@@ -146,7 +146,7 @@
 			uploadPath=getUploadPath(arguments.optionStruct);
 			if(uploadPath EQ "zuploadsecure"){
 				if(application.zcore.user.checkGroupAccess("administrator")){
-					echo('<p><a href="#request.zos.globals.domain#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&'" target="_blank">Download File</a></p>');
+					echo('<p><a href="#request.zos.currentHostName#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&'" target="_blank">Download File</a></p>');
 				}else{
 					echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&' | You must be an administrator to download the file.</p>');
 				}

@@ -140,7 +140,7 @@
 	if(arguments.row.site_option_required EQ 1){
 		allowDelete=false;
 	}
-	return { label: true, hidden: false, value:application.zcore.functions.zInputImage(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', application.zcore.functions.zvar('domain',request.zos.globals.id)&'/zupload/site-options/',250, allowDelete)&'<br /><br />
+	return { label: true, hidden: false, value:application.zcore.functions.zInputImage(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', request.zos.currentHostName&'/zupload/site-options/',250, allowDelete)&'<br /><br />
 	Note: The image will be resized to fit inside these pixel dimensions: '&
 	application.zcore.functions.zso(arguments.optionStruct, 'imagewidth',false,'1000')&' x '&
 	application.zcore.functions.zso(arguments.optionStruct, 'imageheight',false,'1000')&'<br />'};  
