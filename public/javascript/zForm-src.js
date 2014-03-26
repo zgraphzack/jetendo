@@ -4002,7 +4002,13 @@ window.zContentTransition=zContentTransition;
 	
 function zeeo(m,n,o,w,l,r,h,b,v,z,z2){
 	var k='ai',g='lto',f='m',e=':';
-	if(z){return o+n+w+m;}else{ if(l){var cr3=('<a href="'+f+k+g+e+o+n+w+m+'">');if(b+h+v+r!==''){cr3+=(b+h+v+r);}else{cr3+=(o+n+w+m);} cr3+=('<\/a>');}else{cr3+=(o+n+w+m);}document.getElementById('zencodeemailspan'+z2).innerHTML=cr3;}}
+	if(z){return o+n+w+m;}else{ if(l){var cr3=('<a href="'+f+k+g+e+o+n+w+m+'">');
+	if(b+h+v+r!==''){cr3+=(b+h+v+r);}else{cr3+=(o+n+w+m);} cr3+=('<\/a>');
+	}else{
+		cr3+=(o+n+w+m);}var d=document.getElementById('zencodeemailspan'+z2); 
+		if(d){d.innerHTML=cr3;}
+	}
+}
 	
 
 var zLogin={
