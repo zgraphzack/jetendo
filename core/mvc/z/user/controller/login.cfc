@@ -191,20 +191,7 @@
 	var db=request.zos.queryObject;
 	var inputStruct=0;
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
-	/*if(isdefined('request.zos.requestData.headers.origin')){
-	application.zcore.functions.zHeader("Access-Control-Allow-Origin",request.zos.requestData.headers.origin);
-	}
-	application.zcore.functions.zHeader("Access-Control-Expose-Headers", "x_ajax_id");
-	*/
-	// application.zcore.functions.zHeader("Access-Control-Allow-Origin","*"); 
-	/*
-	echo(form.tempToken&"<br>");
-	for(i in application.zcore.tempTokenCache){
-	echo(i&'<br>');
-	}
-	writedump(application.zcore.tempTokenCache);
-	writedump(structkeyexists(application.zcore.tempTokenCache, form.tempToken));
-	abort;*/
+	
 	if(structkeyexists(form, 'tempToken')){
 		if(structkeyexists(application.zcore.tempTokenCache, form.tempToken)){
 			// force login for the token user_id
@@ -230,7 +217,7 @@
 				inputStruct.disableSecurePassword=true;
 				inputStruct.site_id = request.zos.globals.id;
 				application.zcore.user.checkLogin(inputStruct); 
-				if(structkeyexists(request.zos.userSession.groupAccess, "user")){
+				if(application.zcore.user.checkGroupAccess("user")){
 					writeoutput('{"success":true}');
 				}else{
 					structdelete(form, 'zUsername');

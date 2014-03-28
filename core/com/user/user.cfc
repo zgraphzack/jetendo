@@ -356,32 +356,35 @@ userCom.checkLogin(inputStruct);
 		}
 		if(not failedLogin){
 			if(qUserCheck.recordcount NEQ 0){
-				if(arguments.inputStruct.secureLogin and arguments.inputStruct.disableSecurePassword EQ false){
-					passwordVerificationResult=application.zcore.user.verifySecurePassword(form.zPassword, qUserCheck.user_salt, qUserCheck.user_password, qUserCheck.user_password_version);
-					if(not passwordVerificationResult){
-						failedLogin=true; // password didn't match
-						if(structkeyexists(request, 'hashThreadDeathOccurred')){
+				if(arguments.inputStruct.secureLogin){
+					if(arguments.inputStruct.disableSecurePassword EQ false){
+						passwordVerificationResult=application.zcore.user.verifySecurePassword(form.zPassword, qUserCheck.user_salt, qUserCheck.user_password, qUserCheck.user_password_version);
+						
+						if(not passwordVerificationResult){
+							failedLogin=true; // password didn't match
+							if(structkeyexists(request, 'hashThreadDeathOccurred')){
+								db.sql="update #db.table("user", request.zos.zcoreDatasource)# 
+								SET user_salt = #db.param('')#,
+								user_password = #db.param('')#,
+								member_password = #db.param('')#,
+								user_password_version = #db.param(request.zos.defaultPasswordVersion)# 
+								WHERE user_id = #db.param(qUserCheck.user_id)# and 
+								site_id = #db.param(qUserCheck.site_id)#";
+								db.execute("qDeleteUserPassword");
+							}
+						}else if(qUserCheck.user_password_version NEQ request.zos.defaultPasswordVersion){
+							// auto-upgrade this user to the new default password version
+							var userSalt=application.zcore.functions.zGenerateStrongPassword(256,256);
+							var userPasswordHash=application.zcore.user.convertPlainTextToSecurePassword(form.zPassword, userSalt, request.zos.defaultPasswordVersion, false);
 							db.sql="update #db.table("user", request.zos.zcoreDatasource)# 
-							SET user_salt = #db.param('')#,
-							user_password = #db.param('')#,
-							member_password = #db.param('')#,
+							SET user_salt = #db.param(userSalt)#,
+							user_password = #db.param(userPasswordHash)#,
+							member_password = #db.param(userPasswordHash)#,
 							user_password_version = #db.param(request.zos.defaultPasswordVersion)# 
 							WHERE user_id = #db.param(qUserCheck.user_id)# and 
 							site_id = #db.param(qUserCheck.site_id)#";
-							db.execute("qDeleteUserPassword");
+							db.execute("qUpdateUserPassword");
 						}
-					}else if(qUserCheck.user_password_version NEQ request.zos.defaultPasswordVersion){
-						// auto-upgrade this user to the new default password version
-						var userSalt=application.zcore.functions.zGenerateStrongPassword(256,256);
-						var userPasswordHash=application.zcore.user.convertPlainTextToSecurePassword(form.zPassword, userSalt, request.zos.defaultPasswordVersion, false);
-						db.sql="update #db.table("user", request.zos.zcoreDatasource)# 
-						SET user_salt = #db.param(userSalt)#,
-						user_password = #db.param(userPasswordHash)#,
-						member_password = #db.param(userPasswordHash)#,
-						user_password_version = #db.param(request.zos.defaultPasswordVersion)# 
-						WHERE user_id = #db.param(qUserCheck.user_id)# and 
-						site_id = #db.param(qUserCheck.site_id)#";
-						db.execute("qUpdateUserPassword");
 					}
 				}
 			}else{
@@ -395,7 +398,7 @@ userCom.checkLogin(inputStruct);
 			local.config.cacheEnabled=false;
 			application.zcore.db.init(local.config);	// disable query caching for logged in users.
 			session.zos.secureLogin=arguments.inputStruct.secureLogin;
-			if(isDefined('request.zos.tracking')){
+			if(structkeyexists(request.zos, 'tracking')){
 				application.zcore.tracking.setUserId(qUserCheck.user_id);
 			}
 			session.zOS[userSiteId]=StructNew();
