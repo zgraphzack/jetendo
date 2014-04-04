@@ -1985,7 +1985,9 @@ configCom.includeContentByName(ts);
 			request.zos.arrContentParentIDStruct=arraynew(1);
 			request.zos.arrContentParentURLStruct=arraynew(1);
 			arrayappend(request.zos.arrContentParentIDStruct, ts994824713.content_id);
-			if(ts994824713.content_unique_name NEQ ''){
+			if(ts994824713.content_url_only NEQ ''){
+				arrayappend(request.zos.arrContentParentURLStruct, ts994824713.content_url_only);
+			}else if(ts994824713.content_unique_name NEQ ''){
 				arrayappend(request.zos.arrContentParentURLStruct, ts994824713.content_unique_name);
 			}else{
 				arrayappend(request.zos.arrContentParentURLStruct, "/#application.zcore.functions.zURLEncode(ts994824713.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#ts994824713.content_id#.html");
@@ -2364,7 +2366,9 @@ configCom.includeContentByName(ts);
 					}
 					t2.isparent=false;
 					t2.type="subtab";
-					if(row.content_unique_name NEQ ''){
+					if(row.content_url_only NEQ ''){
+						t2.url=request.zos.currentHostName&row.content_url_only;
+					}else if(row.content_unique_name NEQ ''){
 						t2.url=request.zos.currentHostName&row.content_unique_name;
 					}else{ 
 						t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
@@ -2444,7 +2448,10 @@ configCom.includeContentByName(ts);
 			break;
 		}
 		arrayappend(request.zos.arrContentParentIDStruct, qpar.content_id);
-		if(qpar.content_unique_name NEQ ''){
+		if(qpar.content_url_only NEQ ""){
+			arrayappend(request.zos.arrContentParentURLStruct, qpar.content_url_only);
+			arrayappend(arrNav, '<a href="#qpar.content_url_only#">#qpar.content_name#</a> / ');
+		}else if(qpar.content_unique_name NEQ ''){
 			arrayappend(request.zos.arrContentParentURLStruct, qpar.content_unique_name);
 			arrayappend(arrNav, '<a href="#qpar.content_unique_name#">#qpar.content_name#</a> / ');
 		}else{
@@ -2456,7 +2463,9 @@ configCom.includeContentByName(ts);
 		t2=structnew();
 		t2.type="tab";
 		t2.text=qpar.content_name;
-		if(qpar.content_unique_name NEQ ''){
+		if(qpar.content_url_only NEQ ""){
+			t2.url=qpar.content_url_only;
+		}else if(qpar.content_unique_name NEQ ''){
 			t2.url=request.zos.currentHostName&qpar.content_unique_name;
 		}else{ 
 			t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(qpar.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qpar.content_id#.html"; 
@@ -2642,7 +2651,9 @@ configCom.includeContentByName(ts);
 				}else{
 					t2.type="tab";
 				}
-				if(qParent5.content_unique_name NEQ ''){
+				if(qParent5.content_url_only NEQ ''){
+					t2.url=request.zos.currentHostName&qParent5.content_url_only;
+				}else if(qParent5.content_unique_name NEQ ''){
 					t2.url=request.zos.currentHostName&qParent5.content_unique_name;
 				}else{ 
 					t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(qParent5.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qParent5.content_id#.html"; 
@@ -2688,7 +2699,9 @@ configCom.includeContentByName(ts);
 				t2.summary=application.zcore.email.convertHTMLToText(t2.summary);
 				t2.isparent=false;
 				t2.type="subtab";
-				if(row.content_unique_name NEQ ''){
+				if(row.content_url_only NEQ ""){
+					t2.url=row.content_url_only;
+				}else if(row.content_unique_name NEQ ''){
 					t2.url=request.zos.currentHostName&row.content_unique_name;
 				}else{ 
 					t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
