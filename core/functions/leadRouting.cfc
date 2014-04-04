@@ -15,9 +15,6 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	var rs2=structnew();
 	var inquiries_id=arguments.ss.inquiries_id;
 	rs.inquiries_id=arguments.ss.inquiries_id;
-	if(not structkeyexists(rs, 'cc')){
-		rs.cc="";
-	}
 	if(structkeyexists(arguments.ss, 'forceAssign') and arguments.ss.forceAssign){
 		rs.assignEmail=arguments.ss.assignEmail;
 		rs.leadEmail=arguments.ss.leadEmail;
@@ -36,6 +33,9 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		}else{
 			rs=application.zcore.functions.zProcessLeadRoute(rs);
 		}
+	}
+	if(not structkeyexists(rs, 'cc')){
+		rs.cc="";
 	}
 	if(rs.user_id EQ 0){
 		 db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
