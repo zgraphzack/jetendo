@@ -328,19 +328,46 @@ this.remapFieldStruct=t5;
 	
 
 	local.listing_pool=0; 
-	if(ts.rets22_list_8 EQ "A"){ // 20130226165748850821000000
-		if(ts.rets22_list_109 EQ "1536QBU32QA1" or ts.rets22_list_109 EQ "156WO57131IC"){
-			local.listing_pool=1;	
+	pt={
+		"A":{
+			key:"rets22_GF20130226165731566769000000",
+			data:{
+				"15373EEHYRPV":true, 
+				"1536QBSXEUN4":true, 
+				"1536QBSWLBCA":true
+			}
+		},
+		"B":{
+			key:"rets22_GF20130304162858707435000000",
+			data:{
+				"156ZJMT9EDPD":true,
+				"156ZJMTK17WU":true,
+				"156ZJMTUERQ3":true
+			}
+		},
+		"D":{
+			key:"rets22_GF20130313160702258186000000",
+			data:{
+				"1541KGQNC9FJ":true,
+				"1541KGQNBTVG":true,
+				"1541KGQNC05P":true,
+				"1541KGQNC6C2":true
+			}
 		}
-	}else if(ts.rets22_list_8 EQ "B"){ // 20130226165749311842000000
-		if(ts.rets22_list_109 EQ "15709DP8EGLQ" or ts.rets22_list_8 EQ "15709DP8E5ZM"){
-			local.listing_pool=1;	
+	};
+	local.listing_pool=0;
+	for(i in pt){
+		if(i EQ ts.rets22_list_8){
+			arrPool=listtoarray(ts[pt[i].key], ",");
+			for(n=1;n LTE arraylen(arrPool);n++){
+				if(structkeyexists(pt[i].data, arrPool[n])){
+					local.listing_pool=1;
+					break;
+				}
+			}
 		}
-	}else if(ts.rets22_list_8 EQ "D"){ // 20130226165750291149000000
-		if(ts.rets22_list_109 EQ "15709DQKHYUU" or ts.rets22_list_109 EQ "15709DQKHQDL"){
-			local.listing_pool=1;	
-		}
-	} 
+	}
+
 	if(ts.rets22_list_8 EQ "E" or ts.rets22_list_8 EQ "C" or ts.rets22_list_8 EQ "D" or ts.rets22_list_8 EQ "B") {
 	}else{
 		local.backup48=ts["rets22_list_48"];
