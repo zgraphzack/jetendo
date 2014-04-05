@@ -49,7 +49,8 @@
 				<td class="table-list" style="vertical-align:top; width:140px;">Select Parent Site: </td>
 				<td class="table-white">
 				<cfscript>
-				db.sql="SELECT site_id, replace(site_short_domain, #db.param('.#request.zos.testDomain#')#, #db.param('')#) site_short_domain 
+				db.sql="SELECT site_id, replace(replace(site_short_domain, #db.param('.#request.zos.testDomain#')#, #db.param('')#), 
+					#db.param('www.')#, #db.param('')#) site_short_domain 
 				FROM #db.table("site", request.zos.zcoreDatasource)# site 
 				WHERE site_id <> #db.param(-1)#
 				ORDER BY site_short_domain ASC";
