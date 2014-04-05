@@ -437,7 +437,12 @@
 	}
 	form.content_id=application.zcore.functions.zso(form, 'content_id');
 	if(currentMethod EQ "add" or currentMethod EQ "Add Content"){
-		application.zcore.template.appendTag('meta','<script type="text/javascript">/* <![CDATA[ */ var zDisableBackButton=true; /* ]]> */</script>');
+		application.zcore.template.appendTag('scripts','<script type="text/javascript">/* <![CDATA[ */ 
+		var zDisableBackButton=true;
+		zArrDeferredFunctions.push(function(){
+			zDisableBackButton=true;
+		});
+		/* ]]> */</script>');
 	}
 	
 	if(application.zcore.functions.zso(form, 'content_parent_id',true) EQ 0){

@@ -2833,6 +2833,12 @@ Define this function in another CFC to override the default email format
 	}
 	local.arrEnd=arraynew(1);
 	</cfscript>
+	<script type="text/javascript">
+	var zDisableBackButton=true;
+	zArrDeferredFunctions.push(function(){
+		zDisableBackButton=true;
+	});
+	</script>
 	<cfif local.methodBackup EQ "publicEditGroup">
 		<cfif qSet.site_x_option_group_set_approved EQ 2>
 			<p><strong>Note: Updating this record will re-submit this listing for approval.</strong></p>
