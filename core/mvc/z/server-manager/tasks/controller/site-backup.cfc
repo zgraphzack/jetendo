@@ -252,7 +252,8 @@ TODO: figure out why site backup doesn't get compressed.
 			}
 		}
 		if(form.backupType EQ 2){
-			if(form.createNew EQ 1 or not fileexists(local.tempPathUpload)){
+			tempPathUpload=request.zos.backupDirectory&"site-archives/"&curDomain&"-zupload-"&curDate&'.tar.gz';
+			if(form.createNew EQ 1 or not fileexists(tempPathUpload)){
 				result=application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain&chr(9)&curDate, 3600);
 			}
 			variables.downloadSiteUpload(form.sid, curDomain, curDate);
