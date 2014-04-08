@@ -1167,6 +1167,7 @@
 	var photoresize=0;
 	var nowDate=request.zos.mysqlnow;
 	variables.init();
+	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id', true, 0);
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	local.arrSiteIdType=listtoarray(form.siteidtype);
 	local.arrSiteOptionId=listtoarray(form.site_option_id);
@@ -1236,7 +1237,7 @@
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(tempURL, true);
 	}else{	
-		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#");
 	}
 	</cfscript>
 </cffunction>
