@@ -333,7 +333,7 @@
 		rs.listing_region="";
 		rs.listing_tenure="";
 		rs.listing_liststatus="1";
-		rs.listing_data_remarks=application.zcore.functions.zso(ts, 'rets4_publicremarks');
+		rs.listing_data_remarks=replace(application.zcore.functions.zso(ts, 'rets4_publicremarks'), "â", "'", "all");
 		rs.listing_data_address=trim(address);
 		rs.listing_data_zip=trim(application.zcore.functions.zso(ts,'rets4_postalcode'));
 		rs.listing_data_detailcache1=listing_data_detailcache1;
