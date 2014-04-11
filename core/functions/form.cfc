@@ -871,9 +871,11 @@ writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
 		if(arguments.ss.style NEQ ''){
 			output = output&' style="#arguments.ss.style#"';
 		}
+		output = output&' class="zRadioButton ';
 		if(arguments.ss.className NEQ ''){
-			output = output&' class="#arguments.ss.className#"';
+			output&=arguments.ss.className;
 		}
+		output&='"';
 		if(arguments.ss.onclick NEQ ""){
 			output&=' onclick="#arguments.ss.onclick#"';
 		}
