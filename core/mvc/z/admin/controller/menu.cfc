@@ -521,7 +521,7 @@
 			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this menu.',false,true);
 			application.zcore.functions.zRedirect('/z/admin/menu/index?zsid=#request.zsid#');
 		}
-	}
+	} 
 	if(form.menu_character_length EQ 0){
 		form.menu_character_length=10000;
 	}

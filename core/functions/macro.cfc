@@ -191,7 +191,7 @@ writeoutput(application.zcore.functions.zLoadAndCropImage({id:"",width:140,heigh
 <cffunction name="zFullScreenMobileApp" localmode="modern" output="no" returntype="any">
 	<cfscript>
 	var theMeta="";
-    if(cgi.HTTP_USER_AGENT CONTAINS "iphone" or (cgi.HTTP_USER_AGENT CONTAINS "android" and cgi.HTTP_USER_AGENT CONTAINS "mobile")){
+    if(cgi.HTTP_USER_AGENT CONTAINS "iphone" or cgi.HTTP_USER_AGENT CONTAINS "ipod" or  (cgi.HTTP_USER_AGENT CONTAINS "android" and cgi.HTTP_USER_AGENT CONTAINS "mobile")){
 		
 	}else{
 		return;	
