@@ -761,11 +761,13 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	
 	form.searchText=trim(application.zcore.functions.zso(form, 'searchText'));
 	searchTextOriginal=form.searchText;
-	form.searchText=application.zcore.functions.zCleanSearchText(form.searchText, true);
-	if(form.searchText NEQ "" and isNumeric(form.searchText) EQ false and len(form.searchText) LTE 2){
-		application.zcore.status.setStatus(request.zsid,"The search searchText must be 3 or more characters.",form);
-		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
-	}
+    if(not isnumeric(searchTextOriginal)){
+    	form.searchText=application.zcore.functions.zCleanSearchText(form.searchText, true);
+    	if(form.searchText NEQ "" and isNumeric(form.searchText) EQ false and len(form.searchText) LTE 2){
+    		application.zcore.status.setStatus(request.zsid,"The search searchText must be 3 or more characters.",form);
+    		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
+    	}
+    }
 	searchTextReg=rereplace(form.searchText,"[^A-Za-z0-9[[:white:]]]*",".","ALL");
 	searchTextOReg=rereplace(searchTextOriginal,"[^A-Za-z0-9 ]*",".","ALL");
 	
@@ -814,7 +816,7 @@ c2.blog_id = blog.blog_id and c2.blog_comment_approved=#db.param(0)#  and
 blog.site_id = c2.site_id
 #db.trustedSQL(rs2.leftJoin)#
 WHERE blog.site_id=#db.param(request.zos.globals.id)#
-	<cfif form.searchtext NEQ ''>
+	<cfif searchTextOriginal NEQ ''>
 		and 
 		
 		(blog.blog_id = #db.param(searchTextOriginal)# or 
@@ -851,7 +853,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
         select count(blog_id) as count 
 		from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE site_id=#db.param(request.zos.globals.id)#
-	<cfif form.searchtext NEQ ''>
+	<cfif searchTextOriginal NEQ ''>
 		and 
 		
 		(blog.blog_id = #db.param(searchTextOriginal)# or 
