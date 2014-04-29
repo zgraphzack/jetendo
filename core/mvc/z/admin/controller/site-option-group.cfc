@@ -371,7 +371,7 @@
 		//writedump(local.tempColumns);
 		local.arrTemp=structkeyarray(local.tempColumns);
 		arraySort(local.arrTemp, "text", "asc");
-		local.labels=arrayToList(local.arrTemp, chr(9));
+		local.labels="inquiries_custom_json"&chr(9)&arrayToList(local.arrTemp, chr(9));
 		local.values=local.labels;
 		
 	}else{
@@ -835,7 +835,17 @@
 					<a href="/z/admin/site-option-group/displayGroupCode?site_option_group_id=#qProp.site_option_group_id#&amp;site_option_group_parent_id=#qProp.site_option_group_parent_id#" target="_blank">Display Code</a> |
 					
 					<cfif qProp.site_option_group_map_fields_type NEQ 0>
-						<a href="/z/admin/site-option-group/mapFields?site_option_group_id=#qProp.site_option_group_id#">Map Fields</a> | 
+						<a href="/z/admin/site-option-group/mapFields?site_option_group_id=#qProp.site_option_group_id#">Map Fields</a>
+						<cfscript>
+						db.sql="select count(site_option_group_map_id) count 
+						from #db.table("site_option_group_map", request.zos.zcoreDatasource)# site_option_group_map WHERE 
+						site_id = #db.param(qProp.site_id)# AND 
+						site_option_group_id = #db.param(qProp.site_option_group_id)# ";
+						qMap=db.execute("qMap");
+						if(qMap.recordcount EQ 0 or qMap.count EQ 0){
+							echo('<strong>(Not Mapped Yet)</strong> ');
+						}
+						</cfscript> | 
 					</cfif>
 					<a href="/z/admin/site-option-group/edit?site_option_group_id=#qProp.site_option_group_id#&amp;site_option_group_parent_id=#qProp.site_option_group_parent_id#&amp;return=1">Edit</a> | 
 					<cfif qProp.site_option_group_parent_id EQ 0>

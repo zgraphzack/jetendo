@@ -1911,6 +1911,9 @@ Define this function in another CFC to override the default email format
 	local.qMap=db.execute("qMap");
 	 
 	if(local.qMap.recordcount EQ 0){
+		throw('site_option_group_id, "#ts.site_option_group_id#", on site_id, "#request.zos.globals.id#" isn''t mapped 
+		yet so the data can''t be stored in inquiries table or emailed. 
+		The form data below must be manually forwarded to the web site owner or resubmitted.');
 		return;
 	} 
 	form.emailLabelStruct={};
@@ -2037,6 +2040,9 @@ Define this function in another CFC to override the default email format
 	";
 	local.qMap=db.execute("qMap");
 	if(local.qMap.recordcount EQ 0){
+		throw('site_option_group_id, "#ts.site_option_group_id#", on site_id, "#request.zos.globals.id#" isn''t mapped 
+		yet so the data can''t be stored in site_option_group table or emailed. 
+		The form data below must be manually forwarded to the web site owner or resubmitted.');
 		return;
 	}
 	local.arrId=[];
