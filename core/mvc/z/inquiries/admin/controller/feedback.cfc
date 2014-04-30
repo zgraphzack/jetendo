@@ -331,40 +331,13 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	</cfif>
 	<cfif form.closed EQ 0>
 		</td>
-		<td style="vertical-align:top; width:30%;padding-left:10px; padding-right:0px;"><h2 style="display:inline;">
-			Send Email
-			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
-				|
-				</h2>
-				<a href="/z/inquiries/admin/lead-template/index">Edit Templates</a> | 
-				<a href="/z/inquiries/admin/lead-template/add?inquiries_lead_template_type=2&amp;siteIDType=1">Add Email Template</a>
-			<cfelse>
-				</h2>
-			</cfif>
-			<br />
-			<br />
-			<cfscript>
-			tags=StructNew();
-			</cfscript>
+		<td style="vertical-align:top; width:30%;padding-left:10px; padding-right:0px;">
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_id = #db.param(session.zos.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
 			user_server_administrator=#db.param('0')# </cfsavecontent>
 			<cfscript>
 			qAgent=db.execute("qAgent");
 			</cfscript>
-			<cfif qAgent.recordcount NEQ 0>
-				<cfif qAgent.member_signature NEQ ''>
-					<cfset signature=qAgent.member_signature>
-				<cfelse>
-					<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
-				</cfif>
-				<cfscript>
-				tags['{agent name}']=qAgent.member_first_name&' '&qAgent.member_last_name;
-				tags["{agent's company}"]=qAgent.member_company;
-				</cfscript>
-			<cfelse>
-				<cfset signature="">
-			</cfif>
 			<cfsavecontent variable="db.sql"> 
 			SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
 			LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
@@ -380,6 +353,34 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			<cfscript>
 			qTemplate=db.execute("qTemplate");
 			</cfscript>
+			<!--- <h2 style="display:inline;">
+			Send Email
+			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
+				|
+				</h2>
+				<a href="/z/inquiries/admin/lead-template/index">Edit Templates</a> | 
+				<a href="/z/inquiries/admin/lead-template/add?inquiries_lead_template_type=2&amp;siteIDType=1">Add Email Template</a>
+			<cfelse>
+				</h2>
+			</cfif>
+			<br />
+			<br />
+			<cfscript>
+			tags=StructNew();
+			</cfscript>
+			<cfif qAgent.recordcount NEQ 0>
+				<cfif qAgent.member_signature NEQ ''>
+					<cfset signature=qAgent.member_signature>
+				<cfelse>
+					<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
+				</cfif>
+				<cfscript>
+				tags['{agent name}']=qAgent.member_first_name&' '&qAgent.member_last_name;
+				tags["{agent's company}"]=qAgent.member_company;
+				</cfscript>
+			<cfelse>
+				<cfset signature="">
+			</cfif>
 			<script type="text/javascript">
 			/* <![CDATA[ */
 			var arrEmailTemplate=[];
@@ -488,7 +489,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			updateEmailForm('');
 			</cfif>/* ]]> */
 			</script> 
-			<br />
+			<br /> --->
 			<cfif qagent.recordcount NEQ 0>
 				<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
 				<cfscript>

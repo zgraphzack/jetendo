@@ -15,6 +15,7 @@
 	var emailList=0;
 	var pos=0;
 
+application.zcore.functions.z404("Share with friend disabled due to dmarc policy issues requiring smtp authentication / correct DNS records.");
 	form.modalpopforced=1;
 	
 	form.title=application.zcore.functions.zso(form, 'title');
@@ -156,6 +157,7 @@ You can reply to #form.name# by replying to this email.
 <cffunction name="index" localmode="modern" access="remote">
 <cfscript>
 var theMeta=0;
+application.zcore.functions.z404("Share with friend disabled due to dmarc policy issues requiring smtp authentication / correct DNS records.");
 </cfscript>
 <cfsavecontent variable="theMeta">
 <meta name="robots" content="noindex,nofollow" />

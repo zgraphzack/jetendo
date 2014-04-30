@@ -152,6 +152,10 @@
 			}else{
 				ts.html=false;
 			}
+			if(request.zos.globals.emailCampaignFrom EQ ""){
+				throw("request.zos.globals.emailCampaignFrom is missing, can't send listing alerts.");
+			}
+			ts.from=request.zos.globals.emailCampaignFrom;
 			ts.arrParameters=arraynew(1);
 			arrayappend(ts.arrParameters,t9.mls_saved_search_id); 
 			if(form.debug){

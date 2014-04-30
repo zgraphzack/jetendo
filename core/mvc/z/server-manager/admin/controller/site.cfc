@@ -1080,7 +1080,7 @@
 		</tr>
 		<tr >
 			<td class="table-list" style="vertical-align:top; width:140px;">Site Admin Email:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_admin_email", "table-error","table-white")#><input name="site_admin_email" type="text" size="70" maxlength="50" value="#form.site_admin_email#"></td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_admin_email", "table-error","table-white")#><input name="site_admin_email" type="text" size="70" maxlength="50" value="#form.site_admin_email#"> (Make sure you have SPF/DKIM permission to use this email address domain on this server.  AOL/YAHOO and others will be blocked.)</td>
 		</tr>
 		<tr >
 			<td class="table-list" style="vertical-align:top; width:140px;">Bulk Email Signature:</td>
