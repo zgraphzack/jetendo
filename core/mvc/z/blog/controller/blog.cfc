@@ -2614,7 +2614,7 @@ this.app_id=10;
 	order by blog_sticky desc, blog_datetime desc 
 	LIMIT #db.param(0)#,#db.param(25)#
 	</cfsavecontent><cfscript>q_blog_feed=db.execute("q_blog_feed");
-	if(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_url EQ '{default}'){
+	if(structkeyexists(form, 'zURLName') and application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_url EQ '{default}'){
 		curLink="/#application.zcore.functions.zURLEncode(application.zcore.app.getAppData("blog").optionStruct.blog_config_recent_name,'-')#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-0.xml";
 		actualLink="/#form.zURLName#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-0.xml";
 		if(compare(curLink,actualLink) neq 0){
