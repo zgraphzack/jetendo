@@ -55,7 +55,7 @@ $gitCloneURL=get_cfg_var("jetendo_git_clone_url");
 $gitBranch=get_cfg_var("jetendo_git_branch");
 $rootPath=get_cfg_var("jetendo_root_path");
 chdir(get_cfg_var("jetendo_root_path"));
-if($argv[1] =="disableGitIntegration"){
+if(count($argv) >= 2 && $argv[1] =="disableGitIntegration"){
 	$status=`/usr/bin/git status`;
 	if(strpos($status, "fatal: Not a git repository") !== FALSE){
 		echo("Git repo doesn't exist. Running git clone.\n");
@@ -95,7 +95,7 @@ if($argv[1] =="disableGitIntegration"){
 @mkdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme", 0550);
 chdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme");
 $themePath=get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme";
-if($argv[1] == "disableGitIntegration"){
+if(count($argv) >= 2 && $argv[1] == "disableGitIntegration"){
 	$status=`/usr/bin/git status`;
 	if(strpos($status, "fatal: Not a git repository") !== FALSE){
 		echo("Git repo doesn't exist. Running git clone.\n");

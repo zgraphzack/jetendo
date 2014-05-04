@@ -38,15 +38,17 @@ $crontabs.="#every 5 minutes
 # every day at 12:20am
 20 0 * * * /usr/bin/php ".$scriptsPath."listing-image-cleanup.php > /dev/null 2>&1";
 }
-
-	$arr1=explode("\n", file_get_contents($rootCronPath));
-	for($i=0;$i<count($arr1);$i++){
-		if(trim($arr1[$i]) == "" || substr($arr1[$i], 0, 1) != "#"){
-			$arr1=array_slice($arr1, $i);
-			break;
+	$contents="";
+	if(file_exists($rootCronPath)){
+		$arr1=explode("\n", file_get_contents($rootCronPath));
+		for($i=0;$i<count($arr1);$i++){
+			if(trim($arr1[$i]) == "" || substr($arr1[$i], 0, 1) != "#"){
+				$arr1=array_slice($arr1, $i);
+				break;
+			}
 		}
+		$contents=implode("\n", $arr1);
 	}
-	$contents=implode("\n", $arr1);
 	$beginString="\n#jetendo-root-crontabs-begin\n";
 	$endString="\n#jetendo-root-crontabs-end\n";
 	$begin=strpos($contents, $beginString);
