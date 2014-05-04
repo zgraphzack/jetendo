@@ -2689,7 +2689,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	if(mvcFilesChanged or (not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'controllerComponentCache'))){
 		for(i2=1;i2 LTE arraylen(arrFile);i2++){
 			qD=arrFile[i2];
-			if(left(qD.directory, 12) EQ '/mvc/z/test/' and request.zos.cgi.http_host NEQ request.zos.zcoreTestHost){ 
+			if(left(qD.directory, 12) EQ '/mvc/z/test/'){// and request.zos.cgi.http_host NEQ request.zos.zcoreTestHost){ 
 				continue;
 			}
 			
