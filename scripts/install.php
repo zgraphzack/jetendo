@@ -91,6 +91,20 @@ if(count($argv) >= 2 && $argv[1] =="disableGitIntegration"){
 		}
 	}
 }
+@mkdir(get_cfg_var("jetendo_root_path")."sites/", 0770);
+$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").':'.get_cfg_var("jetendo_www_user")." ".get_cfg_var("jetendo_root_path")."sites/";
+`$cmd`;
+@mkdir(get_cfg_var("jetendo_root_path")."sites-writable/", 0770);
+$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").':'.get_cfg_var("jetendo_www_user")." ".get_cfg_var("jetendo_root_path")."sites-writable/";
+`$cmd`;
+@mkdir(get_cfg_var("jetendo_root_path")."logs/", 0770);
+@mkdir(get_cfg_var("jetendo_root_path")."plugins/", 0770);
+@mkdir(get_cfg_var("jetendo_root_path")."execute/", 0770);
+@mkdir(get_cfg_var("jetendo_root_path")."execute/start", 0770);
+@mkdir(get_cfg_var("jetendo_root_path")."execute/complete", 0770);
+$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").':'.get_cfg_var("jetendo_www_user")." ".get_cfg_var("jetendo_root_path")."execute/";
+`$cmd`;
+@mkdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme", 0550);
 @mkdir(get_cfg_var("jetendo_root_path")."themes/", 0550);
 @mkdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme", 0550);
 chdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme");
