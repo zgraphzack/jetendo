@@ -594,7 +594,8 @@ newId=0;
 		
 		</body>
 		</html>
-		</cfmail>CFMXConnectionFailure<cfabort>
+		</cfmail>
+		<cfif not fileexists(request.zos.sharedPath&"database/jetendo-schema-current.json") or not structkeyexists(request.zos, 'globals')>IP: #request.zos.cgi.remote_addr#<br />#zAllRequestVars#<cfelse>CFMXConnectionFailure</cfif><cfabort>
 	<cfelseif structkeyexists(request, 'zForceErrorEmail') or notifyDev>
 		<cfif application.zErrorMinuteCount LTE request.zos.errorEmailAlertsPerMinute>
 			<cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="#request.zos.CGI.HTTP_HOST# has an error" type="html">

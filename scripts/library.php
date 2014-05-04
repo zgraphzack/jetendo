@@ -110,7 +110,7 @@ function checkMySQLPrivileges(){
 	Event_priv ='Y' and  Trigger_priv     ='Y' ");
 	if($cmysql2->error != ""){ 
 		echo "MySQL Error: ".$cmysql2->error."\n";
-		echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have access to SELECT on the \"mysql\" database and global SUPER privilege to enable restoring triggers.";
+		echo "User not found: ".get_cfg_var("jetendo_mysql_default_user").".The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have ALL PRIVILEGES GRANTED for database, \"".$db."\" or GLOBAL PRIVILEGES to all databases.";
 		return false;
 	}
 	if($r->num_rows == 0){
@@ -126,7 +126,7 @@ function checkMySQLPrivileges(){
 		Event_priv ='Y' and  Trigger_priv     ='Y' ");
 		if($cmysql2->error != ""){ 
 			echo "MySQL Error: ".$cmysql2->error."\n";
-			echo "The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have access to SELECT on the \"mysql\" database and global SUPER privilege to enable restoring triggers.";
+			echo "User not found: ".get_cfg_var("jetendo_mysql_default_user").".The mysql user, \"".get_cfg_var("jetendo_mysql_default_user")."\" must have ALL PRIVILEGES GRANTED for database, \"".$db."\" or GLOBAL PRIVILEGES to all databases.";
 			return false;
 		}
 		if($r->num_rows == 0){
