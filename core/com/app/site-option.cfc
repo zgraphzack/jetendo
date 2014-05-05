@@ -1321,7 +1321,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			}
 		}
 		var t9=tempStruct.soGroupData;
-		var fieldStruct=t9.siteOptionGroupFieldLookup[t9.siteOptionGroupSetId[ts.__setId&"_groupId"]];
+		var fieldStruct=t9.siteOptionGroupFieldLookup[ts.__groupId];
 		
 		var defaultStruct=t9.siteOptionGroupDefaults[row.site_option_group_id];
 		for(var i2 in fieldStruct){
