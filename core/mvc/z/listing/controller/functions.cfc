@@ -690,6 +690,19 @@ zGetLatLong(ts);
 	if(trim(arguments.idx.listing_address) NEQ ""){
 		avs.address=application.zcore.functions.zFirstLetterCaps(arguments.idx.listing_address);
 	}
+	arrT=[];
+	if(structkeyexists(avs, 'address')){
+		arrayAppend(arrT, avs.address);
+	}
+	if(structkeyexists(avs, 'city')){
+		arrayAppend(arrT, avs.city);
+	}
+	if(structkeyexists(avs, 'frontage') and avs.frontage NEQ "" and avs.frontage NEQ false){
+		arrayAppend(arrT, avs.frontage);
+	}
+	if(structkeyexists(avs, 'type')){
+		arrayAppend(arrT, avs.type);
+	}
 	// remove false values
 	lbackup23=false;
 	if(structkeyexists(avs, 'address')){
@@ -705,6 +718,7 @@ zGetLatLong(ts);
 		}
 	}
 	structdelete(avs,"address");
+
 	for(i in avs){
 		if(avs[i] EQ false){
 			structdelete(avs,i);
@@ -807,7 +821,7 @@ zGetLatLong(ts);
 	}else{
 		titleStruct.listing_x_site_url=rereplace(application.zcore.functions.zurlencode(arraytolist(arrURL," "),"-"),"-(-*)","-","ALL");
 	}
-	titleStruct.listing_x_site_title=arraytolist(arrTitle,", ");
+	titleStruct.listing_x_site_title=arraytolist(arrT, ", ");//arraytolist(arrTitle,", ");
 	titleStruct.flashTitle=titleStruct.listing_x_site_title;
 	titleStruct.title=titleStruct.listing_x_site_title;
 	titleStruct.mapTitle=titleStruct.listing_x_site_title;
