@@ -155,7 +155,10 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	nv="";
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id)){
+		nv=arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	}
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>
@@ -165,7 +168,11 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	nv="";
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id)){
+		nv=arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	}
+	return nv;
 	</cfscript>
 </cffunction>
 
@@ -200,7 +207,10 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var output="";
-	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
+	value="";
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id)){
+		value=arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	}
 	</cfscript>
 	<cfsavecontent variable="output">
 	<input type="radio" name="site_option_type_id" value="18" onClick="setType(18);" <cfif value EQ "18">checked="checked"</cfif>/>
