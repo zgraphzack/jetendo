@@ -1602,6 +1602,7 @@
 			}
 		}
 	}
+	//writedump(arrTempData);	writedump(form);abort;
 	if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
 		if(not structkeyexists(curCache, 'sortValue')){
 			db.sql="select max(site_x_option_group_set_sort) sortid 
@@ -1666,7 +1667,7 @@
 				if(i NEQ 1){
 					arrayAppend(arrSQL, ", ");
 				}
-				arrayAppend(arrSQL, db.param(arrTempData[n][arrKey[i]]));
+				arrayAppend(arrSQL, db.param(arrTempData[n][arrKey[i]], 'cf_sql_varchar'));
 			}
 			arrayAppend(arrSQL, " ) ");
 		}
