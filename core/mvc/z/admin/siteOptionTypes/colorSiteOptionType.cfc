@@ -208,8 +208,8 @@
 	var db=request.zos.queryObject;
 	var output="";
 	value="";
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id)){
-		value=arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	if(structkeyexists(arguments.dataStruct, arguments.fieldName)){
+		value=arguments.dataStruct[arguments.fieldName];
 	}
 	</cfscript>
 	<cfsavecontent variable="output">
