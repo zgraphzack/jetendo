@@ -28,6 +28,7 @@
 	var arrUrl=this.getLinks();
 	application.zcore.template.setTag("title","Site Map");
 	application.zcore.template.setTag("pagetitle","Site Map");
+	application.zcore.template.setTag("pagenav", '<a href="/">Home</a> /');
 	firstEmptyGroup=true;
 	for(i=1;i LTE arraylen(arrUrl);i++){
 		if(arrUrl[i].url CONTAINS "/z/misc/thank-you/index"){

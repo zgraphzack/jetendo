@@ -633,7 +633,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			db.sql="select s1.site_x_option_group_set_id 
 			from #arrayToList(arrTable, ", ")# 
 			WHERE #arrayToList(arrWhere, " and ")# 
-			and site_x_option_group_set_approved='1' 
+			and site_x_option_group_set_approved=#db.param('1')#  
 			GROUP BY s1.site_x_option_group_set_id ";
 			if(structkeyexists(request.zos, 'siteOptionSearchDateRangeSortEnabled')){
 				db.sql&=" ORDER BY s1.site_x_option_group_set_start_date ASC ";
@@ -1771,7 +1771,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var i=0;
 	dataStruct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.setId, arguments.site_id, arguments.arrGroupName);
 	var t9=application.zcore.siteGlobals[arguments.site_id].soGroupData;
-	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved EQ 0){
+	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved NEQ 1){
 		this.deleteSiteOptionGroupSetIndex(arguments.setId, arguments.site_id);
 		return;
 	}

@@ -124,13 +124,13 @@ propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.contr
       </cfif>
       <strong>
       <cfif application.zcore.app.siteHasApp("content")>
-        <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#qMember.user_id#.html">View my
+        <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#qMember.user_id#.html" class="zMemberBioLink">View my
         <cfif newlistingcount NEQ 0>
           #newlistingcount# listings and
         </cfif>
         full bio</a>
         <cfelse>
-        <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-14-#user_id#.html">View my full bio</a>
+        <a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-14-#user_id#.html" class="zMemberBioLink">View my full bio</a>
       </cfif>
       </strong> </div>
   </div>
