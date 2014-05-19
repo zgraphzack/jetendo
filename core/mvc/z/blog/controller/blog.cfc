@@ -1921,7 +1921,8 @@ this.app_id=10;
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	blog_category_parent_id = #db.param(0)#";
+	blog_category_parent_id = #db.param(0)# 
+	order by blog_category_name asc";
 	qCategory=db.execute("qCategory");
 	arrCategory=[];
 	appData=application.zcore.app.getAppData("blog");
