@@ -181,6 +181,7 @@
 		var cfcatch=0;
 		
 		tempStruct.user_created_datetime = request.zos.mysqlnow;
+		tempStruct.user_updated_datetime = request.zos.mysqlnow;
 		tempStruct.user_system = 1;
 		tempStruct.user_server_administrator = 0;
 		tempStruct.user_site_administrator = 0;

@@ -338,7 +338,7 @@ userCom.checkLogin(inputStruct);
 		qUserCheck=db.execute("qUserCheck");
 		failedLogin=false;
 		if(qUserCheck.recordcount EQ 1){
-			if(qUserCheck.user_password EQ ""){
+			if(qUserCheck.user_password EQ "" and qUserCheck.user_password_new EQ ""){
 				rs=structnew();
 				rs.error=3;
 				rs.success=false;

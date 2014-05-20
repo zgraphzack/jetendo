@@ -1386,7 +1386,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 				local.failed=true;
 			}
 		}else{
-			throw('multiple file upload is not supported by Railo 4.1.011 currently', "custom");
+			throw('multiple file upload is not supported by Railo 4.1.011 currently | ticket: https://issues.jboss.org/browse/RAILO-2468', "custom");
 			file action="uploadAll" result="cffileresult" destination="#request.zos.globals.serverprivatehomedir&'_cache/temp_files/'#" nameconflict="makeunique" filefield="form.imagefiles[#i#]" charset="utf-8";
 			for(i=1;i LTE arraylen(cffileresult);i++){
 				form.image_file=cffileresult[i].clientfile;
