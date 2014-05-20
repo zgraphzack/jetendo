@@ -126,7 +126,7 @@
 			for(var i=0;i<arrField.length;i++){
 				var d=arrField[i];
 				var v="";
-				if(typeof d != "undefined"){
+				if(d != null && typeof d != "undefined"){
 					if(d.type == "select-one"){
 						if(d.options[d.selectedIndex].text !=""){
 							v=d.options[d.selectedIndex].text;

@@ -150,7 +150,7 @@
 		executeParentCallback(eventData.latLng.lat(), eventData.latLng.lng());
 	}
 	var currentGoogleMap=false;
-	function mapSuccessCallback(marker){
+	function mapSuccessCallback2(marker){
 		currentMarker=marker;  
 		var p=currentMarker.getPosition(); 
 		$("##latitude1").val(p.lat());
@@ -219,7 +219,7 @@
 			}
 		 };
 		setInterfaceSize();
-		var mapData=zCreateMapWithAddress("mapDivId", currentMapAddress, optionsObj, mapSuccessCallback, markerObj);  
+		var mapData=zCreateMapWithAddress("mapDivId", currentMapAddress, optionsObj, mapSuccessCallback2, markerObj);  
 		currentMarker=mapData.marker;
 		currentGoogleMap=mapData.map;
 	}

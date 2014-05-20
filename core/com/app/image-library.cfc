@@ -1364,23 +1364,29 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var qImages=0;
 	var r=0;
 	var theMeta=0;
-	var qLibrary=this.getLibraryById(application.zcore.functions.zso(form, 'image_library_id'));
+
+	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
+	tempId=form.image_library_id
+	var qLibrary=this.getLibraryById(form.image_library_id);
 	var i=0;
 	var cffileresult=0;
 	var rd=gethttprequestdata();
 	application.zcore.functions.zSetPageHelpId("2.9");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library");
 	form.image_library_id=qLibrary.image_library_id;
+	if(tempId EQ 0){
+		allowPublicEditingForImageLibraryId(form.image_library_id);
+	}
 	request.zos.inMemberArea=true;
 	form.fieldId=application.zcore.functions.zso(form, 'fieldId');
 	
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
 		application.zcore.functions.z404("No access to image_library_id");	
 	}
-	if(structkeyexists(form, 'image_file')){
+	if(structkeyexists(form, 'image_file') and form.image_file NEQ ""){
 		request.imageLibraryHTMLUpload=true;
 		local.failed=false;
-		if(not isArray(form.image_file) and fileexists(form.image_file)){
+		if(not isArray(form.image_file) or fileexists(form.image_file)){
 			r=this.imageprocessform();
 			if(not r){
 				local.failed=true;
