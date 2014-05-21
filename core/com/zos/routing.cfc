@@ -361,7 +361,7 @@
 			if(isTestCFC EQ false){
 				for(i=1;i LTE arraylen(tempcommeta.parameters);i++){
 					if(tempcommeta.parameters[i].type NEQ "string" and tempcommeta.parameters[i].required EQ "yes"){
-						throw("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
+						application.zcore.functions.z404("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
 					}
 				}
 			}
@@ -378,7 +378,7 @@
 			if(isTestCFC EQ false){
 				for(i=1;i LTE arraylen(tempcommeta.parameters);i++){
 					if(tempcommeta.parameters[i].type NEQ "string" and tempcommeta.parameters[i].required EQ "yes"){
-						throw("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
+						application.zcore.functions.z404("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
 					}
 				}
 			}
