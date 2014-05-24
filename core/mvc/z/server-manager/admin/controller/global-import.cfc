@@ -78,7 +78,7 @@ application.zcore.functions.zRedirect("/z/server-manager/admin/global-import/ind
 		application.zcore.functions.zdeletedirectory(local.curImportPath);
 		application.zcore.functions.zRedirect("/z/server-manager/admin/global-import/index?zsid=#request.zsid#");
 	}
-	// isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/opt/jetendo/sites/", "/opt/jetendo/sites/basicdemo_farbeyondcode_com/", 20);
+	// isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/var/jetendo-server/jetendo/sites/", "/var/jetendo-server/jetendo/sites/basicdemo_farbeyondcode_com/", 20);
 	//('/bin/bash', " -c 'cd #local.curImportPath#temp/; /bin/tar xvfz #local.filePath#' ", 3600);
 	
 	

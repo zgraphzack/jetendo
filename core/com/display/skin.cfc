@@ -556,9 +556,9 @@ todo: open source projects
 		if(fileexists(local.curTempPath)){
 			/*if(request.zos.isExecuteEnabled){
 				// use google closure compiler here instead
-				local.out=trim(application.zcore.functions.zexecute('/opt/railo/jdk/jre/bin/java','-jar #request.zos.installPath#public/javascript/yuicompressor-2.4.6.jar "#local.curTempPath#" -o "#rs.tempFilePath#" --charset utf-8', 5));
+				local.out=trim(application.zcore.functions.zexecute('/var/jetendo-server/railo/jdk/jre/bin/java','-jar #request.zos.installPath#public/javascript/yuicompressor-2.4.6.jar "#local.curTempPath#" -o "#rs.tempFilePath#" --charset utf-8', 5));
 				if(local.out EQ "false" or local.out NEQ ""){
-					arrayappend(rs.arrErrors,"Failed to run yuicompressor on: "&rs.tempFilePath&'<br />command:'&'/opt/railo/jdk/jre/bin/java -jar #request.zos.installPath#public/javascript/yuicompressor-2.4.6.jar "#local.curTempPath#" -o "#rs.tempFilePath#" --charset utf-8<br /><br />result:'&local.out);
+					arrayappend(rs.arrErrors,"Failed to run yuicompressor on: "&rs.tempFilePath&'<br />command:'&'/var/jetendo-server/railo/jdk/jre/bin/java -jar #request.zos.installPath#public/javascript/yuicompressor-2.4.6.jar "#local.curTempPath#" -o "#rs.tempFilePath#" --charset utf-8<br /><br />result:'&local.out);
 					application.zcore.functions.zDeleteFile(rs.tempFilePath);
 					rs.success=false;
 					return rs;

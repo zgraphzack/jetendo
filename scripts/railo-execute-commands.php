@@ -9,8 +9,8 @@ function microtimeFloat()
 $debug=false;
 $timeout=60; // seconds
 $timeStart=microtimeFloat();
-$completePath="/opt/jetendo/execute/complete/";
-$startPath="/opt/jetendo/execute/start/";
+$completePath=get_cfg_var("jetendo_root_path")."execute/complete/";
+$startPath=get_cfg_var("jetendo_root_path")."execute/start/";
 
 //$processorCount=`/bin/cat /proc/cpuinfo | /bin/grep processor | /usr/bin/wc -l`;
 

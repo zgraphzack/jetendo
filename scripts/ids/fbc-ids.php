@@ -17,7 +17,7 @@ exit;
 
 // define excluded files & folders
 $arrExcludeDir=array();
-$arrExcludeDir["/home/privatesambashare/hotstays-temp-data/"]=true;
+$arrExcludeDir["/var/jetendo-server/jetendo/share/hotstays-temp-data/"]=true;
 $arrExcludeDir["/home/newbackup/"]=true;
 $arrExcludeDir["/home/remote-mls-images/"]=true;
 $arrExcludeDir["/var/lib/samba/"]=true;
@@ -25,8 +25,7 @@ $arrExcludeDir["/root/fbc-ids/"]=true;
 $arrExcludeDir["/home/privatesambashare/mls-data/"]=true;
 $arrExcludeDir["/home/privatesambashare/mls-images/"]=true;
 $arrExcludeDir["/home/privatesambashare/mls-cached-images/"]=true;
-$arrExcludeDir["/opt/railo/tomcat/fbcvhosts/76107da6d02482a59b902a077bc98bdd/cfclasses/"]=true;
-$arrExcludeDir["/opt/railo/tomcat/fbcvhosts/76107da6d02482a59b902a077bc98bdd/logs/"]=true;
+$arrExcludeDir["/var/jetendo-server/railovhosts/"]=true;
 $arrExcludeDir["/var/log/"]=true;
 $arrExcludeDir["/dev/.udev/links/"]=true;
 $arrExcludeDir["/etc/httpd/logs/"]=true;
@@ -37,15 +36,14 @@ $arrExcludeDir["/sys/"]=true;
 //$arrExcludeDir["/sys/module/"]=true;
 $arrExcludeDir["/usr/include/"]=true;
 $arrExcludeDir["/usr/local/src/"]=true;
-$arrExcludeDir["/opt/railo/tomcat/logs/"]=true;
-$arrExcludeDir["/opt/sun/javadb/"]=true;
+$arrExcludeDir["/var/jetendo-server/railo/tomcat/logs/"]=true;
 $arrExcludeDir["/usr/java/jdk1.6.0_29/demo/"]=true;
 $arrExcludeDir["/usr/share/"]=true;
 $arrExcludeDir["/var/spool/postfix/public/"]=true;
 $arrExcludeDir["/var/spool/postfix/private/"]=true;
 $arrExcludeDir["/var/lib/yum/yumdb/"]=true;
 $arrExcludeDir["/var/lib/mysql/"]=true;
-$arrExcludeDir["/opt/mysqldata/"]=true;
+$arrExcludeDir["/var/jetendo-server/backup/"]=true;
 $arrExcludeDir["/tmp/"]=true;
 
 $arrMD5AlwaysCheckDir=array("/etc/","/home/vhosts/");

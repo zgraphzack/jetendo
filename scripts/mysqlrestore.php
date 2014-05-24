@@ -1,6 +1,6 @@
 <?php
 /*
-usage: php /opt/jetendo/scripts/mysqlrestore.php
+usage: php /var/jetendo-server/jetendo/scripts/mysqlrestore.php
 */
 
 set_time_limit(20000);

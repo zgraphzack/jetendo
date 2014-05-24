@@ -13,10 +13,10 @@
 	ts.zos.testDomain="127.0.0.2.xip.io";
 	ts.zos.testManagerDomain="127.0.0.2.xip.io";  // xip.io is much slower then using your local hosts file or a local dns server, but it works without additional configuration.  Learn more about xip.io: http://xip.io/  - You can also host your own xip daemon using node.js.
 	if(findnocase("."&ts.zos.testDomain, arguments.tempCgi.http_host) NEQ 0 or findnocase("."&ts.zos.testManagerDomain, arguments.tempCgi.http_host) NEQ 0){
-		ts.zos.installPath="/opt/jetendo/";
+		ts.zos.installPath="/var/jetendo-server/jetendo/";
 		ts.zOS.istestserver=true;
 	}else{
-		ts.zos.installPath="/opt/jetendo/";
+		ts.zos.installPath="/var/jetendo-server/jetendo/";
 		ts.zOS.istestserver=false;
 	}
 	if(structkeyexists(server, "jetendo_"&ts.zos.installPath&"_globalscache") and structkeyexists(form,'zreset') EQ false){
@@ -37,13 +37,13 @@
 		ts.zos.directoryMode=777;
 		ts.zos.fileMode=777;
 		ts.zos.sambaInstallPath="C:/serverData/jetendo/";
-		ts.zos.scriptsPath="/opt/jetendo/scripts/";
-		ts.zos.sharedPath="/opt/jetendo/share/";
-		ts.zos.sharedPathForDatabase="/opt/jetendo/share/";
-		ts.zos.backupDirectory="/zbackup/backup/";
-		ts.zos.mysqlBackupDirectory="/zbackup/backup/";
-		ts.zos.sitesWritablePath="/opt/jetendo/sites-writable/";
-		ts.zos.sitesPath="/opt/jetendo/sites/";
+		ts.zos.scriptsPath="/var/jetendo-server/jetendo/scripts/";
+		ts.zos.sharedPath="/var/jetendo-server/jetendo/share/";
+		ts.zos.sharedPathForDatabase="/var/jetendo-server/jetendo/share/";
+		ts.zos.backupDirectory="/var/jetendo-server/backup/";
+		ts.zos.mysqlBackupDirectory="/var/jetendo-server/backup/";
+		ts.zos.sitesWritablePath="/var/jetendo-server/jetendo/sites-writable/";
+		ts.zos.sitesPath="/var/jetendo-server/jetendo/sites/";
 		
 		// The database name MUST match the datasource name.
 		ts.zos.zcoreDatasource="jetendo"; 
@@ -63,15 +63,15 @@
 		ts.zOS.thisistestserver=false;
 		ts.zos.directoryMode=770;
 		ts.zos.fileMode=660;
-		ts.zos.sambaInstallPath="/opt/jetendo/";
-		ts.zos.scriptsPath="/opt/jetendo/scripts/";
-		ts.zos.sharedPath="/opt/jetendo/share/";
-		ts.zos.sharedPathForDatabase="/opt/jetendo/share/";
-		ts.zos.installPath="/opt/jetendo/";
-		ts.zos.sitesPath="/opt/jetendo/sites/";
-		ts.zos.sitesWritablePath="/opt/jetendo/sites-writable/";
-		ts.zos.backupDirectory="/opt/jetendo/mysqlbackup/";
-		ts.zos.mysqlBackupDirectory="/opt/jetendo/mysqlbackup/";
+		ts.zos.sambaInstallPath="/var/jetendo-server/jetendo/";
+		ts.zos.scriptsPath="/var/jetendo-server/jetendo/scripts/";
+		ts.zos.sharedPath="/var/jetendo-server/jetendo/share/";
+		ts.zos.sharedPathForDatabase="/var/jetendo-server/jetendo/share/";
+		ts.zos.installPath="/var/jetendo-server/jetendo/";
+		ts.zos.sitesPath="/var/jetendo-server/jetendo/sites/";
+		ts.zos.sitesWritablePath="/var/jetendo-server/jetendo/sites-writable/";
+		ts.zos.backupDirectory="/var/jetendo-server/backup/";
+		ts.zos.mysqlBackupDirectory="/var/jetendo-server/backup/";
 		// The database name MUST match the datasource name.
 		ts.zos.zcoreDatasource="jetendo"; 
 		ts.zos.zcoreTempDatasource="ztemp";
@@ -85,7 +85,7 @@
 	
 	ts.zos.zcoreTestHost="test.your-company.com.127.0.0.2.xip.io";
 		
-	ts.zos.scriptDirectory="/opt/jetendo/scripts/";
+	ts.zos.scriptDirectory="/var/jetendo-server/jetendo/scripts/";
 	ts.zos.backupStructureOnlyTables={
 		ts.zos.zcoreDatasource&".site":true, // the site table shouldn't be able to be imported at all since this could cause sites to be lost.  That kind of migration should replace entire database manually.
 		// these tables contain data that is temporary in nature and shouldn't need to be migrated between servers

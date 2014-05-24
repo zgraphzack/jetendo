@@ -1839,8 +1839,11 @@ this.app_id=10;
 		#db.trustedsql(local.rs.select)#  
 		from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		#db.trustedsql(local.rs.leftJoin)#
+		left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
+		blog_x_category.blog_id = blog.blog_id and 
+		blog_x_category.site_id = blog.site_id
 		left join #db.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
-		blog_category.blog_category_id = blog.blog_category_id and 
+		blog_x_category.blog_category_id = blog.blog_category_id and 
 		blog_category.site_id = blog.site_id
 		left join #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment on 
 		blog.blog_id = blog_comment.blog_id and 
@@ -1853,7 +1856,7 @@ this.app_id=10;
 		(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 		blog_event =#db.param(1)#) and 
 		<cfif arguments.blog_category_id NEQ 0>
-			blog_category.blog_category_id = #db.param(arguments.blog_category_id)# and 
+			blog_x_category.blog_category_id = #db.param(arguments.blog_category_id)# and 
 		</cfif>
 		<cfif arguments.futureEventsOnly> 
 			 blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
@@ -2436,6 +2439,10 @@ this.app_id=10;
 	var q_blog_feed='';
 	var blog_feed='';
 	variables.init();
+	form.blog_category_id=application.zcore.functions.zso(form, 'blog_category_id', true, 0);
+	if(form.blog_category_id EQ 0){
+		application.zcore.functions.z404("Missing blog_category_id");
+	}
 	application.zcore.template.clearPrependAppendTagData("content");
 	// set default action
 	application.zcore.template.setTemplate("zcorerootmapping.templates.nothing",true,true);

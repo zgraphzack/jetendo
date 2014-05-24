@@ -28,7 +28,7 @@ $REMOTE_MACHINE = "localhost";
 $REMOTE_BACKUP_LOCATION="/zbackup/full-system-backup";
 
 # Log things
-$LOGFILE = "/opt/jetendo/scripts/rsync_backup.log";
+$LOGFILE = get_cfg_var("jetendo_scripts_path")."rsync_backup.log";
 
 # Directories to backup.
 @BACKUP_DIRS=(

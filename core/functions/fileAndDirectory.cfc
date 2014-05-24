@@ -55,7 +55,7 @@
 	</cfscript>
 </cffunction>
 
-<!--- isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/opt/jetendo/sites/", "/opt/jetendo/sites/site_com/", 20); --->
+<!--- isTarred=application.zcore.functions.zTarZipFilePath("myTarball.tar.gz", "/var/jetendo-server/jetendo/sites/", "/var/jetendo-server/jetendo/sites/site_com/", 20); --->
 <cffunction name="zTarZipFilePath" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="tarFilename" type="string" required="yes" hint="A unique filename for the tar/gzip file. It must not already exist.">
 	<cfargument name="changeToDirectory" type="string" required="yes" hint="The absolute path that you want to store the tar/gzip file in.">

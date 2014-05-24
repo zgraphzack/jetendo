@@ -1,5 +1,5 @@
 ; make a copy of this file with the name "jetendo.ini" in the /etc/php5/mods-available directory, and run service php5-fpm reload
-upload_tmp_dir =/opt/jetendo/phptemp
+upload_tmp_dir =/var/jetendo-server/jetendo/phptemp
 upload_max_filesize = 2000M
 max_input_time = 18000
 post_max_size = 2000M
@@ -20,15 +20,15 @@ jetendo_company_phone="123-555-1234"
 jetendo_company_upload_password="your_password"
 jetendo_admin_domain="https://jetendo.your-company.com"
 jetendo_test_admin_domain="http://jetendo.your-company.com.127.0.0.2.xip.io"
-jetendo_sites_path="/opt/jetendo/sites/";
-jetendo_sites_writable_path="/opt/jetendo/sites-writable/";
-jetendo_log_path="/opt/jetendo/logs/";
-jetendo_root_path="/opt/jetendo/";
-jetendo_root_private_path="/opt/jetendo/sites-writable/jetendo_your-company_com/";
-jetendo_share_path="/opt/jetendo/share/"
-jetendo_scripts_path="/opt/jetendo/scripts/";
-jetendo_backup_path="/zbackup/";
-jetendo_nginx_ssl_path="/opt/nginx/ssl/";
+jetendo_sites_path="/var/jetendo-server/jetendo/sites/";
+jetendo_sites_writable_path="/var/jetendo-server/jetendo/sites-writable/";
+jetendo_log_path="/var/jetendo-server/jetendo/logs/";
+jetendo_root_path="/var/jetendo-server/jetendo/";
+jetendo_root_private_path="/var/jetendo-server/jetendo/sites-writable/jetendo_your-company_com/";
+jetendo_share_path="/var/jetendo-server/jetendo/share/"
+jetendo_scripts_path="/var/jetendo-server/jetendo/scripts/";
+jetendo_backup_path="/var/jetendo-server/backup/";
+jetendo_nginx_ssl_path="/var/jetendo-server/nginx/ssl/";
 jetendo_www_user="www-data";
 // requires creating a developer account at yelp.com
 jetendo_yelp_consumer_key="";

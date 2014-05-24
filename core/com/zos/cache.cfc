@@ -165,7 +165,7 @@ this allows you to delete cache on both sides. --->
 				local.url=application.zcore.cacheData.databaseURLCache[local.key][local.i];
 				local.hashValue=hash(request.zos.globals.domain&local.url);
 				local.hashPath=lcase(right(local.hashValue, 1)&"/"&mid(local.hashValue, len(local.hashValue)-2,2)&"/"&local.hashValue);
-				application.zcore.functions.zdeletefile('/opt/nginx/cache/'&local.hashPath);
+				application.zcore.functions.zdeletefile('/var/jetendo-server/nginx/cache/'&local.hashPath);
 				//application.zcore.functions.zdeletefile(request.zos.globals.privatehomedir&"_cache/html/urls"&local.link);
 				structdelete(application.zcore.cacheData.URLdatabaseCache[local.i], local.key);
 			}
@@ -211,7 +211,7 @@ this allows you to delete cache on both sides. --->
 		/*}else if(arguments.name EQ "content"){
 			hashValue=request.zos.cacheData.urlHashValue&'-content';
 			if(structkeyexists(application.zcore.cacheData.tagHashCache, hashValue) EQ false){
-				application.zcore.functions.zwritefile("/opt/nginx/ztemplatecache/"&hashValue&".html", arguments.content);
+				application.zcore.functions.zwritefile("/var/jetendo-server/nginx/ztemplatecache/"&hashValue&".html", arguments.content);
 				application.zcore.cacheData.tagHashCache[hashValue]=true;
 			}
 			arrayappend(request.zos.cacheData.arrTags, '<!--## include virtual="/ztemplatecache/'&hashValue&'.html" set="'&arguments.name&'" -->');
@@ -235,7 +235,7 @@ this allows you to delete cache on both sides. --->
 			request.zos.cacheData.content=replacenocase(request.zos.cacheData.content, arguments.templateToken, '<!--## echo var="'&arguments.name&'" encoding="none" default="" -->');
 			/*if(structkeyexists(application.zcore.cacheData.tagHashCache, hashValue) EQ false){
 				//application.zcore.functions.zwritefile(request.zos.globals.serverprivatehomedir&"_cache/html/tagcache/"&hashValue&".html", arguments.content);
-				application.zcore.functions.zwritefile("/opt/nginx/tagcache/"&hashValue&".html", arguments.content);
+				application.zcore.functions.zwritefile("/var/jetendo-server/nginx/tagcache/"&hashValue&".html", arguments.content);
 				request.zos.cacheData.content=replace(request.zos.cacheData.content, arguments.templateToken, '<!--## include file="/ztagcache/'&hashValue&'.html" -->');
 			}else{
 				request.zos.cacheData.content=replace(request.zos.cacheData.content, arguments.templateToken, '<!--## include file="/ztagcache/'&hashValue&'.html" -->');
@@ -292,7 +292,7 @@ this allows you to delete cache on both sides. --->
 		}else{
 			hashValue=request.zos.cacheData.urlHashValue&"-json";
 			if(structkeyexists(application.zcore.cacheData.tagHashCache, hashValue) EQ false){
-				application.zcore.functions.zwritefile('/opt/nginx/ztemplatecache/'&hashValue&".html", request.zos.cacheData.content);
+				application.zcore.functions.zwritefile('/var/jetendo-server/nginx/ztemplatecache/'&hashValue&".html", request.zos.cacheData.content);
 				application.zcore.cacheData.tagHashCache[hashValue]=true;
 			}
 			application.zcore.functions.zHeader("Cache-Control",	"max-age="&request.zos.cacheData.expiration);
@@ -317,7 +317,7 @@ this allows you to delete cache on both sides. --->
 		}else{
 			request.zos.cacheData.templateHashValue=hash(request.zos.cacheData.content);
 			if(structkeyexists(application.zcore.cacheData.tagHashCache, request.zos.cacheData.templateHashValue) EQ false){
-				application.zcore.functions.zwritefile('/opt/nginx/ztemplatecache/'&request.zos.cacheData.templateHashValue&".html", request.zos.cacheData.content);
+				application.zcore.functions.zwritefile('/var/jetendo-server/nginx/ztemplatecache/'&request.zos.cacheData.templateHashValue&".html", request.zos.cacheData.content);
 				application.zcore.cacheData.tagHashCache[request.zos.cacheData.templateHashValue]=true;
 			}
 			application.zcore.functions.zHeader("Cache-Control",	"max-age="&request.zos.cacheData.expiration);
@@ -350,7 +350,7 @@ this allows you to delete cache on both sides. --->
 	Z_USER_ID=1;
 	proxy_cache_bypass $cookie_Z_USER_ID $cookie_z_user_id $arg_znocache $http_authorization $cookie_znocache $http_zdisableproxycache; # used to force refresh cache with same url.
 	
-	proxy_cache_path  /opt/nginx/cache levels=1:2 keys_zone=nginxproxycache:1000m;
+	proxy_cache_path  /var/jetendo-server/nginx/cache levels=1:2 keys_zone=nginxproxycache:1000m;
 	proxy_cache_valid 200 302 12h;
 	proxy_cache_valid 404 1m;
 	proxy_cache_key "$scheme$zfulldomain$request_uri";

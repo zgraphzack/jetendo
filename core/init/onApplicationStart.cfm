@@ -401,7 +401,7 @@
 	}
 	/*
 	// this need to be within request.zos.installPath now.
-	directory action="list" recurse="yes" directory="/opt/nginx/tagcache/" name="local.qD";
+	directory action="list" recurse="yes" directory="/var/jetendo-server/nginx/tagcache/" name="local.qD";
 	for(local.row IN local.qD){
 		ts.cacheData.tagHashCache[left(local.row.name, len(local.row.name)-5)]=true;
 	}

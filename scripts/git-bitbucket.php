@@ -1,5 +1,5 @@
 <?php
-// usage: php /opt/jetendo/scripts/git-bitbucket.php "username" "password" "ssh"
+// usage: php /var/jetendo-server/jetendo/scripts/git-bitbucket.php "username" "password" "ssh"
 $rootPath=get_cfg_var("jetendo_root_path");
 if(!isset($argv) || count($argv) <= 3){
 	echo "\nYou must specify a username and password for bitbucket.org. I.e. \n\nphp ".$rootPath."scripts/git-bitbucket.php \"username\" \"password\"\n\n";

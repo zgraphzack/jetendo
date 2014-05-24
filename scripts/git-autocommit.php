@@ -1,5 +1,5 @@
 <?php
-// usage: php /opt/jetendo/scripts/git-autocommit.php "Site structure changed" "0"
+// usage: php /var/jetendo-server/jetendo/scripts/git-autocommit.php "Site structure changed" "0"
 $rootPath=get_cfg_var("jetendo_root_path");
 if(!isset($argv) || count($argv) <= 2){
 	echo "\nYou must specify a commit message. I.e. \n\nphp ".$rootPath."scripts/git-autocommit.php \"Autocommit\"\n\n";
