@@ -57,7 +57,7 @@ $rootPath=get_cfg_var("jetendo_root_path");
 chdir(get_cfg_var("jetendo_root_path"));
 if(count($argv) < 2 || $argv[1] =="disableGitIntegration"){
 	$status=`/usr/bin/git status`;
-	if(strpos($status, "fatal: Not a git repository") !== FALSE){
+	if(!is_dir($rootPath."core") || strpos($status, "fatal: Not a git repository") !== FALSE){
 		echo("Git repo doesn't exist. Running git clone.\n");
 		if(!$debug){
 			$r=`/usr/bin/git clone $gitCloneURL $rootPath`;
@@ -111,7 +111,7 @@ chdir(get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme");
 $themePath=get_cfg_var("jetendo_root_path")."themes/jetendo-default-theme";
 if(count($argv) < 2 || $argv[1] == "disableGitIntegration"){
 	$status=`/usr/bin/git status`;
-	if(strpos($status, "fatal: Not a git repository") !== FALSE){
+	if(!is_dir($themePath."/templates") || strpos($status, "fatal: Not a git repository") !== FALSE){
 		echo("Git repo doesn't exist. Running git clone.\n");
 		if(!$debug){
 			$r=`/usr/bin/git clone $gitThemeCloneURL $themePath`;
@@ -125,7 +125,7 @@ if(count($argv) < 2 || $argv[1] == "disableGitIntegration"){
 		}
 	}
 	if(strpos($status, "nothing to commit") !== FALSE){
-		echo("Git repo is clean. All files match the branch: \"".$gitBranch."\" at ".$gitCloneURL.".\n");
+		echo("Git repo is clean. All files match the branch: \"".$gitThemeBranch."\" at ".$gitThemeCloneURL.".\n");
 	}else{
 		if(count($argv) >=2 && $argv[1] == "ignoreIntegrityCheck"){
 			echo "Igoring unclean git repo\n";
