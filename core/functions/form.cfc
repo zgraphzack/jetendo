@@ -135,6 +135,9 @@ This is a global key. It will work across all domains. --->
 	if(not structkeyexists(application.zcore,'helpStruct')){
 		application.zcore.helpStruct={};
 	}
+	if(not structkeyexists(application.zcore.helpStruct,'tooltip')){
+		application.zcore.helpStruct.tooltip={};
+	}
 	if(not structkeyexists(application.zcore.helpStruct.tooltip, arguments.helpId)){
 		return arguments.defaultLabel;
 	}
