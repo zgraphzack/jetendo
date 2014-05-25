@@ -10,6 +10,7 @@
 	setting requesttimeout="350";
 	// lock all requests so that the object dumps are consistent
 	lock type="exclusive" timeout="300" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{
+		application.zcore.functions.zCreateDirectory(request.zos.zcoreRootCachePath&"scripts/memory-dump/");
 		local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-zcore.bin";
 		local.tempCoreDumpFile=local.coreDumpFile&"."&gettickcount();
 		objectsave(application.zcore, local.tempCoreDumpFile);
