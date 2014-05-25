@@ -789,7 +789,7 @@
 	savecontent variable="local.output"{
 		if(request.zos.inServerManager){
 			runningTask=false;
-			if(left(request.cgi_script_name, 24) EQ '/z/server-manager/tasks/' and request.zos.isServer){
+			if(left(request.cgi_script_name, 24) EQ '/z/server-manager/tasks/' and (request.zos.isServer or request.zos.cgi.remote_addr EQ "127.0.0.1")){
 				runningTask=true;
 			}
 			if(not runningTask and not application.zcore.user.checkServerAccess()){
