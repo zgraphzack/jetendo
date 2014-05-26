@@ -762,7 +762,7 @@ variables.typeStruct["text"]="text";
 					loadnewpath=newpath;
 					loadnewpath2=newpath2;	
 				}
-				dbMLSData.sql="LOAD DATA INFILE '#loadnewPath#' 
+				dbMLSData.sql="LOAD DATA LOCAL INFILE '#loadnewPath#' 
 				REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` 
 				FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
 				dbMLSData.execute("q"); 
@@ -774,7 +774,7 @@ variables.typeStruct["text"]="text";
 						}else{
 							local.tempPath2=local.tempPath;
 						}
-						dbMLSData.sql="LOAD DATA INFILE '#local.tempPath2#' 
+						dbMLSData.sql="LOAD DATA LOCAL INFILE '#local.tempPath2#' 
 						REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` 
 						FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
 						dbMLSData.execute("q"); 
@@ -784,7 +784,7 @@ variables.typeStruct["text"]="text";
 					
 				}
 				if(fileexists(newpath2)){ // a hack added for ntreis which had way too many media records
-					dbMLSData.sql="LOAD DATA INFILE '#loadnewpath2#' REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
+					dbMLSData.sql="LOAD DATA LOCAL INFILE '#loadnewpath2#' REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
 					dbMLSData.execute("q"); 
 					application.zcore.functions.zRenameFile(newPath2,newPath2&"-imported");
 				}

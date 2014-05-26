@@ -357,7 +357,7 @@ TODO: figure out why site backup doesn't get compressed.
 					
 					local.sql="truncate table `"&i2&"`.`"&n&"`;";
 					arrayappend(local.siteRestoreStruct[local.curSiteId], local.sql);
-					local.sql="load data infile '/ZIMPORTPATH/database/"&i2&"/"&n&".tsv' 
+					local.sql="load data local infile '/ZIMPORTPATH/database/"&i2&"/"&n&".tsv' 
 					into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
 					arrayappend(local.siteRestoreStruct[local.curSiteId], local.sql);
 				}else if(local.backupGlobal EQ 1){
@@ -367,7 +367,7 @@ TODO: figure out why site backup doesn't get compressed.
 					
 					local.sql="truncate table `"&i2&"`.`"&n&"`;";
 					arrayappend(d3, local.sql);
-					local.sql="load data infile '/ZIMPORTPATH/database-global-backup/"&i2&"/"&n&".tsv' 
+					local.sql="load data local infile '/ZIMPORTPATH/database-global-backup/"&i2&"/"&n&".tsv' 
 					into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
 					arrayappend(d3, local.sql);
 				}
@@ -405,14 +405,14 @@ TODO: figure out why site backup doesn't get compressed.
 							qd=db.execute("qd");
 							local.sql="delete from `"&i2&"`.`"&n&"` WHERE site_id = '0';";
 							arrayappend(d3, local.sql);
-							local.sql="load data infile '/ZIMPORTPATH/database-global-backup/"&i2&"/"&n&".tsv' into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
+							local.sql="load data local infile '/ZIMPORTPATH/database-global-backup/"&i2&"/"&n&".tsv' into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
 							arrayappend(d3, local.sql);
 						}
 					}else{
 						db.sql="select #local.tempColumnList# from `"&i2&"`.`"&n&"` where site_id ='"&qs.site_id[g]&"' "&limitSQL&" 
 						into outfile '#local.sitePathMySQLStruct[qs.site_id[g]]#database/"&i2&"/"&n&".tsv' #outfileOptions#;";
 						qd=db.execute("qd");
-						local.sql="load data infile '/ZIMPORTPATH/database/"&i2&"/"&n&".tsv' into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
+						local.sql="load data local infile '/ZIMPORTPATH/database/"&i2&"/"&n&".tsv' into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
 						arrayappend(local.siteRestoreStruct[qs.site_id[g]], local.sql);
 					}
 				}

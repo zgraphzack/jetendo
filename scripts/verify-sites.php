@@ -492,6 +492,7 @@ if(!$fail){
 					chmod("/etc/hostsTemp", 644);
 					@unlink("/etc/hosts");
 					rename($r1, "/etc/hosts");
+					`/bin/cp -f /etc/hosts /var/jetendo-server/jetendo/share/hosts`;
 
 					$dnsMasqPath=`/usr/bin/which dnsmasq`;
 					$servicePath=`/usr/bin/which service`;

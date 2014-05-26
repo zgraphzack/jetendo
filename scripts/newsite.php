@@ -394,6 +394,7 @@ for($i4=0;$i4 < 62;$i4++){
 				fwrite($fp, implode("\n", $arrD2)."\n");
 				fclose($fp);
 				rename($r1, "/etc/hosts");
+				`/bin/cp -f /etc/hosts /var/jetendo-server/jetendo/share/hosts`;
 			}
 		} 
 		

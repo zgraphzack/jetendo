@@ -362,7 +362,7 @@
 	}
 
 	query name="qLoadData" datasource="#arguments.datasource#"{
-		echo(preserveSingleQuotes("LOAD DATA INFILE '#escape(arguments.filePath)#' 
+		echo(preserveSingleQuotes("LOAD DATA LOCAL INFILE '#escape(arguments.filePath)#' 
 		REPLACE INTO TABLE `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#` 
 		FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
 	 	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''
@@ -690,7 +690,7 @@
 			if(not fileexists(tsvPath)){
 				throw("Failed to backup `#arguments.schema#`.`#table#`", "Exception");
 			}
-			arrayAppend(arrSQL, replace(replace("LOAD DATA INFILE '#mysqlTsvPath#' 
+			arrayAppend(arrSQL, replace(replace("LOAD DATA LOCAL INFILE '#mysqlTsvPath#' 
 			REPLACE INTO TABLE `#arguments.schema#`.`#table#` 
 			#variables.outfileOptions#", chr(10), ' ', 'all'), chr(13), '', 'all'));
 		}
