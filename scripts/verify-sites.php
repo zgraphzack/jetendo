@@ -62,12 +62,14 @@ function exitWithLogNotification(){
 }
 function getAvailableUpgradePackages(){
 	`/usr/bin/apt-get update`;
-	$r=`/usr/bin/apt-get -s upgrade`;
-	if(strpos($r, "\n0 upgraded") !== FALSE){
-		return false;
+	$arrPackage=array();
+	$arrPackage['results']=`/usr/bin/apt-get -s upgrade`;
+	if(strpos($arrPackage['results'], "\n0 upgraded") !== FALSE){
+		$arrPackage['available']=false;
 	}else{
-		return true;
+		$arrPackage['available']=true;
 	}
+	return $arrPackage;
 }
 function verifySite($row){
 	global $cmysql2, $forcePermissions, $userStruct, $preview, $verifyHomePage, $userUnusedStruct, $isTestServer, $pathStruct, $checkDNS, $dnsServer, $wwwUser, $sitesPath, $ftpEnabled;
@@ -296,11 +298,12 @@ $preview=false;
 
 
 echo "Running apt-get update to check for new packages: ";
-if(getAvailableUpgradePackages()){
-	echo "New packages available.\n";
-	array_push($arrError, "Packages are available to be installed with apt-get.");
+$arrPackage=getAvailableUpgradePackages();
+if($arrPackage['available']){
+	echo "New packages available.\n".$arrPackage['results'];
+	array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
 }else{
-	echo "No new packages are available.\n";
+	echo "No new packages are available. Response: ".$arrPackage['results']."\n";
 }
 
 set_time_limit(2000);
@@ -501,6 +504,13 @@ if(!$fail){
 				array_push($arrError, "/etc/hosts was automatically corrected.");
 			}
 		}
+	}
+}
+if(date('H') == '00'){
+	// daily verification
+	if(file_exists('/var/run/reboot-required')){
+		$c=`/bin/cat /var/run/reboot-required.pkgs`;
+		array_push($arrError, "System reboot required.  The following packages haven't been updated yet because they were in use:\n".$c);	
 	}
 }
 // EXTRA paths in $sitesPath
