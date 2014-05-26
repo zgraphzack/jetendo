@@ -530,8 +530,8 @@
 	ts.registeredControllerPathStruct=structnew();
 	ts.hookAppCom=structnew();
 	request.zos.functions.zUpdateGlobalMVCData(ts);
-	if(fileexists(request.zos.sharedPath&"tooltips.json")){
-		ts.helpStruct=deserializeJson(application.zcore.functions.zreadfile(request.zos.sharedPath&"tooltips.json"));
+	if(fileexists(request.zos.installPath&"database-upgrade/tooltips.json")){
+		ts.helpStruct=deserializeJson(application.zcore.functions.zreadfile(request.zos.installPath&"database-upgrade/tooltips.json"));
 	}
 	ts.railowebinfpath=expandpath("/railo-context/");
 	ts.railowebinfpath=listdeleteat(ts.railowebinfpath, listlen(ts.railowebinfpath,"/"),"/")&"/";

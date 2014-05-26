@@ -1,0 +1,2128 @@
+{
+"tooltip":{
+	"member.site-option-group.edit site_option_small_width":{
+	"qs":"&tooltip_id=397&tooltip_section_id=287",
+	"html":"",
+	"label":"Force Small Label Width"
+},
+	"member.content.edit content_featured_listing_parent_page":{
+	"qs":"&tooltip_id=61&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">If you select Yes,
+ no other page on the site can be used to create new listings. This will add an \"Add Listing\" link to the Real Estate manager menu to simplify adding listings.</span></span></span></p>",
+	"label":"Featured listing page?"
+},
+	"member.content.edit content_parent_id":{
+	"qs":"&tooltip_id=51&tooltip_section_id=6",
+	"html":"<p>Selecting a Parent page will automatically link the 2 pages together. This automates building some of the navigation throughout the website. Associates this page with another page. &nbsp;</p>",
+	"label":"Change Parent Page"
+},
+	"member.rental.category.edit rental_category_email":{
+	"qs":"&tooltip_id=341&tooltip_section_id=212",
+	"html":"",
+	"label":"Lead Email"
+},
+	"member.blog.edit blog_summary":{
+	"qs":"&tooltip_id=305&tooltip_section_id=155",
+	"html":"",
+	"label":"Summary Text"
+},
+	"member.rental.editRental rental_petfriendly_cleaningfee":{
+	"qs":"&tooltip_id=280&tooltip_section_id=221",
+	"html":"",
+	"label":"Pet Cleaning Fee"
+},
+	"member.blog.edit blog_event":{
+	"qs":"&tooltip_id=322&tooltip_section_id=155",
+	"html":"",
+	"label":"Event"
+},
+	"member.blog.edit rss_story":{
+	"qs":"&tooltip_id=160&tooltip_section_id=155",
+	"html":"<p>The meat of the page,
+ where all of the information and text is placed. Editable content in this large text field. &nbsp;</p>",
+	"label":"Body Text"
+},
+	"member.slideshow.edit slideshow_slide_direction":{
+	"qs":"&tooltip_id=102&tooltip_section_id=69",
+	"html":"",
+	"label":"Slide Direction?"
+},
+	"member.member.edit member_photo":{
+	"qs":"&tooltip_id=198&tooltip_section_id=184",
+	"html":"<p>Simply a photo on the visible page. Click CHOOSE FILE,
+ to browse your files for the photo you want on the page. &nbsp;</p>",
+	"label":"Photo"
+},
+	"member.site-option-group.edit site_option_group_parent_id":{
+	"qs":"&tooltip_id=296&tooltip_section_id=287",
+	"html":"",
+	"label":"Parent Group"
+},
+	"member.blog.edit blog_sticky":{
+	"qs":"&tooltip_id=378&tooltip_section_id=155",
+	"html":"",
+	"label":"Sticky?"
+},
+	"member.menu.editItem menu_button_over_url":{
+	"qs":"&tooltip_id=146&tooltip_section_id=142",
+	"html":"",
+	"label":"Over Image"
+},
+	"member.slideshow.edit slideshow_locked":{
+	"qs":"&tooltip_id=104&tooltip_section_id=69",
+	"html":"<p>Makes it so that you cannot delete this slide show.</p>",
+	"label":"Lock slideshow?"
+},
+	"member.rental.editRental rental_monthly_rate":{
+	"qs":"&tooltip_id=263&tooltip_section_id=221",
+	"html":"",
+	"label":"Regular Rate"
+},
+	"member.blog.formcat rss_category_metadesc":{
+	"qs":"&tooltip_id=171&tooltip_section_id=166",
+	"html":"<p>The description of the Meta keywords in the HTML code. Definitions of the meta keywords,
+ used to refine searches by users and search engines.</p>",
+	"label":"Meta Description"
+},
+	"member.slideshow.edit slideshow_forward_image":{
+	"qs":"&tooltip_id=347&tooltip_section_id=69",
+	"html":"",
+	"label":"Forward Image"
+},
+	"member.site-option-group.edit site_option_group_email_cfc_path":{
+	"qs":"&tooltip_id=372&tooltip_section_id=287",
+	"html":"",
+	"label":"Email CFC Path"
+},
+	"member.site-option-group.edit site_option_group_public_thankyou_url":{
+	"qs":"&tooltip_id=365&tooltip_section_id=287",
+	"html":"",
+	"label":"Public Thank You URL"
+},
+	"member.rental.editRental rental_lodgix_property_id":{
+	"qs":"&tooltip_id=293&tooltip_section_id=221",
+	"html":"",
+	"label":"Lodgix Property Id"
+},
+	"member.menu.edit menu_popup_background_color":{
+	"qs":"&tooltip_id=136&tooltip_section_id=3",
+	"html":"",
+	"label":"Color"
+},
+	"member.member.edit user_pref_mail":{
+	"qs":"&tooltip_id=201&tooltip_section_id=184",
+	"html":"",
+	"label":"Physical Mail"
+},
+	"member.rental.editRental rental_riverview":{
+	"qs":"&tooltip_id=238&tooltip_section_id=221",
+	"html":"",
+	"label":"River View"
+},
+	"member.menu.edit menu_popup_background_image":{
+	"qs":"&tooltip_id=137&tooltip_section_id=3",
+	"html":"",
+	"label":"Image"
+},
+	"member.content.edit content_image_caption":{
+	"qs":"&tooltip_id=16&tooltip_section_id=6",
+	"html":"<p>The information placed under/ over the photo,
+ used to describe the photo in detail. Enter in a text field*</p>",
+	"label":"Photo 1 Caption"
+},
+	"member.content.edit content_mix_sold":{
+	"qs":"&tooltip_id=47&tooltip_section_id=6",
+	"html":"",
+	"label":"Mix Sold?"
+},
+	"member.blog.comments blog_comment_title":{
+	"qs":"&tooltip_id=314&tooltip_section_id=176",
+	"html":"",
+	"label":"Subject"
+},
+	"member.member.edit member_last_name":{
+	"qs":"&tooltip_id=188&tooltip_section_id=184",
+	"html":"<p>Enter your last name here.</p>",
+	"label":"Last Name"
+},
+	"member.blog.formcat rss_category_metakey":{
+	"qs":"&tooltip_id=170&tooltip_section_id=166",
+	"html":"<p>Keywords that show up in the HEAD tag of the HTML code. Enter a few phrases,
+ separated by commas,
+ that describe the page. It might show up on Search Engines. &nbsp;</p>",
+	"label":"Meta Keywords"
+},
+	"member.member.edit user_street":{
+	"qs":"&tooltip_id=203&tooltip_section_id=184",
+	"html":"",
+	"label":"Address"
+},
+	"member.blog.editTag rss_tag_unique_name":{
+	"qs":"&tooltip_id=177&tooltip_section_id=171",
+	"html":"<p>FOR ADVANCED USERS,
+ this is a field that lets you override the URL. ie... /mycustompage.html. Note: there is no other URL format supported. You must start with a forward slash and cannot contain any special characters. We advise not using this because you can accidently break your website. &nbsp;</p>",
+	"label":"Unique URL"
+},
+	"member.member.edit user_zip":{
+	"qs":"&tooltip_id=208&tooltip_section_id=184",
+	"html":"",
+	"label":"Zip Code"
+},
+	"member.blog.formcat blog_category_metakey":{
+	"qs":"&tooltip_id=318&tooltip_section_id=166",
+	"html":"",
+	"label":"Meta Keywords"
+},
+	"member.content.edit content_text":{
+	"qs":"&tooltip_id=14&tooltip_section_id=6",
+	"html":"<p>The meat of the page,
+ where all of the information and text is placed. Editable content in this large text field. &nbsp;</p>",
+	"label":"Body Text"
+},
+	"member.blog.reviewComment blog_comment_text":{
+	"qs":"&tooltip_id=331&tooltip_section_id=180",
+	"html":"",
+	"label":"Comments"
+},
+	"member.content.edit content_mls_number":{
+	"qs":"&tooltip_id=27&tooltip_section_id=6",
+	"html":"",
+	"label":"MLS #"
+},
+	"member.rental.editRental nightlyRates":{
+	"qs":"&tooltip_id=246&tooltip_section_id=221",
+	"html":"",
+	"label":"Nightly Rates"
+},
+	"member.site-option-group.edit site_option_group_enable_image_library":{
+	"qs":"&tooltip_id=358&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable Image Library?"
+},
+	"member.rental.editRental weeklyRates":{
+	"qs":"&tooltip_id=254&tooltip_section_id=221",
+	"html":"",
+	"label":"Weekly Rates"
+},
+	"member.menu.editItemLink menu_button_link_target":{
+	"qs":"&tooltip_id=156&tooltip_section_id=153",
+	"html":"",
+	"label":"Target"
+},
+	"member.rental.category.edit rental_category_metadesc":{
+	"qs":"&tooltip_id=220&tooltip_section_id=212",
+	"html":"<p>The description of the Meta keywords in the HTML code. Definitions of the meta keywords,
+ used to refine searches by users and search engines.</p>",
+	"label":"Meta Description"
+},
+	"member.menu.editItem menu_button_type_count":{
+	"qs":"&tooltip_id=150&tooltip_section_id=142",
+	"html":"",
+	"label":"Maximum number of links to show?"
+},
+	"member.site-option-group.edit site_option_group_enable_partial_page_caching":{
+	"qs":"&tooltip_id=357&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable URL Caching"
+},
+	"member.rental.editRental rental_reserved_before":{
+	"qs":"&tooltip_id=276&tooltip_section_id=221",
+	"html":"",
+	"label":"Reserved Days Before"
+},
+	"member.menu.edit menu_disable_popup":{
+	"qs":"&tooltip_id=392&tooltip_section_id=3",
+	"html":"",
+	"label":"Disable pop-ups?"
+},
+	"member.slideshow.edit slideshow_thumbbar_margin":{
+	"qs":"&tooltip_id=93&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbbar Margin"
+},
+	"member.slideshow.edit slideshow_large_image":{
+	"qs":"&tooltip_id=96&tooltip_section_id=69",
+	"html":"",
+	"label":"Included Images"
+},
+	"member.rental.editRental rental_available_start_date":{
+	"qs":"&tooltip_id=245&tooltip_section_id=221",
+	"html":"",
+	"label":"Not Availabile Until"
+},
+	"member.rental.editRental rental_amenities_text":{
+	"qs":"&tooltip_id=240&tooltip_section_id=221",
+	"html":"",
+	"label":"Amenity Description"
+},
+	"member.menu.editItemLink menu_button_link_url":{
+	"qs":"&tooltip_id=300&tooltip_section_id=153",
+	"html":"",
+	"label":"URL"
+},
+	"member.blog.edit blog_story":{
+	"qs":"&tooltip_id=306&tooltip_section_id=155",
+	"html":"",
+	"label":"Body Text"
+},
+	"member.site-option-group.edit site_option_group_enable_cache":{
+	"qs":"&tooltip_id=356&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable Memory Caching"
+},
+	"member.content.edit content_metatitle":{
+	"qs":"&tooltip_id=9&tooltip_section_id=6",
+	"html":"<p>Meta title is optional and overrides the &lt;TITLE&gt; HTML element to be different from the visible page title.</p>",
+	"label":"META Title"
+},
+	"member.content.edit content_hide_link":{
+	"qs":"&tooltip_id=63&tooltip_section_id=6",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Hides/ removes the link from the site completely. </span></span><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">This is useful for password protected pages or other pages that are not designed to be visited directly.</span></span></span></p>",
+	"label":"Hide Link?"
+},
+	"member.blog.edit rss_unique_name":{
+	"qs":"&tooltip_id=167&tooltip_section_id=155",
+	"html":"<p>FOR ADVANCED USERS,
+ this is a field that lets you override the URL. ie... /mycustompage.html. Note: there is no other URL format supported. You must start with a forward slash and cannot contain any special characters. We advise not using this because you can accidently break your website. &nbsp;</p>",
+	"label":"Unique URL"
+},
+	"member.member.edit member_signature":{
+	"qs":"&tooltip_id=197&tooltip_section_id=184",
+	"html":"",
+	"label":"Email<br />Signature<br />(NO HTML)"
+},
+	"member.site-option-group.edit site_option_group_help_description":{
+	"qs":"&tooltip_id=390&tooltip_section_id=287",
+	"html":"",
+	"label":"Help Description:"
+},
+	"member.menu.editItem menu_button_url":{
+	"qs":"&tooltip_id=145&tooltip_section_id=142",
+	"html":"",
+	"label":"Image"
+},
+	"member.member.edit user_fax":{
+	"qs":"&tooltip_id=294&tooltip_section_id=184",
+	"html":"",
+	"label":"Fax"
+},
+	"member.rental.editRental rental_reserved_after":{
+	"qs":"&tooltip_id=277&tooltip_section_id=221",
+	"html":"",
+	"label":"Reserved Days After"
+},
+	"member.member.edit member_public_profile":{
+	"qs":"&tooltip_id=211&tooltip_section_id=184",
+	"html":"<p>Click yes to make this member visible on other public agents' sites.&nbsp;</p>",
+	"label":"Show Profile"
+},
+	"member.site-option-group.edit site_option_group_disable_admin":{
+	"qs":"&tooltip_id=366&tooltip_section_id=287",
+	"html":"",
+	"label":"Disable Admin?"
+},
+	"member.content.edit content_html_text":{
+	"qs":"&tooltip_id=62&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">ADVANCED USERS ONLY! Please put only Complex Javascript HTML Code in the large text field shown. This is useful for embedding javascript,
+ maps,
+ videos,
+ and flash widgets without the editor breaking / filtering the content. This information will appear at the top of the page.</span></span></span></p>",
+	"label":"Insert<br />Advanced Code"
+},
+	"member.blog.comments rss_comments_text":{
+	"qs":"&tooltip_id=181&tooltip_section_id=176",
+	"html":"",
+	"label":"Comments"
+},
+	"member.member.edit member_email":{
+	"qs":"&tooltip_id=190&tooltip_section_id=184",
+	"html":"<p>Enter your personal,
+ or business email here.&nbsp;</p>",
+	"label":"Email"
+},
+	"member.slideshow.edit slideshow_tabsidepadding":{
+	"qs":"&tooltip_id=83&tooltip_section_id=69",
+	"html":"<p>Enter an integer to edit where the tab padding; Where it appears,
+ left to right on the page.</p>",
+	"label":"Tab Side Padding"
+},
+	"member.content.edit content_property_enable_calendar":{
+	"qs":"&tooltip_id=45&tooltip_section_id=6",
+	"html":"",
+	"label":"Availability Calendars"
+},
+	"member.rental.editRental rental_city":{
+	"qs":"&tooltip_id=228&tooltip_section_id=221",
+	"html":"",
+	"label":"City"
+},
+	"member.content.edit content_property_bedrooms":{
+	"qs":"&tooltip_id=32&tooltip_section_id=6",
+	"html":"",
+	"label":"Beds"
+},
+	"member.content.edit content_mls_override":{
+	"qs":"&tooltip_id=30&tooltip_section_id=6",
+	"html":"",
+	"label":"Override MLS?"
+},
+	"member.slideshow.editTab slideshow_tab_type_id":{
+	"qs":"&tooltip_id=109&tooltip_section_id=104",
+	"html":"",
+	"label":"Slideshow Tab Type"
+},
+	"member.member.edit select_client_id":{
+	"qs":"&tooltip_id=292&tooltip_section_id=184",
+	"html":"",
+	"label":"Client Account<br />Access"
+},
+	"member.rental.editRental rental_monthly_rate_holiday":{
+	"qs":"&tooltip_id=264&tooltip_section_id=221",
+	"html":"",
+	"label":"Holiday Rate"
+},
+	"member.content.edit content_listing_user_id":{
+	"qs":"&tooltip_id=48&tooltip_section_id=6",
+	"html":"",
+	"label":"Listing Agent"
+},
+	"member.site-option-group.edit site_option_group_form_description":{
+	"qs":"&tooltip_id=361&tooltip_section_id=287",
+	"html":"",
+	"label":"Form Description:"
+},
+	"member.slideshow.edit slideshow_background_image":{
+	"qs":"&tooltip_id=85&tooltip_section_id=69",
+	"html":"<p>Click CHOOSE FILE to browse through your files to find,
+ and choose a background image for the slide show.</p>",
+	"label":"Background Image"
+},
+	"member.rental.editRental rental_max_pets":{
+	"qs":"&tooltip_id=283&tooltip_section_id=221",
+	"html":"",
+	"label":"Max Pets"
+},
+	"member.menu.edit menuPopupBackground":{
+	"qs":"&tooltip_id=135&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click and choose a color,
+ image,
+ or browse your files for the pop-up background.</span></span></span></p>",
+	"label":"Pop-up Background"
+},
+	"member.content.list changeSortingMethod":{
+	"qs":"&tooltip_id=68&tooltip_section_id=4",
+	"html":"<p>You can change the sorting by editing the \"Sub-Page Sort Method\" field of the parent page. &nbsp;The link to the left displays the parent page edit form.</p>",
+	"label":"Change Sorting Method"
+},
+	"member.member.edit user_pref_fax":{
+	"qs":"&tooltip_id=202&tooltip_section_id=184",
+	"html":"",
+	"label":"Fax"
+},
+	"member.menu.edit menu_link_limit":{
+	"qs":"&tooltip_id=69&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"> <span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required Field. Set to 0 for unlimited size.&nbsp;</span></span></span></p>",
+	"label":"Link&nbsp;Limit"
+},
+	"member.rental.editRental rental_url":{
+	"qs":"&tooltip_id=285&tooltip_section_id=221",
+	"html":"",
+	"label":"Override URL"
+},
+	"member.slideshow.edit slideshow_taboverbgcolor":{
+	"qs":"&tooltip_id=80&tooltip_section_id=69",
+	"html":"<p>Click to choose a color for the tab over background.</p>",
+	"label":"Tab Over Background Color"
+},
+	"member.blog.edit blog_hide_time":{
+	"qs":"&tooltip_id=343&tooltip_section_id=155",
+	"html":"",
+	"label":"Display time?"
+},
+	"member.content.edit content_system_url":{
+	"qs":"&tooltip_id=336&tooltip_section_id=6",
+	"html":"",
+	"label":"URL Rewriting"
+},
+	"member.rental.category.edit rental_category_parent_id":{
+	"qs":"&tooltip_id=214&tooltip_section_id=212",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Associate this category with another category.</span></span></p>",
+	"label":"Change Parent Category"
+},
+	"member.content.edit content_url_only":{
+	"qs":"&tooltip_id=12&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"> <span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">A way to link to another page without duplicating content. All other fields will not be displayed if you use this field.</span></span></span></p>",
+	"label":"External Link"
+},
+	"member.content.edit content_price":{
+	"qs":"&tooltip_id=31&tooltip_section_id=6",
+	"html":"",
+	"label":"Price"
+},
+	"member.rental.editRental rental_rate":{
+	"qs":"&tooltip_id=247&tooltip_section_id=221",
+	"html":"",
+	"label":"Regular Rate"
+},
+	"member.blog.editTag blog_tag_description":{
+	"qs":"&tooltip_id=324&tooltip_section_id=171",
+	"html":"",
+	"label":"Description"
+},
+	"member.rental.editRental rental_weekly_display_holiday":{
+	"qs":"&tooltip_id=258&tooltip_section_id=221",
+	"html":"",
+	"label":"Highest Holiday Rate"
+},
+	"member.site-option-group.edit siteoptiongroupglobal":{
+	"qs":"&tooltip_id=301&tooltip_section_id=287",
+	"html":"",
+	"label":"Global"
+},
+	"member.content.edit content_show_site_map":{
+	"qs":"&tooltip_id=66&tooltip_section_id=6",
+	"html":"<p>Makes this page viewable on the site map of the website. &nbsp;</p>",
+	"label":"Show on site map?"
+},
+	"member.member.edit mlsagentid":{
+	"qs":"&tooltip_id=195&tooltip_section_id=184",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Please type the agent id for each MLS database or leave it blank.</span></span></span></p>",
+	"label":"MLS Agent ID"
+},
+	"member.rental.editRental rental_monthly_display_holiday":{
+	"qs":"&tooltip_id=266&tooltip_section_id=221",
+	"html":"",
+	"label":"Highest Holiday Rate"
+},
+	"member.menu.edit menu_popup_font_over_color":{
+	"qs":"&tooltip_id=138&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click and choose a color for the Rollover pop-up font.&nbsp;</span></span></span></p>",
+	"label":"Pop-up Rollover<br />Font Color"
+},
+	"member.slideshow.editTab image_overwrite":{
+	"qs":"&tooltip_id=290&tooltip_section_id=104",
+	"html":"",
+	"label":"Overwrite<br>Existing Files?"
+},
+	"member.menu.edit menu_padding_width":{
+	"qs":"&tooltip_id=117&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select between 1 and 30 to edit the padding width.</span></span></span></p>",
+	"label":"Padding Width"
+},
+	"member.slideshow.edit slideshow_thumb_margin_top":{
+	"qs":"&tooltip_id=92&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Margin Top"
+},
+	"member.slideshow.edit slideshow_auto_slide_delay":{
+	"qs":"&tooltip_id=101&tooltip_section_id=69",
+	"html":"",
+	"label":"Auto Slide Delay"
+},
+	"member.menu.edit menu_size_limit":{
+	"qs":"&tooltip_id=70&tooltip_section_id=3",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required Field,
+ Set to 0 for unlimited size.&nbsp;</span></span></p>",
+	"label":"Pixel&nbsp;Width/Height"
+},
+	"member.blog.comments blog_comment_author_email":{
+	"qs":"&tooltip_id=313&tooltip_section_id=176",
+	"html":"",
+	"label":"Your Email"
+},
+	"member.content.edit content_property_zip":{
+	"qs":"&tooltip_id=40&tooltip_section_id=6",
+	"html":"",
+	"label":"Zip"
+},
+	"member.slideshow.edit slideshow_thumb_margin_left":{
+	"qs":"&tooltip_id=91&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Margin Left"
+},
+	"member.site-option-group.edit site_option_group_type":{
+	"qs":"&tooltip_id=298&tooltip_section_id=287",
+	"html":"",
+	"label":"Type"
+},
+	"member.member.edit member_password_confirm":{
+	"qs":"&tooltip_id=291&tooltip_section_id=184",
+	"html":"<p>Enter the password again.</p>",
+	"label":"Confirm Password"
+},
+	"member.blog.comments rss_comments_author":{
+	"qs":"&tooltip_id=178&tooltip_section_id=176",
+	"html":"",
+	"label":"Your Name"
+},
+	"member.site-option-group.edit site_option_group_map_group_id":{
+	"qs":"&tooltip_id=368&tooltip_section_id=287",
+	"html":"",
+	"label":"Map Group"
+},
+	"member.slideshow.editTab slideshow_tab_caption":{
+	"qs":"&tooltip_id=106&tooltip_section_id=104",
+	"html":"",
+	"label":"Tab Name"
+},
+	"member.slideshow.edit slideshow_height":{
+	"qs":"&tooltip_id=76&tooltip_section_id=69",
+	"html":"<p>An integer showing the overall height of the slide show.</p>",
+	"label":"Height"
+},
+	"member.content.edit content_name":{
+	"qs":"&tooltip_id=8&tooltip_section_id=6",
+	"html":"<p>This is the name of the page,
+ as shown on the live web site. It is required to add the page to the content manager.</p>",
+	"label":"Title"
+},
+	"member.menu.edit menu_popup_font_color":{
+	"qs":"&tooltip_id=134&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required Field. Click and choose a color for the font.</span></span></span></p>",
+	"label":"Pop-up Font Color"
+},
+	"member.content.edit content_disable_contact_links":{
+	"qs":"&tooltip_id=57&tooltip_section_id=6",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">I</span></span><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">f your text says \"Email,
+\" \"Call,
+\" or \"Contact us\",
+ they will be made into clickable links if you select \"Yes.\"</span></span></span></p>",
+	"label":"Enable Contact Links?"
+},
+	"member.rental.category.edit rental_category_image_library_id":{
+	"qs":"&tooltip_id=216&tooltip_section_id=212",
+	"html":"<p>&nbsp;Simply a photo on the visible page. Click Open Image Uploader,
+ to browse your files for the photo you want on the page. &nbsp;</p>",
+	"label":"Photos"
+},
+	"member.site-option-group.edit site_option_group_delete_on_map":{
+	"qs":"&tooltip_id=370&tooltip_section_id=287",
+	"html":"",
+	"label":"Delete On Map?"
+},
+	"member.blog.edit select_category_id":{
+	"qs":"&tooltip_id=161&tooltip_section_id=155",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select a category and click add. You can associate this article to multiple categories.</span></span></span></p>",
+	"label":"Category"
+},
+	"member.menu.edit menu_vertical":{
+	"qs":"&tooltip_id=142&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click and choose a color,
+ image,
+ or browse files for the pop-up rollover background.</span></span></span></p>",
+	"label":"Layout:"
+},
+	"member.content.list sorting":{
+	"qs":"&tooltip_id=6&tooltip_section_id=4",
+	"html":"<p>Click the arrows to sort the records higher or lower.</p>",
+	"label":"Sorting"
+},
+	"member.content.edit content_lot_number":{
+	"qs":"&tooltip_id=299&tooltip_section_id=6",
+	"html":"",
+	"label":"Lot Number"
+},
+	"member.rental.editRental rental_display_regular":{
+	"qs":"&tooltip_id=249&tooltip_section_id=221",
+	"html":"",
+	"label":"Highest Regular Rate"
+},
+	"member.blog.formcat rss_category_unique_name":{
+	"qs":"&tooltip_id=172&tooltip_section_id=166",
+	"html":"<p>FOR ADVANCED USERS,
+ this is a field that lets you override the URL. ie... /mycustompage.html. Note: there is no other URL format supported. You must start with a forward slash and cannot contain any special characters. We advise not using this because you can accidently break your website. &nbsp;</p>",
+	"label":"Unique URL"
+},
+	"member.rental.editRental rental_gameroom":{
+	"qs":"&tooltip_id=230&tooltip_section_id=221",
+	"html":"",
+	"label":"Gameroom"
+},
+	"member.member.edit user_twitter_url":{
+	"qs":"&tooltip_id=339&tooltip_section_id=184",
+	"html":"",
+	"label":"Twitter URL"
+},
+	"member.content.edit content_property_state":{
+	"qs":"&tooltip_id=38&tooltip_section_id=6",
+	"html":"",
+	"label":"State"
+},
+	"member.rental.editRental rental_cabletv":{
+	"qs":"&tooltip_id=236&tooltip_section_id=221",
+	"html":"",
+	"label":"Cable TV"
+},
+	"member.rental.editRental rental_monthly_rate_addl_guests":{
+	"qs":"&tooltip_id=268&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest Rate"
+},
+	"member.rental.editRental rental_image_library_id":{
+	"qs":"&tooltip_id=225&tooltip_section_id=221",
+	"html":"",
+	"label":"Photos"
+},
+	"member.slideshow.edit slideshow_show_site_map":{
+	"qs":"&tooltip_id=105&tooltip_section_id=69",
+	"html":"<p>Makes this page viewable on the site map of the website. &nbsp;</p>",
+	"label":"Show on site map?"
+},
+	"member.menu.edit menu_popup_font":{
+	"qs":"&tooltip_id=127&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Choose a font for the pop-up.</span></span></span></p>",
+	"label":"Popup Font"
+},
+	"member.content.edit content_menu_title":{
+	"qs":"&tooltip_id=11&tooltip_section_id=6",
+	"html":"<p>Overrides the title in some menus.</p>",
+	"label":"Menu Title"
+},
+	"member.menu.edit menu_selected_background_image":{
+	"qs":"&tooltip_id=396&tooltip_section_id=3",
+	"html":"",
+	"label":"Image"
+},
+	"member.content.edit content_hide_modal":{
+	"qs":"&tooltip_id=55&tooltip_section_id=6",
+	"html":"<p>Select yes to hide the box that requires users to interact with it before they can continue on the working page. This box usually appears after the user has viewed a few pages. &nbsp;</p>",
+	"label":"Hide Modal Windows?"
+},
+	"member.member.edit user_listing_sort":{
+	"qs":"&tooltip_id=194&tooltip_section_id=184",
+	"html":"<p>You can sort the property MLS listings by price. Either price ascending,
+ or price descending.</p>",
+	"label":"Sort Listings"
+},
+	"member.content.edit content_subpage_link_layout":{
+	"qs":"&tooltip_id=53&tooltip_section_id=6",
+	"html":"<p>How the sub-page links will be placed on the page. The clickable options here are: invisible,
+ bottom with summary (default),
+ bottom without summary,
+ bottom with numbered columns,
+ bottom as thumbnails,
+ top with numbered columns,
+ top with columns,
+ top on one line.</p>",
+	"label":"Sub-page Link Layout"
+},
+	"member.slideshow.copy newname":{
+	"qs":"&tooltip_id=287&tooltip_section_id=285",
+	"html":"",
+	"label":"New Name"
+},
+	"member.content.list addChildPage":{
+	"qs":"&tooltip_id=7&tooltip_section_id=4",
+	"html":"<p>Creating a child page will automatically link the 2 pages together. &nbsp;This automates building some of the navigation throughout the website.</p>",
+	"label":"Add Child Page"
+},
+	"member.content.edit content_child_sorting":{
+	"qs":"&tooltip_id=50&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Pages or listings that are associated with this page will automatically sort according to the selected method: Manual Sorting,
+ Price Ascending and Price Descending.</span></span></span></p>",
+	"label":"Sub-Page Sort Method"
+},
+	"member.content.edit content_metakey":{
+	"qs":"&tooltip_id=58&tooltip_section_id=6",
+	"html":"<p>Keywords that show up in the HEAD tag of the HTML code. Enter a few phrases,
+ separated by commas,
+ that describe the page. It might show up on Search Engines. &nbsp;</p>",
+	"label":"Meta Keywords"
+},
+	"member.blog.formcat rss_category_name":{
+	"qs":"&tooltip_id=169&tooltip_section_id=166",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">The Name of the Category.</span></span></span></p>",
+	"label":"Name"
+},
+	"member.site-option-group.edit site_option_group_appidlist":{
+	"qs":"&tooltip_id=321&tooltip_section_id=287",
+	"html":"",
+	"label":"Associate With Apps"
+},
+	"member.blog.reviewComment blog_comment_author_email":{
+	"qs":"&tooltip_id=329&tooltip_section_id=180",
+	"html":"",
+	"label":"Your Email"
+},
+	"member.slideshow.editTab slideshow_tab_link":{
+	"qs":"&tooltip_id=107&tooltip_section_id=104",
+	"html":"",
+	"label":"Tab Link"
+},
+	"member.menu.edit menu_selected_background_color":{
+	"qs":"&tooltip_id=395&tooltip_section_id=3",
+	"html":"",
+	"label":"Color"
+},
+	"member.menu.editItem menu_button_type_tid3":{
+	"qs":"&tooltip_id=152&tooltip_section_id=142",
+	"html":"",
+	"label":"Select a blog category parent page"
+},
+	"member.member.edit user_pref_phone":{
+	"qs":"&tooltip_id=199&tooltip_section_id=184",
+	"html":"",
+	"label":"Phone"
+},
+	"member.slideshow.edit slideshow_thumb_text_height":{
+	"qs":"&tooltip_id=90&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Text Height"
+},
+	"member.rental.editRental rental_display_holiday":{
+	"qs":"&tooltip_id=250&tooltip_section_id=221",
+	"html":"",
+	"label":"Highest Holiday Rate"
+},
+	"member.rental.category.edit rental_category_url":{
+	"qs":"&tooltip_id=222&tooltip_section_id=212",
+	"html":"",
+	"label":"Override URL"
+},
+	"member.slideshow.edit slideshow_metadesc":{
+	"qs":"&tooltip_id=73&tooltip_section_id=69",
+	"html":"<p>The description of the Meta keywords in the HTML code. Definitions of the meta keywords,
+ used to refine searches by users and search engines.</p>",
+	"label":"Meta Description"
+},
+	"member.rental.editRental rental_monthly_display_regular":{
+	"qs":"&tooltip_id=265&tooltip_section_id=221",
+	"html":"",
+	"label":"Highest Regular Rate"
+},
+	"member.menu.editItem menu_button_type_id":{
+	"qs":"&tooltip_id=149&tooltip_section_id=142",
+	"html":"",
+	"label":"Child Link Type"
+},
+	"member.rental.editRental rental_description":{
+	"qs":"&tooltip_id=226&tooltip_section_id=221",
+	"html":"",
+	"label":"Summary Text"
+},
+	"member.menu.edit menu_button_font_size":{
+	"qs":"&tooltip_id=118&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select between 10 and 30 to edit the button font size</span></span></span></p>",
+	"label":"Button Font Size"
+},
+	"member.menu.edit menu_bold":{
+	"qs":"&tooltip_id=115&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click yes to view bold font on the page.</span></span></span></p>",
+	"label":"Bold Font?"
+},
+	"member.content.edit blog_image_library_layout":{
+	"qs":"&tooltip_id=377&tooltip_section_id=6",
+	"html":"",
+	"label":"Photo Layout"
+},
+	"member.member.edit user_enable_widget_builder":{
+	"qs":"&tooltip_id=379&tooltip_section_id=184",
+	"html":"",
+	"label":"Enable Widget Builder?"
+},
+	"member.rental.editRental monthlyRates":{
+	"qs":"&tooltip_id=262&tooltip_section_id=221",
+	"html":"",
+	"label":"Monthly Rates"
+},
+	"member.blog.editTag blog_tag_unique_name":{
+	"qs":"&tooltip_id=327&tooltip_section_id=171",
+	"html":"",
+	"label":"Unique URL"
+},
+	"member.slideshow.edit slideshow_thumb_height":{
+	"qs":"&tooltip_id=89&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Height"
+},
+	"member.rental.editRental rental_monthly_rate_cleaning":{
+	"qs":"&tooltip_id=267&tooltip_section_id=221",
+	"html":"",
+	"label":"Cleaning Fee"
+},
+	"member.menu.edit menu_popup_opacity":{
+	"qs":"&tooltip_id=130&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">You can adjust the transparency of the pop-up box when you scroll over it.</span></span></span></p>",
+	"label":"Popup Opacity"
+},
+	"member.blog.reviewComment rss_comments_text":{
+	"qs":"&tooltip_id=185&tooltip_section_id=180",
+	"html":"",
+	"label":"Comments"
+},
+	"member.blog.edit rss_metadesc":{
+	"qs":"&tooltip_id=166&tooltip_section_id=155",
+	"html":"<p>The description of the Meta keywords in the HTML code. Definitions of the meta keywords,
+ used to refine searches by users and search engines.</p>",
+	"label":"Meta Description"
+},
+	"member.blog.editTag blog_tag_metakey":{
+	"qs":"&tooltip_id=325&tooltip_section_id=171",
+	"html":"",
+	"label":"Meta Keywords"
+},
+	"member.rental.editRental rental_rate_holiday":{
+	"qs":"&tooltip_id=248&tooltip_section_id=221",
+	"html":"",
+	"label":"Holiday Rate"
+},
+	"member.menu.edit menu_popup_divider_color":{
+	"qs":"&tooltip_id=131&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required field. Click and choose a pop-up divider color.</span></span></span></p>",
+	"label":"Popup Divider Color"
+},
+	"member.rental.editRental rental_name":{
+	"qs":"&tooltip_id=224&tooltip_section_id=221",
+	"html":"",
+	"label":"Title"
+},
+	"member.menu.edit menu_name":{
+	"qs":"&tooltip_id=5&tooltip_section_id=3",
+	"html":"<p>Enter a name for this menu.</p>",
+	"label":"Menu Name"
+},
+	"member.content.edit content_engine_name":{
+	"qs":"&tooltip_id=212&tooltip_section_id=6",
+	"html":"",
+	"label":"Engine Name"
+},
+	"member.member.edit syncMemberWith":{
+	"qs":"&tooltip_id=348&tooltip_section_id=184",
+	"html":"",
+	"label":"Sync Member With<br />Your Other Web Sites"
+},
+	"member.content.edit property_id":{
+	"qs":"&tooltip_id=43&tooltip_section_id=6",
+	"html":"",
+	"label":"Property ID"
+},
+	"member.site-option-group.edit site_option_group_search_index_cfc_path":{
+	"qs":"&tooltip_id=354&tooltip_section_id=287",
+	"html":"",
+	"label":"Search Index CFC Path"
+},
+	"member.content.edit content_locked":{
+	"qs":"&tooltip_id=64&tooltip_section_id=6",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Makes it so that the important pages cannot be deleted.</span></span></p>",
+	"label":"Lock content?"
+},
+	"member.blog.formcat blog_category_site_option_app_id":{
+	"qs":"&tooltip_id=333&tooltip_section_id=166",
+	"html":"",
+	"label":"Custom Fields"
+},
+	"member.content.edit content_unique_name":{
+	"qs":"&tooltip_id=60&tooltip_section_id=6",
+	"html":"<p>FOR ADVANCED USERS,
+ this is a field that lets you override the URL. ie... /mycustompage.html. Note: there is no other URL format supported. You must start with a forward slash and cannot contain any special characters. We advise not using this because you can accidently break your website. &nbsp;</p>",
+	"label":"Unique URL"
+},
+	"member.blog.formcat rss_category_parent_id":{
+	"qs":"&tooltip_id=168&tooltip_section_id=166",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Associates this category with another category or blog article.</span></span></span></p>",
+	"label":"Parent Category"
+},
+	"member.slideshow.edit slideshow_y_duration":{
+	"qs":"&tooltip_id=100&tooltip_section_id=69",
+	"html":"",
+	"label":"Y Duration"
+},
+	"member.content.edit content_property_half_baths":{
+	"qs":"&tooltip_id=34&tooltip_section_id=6",
+	"html":"",
+	"label":"Half Baths"
+},
+	"member.rental.editRental rental_rate_cleaning_addl_guests":{
+	"qs":"&tooltip_id=253&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest<br />Cleaning Rate"
+},
+	"member.menu.editItem menu_button_type_tid1":{
+	"qs":"&tooltip_id=151&tooltip_section_id=142",
+	"html":"",
+	"label":"Select a content parent page"
+},
+	"member.blog.edit blog_slideshow_id":{
+	"qs":"&tooltip_id=308&tooltip_section_id=155",
+	"html":"",
+	"label":"Slideshow"
+},
+	"member.rental.editRental rental_beds":{
+	"qs":"&tooltip_id=243&tooltip_section_id=221",
+	"html":"",
+	"label":"Bedrooms"
+},
+	"member.content.edit content_hide_global":{
+	"qs":"&tooltip_id=65&tooltip_section_id=6",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Block or hide content that you do not want on a specific page. Some clients have a section of the page that appears across the entire web site. If you don't want that section to appear on this page,
+ click Yes.</span></span></p>",
+	"label":"Hide Global Text"
+},
+	"member.member.edit user_street2":{
+	"qs":"&tooltip_id=204&tooltip_section_id=184",
+	"html":"",
+	"label":"Address 2"
+},
+	"member.slideshow.edit slideshow_tabbgcolor":{
+	"qs":"&tooltip_id=78&tooltip_section_id=69",
+	"html":"<p>Click to choose a color for the tab background.&nbsp;</p>",
+	"label":"Tab Background Color"
+},
+	"member.menu.edit menu_popup_background_over_image":{
+	"qs":"&tooltip_id=141&tooltip_section_id=3",
+	"html":"",
+	"label":"Image"
+},
+	"member.content.edit content_property_city":{
+	"qs":"&tooltip_id=37&tooltip_section_id=6",
+	"html":"",
+	"label":"City"
+},
+	"member.site-option-group.edit site_option_group_menu_name":{
+	"qs":"&tooltip_id=342&tooltip_section_id=287",
+	"html":"",
+	"label":"Menu Name"
+},
+	"member.rental.category.edit rental_category_slideshow_id":{
+	"qs":"&tooltip_id=218&tooltip_section_id=212",
+	"html":"<p>A selection where you may create or edit a selected slideshow,
+ and add it to a page. You must select &ldquo;Listing Slideshow&rdquo; to edit a selected slideshow.</p>",
+	"label":"Slideshow"
+},
+	"member.blog.edit blog_metakey":{
+	"qs":"&tooltip_id=309&tooltip_section_id=155",
+	"html":"",
+	"label":"Meta Keywords"
+},
+	"member.blog.comments rss_comments_author_email":{
+	"qs":"&tooltip_id=179&tooltip_section_id=176",
+	"html":"",
+	"label":"Your Email"
+},
+	"member.slideshow.copy newsiteid":{
+	"qs":"&tooltip_id=289&tooltip_section_id=285",
+	"html":"",
+	"label":"New Site"
+},
+	"member.rental.editRental rental_weekly_display_regular":{
+	"qs":"&tooltip_id=257&tooltip_section_id=221",
+	"html":"",
+	"label":"Highest Regular Rate"
+},
+	"member.site-option-group.edit site_option_group_limit":{
+	"qs":"&tooltip_id=346&tooltip_section_id=287",
+	"html":"",
+	"label":"Child Limit"
+},
+	"member.rental.editRental rental_weekly_rate_addl_guests":{
+	"qs":"&tooltip_id=260&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest Rate"
+},
+	"member.content.edit content_image_library_layout":{
+	"qs":"&tooltip_id=19&tooltip_section_id=6",
+	"html":"<p>The formatting of the photos on a page. Either <strong>1 column of large photos</strong>,
+ a <strong>Gallery Slideshow</strong>,
+ or <strong>Thumbnails and Lightbox</strong> features. &nbsp;</p>",
+	"label":"Photo Layout"
+},
+	"member.menu.edit menu_background_over_color":{
+	"qs":"&tooltip_id=125&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required Field. Type the color,
+ or color code here.</span></span></span></p>",
+	"label":"Rollover Background"
+},
+	"member.content.edit content_slideshow_id":{
+	"qs":"&tooltip_id=20&tooltip_section_id=6",
+	"html":"<p>A selection where you may create or edit a selected slideshow,
+ and add it to a page. You must select &ldquo;Listing Slideshow&rdquo; to edit a selected slideshow.</p>",
+	"label":"Slideshow"
+},
+	"member.member.edit member_title":{
+	"qs":"&tooltip_id=189&tooltip_section_id=184",
+	"html":"<p>Enter your professional title.</p>",
+	"label":"Title"
+},
+	"member.rental.editRental rental_rate_cleaning":{
+	"qs":"&tooltip_id=251&tooltip_section_id=221",
+	"html":"",
+	"label":"Cleaning Fee"
+},
+	"member.menu.edit menuBackground":{
+	"qs":"&tooltip_id=120&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required Field. Choose between color,
+ image or browse files.</span></span></span></p>",
+	"label":"Background"
+},
+	"member.slideshow.edit slideshow_custom_include":{
+	"qs":"&tooltip_id=94&tooltip_section_id=69",
+	"html":"",
+	"label":"Custom CFM Include"
+},
+	"member.site-option-group.edit site_option_group_display_name":{
+	"qs":"&tooltip_id=391&tooltip_section_id=287",
+	"html":"",
+	"label":"Display Name"
+},
+	"member.rental.editRental rental_monthly_rate_cleaning_addl_guests":{
+	"qs":"&tooltip_id=269&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest<br />Cleaning Rate"
+},
+	"member.content.edit content_is_listing":{
+	"qs":"&tooltip_id=23&tooltip_section_id=6",
+	"html":"",
+	"label":"Is This a Listing?"
+},
+	"member.slideshow.edit slideshow_image_fade_duration":{
+	"qs":"&tooltip_id=98&tooltip_section_id=69",
+	"html":"<p>Enter an integer to edit the amount of time it takes the image to fade in/out.</p>",
+	"label":"Image Fade Duration"
+},
+	"member.member.edit office_id":{
+	"qs":"&tooltip_id=186&tooltip_section_id=184",
+	"html":"",
+	"label":"Office"
+},
+	"member.rental.category.edit rental_category_name":{
+	"qs":"&tooltip_id=215&tooltip_section_id=212",
+	"html":"<p>Enter the Name of the Member Category.</p>",
+	"label":"Name"
+},
+	"member.menu.editItem menu_button_link":{
+	"qs":"&tooltip_id=147&tooltip_section_id=142",
+	"html":"",
+	"label":"URL"
+},
+	"member.site-option-group.edit site_option_group_public_form_title":{
+	"qs":"&tooltip_id=360&tooltip_section_id=287",
+	"html":"",
+	"label":"Public Form Title"
+},
+	"member.slideshow.copy renameexisting":{
+	"qs":"&tooltip_id=288&tooltip_section_id=285",
+	"html":"",
+	"label":"Rename existing slideshow"
+},
+	"member.content.edit content_property_enable_rates":{
+	"qs":"&tooltip_id=44&tooltip_section_id=6",
+	"html":"",
+	"label":"Rental Rates"
+},
+	"member.slideshow.edit slideshow_resize_image":{
+	"qs":"&tooltip_id=97&tooltip_section_id=69",
+	"html":"<p>Click yes to edit the size of the image.</p>",
+	"label":"Resize Image?"
+},
+	"member.rental.amenity.edit rental_amenity_name":{
+	"qs":"&tooltip_id=286&tooltip_section_id=284",
+	"html":"",
+	"label":"Amenity Name"
+},
+	"member.blog.edit rss_status":{
+	"qs":"&tooltip_id=163&tooltip_section_id=155",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Changes the date that the article/ information will appear. </span></span></span><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">I</span></span><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">f in future,
+ article will be invisible until the date arrives</span></span></span><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\"><strong>.&nbsp;</strong></span></span></span></p>",
+	"label":"Date"
+},
+	"member.rental.editRental rental_petfriendly_cleaningtype":{
+	"qs":"&tooltip_id=282&tooltip_section_id=221",
+	"html":"",
+	"label":"Pet Cleaning<br />Rate Type"
+},
+	"member.site-option-group.edit site_option_group_name":{
+	"qs":"&tooltip_id=297&tooltip_section_id=287",
+	"html":"",
+	"label":"Name"
+},
+	"member.rental.editRental rental_waterview":{
+	"qs":"&tooltip_id=232&tooltip_section_id=221",
+	"html":"",
+	"label":"Water View"
+},
+	"member.slideshow.edit slideshow_tabtextcolor":{
+	"qs":"&tooltip_id=79&tooltip_section_id=69",
+	"html":"<p>Click to choose a color for the tab text.</p>",
+	"label":"Tab Text Color"
+},
+	"member.menu.editItem menu_button_sorting":{
+	"qs":"&tooltip_id=154&tooltip_section_id=142",
+	"html":"",
+	"label":"Sorting Method"
+},
+	"member.member.edit user_openid_provider":{
+	"qs":"&tooltip_id=344&tooltip_section_id=184",
+	"html":"",
+	"label":"Sign In With"
+},
+	"member.member.edit user_sync_site_id_list":{
+	"qs":"&tooltip_id=209&tooltip_section_id=184",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Allows this member to be seen on your other public websites.</span></span></p>",
+	"label":"Sync Member With<br />Your Other Web Sites"
+},
+	"member.rental.editRental rental_special":{
+	"qs":"&tooltip_id=241&tooltip_section_id=221",
+	"html":"",
+	"label":"Special Message"
+},
+	"member.site-option-group.edit site_option_group_code":{
+	"qs":"&tooltip_id=303&tooltip_section_id=287",
+	"html":"",
+	"label":"Embed HTML Code:"
+},
+	"member.menu.editItem menu_button_text":{
+	"qs":"&tooltip_id=144&tooltip_section_id=142",
+	"html":"",
+	"label":"Link Text"
+},
+	"member.slideshow.edit slideshow_format":{
+	"qs":"&tooltip_id=95&tooltip_section_id=69",
+	"html":"<p>Click HTML or Flash to edit the slideshow formatting. NOTE: HTML does not work for all features yet.</p>",
+	"label":"Format"
+},
+	"member.member.edit member_description":{
+	"qs":"&tooltip_id=196&tooltip_section_id=184",
+	"html":"<p>A text field describing the content about this new member.</p>",
+	"label":"Description"
+},
+	"member.site-option.edit site_option_appidlist":{
+	"qs":"&tooltip_id=335&tooltip_section_id=291",
+	"html":"",
+	"label":"Associate With Apps"
+},
+	"member.content.edit content_property_bathrooms":{
+	"qs":"&tooltip_id=33&tooltip_section_id=6",
+	"html":"",
+	"label":"Baths"
+},
+	"member.content.edit content_mls_provider":{
+	"qs":"&tooltip_id=26&tooltip_section_id=6",
+	"html":"",
+	"label":"MLS Providers"
+},
+	"member.member.edit user_country":{
+	"qs":"&tooltip_id=207&tooltip_section_id=184",
+	"html":"",
+	"label":"Country"
+},
+	"member.blog.editTag rss_tag_metadesc":{
+	"qs":"&tooltip_id=176&tooltip_section_id=171",
+	"html":"<p>The description of the Meta keywords in the HTML code. Definitions of the meta keywords,
+ used to refine searches by users and search engines.</p>",
+	"label":"Meta Description"
+},
+	"member.slideshow.edit slideshow_tabpadding":{
+	"qs":"&tooltip_id=82&tooltip_section_id=69",
+	"html":"<p>Enter an integer to edit the tab padding.</p>",
+	"label":"Tab Padding"
+},
+	"member.blog.reviewComment blog_comment_author":{
+	"qs":"&tooltip_id=328&tooltip_section_id=180",
+	"html":"",
+	"label":"Your Name"
+},
+	"member.rental.category.edit rental_category_searchable":{
+	"qs":"&tooltip_id=221&tooltip_section_id=212",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click yes to make this rental searchable on the website.</span></span></p>",
+	"label":"Searchable"
+},
+	"member.member.edit user_googleplus_url":{
+	"qs":"&tooltip_id=338&tooltip_section_id=184",
+	"html":"",
+	"label":"Google+ URL"
+},
+	"member.content.edit content_property_country":{
+	"qs":"&tooltip_id=39&tooltip_section_id=6",
+	"html":"",
+	"label":"Country"
+},
+	"member.content.edit content_address":{
+	"qs":"&tooltip_id=36&tooltip_section_id=6",
+	"html":"",
+	"label":"Address"
+},
+	"member.menu.edit menu_font":{
+	"qs":"&tooltip_id=114&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click arrow to choose a font.</span></span></span></p>",
+	"label":"Font"
+},
+	"member.slideshow.edit slideshow_name":{
+	"qs":"&tooltip_id=71&tooltip_section_id=69",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">The Name of the Slideshow.</span></span></span></p>",
+	"label":"Name"
+},
+	"member.blog.editTag rss_tag_name":{
+	"qs":"&tooltip_id=173&tooltip_section_id=171",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Enter the Name of the tag.</span></span></span></p>",
+	"label":"Tag Name"
+},
+	"member.member.edit user_city":{
+	"qs":"&tooltip_id=205&tooltip_section_id=184",
+	"html":"",
+	"label":"City"
+},
+	"member.content.edit content_show_map":{
+	"qs":"&tooltip_id=22&tooltip_section_id=6",
+	"html":"<p>An option that allows specific geographical and listing information about that listing. Click yes to include a map and statistics about the listing. &nbsp;</p>",
+	"label":"Show Map &amp;<br /> Statistics on <br />Landing Page?"
+},
+	"member.slideshow.editPhoto slideshow_image_link":{
+	"qs":"&tooltip_id=113&tooltip_section_id=108",
+	"html":"",
+	"label":"Photo Link"
+},
+	"member.rental.editRental rental_category_id_list":{
+	"qs":"&tooltip_id=223&tooltip_section_id=221",
+	"html":"",
+	"label":"Category"
+},
+	"member.slideshow.editPhoto image_overwrite":{
+	"qs":"&tooltip_id=213&tooltip_section_id=108",
+	"html":"",
+	"label":"Overwrite<br>Existing Files?"
+},
+	"member.rental.editRental rental_home_featured":{
+	"qs":"&tooltip_id=284&tooltip_section_id=221",
+	"html":"",
+	"label":"Featured Listing"
+},
+	"member.blog.editTag blog_tag_name":{
+	"qs":"&tooltip_id=323&tooltip_section_id=171",
+	"html":"",
+	"label":"Tag Name"
+},
+	"member.site-option-group.edit site_option_group_map_insert_type":{
+	"qs":"&tooltip_id=369&tooltip_section_id=287",
+	"html":"",
+	"label":"Map Insert Type"
+},
+	"member.member.edit user_pref_list":{
+	"qs":"&tooltip_id=385&tooltip_section_id=184",
+	"html":"",
+	"label":"Email Mailing List"
+},
+	"member.menu.edit menu_button_margin":{
+	"qs":"&tooltip_id=381&tooltip_section_id=3",
+	"html":"",
+	"label":"Button Margin"
+},
+	"member.slideshow.editTab slideshow_tab_url":{
+	"qs":"&tooltip_id=351&tooltip_section_id=104",
+	"html":"",
+	"label":"Select File"
+},
+	"member.member.edit user_limit_manager_features":{
+	"qs":"&tooltip_id=398&tooltip_section_id=184",
+	"html":"",
+	"label":"Limit Manager Features"
+},
+	"member.content.edit content_include_listings":{
+	"qs":"&tooltip_id=49&tooltip_section_id=6",
+	"html":"<p>A list of numbers that identify the corresponding pages. After adding a page,
+ that page will then have a number. It is used to find that page in the content manager. &nbsp;</p>",
+	"label":"Included Page IDs"
+},
+	"member.slideshow.edit slideshow_tabistext":{
+	"qs":"&tooltip_id=77&tooltip_section_id=69",
+	"html":"<p>Adds text or image tabs on the slide show.</p>",
+	"label":"Tab Type"
+},
+	"member.blog.edit uid":{
+	"qs":"&tooltip_id=158&tooltip_section_id=155",
+	"html":"<p>Choose<strong> </strong>the original blog article writer.</p>",
+	"label":"Author"
+},
+	"member.content.edit content_property_sqfoot":{
+	"qs":"&tooltip_id=35&tooltip_section_id=6",
+	"html":"",
+	"label":"Square Feet"
+},
+	"member.slideshow.editPhoto slideshow_image_thumbnail_url":{
+	"qs":"&tooltip_id=110&tooltip_section_id=108",
+	"html":"",
+	"label":"Select File"
+},
+	"member.site-option-group.edit site_option_group_view_cfc_path":{
+	"qs":"&tooltip_id=352&tooltip_section_id=287",
+	"html":"",
+	"label":"View CFC Path"
+},
+	"member.site-option-group.edit site_option_group_user_group_id_list":{
+	"qs":"&tooltip_id=384&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable Data Entry For User Groups"
+},
+	"member.rental.editRental rental_weekly_rate":{
+	"qs":"&tooltip_id=255&tooltip_section_id=221",
+	"html":"",
+	"label":"Regular Rate"
+},
+	"member.rental.category.edit rental_category_metakey":{
+	"qs":"&tooltip_id=219&tooltip_section_id=212",
+	"html":"<p>Keywords that show up in the HEAD tag of the HTML code. Enter a few phrases,
+ separated by commas,
+ that describe the page. It might show up on Search Engines. &nbsp;</p>",
+	"label":"Meta Keywords"
+},
+	"member.menu.edit menu_popup_background_over_color":{
+	"qs":"&tooltip_id=140&tooltip_section_id=3",
+	"html":"",
+	"label":"Color"
+},
+	"member.blog.edit rss_title":{
+	"qs":"&tooltip_id=157&tooltip_section_id=155",
+	"html":"<p>This is the name of the page,
+ as shown on the live web site. It is required to add the page to the content manager.</p>",
+	"label":"Title"
+},
+	"member.slideshow.edit slideshow_resize_image_bottom":{
+	"qs":"&tooltip_id=386&tooltip_section_id=69",
+	"html":"",
+	"label":"Resize Image Bottom?"
+},
+	"member.site-option-group.edit site_option_group_embed":{
+	"qs":"&tooltip_id=302&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable Embedding?"
+},
+	"member.rental.editRental rental_rate_text":{
+	"qs":"&tooltip_id=274&tooltip_section_id=221",
+	"html":"",
+	"label":"Rate Description"
+},
+	"member.site-option-group.edit site_option_group_enable_approval":{
+	"qs":"&tooltip_id=363&tooltip_section_id=287",
+	"html":"",
+	"label":"Require Approval<br />of Public Data?"
+},
+	"member.menu.edit menu_popup_padding_height":{
+	"qs":"&tooltip_id=129&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select between 1-30 to edit the height of the pop-up padding.</span></span></span></p>",
+	"label":"Popup Padding<br />Height"
+},
+	"member.slideshow.edit slideshow_width":{
+	"qs":"&tooltip_id=75&tooltip_section_id=69",
+	"html":"<p>An integer showing the overall width of the slide show.</p>",
+	"label":"Width"
+},
+	"member.member.edit user_pref_email":{
+	"qs":"&tooltip_id=200&tooltip_section_id=184",
+	"html":"",
+	"label":"Personal Emails"
+},
+	"member.slideshow.edit slideshow_metakey":{
+	"qs":"&tooltip_id=72&tooltip_section_id=69",
+	"html":"<p>Keywords that show up in the HEAD tag of the HTML code. Enter a few phrases,
+ separated by commas,
+ that describe the page. It might show up on Search Engines. &nbsp;</p>",
+	"label":"Meta Keywords"
+},
+	"member.menu.edit menu_locked":{
+	"qs":"&tooltip_id=143&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Makes this menu not deletable.&nbsp;</span></span></span></p>",
+	"label":"Lock menu?"
+},
+	"member.menu.edit menuPopupOverBackground":{
+	"qs":"&tooltip_id=139&tooltip_section_id=3",
+	"html":"<p>&nbsp;</p>\r\n<p><span style=\"color: #000000;\"> <span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click and choose a color,
+ image,
+ or browse files for the pop-up rollover background.</span></span></span></p>\r\n<p><span style=\"font-family: 'Times New Roman',
+ serif; font-size: x-small;\"><br /></span></p>",
+	"label":"Pop-up Rollover<br />Background"
+},
+	"member.blog.edit rss_metakey":{
+	"qs":"&tooltip_id=165&tooltip_section_id=155",
+	"html":"<p>Keywords that show up in the HEAD tag of the HTML code. Enter a few phrases,
+ separated by commas,
+ that describe the page. It might show up on Search Engines. &nbsp;</p>",
+	"label":"Meta Keywords"
+},
+	"member.member.edit member_first_name":{
+	"qs":"&tooltip_id=187&tooltip_section_id=184",
+	"html":"<p>Enter your first name here.</p>",
+	"label":"First Name"
+},
+	"member.member.edit user_alternate_email":{
+	"qs":"&tooltip_id=382&tooltip_section_id=184",
+	"html":"",
+	"label":"Alternate Email"
+},
+	"member.rental.editRental rental_internal_address":{
+	"qs":"&tooltip_id=387&tooltip_section_id=221",
+	"html":"",
+	"label":"Internal Address"
+},
+	"member.blog.comments blog_comment_text":{
+	"qs":"&tooltip_id=315&tooltip_section_id=176",
+	"html":"",
+	"label":"Comments"
+},
+	"member.rental.editRental rental_oceanview":{
+	"qs":"&tooltip_id=237&tooltip_section_id=221",
+	"html":"",
+	"label":"Ocean View"
+},
+	"member.menu.edit menu_popup_font_size":{
+	"qs":"&tooltip_id=133&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click and choose a font. Select between 10 and 30 for sizes.</span></span></span></p>",
+	"label":"Pop-up Font Size"
+},
+	"member.content.edit content_diagonal_message":{
+	"qs":"&tooltip_id=42&tooltip_section_id=6",
+	"html":"",
+	"label":"Diagonal Image<br>Message"
+},
+	"member.content.edit content_firm_name":{
+	"qs":"&tooltip_id=28&tooltip_section_id=6",
+	"html":"",
+	"label":"Firm Name"
+},
+	"member.rental.editRental rental_fireplace":{
+	"qs":"&tooltip_id=234&tooltip_section_id=221",
+	"html":"",
+	"label":"Fireplace"
+},
+	"member.menu.edit menu_font_color":{
+	"qs":"&tooltip_id=119&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Color of the font.&nbsp;</span></span></span></p>",
+	"label":"Font Color"
+},
+	"member.menu.edit menu_selected_background_over_color":{
+	"qs":"&tooltip_id=394&tooltip_section_id=3",
+	"html":"",
+	"label":"Selected Background"
+},
+	"member.slideshow.edit slideshow_thumb_width":{
+	"qs":"&tooltip_id=88&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Width"
+},
+	"member.content.edit content_thumbnail":{
+	"qs":"&tooltip_id=15&tooltip_section_id=6",
+	"html":"<p>Simply a photo on the visible page. Click CHOOSE FILE,
+ to browse your files for the photo you want on the page.</p>",
+	"label":"Photo"
+},
+	"member.blog.edit blog_image_library_id":{
+	"qs":"&tooltip_id=376&tooltip_section_id=155",
+	"html":"",
+	"label":"Photos"
+},
+	"member.member.edit user_facebook_url":{
+	"qs":"&tooltip_id=340&tooltip_section_id=184",
+	"html":"",
+	"label":"Facebook URL"
+},
+	"member.site-option-group.edit site_option_group_allow_public":{
+	"qs":"&tooltip_id=362&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable Public Form?"
+},
+	"member.blog.formcat blog_category_metadesc":{
+	"qs":"&tooltip_id=319&tooltip_section_id=166",
+	"html":"",
+	"label":"Meta Description"
+},
+	"member.blog.formcat blog_category_unique_name":{
+	"qs":"&tooltip_id=320&tooltip_section_id=166",
+	"html":"",
+	"label":"Unique URL"
+},
+	"member.slideshow.editTab slideshow_tab_ajax_enabled":{
+	"qs":"&tooltip_id=108&tooltip_section_id=104",
+	"html":"",
+	"label":"Ajax Enabled?"
+},
+	"member.rental.editRental rental_pool":{
+	"qs":"&tooltip_id=229&tooltip_section_id=221",
+	"html":"",
+	"label":"Pool"
+},
+	"member.blog.reviewComment blog_comment_title":{
+	"qs":"&tooltip_id=330&tooltip_section_id=180",
+	"html":"",
+	"label":"Title"
+},
+	"member.rental.editRental rental_rate_addl_guests":{
+	"qs":"&tooltip_id=252&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest Rate"
+},
+	"member.blog.edit blog_metadesc":{
+	"qs":"&tooltip_id=310&tooltip_section_id=155",
+	"html":"",
+	"label":"Meta Description"
+},
+	"member.slideshow.edit slideshow_x_duration":{
+	"qs":"&tooltip_id=99&tooltip_section_id=69",
+	"html":"",
+	"label":"X Duration"
+},
+	"member.rental.editRental rental_active":{
+	"qs":"&tooltip_id=273&tooltip_section_id=221",
+	"html":"",
+	"label":"Active?"
+},
+	"member.menu.edit menu_background_color":{
+	"qs":"&tooltip_id=121&tooltip_section_id=3",
+	"html":"",
+	"label":"Color"
+},
+	"member.rental.editRental rental_max_guest":{
+	"qs":"&tooltip_id=270&tooltip_section_id=221",
+	"html":"",
+	"label":"Max Guest"
+},
+	"member.site-option-group.edit site_option_group_search_result_cfc_path":{
+	"qs":"&tooltip_id=388&tooltip_section_id=287",
+	"html":"",
+	"label":"Search Result CFC Path"
+},
+	"member.menu.editItem menu_button_type_tid4":{
+	"qs":"&tooltip_id=153&tooltip_section_id=142",
+	"html":"",
+	"label":"Select a blog tag parent page"
+},
+	"member.slideshow.edit slideshow_enable_ajax":{
+	"qs":"&tooltip_id=349&tooltip_section_id=69",
+	"html":"",
+	"label":"Enable Ajax"
+},
+	"member.rental.editRental rental_petfriendly":{
+	"qs":"&tooltip_id=239&tooltip_section_id=221",
+	"html":"",
+	"label":"Pet Friendly"
+},
+	"member.content.edit content_template":{
+	"qs":"&tooltip_id=54&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">ADVANCED USERS ONLY! You can change the formatting of the page by selecting the different templates shown. Leave blank to inherit default template.</span></span></span></p>",
+	"label":"Template"
+},
+	"member.site-option-group.edit site_option_group_parent_field":{
+	"qs":"&tooltip_id=359&tooltip_section_id=287",
+	"html":"",
+	"label":"Parent Field"
+},
+	"member.blog.comments rss_comments_title":{
+	"qs":"&tooltip_id=180&tooltip_section_id=176",
+	"html":"",
+	"label":"Subject"
+},
+	"member.content.edit content_photo_hide_image":{
+	"qs":"&tooltip_id=17&tooltip_section_id=6",
+	"html":"<p><strong>A</strong>llows you the option of viewing a full sized image on the page. Click yes to hide the full size image.</p>",
+	"label":"Hide Full Size Image?"
+},
+	"member.blog.edit blog_status":{
+	"qs":"&tooltip_id=307&tooltip_section_id=155",
+	"html":"",
+	"label":"Date"
+},
+	"member.menu.edit menu_enable_responsive":{
+	"qs":"&tooltip_id=380&tooltip_section_id=3",
+	"html":"",
+	"label":"Enable Responsive?"
+},
+	"member.blog.editTag blog_tag_metadesc":{
+	"qs":"&tooltip_id=326&tooltip_section_id=171",
+	"html":"",
+	"label":"Meta Description"
+},
+	"member.menu.editItemLink menu_button_link_text":{
+	"qs":"&tooltip_id=155&tooltip_section_id=153",
+	"html":"",
+	"label":"Text"
+},
+	"member.rental.editRental rental_highspeedinternet":{
+	"qs":"&tooltip_id=235&tooltip_section_id=221",
+	"html":"",
+	"label":"High Speed Internet"
+},
+	"member.member.edit user_group_id":{
+	"qs":"&tooltip_id=345&tooltip_section_id=184",
+	"html":"",
+	"label":"Access Rights"
+},
+	"member.rental.editRental rental_addl_guest_count":{
+	"qs":"&tooltip_id=271&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest Count"
+},
+	"member.member.edit member_password":{
+	"qs":"&tooltip_id=191&tooltip_section_id=184",
+	"html":"<p>Enter the member's password here. Make sure you remember the password as it can't be retrieved.</p>",
+	"label":"Password"
+},
+	"member.member.edit user_alternate_contact_name":{
+	"qs":"&tooltip_id=383&tooltip_section_id=184",
+	"html":"",
+	"label":"Alternate Contact Name"
+},
+	"member.blog.edit blog_category_description":{
+	"qs":"&tooltip_id=350&tooltip_section_id=155",
+	"html":"",
+	"label":"Description"
+},
+	"member.blog.editTag rss_tag_metakey":{
+	"qs":"&tooltip_id=175&tooltip_section_id=171",
+	"html":"<p>Keywords that show up in the HEAD tag of the HTML code. Enter a few phrases,
+ separated by commas,
+ that describe the page. It might show up on Search Engines. &nbsp;</p>",
+	"label":"Meta Keywords"
+},
+	"member.blog.reviewComment rss_comments_author_email":{
+	"qs":"&tooltip_id=183&tooltip_section_id=180",
+	"html":"",
+	"label":"Your Email"
+},
+	"member.content.edit content_for_sale":{
+	"qs":"&tooltip_id=21&tooltip_section_id=6",
+	"html":"<p>The overall condition of the page/ listing. The different statuses include: Active,
+ Sold,
+ Under Contract,
+ or Inactive.</p>",
+	"label":"Status"
+},
+	"member.slideshow.editPhoto slideshow_image_thumb_caption":{
+	"qs":"&tooltip_id=112&tooltip_section_id=108",
+	"html":"",
+	"label":"Photo Thumbnail<br>Caption"
+},
+	"member.rental.editRental rental_bath":{
+	"qs":"&tooltip_id=244&tooltip_section_id=221",
+	"html":"",
+	"label":"Bathrooms"
+},
+	"member.blog.reviewComment rss_comments_author":{
+	"qs":"&tooltip_id=182&tooltip_section_id=180",
+	"html":"",
+	"label":"Your Name"
+},
+	"member.menu.edit menu_padding_height":{
+	"qs":"&tooltip_id=116&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select between 1 and 30 to edit the padding height.</span></span></span></p>",
+	"label":"Padding Height"
+},
+	"member.rental.editRental rental_mountainview":{
+	"qs":"&tooltip_id=231&tooltip_section_id=221",
+	"html":"",
+	"label":"Mountain View"
+},
+	"member.menu.edit menu_selected_font_color":{
+	"qs":"&tooltip_id=393&tooltip_section_id=3",
+	"html":"",
+	"label":"Selected Font Color"
+},
+	"member.blog.comments blog_comment_author":{
+	"qs":"&tooltip_id=312&tooltip_section_id=176",
+	"html":"",
+	"label":"Your Name"
+},
+	"member.rental.category.edit rental_category_text":{
+	"qs":"&tooltip_id=217&tooltip_section_id=212",
+	"html":"",
+	"label":"Full Text"
+},
+	"member.content.edit content_metadesc":{
+	"qs":"&tooltip_id=59&tooltip_section_id=6",
+	"html":"<p>The description of the Meta keywords in the HTML code. Definitions of the meta keywords,
+ used to refine searches by users and search engines.</p>",
+	"label":"Meta Description"
+},
+	"member.rental.editRental rental_weekly_rate_cleaning":{
+	"qs":"&tooltip_id=259&tooltip_section_id=221",
+	"html":"",
+	"label":"Cleaning Fee"
+},
+	"member.slideshow.edit slideshow_thumb_area_padding":{
+	"qs":"&tooltip_id=87&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Area Padding"
+},
+	"member.content.edit content_summary":{
+	"qs":"&tooltip_id=13&tooltip_section_id=6",
+	"html":"<p>A brief overview of the content on a page. Editable content in this large text field.</p>",
+	"label":"Summary Text"
+},
+	"member.rental.editRental rental_enable_calendar":{
+	"qs":"&tooltip_id=272&tooltip_section_id=221",
+	"html":"",
+	"label":"Enable Calendar?"
+},
+	"member.rental.editRental rental_petfriendly_type":{
+	"qs":"&tooltip_id=279&tooltip_section_id=221",
+	"html":"",
+	"label":"Pet Rate Type"
+},
+	"member.content.edit content_property_template":{
+	"qs":"&tooltip_id=25&tooltip_section_id=6",
+	"html":"",
+	"label":"Property Template"
+},
+	"member.member.edit user_state":{
+	"qs":"&tooltip_id=206&tooltip_section_id=184",
+	"html":"",
+	"label":"State"
+},
+	"member.blog.reviewComment rss_comments_title":{
+	"qs":"&tooltip_id=184&tooltip_section_id=180",
+	"html":"",
+	"label":"Title"
+},
+	"member.blog.formcat blog_category_parent_id":{
+	"qs":"&tooltip_id=316&tooltip_section_id=166",
+	"html":"",
+	"label":"Parent Category"
+},
+	"member.site-option-group.edit site_option_group_search_result_cfc_method":{
+	"qs":"&tooltip_id=389&tooltip_section_id=287",
+	"html":"",
+	"label":"Search Result CFC Method"
+},
+	"member.member.edit member_website":{
+	"qs":"&tooltip_id=193&tooltip_section_id=184",
+	"html":"<p>Enter your website (if applicable). It must start with http://</p>",
+	"label":"Web Site"
+},
+	"member.content.edit content_user_group_id":{
+	"qs":"&tooltip_id=56&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select a user group to allow viewing of this page,
+ and all pages associated with it.</span></span></span></p>",
+	"label":"Viewable by"
+},
+	"member.blog.edit select_tag_id":{
+	"qs":"&tooltip_id=162&tooltip_section_id=155",
+	"html":"<p><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select a tag,
+ and click add. Or you can create a new tag in the &ldquo;Type Tag&rdquo; text field and click ADD.</span></span></p>",
+	"label":"Tags"
+},
+	"member.menu.edit menu_font_over_color":{
+	"qs":"&tooltip_id=124&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required Field. Type the color,
+ or color code here.</span></span></span></p>",
+	"label":"Rollover Font Color"
+},
+	"member.blog.editTag blog_tag_site_option_app_id":{
+	"qs":"&tooltip_id=337&tooltip_section_id=171",
+	"html":"",
+	"label":"Custom Fields"
+},
+	"member.site-option-group.edit site_option_group_public_form_url":{
+	"qs":"&tooltip_id=364&tooltip_section_id=287",
+	"html":"",
+	"label":"Public Form URL"
+},
+	"member.content.edit content_site_option_app_id":{
+	"qs":"&tooltip_id=332&tooltip_section_id=6",
+	"html":"",
+	"label":"Custom Fields"
+},
+	"member.slideshow.edit slideshow_text":{
+	"qs":"&tooltip_id=74&tooltip_section_id=69",
+	"html":"<p>A selection where you may create or edit a selected slideshow,
+ and add it to a page. You must select &ldquo;Listing Slideshow&rdquo; to edit a selected slideshow.</p>",
+	"label":"Slideshow"
+},
+	"member.rental.editRental rental_tax":{
+	"qs":"&tooltip_id=281&tooltip_section_id=221",
+	"html":"",
+	"label":"Taxes"
+},
+	"member.blog.editTag rss_tag_description":{
+	"qs":"&tooltip_id=174&tooltip_section_id=171",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Editable content describing the main ideas of the blog category.</span></span></span></p>",
+	"label":"Description"
+},
+	"member.slideshow.editPhoto slideshow_image_caption":{
+	"qs":"&tooltip_id=111&tooltip_section_id=108",
+	"html":"",
+	"label":"Photo Caption"
+},
+	"member.menu.edit menu_character_length":{
+	"qs":"&tooltip_id=375&tooltip_section_id=3",
+	"html":"",
+	"label":"Max Character Length"
+},
+	"member.menu.edit menu_popup_bold":{
+	"qs":"&tooltip_id=128&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Click yes for a bold styling on the pop-up font.</span></span></span></p>",
+	"label":"Popup Bold<br />Font?"
+},
+	"member.slideshow.edit slideshow_moved_tile_count":{
+	"qs":"&tooltip_id=103&tooltip_section_id=69",
+	"html":"",
+	"label":"Moved Tile Count"
+},
+	"member.content.edit content_image_library_id":{
+	"qs":"&tooltip_id=18&tooltip_section_id=6",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">This tool lets you upload multiple images (.jpg,
+ .gif or .png) at once.</span></span></span><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\"><br /></span></span><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">You may also upload a compressed zip file with these image formats inside.</span></span></span><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\"><br /></span></span><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Please note any files inside the zip,
+ that are not jpg,
+ gif or png,
+,
+ will be ignored.</span></span></span></p>",
+	"label":"Photos"
+},
+	"member.rental.editRental rental_petfriendly_fee":{
+	"qs":"&tooltip_id=278&tooltip_section_id=221",
+	"html":"",
+	"label":"Pet Fee"
+},
+	"member.member.edit member_phone":{
+	"qs":"&tooltip_id=192&tooltip_section_id=184",
+	"html":"<p>Enter your cell phone,
+ or business phone number here.</p>",
+	"label":"Phone"
+},
+	"member.site-option-group.edit site_option_group_search_index_cfc_method":{
+	"qs":"&tooltip_id=355&tooltip_section_id=287",
+	"html":"",
+	"label":"Search Index CFC Method"
+},
+	"member.slideshow.edit slideshow_thumb_padding":{
+	"qs":"&tooltip_id=86&tooltip_section_id=69",
+	"html":"",
+	"label":"Thumbnail Padding"
+},
+	"member.rental.editRental rental_weekly_rate_holiday":{
+	"qs":"&tooltip_id=256&tooltip_section_id=221",
+	"html":"",
+	"label":"Holiday Rate"
+},
+	"member.member.edit leadsOnly":{
+	"qs":"&tooltip_id=210&tooltip_section_id=184",
+	"html":"<ul>\r\n<li>\r\n<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Administrator: </span></span></span><span style=\"color: #000000;\">view/change all public or private data.</span></p>\r\n</li>\r\n<li>\r\n<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Agent: </span></span></span><span style=\"color: #000000;\">view/change only their assigned private data.</span></p>\r\n</li>\r\n<li>\r\n<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Public User: </span></span></span><span style=\"color: #000000;\">view/change data on the public side of the web site only.</span></p>\r\n</li>\r\n</ul>",
+	"label":"Access Rights"
+},
+	"member.rental.editRental rental_hottub":{
+	"qs":"&tooltip_id=233&tooltip_section_id=221",
+	"html":"",
+	"label":"Hot Tub"
+},
+	"member.site-option-group.edit site_option_group_email_cfc_method":{
+	"qs":"&tooltip_id=373&tooltip_section_id=287",
+	"html":"",
+	"label":"Email CFC Method"
+},
+	"member.site-option-group.edit inquiries_type_id":{
+	"qs":"&tooltip_id=374&tooltip_section_id=287",
+	"html":"",
+	"label":"Map To Lead Type"
+},
+	"member.blog.edit rss_summary":{
+	"qs":"&tooltip_id=159&tooltip_section_id=155",
+	"html":"<p>A brief overview of the content on a page. Editable content in this large text field.</p>",
+	"label":"Summary Text"
+},
+	"member.blog.edit blog_unique_name":{
+	"qs":"&tooltip_id=311&tooltip_section_id=155",
+	"html":"",
+	"label":"Unique URL"
+},
+	"member.rental.editRental rental_min_stay":{
+	"qs":"&tooltip_id=275&tooltip_section_id=221",
+	"html":"",
+	"label":"Minimum stay?"
+},
+	"member.menu.edit menu_divider_color":{
+	"qs":"&tooltip_id=123&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Required field. Type in a color for the divider.</span></span></span></p>",
+	"label":"Divider Color"
+},
+	"member.blog.edit blog_title":{
+	"qs":"&tooltip_id=304&tooltip_section_id=155",
+	"html":"",
+	"label":"Title"
+},
+	"member.slideshow.edit slideshow_tabovertextcolor":{
+	"qs":"&tooltip_id=81&tooltip_section_id=69",
+	"html":"<p>Click and choose a color for the tab over the text.&nbsp;</p>",
+	"label":"Tab Over Text Color"
+},
+	"member.content.edit content_text_position":{
+	"qs":"&tooltip_id=24&tooltip_section_id=6",
+	"html":"",
+	"label":"Body Text Position"
+},
+	"member.menu.edit menu_background_image":{
+	"qs":"&tooltip_id=122&tooltip_section_id=3",
+	"html":"",
+	"label":"Image"
+},
+	"member.content.edit content_mls_price":{
+	"qs":"&tooltip_id=29&tooltip_section_id=6",
+	"html":"",
+	"label":"Use MLS Price?"
+},
+	"member.blog.formcat blog_category_name":{
+	"qs":"&tooltip_id=317&tooltip_section_id=166",
+	"html":"",
+	"label":"Name"
+},
+	"member.site-option-group.edit site_option_group_map_fields_type":{
+	"qs":"&tooltip_id=367&tooltip_section_id=287",
+	"html":"",
+	"label":"Map Fields Type"
+},
+	"member.menu.edit menu_popup_padding_width":{
+	"qs":"&tooltip_id=132&tooltip_section_id=3",
+	"html":"<p><span style=\"color: #000000;\"><span style=\"font-family: 'Times New Roman',
+ serif;\"><span style=\"font-size: small;\">Select an integer between 1 and 30,
+ to edit the padding width of the pop-up.</span></span></span></p>",
+	"label":"Popup Padding<br />Width"
+},
+	"member.content.edit content_parentpage_link_layout":{
+	"qs":"&tooltip_id=52&tooltip_section_id=6",
+	"html":"<p>How the parent page links will be placed on the page. The options here include: Invisible,
+ Top with numbered columns,
+ top with columns,
+ or top on one line. &nbsp;</p>",
+	"label":"Parent Page Link Layout"
+},
+	"member.content.edit content_metacode":{
+	"qs":"&tooltip_id=295&tooltip_section_id=6",
+	"html":"<p>This field lets you append additional code into the HTML &lt;HEAD&gt; element for just this page. &nbsp;Example uses may be to attach a stylesheet,
+ add javascript or prevent robot indexing.</p>",
+	"label":"Meta Code"
+},
+	"member.content.edit content_search_mls":{
+	"qs":"&tooltip_id=67&tooltip_section_id=6",
+	"html":"<p>Allows you to refine your search through the MLS. Specific Options include: City,
+ Price,
+ Property type,
+ Beds,
+ Baths,
+ Square footage,
+ the Year Built,
+ County,
+ View,
+ Sale Type,
+ Style,
+ Frontage and More Options.</p>",
+	"label":"Search MLS?"
+},
+	"member.rental.editRental rental_weekly_rate_cleaning_addl_guests":{
+	"qs":"&tooltip_id=261&tooltip_section_id=221",
+	"html":"",
+	"label":"Addl Guest<br />Cleaning Rate"
+},
+	"member.menu.edit menu_background_over_image":{
+	"qs":"&tooltip_id=126&tooltip_section_id=3",
+	"html":"",
+	"label":"Image"
+},
+	"member.blog.edit blog_site_option_app_id":{
+	"qs":"&tooltip_id=334&tooltip_section_id=155",
+	"html":"",
+	"label":"Custom Fields"
+},
+	"member.site-option-group.edit site_option_group_view_cfc_method":{
+	"qs":"&tooltip_id=353&tooltip_section_id=287",
+	"html":"",
+	"label":"View CFC Method"
+},
+	"member.rental.editRental rental_text":{
+	"qs":"&tooltip_id=227&tooltip_section_id=221",
+	"html":"",
+	"label":"Full Text"
+},
+	"member.content.edit content_property_enable_reservation":{
+	"qs":"&tooltip_id=46&tooltip_section_id=6",
+	"html":"",
+	"label":"Accept Online Reservations"
+},
+	"member.content.edit content_name2":{
+	"qs":"&tooltip_id=10&tooltip_section_id=6",
+	"html":"<p>An additional heading that appears below the main title.</p>",
+	"label":"Subheading"
+},
+	"member.blog.edit rss_slideshow_id":{
+	"qs":"&tooltip_id=164&tooltip_section_id=155",
+	"html":"<p>A selection where you may create or edit a selected slideshow,
+ and add it to a page. You must select &ldquo;Listing Slideshow&rdquo; to edit a selected slideshow.</p>",
+	"label":"Slideshow"
+},
+	"member.slideshow.edit slideshow_back_image":{
+	"qs":"&tooltip_id=84&tooltip_section_id=69",
+	"html":"<p>Click CHOOSE FILE,
+ to browse through your files to choose a back image for the slide show.</p>\r\n<p>&nbsp;</p>",
+	"label":"Back Image"
+},
+	"member.menu.editItem menu_button_target":{
+	"qs":"&tooltip_id=148&tooltip_section_id=142",
+	"html":"",
+	"label":"Link Target"
+},
+	"member.site-option-group.edit site_option_group_lead_routing_enabled":{
+	"qs":"&tooltip_id=371&tooltip_section_id=287",
+	"html":"",
+	"label":"Enable Lead Routing?"
+},
+	"member.content.edit content_virtual_tour":{
+	"qs":"&tooltip_id=41&tooltip_section_id=6",
+	"html":"",
+	"label":"Virtual Tour"
+},
+	"member.rental.editRental rental_special_flash":{
+	"qs":"&tooltip_id=242&tooltip_section_id=221",
+	"html":"",
+	"label":"Flashing special"}}}
