@@ -755,7 +755,6 @@ var db=request.zos.queryObject;
 		db.sql="SELECT content_id FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		content_unique_name = #db.param(arrDefaultURL[i])# and 
-		content_for_sale =#db.param(1)# and 
 		content_deleted=#db.param(0)#";
 		qIdCheck=db.execute("qIDCheck");
 		if(qIdCheck.recordcount EQ 0){
