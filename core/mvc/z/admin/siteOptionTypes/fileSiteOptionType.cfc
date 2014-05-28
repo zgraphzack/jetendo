@@ -217,16 +217,16 @@
 	nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
 	var tempDir=getTempDirectory();
 	filename="";
-	if(nv NEQ ""){
+	/*if(nv NEQ ""){
 		if((len(nv) LTE len(tempDir) or left(nv, len(tempDir)) NEQ tempDir or not fileexists(nv))){
 			if(len(nv) LTE len(request.zos.installPath) or left(nv, len(request.zos.installPath)) NEQ request.zos.installPath or not fileexists(nv)){
 				return {success:true, value:replace(nv, '/'&uploadPath&'/site-options/', ''), dateValue:""};
 			}
-		}
-		form.site_x_option_group_id=arguments.row.site_x_option_group_id;
-		fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', 'site_x_option_group', 'site_x_option_group_id', arguments.prefixString&arguments.row.site_option_id&'_delete', request.zos.zcoredatasource, 'site_x_option_group_value');	
-	}
-	if(isNull(fileName) or fileName EQ ""){
+		}*/
+	form.site_x_option_group_id=arguments.row.site_x_option_group_id;
+	fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', 'site_x_option_group', 'site_x_option_group_id', arguments.prefixString&arguments.row.site_option_id&'_delete', request.zos.zcoredatasource, 'site_x_option_group_value');	
+	//}
+	if(not structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_delete') and (isNull(fileName) or fileName EQ "")){
 		arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]=arguments.row.site_x_option_group_value;
 		nv=arguments.row.site_x_option_group_value;
 	}else{
