@@ -11,28 +11,6 @@
 ## for contributing additional features, fixes, and testing.
 ######################################################################
 
-######################################################################
-## Usage Instructions
-######################################################################
-## This script requires two files to run:
-##     backup_dbs.php        - Main script file
-##     backup_dbs_config.php - Configuration file
-## Be sure they are in the same directory.
-## -------------------------------------------------------------------
-## Do not edit the variables in the main file. Use the configuration
-## file to change your settings. The settings are explained there.
-## -------------------------------------------------------------------
-## A few methods to run this script:
-## - php /PATH/backup_dbs.php
-## - BROWSER: http://domain/PATH/backup_dbs.php
-## - ApacheBench: ab "http://domain/PATH/backup_dbs.php"
-## - lynx http://domain/PATH/backup_dbs.php
-## - wget http://domain/PATH/backup_dbs.php
-## - crontab: 0 3  * * *     root  php /PATH/backup_dbs.php
-## -------------------------------------------------------------------
-## For more information, visit the website given above.
-######################################################################
-
 error_reporting( E_ALL );
 
 // Initialize default settings
@@ -228,11 +206,22 @@ for($i=30;$i>=0;$i--){
 
 
 // Loop through databases
-$db_conn	= mysql_connect( $MYSQL_HOST, $MYSQL_USER, $MYSQL_PASSWD ) or error( true, mysql_error(), true );
+$db_conn	= new mysqli( $MYSQL_HOST, $MYSQL_USER, $MYSQL_PASSWD ) or error( true, $db_conn->error, true );
 
-$db_result	= mysql_query('show databases', $db_conn);
+$db_result=$db_conn->query("SHOW VARIABLES LIKE 'datadir'");
+$row = $db_result->fetch_object();
+$mysqlDataDir=$row->Value;
+
+$jsonPath=$logDir.'mysql-backup/backupDateCache.json';
+if(file_exists($jsonPath)){
+	$arrJsonData=json_decode(file_get_contents($jsonPath), true);
+}else{
+	$arrJsonData=array();
+}
+
+$db_result	= $db_conn->query('show databases');
 $db_auth	= " --host=\"$MYSQL_HOST\" --user=\"$MYSQL_USER\" --password=\"$MYSQL_PASSWD\"";
-while ($db_row = mysql_fetch_object($db_result)) {
+while ($db_row = $db_result->fetch_object()) {
  
 	$db = $db_row->Database;
 
@@ -241,34 +230,70 @@ while ($db_row = mysql_fetch_object($db_result)) {
 		continue;
 	}
 
-	$cmd="/bin/rm -rf ".escapeshellarg($BACKUP_TEMP."/".$db);
-	echo $cmd."\n";
-	`$cmd`;
 	@mkdir($BACKUP_TEMP."/".$db, 0600);
 	unset( $output ); 
 	// dump db schema
-	$cmd = "/usr/bin/mysqldump --no-data --triggers $db_auth ".escapeshellarg($db)." 2>&1 >$BACKUP_TEMP/$db/schema.sql";
+	@unlink("$BACKUP_TEMP/$db/schema.sql");
+	$cmd = "/usr/bin/mysqldump --no-data --triggers $db_auth ".escapeshellarg($db)." >".$BACKUP_TEMP."$db/schema.sql";
 	echo $cmd."\n";
 	exec($cmd, $output, $res);
 	if( $res > 0 ) {
 		error( true, "Schema dump failed for $db\n".implode( "\n", $output) );
 	}
-	
-	$result= mysql_query('show tables in `'.$db.'`', $db_conn);
-	while ($row2 = mysql_fetch_array($result)) {
+	$result= $db_conn->query('show tables in `'.$db.'`');
+	while ($row2 = $result->fetch_array(MYSQLI_ASSOC)) {
+
 		$table=$row2['Tables_in_'.$db];
+		if(substr($table, 0, 5) == "zram#"){
+			continue;
+		}
+		$tableFilePath=$mysqlDataDir.str_replace("-", "@002d", str_replace(".", "@002e", str_replace("#", "@0023", $db."/".$table)));
+
+		$antilock=" --single-transaction";
+		if(file_exists($tableFilePath.".ibd")){
+			$currentTableFilePath=$tableFilePath.".ibd";
+		}else if(file_exists($tableFilePath.".IBD")){
+			$currentTableFilePath=$tableFilePath.".IBD";
+		}else if(file_exists($tableFilePath.".MYD")){
+			$antilock=" --lock-table=false --skip-lock-tables";
+			$currentTableFilePath=$tableFilePath.".MYD";
+		}else if(file_exists($tableFilePath.".myd")){
+			$antilock=" --lock-table=false --skip-lock-tables";
+			$currentTableFilePath=$tableFilePath.".myd";
+		}else if(file_exists($tableFilePath.".frm")){
+			$currentTableFilePath=""; // ignore memory tables and other strange table formats
+		}else{
+			$currentTableFilePath="";
+			error( true, "Couldn't find table data file: ".$tableFilePath." | Unknown or missing file extension when looking for .ibd and .MYD");
+			continue;
+		}
+		$backupTable=false;
+		if($currentTableFilePath != ""){
+			$currentFileMTime=filemtime($currentTableFilePath);
+			if(!isset($arrJsonData[$currentTableFilePath]) || $currentFileMTime != $arrJsonData[$currentTableFilePath]){
+				$backupTable=true;
+			}
+			$arrJsonData[$currentTableFilePath]=$currentFileMTime;
+		}else{
+			$backupTable=true;
+		}
 		$tableFileName=preg_replace('/[^A-Za-z0-9_\-]/', '_', $table);
-		unset( $output ); 
-		$cmd="/usr/bin/mysqldump $db_auth --quick --no-create-db --no-create-info --single-transaction --opt --skip-lock-tables  ".escapeshellarg($db)." ".escapeshellarg($table)." 2>&1 >$BACKUP_TEMP/$db/$tableFileName.sql";
-		echo $cmd."\n";
-		writeLog( "Dumping DB: " . $db." Table: ".$table );
-		exec($cmd, $output, $res);
-		if( $res > 0 ) {
-			error( true, "Failed: ".implode( "\n", $output) );
-		} else {
-			writeLog( "Success\n" );
-		} // if
+		if($backupTable || !file_exists("$BACKUP_TEMP/$db/$tableFileName.sql")){
+			@unlink("$BACKUP_TEMP/$db/$tableFileName.sql");
+			$cmd="/usr/bin/mysqldump $db_auth  --opt ".$antilock." --quick --no-create-db --no-create-info  ".escapeshellarg($db)." ".escapeshellarg($table)." >".$BACKUP_TEMP."$db/$tableFileName.sql";
+			echo $cmd."\n";
+			writeLog( "Dumping DB: " . $db." Table: ".$table );
+			exec($cmd, $output, $res);
+			if( $res > 0 ) {
+				error( true, "Failed: ".implode( "\n", $output) );
+			} else {
+				writeLog( "Success\n" );
+			}
+		}else{
+			writeLog( "Skip backup for unchanged table: ".$db.".".$table."\n" );
+		}
 	}
+	file_put_contents($jsonPath, json_encode($arrJsonData));
 
 	if( $OPTIMIZE ) {
 		unset( $output );
@@ -278,23 +303,8 @@ while ($db_row = mysql_fetch_object($db_result)) {
 		} else {
 			writeLog( "Optimized DB: " . $db );
 		}
-	} // if
+	}
 		
-	unset( $output );
-	/*if( $os == 'unix' ) {
-		exec( "$USE_NICE $COMPRESSOR $BACKUP_TEMP/$db.sql 2>&1" , $output, $res );
-	} else {*/
-		//exec("7za a -t7z $BACKUP_TEMP/$db.sql.7z $BACKUP_TEMP/$db.sql", $output, $res);
-		//exec( "zip -mj $BACKUP_TEMP/$db.sql.zip $BACKUP_TEMP/$db.sql 2>&1" , $output, $res );
-	//}
-	//var_dump($output); 
-	/*if($output[count($output)-1] != "Everything is Ok" || $res > 0 ) {
-		error( true, "COMPRESSION FAILED\n".implode( "\n", $output) );
-	} else {
-		writeLog( "Compressed DB: " . $db );
-		@unlink("$BACKUP_TEMP/$db.sql");
-	}*/
-
 	if( $FLUSH ) {
 		unset( $output );
 		exec("mysqladmin $db_auth flush-tables 2>&1", $output, $res );
@@ -304,11 +314,9 @@ while ($db_row = mysql_fetch_object($db_result)) {
 		} else {
 			writeLog( "Flushed Tables" );
 		}
-	} // if
-} // while
+	} 
+} 
 
-mysql_free_result($db_result);
-mysql_close($db_conn);
 
 // first error check, so we can add a message to the backup email in case of error
 if ( $error ) {
@@ -321,8 +329,6 @@ if ( $error ) {
 
 	writeLog( $msg );
 }
-
-
 
 // see if there were any errors to email
 if ( ($ERROR_EMAIL) && ($error) ) {
@@ -339,10 +345,6 @@ if ( ($ERROR_EMAIL) && ($error) ) {
 	$body = "Mysql backup on {$hostname} completed successfully.\n";
 	$res=mymail($EMAIL_ADDR,$ERROR_SUBJECT, $body, "From: \"Coldfusion Error\" <coldfusion_error@farbeyondcode.com>\nX-Mailer: php" );
 }
-
-################################
-# cleanup / mr proper
-################################
 
 // close log files
 fclose($f_log);
