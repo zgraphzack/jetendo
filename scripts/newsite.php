@@ -9,6 +9,7 @@ $sitesPath=get_cfg_var("jetendo_sites_path");
 // */1 * * * * /usr/bin/php /root/newsite.php >/dev/null 2>&1
 
 
+
 $debug=false;
 $timeout=60; // seconds
 $host=`hostname`;
@@ -16,6 +17,14 @@ $testDomain=get_cfg_var("jetendo_test_domain");
 if(strpos($host, $testDomain) !== FALSE){
 	$isTestServer=true;
 	$isInstalledOnSambaMount=get_cfg_var("jetendo_test_server_uses_samba");
+	$adminDomain=str_replace("http://", "", str_replace("https://", "", get_cfg_var("jetendo_admin_domain")));
+	$cmd="/bin/ping -c ".$adminDomain.".";
+	$r=`$cmd`;
+	if(strpos($r, 'bytes from') === false){
+		echo "restart networking because ping to ".$adminDomain." failed.\n";
+		echo `/usr/bin/service networking stop`;
+		echo `/usr/bin/service networking start`;
+	}
 }else{
 	$isTestServer=false;
 	$isInstalledOnSambaMount=get_cfg_var("jetendo_server_uses_samba");

@@ -301,7 +301,8 @@ echo "Running apt-get update to check for new packages: ";
 $arrPackage=getAvailableUpgradePackages();
 if($arrPackage['available']){
 	echo "New packages available.\n".$arrPackage['results'];
-	array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
+	// temporarily commented to avoid emails
+	//array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
 }else{
 	echo "No new packages are available. Response: ".$arrPackage['results']."\n";
 }

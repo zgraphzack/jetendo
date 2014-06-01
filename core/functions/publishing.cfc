@@ -49,30 +49,47 @@ result=zHTTPtoFile(source, destinationFile);
 	<cfargument name="source" required="yes" type="string">
 	<cfargument name="destinationFile" required="yes" type="string">
 	<cfargument name="timeout" type="string" required="no" default="#30#">
+	<cfargument name="throwOnError" type="boolean" required="no" default="#false#">
 	<cfscript>
 	var content = "";
     var tempUnique='###getTickCount()#';
 	var cfhttpresult=0;
+
+	path=getDirectoryFromPath(arguments.destinationFile);
+	tempName=getFileFromPath(arguments.destinationFile);
+	tempFilePath=path&tempName&tempUnique;
+	if(not directoryexists(path)){
+		throw("Directory, ""#path#"", doesn't exist.");
+	}
+	if(fileexists(tempFilePath)){
+		application.zcore.functions.zdeletefile(tempFilePath);
+	}
+	try{
+		HTTP METHOD="GET" URL="#arguments.source#" path="#path#" file="#tempName&tempUnique#" result="cfhttpresult" redirect="yes" timeout="#arguments.timeout#" resolveurl="no" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" getasbinary="auto" throwonerror="yes"{
+			httpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#";
+			httpparam type="Header" name="TE" value="#request.httpCompressionType#";
+		}
+		if(structkeyexists(cfhttpresult,'statuscode') and left(cfhttpresult.statusCode,3) EQ '200'){
+			if(fileexists(arguments.destinationFile)){
+				application.zcore.functions.zdeletefile(arguments.destinationFile);
+			}
+			file action="rename" nameconflict="overwrite" source="#tempFilePath#" destination="#arguments.destinationFile#";
+			return true;
+		}
+	}catch(Any e){
+		// ignore exception
+		if(arguments.throwOnError){
+			if(fileexists(tempFilePath)){
+				application.zcore.functions.zdeletefile(tempFilePath);
+			}
+			rethrow;
+		}
+	}
+	if(fileexists(tempFilePath)){
+		application.zcore.functions.zdeletefile(tempFilePath);
+	}
+	return false;
 	</cfscript>
-		<CFHTTP METHOD="GET" URL="#arguments.source#" result="cfhttpresult" redirect="yes" timeout="#arguments.timeout#" resolveurl="no" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" getasbinary="auto">
-		<cfhttpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#">
-		<cfhttpparam type="Header" name="TE" value="#request.httpCompressionType#">
-		</CFHTTP>
-		<cfif structkeyexists(cfhttpresult,'statuscode') and left(cfhttpresult.statusCode,3) EQ '200' and (isBinary(cfhttpresult.FileContent) or trim(cfhttpresult.FileContent) NEQ "CFMXConnectionFailure" and trim(cfhttpresult.FileContent) NEQ "Connection Failure")>
-			<cfif isBinary(cfhttpresult.FileContent) EQ false>
-				<cfset content = trim(cfhttpresult.FileContent)>
-	            <cffile action="write" nameconflict="overwrite" charset="utf-8" file="#arguments.destinationFile##tempUnique#" output="#content#">
-            <cfelse>
-            	<cffile action="write" nameconflict="overwrite" charset="utf-8" file="#arguments.destinationFile##tempUnique#" output="#cfhttpresult.FileContent#">
-            </cfif>
-            <cffile action="rename" nameconflict="overwrite" source="#arguments.destinationFile##tempUnique#" destination="#arguments.destinationFile#">
-		<cfelse>
-			<cfreturn false>
-		</cfif>
-    <cftry>
-        <cfcatch type="any"><cfreturn false></cfcatch>
-    </cftry>
-	<cfreturn true>
 </cffunction>
 	
 <cffunction name="zPublishQuery" localmode="modern" output="true" returntype="any">

@@ -1404,9 +1404,9 @@ this.isPropertyDisplayCom=true;
 									<td colspan="2"><div class="zls2-11">
 											<cfscript>
 										    if(priceChange GT 0){
-											writeoutput('<span class="zls2-12">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
+											writeoutput('<span class="zls2-12 zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
 										    }else if(priceChange LT 0){
-											writeoutput('<span class="zls2-12">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
+											writeoutput('<span class="zls2-12 zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
 										    }
 											if(request.cgi_script_name EQ "/z/listing/property/detail/index"){
 												writeoutput(htmleditformat(fullTextBackup));
@@ -1918,9 +1918,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 													<cfscript>
 													if(arguments.idx.content_mls_price EQ 1){
 														if(priceChange GT 0){
-															writeoutput('<span class="zls2-12">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
+															writeoutput('<span class="zls2-12 zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
 														}else if(priceChange LT 0){
-															writeoutput('<span class="zls2-12">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
+															writeoutput('<span class="zls2-12 zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
 														}
 													}
 												    </cfscript>
@@ -2153,9 +2153,9 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 											<td><div class="zls2-11">
 													<cfscript>
 													    if(priceChange GT 0){
-														writeoutput('<span class="zls2-12">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
+														writeoutput('<span class="zls2-12 zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
 													    }else if(priceChange LT 0){
-														writeoutput('<span class="zls2-12">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
+														writeoutput('<span class="zls2-12 zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
 													    }
 													    </cfscript>
 													<cfif isDefined('this.isPropertyDisplayCom') EQ false or this.optionstruct.contentDetailView EQ false>
