@@ -493,11 +493,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 		request.lastPhotoId=idx.listing_id;//this.mls_id&"-"&idx.rets21_sysid;
 		if(idx.listing_photocount EQ 0){
 			// check for permanent images or show not available image.
-			if(fileexists(request.zos.globals.serverhomedir&"a/listings/images/images_permanent/#idx.listing_id#.jpg")){
-				idx["photo1"]='/z/a/listing/images/images_permanent/#idx.urlMlsPid#.jpg';
-			}else{
-				idx["photo1"]='/z/a/listing/images/image-not-available.gif';
-			}
+			idx["photo1"]='/z/a/listing/images/image-not-available.gif';
 		}else{
 			i=1;
 			for(i=1;i LTE idx.listing_photocount;i++){
@@ -508,7 +504,6 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 				}else{
 					idx["photo"&i]="http://mlsimage.fnisrediv.com/ListingImages/camrmls/addl_picts/"&removechars(idx.listing_id,1,3)&"-"&(i-1)&".jpg";
 				}
-				//idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/21/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 			}
 		}
 		idx["agentName"]=idx.rets21_la_firstname&" "&idx.rets21_la_lastname;

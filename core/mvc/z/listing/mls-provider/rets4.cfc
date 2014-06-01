@@ -379,16 +379,16 @@
 		
 		
 		if(arguments.query.listing_photocount EQ 0){
-				idx["photo1"]='/z/a/listing/images/image-not-available.gif';
+			idx["photo1"]='/z/a/listing/images/image-not-available.gif';
 			
 		}else{
-				i=1;
-				
-				for(i=1;i LTE arguments.query.listing_photocount;i++){
-					local.fNameTemp1=idx.urlMlsPid&"-"&i&".jpeg";
-					local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-					idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/4/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
-				}
+			i=1;
+			
+			for(i=1;i LTE arguments.query.listing_photocount;i++){
+				local.fNameTemp1=idx.urlMlsPid&"-"&i&".jpeg";
+				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
+				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/4/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			}
 		}
 		oid1="0";
 		d44=dateformat(now(),"yyyymmdd");

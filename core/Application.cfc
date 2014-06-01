@@ -37,7 +37,7 @@ this.suppressRemoteComponentContent = false;
 this.typeChecking = true;
 // request
 // max lifespan of a running request
-this.requestTimeout=createTimeSpan(0,0,0,50); 
+this.requestTimeout=createTimeSpan(0,0,0,25); 
 
 // charset
 this.charset.web="UTF-8";

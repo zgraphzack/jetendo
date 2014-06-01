@@ -126,6 +126,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	var questionMarkPosition=0;
 	var paramIndex=1;
 	var paramDump=0;
+	var startTime=gettickcount('nano');
 	if(arguments.configStruct.dbtype NEQ "" and arguments.configStruct.dbtype NEQ "datasource"){
 		queryStruct.dbtype=arguments.configStruct.dbtype;	
 		structdelete(queryStruct, 'datasource');
@@ -191,7 +192,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	}
 	request.zos.lastDBResult=cfquery;
 	if(structkeyexists(variables.config, 'queryLogFunction') and isCustomFunction(variables.config.queryLogFunction)){
-		variables.config.queryLogFunction({ sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });
+		variables.config.queryLogFunction({ totalExecutionTime:((gettickcount('nano')-startTime)/1000000), sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });
 	}
 	if(structkeyexists(db, arguments.name)){
 		return db[arguments.name];

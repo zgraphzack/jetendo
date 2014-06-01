@@ -5,8 +5,8 @@
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	if(structkeyexists(arguments.ss.result, 'executionTime')){
-		if(arguments.ss.result.executionTime GT 1000){
-			arrayprepend(request.zos.arrRunTime, {time:request.zos.startTime, name:'Slow query logged | Execution Time: #arguments.ss.result.executionTime# | SQL Statement: #arguments.ss.sql#'});
+		if(arguments.ss.totalExecutionTime GT 1000){
+			arrayprepend(request.zos.arrRunTime, {time:request.zos.startTime, name:'Slow query logged | Total Execution Time: #arguments.ss.totalExecutionTime# | Query Execution Time: #arguments.ss.result.executionTime# | SQL Statement: #arguments.ss.sql#'});
 		}
 	}
 	</cfscript>

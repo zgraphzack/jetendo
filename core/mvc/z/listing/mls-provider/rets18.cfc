@@ -296,12 +296,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 		
 		request.lastPhotoId=listing_id;
 		if(idx.listing_photocount EQ 0){
-			// check for permanent images or show not available image.
-			if(fileexists(request.zos.globals.serverhomedir&"a/listings/images/images_permanent/#idx.urlMlsPid#.jpg")){
-				idx["photo1"]='/z/a/listing/images/images_permanent/#idx.urlMlsPid#.jpg';
-			}else{
-				idx["photo1"]='/z/a/listing/images/image-not-available.gif';
-			}
+			idx["photo1"]='/z/a/listing/images/image-not-available.gif';
 		}else{
 			i=1;
 			firstpic=1;

@@ -418,20 +418,20 @@ unlimited between 7pm and 5am hawaii time
 		
 		
 		if(arguments.query.listing_photocount EQ 0){
-				idx["photo1"]='/z/a/listing/images/image-not-available.gif';
+			idx["photo1"]='/z/a/listing/images/image-not-available.gif';
 			
 		}else{
-				i=1;
-				if(idx["rets20_status"] NEQ "A"){
-					local.tempCount=1;
-				}else{
-					local.tempCount=arguments.query.listing_photocount;
-				}
-				for(i=1;i LTE local.tempCount;i++){
-					local.fNameTemp1=idx.listing_id&"-"&i&".jpeg";
-					local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-					idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
-				}
+			i=1;
+			if(idx["rets20_status"] NEQ "A"){
+				local.tempCount=1;
+			}else{
+				local.tempCount=arguments.query.listing_photocount;
+			}
+			for(i=1;i LTE local.tempCount;i++){
+				local.fNameTemp1=idx.listing_id&"-"&i&".jpeg";
+				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
+				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			}
 		}
 		
 		oid1="0";

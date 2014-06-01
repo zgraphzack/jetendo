@@ -27,6 +27,14 @@
 	ts.zos.grammarlyTrackingURL="http://tr.grammarly.com/aff_c?offer_id=37&aff_id=3187";
 	
 	if(ts.zos.istestserver){
+		ts.zos.serverStruct={
+			"1":{
+				apiURL:"https://server1.your-company.com/z/api/",
+				serverId:1,
+				datasource:"server1jetendo", // this datasource should have only SELECT access on the "version" table, and nothing else.
+				databaseIncrementOffset:1
+			}
+		};
 		ts.zos.defaultSSLManagerDomain="";
 		ts.zos.defaultPasswordVersion=2; // Valid values are 0 - no hash,1 - hash with many iterations or 2 scrypt java.
 		ts.zos.passwordExpirationTimeSpan=createtimespan(180, 0, 0, 0); // 180 days is the default
@@ -53,6 +61,20 @@
 		ts.zos.allowRequestCFC=true;
 		ts.zOS.railoAdminReadEnabled=true;
 	}else{ 
+		ts.zos.serverStruct={
+			"1":{
+				apiURL:"https://server1.your-company.com/z/api/",
+				serverId:1, // this should be the value of the mysql variable "server_id"
+				datasource:"server1jetendo" // this datasource should have only SELECT access on the "version" table, and nothing else.
+			}
+			// uncomment and configure to enable syncing multiple jetendo servers | Make sure to update the my.cnf auto_increment_increment and auto_increment_offset variables for each server added.
+			/*,
+			"2":{
+				apiURL:"https://server2.your-company.com/z/api/",
+				serverId:2,
+				datasource:"server2jetendo"
+			}*/
+		};
 		ts.zos.defaultSSLManagerDomain=""; // leave blank until you install a wildcard ssl certificate on this domain's ip.
 		ts.zos.defaultPasswordVersion=2; // Valid values are 0 - no hash,1 - hash with many iterations or 2 scrypt java.
 		ts.zos.passwordExpirationTimeSpan=createtimespan(180, 0, 0, 0); // 180 days is the default

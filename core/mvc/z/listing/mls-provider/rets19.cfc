@@ -426,24 +426,13 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 			echo("count:"&idx.listing_photocount&"<BR>");
 		}*/
 		if(idx.listing_photocount EQ 0){
-			// check for permanent images or show not available image.
-			/*if(fileexists(request.zos.globals.serverhomedir&"a/listings/images/images_permanent/#idx.rets19_sysid#.jpg")){
-				idx["photo1"]='/z/a/listing/images/images_permanent/#idx.urlMlsPid#.jpg';
-			}else{*/
-				idx["photo1"]='/z/a/listing/images/image-not-available.gif';
-			//}
+			idx["photo1"]='/z/a/listing/images/image-not-available.gif';
 		}else{
 			i=1; 
 			for(i=1;i LTE idx.listing_photocount;i++){
 				local.fNameTemp1=idx.listing_id&"-"&i&".jpeg";
 				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				/*if(structkeyexists(form, 'debugPhotos')){
-					echo("photo#i#:"&idx["photo"&i]&"<BR>");
-				}*/
 				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
-				/*local.fNameTemp1=idx.rets19_sysid&"-"&i&".jpeg";
-				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;*/
 			}
 		}
 		idx["agentName"]=idx.rets19_144;

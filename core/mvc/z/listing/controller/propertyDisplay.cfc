@@ -670,6 +670,7 @@ this.isPropertyDisplayCom=true;
 	}else if(this.optionstruct.search_result_layout EQ 2){
 		this.optionStruct.thumbnailLayout=true;
 	}
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc before display() loop'});
 	</cfscript>
 	<cfloop from="1" to="#arraylen(this.dataStruct.arrQuery)#" index="g2">
 		<cfset curQuery=this.dataStruct.arrQuery[g2]>
@@ -684,8 +685,10 @@ this.isPropertyDisplayCom=true;
 				idx.mls_id=listgetat(curQuery.listing_id,1,"-");
 				if(this.optionStruct.getDetails){
 					structappend(idx, request.zos.listingMlsComObjects[idx.mls_id].getDetails(this.dataStruct.arrQuery[g2],curQuery.currentrow), true);
+					arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc after getDetails() for listing_id = #curQuery.listing_id#'});
 				}else{
 					structappend(idx, request.zos.listingMlsComObjects[idx.mls_id].baseGetDetails(this.dataStruct.arrQuery[g2],curQuery.currentrow), true);
+					arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc after baseGetDetails() for listing_id = #curQuery.listing_id#'});
 				}
 				tempText2="";
 				</cfscript>
@@ -834,8 +837,15 @@ this.isPropertyDisplayCom=true;
 				    </cfscript>
 				</cfif>
 			</cfif>
+			<cfscript>
+			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc end of display loop for listing_id = #curQuery.listing_id#'});
+			</cfscript>
 		</cfloop>
 	</cfloop>
+
+	<cfscript>
+	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc after display() loop'});
+	</cfscript>
 	<cfif this.optionStruct.thumbnailLayout>
 		<cfscript>
 			arrayprepend(arrOutput,'<div style="width:100%; float:left;"><div id="zmls-thumbnailboxid">');
@@ -928,12 +938,12 @@ this.isPropertyDisplayCom=true;
 				<cfscript>
 				idx.arrayIndex=this.dataStruct.orderStruct[curQuery.listing_id];
 				idx.mls_id=listgetat(curQuery.listing_id,1,"-");
-						if(this.optionStruct.getDetails){
+				if(this.optionStruct.getDetails){
 					structappend(idx, request.zos.listingMlsComObjects[idx.mls_id].getDetails(this.dataStruct.arrQuery[g2],curQuery.currentrow), true);
-						}else{
+				}else{
 					structappend(idx, request.zos.listingMlsComObjects[idx.mls_id].baseGetDetails(this.dataStruct.arrQuery[g2],curQuery.currentrow), true);
-						}
-					</cfscript>
+				}
+				</cfscript>
 				<cfif this.optionStruct.mapFormat>
 					<cfscript>
 					this.mapTemplate(idx, idx.arrayIndex);

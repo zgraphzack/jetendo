@@ -467,12 +467,7 @@ this.remapFieldStruct=t5;
 		t44444=0;
 		request.lastPhotoId=idx.listing_id;
 		if(idx.listing_photocount EQ 0){
-			// check for permanent images or show not available image.
-			if(fileexists(request.zos.globals.serverhomedir&"a/listings/images/images_permanent/#idx.urlMlsPid#.jpg")){
-				idx["photo1"]='/z/a/listing/images/images_permanent/#idx.urlMlsPid#.jpg';
-			}else{
-				idx["photo1"]='/z/a/listing/images/image-not-available.gif';
-			}
+			idx["photo1"]='/z/a/listing/images/image-not-available.gif';
 		}else{
 			i=1;
 			for(i=1;i LTE idx.listing_photocount;i++){

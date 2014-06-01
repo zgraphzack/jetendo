@@ -42,108 +42,109 @@
 	}
 	</cfscript>
 	<cftry>
-	<cfscript>
-	request.zos.inOnErrorFunction=true;
-	</cfscript>
-	<cfif structkeyexists(form, 'zab')>
-	<cfif structkeyexists(arguments.exception, 'message') and arguments.exception.message CONTAINS "timeout"><cfheader statuscode="500" statustext="Internal Server Error">timeout<cfabort></cfif>
-	<cfsavecontent variable="theDump"><cfdump var="#exception#"></cfsavecontent>
-	<cffile action="append" file="#request.zos.zcoreRootPrivatePath#_cache/error-log.txt" output="#now()# | #application.applicationname# | #arguments.eventName#: #arguments.exception.message#" addnewline="yes"><!--- #chr(10)##theDump# --->
-	<cfabort>
-	</cfif> 
-	<cfscript>
-	cferror=arguments.exception;
-	</cfscript>
-	<!-- Error Handler Forces All Tags Closed with this code below -->
-	</table></table></table></table></table></table></table></table></table></table></div></div></div></div></div></div></div></div></div></div>
-	<!-- Begin Error -->
-	<hr style="clear:both;" />
-	<table  style="border-spacing:0px; width:100%; "><tr><td style="padding:10px; background-color:##FFF !important;"><h1>Error in Application.cfc event: #arguments.eventName#</h1>
-	<cfif structkeyexists(form, request.zos.urlRoutingParameter) EQ false>
-	#cferror.message#
-	<cfdump var="#cferror#">
-	<cfelse>
-	<cftry>
-	<!--- to force an error to be logged even for a developer set: 
-	request.zForceErrorEmail=true;
-	--->
-	
-	<cfscript>
-	if(isDefined('local') and structkeyexists(local, 'cferror')){
-		variables._handleError(local.cferror);
-	}else if(isDefined('local') and structkeyexists(local, 'cfcatch')){
-		variables._handleError(local.cfcatch);
-	}else if(isDefined('arguments') and structkeyexists(variables, 'cferror')){
-		variables._handleError(arguments.cferror);
-	}else if(isDefined('arguments') and structkeyexists(arguments, 'cfcatch')){
-		variables._handleError(variables.cfcatch);
-	}else if(structkeyexists(variables, 'cferror')){
-		variables._handleError(variables.cferror);
-	}else if(structkeyexists(variables, 'cfcatch')){
-		variables._handleError(variables.cfcatch);
-	}else{
-		variables._handleError({});
-	}
-	if(isdefined('application.zcore.functions.zabort')){
-		application.zcore.functions.zabort();
-	}
-	</cfscript>
-	<cfcatch type="any">
-	<cfif isDefined('arguments.exception.message') and arguments.exception.message CONTAINS "timeout">
-	<cffile action="append" file="#expandpath('/zcorecachemapping/')#error-log.txt" output="#arguments.eventName#: #arguments.exception.message#" addnewline="yes">
-	Script Timeout<cfabort>
-	</cfif>
-	<cfsavecontent variable="theError">
-	<h2>Normal error handler failed.</h2>
-	<cfdump var="#cfcatch#">
-	
-	<h2>The original error</h2>
-	<cfdump var="#arguments.exception#">
-	</cfsavecontent>
-	#theError# 
-	<cfif request.zos.isDeveloper EQ false>
-	<cftry>
-		<cfif application.zErrorMinuteCount LTE request.zos.errorEmailAlertsPerMinute>
-			<cfmail from="#request.zos.developerEmailFrom#" to="#request.zos.developerEmailTo#" subject="#request.zos.cgi.http_host# has an error" type="html">
-			#application.zcore.functions.zHTMLDoctype()#
-			<head>
-			<meta charset="utf-8" />
-			<title>Error</title>
-			</head>
-			
-			<body>
-			<h1>Error in Application.cfc event: #arguments.eventName#</h1>
-			<cfdump var="#cgi#">
-			<br />
-			<br />
-			
-			#theError#
-			<cfif application.zErrorMinuteCount EQ request.zos.errorEmailAlertsPerMinute>
-				<br /><br />Error alert limit threshold of #request.zos.errorEmailAlertsPerMinute# alerts per minute was reached.  Further errors are only visible in server manager.
-			</cfif>
-			</body>
-			</html>
-			</cfmail> 
+		<cfscript>
+		request.zos.inOnErrorFunction=true;
+		</cfscript>
+		<cfif structkeyexists(form, 'zab')>
+			<cfif structkeyexists(arguments.exception, 'message') and arguments.exception.message CONTAINS "timeout">
+				<cfheader statuscode="500" statustext="Internal Server Error">timeout<cfabort></cfif>
+				<cfsavecontent variable="theDump"><cfdump var="#exception#"></cfsavecontent>
+				<cffile action="append" file="#request.zos.zcoreRootPrivatePath#_cache/error-log.txt" output="#now()# | #application.applicationname# | #arguments.eventName#: #arguments.exception.message#" addnewline="yes"><!--- #chr(10)##theDump# --->
+				<cfabort>
+			</cfif> 
+			<cfscript>
+			cferror=arguments.exception;
+			</cfscript>
+			<!-- Error Handler Forces All Tags Closed with this code below so the error can be visible in browser -->
+			</table></table></table></table></table></table></table></table></table></table></div></div></div></div></div></div></div></div></div></div>
+			<!-- Begin Error -->
+			<hr style="clear:both;" />
+			<table  style="border-spacing:0px; width:100%; "><tr><td style="padding:10px; background-color:##FFF !important;"><h1>Error in Application.cfc event: #arguments.eventName#</h1>
+			<cfif structkeyexists(form, request.zos.urlRoutingParameter) EQ false>
+				#cferror.message#
+				<cfdump var="#cferror#">
+			<cfelse>
+			<cftry>
+				<!--- to force an error to be logged even for a developer set: 
+				request.zForceErrorEmail=true;
+				--->
+				
+				<cfscript>
+				if(isDefined('local') and structkeyexists(local, 'cferror')){
+					variables._handleError(local.cferror);
+				}else if(isDefined('local') and structkeyexists(local, 'cfcatch')){
+					variables._handleError(local.cfcatch);
+				}else if(isDefined('arguments') and structkeyexists(variables, 'cferror')){
+					variables._handleError(arguments.cferror);
+				}else if(isDefined('arguments') and structkeyexists(arguments, 'cfcatch')){
+					variables._handleError(variables.cfcatch);
+				}else if(structkeyexists(variables, 'cferror')){
+					variables._handleError(variables.cferror);
+				}else if(structkeyexists(variables, 'cfcatch')){
+					variables._handleError(variables.cfcatch);
+				}else{
+					variables._handleError({});
+				}
+				if(isdefined('application.zcore.functions.zabort')){
+					application.zcore.functions.zabort();
+				}
+				</cfscript>
+				<cfcatch type="any">
+					<cfif isDefined('arguments.exception.message') and arguments.exception.message CONTAINS "timeout">
+					<cffile action="append" file="#expandpath('/zcorecachemapping/')#error-log.txt" output="#arguments.eventName#: #arguments.exception.message#" addnewline="yes">
+					Script Timeout<cfabort>
+					</cfif>
+					<cfsavecontent variable="theError">
+						<h2>Normal error handler failed.</h2>
+						<cfdump var="#cfcatch#">
+						
+						<h2>The original error</h2>
+						<cfdump var="#arguments.exception#">
+					</cfsavecontent>
+					#theError# 
+					<cfif request.zos.isDeveloper EQ false>
+						<cftry>
+							<cfif application.zErrorMinuteCount LTE request.zos.errorEmailAlertsPerMinute>
+								<cfmail from="#request.zos.developerEmailFrom#" to="#request.zos.developerEmailTo#" subject="#request.zos.cgi.http_host# has an error" type="html">
+								#application.zcore.functions.zHTMLDoctype()#
+								<head>
+								<meta charset="utf-8" />
+								<title>Error</title>
+								</head>
+								
+								<body>
+								<h1>Error in Application.cfc event: #arguments.eventName#</h1>
+								<cfdump var="#cgi#">
+								<br />
+								<br />
+								
+								#theError#
+								<cfif application.zErrorMinuteCount EQ request.zos.errorEmailAlertsPerMinute>
+									<br /><br />Error alert limit threshold of #request.zos.errorEmailAlertsPerMinute# alerts per minute was reached.  Further errors are only visible in server manager.
+								</cfif>
+								</body>
+								</html>
+								</cfmail> 
+							</cfif>
+							<cfcatch type="any">
+								<h2>Rethrew Error</h2>
+								<cfrethrow>
+							</cfcatch>
+						</cftry>
+					<cfelse>
+						<h2>Rethrew Error</h2>
+						<cfrethrow>
+					</cfif>
+					<cfabort>
+				</cfcatch>
+			</cftry>
 		</cfif>
-	<cfcatch type="any">
-	<h2>Rethrew Error</h2>
-	<cfrethrow>
-	</cfcatch>
-	</cftry>
-	<cfelse>
-	<h2>Rethrew Error</h2>
-	<cfrethrow>
-	</cfif>
-	<cfabort>
-	</cfcatch>
-	</cftry>
-	</cfif>
-	<cfcatch type="any">
-	<cfheader statuscode="500" statustext="Internal Server Error">
-	<cfdump var="#cfcatch#">
-	<cfdump var="#arguments#">
-	<cfabort>
-	</cfcatch>
+		<cfcatch type="any">
+			<cfheader statuscode="500" statustext="Internal Server Error">
+			<cfdump var="#cfcatch#">
+			<cfdump var="#arguments#">
+			<cfabort>
+		</cfcatch>
 	</cftry>
 	<cfreturn />
 </cffunction>
@@ -484,7 +485,37 @@ if(isDefined('request.zos.arrRunTime')){
 	}
 	echo('<br /><br />');
 }
+
+arrRunningSQL=[];
+try{
+	query name="qProcessList" datasource="#request.zos.zcoreDatasource#"{
+		echo("SHOW PROCESSLIST");
+	}
+	echo('<h2>Mysql processlist</h2>');
+	for(row in qProcessList){
+		if(row.info NEQ ""){
+			if(row.info CONTAINS "SHOW PROCESSLIST"){
+				continue;
+			}else if(row.info CONTAINS "password"){
+				row.info="SQL STATEMENT MAY CONTAIN PASSWORD AND HAS BEEN REMOVED FOR SECURITY.";
+			}
+			arrayAppend(arrRunningSQL, "time: "&row.time&" user: "&row.user&" host: "&host&" db: "&row.db&" sql: "&row.info);
+		}
+	}
+	if(arraylen(arrRunningSQL)){
+		for(i=1;i<=arraylen(arrRunningSQL);i++){
+			echo(arrRunningSQL[i]&"<br>");
+		}
+	}else{
+		echo("No queries running.<br />");
+	}
+	echo("<br />");
+}catch(Any e){
+	echo('<h2>Failed to display mysql processlist</h2>');
+	writedump(e);
+}
 </cfscript>
+
 <cfif isDefined('CGI')>
 <h2>CGI Variables</h2>
 <cfscript>
