@@ -654,7 +654,7 @@ userCom.checkLogin(inputStruct);
 	request.zos.userSession=structnew();
 	request.zos.userSession.groupAccess=structnew();
 	
-	if(isdefined('session.zos.user.id')){
+	if(isdefined('session.zos.user.id') and isdefined('session.zos.user.site_id')){
 		structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id);
 	}
 	</cfscript>

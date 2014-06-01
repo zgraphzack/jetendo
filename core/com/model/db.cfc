@@ -27,6 +27,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			sql:"", // specify the full sql statement
 			verifyQueriesEnabled:false, // Enabling sql verification takes more cpu time, so it should only run when testing in development.
 			parseSQLFunctionStruct:{}, // Each struct key value should be a function that accepts and returns parsedSQLStruct. Prototype: struct customFunction(required struct parsedSQLStruct, required string defaultDatabaseName);
+			queryLogFunction: false, // Set to a function that has a struct argument with the following keys { sql:, configStruct: , result: }
 			cacheStructKey:'variables.cacheStruct', // Set to an application or server scope struct to store this data in shared memory. Use structnew('soft') on railo to have automatic garbage collection when the JVM is low on memory.
 			cacheEnabled: true // Set to false to disable the query cache
 		};
@@ -189,6 +190,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		}
 	}
 	request.zos.lastDBResult=cfquery;
+	if(structkeyexists(variables.config, 'queryLogFunction') and isCustomFunction(variables.config.queryLogFunction)){
+		variables.config.queryLogFunction({ sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });
+	}
 	if(structkeyexists(db, arguments.name)){
 		return db[arguments.name];
 	}else{

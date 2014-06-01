@@ -87,6 +87,7 @@
 	ts={};
 	c=application.zcore.db.getConfig();
 	c.cacheDisabled=false;
+	c.queryLogFunction=application.zcore.functions.zLogQuery;
 	ts.cacheDisabledDB=duplicate(application.zcore.componentObjectCache.db);
 	ts.cacheDisabledDB.init(c);
 	
@@ -94,17 +95,20 @@
 	c.datasource=arguments.globalStruct.datasource;
 	c.verifyQueriesEnabled=false;
 	c.cacheDisabled=false;
+	c.queryLogFunction=application.zcore.functions.zLogQuery;
 	ts.cacheDisabledNoVerifyDB=duplicate(application.zcore.componentObjectCache.db);
 	ts.cacheDisabledNoVerifyDB.init(c);
 	
 	c=application.zcore.db.getConfig();
 	c.datasource=arguments.globalStruct.datasource;
 	c.verifyQueriesEnabled=false;
+	c.queryLogFunction=application.zcore.functions.zLogQuery;
 	ts.cacheEnabledNoVerifyDB=duplicate(application.zcore.componentObjectCache.db);
 	ts.cacheEnabledNoVerifyDB.init(c);
 	
 	c=application.zcore.db.getConfig();
 	c.datasource=arguments.globalStruct.datasource;
+	c.queryLogFunction=application.zcore.functions.zLogQuery;
 	ts.cacheEnabledDB=duplicate(application.zcore.componentObjectCache.db);
 	ts.cacheEnabledDB.init(c);
 	return ts;

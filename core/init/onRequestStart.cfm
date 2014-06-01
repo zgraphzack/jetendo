@@ -316,6 +316,12 @@
 		application.zcore.functions.zOS_rebuildCache();
 		application.zcore.functions.zredirect("/");
 	}
+
+	if(structkeyexists(application.zcore, 'importMLSRunning')){
+		request.zos.importMLSRunning=true;
+	}else{
+		request.zos.importMLSRunning=false;
+	}
 	
 	Request.zOS.debuggerEnabled = true;
 	request.zos.templateData=structnew();

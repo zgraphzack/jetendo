@@ -498,6 +498,9 @@ USER WAS PERMANENTLY BLOCKED.');
 #(gettickcount('nano')-request.zos.startTime)/1000000000# seconds to complete<br />
 user ip: #request.zos.cgi.remote_addr#<br />
 user agent: #request.zos.cgi.HTTP_USER_AGENT#<br />
+<cfif request.zos.importMLSRunning>
+	Import MLS was running when this slow script alert was triggered.<br />
+</cfif>
 <br />
 <cfscript>	
 if(structkeyexists(request.zos, 'arrRunTime')){

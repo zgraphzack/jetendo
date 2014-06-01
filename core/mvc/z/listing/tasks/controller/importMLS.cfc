@@ -7,6 +7,7 @@ var myloops=0;
 var idxCom=0;
 var r=0;
 request.ignoreslowscript=true;
+application.zcore.importMLSRunning=true;
 myloops=40;
 while(myloops GT 0){
 	myloops--;
@@ -19,6 +20,7 @@ while(myloops GT 0){
 		break;
 	}
 }
+structdelete(application.zcore, 'importMLSRunning');
 application.zcore.functions.zabort();
 </cfscript>
 </cffunction>
