@@ -16,6 +16,13 @@
 					}else{
 						session.zos.verifyQueries=false;
 					}
+				}else if(form.zOS_MODE EQ "debugleadrouting"){
+					if(form.zOS_modeValue EQ "true"){
+						session.zos.debugleadrouting=true;
+					}else if(structkeyexists(session, 'zos')){
+						structdelete(session.zos, 'debugleadrouting');
+					}
+
 				}
 				if(structkeyexists(form, 'zOS_modeValue') and form.zOS_modeValue){
 					session.zOS.modes[form.zOS_Mode] = true;
@@ -94,7 +101,6 @@
                 <input type="text" name="zOS_modeVarDumpName" id="zOS_modeVarDumpName" value="" class="zOS_modeInput" />
                 &nbsp; <a href="##" onclick="zOS_mode_submit('varDump','true');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Off</a>
               </cfif>
-              
               | Verify Queries: 
             	<cfif isDefined('session.zos.verifyQueries') and session.zos.verifyQueries>
                  <a href="##" onclick="zOS_mode_submit('VerifyQueries','false');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>On</a>
@@ -109,6 +115,12 @@
 			<cfelse>
 				Deploy: <a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index" target="_blank">Go to Test Server Deploy</a>
 			</cfif>
+              | Debug Lead Routing: 
+            	<cfif isDefined('session.zos.debugleadrouting') and session.zos.debugleadrouting>
+                 <a href="##" onclick="zOS_mode_submit('debugleadrouting','false');return false;">On</a>
+                <cfelse>
+                &nbsp; <a href="##" onclick="zOS_mode_submit('debugleadrouting','true');return false;">Off</a>
+                </cfif>
               </div>
             <div class="zOS_mode_td">
               <cfif isDefined('session.zos.tracking.track_user_hits')>Hits: #session.zos.tracking.track_user_hits#</cfif>

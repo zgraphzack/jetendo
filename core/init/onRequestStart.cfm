@@ -248,6 +248,9 @@
 			StructAppend(variables, request.zos.functions);
 		}
 		
+		if(request.zos.isDeveloper and isdefined('session.zos.debugleadrouting')){
+			request.zos.debugleadrouting=true;
+		}
 		
 		
 		if(request.zos.isDeveloper){
