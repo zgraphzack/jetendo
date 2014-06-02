@@ -649,22 +649,22 @@
 				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+30)# ";
 				qIdList=db.execute("qIdList");
 				offset+=30;
-				if(qId.idlist EQ ""){
+				if(qIdList.idlist EQ ""){
 					break;
 				}
 				db2.sql="DELETE FROM #db2.table("listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qId.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qId.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qId.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
 				listing_track_deleted=#db2.param(1)# 
-				WHERE listing_id IN ('#qId.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 			}
 
@@ -684,18 +684,18 @@
 				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+30)# ";
 				qIdList=db.execute("qIdList");
 				offset+=30;
-				if(qId.idlist EQ ""){
+				if(qIdList.idlist EQ ""){
 					break;
 				}
 				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-				WHERE listing_id IN ('#qId.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 			}
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
 			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))# 
 			WHERE mls_id IN (#db.trustedSQL(mlsIdPSQL)#)";
 			db.execute("q"); 
-			writeoutput('<br />#qId.count# Inactive listings were removed.');	
+			writeoutput('<br />#listlen(qIdList.idlist, ",")# Inactive listings were removed.');	
 		}else{
 			writeoutput('<br />No inactive listings were removed.');	
 			

@@ -15,15 +15,4 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="clearCache" localmode="modern" access="remote" roles="serveradministrator">
-	<cfscript>
-	if(not structkeyexists(form, 'type')){
-		throw('form.type is required and must be "site" or "app".');
-	}
-	if(form.type EQ "site" and not structkeyexists(form, 'sid')){
-		throw('form.sid is required when form.type equals "site".');
-	}
-	</cfscript>
-</cffunction>
-
 </cfcomponent>
