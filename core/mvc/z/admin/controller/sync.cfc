@@ -126,7 +126,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	ts={
 		arrSiteOption:[],
 		arrSiteOptionGroup:[],
-		arrSiteOptionGroupMap:[],
+	//	arrSiteOptionGroupMap:[],
 	};
 	// setup destination data
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# 
@@ -162,13 +162,13 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		arrayAppend(ts.arrSiteOptionGroup, row);
 	}
-	
+	/*
 	db.sql="select * from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# ";
 	qMap=db.execute("qMap");
 	for(row in qMap){
 		arrayAppend(ts.arrSiteOptionGroupMap, row);
-	}
+	}*/
 	return ts;
 	</cfscript>
 </cffunction>
@@ -181,7 +181,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	struct={
 		siteOptionStruct:{},
 		siteOptionGroupStruct:{},
-		siteOptionGroupMapStruct:{},
+		//siteOptionGroupMapStruct:{},
 		siteOptionNameStruct:{},
 		siteOptionGroupNameStruct:{},
 		siteOptionGroupNameLookupById:{}
@@ -210,10 +210,11 @@ This allows avoiding remaps more easily.  Less code when importing.
 			struct.siteOptionNameStruct["0"][ts.arrSiteOption[i].site_option_name]=ts.arrSiteOption[i].site_option_id;
 		}
 	}
+	/*
 	for(i=1;i LTE arraylen(ts.arrSiteOptionGroupMap);i++){
 		ts.arrSiteOptionGroupMap[i].site_id=request.zos.globals.id;
 		struct.siteOptionGroupMapStruct[ts.arrSiteOptionGroupMap[i].site_option_group_map_id]=ts.arrSiteOptionGroupMap[i];
-	}
+	}*/
 	return struct;
 	</cfscript>
 </cffunction>
@@ -581,7 +582,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	}
 	</cfscript>
 </cffunction>
-
+<!--- 
 <cffunction name="updateSiteOptionGroupMap" localmode="modern">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="new" type="boolean" required="yes">
@@ -618,9 +619,9 @@ This allows avoiding remaps more easily.  Less code when importing.
 		return db.execute("qSiteOptionGroupMapUpdate");
 	}
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
-
+<!--- 
 <cffunction name="remapSiteOptionGroupMap" localmode="modern" returntype="struct">
 	<cfargument name="source" type="struct" required="yes">
 	<cfargument name="destination" type="struct" required="yes">
@@ -668,7 +669,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	row.site_id=request.zos.globals.id;
 	return {success:true, struct:row };
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 
 <cffunction name="exportData" access="remote" localmode="modern" roles="serveradministrator">
@@ -891,10 +892,10 @@ This allows avoiding remaps more easily.  Less code when importing.
 					db.execute("qDelete");
 				} 
 				
-				db.sql="delete from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
+				/*db.sql="delete from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
 				where site_option_id = #db.param(siteOptionId)# and 
 				site_id = #db.param(request.zos.globals.id)#";
-				db.execute("qDelete");
+				db.execute("qDelete");*/
 				
 				db.sql="delete from #db.table("site_option", request.zos.zcoreDatasource)# 
 				WHERE site_option_id=#db.param(siteOptionId)# and 
@@ -978,7 +979,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 			}
 		}
 	}
-	
+	/*
 	if(structcount(sourceStruct.siteOptionGroupMapStruct)){
 		groupIdStruct={};
 		for(i in sourceStruct.siteOptionGroupMapStruct){
@@ -1010,7 +1011,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 				db.execute("qDelete");
 			}
 		}
-	}
+	}*/
 	
 	if(form.debugEnabled){
 		echo("Import cancelled because debugging is enabled.");
