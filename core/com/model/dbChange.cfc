@@ -27,7 +27,6 @@ dbChange.setTable(request.zos.zcoreDatasource, "content");
 ts={
 	schema:request.zos.zcoreDatasource,
 	table:"content",
-	originalStruct: dbChange.getDataById(request.zos.zcoreDatasource, "content", form.content_id, request.zos.globals.id),
 	struct:{
 		field:"value"
 	},
@@ -41,7 +40,6 @@ dbChange.update(ts);
 ts={
 	schema:request.zos.zcoreDatasource,
 	table:"content",
-	originalStruct: dbChange.getDataById(request.zos.zcoreDatasource, "content", form.content_id, request.zos.globals.id),
 	struct:{
 		field:"value"
 	}
@@ -51,7 +49,6 @@ content_id=dbChange.insert(ts);
 ts={
 	schema:request.zos.zcoreDatasource,
 	table:"content",
-	originalStruct: dbChange.getDataById(request.zos.zcoreDatasource, "content", form.content_id, request.zos.globals.id),
 	struct:{
 		field:"value"
 	}
@@ -91,34 +88,6 @@ if(!transactionResult){
 }
 
  --->
-<cffunction name="getDataById" access="private" localmode="modern">
-	<cfargument name="schema" type="string" required="yes">
-	<cfargument name="table" type="string" required="yes">
-	<cfargument name="primaryKeyField" type="string" required="yes">
-	<cfargument name="primaryKeyValue" type="string" required="yes">
-	<cfargument name="site_id" type="string" required="no" default="">
-	<cfscript>
-	db=request.zos.queryObject;
-	db.sql="select * from #db.table(arguments.table, arguments.schema)# WHERE 
-	`#application.zcore.functions.zescape(arguments.primaryKeyField)#` = #db.param(arguments.primaryKeyValue)# ";
-	siteIdText="";
-	if(structkeyexists(arguments, 'site_id')){
-		db.sql&=" and site_id = #db.param(arguments.site_id)# ";
-		siteIdText= " and site_id = #arguments.site_id# ";
-	}
-	db.sql&=" LIMIT 0,1";
-	qGetDataById=db.execute("qGetDataById");
-	if(qGetDataById.recordcount EQ 0){
-		throw("Database record is missing and it is required for dbChange to function.<br />
-		select * from `#arguments.schema#`.`#arguments.table#` WHERE 
-		`#arguments.primaryKeyField#` = #arguments.primaryKeyValue# #siteIdText# LIMIT 0,1");
-	}
-	for(row in qGetDataById){
-		return row;
-	}
-	</cfscript>
-
-</cffunction>
 
 <cffunction name="storeChange" access="private" localmode="modern">
 	<cfargument name="type" type="string" requires="yes">
@@ -137,15 +106,18 @@ if(!transactionResult){
 			if(not structkeyexists(arguments.struct.whereStruct, 'site_id')){
 				throw("arguments.struct.whereStruct.site_id is required when arguments.type is delete or update.");
 			}
+			sid=arguments.struct.whereStruct["site_id"];
 		}else{
 			if(not structkeyexists(arguments.struct.struct, 'site_id')){
 				throw("arguments.struct.struct.site_id is required when arguments.type is insert or replace.");
 			}
+			sid=arguments.struct.struct["site_id"];
 		}
-		originalData=getDataById(arguments.struct.schema, arguments.struct.table, tableStruct.primaryKey, arguments.struct[tableStruct.primaryKey], arguments.struct["site_id"]);
 	}else{
-		originalData=getDataById(arguments.struct.schema, arguments.struct.table, tableStruct.primaryKey, arguments.struct[tableStruct.primaryKey]);
+		sid="";
 	}
+	originalData=application.zcore.functions.zGetDataById(arguments.type, arguments.struct.schema, arguments.struct.table, tableStruct.primaryKey, arguments.struct[tableStruct.primaryKey], sid);
+	timestamp=dateformat(now(), 'yyyymmdd')&NumberFormat(timeformat(now(), 'HHmmssl'),"000");
 	structappend(arguments.struct, originalData, false);
 	for(field in tableStruct.fileFieldStruct){
 		if(compare(originalData[field], arguments.struct[field]) NEQ 0){
@@ -417,13 +389,14 @@ generating the id is not required if I set the id to version_json_data struct pr
 
 <cffunction name="executeInsert" access="private" localmode="modern">
 	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="fieldStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
 	savecontent variable="db.sql"{
 		echo("INSERT INTO #db.table(n.table, n.schema)# SET ");
 		first=true;
-		for(i in n.struct){
+		for(i in arguments.fieldStruct){
 			if(!first){
 				first=false;
 				echo(", "&chr(10));
@@ -438,13 +411,14 @@ generating the id is not required if I set the id to version_json_data struct pr
 
 <cffunction name="executeReplace" access="private" localmode="modern">
 	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="fieldStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
 	savecontent variable="db.sql"{
 		echo("REPLACE INTO #db.table(n.table, n.schema)# SET ");
 		first=true;
-		for(i in n.struct){
+		for(i in arguments.fieldStruct){
 			if(!first){
 				first=false;
 				echo(", "&chr(10));
@@ -458,13 +432,17 @@ generating the id is not required if I set the id to version_json_data struct pr
 
 <cffunction name="executeUpdate" access="private" localmode="modern">
 	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="fieldStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
 	savecontent variable="db.sql"{
 		echo("UPDATE #db.table(n.table, n.schema)# SET ");
 		first=true;
-		for(i in n.struct){
+		for(i in arguments.fieldStruct){
+			if(structkeyexists(n.whereStruct, i)){
+				continue;
+			}
 			if(!first){
 				first=false;
 				echo(", "&chr(10));

@@ -12,6 +12,46 @@
 	</cfscript>
 </cffunction>
 
+
+<!--- 
+application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, "content", "content_id", form.content_id, form.site_id);
+ --->
+<cffunction name="zGetDataById" access="private" localmode="modern">
+	<cfargument name="changeType" type="string" required="no" default="">
+	<cfargument name="schema" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
+	<cfargument name="primaryKeyField" type="string" required="yes">
+	<cfargument name="primaryKeyValue" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="no" default="">
+	<cfscript>
+	db=request.zos.queryObject;
+	if(arguments.changeType EQ "insert"){
+		return duplicate(application.zcore.tableColumns[arguments.schema&"."&arguments.table]);
+	}
+	db.sql="select * from #db.table(arguments.table, arguments.schema)# WHERE 
+	`#application.zcore.functions.zescape(arguments.primaryKeyField)#` = #db.param(arguments.primaryKeyValue)# ";
+	siteIdText="";
+	if(structkeyexists(arguments, 'site_id')){
+		db.sql&=" and site_id = #db.param(arguments.site_id)# ";
+		siteIdText= " and site_id = #arguments.site_id# ";
+	}
+	db.sql&=" LIMIT 0,1";
+	qGetDataById=db.execute("qGetDataById");
+	if(qGetDataById.recordcount EQ 0){
+		if(arguments.changeType EQ "replace"){
+			return duplicate(application.zcore.tableColumns[arguments.schema&"."&arguments.table]);
+		}
+		throw("Database record is missing and it is required for dbChange to function.<br />
+		select * from `#arguments.schema#`.`#arguments.table#` WHERE 
+		`#arguments.primaryKeyField#` = #arguments.primaryKeyValue# #siteIdText# LIMIT 0,1");
+	}
+	for(row in qGetDataById){
+		return row;
+	}
+	</cfscript>
+
+</cffunction>
+
   <!--- text=application.zcore.functions.zCleanSearchText(text); --->
  <cffunction name="zCleanSearchText" localmode="modern" output="yes" returntype="any">
 		<cfargument name="text" type="string" required="yes">

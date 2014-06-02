@@ -1,4 +1,11 @@
 <cfcomponent>
+<!--- 
+TODO: this is meant to be the scheduled task for multiple master replication
+executeClearCache() is not fully implemented
+this code hasn't been executed yet at all.
+needs to be integrated with component cache, onApplicationStart, and code cache clearing
+versionSyncTableStruct is incomplete and the fileFieldStruct functions are not using real code to generate the file path yet.
+ --->
 <cffunction name="init" localmode="modern" access="public">
 	<cfscript>
 	/*
@@ -25,13 +32,16 @@
 		"jetendo":{
 			"content":{
 				primaryKey:"content_id",
+				dateField:"content_updated_datetime",
 				hasSiteId: true
 			"blog":{
 				primaryKey:"blog_id",
+				dateField:"blog_updated_datetime",
 				hasSiteId: true
 			},
 			"image":{,
 				primaryKey:"image_id",
+				dateField:"image_datetime",
 				hasSiteId: true,
 				fileFieldStruct:{
 					"image_file":function(row){
@@ -79,14 +89,15 @@
 </cffunction>
 
 <cffunction name="executeInsert" access="private" localmode="modern">
-	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfargument name="fieldStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
 	savecontent variable="db.sql"{
 		echo("INSERT INTO #db.table(n.table, n.schema)# SET ");
 		first=true;
-		for(i in n.struct){
+		for(i in arguments.fieldStruct){
 			if(!first){
 				first=false;
 				echo(", "&chr(10));
@@ -100,14 +111,15 @@
 
 
 <cffunction name="executeReplace" access="private" localmode="modern">
-	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfargument name="fieldStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
 	savecontent variable="db.sql"{
 		echo("REPLACE INTO #db.table(n.table, n.schema)# SET ");
 		first=true;
-		for(i in n.struct){
+		for(i in arguments.fieldStruct){
 			if(!first){
 				first=false;
 				echo(", "&chr(10));
@@ -120,14 +132,18 @@
 </cffunction>
 
 <cffunction name="executeUpdate" access="private" localmode="modern">
-	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfargument name="fieldStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
 	savecontent variable="db.sql"{
 		echo("UPDATE #db.table(n.table, n.schema)# SET ");
 		first=true;
-		for(i in n.struct){
+		for(i in arguments.fieldStruct){
+			if(structkeyexists(n.whereStruct, i)){
+				continue;
+			}
 			if(!first){
 				first=false;
 				echo(", "&chr(10));
@@ -149,7 +165,7 @@
 </cffunction>
 
 <cffunction name="executeDelete" access="private" localmode="modern">
-	<cfargument name="struct" type="struct" requires="yes">
+	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	n=arguments.struct;
@@ -194,16 +210,15 @@
 	fileRenameStruct={};
 	newFileStruct={};
 
-/*
-there is a flaw in this design if it relies on the LOCAL datasource
-i MUST query the remote servers for new version records and ALWAYS disable replication of this table to the other servers
-*/
 	// need to merge and sort the version records BEFORE running them.
 	rowStruct={};
 	rowLimit=5; 
 	for(i in request.zos.serverStruct){
 		currentServer=request.zos.serverStruct[i];
 		if(i EQ application.zcore.currentServerID){
+			continue;
+		}
+		if(currentServer.notAvailable){
 			continue;
 		}
 		db.sql="select * from #db.table("version", currentServer.datasource)# where 
@@ -243,12 +258,32 @@ i MUST query the remote servers for new version records and ALWAYS disable repli
 				transaction action="begin"{
 					for(i=1;i<=arraylen(ss.arrChange);i++){
 						n=ss.arrChange[i];
+						/*
+						// we could choose to ignore updates that are for an older datetime maybe in the future
+						if((n.type EQ "update" or n.type EQ "replace") and structkeyexists(tableStruct, 'dateField')){
+							tableStruct=application.zcore.versionSyncTableStruct[n.data.struct.schema][n.data.struct.table];
+							if(tableStruct.hasSiteId){
+								if(arguments.type EQ "delete" or arguments.type EQ "update"){
+									sid=n.data.whereStruct["site_id"];
+								}else{
+									sid=n.data.struct["site_id"];
+								}
+							}else{
+								sid="";
+							}
+							originalData=application.zcore.functions.zGetDataById(n.type, n.data.struct.schema, n.data.struct.table, tableStruct.primaryKey, n.data.struct[tableStruct.primaryKey], sid);
+							if(n.data.struct[tableStruct.dateField] LTE originalData[tableStruct.dateField]){
+								// skip this update, because a newer update has already executed on the same record.
+								continue;
+							}
+						}*/
+						fieldStruct=application.zcore.tableColumns[n.data.struct.schema&"."&n.data.struct.table];
 						if(n.type EQ "insert"){
-							executeInsert(n.data);
+							executeInsert(n.data, fieldStruct);
 						}else if(n.type EQ "update"){
-							executeUpdate(n.data);
+							executeUpdate(n.data, fieldStruct);
 						}else if(n.type EQ "replace"){
-							executeReplace(n.data);
+							executeReplace(n.data, fieldStruct);
 						}else if(n.type EQ "delete"){
 							executeDelete(n.data);
 						}
