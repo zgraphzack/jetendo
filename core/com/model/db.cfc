@@ -192,7 +192,14 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	}
 	request.zos.lastDBResult=cfquery;
 	if(structkeyexists(variables.config, 'queryLogFunction') and isCustomFunction(variables.config.queryLogFunction)){
-		variables.config.queryLogFunction({ totalExecutionTime:((gettickcount('nano')-startTime)/1000000), sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });
+		try{
+			variables.config.queryLogFunction({ totalExecutionTime:((gettickcount('nano')-startTime)/1000000), sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });
+		}catch(Any excpt){
+			if(request.zos.isDeveloper or request.zos.isTestServer){
+				echo("Failed to run queryLogFunction due to error:<br />");
+				writedump(excpt);
+			}
+		}
 	}
 	if(structkeyexists(db, arguments.name)){
 		return db[arguments.name];
