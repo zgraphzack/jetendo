@@ -528,7 +528,7 @@ this.remapFieldStruct=t5;
 		for(i=1;i LTE idx.listing_photocount;i++){
 			local.fNameTemp1="22-"&idx.urlMlsPid&"-"&i&".jpeg";
 			local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-			idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/22/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			idx["photo"&i]=request.zos.retsPhotoPath&'22/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}
 	} 
 	db.sql="select * from #db.table("rets22_office", request.zos.zcoreDatasource)# rets22_office 
@@ -574,7 +574,7 @@ this.remapFieldStruct=t5;
 	request.lastPhotoId=this.mls_id&"-"&arguments.mls_pid;
 	local.fNameTemp1="22-"&arguments.mls_pid&"-"&arguments.num&".jpeg";
 	local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-	return request.zos.currentHostName&'/zretsphotos/22/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+	return request.zos.retsPhotoPath&'22/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 	
 	</cfscript>
 </cffunction>

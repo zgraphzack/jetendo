@@ -2812,9 +2812,9 @@ this.app_id=10;
 	var tempMenu='';
 	var tempPagenav='';
 	request.month=CreateDate(year(now()),month(now()),1);
-	if(structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_subtitle') and application.zcore.app.getAppData("blog").optionStruct.blog_config_subtitle NEQ ""){
+	/*if(structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_subtitle') and application.zcore.app.getAppData("blog").optionStruct.blog_config_subtitle NEQ ""){
 		writeoutput('<p>#application.zcore.app.getAppData("blog").optionStruct.blog_config_subtitle#</p>');
-	}
+	}*/
 	variables.init();
 	</cfscript>
 	<cfsavecontent variable="tempPageNav">

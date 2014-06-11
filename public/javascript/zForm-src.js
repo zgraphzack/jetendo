@@ -446,6 +446,22 @@ function zLoadAndCropImage(obj, imageURL, debug, width, height, crop, style){
 		}
 		return;	
 	}
+
+	var p=window.location.href.indexOf("/", 8);
+	var currentHostName="a";
+	if(p != -1){
+		currentHostName=window.location.href.substr(0, p);
+	}
+	p=imageURL.indexOf("/", 8);
+	var imageHostName="b";
+	if(imageHostName != -1){
+		imageHostName=imageURL.substr(0, p);
+	}
+	var proxyPath="/zimageproxy/";
+	if(currentHostName != imageHostName && imageURL.substr(0, proxyPath.length) != proxyPath){
+		// use proxy when it is a remote domain to avoid crossdomain security error
+		imageURL="/zimageproxy/"+imageURL.replace("http://", "").replace("https://", "");
+	}
 	var canvas = document.createElement('canvas');
 	zLoadAndCropImagesIndex++;
 	canvas.id="zCropImageID"+zLoadAndCropImagesIndex+"_canvas";

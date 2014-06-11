@@ -697,7 +697,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 					if(i EQ 1){
 						request.lastPhotoId=arguments.query.listing_id;
 					}
-					idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+					idx["photo"&i]=request.zos.retsPhotoPath&'7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 				/*}else{
 					idx["photo"&i]='/z/a/listing/images/image-not-available.gif';
 					if(i EQ 1){
@@ -755,7 +755,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 		local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
 		local.absPath='#request.zos.sharedPath#mls-images/7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		if(fileexists(local.absPath)){
-			return request.zos.currentHostName&'/zretsphotos/7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			return request.zos.retsPhotoPath&'7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}else{
 			request.lastPhotoId="";
 			return "";
@@ -775,7 +775,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				request.lastPhotoId=this.mls_id&"-"&arguments.sysid;
 				local.fNameTemp1=arguments.sysid&"-"&arguments.num&".jpeg";
 				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				return request.zos.currentHostName&'/zretsphotos/7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+				return request.zos.retsPhotoPath&'7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 			}else{
 				request.lastPhotoId="";
 				return "";

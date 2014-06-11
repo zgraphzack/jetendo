@@ -25,7 +25,7 @@
 	
 	// sign up for grammarly's affiliate program and replace this url with a tracking url provided by their system to earn commission.
 	ts.zos.grammarlyTrackingURL="http://tr.grammarly.com/aff_c?offer_id=37&aff_id=3187";
-	
+	ts.zos.mlsImagesDomain=""; // optionally change the domain that MLS images are served from. i.e. http://mls-images.mycompany.com, or leave blank.
 	if(ts.zos.istestserver){
 		ts.zos.serverStruct={
 			"1":{

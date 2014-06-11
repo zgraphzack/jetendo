@@ -387,7 +387,7 @@
 			for(i=1;i LTE arguments.query.listing_photocount;i++){
 				local.fNameTemp1=idx.urlMlsPid&"-"&i&".jpeg";
 				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/4/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+				idx["photo"&i]=request.zos.retsPhotoPath&'4/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 			}
 		}
 		oid1="0";
@@ -440,7 +440,7 @@
 		request.lastPhotoId=this.mls_id&"-"&arguments.mls_pid;
 		local.fNameTemp1=arguments.mls_pid&"-"&arguments.num&".jpeg";
 		local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-		return request.zos.currentHostName&'/zretsphotos/4/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+		return request.zos.retsPhotoPath&'4/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		</cfscript>
     </cffunction>
 	

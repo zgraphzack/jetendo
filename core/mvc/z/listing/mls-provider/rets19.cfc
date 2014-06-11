@@ -432,7 +432,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 			for(i=1;i LTE idx.listing_photocount;i++){
 				local.fNameTemp1=idx.listing_id&"-"&i&".jpeg";
 				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+				idx["photo"&i]=request.zos.retsPhotoPath&'19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 			}
 		}
 		idx["agentName"]=idx.rets19_144;
@@ -477,7 +477,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
 		local.absPath='#request.zos.sharedPath#mls-images/19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		if(fileexists(local.absPath)){
-			return request.zos.currentHostName&'/zretsphotos/19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			return request.zos.retsPhotoPath&'19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}else{
 			request.lastPhotoId="";
 			return "";
@@ -500,7 +500,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 			request.lastPhotoId=this.mls_id&"-"&arguments.sysid;
 			local.fNameTemp1=arguments.sysid&"-"&arguments.num&".jpeg";
 			local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-			return request.zos.currentHostName&'/zretsphotos/19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			return request.zos.retsPhotoPath&'19/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}else{
 			return "";
 		}
@@ -509,7 +509,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		request.lastPhotoId="";
 		if(qId.recordcount NEQ 0){
 			request.lastPhotoId=this.mls_id&"-"&qId.rets19_sysid;
-			photo=request.zos.currentHostName&'/zretsphotos/19/'&qId.rets19_sysid&"-"&arguments.num&".jpeg";
+			photo=request.zos.retsPhotoPath&'19/'&qId.rets19_sysid&"-"&arguments.num&".jpeg";
 		}
 		return photo;*/
 		</cfscript>

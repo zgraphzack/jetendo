@@ -552,7 +552,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 		}else{
 			return "http://mlsimage.fnisrediv.com/ListingImages/camrmls/addl_picts/"&arguments.mls_pid&"-"&(arguments.num-1)&".jpg";
 		}
-		//return request.zos.currentHostName&'/zretsphotos/21/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+		//return request.zos.retsPhotoPath&'21/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		</cfscript>
     </cffunction>
 	

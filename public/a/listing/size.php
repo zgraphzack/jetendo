@@ -470,14 +470,15 @@ try {
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 			
 			
 			$a = curl_exec($ch);
 			if($a===FALSE){
 				if($debug){
 					echo "curl failed2<br />";
+					echo "url: ".$photourl."<br />";
 					echo curl_error($ch);
 					exit;
 				}else{

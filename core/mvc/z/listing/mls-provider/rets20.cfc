@@ -430,7 +430,7 @@ unlimited between 7pm and 5am hawaii time
 			for(i=1;i LTE local.tempCount;i++){
 				local.fNameTemp1=idx.listing_id&"-"&i&".jpeg";
 				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				idx["photo"&i]=request.zos.currentHostName&'/zretsphotos/20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+				idx["photo"&i]=request.zos.retsPhotoPath&'20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 			}
 		}
 		
@@ -482,7 +482,7 @@ unlimited between 7pm and 5am hawaii time
 		local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
 		local.absPath='#request.zos.sharedPath#mls-images/20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		if(fileexists(local.absPath)){
-			return request.zos.currentHostName&'/zretsphotos/20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			return request.zos.retsPhotoPath&'20/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}else{
 			request.lastPhotoId="";
 			return "";

@@ -415,36 +415,26 @@ var local=structnew();
 local.c=replace(arguments.photourl, request.zos.currentHostName, "");
 if(compare(arguments.photourl, local.c) NEQ 0){
 	if(left(local.c, 12) EQ "/zretsphotos"){
-		if(arguments.width EQ 10000 or arguments.height EQ 10000){
-			/*
-			local.fNameTemp1=listgetat(arguments.listing_id,2,"-")&"-"&arguments.num&".jpeg";
-			local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-			return request.zos.currentHostName&'/zretsphotos/'&listgetat(arguments.listing_id,1,"-")&'/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
-			*/
-			return local.c;
-		//	return request.zos.currentHostName&"/zretsphotos/#replace(arguments.listing_id,"-","/")#-#arguments.num#.jpeg";
+		if(arguments.width EQ 10000 or arguments.height EQ 10000){ 
+			return local.c; 
 		}else if(listlen(arguments.listing_id,"-") EQ 3){
 			return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#&amp;a=#arguments.autocrop#";
 		}else{
 			return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;a=#arguments.autocrop#";
-		}
-		///zgen.#arguments.width#.#arguments.height#.#arguments.autocrop#."&replace(arguments.listing_id,"-",".")&"-"&arguments.num&".jpeg";
-		//return request.zos.currentHostName&"/zgen.#arguments.width#.#arguments.height#.#arguments.autocrop#."&replace(arguments.listing_id,"-",".")&"-"&arguments.num&".jpeg";
+		} 
 	}else{
 		return request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif';	
 	}
 }else{
 	if(arguments.width EQ 10000 or arguments.height EQ 10000){
-		if(left(arguments.photourl,5) EQ "http:"){
-			//return arguments.photourl;
+		if(left(arguments.photourl,5) EQ "http:"){ 
 			return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;p=#urlencodedformat(arguments.photourl)#&amp;a=#arguments.autocrop#";
 		}else{
 			return request.zos.currentHostName&arguments.photourl;
 		}
 	}else{
 		return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;p=#urlencodedformat(arguments.photourl)#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;a=#arguments.autocrop#";
-	}
-	//return request.zos.currentHostName&"/zgen.#arguments.width#.#arguments.height#.#arguments.autocrop#."&replace(arguments.listing_id,"-",".")&"-"&arguments.num&".jpeg?p="&urlencodedformat(arguments.photourl);
+	} 
 }
 </cfscript>
 </cffunction>
@@ -2453,8 +2443,11 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	var i=0;
 	var qMapCheck=0;
 	var tempSQL=0;
-
-	
+	if(request.zos.mlsImagesDomain NEQ ""){
+		request.zos.retsPhotoPath=request.zos.mlsImagesDomain&'/zretsphotos/';
+	}else{
+		request.zos.retsPhotoPath=request.zos.currentHostName&'/zretsphotos/';
+	}
 	if(request.zos.allowRequestCFC){
 		request.zos["listing"]=application.zcore.listingStruct;
 		request.zos["listingApp"]=application.sitestruct[request.zos.globals.id].app.appCache[this.app_id];
