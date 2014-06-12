@@ -156,7 +156,11 @@
 			if(not verifyStruct.success){
 				writeoutput('Database schema validation failed post-upgrade. Changes were made. 
 				The upgrade scripts may be broken.  You must verify your installation is still working.');
+				echo(" | disk current version: "&newDsStruct.databaseVersion&" | memory version:"&application.zcore.databaseVersion&" | database version: "&curDSStruct.databaseVersion);
 				restoreTables(backupStruct);
+				//jsonOutput=replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL");
+				//echo(jsonOutput);
+				writedump(verifyStruct);
 				return false;
 			}
 		}

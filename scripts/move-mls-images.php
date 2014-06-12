@@ -539,6 +539,9 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 		if($renameEnabled){
 			if(substr_count($fname, "-") == 1){
 				$fname=$arrIdNew[$arrFID2[$i]].substr($fname, strpos($fname, "-"));
+				echo "Found id:".$fname."\n";
+			}else{
+				echo "Didn't find id\n";
 			}
 		}
 		$md5name=md5($fname);
@@ -584,8 +587,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 		if($crop){
 			// read image, crop and store
 			if(substr($filedestination, strlen($filedestination)-4, 4) == ".pdf"){
-				echo "moving: ".$arrFID[$i]."\n";
-				
+				echo "moving: ".$arrFID[$i]." to ".$filedestination."\n";
 				$r=moveFile($filesource, $filedestination);
 				if($r===FALSE){
 					echo "non image copy failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
@@ -597,7 +599,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 				}
 				
 			}else{
-				echo "cropping: ".$arrFID[$i]."\n";
+				echo "cropping: ".$arrFID[$i]." to ".$filedestination."\n";
 				$r=processImage($filesource, $filedestination);
 				usleep(40000);
 				if($r===FALSE){
@@ -649,6 +651,10 @@ function getRets22SysId(){
 	return array("select SQL_NO_CACHE rets22_list_1 as imageid, rets22_list_105 as listingid from rets22_property where rets22_list_1 IN ('", $mlsDataDatasource);
 }
 
+function getRets24SysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets24_list_1 as imageid, rets24_list_105 as listingid from rets24_property where rets24_list_1 IN ('", $mlsDataDatasource);
+}
 $arrQueryFunction=array();
 $arrQueryFunction["7"]="getRets7SysId";
 $arrQueryFunction["12"]="getRets12SysId";
@@ -656,6 +662,7 @@ $arrQueryFunction["16"]="getRets16SysId";
 //$arrQueryFunction["18"]="getRets18SysId";
 $arrQueryFunction["20"]="getRets20SysId";
 $arrQueryFunction["22"]="getRets22SysId";
+$arrQueryFunction["24"]="getRets24SysId";
 
 
 echo "\ndelete runningFilePath before image processing:".$runningFilePath."\n";
