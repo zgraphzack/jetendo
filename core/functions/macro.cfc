@@ -880,7 +880,8 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 	var fd=0;
 	if(structkeyexists(request.zos, 'zAbortRan')){
 		return;
-	} 
+	}
+	application.zcore.session.put(session);
 	request.zos.zAbortRan=true;
 	if(arguments.skipBack EQ false and structkeyexists(application.zcore,'tracking')){
 		application.zcore.tracking.backOneHit();

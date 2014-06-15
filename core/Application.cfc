@@ -100,15 +100,15 @@ this.scopeCascading = "standard";
 	 
 <cfscript>
 local.tempCGI=duplicate(CGI);
-request.zos.requestData=getHTTPRequestData();
-
-if(structkeyexists(request.zos.requestData.headers,'remote_addr')){
-	local.tempCGI.remote_addr=request.zos.requestData.headers.remote_addr;
+requestData=getHTTPRequestData();
+if(structkeyexists(requestData.headers,'remote_addr')){
+	local.tempCGI.remote_addr=requestData.headers.remote_addr;
 }
-if(structkeyexists(request.zos.requestData.headers,'http_host')){
-	local.tempCGI.http_host=request.zos.requestData.headers.http_host;
+if(structkeyexists(requestData.headers,'http_host')){
+	local.tempCGI.http_host=requestData.headers.http_host;
 }
 variables.setupGlobals(local.tempCGI);
+request.zos.requestData=requestData;
 request.zos.cgi=local.tempCGI;
 </cfscript>
 

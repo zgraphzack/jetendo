@@ -372,6 +372,7 @@
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-1'});
 	ts.componentObjectCache=structnew();
 	ts.componentObjectCache.cache=CreateObject("component","zcorerootmapping.com.zos.cache");
+	ts.componentObjectCache.session=CreateObject("component","zcorerootmapping.com.zos.session");
 	ts.componentObjectCache.tracking=CreateObject("component","zcorerootmapping.com.app.tracking");
 	ts.componentObjectCache.template=CreateObject("component","zcorerootmapping.com.zos.template");
 	ts.componentObjectCache.routing=CreateObject("component", "zcorerootmapping.com.zos.routing");

@@ -458,7 +458,7 @@ function zLoadAndCropImage(obj, imageURL, debug, width, height, crop, style){
 		imageHostName=imageURL.substr(0, p);
 	}
 	var proxyPath="/zimageproxy/";
-	if(currentHostName != imageHostName && imageURL.substr(0, proxyPath.length) != proxyPath){
+	if(imageURL.substr(0,4) == 'http' && currentHostName != imageHostName && imageURL.substr(0, proxyPath.length) != proxyPath){
 		// use proxy when it is a remote domain to avoid crossdomain security error
 		imageURL="/zimageproxy/"+imageURL.replace("http://", "").replace("https://", "");
 	}

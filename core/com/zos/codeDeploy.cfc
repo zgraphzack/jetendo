@@ -95,6 +95,7 @@
 	
 	componentObjectCache=structnew();
 	componentObjectCache.cache=CreateObject("component","zcorerootmapping.com.zos.cache");
+	componentObjectCache.session=CreateObject("component","zcorerootmapping.com.zos.session");
 	componentObjectCache.tracking=CreateObject("component","zcorerootmapping.com.app.tracking");
 	componentObjectCache.template=CreateObject("component","zcorerootmapping.com.zos.template");
 	componentObjectCache.routing=CreateObject("component", "zcorerootmapping.com.zos.routing");

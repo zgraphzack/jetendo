@@ -496,8 +496,10 @@ variables.tableLookup["I"]="I";
 	idx["virtualtoururl"]=arguments.query["rets24_unbrandedidxvirtualtour"];
 	idx["zipcode"]=arguments.query["listing_zip"][arguments.row];
 	idx["maintfees"]="";
-	if(arguments.query["rets#this.mls_id#_LIST_150"][arguments.row] NEQ ""){
+	if(isnumeric(arguments.query["rets#this.mls_id#_LIST_150"][arguments.row])){
 		idx["maintfees"]=arguments.query["rets#this.mls_id#_LIST_150"][arguments.row];
+	}else if(isnumeric(arguments.query["rets#this.mls_id#_LIST_50"][arguments.row])){
+		idx["maintfees"]=arguments.query["rets#this.mls_id#_LIST_50"][arguments.row];
 	}
 	
 	</cfscript>

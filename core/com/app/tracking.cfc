@@ -477,6 +477,7 @@ USER WAS PERMANENTLY BLOCKED.');
 			}*/
 			if(request.zos.trackingspider and structcount(session)){
 				structclear(session);	
+				application.zcore.session.clear();
 			}
 		}
 		

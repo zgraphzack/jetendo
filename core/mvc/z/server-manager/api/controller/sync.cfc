@@ -15,4 +15,15 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="downloadNewerSessions" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	if(not structkeyexists(form, 'newerThenDate')){
+		throw("form.newerThenDate is required.");
+	}
+	syncStruct=application.zcore.session.getSessionsNewerThen(parsedatetime(form.newerThenDate));
+	echo(serialize(syncStruct));
+	abort;
+	</cfscript>
+</cffunction>
+
 </cfcomponent>

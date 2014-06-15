@@ -47,9 +47,7 @@ var returnStruct=0;
 var propDisplayCom=0;
 var contentIdList=0;
 var propertyHTML=0;
-var db=request.zos.queryObject;
-//structdelete(session.zos.listing,"savedListingUserLoaded");
-//structclear(session);
+var db=request.zos.queryObject; 
 request.disableShareThis=true;
 form.saveAct=application.zcore.functions.zso(form, 'saveAct'); 
 if(isDefined('session.zos.user.id')){

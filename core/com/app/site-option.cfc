@@ -1434,8 +1434,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var row=0;
 	var i=0;
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
-	where site_option_group_search_index_cfc_path <> #db.param('')# and 
-	site_option_group_search_index_cfc_method <> #db.param('')# and 
+	where 
 	site_option_group_parent_id = #db.param('0')# and 
 	site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_disable_site_map = #db.param(0)# and 

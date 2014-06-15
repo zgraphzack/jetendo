@@ -149,7 +149,16 @@
     
     
     
+    /*
+    # To enable SSL session id tracking for Jetendo session verification, you must pass the nginx SSL session id to tomcat.
+    # in nginx server configuration, add this for ssl sites:
+        proxy_set_header ssl_session_id $ssl_session_id;
+    # You should also make sure the session cache and timeout time length matches the value of sessionExpirationInMinutes because the nginx default is only 5 minutes.  You can change it to 30 minutes by setting the following 2 options in nginx.conf
+        ssl_session_cache   shared:SSL:30m;
+        ssl_session_timeout  30m;
+    */
     ts.zos.serverSessionVariable="zsessionid";
+    ts.zos.sessionExpirationInMinutes=30;
     
     // port defined for the java server connector when using SSL - used to detect a secure connection instead of port 443.
     ts.zos.alternatesecureport="8889";

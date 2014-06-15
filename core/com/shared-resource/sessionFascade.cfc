@@ -1,4 +1,7 @@
 <!--- 
+new approach:
+
+
 example of using IOC for automatic scope cfc dependency injection:
 
 // user.cfc with read/write access to session:

@@ -23,7 +23,7 @@
 			<cfcontent type="text/html; iso-8859-1">
 			<cfheader statuscode="404" statustext="Page not found">
 			
-			<cfsavecontent variable="local.zErrorTempURL"><cfif request.zos.CGI.SERVER_PORT EQ "80">http://<cfelse>https://</cfif>#listgetat(request.zOS.CGI.http_host,1,":")#<cfif isDefined('form._zsa3_path')>#form._zsa3_path#?#replace(CGI.QUERY_STRING,"_zsa3_path=","_zsa3_pathdisabled=","all")#<cfelse>#request.cgi_script_name#<cfif CGI.QUERY_STRING NEQ "">?#CGI.QUERY_STRING#</cfif></cfif></cfsavecontent>
+			<cfsavecontent variable="local.zErrorTempURL"><cfif request.zos.CGI.SERVER_PORT EQ "80">http://<cfelse>https://</cfif>#listgetat(request.zOS.CGI.http_host,1,":")#<cfif structkeyexists(form, '_zsa3_path')>#form._zsa3_path#?#replace(request.zos.CGI.QUERY_STRING,"_zsa3_path=","_zsa3_pathdisabled=","all")#<cfelse>#request.cgi_script_name#<cfif request.zos.CGI.QUERY_STRING NEQ "">?#request.zos.CGI.QUERY_STRING#</cfif></cfif></cfsavecontent>
 			<cfscript>
 			local.ignoreStruct={
 				"/z/listing/property/":true
@@ -40,10 +40,10 @@
 					<cfquery name="qLog" datasource="#request.zos.zcoredatasource#">
 					INSERT INTO log404 SET 
 					log404_url ='#application.zcore.functions.zescape(local.zErrorTempURL)#',
-					log404_user_agent='#application.zcore.functions.zescape(cgi.http_user_agent)#',
-					log404_ip ='#application.zcore.functions.zescape(cgi.remote_addr)#',
+					log404_user_agent='#application.zcore.functions.zescape(request.zos.cgi.http_user_agent)#',
+					log404_ip ='#application.zcore.functions.zescape(request.zos.cgi.remote_addr)#',
 					log404_datetime ='#application.zcore.functions.zescape(request.zos.mysqlnow)#', 
-					log404_referer='#application.zcore.functions.zescape(cgi.http_referer)#'
+					log404_referer='#application.zcore.functions.zescape(request.zos.cgi.http_referer)#'
 					</cfquery>
 					<cfcatch type="database">
 						<!--- ignore database errors --->
@@ -51,14 +51,10 @@
 				</cftry>
 			</cfif>
 			<cfscript>
-			if(isDefined('request.zos.cgi.http_host')){
-				host=request.zos.cgi.http_host;
-			}else{
-				host=cgi.http_host;
-			}
+			host=request.zos.cgi.http_host;
 			</cfscript>
 			<cfquery name="qSite" datasource="#request.zos.zcoredatasource#">
-			SELECT * FROM site WHERE site_domain = 'http://#listgetat(host,1,":")#' and site_active='1' and site_id <> '1'
+			SELECT * FROM site WHERE site_domain like '%://#listgetat(host,1,":")#' and site_active='1' and site_id <> '1'
 			</cfquery>
 			<cfscript>
 			
@@ -76,7 +72,7 @@
 			}else{
 				p="";
 			}
-			if(cgi.server_port_secure EQ 1 or cgi.server_port EQ request.zos.alternatesecureport or cgi.server_port EQ "443"){
+			if(request.zos.cgi.server_port_secure EQ 1 or request.zos.cgi.server_port EQ request.zos.alternatesecureport or request.zos.cgi.server_port EQ "443"){
 				ph="https://";	
 			}else{
 				ph="http://";
@@ -125,7 +121,7 @@
 				<body>
 				<p class="style1">Sorry, this page no longer exists.</p>
 				<p class="style2"><strong>Now redirecting you to the home page.</strong></p>
-				<p class="style2">If your browser doesn't automatically redirect in 25 seconds, <a href="http://#listgetat(CGI.HTTP_HOST,1,':')#/">click here</a>.</p>
+				<p class="style2">If your browser doesn't automatically redirect in 25 seconds, <a href="http://#listgetat(host,1,":")#/">click here</a>.</p>
 				</body>
 				</html>
 			</cfif>

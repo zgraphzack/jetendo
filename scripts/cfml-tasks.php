@@ -7,6 +7,14 @@ function getTasks(){
 	}else{
 		$adminDomain=get_cfg_var("jetendo_admin_domain");
 	}
+
+	$t=new stdClass();
+	$t->logName="sync-sessions.html";
+	$t->interval=60;
+	$t->startTimeOffsetSeconds=0;
+	$t->url=$adminDomain."/z/server-manager/tasks/sync-sessions/index";
+	array_push($arrTask, $t);
+
 	$t=new stdClass();
 	$t->logName="listing-generatedata.html";
 	$t->type="every";

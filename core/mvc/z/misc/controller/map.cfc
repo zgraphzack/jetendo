@@ -191,7 +191,7 @@
 		}else{
 			$("##address1").css("width", "65%");
 		}
-		$("##mapDivId").css("height", (zWindowSize.height-100)+"px");
+		$("##mapDivId").css("height", (zWindowSize.height-140)+"px");
 	}
 	function setMapSize(){
 		setInterfaceSize();
@@ -230,7 +230,9 @@
 	application.zcore.template.appendTag("scripts", local.scriptOutput); 
 	</cfscript>
 	<div style="min-width:320px; width:100%; float:left;">
-		<div id="mapContainerDiv" style="width:100%; padding-bottom:5px; float:left;"><input type="text" placeholder="Type Street Address" name="address" id="address1" style="width:62%;" value="#htmleditformat(form.address)#" /> <input type="button" name="submit1" id="setMarkerButton" value="Search" /> <input type="button" name="submit2" id="centerMapButton" value="Center Map" />
+		<div id="mapContainerDiv" style="width:100%; padding-bottom:5px; float:left;">
+			Directions: After confirming the map location is correct below, click close and save the record you're editing to save the new map coordinates.  If the location is not correct, you can search for a new address OR click and drag the pin to the correct location.
+			<br /><input type="text" placeholder="Type Street Address" name="address" id="address1" style="width:62%;" value="#htmleditformat(form.address)#" /> <input type="button" name="submit1" id="setMarkerButton" value="Search" /> <input type="button" name="submit2" id="centerMapButton" value="Center Map" />
 		</div>
 		<div id="mapContainerDiv" style="width:100%; float:left;">
 			<div style="width:100%; float:left;height:200px;" id="mapDivId"></div>

@@ -90,5 +90,6 @@
 		//writeoutput(trim(local.finalString));
 		//writeOutput(trim(rereplace(local.finalString, "\n\s+",chr(10),"all")));
 	}*/
+	application.zcore.session.put(session);
 	application.zcore.functions.zThrowIfImplicitVariableAccessDetected();
 </cfscript></cffunction>

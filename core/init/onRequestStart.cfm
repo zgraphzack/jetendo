@@ -57,6 +57,7 @@
 	if(request.zos.zreset EQ "session" or request.zos.zreset EQ "all"){
 		application.zcore.user.logOut(false, true);
 		structclear(session);
+		application.zcore.session.clear();
 	}
 	
 	application.zcore.functions.zReturnJson(ts);
@@ -92,6 +93,8 @@
 				
 			}
 		}
+		sessionStruct=application.zcore.session.get();
+		structappend(session, sessionStruct, true);
 		
 		request.zos.inMemberArea=false;
 		request.zos.inServerManager=false;
@@ -153,16 +156,17 @@
 		}
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0restore session<br />');	local.s=gettickcount('nano');
 		 
-		local.timeSpan=CreateTimeSpan( 0,0,30,0);
+		 /*
+		local.timeSpan=CreateTimeSpan( 0,0,request.zos.sessionExpirationInMinutes,0);
 		if(structkeyexists(session, 'cfid') and structkeyexists(session, 'cftoken')){
 			try{
-				application.zcore.functions.zCookie({name:'cfid', value=session.cfid, expires: local.timeSpan });
-				application.zcore.functions.zCookie({name:'cftoken', value=session.cftoken, expires:local.timeSpan });
-				//application.zcore.functions.zCookie({name:'jsessionid', value=session.sessionid, expires:local.timeSpan });
+				application.zcore.functions.zCookie({name:'cfid', value:session.cfid, expires: local.timeSpan });
+				application.zcore.functions.zCookie({name:'cftoken', value:session.cftoken, expires:local.timeSpan });
+				//application.zcore.functions.zCookie({name:'jsessionid', value:session.sessionid, expires:local.timeSpan });
 			}catch(Any e){
 				// ignore session cookie errors.
 			}
-		}
+		}*/
 		local.temphomedir=Request.zOSHomeDir;//replace(expandpath('/'),"\","/","all");
 		local.tempdomain="http://"&lcase(request.zos.cgi.server_name);
 		local.tempsecuredomain="https://"&lcase(request.zos.cgi.server_name); // need to be able to override this.
@@ -306,6 +310,7 @@
 	if(not structkeyexists(session, 'zos') or (request.zos.zreset EQ "session" or request.zos.zreset EQ "all")){
 		application.zcore.user.logOut(false, true);
 		structclear(session);
+		application.zcore.session.clear();
 	}
 	variables.site_id=application.sitestruct[request.zos.globals.id].site_id; 
 	
