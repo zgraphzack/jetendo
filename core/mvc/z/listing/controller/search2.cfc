@@ -806,7 +806,7 @@
 				application.zcore.functions.zQueryToStruct(qc23872,temp238722);
 				request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 				form.searchId=application.zcore.status.getNewId();
-				session.zos.tempVars.zListingSearchId=form.searchId;
+				request.zsession.tempVars.zListingSearchId=form.searchId;
 				application.zcore.status.setStatus(form.searchid,false,temp23872);
 			}else{
 				application.zcore.functions.z301redirect('/');
@@ -827,7 +827,7 @@
 				application.zcore.functions.zQueryToStruct(qc23872,temp238722);
 				request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 				form.searchId=application.zcore.status.getNewId();
-				session.zos.tempVars.zListingSearchId=form.searchId;
+				request.zsession.tempVars.zListingSearchId=form.searchId;
 				application.zcore.status.setStatus(form.searchid,false,temp23872);
 			}else{
 				application.zcore.functions.z301redirect('/');
@@ -1204,10 +1204,10 @@
 			if(form.searchFormEnabledDropDownMenus){
 				writeoutput('<a href="#request.zos.listing.functions.getSearchFormLink()#" class="zNoContentTransition"><strong style="font-size:14px;">+ Show more options</strong><br />(i.e. Subdivision, zip code, <br />keyword search)</a>');
 			}
-			if(isDefined('session.zos.user.id') EQ false){
+			if(isDefined('request.zsession.user.id') EQ false){
 				writeoutput('<br /><br /><a href="/z/user/preference/index" style="font-size:14px; font-weight:bold;">Login/Create Account</a>');
 			}else{
-				writeoutput('<br /><br /><span style="font-size:14px; font-weight:bold;">Logged in as #session.zos.user.first_name#,<br />
+				writeoutput('<br /><br /><span style="font-size:14px; font-weight:bold;">Logged in as #request.zsession.user.first_name#,<br />
 			<a href="/?zlogout=1">LOG OUT</a></span>');
 			}
 			writeoutput('</span>');	

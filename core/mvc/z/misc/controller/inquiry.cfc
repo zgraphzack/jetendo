@@ -262,7 +262,7 @@
             <table class="zinquiry-form-table">
             <tr>
                 <th>First Name: *</th>
-                <td><input name="inquiries_first_name" id="inquiries_first_name" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(session, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" />
+                <td><input name="inquiries_first_name" id="inquiries_first_name" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" />
         <cfif structkeyexists(form, 'content_id') or structkeyexists(form, 'selected_content_id') or isDefined('request.zos.zPrimaryContentId')>
 			<cfscript>
             if(application.zcore.functions.zso(form, 'content_id') NEQ ''){
@@ -275,16 +275,16 @@
             </tr>
             <tr>
                 <th>Last Name: *</th>
-                <td><input name="inquiries_last_name" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(session, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /></td>
+                <td><input name="inquiries_last_name" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /></td>
             </tr>
           <tr id="zInquiryFormTRCompany"><th>Company:</th><td><input type="text" class="textinput" name="inquiries_company" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_company')#" /></td></tr>
             <tr>
                 <th>Email: <cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_email_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_email_required EQ 1>*</cfif></th>
-                <td><input name="inquiries_email" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(session, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /></td>
+                <td><input name="inquiries_email" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /></td>
             </tr>
             <tr>
                 <th>Phone: <cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1>*</cfif></th>
-                <td><input name="inquiries_phone1" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(session, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /></td>
+                <td><input name="inquiries_phone1" type="text" style="width:96%;" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /></td>
             </tr>
             
           <tr id="zInquiryFormTRAddress"><th>Address:</th><td><input type="text" class="textinput" name="inquiries_address" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_address')#" /></td></tr>
@@ -302,8 +302,8 @@
             </tr>
             
             <cfscript>
-            if(isDefined('session.zLastSearchId')){
-                ts2=application.zcore.status.getStruct(session.zLastSearchId);
+            if(isDefined('request.zsession.zLastSearchId')){
+                ts2=application.zcore.status.getStruct(request.zsession.zLastSearchId);
                 ts=ts2.varstruct;
                 form.inquiries_property_type = application.zcore.functions.zso(ts, 'property_type_code');
                 form.inquiries_property_city=application.zcore.functions.zso(ts, 'city_id');

@@ -89,7 +89,7 @@
 		application.zcore.functions.zRedirect("/z/inquiries/admin/feedback/view?zPageId=#form.zPageId#&zsid=#Request.zsid#&inquiries_id=#form.inquiries_id#");
 	
 	}
-	form.user_id = session.zos.user.id;
+	form.user_id = request.zsession.user.id;
 	form.site_id = request.zOS.globals.id;
 	
 	//	Insert Into Inquiry Database
@@ -167,7 +167,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
 		application.zcore.functions.zRedirect("/z/inquiries/admin/feedback/view?zPageId=#form.zPageId#&zsid=#Request.zsid#&inquiries_id=#form.inquiries_id#");
 	}
-	form.user_id = session.zos.user.id;
+	form.user_id = request.zsession.user.id;
 	form.site_id = request.zOS.globals.id;
 	
 	form.inquiries_feedback_from=form.lead_email_from;
@@ -242,7 +242,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	WHERE inquiries_id = #db.param(form.inquiries_id)# and 
 	inquiries.site_id = #db.param(request.zos.globals.id)#";
 	if(structkeyexists(request.zos.userSession.groupAccess, 'administrator') EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-		db.sql&=" AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+		db.sql&=" AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
 	}
 	qInquiry=db.execute("qInquiry");
@@ -266,7 +266,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 		WHERE inquiries_email = #db.param(form.inquiries_email)# and site_id = #db.param(request.zos.globals.id)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, 'administrator') EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-			AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+			AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 		</cfif>
 		ORDER BY inquiries_id DESC </cfsavecontent>
@@ -333,7 +333,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		</td>
 		<td style="vertical-align:top; width:30%;padding-left:10px; padding-right:0px;">
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-			WHERE user_id = #db.param(session.zos.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
+			WHERE user_id = #db.param(request.zsession.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
 			user_server_administrator=#db.param('0')# </cfsavecontent>
 			<cfscript>
 			qAgent=db.execute("qAgent");

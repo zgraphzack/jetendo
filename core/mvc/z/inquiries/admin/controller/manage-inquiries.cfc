@@ -202,7 +202,7 @@
 	inquiries_parent_id = #db.param(0)# ) or 
 	(inquiries_parent_id = #db.param(form.inquiries_id)# ))
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-		AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+		AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
 	</cfsavecontent>
@@ -222,7 +222,7 @@
 	<cfloop query="qinquiry">
 		<h2 style="display:inline;">Inquiry Information</h2>
 		| <a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
-		<cfif session.zos.user.group_id NEQ homeownerid>
+		<cfif request.zsession.user.group_id NEQ homeownerid>
 			| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Assign Lead</a>
 		</cfif>
 		<cfif qinquiry.inquiries_reservation EQ 1>
@@ -256,19 +256,19 @@
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("4.1");
 	if(structkeyexists(form, 'leadcontactfilter')){
-		session.leadcontactfilter=form.leadcontactfilter;		
-	}else if(isDefined('session.leadcontactfilter') EQ false){
-		session.leadcontactfilter='all';
+		request.zsession.leadcontactfilter=form.leadcontactfilter;		
+	}else if(isDefined('request.zsession.leadcontactfilter') EQ false){
+		request.zsession.leadcontactfilter='all';
 	}
 	if(structkeyexists(form, 'grouping')){
-		session.leademailgrouping=form.grouping;
-	}else if(isDefined('session.leademailgrouping') EQ false){
-		session.leademailgrouping='1';
+		request.zsession.leademailgrouping=form.grouping;
+	}else if(isDefined('request.zsession.leademailgrouping') EQ false){
+		request.zsession.leademailgrouping='1';
 	}
 	if(structkeyexists(form, 'viewspam')){
-		session.leadviewspam=form.viewspam;
-	}else if(not structkeyexists(session, 'leadviewspam')){
-		session.leadviewspam=0;	
+		request.zsession.leadviewspam=form.viewspam;
+	}else if(not structkeyexists(request.zsession, 'leadviewspam')){
+		request.zsession.leadviewspam=0;	
 	}
 	qSortCom = CreateObject("component","zcorerootmapping.com.display.querySort");
 	form.zPageId = qSortCom.init("zPageId");
@@ -289,12 +289,12 @@
 		and inquiries_reservation_status=#db.param(0)#
 	</cfif>
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-		AND user_id = #db.param(session.zOS.user.id)# and 
+		AND user_id = #db.param(request.zsession.user.id)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
-	<cfif application.zcore.functions.zso(session, 'agentuserid') NEQ ''>
-		and inquiries.user_id = #db.param(session.agentuserid)# and 
-		user_id_siteIDType = #db.param(session.agentusersiteidtype)#
+	<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
+		and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+		user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 	</cfif>
 	</cfsavecontent>
 	<cfscript>
@@ -310,12 +310,12 @@
 	</cfif>
 	and inquiries_parent_id = #db.param(0)#
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-		AND user_id = #db.param(session.zOS.user.id)# and 
+		AND user_id = #db.param(request.zsession.user.id)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
-	<cfif application.zcore.functions.zso(session, 'agentuserid') NEQ ''>
-		and inquiries.user_id = #db.param(session.agentuserid)# and 
-		user_id_siteIDType = #db.param(session.agentusersiteidtype)#
+	<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
+		and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+		user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 	</cfif>
 	</cfsavecontent>
 	<cfscript>
@@ -355,12 +355,12 @@
 		</cfif>
 		and inquiries_parent_id = #db.param(0)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-			AND user_id = #db.param(session.zOS.user.id)# and 
+			AND user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 		</cfif>
-		<cfif application.zcore.functions.zso(session, 'agentuserid') NEQ ''>
-			and inquiries.user_id = #db.param(session.agentuserid)# and 
-			user_id_siteIDType = #db.param(session.agentusersiteidtype)#
+		<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
+			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
 		</cfsavecontent>
 		<cfscript>
@@ -389,15 +389,15 @@
 		</cfif>
 		and inquiries_parent_id = #db.param(0)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-			AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+			AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 		</cfif>
-		<cfif application.zcore.functions.zso(session, 'agentuserid') NEQ ''>
-			and inquiries.user_id = #db.param(session.agentuserid)# and 
-			user_id_siteIDType = #db.param(session.agentusersiteidtype)#
+		<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
+			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
 		<cfif structkeyexists(form, 'searchOn') EQ false>
-			<cfif session.leadcontactfilter NEQ 'allclosed'>
+			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
 				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#)
@@ -424,19 +424,19 @@
 				and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#
 			</cfif>
 		</cfif>
-		<cfif session.leadviewspam EQ "0">
+		<cfif request.zsession.leadviewspam EQ "0">
 			and inquiries.inquiries_spam =#db.param(0)#
 		</cfif>
-		<cfif session.leadcontactfilter EQ 'new'>
+		<cfif request.zsession.leadcontactfilter EQ 'new'>
 			and inquiries.inquiries_status_id ='1'
-		<cfelseif session.leadcontactfilter EQ 'email'>
+		<cfelseif request.zsession.leadcontactfilter EQ 'email'>
 			and inquiries_phone1 =#db.param('')# and inquiries_phone_time=#db.param('')#
-		<cfelseif session.leadcontactfilter EQ 'phone'>
+		<cfelseif request.zsession.leadcontactfilter EQ 'phone'>
 			and inquiries_phone1 <>#db.param('')# and inquiries_phone_time=#db.param('')#
-		<cfelseif session.leadcontactfilter EQ 'forced'>
+		<cfelseif request.zsession.leadcontactfilter EQ 'forced'>
 			and inquiries_phone_time<>#db.param('')#
 		</cfif>
-		<cfif session.leademailgrouping EQ '1'>
+		<cfif request.zsession.leademailgrouping EQ '1'>
 			and inquiries_primary = #db.param('1')#
 		</cfif>
 		<cfif qsortcom.getorderby(false) NEQ ''>
@@ -454,7 +454,7 @@
 		qinquiries=db.execute("qinquiries");
 		</cfscript>
 		<cfsavecontent variable="db.sql"> SELECT count(
-		<cfif session.leademailgrouping EQ '1'>
+		<cfif request.zsession.leademailgrouping EQ '1'>
 			DISTINCT
 		</cfif>
 		inquiries.inquiries_email) count 
@@ -466,15 +466,15 @@
 		</cfif>
 		and inquiries_parent_id = #db.param(0)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-			AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+			AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 		</cfif>
-		<cfif application.zcore.functions.zso(session, 'agentuserid') NEQ ''>
-			and inquiries.user_id = #db.param(session.agentuserid)# and 
-			user_id_siteIDType = #db.param(session.agentusersiteidtype)#
+		<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
+			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
 		<cfif structkeyexists(form, 'searchOn') EQ false>
-			<cfif session.leadcontactfilter NEQ 'allclosed'>
+			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
 				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#)
@@ -501,19 +501,19 @@
 				and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#
 			</cfif>
 		</cfif>
-		<cfif session.leadviewspam EQ "0">
+		<cfif request.zsession.leadviewspam EQ "0">
 			and inquiries.inquiries_spam =#db.param(0)#
 		</cfif>
-		<cfif session.leadcontactfilter EQ 'new'>
+		<cfif request.zsession.leadcontactfilter EQ 'new'>
 			and inquiries.inquiries_status_id =#db.param('1')#
-		<cfelseif session.leadcontactfilter EQ 'email'>
+		<cfelseif request.zsession.leadcontactfilter EQ 'email'>
 			and inquiries_phone1 =#db.param('')# and inquiries_phone_time=#db.param('')#
-		<cfelseif session.leadcontactfilter EQ 'phone'>
+		<cfelseif request.zsession.leadcontactfilter EQ 'phone'>
 			and inquiries_phone1 <>#db.param('')# and inquiries_phone_time=#db.param('')#
-		<cfelseif session.leadcontactfilter EQ 'forced'>
+		<cfelseif request.zsession.leadcontactfilter EQ 'forced'>
 			and inquiries_phone_time<>#db.param('')#
 		</cfif>
-		<cfif session.leademailgrouping EQ '1'>
+		<cfif request.zsession.leademailgrouping EQ '1'>
 			and inquiries_primary = #db.param('1')#
 		</cfif>
 		</cfsavecontent>
@@ -586,43 +586,43 @@
 			<br />
 		</cfif>
 		Show:
-		<cfif session.leadcontactfilter NEQ 'all'>
+		<cfif request.zsession.leadcontactfilter NEQ 'all'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=all&amp;zPageId=#form.zPageId#">All Active</a>
 		<cfelse>
 			<strong>All Active</strong>
 		</cfif>
 		|
-		<cfif session.leadcontactfilter NEQ 'new'>
+		<cfif request.zsession.leadcontactfilter NEQ 'new'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=new&amp;zPageId=#form.zPageId#">New</a>
 		<cfelse>
 			<strong>New</strong>
 		</cfif>
 		|
-		<cfif session.leadcontactfilter NEQ 'email'>
+		<cfif request.zsession.leadcontactfilter NEQ 'email'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=email&amp;zPageId=#form.zPageId#">Email Only</a>
 		<cfelse>
 			<strong>Email Only</strong>
 		</cfif>
 		|
-		<cfif session.leadcontactfilter NEQ 'phone'>
+		<cfif request.zsession.leadcontactfilter NEQ 'phone'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=phone&amp;zPageId=#form.zPageId#">Phone + Email</a>
 		<cfelse>
 			<strong>Phone + Email</strong>
 		</cfif>
 		|
-		<cfif session.leadcontactfilter NEQ 'forced'>
+		<cfif request.zsession.leadcontactfilter NEQ 'forced'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=forced&amp;zPageId=#form.zPageId#">Forced Leads</a>
 		<cfelse>
 			<strong>Forced Leads</strong>
 		</cfif>
 		|
-		<cfif session.leadcontactfilter NEQ 'allclosed'>
+		<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=allclosed&amp;zPageId=#form.zPageId#">All Closed</a>
 		<cfelse>
 			<strong>All Closed</strong>
 		</cfif>
 		| <strong>Group By Email:</strong>
-		<cfif session.leademailgrouping NEQ '1'>
+		<cfif request.zsession.leademailgrouping NEQ '1'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?grouping=1&amp;zPageId=#form.zPageId#">Enable</a>
 		<cfelse>
 			<a href="/z/inquiries/admin/manage-inquiries/index?grouping=0&amp;zPageId=#form.zPageId#">Disable</a>
@@ -631,7 +631,7 @@
 			| <a href="/z/inquiries/admin/manage-inquiries/index">Clear Sorting</a>
 		</cfif>
 		 |  <strong>Spam:</strong> 
-		<cfif session.leadviewspam NEQ '1'>
+		<cfif request.zsession.leadviewspam NEQ '1'>
 			<a href="/z/inquiries/admin/manage-inquiries/index?viewspam=1&amp;zPageId=#form.zPageId#">View</a>
 		 <cfelse>
 			<a href="/z/inquiries/admin/manage-inquiries/index?viewspam=0&amp;zPageId=#form.zPageId#">Hide</a>
@@ -677,7 +677,7 @@
 				<th>Admin</th>
 			</tr>
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-			WHERE user_id = #db.param(session.zos.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user"))# and 
+			WHERE user_id = #db.param(request.zsession.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user"))# and 
 			user_server_administrator=#db.param('0')# </cfsavecontent>
 			<cfscript>
 			qMember=db.execute("qMember");

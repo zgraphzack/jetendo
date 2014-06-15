@@ -415,10 +415,10 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 <cffunction name="allowPublicEditingForImageLibraryId" localmode="modern">
 	<cfargument name="image_library_id" type="numeric" required="yes">
 	<cfscript>
-	if(not structkeyexists(session, 'publicImageLibraryIdStruct')){
-		session.publicImageLibraryIdStruct={};
+	if(not structkeyexists(request.zsession, 'publicImageLibraryIdStruct')){
+		request.zsession.publicImageLibraryIdStruct={};
 	}
-	session.publicImageLibraryIdStruct[arguments.image_library_id]=true;
+	request.zsession.publicImageLibraryIdStruct[arguments.image_library_id]=true;
 	</cfscript>
 </cffunction>
 	
@@ -442,10 +442,10 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		if(structkeyexists(arguments.ss, 'allowPublicEditing') and arguments.ss.allowPublicEditing){
 			qLibrary=this.getLibraryById(arguments.ss.value);
 			var image_library_id=qLibrary.image_library_id;
-			if(not structkeyexists(session, 'publicImageLibraryIdStruct')){
-				session.publicImageLibraryIdStruct={};
+			if(not structkeyexists(request.zsession, 'publicImageLibraryIdStruct')){
+				request.zsession.publicImageLibraryIdStruct={};
 			}
-			session.publicImageLibraryIdStruct[image_library_id]=true;	
+			request.zsession.publicImageLibraryIdStruct[image_library_id]=true;	
 		}else{
 			if(not application.zcore.user.checkGroupAccess("member")){
 				application.zcore.functions.z404("No access allow to image library when not logged in.");
@@ -1609,9 +1609,9 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfscript>
 	if(application.zcore.user.checkGroupAccess("member")){
 		return true;
-	}else if(not structkeyexists(session, 'publicImageLibraryIdStruct')){
+	}else if(not structkeyexists(request.zsession, 'publicImageLibraryIdStruct')){
 		return false;
-	}else if(not structkeyexists(session.publicImageLibraryIdStruct, arguments.image_library_id)){
+	}else if(not structkeyexists(request.zsession.publicImageLibraryIdStruct, arguments.image_library_id)){
 		return false;
 	}else{
 		return true;

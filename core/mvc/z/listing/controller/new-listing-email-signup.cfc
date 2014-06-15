@@ -41,28 +41,28 @@
 	<p>* denotes required field.</p>
 	<div style="float:left; width:100%; padding-bottom:20px; "> 
 	<table style="border-spacing:0px;" class="table-list">
-	<cfif isDefined('session.zos.user.id')>
+	<cfif isDefined('request.zsession.user.id')>
 		<tr><td style="vertical-align:top;">Email Address:</td>
-		<td>Logged in as #session.zos.user.email#<br />
+		<td>Logged in as #request.zsession.user.email#<br />
 		Want to use a different account? <a href="#request.cgi_script_name#?zlogout=1">Click Here to Logout</a>
-		<input type="hidden" name="saved_search_email" value="#session.zos.user.email#" /></td>
+		<input type="hidden" name="saved_search_email" value="#request.zsession.user.email#" /></td>
 		</tr>
 	<cfelse>
             <tr>
                 <th>First Name: *</th>
-                <td><input name="inquiries_first_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_first_name') EQ ''>#application.zcore.functions.zso(session, 'inquiries_first_name')#<cfelse>#application.zcore.functions.zso(form,'inquiries_first_name')#</cfif>" /></td>
+                <td><input name="inquiries_first_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_first_name') EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#application.zcore.functions.zso(form,'inquiries_first_name')#</cfif>" /></td>
             </tr>
             <tr>
                 <th>Last Name: *</th>
-                <td><input name="inquiries_last_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_last_name') EQ ''>#application.zcore.functions.zso(session, 'inquiries_last_name')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_last_name')#</cfif>" /></td>
+                <td><input name="inquiries_last_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_last_name') EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_last_name')#</cfif>" /></td>
             </tr>
 		<tr><td style="vertical-align:top;">Email Address: *</td>
-		<td><input type="text" name="saved_search_email" style="max-width:300px;" value="<cfif isDefined('session.saved_search_email')>#session.saved_search_email#<cfelse>#application.zcore.functions.zso(session, 'inquiries_email')#</cfif>" />
+		<td><input type="text" name="saved_search_email" style="max-width:300px;" value="<cfif isDefined('request.zsession.saved_search_email')>#request.zsession.saved_search_email#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" />
 		</td>
 		</tr>
             <tr>
                 <th>Phone: <cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1>*</cfif></th>
-                <td><input name="inquiries_phone1" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_phone1') EQ ''>#application.zcore.functions.zso(session, 'inquiries_phone1')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_phone1')#</cfif>" /></td>
+                <td><input name="inquiries_phone1" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_phone1') EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_phone1')#</cfif>" /></td>
             </tr>
 	</cfif> 
 	<tr>
@@ -164,9 +164,9 @@
 	form.saved_search_format=application.zcore.functions.zso(form, 'saved_search_format', true, 1);
 	form.saved_search_frequency=application.zcore.functions.zso(form, 'saved_search_frequency', true, 0);
 	if(application.zcore.user.checkGroupAccess("user")){
-		form.saved_search_email=session.zos.user.email;
-		form.inquiries_first_name=session.zos.user.first_name;
-		form.inquiries_last_name=session.zos.user.last_name;
+		form.saved_search_email=request.zsession.user.email;
+		form.inquiries_first_name=request.zsession.user.first_name;
+		form.inquiries_last_name=request.zsession.user.last_name;
 	}
 
 
@@ -245,7 +245,7 @@
 	}
 	form.inquiries_email=form.saved_search_email;
 	form.mail_user_id=application.zcore.user.automaticAddUser(application.zcore.functions.zUserMapFormFields(structnew())); 
-	session.inquiries_email=form.saved_search_email;
+	request.zsession.inquiries_email=form.saved_search_email;
 	local.tempEmail=application.zcore.functions.zvarso('zofficeemail');  
 	application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#");
 	</cfscript>

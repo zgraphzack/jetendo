@@ -8,7 +8,7 @@
 	showAll=application.zcore.functions.zso(form, 'showAllJetendoDocumentation', false, false);
 	if(showAll EQ false){
 		if(not application.zcore.user.checkGroupAccess("user")){
-			structdelete(session.zos, 'zManualStruct');
+			structdelete(request.zsession, 'zManualStruct');
 			ts = StructNew();
 			ts.secureLogin=true;
 			ts.usernameLabel = "E-Mail Address";
@@ -34,8 +34,8 @@
 	application.zcore.skin.includeJS("/z/javascript/zDocumentation.js");
 
 	if(request.zos.zreset EQ ""){
-		if(application.zcore.user.checkGroupAccess("user") and structkeyexists(session.zos, 'zManualStruct')){
-			request.zos.siteManagerManual=session.zos.zManualStruct;
+		if(application.zcore.user.checkGroupAccess("user") and structkeyexists(request.zsession, 'zManualStruct')){
+			request.zos.siteManagerManual=request.zsession.zManualStruct;
 			return;
 		}else if(showAll and structkeyexists(application.zcore, 'manualStruct')){
 			request.zos.siteManagerManual=application.zcore.manualStruct;
@@ -96,7 +96,7 @@ zdoc css style documentation
 .zdoc-console
 		 --->
          
-    <!--- make this personalized to each user based on session.zos.user.limitManagerFeatureStruct --->
+    <!--- make this personalized to each user based on request.zsession.user.limitManagerFeatureStruct --->
 	<cfscript>
 	arrS=[];
 	arrayAppend(arrS, { id:"0", url:"/index.html", title:"Documentation"});
@@ -444,7 +444,7 @@ zdoc css style documentation
 		arrayappend(ts.parentIdStruct[ns.parentId], ns.id);
 	}
 	if(application.zcore.user.checkGroupAccess("user")){
-		session.zos.zManualStruct=ts;
+		request.zsession.zManualStruct=ts;
 	}else{
 		application.zcore.manualStruct=ts;
 	}

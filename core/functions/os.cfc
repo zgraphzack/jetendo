@@ -366,7 +366,7 @@ if(not rs.success){
 	if(application.zcore.user.checkServerAccess()){
 		return true;
 	}else if(application.zcore.user.checkGroupAccess("member")){
-		if(isdefined('session.zos.user.enableWidgetBuilder') and session.zos.user.enableWidgetBuilder EQ 1){
+		if(isdefined('request.zsession.user.enableWidgetBuilder') and request.zsession.user.enableWidgetBuilder EQ 1){
 			return true;
 		}else{
 			return false;
@@ -1587,9 +1587,9 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="appendURL" type="string" required="no" default="">
     <cfscript>
 	var zt="";
-	if(structkeyexists(session.zos,'___zr')){
-		zt=session.zos.___zr;
-		structdelete(session.zos,'___zr');
+	if(structkeyexists(request.zsession,'___zr')){
+		zt=request.zsession.___zr;
+		structdelete(request.zsession,'___zr');
 		application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(zt, arguments.appendURL));
 	}else{
 		application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.inputURL, arguments.appendURL));
@@ -1853,7 +1853,9 @@ application.zcore.functions.zLogError(ts);
 	ts.struct.log_datetime=request.zos.mysqlnow;
 	ts.struct.log_status='New';
 	ts.struct.log_priority='0';
-	ts.struct.user_id=application.zcore.functions.zso(session, 'zos.user.id');
+	if(isdefined('request.zsession.user.id')){
+		ts.struct.user_id = request.zsession.user.id;
+	}
 	ts.struct.log_type='error';
 	ts.struct.site_id=request.zos.globals.id;
 	log_id=application.zcore.functions.zInsert(ts);

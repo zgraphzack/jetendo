@@ -881,12 +881,12 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 	if(structkeyexists(request.zos, 'zAbortRan')){
 		return;
 	}
-	application.zcore.session.put(session);
+	application.zcore.session.put(request.zsession);
 	request.zos.zAbortRan=true;
 	if(arguments.skipBack EQ false and structkeyexists(application.zcore,'tracking')){
 		application.zcore.tracking.backOneHit();
 	} 
-	if(isDefined('session.zlistingpageviewcount')){ session.zlistingpageviewcount--;}
+	if(isDefined('request.zsession.zlistingpageviewcount')){ request.zsession.zlistingpageviewcount--;}
 	application.zcore.functions.zEndOfRunningScript();
 	request.zos.scriptAborted=true; 
 	request.zOS.templateData.notemplate=true;

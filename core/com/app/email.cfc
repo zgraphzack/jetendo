@@ -384,7 +384,7 @@ ts.draft=false; // disables cfmail, but allows save and preview to work as norma
 ts.save=true; // if true, you must call eCom.setAccount() before using the function.  if false, the email is not saved in the database and no user_id or site_id is information.
 ts.skipProcessing=false; // only set to true when you are 100% sure the data is valid.  Data will not be saved in sent folder.  This is used for bulk email campaigns.
 // fields used when saving
-ts.user_id=session.zos.user.id;
+ts.user_id=request.zsession.user.id;
 ts.site_id=request.zos.globals.id;
 ts.zemail_parent_id=0;
 rCom=emailCom.send(ts);
@@ -450,8 +450,8 @@ if(rCom.isOK() EQ false){
 	ts.skipProcessing=false; // only set to true when you are 100% sure the data is valid.  Data will not be saved in sent folder.  This is used for bulk email campaigns.
 	ts.spoolenable=true; // by default allow coldfusion to spool emails for prioritized delivery
 	ts.save=false; // by default don't save the email
-	if(isDefined('session.zos.user.id')){
-		ts.user_id=session.zos.user.id;
+	if(isDefined('request.zsession.user.id')){
+		ts.user_id=request.zsession.user.id;
 	}
 	ts.site_id=request.zos.globals.id;
 	// inherit email account login from the component

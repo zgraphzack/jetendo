@@ -1396,7 +1396,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 				application.zcore.functions.zQueryToStruct(qc23872,temp238722);
 				request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 				form.searchId=application.zcore.status.getNewId();
-				session.zos.tempVars.zListingSearchId=form.searchId;
+				request.zsession.tempVars.zListingSearchId=form.searchId;
 				application.zcore.status.setStatus(form.searchid,false,temp23872);
 			}else{
 				application.zcore.functions.z301redirect('/');
@@ -1417,7 +1417,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 				application.zcore.functions.zQueryToStruct(qc23872,temp238722);
 				request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 				form.searchId=application.zcore.status.getNewId();
-				session.zos.tempVars.zListingSearchId=form.searchId;
+				request.zsession.tempVars.zListingSearchId=form.searchId;
 				application.zcore.status.setStatus(form.searchid,false,temp23872);
 			}else{
 				application.zcore.functions.z301redirect('/');

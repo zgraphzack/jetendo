@@ -479,7 +479,7 @@ turn cgi parameters into an ordered prepared statement.  no different then the c
 
  check if query exists in kv store (query as key name)
  if(notexists){
-	// if(session expired or 
+	// if(request.zsession expired or 
 	if(http_referer is missing){
 		// trust this hit less
 	}
@@ -660,12 +660,12 @@ if(groupRequired){
 		sessionInited=true; 
 		initSession("railo_session_"&form.cfid&"_"&form.cftoken); 
 	}
-	if(sessionInited EQ false){
+	if(request.zsessionInited EQ false){
 		writeoutput('{loginrequired:true,success:false,errorMessage:"Login required"}');
 		application.zcore.functions.zabort();	
 	}
 	for(i=1;i LTE arraylen(arrGroup);i++){
-		if(structkeyexists(sessionGroups, arrGroup[i]) EQ false){
+		if(structkeyexists(request.zsessionGroups, arrGroup[i]) EQ false){
 			writeoutput('{loginrequired:true,success:false,errorMessage:"Login required"}');
 			application.zcore.functions.zabort();	
 		}

@@ -6,8 +6,8 @@
 	variables.propertyDataCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	variables.propertyDisplayCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	application.zcore.functions.zDisbleEndFormCheck();
-	if(structkeyexists(form,'showLastSearch') and isDefined('session.zos.tempVars.zListingSearchId')){
-		form.searchId=session.zos.tempVars.zListingSearchId;
+	if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){
+		form.searchId=request.zsession.tempVars.zListingSearchId;
 		form.zIndex=application.zcore.status.getField(form.searchId, "zIndex",1);
 	}
 	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
@@ -201,7 +201,7 @@ listing_longitude<>'0'";
 		structdelete(ts,'zwhere');
 		structdelete(ts,'contentTableEnabled');
 	}
-	if(structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('session.zListingHideMap') and session.zListingHideMap EQ true))){
+	if(structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ true))){
 		jsonText='{"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,"success":true}';
 	}else{
 		ts.zReturnSimpleQuery=true;
@@ -422,14 +422,14 @@ listing_longitude<>'0'";
 								<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
 							</div>
 						</div>');
-						if(isDefined('session.zListingHideMap') EQ false){
-							session.zListingHideMap=false;
+						if(isDefined('request.zsession.zListingHideMap') EQ false){
+							request.zsession.zListingHideMap=false;
 						}
 						if(structkeyexists(form, 'zListingHideMap')){
 							if(form.zListingHideMap EQ 1){
-								session.zListingHideMap=true;	
+								request.zsession.zListingHideMap=true;	
 							}else{
-								session.zListingHideMap=false;
+								request.zsession.zListingHideMap=false;
 							}
 						}
 						if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_hide_map_until_search') EQ 1){
@@ -440,7 +440,7 @@ listing_longitude<>'0'";
 						writeoutput('</td>
 					<td style="vertical-align:top; text-align:right; font-size:14px; font-weight:bold;">&nbsp;');
 						if(application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false){
-							if((isDefined('session.zListingHideMap') EQ false or session.zListingHideMap EQ false) and tempHideMap EQ false){
+							if((isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false){
 								writeoutput('
 									<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
 									<a id="zHideMapSearchButton" href="#request.zos.listing.functions.getSearchFormLink()#?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>'); //class="zNoContentTransition" 
@@ -504,13 +504,13 @@ listing_longitude<>'0'";
 					ts.getDetails=false;
 				}
 				ts.searchId=form.searchId;
-				session.zos.tempVars.zListingSearchId=form.searchId;
+				request.zsession.tempVars.zListingSearchId=form.searchId;
 				variables.propertyDisplayCom.init(ts);
 				if(returnStruct.count NEQ 0 and (isnumeric(application.zcore.functions.zso(form, 'searchId')) or structkeyexists(form,'searchaction'))){
 					res=variables.propertyDisplayCom.display();
 				}
 			}
-			if(structkeyexists(application.sitestruct[request.zos.globals.id], 'zListingMapCheck') and isDefined('session.zListingHideMap') and session.zListingHideMap EQ false and tempHideMap EQ false){
+			if(structkeyexists(application.sitestruct[request.zos.globals.id], 'zListingMapCheck') and isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ false and tempHideMap EQ false){
 				ms={
 					mapQuery=mapQuery,
 					propertyDataCom=variables.propertyDataCom
@@ -660,7 +660,7 @@ listing_longitude<>'0'";
 			request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 			form.searchId=application.zcore.status.getNewId();
 			
-			session.zos.tempVars.zListingSearchId=form.searchId;
+			request.zsession.tempVars.zListingSearchId=form.searchId;
 			application.zcore.status.setStatus(form.searchId,false,temp23872);
 		}else{
 			application.zcore.functions.z301redirect('/');
@@ -682,7 +682,7 @@ listing_longitude<>'0'";
 			application.zcore.functions.zQueryToStruct(qc23872,temp238722);
 			request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 			form.searchId=application.zcore.status.getNewId();
-			session.zos.tempVars.zListingSearchId=form.searchId;
+			request.zsession.tempVars.zListingSearchId=form.searchId;
 			application.zcore.status.setStatus(form.searchId,false,temp23872);
 		}else{
 			application.zcore.functions.z301redirect('/');

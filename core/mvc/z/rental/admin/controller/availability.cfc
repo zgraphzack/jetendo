@@ -63,9 +63,9 @@
 			db.execute("q");
 		}
 	}			
-	if(structkeyexists(session, "rental_availability_return"&form.rental_id)){
-		tempLink=session["rental_availability_return"&form.rental_id];
-		structdelete(session,"rental_availability_return"&form.rental_id);
+	if(structkeyexists(request.zsession, "rental_availability_return"&form.rental_id)){
+		tempLink=request.zsession["rental_availability_return"&form.rental_id];
+		structdelete(request.zsession,"rental_availability_return"&form.rental_id);
 		application.zcore.functions.z301Redirect(tempLink);
 	}else{
 		application.zcore.functions.z301Redirect("/z/rental/admin/availability/select?rental_id=#form.rental_id#&start_date=#start_date#&zmessage=#URLEncodedFormat('Availability updated.')#");
@@ -101,7 +101,7 @@
 	var qLast=0;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Calendars");
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "rental_availability_return"&form.rental_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "rental_availability_return"&form.rental_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	form.rental_id=application.zcore.functions.zso(form, 'rental_id',true,-1);
 	db.sql="SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 

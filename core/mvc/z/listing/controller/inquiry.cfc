@@ -301,25 +301,25 @@
 		<table style="border-spacing:0px; width:98%;" class="zinquiry-form-table">
 			<tr>
 				<td style="width:90px;">First Name:<span class="highlight"> *</span></td>
-				<td><input name="inquiries_first_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(session, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" /></td>
+				<td><input name="inquiries_first_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" /></td>
 			</tr>
 			<tr>
 				<td style="width:90px;">Last Name:<span class="highlight"> *</span></td>
-				<td><input name="inquiries_last_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(session, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /></td>
+				<td><input name="inquiries_last_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /></td>
 			</tr>
 			<tr>
 				<td>Email:
 					<cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_email_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_email_required EQ 1>
 						<span class="highlight"> *</span>
 					</cfif></td>
-				<td><input name="inquiries_email" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(session, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /></td>
+				<td><input name="inquiries_email" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /></td>
 			</tr>
 			<tr>
 				<td>Phone:
 					<cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1>
 						<span class="highlight"> * </span>
 					</cfif></td>
-				<td><input name="inquiries_phone1" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(session, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /></td>
+				<td><input name="inquiries_phone1" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /></td>
 			</tr>
 			<tr>
 				<td style="vertical-align:top; ">Comments:</td>

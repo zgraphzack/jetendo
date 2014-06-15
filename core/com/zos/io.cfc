@@ -20,7 +20,7 @@
 				<cfreturn false>
 			</cfcatch>
 		</cftry>
-		<cfif isDefined('session.zOS.modes.debug') and isDefined('request.zOS.introspection') EQ false>
+		<cfif isDefined('request.zsession.modes.debug') and isDefined('request.zOS.introspection') EQ false>
 			<cfscript>
 			if(isDefined('Request.zOS.currentScript.variables') EQ false){
 				Request.zOS.currentScript.variables = StructNew();

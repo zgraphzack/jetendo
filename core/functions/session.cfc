@@ -7,14 +7,14 @@
 	<cfargument name="value" type="string" required="yes">
 	<!--- save configuration for appName --->
 	<cfscript> 
-	if(isDefined('session.zOS.appVar') EQ false){
-		session.zOS.appVar = StructNew();
+	if(isDefined('request.zsession.appVar') EQ false){
+		request.zsession.appVar = StructNew();
 	} 
-	if(isDefined('session.zOS.appVar.'&arguments.appName) EQ false){
-		StructInsert(session.zOS.appVar, arguments.appName, StructNew(), true);
-		session.zOS.appVar[arguments.appName].config = StructNew();
+	if(isDefined('request.zsession.appVar.'&arguments.appName) EQ false){
+		StructInsert(request.zsession.appVar, arguments.appName, StructNew(), true);
+		request.zsession.appVar[arguments.appName].config = StructNew();
 	}
-	StructInsert(session.zOS.appVar[arguments.appName].config, arguments.varName, arguments.value,true);
+	StructInsert(request.zsession.appVar[arguments.appName].config, arguments.varName, arguments.value,true);
 	return true;
 	</cfscript>
 </cffunction>
@@ -27,8 +27,8 @@
 	<cfargument name="value" type="string" required="no" default="">
 	<!--- save configuration for appName --->
 	<cfscript>
-	if(isDefined('session.zOS.appVar.'&arguments.appName&'.config.'&arguments.varName)){
-		return session.zOS.appVar[arguments.appName].config[arguments.varName];
+	if(isDefined('request.zsession.appVar.'&arguments.appName&'.config.'&arguments.varName)){
+		return request.zsession.appVar[arguments.appName].config[arguments.varName];
 	}else{
 		return arguments.value;
 	}
@@ -41,11 +41,11 @@
 	<cfargument name="appName" type="string" required="yes">
 	<!--- clear configuration for appName  --->
 	<cfscript>	
-	if(isDefined('session.zOS.appVar') EQ false){
-		session.zOS.appVar = StructNew();
+	if(isDefined('request.zsession.appVar') EQ false){
+		request.zsession.appVar = StructNew();
 	}
-	StructInsert(session.zOS.appVar, arguments.appName, StructNew(), true);
-	session.zOS.appVar[arguments.appName].config = StructNew();
+	StructInsert(request.zsession.appVar, arguments.appName, StructNew(), true);
+	request.zsession.appVar[arguments.appName].config = StructNew();
 	return true;
 	</cfscript>
 </cffunction>

@@ -29,8 +29,8 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		if(not structkeyexists(variables,'initRun')){
 			this.init();
 		}
-		if(not structkeyexists(session, variables.sessionKey)){
-			session[variables.sessionKey] = {
+		if(not structkeyexists(request.zsession, variables.sessionKey)){
+			request.zsession[variables.sessionKey] = {
 				count = 0,
 				id = 0,
 				dataCount = 0
@@ -44,7 +44,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		<cfargument name="id" type="string" required="yes">
         <cfscript>
 		var local={};
-		if(not structkeyexists(variables, 'initRun') or not structkeyexists(session, variables.sessionKey)) variables.initSession();
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
 		</cfscript>
 		<cfif isNumeric(arguments.id) EQ false>
 			<cfif find("@",arguments.id) NEQ 0>
@@ -55,22 +55,22 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			</cfif>
 		</cfif>
 		<cfscript>
-		if(structkeyexists(session[variables.sessionKey], arguments.id)){// and structkeyexists(session[variables.sessionKey][arguments.id], 'varStruct')){
-			return session[variables.sessionKey][arguments.id];
+		if(structkeyexists(request.zsession[variables.sessionKey], arguments.id)){// and structkeyexists(request.zsession[variables.sessionKey][arguments.id], 'varStruct')){
+			return request.zsession[variables.sessionKey][arguments.id];
 		
 		}else{
 			// force it to exist and then return it
-			session[variables.sessionKey][arguments.id]={
+			request.zsession[variables.sessionKey][arguments.id]={
 				arrMessages = ArrayNew(1),
 				arrErrors = ArrayNew(1),
 				errorStruct = StructNew(),
 				varStruct = StructNew(),
 				errorFieldStruct = StructNew()
 			};
-			if(structkeyexists(session[variables.sessionKey],'count') EQ false or arguments.id GT session[variables.sessionKey].count){
-				session[variables.sessionKey].count = arguments.id;
+			if(structkeyexists(request.zsession[variables.sessionKey],'count') EQ false or arguments.id GT request.zsession[variables.sessionKey].count){
+				request.zsession[variables.sessionKey].count = arguments.id;
 			}
-			return session[variables.sessionKey][arguments.id];
+			return request.zsession[variables.sessionKey][arguments.id];
 		}
 		</cfscript>
 	</cffunction>
@@ -78,8 +78,8 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	<!--- statusCom.getNewId(); --->
 	<cffunction name="getNewId" localmode="modern" access="public" returntype="any" output="false" hint="Create new id">
 		<cfscript>
-		if(not structkeyexists(variables, 'initRun') or not structkeyexists(session, variables.sessionKey)) variables.initSession();
-		curStruct=session[variables.sessionKey];
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
+		curStruct=request.zsession[variables.sessionKey];
 		if(isnumeric(curStruct.count) EQ false){
 			curStruct.count=0;
 		}
@@ -94,8 +94,8 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	<cffunction name="deleteId" localmode="modern" access="public" returntype="any" output="false" hint="Delete status id">
 		<cfargument name="id" type="numeric" required="yes">
 		<cfscript>
-		if(structkeyexists(session, variables.sessionKey) and structkeyexists(session[variables.sessionKey], arguments.id)){
-			structdelete(session[variables.sessionKey], arguments.id);
+		if(structkeyexists(request.zsession, variables.sessionKey) and structkeyexists(request.zsession[variables.sessionKey], arguments.id)){
+			structdelete(request.zsession[variables.sessionKey], arguments.id);
 		}
 		</cfscript>
 	</cffunction>
@@ -103,7 +103,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	<!--- statusCom.deleteSessionData(); --->
 	<cffunction name="deleteSessionData" localmode="modern" access="public" returntype="any" output="false" hint="Delete status id">
 		<cfscript>
-		structdelete(session, variables.sessionKey);
+		structdelete(request.zsession, variables.sessionKey);
 		structdelete(variables, 'statusStruct');
 		</cfscript>
 	</cffunction>
@@ -133,7 +133,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
         <cfscript>
 		var local=structnew();
 		var statusStruct=0;
-		if(not structkeyexists(variables, 'initRun') or not structkeyexists(session, variables.sessionKey)) variables.initSession();
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
 		</cfscript>
 		<cfif isNumeric(arguments.id) EQ false>
 			<cfif find("@",arguments.id) NEQ 0>
@@ -150,7 +150,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		<cfscript>
 		statusStruct = this.getStruct(arguments.id);
 		if(arguments.status NEQ false){
-			session[variables.sessionKey].dataCount++;
+			request.zsession[variables.sessionKey].dataCount++;
 			if(arguments.error){
 				local.exists=false;
 				for(local.i=1;local.i LTE arraylen(statusStruct.arrErrors);local.i++){
@@ -177,7 +177,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		}
 		/*
 		if(structkeyexists(statusStruct,'varStruct') EQ false){
-			session[variables.sessionKey][arguments.id]={
+			request.zsession[variables.sessionKey][arguments.id]={
 				arrMessages = ArrayNew(1),
 				arrErrors = ArrayNew(1),
 				errorStruct = StructNew(),
@@ -186,11 +186,11 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			};
 		}
 		*/
-		if(structkeyexists(session[variables.sessionKey],'dataStruct') EQ false){
-			session[variables.sessionKey].dataStruct=0;
+		if(structkeyexists(request.zsession[variables.sessionKey],'dataStruct') EQ false){
+			request.zsession[variables.sessionKey].dataStruct=0;
 		}
 		if(isStruct(arguments.varStruct)){
-			session[variables.sessionKey].dataCount++;
+			request.zsession[variables.sessionKey].dataCount++;
 			StructAppend(statusStruct.varStruct, arguments.varStruct, true);
 		}
 		return arguments.id;
@@ -204,9 +204,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		<cfargument name="defaultValue" type="any" required="no" default="">
 		<cfargument name="forceToExist" type="boolean" required="no" default="#false#">
 		<cfscript>
-		if(not structkeyexists(variables, 'initRun') or not structkeyexists(session, variables.sessionKey)) variables.initSession();
-		if(isDefined('session.zos') and structkeyexists(session[variables.sessionKey],arguments.id) and structkeyexists(session[variables.sessionKey][arguments.id].varStruct, arguments.fieldName)){
-			return session[variables.sessionKey][arguments.id].varStruct[arguments.fieldName];
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
+		if(isDefined('request.zsession') and structkeyexists(request.zsession[variables.sessionKey],arguments.id) and structkeyexists(request.zsession[variables.sessionKey][arguments.id].varStruct, arguments.fieldName)){
+			return request.zsession[variables.sessionKey][arguments.id].varStruct[arguments.fieldName];
 		}else{
 			if(arguments.forceToExist){
 				var statusStruct = this.getStruct(arguments.id);
@@ -227,7 +227,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		
 		<cfscript>
 		var statusStruct=0;
-		if(not structkeyexists(variables, 'initRun') or not structkeyexists(session, variables.sessionKey)) variables.initSession();
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
 		statusStruct = this.getStruct(arguments.id);
 		StructInsert(statusStruct.varStruct, arguments.fieldName, arguments.value, true);
 		</cfscript>
@@ -249,12 +249,12 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		<cfscript>
 		var i = "";
 		var arrTemp = ArrayNew(1); 
-		if(not structkeyexists(variables, 'initRun') or not structkeyexists(session, variables.sessionKey)) variables.initSession();
-		if(structkeyexists(session[variables.sessionKey],arguments.id)){
-			arrTemp = duplicate(session[variables.sessionKey][arguments.id].arrErrors);
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
+		if(structkeyexists(request.zsession[variables.sessionKey],arguments.id)){
+			arrTemp = duplicate(request.zsession[variables.sessionKey][arguments.id].arrErrors);
 			
-			for(i in session[variables.sessionKey][arguments.id].errorStruct){
-				ArrayAppend(arrTemp, session[variables.sessionKey][arguments.id].errorStruct[i]);
+			for(i in request.zsession[variables.sessionKey][arguments.id].errorStruct){
+				ArrayAppend(arrTemp, request.zsession[variables.sessionKey][arguments.id].errorStruct[i]);
 			}		
 		}
 		return arrTemp;
@@ -285,7 +285,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		<cfargument name="id" type="numeric" required="yes">
 		<cfargument name="fieldName" type="string" required="yes">
 		<cfscript>
-		if(structkeyexists(session[variables.sessionKey],arguments.id) and structkeyexists(session[variables.sessionKey][arguments.id].errorFieldStruct, arguments.fieldName)){
+		if(structkeyexists(request.zsession[variables.sessionKey],arguments.id) and structkeyexists(request.zsession[variables.sessionKey][arguments.id].errorFieldStruct, arguments.fieldName)){
 			return true;
 		}else{
 			return false;

@@ -1704,11 +1704,11 @@ this.app_id=10;
 			<table style="width:100%;"> 
 			<tr>
 			<td style="white-space: nowrap;">Your Name: <span style="color:##FF0000; font-weight:bold"> *</span></td>
-			<td style="width:90%;"><input type="text" name="blog_comment_author" value="<cfif isDefined('session.blog_comment_author')>#htmleditformat(session.blog_comment_author)#<cfelse>#htmleditformat(qarticle.blog_comment_author)#</cfif>"  style="width:96%;" /></td>
+			<td style="width:90%;"><input type="text" name="blog_comment_author" value="<cfif isDefined('request.zsession.blog_comment_author')>#htmleditformat(request.zsession.blog_comment_author)#<cfelse>#htmleditformat(qarticle.blog_comment_author)#</cfif>"  style="width:96%;" /></td>
 			</tr>
 			<tr>
 			<td style="white-space: nowrap;">Your Email: <span style="color:##FF0000; font-weight:bold"> *</span></td>
-			<td style="width:90%;"><input type="text" name="blog_comment_author_email" value="<cfif isDefined('session.blog_comment_author_email')>#htmleditformat(session.blog_comment_author_email)#<cfelse>#htmleditformat(qarticle.blog_comment_author_email)#</cfif>" style="width:96%;" maxlength="50" /></td>
+			<td style="width:90%;"><input type="text" name="blog_comment_author_email" value="<cfif isDefined('request.zsession.blog_comment_author_email')>#htmleditformat(request.zsession.blog_comment_author_email)#<cfelse>#htmleditformat(qarticle.blog_comment_author_email)#</cfif>" style="width:96%;" maxlength="50" /></td>
 			</tr>
 			<tr>
 			<td style="white-space: nowrap;">Subject: </td>
@@ -3390,7 +3390,7 @@ this.app_id=10;
 		application.zcore.status.setStatus(request.zsid, 'You must submit your name.', form,false);
 		application.zcore.functions.zRedirect(ulink);
 	}else{
-		session.blog_comment_author = form.blog_comment_author;
+		request.zsession.blog_comment_author = form.blog_comment_author;
 	}
 	if(len(form.blog_comment_text) lt 1 or len(form.blog_comment_text) GT 1000){
 		//throw error
@@ -3402,7 +3402,7 @@ this.app_id=10;
 		application.zcore.status.setStatus(request.zsid, 'Comments Author Email must be a well formatted email address, (ex. johndoe@domain.com)', form,false);
 		application.zcore.functions.zRedirect(ulink);
 	}else{
-		session.blog_comment_author_email = form.blog_comment_author_email;
+		request.zsession.blog_comment_author_email = form.blog_comment_author_email;
 	}
 	inputStruct = StructNew();
 	inputStruct.table = "blog_comment";

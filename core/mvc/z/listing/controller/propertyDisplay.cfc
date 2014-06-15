@@ -35,17 +35,17 @@ this.isPropertyDisplayCom=true;
 	this.optionStruct.featuredFormat=false;
 	this.optionStruct.compactWithLinks=false;
 	// cookie holds the old date - set to session
-	if(isDefined('session.lastVisitDate') EQ false){
+	if(isDefined('request.zsession.lastVisitDate') EQ false){
 		if(isDefined('cookie.lastVisitDate') and isdate(cookie.lastVisitDate)){
-			session.lastVisitDate=cookie.lastVisitDate;
+			request.zsession.lastVisitDate=cookie.lastVisitDate;
 		}else{
-			session.lastVisitDate=request.zos.mysqlnow;
+			request.zsession.lastVisitDate=request.zos.mysqlnow;
 		}
 		// cookie holds the current date
-		cookie.lastVisitDate=DateFormat(session.lastVisitDate,'yyyy-mm-dd')&' '&TimeFormat(session.lastVisitDate,'HH:mm:ss');		
+		cookie.lastVisitDate=DateFormat(request.zsession.lastVisitDate,'yyyy-mm-dd')&' '&TimeFormat(request.zsession.lastVisitDate,'HH:mm:ss');		
 	}
 	// use session old date for everything until session expires
-	this.optionStruct.lastVisitDate=session.lastVisitDate;
+	this.optionStruct.lastVisitDate=request.zsession.lastVisitDate;
 	StructAppend(this.optionStruct, arguments.optionStruct,true);
 	this.optionStruct.lastVisitDate=parsedatetime(DateFormat(this.optionStruct.lastVisitDate,'yyyy-mm-dd')&' 00:00:00');
 	if(isDefined('this.optionStruct.dataStruct') EQ false){

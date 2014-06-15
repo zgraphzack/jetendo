@@ -35,7 +35,7 @@
 	}
 	
 	if(structkeyexists(form, 'return') and structkeyexists(form, 'rental_id')){
-		StructInsert(session, "rental_rates_return"&form.rental_id, request.zos.cgi.http_referer, true);		
+		StructInsert(request.zsession, "rental_rates_return"&form.rental_id, request.zos.cgi.http_referer, true);		
 	};
 	application.zcore.functions.zRequireJquery();
 	application.zcore.functions.zRequireJqueryUI();
@@ -673,9 +673,9 @@
 		}
 	}	
 	
-	if(structkeyexists(session, "rental_rates_return"&form.rental_id)){
-		tempLink=session["rental_rates_return"&form.rental_id];
-		structdelete(session,"rental_rates_return"&form.rental_id);
+	if(structkeyexists(request.zsession, "rental_rates_return"&form.rental_id)){
+		tempLink=request.zsession["rental_rates_return"&form.rental_id];
+		structdelete(request.zsession,"rental_rates_return"&form.rental_id);
 		application.zcore.functions.z301Redirect(tempLink);
 	}else{
 		application.zcore.functions.zredirect(redirecturl);

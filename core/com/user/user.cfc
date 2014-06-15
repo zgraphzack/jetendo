@@ -156,11 +156,11 @@ this.customStruct = StructNew();
 <cffunction name="getSiteIdTypeFromLoggedOnUser" localmode="modern" output="no" returntype="any">
 	<cfscript>
 	var r="";
-	if(session.zos.user.site_id EQ request.zos.globals.id){
+	if(request.zsession.user.site_id EQ request.zos.globals.id){
 		return "1";
-	}else if(session.zos.user.site_id EQ request.zos.globals.parentId){
+	}else if(request.zsession.user.site_id EQ request.zos.globals.parentId){
 		return "2";
-	}else if(session.zos.user.site_id EQ request.zos.globals.serverid){
+	}else if(request.zsession.user.site_id EQ request.zos.globals.serverid){
 		return "3";
 	}else{
 		return "0";
@@ -393,18 +393,18 @@ userCom.checkLogin(inputStruct);
 		} 
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin after password hashing'}); 
 		if(not failedLogin){
-			session.member_id = qUserCheck.member_id;
+			request.zsession.member_id = qUserCheck.member_id;
 			local.config=application.zcore.db.getConfig();
 			local.config.cacheEnabled=false;
 			application.zcore.db.init(local.config);	// disable query caching for logged in users.
-			session.zos.secureLogin=arguments.inputStruct.secureLogin;
+			request.zsession.secureLogin=arguments.inputStruct.secureLogin;
 			if(structkeyexists(request.zos, 'tracking')){
 				application.zcore.tracking.setUserId(qUserCheck.user_id);
 			}
-			session.zOS[userSiteId]=StructNew();
-			session.zOS[userSiteId].id = qUserCheck.user_id;
-			session.zOS[userSiteId].email = qUserCheck.user_username;
-			session.zOS[userSiteId].login_site_id = request.zos.globals.id;
+			request.zsession[userSiteId]=StructNew();
+			request.zsession[userSiteId].id = qUserCheck.user_id;
+			request.zsession[userSiteId].email = qUserCheck.user_username;
+			request.zsession[userSiteId].login_site_id = request.zos.globals.id;
 			this.updateSession(arguments.inputStruct);
 			db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 			SET user_updated_ip = #db.param(request.zos.cgi.remote_addr)#, 
@@ -459,8 +459,8 @@ userCom.checkLogin(inputStruct);
 				}
 			}
 		}else{
-			if(isDefined('session.zOS')){
-				StructDelete(session.zOS, "user");
+			if(isDefined('request.zsession')){
+				StructDelete(request.zsession, "user");
 			}
 			if(ss.noLoginForm){
 				rs=structnew();
@@ -492,9 +492,9 @@ userCom.checkLogin(inputStruct);
 		if(ss.checkServerAdministrator and request.zos.isServer EQ false and this.checkServerAccess() EQ false){
 			// no access
 		}else{
-			if(isDefined('session.zos.secureLogin') and session.zos.secureLogin EQ false and arguments.inputStruct.secureLogin and isDefined('session.zos.user.email')){
+			if(isDefined('request.zsession.secureLogin') and request.zsession.secureLogin EQ false and arguments.inputStruct.secureLogin and isDefined('request.zsession.user.email')){
 				// insecure user has moved to a secure area, require password entry!
-				form.zusername=session.zos.user.email;
+				form.zusername=request.zsession.user.email;
 			}else{
 				arrG=listtoarray(ss.user_group_name);
 				for(i=1;i lte arraylen(arrg);i++){
@@ -506,7 +506,7 @@ userCom.checkLogin(inputStruct);
 				}
 			}
 		}
-		if(isDefined('session.zos.user.id')){
+		if(isDefined('request.zsession.user.id')){
 			this.setLoginLog(2); // user account data and login is no longer valid
 		}
 		// set login form options
@@ -654,43 +654,39 @@ userCom.checkLogin(inputStruct);
 	request.zos.userSession=structnew();
 	request.zos.userSession.groupAccess=structnew();
 	
-	if(isdefined('session.zos.user.id') and isdefined('session.zos.user.site_id')){
-		structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id);
+	if(isdefined('request.zsession.user.id') and isdefined('request.zsession.user.site_id')){
+		structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id);
 	}
+	if(arguments.skipLog EQ false){
+		this.setLoginLog(3);
+	}
+	StructDelete(request.zsession, "user");
+	StructDelete(request.zsession,'secureLogin');
+	structdelete(request.zsession,"ztoken");
+	structdelete(request.zsession,"inquiries_email");
+	structdelete(request.zsession,"inquiries_first_name");
+	structdelete(request.zsession,"inquiries_last_name");
+	structdelete(request.zsession,"inquiries_phone1");
+	structdelete(request.zsession,"zUserInquiryInfoLoaded");
+	
+	ts=structnew();
+	ts.name="zLoggedIn";
+	ts.value="0";
+	ts.expires="now";
+	application.zcore.functions.zCookie(ts); 
 	</cfscript>
-	<cfif structkeyexists(session, 'zOS')>
-		<cfscript>
-		if(arguments.skipLog EQ false){
-			this.setLoginLog(3);
-		}
-		StructDelete(session.zOS, "user");
-		StructDelete(session.zos,'secureLogin');
-		structdelete(session.zos,"ztoken");
-		structdelete(session,"inquiries_email");
-		structdelete(session,"inquiries_first_name");
-		structdelete(session,"inquiries_last_name");
-		structdelete(session,"inquiries_phone1");
-		structdelete(session,"zUserInquiryInfoLoaded");
-		
-		ts=structnew();
-		ts.name="zLoggedIn";
-		ts.value="0";
-		ts.expires="now";
-		application.zcore.functions.zCookie(ts); 
-		</cfscript>
-		<cfcookie name="z_user_id" value="" expires="now">
-		<cfcookie name="z_user_siteIdType" value="" expires="now">
-		<cfcookie name="z_user_key" value="" expires="now">
-		<cfcookie name="z_tmpusername2" value="" expires="now">
-		<cfcookie name="z_tmppassword2" value="" expires="now">
-		<cfif not arguments.retainToken>
-			<cfcookie name="ztoken" value="" expires="now">	
-		</cfif>
-		<cfcookie name="inquiries_email" value="" expires="now">
-		<cfcookie name="inquiries_first_name" value="" expires="now">
-		<cfcookie name="inquiries_last_name" value="" expires="now">
-		<cfcookie name="inquiries_phone1" value="" expires="now">
+	<cfcookie name="z_user_id" value="" expires="now">
+	<cfcookie name="z_user_siteIdType" value="" expires="now">
+	<cfcookie name="z_user_key" value="" expires="now">
+	<cfcookie name="z_tmpusername2" value="" expires="now">
+	<cfcookie name="z_tmppassword2" value="" expires="now">
+	<cfif not arguments.retainToken>
+		<cfcookie name="ztoken" value="" expires="now">	
 	</cfif>
+	<cfcookie name="inquiries_email" value="" expires="now">
+	<cfcookie name="inquiries_first_name" value="" expires="now">
+	<cfcookie name="inquiries_last_name" value="" expires="now">
+	<cfcookie name="inquiries_phone1" value="" expires="now">
 </cffunction>
 
 <cffunction name="updateSession" localmode="modern" access="public" returntype="any" output="no" hint="This function should happen every page view once the user is logged in.">
@@ -713,14 +709,14 @@ userCom.checkLogin(inputStruct);
 	if(ss.site_id NEQ request.zos.globals.id){
 		userSiteId='user'&ss.site_id;			
 	}
-	if(isDefined('session.zOS.#userSiteId#.id') EQ false){
+	if(isDefined('request.zsession.#userSiteId#.id') EQ false){
 		this.logOut(true);
 		return;
 	}
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-	WHERE user_id = #db.param(session.zOS[userSiteId].id)# and  
+	WHERE user_id = #db.param(request.zsession[userSiteId].id)# and  
 	user_active = #db.param(1)# and 
-	user_username = #db.param(session.zOS[userSiteId].email)# and 
+	user_username = #db.param(request.zsession[userSiteId].email)# and 
 	(site_id = #db.param(ss.site_id)# or 
 	(user_server_administrator = #db.param('1')# and 
 	site_id = #db.param(Request.zos.globals.serverId)#) ";
@@ -731,8 +727,8 @@ userCom.checkLogin(inputStruct);
 	qUser=db.execute("qUser");
 	if(qUser.recordcount EQ 0 or qUser.user_group_id EQ 0){
 		this.logOut(true);
-		if(isDefined('session.zOS')){
-			StructDelete(session.zOS, "user");
+		if(isDefined('request.zsession')){
+			StructDelete(request.zsession, "user");
 		}
 		this.setLoginLog(2); // user account data and login is no longer valid
 		// set login form options
@@ -745,30 +741,30 @@ userCom.checkLogin(inputStruct);
 		// abort with login form
 		application.zcore.template.abort(overrideContent);
 	}
-	session.zOS[userSiteId].first_name = qUser.user_first_name;
-	session.zOS[userSiteId].last_name = qUser.user_last_name;
-	session.zOS[userSiteId].email = qUser.user_email;
-	session.zOS[userSiteId].server_administrator = qUser.user_server_administrator;
-	session.zOS[userSiteId].site_administrator = qUser.user_site_administrator;
-	session.zOS[userSiteId].enableWidgetBuilder=qUser.user_enable_widget_builder;
-	session.zOS[userSiteId].intranet_administrator = qUser.user_intranet_administrator;
-	session.zOS[userSiteId].access_site_children = qUser.user_access_site_children;
+	request.zsession[userSiteId].first_name = qUser.user_first_name;
+	request.zsession[userSiteId].last_name = qUser.user_last_name;
+	request.zsession[userSiteId].email = qUser.user_email;
+	request.zsession[userSiteId].server_administrator = qUser.user_server_administrator;
+	request.zsession[userSiteId].site_administrator = qUser.user_site_administrator;
+	request.zsession[userSiteId].enableWidgetBuilder=qUser.user_enable_widget_builder;
+	request.zsession[userSiteId].intranet_administrator = qUser.user_intranet_administrator;
+	request.zsession[userSiteId].access_site_children = qUser.user_access_site_children;
 	arrLimitManagerFeatures=listToArray(qUser.user_limit_manager_features, ",");
 	featureStruct={};
 	for(i=1;i LTE arraylen(arrLimitManagerFeatures);i++){
 		featureStruct[arrLimitManagerFeatures[i]]=true;
 	}
-	session.zOS[userSiteId].limitManagerFeatureStruct = featureStruct;
-	session.zOS[userSiteId].server_admin_site_id_list = qUser.user_server_admin_site_id_list;
-	session.zOS[userSiteId].id = qUser.user_id;
-	session.zOS[userSiteId].site_id = qUser.site_id;
-	session.zOS[userSiteId].groupAccess = StructNew();
-	session.zOS[userSiteId].login_site_id = request.zos.globals.id;
+	request.zsession[userSiteId].limitManagerFeatureStruct = featureStruct;
+	request.zsession[userSiteId].server_admin_site_id_list = qUser.user_server_admin_site_id_list;
+	request.zsession[userSiteId].id = qUser.user_id;
+	request.zsession[userSiteId].site_id = qUser.site_id;
+	request.zsession[userSiteId].groupAccess = StructNew();
+	request.zsession[userSiteId].login_site_id = request.zos.globals.id;
 	
 	// have to use query for other site group access
 	if(qUser.site_id NEQ request.zos.globals.id){
 		hasAllGroups=false
-		if(session.zOS[userSiteId].server_administrator EQ 1 or session.zOS[userSiteId].site_administrator EQ 1 or (session.zOS[userSiteId].site_id NEQ ss.site_id and session.zOS[userSiteId].access_site_children EQ 1)){
+		if(request.zsession[userSiteId].server_administrator EQ 1 or request.zsession[userSiteId].site_administrator EQ 1 or (request.zsession[userSiteId].site_id NEQ ss.site_id and request.zsession[userSiteId].access_site_children EQ 1)){
 			hasAllGroups=true;
 		}
 		//if(not hasAllGroups){
@@ -805,60 +801,60 @@ userCom.checkLogin(inputStruct);
 			if(qUserGroup.recordcount EQ 0 or qUserGroup.user_group_primary EQ 0){
 				application.zcore.template.fail("#this.comName#: updateSession: This site is missing a primary user group<br /><br /><a href=""#request.zOS.globals.serverDomain#/z/server-manager/admin/user/editSitePermissions?sid=#ss.site_id#"" target=""_blank"">Edit Site Permissions</a>",true);
 			}
-			session.zOS[userSiteId].group_id = qUserGroup.user_group_id;
+			request.zsession[userSiteId].group_id = qUserGroup.user_group_id;
 			for(i=1;i LTE qusergroup.recordcount;i=i+1){
-				session.zOS[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
+				request.zsession[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
 			}
 		}else{
-			session.zOS[userSiteId].group_id = qUserGroup.user_group_id;
+			request.zsession[userSiteId].group_id = qUserGroup.user_group_id;
 			for(i=1;i LTE qusergroup.recordcount;i=i+1){
-				session.zOS[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
+				request.zsession[userSiteId].groupAccess[qusergroup.user_group_name[i]] = qusergroup.user_group_id[i];
 			}
 		}
 		
 	}else{
 		
-		if(isDefined('session.zOS.user.server_administrator') and (session.zOS[userSiteId].server_administrator EQ 1 or session.zOS[userSiteId].site_administrator EQ 1 or (session.zOS[userSiteId].site_id NEQ ss.site_id and session.zOS[userSiteId].access_site_children EQ 1))){
+		if(isDefined('request.zsession.user.server_administrator') and (request.zsession[userSiteId].server_administrator EQ 1 or request.zsession[userSiteId].site_administrator EQ 1 or (request.zsession[userSiteId].site_id NEQ ss.site_id and request.zsession[userSiteId].access_site_children EQ 1))){
 		// give access to all groups for server administrator or site administrator
 			if(isDefined('Request.zOS.globals.user_group.primary') EQ false){
 				application.zcore.template.fail("#this.comName#: updateSession: This site is missing a primary user group<br /><br /><a href=""#request.zOS.globals.serverDomain#/z/server-manager/admin/user/editSitePermissions?sid=#ss.site_id#"" target=""_blank"">Edit Site Permissions</a>",true);
 			}
-			session.zOS[userSiteId].group_id = Request.zOS.globals.user_group.primary;
+			request.zsession[userSiteId].group_id = Request.zOS.globals.user_group.primary;
 			for(i in Request.zOS.globals.user_group.ids){
-				session.zOS[userSiteId].groupAccess[Request.zOS.globals.user_group.ids[i]] = i;
+				request.zsession[userSiteId].groupAccess[Request.zOS.globals.user_group.ids[i]] = i;
 			}
 		}else{
 			if(qUser.site_id NEQ ss.site_id){
 				try{
 					t9453=application.siteStruct[quser.site_id].globals.user_group.ids[qUser.user_group_id];
 					// find administrator or whatever in current site group ids...
-					session.zOS[userSiteId].group_id = Request.zOS.globals.user_group.names[t9453];
+					request.zsession[userSiteId].group_id = Request.zOS.globals.user_group.names[t9453];
 				}catch(Any excpt){
 					application.zcore.template.fail("User Group ID is missing from database, #qUser.user_group_id# for site_id = #quser.site_id#.  This id came from the user table 
 					WHERE user_id = #db.param(qUser.user_id)#",true);
 				}
 			
 			}else{
-				session.zOS[userSiteId].group_id = qUser.user_group_id;
+				request.zsession[userSiteId].group_id = qUser.user_group_id;
 			}
 			try{
-				StructAppend(session.zOS[userSiteId].groupAccess, Request.zOS.globals.user_group.access[session.zOS[userSiteId].group_id], true);
+				StructAppend(request.zsession[userSiteId].groupAccess, Request.zOS.globals.user_group.access[request.zsession[userSiteId].group_id], true);
 			}catch(Any excpt){
-				application.zcore.template.fail("User Group ID is missing from database, #session.zOS[userSiteId].group_id#.  This id came from the user table 
+				application.zcore.template.fail("User Group ID is missing from database, #request.zsession[userSiteId].group_id#.  This id came from the user table 
 				WHERE user_id = #db.param(qUser.user_id)#",true);
 			}
 		}
 	}
-	if(session.zOS[userSiteId].server_administrator EQ 1){
-		session.zOS[userSiteId].groupAccess["serveradministrator"] =1;
+	if(request.zsession[userSiteId].server_administrator EQ 1){
+		request.zsession[userSiteId].groupAccess["serveradministrator"] =1;
 	}
-	if(session.zOS[userSiteId].site_administrator EQ 1){
-		session.zOS[userSiteId].groupAccess["siteadministrator"] =1;
+	if(request.zsession[userSiteId].site_administrator EQ 1){
+		request.zsession[userSiteId].groupAccess["siteadministrator"] =1;
 	}
 	
 	if(ss.site_id EQ request.zos.globals.id){
-		if(isDefined('session.zos.user')){
-			request.zos.userSession=duplicate(session.zos.user);
+		if(isDefined('request.zsession.user')){
+			request.zos.userSession=duplicate(request.zsession.user);
 		}else{
 			request.zos.userSession=structnew();
 			request.zos.userSession.groupAccess=structnew();	
@@ -893,10 +889,10 @@ userCom.checkLogin(inputStruct);
 		userSiteId='user'&arguments.site_id;			
 	}
 	
-	if(not structkeyexists(session, 'zOS') or not structkeyexists(session.zos, userSiteId)){
+	if(not structkeyexists(request.zsession, userSiteId)){
 		return false;
 	}else{
-		c=session.zOS[userSiteId];
+		c=request.zsession[userSiteId];
 		if(not structkeyexists(c, 'login_site_id') or c.login_site_id NEQ arguments.site_id){
 			return false;
 		}
@@ -921,8 +917,8 @@ userCom.checkLogin(inputStruct);
 		userSiteId='user'&arguments.site_id;			
 	}
 	
-	if(isDefined('session.zOS.#userSiteId#.groupAccess')){
-		v=session.zOS[userSiteId].groupAccess;
+	if(isDefined('request.zsession.#userSiteId#.groupAccess')){
+		v=request.zsession[userSiteId].groupAccess;
 		for(i in v){
 			if(v[i] EQ arguments.user_group_id){
 				return true;
@@ -944,7 +940,7 @@ userCom.checkLogin(inputStruct);
 	if(structkeyexists(request.zos,'checkSiteAccessCached'&userSiteId)){
 		return request.zos['checkSiteAccessCached'&userSiteId];
 	}
-	if(isDefined('session.zos') and structkeyexists(session.zos,userSiteId) and ( session.zos[userSiteId].server_administrator EQ 1 or session.zos[userSiteId].site_administrator EQ 1  )){
+	if(isDefined('request.zsession') and structkeyexists(request.zsession,userSiteId) and ( request.zsession[userSiteId].server_administrator EQ 1 or request.zsession[userSiteId].site_administrator EQ 1  )){
 		request.zos['checkSiteAccessCached'&userSiteId]=true;
 		return true;
 	}else{
@@ -962,8 +958,8 @@ userCom.checkLogin(inputStruct);
 	if(arguments.site_id NEQ request.zos.globals.id){
 		userSiteId='user'&arguments.site_id;			
 	}
-	if(isDefined('session.zos') and structkeyexists(session.zos,userSiteId) and structkeyexists(session.zos[userSiteId],'server_administrator') and session.zos[userSiteId].server_administrator EQ 1){
-		if(not structkeyexists(session.zOS[userSiteId], 'server_admin_site_id_list') or session.zOS[userSiteId].server_admin_site_id_list NEQ ""){
+	if(isDefined('request.zsession') and structkeyexists(request.zsession,userSiteId) and structkeyexists(request.zsession[userSiteId],'server_administrator') and request.zsession[userSiteId].server_administrator EQ 1){
+		if(not structkeyexists(request.zsession[userSiteId], 'server_admin_site_id_list') or request.zsession[userSiteId].server_admin_site_id_list NEQ ""){
 			return false;
 		}else{
 			return true;
@@ -1170,11 +1166,11 @@ formString = userCom.loginForm(inputStruct);
 	ts.forcePrimaryInsert.user_token_username=true;
 	local.user_token_id=application.zcore.functions.zInsert(ts);
 	
-	session.zos.ztoken="#ts.struct.user_token_version#|#local.user_token_id#|#ts.struct.user_token_username#|#local.uniqueTokenTemp#";
+	request.zsession.ztoken="#ts.struct.user_token_version#|#local.user_token_id#|#ts.struct.user_token_username#|#local.uniqueTokenTemp#";
 	//new permanent token cookie is set
 	local.ts9=structnew();
 	local.ts9.name="ztoken";
-	local.ts9.value=session.zos.ztoken;
+	local.ts9.value=request.zsession.ztoken;
 	local.ts9.expires="never";
 	application.zcore.functions.zcookie(local.ts9);
 	</cfscript>
@@ -1204,22 +1200,22 @@ formString = userCom.loginForm(inputStruct);
 			writeoutput('Verifying cookie.ztoken: #cookie.ztoken#<br />'); 
 		}
 	}
-	if(isDefined('session.zos.ztoken') and isDefined('session.zos.user')){
-		if(compare(session.zos.ztoken, cookie.ztoken) NEQ 0){
+	if(isDefined('request.zsession.ztoken') and isDefined('request.zsession.user')){
+		if(compare(request.zsession.ztoken, cookie.ztoken) NEQ 0){
 			if(local.debug){ 
 				writeoutput('current login doesn''t match the cookie, override it<br />'); 
 				abort;
 			}
 			local.ts9=structnew();
 			local.ts9.name="ztoken";
-			local.ts9.value=session.zos.ztoken;
+			local.ts9.value=request.zsession.ztoken;
 			local.ts9.expires="never";
 			application.zcore.functions.zcookie(local.ts9);
 			return false;
 		}else{
 			if(local.debug){ 
 				writeoutput('user is logged in and ztoken matches - do no further work.<br />Dumping session:'); 
-				writedump(session);
+				writedump(request.zsession);
 				abort;
 			}
 			return true;
@@ -1253,7 +1249,7 @@ formString = userCom.loginForm(inputStruct);
 	}
 	form.zusername=local.qUserToken.user_token_username;
 	/*
-	removed user agent validation until it can be made more specific so constant browser upgrades don't invalidate session.
+	removed user agent validation until it can be made more specific so constant browser upgrades don't invalidate request.zsession.
 	if(local.qUserToken.user_token_user_agent NEQ request.zos.cgi.http_user_agent){
 		if(local.debug){ 
 			writeoutput('token is valid, but user agent changed.  Removing ztoken for this id and clearing cookie. User will have to login again.<br />'); 
@@ -1293,7 +1289,7 @@ formString = userCom.loginForm(inputStruct);
 			structdelete(form,'zusername');
 			if(local.debug){ 
 				writeoutput('token secure login was successful.  issuing new token.<br />');
-				writedump(session.zos.user);
+				writedump(request.zsession.user);
 			}
 			local.uniqueTokenTemp=hash(application.zcore.functions.zGenerateStrongPassword(156,256), 'sha-256');
 			local.user_token_salt=application.zcore.functions.zGenerateStrongPassword(256,256);
@@ -1309,14 +1305,14 @@ formString = userCom.loginForm(inputStruct);
 			site_id=#db.param(request.zos.globals.id)# 
 			";
 			db.execute("q"); 
-			session.zos.ztoken="#local.qUserToken.user_token_version#|#local.qUserToken.user_token_id#|#local.qUserToken.user_token_username#|#local.uniqueTokenTemp#";
+			request.zsession.ztoken="#local.qUserToken.user_token_version#|#local.qUserToken.user_token_id#|#local.qUserToken.user_token_username#|#local.uniqueTokenTemp#";
 			if(local.debug){ 
-				writeoutput('token updated:'&session.zos.ztoken&'<br />'); 
+				writeoutput('token updated:'&request.zsession.ztoken&'<br />'); 
 			}
 			//new permanent token cookie is set
 			local.ts9=structnew();
 			local.ts9.name="ztoken";
-			local.ts9.value=session.zos.ztoken;
+			local.ts9.value=request.zsession.ztoken;
 			local.ts9.expires="never";
 			application.zcore.functions.zcookie(local.ts9);
 			if(local.debug){

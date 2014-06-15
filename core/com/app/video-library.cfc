@@ -101,7 +101,9 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 		if(queue_id EQ false){
 			writeoutput('{"arrVideos":[{"success":false,"message":"Video failed to save."}]}');
 		}
-		ts.struct.user_id=application.zcore.functions.zso(session, 'zos.user.id');
+		if(isDefined('request.zsession.user.id')){
+			ts.struct.user_id=request.zsession.user.id;
+		}
 		ts.struct.queue_id=queue_id;
 		ts.struct.queue_status=0;
 		ts.struct.queue_hash=hash(queue_id&"-"&ts.struct.queue_created_datetime);
@@ -306,7 +308,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	application.zcore.functions.zRequireSWFUpload();
 	
 	application.zcore.template.setTag("title","Video Library");
-	if(not structkeyexists(session, 'cfid')){
+	if(not structkeyexists(request.zsession, 'cfid')){
 		application.zcore.functions.zredirect('/z/admin/admin-home/index');
 	}
 	</cfscript>

@@ -1006,12 +1006,12 @@ application.zcore.template.appendTag("meta",'<style type="text/css">
 </style>');
 if(structkeyexists(form, 'csort')){
     if(form.csort EQ 'date'){
-	session.fileManagerSortDate=1;
+	request.zsession.fileManagerSortDate=1;
     }else{
-	session.fileManagerSortDate=0;
+	request.zsession.fileManagerSortDate=0;
     }
 }
-if(application.zcore.functions.zso(session, 'fileManagerSortDate',true) EQ 0){
+if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true) EQ 0){
     dirSortString="type asc, name asc";
 }else{
     dirSortString="type asc, dateLastModified desc, name asc";
@@ -1030,7 +1030,7 @@ if(application.zcore.functions.zso(session, 'fileManagerSortDate',true) EQ 0){
 				<a href="/z/admin/files/galleryAdd?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/image.gif" style="vertical-align:bottom; padding-left:4px; padding-right:4px;">Upload Image</a> | 
 			</cfif>
 				Sort by: 
-				<cfif application.zcore.functions.zso(session, 'fileManagerSortDate',true) EQ 0>
+				<cfif application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true) EQ 0>
 					<a href="/z/admin/files/index?csort=date&amp;d=#URLEncodedFormat(form.d)#">Date</a> | Name | 
 				<cfelse>
 					Date | <a href="/z/admin/files/index?csort=name&d=#URLEncodedFormat(form.d)#">Name</a> | 

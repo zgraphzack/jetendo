@@ -369,7 +369,7 @@ rs=zGetHashPath(dir, id);
 	var invalidStruct=structnew();
 	var arrInvalidfiletypes=listtoarray("asp,aspx,asa,ini,htaccess,cfm,cfc,php,php3,vbs,bat,exe,js,shtml,reg,inc,perl,pl,cgi,php5,php4,php1,php2,phtml,ssi,xhtm");//,html
 	request.zUploadFileErrorCause="";
-	if(isDefined('session.zos.user') EQ false or (structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and application.zcore.user.checkServerAccess() EQ false)){
+	if(isDefined('request.zsession.user') EQ false or (structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and application.zcore.user.checkServerAccess() EQ false)){
 		arrayappend(arrInvalidfiletypes,'html');		
 		arrayappend(arrInvalidfiletypes,'htm');
 	}

@@ -421,8 +421,8 @@ StructDelete(request, 'cfdumpinited');
  <cfif isDefined('request.zos.globals.serverId')>
  <cfquery name="quc" datasource="#request.zos.zcoreDatasource#">
  SELECT * from user where user_active = '1' 
- <cfif isDefined('session.zos.user.id')>
- and user_id = '#session.zos.user.id#' 
+ <cfif isDefined('request.zsession.user.id')>
+ and user_id = '#request.zsession.user.id#' 
  </cfif>
  and user_updated_ip = '#request.zos.cgi.remote_addr#' and 
  user_ip_blocked = '0' 

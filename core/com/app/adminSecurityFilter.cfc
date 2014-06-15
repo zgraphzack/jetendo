@@ -159,8 +159,8 @@
 	if(arguments.site_id NEQ request.zos.globals.id){
 		userSiteId='user'&arguments.site_id;
 	} 
-	if(structkeyexists(session, 'zos') and structkeyexists(session.zos,userSiteId)){
-		if(not structkeyexists(session.zOS[userSiteId], 'limitManagerFeatureStruct') or structcount(session.zOS[userSiteId].limitManagerFeatureStruct) EQ 0){
+	if(structkeyexists(request.zsession,userSiteId)){
+		if(not structkeyexists(request.zsession[userSiteId], 'limitManagerFeatureStruct') or structcount(request.zsession[userSiteId].limitManagerFeatureStruct) EQ 0){
 			return true;
 		}else{
 			//if(structkeyexists(arguments.functionMetaData, 'jetendo-admin-feature')){
@@ -169,7 +169,7 @@
 				if(not structkeyexists(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct, arrFeature[i])){
 					throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
 				}
-				if(not structkeyexists(session.zOS[userSiteId].limitManagerFeatureStruct, arrFeature[i])){
+				if(not structkeyexists(request.zsession[userSiteId].limitManagerFeatureStruct, arrFeature[i])){
 					currentFeature=application.siteStruct[request.zos.globals.id].adminFeatureMapStruct[arrFeature[i]];
 					return false;
 				}

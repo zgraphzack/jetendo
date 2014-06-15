@@ -11,7 +11,7 @@
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
 	if(structkeyexists(form,'return') and structkeyexists(form,'rental_amenity_id')){
-		StructInsert(session, "rental_amenity_return"&form.rental_amenity_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "rental_amenity_return"&form.rental_amenity_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	variables.queueSortStruct = StructNew();
 	variables.queueSortStruct.tableName = "rental_amenity";
@@ -88,9 +88,9 @@
 		result=db.execute("result");
 		variables.queueSortCom.sortAll();
         application.zcore.status.setStatus(request.zsid, "Rental amenity deleted successfully.");
-		if(structkeyexists(session, "rental_amenity_return"&form.rental_amenity_id)){
-			var tempLink=session["rental_amenity_return"&form.rental_amenity_id];
-			structdelete(session,"rental_amenity_return"&form.rental_amenity_id);
+		if(structkeyexists(request.zsession, "rental_amenity_return"&form.rental_amenity_id)){
+			var tempLink=request.zsession["rental_amenity_return"&form.rental_amenity_id];
+			structdelete(request.zsession,"rental_amenity_return"&form.rental_amenity_id);
 			application.zcore.functions.z301Redirect(tempLink);
 		}else{
 			application.zcore.functions.zRedirect("/z/rental/admin/rental-amenity/index?zsid="&request.zsid);
@@ -174,9 +174,9 @@
 		}
 	}
 	
-	if(structkeyexists(session, "rental_amenity_return"&form.rental_amenity_id)){
-		tempLink=session["rental_amenity_return"&form.rental_amenity_id];
-		structdelete(session,"rental_amenity_return"&form.rental_amenity_id);
+	if(structkeyexists(request.zsession, "rental_amenity_return"&form.rental_amenity_id)){
+		tempLink=request.zsession["rental_amenity_return"&form.rental_amenity_id];
+		structdelete(request.zsession,"rental_amenity_return"&form.rental_amenity_id);
 		application.zcore.functions.z301Redirect(tempLink);
 	}else{
 		application.zcore.functions.zredirect(redirecturl);

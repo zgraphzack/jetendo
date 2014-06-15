@@ -25,10 +25,10 @@
 		form.returnId = form.returnId;
 	}
 	if(structkeyexists(form, 'zsaUsersOnly')){
-		if(form.zsaUsersOnly EQ 1 or isDefined('session.zsaUsersOnly') EQ false){
-			session.zsaUsersOnly = 1;
+		if(form.zsaUsersOnly EQ 1 or isDefined('request.zsession.zsaUsersOnly') EQ false){
+			request.zsession.zsaUsersOnly = 1;
 		}else if(form.zsaUsersOnly EQ 0){
-			StructDelete(session, 'zsaUsersOnly');
+			StructDelete(request.zsession, 'zsaUsersOnly');
 		}
 		StructDelete(form, "zsaUsersOnly");
 	}
@@ -43,7 +43,7 @@
 				<a href="/z/server-manager/admin/user/editSitePermissions?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#">Site Permissions</a> | 
 				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#">Add User</a> | 
 				<a href="/z/server-manager/admin/user/addUserGroup?zid=#form.zid#&sid=#form.sid#&amp;returnId=#form.returnId#">Add User Group</a> |
-					<cfif isDefined('session.zsaUsersOnly')>
+					<cfif isDefined('request.zsession.zsaUsersOnly')>
 						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#&zsaUsersOnly=0">Hide Server Manager Users.</a>
 					<cfelse>
 						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#&amp;zsaUsersOnly=1">Show Server Manager Users.</a>
@@ -240,7 +240,7 @@
 	
 	form.user_group_id = application.zcore.functions.zso(form, 'uai');
 	inputStruct.user_openid_required=application.zcore.functions.zso(form, 'user_openid_required',false,0);
-	if(form.user_id NEQ session.zos.user.id){
+	if(form.user_id NEQ request.zsession.user.id){
 		inputStruct.user_access_site_children = application.zcore.functions.zso(form, 'user_access_site_children',true); // set to 1 to give user full access to children sites
 		inputStruct.user_site_administrator = application.zcore.functions.zso(form, 'user_site_administrator',true); // set to 1 to give user full access to all groups on a site
 		inputStruct.user_server_administrator = application.zcore.functions.zso(form, 'user_server_administrator',true); // set to 1 to give user full access to all sites & groups
@@ -501,7 +501,7 @@
 			<tr>
 				<td style="vertical-align:top; width:140px;">Site Administrator:</td>
 				<td>
-					<cfif currentMethod EQ "editUser" and session.zOS.user.id EQ qUser.user_id>
+					<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
 						<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 					<cfelse>
 						<input name="user_site_administrator" id="user_site_administrator" type="checkbox" onClick="checkUser(1);" value="1" <cfif form.user_site_administrator EQ 1>checked="checked"</cfif>>
@@ -511,7 +511,7 @@
 			<tr>
 				<td style="vertical-align:top; width:140px;">Access Site Children:</td>
 				<td>
-					<cfif currentMethod EQ "editUser" and session.zOS.user.id EQ qUser.user_id>
+					<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
 						<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 					<cfelse>
 						<input name="user_access_site_children" id="user_access_site_children" type="checkbox" onClick="checkUser(2);" value="1" <cfif form.user_access_site_children EQ 1>checked="checked"</cfif>>
@@ -521,7 +521,7 @@
 			<cfif form.sid EQ '1'>
 				<tr>
 					<td style="vertical-align:top; width:140px;">Server Administrator:</td>
-					<td><cfif currentMethod EQ "editUser" and session.zOS.user.id EQ qUser.user_id>
+					<td><cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
 							<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 							<cfelse>
 							<input name="user_server_administrator" id="user_server_administrator" type="checkbox" onClick="checkUser(2);" value="1" <cfif form.user_server_administrator EQ 1>checked="checked"</cfif>>
@@ -573,7 +573,7 @@
 				}else{
 					document.getElementById("serverAdminDiv").style.display='none';
 				}
-			<cfif currentMethod EQ "editUser" and session.zOS.user.id EQ qUser.user_id>
+			<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
 				if(num == 1){
 					if(document.userForm.user_site_administrator.checked == false){
 						document.userForm.user_server_administrator.checked = false;
@@ -670,7 +670,7 @@
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user
 	WHERE user_group_id = #db.param(application.zcore.functions.zso(form, 'user_group_id'))# and 
 	site_id = #db.param(form.sid)#";
-	if(isDefined('session.zsaUsersOnly')){
+	if(isDefined('request.zsession.zsaUsersOnly')){
 		db.sql&=" and user_system = #db.param('1')#";
 	}
 	db.sql&=" ORDER BY user_first_name ASC";
@@ -731,7 +731,7 @@
 					<cfelse>
 						Custom User Script
 					</cfif></td>
-				<td ><cfif isDefined('session.zOS.user.id') and session.zOS.user.id NEQ qUserList.user_id>
+				<td ><cfif isDefined('request.zsession.user.id') and request.zsession.user.id NEQ qUserList.user_id>
 						<cfif qUserList.user_active EQ 1>
 							<a href="/z/server-manager/admin/user/deactivate?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Deactivate</a>
 						<cfelse>
@@ -740,7 +740,7 @@
 						|
 					</cfif>
 					<a href="/z/server-manager/admin/user/editUser?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Edit</a> |
-					<cfif isDefined('session.zOS.user.id') and session.zOS.user.id EQ qUserList.user_id and session.zOS.user.site_id EQ qUserList.site_id>
+					<cfif isDefined('request.zsession.user.id') and request.zsession.user.id EQ qUserList.user_id and request.zsession.user.site_id EQ qUserList.site_id>
 						<span class="highlight">Required</span>
 					<cfelse>
 						<a href="/z/server-manager/admin/user/deleteUser?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Delete</a>
@@ -794,7 +794,7 @@
 				<td>#qUserList.user_group_name#&nbsp;</td>
 				<td >#qUserList.user_group_friendly_name#&nbsp;</td>
 				<td ><a href="/z/server-manager/admin/user/listGroup?zid=#form.zid#&sid=#form.sid#&user_group_id=#qUserList.user_group_id#">View Users</a> | <a href="/z/server-manager/admin/user/editUserGroup?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_group_id=#qUserList.user_group_id#">Edit</a> |
-					<cfif isDefined('session.zOS.user.group_id') and session.zOS.user.group_id NEQ qUserList.user_group_id>
+					<cfif isDefined('request.zsession.user.group_id') and request.zsession.user.group_id NEQ qUserList.user_group_id>
 						<a href="/z/server-manager/admin/user/deleteUserGroup?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&amp;user_group_id=#qUserList.user_group_id#">Delete</a>
 					<cfelse>
 						<span class="highlight">Required</span>

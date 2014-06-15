@@ -6,31 +6,31 @@
 			if(Request.zOS.debuggerEnabled EQ false){
 				return "";
 			}
-			if(isDefined('session.zOS.modes') EQ false){
-				session.zOS.modes = StructNew();
+			if(isDefined('request.zsession.modes') EQ false){
+				request.zsession.modes = StructNew();
 			}
 			if(structkeyexists(form, 'zOS_mode')){
 				if(form.zOS_Mode EQ 'VerifyQueries'){
 					if(form.zOS_modeValue EQ "true"){
-						session.zos.verifyQueries=true;
+						request.zsession.verifyQueries=true;
 					}else{
-						session.zos.verifyQueries=false;
+						request.zsession.verifyQueries=false;
 					}
 				}else if(form.zOS_MODE EQ "debugleadrouting"){
 					if(form.zOS_modeValue EQ "true"){
-						session.zos.debugleadrouting=true;
-					}else if(structkeyexists(session, 'zos')){
-						structdelete(session.zos, 'debugleadrouting');
+						request.zsession.debugleadrouting=true;
+					}else{
+						structdelete(request.zsession, 'debugleadrouting');
 					}
 
 				}
 				if(structkeyexists(form, 'zOS_modeValue') and form.zOS_modeValue){
-					session.zOS.modes[form.zOS_Mode] = true;
+					request.zsession.modes[form.zOS_Mode] = true;
 					if(form.zOS_Mode EQ 'varDump' and structkeyexists(form, 'zOS_modeVarDumpName')){
-						session.zOS.modes.varDumpName = form.zOS_modeVarDumpName;
+						request.zsession.modes.varDumpName = form.zOS_modeVarDumpName;
 					} 
 				}else{
-					StructDelete(session.zOS.modes, form.zOS_Mode);
+					StructDelete(request.zsession.modes, form.zOS_Mode);
 				}
 			}
 		}
@@ -81,28 +81,28 @@
               <a href="##" onclick="zOS_mode_submit('reset','true','all', '&amp;zforce=1');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" ---> class="zOS_mode_link">All &amp; Skin Cache Rebuild</a> ) <a href="##" onclick="zOS_mode_submit('reset','true','cache');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Rebuild Global Files</a></div>
             <div class="zOS_mode_td"> Component Cache: <cfif request.zos.disableSystemCaching><a href="##" onclick="document.zOS_mode_form.zOS_mode.value='';document.zOS_mode_form.action+='<cfif returnStruct.urlString NEQ "">&amp;<cfelse>?</cfif>zdisablesystemcaching=false'; document.zOS_mode_form.submit(); return false;">Off</a><cfelse><a href="##" onclick="document.zOS_mode_form.zOS_mode.value='';document.zOS_mode_form.action+='<cfif returnStruct.urlString NEQ "">&amp;<cfelse>?</cfif>zdisablesystemcaching=true'; document.zOS_mode_form.submit(); return false;">On</a></cfif> | Debug:
             
-              <cfif isDefined('session.zOS.modes.debug')>
+              <cfif isDefined('request.zsession.modes.debug')>
                 <a href="##" onclick="zOS_mode_submit('debug','false');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>On</a>
                 <cfelse>
                 <a href="##" onclick="zOS_mode_submit('debug','true');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Off</a>
               </cfif>
               | Time:
-              <cfset session.zOS.modes.time=true>
-              <cfif isDefined('session.zOS.modes.time')>
+              <cfset request.zsession.modes.time=true>
+              <cfif isDefined('request.zsession.modes.time')>
                 <a href="##" onclick="zOS_mode_submit('time','false');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>On</a>
                 <cfelse>
                 <a href="##" onclick="zOS_mode_submit('time','true');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Off</a>
               </cfif>
               <br />Var Dump:
-              <cfif isDefined('session.zOS.modes.varDump')>
-#session.zOS.modes.varDumpName#                                                                            &nbsp; <a href="##" onclick="zOS_mode_submit('varDump','false');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>On</a>
+              <cfif isDefined('request.zsession.modes.varDump')>
+#request.zsession.modes.varDumpName#                                                                            &nbsp; <a href="##" onclick="zOS_mode_submit('varDump','false');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>On</a>
                 <input type="hidden" name="zOS_modeVarDumpName" id="zOS_modeVarDumpName" value="" class="zOS_modeInput" />
                 <cfelse>
                 <input type="text" name="zOS_modeVarDumpName" id="zOS_modeVarDumpName" value="" class="zOS_modeInput" />
                 &nbsp; <a href="##" onclick="zOS_mode_submit('varDump','true');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Off</a>
               </cfif>
               | Verify Queries: 
-            	<cfif isDefined('session.zos.verifyQueries') and session.zos.verifyQueries>
+            	<cfif isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries>
                  <a href="##" onclick="zOS_mode_submit('VerifyQueries','false');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>On</a>
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('VerifyQueries','true');return false;" <!--- onmouseover="zOS_mode_status();" onmousemove="zOS_mode_status();" onmouseout="zOS_mode_status_off();" --->>Off</a>
@@ -116,16 +116,16 @@
 				Deploy: <a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index" target="_blank">Go to Test Server Deploy</a>
 			</cfif>
               | Debug Lead Routing: 
-            	<cfif isDefined('session.zos.debugleadrouting') and session.zos.debugleadrouting>
+            	<cfif isDefined('request.zsession.debugleadrouting') and request.zsession.debugleadrouting>
                  <a href="##" onclick="zOS_mode_submit('debugleadrouting','false');return false;">On</a>
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('debugleadrouting','true');return false;">Off</a>
                 </cfif>
               </div>
             <div class="zOS_mode_td">
-              <cfif isDefined('session.zos.tracking.track_user_hits')>Hits: #session.zos.tracking.track_user_hits#</cfif>
-              <cfif isDefined('session.zlistingpageviewcount')> Listing Pages: #session.zlistingpageviewcount#</cfif>
-              <cfif isDefined('session.zlistingdetailhitcount')>  Detail Hits: #session.zlistingdetailhitcount#</cfif>
+              <cfif isDefined('request.zsession.tracking.track_user_hits')>Hits: #request.zsession.tracking.track_user_hits#</cfif>
+              <cfif isDefined('request.zsession.zlistingpageviewcount')> Listing Pages: #request.zsession.zlistingpageviewcount#</cfif>
+              <cfif isDefined('request.zsession.zlistingdetailhitcount')>  Detail Hits: #request.zsession.zlistingdetailhitcount#</cfif>
               
               <cfscript>
 			if(structkeyexists(form, 'zOS_viewXHTMLError')){
@@ -133,9 +133,9 @@
 				writeoutput('This page is XHTML 1.0 Compliant');
 			}
 			</cfscript>
-              <cfif isDefined('session.zOS.modes.validateXHTML')>
+              <cfif isDefined('request.zsession.modes.validateXHTML')>
                 <cfscript>
-			StructDelete(session.zOS.modes, 'validateXHTML');
+			StructDelete(request.zsession.modes, 'validateXHTML');
 			try{
 				XMLParse(request.zos.debuggerFinalString);
 				writeoutput('This page is XHTML 1.0 Compliant');
@@ -201,17 +201,17 @@
   <cfsavecontent variable="returnString">
   <cfscript>
 			try{
-				if(isDefined('session.zOS.modes.varDump')){
-					writeoutput('Dumping: '&session.zOS.modes.varDumpName&'<br /><br />');
-					if(find("(", session.zOS.modes.varDumpName) EQ 0){ 
-						if(isDefined(session.zOS.modes.varDumpName)){
-							if(session.zOS.modes.varDumpName EQ 'request.zos.templateData.tagContent'){
+				if(isDefined('request.zsession.modes.varDump')){
+					writeoutput('Dumping: '&request.zsession.modes.varDumpName&'<br /><br />');
+					if(find("(", request.zsession.modes.varDumpName) EQ 0){ 
+						if(isDefined(request.zsession.modes.varDumpName)){
+							if(request.zsession.modes.varDumpName EQ 'request.zos.templateData.tagContent'){
 								StructDelete(request.zos.templateData.tagContent, 'content');
 							}
-							application.zcore.functions.zDump(evaluate(session.zOS.modes.varDumpName),session.zOS.modes.varDumpName,false);
+							application.zcore.functions.zDump(evaluate(request.zsession.modes.varDumpName),request.zsession.modes.varDumpName,false);
 						
-						}else if(isDefined('Request.zOS.currentScript.variables.#session.zOS.modes.varDumpName#')){
-							application.zcore.functions.zDump(Request.zOS.currentScript.variables[session.zOS.modes.varDumpName],session.zOS.modes.varDumpName,false);
+						}else if(isDefined('Request.zOS.currentScript.variables.#request.zsession.modes.varDumpName#')){
+							application.zcore.functions.zDump(Request.zOS.currentScript.variables[request.zsession.modes.varDumpName],request.zsession.modes.varDumpName,false);
 						
 						}else{
 							writeoutput("{missing variable}");
@@ -223,10 +223,10 @@
 				// nothing
 			}
 			if(isDefined('session')){
-				request._______mysession = duplicate(session);
-				if(isDefined('request._______mysession.zos')){
-					StructDelete(request._______mysession.zos, 'statusstruct');
-					StructDelete(request._______mysession.zos, 'ZOSDEBUGGERLASTOUTPUT');
+				request._______mysession = duplicate(request.zsession);
+				if(isDefined('request._______myrequest.zsession')){
+					StructDelete(request._______myrequest.zsession, 'statusstruct');
+					StructDelete(request._______myrequest.zsession, 'ZOSDEBUGGERLASTOUTPUT');
 				}
 			}
 			if(isDefined('application.zcore.functions.zdump')){
@@ -234,7 +234,7 @@
 			}
 			StructDelete(request, 'cfdumpinited');
 			</cfscript>
-  <cfif isDefined('session.zOS.modes.debug')>
+  <cfif isDefined('request.zsession.modes.debug')>
     Debug Output (Components and functions were removed)<br />
     <br />
     <cfif isDefined('form') and StructCount(form) NEQ 0>
@@ -287,12 +287,12 @@
   <cfset dumpcode="">
   <cfscript>
 		if(len(trim(returnString)) EQ 0){
-			session.zos.zOSDebuggerLastOutput = '';
+			request.zsession.zOSDebuggerLastOutput = '';
 			return '';
 		}else{
 			returnString = '#application.zcore.functions.zHTMLDoctype()#<head><title>Debugger</title></head><body><table class="zOS_mode_table" style="width:100%;"><tr><td 
 style="vertical-align:top; " class="zOS_mode_td">#returnString#</td></tr></table></body></html>';
-			session.zos.zOSDebuggerLastOutput = styleString&returnString;
+			request.zsession.zOSDebuggerLastOutput = styleString&returnString;
 			return '<iframe width="700" height="500" src="#request.cgi_script_name#?zOSDebuggerLastOutput=1">No output</iframe>';
 		}
 		</cfscript>

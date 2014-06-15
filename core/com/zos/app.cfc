@@ -207,7 +207,7 @@
 				if(structkeyexists(arguments.sharedStruct,"Update Profile") EQ false){
 					ts=structnew();
 					ts.featureName="Users";
-					ts.link=application.zcore.functions.zvar('domain',session.zos.user.site_id)&"/z/admin/member/index";
+					ts.link=application.zcore.functions.zvar('domain',request.zsession.user.site_id)&"/z/admin/member/index";
 					ts.children=structnew();
 					arguments.sharedStruct["Update Profile"]=ts;
 				}

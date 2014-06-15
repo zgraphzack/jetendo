@@ -54,15 +54,15 @@
 	A major system update is in progress. Please try again later.</body></html><cfscript>application.zcore.functions.zabort();</cfscript>
 	 ---> 
 	<cfscript>
-	if(structkeyexists(session.zos.user, 'group_id')){
-		userGroupId=session.zos.user.group_id;
+	if(structkeyexists(request.zsession.user, 'group_id')){
+		userGroupId=request.zsession.user.group_id;
 	}else{
 		userGroupId=0;
 	}
 	</cfscript>
 	<cfif not request.zos.inServerManager and (application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
-	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, session.zos.user.site_id&"_"&session.zos.user.id))>
-		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id]#
+	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id))>
+		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[request.zsession.user.site_id&"_"&request.zsession.user.id]#
 	<cfelse>
 		<cfsavecontent variable="templateMenuOutput">
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="table-list" style="margin-bottom:10px; ">
@@ -78,10 +78,10 @@
 	<td style="text-align:right;background-color:##336699; color:##DFDFDF;width:400px; padding-right:5px;">
 	
 		<cfscript>
-		if(request.zos.isDeveloper and session.zos.user.site_id EQ request.zos.globals.serverId and application.zcore.user.checkServerAccess()){
+		if(request.zos.isDeveloper and request.zsession.user.site_id EQ request.zos.globals.serverId and application.zcore.user.checkServerAccess()){
 			siteIdSQL=" and site_id <> -1";
 		}else{
-			if(session.zos.user.site_id NEQ request.zos.globals.id and application.zcore.user.checkGroupAccess("administrator")){
+			if(request.zsession.user.site_id NEQ request.zos.globals.id and application.zcore.user.checkGroupAccess("administrator")){
 				if(request.zos.globals.parentID NEQ 0){
 					siteIdSQL=" and (site_id = '"&request.zos.globals.parentID&"' or site_parent_id ='"&request.zos.globals.parentID&"')";
 				}else{
@@ -89,12 +89,12 @@
 				}
 			}else{
 				db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
-				WHERE user_id=#db.param(session.zos.user.id)# and 
-				site_id=#db.param(session.zos.user.site_id)#";
+				WHERE user_id=#db.param(request.zsession.user.id)# and 
+				site_id=#db.param(request.zsession.user.site_id)#";
 				qUser=db.execute("qUser");
 				
 				arrSiteId=listtoarray(qUser.user_sync_site_id_list, ",",false);
-				arrayappend(arrSiteId, session.zos.user.site_id);
+				arrayappend(arrSiteId, request.zsession.user.site_id);
 				siteIdSQL=" and site_id IN ('"&arraytolist(arrSiteId, "','")&"')";
 			}
 		}
@@ -164,7 +164,7 @@
 	</cfsavecontent>
 	    #templateMenuOutput#
 		<cfif not request.zos.inServerManager>
-			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[session.zos.user.site_id&"_"&session.zos.user.id]=templateMenuOutput>
+			<cfset application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[request.zsession.user.site_id&"_"&request.zsession.user.id]=templateMenuOutput>
 		</cfif>
 	</cfif>
 	<cfif request.zos.inServerManager>

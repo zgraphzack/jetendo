@@ -257,7 +257,7 @@
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Listings", true);
 		var db=request.zos.queryObject;
         if(structkeyexists(form, 'return')){
-            StructInsert(session, "manual_listing_return"&form.manual_listing_id, request.zos.CGI.HTTP_REFERER, true);		
+            StructInsert(request.zsession, "manual_listing_return"&form.manual_listing_id, request.zos.CGI.HTTP_REFERER, true);		
         }
         </cfscript>
 	<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing 
@@ -268,9 +268,9 @@ qCheck=db.execute("qCheck");
 
         if(qCheck.recordcount EQ 0){
             application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this manual_listing.',false,true);
-            if(isDefined('session.manual_listing_return'&form.manual_listing_id)){
-                tempURL = session['manual_listing_return'&form.manual_listing_id];
-                StructDelete(session, 'manual_listing_return'&form.manual_listing_id);
+            if(isDefined('request.zsession.manual_listing_return'&form.manual_listing_id)){
+                tempURL = request.zsession['manual_listing_return'&form.manual_listing_id];
+                StructDelete(request.zsession, 'manual_listing_return'&form.manual_listing_id);
                 application.zcore.functions.zRedirect(tempURL, true);
             }else{
                 application.zcore.functions.zRedirect('/z/listing/admin/manual-listing/index?zsid=#request.zsid#');
@@ -289,7 +289,7 @@ qCheck=db.execute("qCheck");
 			<br />
 			Title: #qCheck.manual_listing_title# <br />
 			<br />
-			<a href="/z/listing/admin/manual-listing/delete?confirm=1&manual_listing_id=#form.manual_listing_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#application.zcore.functions.zso(session, 'manual_listing_return'&form.manual_listing_id)#">No</a> </h2>
+			<a href="/z/listing/admin/manual-listing/delete?confirm=1&manual_listing_id=#form.manual_listing_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_id)#">No</a> </h2>
 	</cfif>
 </cffunction>
 <cffunction name="insert" localmode="modern" access="remote" roles="member">
@@ -403,18 +403,18 @@ qCheck=db.execute("qCheck");
         
         if(form.method EQ 'insert'){
             application.zcore.status.setStatus(request.zsid, "Page added.");
-            if(isDefined('session.manual_listing_return')){
-                tempURL = session['manual_listing_return'];
-                StructDelete(session, 'manual_listing_return');
+            if(isDefined('request.zsession.manual_listing_return')){
+                tempURL = request.zsession['manual_listing_return'];
+                StructDelete(request.zsession, 'manual_listing_return');
                 tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
                 application.zcore.functions.zRedirect(tempURL, true);
             }
         }else{
             application.zcore.status.setStatus(request.zsid, "Page updated.");
         }
-        if(structkeyexists(form, 'manual_listing_id') and isDefined('session.manual_listing_return'&form.manual_listing_id)){// and uniqueChanged EQ false){	
-            tempURL = session['manual_listing_return'&form.manual_listing_id];
-            StructDelete(session, 'manual_listing_return'&form.manual_listing_id);
+        if(structkeyexists(form, 'manual_listing_id') and isDefined('request.zsession.manual_listing_return'&form.manual_listing_id)){// and uniqueChanged EQ false){	
+            tempURL = request.zsession['manual_listing_return'&form.manual_listing_id];
+            StructDelete(request.zsession, 'manual_listing_return'&form.manual_listing_id);
             tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
             application.zcore.functions.zRedirect(tempURL, true);
         }else{	
@@ -481,7 +481,7 @@ qCheck=db.execute("qCheck");
             form.manual_listing_created_datetime = application.zcore.functions.zGetDateSelect("manual_listing_created_datetime");	
         }
         if(structkeyexists(form, 'return')){
-            StructInsert(session, "manual_listing_return"&form.manual_listing_id, request.zos.CGI.HTTP_REFERER, true);		
+            StructInsert(request.zsession, "manual_listing_return"&form.manual_listing_id, request.zos.CGI.HTTP_REFERER, true);		
         }
         </cfscript>
 	<h2>
@@ -514,7 +514,7 @@ qCheck=db.execute("qCheck");
         tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
         tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
         tabCom.setMenuName("member-manual_listing-edit");
-        cancelURL=application.zcore.functions.zso(session, 'manual_listing_return'&form.manual_listing_id);
+        cancelURL=application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_id);
         if(cancelURL EQ ""){
         	cancelURL="/z/listing/admin/manual-listing/index";
         }

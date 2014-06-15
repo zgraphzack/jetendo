@@ -47,16 +47,16 @@
 		| 	Filter By User:
 		<cfscript>
 		if(structkeyexists(form, 'agentuserid')){
-			session.agentuserid=form.agentuserid;
-			session.agentusersiteidtype=application.zcore.functions.zso(form, 'agentusersiteidtype');
-		}else if(isDefined('session.agentuserid') EQ false){
-			session.agentuserid='';
-			session.agentusersiteidtype='';
+			request.zsession.agentuserid=form.agentuserid;
+			request.zsession.agentusersiteidtype=application.zcore.functions.zso(form, 'agentusersiteidtype');
+		}else if(isDefined('request.zsession.agentuserid') EQ false){
+			request.zsession.agentuserid='';
+			request.zsession.agentusersiteidtype='';
 		}
 		selectStruct = StructNew();
 		selectStruct.name = "user_id";
 		selectStruct.query = qAgents;
-		selectStruct.selectedValues=session.agentuserid;
+		selectStruct.selectedValues=request.zsession.agentuserid;
 		selectStruct.queryLabelField = "##user_first_name## ##user_last_name##";
 		selectStruct.queryParseLabelVars = true;
 		selectStruct.onChange="getAgentLeads(this.options[this.selectedIndex].value);";
@@ -444,17 +444,17 @@ Buy Real Estate
 			</tr>
 		</cfif>
 		<cfif trim(t.inquiries_email) NEQ ''>
-			<cfif isDefined('session.zos.user.id')>
+			<cfif isDefined('request.zsession.user.id')>
 				<cfscript>
 				db.sql="SELECT * FROM #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user 
-				WHERE user_id =#db.param(session.zOS.user.id)# and 
-				site_id =#db.param(session.zos.user.site_id)#";
+				WHERE user_id =#db.param(request.zsession.user.id)# and 
+				site_id =#db.param(request.zsession.user.site_id)#";
 				qmem2=db.execute("qmem2");
 				</cfscript>
 			</cfif>
 			<tr>
 				<th style="#thstyle# text-align:left;" >Email:</th>
-				<td style="#tdstyle#"><a href="mailto:#t.inquiries_email#<cfif isDefined('session.zos.user.id')>?subject=#URLEncodedFormat('RE: Your web site inquiry')#&body=#URLEncodedFormat('Dear '&trim(t.inquiries_first_name&' '&t.inquiries_last_name)&','&chr(10)&chr(10)&chr(9))#<cfif trim(t.inquiries_comments) NEQ ''>#URLEncodedFormat(chr(10)&chr(10)&'------------------------------------------------------'&chr(10)&'On '&DateFormat(t.inquiries_datetime, "mmmm d")&', you wrote: '&chr(10)&chr(10)&replacenocase(left(t.inquiries_comments,1200),"<br />",chr(10),"ALL"))#<cfif len(t.inquiries_comments) GT 1200>...</cfif></cfif></cfif>">#t.inquiries_email#</a>&nbsp;</td>
+				<td style="#tdstyle#"><a href="mailto:#t.inquiries_email#<cfif isDefined('request.zsession.user.id')>?subject=#URLEncodedFormat('RE: Your web site inquiry')#&body=#URLEncodedFormat('Dear '&trim(t.inquiries_first_name&' '&t.inquiries_last_name)&','&chr(10)&chr(10)&chr(9))#<cfif trim(t.inquiries_comments) NEQ ''>#URLEncodedFormat(chr(10)&chr(10)&'------------------------------------------------------'&chr(10)&'On '&DateFormat(t.inquiries_datetime, "mmmm d")&', you wrote: '&chr(10)&chr(10)&replacenocase(left(t.inquiries_comments,1200),"<br />",chr(10),"ALL"))#<cfif len(t.inquiries_comments) GT 1200>...</cfif></cfif></cfif>">#t.inquiries_email#</a>&nbsp;</td>
 			</tr>
 		</cfif>
 		<cfif trim(t.inquiries_phone_time) NEQ ''>

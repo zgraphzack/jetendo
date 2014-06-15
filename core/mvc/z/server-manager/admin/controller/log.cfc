@@ -73,19 +73,19 @@
 
 <cfif form.action EQ "addHostFilter">
 	<cfscript>
-	if(isDefined('session.zCFError_host_filter') EQ false or structkeyexists(form, 'reset')){
-		session.zCFError_host_filter = ArrayNew(1);
+	if(isDefined('request.zsession.zCFError_host_filter') EQ false or structkeyexists(form, 'reset')){
+		request.zsession.zCFError_host_filter = ArrayNew(1);
 	}
 	for(n=1;n LTE ListLen(form.log_hostfilter);n=n+1){
 		currentHost = ListGetAt(form.log_hostfilter, n);
 		exists = false;
-		for(i=1;i LTE arrayLen(session.zCFError_host_filter);i=i+1){
-			if(session.zCFError_host_filter[i] EQ currentHost){
+		for(i=1;i LTE arrayLen(request.zsession.zCFError_host_filter);i=i+1){
+			if(request.zsession.zCFError_host_filter[i] EQ currentHost){
 				exists = true;
 			}
 		}
 		if(exists EQ false){
-			ArrayAppend(session.zCFError_host_filter, currentHost);
+			ArrayAppend(request.zsession.zCFError_host_filter, currentHost);
 		}
 	}
 	application.zcore.status.setStatus(request.zsid, "Host(s) added to filter.");
@@ -94,7 +94,7 @@
 	
 <cfelseif form.action EQ "clearHostFilter">
 	<cfscript>
-	structDelete(session, "zCFError_host_filter", true);
+	structDelete(request.zsession, "zCFError_host_filter", true);
 	application.zcore.status.setStatus(request.zsid, "Host filter cleared.");
 	application.zcore.functions.zRedirect("#Request.zScriptName#&action=list&zsid=#request.zsid#", true);
 	</cfscript>
@@ -157,7 +157,7 @@
 	<cfif structkeyexists(form, 'log_id')>
 		WHERE log_id = #db.param(form.log_id)#  
 		LIMIT #db.param(0)#,#db.param(1)#
-	<cfelseif isDefined('session.zCFError_host_filter')>
+	<cfelseif isDefined('request.zsession.zCFError_host_filter')>
 		#variables.getSelectedHosts("log",true)# 
 		ORDER BY log_datetime DESC
 		LIMIT #db.param(0)#,#db.param(30)#
@@ -193,11 +193,11 @@
 
 <cfif form.action EQ "hideResolved">
 	<cfscript>
-	StructDelete(session, "zCFError_hideResolved", true);
+	StructDelete(request.zsession, "zCFError_hideResolved", true);
 	application.zcore.functions.zRedirect(Request.zScriptName&"&action=list",true);
 	</cfscript>
 <cfelseif form.action EQ "showResolved">
-	<cfset session.zCFError_hideResolved = true>
+	<cfset request.zsession.zCFError_hideResolved = true>
 	<cfscript>
 	application.zcore.functions.zRedirect(Request.zScriptName&"&action=list",true);
 	</cfscript>
@@ -213,10 +213,10 @@
 	FROM #db.table("log", request.zos.zcoreDatasource)# log 
     
 	WHERE log_id <> #db.param(-1)# 
-	<cfif isDefined('session.zCFError_hideResolved') EQ false>
+	<cfif isDefined('request.zsession.zCFError_hideResolved') EQ false>
 	and log_status <> #db.param('Resolved')#
 	</cfif> 
-	<cfif isDefined('session.zCFError_host_filter')>
+	<cfif isDefined('request.zsession.zCFError_host_filter')>
 		#db.trustedSQL(variables.getSelectedHosts("log"))#
 	</cfif>
 	</cfsavecontent><cfscript>qLogCount=db.execute("qLogCount");</cfscript>
@@ -226,10 +226,10 @@
 	replace(log_host,#db.param("www.")#,#db.param("")#) as log_short_host 
 	FROM #db.table("log", request.zos.zcoreDatasource)# log  
 	WHERE log_id <> #db.param(-1)# 
-	<cfif isDefined('session.zCFError_hideResolved') EQ false>
+	<cfif isDefined('request.zsession.zCFError_hideResolved') EQ false>
 	and log_status <> #db.param('Resolved')#
 	</cfif>
-	<cfif isDefined('session.zCFError_host_filter')>
+	<cfif isDefined('request.zsession.zCFError_host_filter')>
 		#db.trustedSQL(variables.getSelectedHosts("log"))#
 	</cfif>
 	#qSortCom.getOrderBy()#
@@ -238,7 +238,7 @@
 	<table style="border-spacing:0px;width:100%;" class="table-list">
 	<tr><td> 
 	
-	<cfif isDefined('session.zCFError_hideResolved') EQ false>
+	<cfif isDefined('request.zsession.zCFError_hideResolved') EQ false>
 	 | <a href="#Request.zScriptName#&action=showResolved">Show Resolved</a>
 	 <cfelse>
 	 | <a href="#Request.zScriptName#&action=hideResolved">Hide Resolved</a>
@@ -339,9 +339,9 @@
 	var arrFilter = ArrayNew(1);
 	var i = 0;
 	var current = "";
-	if(isDefined("session.zCFError_host_filter")){
-		for(i=1;i LTE ArrayLen(session.zCFError_host_filter);i=i+1){
-			current = session.zCFError_host_filter[i];
+	if(isDefined("request.zsession.zCFError_host_filter")){
+		for(i=1;i LTE ArrayLen(request.zsession.zCFError_host_filter);i=i+1){
+			current = request.zsession.zCFError_host_filter[i];
 			if(current NEQ -1){
 				ArrayAppend(arrFilter, arguments.table&".log_host = '" & replace(replace(current, "\", "\\", "ALL"), "'", "''", "ALL") & "'");
 			}

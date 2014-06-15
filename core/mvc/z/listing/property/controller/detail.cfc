@@ -53,13 +53,13 @@ application.zcore.template.setTag("title","Property Detail");
 ts=StructNew();
 ts.list='';
 //request.zos.page.setActions(ts);
-if(structkeyexists(form, 'searchId') EQ false and isDefined('session.zos.tempVars.zListingSearchId')){
-	form.searchId=session.zos.tempVars.zListingSearchId;
+if(structkeyexists(form, 'searchId') EQ false and isDefined('request.zsession.tempVars.zListingSearchId')){
+	form.searchId=request.zsession.tempVars.zListingSearchId;
 }
-if(isDefined('session.zlistingdetailhitcount') EQ false){
-	session.zlistingdetailhitcount=1;
+if(isDefined('request.zsession.zlistingdetailhitcount') EQ false){
+	request.zsession.zlistingdetailhitcount=1;
 }else{
-	session.zlistingdetailhitcount++;
+	request.zsession.zlistingdetailhitcount++;
 }
 
 firstImageToShow=1;

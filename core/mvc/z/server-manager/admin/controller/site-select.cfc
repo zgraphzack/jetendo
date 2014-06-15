@@ -83,14 +83,14 @@
 		</cfif>
 		
 		<cfif structkeyexists(form, 'showInactiveSites')>
-			<cfset session.showInactiveSites=form.showInactiveSites>
+			<cfset request.zsession.showInactiveSites=form.showInactiveSites>
 		</cfif>
 		
 		<form action="#request.cgi_script_name#?action=list" method="get">
 			<table style="border-spacing:0px; width:100%;" class="table-list">
 				<tr class="table-shadow">
 					<td colspan="13" class="tiny"><h2 style="display:inline;">Sites | </h2><a href="/z/server-manager/admin/site/newDomain">Add Site</a> <!--- | <a href="#request.cgi_script_name#?action=manageBudget">Manage Budgets</a>  --->
-						<cfif application.zcore.functions.zso(session, 'showInactiveSites', true, 0) EQ 1>
+						<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites', true, 0) EQ 1>
 							| <a href="/z/server-manager/admin/site-select/index?showInactiveSites=0">Hide Inactive</a>
 							<cfelse>
 							| <a href="/z/server-manager/admin/site-select/index?showInactiveSites=1">Show Inactive</a>
@@ -125,7 +125,7 @@
 			<cfif len(selectedChar) NEQ 0>
 				and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#
 			</cfif>
-			<cfif application.zcore.functions.zso(session, 'showInactiveSites', true, 0) NEQ 1>
+			<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites', true, 0) NEQ 1>
 				and site_active=#db.param(1)#
 			</cfif>
 			</cfsavecontent>
@@ -139,7 +139,7 @@ qCount=db.execute("qCount");
 			<cfif len(selectedChar) NEQ 0>
 				and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#
 			</cfif>
-			<cfif application.zcore.functions.zso(session, 'showInactiveSites') NEQ 1>
+			<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites') NEQ 1>
 				and site_active=#db.param(1)#
 			</cfif>
 			ORDER BY site_sitename ASC 

@@ -48,14 +48,14 @@
 			}
 		}
 		structappend(form,ss.varstruct);
-		if(isDefined('session.zos.user.id')){
-			form.user_id=session.zos.user.id;
+		if(isDefined('request.zsession.user.id')){
+			form.user_id=request.zsession.user.id;
 			form.user_id_siteIDType=application.zcore.user.getSiteIdTypeFromLoggedOnUser();
 		}else{
 			form.user_id=0;
 			form.user_id_siteIDType=4;
 		}
-		session.inquiries_email=form.saved_search_email;
+		request.zsession.inquiries_email=form.saved_search_email;
 		form.saved_search_format=application.zcore.functions.zso(form, 'saved_search_format', true, 1);
 		form.saved_search_last_sent_date=request.zos.mysqlnow;
 		form.mls_saved_search_id=request.zos.listing.functions.zMLSSearchOptionsUpdate('update', 0, form.saved_search_email, form); 
@@ -120,10 +120,10 @@
 			    <form action="#request.cgi_script_name#?method=index&action=save&searchId=#form.searchid#" method="post">
 			    <table style="border-spacing:0px;width:100%;">
 			<tr><td>Email Address:</td>
-			<td><cfif isDefined('session.zos.user.id')>Logged in as #session.zos.user.email#<br />
+			<td><cfif isDefined('request.zsession.user.id')>Logged in as #request.zsession.user.email#<br />
 			Want to use a different account? <a href="#request.cgi_script_name#?zlogout=1&searchId=#urlencodedformat(form.searchid)#">Click Here to Logout</a>
-			<input type="hidden" name="saved_search_email" value="#session.zos.user.email#" />
-			<cfelse><input type="text" name="saved_search_email" style="width:400px;" value="<cfif isDefined('session.saved_search_email')>#session.saved_search_email#<cfelse>#application.zcore.functions.zso(session, 'inquiries_email')#</cfif>" /></cfif> </td>
+			<input type="hidden" name="saved_search_email" value="#request.zsession.user.email#" />
+			<cfelse><input type="text" name="saved_search_email" style="width:400px;" value="<cfif isDefined('request.zsession.saved_search_email')>#request.zsession.saved_search_email#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" /></cfif> </td>
 			</tr>
 			<tr>
 			<td>Format:</td>

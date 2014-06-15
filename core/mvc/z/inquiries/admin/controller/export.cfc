@@ -77,12 +77,12 @@
 			and inquiries.inquiries_spam = #db.param(0)# 
 			and inquiries_parent_id = #db.param(0)#');
 			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-				writeoutput(' AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+				writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 				user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
 			}
-			if(application.zcore.functions.zso(session, 'agentuserid') NEQ ''){
-				writeoutput(' and inquiries.user_id = #db.param(session.agentuserid)# and 
-				user_id_siteIDType = #db.param(session.agentusersiteidtype)#');
+			if(application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''){
+				writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+				user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#');
 			}
 			if(form.inquiries_start_date EQ false){
 				writeoutput(' and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
@@ -108,12 +108,12 @@
 			inquiries.inquiries_spam = #db.param(0)# and 
 			inquiries_parent_id = #db.param(0)#');
 			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-				writeoutput(' AND inquiries.user_id = #db.param(session.zOS.user.id)# and 
+				writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 				user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
 			}
-			if(application.zcore.functions.zso(session,'agentuserid') NEQ ''){
-				writeoutput(' and inquiries.user_id = #db.param(session.agentuserid)# and 
-				user_id_siteIDType = #db.param(session.agentusersiteidtype)# ');
+			if(application.zcore.functions.zso(request.zsession,'agentuserid') NEQ ''){
+				writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+				user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)# ');
 			}
 			if(application.zcore.functions.zso(form,'searchType',true) EQ 0){
 				if(form.inquiries_start_date EQ false){
@@ -135,18 +135,18 @@
 			if(application.zcore.functions.zso(form,'inquiries_name') NEQ ""){
 				writeoutput(' and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#');
 			}
-			if(isDefined('session.leadcontactfilter')){
-				if(session.leadcontactfilter EQ 'new'){
+			if(isDefined('request.zsession.leadcontactfilter')){
+				if(request.zsession.leadcontactfilter EQ 'new'){
 					writeoutput(' and inquiries.inquiries_status_id =#db.param('1')#');
-				}else if(session.leadcontactfilter EQ 'email'){
+				}else if(request.zsession.leadcontactfilter EQ 'email'){
 					writeoutput(' and inquiries_phone1 =#db.param('')# 	and inquiries_phone_time=#db.param('')#');
-				}else if(session.leadcontactfilter EQ 'phone'){
+				}else if(request.zsession.leadcontactfilter EQ 'phone'){
 					writeoutput(' and inquiries_phone1 <>#db.param('')# 	and inquiries_phone_time=#db.param('')#');
-				}else if(session.leadcontactfilter EQ 'forced'){
+				}else if(request.zsession.leadcontactfilter EQ 'forced'){
 					writeoutput(' and inquiries_phone_time<>#db.param('')#');
 				}
 			}
-			if(isDefined('session.leademailgrouping') and session.leademailgrouping EQ '1'){
+			if(isDefined('request.zsession.leademailgrouping') and request.zsession.leademailgrouping EQ '1'){
 				writeoutput(' and inquiries_primary = #db.param('1')#');
 			}
 			if(application.zcore.functions.zso(form, 'exporttype') EQ 1){

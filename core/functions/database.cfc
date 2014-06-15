@@ -300,7 +300,7 @@ application.zcore.functions.zQueueQuery(ts);
 			aliasSQL=" as `"&arguments.alias&"`";
 		}
 	}
-	if(request.zos.isdeveloper and isDefined('session.zos.verifyQueries') and session.zos.verifyQueries){
+	if(request.zos.isdeveloper and isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
 		zt=":ztablesql:";	
 	}
 	/*if(structkeyexists(application.zcore.sharedTables, arguments.name)){
@@ -510,7 +510,7 @@ if(table_id EQ false){
 	sqlInsert = sqlInsert&" INTO " & request.zos.noVerifyQueryObject.table(ss.table, ss.datasource) & " SET " & arrayToList(arrInsert);
 	
 	if(request.zos.isdeveloper){
-		if(isDefined('session.zos.verifyQueries') and session.zos.verifyQueries){
+		if(isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
 			sqlInsert=application.zcore.functions.zVerifySiteIdsInQuery(sqlInsert, ss.datasource);	
 		}else{
 			sqlInsert=replace(sqlInsert, ":ztablesql:", "", "all");
@@ -710,7 +710,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		<cftry>
         	<cfscript>
 			if(request.zos.isdeveloper){
-				if(isDefined('session.zos.verifyQueries') and session.zos.verifyQueries){
+				if(isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
 					sqlUpdate=application.zcore.functions.zVerifySiteIdsInQuery(sqlUpdate, ss.datasource);	
 				}else{
 					sqlUpdate=replace(sqlUpdate, ":ztablesql:", "", "all");
@@ -1116,7 +1116,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	var curDate=now();
 	var curDate2=0;
 	var cacheEnabled=false;
-	if(arguments.cacheTimeSpan NEQ zeroTimeSpan and not isDefined('session.zos.user')){
+	if(arguments.cacheTimeSpan NEQ zeroTimeSpan and not isDefined('request.zsession.user')){
 		cacheEnabled=true;
 	}
 	</cfscript>
@@ -1125,7 +1125,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	</cfif>
 	<cfscript>
 	if(request.zos.isdeveloper){
-		if(isDefined('session.zos.verifyQueries') and session.zos.verifyQueries and arguments.disableSiteIdVerification EQ false){
+		if(isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries and arguments.disableSiteIdVerification EQ false){
 			arguments.sql=trim(application.zcore.functions.zVerifySiteIdsInQuery(arguments.sql, arguments.datasource));	
 		}else{
 			arguments.sql=trim(replace(arguments.sql, ":ztablesql:", "", "all"));

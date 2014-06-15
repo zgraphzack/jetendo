@@ -194,8 +194,8 @@ var arrAvgLong=0;
 var arrCountAtAddress=0;
 var propDisplayCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 application.zcore.functions.zDisbleEndFormCheck();
-if(structkeyexists(form,'showLastSearch') and isDefined('session.zos.tempVars.zListingSearchId')){
-	form.searchId=session.zos.tempVars.zListingSearchId;
+if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){
+	form.searchId=request.zsession.tempVars.zListingSearchId;
 	form.zIndex=application.zcore.status.getField(form.searchId, "zIndex",1);
 }
 if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
@@ -358,7 +358,7 @@ listing_longitude<>'0'";
 		structdelete(ts,'zwhere');
 		structdelete(ts,'contentTableEnabled');
 	}
-	</cfscript><cfif structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('session.zListingHideMap') and session.zListingHideMap EQ true))><cfscript>
+	</cfscript><cfif structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ true))><cfscript>
 	jsonText='{"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,"success":true}';
 	</cfscript><cfelse><cfscript>
 	ts.zReturnSimpleQuery=true;
@@ -610,7 +610,7 @@ if(application.zcore.functions.zso(form, 'zsearch_cid') NEQ ''){
 		request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 		form.searchId=application.zcore.status.getNewId();
 		
-		session.zos.tempVars.zListingSearchId=form.searchId;
+		request.zsession.tempVars.zListingSearchId=form.searchId;
 		application.zcore.status.setStatus(form.searchId,false,temp23872);
 	}else{
 		application.zcore.functions.z301redirect('/');
@@ -633,7 +633,7 @@ if(application.zcore.functions.zso(form, 'zsearch_bid') NEQ ''){
 		application.zcore.functions.zQueryToStruct(qc23872,temp238722);
 		request.zos.listing.functions.zMLSSetSearchStruct(temp23872,temp238722);
 		form.searchId=application.zcore.status.getNewId();
-		session.zos.tempVars.zListingSearchId=form.searchId;
+		request.zsession.tempVars.zListingSearchId=form.searchId;
 		application.zcore.status.setStatus(form.searchId,false,temp23872);
 	}else{
 		application.zcore.functions.z301redirect('/');
@@ -3614,10 +3614,10 @@ if(structkeyexists(request,'theSearchFormTemplate') EQ false){
 	if(form.searchFormEnabledDropDownMenus){
 		writeoutput('<a href="#request.zos.listing.functions.getSearchFormLink()#" class="zNoContentTransition"><strong style="font-size:14px;">+ Show more options</strong><br />(i.e. Subdivision, zip code, <br />keyword search)</a>');
 	}
-	/*if(isDefined('session.zos.user.id') EQ false){
+	/*if(isDefined('request.zsession.user.id') EQ false){
 		writeoutput('<br /><br /><a href="/z/user/preference/index" style="font-size:14px; font-weight:bold;">Login/Create Account</a>');
 	}else{
-		writeoutput('<br /><br /><span style="font-size:14px; font-weight:bold;">Logged in as #session.zos.user.first_name#,<br />
+		writeoutput('<br /><br /><span style="font-size:14px; font-weight:bold;">Logged in as #request.zsession.user.first_name#,<br />
 	<a href="/?zlogout=1">LOG OUT</a></span>');
 	}*/
     writeoutput('</span>');	
@@ -3718,14 +3718,14 @@ propertyDataCom.setSearchCriteria(form);
 <!--- <script type="text/javascript">/* <![CDATA[ */zListingDisplayHelpBox();/* ]]> */</script> --->
 
 <cfscript>
-if(isDefined('session.zListingHideMap') EQ false){
-	session.zListingHideMap=false;
+if(isDefined('request.zsession.zListingHideMap') EQ false){
+	request.zsession.zListingHideMap=false;
 }
 if(structkeyexists(form, 'zListingHideMap')){
 	if(form.zListingHideMap EQ 1){
-		session.zListingHideMap=true;	
+		request.zsession.zListingHideMap=true;	
 	}else{
-		session.zListingHideMap=false;
+		request.zsession.zListingHideMap=false;
 	}
 }
 if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_hide_map_until_search') EQ 1){
@@ -3738,7 +3738,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 
 </td><td style="vertical-align:top; text-align:right; font-size:110%; font-weight:bold;">&nbsp;
 <cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
-	<cfif (isDefined('session.zListingHideMap') EQ false or session.zListingHideMap EQ false) and tempHideMap EQ false>
+	<cfif (isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false>
 		<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
 		<a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
 	<cfelse>
@@ -3814,7 +3814,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 				ts.getDetails=false;
 			}
 			ts.searchId=form.searchId;
-			session.zos.tempVars.zListingSearchId=form.searchId;
+			request.zsession.tempVars.zListingSearchId=form.searchId;
 			propDisplayCom.init(ts);
 			if(returnStruct.count NEQ 0 and (isnumeric(application.zcore.functions.zso(form, 'searchId')) or structkeyexists(form,'searchaction'))){
 				res=propDisplayCom.display();
@@ -3822,7 +3822,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 		}
 		</cfscript>	
 
-        <cfif structkeyexists(application.sitestruct[request.zos.globals.id], 'zListingMapCheck') and isDefined('session.zListingHideMap') and session.zListingHideMap EQ false and tempHideMap EQ false>
+        <cfif structkeyexists(application.sitestruct[request.zos.globals.id], 'zListingMapCheck') and isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ false and tempHideMap EQ false>
         <cfscript>
 		ms={
 			mapQuery=mapQuery,

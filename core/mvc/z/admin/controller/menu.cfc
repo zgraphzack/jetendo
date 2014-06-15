@@ -313,10 +313,10 @@
 	}else{
 		application.zcore.status.setStatus(request.zsid, "link updated.");
 	}
-	if(structkeyexists(form, 'menu_button_link_id') and isDefined('session.menu_button_link_return'&form.menu_button_link_id)){	
-		tempURL = session['menu_button_link_return'&form.menu_button_link_id];
+	if(structkeyexists(form, 'menu_button_link_id') and isDefined('request.zsession.menu_button_link_return'&form.menu_button_link_id)){	
+		tempURL = request.zsession['menu_button_link_return'&form.menu_button_link_id];
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
-		StructDelete(session, 'menu_button_link_return'&form.menu_button_link_id, true);
+		StructDelete(request.zsession, 'menu_button_link_return'&form.menu_button_link_id, true);
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 	}else{	
 		application.zcore.functions.zRedirect('/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&menu_button_id=#form.menu_button_id#&zsid=#request.zsid#');
@@ -484,10 +484,10 @@
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Button updated.");
 	}
-	if(structkeyexists(form, 'menu_button_id') and isDefined('session.menu_button_return'&form.menu_button_id)){	
-		tempURL = session['menu_button_return'&form.menu_button_id];
+	if(structkeyexists(form, 'menu_button_id') and isDefined('request.zsession.menu_button_return'&form.menu_button_id)){	
+		tempURL = request.zsession['menu_button_return'&form.menu_button_id];
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
-		StructDelete(session, 'menu_button_return'&form.menu_button_id, true);
+		StructDelete(request.zsession, 'menu_button_return'&form.menu_button_id, true);
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 	}else{	
 		application.zcore.functions.zRedirect('/z/admin/menu/manageMenu?menu_id=#form.menu_id#&zsid=#request.zsid#');
@@ -659,10 +659,10 @@
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Menu updated.");
 	}
-	if(structkeyexists(form, 'menu_id') and isDefined('session.menu_return'&form.menu_id)){	
-		tempURL = session['menu_return'&form.menu_id];
+	if(structkeyexists(form, 'menu_id') and isDefined('request.zsession.menu_return'&form.menu_id)){	
+		tempURL = request.zsession['menu_return'&form.menu_id];
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
-		StructDelete(session, 'menu_return'&form.menu_id, true);
+		StructDelete(request.zsession, 'menu_return'&form.menu_id, true);
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 	}else{	
 		application.zcore.functions.zRedirect('/z/admin/menu/index?zsid=#request.zsid#');
@@ -714,7 +714,7 @@
 	var tempURL=0;
 	variables.init();
 	if(structkeyexists(form,'return')){
-		StructInsert(session, "menu_button_return"&form.menu_button_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "menu_button_return"&form.menu_button_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 	WHERE menu_button.menu_button_id = #db.param(form.menu_button_id)# and 
@@ -722,9 +722,9 @@
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'This menu button no longer exists.',false,true);
-		if(isDefined('session.menu_button_return'&form.menu_button_id)){
-			tempURL = session['menu_button_return'&form.menu_button_id];
-			StructDelete(session, 'menu_button_return'&form.menu_button_id, true);
+		if(isDefined('request.zsession.menu_button_return'&form.menu_button_id)){
+			tempURL = request.zsession['menu_button_return'&form.menu_button_id];
+			StructDelete(request.zsession, 'menu_button_return'&form.menu_button_id, true);
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/menu/index?zsid=#request.zsid#');
@@ -774,16 +774,16 @@
 	var tempURL=0;
 	variables.init();
 	if(structkeyexists(form,'return')){
-		StructInsert(session, "menu_return"&form.menu_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "menu_return"&form.menu_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu.menu_id = #db.param(form.menu_id)# and menu.site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'This menu no longer exists.',false,true);
-		if(isDefined('session.menu_return'&form.menu_id)){
-			tempURL = session['menu_return'&form.menu_id];
-			StructDelete(session, 'menu_return'&form.menu_id, true);
+		if(isDefined('request.zsession.menu_return'&form.menu_id)){
+			tempURL = request.zsession['menu_return'&form.menu_id];
+			StructDelete(request.zsession, 'menu_return'&form.menu_id, true);
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/menu/index?zsid=#request.zsid#');
@@ -989,7 +989,7 @@
 	application.zcore.functions.zQueryToStruct(qMenuItemLink, form,'menu_button_link_id,site_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	if(structkeyexists(form,'return')){
-		StructInsert(session, "menu_button_link_return"&form.menu_button_link_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "menu_button_link_return"&form.menu_button_link_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	</cfscript>
 	<h2>
@@ -1078,7 +1078,7 @@
 	application.zcore.functions.zQueryToStruct(qMenuItem, form,'menu_button_id,site_id,menu_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	if(structkeyexists(form,'return')){
-		StructInsert(session, "menu_button_return"&form.menu_button_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "menu_button_return"&form.menu_button_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	</cfscript>
 	<h2>
@@ -1307,7 +1307,7 @@
 	application.zcore.functions.zQueryToStruct(qMenu, form,'menu_id,site_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	if(structkeyexists(form,'return')){
-		StructInsert(session, "menu_return"&form.menu_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "menu_return"&form.menu_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	application.zcore.functions.zIncludeJsColor();
 	</cfscript>

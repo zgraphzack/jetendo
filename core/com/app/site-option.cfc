@@ -492,7 +492,7 @@ ts=[
 	{
 		type="=",
 		field: "User Id",
-		arrValue:[session.zos.user.id]	
+		arrValue:[request.zsession.user.id]	
 	},
 	'OR',
 	[

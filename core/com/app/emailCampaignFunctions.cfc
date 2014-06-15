@@ -260,7 +260,7 @@ if(rs.isOK()){
 	ts.zemail_campaign_scheduled_datetime=false;
 	ts.zemail_campaign_from=false;
 	//ts.arrEmailListIds=arrayNew(1);
-	ts.user_id=session.zos.user.id; // email campaigns always require a logged in user
+	ts.user_id=request.zsession.user.id; // email campaigns always require a logged in user
 	StructAppend(arguments.ss,ts,false);
 	structdelete(arguments.ss,'zemail_campaign_status');
 	// zemail_campaign_status | 1 = running, 2 = error, 3 = complete, 4 paused
@@ -394,7 +394,7 @@ if(rCom.isOK()){
 	ts.zemail_campaign_id=0;
 	ts.arrEmailListIds=arrayNew(1);
 	ts.zemail_list_id=0;
-	ts.user_id=session.zos.user.id; // email campaigns always require a logged in user
+	ts.user_id=request.zsession.user.id; // email campaigns always require a logged in user
 	StructAppend(arguments.ss,ts,false);
 	if(trim(arguments.ss.zemail_list_name) EQ ""){
 		rCom.setError("Email list name is required.",1);
@@ -444,7 +444,7 @@ if(rs.isOK()){
 	ts.site_id=request.zos.globals.id;
 	ts.zemail_campaign_id=0;
 	ts.arrEmailListIds=arrayNew(1);
-	ts.user_id=session.zos.user.id; // email campaigns always require a logged in user
+	ts.user_id=request.zsession.user.id; // email campaigns always require a logged in user
 	StructAppend(arguments.ss,ts,false);
 	if(isarray(arguments.ss.arrEmailListIds) EQ false){
 		rCom.setError("You must specify one or more email list.",1);
@@ -499,7 +499,7 @@ if(rs.isOK()){
 	ts.arrEmailListIds=arrayNew(1);
 	ts.arrEmailListNames=arrayNew(1);
 	ts.selectAll=true;
-	ts.user_id=session.zos.user.id; // email campaigns always require a logged in user
+	ts.user_id=request.zsession.user.id; // email campaigns always require a logged in user
 	StructAppend(arguments.ss,ts,false);
 	if(arguments.ss.selectAll EQ false){
 		fields="zemail_list_id";

@@ -69,7 +69,7 @@
 		application.zcore.functions.zEndOfRunningScript();  
 		
 		if(request.zos.isdeveloper and structkeyexists(request.zos, 'debugbarOutput')){
-			if(isDefined('session.zOS.modes.time') and request.zos.debugbarStruct.returnString NEQ ""){ 
+			if(isDefined('request.zsession.modes.time') and request.zos.debugbarStruct.returnString NEQ ""){ 
 				echo(replace(request.zos.debugbarStruct.returnString, '##zdebuggerTimeOutput##', '<br />Page generated in '&((gettickcount('nano')-Request.zOS.startTime)/1000000000)&' seconds.',"one"));
 				echo(request.zos.debugbarStruct.returnString2&request.zos.debugbarOutput);
 			}
@@ -90,6 +90,6 @@
 		//writeoutput(trim(local.finalString));
 		//writeOutput(trim(rereplace(local.finalString, "\n\s+",chr(10),"all")));
 	}*/
-	application.zcore.session.put(session);
+	application.zcore.session.put(request.zsession);
 	application.zcore.functions.zThrowIfImplicitVariableAccessDetected();
 </cfscript></cffunction>

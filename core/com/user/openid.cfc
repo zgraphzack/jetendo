@@ -557,7 +557,7 @@ WHERE site_id <>'16'
 				if(structkeyexists(form,"openid.ext1.value.email") EQ false){
 					form["openid.ext1.value.email"]='';
 				}
-				session.zos.secureLogin=true;
+				request.zsession.secureLogin=true;
 				 db.sql="update #db.table("user", request.zos.zcoreDatasource)# user 
 				 set user_openid_email=#db.param(form["openid.ext1.value.email"])#, 
 				 user_openid_provider=#db.param(form.providerId)#, 
@@ -581,7 +581,7 @@ WHERE site_id <>'16'
     
     <cffunction name="isAdminChangeAllowed" localmode="modern" access="public" output="no" returntype="boolean">
     	<cfscript>
-		if(request.zos.globals.requireSecureLogin EQ "0" or (isDefined('session.zos.secureLogin') and session.zos.secureLogin)){
+		if(request.zos.globals.requireSecureLogin EQ "0" or (isDefined('request.zsession.secureLogin') and request.zsession.secureLogin)){
 			return true;
 		}else{
 			return false;

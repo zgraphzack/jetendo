@@ -9,9 +9,9 @@
 	form.searchtext=trim(application.zcore.functions.zso(form,'searchtext'));
 	if(not structkeyexists(request.zos.userSession.groupAccess, "administrator") and not structkeyexists(request.zos.userSession.groupAccess, "manager")){
 		if(form.method EQ "index"){
-			application.zcore.functions.zRedirect("/z/admin/member/edit?user_id=#session.zos.user.id#");
+			application.zcore.functions.zRedirect("/z/admin/member/edit?user_id=#request.zsession.user.id#");
 		}
-		form.user_id = session.zos.user.id;
+		form.user_id = request.zsession.user.id;
 		if(form.method EQ 'delete' or form.method EQ 'insert' or form.method EQ 'list' or form.method EQ 'add'){
 			application.zcore.status.setStatus(Request.zsid, 'Permission Denied', false,true);
 			application.zcore.functions.zRedirect('/z/admin/member/index?zsid=#request.zsid#');
@@ -20,18 +20,18 @@
 	form.site_id=request.zos.globals.id;
 	form.user_group_id2 = userGroupCom.getGroupId('agent',request.zos.globals.id);
 	
-	if(isDefined('session.showallusers') EQ false){
-		session.showallusers=false;
+	if(isDefined('request.zsession.showallusers') EQ false){
+		request.zsession.showallusers=false;
 	}
 	if(structkeyexists(form,'showallusers')){
 		if(form.showallusers EQ 1){
-			session.showallusers=true;
+			request.zsession.showallusers=true;
 		}else{
-			session.showallusers=false;
+			request.zsession.showallusers=false;
 		}
 	}
 	variables.userUserGroupIdCopy = userGroupCom.getGroupId('user',request.zos.globals.id);
-	if(session.showallusers){
+	if(request.zsession.showallusers){
 		variables.userUserGroupId=0;
 	}else{
 		variables.userUserGroupId =variables.userUserGroupIdCopy;
@@ -294,7 +294,7 @@
 		}
 	}
 	curGROUPID="";
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and (session.zos.user.id NEQ form.user_id or session.zos.user.site_id NEQ request.zos.globals.id)){
+	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and (request.zsession.user.id NEQ form.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)){
 		db.sql="select user_group_id from #db.table("user_group", request.zos.zcoreDatasource)# user_group where user_group_id = #db.param(form.user_group_id)# and site_id=#db.param(request.zos.globals.id)#";
 		qG=db.execute("qG");
 		if(qG.recordcount EQ 1){
@@ -358,7 +358,7 @@
 		structdelete(variables,'member_password');		
 	}
 	ts.site_id=request.zos.globals.id;
-	if(application.zcore.user.checkGroupAccess("administrator") and structcount(session.zos.user.limitManagerFeatureStruct) EQ 0){
+	if(application.zcore.user.checkGroupAccess("administrator") and structcount(request.zsession.user.limitManagerFeatureStruct) EQ 0){
 		form.user_limit_manager_features=application.zcore.adminSecurityFilter.validateFeatureAccessList(application.zcore.functions.zso(form,'user_limit_manager_features'));
 	}
 	if(form.method EQ "update"){
@@ -585,7 +585,7 @@
 				htmlEditor.create();
 				</cfscript></td>
 			</tr>
-			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") and (session.zos.user.id NEQ form.user_id or session.zos.user.site_id NEQ request.zos.globals.id)>
+			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") and (request.zsession.user.id NEQ form.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)>
 				<cfscript>
 				db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group WHERE site_id = #db.param(request.zos.globals.id)#";
 				if(not application.zcore.app.siteHasApp("listing")){ 
@@ -614,7 +614,7 @@
 		#tabCom.endFieldSet()# 
 		#tabCom.beginFieldSet("Advanced")#
 		<table style="  border-spacing:0px;" class="table-list">
-			<cfif application.zcore.user.checkGroupAccess("administrator") and structcount(session.zos.user.limitManagerFeatureStruct) EQ 0>
+			<cfif application.zcore.user.checkGroupAccess("administrator") and structcount(request.zsession.user.limitManagerFeatureStruct) EQ 0>
 				<tr>
 					<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Limit Manager Features","member.member.edit user_limit_manager_features")#</th>
 					<td style="vertical-align:top; "> 
@@ -906,7 +906,7 @@
 	if(structkeyexists(form, 'searchtext') and trim(form.searchtext) NEQ ''){
 		db.sql&=" and concat(user.user_id,#db.param(' ')#,user_first_name,#db.param(' ')#,user_last_name,#db.param(' ')#,user_username) like #db.param('%#form.searchtext#%')#";
 	}
-	if(session.showallusers EQ false){
+	if(request.zsession.showallusers EQ false){
 		db.sql&=" and user_group_id <> #db.param(variables.userUserGroupId)#";
 	}
 	qCount=db.execute("qCount");
@@ -921,7 +921,7 @@
 	if(structkeyexists(form, 'user_group_id') and trim(form.user_group_id) NEQ ''){
 		db.sql&=" and user.user_group_id = #db.param(form.user_group_id)# ";
 	}
-	if(session.showallusers EQ false){
+	if(request.zsession.showallusers EQ false){
 		db.sql&=" and user.user_group_id <> #db.param(variables.userUserGroupId)#";
 	}
 	if(structkeyexists(form, 'searchtext') and trim(form.searchtext) NEQ ''){
@@ -943,7 +943,7 @@
 			<a href="/z/admin/member/import">Import Users</a> |
 		</cfif>
 	</cfif>
-	<cfif session.showallusers EQ false>
+	<cfif request.zsession.showallusers EQ false>
 		<a href="/z/admin/member/index?showallusers=1&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Show Public Users</a>
 	<cfelse>
 		<a href="/z/admin/member/index?showallusers=0">Hide Public Users</a>
@@ -1049,7 +1049,7 @@
 					<cfelse>
 					<cfif qMember.userSiteId EQ qMember.memberSiteId>
 						<a href="/z/admin/member/edit?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Edit</a>
-						<cfif qMember.usersiteid EQ qMember.memberSiteId and (session.zos.user.id NEQ qMember.user_id or session.zos.user.site_id NEQ request.zos.globals.id)>
+						<cfif qMember.usersiteid EQ qMember.memberSiteId and (request.zsession.user.id NEQ qMember.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)>
 							| <a href="/z/admin/member/delete?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Delete</a>
 						</cfif>
 					<cfelse>

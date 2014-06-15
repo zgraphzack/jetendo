@@ -58,7 +58,7 @@
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 	WHERE content_id = #db.param(form.content_id)# and 
@@ -66,9 +66,9 @@
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this content.',false,true);
-		if(isDefined('session.content_return'&form.content_id)){
-			tempURL = session['content_return'&form.content_id];
-			StructDelete(session, 'content_return'&form.content_id);
+		if(isDefined('request.zsession.content_return'&form.content_id)){
+			tempURL = request.zsession['content_return'&form.content_id];
+			StructDelete(request.zsession, 'content_return'&form.content_id);
 			application.zcore.functions.zRedirect(tempURL, true);
 		}else{
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
@@ -361,18 +361,18 @@
 	
 	if(form.method EQ 'insert'){
 		application.zcore.status.setStatus(request.zsid, "Page added.");
-		if(isDefined('session.content_return')){
-			tempURL = session['content_return'];
-			StructDelete(session, 'content_return');
+		if(isDefined('request.zsession.content_return')){
+			tempURL = request.zsession['content_return'];
+			StructDelete(request.zsession, 'content_return');
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(tempURL, true);
 		}
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Page updated.");
 	}
-	if(structkeyexists(form, 'content_id') and isDefined('session.content_return'&form.content_id) and uniqueChanged EQ false){	
-		tempURL = session['content_return'&form.content_id];
-		StructDelete(session, 'content_return'&form.content_id);
+	if(structkeyexists(form, 'content_id') and isDefined('request.zsession.content_return'&form.content_id) and uniqueChanged EQ false){	
+		tempURL = request.zsession['content_return'&form.content_id];
+		StructDelete(request.zsession, 'content_return'&form.content_id);
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(tempURL, true);
 	}else{	
@@ -469,7 +469,7 @@
 		form.content_datetime = application.zcore.functions.zGetDateSelect("content_datetime");	
 	}
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	if(currentMethod EQ 'add'){
 		writeoutput('<h2>Add Page</h2>');
@@ -499,7 +499,7 @@
 	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-content-edit");
-	cancelURL=application.zcore.functions.zso(session, 'content_return'&form.content_id); 
+	cancelURL=application.zcore.functions.zso(request.zsession, 'content_return'&form.content_id); 
 	if(cancelURL EQ ""){
 		cancelURL="/z/content/admin/content-admin/index";
 	}
@@ -1809,9 +1809,9 @@
 	form.zLogIndex = application.zcore.status.getField(form.zPageId, "zLogIndex", 1, true);
 	Request.zScriptName2 = "/z/content/admin/content-admin/index?searchtext=#urlencodedformat(application.zcore.functions.zso(form, 'searchtext'))#&searchexactonly=#searchexactonly#&content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#";
 	if(structkeyexists(form, 'showinactive')){
-		session.showinactive=form.showinactive;
-	}else if(isDefined('session.showinactive') EQ false){
-		session.showinactive=1;
+		request.zsession.showinactive=form.showinactive;
+	}else if(isDefined('request.zsession.showinactive') EQ false){
+		request.zsession.showinactive=1;
 	}
 	writeoutput('<h2>Manage Pages</h2>');
 	if(form.content_parent_id NEQ 0){
@@ -1893,7 +1893,7 @@
 			and content.content_parent_id = #db.param('0')#
 		</cfif> 
 	</cfif> 
-	<cfif session.showinactive EQ 0> 
+	<cfif request.zsession.showinactive EQ 0> 
 		and content.content_for_sale<>#db.param('2')#
 	</cfif>
 	and content.content_deleted = #db.param('0')#
@@ -2014,7 +2014,7 @@
 	<div style="width:35%; text-align:right; float:right;">
 		<cfif qsortcom.getorderby(false) NEQ ''><a href="/z/content/admin/content-admin/index">Clear Sorting</a> | </cfif> 
 	
-		<cfif session.showinactive EQ 1><a href="/z/content/admin/content-admin/index?showinactive=0">Hide Inactive</a>
+		<cfif request.zsession.showinactive EQ 1><a href="/z/content/admin/content-admin/index?showinactive=0">Hide Inactive</a>
 		<cfelse>
 			<a href="/z/content/admin/content-admin/index?showinactive=1">Show Inactive</a>
 		</cfif> | 

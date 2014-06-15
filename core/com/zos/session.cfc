@@ -18,12 +18,12 @@ ssl session - lost on browser close - lost on server reboot
 	<cfscript>
 	clear();
 	dataStruct=get();
-	backupSessionId=request.zos.sessionID;
+	backupSessionId=request.zsessionID;
 	echo("<hr />Dump should be empty struct<br />");
 	writedump(dataStruct);
 	// this should throw exception about data types.
-	dataStruct.cfcTest=createobject("component", "zcorerootmapping.com.zos.session");
-	put(dataStruct);
+	//dataStruct.cfcTest=createobject("component", "zcorerootmapping.com.zos.session");
+	//put(dataStruct);
 
 	dataStruct.newData=1;
 	put(dataStruct);
@@ -36,16 +36,16 @@ ssl session - lost on browser close - lost on server reboot
 	writedump(dataStruct);
 
 	// force session to expire
-	application.customSessionStruct[request.zos.sessionID].date=dateadd("n", -(request.zos.sessionExpirationInMinutes+10), now());
+	application.customSessionStruct[request.zsessionID].date=dateadd("n", -(request.zos.sessionExpirationInMinutes+10), now());
 	deleteOld();
 	dataStruct=get();
 	echo("<hr />Dump should be empty struct<br />");
 	writedump(dataStruct);
-	echo("<hr />Session id #request.zos.sessionID# should be different from #backupSessionId# <br />");
+	echo("<hr />Session id #request.zsessionID# should be different from #backupSessionId# <br />");
 	dataStruct.newData3=1;
 	put(dataStruct);
 	syncStruct=getSessionsNewerThen(dateadd("n", -request.zos.sessionExpirationInMinutes, now()));
-	echo("<hr />Dump should be sessionID key ""#request.zos.sessionID#"" with struct with key newData3=1<br />");
+	echo("<hr />Dump should be sessionID key ""#request.zsessionID#"" with struct with key newData3=1<br />");
 	writedump(syncStruct);
 	abort;
 
@@ -145,8 +145,8 @@ ssl session - lost on browser close - lost on server reboot
 	if(not structkeyexists(request.zos, 'sessionID')){
 		getSessionId();
 	}
-	if(structkeyexists(application.customSessionStruct, request.zos.sessionID)){
-		return duplicate(application.customSessionStruct[request.zos.sessionID].data);
+	if(structkeyexists(application.customSessionStruct, request.zsessionID)){
+		return duplicate(application.customSessionStruct[request.zsessionID].data);
 	}else{
 		// return empty struct if no session exists yet, otherwise: (threadsafe - no locking needed)
 		return {};
@@ -185,7 +185,7 @@ ssl session - lost on browser close - lost on server reboot
 	}
 	timeSpan=CreateTimeSpan(0, 0, request.zos.sessionExpirationInMinutes, 0);
 	application.zcore.functions.zCookie({name:request.zos.serverSessionVariable, value:currentId, expires: timeSpan });
-	request.zos.sessionID=currentId;
+	request.zsessionID=currentId;
 	return currentId;
 	</cfscript>
 </cffunction>
@@ -213,10 +213,11 @@ ssl session - lost on browser close - lost on server reboot
 		data: arguments.struct,
 		sslSessionId:''
 	};
-	if(structkeyexists(request.zos.requestData, 'ssl_session_id')){
-		ts.sslSessionId=request.zos.requestData.ssl_session_id;
+	if(structkeyexists(request.zos.requestData.headers, 'ssl_session_id')){
+		ts.sslSessionId=request.zos.requestData.headers.ssl_session_id;
 	}
-	application.customSessionStruct[request.zos.sessionID]=ts;
+	request.zsession=ts.data;
+	application.customSessionStruct[request.zsessionID]=ts;
 	</cfscript>
 </cffunction>
 
@@ -233,7 +234,7 @@ ssl session - lost on browser close - lost on server reboot
 </cffunction>
 
 
-<cffunction name="checkStruct" access="private" localmode="modern">
+<cffunction name="checkStruct" access="private" localmode="modern" returntype="boolean">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	struct=arguments.struct;
@@ -249,6 +250,7 @@ ssl session - lost on browser close - lost on server reboot
 	<cfscript>
 	savecontent variable="meta"{
 		writedump(getmetadata(arguments.v));
+		writedump(arguments.v);
 	}
 	throw("Session data type must be struct, array or a simple value to allow safe replication/serialization and the following type was found:<br />"&meta);
 	</cfscript>

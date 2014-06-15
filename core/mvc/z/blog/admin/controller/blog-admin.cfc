@@ -237,9 +237,9 @@ if(form.blog_category_unique_name CONTAINS "?"){
     
     application.zcore.functions.zMenuClearCache({blogCategory=true});
     
-    if(structkeyexists(session, 'blogcategory_return'&form.blog_category_id) and not uniqueChanged){	
-        tempURL = session['blogcategory_return'&form.blog_category_id];
-        StructDelete(session, 'blogcategory_return'&form.blog_category_id, true);
+    if(structkeyexists(request.zsession, 'blogcategory_return'&form.blog_category_id) and not uniqueChanged){	
+        tempURL = request.zsession['blogcategory_return'&form.blog_category_id];
+        StructDelete(request.zsession, 'blogcategory_return'&form.blog_category_id, true);
         application.zcore.functions.zRedirect(tempURL, true);
     }else{	
         application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#');
@@ -672,9 +672,9 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
     application.zcore.functions.zMenuClearCache({blogArticle=true});
     
      
-    if(isDefined('session.blog_return'&form.blog_id) and not uniqueChanged){	
-        tempURL = session['blog_return'&form.blog_id];
-        StructDelete(session, 'blog_return'&form.blog_id, true);
+    if(isDefined('request.zsession.blog_return'&form.blog_id) and not uniqueChanged){	
+        tempURL = request.zsession['blog_return'&form.blog_id];
+        StructDelete(request.zsession, 'blog_return'&form.blog_id, true);
         application.zcore.functions.zRedirect(tempURL, true);
     }else{	
         application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#');
@@ -754,9 +754,9 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
     application.zcore.functions.zSetPageHelpId("3.1");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
 	if(structkeyexists(form, 'searchText')){
-		session.zos.blogSearchText=form.searchText;
+		request.zsession.blogSearchText=form.searchText;
 	}else if(structkeyexists(form, 'searchText')){
-		form.searchText=session.zos.blogSearchText;
+		form.searchText=request.zsession.blogSearchText;
 	}
 	
 	form.searchText=trim(application.zcore.functions.zso(form, 'searchText'));
@@ -1108,9 +1108,9 @@ ts.struct=form;
     application.zcore.app.getAppCFC("blog").searchReindexBlogTags(form.blog_tag_id, false);
     
 	
-    if(isDefined('form.blog_tag_id') and isDefined('session.blogtag_return'&form.blog_tag_id) and uniqueChanged EQ false){	
-        tempURL = session['blogtag_return'&form.blog_tag_id];
-        StructDelete(session, 'blogtag_return'&form.blog_tag_id, true);
+    if(isDefined('form.blog_tag_id') and isDefined('request.zsession.blogtag_return'&form.blog_tag_id) and uniqueChanged EQ false){	
+        tempURL = request.zsession['blogtag_return'&form.blog_tag_id];
+        StructDelete(request.zsession, 'blogtag_return'&form.blog_tag_id, true);
         tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
         application.zcore.functions.zRedirect(tempURL, true);
     }else{	
@@ -1276,7 +1276,7 @@ ts.struct=form;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
     form.blog_tag_id=application.zcore.functions.zso(form, 'blog_tag_id',false,-1);
     if(structkeyexists(form, 'return')){
-        StructInsert(session, "blogtag_return"&form.blog_tag_id, request.zos.CGI.HTTP_REFERER, true);		
+        StructInsert(request.zsession, "blogtag_return"&form.blog_tag_id, request.zos.CGI.HTTP_REFERER, true);		
     }
     </cfscript>
         <cfsavecontent variable="db.sql">
@@ -1317,7 +1317,7 @@ ts.struct=form;
 tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-tag-edit");
-cancelURL=application.zcore.functions.zso(session, 'blogtag_return'&form.blog_tag_id);
+cancelURL=application.zcore.functions.zso(request.zsession, 'blogtag_return'&form.blog_tag_id);
 if(cancelURL EQ ""){
     cancelURL="/z/blog/admin/blog-admin/tagList";
 }
@@ -1442,7 +1442,7 @@ tabCom.enableSaveButtons();
 	}
 	form.blog_id=application.zcore.functions.zso(form, 'blog_id',false,"");
 	if(structkeyexists(form, 'return')){
-	    StructInsert(session, "blog_return"&form.blog_id, request.zos.CGI.HTTP_REFERER, true);		
+	    StructInsert(request.zsession, "blog_return"&form.blog_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="select *
 	from #db.table("blog", request.zos.zcoreDatasource)# blog
@@ -1491,7 +1491,7 @@ tabCom.enableSaveButtons();
 	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-blog-edit");
-	cancelURL=application.zcore.functions.zso(session, 'blog_return'&form.blog_id);
+	cancelURL=application.zcore.functions.zso(request.zsession, 'blog_return'&form.blog_id);
 	if(cancelURL EQ ""){
 		cancelURL="/z/blog/admin/blog-admin/articleList";
 	}
@@ -1524,7 +1524,7 @@ tabCom.enableSaveButtons();
 	    }
             form.uid=form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
         }else if(application.zcore.functions.zso(form, 'uid') EQ ''){
-           	form.uid=session.zos.user.id&'|'&session.zos.user.site_id;
+           	form.uid=request.zsession.user.id&'|'&request.zsession.user.site_id;
         } 
         selectStruct = StructNew();
         selectStruct.name = "uid";
@@ -2082,11 +2082,11 @@ local.blogIdBackup=form.blog_id;
           <tr>
           <tr>
             <th style="width:90px;">#application.zcore.functions.zOutputHelpToolTip("Your Name","member.blog.comments blog_comment_author")#</th>
-            <td><input type="text" name="blog_comment_author" value="<cfif form.blog_comment_author NEQ "">#form.blog_comment_author#<cfelse>#session.zos.user.first_name# #session.zos.user.last_name#</cfif>" size="50"></td>
+            <td><input type="text" name="blog_comment_author" value="<cfif form.blog_comment_author NEQ "">#form.blog_comment_author#<cfelse>#request.zsession.user.first_name# #request.zsession.user.last_name#</cfif>" size="50"></td>
           </tr>
           <tr>
             <th>#application.zcore.functions.zOutputHelpToolTip("Your Email","member.blog.comments blog_comment_author_email")#</th>
-            <td><input type="text" name="blog_comment_author_email" value="<cfif form.blog_comment_author_email NEQ "">#form.blog_comment_author_email#<cfelse>#session.zos.user.email#</cfif>" size="50" /></td>
+            <td><input type="text" name="blog_comment_author_email" value="<cfif form.blog_comment_author_email NEQ "">#form.blog_comment_author_email#<cfelse>#request.zsession.user.email#</cfif>" size="50" /></td>
           </tr>
           <tr>
             <th>#application.zcore.functions.zOutputHelpToolTip("Subject","member.blog.comments blog_comment_title")#</th>
@@ -2187,7 +2187,7 @@ local.blogIdBackup=form.blog_id;
 	site_id=#db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qEdit=db.execute("qEdit");
     if(structkeyexists(form, 'return')){
-        StructInsert(session, "blogcategory_return"&form.blog_category_id, request.zos.CGI.HTTP_REFERER, true);		
+        StructInsert(request.zsession, "blogcategory_return"&form.blog_category_id, request.zos.CGI.HTTP_REFERER, true);		
     }
     application.zcore.functions.zquerytostruct(qedit, form);
     application.zcore.functions.zstatushandler(request.zsid,true, false, form);
@@ -2219,7 +2219,7 @@ local.blogIdBackup=form.blog_id;
 tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-category-edit");
-cancelURL=application.zcore.functions.zso(session, 'blogcategory_return'&form.blog_category_id);
+cancelURL=application.zcore.functions.zso(request.zsession, 'blogcategory_return'&form.blog_category_id);
 if(cancelURL EQ ""){
     cancelURL="/z/blog/admin/blog-admin/categoryList";
 }

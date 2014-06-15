@@ -18,7 +18,7 @@
         <cfscript>
             validate_length = (len(qImages.name) - 4);
             validate_name = left(qImages.name, validate_length);
-            StructInsert(session, "vid"&form.vid, ucase(validate_name), true);
+            StructInsert(request.zsession, "vid"&form.vid, ucase(validate_name), true);
         </cfscript>
         
         <CFCONTENT type="image/jpeg" FILE="#request.zos.globals.serverprivatehomedir#validate_images/#qImages.name#">

@@ -14,12 +14,12 @@
      <cffunction name="backOneHit" localmode="modern" output="no" returntype="any">
      	<cfscript>
 		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		if(structkeyexists(request.zos,'trackingInitOnce') and isDefined('session.zos.tracking') and structkeyexists(request.zos,'trackingDisableBackOneHit') EQ false){
+		if(structkeyexists(request.zos,'trackingInitOnce') and isDefined('request.zsession.tracking') and structkeyexists(request.zos,'trackingDisableBackOneHit') EQ false){
 			request.zos.trackingDisableBackOneHit=true;
-			session.zos.tracking.track_user_hits--;
-			if(arraylen(session.zos.trackingArrPages) NEQ 0 and arrayisdefined(session.zos.trackingArrPages, arraylen(session.zos.trackingArrPages))){
+			request.zsession.tracking.track_user_hits--;
+			if(arraylen(request.zsession.trackingArrPages) NEQ 0 and arrayisdefined(request.zsession.trackingArrPages, arraylen(request.zsession.trackingArrPages))){
 				try{
-				arraydeleteat(session.zos.trackingArrPages, arraylen(session.zos.trackingArrPages));
+				arraydeleteat(request.zsession.trackingArrPages, arraylen(request.zsession.trackingArrPages));
 				}catch(Any excpt){
 				}
 			}
@@ -97,12 +97,12 @@
 				ip_block_url=#db.param(request.zos.cgi.http_host&request.zos.cgi.script_name&"?"&request.zos.cgi.QUERY_STRING)#";
 				db.execute("q");
 				application.zcore.abusiveBlockedIpStruct[request.zos.cgi.remote_addr]=true;
-				structclear(session);
+				application.zcore.session.clear();
 				mail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="Abusive spidering detected for #request.zos.cgi.remote_addr#"{
 writeoutput('Abusive spidering detected:
 IP:#request.zos.cgi.remote_addr#
 User Agent:#request.zos.cgi.HTTP_USER_AGENT#
-track_user_id: #application.zcore.functions.zso(session, 'zos.tracking.track_user_id')#
+track_user_id: #application.zcore.functions.zso(request.zsession.tracking, 'track_user_id')#
 Date:#request.zOS.mysqlnow#
 Last URL: #request.zos.cgi.http_host##request.zos.cgi.script_name#?#request.zos.cgi.query_string#
 
@@ -145,17 +145,21 @@ USER WAS PERMANENTLY BLOCKED.');
 			return;	
 		}	
 		// check session
-		if(isDefined('session.zos') EQ false){
-			session.zos=StructNew();
+		if(isDefined('request.zsession') EQ false){
+			request.zsession=StructNew();
 		}
 		
-		if(isDefined('session.zos') EQ false or structkeyexists(session.zos,'tracking') EQ false){
+		if(isDefined('request.zsession') EQ false or structkeyexists(request.zsession,'tracking') EQ false){
 			t4=structnew();
 			t4.inquiries_id=0;
 			t4.track_user_id=0;
-			t4.track_user_email=application.zcore.functions.zso(session, 'inquiries_email');
+			t4.track_user_email=application.zcore.functions.zso(request.zsession, 'inquiries_email');
 			t4.track_user_parent_id=0;
-			t4.user_id=application.zcore.functions.zso(session, 'zos.user.id');
+			if(isdefined('request.zsession.user.id')){
+				t4.user_id=request.zsession.user.id;
+			}else{
+				t4.user_id=0;
+			}
 			if(t4.track_user_email NEQ ""){
 				db.sql="select * from #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
 				where track_user_email = #db.param(t4.track_user_email)# and 
@@ -191,12 +195,12 @@ USER WAS PERMANENTLY BLOCKED.');
 			}
 			t4.site_id=request.zos.globals.id;
 			t4.zemail_campaign_id=0;
-			session.zos.tracking=t4;
-			session.zos.trackingArrPages=arraynew(1);
+			request.zsession.tracking=t4;
+			request.zsession.trackingArrPages=arraynew(1);
 		}else{
-			session.zos.tracking.track_user_hits++;
-			session.zos.tracking.track_user_recent_datetime=request.zos.mysqlnow;
-			session.zos.tracking.track_user_session_length=DateDiff("s", session.zos.tracking.track_user_datetime, now());
+			request.zsession.tracking.track_user_hits++;
+			request.zsession.tracking.track_user_recent_datetime=request.zos.mysqlnow;
+			request.zsession.tracking.track_user_session_length=DateDiff("s", request.zsession.tracking.track_user_datetime, now());
 		}
 		local.ps=structnew();
 		// get the actual script name, not the URL rewrite engine
@@ -209,9 +213,9 @@ USER WAS PERMANENTLY BLOCKED.');
 		//local.ps.track_page_form=local.rs.formString;
 		local.ps.track_page_datetime=request.zos.mysqlnow;
 		
-		arrayappend(session.zos.trackingArrPages, local.ps);
-		if(arraylen(session.zos.trackingArrPages) GT 3){
-			arraydeleteat(session.zos.trackingArrPages,1);	
+		arrayappend(request.zsession.trackingArrPages, local.ps);
+		if(arraylen(request.zsession.trackingArrPages) GT 3){
+			arraydeleteat(request.zsession.trackingArrPages,1);	
 		}
 		</cfscript>
 	</cffunction>
@@ -219,7 +223,7 @@ USER WAS PERMANENTLY BLOCKED.');
 	
 	<!--- trackCom.getUser(track_user_id); --->
 	<cffunction name="getUser" localmode="modern" output="false">
-		<cfargument name="track_user_id" type="string" required="no" default="#application.zcore.functions.zso(session, 'zos.track_user_id')#">
+		<cfargument name="track_user_id" type="string" required="no" default="#application.zcore.functions.zso(request.zsession, 'track_user_id')#">
 		<cfscript>
 		var qUser="";
 		var local=structnew();
@@ -234,10 +238,10 @@ USER WAS PERMANENTLY BLOCKED.');
 		<cfargument name="user_id" type="string" required="yes">
 		<cfscript>
 		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		if(isDefined('session.zos.tracking') EQ false){
+		if(isDefined('request.zsession.tracking') EQ false){
 			return false;
 		}
-		session.zos.tracking.user_id=arguments.user_id;
+		request.zsession.tracking.user_id=arguments.user_id;
 		</cfscript>
 	</cffunction>
 	
@@ -251,10 +255,10 @@ USER WAS PERMANENTLY BLOCKED.');
 		var qupdate=0;
 		var db=request.zos.queryObject;
 		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		if(isDefined('session.zos.tracking') EQ false){
+		if(isDefined('request.zsession.tracking') EQ false){
 			return false;
 		}
-		session.zos.tracking.track_user_email=trim(arguments.track_user_email);
+		request.zsession.tracking.track_user_email=trim(arguments.track_user_email);
 		</cfscript>
 		<!--- set parent id if it exists --->
 		<cfsavecontent variable="db.sql">
@@ -263,8 +267,8 @@ USER WAS PERMANENTLY BLOCKED.');
 		site_id = #db.param(request.zos.globals.id)#
 		</cfsavecontent><cfscript>qUser=db.execute("qUser");
 		if(qUser.recordcount NEQ 0){
-			session.zos.tracking.track_user_id=qUser.track_user_id;
-			session.zos.tracking.user_id=qUser.user_id;
+			request.zsession.tracking.track_user_id=qUser.track_user_id;
+			request.zsession.tracking.user_id=qUser.user_id;
 		}
 		</cfscript>
 	</cffunction>
@@ -286,68 +290,68 @@ USER WAS PERMANENTLY BLOCKED.');
 	var db=request.zos.queryObject;
 	var ts=structnew();
 	if(structkeyexists(request.zos,'trackingDisabled')) return;
-	if(isDefined('session.zos.tracking') EQ false){
+	if(isDefined('request.zsession.tracking') EQ false){
 		return false;
 	}
 	local.tempSource="";
 	if(structkeyexists(cookie, 'zsource')){
 		local.tempSource=cookie.zsource;	
 	}
-	session.zos.tracking.inquiries_id=arguments.inquiries_id;
+	request.zsession.tracking.inquiries_id=arguments.inquiries_id;
 	local.c=application.zcore.db.getConfig();
 	local.c.autoReset=false;
 	local.c.datasource=request.zos.zcoreDatasource;
 	db=application.zcore.db.newQuery(local.c);
 	hasSession=false;
-	if(isdefined('session.zos.tracking.track_user_id') and not isnull(session.zos.tracking.track_user_id)){
+	if(isdefined('request.zsession.tracking.track_user_id') and not isnull(request.zsession.tracking.track_user_id)){
 		hasSession=true;
-		track_user_id=session.zos.tracking.track_user_id;
+		track_user_id=request.zsession.tracking.track_user_id;
 		db.sql="UPDATE #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)#  SET ";
 	}else{
 		db.sql="INSERT INTO #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)#  SET ";
 	}
-        db.sql&=" inquiries_id=#db.param(session.zos.tracking.inquiries_id)#, 
-        track_user_email=#db.param(session.zos.tracking.track_user_email)#, 
-        track_user_parent_id=#db.param(session.zos.tracking.track_user_parent_id)#, 
-        user_id=#db.param(session.zos.tracking.user_id)#, 
-        track_user_datetime=#db.param(dateformat(session.zos.tracking.track_user_datetime,'yyyy-mm-dd')&' '&timeformat(session.zos.tracking.track_user_datetime,'HH:mm:ss'))#, 
-        track_user_recent_datetime=#db.param(dateformat(session.zos.tracking.track_user_recent_datetime,'yyyy-mm-dd')&' '&timeformat(session.zos.tracking.track_user_recent_datetime,'HH:mm:ss'))#, 
-        track_user_session_length=#db.param(session.zos.tracking.track_user_session_length)#, 
-        track_user_agent=#db.param(session.zos.tracking.track_user_agent)#, 
-        track_user_spider=#db.param(session.zos.tracking.track_user_spider)#, 
-        track_user_ip=#db.param(session.zos.tracking.track_user_ip)#, 
-        track_user_referer=#db.param(session.zos.tracking.track_user_referer)#, 
-        track_user_hits=#db.param(session.zos.tracking.track_user_hits)#, 
-        track_user_conversions=#db.param(session.zos.tracking.track_user_conversions)#, 
-        track_user_ppc=#db.param(session.zos.tracking.track_user_ppc)#, 
-        track_user_keywords=#db.param(session.zos.tracking.track_user_keywords)#, 
+        db.sql&=" inquiries_id=#db.param(request.zsession.tracking.inquiries_id)#, 
+        track_user_email=#db.param(request.zsession.tracking.track_user_email)#, 
+        track_user_parent_id=#db.param(request.zsession.tracking.track_user_parent_id)#, 
+        user_id=#db.param(request.zsession.tracking.user_id)#, 
+        track_user_datetime=#db.param(dateformat(request.zsession.tracking.track_user_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_datetime,'HH:mm:ss'))#, 
+        track_user_recent_datetime=#db.param(dateformat(request.zsession.tracking.track_user_recent_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_recent_datetime,'HH:mm:ss'))#, 
+        track_user_session_length=#db.param(request.zsession.tracking.track_user_session_length)#, 
+        track_user_agent=#db.param(request.zsession.tracking.track_user_agent)#, 
+        track_user_spider=#db.param(request.zsession.tracking.track_user_spider)#, 
+        track_user_ip=#db.param(request.zsession.tracking.track_user_ip)#, 
+        track_user_referer=#db.param(request.zsession.tracking.track_user_referer)#, 
+        track_user_hits=#db.param(request.zsession.tracking.track_user_hits)#, 
+        track_user_conversions=#db.param(request.zsession.tracking.track_user_conversions)#, 
+        track_user_ppc=#db.param(request.zsession.tracking.track_user_ppc)#, 
+        track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
 	track_user_source=#db.param(local.tempSource)#, 
-        zemail_campaign_id=#db.param(session.zos.tracking.zemail_campaign_id)# ";
+        zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
 	if(hasSession){
-		db.sql&=" WHERE track_user_id = #db.param(session.zos.tracking.track_user_id)# and ";
+		db.sql&=" WHERE track_user_id = #db.param(request.zsession.tracking.track_user_id)# and ";
 	}
-        db.sql&=" site_id=#db.param(session.zos.tracking.site_id)# ";
+        db.sql&=" site_id=#db.param(request.zsession.tracking.site_id)# ";
 	if(hasSession){
 		db.execute("qUpdate");
 	}else{
 		local.rs=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 		if(local.rs.success){ 
 			track_user_id=local.rs.result;
-			session.zos.tracking.track_user_id=local.rs.result;
+			request.zsession.tracking.track_user_id=local.rs.result;
 		}else{
 			throw("track_user insert failed");	
 		}
 	}
-	for(i=1;i LTE arraylen(session.zos.trackingArrPages);i++){
+	for(i=1;i LTE arraylen(request.zsession.trackingArrPages);i++){
 		db.sql="INSERT INTO #request.zos.queryObject.table("track_page", request.zos.zcoreDatasource)#  SET 
-		track_page_script=#db.param(session.zos.trackingArrPages[i].track_page_script)#,
-		track_page_qs=#db.param(session.zos.trackingArrPages[i].track_page_qs)#,
-		track_page_datetime=#db.param(dateformat(session.zos.trackingArrPages[i].track_page_datetime,'yyyy-mm-dd')&' '&timeformat(session.zos.trackingArrPages[i].track_page_datetime, 'HH:mm:ss'))#,
-		track_user_id=#db.param(session.zos.tracking.track_user_id)#,
+		track_page_script=#db.param(request.zsession.trackingArrPages[i].track_page_script)#,
+		track_page_qs=#db.param(request.zsession.trackingArrPages[i].track_page_qs)#,
+		track_page_datetime=#db.param(dateformat(request.zsession.trackingArrPages[i].track_page_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.trackingArrPages[i].track_page_datetime, 'HH:mm:ss'))#,
+		track_user_id=#db.param(request.zsession.tracking.track_user_id)#,
 		site_id=#db.param(request.zos.globals.id)#";
 		local.rs=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 	}
-	if(arraylen(session.zos.trackingArrPages)){
+	if(arraylen(request.zsession.trackingArrPages)){
 		if(local.rs.success){
 			track_page_id=local.rs.result;
 		}else{
@@ -419,8 +423,8 @@ USER WAS PERMANENTLY BLOCKED.');
     	<cfargument name="zemail_campaign_id" type="string" required="yes">
 		<cfscript>
 		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		session.zos.zemail_campaign_id=arguments.zemail_campaign_id;
-		session.zos.tracking.zemail_campaign_id=arguments.zemail_campaign_id;
+		request.zsession.zemail_campaign_id=arguments.zemail_campaign_id;
+		request.zsession.tracking.zemail_campaign_id=arguments.zemail_campaign_id;
 		</cfscript>
         <cfcookie name="__#request.zos.zcoremapping#ecid" expires="never" value="#arguments.zemail_campaign_id#" domain=".#request.zCookieDomain#">
     </cffunction>
@@ -433,15 +437,15 @@ USER WAS PERMANENTLY BLOCKED.');
 		var db=request.zos.queryObject;
 		var q=0;
 		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		if(isDefined('session.zos.zemail_campaign_id') and isDefined('session.zos.user.id')){
+		if(isDefined('request.zsession.zemail_campaign_id') and isDefined('request.zsession.user.id')){
 			db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
 			SET zemail_campaign_click_type=#db.param('5')#, 
 			zemail_campaign_click_html=#db.param('1')#, 
 			zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
 			zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
 			zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
-			zemail_campaign_id=#db.param(session.zos.zemail_campaign_id)#, 
-			user_id=#db.param(session.zos.user.id)#,
+			zemail_campaign_id=#db.param(request.zsession.zemail_campaign_id)#, 
+			user_id=#db.param(request.zsession.user.id)#,
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q");
 		}else if(isDefined('cookie.__#request.zos.zcoremapping#ecid') and isDefined('cookie.__#request.zos.zcoremapping#euid')){
@@ -475,8 +479,7 @@ USER WAS PERMANENTLY BLOCKED.');
 			if(isDefined('request.zos.processId') and isDefined('application.zcore.processList')){
 				StructDelete(application.zcore.processList, request.zos.processId);
 			}*/
-			if(request.zos.trackingspider and structcount(session)){
-				structclear(session);	
+			if(request.zos.trackingspider and structcount(request.zsession)){
 				application.zcore.session.clear();
 			}
 		}

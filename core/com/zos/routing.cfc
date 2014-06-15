@@ -470,10 +470,10 @@
 				if(qM.recordcount EQ 0){
 					application.zcore.functions.zredirect('/');
 				}else{
-					session.inquiries_email=qm.mail_user_email;
-					session.inquiries_first_name=qm.mail_user_first_name;
-					session.inquiries_last_name=qm.mail_user_last_name;
-					session.inquiries_phone1=qm.mail_user_phone;
+					request.zsession.inquiries_email=qm.mail_user_email;
+					request.zsession.inquiries_first_name=qm.mail_user_first_name;
+					request.zsession.inquiries_last_name=qm.mail_user_last_name;
+					request.zsession.inquiries_phone1=qm.mail_user_phone;
 				}
 			}else{
 				application.zcore.functions.zredirect('/');
@@ -597,7 +597,7 @@
 						if(qE.recordcount NEQ 0){
 							form.e=qE.user_username;
 							form.k=qE.user_key;
-							if(isDefined('session.zos.user.id') EQ false or session.zos.user.id NEQ form.user_id){
+							if(isDefined('request.zsession.user.id') EQ false or request.zsession.user.id NEQ form.user_id){
 								form.zusername=qE.user_username;
 								form.zpassword=qE.user_password;
 								inputStruct = StructNew();
@@ -657,7 +657,7 @@
 				if(qE.recordcount NEQ 0){
 					form.e=qE.user_username;
 					form.k=qE.user_key;
-					if(isDefined('session.zos.user.id') EQ false or session.zos.user.id NEQ form.user_id){
+					if(isDefined('request.zsession.user.id') EQ false or request.zsession.user.id NEQ form.user_id){
 						form.zusername=qE.user_username;
 						form.zpassword=qE.user_password;
 						inputStruct = StructNew();
@@ -837,7 +837,7 @@
 					if(qE.recordcount NEQ 0){
 						form.e=qE.user_username;
 						form.k=qE.user_key;
-						if(isDefined('session.zos.user.id') EQ false or session.zos.user.id NEQ form.user_id){
+						if(isDefined('request.zsession.user.id') EQ false or request.zsession.user.id NEQ form.user_id){
 							form.zusername=qE.user_username;
 							form.zpassword=qE.user_password;
 							inputStruct = StructNew();
@@ -900,7 +900,7 @@
 			if(qE.recordcount NEQ 0){
 				form.e=qE.user_username;
 				form.k=qE.user_key;
-				if(isDefined('session.zos.user.id') EQ false or session.zos.user.id NEQ form.user_id){
+				if(isDefined('request.zsession.user.id') EQ false or request.zsession.user.id NEQ form.user_id){
 					form.zusername=qE.user_username;
 					form.zpassword=qE.user_password;
 					inputStruct = StructNew();
@@ -914,7 +914,7 @@
 				}
 			}
 			if(structkeyexists(request,'zEmailClickThrough')){
-				if(arraylen(arrpath) GTE 6 and isDefined('session.zos.user.id')){
+				if(arraylen(arrpath) GTE 6 and isDefined('request.zsession.user.id')){
 					ts=StructNew();
 					ts.user_id=arrpath[1];
 					ts.user_key=arrpath[2];

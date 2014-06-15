@@ -413,9 +413,9 @@
 	qS2=db.execute("qS2");
 	if(qS2.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, "Site option no longer exists.",false,true);
-		if(isDefined('session.siteoption_return')){
-			tempURL = session['siteoption_return'];
-			StructDelete(session, 'siteoption_return', true);
+		if(isDefined('request.zsession.siteoption_return')){
+			tempURL = request.zsession['siteoption_return'];
+			StructDelete(request.zsession, 'siteoption_return', true);
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(tempURL, true);
 		}else{
@@ -493,9 +493,9 @@
 			queueComStruct.sortAll();
 		}
 		application.zcore.status.setStatus(request.zsid, "Site option deleted.");
-		if(isDefined('session.siteoption_return')){
-			tempURL = session['siteoption_return'];
-			StructDelete(session, 'siteoption_return', true);
+		if(isDefined('request.zsession.siteoption_return')){
+			tempURL = request.zsession['siteoption_return'];
+			StructDelete(request.zsession, 'siteoption_return', true);
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(tempURL, true);
 		}else{
@@ -505,7 +505,7 @@
 	<cfelse>
 		<cfscript>
 		if(structkeyexists(form, 'return')){
-			StructInsert(session, "siteoption_return"&form.site_option_id, request.zos.CGI.HTTP_REFERER, true);		
+			StructInsert(request.zsession, "siteoption_return"&form.site_option_id, request.zos.CGI.HTTP_REFERER, true);		
 		}
 		theTitle="Delete Site Option";
 		application.zcore.template.setTag("title",theTitle);
@@ -651,18 +651,18 @@
 			queueComStruct.sortAll();
 		}
 		application.zcore.status.setStatus(request.zsid, "Site option added.");
-		if(isDefined('session.siteoption_return')){
-			tempURL = session['siteoption_return'];
-			StructDelete(session, 'siteoption_return', true);
+		if(isDefined('request.zsession.siteoption_return')){
+			tempURL = request.zsession['siteoption_return'];
+			StructDelete(request.zsession, 'siteoption_return', true);
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(tempURL, true);
 		}
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Site option updated.");
 	}
-	if(structkeyexists(form, 'site_option_id') and isDefined('session.siteoption_return'&form.site_option_id)){	
-		tempURL = session['siteoption_return'&form.site_option_id];
-		StructDelete(session, 'siteoption_return'&form.site_option_id, true);
+	if(structkeyexists(form, 'site_option_id') and isDefined('request.zsession.siteoption_return'&form.site_option_id)){	
+		tempURL = request.zsession['siteoption_return'&form.site_option_id];
+		StructDelete(request.zsession, 'siteoption_return'&form.site_option_id, true);
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(tempURL, true);
 	}else{	
@@ -703,7 +703,7 @@
 	}
 	qS=db.execute("qS");
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "siteoption_return"&form.site_option_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "siteoption_return"&form.site_option_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	if(currentMethod EQ 'edit' and qS.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Site option doesn't exist.");
@@ -1231,9 +1231,9 @@
 	application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 	
 	application.zcore.status.setStatus(request.zsid,"Site options saved.");
-	if(isDefined('session.siteoption_return') and form.site_option_app_id EQ 0){	
-		tempURL = session['siteoption_return'];
-		StructDelete(session, 'siteoption_return', true);
+	if(isDefined('request.zsession.siteoption_return') and form.site_option_app_id EQ 0){	
+		tempURL = request.zsession['siteoption_return'];
+		StructDelete(request.zsession, 'siteoption_return', true);
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(tempURL, true);
 	}else{	
@@ -2374,12 +2374,12 @@ Define this function in another CFC to override the default email format
 	searchFieldEnabledStruct={};
 	
 	local.tempGroupKey="#form.site_option_app_id#-#form.site_option_group_id#";
-	if(structkeyexists(session, 'siteOptionGroupSearch') and structkeyexists(session.siteOptionGroupSearch, local.tempGroupKey)){
+	if(structkeyexists(request.zsession, 'siteOptionGroupSearch') and structkeyexists(request.zsession.siteOptionGroupSearch, local.tempGroupKey)){
 		if(structkeyexists(form, 'clearSearch')){
-			structdelete(session.siteOptionGroupSearch, local.tempGroupKey);
+			structdelete(request.zsession.siteOptionGroupSearch, local.tempGroupKey);
 		}else if(not structkeyexists(form, 'searchOn')){
 			form.searchOn=1;
-			structappend(form, session.siteOptionGroupSearch[local.tempGroupKey], false);
+			structappend(form, request.zsession.siteOptionGroupSearch[local.tempGroupKey], false);
 		}
 	}
 	if(form.site_option_group_id NEQ 0 and arraylen(local.arrSearchTable)){ 
@@ -2419,10 +2419,10 @@ Define this function in another CFC to override the default email format
 			}
 		} 
 		if(structkeyexists(form, 'searchOn')){
-			if(not structkeyexists(session, 'siteOptionGroupSearch')){
-				session.siteOptionGroupSearch={};
+			if(not structkeyexists(request.zsession, 'siteOptionGroupSearch')){
+				request.zsession.siteOptionGroupSearch={};
 			}
-			session.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
+			request.zsession.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
 		}
 		local.arrNewSearchSQL=[];
 		for(n=1;n LTE arraylen(local.arrSearchSQL);n++){
@@ -2435,10 +2435,10 @@ Define this function in another CFC to override the default email format
 		if(qGroup.site_option_group_enable_approval EQ 1){
 			if(structkeyexists(form, 'searchOn')){
 				local.searchStruct['site_x_option_group_set_approved']=application.zcore.functions.zso(form,'site_x_option_group_set_approved');
-				if(not structkeyexists(session, 'siteOptionGroupSearch')){
-					session.siteOptionGroupSearch={};
+				if(not structkeyexists(request.zsession, 'siteOptionGroupSearch')){
+					request.zsession.siteOptionGroupSearch={};
 				}
-				session.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
+				request.zsession.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
 			}
 			arrayAppend(local.arrSearch, '<td style="vertical-align:top;">Approval Status:<br />');
 			ts = StructNew();
@@ -3211,7 +3211,7 @@ Define this function in another CFC to override the default email format
 	application.zcore.functions.zSetPageHelpId("2.7");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	if(structkeyexists(form, 'return') and request.zos.CGI.HTTP_REFERER NEQ ""){
-		StructInsert(session, "siteoption_return", request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "siteoption_return", request.zos.CGI.HTTP_REFERER, true);		
 	}
 	form.jumpto=application.zcore.functions.zso(form, 'jumpto');
 	site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id',true);
@@ -3306,11 +3306,11 @@ Define this function in another CFC to override the default email format
 	}
 	writeoutput('<h2>Global Site Options</h2>');
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-	where user_id = #db.param(session.zos.user.id)# and 
-	site_id=#db.param(session.zos.user.site_id)#";
+	where user_id = #db.param(request.zsession.user.id)# and 
+	site_id=#db.param(request.zsession.user.site_id)#";
 	qU9=db.execute("qU9");
 	if(qu9.recordcount NEQ 0 and form.site_option_app_id EQ 0){
-		writeoutput('<a href="/z/-evm#session.zos.user.id#.0.#qu9.user_key#.1" rel="external" onclick="window.open(this.href); return false;">View email autoresponder</a><br />
+		writeoutput('<a href="/z/-evm#request.zsession.user.id#.0.#qu9.user_key#.1" rel="external" onclick="window.open(this.href); return false;">View email autoresponder</a><br />
 		<br />');
 	}
 	if(qS.recordcount EQ 0){

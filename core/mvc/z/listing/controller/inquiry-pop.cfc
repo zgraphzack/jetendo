@@ -2,7 +2,7 @@
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private" returntype="any">
 	<cfscript>
-	session.zPopinquiryPopCompleted=true;
+	request.zsession.zPopinquiryPopCompleted=true;
 	if(application.zcore.app.siteHasApp("content") EQ false){
 		application.zcore.functions.z301redirect('/');	
 	}
@@ -41,7 +41,7 @@
 		//application.zcore.status.setStatus(request.zsid, "Your session has expired.  Please submit the form again.",form,true);
 		//application.zcore.functions.zRedirect("/z/listing/inquiry-pop/index?zsid="&request.zsid);
 	}
-	session.zPopinquiryPopSent=true;
+	request.zsession.zPopinquiryPopSent=true;
 	form.inquiries_datetime=request.zos.mysqlnow;
 	form.inquiries_email=application.zcore.functions.zso(form, 'email');
 	if(application.zcore.functions.zEmailValidate(form.inquiries_email) EQ false){
@@ -309,7 +309,7 @@
 	<td> Name: 
 	</td>
 	<td>
-	<input name="name" type="text" class="formtxt" id="name" value="<cfif application.zcore.functions.zso(form, 'name') NEQ "">#form.name#<cfelse>#application.zcore.functions.zso(session, 'inquiries_first_name')# #application.zcore.functions.zso(session, 'inquiries_last_name')#</cfif>" />
+	<input name="name" type="text" class="formtxt" id="name" value="<cfif application.zcore.functions.zso(form, 'name') NEQ "">#form.name#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')# #application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#</cfif>" />
 	</td>
 	<td style="vertical-align:top;" colspan="2" rowspan="3">Additional Features/Comments:
 	<label for="comments"></label>
@@ -320,7 +320,7 @@
 	<td> Phone: 
 	</td>
 	<td>
-	<input name="Phone" id="Phone" type="text" class="formtxt" value="<cfif application.zcore.functions.zso(form, 'phone') NEQ "">#form.phone#<cfelse>#application.zcore.functions.zso(session, 'inquiries_phone1')#</cfif>" />
+	<input name="Phone" id="Phone" type="text" class="formtxt" value="<cfif application.zcore.functions.zso(form, 'phone') NEQ "">#form.phone#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#</cfif>" />
 	</td>
 	</tr>
 	<tr>
@@ -328,7 +328,7 @@
 	
 	</td>
 	<td>
-	<input name="Email" type="text" class="formtxt" id="Email" value="<cfif application.zcore.functions.zso(form, 'email') NEQ "">#form.email#<cfelse>#application.zcore.functions.zso(session, 'inquiries_email')#</cfif>" />
+	<input name="Email" type="text" class="formtxt" id="Email" value="<cfif application.zcore.functions.zso(form, 'email') NEQ "">#form.email#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" />
 	</td>
 	</tr>
 	<tr><td colspan="4"><input type="submit" style="font-size:14px; padding:5px; line-height:14px;" name="search1" value="Submit" /> 

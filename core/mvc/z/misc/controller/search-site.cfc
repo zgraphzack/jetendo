@@ -90,8 +90,8 @@ search sql generator has to be able to search on child group data for paging to 
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	if(not structkeyexists(form, 'groupId')){
 		form.groupId=0;
-		if(structkeyexists(session, 'searchLastGroupId')){
-			form.groupId=session.searchLastGroupId;
+		if(structkeyexists(request.zsession, 'searchLastGroupId')){
+			form.groupId=request.zsession.searchLastGroupId;
 		}
 	}else{
 		form.clearCache=true;
@@ -100,8 +100,8 @@ search sql generator has to be able to search on child group data for paging to 
 		this.getPublicSearchCriteria();
 		rs=variables.getPublicSearchResults();
 	}
-	if(structkeyexists(session, 'searchGroupStructCache') and structkeyexists(session.searchGroupStructCache,  form.groupId) and structkeyexists(session.searchGroupStructCache[form.groupId], 'zIndex')){
-		form.zIndex=session.searchGroupStructCache[form.groupId].zIndex;
+	if(structkeyexists(request.zsession, 'searchGroupStructCache') and structkeyexists(request.zsession.searchGroupStructCache,  form.groupId) and structkeyexists(request.zsession.searchGroupStructCache[form.groupId], 'zIndex')){
+		form.zIndex=request.zsession.searchGroupStructCache[form.groupId].zIndex;
 	}
 	</cfscript>
 	<cfsavecontent variable="meta">
@@ -364,13 +364,13 @@ search sql generator has to be able to search on child group data for paging to 
 		}
 		rs.html=rs.html&navigation;
 	}
-	if(not structkeyexists(session, 'searchGroupStructCache')){
-		session.searchGroupStructCache={};
+	if(not structkeyexists(request.zsession, 'searchGroupStructCache')){
+		request.zsession.searchGroupStructCache={};
 	}
-	if(not structkeyexists(session.searchGroupStructCache,  form.groupId)){
-		session.searchGroupStructCache[form.groupId]={};
+	if(not structkeyexists(request.zsession.searchGroupStructCache,  form.groupId)){
+		request.zsession.searchGroupStructCache[form.groupId]={};
 	}
-	session.searchGroupStructCache[form.groupId]=searchCacheStruct;
+	request.zsession.searchGroupStructCache[form.groupId]=searchCacheStruct;
 	return rs;
 	</cfscript>
 </cffunction>
@@ -387,23 +387,23 @@ search sql generator has to be able to search on child group data for paging to 
 	<cfscript>
 	form.groupId=application.zcore.functions.zso(form, 'groupId', true);
 	form.clearCache=application.zcore.functions.zso(form, 'clearCache', false, false);
-	session.searchLastGroupId=form.groupId;
+	request.zsession.searchLastGroupId=form.groupId;
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
-	if(not structkeyexists(session, 'searchGroupStructCache')){
-		session.searchGroupStructCache={};
+	if(not structkeyexists(request.zsession, 'searchGroupStructCache')){
+		request.zsession.searchGroupStructCache={};
 	}
-	if(not structkeyexists(session.searchGroupStructCache,  form.groupId) or form.clearCache){
-		session.searchGroupStructCache[form.groupId]={};
+	if(not structkeyexists(request.zsession.searchGroupStructCache,  form.groupId) or form.clearCache){
+		request.zsession.searchGroupStructCache[form.groupId]={};
 	}
-	if(structkeyexists(session.searchGroupStructCache[form.groupId], 'zIndex')){
-		rs.zIndex=session.searchGroupStructCache[form.groupId].zIndex;
+	if(structkeyexists(request.zsession.searchGroupStructCache[form.groupId], 'zIndex')){
+		rs.zIndex=request.zsession.searchGroupStructCache[form.groupId].zIndex;
 	}else{
 		rs.zIndex=1;
 	}
 	if(form.zIndex GTE 100 or form.zIndex LT 1){
 		form.zIndex=1; // don't allow pagination for more then the first 1000 results.
 	}
-	session.searchGroupStructCache[form.groupId].zIndex=rs.zIndex;
+	request.zsession.searchGroupStructCache[form.groupId].zIndex=rs.zIndex;
 	</cfscript>
 </cffunction>
 
@@ -420,7 +420,7 @@ search sql generator has to be able to search on child group data for paging to 
 		onSubmit="try{ getSearchResults(#form.groupId#, 0); }catch(e){console.log(e);} return false;";
 		onchange="getDelayedSearchResults();";
 	}
-	structappend(form, session.searchGroupStructCache[form.groupId], true);
+	structappend(form, request.zsession.searchGroupStructCache[form.groupId], true);
 	rs={success:true, groupId: form.groupId};
 	if(form.groupId EQ 0){
 		rs.title="Search Everything";

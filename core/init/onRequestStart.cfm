@@ -56,7 +56,6 @@
 	}
 	if(request.zos.zreset EQ "session" or request.zos.zreset EQ "all"){
 		application.zcore.user.logOut(false, true);
-		structclear(session);
 		application.zcore.session.clear();
 	}
 	
@@ -81,21 +80,18 @@
 			setting requesttimeout="350";
 			lock type="exclusive" timeout="300" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{};
 		}
-		if(structkeyexists(application,'sessionstruct') and structkeyexists(application.sessionstruct, session.sessionid)){
+		if(structkeyexists(application,'sessionstruct') and structkeyexists(application.sessionstruct, request.zsession.sessionid)){
 			request.zos.oldestPossibleSessionDate=now()-this.sessiontimeout;
 			request.zos.oldestPossibleSessionDate=createodbcdatetime(dateformat(request.zos.oldestPossibleSessionDate,"yyyy-mm-dd")&" "&timeformat(request.zos.oldestPossibleSessionDate, "HH:mm:ss"));
-			if(datecompare(application.sessionstruct[session.sessionid].lastvisit, request.zos.oldestPossibleSessionDate) LTE 0){
-				structdelete(application.sessionstruct, session.sessionid);
+			if(datecompare(application.sessionstruct[request.zsession.sessionid].lastvisit, request.zos.oldestPossibleSessionDate) LTE 0){
+				structdelete(application.sessionstruct, request.zsession.sessionid);
 			}else{
-				structappend(session, application.sessionStruct[session.sessionid], true);
-				structdelete(application.sessionStruct,session.sessionid);
+				structappend(request.zsession, application.sessionStruct[request.zsession.sessionid], true);
+				structdelete(application.sessionStruct,request.zsession.sessionid);
 				//writeoutput('copied session<br />');
 				
 			}
 		}
-		sessionStruct=application.zcore.session.get();
-		structappend(session, sessionStruct, true);
-		
 		request.zos.inMemberArea=false;
 		request.zos.inServerManager=false;
 		
@@ -108,11 +104,21 @@
 		Request.zOSEndFile=ArrayNew(1);
 		request.zos.whiteSpaceEnabled=false;
 		
-		
+		try{
+			application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
+			request.zsession=application.zcore.session.get(); 
+		}catch(Any e){
+			application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
+			request.zsession=application.zcore.session.get(); 
+		}
+		/*
+	application.zcore.session.clear();
+	writedump(request.zsession);
+	abort;*/
 		ts=structnew();
 		ts.name="zLoggedIn";
-		if(isDefined('session.zos.user')){
-			request.zos.userSession=duplicate(session.zos.user);
+		if(isDefined('request.zsession.user')){
+			request.zos.userSession=duplicate(request.zsession.user);
 			ts.value="1";
 		}else{
 			request.zos.userSession={groupAccess:{}};
@@ -126,18 +132,18 @@
 		}
 		request.zos.migrationMode=false;
 		if(request.zos.isDeveloper or request.zos.istestserver){
-			if(isDefined('session.zos.verifyQueries') EQ false and request.zos.istestserver){
-				session.zos.verifyQueries=true;
+			if(isDefined('request.zsession.verifyQueries') EQ false and request.zos.istestserver){
+				request.zsession.verifyQueries=true;
 			}
 			if(structkeyexists(form,'zDisableSystemCaching')){
 				if(form.zDisableSystemCaching){
-					session.zDisableSystemCaching=true;
+					request.zsession.zDisableSystemCaching=true;
 					request.zos.disableSystemCaching=true;
 				}else{
-					structdelete(session,'zDisableSystemCaching');
+					structdelete(request.zsession,'zDisableSystemCaching');
 				}
 			}
-			if(isDefined('session.zDisableSystemCaching')){
+			if(isDefined('request.zsession.zDisableSystemCaching')){
 				request.zos.disableSystemCaching=true;
 			}else{
 				request.zos.disableSystemCaching=false;
@@ -158,11 +164,11 @@
 		 
 		 /*
 		local.timeSpan=CreateTimeSpan( 0,0,request.zos.sessionExpirationInMinutes,0);
-		if(structkeyexists(session, 'cfid') and structkeyexists(session, 'cftoken')){
+		if(structkeyexists(request.zsession, 'cfid') and structkeyexists(request.zsession, 'cftoken')){
 			try{
-				application.zcore.functions.zCookie({name:'cfid', value:session.cfid, expires: local.timeSpan });
-				application.zcore.functions.zCookie({name:'cftoken', value:session.cftoken, expires:local.timeSpan });
-				//application.zcore.functions.zCookie({name:'jsessionid', value:session.sessionid, expires:local.timeSpan });
+				application.zcore.functions.zCookie({name:'cfid', value:request.zsession.cfid, expires: local.timeSpan });
+				application.zcore.functions.zCookie({name:'cftoken', value:request.zsession.cftoken, expires:local.timeSpan });
+				//application.zcore.functions.zCookie({name:'jsessionid', value:request.zsession.sessionid, expires:local.timeSpan });
 			}catch(Any e){
 				// ignore session cookie errors.
 			}
@@ -221,12 +227,12 @@
 			application.zcore.listingCom.onApplicationStart();
 		}
 		request.zos.site_id=local.site_id;
-		if(request.zos.isdeveloper and isDefined('session.zos.verifyQueries') and session.zos.verifyQueries){
+		if(request.zos.isdeveloper and isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
 			local.verifyQueriesEnabled=true;
 		}else{
 			local.verifyQueriesEnabled=false;
 		}
-		if(isDefined('session.zos.user')){
+		if(isDefined('request.zsession.user')){
 			request.zos.db=application.sitestruct[request.zos.globals.id].dbComponents.cacheDisabledDB;
 			request.zos.dbNoVerify=application.sitestruct[request.zos.globals.id].dbComponents.cacheDisabledNoVerifyDB;
 		}else{
@@ -252,7 +258,7 @@
 			StructAppend(variables, request.zos.functions);
 		}
 		
-		if(request.zos.isDeveloper and isdefined('session.zos.debugleadrouting')){
+		if(request.zos.isDeveloper and isdefined('request.zsession.debugleadrouting')){
 			request.zos.debugleadrouting=true;
 		}
 		
@@ -260,8 +266,8 @@
 		if(request.zos.isDeveloper){
 			if(structkeyexists(form, 'zOSDebuggerLastOutput')){
 				form.znotemplate=1;
-				if(isDefined('session.zos.zOSDebuggerLastOutput')){
-					writeoutput(session.zos.zOSDebuggerLastOutput);
+				if(isDefined('request.zsession.zOSDebuggerLastOutput')){
+					writeoutput(request.zsession.zOSDebuggerLastOutput);
 				}else{
 					writeoutput('No debugging output available');
 				}
@@ -307,9 +313,8 @@
 </cffunction>
 
 <cffunction name="onRequestStart1" localmode="modern" output="yes"><cfscript>
-	if(not structkeyexists(session, 'zos') or (request.zos.zreset EQ "session" or request.zos.zreset EQ "all")){
+	if((request.zos.zreset EQ "session" or request.zos.zreset EQ "all")){
 		application.zcore.user.logOut(false, true);
-		structclear(session);
 		application.zcore.session.clear();
 	}
 	variables.site_id=application.sitestruct[request.zos.globals.id].site_id; 
@@ -341,8 +346,8 @@
 	if(themeName EQ ""){
 		themeName="custom";
 	}
-	if(structkeyexists(session, 'zCurrentTheme')){
-		themeName=session.zCurrentTheme;
+	if(structkeyexists(request.zsession, 'zCurrentTheme')){
+		themeName=request.zsession.zCurrentTheme;
 	}  
 	if(themeName NEQ "custom"){	
 		if(themeName CONTAINS "/" or themeName CONTAINS "\" or themeName CONTAINS "."){
@@ -426,7 +431,7 @@
 		application.zcore.user.verifyToken();
 	}
 	if(application.zcore.user.checkGroupAccess("user") and structkeyexists(application.zcore, 'forceUserUpdateSession')){
-		if(structkeyexists(application.zcore.forceUserUpdateSession, session.zos.user.site_id&":"&session.zos.user.id)){
+		if(structkeyexists(application.zcore.forceUserUpdateSession, request.zsession.user.site_id&":"&request.zsession.user.id)){
 			application.zcore.user.updateSession({site_id:request.zos.globals.id});
 		}
 	}
@@ -583,7 +588,7 @@
 	
 	// stores a temporary return url
 	if(structkeyexists(form, '___zr')){
-		session.zos.___zr=form.___zr;
+		request.zsession.___zr=form.___zr;
 	}
 	if(structkeyexists(form, 'zsid') EQ false or isNumeric(form.zsid) EQ false){
 		Request.zsid = application.zcore.status.getNewId();
@@ -744,7 +749,7 @@
 
 <cffunction name="onRequestStart3" localmode="modern" output="yes">
 	<cfscript>
-	/*if(isDefined('session.zos.user.id')){
+	/*if(isDefined('request.zsession.user.id')){
 		request.zDBCacheTimeSpan=createtimespan(0,0,0,0);	
 	}else{*/
 		request.zDBCacheTimeSpan=createtimespan(0,0,0,0);
@@ -821,11 +826,11 @@
 			application.zcore.template.setTag("stylesheet","/z/stylesheets/manager.css",false);
 			application.zcore.template.requireTag("title");
 			application.zcore.template.setTag("title","Server Manager");
-			if(not structkeyexists(session, 'global_zsites_id')){
-				session.global_zsites_id = ",,,";
+			if(not structkeyexists(request.zsession, 'global_zsites_id')){
+				request.zsession.global_zsites_id = ",,,";
 			}
 			if(structkeyexists(form,'global_zsites_id1')){
-				session.global_zsites_id = form.global_zsites_id1&","&form.global_zsites_id2&","&form.global_zsites_id3;
+				request.zsession.global_zsites_id = form.global_zsites_id1&","&form.global_zsites_id2&","&form.global_zsites_id3;
 			}
 			// init site navbar
 			if(structkeyexists(form,'zid') EQ false){
@@ -840,7 +845,7 @@
 				}
 			}
 			Request.zScriptName = request.cgi_script_name&"?zid=#form.zid#";
-			if((isDefined('session.zos.user.id') and not runningTask) and structkeyexists(form, 'zhidetopnav') eq false){
+			if((isDefined('request.zsession.user.id') and not runningTask) and structkeyexists(form, 'zhidetopnav') eq false){
 				application.zcore.template.setTag("secondnav",application.zcore.functions.zOS_getSiteNav(form.zid));
 			}else if(not request.zos.isServer and not request.zos.isDeveloperIPMatch){
 				application.zcore.functions.z404("Only logged on developer users or the server itself can access this url.");	
@@ -856,16 +861,16 @@
 		try{
 			login applicationtoken="#application.applicationname#"{
 			}
-			if(isDefined('session.zos.user.groupAccess') EQ false or structkeyexists(form,'zLogOut')){
+			if(isDefined('request.zsession.user.groupAccess') EQ false or structkeyexists(form,'zLogOut')){
 				logout;
-			}else if(structkeyexists(session.zos, 'user')){
-				if(session.zos.secureLogin){
-					local.roles = structkeylist(session.zos.user.groupAccess);
+			}else if(structkeyexists(request.zsession, 'user')){
+				if(request.zsession.secureLogin){
+					local.roles = structkeylist(request.zsession.user.groupAccess);
 				}else{
 					local.roles="user";
 				}
 				local.pass=hash(request.zos.now&request.zos.zcoremapping&"+|secureKey");
-				loginuser name="#session.zos.user.email#" password="#local.pass#" roles="#local.roles#";
+				loginuser name="#request.zsession.user.email#" password="#local.pass#" roles="#local.roles#";
 			}
 		}catch(Any local.e){
 			local.roles="";

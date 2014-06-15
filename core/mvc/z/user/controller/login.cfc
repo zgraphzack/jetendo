@@ -155,7 +155,7 @@
 	application.zcore.functions.zheader("content-type", "application/javascript");
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
 	if(structkeyexists(cookie, 'ztoken') and application.zcore.user.checkGroupAccess("user")){
-		application.zcore.tempTokenCache[cookie.ztoken]={date:now(), user_id:session.zos.user.id, site_id:session.zos.user.site_id};
+		application.zcore.tempTokenCache[cookie.ztoken]={date:now(), user_id:request.zsession.user.id, site_id:request.zsession.user.site_id};
 		local.isDeveloper=0;
 		if(request.zos.userSession.site_id EQ request.zos.globals.serverID and application.zcore.user.checkServerAccess()){
 			local.isDeveloper="1";
@@ -173,7 +173,7 @@
 	application.zcore.functions.zheader("content-type", "application/javascript");
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
 	if(structkeyexists(cookie, 'ztoken') and application.zcore.user.checkGroupAccess("user")){
-		application.zcore.tempTokenCache[cookie.ztoken]={date:now(), user_id:session.zos.user.id, site_id:session.zos.user.site_id};
+		application.zcore.tempTokenCache[cookie.ztoken]={date:now(), user_id:request.zsession.user.id, site_id:request.zsession.user.site_id};
 		local.isDeveloper=0;
 		if(request.zos.userSession.site_id EQ request.zos.globals.serverID and application.zcore.user.checkServerAccess()){
 			local.isDeveloper="1";
@@ -221,7 +221,7 @@
 					writeoutput('{"success":true}');
 				}else{
 					structdelete(form, 'zUsername');
-					structdelete(form, 'zPassword');	
+					structdelete(form, 'zPassword');
 					writeoutput('{"success":false,"s":1}');
 				}
 			}

@@ -217,8 +217,8 @@
     ts.databaseVersion=ts2.databaseVersion;
     ts.sourceVersion=ts2.sourceVersion;
     
-	if(isDefined('session.zos.user')){
-		request.zos.userSession=duplicate(session.zos.user);
+	if(isDefined('request.zsession.user')){
+		request.zos.userSession=duplicate(request.zsession.user);
 	}else{
 		request.zos.userSession=structnew();
 		request.zos.userSession.groupAccess=structnew();	
@@ -409,7 +409,7 @@
 	*/
 	request.zos.globals=structnew();
 	structappend(request.zos.globals,duplicate(ts.serverGlobals));
-	if(request.zos.isdeveloper and isDefined('session.zos.verifyQueries') and session.zos.verifyQueries){
+	if(request.zos.isdeveloper and isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
 		local.verifyQueriesEnabled=true;
 	}else{
 		local.verifyQueriesEnabled=false;
@@ -577,8 +577,8 @@
 	if(structkeyexists(form, request.zos.urlRoutingParameter) EQ false){
 		return;	
 	}
-	if(isDefined('session.zos.user')){
-		request.zos.userSession=duplicate(session.zos.user);
+	if(isDefined('request.zsession.user')){
+		request.zos.userSession=duplicate(request.zsession.user);
 	}else{
 		request.zos.userSession=structnew();
 		request.zos.userSession.groupAccess=structnew();	

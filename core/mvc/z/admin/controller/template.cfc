@@ -578,7 +578,7 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
 
 <cfif form.action EQ 'insert' or form.action EQ 'update'>
 	<cfscript>
-	form.user_id=session.zos.user.id;
+	form.user_id=request.zsession.user.id;
 	form.site_id = request.zos.globals.id;
 	ts=StructNew();
 	ts.file_name.required = true;

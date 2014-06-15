@@ -80,7 +80,7 @@ eCom.search(ts);
 	 </cfif>
 	 ) and 
 	site_id = #db.param(request.zos.globals.id)# and 
-	user_id = #db.param(session.zos.user.id)# 
+	user_id = #db.param(request.zsession.user.id)# 
 	</cfsavecontent><cfscript>qSearchCount=db.execute("qSearchCount");</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT *
@@ -97,7 +97,7 @@ eCom.search(ts);
 	 </cfif>
 	 ) and 
 	site_id = #db.param(request.zos.globals.id)# and 
-	user_id = #db.param(session.zos.user.id)# 
+	user_id = #db.param(request.zsession.user.id)# 
 	 <cfif application.zcore.enableFullTextIndex>
 	ORDER BY score DESC 
 	</cfif>
@@ -128,13 +128,13 @@ eCom.delete(zemail_id);
 		application.zcore.template.fail("COMPONENT: zcorerootmapping.com.app.email.cfc - FUNCTION: delete() - you must call this.setAccount() before using this function.");
 	}
 	</cfscript>
-	<cflock name="zcorerootmapping.com.app.email.cfc:delete:#session.zos.user.id#:#request.zos.emailData.popserver#:#request.zos.emailData.username#" timeout="300" type="exclusive">
+	<cflock name="zcorerootmapping.com.app.email.cfc:delete:#request.zsession.user.id#:#request.zos.emailData.popserver#:#request.zos.emailData.username#" timeout="300" type="exclusive">
 	<!--- query to check if downloaded --->
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("zemail", request.zos.zcoreDatasource)# zemail 
 	WHERE zemail_id =#db.param(arguments.id)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
-	user_id = #db.param(session.zos.user.id)#
+	user_id = #db.param(request.zsession.user.id)#
 	</cfsavecontent><cfscript>qC=db.execute("qC");
 	if(qC.recordcount EQ 0){
 		return false;
@@ -170,13 +170,13 @@ eCom.delete(zemail_id);
 	DELETE FROM #db.table("zemail", request.zos.zcoreDatasource)#  
 	WHERE zemail_id = #db.param(arguments.id)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
-	user_id = #db.param(session.zos.user.id)#
+	user_id = #db.param(request.zsession.user.id)#
 	</cfsavecontent><cfscript>qC=db.execute("qC");</cfscript>
 	<cfsavecontent variable="db.sql">
 	DELETE FROM #db.table("zemail_data", request.zos.zcoreDatasource)#  
 	WHERE zemail_id = #db.param(arguments.id)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
-	user_id = #db.param(session.zos.user.id)#
+	user_id = #db.param(request.zsession.user.id)#
 	</cfsavecontent><cfscript>qC=db.execute("qC");</cfscript>
 	<cfreturn true>
 	</cflock>
@@ -217,7 +217,7 @@ eCom.getEmail(query,queryRowNumber,original);
 		FROM #db.table("zemail_data", request.zos.zcoreDatasource)# zemail_data 
 		WHERE zemail_id = #db.param(arguments.q.zemail_id[arguments.row])# and 
 		site_id = #db.param(request.zos.globals.id)# and 
-		user_id = #db.param(session.zos.user.id)#
+		user_id = #db.param(request.zsession.user.id)#
 		</cfsavecontent><cfscript>qEmail2=db.execute("qEmail2");</cfscript>
 		<cfif qEmail2.recordcount NEQ 0>
 			<cfscript>
@@ -301,7 +301,7 @@ eCom.pop(ts);
 	zemail_id=false;
 	</cfscript>
 	<!--- do a named lock for this specific connection so it can't have 2 threads running at the same time on the same email account.  5 minute timeout --->
-	<cflock name="zcorerootmapping.com.app.email.cfc:pop:#session.zos.user.id#:#request.zos.emailData.popserver#:#request.zos.emailData.username#" timeout="300" type="exclusive">
+	<cflock name="zcorerootmapping.com.app.email.cfc:pop:#request.zsession.user.id#:#request.zos.emailData.popserver#:#request.zos.emailData.username#" timeout="300" type="exclusive">
 	<!--- get headers so we can check what has already been downloaded --->
 	<cfif arguments.ss.id NEQ ''>
 		<cfsavecontent variable="db.sql">
@@ -309,7 +309,7 @@ eCom.pop(ts);
 		#db.table("zemail", request.zos.zcoreDatasource)# zemail 
 		WHERE zemail_id =#db.param(arguments.ss.id)# and 
 		site_id = #db.param(request.zos.globals.id)# and 
-		user_id = #db.param(session.zos.user.id)#
+		user_id = #db.param(request.zsession.user.id)#
 		</cfsavecontent><cfscript>qEmail=db.execute("qEmail");
 		if(qEmail.recordcount EQ 0){
 			rs.success=false;
@@ -360,7 +360,7 @@ eCom.pop(ts);
 			FROM #db.table("zemail", request.zos.zcoreDatasource)# zemail 
 			WHERE zemail_uid IN (#db.trustedSQL(checkList)#) and 
 			site_id = #db.param(request.zos.globals.id)# and 
-			user_id = #db.param(session.zos.user.id)#
+			user_id = #db.param(request.zsession.user.id)#
 			</cfsavecontent><cfscript>qC=db.execute("qC");</cfscript>
 			<cfloop query="qC">
 				<cfscript>
@@ -389,7 +389,7 @@ eCom.pop(ts);
 				ts.zemail_from =from;
 				ts.zemail_folder_id = this.getFolder("inbox");
 				ts.site_id=request.zos.globals.id;
-				ts.user_id=session.zos.user.id;
+				ts.user_id=request.zsession.user.id;
 				fromNameArr = listtoarray(from, "<");
 				fromName = removechars(fromNameArr[1], 1, 1);
 				fromNameLen = len(fromName) - 1;
@@ -413,7 +413,7 @@ eCom.pop(ts);
 				}
 				ts=StructNew();
 				ts.site_id=request.zos.globals.id;
-				ts.user_id=session.zos.user.id;
+				ts.user_id=request.zsession.user.id;
 				ts.zemail_id=zemail_id;
 				ts.zemail_data_search=from&' '&to&' '&cc&' '&subject; // concat all searchable fields
 				inputStruct = StructNew();
@@ -556,7 +556,7 @@ eCom.pop(ts);
 			application.zcore.functions.zWriteFile(np&newFileName&ts.zemail_rename_number&'-text.ini',trim(textbody));
 			
 			ts.site_id=request.zos.globals.id;
-			ts.user_id=session.zos.user.id;
+			ts.user_id=request.zsession.user.id;
 			// prepare update
 			inputStruct = StructNew();
 			inputStruct.table = 'zemail';
@@ -605,12 +605,12 @@ eCom.pop(ts);
 				db.sql="DELETE FROM #db.table("zemail", request.zos.zcoreDatasource)#  
 				WHERE zemail_id = #db.param(zemail_id)# and 
 				site_id = #db.param(request.zos.globals.id)# and 
-				user_id = #db.param(session.zos.user.id)#";
+				user_id = #db.param(request.zsession.user.id)#";
 				db.execute("q");
 				db.sql="DELETE FROM #db.table("zemail_data", request.zos.zcoreDatasource)#  
 				WHERE zemail_id = #db.param(zemail_id)# and 
 				site_id = #db.param(request.zos.globals.id)# and 
-				user_id = #db.param(session.zos.user.id)#";
+				user_id = #db.param(request.zsession.user.id)#";
 				db.execute("q");
 			}
 			</cfscript>
@@ -651,7 +651,7 @@ eCom.pop(ts);
 		WHERE zemail_id =#db.param(arguments.ss.id)# and 
 		zemail_processed=#db.param('1')# and 
 		site_id = #db.param(request.zos.globals.id)# and 
-		user_id = #db.param(session.zos.user.id)#
+		user_id = #db.param(request.zsession.user.id)#
 		</cfsavecontent><cfscript>qEmail=db.execute("qEmail");
 		if(qEmail.recordcount EQ 0){
 			rs.count=0;
@@ -736,7 +736,7 @@ eCom.setAccount(zemail_account_id, site_id);
 	SELECT * FROM #db.table("zemail_account", request.zos.zcoreDatasource)# zemail_account 
 	WHERE zemail_account_id = #db.param(arguments.zemail_account_id)# and 
 	site_id = #db.param(arguments.site_id)# and 
-	user_id = #db.param(session.zos.user.id)#
+	user_id = #db.param(request.zsession.user.id)#
 	</cfsavecontent><cfscript>qAccount=db.execute("qAccount");
 	if(qAccount.recordcount EQ 0){
 		application.zcore.template.fail("COMPONENT: zcorerootmapping.com.app.email.cfc - FUNCTION: setAccount() - the email account, #arguments.zemail_account_id#, doesn't exist or this user doesn't have permission to this account.");

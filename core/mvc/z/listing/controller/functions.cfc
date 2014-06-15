@@ -200,8 +200,8 @@ local.tempCom.index();
 				ts.struct.saved_search_key=hash(application.zcore.functions.zGenerateStrongPassword(256,256), 'sha-256');
 				ts.struct.saved_search_created_date=nowDate;
 				if(structkeyexists(ts.struct, 'saved_search_email')){
-					session.saved_search_email=ts.struct.saved_search_email;
-					session.saved_search_key=ts.struct.saved_search_key;
+					request.zsession.saved_search_email=ts.struct.saved_search_email;
+					request.zsession.saved_search_key=ts.struct.saved_search_key;
 				}
 				//Now, we insert the new data
 				arguments.mls_saved_search_id = application.zcore.functions.zInsert(ts);
@@ -1331,10 +1331,10 @@ zGetLatLong(ts);
 	<cfscript>
 	var db=request.zos.queryObject;
 	local.email="";
-	if(structkeyexists(session,'inquiries_email')){
-		local.email=session.inquiries_email;
+	if(structkeyexists(request.zsession,'inquiries_email')){
+		local.email=request.zsession.inquiries_email;
 	}else if(application.zcore.user.checkGroupAccess("user")){
-		local.email=session.zos.user.email;
+		local.email=request.zsession.user.email;
 	}
 	if(local.email EQ ""){
 		return false;

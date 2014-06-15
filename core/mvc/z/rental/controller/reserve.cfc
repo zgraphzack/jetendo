@@ -688,8 +688,8 @@ if(DateCompare(sd2, ed2) GTE 0){
 	searching=true;
 }	
 if(sd2 NEQ false and ed2 NEQ false){
-	session.inquiries_start_date=sd2;
-	session.inquiries_end_date=ed2;
+	request.zsession.inquiries_start_date=sd2;
+	request.zsession.inquiries_end_date=ed2;
 	variables[startDateFieldName]=sd2;
 	variables[endDateFieldName]=ed2;
 }

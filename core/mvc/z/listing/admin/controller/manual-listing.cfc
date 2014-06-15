@@ -229,7 +229,7 @@ still need to add all the meta data fields and photo display
 	var qCheck=0;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Listings", true);
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "manual_listing_return"&form.manual_listing_unique_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "manual_listing_return"&form.manual_listing_unique_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing 
 	WHERE manual_listing_unique_id = #db.param(form.manual_listing_unique_id)# and 
@@ -237,9 +237,9 @@ still need to add all the meta data fields and photo display
 	qCheck=db.execute("qCheck"); 
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this manual_listing.',false,true);
-		if(isDefined('session.manual_listing_return'&form.manual_listing_unique_id)){
-			tempURL = session['manual_listing_return'&form.manual_listing_unique_id];
-			StructDelete(session, 'manual_listing_return'&form.manual_listing_unique_id);
+		if(isDefined('request.zsession.manual_listing_return'&form.manual_listing_unique_id)){
+			tempURL = request.zsession['manual_listing_return'&form.manual_listing_unique_id];
+			StructDelete(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id);
 			application.zcore.functions.zRedirect(tempURL, true);
 		}else{
 			application.zcore.functions.zRedirect('/z/listing/admin/manual-listing/index?zsid=#request.zsid#');
@@ -272,7 +272,7 @@ still need to add all the meta data fields and photo display
 			ID: #qCheck.manual_listing_unique_id#<br />
 			Title: #qCheck.manual_listing_title# <br />
 			<br />
-			<a href="/z/listing/admin/manual-listing/delete?confirm=1&amp;manual_listing_unique_id=#form.manual_listing_unique_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#application.zcore.functions.zso(session, 'manual_listing_return'&form.manual_listing_unique_id)#">No</a> </h2>
+			<a href="/z/listing/admin/manual-listing/delete?confirm=1&amp;manual_listing_unique_id=#form.manual_listing_unique_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id)#">No</a> </h2>
 	</cfif>
 </cffunction>
 <cffunction name="insert" localmode="modern" access="remote" roles="member">
@@ -434,18 +434,18 @@ still need to add all the meta data fields and photo display
 		
 		if(form.method EQ 'insert'){
 			application.zcore.status.setStatus(request.zsid, "Listing added.");
-			if(isDefined('session.manual_listing_return')){
-				tempURL = session['manual_listing_return'];
-				StructDelete(session, 'manual_listing_return');
+			if(isDefined('request.zsession.manual_listing_return')){
+				tempURL = request.zsession['manual_listing_return'];
+				StructDelete(request.zsession, 'manual_listing_return');
 				tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 				application.zcore.functions.zRedirect(tempURL, true);
 			}
 		}else{
 			application.zcore.status.setStatus(request.zsid, "Listing updated.");
 		}
-		if(structkeyexists(form, 'manual_listing_unique_id') and isDefined('session.manual_listing_return'&form.manual_listing_unique_id)){// and uniqueChanged EQ false){	
-			tempURL = session['manual_listing_return'&form.manual_listing_unique_id];
-			StructDelete(session, 'manual_listing_return'&form.manual_listing_unique_id);
+		if(structkeyexists(form, 'manual_listing_unique_id') and isDefined('request.zsession.manual_listing_return'&form.manual_listing_unique_id)){// and uniqueChanged EQ false){	
+			tempURL = request.zsession['manual_listing_return'&form.manual_listing_unique_id];
+			StructDelete(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id);
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(tempURL, true);
 		}else{	
@@ -506,7 +506,7 @@ still need to add all the meta data fields and photo display
 			form.manual_listing_created_datetime = application.zcore.functions.zGetDateSelect("manual_listing_created_datetime");	
 		}
 		if(structkeyexists(form, 'return')){
-			StructInsert(session, "manual_listing_return"&form.manual_listing_unique_id, request.zos.CGI.HTTP_REFERER, true);		
+			StructInsert(request.zsession, "manual_listing_return"&form.manual_listing_unique_id, request.zos.CGI.HTTP_REFERER, true);		
 		}
 		</cfscript>
 	<h2>
@@ -539,7 +539,7 @@ still need to add all the meta data fields and photo display
 		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-manual_listing-edit");
-		cancelURL=application.zcore.functions.zso(session, 'manual_listing_return'&form.manual_listing_unique_id);
+		cancelURL=application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id);
 		if(cancelURL EQ ""){
 			cancelURL="/z/listing/admin/manual-listing/index";
 		}

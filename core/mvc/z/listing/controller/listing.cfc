@@ -2473,7 +2473,7 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	}
 	
 	
-	if(isDefined('session.zos.user.id') EQ false and (structkeyexists(cookie,"z_user_id") EQ false or cookie.z_user_id EQ "")){
+	if(isDefined('request.zsession.user.id') EQ false and (structkeyexists(cookie,"z_user_id") EQ false or cookie.z_user_id EQ "")){
 		request.zos.zListingShowSoldData=false;
 	}else{
 		request.zos.zListingShowSoldData=true;
@@ -2512,7 +2512,7 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
     </cfsavecontent><cfscript>qMapCheck=db.execute("qMapCheck");</cfscript>
     <cfif qMapCheck.recordcount EQ 0><cfset application.sitestruct[request.zos.globals.id].zListingMapCheck=false><cfelse><cfset application.sitestruct[request.zos.globals.id].zListingMapCheck=true></cfif>
 </cfif>
-	<cfif structkeyexists(session, 'inquiries_email') EQ false and structkeyexists(form, 'mls_saved_search_id') and structkeyexists(form, 'saved_search_email') and structkeyexists(form, 'saved_search_key')>
+	<cfif structkeyexists(request.zsession, 'inquiries_email') EQ false and structkeyexists(form, 'mls_saved_search_id') and structkeyexists(form, 'saved_search_email') and structkeyexists(form, 'saved_search_key')>
 		<cfsavecontent variable="db.sql">
 		SELECT * FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE mls_saved_search_id =#db.param(form.mls_saved_search_id)# and 
@@ -2529,11 +2529,11 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 			site_id = #db.param(request.zos.globals.id)#
 			</cfsavecontent><cfscript>qinquiry=db.execute("qInquiry");</cfscript>
 			<cfif qinquiry.recordcount NEQ 0>
-				<cfset session.inquiries_email = qinquiry.inquiries_email>
-				<cfset session.inquiries_first_name=qinquiry.inquiries_first_name>
-				<cfset session.inquiries_phone1=qinquiry.inquiries_phone1>
+				<cfset request.zsession.inquiries_email = qinquiry.inquiries_email>
+				<cfset request.zsession.inquiries_first_name=qinquiry.inquiries_first_name>
+				<cfset request.zsession.inquiries_phone1=qinquiry.inquiries_phone1>
 			<cfelse>
-				<cfset session.inquiries_email = qsaved.saved_search_email>
+				<cfset request.zsession.inquiries_email = qsaved.saved_search_email>
 			</cfif>
 		</cfif>
 	</cfif>
@@ -2605,7 +2605,7 @@ application.zcore.template.prependTag("meta", metaContent);
 application.zcore.template.appendTag("meta", metaContent2);
 if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.cgi_script_name,4) NEQ ".xml" and request.zos.inMemberArea EQ false and structkeyexists(form, 'zFPE') EQ false){
 	if (request.zos.originalURL NEQ "/z/listing/sl/view" and request.cgi_script_name NEQ "/z/listing/sl/index" and request.cgi_script_name NEQ "/z/listing/inquiry/index" and structkeyexists(request,'znotemplate') EQ false) {
-		if(isDefined('session.zos.tempVars.zListingSearchId')){
+		if(isDefined('request.zsession.tempVars.zListingSearchId')){
 			writeoutput('<div id="zListingSearchBarEnabledDiv" style="display:none;"></div>');
 		}
 		if(request.zos.globals.enableInstantLoad EQ 1 or (structkeyexists(cookie,'SAVEDLISTINGCOUNT') and cookie.SAVEDLISTINGCOUNT NEQ 0) or (structkeyexists(cookie,'SAVEDCONTENTCOUNT') and cookie.savedContentCount NEQ 0)){
@@ -2629,10 +2629,10 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	}
 	//if(request.zos.cgi.http_referer NEQ "" and 
 	if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled NEQ 0 and left(request.zos.templateData.template, 3) NEQ "/z/" and request.cgi_script_name NEQ "/z/listing/inquiry-pop/index" and request.cgi_script_name NEQ "/z/user/privacy/index"){
-		if(structkeyexists(session, 'zlistingpageviewcount') EQ false){
-			session.zlistingpageviewcount=1;
+		if(structkeyexists(request.zsession, 'zlistingpageviewcount') EQ false){
+			request.zsession.zlistingpageviewcount=1;
 		}else{
-			session.zlistingpageviewcount++;
+			request.zsession.zlistingpageviewcount++;
 		}
 		showModalForm=false;
 		hitCount=5;
@@ -2641,26 +2641,26 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 		}
 		
 		if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 1){
-			if(session.zlistingpageviewcount GTE hitCount){
+			if(request.zsession.zlistingpageviewcount GTE hitCount){
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(session, 'zPopinquiryPopSent') EQ false){
+					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(request.zsession, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;
 					}
 				}else{
-					if(structkeyexists(session, 'zPopinquiryPopCompleted') EQ false){
+					if(structkeyexists(request.zsession, 'zPopinquiryPopCompleted') EQ false){
 						showModalForm=true;
 					}
 				}
 			}
 		}else if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 2){
 			// show on Xth listing detail page
-			if(structkeyexists(session, 'zlistingdetailhitcount') and session.zlistingdetailhitcount GTE hitCount){
+			if(structkeyexists(request.zsession, 'zlistingdetailhitcount') and request.zsession.zlistingdetailhitcount GTE hitCount){
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(session, 'zPopinquiryPopSent') EQ false){
+					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(request.zsession, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;
 					}
 				}else{
-					if(not structkeyexists(session, 'zPopinquiryPopCompleted')){
+					if(not structkeyexists(request.zsession, 'zPopinquiryPopCompleted')){
 						showModalForm=true;
 					}
 				}
@@ -2672,12 +2672,12 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			if(request.zos.originalURL EQ searchFormURL){
 				// check if cookie was set
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
-					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(session, 'zPopinquiryPopSent') EQ false){
+					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(request.zsession, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;
 					}
 				}else{
 					// if i want it to be permanently not shown again, i could add cookie to inquiry-pop.cfc at the top and check for it to not exist.
-					if(structkeyexists(session, 'zPopinquiryPopCompleted') EQ false){
+					if(structkeyexists(request.zsession, 'zPopinquiryPopCompleted') EQ false){
 						showModalForm=true;
 					}
 				}
@@ -3043,22 +3043,22 @@ drop table if exists
 <cffunction name="updateUserSavedListings" localmode="modern" output="no" returntype="any">
 <cfscript>
 	var db=request.zos.queryObject;
-	if(isDefined('session.zos.user.id')){
-		if((isDefined('session.zos.listing.savedContentStruct') and structcount(session.zos.listing.savedContentStruct) EQ 0) and (isDefined('session.zos.listing.savedListingStruct') EQ false and structcount(session.zos.listing.savedListingStruct) EQ 0)){
+	if(isDefined('request.zsession.user.id')){
+		if((isDefined('request.zsession.listing.savedContentStruct') and structcount(request.zsession.listing.savedContentStruct) EQ 0) and (isDefined('request.zsession.listing.savedListingStruct') EQ false and structcount(request.zsession.listing.savedListingStruct) EQ 0)){
 			db.sql="DELETE FROM #db.table("saved_listing", request.zos.zcoreDatasource)#  
 			WHERE site_id=#db.param(request.zos.globals.id)# and 
-			user_id=#db.param(session.zos.user.id)#  and 
+			user_id=#db.param(request.zsession.user.id)#  and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
 			db.execute("q"); 
 		}else{
 			 db.sql="REPLACE INTO #db.table("saved_listing", request.zos.zcoreDatasource)#  
-			 SET saved_listing_count=#db.param(structcount(session.zos.listing.savedListingStruct))#,
-			  saved_listing_idlist=#db.param(structkeylist(session.zos.listing.savedListingStruct))#, 
-			  saved_content_count=#db.param(structcount(session.zos.listing.savedContentStruct))#, 
-			  saved_content_idlist=#db.param(structkeylist(session.zos.listing.savedContentStruct))#, 
+			 SET saved_listing_count=#db.param(structcount(request.zsession.listing.savedListingStruct))#,
+			  saved_listing_idlist=#db.param(structkeylist(request.zsession.listing.savedListingStruct))#, 
+			  saved_content_count=#db.param(structcount(request.zsession.listing.savedContentStruct))#, 
+			  saved_content_idlist=#db.param(structkeylist(request.zsession.listing.savedContentStruct))#, 
 			  saved_listing_datetime=#db.param(request.zos.mysqlnow)#,  
 			  site_id=#db.param(request.zos.globals.id)#, 
-			  user_id=#db.param(session.zos.user.id)#, 
+			  user_id=#db.param(request.zsession.user.id)#, 
 			  user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
 			 db.execute("q");
 		}

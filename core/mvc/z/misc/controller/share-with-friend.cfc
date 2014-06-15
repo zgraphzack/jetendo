@@ -77,12 +77,12 @@ application.zcore.functions.z404("Share with friend disabled due to dmarc policy
 	</cfscript>
 	<cfif error EQ false and emailList NEQ "">
 		<cfscript>
-		if(isDefined('session.friendEmailSent') EQ false){
-			session.friendEmailSent = 0;
+		if(isDefined('request.zsession.friendEmailSent') EQ false){
+			request.zsession.friendEmailSent = 0;
 		}
-		session.friendEmailSent = session.friendEmailSent+1;
-		if(session.friendEmailSent GT 10){			
-			application.zcore.status.setStatus(request.zsid, "You can only send 10 ""Email a Friend"" emails per session.",form,true);
+		request.zsession.friendEmailSent = request.zsession.friendEmailSent+1;
+		if(request.zsession.friendEmailSent GT 10){			
+			application.zcore.status.setStatus(request.zsid, "You can only send 10 ""Email a Friend"" emails per request.zsession.",form,true);
 			application.zcore.functions.zRedirect(request.zscriptname&"&zsid="&request.zsid);
 		}
 		fromEmail=request.zos.globals.emailcampaignfrom;

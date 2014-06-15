@@ -45,12 +45,12 @@
 		set site_theme_name=#db.param(form.name)# 
 		where site_id = #db.param(request.zos.globals.id)#";
 		db.execute("qUpdate");
-		structdelete(session, 'zCurrentTheme');
+		structdelete(request.zsession, 'zCurrentTheme');
 		application.zcore.functions.zOS_cacheSiteAndUserGroups();
 		application.zcore.status.setStatus(request.zsid, "The theme, ""#form.name#"", has been permanently applied as the default theme.  All users will see the new theme.  Please make sure your web site is working correctly with the new theme.");
 	}else{
-		session.zCurrentTheme=form.name;
-		application.zcore.status.setStatus(request.zsid, "The theme, ""#form.name#"", has been set for your session.  Other users will not see the change.  If you log out or your session expires, the theme will revert to the permanent theme that is applied.");
+		request.zsession.zCurrentTheme=form.name;
+		application.zcore.status.setStatus(request.zsid, "The theme, ""#form.name#"", has been set for your request.zsession.  Other users will not see the change.  If you log out or your session expires, the theme will revert to the permanent theme that is applied.");
 	}
 	application.zcore.functions.zRedirect("/z/admin/theme/index?zsid=#request.zsid#");
 	</cfscript>
@@ -58,7 +58,7 @@
 
 <cffunction name="disablePreview" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
-	structdelete(session, 'zCurrentTheme');
+	structdelete(request.zsession, 'zCurrentTheme');
 	application.zcore.status.setStatus(request.zsid, "Preview theme mode disabled.");
 	application.zcore.functions.zRedirect("/z/admin/theme/index?zsid=#request.zsid#");
 	</cfscript>
@@ -70,8 +70,8 @@
 	application.zcore.functions.zSetPageHelpId("2.10");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	
-	if(structkeyexists(session, 'zCurrentTheme')){
-		currentTheme=session.zCurrentTheme;
+	if(structkeyexists(request.zsession, 'zCurrentTheme')){
+		currentTheme=request.zsession.zCurrentTheme;
 	}else{
 		currentTheme=application.zcore.functions.zso(request.zos.globals, 'themeName', false, "custom");
 	}
@@ -96,7 +96,7 @@
 		<td>');
 			
 		if(currentTheme EQ i){
-			if(structkeyexists(session, 'zCurrentTheme')){
+			if(structkeyexists(request.zsession, 'zCurrentTheme')){
 				echo('Preview Enabled, <a href="/z/admin/theme/disablePreview">Click To Disable</a> | 
 				<a href="/z/admin/theme/apply?name=#urlencodedformat(i)#">Apply</a>');
 			}else{

@@ -201,6 +201,11 @@ request.zos.cgi=local.tempCGI;
         form[request.zos.urlRoutingParameter]=listtoarray(form[request.zos.urlRoutingParameter],",", true);
         form[request.zos.urlRoutingParameter]=form[request.zos.urlRoutingParameter][1];
 		request.zos.originalURL=form[request.zos.urlRoutingParameter];
+        this.SessionManagement = false;
+		/*if(request.zos.isTestServer){
+        }else{
+        	this.SessionManagement = true;
+        }*/
     }else{
         this.Name = request.zos.cgi.http_host;
         this.ApplicationTimeout = CreateTimeSpan( 30, 0, 0, 0 );
@@ -242,7 +247,6 @@ request.zos.cgi=local.tempCGI;
     request.zOS.mysqlnow=DateFormat(request.zos.now,'yyyy-mm-dd')&' '&TimeFormat(request.zos.now,'HH:mm:ss');
     
     variables.getApplicationConfig();
-	request.zos.sessiontimeout=this.sessiontimeout;
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onCoreRequest complete'});
     </cfscript>
 </cffunction>
@@ -259,7 +263,7 @@ request.zos.cgi=local.tempCGI;
     // lookup the app name.
     ts.Name = "zcore_"&request.zos.installPath;
     ts.ApplicationTimeout = CreateTimeSpan( 30, 0, 0, 0 );
-    ts.SessionTimeout=CreateTimeSpan(0,0,60,0); 
+    ts.SessionTimeout=CreateTimeSpan(0,0,request.zos.sessionExpirationInMinutes,0); 
 	
     server["zcore_"&request.zos.installPath&"_cache"]=ts;
     structappend(this, ts, true);

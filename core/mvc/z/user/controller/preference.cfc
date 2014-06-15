@@ -33,7 +33,7 @@
 	application.zcore.template.setTag("title","Edit Profile");
 	application.zcore.template.setTag("pagetitle","Edit Profile");
 	application.zcore.template.setTag("pagenav",zpagenav);
-	if(form.e NEQ '' and isDefined('session.zos.user.email') and form.e NEQ session.zos.user.email){
+	if(form.e NEQ '' and isDefined('request.zsession.user.email') and form.e NEQ request.zsession.user.email){
 		if(structkeyexists(form,"x_ajax_id") EQ false){
 			application.zcore.user.logOut();
 		}
@@ -46,8 +46,8 @@
 	variables.secureLogin=false;
 	if(form.e EQ '' and form.k EQ '' and  structkeyexists(request.zos.userSession.groupAccess, "user")){
 		db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user
-		where user_id = #db.param(session.zos.user.id)# and 
-		site_id=#db.param(session.zos.user.site_id)# ";
+		where user_id = #db.param(request.zsession.user.id)# and 
+		site_id=#db.param(request.zsession.user.site_id)# ";
 		variables.qcheckemail=db.execute("qcheckemail");
 
 		variables.secureLogin=true;
@@ -77,10 +77,10 @@
 			addKey=db.execute("addKey");
 		}
 		if(structkeyexists(request.zos.userSession.groupAccess, "user")){
-			if(form.e NEQ session.zos.user.email){
+			if(form.e NEQ request.zsession.user.email){
 				application.zcore.user.logOut();
 			}else{
-				variables.secureLogin=session.zos.secureLogin;
+				variables.secureLogin=request.zsession.secureLogin;
 			}
 		}else if(form.k NEQ ''){
 			if(variables.qcheckemail.user_key EQ form.k){
@@ -106,7 +106,7 @@
 			}
 		}
 	}
-	if(isDefined('session.zos.secureLogin') and session.zos.secureLogin EQ false){
+	if(isDefined('request.zsession.secureLogin') and request.zsession.secureLogin EQ false){
 		variables.secureLogin=false;
 	}
 	if(variables.qcheckemail.recordcount NEQ 0){
@@ -316,8 +316,8 @@
 		inputStruct.noRedirect=true;
 		inputStruct.noLoginForm=true;
 		
-		if(isDefined('session.zos.user.site_id')){
-			inputStruct.site_id = session.zos.user.site_id;
+		if(isDefined('request.zsession.user.site_id')){
+			inputStruct.site_id = request.zsession.user.site_id;
 		}else{
 			inputStruct.site_id=request.zos.globals.id;
 		}
@@ -394,8 +394,8 @@ If the link does not work, please copy and paste the entire link in your browser
 	arrPref = arraynew(1);
 	form.user_updated_datetime = dateformat(variables.nowDate, "yyyy-mm-dd")&" "&timeformat(variables.nowDate, "HH:mm:ss");
 	form.user_updated_ip =request.zos.cgi.remote_addr;
-	if(isDefined('session.zos.user.site_id')){
-		form.site_id = session.zos.user.site_id;
+	if(isDefined('request.zsession.user.site_id')){
+		form.site_id = request.zsession.user.site_id;
 	}else{
 		form.site_id=request.zos.globals.id;
 	}

@@ -808,24 +808,24 @@ var db=request.zos.queryObject;
 	}
 	if(isDefined('cookie.inquiries_email') and isDefined('cookie.inquiries_first_name') and isDefined('cookie.inquiries_phone1')){
 		if(cookie.inquiries_email NEQ ""){
-			session.inquiries_email = cookie.inquiries_email;
+			request.zsession.inquiries_email = cookie.inquiries_email;
 		}
 		if(cookie.inquiries_first_name NEQ ""){
-			session.inquiries_first_name=cookie.inquiries_first_name;
+			request.zsession.inquiries_first_name=cookie.inquiries_first_name;
 		}
 		if(cookie.inquiries_phone1 NEQ ""){
-		session.inquiries_phone1=cookie.inquiries_phone1;	
+		request.zsession.inquiries_phone1=cookie.inquiries_phone1;	
 		}
 	}
 	
 	if(structkeyexists(form, 'zlogout') EQ false){
-		if(isDefined('session.zos.user.id') and isDefined('session.zos.user.site_id')){
-			if(isDefined('session.zUserInquiryInfoLoaded') EQ false){
-				tmpUsrId=session.zos.user.id;
+		if(isDefined('request.zsession.user.id') and isDefined('request.zsession.user.site_id')){
+			if(isDefined('request.zsession.zUserInquiryInfoLoaded') EQ false){
+				tmpUsrId=request.zsession.user.id;
 				db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-				WHERE user_id = #db.param(session.zos.user.id)# and 
+				WHERE user_id = #db.param(request.zsession.user.id)# and 
 				user_active=#db.param(1)# and 
-				site_id = #db.param(session.zos.user.site_id)#";
+				site_id = #db.param(request.zsession.user.site_id)#";
 				qc=db.execute("qc");
 				ts=structnew();
 				ts.name="z_user_id";
@@ -842,7 +842,7 @@ var db=request.zos.queryObject;
 				ts.value=application.zcore.user.getSiteIdTypeFromLoggedOnUser();
 				ts.expires="never";
 				application.zcore.functions.zCookie(ts);
-				session.zUserInquiryInfoLoaded=true;
+				request.zsession.zUserInquiryInfoLoaded=true;
 			}
 		}else if(application.zcore.functions.zso(cookie, 'z_user_id') NEQ "" and application.zcore.functions.zso(cookie, 'z_user_key') NEQ ""){
 			tmpUsrId=cookie.z_user_id;
@@ -855,10 +855,10 @@ var db=request.zos.queryObject;
 			qc=db.execute("qc");
 		}
 		if(isquery(qc) and qc.recordcount NEQ 0){
-			session.inquiries_email=qc.user_username;
-			session.inquiries_first_name=qc.user_first_name;
-			session.inquiries_last_name=qc.user_last_name;
-			session.inquiries_phone1=qc.user_phone;
+			request.zsession.inquiries_email=qc.user_username;
+			request.zsession.inquiries_first_name=qc.user_first_name;
+			request.zsession.inquiries_last_name=qc.user_last_name;
+			request.zsession.inquiries_phone1=qc.user_phone;
 			ts=structnew();
 			ts.name="inquiries_email";
 			ts.value="";
@@ -879,7 +879,7 @@ var db=request.zos.queryObject;
 			ts.value="";
 			ts.expires="now";
 			application.zcore.functions.zCookie(ts);
-			session.zUserInquiryInfoLoaded=true;
+			request.zsession.zUserInquiryInfoLoaded=true;
 		}
 	}
 	
@@ -1685,7 +1685,7 @@ configCom.includeContentByName(ts);
 		#db.trustedsql(rs.leftJoin)# 
 		WHERE content.site_id = #db.param(request.zos.globals.id)# and 
 		content_id =#db.param(arguments.argContentId)# ";
-		if(application.zcore.functions.zso(session, 'zcontentshowinactive') EQ 0){
+		if(application.zcore.functions.zso(request.zsession, 'zcontentshowinactive') EQ 0){
 			db.sql&=" and content_for_sale <> #db.param(2)# ";
 		}
 		db.sql&=" and content_deleted = #db.param(0)# 
@@ -1862,9 +1862,9 @@ configCom.includeContentByName(ts);
 	}
 	if(structkeyexists(request.zos.userSession.groupAccess, "member")){
 		if(structkeyexists(form, 'zcontentshowinactive')){
-			session.zcontentshowinactive=form.zcontentshowinactive;
+			request.zsession.zcontentshowinactive=form.zcontentshowinactive;
 		}else{
-			session.zcontentshowinactive=application.zcore.functions.zso(session, 'zcontentshowinactive',true);	
+			request.zsession.zcontentshowinactive=application.zcore.functions.zso(request.zsession, 'zcontentshowinactive',true);	
 		}
 		request.zos.zcontentshowinactive=true;
 	}else{

@@ -12,7 +12,7 @@
 	}
 	
 	if(structkeyexists(form, 'return') and structkeyexists(form, 'rental_category_id')){
-		StructInsert(session, "rental_category_return"&form.rental_category_id, request.zos.cgi.http_referer, true);		
+		StructInsert(request.zsession, "rental_category_return"&form.rental_category_id, request.zos.cgi.http_referer, true);		
 	}
 	variables.queueSortStruct = StructNew();
 	// required
@@ -60,9 +60,9 @@
 	form.rental_category_parent_id=application.zcore.functions.zso(form, 'rental_category_parent_id',true);
 	if(structkeyexists(form, 'enableRentalCategorySortingMode')){
 		if(form.enableRentalCategorySortingMode EQ 0){
-			structdelete(session, 'enableRentalCategorySortingMode');
+			structdelete(request.zsession, 'enableRentalCategorySortingMode');
 		}else{
-			session.enableRentalCategorySortingMode=true;
+			request.zsession.enableRentalCategorySortingMode=true;
 		}
 	}
 	</cfscript>
@@ -105,13 +105,13 @@
 		<br />
 	</cfif>
 	
-	<p><cfif structkeyexists(session, 'enableRentalCategorySortingMode')>
+	<p><cfif structkeyexists(request.zsession, 'enableRentalCategorySortingMode')>
 		<a href="/z/rental/admin/rental-category/index?rental_category_parent_id=#form.rental_category_parent_id#&enableRentalCategorySortingMode=0">Disable Rental Sorting Mode</a>
 	<cfelse>
 		<a href="/z/rental/admin/rental-category/index?rental_category_parent_id=#form.rental_category_parent_id#&enableRentalCategorySortingMode=1">Enable Rental Sorting Mode</a>
 	</cfif><p>
 	
-	<cfif structkeyexists(session, 'enableRentalCategorySortingMode')>
+	<cfif structkeyexists(request.zsession, 'enableRentalCategorySortingMode')>
 		<cfscript>	
 		db.sql=" SELECT * #db.trustedSQL(rs.select)#, 
 		if(rc2.rental_category_id IS NOT NULL,#db.param(1)#,#db.param(0)#) hasChildren FROM 
@@ -299,9 +299,9 @@
 		application.zcore.app.getAppCFC("rental").searchIndexDeleteRentalCategory(form.rental_category_id, false);
 		variables.queueSortCom.sortAll();
         application.zcore.status.setStatus(request.zsid, "Rental Category deleted successfully.");
-		if(structkeyexists(session, "rental_category_return"&form.rental_category_id)){
-			tempLink=session["rental_category_return"&form.rental_category_id];
-			structdelete(session,"rental_category_return"&form.rental_category_id);
+		if(structkeyexists(request.zsession, "rental_category_return"&form.rental_category_id)){
+			tempLink=request.zsession["rental_category_return"&form.rental_category_id];
+			structdelete(request.zsession,"rental_category_return"&form.rental_category_id);
 			application.zcore.functions.z301Redirect(tempLink);
 		}else{
 			application.zcore.functions.zRedirect("/z/rental/admin/rental-category/index?rental_category_id="&form.rental_category_id&"&zsid="&request.zsid);
@@ -435,9 +435,9 @@
 			application.zcore.template.fail("Failed to process rewrite URLs for rental_category_id = #db.param(form.rental_category_id)# and rental_category_url = #db.param(application.zcore.functions.zso(form,'rental_category_url'))#.");
 		}
 	}
-	if(structkeyexists(session, "rental_category_return"&form.rental_category_id)){
-		tempLink=session["rental_category_return"&form.rental_category_id];
-		structdelete(session,"rental_category_return"&form.rental_category_id);
+	if(structkeyexists(request.zsession, "rental_category_return"&form.rental_category_id)){
+		tempLink=request.zsession["rental_category_return"&form.rental_category_id];
+		structdelete(request.zsession,"rental_category_return"&form.rental_category_id);
 		application.zcore.functions.z301Redirect(tempLink);
 	}else{
 		application.zcore.functions.zredirect(redirecturl);

@@ -68,10 +68,10 @@ This is a global key. It will work across all domains. --->
     	writeoutput('<h2>Lead submission is disabled in demo mode.</h2><p>Please go back and continuing browsing the demo site.</p>');
     	application.zcore.functions.zabort();
     }
-    if(structkeyexists(session.zos,'formHashUniqueStruct') EQ false or structkeyexists(session.zos.formHashUniqueStruct, arguments.hashValue) EQ false){
+    if(structkeyexists(request.zsession,'formHashUniqueStruct') EQ false or structkeyexists(request.zsession.formHashUniqueStruct, arguments.hashValue) EQ false){
         return false;
     }else{
-        structdelete(session.zos.formHashUniqueStruct, arguments.hashValue);
+        structdelete(request.zsession.formHashUniqueStruct, arguments.hashValue);
         return true;
     }
     </cfscript>
@@ -79,10 +79,10 @@ This is a global key. It will work across all domains. --->
 <cffunction name="zGetFormHashValue" localmode="modern" output="no" returntype="string">
     <cfscript>
     var hashValue=hash(randrange(13101231,1201230120)&request.zos.mysqlnow,'sha-256');
-    if(isDefined('session.zos') EQ false or structkeyexists(session.zos,'formHashUniqueStruct') EQ false){
-        session.zos.formHashUniqueStruct=structnew();
+    if(isDefined('request.zsession') EQ false or structkeyexists(request.zsession,'formHashUniqueStruct') EQ false){
+        request.zsession.formHashUniqueStruct=structnew();
     }
-    session.zos.formHashUniqueStruct[hashValue]=true;
+    request.zsession.formHashUniqueStruct[hashValue]=true;
     return hashValue;
     </cfscript>
 </cffunction>

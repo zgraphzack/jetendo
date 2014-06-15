@@ -308,7 +308,7 @@
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("slideshow_image", request.zos.zcoreDatasource)# slideshow_image, #db.table("slideshow", request.zos.zcoreDatasource)# slideshow
 	where slideshow.site_id = slideshow_image.site_id and 
@@ -319,9 +319,9 @@
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this slideshow.',false,true);
-		if(isDefined('session.slideshow_return'&form.slideshow_id)){
-			tempURL = session['slideshow_return'&form.slideshow_id];
-			StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+		if(isDefined('request.zsession.slideshow_return'&form.slideshow_id)){
+			tempURL = request.zsession['slideshow_return'&form.slideshow_id];
+			StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/slideshow/managephoto?slideshow_id=#form.slideshow_id#&slideshow_tab_id=#form.slideshow_tab_id#&zsid=#request.zsid#');
@@ -349,7 +349,7 @@
 		<img src="/zupload/slideshow/#qCheck.slideshow_id#/#qCheck.slideshow_image_thumbnail_url#" /><br />
 		<br />
 		<a href="/z/admin/slideshow/deletePhoto?confirm=1&amp;slideshow_id=#form.slideshow_id#&amp;slideshow_image_id=#qcheck.slideshow_image_id#&amp;slideshow_tab_id=#qcheck.slideshow_tab_id#">Yes</a>&nbsp;&nbsp;&nbsp;
-		<a href="#application.zcore.functions.zso(session,'slideshow_return'&form.slideshow_id)#">No</a> </h2>
+		<a href="#application.zcore.functions.zso(request.zsession,'slideshow_return'&form.slideshow_id)#">No</a> </h2>
 	</cfif>
 </cffunction>
 
@@ -363,7 +363,7 @@
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab, #db.table("slideshow", request.zos.zcoreDatasource)# slideshow
 	where slideshow.site_id = slideshow_tab.site_id and 
@@ -374,9 +374,9 @@
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this slideshow.',false,true);
-		if(isDefined('session.slideshow_return'&form.slideshow_id)){
-			tempURL = session['slideshow_return'&form.slideshow_id];
-			StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+		if(isDefined('request.zsession.slideshow_return'&form.slideshow_id)){
+			tempURL = request.zsession['slideshow_return'&form.slideshow_id];
+			StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/slideshow/managephoto?slideshow_id=#form.slideshow_id#&slideshow_tab_id=#form.slideshow_tab_id#&zsid=#request.zsid#');
@@ -426,7 +426,7 @@
 			<br />
 		</cfif>
 		<a href="/z/admin/slideshow/deleteTab?confirm=1&amp;slideshow_id=#form.slideshow_id#&amp;slideshow_tab_id=#qcheck.slideshow_tab_id#">Yes</a>&nbsp;&nbsp;&nbsp;
-		<a href="#application.zcore.functions.zso(session,'slideshow_return'&form.slideshow_id)#">No</a> </h2>
+		<a href="#application.zcore.functions.zso(request.zsession,'slideshow_return'&form.slideshow_id)#">No</a> </h2>
 	</cfif>
 </cffunction>
 
@@ -440,7 +440,7 @@
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows", true);	
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 	LEFT JOIN #db.table("slideshow_image", request.zos.zcoreDatasource)# slideshow_image ON 
@@ -451,18 +451,18 @@
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount GT 1){
 		application.zcore.status.setStatus(request.zsid, 'You must delete all the slideshow images before deleting a slideshow.',false,true);
-		if(isDefined('session.slideshow_return'&form.slideshow_id)){
-			tempURL = session['slideshow_return'&form.slideshow_id];
-			StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+		if(isDefined('request.zsession.slideshow_return'&form.slideshow_id)){
+			tempURL = request.zsession['slideshow_return'&form.slideshow_id];
+			StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/slideshow/index?zsid=#request.zsid#');
 		}
 	}else if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'This slideshow no longer exists.',false,true);
-		if(isDefined('session.slideshow_return'&form.slideshow_id)){
-			tempURL = session['slideshow_return'&form.slideshow_id];
-			StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+		if(isDefined('request.zsession.slideshow_return'&form.slideshow_id)){
+			tempURL = request.zsession['slideshow_return'&form.slideshow_id];
+			StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}else{
 			application.zcore.functions.zRedirect('/z/admin/slideshow/index?zsid=#request.zsid#');
@@ -501,7 +501,7 @@
 			Title: #qCheck.slideshow_name# <br />
 			<br />
 			<a href="/z/admin/slideshow/delete?confirm=1&amp;slideshow_id=#form.slideshow_id#">Yes</a>&nbsp;&nbsp;&nbsp;
-			<a href="#application.zcore.functions.zso(session,'slideshow_return'&form.slideshow_id)#">No</a> </h2>
+			<a href="#application.zcore.functions.zso(request.zsession,'slideshow_return'&form.slideshow_id)#">No</a> </h2>
 	</cfif>
 </cffunction>
 
@@ -749,10 +749,10 @@
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Slideshow saved.");
 	}
-	if(structkeyexists(form, 'slideshow_id') and isDefined('session.slideshow_return'&form.slideshow_id)){	
-		tempURL = session['slideshow_return'&form.slideshow_id];
+	if(structkeyexists(form, 'slideshow_id') and isDefined('request.zsession.slideshow_return'&form.slideshow_id)){	
+		tempURL = request.zsession['slideshow_return'&form.slideshow_id];
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
-		StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+		StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 	}else{	
 		application.zcore.functions.zRedirect('/z/admin/slideshow/index?zsid=#request.zsid#');
@@ -778,7 +778,7 @@
 	application.zcore.functions.zSetPageHelpId("2.4.3");
     form.slideshow_tab_id=application.zcore.functions.zso(form, 'slideshow_tab_id');
     if(structkeyexists(form, 'return')){
-    StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
+    StructInsert(request.zsession, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
     }
 	db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# s
 	LEFT JOIN #db.table("slideshow_tab", request.zos.zcoreDatasource)# st ON 
@@ -1169,18 +1169,18 @@
 
 	if(form.method EQ 'insertTab'){
 		application.zcore.status.setStatus(request.zsid, "Tab added.");
-		if(isDefined('session.slideshow_return')){
-			tempURL = session['slideshow_return'];
-			StructDelete(session, 'slideshow_return', true);
+		if(isDefined('request.zsession.slideshow_return')){
+			tempURL = request.zsession['slideshow_return'];
+			StructDelete(request.zsession, 'slideshow_return', true);
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Tab updated.");
 	}
-	if(structkeyexists(form, 'slideshow_tab_id') and isDefined('session.slideshow_return'&form.slideshow_id) ) {
-		tempURL = session['slideshow_return'&form.slideshow_id];
-		StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+	if(structkeyexists(form, 'slideshow_tab_id') and isDefined('request.zsession.slideshow_return'&form.slideshow_id) ) {
+		tempURL = request.zsession['slideshow_return'&form.slideshow_id];
+		StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 	}else{	
@@ -1206,7 +1206,7 @@
 	application.zcore.functions.zSetPageHelpId("2.4.5");
     form.slideshow_image_id=application.zcore.functions.zso(form, 'slideshow_image_id');
     if(structkeyexists(form, 'return')){
-    	StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
+    	StructInsert(request.zsession, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
     }
 	db.sql="SELECT * from #db.table("slideshow", request.zos.zcoreDatasource)# s
 	LEFT JOIN #db.table("slideshow_image", request.zos.zcoreDatasource)# si 
@@ -1407,18 +1407,18 @@
 		
 	if(form.method EQ 'insert'){
 		application.zcore.status.setStatus(request.zsid, "Image added.");
-		if(isDefined('session.slideshow_return')){
-			tempURL = session['slideshow_return'];
-			StructDelete(session, 'slideshow_return', true);
+		if(isDefined('request.zsession.slideshow_return')){
+			tempURL = request.zsession['slideshow_return'];
+			StructDelete(request.zsession, 'slideshow_return', true);
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 		}
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Image updated.");
 	}
-	if(structkeyexists(form, 'slideshow_image_id') and isDefined('session.slideshow_return'&form.slideshow_id) ) {
-		tempURL = session['slideshow_return'&form.slideshow_id];
-		StructDelete(session, 'slideshow_return'&form.slideshow_id, true);
+	if(structkeyexists(form, 'slideshow_image_id') and isDefined('request.zsession.slideshow_return'&form.slideshow_id) ) {
+		tempURL = request.zsession['slideshow_return'&form.slideshow_id];
+		StructDelete(request.zsession, 'slideshow_return'&form.slideshow_id, true);
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(application.zcore.functions.zurlappend(tempURL,"zsid=#request.zsid#"), true);
 	}else{	
@@ -1459,7 +1459,7 @@
 	application.zcore.functions.zQueryToStruct(qSlideshow,form,'slideshow_id,site_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	if(structkeyexists(form, 'return')){
-		StructInsert(session, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
+		StructInsert(request.zsession, "slideshow_return"&form.slideshow_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	</cfscript>
 	<h2>
@@ -1486,7 +1486,7 @@
 	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-slideshow-edit");
-	cancelURL=application.zcore.functions.zso(session,'slideshow_return'&form.slideshow_id);
+	cancelURL=application.zcore.functions.zso(request.zsession,'slideshow_return'&form.slideshow_id);
 	tabCom.setCancelURL(cancelURL);
 	tabCom.enableSaveButtons();
 	</cfscript>

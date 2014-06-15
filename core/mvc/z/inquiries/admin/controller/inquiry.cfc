@@ -51,7 +51,7 @@
 		application.zcore.functions.zRedirect("/z/inquiries/admin/inquiry/add?zPageId=#form.zPageId#&zsid=#Request.zsid#");
 	}
 	/*if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-		form.user_id = session.zos.user.id;
+		form.user_id = request.zsession.user.id;
 	}*/
 	form.site_id = request.zOS.globals.id;
 	
@@ -113,7 +113,7 @@
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
 	WHERE inquiries_id = #db.param(form.inquiries_id)# and site_id = #db.param(request.zos.globals.id)#
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
-		and user_id = #db.param(session.zos.user.id)# and user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
+		and user_id = #db.param(request.zsession.user.id)# and user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
 	</cfsavecontent>
 	<cfscript>
