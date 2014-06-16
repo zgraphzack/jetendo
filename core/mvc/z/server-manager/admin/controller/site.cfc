@@ -601,7 +601,7 @@
 	
 	if(application.zcore.status.getErrorCount(Request.zsid) NEQ 0){
 		if(currentMethod EQ "update"){
-			application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?zsid=#Request.zsid#");
+			application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?sid=#form.sid#&zsid=#Request.zsid#");
 		}else{
 			application.zcore.functions.zRedirect("/z/server-manager/admin/site/add?newdomain=#application.zcore.functions.zso(form, 'newdomain')#&zsid=#Request.zsid#");
 		}
@@ -638,7 +638,7 @@
 		}
 		if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			application.zcore.status.setStatus(Request.zsid, "Fail to update site",form,true);
-			application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?zsid=#Request.zsid#");
+			application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?sid=#form.sid#&zsid=#Request.zsid#");
 		}else{
 			application.zcore.status.setStatus(Request.zsid, "Site, '#form.site_sitename#', Updated Successfully.");
 		}

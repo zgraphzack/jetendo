@@ -121,6 +121,22 @@
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('debugleadrouting','true');return false;">Off</a>
                 </cfif>
+                <br />
+                <cfif structkeyexists(request.zos.requestData.headers, 'ssl_session_id')>
+					<cfif structkeyexists(request.zsession, 'ssl_session_id')>
+						<cfif request.zsession.ssl_session_id NEQ request.zos.requestData.headers.ssl_session_id>
+               				ssl_session_id changed<br />
+               			<cfelse>
+               				ssl_session_id reused
+						</cfif>
+					<cfelse>
+						new session
+               		</cfif>
+					<cfscript>
+					request.zsession.ssl_session_id=request.zos.requestData.headers.ssl_session_id;
+					</cfscript>
+				</cfif> | 
+               	#structcount(application.customSessionStruct)# Active Sessions
               </div>
             <div class="zOS_mode_td">
               <cfif isDefined('request.zsession.tracking.track_user_hits')>Hits: #request.zsession.tracking.track_user_hits#</cfif>

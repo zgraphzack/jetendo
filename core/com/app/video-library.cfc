@@ -308,9 +308,6 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	application.zcore.functions.zRequireSWFUpload();
 	
 	application.zcore.template.setTag("title","Video Library");
-	if(not structkeyexists(request.zsession, 'cfid')){
-		application.zcore.functions.zredirect('/z/admin/admin-home/index');
-	}
 	</cfscript>
 	<cfsavecontent variable="theMeta">
 	<script type="text/javascript">
@@ -371,6 +368,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	</cfscript>
 	<script type="text/javascript">
 	/* <![CDATA[ */ 
+	var sessionIDName="#request.zos.serverSessionVariable#";
 	var arrVideoLibraryComplete=new Array();
 	 /* ]]> */
 	 </script>

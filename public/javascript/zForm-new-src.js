@@ -146,7 +146,7 @@ function myImageLibraryUploadSuccess(file, serverData){
 function zInitSWFUpload(imageLibraryId){ 
 	var settings = {
 		flash_url : "/z/javascript/swfupload/swfupload.swf",
-		upload_url: "/z/_com/app/image-library?CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN')+"&method=imageprocessform&image_library_id="+imageLibraryId, 
+		upload_url: "/z/_com/app/image-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=imageprocessform&image_library_id="+imageLibraryId, 
 		file_size_limit : "100 MB",
 		file_post_name : "image_file",
 		file_types : "*.jpg;*.jpeg;*.gif;*.png;*.zip",
@@ -261,7 +261,7 @@ function zDeleteVideo(libraryId){
 		//document.getElementById('embedMenuDiv').style.display="none";
 		var tempObj={};
 		tempObj.id="zAjaxDeleteVideo";
-		tempObj.url="/z/_com/app/video-library?CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN')+"&method=deleteVideo&video_id="+t.video_id+"&libraryid="+libraryId;
+		tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=deleteVideo&video_id="+t.video_id+"&libraryid="+libraryId;
 		tempObj.cache=false;
 		tempObj.callback=zAjaxDeleteVideoCallback;
 		tempObj.ignoreOldRequests=false;
@@ -321,7 +321,7 @@ function zAjaxEncodeProgressCallback(r){
 			t.videoFile='/zupload/video/'+r.filename;
 			var tempObj={};
 			tempObj.id="zAjaxSaveQueueToVideo";
-			tempObj.url="/z/_com/app/video-library?CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN')+"&method=saveQueueToVideo&queue_id="+r.queue_id;
+			tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=saveQueueToVideo&queue_id="+r.queue_id;
 			tempObj.cache=false;
 			tempObj.callback=zAjaxSaveQueueToVideoCallback;
 			tempObj.ignoreOldRequests=false;
@@ -352,7 +352,7 @@ function zAjaxEncodeProgressCallback(r){
 function zAjaxEncodeProgress(){
 	var tempObj={};
 	tempObj.id="zAjaxVideoEncodeProgress";
-	tempObj.url="/z/_com/app/video-library?CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN')+"&method=videoencodeprogress&queue_id_list="+arrProgressVideo.join(",");
+	tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=videoencodeprogress&queue_id_list="+arrProgressVideo.join(",");
 	tempObj.cache=false;
 	tempObj.callback=zAjaxEncodeProgressCallback;
 	tempObj.ignoreOldRequests=false;
@@ -385,7 +385,7 @@ function cancelEncoding(){
 	}
 	var tempObj={};
 	tempObj.id="zAjaxVideoEncodeCancel";
-	tempObj.url="/z/_com/app/video-library?CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN')+"&method=videoencodecancel&queue_id_list="+arrProgressVideo.join(",");
+	tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=videoencodecancel&queue_id_list="+arrProgressVideo.join(",");
 	tempObj.cache=false;
 	tempObj.callback=zAjaxEncodeCancelCallback;
 	tempObj.ignoreOldRequests=false;
@@ -463,7 +463,7 @@ function zAjaxKeepSessionActiveCallback(file, serverdata){
 function keepSessionActive(){ 
 	var tempObj={};
 	tempObj.id="zKeepSessionActive";
-	tempObj.url="/z/_com/app/video-library?method=videokeepsessionactive&CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN');
+	tempObj.url="/z/_com/app/video-library?method=videokeepsessionactive&"+sessionIDName+"="+zGetCookie(sessionIDName);
 	tempObj.cache=false;
 	tempObj.callback=zAjaxKeepSessionActiveCallback;
 	tempObj.ignoreOldRequests=false;
@@ -473,7 +473,7 @@ function setupSWFUpload(){
 	document.getElementById("encodingRes").innerHTML=document.getElementById('video_width').value+"x"+document.getElementById('video_height').value;
 	var settings = {
 		flash_url : "/z/javascript/swfupload/swfupload.swf",
-		upload_url: "/z/_com/app/video-library?CFID="+zGetCookie('CFID')+"&CFTOKEN="+zGetCookie('CFTOKEN')+"&method=videoprocessform&zFPE=1&video_width="+document.getElementById('video_width').value+"&video_height="+document.getElementById('video_height').value, 
+		upload_url: "/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=videoprocessform&zFPE=1&video_width="+document.getElementById('video_width').value+"&video_height="+document.getElementById('video_height').value, 
 		file_size_limit : "1000 MB",
 		file_post_name : "video_file",
 		file_types : "*.3g2;*.3gp;*.asf;*.asx;*.avi;*.flv;*.mov;*.mp4;*.mpg;*.swf;*.vob;*.wmv;*.divx;*.f4v;*.m2p;*.m4v;*.mkv;*.mpeg;*.ogv;*.webm;*.xvid;",

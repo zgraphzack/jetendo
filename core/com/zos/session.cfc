@@ -177,11 +177,11 @@ ssl session - lost on browser close - lost on server reboot
 		}else if(c.ip NEQ request.zos.cgi.remote_addr){
 			currentId=createUUID();
 		}
-		if(structkeyexists(request.zos.requestData.headers, 'ssl_session_id')){
+		/*if(structkeyexists(request.zos.requestData.headers, 'ssl_session_id')){
 			if(c.sslSessionId NEQ request.zos.requestData.headers.ssl_session_id){
 				currentId=createUUID();
 			}
-		}
+		}*/
 	}
 	timeSpan=CreateTimeSpan(0, 0, request.zos.sessionExpirationInMinutes, 0);
 	application.zcore.functions.zCookie({name:request.zos.serverSessionVariable, value:currentId, expires: timeSpan });
@@ -202,6 +202,10 @@ ssl session - lost on browser close - lost on server reboot
 	if(not structkeyexists(request.zos, 'sessionID')){
 		getSessionId();
 	}
+	if(structkeyexists(request.zos, 'trackingspider') and request.zos.trackingspider){
+		structdelete(application.customSessionStruct, request.zsessionID);
+		return;
+	}
 	if(request.zos.isTestServer){
 		// verify recursively all data being put is array, struct, string, boolean, numeric.  No complex types or java allowed
 		checkStruct(arguments.struct);
@@ -210,12 +214,13 @@ ssl session - lost on browser close - lost on server reboot
 		date: now(),
 		userAgent: request.zos.cgi.http_user_agent,
 		ip: request.zos.cgi.remote_addr,
-		data: arguments.struct,
-		sslSessionId:''
+		data: arguments.struct
+		//,		sslSessionId:''
 	};
+	/*
 	if(structkeyexists(request.zos.requestData.headers, 'ssl_session_id')){
 		ts.sslSessionId=request.zos.requestData.headers.ssl_session_id;
-	}
+	}*/
 	request.zsession=ts.data;
 	application.customSessionStruct[request.zsessionID]=ts;
 	</cfscript>
