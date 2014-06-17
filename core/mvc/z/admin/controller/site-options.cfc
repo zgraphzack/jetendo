@@ -123,8 +123,9 @@
 			<cfargument name="struct" type="struct" required="yes">
 			<cfscript>
 			if(arguments.struct["column1"] EQ "bad value"){
-			arguments.struct["column1"]="correct value";
+				arguments.struct["column1"]="correct value";
 			}
+			return true; /* return false if you do not want to import this record. */
 			</cfscript>
 			</cffunction>
 			</cfcomponent>')#</textarea></p>
@@ -270,16 +271,23 @@
 			}
 		}
 		if(filterEnabled){
-			filterInstance[form.cfcMethod](ts);
+			result=filterInstance[form.cfcMethod](ts);
+			if(not result){
+				continue;
+			}
 		}
 		structappend(ts, defaultStruct, false);  
-		for(i in defaultStruct){ 
+		for(i in ts){ 
 			if(structkeyexists(dataStruct, siteOptionIdLookupByName[i]) and dataStruct[siteOptionIdLookupByName[i]].mapData){
-				if(structkeyexists(dataStruct[siteOptionIdLookupByName[i]].struct, ts[i])){
-					ts[i]=dataStruct[siteOptionIdLookupByName[i]].struct[ts[i]];
-				}else{
-					ts[i]="";
+				arrC=listToArray(ts[i], ",");
+				arrC2=[];
+				for(i2=1;i2 LTE arraylen(arrC);i2++){
+					c=trim(arrC[i2]);
+					if(structkeyexists(dataStruct[siteOptionIdLookupByName[i]].struct, c)){
+						arrayAppend(arrC2, dataStruct[siteOptionIdLookupByName[i]].struct[c]);
+					}
 				}
+				ts[i]=arrayToList(arrC2, ",");
 			} 
 			form['newvalue'&siteOptionIdLookupByName[i]]=ts[i];
 		}   
