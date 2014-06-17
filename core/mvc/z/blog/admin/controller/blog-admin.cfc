@@ -1842,7 +1842,7 @@ tabCom.enableSaveButtons();
             If a blog article's date is set to the future, it will be invisible to the public unless you click "Yes" for the "Event" field above.<br /><br />
             <div id="dateBox">
             <cfscript>
-            writeoutput("Specify Date:"&application.zcore.functions.zDateSelect("blog_datetime","blog_datetime",yeardate,year(now())+1,""));
+            writeoutput("Specify Date:"&application.zcore.functions.zDateSelect("blog_datetime","blog_datetime",2000,year(now())+1,""));
             writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_datetime","blog_datetime",1,5));
             </cfscript><br />
             <div id="eventDateBox" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0)><cfelse>style="display:none;"</cfif>>

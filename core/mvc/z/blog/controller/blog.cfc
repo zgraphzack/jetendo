@@ -1597,7 +1597,7 @@ this.app_id=10;
 		authorLabel=qArticle.user_username;
 	}
 	</cfscript>
-	<span style="font-size:100%; font-weight:700; clear:both; ">Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
+	<span class="zblog-author" style="font-size:100%; font-weight:700; clear:both; ">Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
 	<cfset local.curFeedLink=application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url')> 
 	<cfif qArticle.user_googleplus_url NEQ "" or qArticle.user_twitter_url NEQ "" or qArticle.user_facebook_url NEQ "">
 		&nbsp; Follow me: 

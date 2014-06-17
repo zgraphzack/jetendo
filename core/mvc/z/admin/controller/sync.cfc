@@ -778,9 +778,11 @@ This allows avoiding remaps more easily.  Less code when importing.
 	arraySort(arrKey, "text", "asc");
 	for(g=1;g LTE arrayLen(arrKey);g++){
 		i=arrKey[g];
-		c=fieldChangeStruct.changedFields[i];
-		for(n in c){
-			arrayAppend(arrF, '<tr><td>'&replace(i, chr(9), " &rarr; ", "all")&" &rarr; "&n&"</td></tr>");
+		if(structkeyexists(fieldChangeStruct.changedFields, i)){
+			c=fieldChangeStruct.changedFields[i];
+			for(n in c){
+				arrayAppend(arrF, '<tr><td>'&replace(i, chr(9), " &rarr; ", "all")&" &rarr; "&n&"</td></tr>");
+			}
 		}
 	}
 	if(arrayLen(arrF)){
