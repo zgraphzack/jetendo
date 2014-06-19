@@ -877,7 +877,6 @@ this.app_id=10;
 	var error=false;
 	var df=structnew();
 	df.blog_config_title="Blog";
-	df.blog_config_subtitle="A place to share thoughts";
 	df.blog_config_root_url="{default}";
 	df.blog_config_url_article_id="1";
 	df.blog_config_url_category_id="2";
@@ -892,7 +891,7 @@ this.app_id=10;
 	df.blog_config_home_url="/";
 	for(i in df){	
 		if(arguments.validate){
-			if(structkeyexists(form,i) EQ false or (form[i] EQ "" and i NEQ "blog_config_subtitle")){	
+			if(structkeyexists(form,i) EQ false or (form[i] EQ "")){	
 				error=true;
 				field=trim(lcase(replacenocase(replacenocase(i,"blog_config_",""),"_"," ","ALL")));
 				application.zcore.status.setStatus(request.zsid,"#field# is required.",form);
@@ -982,11 +981,7 @@ this.app_id=10;
 		<tr>
 		<th>Title:</th>
 		<td><input type="text" name="blog_config_title" value="#form.blog_config_title#" size="60" maxlength="255"></td>
-		</tr>
-		<tr>
-		<th>Subtitle:</th>
-		<td><input type="text" name="blog_config_subtitle" value="#form.blog_config_subtitle#" size="60"  maxlength="255"></td>
-		</tr>
+		</tr> 
 		<tr>
 		<th>Root URL</th>
 		<td><input type="text" name="blog_config_root_url" id="blog_config_root_url" value="#form.blog_config_root_url#" size="40"  maxlength="100"> <a href="##" onclick=" document.getElementById('blog_config_root_url').value='{default}'; return false;">Restore default</a></td>
@@ -2811,10 +2806,7 @@ this.app_id=10;
 	var db=request.zos.queryObject;
 	var tempMenu='';
 	var tempPagenav='';
-	request.month=CreateDate(year(now()),month(now()),1);
-	/*if(structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_subtitle') and application.zcore.app.getAppData("blog").optionStruct.blog_config_subtitle NEQ ""){
-		writeoutput('<p>#application.zcore.app.getAppData("blog").optionStruct.blog_config_subtitle#</p>');
-	}*/
+	request.month=CreateDate(year(now()),month(now()),1); 
 	variables.init();
 	</cfscript>
 	<cfsavecontent variable="tempPageNav">

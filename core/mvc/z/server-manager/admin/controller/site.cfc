@@ -736,7 +736,7 @@
 	}
 	
 	 db.sql="INSERT INTO #db.table("blog_config", request.zos.zcoreDatasource)#  (`blog_config_title`,`blog_config_subtitle`,`blog_config_stylesheet`,`blog_config_manager_stylesheet`,`blog_config_root_url`,`blog_config_url_article_id`,`blog_config_url_category_id`,`blog_config_url_misc_id`,`blog_config_url_tag_id`,`blog_config_recent_name`,`blog_config_url_format`,`blog_config_category_home_name`,`blog_config_recent_url`,`blog_config_category_home_url`,`blog_config_archive_name`,`blog_config_home_url`,`blog_config_include_sidebar`,`blog_config_show_detail`,`app_x_site_id`,`site_id`) VALUES 
-	 #db.trustedSQL("( 'Blog','A place to share thoughts','/z/a/blog/stylesheets/style.css','','{default}','1','2','3','4','Recent Articles','/##name##-##appid##-##id##.##ext##','Blog Categories','{default}','{default}','archive','/','0','0','#qId1.id#','#form.site_id#')")#";
+	 #db.trustedSQL("( 'Blog','','/z/a/blog/stylesheets/style.css','','{default}','1','2','3','4','Recent Articles','/##name##-##appid##-##id##.##ext##','Blog Categories','{default}','{default}','archive','/','0','0','#qId1.id#','#form.site_id#')")#";
 	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
 	if(not local.rs.success){
 		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	
