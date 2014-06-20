@@ -57,6 +57,7 @@
 	var db=request.zos.queryObject;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	if(structkeyexists(form, 'return')){
 		StructInsert(request.zsession, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
@@ -71,7 +72,7 @@
 			StructDelete(request.zsession, 'content_return'&form.content_id);
 			application.zcore.functions.zRedirect(tempURL, true);
 		}else{
-			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
+			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 		}
 	}
 	if(structkeyexists(form, 'confirm')){
@@ -105,19 +106,19 @@
 		site_id = #db.param(request.zos.globals.id)#";
 		qChildren=db.execute("qChildren");
 		if(qchildren.recordcount EQ 0){
-			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qparent.content_parent_id#&zsid=#request.zsid#');
+			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qparent.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 		}else{
-			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&zsid=#request.zsid#');
+			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 		}	
 	}else{
-		local.link="/z/content/admin/content-admin/delete?confirm=1&content_id=#form.content_id#";
+		local.link="/z/content/admin/content-admin/delete?confirm=1&content_id=#form.content_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#";
 		if(qcheck.content_parent_id NEQ 0){
 			local.link&="&content_parent_id=#qcheck.content_parent_id#";
 		}
 		writeoutput('<h2>Are you sure you want to delete this content?<br /><br />
 		Title: #qCheck.content_name# <br /><br />
 		<a href="#local.link#">Yes</a>&nbsp;&nbsp;&nbsp;
-		<a href="/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#">No</a></h2>');
+		<a href="/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>');
 	}
 	</cfscript>
 </cffunction>
@@ -144,6 +145,7 @@
 	var db=request.zos.queryObject;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
+	application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	for(i in form){
 		if(isSimpleValue(form[i])){
 			form[i]=trim(form[i]);	
@@ -185,7 +187,7 @@
 		site_id = #db.param(request.zos.globals.id)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
-			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this content.',false,true);
+			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this content.',form,true);
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
 		}
 		if(application.zcore.user.checkSiteAccess() EQ false){
@@ -376,7 +378,11 @@
 		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 		application.zcore.functions.zRedirect(tempURL, true);
 	}else{	
-		application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
+		link=application.zcore.functions.zBuildURL('/z/content/admin/content-admin/index', {
+			zsid: request.zsid,
+			site_x_option_group_set_id:form.site_x_option_group_set_id
+		});
+		application.zcore.functions.zRedirect(link);
 	}
 	</cfscript>
 </cffunction>
@@ -435,6 +441,10 @@
 		currentMethod='add';
 		form.return=1;
 	}
+	
+	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+
+
 	form.content_id=application.zcore.functions.zso(form, 'content_id');
 	if(currentMethod EQ "add" or currentMethod EQ "Add Content"){
 		application.zcore.template.appendTag('scripts','<script type="text/javascript">/* <![CDATA[ */ 
@@ -463,7 +473,7 @@
 	if(form.method EQ "add" and structkeyexists(form, 'content_parent_id')){
 		local.backupContentParentId=form.content_parent_id;
 	}
-	application.zcore.functions.zQueryToStruct(qContent, form,'content_id,site_id');
+	application.zcore.functions.zQueryToStruct(qContent, form,'content_id,site_id,site_x_option_group_set_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form);
 	if(application.zcore.status.getErrorCount(request.zsid) NEQ 0){
 		form.content_datetime = application.zcore.functions.zGetDateSelect("content_datetime");	
@@ -495,13 +505,14 @@
 	}
 	application.zcore.functions.zForm(ts);
 	
-	
+	application.zcore.siteOptionCom.setIdHiddenField();
+
 	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-content-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession, 'content_return'&form.content_id); 
 	if(cancelURL EQ ""){
-		cancelURL="/z/content/admin/content-admin/index";
+		cancelURL="/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#";
 	}
 	tabCom.setCancelURL(cancelURL);
 	tabCom.enableSaveButtons();
@@ -1791,9 +1802,12 @@
 	var i=0;
 	var searchTextOriginal=0;
 	var contentphoto99=0;
-	application.zcore.functions.zSetPageHelpId("2.1");
+	application.zcore.functions.zSetPageHelpId("2.1"); 
 	this.init();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.displaySectionNav();
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 
+
 	searchText=trim(application.zcore.functions.zso(form, 'searchText'));
 	searchexactonly=application.zcore.functions.zso(form, 'searchexactonly',false,1);
 	searchTextOriginal=searchText;
@@ -1817,7 +1831,8 @@
 	if(form.content_parent_id NEQ 0){
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(form.content_parent_id)# and 
-		site_id = #db.param(request.zos.globals.id)# ";
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
 		qcontentp=db.execute("qcontentp");
 		if(qcontentp.recordcount EQ 0){
 			application.zcore.functions.zredirect("/z/content/admin/content-admin/index");
@@ -1832,7 +1847,6 @@
 	ts.count =  1; 
 	rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 	</cfscript>
-
 	<cfsavecontent variable="db.sql">
 	SELECT *, 
 	#db.trustedSQL("if(content.content_price = 0,0.00,content.content_price) content_price2, 
@@ -1896,7 +1910,8 @@
 	<cfif request.zsession.showinactive EQ 0> 
 		and content.content_for_sale<>#db.param('2')#
 	</cfif>
-	and content.content_deleted = #db.param('0')#
+	and content.content_deleted = #db.param('0')# and 
+	content.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
 	GROUP BY content.content_id 
 	ORDER BY 
 	<cfif qSortCom.getOrderBy(false) NEQ ''>
@@ -1929,7 +1944,7 @@
 		if(document.getElementById('searchexactonly2').checked){
 			st=0; 
 		}
-		window.location.href='/z/content/admin/content-admin/index?searchtext='+escape(document.getElementById('searchtext').value)+'&searchexactonly='+st;
+		window.location.href='/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#&searchtext='+escape(document.getElementById('searchtext').value)+'&searchexactonly='+st;
 	}
 	/* ]]> */
 	</script>
@@ -1944,8 +1959,8 @@
 			<p style="font-size:14px;"><strong style=" color:##F00;">NEW:</strong> Listings are now added with the above menu option: Real Estate -&gt; Add New Listing.</p>
 		</cfif>
 	</cfif>
-	<form name="myForm22" action="/z/content/admin/content-admin/index" method="GET" style="margin:0px;">
-		<input type="hidden" name="method" value="list" />
+	<form name="myForm22" action="/z/content/admin/content-admin/index" method="GET" style="margin:0px;"> 
+		#application.zcore.siteOptionCom.setIdHiddenField()#
 		<table style="width:100%; border-spacing:0px; border:1px solid ##CCCCCC;" class="table-list">
 			<tr>
 				<td>Search by ID, title
@@ -1955,7 +1970,7 @@
 				<input type="radio" name="searchexactonly" id="searchexactonly1" value="1" style="border:none; background:none;" <cfif searchexactonly EQ 1>checked="checked"</cfif> /> No 
 				<input type="radio" name="searchexactonly" id="searchexactonly2" value="0" <cfif searchexactonly EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> | 
 				<cfif application.zcore.functions.zso(form, 'searchtext') NEQ ''>
-					<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/content/admin/content-admin/index';" />
+					<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#';" />
 				</cfif>
 				<input type="hidden" name="zIndex" value="1" /></td>
 			</tr>
@@ -1988,7 +2003,7 @@
 			parentParentId=qpar.content_parent_id;
 		}
 		ArrayAppend(arrName, qpar.content_name);
-		arrayappend(arrNav, '<a href="/z/content/admin/content-admin/index?content_parent_id=#qpar.content_id#">#qPar.content_name#</a> / ');
+		arrayappend(arrNav, '<a href="/z/content/admin/content-admin/index?content_parent_id=#qpar.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#qPar.content_name#</a> / ');
 		cpi=qpar.content_parent_id;
 		if(cpi EQ 0){
 			break;
@@ -1998,10 +2013,18 @@
 	<div style="width:65%; text-align:left; float:left;">
 		<strong>
 		<cfscript>
-		if((structkeyexists(form, 'content_parent_id') EQ false or form.content_parent_id EQ 0) and application.zcore.functions.zso(form, 'searchtext') EQ ''){
-			writeoutput('Home /');
+		if(form.site_x_option_group_set_id NEQ 0){
+			if((structkeyexists(form, 'content_parent_id') EQ false or form.content_parent_id EQ 0) and application.zcore.functions.zso(form, 'searchtext') EQ ''){
+				echo ('Section Root');
+			}else{
+				echo('<a href="/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Section Root</a> / ');
+			}
 		}else{
-			writeoutput('<a href="/z/content/admin/content-admin/index">Home</a> / ');
+			if((structkeyexists(form, 'content_parent_id') EQ false or form.content_parent_id EQ 0) and application.zcore.functions.zso(form, 'searchtext') EQ ''){
+				writeoutput('Home /');
+			}else{
+				writeoutput('<a href="/z/content/admin/content-admin/index">Home</a> / ');
+			}
 		}
 		for(i=arraylen(arrNav);i GTE 2;i=i-1){
 			writeoutput(arrNav[i]);
@@ -2018,20 +2041,23 @@
 		<cfelse>
 			<a href="/z/content/admin/content-admin/index?showinactive=1">Show Inactive</a>
 		</cfif> | 
-<cfif application.zcore.functions.zso(form, 'content_parent_id', true) EQ 0>
-	<cfscript>
-	db.sql="select content_id from #db.table("content", request.zos.zcoreDatasource)# 
-	WHERE content_unique_name = #db.param("/")# and 
-	site_id = #db.param(request.zos.globals.id)# ";
-	qHome=db.execute("qHome");
-	if(qHome.recordcount EQ 1){
-		echo('<a href="/z/content/admin/content-admin/edit?content_id=#qHome.content_id#&return=1">Edit Home Page</a>');
-	}
-	</cfscript>
-<cfelse>
-	<a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&return=1">Edit This Page</a>
-</cfif>
-		| <a href="/z/content/admin/content-admin/add?content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#&return=1">Add Page Here</a> | 
+	<cfif form.site_x_option_group_set_id EQ 0>
+	
+		<cfif application.zcore.functions.zso(form, 'content_parent_id', true) EQ 0>
+			<cfscript>
+			db.sql="select content_id from #db.table("content", request.zos.zcoreDatasource)# 
+			WHERE content_unique_name = #db.param("/")# and 
+			site_id = #db.param(request.zos.globals.id)# ";
+			qHome=db.execute("qHome");
+			if(qHome.recordcount EQ 1){
+				echo('<a href="/z/content/admin/content-admin/edit?content_id=#qHome.content_id#&return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit Home Page</a>');
+			}
+			</cfscript>
+		<cfelse>
+			<a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit This Page</a>
+		</cfif> | 
+	</cfif>
+		<a href="/z/content/admin/content-admin/add?content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Page Here</a> | 
 
 		 <a href="##" onclick="zToggleDisplay('contentHelpDiv'); return false;"><strong>Need Help?</strong></a></div>
 		
@@ -2107,7 +2133,7 @@
 						&nbsp;
 					</cfif></td>
 				<td style="vertical-align:top; ">
-					<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#"></cfif>
+					<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#"></cfif>
 						#qSite.content_name#
 					<cfif application.zcore.app.siteHasApp("listing")><br />
 						<cfif qSite.content_address NEQ ''>#qSite.content_address# | </cfif>
@@ -2197,19 +2223,19 @@
 				#variables.queueSortCom.getLinks(qSite.recordcount, qSite.currentrow, "/z/content/admin/content-admin/"&form.method&"?content_id="&qSite.content_id&"&content_parent_id="&qSite.content_parent_id, "vertical-arrows")#
 			</cfif></td><td style="vertical-align:top; ">
 				<cfif (structkeyexists(form, 'qcontentp') EQ false or qcontentp.content_featured_listing_parent_page NEQ 1)>
-				<a href="/z/content/admin/content-admin/add?content_parent_id=#qSite.content_id#&return=1">#application.zcore.functions.zOutputHelpToolTip("Add Child Page","member.content.list addChildPage")#</a> | 
+				<a href="/z/content/admin/content-admin/add?content_parent_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Add Child Page","member.content.list addChildPage")#</a> | 
 				</cfif>
 				<a href="<cfif qSite.content_url_only NEQ ''>#qSite.content_url_only#<cfelse><cfif qSite.content_unique_name NEQ ''>#qSite.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(qSite.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qSite.content_id#.html</cfif></cfif><cfif qSite.content_for_sale EQ 2>?preview=1</cfif>" target="_blank"><cfif qSite.content_for_sale EQ 2>(Inactive, Click to Preview)<cfelse>View</cfif></a> | 
 				<cfif application.zcore.app.siteHasApp("listing") and qSite.content_search_mls EQ 1><a href="#request.zos.globals.domain##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_cid=#qSite.content_id#")#">Search Results Only</a> | </cfif>
 			<cfif application.zcore.app.siteHasApp("listing")>
-			<a href="<cfif qSite.content_url_only NEQ ''>#qSite.content_url_only#<cfelse><cfif qSite.content_unique_name NEQ ''>#qSite.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(qSite.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qSite.content_id#.html</cfif></cfif>?<cfif qSite.content_for_sale EQ 2>preview=1&</cfif>hidemls=1" target="_blank">View (w/o MLS)</a> | 
+			<a href="<cfif qSite.content_url_only NEQ ''>#qSite.content_url_only#<cfelse><cfif qSite.content_unique_name NEQ ''>#qSite.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(qSite.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qSite.content_id#.html</cfif></cfif>?<cfif qSite.content_for_sale EQ 2>preview=1&amp;</cfif>hidemls=1" target="_blank">View (w/o MLS)</a> | 
 			</cfif> 
-			<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#">Subpages (#qSite.children#)</a> | </cfif>
-			<a href="/z/content/admin/content-admin/edit?content_id=#qSite.content_id#&return=1">Edit</a>
+			<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Subpages (#qSite.children#)</a> | </cfif>
+			<a href="/z/content/admin/content-admin/edit?content_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a>
 			<cfif qSite.content_locked EQ 0 or application.zcore.user.checkSiteAccess()>
 				 | 
 				<cfif qSite.children EQ 0>
-				<a href="/z/content/admin/content-admin/delete?content_id=#qSite.content_id#&return=1">Delete</a>
+				<a href="/z/content/admin/content-admin/delete?content_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a>
 				</cfif>
 			<cfelse> 
 				<span style="color:##999999;">Delete Disabled</span>

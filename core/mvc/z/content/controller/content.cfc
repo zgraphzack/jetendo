@@ -247,12 +247,12 @@ var db=request.zos.queryObject;
 			ts.link="/z/admin/slideshow/index";
 			arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
 		}   
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Slideshow") EQ false){
+		/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Slideshow") EQ false){
 			ts=structnew();
 			ts.featureName="Slideshows";
 			ts.link="/z/admin/slideshow/add";
 			arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
-		}	
+		}	*/
 		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
 			ts=structnew();
 			ts.featureName="Menus";
@@ -267,12 +267,12 @@ var db=request.zos.queryObject;
 				arguments.linkStruct["Content Manager"].children["Themes"]=ts;
 			}	
 		}
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Menu") EQ false){
+		/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Menu") EQ false){
 			ts=structnew();
 			ts.featureName="Menus";
 			ts.link="/z/admin/menu/add";
 			arguments.linkStruct["Content Manager"].children["Add Menu"]=ts;
-		}
+		}*/
 		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
 			ts=structnew();
 			ts.featureName="Problem Link Report";
@@ -983,6 +983,7 @@ if(isQuery(qContent)){
 	ts.insertAtHTML='';
 	ts.appendUrl="";
 	ts.content_parent_id=0;
+	ts.site_x_option_group_set_id=0;
 	ts.content_unique_name="";
 	ts.moretemplate="";
 	ts.template="";
@@ -1026,7 +1027,8 @@ if(isQuery(qContent)){
 	db.sql&=" and 
 	content_for_sale <>#db.param(2)# and 
 	content_deleted = #db.param(0)# and 
-	content.site_id = #db.param(request.zos.globals.id)#   
+	content.site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_group_set_id = #db.param(arguments.ss.site_x_option_group_set_id)# 
 	GROUP BY content.content_id
 	ORDER BY ";
 	if(arguments.ss.sortAlpha){
@@ -1162,7 +1164,8 @@ if(isQuery(qContent)){
 		}
 		db.sql&="  and content_for_sale=#db.param(1)# and 
 		content_deleted = #db.param(0)# and 
-		content.site_id = #db.param(request.zos.globals.id)# 
+		content.site_id = #db.param(request.zos.globals.id)# and 
+		site_x_option_group_set_id = #db.param(arguments.ss.site_x_option_group_set_id)#
 		GROUP BY content.content_id";
 		qpar=db.execute("qpar");
 		loop query="qpar"{

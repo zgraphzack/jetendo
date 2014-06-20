@@ -2466,6 +2466,7 @@ User's IP: #request.zos.cgi.remote_addr#
 		ts.__groupId=row.site_option_group_id;
 		ts.__approved=row.site_x_option_group_set_approved;
 		ts.__title=row.site_x_option_group_set_title;
+		ts.__parentID=row.site_x_option_group_set_parent_id;
 		ts.__summary=row.site_x_option_group_set_summary;
 		// build url
 		if(row.site_x_option_group_set_image_library_id NEQ 0){

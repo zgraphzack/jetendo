@@ -831,6 +831,122 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="displaySectionNav" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	struct=application.zcore.functions.zGetSiteOptionGroupSetById(form.site_x_option_group_set_id);
+	if(structcount(struct) EQ 0){
+		return;
+		// application.zcore.functions.z404("This set record doesn't exist, ""#form.site_x_option_group_set_id#""."); 
+	}else{
+		groupStruct=application.zcore.functions.zGetSiteOptionGroupById(struct.__groupId);
+	}
+	curGroupId=groupStruct.site_option_group_id;
+	curParentId=groupStruct.site_option_group_parent_id;
+	curParentSetId=struct.__parentId;
+
+	/*echo('<p><a href="/z/admin/site-options/manageGroup?site_option_group_id=#groupStruct.site_option_group_id#&amp;site_x_option_group_set_parent_id=#struct.__parentId#">#groupStruct.site_option_group_name#</a> /');*/
+	getSetParentLinks(curGroupId, curParentId, curParentSetId, true);
+	//echo('</p>');
+	echo('<h2>Manage Section: #groupStruct.site_option_group_name# | #struct.__title#</h2>');
+	</cfscript>
+	
+</cffunction>
+
+<cffunction name="getSetParentLinks" access="public" localmode="modern">
+	<cfargument name="site_option_group_id" type="string" required="yes">
+	<cfargument name="site_option_group_parent_id" type="string" required="yes">
+	<cfargument name="site_x_option_group_set_parent_id" type="string" required="yes">
+	<cfargument name="linkCurrentPage" type="boolean" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	arrParent=arraynew(1);
+	curGroupId=arguments.site_option_group_id;
+	curParentId=arguments.site_option_group_parent_id;
+	curParentSetId=arguments.site_x_option_group_set_parent_id;
+	groupStruct=application.zcore.functions.zGetSiteOptionGroupById(curGroupId);
+	if(arguments.linkCurrentPage){
+		if(form.method NEQ "sectionGroup"){
+			arrayAppend(arrParent, '<a href="/z/admin/site-options/sectionGroup?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Section</a> /');
+		}else{
+			arrayAppend(arrParent, '<a href="/z/admin/site-options/manageGroup?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#curParentSetId#">Manage #groupStruct.site_option_group_name#(s)</a> / ');
+		}
+	}
+	if(curParentSetId NEQ 0){
+		loop from="1" to="25" index="i"{
+			db.sql="select s1.*, s2.site_x_option_group_set_title, s2.site_x_option_group_set_id d2, s2.site_x_option_group_set_parent_id d3 
+			from #db.table("site_option_group", request.zos.zcoreDatasource)# s1, 
+			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s2
+			where s1.site_id = s2.site_id and 
+			s1.site_id = #db.param(request.zos.globals.id)# and 
+			s1.site_option_group_id=s2.site_option_group_id and 
+			s2.site_x_option_group_set_id=#db.param(curParentSetId)# and 
+			s1.site_option_group_id = #db.param(curParentId)# 
+			LIMIT #db.param(0)#,#db.param(1)#";
+			q12=db.execute("q12");
+			loop query="q12"{
+				out='<a href="#application.zcore.functions.zURLAppend("/z/admin/site-options/manageGroup", "site_option_group_id=#q12.site_option_group_id#&amp;site_x_option_group_set_parent_id=#q12.d3#")#">#application.zcore.functions.zFirstLetterCaps(q12.site_option_group_display_name)#</a> / ';
+				if(not arguments.linkCurrentPage and curGroupID EQ arguments.site_option_group_id){
+					out&=q12.site_x_option_group_set_title&' /';
+				}else{
+					out&='<a href="/z/admin/site-options/manageGroup?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#q12.d2#">#q12.site_x_option_group_set_title#</a> /';
+				}
+				arrayappend(arrParent, out);
+				curGroupId=q12.site_option_group_id;
+				curParentId=q12.site_option_group_parent_id;
+				curParentSetId=q12.d3;
+			}
+			if(q12.recordcount EQ 0 or curParentSetId EQ 0){
+				break;
+			}
+		}
+	}
+	if(arraylen(arrParent)){
+		writeoutput('<p>');
+		for(i = arrayLen(arrParent);i GTE 1;i--){
+			writeOutput(arrParent[i]&' ');
+		}
+		writeoutput(" </p>");
+	}
+	</cfscript>
+</cffunction>
+<cffunction name="setIdHiddenField" access="public" returntype="any" localmode="modern">
+	<cfscript>
+    ts3=structnew();
+    ts3.name="site_x_option_group_set_id";
+    application.zcore.functions.zinput_hidden(ts3);
+	</cfscript>
+</cffunction>
+
+<cffunction name="requireSectionEnabledSetId" access="public" returntype="any" localmode="modern">
+	<cfscript>
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
+	if(not isSectionEnabledForSetId(form.site_x_option_group_set_id)){
+		application.zcore.functions.z404("form.site_x_option_group_set_id, ""#form.site_x_option_group_set_id#"", doesn't exist or doesn't has enable section set to use for the site_option_group.");
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="isSectionEnabledForSetId" access="public" returntype="boolean" localmode="modern">
+	<cfargument name="site_x_option_group_set_id" type="string" required="yes">
+	<cfscript>
+	if(arguments.site_x_option_group_set_id EQ "" or arguments.site_x_option_group_set_id EQ 0){
+		return true;
+	}
+	struct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.site_x_option_group_set_id);
+	if(structcount(struct) EQ 0){
+		return false;
+	}else{
+		groupStruct=application.zcore.functions.zGetSiteOptionGroupById(struct.__groupId);
+		if(groupStruct.site_option_group_enable_section EQ 1){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSiteOptionFieldNameById" access="public" returntype="string" localmode="modern">
 	<cfargument name="site_option_id" type="string" required="yes">
 	<cfscript>
@@ -1031,6 +1147,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	ts.__groupId=row.site_option_group_id;
 	ts.__approved=row.site_x_option_group_set_approved;
 	ts.__title=row.site_x_option_group_set_title;
+	ts.__parentID=row.site_x_option_group_set_parent_id;
 	ts.__summary=row.site_x_option_group_set_summary;
 	// build url
 	if(row.site_x_option_group_set_image_library_id NEQ 0){
@@ -1304,6 +1421,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		ts.__groupId=row.site_option_group_id;
 		ts.__approved=row.site_x_option_group_set_approved;
 		ts.__title=row.site_x_option_group_set_title;
+		ts.__parentID=row.site_x_option_group_set_parent_id;
 		ts.__summary=row.site_x_option_group_set_summary;
 		// build url
 		if(row.site_x_option_group_set_image_library_id NEQ 0){

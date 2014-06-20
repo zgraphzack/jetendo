@@ -1162,7 +1162,7 @@
 				form.siteoptiongroupglobal='1';
 			}
 			</cfscript>
-			<cfif application.zcore.functions.zso(form, 'site_option_group_parent_id', true) EQ 0>
+			<!--- <cfif application.zcore.functions.zso(form, 'site_option_group_parent_id', true) EQ 0> --->
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Associate With Apps","member.site-option-group.edit site_option_group_appidlist")#</th>
 					<td><cfscript>
@@ -1182,6 +1182,10 @@
 					selectStruct.queryValueField = "app_id";
 					application.zcore.functions.zInput_Checkbox(selectStruct);
 					</cfscript></td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Section?","member.site-option-group.edit site_option_group_enable_section")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_section")#</td>
 				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Only Show App Admin?","member.site-option-group.edit site_option_group_admin_app_only")#</th>
@@ -1215,7 +1219,7 @@
 					<td><input name="site_option_group_public_form_title" id="site_option_group_public_form_title" size="50" type="text" value="#htmleditformat(form.site_option_group_public_form_title)#" maxlength="100" />
 							</td></tr>
 				
-			</cfif>
+			<!--- </cfif> --->
 				<cfscript>
 				if(form.site_option_group_admin_paging_limit EQ ""){
 					form.site_option_group_admin_paging_limit=0;

@@ -1440,12 +1440,12 @@
 		if(row.site_option_url_title_field EQ 1){
 			hasTitleField=true;
 		}
-		if(row.site_option_primary_field EQ 1){
-			hasPrimaryField=true;
-		}
 		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
 		if(structkeyexists(form, row.site_option_name)){
 			form['newvalue'&row.site_option_id]=form[row.site_option_name];
+		}
+		if(row.site_option_primary_field EQ 1 and currentCFC.isSearchable()){
+			hasPrimaryField=true;
 		}
 		nv=currentCFC.getFormValue(row, 'newvalue', form);
 		if(row.site_option_required EQ 1){
@@ -1541,25 +1541,26 @@
 				}
 			}
 		}
-		
-		if(hasTitleField){
-			if(row.site_option_url_title_field EQ 1){
-				if(len(form.siteOptionTitle)){
-					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
-				}else{
-					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
+		if(currentCFC.isSearchable()){
+			if(hasTitleField){
+				if(row.site_option_url_title_field EQ 1){
+					if(len(form.siteOptionTitle)){
+						form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
+					}else{
+						form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
+					}
 				}
-			}
-		}else{
-			if(not hasPrimaryField){
-				if(form.siteOptionTitle EQ ""){
-					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name]; 
-				}
-			}else if(row.site_option_primary_field EQ 1){
-				if(len(form.siteOptionTitle)){
-					form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
-				}else{
-					form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
+			}else{
+				if(not hasPrimaryField){
+					if(form.siteOptionTitle EQ ""){
+						form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name]; 
+					}
+				}else if(row.site_option_primary_field EQ 1){
+					if(len(form.siteOptionTitle)){
+						form.siteOptionTitle&=" "&local.newDataMappedStruct[row.site_option_name];
+					}else{
+						form.siteOptionTitle=local.newDataMappedStruct[row.site_option_name];
+					}
 				}
 			}
 		}
@@ -2150,6 +2151,39 @@ Define this function in another CFC to override the default email format
 	</cfscript>
 </cffunction>
 
+
+
+	
+
+<cffunction name="sectionGroup" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	var db=request.zos.queryObject;
+
+	//echo('<p><a href="/z/admin/site-options/manageGroup?site_option_group_id=9">Back to custom</a></p>');
+	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.displaySectionNav();
+
+	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+		echo('<a href="/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Pages</a> | ');
+		echo('<a href="/z/content/admin/content-admin/add?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Page</a><br />');
+	}
+	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		echo('<a href="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Blog Articles</a> | ');
+		echo('<a href="/z/blog/admin/blog-admin/articleAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Article</a><br />');
+	}
+	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+		echo('<a href="/z/admin/menu/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Menus</a> | ');
+		echo('<a href="/z/admin/menu/add?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Menu</a><br />');
+	}
+	/*if(application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Categories")){
+		echo('<a href="/z/blog/admin/blog-admin/categoryList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Pages</a><br />');
+		echo('<a href="/z/blog/admin/blog-admin/categoryAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Page</a><br />');
+	}*/
+	</cfscript>
+
+</cffunction>
+
+
 <cffunction name="publicManageGroup" localmode="modern" access="public" roles="member">
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
@@ -2194,6 +2228,7 @@ Define this function in another CFC to override the default email format
 	defaultStruct={
 		addURL:"/z/admin/site-options/addGroup",
 		editURL:"/z/admin/site-options/editGroup",
+		sectionURL:"/z/admin/site-options/sectionGroup",
 		deleteURL:"/z/admin/site-options/deleteGroup",
 		insertURL:"/z/admin/site-options/insertGroup",
 		updateURL:"/z/admin/site-options/updateGroup",
@@ -2333,37 +2368,8 @@ Define this function in another CFC to override the default email format
 	application.zcore.template.setTag("pagetitle",theTitle);
 	curParentId=q1.site_option_group_parent_id;
 	curParentSetId=form.site_x_option_group_set_parent_id;
-	arrParent=arraynew(1);
 	if(not structkeyexists(arguments.struct, 'hideNavigation') or not arguments.struct.hideNavigation){
-		if(curParentSetId NEQ 0){
-			loop from="1" to="25" index="i"{
-				db.sql="select s1.*, s2.site_x_option_group_set_title, s2.site_x_option_group_set_id d2, s2.site_x_option_group_set_parent_id d3 
-				from #db.table("site_option_group", request.zos.zcoreDatasource)# s1, 
-				#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s2
-				where s1.site_id = s2.site_id and 
-				s1.site_id = #db.param(request.zos.globals.id)# and 
-				s1.site_option_group_id=s2.site_option_group_id and 
-				s2.site_x_option_group_set_id=#db.param(curParentSetId)# and 
-				s1.site_option_group_id = #db.param(curParentId)# 
-				LIMIT #db.param(0)#,#db.param(1)#";
-				q12=db.execute("q12");
-				loop query="q12"{
-					arrayappend(arrParent, '<a href="#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id=#q12.site_option_group_id#&amp;site_x_option_group_set_parent_id=#q12.d3#")#">#application.zcore.functions.zFirstLetterCaps(q12.site_option_group_display_name)#</a> / #q12.site_x_option_group_set_title# /');
-					curParentId=q12.site_option_group_parent_id;
-					curParentSetId=q12.d3;
-				}
-				if(q12.recordcount EQ 0 or curParentSetId EQ 0){
-					break;
-				}
-			}
-		}
-		if(arraylen(arrParent)){
-			writeoutput('<p>');
-			for(i = arrayLen(arrParent);i GTE 1;i--){
-				writeOutput(arrParent[i]&' ');
-			}
-			writeoutput(" </p>");
-		}
+		application.zcore.siteOptionCom.getSetParentLinks(q1.site_option_group_id, curParentId, curParentSetId, false);
 	}
 	db.sql="select *, count(s3.site_option_group_id) childCount 
 	from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
@@ -2648,8 +2654,11 @@ Define this function in another CFC to override the default email format
 							writeoutput(' <a href="'&application.zcore.functions.zURLAppend(tempLink, "zpreview=1")&'" target="_blank">Preview</a> | ');
 						}
 					}
-					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Edit</a> | 
-					<a href="#application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Delete</a>');
+					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Edit</a> | ');
+					if(row.site_option_group_enable_section EQ 1){
+						echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> | ');
+					}
+					echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Delete</a>');
 				}
 				writeoutput('</td>'); 
 			}
@@ -3088,6 +3097,7 @@ Define this function in another CFC to override the default email format
 	defaultStruct={
 		addURL:"/z/admin/site-options/addGroup",
 		editURL:"/z/admin/site-options/editGroup",
+		sectionURL:"/z/admin/site-options/sectionGroup",
 		deleteURL:"/z/admin/site-options/deleteGroup",
 		insertURL:"/z/admin/site-options/insertGroup",
 		updateURL:"/z/admin/site-options/updateGroup",

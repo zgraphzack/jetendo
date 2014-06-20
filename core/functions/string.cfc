@@ -10,6 +10,21 @@
 	<cfreturn output>
 </cffunction>
 
+<cffunction name="zBuildURL" access="public" localmode="modern">
+	<cfargument name="link" type="string" required="yes">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfscript>
+	if(find("?", arguments.link) EQ 0){
+		arguments.link&="?";
+	}
+	for(i in arguments.struct){
+		arguments.link&="&"&i&'='&urlencodedformat(arguments.struct[i]);
+	}
+	return arguments.link;
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="zStripHTMLTags" localmode="modern" output="no" returntype="string">
 	<cfargument name="string" type="string" required="yes">
 	<cfscript>
