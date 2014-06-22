@@ -6,6 +6,7 @@
 	var t9=0;		
 	var ts=arguments.ss;
 	ts.tempTokenCache=structnew();
+
 	
 	// railo 4.1.010 can't do soft serialization yet, but it was fixed in the next version
 	ts.queryCache=structnew('soft');

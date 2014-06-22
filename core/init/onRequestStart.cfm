@@ -103,14 +103,9 @@
 		Request.zOSBeginFile=ArrayNew(1);
 		Request.zOSEndFile=ArrayNew(1);
 		request.zos.whiteSpaceEnabled=false;
-		
-		try{
-			application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
-			request.zsession=application.zcore.session.get(); 
-		}catch(Any e){
-			application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
-			request.zsession=application.zcore.session.get(); 
-		}
+		 
+		application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
+		request.zsession=application.zcore.session.get();  
 		/*
 	application.zcore.session.clear();
 	writedump(request.zsession);

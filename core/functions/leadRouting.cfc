@@ -4,6 +4,7 @@
 ts=structnew();
 ts.inquiries_id=inquiries_id;
 ts.subject="New Lead";
+ts.disableDebugAbort=false;
 application.zcore.functions.zAssignAndEmailLead(ts);
  --->
 <cffunction name="zAssignAndEmailLead" localmode="modern" output="yes" returntype="any">
@@ -15,6 +16,9 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	var rs2=structnew();
 	var inquiries_id=arguments.ss.inquiries_id;
 	rs.inquiries_id=arguments.ss.inquiries_id; 
+	if(not structkeyexists(arguments.ss, 'disableDebugAbort')){
+		arguments.ss.disableDebugAbort=false;
+	}
 	if(structkeyexists(arguments.ss, 'forceAssign') and arguments.ss.forceAssign){
 		rs.assignEmail=arguments.ss.assignEmail;
 		rs.leadEmail=arguments.ss.leadEmail;
@@ -58,14 +62,20 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		db.execute("q"); 
 	} 
 	if(structkeyexists(request.zos, 'debugleadrouting')){
-		echo("Aborted before sending lead email because debug lead routing is enabled.");
 		writedump(rs);
-		abort;
+		if(not arguments.ss.disableDebugAbort){
+			echo("Aborted before sending lead email because debug lead routing is enabled.");
+			abort;
+		}
 	}
 	form.inquiries_id=inquiries_id;
-	mail to="#rs.assignEmail#" cc="#rs.cc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
-		iemailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
-	        iemailCom.getEmailTemplate();
+	if(not structkeyexists(request.zos, 'debugleadrouting')){
+		mail to="#rs.assignEmail#" cc="#rs.cc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
+			iemailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+		    iemailCom.getEmailTemplate();
+		}
+	}else{
+		echo("Would send email to #rs.assignEmail#<br />");
 	}
 	rs2.success=true;
 	return rs2;

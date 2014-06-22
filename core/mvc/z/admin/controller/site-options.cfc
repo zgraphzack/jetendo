@@ -47,7 +47,7 @@
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	}
 	</cfscript>
-	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
+	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "autoDeleteGroup" and form.method NEQ "publicAjaxInsertGroup" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
 		<table style="border-spacing:0px; width:100%; " class="table-list">
 			<tr>
 				<cfif form.method NEQ "list">
@@ -1283,7 +1283,7 @@
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
 	form.method="publicAjaxInsertGroup";
-	this.updateGroup(arguments.struct);
+	return this.updateGroup(arguments.struct);
 	</cfscript>
 </cffunction>
 
@@ -1786,23 +1786,35 @@
 			local.newDataMappedStruct.site_option_group_id =form.site_option_group_id;
 			form.inquiries_type_id =local.qCheck.inquiries_type_id;
 			local.newDataMappedStruct.inquiries_type_id =local.qCheck.inquiries_type_id;
+			if(structkeyexists(request.zos, 'debugleadrouting')){
+				echo('mapDataToInquiries<br />');
+			}
 			mapDataToInquiries(local.newDataMappedStruct, form, local.sendEmail); 
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_map_group_id NEQ 0){
 				local.groupIdBackup2=local.qCheck.site_option_group_map_group_id;
 				local.newDataStruct.site_option_group_id =form.site_option_group_id;
 				local.newDataStruct.site_option_group_map_group_id=local.qCheck.site_option_group_map_group_id;
+				if(structkeyexists(request.zos, 'debugleadrouting')){
+					echo('mapDataToGroup<br />');
+				}
 				mapDataToGroup(local.newDataStruct, form, local.sendEmail); 
 			}
 		}
 		local.setIdBackup2=form.site_x_option_group_set_id; 
 		if(local.qCheck.site_option_group_delete_on_map EQ 1){
+			if(structkeyexists(request.zos, 'debugleadrouting')){
+				echo('autoDeleteGroup<br />');
+			}
 			form.site_option_group_id=local.qCheck.site_option_group_id;
 			form.site_x_option_group_set_id=local.setIdBackup;
 			local.tempResult=variables.autoDeleteGroup(); 
 		}
 	}
 	if(local.sendEmail and not structkeyexists(form, 'disableGroupEmail')){
+		if(structkeyexists(request.zos, 'debugleadrouting')){
+			echo('site-options|sendEmail<br />');
+		}
 		ts=StructNew();
 		
 		ts.to=request.officeEmail;
@@ -1835,17 +1847,29 @@
 		ts.site_id=request.zos.globals.id;
 		//writedump(ts);abort;
 		//ts.spoolenable=false;
+		if(structkeyexists(request.zos, 'debugleadrouting')){
+			ts.preview=true;
+		}
 		rCom=application.zcore.email.send(ts);
+		if(structkeyexists(request.zos, 'debugleadrouting')){
+			writedump(ts);
+			writedump(rCom.getData());
+		}
 		if(rCom.isOK() EQ false){
 			rCom.setStatusErrors(request.zsid);
 			application.zcore.functions.zstatushandler(request.zsid);
 			application.zcore.functions.zabort();
 		}
 	}
+	if(structkeyexists(request.zos, 'debugleadrouting')){
+		echo("Aborted before redirect.");
+		abort;
+	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds5<br>'); startTime=gettickcount();
 	if(debug) application.zcore.functions.zabort();
 	if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
-		return {success:true, zsid:request.zsid, site_x_option_group_set_id:local.setIdBackup};
+		ts={success:true, zsid:request.zsid, site_x_option_group_set_id:local.setIdBackup};
+		return ts;
 	}else if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicUpdateGroup"){ 
 		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');
 		application.zcore.status.setStatus(request.zsid,"Saved successfully.");
@@ -2008,6 +2032,11 @@ Define this function in another CFC to override the default email format
 		}
 		ts.subject="#tempTitle# form submitted on #request.zos.globals.shortdomain#";
 		// send the lead
+
+		if(structkeyexists(request.zos, 'debugleadrouting')){
+			echo('zAssignAndEmailLead<br />');
+		}
+		ts.disableDebugAbort=true;
 		rs=application.zcore.functions.zAssignAndEmailLead(ts);
 		if(rs.success EQ false){
 			// failed to assign/email lead
