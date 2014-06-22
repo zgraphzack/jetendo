@@ -226,5 +226,38 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 	//application.zcore.template.setTag("pagenav",tempPageNav);
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="checkHealth" localmode="modern" access="remote">
+	<cfscript>
+	if(structkeyexists(application.zcore, 'serverDown')){
+		if(structkeyexists(request.zsession, 'forceHealthFailure')){
+			application.zcore.functions.z404("Server is down due to turning on force health failure in debug toolbar.");
+		}else{
+			application.zcore.functions.z404("Server is down.");
+		}
+	}else{
+		echo("OK");
+		abort;
+	}
+	</cfscript>
+
+</cffunction>
+
+<cffunction name="checkHealth2" localmode="modern" access="remote">
+	<cfscript>
+	if(structkeyexists(application.zcore, 'serverDown2')){
+		if(structkeyexists(request.zsession, 'forceHealthFailure2')){
+			application.zcore.functions.z404("Server is down due to turning on force health failure in debug toolbar (2).");
+		}else{
+			application.zcore.functions.z404("Server is down (2).");
+		}
+	}else{
+		echo("OK");
+		abort;
+	}
+	</cfscript>
+
+</cffunction>
 </cfoutput>
 </cfcomponent>

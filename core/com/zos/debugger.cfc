@@ -22,6 +22,22 @@
 					}else{
 						structdelete(request.zsession, 'debugleadrouting');
 					}
+				}else if(form.zOS_MODE EQ "forceHealthFailure"){
+					if(form.zOS_modeValue EQ "true"){
+						request.zsession.forceHealthFailure=true;
+						application.zcore.serverDown=true;
+					}else{
+						structdelete(application.zcore, 'serverDown');
+						structdelete(request.zsession, 'forceHealthFailure');
+					}
+				}else if(form.zOS_MODE EQ "forceHealthFailure2"){
+					if(form.zOS_modeValue EQ "true"){
+						request.zsession.forceHealthFailure2=true;
+						application.zcore.serverDown2=true;
+					}else{
+						structdelete(application.zcore, 'serverDown2');
+						structdelete(request.zsession, 'forceHealthFailure2');
+					}
 
 				}
 				if(structkeyexists(form, 'zOS_modeValue') and form.zOS_modeValue){
@@ -121,6 +137,18 @@
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('debugleadrouting','true');return false;">Off</a>
                 </cfif>
+              | Force Health Failure: 
+            	<cfif isDefined('request.zsession.forceHealthFailure') and request.zsession.forceHealthFailure>
+                 <a href="##" onclick="zOS_mode_submit('forceHealthFailure','false');return false;">On 1</a>
+                <cfelse>
+                &nbsp; <a href="##" onclick="zOS_mode_submit('forceHealthFailure','true');return false;">Off 1</a>
+                </cfif>
+            	<cfif isDefined('request.zsession.forceHealthFailure2') and request.zsession.forceHealthFailure2>
+                 <a href="##" onclick="zOS_mode_submit('forceHealthFailure2','false');return false;">On 2</a>
+                <cfelse>
+                &nbsp; <a href="##" onclick="zOS_mode_submit('forceHealthFailure2','true');return false;">Off 2</a>
+                </cfif>
+                
                 <br />
                 <cfif structkeyexists(request.zos.requestData.headers, 'ssl_session_id')>
 					<cfif structkeyexists(request.zsession, 'ssl_session_id')>
