@@ -28,6 +28,41 @@ versionSyncTableStruct is incomplete and the fileFieldStruct functions are not u
 	arguments.sharedStruct.currentServerStruct=request.zos.serverStruct[arguments.sharedStruct.currentServerID];
 	arguments.sharedStruct.databaseIncrementOffset=qServer.offset;
 	arguments.sharedStruct.databaseIncrementIncrement=qServer.increment;
+
+
+
+	defaultServerStruct={
+        apiURL:"",
+        serverId:"",
+        datasource:"",
+        databaseIncrementOffset:""
+	};
+	for(i in request.zos.serverStruct){
+		c=request.zos.serverStruct[i];
+		structappend(c, defaultServerStruct, false);
+	}
+	for(i in request.zos.serverStruct){
+		c=request.zos.serverStruct[i];
+		for(n in request.zos.serverStruct){
+			g=request.zos.serverStruct[n];
+			if(n EQ i){
+				continue;
+			}
+			for(f in g){
+				if(g[f] EQ c[f]){
+					throw("#f# is set to ""#g[f]#"" on more then one server record. Each server record in request.zos.serverStruct must have a unique value from the other servers.");
+				}
+			}
+		}
+	}
+	if(structcount(request.zos.serverStruct) NEQ qServer.increment){
+		throw('Database variable, auto_increment_increment (#qServer.increment#), doesn''t equal the number of servers in request.zos.serverStruct (#structcount(request.zos.serverStruct)#). You must correct this.');
+	}
+	if(arguments.sharedStruct.currentServerStruct.databaseIncrementOffset NEQ qServer.offset){
+		throw('Database variable, auto_increment_offset (#qServer.offset#), doesn''t equal the value for the current server in request.zos.serverStruct (#arguments.sharedStruct.currentServerStruct.databaseIncrementOffset#).  You must correct this.');
+
+	}
+
 	versionSyncTableStruct={
 		"jetendo":{
 			"content":{

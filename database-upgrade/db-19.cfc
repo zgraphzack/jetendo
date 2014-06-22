@@ -3,8 +3,6 @@
 <cffunction name="getChangedTableArray" localmode="modern" access="public" returntype="array">
 	<cfscript>
 	arr1=[];
-	arrayAppend(arr1, { schema: request.zos.zcoreDatasource, table: 'site_option_group'  });
-	arrayAppend(arr1, { schema: request.zos.zcoreDatasource, table: 'inquiries'  });
 	return arr1;
 	</cfscript>
 </cffunction>
