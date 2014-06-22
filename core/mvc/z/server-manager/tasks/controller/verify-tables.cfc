@@ -23,11 +23,15 @@
 		var triggerTemplate="BEGIN    
 		IF (@zDisableTriggers IS NULL) THEN
 			IF (NEW.`##keyName##` > 0) THEN
-			SET @zLastInsertId = NEW.`##keyName##`;
+				SET @zLastInsertId = NEW.`##keyName##`;
 			ELSE
-			SET @zLastInsertId=(SELECT IFNULL(MAX(`##keyName##`)+1,1) FROM `##tableName##` 
-			WHERE `##tableName##`.site_id = NEW.site_id);
-			SET NEW.`##keyName##`=@zLastInsertId;
+				SET @zLastInsertId=(
+						SELECT IFNULL(
+						(MAX(`##keyName##`) - (MAX(`##keyName##`) MOD @@auto_increment_increment))+@@auto_increment_increment+(@@auto_increment_offset-1), @@auto_increment_offset)  
+						FROM `##tableName##` 
+						WHERE `##tableName##`.site_id = NEW.site_id
+					);
+				SET NEW.`##keyName##`=@zLastInsertId;
 			END IF;
 		END IF;
 		END";
@@ -176,17 +180,26 @@
 							    FOR EACH ROW BEGIN
 								IF (@zDisableTriggers IS NULL) THEN
 									IF (NEW.`#local.curPrimaryKeyId#` > 0) THEN
-									SET @zLastInsertId = NEW.`#local.curPrimaryKeyId#`;
+										SET @zLastInsertId = NEW.`#local.curPrimaryKeyId#`;
+									ELSE
+										SET @zLastInsertId=(
+											SELECT IFNULL(
+											(MAX(`#local.curPrimaryKeyId#`) - (MAX(`#local.curPrimaryKeyId#`) MOD @@auto_increment_increment))+@@auto_increment_increment+(@@auto_increment_offset-1), @@auto_increment_offset)  
+											FROM `#local.curTableName#` 
+											WHERE `#local.curTableName#`.site_id = NEW.site_id
+										);
+										SET NEW.`#local.curPrimaryKeyId#`=@zLastInsertId;
+									END IF;
+								END IF;
+							END";
+							/* old simple method:
 									ELSE
 									SET @zLastInsertId=(
 										SELECT IFNULL(MAX(`#local.curPrimaryKeyId#`)+1,1) 
 										FROM `#local.curTableName#` 
 										WHERE `#local.curTableName#`.site_id = NEW.site_id
 										);
-									SET NEW.`#local.curPrimaryKeyId#`=@zLastInsertId;
-									END IF;
-								END IF;
-							END";
+*/
 							if(not debug) db.execute("q");
 							
 						if(not local.triggerMatch){
@@ -200,30 +213,31 @@
 			//break;
 		}
 
-		tempFile2=request.zos.sharedPath&"database/jetendo-schema-current.json";
-		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-		if(not dbUpgradeCom.verifyDatabaseStructure(tempFile2)){
-			arrayAppend(arrError, "<hr />Database schema didn't match source code schema file: #tempFile2#.  
-				This is a serious problem that must be manually fixed before performing an upgrade. 
-				The queries to run to fix the schema were generated above.<br />");
-		}
-
-		if(request.zos.isDeveloper){
-			if(arraylen(arrError)){
-				writeoutput('<h2>The following errors were detected with the database table structure.</h2><ul>');
-				for(i=1;i LTE arraylen(arrError);i++){
-					writeoutput('<li>'&arrError[i]&"</li>");
+		if(not structkeyexists(request.zos, 'disabeVerifyTablesVerify')){
+			tempFile2=request.zos.sharedPath&"database/jetendo-schema-current.json";
+			dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+			if(not dbUpgradeCom.verifyDatabaseStructure(tempFile2)){
+				arrayAppend(arrError, "<hr />Database schema didn't match source code schema file: #tempFile2#.  
+					This is a serious problem that must be manually fixed before performing an upgrade. 
+					The queries to run to fix the schema were generated above.<br />");
+			}
+			if(request.zos.isDeveloper){
+				if(arraylen(arrError)){
+					writeoutput('<h2>The following errors were detected with the database table structure.</h2><ul>');
+					for(i=1;i LTE arraylen(arrError);i++){
+						writeoutput('<li>'&arrError[i]&"</li>");
+					}
+					writeoutput('</ul>');
+				}else{
+					writeoutput('All tables verified successfully');
 				}
-				writeoutput('</ul>');
-			}else{
-				writeoutput('All tables verified successfully');
+				if(not arguments.returnErrors){
+					application.zcore.functions.zabort();
+				}
 			}
-			if(not arguments.returnErrors){
-				application.zcore.functions.zabort();
+			if(arguments.returnErrors){
+				return arrError;
 			}
-		}
-		if(arguments.returnErrors){
-			return arrError;
 		}
 		</cfscript>
 	</cffunction>
