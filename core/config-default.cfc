@@ -157,7 +157,7 @@
         ssl_session_cache   shared:SSL:30m;
         ssl_session_timeout  30m;
     */
-    ts.zos.serverSessionVariable="zsessionid";
+    ts.zos.serverSessionVariable="ZSESSIONID";
     ts.zos.sessionExpirationInMinutes=30;
     
     // port defined for the java server connector when using SSL - used to detect a secure connection instead of port 443.

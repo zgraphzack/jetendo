@@ -1431,11 +1431,14 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	/* <![CDATA[ */
 	var swfu;  
 	var debugImageLibrary=false; 
-	var sessionIDName="#request.zos.serverSessionVariable#";
+	var sessionIDName="#ucase(request.zos.serverSessionVariable)#";
 	zArrDeferredFunctions.push(function() { 
-		var field=window.parent.document.getElementById('#form.fieldId#');
-		if(typeof field != "undefined"){
-			field.value="#form.image_library_id#";
+		var f='#form.fieldId#';
+		if(f != ""){
+			var field=window.parent.document.getElementById(f);
+			if(typeof field != "undefined"){
+				field.value="#form.image_library_id#";
+			}
 		}
 		zInitSWFUpload("#form.image_library_id#"); 
 	});

@@ -18,7 +18,7 @@ ssl session - lost on browser close - lost on server reboot
 	<cfscript>
 	clear();
 	dataStruct=get();
-	backupSessionId=request.zsessionID;
+	backupSessionId=request[request.zos.serverSessionVariable];
 	echo("<hr />Dump should be empty struct<br />");
 	writedump(dataStruct);
 	// this should throw exception about data types.
@@ -36,16 +36,16 @@ ssl session - lost on browser close - lost on server reboot
 	writedump(dataStruct);
 
 	// force session to expire
-	application.customSessionStruct[request.zsessionID].date=dateadd("n", -(request.zos.sessionExpirationInMinutes+10), now());
+	application.customSessionStruct[request[request.zos.serverSessionVariable]].date=dateadd("n", -(request.zos.sessionExpirationInMinutes+10), now());
 	deleteOld();
 	dataStruct=get();
 	echo("<hr />Dump should be empty struct<br />");
 	writedump(dataStruct);
-	echo("<hr />Session id #request.zsessionID# should be different from #backupSessionId# <br />");
+	echo("<hr />Session id #request[request.zos.serverSessionVariable]# should be different from #backupSessionId# <br />");
 	dataStruct.newData3=1;
 	put(dataStruct);
 	syncStruct=getSessionsNewerThen(dateadd("n", -request.zos.sessionExpirationInMinutes, now()));
-	echo("<hr />Dump should be sessionID key ""#request.zsessionID#"" with struct with key newData3=1<br />");
+	echo("<hr />Dump should be sessionID key ""#request[request.zos.serverSessionVariable]#"" with struct with key newData3=1<br />");
 	writedump(syncStruct);
 	abort;
 
@@ -142,11 +142,11 @@ ssl session - lost on browser close - lost on server reboot
 
 <cffunction name="get" access="public" localmode="modern">
 	<cfscript>
-	if(not structkeyexists(request.zos, 'sessionID')){
+	if(not structkeyexists(request, request.zos.serverSessionVariable)){
 		getSessionId();
 	}
-	if(structkeyexists(application.customSessionStruct, request.zsessionID)){
-		return duplicate(application.customSessionStruct[request.zsessionID].data);
+	if(structkeyexists(application.customSessionStruct, request[request.zos.serverSessionVariable])){
+		return duplicate(application.customSessionStruct[request[request.zos.serverSessionVariable]].data);
 	}else{
 		// return empty struct if no session exists yet, otherwise: (threadsafe - no locking needed)
 		return {};
@@ -156,13 +156,16 @@ ssl session - lost on browser close - lost on server reboot
 
 <cffunction name="getSessionId" access="private" localmode="modern">
 	<cfscript>
+	if(structkeyexists(request, request.zos.serverSessionVariable)){
+		return request[request.zos.serverSessionVariable];
+	}
 	if(not structkeyexists(application, 'customSessionStruct')){
 		application.customSessionStruct={};
 	}
-	if(structkeyexists(cookie, request.zos.serverSessionVariable)){
-		currentId=cookie[request.zos.serverSessionVariable];
-	}else if(structkeyexists(form, request.zos.serverSessionVariable)){
+	if(structkeyexists(form, request.zos.serverSessionVariable)){
 		currentId=form[request.zos.serverSessionVariable];
+	}else if(structkeyexists(cookie, request.zos.serverSessionVariable)){
+		currentId=cookie[request.zos.serverSessionVariable];
 	}else{
 		currentId='';
 	}
@@ -172,7 +175,7 @@ ssl session - lost on browser close - lost on server reboot
 	}else{
 		// verify security
 		c=application.customSessionStruct[currentID];
-		if(c.userAgent NEQ request.zos.cgi.http_user_agent){
+		if(request.zos.cgi.http_user_agent does not contain "Shockwave Flash" and c.userAgent NEQ request.zos.cgi.http_user_agent){
 			currentId=createUUID();
 		}else if(c.ip NEQ request.zos.cgi.remote_addr){
 			currentId=createUUID();
@@ -185,7 +188,7 @@ ssl session - lost on browser close - lost on server reboot
 	}
 	timeSpan=CreateTimeSpan(0, 0, request.zos.sessionExpirationInMinutes, 0);
 	application.zcore.functions.zCookie({name:request.zos.serverSessionVariable, value:currentId, expires: timeSpan });
-	request.zsessionID=currentId;
+	request[request.zos.serverSessionVariable]=currentId;
 	return currentId;
 	</cfscript>
 </cffunction>
@@ -203,7 +206,7 @@ ssl session - lost on browser close - lost on server reboot
 		getSessionId();
 	}
 	if(structkeyexists(request.zos, 'trackingspider') and request.zos.trackingspider){
-		structdelete(application.customSessionStruct, request.zsessionID);
+		structdelete(application.customSessionStruct, request[request.zos.serverSessionVariable]);
 		return;
 	}
 	if(request.zos.isTestServer){
@@ -222,7 +225,7 @@ ssl session - lost on browser close - lost on server reboot
 		ts.sslSessionId=request.zos.requestData.headers.ssl_session_id;
 	}*/
 	request.zsession=ts.data;
-	application.customSessionStruct[request.zsessionID]=ts;
+	application.customSessionStruct[request[request.zos.serverSessionVariable]]=ts;
 	</cfscript>
 </cffunction>
 
