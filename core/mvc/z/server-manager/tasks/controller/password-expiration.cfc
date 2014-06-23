@@ -33,7 +33,8 @@
 	user_security_question2  = #db.param('')#,  
 	user_security_answer2  = #db.param('')#,  
 	user_security_question3  = #db.param('')#,  
-	user_security_answer3  = #db.param('')# 
+	user_security_answer3  = #db.param('')# ,
+	user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE ";
 	if(arraylen(arrSite)){
 		db.sql&=" site_id NOT IN ("&siteIdList&") and ";

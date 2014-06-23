@@ -67,14 +67,16 @@
 			if(arraylen(rs.arrSQL) NEQ 0){
 				db.sql="INSERT INTO #db.table("listing_lookup", request.zos.zcoreDatasource)#  
 				(listing_lookup_mls_provider, listing_lookup_type, listing_lookup_value, listing_lookup_oldid, 
-					listing_lookup_datetime, listing_lookup_oldid_unchanged) VALUES"&db.trustedSQL(arraytolist(rs.arrSQL))&" 
+					listing_lookup_datetime, listing_lookup_oldid_unchanged, listing_lookup_updated_datetime) 
+				VALUES"&db.trustedSQL(arraytolist(rs.arrSQL))&" 
 				ON DUPLICATE KEY UPDATE 
 				listing_lookup_mls_provider=VALUES(listing_lookup_mls_provider), 
 				listing_lookup_type=VALUES(listing_lookup_type), 
 				listing_lookup_value=VALUES(listing_lookup_value), 
 				listing_lookup_oldid=VALUES(listing_lookup_oldid), 
 				listing_lookup_datetime=#db.trustedSQL("'"&listing_lookup_datetime&"'")#, 
-				listing_lookup_oldid_unchanged=VALUES(listing_lookup_oldid_unchanged)";
+				listing_lookup_oldid_unchanged=VALUES(listing_lookup_oldid_unchanged),
+				listing_lookup_updated_datetime=VALUES(listing_lookup_updated_datetime)";
 				if(request.zos.isdeveloper and application.zcore.functions.zso(form,'zdebug') NEQ ""){
 					writeoutput("<h2>sql for mls_id: "&i&"</h2>");
 					writeoutput(db.sql&"<br /><hr /><br />");

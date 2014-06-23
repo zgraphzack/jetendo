@@ -367,7 +367,7 @@
 		}
 		
 		for(i in dS){
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#dS[i]#','#i#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#dS[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		 db.sql="select cast(group_concat(distinct ngm_fetview SEPARATOR #db.param(',')#) AS CHAR) datalist 
 		 from #db.table("ngm", request.zos.zcoreDatasource)# ngm 
@@ -380,7 +380,7 @@
 		}
 		
 		for(i in dS){
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#i#','#i#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#i#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		 db.sql="select cast(group_concat(distinct ngm_fetcondition SEPARATOR #db.param(',')#) AS CHAR) datalist 
 		 from #db.table("ngm", request.zos.zcoreDatasource)# ngm 
@@ -394,7 +394,7 @@
 		structdelete(dS,"See Remarks");
 		
 		for(i in dS){
-			arrayappend(arrSQL,"('#this.mls_provider#','condition','#i#','#i#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','condition','#i#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		 db.sql="select cast(group_concat(distinct ngm_fetstyle SEPARATOR #db.param(',')#) AS CHAR) datalist 
 		 from #db.table("ngm", request.zos.zcoreDatasource)# ngm 
@@ -410,7 +410,7 @@
 		structdelete(dS,"S");
 		
 		for(i in dS){
-			arrayappend(arrSQL,"('#this.mls_provider#','style','#i#','#i#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','style','#i#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		} 
 		db.sql="select cast(group_concat(distinct ngm_fetfrontage SEPARATOR #db.param(',')#) AS CHAR) datalist 
 		from #db.table("ngm", request.zos.zcoreDatasource)# ngm 
@@ -428,21 +428,21 @@
 		structdelete(ds,'None');
 		for(i in dS){
 			if(structkeyexists(ds2,i)){
-				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#ds2[i]#','#i#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#ds2[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}else{
-				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#i#','#i#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#i#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		
 		
 		
-		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Lots and Acreage','Lots/Acreage','#request.zos.mysqlnow#','Lots/Acreage')");
-		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Residential','Residential','#request.zos.mysqlnow#','Residential')");
-		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Commercial','Commercial','#request.zos.mysqlnow#','Commercial')");
-		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Multi-Family','Multi-Family & Apartments','#request.zos.mysqlnow#','Multi-Family & Apartments')");
+		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Lots and Acreage','Lots/Acreage','#request.zos.mysqlnow#','Lots/Acreage','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Residential','Residential','#request.zos.mysqlnow#','Residential','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Commercial','Commercial','#request.zos.mysqlnow#','Commercial','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','listing_type','Multi-Family','Multi-Family & Apartments','#request.zos.mysqlnow#','Multi-Family & Apartments','#request.zos.mysqlnow#')");
 		arrT=listtoarray("Vacant Lot,Lake Front Lot,Commercial Lot,Acreage,River Access Lot,Commercial,Residential,Townhouse,Lake Access Lot,Subdivision being developed,Condominium,Business,Mobile Home Lot,Duplex,RV Lot,Farm,Multi-Family,Apartments,Industrial,Multiple Ownership",",");
 		for(i=1;i LTE arraylen(arrT);i++){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#arrT[i]#','#arrT[i]#','#request.zos.mysqlnow#','#arrT[i]#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#arrT[i]#','#arrT[i]#','#request.zos.mysqlnow#','#arrT[i]#','#request.zos.mysqlnow#')");
 		}
 
 		return {arrSQL:arrSQL, cityCreated:false, arrError:arrError};

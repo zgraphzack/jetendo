@@ -59,6 +59,7 @@
 			db.sql="INSERT INTO #request.zos.queryObject.table("availability", request.zos.zcoreDatasource)#  
 			SET site_id = #db.param(request.zOS.globals.id)#, 
 			availability_date = #db.param(listGetAt(form.avail_date, i))#, 
+			availability_updated_datetime='#request.zos.mysqlnow#',
 			rental_id = #db.param(form.rental_id)#";				
 			db.execute("q");
 		}

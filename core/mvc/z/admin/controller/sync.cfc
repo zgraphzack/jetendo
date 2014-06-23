@@ -513,6 +513,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	throw("updateSiteOption not implemented.");
 	abort;
 	db=request.zos.queryObject;
+	arguments.row.site_option_updated_datetime = request.zos.mysqlnow;
 	if(arguments.new){
 		arrSQL=["INSERT INTO #db.table("site_option", request.zos.zcoreDatasource)# SET "];
 		for(i in arguments.row){
@@ -552,6 +553,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	throw("updateSiteOptionGroup not implemented.");
 	abort;
 	db=request.zos.queryObject;
+	arguments.row.site_option_group_updated_datetime = request.zos.mysqlnow;
 	if(arguments.new){
 		arrSQL=["INSERT INTO #db.table("site_option_group", request.zos.zcoreDatasource)# SET "];
 		for(i in arguments.row){
@@ -590,6 +592,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	throw("updateSiteOptionGroupMap not implemented.");
 	abort;
 	db=request.zos.queryObject;
+	arguments.row.site_option_group_map_updated_datetime = request.zos.mysqlnow;
 	if(arguments.new){
 		arrSQL=["INSERT INTO #db.table("site_option_group_map", request.zos.zcoreDatasource)# SET "];
 		for(i in arguments.row){

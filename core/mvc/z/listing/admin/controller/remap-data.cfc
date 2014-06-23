@@ -253,6 +253,7 @@
 			*/
 			db.sql="UPDATE #db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 			SET `#form.searchCriteria#` = '#application.zcore.functions.zescape(local.result1)#',
+			mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 			 `#form.searchCriteria2#` = #db.param(local.result2)# 
 			WHERE mls_saved_search_id IN ("&db.trustedSQL("'"&row.idlist&"'")&")  and 
 			site_id=#db.param(row.site_id)#";

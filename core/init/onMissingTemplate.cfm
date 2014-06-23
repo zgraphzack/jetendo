@@ -43,7 +43,8 @@
 					log404_user_agent='#application.zcore.functions.zescape(request.zos.cgi.http_user_agent)#',
 					log404_ip ='#application.zcore.functions.zescape(request.zos.cgi.remote_addr)#',
 					log404_datetime ='#application.zcore.functions.zescape(request.zos.mysqlnow)#', 
-					log404_referer='#application.zcore.functions.zescape(request.zos.cgi.http_referer)#'
+					log404_referer='#application.zcore.functions.zescape(request.zos.cgi.http_referer)#', 
+					log404_updated_datetime='#application.zcore.functions.zescape(request.zos.mysqlnow)#'
 					</cfquery>
 					<cfcatch type="database">
 						<!--- ignore database errors --->

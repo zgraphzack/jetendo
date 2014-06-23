@@ -49,14 +49,16 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	}
 	if(rs.user_id EQ 0){
 		 db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
-		SET inquiries_assign_email=#db.param(rs.assignemail)# 
+		SET inquiries_assign_email=#db.param(rs.assignemail)#,
+		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_id=#db.param(arguments.ss.inquiries_id)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("q");
 	}else{
 		db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 		SET user_id=#db.param(rs.user_id)#, 
-		user_id_siteIDType=#db.param(rs.user_id_siteIDType)# 
+		user_id_siteIDType=#db.param(rs.user_id_siteIDType)#,
+		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_id=#db.param(arguments.ss.inquiries_id)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("q"); 
@@ -427,13 +429,16 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			rs.user_id=qAssignUser.user_id;
 		}
 		// round robin doesn't work in user is in parent site. should it?
-		db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user SET user_next_lead = user_next_lead+1 
+		db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
+		SET user_next_lead = user_next_lead+1,
+		user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# ";
 		db.execute("q"); 
 		db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-		SET user_next_lead = #db.param(0)# 
+		SET user_next_lead = #db.param(0)#,
+		user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE user_id = #db.param(qAssignUser.user_id)# and site_id = #db.param(qAssignUser.site_id)#";
 		db.execute("q"); 
 	}else if(c.data.inquiries_routing_type_id EQ 2){
@@ -645,13 +650,15 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		}
 		// round robin doesn't work in user is in parent site. should it?
 		 db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-		 SET user_next_lead = user_next_lead+#db.param(1)# 
+		 SET user_next_lead = user_next_lead+#db.param(1)#,
+		 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# ";
 		db.execute("q");
 		 db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-		 SET user_next_lead = #db.param(0)# 
+		 SET user_next_lead = #db.param(0)#, 
+		 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE user_id = #db.param(qAssignUser.user_id)# and 
 		site_id = #db.param(qAssignUser.site_id)#";
 		db.execute("q");
@@ -943,13 +950,15 @@ application.zcore.functions.zLeadRecordLog(ts);
 							// assign to the round robin user
 							rs.user_id=qAssignUser.user_id;
 							db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-							SET user_next_lead = user_next_lead+#db.param(1)# 
+							SET user_next_lead = user_next_lead+#db.param(1)#,
+							user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 							WHERE site_id = #db.param(request.zos.globals.id)# and 
 							user_active= #db.param(1)# and 
 							user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# ";
 							db.execute("q");
 							 db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-							 SET user_next_lead = #db.param(0)# 
+							 SET user_next_lead = #db.param(0)#,
+							 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 							WHERE user_id = #db.param(qAssignUser.user_id)# and 
 							site_id = #db.param(request.zos.globals.id)#";
 							db.execute("q");
@@ -1016,7 +1025,8 @@ application.zcore.functions.zLeadRecordLog(ts);
 						rs.to=application.zcore.functions.zvarso('zofficeemail');
 					}
 					 db.sql="update #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
-					 set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, inquiries_reminders_sent=#db.param(totalReminders)# 
+					 set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, 
+					 inquiries_reminders_sent=#db.param(totalReminders)# 
 					WHERE inquiries_id = #db.param(inquiries_id)#";
 					db.execute("q");
 				}

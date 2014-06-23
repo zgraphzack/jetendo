@@ -136,7 +136,8 @@ local.tempCom.index();
 		<cfscript>
 		var db=request.zos.queryObject;
 		db.sql="UPDATE #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-		SET saved_search_email = #db.param(arguments.newemail)# 
+		SET saved_search_email = #db.param(arguments.newemail)#,
+		mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		where saved_search_email = #db.param(arguments.oldemail)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("q"); 

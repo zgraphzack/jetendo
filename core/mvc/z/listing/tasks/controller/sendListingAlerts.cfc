@@ -59,7 +59,8 @@
 			qU=db.execute("qU");
 			if(qU.recordcount NEQ 0){
 				db.sql="update #db.table("mls_saved_search", request.zos.zcoreDatasource)# set 
-				mail_user_id = #db.param(qU.mail_user_id)# 
+				mail_user_id = #db.param(qU.mail_user_id)#,
+				mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				where mls_saved_search_id in (#db.trustedSQL(row.idlist)#) and 
 				site_id = #db.param(request.zos.globals.id)# ";
 				db.execute("qUpdate");
@@ -74,7 +75,8 @@
 			if(qU.recordcount NEQ 0){
 				db.sql="update #db.table("mls_saved_search", request.zos.zcoreDatasource)# set 
 				user_id = #db.param(qU.user_id)#, 
-				user_id_siteIDType = #db.param(application.zcore.functions.zGetSiteIdType(qU.site_id))# 
+				user_id_siteIDType = #db.param(application.zcore.functions.zGetSiteIdType(qU.site_id))#,
+				mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				where mls_saved_search_id in (#db.trustedSQL(row.idlist)#) and 
 				site_id = #db.param(request.zos.globals.id)# ";
 				db.execute("qUpdate");
@@ -201,7 +203,8 @@
 		}else{
 			db.sql="update #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 			set 
-			saved_search_sent_date=#db.param(nowDate)#  
+			saved_search_sent_date=#db.param(nowDate)#,
+			mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)#   
 			where mls_saved_search_id in (#db.trustedSQL(row.idlist)#) and 
 			site_id = #db.param(request.zos.globals.id)#";  
 			db.execute("q");

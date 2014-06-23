@@ -87,6 +87,9 @@ versionSyncTableStruct is incomplete and the fileFieldStruct functions are not u
 					}
 				}
 			}
+			/*
+			need to have all tables here, so I can manually handle mysql replication
+			*/
 		}
 	};
 	idGenerationStruct={};
@@ -97,10 +100,9 @@ versionSyncTableStruct is incomplete and the fileFieldStruct functions are not u
 			idGenerationStruct[schema][table]={};
 			c=tableStruct[table];
 			if(c.hasSiteId){
-				db.sql="select max(a.`#application.zcore.functions.zescape(c.primaryKey)#`) maxId, site.site_id
-				from #db.table("site", request.zos.zcoreDatasource)# site 
-				LEFT JOIN #db.table(table, schema)# a ON site.site_id = a.site_id
-				group by site.site_id ";
+				db.sql="select max(a.`#application.zcore.functions.zescape(c.primaryKey)#`) maxId, a.site_id
+				from #db.table(table, schema)# a 
+				group by a.site_id ";
 			}else{
 				db.sql="select max(a.#c.primaryKey#) maxId 
 				from #db.table(table, schema)# ";
@@ -406,6 +408,7 @@ when a server starts, before it can process live requests, it would need to chec
 			db.sql="update #db.table(ds.tableName, ds.datasource)# set  
 			`#db.primaryKeyField#` = '#qS.oldId#' ";
 			version_active = #db.param(1)# 
+			
 			where `#db.primaryKeyField#` =#db.param(newVersionId)# ";
 			if(structkeyexists(db, 'site_id')){
 				db.sql&=" and site_id = '#ds.site_id#' ", 

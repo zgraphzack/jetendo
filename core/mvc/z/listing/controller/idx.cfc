@@ -120,6 +120,7 @@
 				for (x=1; x LTE qP.recordcount; x++) {
 					 db.sql="UPDATE #db.table("content", request.zos.zcoreDatasource)# content 
 					 SET content_price=#db.param(qP.listing_price[x])#, 
+					 content_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 					 content_price_update_datetime=#db.param(nd222)# 
 					 WHERE site_id <> #db.param(-1)# and 
 					 content_id = #db.param(qP.content_id[x])#";
@@ -281,6 +282,7 @@
 	db.sql="UPDATE #db.table("mls", request.zos.zcoreDatasource)# mls 
 	SET mls_current_file_path=#db.param(this.optionstruct.filePath)#, 
 	mls_error_sent=#db.param('0')#, 
+	mls_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 	mls_skip_bytes=#db.param(this.optionstruct.skipBytes)# #db.trustedSQL(mlsUpdateDate)# 
 	where mls_id = #db.param(this.optionstruct.mls_id)#";
 	db.execute("q"); 
@@ -482,7 +484,8 @@
 		 if(arraylen(arrP) NEQ 0){
 		 	sql="'"&arraytolist(arrP,"','")&"'";
 			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-			set listing_track_processed_datetime = #db.param(this.nowDate)# 
+			set listing_track_processed_datetime = #db.param(this.nowDate)#, 
+			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE listing_id IN (#db.trustedSQL(sql)#)";
 			db.execute("q"); 
 		 }
@@ -570,7 +573,8 @@
 	<tr><td>#qTwoDaysAgo.mls_id#</td><td>#qTwoDaysAgo.mls_name#</td><td>#dateformat(qTwoDaysAgo.mls_update_date,"m/d/yyyy")#</td></tr>
 	<cfscript>
 	 db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
-	 SET mls_error_sent=#db.param('1')# 
+	 SET mls_error_sent=#db.param('1')#, 
+	 mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	 where mls_id = #db.param(qTwoDaysAgo.mls_id)# ";
 	 db.execute("q");
 	</cfscript>
@@ -635,7 +639,9 @@
 
 			db2.sql="TRUNCATE TABLE #db2.table("listing_delete", request.zos.zcoreDatasource)# ";
 			db2.execute("qTruncate");
-			db2.sql="INSERT INTO listing_delete (listing_id) SELECT listing_id FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
+			db2.sql="INSERT INTO listing_delete (listing_id, listing_delete_updated_datetime) 
+			SELECT listing_id, #db2.param(request.zos.mysqlnow)# 
+			FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_deleted=#db2.param('0')# and 
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
 			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
@@ -663,7 +669,8 @@
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
-				listing_track_deleted=#db2.param(1)# 
+				listing_track_deleted=#db2.param(1)#, 
+				listing_track_updated_datetime=#db2.param(request.zos.mysqlnow)#  
 				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 			}
@@ -671,8 +678,8 @@
 			oneMonthAgo=dateformat(oneMonthAgo,'yyyy-mm-dd')&' '&timeformat(oneMonthAgo,'HH:mm:ss');
 			db2.sql="TRUNCATE TABLE #db2.table("listing_delete", request.zos.zcoreDatasource)# ";
 			db2.execute("qTruncate");
-			db2.sql="INSERT INTO #db2.table("listing_delete", request.zos.zcoreDatasource)# (listing_id) 
-			SELECT listing_id FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
+			db2.sql="INSERT INTO #db2.table("listing_delete", request.zos.zcoreDatasource)# (listing_id, listing_delete_updated_datetime) 
+			SELECT listing_id, #db2.param(request.zos.mysqlnow)# FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
 			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
 			#db2.trustedSQL(mlsPSQL)#";
@@ -692,7 +699,8 @@
 				db2.execute("qDelete");
 			}
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
-			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))# 
+			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))#, 
+			mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE mls_id IN (#db.trustedSQL(mlsIdPSQL)#)";
 			db.execute("q"); 
 			writeoutput('<br />#listlen(qIdList.idlist, ",")# Inactive listings were removed.');	

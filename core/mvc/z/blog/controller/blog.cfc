@@ -495,13 +495,15 @@ this.app_id=10;
 	// don't stop pinging until all active pings server are pinged successfully.
 	pingList=structkeylist(pingDoneStruct);
 	db.sql="UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
-	SET blog_ping_result=#db.param(pingList)# 
+	SET blog_ping_result=#db.param(pingList)#,
+	blog_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE blog_id = #db.param(form.blog_id)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 		local.q=db.execute("q");
 	if(structcount(pingStruct) EQ structcount(pingDoneStruct)){
 		db.sql="UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
-		SET blog_ping_datetime = #db.param(request.zos.mysqlnow)# 
+		SET blog_ping_datetime = #db.param(request.zos.mysqlnow)#, 
+		blog_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE blog_id = #db.param(form.blog_id)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		local.q=db.execute("q");

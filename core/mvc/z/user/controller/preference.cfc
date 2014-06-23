@@ -72,7 +72,9 @@
 		if(trim(variables.qcheckemail.user_key) EQ ''){
 			form.user_key = hash(application.zcore.functions.zGenerateStrongPassword(80,200),'sha');
 			db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-			set user_key =#db.param(form.user_key)# WHERE user_id = #db.param(variables.qcheckemail.user_id)# and 
+			set user_key =#db.param(form.user_key)#,
+			user_updated_datetime=#db.param(request.zos.mysqlnow)# 
+			WHERE user_id = #db.param(variables.qcheckemail.user_id)# and 
 			site_id=#db.param(variables.qcheckemail.site_id)#";
 			addKey=db.execute("addKey");
 		}
@@ -341,7 +343,8 @@
 	user_password_new_salt= #db.param(form.user_password_new_salt)#, 
 	user_password_new_version= #db.param(form.user_password_new_version)#, 
 	user_confirm_count=#db.param(1)#, 
-	user_key=#db.param(user_key)#
+	user_key=#db.param(user_key)#,
+	user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE user_username = #db.param(form.e)# and 
 	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# ";
 	qP=db.execute("qP");
@@ -573,7 +576,8 @@ To view more info about this new user, click the following link:
 	if(variables.qcheckemail.recordcount eq 0){
 		form.user_key = hash(dateformat(variables.nowDate, "yyyymmdd")&timeformat(variables.nowDate, "hhmmss")&'_'&form.user_id, 'sha-256');
 		db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-		set user_key =#db.param(form.user_key)#
+		set user_key =#db.param(form.user_key)#,
+		user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE user_username = #db.param(form.e)# and 
 		site_id=#db.param(request.zos.globals.id)# ";
 		addKey=db.execute("addKey");
@@ -624,10 +628,10 @@ If the link does not work, please copy and paste the entire link in your browser
 	form.user_salt=application.zcore.functions.zGenerateStrongPassword(256,256);
 	form.mail_user_key=hash(form.user_salt, "sha-256");
 	db.sql="INSERT INTO #db.table("mail_user", request.zos.zcoreDatasource)# (mail_user_confirm , mail_user_opt_in, mail_user_email,mail_user_key, 
-	site_id , mail_user_sent_datetime , mail_user_datetime , mail_user_confirm_datetime , mail_user_confirm_count)
+	site_id , mail_user_sent_datetime , mail_user_datetime , mail_user_confirm_datetime , mail_user_confirm_count, mail_user_updated_datetime)
 	VALUES( #db.param(0)#, #db.param(0)#, #db.param(form.e)#, #db.param(form.mail_user_key)#, 
 	#db.param(request.zos.globals.id)#, #db.param(request.zos.mysqlnow)#, #db.param(request.zos.mysqlnow)#, 
-	#db.param(request.zos.mysqlnow)#, #db.param(3)# )
+	#db.param(request.zos.mysqlnow)#, #db.param(3)#, #db.param(request.zos.mysqlnow)# )
 	
 	ON DUPLICATE KEY UPDATE mail_user_opt_in=#db.param('0')#, 
 	mail_user_confirm_count=#db.param(3)#,  

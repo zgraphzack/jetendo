@@ -483,13 +483,15 @@
 				set user_confirm=#db.param(1)#, 
 				user_pref_email=#db.param(1)#, 
 				user_confirm_datetime=#db.param(request.zos.mysqlnow)#, 
-				user_confirm_ip=#db.param(request.zos.cgi.remote_addr)# 
+				user_confirm_ip=#db.param(request.zos.cgi.remote_addr)#,
+				user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE user_username=#db.param(qM.mail_user_email)# and 
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q"); 
 				db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 				set mail_user_opt_in=#db.param(1)#, 
-				mail_user_confirm=#db.param(1)# 
+				mail_user_confirm=#db.param(1)#,
+				mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE mail_user_id=#db.param(form.mail_user_id)# and 
 				mail_user_key=#db.param(form.mail_user_key)# and 
 				site_id=#db.param(request.zos.globals.id)#";
@@ -502,7 +504,8 @@
 				set user_pref_email=#db.param(0)#, 
 				user_confirm=#db.param(1)#, 
 				user_confirm_datetime=#db.param(request.zos.mysqlnow)#, 
-				user_confirm_ip=#db.param(request.zos.cgi.remote_addr)# 
+				user_confirm_ip=#db.param(request.zos.cgi.remote_addr)#,
+				user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE user_username=#db.param(qM.mail_user_email)# and 
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q"); 
@@ -510,7 +513,8 @@
 				 set mail_user_opt_in=#db.param(0)#, 
 				 mail_user_confirm=#db.param(1)#,  
 				 mail_user_confirm_datetime=#db.param(request.zos.mysqlnow)#, 
-				 mail_user_confirm_ip=#db.param(request.zos.cgi.remote_addr)# 
+				 mail_user_confirm_ip=#db.param(request.zos.cgi.remote_addr)#,
+				 mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE mail_user_id=#db.param(form.mail_user_id)# and 
 				mail_user_key=#db.param(form.mail_user_key)# and 
 				site_id=#db.param(request.zos.globals.id)#";
@@ -619,7 +623,8 @@
 					zemail_campaign_click_html=#db.param(0)#, 
 					zemail_campaign_click_offset=#db.param(0)#, 
 					zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
-					zemail_campaign_click_datetime=#db.param(request.zOS.mysqlnow)#,
+					zemail_campaign_click_datetime=#db.param(request.zOS.mysqlnow)#, 
+					zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#,
 					zemail_campaign_id=#db.param(form.zemail_campaign_id)#,
 					 user_id=#db.param(form.user_id)#,
 					 site_id=#db.param(request.zos.globals.id)#";
@@ -724,6 +729,7 @@
 					 zemail_campaign_click_datetime=#db.param(ts.zemail_campaign_click_datetime)#,
 					 zemail_campaign_id=#db.param(ts.zemail_campaign_id)#,
 					 user_id=#db.param(ts.user_id)#, 
+					zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 					 mail_user_id=#db.param(ts.mail_user_id)#,
 					 site_id=#db.param(request.zos.globals.id)#";
 					db.execute("q"); 
@@ -862,6 +868,7 @@
 				zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
 				zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
 				zemail_campaign_id=#db.param(form.zemail_campaign_id)#, 
+				zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 				user_id=#db.param(form.user_id)#,
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q"); 
@@ -955,7 +962,8 @@
 					zemail_campaign_click_ip=#db.param(ts.zemail_campaign_click_ip)#, 
 					zemail_campaign_click_datetime=#db.param(ts.zemail_campaign_click_datetime)#, 
 					zemail_campaign_id=#db.param(ts.zemail_campaign_id)#, 
-					user_id=#db.param(ts.user_id)#,
+					user_id=#db.param(ts.user_id)#, 
+					zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#,
 					site_id=#db.param(request.zos.globals.id)#";
 					db.execute("q"); 
 					if(ts.zemail_campaign_click_offset EQ 0){

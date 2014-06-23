@@ -20,7 +20,8 @@
 	var qIn=0;
 	variables.init();
 	db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
-	SET inquiries_status_id= #db.param(form.inquiries_status_id)# 
+	SET inquiries_status_id= #db.param(form.inquiries_status_id)#,
+	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE inquiries_id= #db.param(form.inquiries_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qIn=db.execute("qIn");

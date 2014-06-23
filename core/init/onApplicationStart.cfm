@@ -419,7 +419,10 @@
 		insertIdSQL:"select @zLastInsertId id2, last_insert_id() id",
 		datasource:request.zos.globals.serverdatasource,
 		tablePrefix:request.zos.zcoreDatasourcePrefix,
-		parseSQLFunctionStruct:{checkSiteId:application.zcore.functions.zVerifySiteIdsInDBCFCQuery},
+		parseSQLFunctionStruct:{
+			checkSiteId:application.zcore.functions.zVerifySiteIdsInDBCFCQuery
+			//, checkDeletedField:application.zcore.functions.zVerifyDeletedInDBCFCQuery
+		},
 		verifyQueriesEnabled:local.verifyQueriesEnabled,
 		cacheStructKey:'application.zcore.queryCache'
 	}

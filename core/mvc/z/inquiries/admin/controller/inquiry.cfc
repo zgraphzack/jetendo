@@ -56,7 +56,9 @@
 	form.site_id = request.zOS.globals.id;
 	
 	form.inquiries_primary=1;
-	db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries SET inquiries_primary=#db.param(0)# 
+	db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
+	SET inquiries_primary=#db.param(0)#, 
+	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	r=db.execute("r");

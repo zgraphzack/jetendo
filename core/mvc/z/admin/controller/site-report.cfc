@@ -85,11 +85,13 @@ more?
     link_verify_status_tableid=#db.param(arguments.ss.tableid)#, 
     link_verify_status_status=#db.param(arguments.ss.status)#,
     link_verify_status_links=#db.param(arguments.ss.links)#, 
-    link_verify_status_datetime=#db.param(local.dt)#
+    link_verify_status_datetime=#db.param(local.dt)#, 
+	link_verify_status_updated_datetime=#db.param(request.zos.mysqlnow)#
     ON DUPLICATE KEY UPDATE 
     link_verify_status_status=#db.param(arguments.ss.status)#,
     link_verify_status_links=#db.param(arguments.ss.links)#, 
-    link_verify_status_datetime=#db.param(local.dt)#
+    link_verify_status_datetime=#db.param(local.dt)#, 
+	link_verify_status_updated_datetime=#db.param(request.zos.mysqlnow)#
     </cfsavecontent><cfscript>local.qI=db.execute("qI");</cfscript>
 </cffunction>
 
@@ -793,9 +795,11 @@ more?
     INSERT INTO #request.zos.queryObject.table("link_verify_link", request.zos.zcoreDatasource)#  
 	SET link_verify_link_url=#db.param(local.hashLink)#, 
 	link_verify_link_status=#db.param(arguments.status)#, 
-	link_verify_link_datetime=#db.param(request.zos.mysqlnow)# 
+	link_verify_link_datetime=#db.param(request.zos.mysqlnow)#, 
+	link_verify_link_updated_datetime=#db.param(request.zos.mysqlnow)#
     ON DUPLICATE KEY UPDATE link_verify_link_status=#db.param(arguments.status)#, 
-	link_verify_link_datetime=#db.param(request.zos.mysqlnow)# 
+	link_verify_link_datetime=#db.param(request.zos.mysqlnow)# , 
+	link_verify_link_updated_datetime=#db.param(request.zos.mysqlnow)#
     </cfsavecontent><cfscript>local.qR=db.execute("qR");</cfscript>
 </cffunction>
 

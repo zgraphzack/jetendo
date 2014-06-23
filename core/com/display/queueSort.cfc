@@ -65,7 +65,8 @@ queueSortCom.init(inputStruct);
 	var newsort = 2;
 	var local=structnew();
 	db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-	SET `#this.sortFieldName#` = #db.param(1)#
+	SET `#this.sortFieldName#` = #db.param(1)#,
+	#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE `#this.primaryKeyName#` = #db.param(arguments.id)#";
 	if(len(this.where) NEQ 0){
 		db.sql&=" and #db.trustedSQL(this.where)#";
@@ -82,7 +83,8 @@ queueSortCom.init(inputStruct);
 	newsort = 2;
 	for(local.row in qSelect){
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
-		SET `#this.sortFieldName#` = #db.param(newsort)#
+		SET `#this.sortFieldName#` = #db.param(newsort)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(local.row[this.primaryKeyName])#";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
@@ -111,7 +113,8 @@ queueSortCom.init(inputStruct);
 	}
 	qSelect=db.execute("qSelect");
 	db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-	SET `#this.sortFieldName#` = #db.param(qSelect.count)#
+	SET `#this.sortFieldName#` = #db.param(qSelect.count)#,
+	#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE `#this.primaryKeyName#` = #db.param(arguments.id)#";
 	if(len(this.where) NEQ 0){
 		db.sql&=" and #db.trustedSQL(this.where)#";
@@ -128,7 +131,8 @@ queueSortCom.init(inputStruct);
 	local.i=1;
 	for(local.row in qSelect){
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-		SET `#this.sortFieldName#` = #db.param(local.i)#
+		SET `#this.sortFieldName#` = #db.param(local.i)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(local.row[this.primaryKeyName])#";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
@@ -175,14 +179,16 @@ queueSortCom.init(inputStruct);
 		}
 		qSelect=db.execute("qSelect");
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1]-1)#
+		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1]-1)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(arguments.id)#";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
 		}
 		qUpdate=db.execute("qUpdate");
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1])#
+		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1])#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(qSelect[this.primaryKeyName][1])#";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
@@ -211,7 +217,8 @@ queueSortCom.init(inputStruct);
 	for(local.row in local.qAll){
 		if(local.row.sort EQ 0){
 			db.sql="update #db.table(this.tableName, this.datasource)# set 
-			 `#this.sortFieldName#` = #db.param(local.i)# 
+			 `#this.sortFieldName#` = #db.param(local.i)# ,
+			#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			 WHERE  `#this.primaryKeyName#` = #db.param(local.row.id)#";
 			if(len(this.where) NEQ 0){
 				db.sql&=" and #db.trustedSQL(this.where)#";
@@ -259,14 +266,16 @@ queueSortCom.init(inputStruct);
 	qSelect=db.execute("qSelect");
 	if(qSelect.recordcount NEQ 0){
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1]+1)#
+		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1]+1)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(arguments.id)# ";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
 		}
 		qUpdate=db.execute("qUpdate");
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename#
-		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1])#
+		SET `#this.sortFieldName#` = #db.param(qCurrent[this.sortFieldName][1])#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(qSelect[this.primaryKeyName][1])# ";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
@@ -304,7 +313,8 @@ queueSortCom.init(inputStruct);
 		arguments.position = qSelect.count;
 	}
 	db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
-	SET `#this.sortFieldName#` = #db.param(arguments.position)#
+	SET `#this.sortFieldName#` = #db.param(arguments.position)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE `#this.primaryKeyName#` = #db.param(arguments.id)#";
 	if(len(this.where) NEQ 0){
 		db.sql&=" and #db.trustedSQL(this.where)#";
@@ -326,7 +336,8 @@ queueSortCom.init(inputStruct);
 			newPosition =local.i;
 		}
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
-		SET `#this.sortFieldName#` = #db.param(newPosition)#
+		SET `#this.sortFieldName#` = #db.param(newPosition)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(local.row[this.primaryKeyName])#";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
@@ -359,7 +370,8 @@ queueSortCom.init(inputStruct);
 			continue;
 		}
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
-		SET `#this.sortFieldName#` = #db.param(local.i)#
+		SET `#this.sortFieldName#` = #db.param(local.i)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(local.row[this.primaryKeyName])# ";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";
@@ -369,7 +381,8 @@ queueSortCom.init(inputStruct);
 	}
 	for(local.n in local.zeroStruct){
 		db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
-		SET `#this.sortFieldName#` = #db.param(local.i)#
+		SET `#this.sortFieldName#` = #db.param(local.i)#,
+		#this.tablename#_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE `#this.primaryKeyName#` = #db.param(local.n)# ";
 		if(len(this.where) NEQ 0){
 			db.sql&=" and #db.trustedSQL(this.where)#";

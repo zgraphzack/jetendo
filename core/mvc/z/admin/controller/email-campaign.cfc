@@ -589,7 +589,8 @@ SELECT zemail_smtp_domain_id FROM #db.table("zemail_smtp_domain", request.zos.zc
     zemail_smtp_domain_datetime=#db.param(nowDate)#,
     zemail_smtp_domain_daily_count=zemail_smtp_domain_daily_count+#db.param(1)#, 
     zemail_smtp_domain_weekly_count=zemail_smtp_domain_weekly_count+#db.param(1)#, 
-    zemail_smtp_domain_monthly_count=zemail_smtp_domain_monthly_count+#db.param(1)#
+    zemail_smtp_domain_monthly_count=zemail_smtp_domain_monthly_count+#db.param(1)#, 
+    zemail_smtp_domain_updated_datetime=#db.param(request.zos.mysqlnow)#
     WHERE  zemail_smtp_domain_id =#db.param(zemail_smtp_domain_id)# and site_id = #db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qU=db.execute("qU");</cfscript>
 <cfelse>
@@ -599,7 +600,8 @@ SELECT zemail_smtp_domain_id FROM #db.table("zemail_smtp_domain", request.zos.zc
     zemail_smtp_domain_datetime=#db.param(nowDate)#,
     zemail_smtp_domain_daily_count=#db.param(1)#, 
     zemail_smtp_domain_weekly_count=#db.param(1)#, 
-    zemail_smtp_domain_monthly_count=#db.param(1)#,
+    zemail_smtp_domain_monthly_count=#db.param(1)#, 
+    zemail_smtp_domain_updated_datetime=#db.param(request.zos.mysqlnow)#,
     site_id = #db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qU=db.execute("dU");</cfscript>
 </cfif>

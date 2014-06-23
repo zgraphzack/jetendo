@@ -44,7 +44,8 @@
 	}else if(qEmail.zemail_campaign_status eq '0'){
 		// running new email campaign, set status to 1 "running"
 		db.sql="UPDATE #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign 
-		SET zemail_campaign_status = #db.param('1')# 
+		SET zemail_campaign_status = #db.param('1')#,
+		zemail_campaign_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# ";
 		db.execute("q");
 		// always send to opt in server administrators first here
@@ -65,7 +66,8 @@
 		// update campaign status to 3 (complete)
 		db.sql="UPDATE #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign 
 		SET zemail_campaign_status = #db.param('3')#, 
-		zemail_campaign_completed_datetime = #db.param(request.zos.mysqlnow)#  
+		zemail_campaign_completed_datetime = #db.param(request.zos.mysqlnow)#,
+		zemail_campaign_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# ";
 		db.execute("q");
 		this.runEmailCampaign();
@@ -95,7 +97,8 @@
 	if(qE.recordcount EQ 0){
 		// this list is complete, set email list to complete
 		db.sql="UPDATE #db.table("zemail_list_x_campaign", request.zos.zcoreDatasource)# zemail_list_x_campaign 
-		SET zemail_list_x_campaign_complete = #db.param('1')# 
+		SET zemail_list_x_campaign_complete = #db.param('1')#,
+		zemail_list_x_campaign_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# and 
 		site_id = #db.param(qemail.site_id)# ";
 		db.execute("q");
@@ -112,7 +115,8 @@
 			if(isdefined('application.zcore.changeEmailCampaignStatus'&qemail.zemail_campaign_id)){
 				s=application.zcore['changeEmailCampaignStatus'&qemail.zemail_campaign_id];
 				db.sql="UPDATE #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign 
-				SET zemail_campaign_status = #db.param(s)# 
+				SET zemail_campaign_status = #db.param(s)#,
+				zemail_campaign_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# ";
 				db.execute("q");
 				if(s neq 1){
@@ -125,6 +129,7 @@
 			// record sent record
 			 db.sql="INSERT INTO #db.table("zemail_campaign_x_user", request.zos.zcoreDatasource)#  
 			 SET zemail_campaign_id=#db.param(qemail.zemail_campaign_id)#, 
+			 zemail_campaign_x_user_updated_datetime=#db.param(request.zos.mysqlnow)#,
 			 user_id=#db.param(qe.user_id[i])#, 
 			 site_id=#db.param(qEmail.site_id)#";
 			result=db.insert("q", request.zOS.insertIDColumnForSiteIDTable);
@@ -157,13 +162,15 @@
 						continue; // skip opt in errors.
 					}
 					 db.sql="UPDATE #db.table("zemail_list_x_campaign", request.zos.zcoreDatasource)# zemail_list_x_campaign 
-					 SET zemail_list_x_campaign_offset = #db.param((offset-1))# 
+					 SET zemail_list_x_campaign_offset = #db.param((offset-1))#,
+					 zemail_list_x_campaign_updated_datetime=#db.param(request.zos.mysqlnow)# 
 					 WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# and 
 					 site_id=#db.param(qEmail.site_id)# ";
 					 db.execute("q");
 					// update email campaign status to be 2 which is "error"
 					 db.sql="UPDATE #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign 
-					 SET zemail_campaign_status = #db.param('2')# 
+					 SET zemail_campaign_status = #db.param('2')#,
+					 zemail_campaign_updated_datetime=#db.param(request.zos.mysqlnow)# 
 					 WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# ";
 					 db.execute("q");
 					rCom.fail('Email Campaign Failed to send an email for the following reason(s):<br /><br />'&arraytolist(rCom.getErrors(),'<br />'));
@@ -176,7 +183,8 @@
 		}
 		// update offset
 		db.sql="UPDATE #db.table("zemail_list_x_campaign", request.zos.zcoreDatasource)# zemail_list_x_campaign 
-		SET zemail_list_x_campaign_offset = #db.param(offset)# 
+		SET zemail_list_x_campaign_offset = #db.param(offset)#,
+		zemail_list_x_campaign_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE zemail_campaign_id=#db.param(qEmail.zemail_campaign_id)# and 
 		site_id=#db.param(qEmail.site_id)# ";
 		db.execute("q");
@@ -355,7 +363,8 @@ if(rs.isOK()){
 		return rCom;
 	}
 	db.sql="UPDATE #db.table("zemail_template", request.zos.zcoreDatasource)# zemail_template 
-	SET zemail_campaign_id = #db.param(rs.zemail_campaign_id)# 
+	SET zemail_campaign_id = #db.param(rs.zemail_campaign_id)#,
+	zemail_template_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE zemail_template_id = #db.param(arguments.ss.zemail_template_id)# and 
 	site_id = #db.param(arguments.ss.site_id)#";
 	db.execute("q");
@@ -462,6 +471,7 @@ if(rs.isOK()){
 		db.sql="INSERT INTO #db.table("zemail_list_x_campaign", request.zos.zcoreDatasource)#  
 		SET zemail_campaign_id =#db.param(arguments.ss.zemail_campaign_id)#, 
 		zemail_list_id=#db.param(arguments.ss.arrEmailListIds[i])#, 
+		zemail_list_x_campaign_updated_datetime=#db.param(request.zos.mysqlnow)#,
 		site_id = #db.param(arguments.ss.site_id)#";			
 		db.execute("q");
 	}
@@ -840,7 +850,8 @@ if(ts.permanent){
 		application.zcore.template.fail("query is missing site_id here");
 		db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 		SET user_confirm=#db.param(0)#, 
-		user_pref_list=#db.param(0)# 
+		user_pref_list=#db.param(0)#,
+		user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		where user_id =#db.param(ts.user_id)#";
 		db.execute("q");
 	}
@@ -856,6 +867,7 @@ if(ts.delete and ts.zemail_campaign_id NEQ 0){
 	 zemail_campaign_click_ip=#db.param('')#, 
 	 zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
 	 zemail_campaign_id=#db.param(ts.zemail_campaign_id)#, 
+	 zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#,
 	user_id=#db.param(ts.user_id)#,
 	site_id=#db.param(ts.site_id)#";
 	db.execute("q");

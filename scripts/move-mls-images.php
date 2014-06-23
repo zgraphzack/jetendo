@@ -606,13 +606,17 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 					echo "processImage() failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
 					return false;
 				}else{
-					array_push($arrV, "('".$arrFID[$i]."','".$newHash."', '".$mysqldate."')");
+					array_push($arrV, "('".$arrFID[$i]."','".$newHash."', '".$mysqldate."', '".$mysqldate."')");
 				}
 			}
 		}
 	}
 	if(count($arrV) != 0){
-		$sql2="INSERT INTO mls_image_hash (mls_image_hash_mlsid, mls_image_hash_value, mls_image_hash_datetime) VALUES ".implode(", ", $arrV)." ON DUPLICATE KEY UPDATE mls_image_hash_value=VALUES(mls_image_hash_value), mls_image_hash_datetime=VALUES(mls_image_hash_datetime)";
+		$sql2="INSERT INTO mls_image_hash (mls_image_hash_mlsid, mls_image_hash_value, mls_image_hash_datetime, mls_image_hash_updated_datetime) 
+		VALUES ".implode(", ", $arrV)." ON DUPLICATE KEY UPDATE 
+		mls_image_hash_value=VALUES(mls_image_hash_value), 
+		mls_image_hash_datetime=VALUES(mls_image_hash_datetime), 
+		mls_image_hash_updated_datetime=VALUES(mls_image_hash_updated_datetime) ";
 		$r=$cmysql->query($sql2);
 		if($r===FALSE){
 			echo "Critical mysql failure:".$cmysql->error;

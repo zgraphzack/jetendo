@@ -77,7 +77,7 @@
 		}
 		if(qVersion.recordcount EQ 0){
 			query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
-				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
+				echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#', jetendo_setup_updated_datetime='#request.zos.mysqlnow#' ");
 			}
 			currentVersion=application.zcore.databaseVersion;
 			if(not structkeyexists(application, request.zos.installPath&":dbUpgradeCheckVersion")){
@@ -102,7 +102,7 @@
 		installInitialDatabase();
 		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
 		query name="qInsert" datasource="#request.zos.zcoreDatasource#"{
-			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
+			echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#', jetendo_setup_updated_datetime='#request.zos.mysqlnow#' ");
 		}
 		application[request.zos.installPath&":displaySetupScreen"]=true;
 		return true;
@@ -166,7 +166,9 @@
 		}
 
 		query name="qUpdate" datasource="#request.zos.zcoreDatasource#"{
-			echo("UPDATE jetendo_setup SET jetendo_setup_database_version = '#application.zcore.databaseVersion#' ");
+			echo("UPDATE jetendo_setup 
+			SET jetendo_setup_database_version = '#application.zcore.databaseVersion#',
+			jetendo_setup_updated_datetime='#request.zos.mysqlnow#' ");
 		}
 
 		jsonOutput=replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL");

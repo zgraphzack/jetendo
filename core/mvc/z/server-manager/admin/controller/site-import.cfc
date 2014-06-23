@@ -479,7 +479,8 @@
 	// force system to self-heal
 	db.sql="UPDATE #db.table("site", request.zos.zcoreDatasource)# 
 	SET site_system_user_created=#db.param(0)#, 
-	site_system_user_modified=#db.param(1)# 
+	site_system_user_modified=#db.param(1)#, 
+	site_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE site_id=#db.param(globals.site_id)# ";
 	db.execute("qUpdate");
 	application.zcore.functions.zdeletedirectory(curImportPath);

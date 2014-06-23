@@ -107,7 +107,8 @@
 	}
 	db.sql="update #db.table("robots_global", request.zos.zcoreDatasource)# robots_global 
 	set robots_global_site=#db.param(form.robots_global_site)#, 
-	robots_global_zsa=#db.param(form.robots_global_zsa)# 
+	robots_global_zsa=#db.param(form.robots_global_zsa)#,
+	robots_global_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	where robots_global_id=#db.param('1')#";
 	db.execute("q"); 
 	application.zcore.status.setStatus(request.zsid, 'Global Robots.txt Updated.');

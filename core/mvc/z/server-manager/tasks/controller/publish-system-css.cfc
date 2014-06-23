@@ -21,7 +21,8 @@
 	}
 	
 	db.sql="UPDATE #db.table("slideshow", request.zos.zcoreDatasource)# slideshow
-	SET	slideshow_hash=#db.param('')# 
+	SET	slideshow_hash=#db.param('')#,
+	slideshow_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE
 	site_id <> #db.param(-1)#";
 	local.q=db.execute("q");

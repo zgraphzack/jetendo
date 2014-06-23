@@ -164,7 +164,8 @@
 				db.sql="update #db.table("slideshow", request.zos.zcoreDatasource)# slideshow set 
 				slideshow_locked = #db.param(0)#, 
 				slideshow_name =#db.param(newname22)#, 
-				slideshow_codename=#db.param(newname22)#
+				slideshow_codename=#db.param(newname22)#,
+				slideshow_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				where slideshow_id = #db.param(qs2.slideshow_id)# and 
 				site_id=#db.param(qS2.site_id)#";
 				q=db.execute("q");
@@ -1135,14 +1136,16 @@
 		}
 		db.sql="UPDATE #db.table("slideshow", request.zos.zcoreDatasource)# slideshow SET 
 		slideshow_tab_size=#db.param(form.slideshow_tab_size)#, 
-		slideshow_thumb_display_count=#db.param(firstTileCount)#
+		slideshow_thumb_display_count=#db.param(firstTileCount)#,
+		slideshow_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		 where slideshow_id=#db.param(form.slideshow_id)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		q=db.execute("q");
 	}else{
 		db.sql="UPDATE #db.table("slideshow", request.zos.zcoreDatasource)# slideshow SET 
 		slideshow_tab_size=#db.param(form.slideshow_tab_size)#, 
-		slideshow_thumb_display_count=#db.param('0')#
+		slideshow_thumb_display_count=#db.param('0')#,
+		slideshow_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		 where slideshow_id=#db.param(form.slideshow_id)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		q=db.execute("q");

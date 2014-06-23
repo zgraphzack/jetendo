@@ -47,7 +47,8 @@
 			throw(rs.errorMessage);
 		}
 		db.sql="update  #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# 
-		set site_x_deploy_server_remote_path = #db.param(rs.dataStruct.installPath)# 
+		set site_x_deploy_server_remote_path = #db.param(rs.dataStruct.installPath)#,
+		site_x_deploy_server_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		where site_id = #db.param(row.site_id)# and 
 		site_x_deploy_server_id = #db.param(row.site_x_deploy_server_id)# ";
 		db.execute("qUpdate");

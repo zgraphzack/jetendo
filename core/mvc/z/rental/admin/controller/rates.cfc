@@ -608,7 +608,8 @@
 	}
 	
 	db.sql="update #request.zos.queryObject.table("rental_x_category", request.zos.zcoreDatasource)# rental_x_category 
-	set rental_x_category_updating=#db.param('1')# 
+	set rental_x_category_updating=#db.param('1')#,
+	rental_x_category_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	where rental_id = #db.param(form.rental_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	q=db.execute("q");
@@ -627,6 +628,7 @@
 		rental_x_category_updating=#db.param('0')#, 
 		rental_category_id = #db.param(arrCatId[i])#, 
 		rental_id = #db.param(form.rental_id)#, 
+		rental_x_category_updated_datetime='#request.zos.mysqlnow#',
 		site_id = #db.param(request.zos.globals.id)#
 		 on duplicate key update rental_x_category_updating=#db.param('0')#";
 		db.execute("q");
@@ -645,7 +647,8 @@
 		}
 	}
 	db.sql="update #request.zos.queryObject.table("rental_x_amenity", request.zos.zcoreDatasource)# rental_x_amenity 
-	set rental_x_amenity_updating=#db.param('1')# 
+	set rental_x_amenity_updating=#db.param('1')#,
+	rental_x_amenity_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	where rental_id=#db.param(form.rental_id)# and 
 	site_id =#db.param(request.zos.globals.id)#";
 	q=db.execute("q");
@@ -654,6 +657,7 @@
 		set site_id=#db.param(request.zos.globals.id)#, 
 		rental_x_amenity_updating=#db.param('0')#, 
 		rental_id=#db.param(form.rental_id)#, 
+		rental_x_amenity_updated_datetime='#request.zos.mysqlnow#',
 		rental_amenity_id=#db.param(arrD[i])#	";
 		db.execute("q");
 	} 

@@ -580,52 +580,52 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 		fd["mobile"]="Mobile";
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 			}
 		}
 		for(g=1;g LTE arraylen(this.arrTypeLoop);g++){
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"view");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','view','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','view','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"type");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"STYLE");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"landfeelease");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','tenure','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','tenure','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"county");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','county','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','county','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"area");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','region','#application.zcore.functions.zescape(trim(fd[i]))#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','region','#application.zcore.functions.zescape(trim(fd[i]))#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"PARKING");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
 				}
 			}
 			
@@ -667,7 +667,8 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						country_code=#db.param('US')#, 
 						city_mls_id=#db.param(i)#, 
 						city_longitude=#db.param(qZ.zipcode_longitude)#, 
-						city_latitude=#db.param(qZ.zipcode_latitude)# ";
+						city_latitude=#db.param(qZ.zipcode_latitude)#,
+					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						db.execute("q"); 
 						 db.sql="SELECT last_insert_id() as city_id";
 						 qId=db.execute("qId");
@@ -678,7 +679,8 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						 country_code=#db.param('US')#, 
 						 city_mls_id=#db.param(i)#, 
 						 city_longitude=#db.param(qZ.zipcode_longitude)#, 
-						 city_latitude=#db.param(qZ.zipcode_latitude)#  ";
+						 city_latitude=#db.param(qZ.zipcode_latitude)#,
+					 	city_updated_datetime=#db.param(request.zos.mysqlnow)#  ";
 						 db.execute("q");
 						//writeoutput("created #i#: "&qId.city_id&"<br>");
 						cityCreated=true; // need to run zipcode calculations
@@ -687,7 +689,8 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						SET city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						state_abbr=#db.param(tempState)#,
 						country_code=#db.param('US')#, 
-						city_mls_id=#db.param(i)# ";
+						city_mls_id=#db.param(i)#,
+						 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						db.execute("q"); 
 						//writeoutput('Missing: #fd[i]#, california<br />');
 						//arrayAppend(arrError, "<a href=""http://maps.google.com/maps?q=#urlencodedformat(fd[i]&', california')#"" rel=""external"" onclick=""window.open(this.href); return false;"">#fd[i]#, california</a> is missing in `#request.zos.zcoreDatasource#`.zipcode.<br />");

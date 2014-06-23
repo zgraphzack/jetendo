@@ -60,7 +60,8 @@ this.customStruct = StructNew();
 			db.sql="update #db.table("user", request.zos.zcoreDatasource)# user 
 			set user_confirm=#db.param(0)#, 
 			user_confirm_count =#db.param(0)#, 
-			user_pref_email=#db.param(1)# 
+			user_pref_email=#db.param(1)#,
+			user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE user_id=#db.param(qU.user_id)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q"); 
@@ -77,7 +78,8 @@ this.customStruct = StructNew();
 			db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)#  
 			set mail_user_confirm=#db.param(0)#, 
 			mail_user_confirm_count=#db.param(0)#, 
-			mail_user_opt_in=#db.param(1)# 
+			mail_user_opt_in=#db.param(1)#,
+			mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE mail_user_id=#db.param(qU.mail_user_id)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q"); 
@@ -131,7 +133,8 @@ this.customStruct = StructNew();
 	login_log_ip=#db.param(request.zos.cgi.remote_addr)#,
 	login_log_user_agent=#db.param(cgi.HTTP_USER_AGENT)#,
 	site_id=#db.param(request.zos.globals.id)#,
-	login_log_status=#db.param(arguments.status)#";
+	login_log_status=#db.param(arguments.status)#,
+	login_log_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 	if(structkeyexists(form, 'zusername')){
 		db.sql&=" , login_log_username = #db.param(form.zusername)#";
 	}
@@ -289,7 +292,9 @@ userCom.checkLogin(inputStruct);
 		if(failCount EQ 10){
 			if(emailSent EQ false){
 				db.sql="UPDATE #db.table("login_log", request.zos.zcoreDatasource)# login_log 
-				SET login_log_email_sent =#db.param(1)# WHERE login_log_ip=#db.param(request.zos.cgi.remote_addr)# and 
+				SET login_log_email_sent =#db.param(1)#,
+				login_log_updated_datetime=#db.param(request.zos.mysqlnow)# 
+				WHERE login_log_ip=#db.param(request.zos.cgi.remote_addr)# and 
 				login_log_user_agent=#db.param(left(cgi.HTTP_USER_AGENT,150))# and 
 				login_log_datetime > #db.param(oldDate)# and 
 				site_id <> #db.param(-1)# ";
@@ -367,7 +372,8 @@ userCom.checkLogin(inputStruct);
 								SET user_salt = #db.param('')#,
 								user_password = #db.param('')#,
 								member_password = #db.param('')#,
-								user_password_version = #db.param(request.zos.defaultPasswordVersion)# 
+								user_password_version = #db.param(request.zos.defaultPasswordVersion)#,
+								user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 								WHERE user_id = #db.param(qUserCheck.user_id)# and 
 								site_id = #db.param(qUserCheck.site_id)#";
 								db.execute("qDeleteUserPassword");
@@ -380,7 +386,8 @@ userCom.checkLogin(inputStruct);
 							SET user_salt = #db.param(userSalt)#,
 							user_password = #db.param(userPasswordHash)#,
 							member_password = #db.param(userPasswordHash)#,
-							user_password_version = #db.param(request.zos.defaultPasswordVersion)# 
+							user_password_version = #db.param(request.zos.defaultPasswordVersion)#,
+							user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 							WHERE user_id = #db.param(qUserCheck.user_id)# and 
 							site_id = #db.param(qUserCheck.site_id)#";
 							db.execute("qUpdateUserPassword");
@@ -1297,7 +1304,8 @@ formString = userCom.loginForm(inputStruct);
 			db.sql="update #db.table("user_token", request.zos.zcoreDatasource)# user_token 
 			set user_token_key=#db.param(local.user_token_key)#, 
 			user_token_salt=#db.param(local.user_token_salt)#, 
-			user_token_datetime=#db.param(request.zos.mysqlnow)#
+			user_token_datetime=#db.param(request.zos.mysqlnow)#,
+			user_token_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			WHERE 
 			user_token_version=#db.param(local.arrToken[1])# and 
 			user_token_id=#db.param(local.arrToken[2])# and 

@@ -325,6 +325,7 @@ USER WAS PERMANENTLY BLOCKED.');
         track_user_conversions=#db.param(request.zsession.tracking.track_user_conversions)#, 
         track_user_ppc=#db.param(request.zsession.tracking.track_user_ppc)#, 
         track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
+        track_user_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 	track_user_source=#db.param(local.tempSource)#, 
         zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
 	if(hasSession){
@@ -348,6 +349,7 @@ USER WAS PERMANENTLY BLOCKED.');
 		track_page_qs=#db.param(request.zsession.trackingArrPages[i].track_page_qs)#,
 		track_page_datetime=#db.param(dateformat(request.zsession.trackingArrPages[i].track_page_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.trackingArrPages[i].track_page_datetime, 'HH:mm:ss'))#,
 		track_user_id=#db.param(request.zsession.tracking.track_user_id)#,
+		track_page_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 		site_id=#db.param(request.zos.globals.id)#";
 		local.rs=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 	}
@@ -377,10 +379,12 @@ USER WAS PERMANENTLY BLOCKED.');
 	track_page_id = #db.param(track_page_id)#,
 	track_convert_id = #db.param(track_convert_id)#,
 	track_user_x_convert_datetime = #db.param(request.zos.mysqlnow)#, 
+	track_user_x_convert_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("qUser");
 	db.sql="UPDATE #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
-	SET track_user_conversions=track_user_conversions+#db.param(1)# 
+	SET track_user_conversions=track_user_conversions+#db.param(1)#,
+	track_user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE track_user_id = #db.param(track_user_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qUpdate=db.execute("qUpdate");
@@ -445,6 +449,7 @@ USER WAS PERMANENTLY BLOCKED.');
 			zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
 			zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
 			zemail_campaign_id=#db.param(request.zsession.zemail_campaign_id)#, 
+			zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 			user_id=#db.param(request.zsession.user.id)#,
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q");
@@ -455,6 +460,7 @@ USER WAS PERMANENTLY BLOCKED.');
 			zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
 			zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
 			zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
+			zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#,
 			zemail_campaign_id=#db.param(cookie["__#request.zos.zcoremapping#ecid"])#, 
 			user_id=#db.param(cookie["__#request.zos.zcoremapping#euid"])#,
 			site_id=#db.param(request.zos.globals.id)#";

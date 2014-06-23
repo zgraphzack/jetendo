@@ -171,7 +171,8 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 			arrayappend(local.arrQueue2, "#db.param(local.arrQueue[local.i])#");
 		} 
 		db.sql="update #db.table("queue", request.zos.zcoreDatasource)# queue 
-		set queue_cancelled=#db.param(1)# 
+		set queue_cancelled=#db.param(1)# ,
+		queue_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		queue_id IN ("&db.trustedSQL(arraytolist(local.arrQueue2,","))&")";
 		q=db.execute("q");

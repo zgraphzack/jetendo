@@ -287,13 +287,15 @@
 				user_group_login_access = #db.param(1)#, 
 				user_group_modify_user = #db.param(modifyUser)#, 
 				user_group_share_user = #db.param(shareUser)#, 
+				user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 				site_id = #db.param(arguments.site_id)#";
 	   			result=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 				if(not result.success){
 					 db.sql="UPDATE #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
 					 SET user_group_login_access = #db.param(1)#, 
 					 user_group_modify_user = #db.param(modifyUser)#, 
-					 user_group_share_user = #db.param(shareUser)# 
+					 user_group_share_user = #db.param(shareUser)#,
+					 user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)#  
 					WHERE user_group_id = #db.param(arguments.user_group_id)# and  
 					user_group_child_id = #db.param(current)# and  
 					site_id = #db.param(arguments.site_id)#";
@@ -319,12 +321,14 @@
 				 user_group_child_id = #db.param(current)#, 
 				 user_group_modify_user = #db.param(1)#, 
 				 user_group_share_user = #db.param(shareUser)#, 
+				 user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 				 site_id = #db.param(arguments.site_id)#";
 	   			result=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 				if(not result.success){ 
 					db.sql="UPDATE #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
 					SET user_group_modify_user = #db.param(1)#, 
-					user_group_share_user = #db.param(shareUser)# 
+					user_group_share_user = #db.param(shareUser)#,
+					user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)# 
 					WHERE user_group_id = #db.param(arguments.user_group_id)# and  
 					user_group_child_id = #db.param(current)# and  
 					site_id = #db.param(arguments.site_id)#";
@@ -339,11 +343,13 @@
 				 SET user_group_id = #db.param(arguments.user_group_id)#, 
 				 user_group_child_id = #db.param(current)#, 
 				 user_group_share_user = #db.param(1)#, 
+				user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 				 site_id = #db.param(arguments.site_id)#";
 	    			result=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 				if(not result.success){				
 					 db.sql="UPDATE #db.table("user_group_x_group", request.zos.zcoreDatasource)#  SET 
-					user_group_share_user = #db.param('1')# 
+					user_group_share_user = #db.param('1')#,
+					user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)# 
 					WHERE user_group_id = #db.param(arguments.user_group_id)# and  
 					user_group_child_id = #db.param(current)# and  
 					site_id = #db.param(arguments.site_id)#";

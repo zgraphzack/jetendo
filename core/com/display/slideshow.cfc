@@ -366,7 +366,8 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 	ts.site_id=arguments.ss.site_id;
 	application.zcore.functions.zPublishCss(ts);
 	 db.sql="update #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-	 set slideshow_hash = #db.param(arguments.ss.slideshowHash)# 
+	 set slideshow_hash = #db.param(arguments.ss.slideshowHash)#,
+	 slideshow_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE slideshow_id = #db.param(qss.slideshow_id)# and 
 	site_id =#db.param(arguments.ss.site_id)#";
 	db.execute("q");

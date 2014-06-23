@@ -580,8 +580,9 @@ newId=0;
         log_datetime = '#DateFormat(now(), "yyyy-mm-dd")# #TimeFormat(now(), "HH:mm:ss")#',
         log_title = '#variables._zTempEscape(zErrorTempURL)#',
         log_ip = '#variables._zTempEscape(request.zos.cgi.remote_addr)#', 
-	log_user_agent='#variables._zTempEscape(request.zos.cgi.http_user_agent)#',
-        log_message = '#variables._zTempEscape(zAllRequestVars)#' 
+		log_user_agent='#variables._zTempEscape(request.zos.cgi.http_user_agent)#',
+        log_message = '#variables._zTempEscape(zAllRequestVars)#' , 
+		log_updated_datetime='#variables._zTempEscape(request.zos.mysqlnow)#'
         </cfsavecontent>
         <cftry>
         <cfquery name="qInsertError" datasource="#Request.zOS.globals.serverDatasource#">

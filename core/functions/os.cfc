@@ -1307,7 +1307,8 @@ application.zcore.functions.zLogError(ts);
 	log_user_agent=#db.param(request.zos.cgi.http_user_agent)# ,
 	log_script_name=#db.param(arguments.ss.scriptName)#,
 	log_line_number=#db.param(arguments.ss.lineNumber)#, 
-	log_exception_message=#db.param(arguments.ss.exceptionMessage)# ";
+	log_exception_message=#db.param(arguments.ss.exceptionMessage)#, 
+	log_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 	rs=db.insert("qInsert");
 	
 	if(rs.success){

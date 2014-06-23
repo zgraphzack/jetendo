@@ -133,7 +133,8 @@
 		if(structkeyexists(form, 'log_resolver'&i)){
 				currentId = form['log_resolver'&i];
 				 db.sql="UPDATE #db.table("log", request.zos.zcoreDatasource)# log 
-				 SET log_status = #db.param('Resolved')# 
+				 SET log_status = #db.param('Resolved')#, 
+				 log_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE log_id = #db.param(currentId)#";
 				db.execute("q");
 		}

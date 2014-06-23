@@ -799,7 +799,8 @@
 		if(rCom.isOK()){
 			if(form.configmethod eq 'configSave'){
 				db.sql="UPDATE #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
-				SET app_x_site_status = #db.param(form.app_x_site_status)# 
+				SET app_x_site_status = #db.param(form.app_x_site_status)#,
+				app_x_site_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE app_x_site_id=#db.param(local.app_x_site_id)# and 
 				site_id =#db.param(local.sid)#";
 				db.execute("q"); 

@@ -464,6 +464,9 @@ if(table_id EQ false){
 	if(request.zos.istestserver and structkeyexists(arguments.inputStruct, 'struct') EQ false){
 		throw("Error: FUNCTION: zInsert: inputStruct.struct must be set.", "exception");
 	}
+	if(structkeyexists(ss,'struct')){
+		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+	}
 	</cfscript>
     <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
         <cfquery name="fields" datasource="#ss.datasource#">
@@ -622,6 +625,9 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	}
 	if(request.zos.istestserver and structkeyexists(arguments.inputStruct, 'struct') EQ false){
 		throw("Error: FUNCTION: zInsert: inputStruct.struct must be set.", "exception");
+	}
+	if(structkeyexists(ss,'struct')){
+		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
 	}
 	</cfscript>
     <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
@@ -795,12 +801,85 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
                     
                 }else if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "from"){
                     if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
-                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.6");
-			writedump(ps);
-			abort;
+                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.6"); 
                     }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN "site_id"){
                         arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.7");
                     }
+                }
+            }
+        }
+    }
+    return ps;
+    </cfscript>
+</cffunction>
+
+
+
+<cffunction name="zVerifyDeletedInDBCFCQuery" localmode="modern" access="public" returntype="struct">
+    <cfargument name="parsedSQLStruct" type="struct" required="yes">
+    <cfscript>
+    var local=structnew();
+    var ps=arguments.parsedSQLStruct; 
+    if(not structkeyexists(application, 'zcore')){
+    	return ps;
+    }
+    for(local.i2=1;local.i2 LTE arraylen(ps.arrLeftJoin);local.i2++){
+        if(not structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrLeftJoin[local.i2].table)){
+        	continue;
+        }
+        deletedField=listgetat(ps.arrLeftJoin[local.i2].table, 2, ".")&"_deleted";
+        // search for reference to tableAlias.site_id in onstatement OR wherestatement
+        if(ps.arrLeftJoin[local.i2].onstatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".#deletedField#" and ps.whereStatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".#deletedField#"){
+            arrayappend(ps.arrError, ps.arrLeftJoin[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&ps.arrLeftJoin[local.i2].tableAlias);
+        }
+    }
+    for(local.i2=1;local.i2 LTE arraylen(ps.arrTable);local.i2++){
+        if(not structkeyexists(application.zcore.tableColumns, ps.arrTable[local.i2].table)){
+        	continue;
+        }
+        deletedField=listgetat(ps.arrTable[local.i2].table, 2, ".")&"_deleted"; 	
+        if(not structkeyexists(application.zcore.tableColumns[ps.arrTable[local.i2].table], deletedField)){
+        	continue;
+        }
+        // search for reference to tableAlias.table_deleted in onstatement OR wherestatement
+        if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
+            local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
+            if(local.c43 DOES NOT CONTAIN deletedField){
+                arrayappend(ps.arrError, "#deletedField# must be in the COLUMN LIST.");
+            }
+        }
+        if(ps.intoPos){
+            if(ps.selectPos){
+                if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "into"){
+                    if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&"."&deletedField){
+                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.1");
+                    }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN deletedField){
+                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.2");
+                    }
+                }
+            }
+        }else{
+            if(ps.setPos){
+                if(ps.setStatement DOES NOT CONTAIN deletedField){
+                    arrayappend(ps.arrError, "#deletedField# must be in the SET STATEMENT.3");
+                }
+                if(ps.wherePos and ps.whereStatement NEQ ""){
+                    if(arraylen(ps.arrTable) EQ 1){
+                        if(ps.whereStatement DOES NOT CONTAIN deletedField){
+                            arrayappend(ps.arrError, "#deletedField# must be in the WHERE STATEMENT.4");
+                        }
+                    }else{
+                        if(ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".#deletedField#"){
+                            arrayappend(ps.arrError, "#deletedField# must be in the WHERE STATEMENT.5");
+                        }
+                    }
+                }
+                
+            }else if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "from"){
+                if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".#deletedField#"){
+                    arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.6"); 
+                }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN deletedField){
+                    arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.7");
                 }
             }
         }

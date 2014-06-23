@@ -2012,7 +2012,8 @@ Define this function in another CFC to override the default email format
 	form.inquiries_primary=1;
 	if(application.zcore.functions.zso(form, 'inquiries_email') NEQ ""){
 		db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
-		SET inquiries_primary=#db.param(0)# 
+		SET inquiries_primary=#db.param(0)#,
+		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_email=#db.param(form.inquiries_email)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		db.execute("q"); 

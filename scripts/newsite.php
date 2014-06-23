@@ -416,7 +416,13 @@ for($i4=0;$i4 < 62;$i4++){
 		}
 		// make new connection because above connection is not buffered.
 		$cmysql2=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
-		$cmysql2->query("update site set site_system_user_created='1', site_system_user_modified='0', site_short_domain_previous='', site_username_previous='', site_password_previous='' where site_id='".$row["site_id"]."'");
+		$mysqldate = date("Y-m-d H:i:s");
+		$cmysql2->query("update site set site_system_user_created='1', 
+			site_system_user_modified='0', 
+			site_short_domain_previous='', 
+			site_username_previous='', 
+			site_password_previous='',
+			site_updated_datetime='".$mysqldate."' where site_id='".$row["site_id"]."'");
 	}
 	sleep(1);
 	if(microtime_float() - $time_start > $timeout-3){

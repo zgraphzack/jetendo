@@ -83,7 +83,8 @@
 		// don't delete because rewrite rules must persist
 		application.zcore.app.getAppCFC("content").searchIndexDeleteContent(form.content_id);
 		db.sql="UPDATE #db.table("content", request.zos.zcoreDatasource)# content 
-		SET content_deleted=#db.param(1)# 
+		SET content_deleted=#db.param(1)#, 
+		content_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE content_id = #db.param(form.content_id)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("q"); 

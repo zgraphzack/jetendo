@@ -539,7 +539,7 @@ this.remapFieldStruct=t5;
 			fd=this.getRETSValues("property", this.arrTypeLoop[g], "county");
 			for(i in fd){
 				i2=i;
-				arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 			
 			
@@ -547,21 +547,21 @@ this.remapFieldStruct=t5;
 			for(i in fd){
 				i2=i;
 				if(i2 NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"propertystyle");
 			for(i in fd){
 				i2=i;
 				if(i2 NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"dwellingstyle");
 			for(i in fd){
 				i2=i;
 				if(i2 NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 				}
 			}
 			
@@ -569,7 +569,7 @@ this.remapFieldStruct=t5;
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"WaterFrontageDesc");
 			for(i in fd){
 				tmp=i;
-				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 			
 			
@@ -577,7 +577,7 @@ this.remapFieldStruct=t5;
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"DwellingView");
 			for(i in fd){
 				tmp=i;
-				arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		return {arrSQL:arrSQL, cityCreated:false, arrError:arrError};

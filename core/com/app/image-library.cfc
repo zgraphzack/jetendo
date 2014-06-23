@@ -56,7 +56,8 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	<cfscript>
 	var db=request.zos.queryObject;
 	db.sql="UPDATE #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)# 
-	SET image_library_active = #db.param('1')# 
+	SET image_library_active = #db.param('1')#,
+	image_library_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
@@ -68,13 +69,15 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	<cfscript>
 	var db=request.zos.queryObject;
 	db.sql="UPDATE #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)# 
-	SET image_library_approved = #db.param('1')# 
+	SET image_library_approved = #db.param('1')#,
+	image_library_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	
 	db.sql="UPDATE #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# 
-	SET image_approved = #db.param('1')# 
+	SET image_approved = #db.param('1')#,
+	image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
@@ -86,13 +89,15 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	<cfscript>
 	var db=request.zos.queryObject;
 	db.sql="UPDATE #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)# 
-	SET image_library_approved = #db.param('0')# 
+	SET image_library_approved = #db.param('0')#,
+	image_library_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	
 	db.sql="UPDATE #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# 
-	SET image_approved = #db.param('0')# 
+	SET image_approved = #db.param('0')#,
+	image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
@@ -287,7 +292,8 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		}else if(ArrayLen(arrList) EQ 1){
 			image_intermediate_file=arrList[1];
 			db.sql="UPDATE #request.zos.queryObject.table("image", request.zos.zcoreDatasource)#  
-			SET image_intermediate_file=#db.param(image_intermediate_file)# 
+			SET image_intermediate_file=#db.param(image_intermediate_file)# ,
+			image_updated_datetime=#db.param(request.zos.mysqlnow)#
 			WHERE image_id = #db.param(arguments.image_id)# and 
 			site_id =#db.param(request.zos.globals.id)#";
 			db.execute("q");
@@ -622,7 +628,8 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 			s9.image_file=application.zcore.functions.zURLEncode(s9.image_caption,'-')&"-"&s9.image_id&"."&ext;
 			application.zcore.functions.zRenameFile(oldFilePath,destination&s9.image_file); 
 			db.sql="UPDATE #request.zos.queryObject.table("image", request.zos.zcoreDatasource)#  
-			SET image_file = #db.param(s9.image_file)# 
+			SET image_file = #db.param(s9.image_file)#,
+			image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			WHERE image_id = #db.param(s9.image_id)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q");
@@ -1540,7 +1547,8 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	arrImageId=listtoarray(form.image_id_list,",");
 	for(i=1;i LTE arraylen(arrImageId);i++){
 		db.sql="UPDATE #request.zos.queryObject.table("image", request.zos.zcoreDatasource)#  
-		SET image_sort = #db.param(i)# 
+		SET image_sort = #db.param(i)#,
+		image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE image_library_id = #db.param(form.image_library_id)# and 
 		image_id = #db.param(arrImageId[i])# and 
 		site_id=#db.param(request.zos.globals.id)#";

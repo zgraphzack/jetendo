@@ -319,11 +319,14 @@
 		application.zcore.functions.zRedirect("/z/server-manager/admin/user/editSitePermissions?zid=#form.zid#&sid=#form.sid#&zsid=#Request.zsid#");
 	}
 	db.sql=" UPDATE #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-	SET user_group_primary = #db.param(0)# 
+	SET user_group_primary = #db.param(0)#,
+	user_group_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE site_id = #db.param(form.sid)# ";
 	qFlush=db.execute("qFlush");
 	db.sql="UPDATE #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-	SET user_group_primary = #db.param(1)# WHERE user_group_id = #db.param(form.user_group_primary)# and 
+	SET user_group_primary = #db.param(1)#,
+	user_group_updated_datetime=#db.param(request.zos.mysqlnow)# 
+	WHERE user_group_id = #db.param(form.user_group_primary)# and 
 	site_id = #db.param(form.sid)# ";
 	qUpdate=db.execute("qUpdate");	
 	if(application.zcore.functions.zso(form, 'user_group_id') NEQ ''){

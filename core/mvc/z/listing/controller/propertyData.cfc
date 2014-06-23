@@ -1241,6 +1241,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				arrayAppend(arrF,'site_id');
 				arrayAppend(arrF,'mls_dir_hash');
 				arrayAppend(arrF,'mls_dir_search_string');
+				arrayAppend(arrF,'mls_dir_updated_datetime');
 						
 				arrayappend(arrsql,arraytolist(arrF)&") VALUES "); 
 				arrRow=arraynew(1);
@@ -1351,9 +1352,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 							arrSavedValues[curOriginalFieldIndex] = qZselect.value[zI];
 						}
 						hashStruct[arrHash[i]].newValue=arrSavedValues[curOriginalFieldIndex];
-						arrayappend(arrSavedRow,"'"&arraytolist(arrSavedValues,"','")&"'"); 
+						arrayappend(arrSavedRow,"'"&arraytolist(arrSavedValues,"','")&"', '#request.zos.mysqlnow#'"); 
 					}
-					savedSQL="INSERT INTO #db2.table("mls_saved_search", request.zos.zcoreDatasource)#  (`"&arraytolist(this.arrSearchFields,"`,`")&"`,saved_search_created_date,saved_search_updated_date) VALUES("&arraytolist(arrSavedRow,"),(")&")";
+					savedSQL="INSERT INTO #db2.table("mls_saved_search", request.zos.zcoreDatasource)#  (`"&arraytolist(this.arrSearchFields,"`,`")&"`,saved_search_created_date,saved_search_updated_date, mls_saved_search_updated_datetime) VALUES("&arraytolist(arrSavedRow,"),(")&")";
 					//writeoutput(savedSQL);
 					//application.zcore.functions.zabort();
 					newId=0;
@@ -1381,6 +1382,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 							arrayAppend(arrF,application.zcore.functions.zescape(request.zos.globals.id));
 							arrayAppend(arrF,application.zcore.functions.zescape(arrHash[i]));
 							arrayAppend(arrF,application.zcore.functions.zescape(hashStruct[arrHash[i]].mls_dir_search_string));
+							arrayappend(arrF,request.zos.mysqlnow);
 							arrayappend(arrRow,"'"&arraytolist(arrF,"','")&"'"); 
 						}
 						arrayappend(arrsql,"("&arraytolist(arrRow,"),(")&")");
@@ -1982,7 +1984,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 		}
 		if(arraylen(local.arrC2) NEQ 0){
 			db.sql="update #db.table("mls_filter", request.zos.zcoreDatasource)#  
-			set "&db.trustedSQL(arraytolist(local.arrC2, ", "))&" 
+			set "&db.trustedSQL(arraytolist(local.arrC2, ", "))&" ,
+			mls_filter_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			where site_id = #db.param(request.zos.globals.id)#";
 			db.execute("q");
 		}

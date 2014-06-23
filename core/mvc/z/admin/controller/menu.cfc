@@ -132,7 +132,13 @@
 			qS2=db.execute("qS2");
 			if(qS2.recordcount NEQ 0){
 				newcodename22=qS2.menu_name&" (renamed on "&dateformat(now(),"m/d/yy")&" at "&timeformat(now(),"HH:mm:ss")&")";
-				db.sql="update #db.table("menu", request.zos.zcoreDatasource)# menu set menu_locked = #db.param('0')#, menu_name =#db.param(newcodename22)#, menu_codename=#db.param(newcodename22)# WHERE menu_id = #db.param(qs2.menu_id)#  and site_id =#db.param(qs2.site_id)#";
+				db.sql="update #db.table("menu", request.zos.zcoreDatasource)# menu 
+				set menu_locked = #db.param('0')#, 
+				menu_name =#db.param(newcodename22)#, 
+				menu_codename=#db.param(newcodename22)#,
+				menu_updated_datetime=#db.param(request.zos.mysqlnow)#  
+				WHERE menu_id = #db.param(qs2.menu_id)#  and 
+				site_id =#db.param(qs2.site_id)#";
 				qC=db.execute("qC");
 			}
 		}

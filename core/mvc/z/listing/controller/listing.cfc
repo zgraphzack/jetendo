@@ -2731,7 +2731,8 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	#db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
 	 #db.table("zipcode", request.zos.zcoreDatasource)#  
 	 SET city_latitude=zipcode_latitude, 
-	 city_longitude=zipcode_longitude 
+	 city_longitude=zipcode_longitude,
+	 city_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE `city`.city_name = zipcode.city_name AND 
 	`city`.state_abbr = zipcode.state_abbr AND 
 	`city`.country_code = zipcode.country_code ";
@@ -2739,16 +2740,18 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	db.sql="UPDATE #db.table("city", request.zos.zcoreDatasource)# city, 
 	#db.table("zipcode", request.zos.zcoreDatasource)#  
 	SET city_latitude=zipcode_latitude, 
-	city_longitude=zipcode_longitude 
+	city_longitude=zipcode_longitude,
+	city_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE `city`.city_name = zipcode.city_name AND 
 	`city`.state_abbr = zipcode.state_abbr AND 
 	`city`.country_code = zipcode.country_code  ";
     db.execute("q"); 
 	db.sql="INSERT INTO 
 	#db.table("city_distance_safe_update", request.zos.zcoreDatasource)# 
-	 (city_parent_id, city_id, city_distance) 
+	 (city_parent_id, city_id, city_distance, city_distance_updated_datetime, city_distance_deleted) 
 SELECT city.city_id, city2.city_id,  
-	#db.trustedSQL("ROUND((ACOS((SIN(city.city_latitude/57.2958) * SIN(city2.city_latitude/57.2958)) + (COS(city.city_latitude/57.2958) * COS(city2.city_latitude/57.2958) * COS(city2.city_longitude/57.2958 - city.city_longitude/57.2958)))) * 3963, 0) AS distance")#
+	#db.trustedSQL("ROUND((ACOS((SIN(city.city_latitude/57.2958) * SIN(city2.city_latitude/57.2958)) + (COS(city.city_latitude/57.2958) * COS(city2.city_latitude/57.2958) * COS(city2.city_longitude/57.2958 - city.city_longitude/57.2958)))) * 3963, 0) AS distance")#, 
+	city.city_distance_updated_datetime, city.city_distance_deleted
 	FROM #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city
 	LEFT JOIN #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city2 ON  #db.trustedSQL("ROUND((ACOS((SIN(city.city_latitude/57.2958) * SIN(city2.city_latitude/57.2958)) + (COS(city.city_latitude/57.2958) * COS(city2.city_latitude/57.2958) * COS(city2.city_longitude/57.2958 - city.city_longitude/57.2958)))) * 3963, 0) <= 100
 	AND city2.city_latitude<>0 AND city2.city_longitude<>0

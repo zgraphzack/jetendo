@@ -389,7 +389,9 @@ qCheck=db.execute("qCheck");
             }
 			form.manual_listing_id="0-"&form.manual_listing_unique_id;
 			db.sql="update #db.table("manual_listing", request.zos.zcoreDatasource)# set 
-			manual_listing_id=#db.param(form.manual_listing_id)# where 
+			manual_listing_id=#db.param(form.manual_listing_id)#,
+			manual_listing_updated_datetime=#db.param(request.zos.mysqlnow)# 
+			 where 
 			manual_listing_unique_id=#db.param(form.manual_listing_unique_id)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			qUpdate=db.execute("qUpdate");

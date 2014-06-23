@@ -80,7 +80,8 @@
 		request.zsession.saved_search_last_sent_date=local.qSearch.saved_search_sent_date;
 	}
 	db.sql="update #db.table("mls_saved_search", request.zos.zcoreDatasource)# 
-	set  saved_search_last_sent_date=#db.param(dateformat(local.qSearch.saved_search_sent_date,'yyyy-mm-dd')&' '&timeformat(local.qSearch.saved_search_sent_date,'HH:mm:ss'))# 
+	set  saved_search_last_sent_date=#db.param(dateformat(local.qSearch.saved_search_sent_date,'yyyy-mm-dd')&' '&timeformat(local.qSearch.saved_search_sent_date,'HH:mm:ss'))#,
+	mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE mls_saved_search_id = #db.param(local.qSearch.mls_saved_search_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("qUpdate");

@@ -709,7 +709,8 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
 		form.file_version_id=application.zcore.functions.zInsert(ts);
 		
 		db.sql="update #request.zos.queryObject.table("file_version", request.zos.zcoreDatasource)# file_version 
-		set file_version_active=#db.param(0)# 
+		set file_version_active=#db.param(0)#,
+		file_version_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		where file_id=#db.param(form.file_id)# and 
 		file_version_id <> #db.param(form.file_version_id)#";
 		r=db.execute("r");

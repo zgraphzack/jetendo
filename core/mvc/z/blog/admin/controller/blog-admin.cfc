@@ -18,7 +18,8 @@
         <cfscript>
             g=createUUID();
         db.sql="UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
-		SET blog_guid=#db.param(g)# 
+		SET blog_guid=#db.param(g)#,
+        blog_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE blog_id=#db.param(qB.blog_id)# and 
 		site_id=#db.param(qB.site_id)#";
 		db.execute("q"); 
@@ -351,7 +352,8 @@ if(form.blog_category_unique_name CONTAINS "?"){
     init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
 	 db.sql="UPDATE #db.table("blog_comment", request.zos.zcoreDatasource)#  
-	 SET blog_comment_approved=#db.param(1)# 
+	 SET blog_comment_approved=#db.param(1)#, 
+     blog_comment_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE site_id=#db.param(request.zos.globals.id)# and 
 	blog_comment_id =#db.param(form.blog_comment_id)#";
 	db.execute("q");
@@ -604,13 +606,15 @@ if(arraylen(arrUser) EQ 1){
         for(i=1;i LTE arraylen(ArrCat);i++){
             if(i EQ 1){
                 db.sql="UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
-				SET blog_category_id = #db.param(arrCat[i])# 
+				SET blog_category_id = #db.param(arrCat[i])#,
+                blog_updated_datetime = #db.param(request.zos.mysqlnow)#, 
 				WHERE blog_id = #db.param(form.blog_id)# and 
 				site_id=#db.param(request.zos.globals.id)# ";
 				db.execute("q"); 
             }
             db.sql="INSERT INTO #db.table("blog_x_category", request.zos.zcoreDatasource)#  
 			SET blog_id = #db.param(form.blog_id)#, 
+            blog_x_category_updated_datetime = #db.param(request.zos.mysqlnow)#, 
 			blog_category_id = #db.param(arrCat[i])#, 
 			site_id=#db.param(request.zos.globals.id)# ";
 			db.execute("q"); 
@@ -639,6 +643,7 @@ if(arraylen(arrUser) EQ 1){
             }
             db.sql="INSERT INTO #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
 			SET blog_id = #db.param(form.blog_id)#, 
+            blog_x_tag_updated_datetime = #db.param(request.zos.mysqlnow)#, 
 			blog_tag_id=#db.param(form.blog_tag_id)#, 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q"); 

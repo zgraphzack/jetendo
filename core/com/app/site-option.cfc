@@ -1656,7 +1656,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}
 	db.sql="UPDATE #db.table("site_x_option_group_set", request.zos.zcoredatasource)# 
 	SET 
-	site_x_option_group_set_approved=#db.param(approved)# 
+	site_x_option_group_set_approved=#db.param(approved)#,
+	site_x_option_group_set_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE site_id =#db.param(arguments.site_id)# and 
 	site_x_option_group_set_id = #db.param(arguments.setId)# ";
 	db.execute("qUpdate");
@@ -1937,7 +1938,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfscript>
 	var db=request.zos.queryObject;
 	 db.sql="UPDATE #db.table("site_option_app", request.zos.zcoreDatasource)# site_option_app 
-	 SET site_option_app_active = #db.param('1')# 
+	 SET site_option_app_active = #db.param('1')#, 
+	 site_option_app_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	 WHERE site_option_app_id=#db.param(arguments.site_option_app_id)# and 
 	 site_id = #db.param(request.zos.globals.id)#";
 	 db.execute("q");

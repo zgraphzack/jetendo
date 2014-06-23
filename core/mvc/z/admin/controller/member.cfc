@@ -93,7 +93,8 @@
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users", true);	
 	db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-	SET user_active = #db.param('1')# 
+	SET user_active = #db.param('1')#,
+	user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE user_id = #db.param(form.user_id)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qUp=db.execute("qUp");
@@ -107,7 +108,8 @@
 	var db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users", true);	
 	db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-	SET user_active = #db.param('0')# 
+	SET user_active = #db.param('0')#,
+	user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE user_id = #db.param(form.user_id)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qUp=db.execute("qUp");

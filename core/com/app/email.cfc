@@ -789,7 +789,8 @@ application.zcore.functions.zdeletefile(arguments.ss.arrCID[count]);
 			}else{
 				db.sql="UPDATE #db.table("zemail", request.zos.zcoreDatasource)# zemail 
 				SET zemail_processed=#db.param('1')#, 
-				zemail_rename_number = #db.param(ts.zemail_rename_number)# 
+				zemail_rename_number = #db.param(ts.zemail_rename_number)#,
+				zemail_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				WHERE zemail_id = #db.param(zemail_id)# and 
 				user_id = #db.param(arguments.ss.user_id)# and 
 				site_id = #db.param(arguments.ss.site_id)# ";

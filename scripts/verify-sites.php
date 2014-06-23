@@ -228,7 +228,8 @@ function verifySite($row){
 	}else{
 		if(!$preview){
 			$cmysql2->query("update site set 
-			site_verified_datetime=now()
+			site_verified_datetime=now(),
+			site_updated_datetime=now()
 			WHERE 
 			site_id = '".$cmysql2->real_escape_string($row["site_id"])."'");
 		}

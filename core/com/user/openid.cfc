@@ -561,7 +561,8 @@ WHERE site_id <>'16'
 				 db.sql="update #db.table("user", request.zos.zcoreDatasource)# user 
 				 set user_openid_email=#db.param(form["openid.ext1.value.email"])#, 
 				 user_openid_provider=#db.param(form.providerId)#, 
-				 user_openid_id=#db.param(form["openid.identity"])# 
+				 user_openid_id=#db.param(form["openid.identity"])#,
+				 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE user_id=#db.param(arguments.user_id)# and 
 				site_id = #db.param(arguments.site_id)#";
 				db.execute("q");
@@ -598,7 +599,8 @@ WHERE site_id <>'16'
 			 db.sql="update #db.table("user", request.zos.zcoreDatasource)# user 
 			 set user_openid_email=#db.param('')#, 
 			 user_openid_provider=#db.param(0)#,
-			  user_openid_id=#db.param('')# 
+			  user_openid_id=#db.param('')#,
+			  user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE user_id=#db.param(arguments.user_id)# and 
 			site_id = #db.param(arguments.site_id)#";
 			db.execute("q");

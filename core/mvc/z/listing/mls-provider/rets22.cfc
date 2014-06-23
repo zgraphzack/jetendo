@@ -609,21 +609,21 @@ this.remapFieldStruct=t5;
 	for(i in fd){
 		i2=i;
 		if(i2 NEQ ""){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 	}
 	for(g=1;g LTE arraylen(this.arrTypeLoop);g++){
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"list_41");
 		for(i in fd){
 			i2=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		} 
 	
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"LIST_9"); 
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		
@@ -633,35 +633,35 @@ this.remapFieldStruct=t5;
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130306200748323850000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130313160701380862000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130325004325380721000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130313160719015644000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		/*
@@ -670,7 +670,7 @@ this.remapFieldStruct=t5;
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','subdivision','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','subdivision','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		*/
@@ -679,28 +679,28 @@ this.remapFieldStruct=t5;
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130313160719925404000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130313160702301802000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130304162858580559000000");
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 			}
 		}
 		
@@ -712,27 +712,27 @@ this.remapFieldStruct=t5;
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130702134753249824000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130702135847480250000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130702135916588997000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130702140004488300000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130702140346507495000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		
 		
@@ -740,12 +740,12 @@ this.remapFieldStruct=t5;
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130313160701309776000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		}
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"GF20130226165731564034000000");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
 		} 
 		
 		
@@ -779,14 +779,16 @@ this.remapFieldStruct=t5;
 						 SET city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
-						 city_mls_id=#db.param(i)# ";
+						 city_mls_id=#db.param(i)#,
+					 	city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						 local.result=db.insert("q"); 
 						 db.sql="INSERT INTO #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)#  
 						 SET city_id=#db.param(local.result.result)#, 
 						 city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
-						 city_mls_id=#db.param(i)# ";
+						 city_mls_id=#db.param(i)#,
+						 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						 db.execute("q");
 						//writeoutput(qId.city_id);
 						cityCreated=true; // need to run zipcode calculations
