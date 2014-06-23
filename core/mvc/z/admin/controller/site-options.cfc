@@ -2201,10 +2201,10 @@ Define this function in another CFC to override the default email format
 		echo('<a href="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Blog Articles</a> | ');
 		echo('<a href="/z/blog/admin/blog-admin/articleAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Article</a><br />');
 	}
-	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
+	/*if(application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
 		echo('<a href="/z/admin/menu/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Menus</a> | ');
 		echo('<a href="/z/admin/menu/add?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Menu</a><br />');
-	}
+	}*/
 	/*if(application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Categories")){
 		echo('<a href="/z/blog/admin/blog-admin/categoryList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Pages</a><br />');
 		echo('<a href="/z/blog/admin/blog-admin/categoryAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Page</a><br />');

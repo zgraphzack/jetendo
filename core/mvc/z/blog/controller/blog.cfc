@@ -23,7 +23,7 @@ this.app_id=10;
 </cffunction>
 
 <cffunction name="registerHooks" localmode="modern" output="no" access="public">
-<cfscript>
+	<cfscript>
 	
 	</cfscript>
 </cffunction>
@@ -106,13 +106,15 @@ this.app_id=10;
 		}
 		local.t2.title=ts.optionStruct.blog_config_category_home_name;
 		arrayappend(arguments.arrUrl,local.t2);
-		
-		
 		</cfscript>
 		<!--- archive pages for --->
 		<cfsavecontent variable="db.sql">
-		select *, date_format(blog_datetime, #db.param('%Y-%m')#) thismonth from #db.table("blog", request.zos.zcoreDatasource)# blog 
-		where site_id=#db.param(request.zos.globals.id)# and (blog_datetime<=#db.param(request.zos.mysqlnow)# or blog_event =#db.param(1)#) and blog_status <> #db.param(2)# 
+		select *, date_format(blog_datetime, #db.param('%Y-%m')#) thismonth 
+		from #db.table("blog", request.zos.zcoreDatasource)# blog 
+		where site_id=#db.param(request.zos.globals.id)# and 
+		(blog_datetime<=#db.param(request.zos.mysqlnow)# or 
+		blog_event =#db.param(1)#) and 
+		blog_status <> #db.param(2)# 
 		GROUP BY date_format(blog_datetime, #db.param('%Y-%m')#)
 		</cfsavecontent><cfscript>local.qArchive=db.execute("qArchive");</cfscript>
 		<cfloop query="local.qArchive"><cfscript>
@@ -1055,6 +1057,13 @@ this.app_id=10;
 		</tr>
 		<tr> 
 		<th style="vertical-align:top;">&nbsp;</th>
+		<td style="vertical-align:top;">Always show section articles on main blog pages?<br />
+		<input type="radio" name="blog_config_always_show_section_articles" value="1" <cfif form.blog_config_always_show_section_articles EQ 1 or form.blog_config_always_show_section_articles EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
+		<input type="radio" name="blog_config_always_show_section_articles" value="0" <cfif form.blog_config_always_show_section_articles EQ 0 >checked="checked"</cfif> style="border:none; background:none;" /> No 
+		</td>
+		</tr>
+		<tr> 
+		<th style="vertical-align:top;">&nbsp;</th>
 		<td style="vertical-align:top;">Display Full Detail of first article on category page?<br />
 		<input type="radio" name="blog_config_show_detail" value="1" <cfif form.blog_config_show_detail EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
 		<input type="radio" name="blog_config_show_detail" value="0" <cfif form.blog_config_show_detail EQ 0 or form.blog_config_show_detail EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> No 
@@ -1436,6 +1445,7 @@ this.app_id=10;
 	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
 	where blog.blog_id = #db.param(form.blog_id)# and 
 	blog.site_id=#db.param(request.zos.globals.id)# 
+
 	<cfif structkeyexists(form, 'preview') EQ false> 
 		and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 		blog_event =#db.param(1)#) and 
@@ -1443,7 +1453,7 @@ this.app_id=10;
 	</cfif>
 	GROUP BY blog.blog_id
 	order by blog_sticky desc, blog_datetime, blog_comment_datetime
-	</cfsavecontent><cfscript>qArticle=db.execute("qArticle");</cfscript> 
+	</cfsavecontent>
 	<cfif isDefined('request.zos.supressBlogArticleDetails') EQ false or request.zos.supressBlogArticleDetails NEQ 1>
 		<cfif qArticle.recordcount eq 0>
 			<cfscript>
@@ -1808,6 +1818,9 @@ this.app_id=10;
 	if(structcount(application.zcore.app.getAppData("blog")) NEQ 0){
 		loadBlogArticleInclude=true;
 	}
+	if(not structkeyexists(displayStruct, 'site_x_option_group_set_id')){
+		displayStruct.site_x_option_group_set_id =0;
+	}
 	arguments.displayStruct.arrBlog=arraynew(1);
 	
 	local.thumbnailStruct=variables.getThumbnailSizeStruct();
@@ -1850,6 +1863,15 @@ this.app_id=10;
 		blog.user_id = user.user_id  and 
 		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
 		where blog.site_id=#db.param(request.zos.globals.id)# and 
+		<cfif form.site_x_option_group_set_id NEQ 0>
+	        (blog.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
+	        	or blog.blog_show_all_sections=#db.param(1)# 
+				
+	        ) and 
+	    <cfelseif application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
+			blog.site_x_option_group_set_id = #db.param(0)#  and 
+        </cfif>
+        
 		(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 		blog_event =#db.param(1)#) and 
 		<cfif arguments.blog_category_id NEQ 0>
@@ -2810,6 +2832,7 @@ this.app_id=10;
 	var tempPagenav='';
 	request.month=CreateDate(year(now()),month(now()),1); 
 	variables.init();
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
 	</cfscript>
 	<cfsavecontent variable="tempPageNav">
 	<a class="#application.zcore.functions.zGetLinkClasses()#" href="#application.zcore.app.getAppData("blog").optionStruct.blog_config_home_url#">#application.zcore.functions.zvar("homelinktext")#</a> /
@@ -2875,13 +2898,23 @@ this.app_id=10;
 	blog.user_id = user.user_id   and 
 	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
 	where blog.site_id=#db.param(request.zos.globals.id)# and
+	<cfif form.site_x_option_group_set_id NEQ 0>
+        (blog.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
+        	or blog.blog_show_all_sections=#db.param(1)# 
+			
+        ) and 
+    <cfelseif application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
+		blog.site_x_option_group_set_id = #db.param(0)#  and 
+    </cfif>
 	 (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 	 blog_event =#db.param(1)#) and 
 	 blog_status <> #db.param(2)# 
 	group by blog.blog_id
 	order by blog_sticky desc, blog_datetime desc
 	LIMIT #db.param(start)#, #db.param(searchStruct.perpage)#
-	</cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
+	</cfsavecontent><cfscript>
+	qList=db.execute("qList");
+	</cfscript>
 	<cfsavecontent variable="tempMenu">
 	<cfset content = '#content#'>
 	#this.menuTemplate()#
@@ -3331,6 +3364,8 @@ this.app_id=10;
 	var link='';
 	var t='';
 	var db=request.zos.queryObject;
+
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
 	if(structkeyexists(form,'blog_id') EQ false){
 	    application.zcore.functions.zRedirect('/');
 	}
@@ -3449,7 +3484,7 @@ this.app_id=10;
 	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
 		if(structkeyexists(form, 'managerReturn')){
 			application.zcore.status.setStatus(request.zsid, 'Your submission was successful and was automatically posted since you are a content manager.');
-			application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#');
+			application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 		}else{
 			application.zcore.status.setStatus(request.zsid, 'Your submission was successful and was automatically posted since you are a content manager.');
 			application.zcore.functions.zRedirect(ulink);
@@ -3515,7 +3550,7 @@ this.app_id=10;
 	var ts2=0;
 	var pos=0;
 	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
-		writeoutput('<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1'');">');
+		writeoutput('<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#'');">');
 	}
 	
 	local.thumbnailStruct=variables.getThumbnailSizeStruct();
@@ -3574,7 +3609,12 @@ this.app_id=10;
 		
 		<div class="rss-summary-box">
 			<div>
-			 Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_first_name&" "&arguments.query.user_last_name,true,false)# in <a href="<cfif arguments.query.blog_category_unique_name NEQ ''>#arguments.query.blog_category_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,arguments.query.blog_category_id,"html",arguments.query.blog_category_name)#</cfif>" class="#application.zcore.functions.zGetLinkClasses()#">#htmleditformat(arguments.query.blog_category_name)#</a> <!--- | <a href="<cfif arguments.query.blog_unique_name NEQ ''>#arguments.query.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,arguments.query.blog_id,"html",arguments.query.blog_title,arguments.query.blog_datetime)#</cfif>##comment" class="#application.zcore.functions.zGetLinkClasses()#">Comments (#commentCount#)</a> --->
+				<cfif arguments.query.user_first_name NEQ "" and arguments.query.user_last_name NEQ "">
+					Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_first_name&" "&arguments.query.user_last_name,true,false)# in 
+				<cfelse>
+					Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_username,true,false)# in 
+				</cfif>
+				<a href="<cfif arguments.query.blog_category_unique_name NEQ ''>#arguments.query.blog_category_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,arguments.query.blog_category_id,"html",arguments.query.blog_category_name)#</cfif>" class="#application.zcore.functions.zGetLinkClasses()#">#htmleditformat(arguments.query.blog_category_name)#</a> <!--- | <a href="<cfif arguments.query.blog_unique_name NEQ ''>#arguments.query.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,arguments.query.blog_id,"html",arguments.query.blog_title,arguments.query.blog_datetime)#</cfif>##comment" class="#application.zcore.functions.zGetLinkClasses()#">Comments (#commentCount#)</a> --->
 			</div>		
 		</div>
 		<!--- <cfif local.image NEQ "">

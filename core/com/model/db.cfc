@@ -188,6 +188,8 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			sleep(retrySleep);
 			retrySleep*=2;
 			retry;
+		}else{
+			rethrow;
 		}
 	}
 	request.zos.lastDBResult=cfquery;

@@ -112,14 +112,14 @@
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 		}	
 	}else{
-		local.link="/z/content/admin/content-admin/delete?confirm=1&content_id=#form.content_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#";
+		local.link="/z/content/admin/content-admin/delete?confirm=1&amp;content_id=#form.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#";
 		if(qcheck.content_parent_id NEQ 0){
-			local.link&="&content_parent_id=#qcheck.content_parent_id#";
+			local.link&="&amp;content_parent_id=#qcheck.content_parent_id#";
 		}
 		writeoutput('<h2>Are you sure you want to delete this content?<br /><br />
 		Title: #qCheck.content_name# <br /><br />
 		<a href="#local.link#">Yes</a>&nbsp;&nbsp;&nbsp;
-		<a href="/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>');
+		<a href="/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>');
 	}
 	</cfscript>
 </cffunction>
@@ -1815,7 +1815,7 @@
 	searchText=application.zcore.functions.zCleanSearchText(searchText, true);
 	if(searchText NEQ "" and isNumeric(searchText) EQ false and len(searchText) LTE 2){
 		application.zcore.status.setStatus(request.zsid,"The search searchText must be 3 or more characters.",form);
-		application.zcore.functions.zRedirect("/z/content/admin/content-admin/index?zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/content/admin/content-admin/index?zsid=#request.zsid#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 	}
 	searchTextReg=rereplace(searchText,"[^A-Za-z0-9[[:white:]]]*",".","ALL");
 	searchTextOReg=rereplace(searchTextOriginal,"[^A-Za-z0-9 ]*",".","ALL");
@@ -2036,11 +2036,11 @@
 		</cfscript></strong>
 	</div>
 	<div style="width:35%; text-align:right; float:right;">
-		<cfif qsortcom.getorderby(false) NEQ ''><a href="/z/content/admin/content-admin/index">Clear Sorting</a> | </cfif> 
+		<cfif qsortcom.getorderby(false) NEQ ''><a href="/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Clear Sorting</a> | </cfif> 
 	
-		<cfif request.zsession.showinactive EQ 1><a href="/z/content/admin/content-admin/index?showinactive=0">Hide Inactive</a>
+		<cfif request.zsession.showinactive EQ 1><a href="/z/content/admin/content-admin/index?showinactive=0&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Hide Inactive</a>
 		<cfelse>
-			<a href="/z/content/admin/content-admin/index?showinactive=1">Show Inactive</a>
+			<a href="/z/content/admin/content-admin/index?showinactive=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Show Inactive</a>
 		</cfif> | 
 	<cfif form.site_x_option_group_set_id EQ 0>
 	
@@ -2073,7 +2073,7 @@
 	<cfif qSite.recordcount EQ 0>
 		<br />No content added yet. 
 		<cfif structkeyexists(form, 'content_parent_id') EQ false and structkeyexists(form, 'parentChildGroupId') EQ false>
-			<a href="/z/content/admin/content-admin/add?content_parent_id=0&return=1">Click here to add content.</a>
+			<a href="/z/content/admin/content-admin/add?content_parent_id=0&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Click here to add content.</a>
 		</cfif>
 	</cfif>
 	<cfscript>
@@ -2086,7 +2086,7 @@
 	<cfif qSite.recordcount NEQ 0>
 		<cfif application.zcore.app.siteHasApp("listing") and form.content_parent_id NEQ 0>
 			<div style="float:left;">Sorting method: <cfif parentChildSorting EQ 1>Price Descending<cfelseif parentChildSorting EQ 2>Price Ascending<cfelseif parentChildSorting EQ 3>Alphabetic<cfelse>Manual (Click black arrows)</cfif> | </div>
-			<div style="float:left; width:150px;"><a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&return=1">#application.zcore.functions.zOutputHelpToolTip("Change Sorting Method","member.content.list changeSortingMethod")#</a></div><br />
+			<div style="float:left; width:150px;"><a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Change Sorting Method","member.content.list changeSortingMethod")#</a></div><br />
 		</cfif><br />
 		<table style="border-spacing:0px; width:100%;" class="table-list">
 			<tr>

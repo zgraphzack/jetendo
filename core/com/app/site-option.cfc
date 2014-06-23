@@ -868,9 +868,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	if(arguments.linkCurrentPage){
 		if(form.method NEQ "sectionGroup"){
 			arrayAppend(arrParent, '<a href="/z/admin/site-options/sectionGroup?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Section</a> /');
-		}else{
-			arrayAppend(arrParent, '<a href="/z/admin/site-options/manageGroup?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#curParentSetId#">Manage #groupStruct.site_option_group_name#(s)</a> / ');
 		}
+		arrayAppend(arrParent, '<a href="/z/admin/site-options/manageGroup?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#curParentSetId#">Manage #groupStruct.site_option_group_name#(s)</a> / ');
 	}
 	if(curParentSetId NEQ 0){
 		loop from="1" to="25" index="i"{

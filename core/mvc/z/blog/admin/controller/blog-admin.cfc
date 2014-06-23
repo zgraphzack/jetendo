@@ -10,22 +10,6 @@
     request.disableShareThis=true;
 	application.zcore.template.setTag("title","Blog Manager");
     </cfscript>
-    <!--- <cfif form.method EQ "fixguid">
-    <cfsavecontent variable="db.sql">SELECT blog_id, site_id 
-	FROM #db.table("blog", request.zos.zcoreDatasource)# blog</cfsavecontent>
-    <cfscript>qB=db.execute("qB");</cfscript>
-    <cfloop query="qB">
-        <cfscript>
-            g=createUUID();
-        db.sql="UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
-		SET blog_guid=#db.param(g)#,
-        blog_updated_datetime=#db.param(request.zos.mysqlnow)#  
-		WHERE blog_id=#db.param(qB.blog_id)# and 
-		site_id=#db.param(qB.site_id)#";
-		db.execute("q"); 
-        </cfscript>
-    </cfloop>
-    </cfif> --->
     
     
     #this.navTemplate()#
@@ -37,6 +21,7 @@
 	<cfscript>
 	//var link='';
 	var homelink='';
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     //link=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 4, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
     
     if(application.zcore.app.getAppData("blog").optionstruct.blog_config_root_url NEQ "{default}"){
@@ -46,14 +31,17 @@
         homelink=request.zos.currentHostName&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id,3,"html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
     }
     //homelink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 3, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
+    
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
+    application.zcore.siteOptionCom.displaySectionNav();
     </cfscript>
-    <a href="#homelink#">Blog Home Page</a> | 
-    <a href="/z/blog/admin/blog-admin/articleList">Manage Articles</a> | 
-    <a href="/z/blog/admin/blog-admin/articleAdd">Add Article</a> | 
-    <a href="/z/blog/admin/blog-admin/categoryList">Manage Categories</a> | 
-    <a href="/z/blog/admin/blog-admin/categoryAdd">Add Category</a> | 
-    <a href="/z/blog/admin/blog-admin/tagList">Manage Tags</a> | 
-    <a href="/z/blog/admin/blog-admin/tagAdd">Add Tag</a>
+    <a href="#homelink#" target="_blank">Blog Home Page</a> | 
+    <a href="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Articles</a> | 
+    <a href="/z/blog/admin/blog-admin/articleAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Article</a> | 
+    <a href="/z/blog/admin/blog-admin/categoryList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Categories</a> | 
+    <a href="/z/blog/admin/blog-admin/categoryAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Category</a> | 
+    <a href="/z/blog/admin/blog-admin/tagList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Tags</a> | 
+    <a href="/z/blog/admin/blog-admin/tagAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Tag</a>
     <hr />
 </cffunction>
 
@@ -108,21 +96,22 @@
 	var qId=0;
     init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     form.blog_datetime = dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
     blogform = StructNew();
     blogform.blog_category_name.required = true;
     blogform.blog_category_description.html = true;
     blogform.blog_category_description.allowNull = true;
     result = application.zcore.functions.zValidateStruct(form, blogform, request.zsid, true);
-if(form.blog_category_unique_name CONTAINS "?"){
-	application.zcore.status.setStatus(request.zsid, "The URL can't contain query string parameters.  I.e. ""?id=1""", form, true);
-	result=true;
-}
+    if(form.blog_category_unique_name CONTAINS "?"){
+    	application.zcore.status.setStatus(request.zsid, "The URL can't contain query string parameters.  I.e. ""?id=1""", form, true);
+    	result=true;
+    }
     if(result){
 	if(form.method EQ "updateGroup"){
-		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryEdit?zsid=#Request.zsid#&blog_category_id=#form.blog_category_id#");
+		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryEdit?zsid=#Request.zsid#&blog_category_id=#form.blog_category_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 	}else{
-		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryAdd?zsid=#Request.zsid#&blog_category_id=#form.blog_category_id#");
+		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryAdd?zsid=#Request.zsid#&blog_category_id=#form.blog_category_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 	}
     }
     
@@ -138,7 +127,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 			qCheck=db.execute("qCheck"); 
             if(qcheck.recordcount EQ 0){
                 application.zcore.status.setStatus(request.zsid,"This blog category no longer exists.");
-                application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
+                application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
             }
             if(qcheck.blog_category_unique_name NEQ form.blog_category_unique_name){
                 uniqueChanged=true;	
@@ -199,7 +188,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
         if(application.zcore.functions.zUpdate(inputStruct) EQ false){
             // failed, on duplicate key or sql error
             application.zcore.status.setStatus(request.zsid, 'There was an error updating this category.', form,true);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         }else{
             application.zcore.status.setStatus(request.zsid, 'This category was updated successfully.', form,false);
         }
@@ -208,7 +197,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
         if(form.blog_category_id EQ false){
             //Throw Error
             application.zcore.status.setStatus(request.zsid, 'There was an error inserting this category.', form,true);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryEdit?zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryEdit?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         }else{
             application.zcore.status.setStatus(request.zsid, 'This category was added successfully.', form,false);
         }
@@ -243,7 +232,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
         StructDelete(request.zsession, 'blogcategory_return'&form.blog_category_id, true);
         application.zcore.functions.zRedirect(tempURL, true);
     }else{	
-        application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#');
+        application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
     }
     </cfscript>
 </cffunction>
@@ -256,17 +245,15 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	var res=0;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories", true); 
-	</cfscript>
-    <cfsavecontent variable="db.sql">
-    select *
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	db.sql="select *
     from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
-    
 	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
-	site_id=#db.param(request.zos.globals.id)#
-    </cfsavecontent><cfscript>qList=db.execute("qList");
+	site_id=#db.param(request.zos.globals.id)#";
+    qList=db.execute("qList");
     if(qList.recordcount EQ 0){
         application.zcore.status.setStatus(request.zsid,"This category no longer exists.");
-        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#");	
+        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");	
     }
     </cfscript>
     <cfif structkeyexists(form,'confirm')>
@@ -279,27 +266,28 @@ if(form.blog_category_unique_name CONTAINS "?"){
         db.sql="delete
             from #db.table("blog_category", request.zos.zcoreDatasource)# 
             
-	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
-	site_id=#db.param(request.zos.globals.id)#";
-	qDelete=db.execute("qDelete");
+    	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+    	site_id=#db.param(request.zos.globals.id)#";
+    	qDelete=db.execute("qDelete");
         this.sortCat(0);
         res=application.zcore.app.getAppCFC("blog").updateRewriteRules();
         application.zcore.functions.zMenuClearCache({blogCategory=true});
             application.zcore.status.setStatus(request.zsid, 'This category was deleted successfully.', form,false);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         </cfscript>
     <cfelse>
-        <cfsavecontent variable="db.sql">
-            select *
-            from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
-            
-			WHERE blog_category_id = #db.param(form.blog_category_id)# and 
-			site_id=#db.param(request.zos.globals.id)#
-        </cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
+        <cfscript>
+        db.sql="select *
+        from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
+        
+		WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+		site_id=#db.param(request.zos.globals.id)#";
+        qList=db.execute("qList");
+        </cfscript>
         <h2>Are you sure you want to delete category, #qList.blog_category_name#?<br />
         <br />
-        <a href="/z/blog/admin/blog-admin/categoryDelete?confirm=true&blog_category_id=#form.blog_category_id#">Yes</a>&nbsp;&nbsp;&nbsp;
-        <a href="/z/blog/admin/blog-admin/categoryList">No</a></h2>
+        <a href="/z/blog/admin/blog-admin/categoryDelete?confirm=true&amp;blog_category_id=#form.blog_category_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Yes</a>&nbsp;&nbsp;&nbsp;
+        <a href="/z/blog/admin/blog-admin/categoryList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>
     </cfif>
 </cffunction>
 
@@ -310,6 +298,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	var db=request.zos.queryObject;
     init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	</cfscript>
     <cfsavecontent variable="db.sql">
     select *
@@ -320,7 +309,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
     </cfsavecontent><cfscript>qList=db.execute("qList");
     if(qList.recordcount EQ 0){
         application.zcore.status.setStatus(request.zsid,"This comment no longer exists.");
-        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#");	
+        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");	
     }
     </cfscript>
     <cfif structkeyexists(form, 'confirm')>
@@ -331,7 +320,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 		blog_comment_id =#db.param(form.blog_comment_id)#";
 		db.execute("q"); 
         application.zcore.status.setStatus(request.zsid,"Comment deleted.");
-        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#");
+        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
     </cfscript>
     <cfelse>
         <h2>Are you sure you want to delete this blog comment?<br /><br />
@@ -340,8 +329,8 @@ if(form.blog_category_unique_name CONTAINS "?"){
 
         Comments: #qlist.blog_comment_text#?<br />
         <br />
-        <a href="/z/blog/admin/blog-admin/commentDelete?confirm=true&blog_id=#form.blog_id#&blog_comment_id=#form.blog_comment_id#">Yes</a>&nbsp;&nbsp;&nbsp;
-        <a href="/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#">No</a></h2>
+        <a href="/z/blog/admin/blog-admin/commentDelete?confirm=true&amp;blog_id=#form.blog_id#&amp;blog_comment_id=#form.blog_comment_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Yes</a>&nbsp;&nbsp;&nbsp;
+        <a href="/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>
         
     </cfif>
 </cffunction>
@@ -351,6 +340,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	var db=request.zos.queryObject;
     init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	 db.sql="UPDATE #db.table("blog_comment", request.zos.zcoreDatasource)#  
 	 SET blog_comment_approved=#db.param(1)#, 
      blog_comment_updated_datetime=#db.param(request.zos.mysqlnow)#  
@@ -358,7 +348,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	blog_comment_id =#db.param(form.blog_comment_id)#";
 	db.execute("q");
 	application.zcore.status.setStatus(request.zsid,"Comment approved");	
-	application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#");
+	application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
     </cfscript>
 </cffunction>
 
@@ -372,6 +362,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	var qc=0;
     variables.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	
     form.blog_comment_id=application.zcore.functions.zso(form, 'blog_comment_id');
     if(structkeyexists(form, 'deletef') and form.deletef EQ 1){
@@ -381,7 +372,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 		blog_comment_id =#db.param(form.blog_comment_id)#";
 		db.execute("q"); 
         application.zcore.status.setStatus(request.zsid,"Comment deleted.");
-        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#");
+        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
     }
 	db.sql="select * from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment 
 	WHERE blog_comment_id =#db.param(form.blog_comment_id)# and 
@@ -389,7 +380,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	qC=db.execute("qC"); 
 	if(qC.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Invalid request");
-		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 	}
 	form.blog_comment_approved = 1;
 	if(form.blog_comment_title eq ''){
@@ -401,22 +392,22 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	}
 	if(form.blog_comment_author eq ''){
 		//throw error
-		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 	}
 	if(form.blog_comment_title eq ''){
 		//throw error
-		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 	}
 	if(len(form.blog_comment_text) lt 1){
 		//throw error
-		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 	}
 	blogform = StructNew();
 	blogform.blog_comment_author_email.email = true;
 	result = application.zcore.functions.zValidateStruct(form, blogform, request.zsid, true);
 	if(result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
-		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentReview?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 	}
 	form.site_id=request.zos.globals.id;
 	inputStruct = StructNew();
@@ -426,10 +417,10 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	inputStruct.forceWhereFields = "blog_comment_id";
 	if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		// failed, on duplicate key or sql error
-		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 	}else{
 		// success
-		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 	}
     </cfscript>
 </cffunction>
@@ -459,6 +450,7 @@ if(form.blog_category_unique_name CONTAINS "?"){
 	var blogform=0;
     variables.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     blogform = StructNew();
     blogform.blog_story.html = true;
     blogform.uid.required=true;
@@ -502,9 +494,9 @@ if(arraylen(arrUser) EQ 1){
     if(error){
         application.zcore.status.setStatus(request.zsid, false,form,true);
         if(form.method EQ 'articleInsert'){
-            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleAdd?zsid=#Request.zsid#");
+            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleAdd?zsid=#Request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
         }else{
-            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleEdit?zsid=#Request.zsid#&blog_id=#form.blog_id#");
+            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleEdit?zsid=#Request.zsid#&blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
         }
     }
     uniqueChanged=false;
@@ -514,11 +506,12 @@ if(arraylen(arrUser) EQ 1){
 	if(form.method EQ 'articleUpdate'){
 		db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE blog_id=#db.param(form.blog_id)# and 
-		site_id=#db.param(request.zos.globals.id)#";
+		site_id=#db.param(request.zos.globals.id)# and 
+        site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#";
 		qCheck=db.execute("qCheck"); 
 		if(qcheck.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid,"This blog article no longer exists.");
-			application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 		}
 		if(qcheck.blog_unique_name NEQ form.blog_unique_name){
 			uniqueChanged=true;	
@@ -529,7 +522,8 @@ if(arraylen(arrUser) EQ 1){
                  db.sql="SELECT mls_saved_search_id, blog_search_mls 
 				 from #db.table("blog", request.zos.zcoreDatasource)# blog 
 				WHERE blog_id = #db.param(form.blog_id)# and 
-				site_id = #db.param(request.zos.globals.id)#";
+				site_id = #db.param(request.zos.globals.id)# and 
+                site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#";
 				qId=db.execute("qId");
                 form.mls_saved_search_id=qid.mls_saved_search_id;
             }else{
@@ -550,7 +544,8 @@ if(arraylen(arrUser) EQ 1){
     if(form.method EQ "articleUpdate"){
         db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE blog_id = #db.param(form.blog_id)# and 
-		site_id=#db.param(request.zos.globals.id)#";
+		site_id=#db.param(request.zos.globals.id)# and 
+        site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#";
 		qCheck=db.execute("qCheck"); 
         if(application.zcore.functions.zso(form, 'blog_metakey') EQ qCheck.blog_metakey and qCheck.blog_metakey NEQ ""){
             if(replace(replace(qCheck.blog_title,"|"," ","ALL"),","," ","ALL") EQ qCheck.blog_metakey){
@@ -583,7 +578,7 @@ if(arraylen(arrUser) EQ 1){
         if(form.blog_id EQ false){
             //Throw Error
             application.zcore.status.setStatus(request.zsid, 'There was an error adding this story.', form,true);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleAdd?zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleAdd?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         }else{
             application.zcore.status.setStatus(request.zsid, 'This story has been added successfully.');
         }
@@ -592,7 +587,7 @@ if(arraylen(arrUser) EQ 1){
         if(application.zcore.functions.zUpdate(inputStruct) EQ false){
             // failed, on duplicate key or sql error
             application.zcore.status.setStatus(request.zsid, 'An error has occured while updating this story.', form,true);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         }else{
             application.zcore.status.setStatus(request.zsid, 'This story was updated successfully.');
         }
@@ -607,10 +602,10 @@ if(arraylen(arrUser) EQ 1){
             if(i EQ 1){
                 db.sql="UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
 				SET blog_category_id = #db.param(arrCat[i])#,
-                blog_updated_datetime = #db.param(request.zos.mysqlnow)#, 
+                blog_updated_datetime = #db.param(request.zos.mysqlnow)#
 				WHERE blog_id = #db.param(form.blog_id)# and 
 				site_id=#db.param(request.zos.globals.id)# ";
-				db.execute("q"); 
+				a=db.execute("q"); 
             }
             db.sql="INSERT INTO #db.table("blog_x_category", request.zos.zcoreDatasource)#  
 			SET blog_id = #db.param(form.blog_id)#, 
@@ -682,7 +677,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
         StructDelete(request.zsession, 'blog_return'&form.blog_id, true);
         application.zcore.functions.zRedirect(tempURL, true);
     }else{	
-        application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#');
+        application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
     }
     </cfscript>
 </cffunction>
@@ -696,51 +691,51 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	var res=0;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
-	</cfscript>
-    <cfsavecontent variable="db.sql">
-    select *
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	db.sql="select *
     from #db.table("blog", request.zos.zcoreDatasource)# blog
     
-	WHERE blog_id = #db.param(form.blog_id)# and 
-	site_id=#db.param(request.zos.globals.id)#
-    </cfsavecontent><cfscript>qList=db.execute("qList");
+	WHERE blog_id = #db.param(form.blog_id)# and
+    site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
+	site_id=#db.param(request.zos.globals.id)#";
+    qList=db.execute("qList");
     if(qList.recordcount EQ 0){
         application.zcore.status.setStatus(request.zsid,"This article no longer exists.");
-        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");	
+        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");	
     }
     </cfscript>
     <cfif structkeyexists(form, 'confirm')>
-	<cfscript>
-	if(application.zcore.app.siteHasApp("listing")){
-	request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qlist.mls_saved_search_id);
-	}
-	application.zcore.siteOptionCom.deleteSiteOptionAppId(qList.blog_site_option_app_id);
-	application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogArticle(form.blog_id);
-	db.sql="delete
-	from #db.table("blog", request.zos.zcoreDatasource)# 
-	WHERE blog_id = #db.param(form.blog_id)# and 
-	site_id=#db.param(request.zos.globals.id)#";
-	qDelete=db.execute("qDelete");
-        
-	db.sql="DELETE FROM #db.table("blog_x_category", request.zos.zcoreDatasource)#  
-	WHERE blog_id = #db.param(form.blog_id)# and 
-	site_id=#db.param(request.zos.globals.id)# ";
-	db.execute("q");
-	db.sql="DELETE from #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
-	WHERE blog_id = #db.param(form.blog_id)# and 
-	site_id=#db.param(request.zos.globals.id)# ";
-	db.execute("q");
-        
-	application.zcore.imageLibraryCom.deleteImageLibraryId(qList.blog_image_library_id);
+    	<cfscript>
+    	if(application.zcore.app.siteHasApp("listing")){
+    	request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qlist.mls_saved_search_id);
+    	}
+    	application.zcore.siteOptionCom.deleteSiteOptionAppId(qList.blog_site_option_app_id);
+    	application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogArticle(form.blog_id);
+    	db.sql="delete
+    	from #db.table("blog", request.zos.zcoreDatasource)# 
+    	WHERE blog_id = #db.param(form.blog_id)# and 
+    	site_id=#db.param(request.zos.globals.id)#";
+    	qDelete=db.execute("qDelete");
+            
+    	db.sql="DELETE FROM #db.table("blog_x_category", request.zos.zcoreDatasource)#  
+    	WHERE blog_id = #db.param(form.blog_id)# and 
+    	site_id=#db.param(request.zos.globals.id)# ";
+    	db.execute("q");
+    	db.sql="DELETE from #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
+    	WHERE blog_id = #db.param(form.blog_id)# and 
+    	site_id=#db.param(request.zos.globals.id)# ";
+    	db.execute("q");
+            
+    	application.zcore.imageLibraryCom.deleteImageLibraryId(qList.blog_image_library_id);
         res=application.zcore.app.getAppCFC("blog").updateRewriteRules();
         application.zcore.functions.zMenuClearCache({blogArticle=true});
             application.zcore.status.setStatus(request.zsid, 'Your story has been deleted.');
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         </cfscript>
     <cfelse>
         <h2>Are you sure you want to delete #qList.blog_title#?<br />
         <br />
-        <a href="/z/blog/admin/blog-admin/blogDelete?confirm=yes&blog_id=#form.blog_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="/z/blog/admin/blog-admin/articleList">No</a></h2>
+        <a href="/z/blog/admin/blog-admin/blogDelete?confirm=yes&amp;blog_id=#form.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>
     </cfif>
 </cffunction>
 
@@ -758,6 +753,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	this.init();
     application.zcore.functions.zSetPageHelpId("3.1");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	if(structkeyexists(form, 'searchText')){
 		request.zsession.blogSearchText=form.searchText;
 	}else if(structkeyexists(form, 'searchText')){
@@ -770,7 +766,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
     	form.searchText=application.zcore.functions.zCleanSearchText(form.searchText, true);
     	if(form.searchText NEQ "" and isNumeric(form.searchText) EQ false and len(form.searchText) LTE 2){
     		application.zcore.status.setStatus(request.zsid,"The search searchText must be 3 or more characters.",form);
-    		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
+    		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
     	}
     }
 	searchTextReg=rereplace(form.searchText,"[^A-Za-z0-9[[:white:]]]*",".","ALL");
@@ -802,25 +798,26 @@ ts.count =  1;
 rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
     </cfscript>
     <cfsavecontent variable="db.sql">
-select *, count(distinct c1.blog_comment_id) cc1 , count(distinct c2.blog_comment_id) cc2 
-<cfif form.searchtext NEQ ''>
-	<cfif application.zcore.enableFullTextIndex>
-		MATCH(blog.blog_search) AGAINST (#db.param(form.searchText)#) as score , 
-		MATCH(blog.blog_search) AGAINST (#db.param(searchTextOriginal)#) as score2 , 
-	</cfif>
-</cfif>
-#db.trustedSQL(rs2.select)#  
-from #db.table("blog", request.zos.zcoreDatasource)# blog
-left join #db.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
-blog_category.blog_category_id = blog.blog_category_id  and blog.site_id = blog_category.site_id
-left join #db.table("blog_comment", request.zos.zcoreDatasource)# c1 ON 
-c1.blog_id = blog.blog_id and 
-blog.site_id = c1.site_id
-left join #db.table("blog_comment", request.zos.zcoreDatasource)# c2 ON 
-c2.blog_id = blog.blog_id and c2.blog_comment_approved=#db.param(0)#  and 
-blog.site_id = c2.site_id
-#db.trustedSQL(rs2.leftJoin)#
-WHERE blog.site_id=#db.param(request.zos.globals.id)#
+    select *, count(distinct c1.blog_comment_id) cc1 , count(distinct c2.blog_comment_id) cc2 
+    <cfif form.searchtext NEQ ''>
+    	<cfif application.zcore.enableFullTextIndex>
+    		MATCH(blog.blog_search) AGAINST (#db.param(form.searchText)#) as score , 
+    		MATCH(blog.blog_search) AGAINST (#db.param(searchTextOriginal)#) as score2 , 
+    	</cfif>
+    </cfif>
+    #db.trustedSQL(rs2.select)#  
+    from #db.table("blog", request.zos.zcoreDatasource)# blog
+    left join #db.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
+    blog_category.blog_category_id = blog.blog_category_id  and blog.site_id = blog_category.site_id
+    left join #db.table("blog_comment", request.zos.zcoreDatasource)# c1 ON 
+    c1.blog_id = blog.blog_id and 
+    blog.site_id = c1.site_id
+    left join #db.table("blog_comment", request.zos.zcoreDatasource)# c2 ON 
+    c2.blog_id = blog.blog_id and c2.blog_comment_approved=#db.param(0)#  and 
+    blog.site_id = c2.site_id
+    #db.trustedSQL(rs2.leftJoin)#
+    WHERE blog.site_id=#db.param(request.zos.globals.id)# and 
+    site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
 	<cfif searchTextOriginal NEQ ''>
 		and 
 		
@@ -855,9 +852,10 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
         LIMIT #db.param(start)#, #db.param(searchStruct.perpage)#
     </cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
     <cfsavecontent variable="db.sql">
-        select count(blog_id) as count 
-		from #db.table("blog", request.zos.zcoreDatasource)# blog 
-		WHERE site_id=#db.param(request.zos.globals.id)#
+    select count(blog_id) as count 
+	from #db.table("blog", request.zos.zcoreDatasource)# blog 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+    site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
 	<cfif searchTextOriginal NEQ ''>
 		and 
 		
@@ -887,20 +885,20 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
         searchNav = application.zcore.functions.zSearchResultsNav(searchStruct);
     </cfscript>
     <h2>Manage Blog Articles</h2>
-<form name="myForm22" action="/z/blog/admin/blog-admin/articleList" method="GET" style="margin:0px;">
-	<input type="hidden" name="method" value="list" />
-	<table style="width:100%; border-spacing:0px; margin-bottom:5px;border:1px solid ##CCCCCC;" class="table-list">
-		<tr>
-			<td>Search by ID, title or any other text: 
-			<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" size="20" maxchars="10" /> 
-			<input type="submit" name="searchForm" value="Search" /> 
-			<cfif application.zcore.functions.zso(form, 'searchtext') NEQ ''> | 
-				<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/blog/admin/blog-admin/articleList?form.searchtext=';" />
-			</cfif>
-			<input type="hidden" name="zIndex" value="1" /></td>
-		</tr>
-	</table>
-</form> 
+    <form name="myForm22" action="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#" method="GET" style="margin:0px;">
+    	<input type="hidden" name="method" value="list" />
+    	<table style="width:100%; border-spacing:0px; margin-bottom:5px;border:1px solid ##CCCCCC;" class="table-list">
+    		<tr>
+    			<td>Search by ID, title or any other text: 
+    			<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" size="20" maxchars="10" /> 
+    			<input type="submit" name="searchForm" value="Search" /> 
+    			<cfif application.zcore.functions.zso(form, 'searchtext') NEQ ''> | 
+    				<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/blog/admin/blog-admin/articleList?searchtext=';" />
+    			</cfif>
+    			<input type="hidden" name="zIndex" value="1" /></td>
+    		</tr>
+    	</table>
+    </form> 
     <cfif qlist.recordcount NEQ 0>
     #searchNAV#
     <table style="border-spacing:0px; border:0; width:100%;" class="table-list">
@@ -930,7 +928,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
 		contentphoto99=(arrImages[1].link);
 	}
 	</cfscript>
-            <td>#qList.blog_id#</td>
+    <td>#qList.blog_id#</td>
 	<td style="vertical-align:top; width:100px; ">
 		<cfif contentphoto99 NEQ "">
 			<img alt="Image" src="#request.zos.currentHostName&contentphoto99#" width="100" height="70" /></a>
@@ -941,11 +939,22 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
             <td>#qList.blog_category_name#</td>
             <td style="width:145px;">#dateformat(qList.blog_datetime, 'm/d/yyyy')# @ #timeformat(qList.blog_datetime, 'h:mm tt')#</td>
             <td style="width:200px;">
-            <a href="<cfif qList.blog_unique_name NEQ ''>#qList.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qList.blog_id,"html",qList.blog_title,qList.blog_datetime)#</cfif><cfif qList.blog_status EQ 2 or (qList.blog_status EQ 1 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)>?preview=1</cfif>" target="_blank"><cfif qList.blog_status EQ 2 or (qList.blog_status EQ 1 and qList.blog_event EQ 0 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)>(Inactive, Click to Preview)<cfelse>View</cfif></a> | 
+                <cfscript>
+                if(qList.blog_unique_name NEQ ''){
+                    viewlink=qList.blog_unique_name;
+                }else{
+                    viewlink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qList.blog_id,"html",qList.blog_title,qList.blog_datetime);
+                }
+                if(qList.blog_status EQ 2 or (qList.blog_status EQ 1 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)){
+                    viewlink&"?preview=1";
+                }
+                </cfscript>
+            <a href="#viewlink#" target="_blank"><cfif qList.blog_status EQ 2 or (qList.blog_status EQ 1 and qList.blog_event EQ 0 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)>(Inactive, Click to Preview)<cfelse>View</cfif></a> | 
             <cfif qList.blog_search_mls EQ 1><a href="#request.zos.currentHostName##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_bid=#qList.blog_id#")#">Search Results Only</a> | </cfif>
-            <a href="/z/blog/admin/blog-admin/commentList?blog_id=#qList.blog_id#">
+            <a href="/z/blog/admin/blog-admin/commentList?blog_id=#qList.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">
 	<cfif application.zcore.functions.zIsExternalCommentsEnabled()>Comments<cfelse><cfif qList.cc1 NEQ 0> #qList.cc1# Comment<cfif qList.cc1 GT 1>s</cfif><cfif qList.cc2 NEQ 0> <strong>(#qList.cc2# New)</strong></cfif><cfelse>Comments</cfif></cfif></a> |
-            <a href="/z/blog/admin/blog-admin/articleEdit?blog_id=#qList.blog_id#">Edit</a> | <a href="/z/blog/admin/blog-admin/blogDelete?blog_id=#qList.blog_id#">Delete</a></td>
+            <a href="/z/blog/admin/blog-admin/articleEdit?blog_id=#qList.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a> | 
+            <a href="/z/blog/admin/blog-admin/blogDelete?blog_id=#qList.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a></td>
         </tr>
     </cfloop>
     </table>
@@ -981,6 +990,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
 	var error=0;
 	variables.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     uniqueChanged=false;
     //if(application.zcore.user.checkSiteAccess()){
         if(form.method EQ 'tagInsert' and application.zcore.functions.zso(form, 'blog_tag_unique_name') NEQ ""){
@@ -993,7 +1003,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
 			qCheck=db.execute("qCheck");
             if(qcheck.recordcount EQ 0){
                 application.zcore.status.setStatus(request.zsid,"This tag no longer exists.");
-                application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagList?zsid=#request.zsid#");
+                application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
             }
             if(qcheck.blog_tag_unique_name NEQ form.blog_tag_unique_name){
                 uniqueChanged=true;	
@@ -1012,9 +1022,9 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
     if(error){	
         application.zcore.status.setStatus(request.zsid,"Please correct the following validation errors.",form,true);
         if(form.method EQ 'tagInsert'){
-            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagAdd?zsid=#Request.zsid#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#");
+            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagAdd?zsid=#Request.zsid#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
         }else{
-            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagEdit?zsid=#Request.zsid#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&blog_tag_id=#form.blog_tag_id#");
+            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagEdit?zsid=#Request.zsid#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&blog_tag_id=#form.blog_tag_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
         }
     }
 
@@ -1077,7 +1087,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
         if(form.blog_tag_id EQ false){
             //Throw Error
             application.zcore.status.setStatus(request.zsid, 'The tag name, "#form.blog_tag_name#", already exists. Please type a unique tag name.', form,true);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagAdd?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagAdd?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         }else{
             application.zcore.status.setStatus(request.zsid, 'This tag has been added successfully.');
         }
@@ -1086,7 +1096,7 @@ WHERE blog.site_id=#db.param(request.zos.globals.id)#
         if(application.zcore.functions.zUpdate(inputStruct) EQ false){
             // failed, on duplicate key or sql error
             application.zcore.status.setStatus(request.zsid, 'The tag name, "#form.blog_tag_name#", already exists. Please type a unique tag name.', form,true);
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         }else{
             application.zcore.status.setStatus(request.zsid, 'This tag was updated successfully.');
         }
@@ -1119,7 +1129,7 @@ ts.struct=form;
         tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
         application.zcore.functions.zRedirect(tempURL, true);
     }else{	
-        application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#');
+        application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
     }
     </cfscript>
 </cffunction>
@@ -1137,6 +1147,7 @@ ts.struct=form;
 	this.init();
     application.zcore.functions.zSetPageHelpId("3.6");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	
 	if(application.zcore.functions.zso(form, 'ListTagID') EQ ''){ 
 		form.ListTagId = application.zcore.status.getNewId(); 
@@ -1199,8 +1210,8 @@ ts.struct=form;
             <td>#qT.blog_tag_name#</td>
             <td>#qT.count#</td>
             <td><cfif qT.count NEQ 0><a href="<cfif qT.blog_tag_unique_name NEQ ''>#qT.blog_tag_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_tag_id, qT.blog_tag_id,"html", qT.blog_tag_name)#</cfif>" target="_blank">View</a> | </cfif>
-            <a href="/z/blog/admin/blog-admin/tagEdit?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&blog_tag_id=#qT.blog_tag_id#">Edit</a> | 
-            <a href="/z/blog/admin/blog-admin/tagDelete?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&blog_tag_id=#qT.blog_tag_id#">Delete</a></td>
+            <a href="/z/blog/admin/blog-admin/tagEdit?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;blog_tag_id=#qT.blog_tag_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a> | 
+            <a href="/z/blog/admin/blog-admin/tagDelete?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;blog_tag_id=#qT.blog_tag_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a></td>
         </tr>
     </cfloop>
     </table>
@@ -1214,6 +1225,7 @@ ts.struct=form;
 	var db=request.zos.queryObject;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags", true); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	</cfscript>
     <cfsavecontent variable="db.sql">
     select *
@@ -1224,7 +1236,7 @@ ts.struct=form;
     </cfsavecontent><cfscript>qList=db.execute("qList");
     if(qList.recordcount EQ 0){
         application.zcore.status.setStatus(request.zsid,"This article no longer exists.");
-        application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#request.zsid#");	
+        application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");	
     }
     </cfscript>
     <cfif structkeyexists(form, 'confirm')>
@@ -1246,7 +1258,7 @@ ts.struct=form;
 		site_id=#db.param(request.zos.globals.id)#
         </cfsavecontent><cfscript>qDelete=db.execute("qDelete");
             application.zcore.status.setStatus(request.zsid, 'Your tag has been deleted.');
-            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#');
+            application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
         </cfscript>
     <cfelse>
         <cfsavecontent variable="db.sql">
@@ -1257,7 +1269,7 @@ ts.struct=form;
         </cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
         <h2>Are you sure you want to delete #qList.blog_tag_name#?<br />
         <br />
-        <a href="/z/blog/admin/blog-admin/tagDelete?confirm=yes&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&blog_tag_id=#form.blog_tag_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#">No</a></h2>
+        <a href="/z/blog/admin/blog-admin/tagDelete?confirm=yes&amp;ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;blog_tag_id=#form.blog_tag_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>
     </cfif>
 </cffunction>
 
@@ -1279,6 +1291,7 @@ ts.struct=form;
     application.zcore.functions.zSetPageHelpId("3.7");
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     form.blog_tag_id=application.zcore.functions.zso(form, 'blog_tag_id',false,-1);
     if(structkeyexists(form, 'return')){
         StructInsert(request.zsession, "blogtag_return"&form.blog_tag_id, request.zos.CGI.HTTP_REFERER, true);		
@@ -1310,7 +1323,7 @@ ts.struct=form;
             newAction="tagUpdate";
         }
         ts.enctype="multipart/form-data";
-        ts.action="/z/blog/admin/blog-admin/#newAction#?blog_tag_id=#form.blog_tag_id#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#";
+        ts.action="/z/blog/admin/blog-admin/#newAction#?blog_tag_id=#form.blog_tag_id#&ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&site_x_option_group_set_id=#form.site_x_option_group_set_id#";
         ts.method="post";
         ts.successMessage=false;
         if(application.zcore.app.siteHasApp("listing")){
@@ -1324,7 +1337,7 @@ tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-tag-edit");
 cancelURL=application.zcore.functions.zso(request.zsession, 'blogtag_return'&form.blog_tag_id);
 if(cancelURL EQ ""){
-    cancelURL="/z/blog/admin/blog-admin/tagList";
+    cancelURL="/z/blog/admin/blog-admin/tagList?site_x_option_group_set_id=#form.site_x_option_group_set_id#";
 }
 tabCom.setCancelURL(cancelURL);
 tabCom.enableSaveButtons();
@@ -1418,30 +1431,12 @@ tabCom.enableSaveButtons();
 
 <cffunction name="articleEdit" localmode="modern" access="remote" roles="member">
 	<cfscript>
-    var local=structnew();
-    var ts=0;
-	var selectStruct=0;
-	var qslide=0;
 	var db=request.zos.queryObject;
-	var qd=0;
-	var qTag=0;
-	var yeardate=0;
-	var qcat=0;
-	var htmlEditor=0;
-	var arrT=0;
-	var i=0;
-	var uid=0;
-	var sql=0;
-	var userGroupCom=0;
-	var qUser=0;
-	var tabCom=0;
-	var qEdit=0;
-	var newAction=0;
-	var cancelURL=0;
 	var currentMethod=form.method;
 	this.init();
     application.zcore.functions.zSetPageHelpId("3.2");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	if(structkeyexists(form, 'blog_event')){
 		local.blogEventChecked=true;
 	}
@@ -1452,6 +1447,7 @@ tabCom.enableSaveButtons();
 	db.sql="select *
 	from #db.table("blog", request.zos.zcoreDatasource)# blog
 	WHERE blog_id = #db.param(form.blog_id)# and 
+    site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	qEdit=db.execute("qEdit");
 	</cfscript>
@@ -1464,7 +1460,7 @@ tabCom.enableSaveButtons();
 		</cfscript>
 	</cfif>
 	<cfscript>
-	application.zcore.functions.zQueryToStruct(qEdit, form);
+	application.zcore.functions.zQueryToStruct(qEdit, form, 'site_x_option_group_set_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form);
 	/*if(structkeyexists(local, 'blogEventChecked')){
 		form.blog_event=1;
@@ -1484,7 +1480,7 @@ tabCom.enableSaveButtons();
 	}
 	ts.ajax=false;
 	ts.enctype="multipart/form-data";
-	ts.action="/z/blog/admin/blog-admin/#newAction#?blog_id=#form.blog_id#";
+	ts.action="/z/blog/admin/blog-admin/#newAction#?blog_id=#form.blog_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#";
 	ts.method="post";
 	ts.successMessage=false;
 	if(application.zcore.app.siteHasApp("listing")){
@@ -1516,13 +1512,13 @@ tabCom.enableSaveButtons();
                 <th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
                 <td>
         <cfscript>
-	userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
-	local.useruser_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
-	db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)# user 
-	WHERE user_group_id <> #db.param(local.useruser_group_id)# and 
-	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
-	user_server_administrator=#db.param(0)#";
-	qUser=db.execute("qUser"); 
+    	userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+    	local.useruser_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
+    	db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)# user 
+    	WHERE user_group_id <> #db.param(local.useruser_group_id)# and 
+    	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
+    	user_server_administrator=#db.param(0)#";
+    	qUser=db.execute("qUser"); 
         if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
 	    if(form.user_id_siteIdType EQ 0){
 		    form.user_id_siteIdType=1;
@@ -1593,7 +1589,7 @@ tabCom.enableSaveButtons();
             </cfsavecontent><cfscript>qCat=db.execute("qCat");
         if(qcat.recordcount EQ 0){
             application.zcore.status.setStatus(request.zsid,"You must add at least one category before adding articles.");
-            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryAdd?zsid=#request.zsid#");
+            application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/categoryAdd?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
         }
         selectStruct = StructNew();
         selectStruct.name = "select_category_id";
@@ -1821,14 +1817,6 @@ tabCom.enableSaveButtons();
                     </cfscript></td>
             </tr>
             <cfscript>
-             db.sql="select min(blog_datetime) mindate from #db.table("blog", request.zos.zcoreDatasource)# blog 
-			WHERE site_id=#db.param(request.zos.globals.id)# ";
-			qD=db.execute("qD");
-            if(qD.recordcount NEQ 0 and qD.mindate NEQ ""){
-                yeardate=year(qD.mindate);	
-            }else{
-                yeardate=year(now());
-            }
             if(isnull(form.blog_datetime) or form.blog_datetime EQ '0000-00-00 00:00:00' or isdate(form.blog_datetime) EQ false){
                 form.blog_datetime=dateadd("d",-7,now());
             }
@@ -1855,7 +1843,7 @@ tabCom.enableSaveButtons();
             if(form.blog_end_datetime EQ "" or isdate(form.blog_end_datetime) EQ false){
                 form.blog_end_datetime=form.blog_datetime;
             }
-            writeoutput("Event End Date:"&application.zcore.functions.zDateSelect("blog_end_datetime","blog_end_datetime", yeardate, year(now())+1,""));
+            writeoutput("Event End Date:"&application.zcore.functions.zDateSelect("blog_end_datetime","blog_end_datetime", 2000, year(now())+1,""));
             writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_end_datetime","blog_end_datetime",1,5));
             </cfscript>
             
@@ -1983,7 +1971,8 @@ tabCom.enableSaveButtons();
 	this.init();
     application.zcore.functions.zSetPageHelpId("3.3");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
-  application.zcore.functions.zstatushandler(request.zsid, true, false, form);
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
+    application.zcore.functions.zstatushandler(request.zsid, true, false, form);
     </cfscript>
     <cfsavecontent variable="db.sql">
     SELECT * from #db.table("blog", request.zos.zcoreDatasource)# blog 
@@ -1992,7 +1981,7 @@ tabCom.enableSaveButtons();
     </cfsavecontent><cfscript>qR=db.execute("qR");
     if(qR.recordcount EQ 0){
         application.zcore.status.setStatus(request.zsid,"Invalid request.");
-        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#");
+        application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
     }
     </cfscript>
     <script type="text/javascript">
@@ -2060,8 +2049,8 @@ function textCounter(field,cntfield,maxlimit) {
             <td style="width:125px; vertical-align:top;">#dateformat(qComments.blog_comment_datetime,"m/d/yyyy")&" "&timeformat(qComments.blog_comment_datetime,"h:mm tt")#</td>
             <td style="width:70px; vertical-align:top;"><cfif qComments.blog_comment_approved EQ '0'>New<cfelse>Approved</cfif></td>
             <!--- <td>#left(qComments.blog_category_description, 100)#<cfif len(qComments.blog_category_description) gt 100>...</cfif></td> --->
-            <td style=" vertical-align:top; width:160px; "><cfif qComments.blog_comment_approved EQ '0'><a href="/z/blog/admin/blog-admin/commentApprove?blog_comment_id=#qComments.blog_comment_id#&blog_id=#qComments.blog_id#">Approve</a> | </cfif> <a href="/z/blog/admin/blog-admin/commentReview?blog_comment_id=#qComments.blog_comment_id#&blog_id=#qComments.blog_id#">Edit</a> | 
-            <a href="/z/blog/admin/blog-admin/commentDelete?blog_comment_id=#qComments.blog_comment_id#&blog_id=#qComments.blog_id#">Delete</a></td>
+            <td style=" vertical-align:top; width:160px; "><cfif qComments.blog_comment_approved EQ '0'><a href="/z/blog/admin/blog-admin/commentApprove?blog_comment_id=#qComments.blog_comment_id#&amp;blog_id=#qComments.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Approve</a> | </cfif> <a href="/z/blog/admin/blog-admin/commentReview?blog_comment_id=#qComments.blog_comment_id#&amp;blog_id=#qComments.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a> | 
+            <a href="/z/blog/admin/blog-admin/commentDelete?blog_comment_id=#qComments.blog_comment_id#&amp;blog_id=#qComments.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a></td>
         </tr>
     </cfloop>
     </table>
@@ -2081,7 +2070,7 @@ local.blogIdBackup=form.blog_id;
     application.zcore.functions.zstatushandler(request.zsid,true,true, form);
 	form.set9=application.zcore.functions.zGetHumanFieldIndex();
 	</cfscript>
-    <form action="/z/blog/blog/addComment?blog_id=#local.blogIdBackup#&amp;managerReturn=1" onsubmit="zSet9('zset9_#form.set9#');" method="post" name="myForm">
+    <form action="/z/blog/blog/addComment?blog_id=#local.blogIdBackup#&amp;managerReturn=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#" onsubmit="zSet9('zset9_#form.set9#');" method="post" name="myForm">
             <input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
         <table style="width:100%; border-spacing:0px;" class="table-list">
           <tr>
@@ -2109,7 +2098,7 @@ local.blogIdBackup=form.blog_id;
           </tr>
             <th>&nbsp;<input type="hidden" name="blog_id" value="#form.blog_id#" /></th>
             <td><div id="waitdiv1" style="display:none;padding:5px; margin-right:5px; float:left;">Please Wait</div> 
-            <button type="submit" name="submitForm" value="add" onclick="this.style.display='none';document.getElementById('waitdiv1').style.display='block';">Add Comment</button> <button type="button" name="deletecomment" value="Cancel" onclick="window.location.href='/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#';">Cancel</button></td>
+            <button type="submit" name="submitForm" value="add" onclick="this.style.display='none';document.getElementById('waitdiv1').style.display='block';">Add Comment</button> <button type="button" name="deletecomment" value="Cancel" onclick="window.location.href='/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#';">Cancel</button></td>
           </tr>
         </table>
     </form>
@@ -2125,6 +2114,7 @@ local.blogIdBackup=form.blog_id;
 	this.init();
     application.zcore.functions.zSetPageHelpId("3.4");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	</cfscript>
     <cfsavecontent variable="db.sql">
         select *,concat(repeat(#db.param("_")#,blog_category_level*#db.param(3)#),blog_category_name) catname, 
@@ -2154,8 +2144,8 @@ local.blogIdBackup=form.blog_id;
             <!--- <td>#left(qList.blog_category_description, 100)#<cfif len(qList.blog_category_description) gt 100>...</cfif></td> --->
             <td style="width:130px; ">
             <a href="<cfif qList.blog_category_unique_name NEQ ''>#qList.blog_category_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id, qList.blog_category_id,"html", qList.blog_category_name)#</cfif>" target="_blank">View</a> | 
-            <a href="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#qList.blog_category_id#">Edit</a> | 
-            <a href="/z/blog/admin/blog-admin/categoryDelete?blog_category_id=#qList.blog_category_id#">Delete</a></td>
+            <a href="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#qList.blog_category_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a> | 
+            <a href="/z/blog/admin/blog-admin/categoryDelete?blog_category_id=#qList.blog_category_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a></td>
         </tr>
     </cfloop>
     </table>
@@ -2183,6 +2173,7 @@ local.blogIdBackup=form.blog_id;
     form.blog_category_id=application.zcore.functions.zso(form, 'blog_category_id');
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     </cfscript>
     <cfsavecontent variable="db.sql">
         select *
@@ -2212,7 +2203,7 @@ local.blogIdBackup=form.blog_id;
     ts.name="zMLSSearchForm";
     ts.ajax=false;
     ts.enctype="multipart/form-data";
-    ts.action="/z/blog/admin/blog-admin/categoryUpdate?blog_category_id=#form.blog_category_id#";
+    ts.action="/z/blog/admin/blog-admin/categoryUpdate?blog_category_id=#form.blog_category_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#";
     ts.method="post";
     ts.successMessage=false;
     if(application.zcore.app.siteHasApp("listing")){
@@ -2226,7 +2217,7 @@ tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-category-edit");
 cancelURL=application.zcore.functions.zso(request.zsession, 'blogcategory_return'&form.blog_category_id);
 if(cancelURL EQ ""){
-    cancelURL="/z/blog/admin/blog-admin/categoryList";
+    cancelURL="/z/blog/admin/blog-admin/categoryList?site_x_option_group_set_id=#form.site_x_option_group_set_id#";
 }
 tabCom.setCancelURL(cancelURL);
 tabCom.enableSaveButtons();
@@ -2349,6 +2340,7 @@ tabCom.enableSaveButtons();
 	this.init();
     application.zcore.functions.zSetPageHelpId("3.1");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
+    application.zcore.siteOptionCom.requireSectionEnabledSetId();
     form.blog_comment_id=application.zcore.functions.zso(form, 'blog_comment_id');
 	</cfscript>
     <script type="text/javascript">
@@ -2393,12 +2385,12 @@ tabCom.enableSaveButtons();
 		site_id=#db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qComments=db.execute("qComments");
 	if(qComments.recordcount eq 0){
-		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList");
+		application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 	}
 	application.zcore.functions.zQueryToStruct(qComments, form);
 	application.zcore.functions.zStatusHandler(request.zsid, true, false, form);
     </cfscript>
-    <form action="/z/blog/admin/blog-admin/commentUpdate" method="post" name="myForm">
+    <form action="/z/blog/admin/blog-admin/commentUpdate?site_x_option_group_set_id=#form.site_x_option_group_set_id#" method="post" name="myForm">
         <table style="width:100%; border-spacing:0px;" class="table-list">
           <tr>
           <tr>
@@ -2426,7 +2418,7 @@ tabCom.enableSaveButtons();
             <th>&nbsp;<input type="hidden" name="blog_id" value="#form.blog_id#" /><input type="hidden" name="blog_comment_id" value="#form.blog_comment_id#" /></th>
             <td>
             <div id="waitdiv1" style="display:none;padding:5px; margin-right:5px; float:left;">Please Wait</div>
-            <button type="submit" name="submitForm" value="update" onclick="this.style.display='none';document.getElementById('waitdiv1').style.display='block';" >Update</button> <button type="button" name="deletecomment" value="Cancel" onclick="window.location.href='/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#';">Cancel</button></td>
+            <button type="submit" name="submitForm" value="update" onclick="this.style.display='none';document.getElementById('waitdiv1').style.display='block';" >Update</button> <button type="button" name="deletecomment" value="Cancel" onclick="window.location.href='/z/blog/admin/blog-admin/commentList?blog_id=#form.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#';">Cancel</button></td>
           </tr>
         </table>
     </form>
