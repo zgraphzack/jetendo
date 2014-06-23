@@ -1454,6 +1454,9 @@ this.app_id=10;
 	GROUP BY blog.blog_id
 	order by blog_sticky desc, blog_datetime, blog_comment_datetime
 	</cfsavecontent>
+	<cfscript>
+	qArticle=db.execute("qArticle");
+	</cfscript>
 	<cfif isDefined('request.zos.supressBlogArticleDetails') EQ false or request.zos.supressBlogArticleDetails NEQ 1>
 		<cfif qArticle.recordcount eq 0>
 			<cfscript>
@@ -1815,6 +1818,7 @@ this.app_id=10;
 	var qList='';
 	loadBlogArticleInclude=false;
 	content = 'include';
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
 	if(structcount(application.zcore.app.getAppData("blog")) NEQ 0){
 		loadBlogArticleInclude=true;
 	}
@@ -1868,7 +1872,7 @@ this.app_id=10;
 	        	or blog.blog_show_all_sections=#db.param(1)# 
 				
 	        ) and 
-	    <cfelseif application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
+	    <cfelseif structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_always_show_section_articles') and application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
 			blog.site_x_option_group_set_id = #db.param(0)#  and 
         </cfif>
         
@@ -2903,7 +2907,7 @@ this.app_id=10;
         	or blog.blog_show_all_sections=#db.param(1)# 
 			
         ) and 
-    <cfelseif application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
+    <cfelseif structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_always_show_section_articles') and application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
 		blog.site_x_option_group_set_id = #db.param(0)#  and 
     </cfif>
 	 (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 

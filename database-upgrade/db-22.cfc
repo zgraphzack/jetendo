@@ -23,7 +23,7 @@
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix#blog_version`   
 	ADD COLUMN `blog_updated_datetime` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_image_library_id`, 
-	ADD COLUMN `blog_deleted` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_updated_datetime`
+	ADD COLUMN `blog_deleted` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_updated_datetime`,
 	ADD COLUMN `blog_show_all_sections` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_deleted`")){
 		return false;
 	}
