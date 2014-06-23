@@ -31,7 +31,7 @@
         homelink=request.zos.currentHostName&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id,3,"html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
     }
     //homelink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 3, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
-    
+
     application.zcore.siteOptionCom.requireSectionEnabledSetId();
     application.zcore.siteOptionCom.displaySectionNav();
     </cfscript>
@@ -1887,9 +1887,15 @@ tabCom.enableSaveButtons();
 			</cfscript>
 		</td>
 	</tr>
+    
+            <tr>
+                <th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Show On All Sections?","member.blog.edit blog_show_all_sections")#</th>
+                <td>#application.zcore.functions.zInput_Boolean("blog_show_all_sections")# | If this site uses custom sections, setting this to yes, will allow the blog article to appear on them.</td>
+            </tr>
             <tr>
                 <th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Sticky?","member.blog.edit blog_sticky")#</th>
                 <td>#application.zcore.functions.zInput_Boolean("blog_sticky")# | Force to top of all pages.</td>
+            </tr>
         </table>
         #tabCom.endFieldSet()#
         #tabCom.beginFieldSet("Advanced")# 

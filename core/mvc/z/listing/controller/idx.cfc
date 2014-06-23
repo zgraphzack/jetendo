@@ -694,7 +694,7 @@
 				if(qIdList.idlist EQ ""){
 					break;
 				}
-				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
+				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN ('#qIdList.idlist#')";
 				db2.execute("qDelete");
 			}
