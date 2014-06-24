@@ -278,8 +278,7 @@
 			site_option_id=#db.param(form.site_option_id)#,
 			site_option_group_map_fieldname=#db.param(form.mapField)#,
 			site_option_group_id=#db.param(form.site_option_group_id)#, 
-			site_id=#db.param(request.zos.globals.id)# , 
-			site_option_group_map_updated_datetime=#db.param(request.zos.mysqlnow)#
+			site_id=#db.param(request.zos.globals.id)#
 			";
 			db.execute("qInsert");
 		}
