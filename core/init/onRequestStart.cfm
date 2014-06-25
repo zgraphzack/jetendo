@@ -493,7 +493,7 @@
 			if(replace(replace(request.zos.globals.securedomain,"http://",""),"https://","") NEQ request.zos.cgi.http_host){
 				application.zcore.functions.z404("Secure domain doesn't match http_host.");	
 			}
-			request.zos.currentHostName='http://'&lcase(request.zos.cgi.http_host); 
+			request.zos.currentHostName='https://'&lcase(request.zos.cgi.http_host); 
 		    request.zRootDomain=replace(replace(lcase(replace(replace(request.zos.globals.domain, "http://",""), "https://", "")),"www.",""),"."&request.zos.testDomain,"");
 		    request.zCookieDomain=replace(lcase(request.zRootDomain),"www.","");
 		    request.zRootPath="/"&replace(request.zRootDomain,".","_","all")&"/";
