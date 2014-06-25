@@ -68,44 +68,85 @@ this.app_id=12;
 
 <cffunction name="getSiteMap" localmode="modern" output="no" access="public" returntype="array" hint="add links to sitemap array">
 	<cfargument name="arrUrl" type="array" required="yes">
-<cfscript>
-var ts=application.zcore.app.getInstance(this.app_id);
-var db=request.zos.queryObject;
-</cfscript>
-<cfsavecontent variable="returnText">
-	<cfsavecontent variable="db.sql">
-	SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE content.site_id = #db.param(request.zos.globals.id)# and content_parent_id = #db.param(0)# and content_for_sale <> #db.param(2)# and content_deleted=#db.param(0)# and content_user_group_id =#db.param(0)#
- and content_show_site_map = #db.param(1)#
- ORDER BY content_name ASC
-	</cfsavecontent><cfscript>qContent=db.execute("qContent");
-	request.allTempIds=StructNew();
-	childStruct=application.zcore.app.getAppCFC("content").getAllContent(qContent,0,0,structnew(),false," and content_for_sale <> 2 and content_show_site_map = 1 ",true);//and content_hide_link = #db.param(0)# ");
-	for(i=1;i LTE arraylen(childStruct.arrContentId);i++){
-		t2=StructNew();
-		t2.groupName="Content";
-		if(childStruct.arrContentUrlOnly[i] NEQ ''){
-			t2.url=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName, childStruct.arrContentUrlOnly[i]);
-		}else if(childStruct.arrContentUniqueName[i] NEQ ''){
-			t2.url=request.zos.currentHostName&childStruct.arrContentUniqueName[i];
-		}else{
-			if(childStruct.arrIndent[i] NEQ ""){
-				c1=replace(childStruct.arrContentName[i], childStruct.arrIndent[i],"","one");
-			}else{
-				c1=childStruct.arrContentName[i];
+	<cfscript>
+	var ts=application.zcore.app.getInstance(this.app_id);
+	var db=request.zos.queryObject;
+	</cfscript>
+	<cfsavecontent variable="returnText">
+		<cfsavecontent variable="db.sql">
+		SELECT *, count(*) count 
+		FROM #db.table("content", request.zos.zcoreDatasource)# content, 
+		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s 
+		WHERE content.site_id = #db.param(request.zos.globals.id)# and 
+		content_parent_id = #db.param(0)# and 
+		content_for_sale <> #db.param(2)# and 
+		content_deleted=#db.param(0)# and 
+		content_user_group_id =#db.param(0)# and 
+		content_show_site_map = #db.param(1)# and 
+		content.site_x_option_group_set_id <> #db.param(0)# and 
+		content.site_x_option_group_set_id = s.site_x_option_group_set_id and 
+		content.site_id = s.site_id 
+		group by content.site_x_option_group_set_id
+		order by s.site_x_option_group_set_title ASC
+		</cfsavecontent><cfscript>qsection=db.execute("qsection");
+		</cfscript>
+		<cfloop query="qsection">
+			<cfscript>
+			pages=ceiling(qsection.count/10);
+			t2=StructNew();
+			t2.groupName="Content Sections";
+			currentLink=request.zos.currentHostName&getSectionHomeLink(qsection.site_x_option_group_set_id);
+			t2.url=currentLink;
+			t2.title=qsection.site_x_option_group_set_title&" Pages";
+			arrayappend(arguments.arrUrl,t2);
+			for(i=2;i LTE pages;i++){
+				t2=StructNew();
+				t2.groupName="Page Sections";
+				t2.url=request.zos.currentHostName&currentLink&"?zIndex=#i#";
+				t2.title=qsection.site_x_option_group_set_title&" Pages (page #i#)";
+				arrayappend(arguments.arrUrl,t2);
 			}
-			t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(c1,'-')#-#ts.optionStruct.content_config_url_article_id#-#childStruct.arrContentId[i]#.html";
+			</cfscript>
+		</cfloop>
+
+		<cfsavecontent variable="db.sql">
+		SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
+		WHERE content.site_id = #db.param(request.zos.globals.id)# and 
+		content_parent_id = #db.param(0)# and 
+		content_for_sale <> #db.param(2)# and 
+		content_deleted=#db.param(0)# and 
+		content_user_group_id =#db.param(0)#
+		and content_show_site_map = #db.param(1)#
+		ORDER BY content_name ASC
+		</cfsavecontent><cfscript>qContent=db.execute("qContent");
+		request.allTempIds=StructNew();
+		childStruct=application.zcore.app.getAppCFC("content").getAllContent(qContent,0,0,structnew(),false," and content_for_sale <> 2 and content_show_site_map = 1 ",true);//and content_hide_link = #db.param(0)# ");
+		for(i=1;i LTE arraylen(childStruct.arrContentId);i++){
+			t2=StructNew();
+			t2.groupName="Content";
+			if(childStruct.arrContentUrlOnly[i] NEQ ''){
+				t2.url=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName, childStruct.arrContentUrlOnly[i]);
+			}else if(childStruct.arrContentUniqueName[i] NEQ ''){
+				t2.url=request.zos.currentHostName&childStruct.arrContentUniqueName[i];
+			}else{
+				if(childStruct.arrIndent[i] NEQ ""){
+					c1=replace(childStruct.arrContentName[i], childStruct.arrIndent[i],"","one");
+				}else{
+					c1=childStruct.arrContentName[i];
+				}
+				t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(c1,'-')#-#ts.optionStruct.content_config_url_article_id#-#childStruct.arrContentId[i]#.html";
+			}
+			if(isdate(childStruct.arrContentUpdatedDatetime[i])){
+				t2.lastmod=dateformat(childStruct.arrContentUpdatedDatetime[i],'yyyy-mm-dd');//2005-05-10T17:33:30+08:00
+			}else{
+				t2.lastmod=dateformat(now(),'yyyy-mm-dd');//2005-05-10T17:33:30+08:00
+			}
+			t2.indent=replace(childStruct.arrIndent[i],"_","  ","ALL");
+			t2.title=replace(childStruct.arrContentName[i],"_"," ","ALL");
+			arrayappend(arguments.arrUrl,t2);
 		}
-		if(isdate(childStruct.arrContentUpdatedDatetime[i])){
-			t2.lastmod=dateformat(childStruct.arrContentUpdatedDatetime[i],'yyyy-mm-dd');//2005-05-10T17:33:30+08:00
-		}else{
-			t2.lastmod=dateformat(now(),'yyyy-mm-dd');//2005-05-10T17:33:30+08:00
-		}
-		t2.indent=replace(childStruct.arrIndent[i],"_","  ","ALL");
-		t2.title=replace(childStruct.arrContentName[i],"_"," ","ALL");
-		arrayappend(arguments.arrUrl,t2);
-	}
-	</cfscript>	
-</cfsavecontent>
+		</cfscript>	
+	</cfsavecontent>
 	<cfreturn arguments.arrUrl>
 </cffunction>
 
@@ -357,7 +398,8 @@ var db=request.zos.queryObject;
 	ORDER BY content_deleted ASC, content_for_sale ASC, content_unique_name DESC ";
 	qContent=db.execute("qContent");
 	loop query="qConfig"{
-		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_article_id]=arraynew(1);
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_article_id]=[];
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_section_id]=[];
 		t9=structnew();
 		t9.type=1;
 		t9.scriptName="/z/content/content/viewPage";
@@ -395,6 +437,19 @@ var db=request.zos.queryObject;
 			
 		}
 	}
+
+	t9=structnew();
+	t9.type=1;
+	t9.scriptName="/z/content/content/displayContentSection";
+	t9.ifStruct=structnew();
+	t9.ifStruct.ext="html";
+	t9.urlStruct=structnew();
+	t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/displayContentSection";
+	t9.mapStruct=structnew();
+	t9.mapStruct.urlTitle="zURLName";
+	t9.mapStruct.dataId="site_x_option_group_set_id";
+	arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_section_id],t9);
+
 	loop query="qContent"{
 		t9=structnew();
 		t9.scriptName="/z/content/content/viewPage";
@@ -467,6 +522,7 @@ var db=request.zos.queryObject;
 	ts=StructNew();
 	ts.arrId=arrayNew(1);
 	arrayappend(ts.arrId,trim(form.content_config_url_article_id));
+	arrayappend(ts.arrId,trim(form.content_config_url_section_id));
 	if(form.content_config_url_listing_user_id NEQ ""){
 		arrayappend(ts.arrId,trim(form.content_config_url_listing_user_id));
 	}
@@ -564,12 +620,25 @@ var db=request.zos.queryObject;
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		echo('</td>
 		</tr>
-		
 		<tr>
 		<th>URL Agent ID</th>
 		<td>');
 		writeoutput(application.zcore.app.selectAppUrlId("content_config_url_listing_user_id", form.content_config_url_listing_user_id, this.app_id));
 		echo(' (This is used for viewing agent listings)</td>
+		</tr>
+		<tr>
+		<th>URL Section ID</th>
+		<td>');
+		writeoutput(application.zcore.app.selectAppUrlId("content_config_url_section_id", form.content_config_url_section_id, this.app_id));
+		echo(' </td>
+		</tr>
+		<tr>
+		<th>Section Title Affix:</th>
+		<td>');
+		ts = StructNew();
+		ts.name = "content_config_section_title_affix";
+		application.zcore.functions.zInput_Text(ts);
+		echo('</td>
 		</tr>
 		
 		<tr>
@@ -1817,6 +1886,330 @@ configCom.includeContentByName(ts);
 	</cfscript>
 </cffunction>
 	
+<cffunction name="getSectionHomeLink" localmode="modern" access="public" output="no" returntype="string">
+	<cfargument name="site_x_option_group_set_id" type="string" required="yes">
+	<cfscript>
+	struct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.site_x_option_group_set_id);
+	return "/#application.zcore.functions.zURLEncode(struct.__title,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_section_id#-#arguments.site_x_option_group_set_id#.html";
+	</cfscript>
+</cffunction>
+
+<cffunction name="displayContentSection" localmode="modern" access="remote" output="yes" returntype="any">
+	<cfscript>
+	db=request.zos.queryObject;
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
+
+	struct=application.zcore.functions.zGetSiteOptionGroupSetById(form.site_x_option_group_set_id);
+	if(structcount(struct) EQ 0){
+		application.zcore.functions.z404("form.site_x_option_group_set_id, ""#form.site_x_option_group_set_id#"" doesn't exist, so displayContentSection can't load.");
+	}
+
+	curLink=getSectionHomeLink(form.site_x_option_group_set_id);
+	actualLink="/#application.zcore.functions.zso(form, 'zUrlName')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_section_id#-#form.site_x_option_group_set_id#.html";
+	if(compare(curLink,actualLink) neq 0){
+		application.zcore.functions.z301Redirect(curLink);
+	}
+/*
+	ts=structnew(); 
+	ts.showHidden=true;
+	ts.beforeCode="";
+	ts.afterCode="";
+	ts.delimiter="";
+	ts.linkTextLength=50; 
+	ts.forceLinkForCurrentPage=true;
+	ts.returnData=true; 
+	ts.disableMoreLink=true;
+	ts.site_x_option_group_set_id=form.site_x_option_group_set_id;
+	ts.content_parent_id=0;
+	r1=request.zos.tempObj.contentInstance.configCom.getSidebar(ts);
+	writedump(r1);*/
+
+	tempPageNav='<a href="/">#application.zcore.functions.zvar("homelinktext")#</a> / <a href="#struct.__url#">#struct.__title#</a> /';
+	application.zcore.template.setTag("pagenav",tempPageNav);
+	affix=application.zcore.functions.zso(application.zcore.app.getAppData("content").optionStruct, 'content_config_section_title_affix');
+	if(affix NEQ ""){
+		title=struct.__title&" "&affix;
+	}else{
+		title=struct.__title&" Content Section";
+	}
+	application.zcore.template.setTag("pagetitle", title);
+	application.zcore.template.setTag("title", title);
+
+
+
+	application.zcore.app.getAppCFC("content").setContentIncludeConfig({});
+	contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
+	arrOutputStruct=[];
+	ts1={
+		content_subpage_link_layout:0,
+		content_parentpage_link_layout:7,
+		content_id:0,
+		content_parent_id:0,
+		content_include_listings:''
+	};
+
+
+	parentThumbnailSize={width:0, height:0, crop:0};
+	setRequestThumbnailSize(parentThumbnailSize.width, parentThumbnailSize.height, parentThumbnailSize.crop);
+	initExcludeContentId();
+
+	curParentSorting=0;
+	ts =structnew();
+	ts.image_library_id_field="content.content_image_library_id";
+	ts.count =  1; // how many images to get
+	rs=application.zcore.imageLibraryCom.getImageSQL(ts);
+	db.sql="SELECT * ";
+	if(curParentSorting EQ "3"){
+		db.sql&=", if(content.content_menu_title = #db.param('')#, content.content_name, content.content_menu_title) as _sortName ";
+	}
+	db.sql&=" #db.trustedSQL(rs.select)# FROM #db.table("content", request.zos.zcoreDatasource)# content 
+	#db.trustedSQL(rs.leftJoin)# 
+	WHERE content.site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#  and 
+	content.content_parent_id =#db.param(0)# ";
+	if(structkeyexists(form,'preview') EQ false and structkeyexists(request.zos, 'zcontentshowinactive') and request.zos.zcontentshowinactive EQ false){
+		db.sql&=" and content_for_sale <> #db.param(2)#";
+	}
+	db.sql&=" and content_deleted = #db.param(0)# and 
+	content_hide_link =#db.param(0)#";
+	if(contentConfig.hideContentSold){
+		db.sql&=" and content_for_sale =#db.param(1)#";
+	}
+	db.sql&=" GROUP BY content.content_id 
+	ORDER BY ";
+	if(curParentSorting EQ "3"){
+		db.sql&=" _sortName ASC ";
+	}else if(curParentSorting EQ "1"){
+		db.sql&=" content_price desc ";
+	}else if(curParentSorting EQ "2"){
+		db.sql&=" content_price asc ";
+	}else{
+		db.sql&=" content_sort ASC, content_datetime DESC, content_created_datetime DESC ";
+	}
+	qContentChild=db.execute("qContentChild");
+	menuLinkStruct=getSectionDisplayMenuLinks(ts1, contentConfig, curParentSorting, qContentChild, 0, arrOutputStruct);
+	
+
+
+	outputStruct={};
+	for(i=1;i LTE arraylen(arrOutputStruct);i++){
+		outputStruct[i]=arrOutputStruct[i];
+	}
+	try{
+		if(isNumeric(curParentSorting) EQ false){
+			arrOrder=structsort(outputStruct,"numeric","asc","sort");
+		}else if(curParentSorting EQ 1){
+			arrOrder=structsort(outputStruct,"numeric","desc","price");
+		}else if(curParentSorting EQ 2){
+			arrOrder=structsort(outputStruct,"numeric","asc","price");
+		}else if(curParentSorting EQ 3){
+			arrOrder=structsort(outputStruct,"text","asc","name");
+		}else if(curParentSorting EQ 0){
+			arrOrder=structsort(outputStruct,"numeric","asc","sort");
+		}else{
+			arrOrder=structkeyarray(outputStruct);
+			arraysort(arrOrder, "numeric", "asc");
+		}
+	}catch(Any excpt){
+		arrOrder=structkeyarray(outputStruct);
+		arraysort(arrOrder, "numeric", "asc");
+	}
+	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+		echo("curParentSorting: "&curParentSorting&"<br />");
+		echo('Initial sort order: <br />');
+		for(i in outputStruct){
+			echo('##'&i&' id:'&outputStruct[i].id&' | sort: '&outputStruct[i].sort&'<br />');
+		}
+		echo('<br />Final sort order: <br />');
+		for(i=1;i LTE arraylen(arrOrder);i++){
+			echo('##'&i&' id:'&outputStruct[arrOrder[i]].id&' | sort: '&outputStruct[arrOrder[i]].sort&'<br />');
+		}
+		echo('<br />');
+		
+	}
+	
+	uniqueChildStruct3838=structnew();
+	for(i=1;i LTE arraylen(arrOrder);i++){
+		c=outputStruct[arrOrder[i]];
+		if(c.id EQ "" or structkeyexists(uniqueChildStruct3838, c.id) EQ false){
+		uniqueChildStruct3838[c.id]=true;
+			writeoutput(c.output);
+		}
+	}
+	</cfscript>
+
+	
+</cffunction>
+
+
+
+<cffunction name="getSectionDisplayMenuLinks" localmode="modern" access="private">
+	<cfargument name="qContent" type="any" required="yes">
+	<cfargument name="contentConfig" type="struct" required="yes">
+	<cfargument name="curParentSorting" type="numeric" required="yes">
+	<cfargument name="qContentChild" type="any" required="yes">
+	<cfargument name="propertyCount" type="numeric" required="yes">
+	<cfargument name="arrOutputStruct" type="array" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	subpageLinkLayoutBackup=arguments.qContent.content_subpage_link_layout;
+	parentpageLinkLayoutBackup=arguments.qContent.content_parentpage_link_layout;
+	ts =structnew();
+	out99="";
+	ts.output=false;
+	if(structkeyexists(request, 'zsidebarwidth')){
+		ts.width=request.zsidebarwidth;
+	}else{
+		ts.width=225;
+	}
+	ts.arrLinks=arraynew(1);
+	selectedContentId=arguments.qContent.content_id;
+	selectedIndex=1;
+	if(arguments.contentConfig.disableChildContent EQ false){
+		if(arguments.qContent.content_parent_id NEQ 0){
+			db.sql="SELECT * ";
+			if(arguments.curParentSorting EQ "3"){
+				db.sql&=" , if(content.content_menu_title = #db.param('')#, content.content_name, content.content_menu_title) as _sortName";
+			}
+			db.sql&=" FROM #db.table("content", request.zos.zcoreDatasource)# content 
+			WHERE content.site_id = #db.param(request.zos.globals.id)# and 
+			content.content_parent_id =#db.param(arguments.qContent.content_parent_id)# ";
+			if(structkeyexists(form, 'preview') EQ false and request.zos.zcontentshowinactive EQ false){
+				db.sql&=" and content_for_sale <> #db.param(2)# ";
+		   	} 
+		   	db.sql&=" and content_deleted = #db.param(0)# and 
+		   	content_hide_link =#db.param(0)# ";
+		   	if(arguments.contentConfig.hideContentSold){
+		   		db.sql&=" and content_for_sale =#db.param(1)#";
+		   	}
+			db.sql&=" ORDER BY ";
+			if(arguments.curParentSorting EQ "3"){
+				db.sql&=" _sortName ASC ";
+			}else if(arguments.curParentSorting EQ "1"){
+				db.sql&=" content_price desc ";
+			}else if(arguments.curParentSorting EQ "2"){
+				db.sql&=" content_price asc ";
+			}else{
+				db.sql&=" content_sort ASC, content_datetime DESC, content_created_datetime DESC ";
+			}
+			qParent5=db.execute("qParent5");
+			loop query="qParent5"{
+				t2=structnew();
+				t2.text=qParent5.content_name;
+				if(qParent5.content_menu_title NEQ ""){
+					t2.text=qParent5.content_menu_title;	
+				}
+				t2.photo="";
+				t2.isparent=true;
+				if(qParent5.content_id EQ selectedContentId){
+					t2.type="selected";
+					selectedIndex=arraylen(ts.arrLinks)+1;
+				}else{
+					t2.type="tab";
+				}
+				if(qParent5.content_url_only NEQ ''){
+					t2.url=request.zos.currentHostName&qParent5.content_url_only;
+				}else if(qParent5.content_unique_name NEQ ''){
+					t2.url=request.zos.currentHostName&qParent5.content_unique_name;
+				}else{ 
+					t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(qParent5.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qParent5.content_id#.html"; 
+				}
+				arrayappend(ts.arrLinks,t2);
+			}
+			if(qParent5.recordcount NEQ 0){
+				ts.link_layout=parentpageLinkLayoutBackup;
+				out99&=this.displayMenuLinks(ts);
+			}
+		}
+
+
+		ts.arrLinks=arraynew(1);
+		index=0;
+		if(arguments.qContentChild.recordcount){
+			for(row in arguments.qContentChild){
+				index++;
+				ts3=structnew();
+				ts3.image_library_id=row.content_image_library_id;
+				ts3.output=false;
+				ts3.query=arguments.qContentChild;
+				ts3.row=index;
+				ts3.size=request.zos.thumbnailSizeStruct.width&"x"&request.zos.thumbnailSizeStruct.height;
+				ts3.crop=request.zos.thumbnailSizeStruct.crop; 
+				ts3.count = 1;
+				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts3);
+				t2=structnew();
+				t2.photo=""; 
+				if(arraylen(arrImages) NEQ 0){
+					t2.photo=(arrImages[1].link);
+				}
+				t2.text=row.content_name;
+				if(row.content_menu_title NEQ ""){
+					t2.text=row.content_menu_title;	
+				}
+
+				if(row.content_text EQ ''){
+					t2.summary=row.content_summary;
+				}else{
+					t2.summary=row.content_text;
+				}
+				t2.summary=application.zcore.email.convertHTMLToText(t2.summary);
+				t2.isparent=false;
+				t2.type="subtab";
+				if(row.content_url_only NEQ ""){
+					t2.url=row.content_url_only;
+				}else if(row.content_unique_name NEQ ''){
+					t2.url=request.zos.currentHostName&row.content_unique_name;
+				}else{ 
+					t2.url=request.zos.currentHostName&"/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html"; 
+				}
+				selectedIndex++;
+				if(arraylen(ts.arrLinks) LT selectedIndex){
+					arrayappend(ts.arrLinks,t2);
+				}else{
+					arrayinsertat(ts.arrLinks,selectedIndex,t2);
+				}
+			}
+			if(arguments.qContentChild.recordcount NEQ 0){
+				ts.link_layout=subpageLinkLayoutBackup;
+				out99&=this.displayMenuLinks(ts);
+			}
+
+			
+			if(subpageLinkLayoutBackup EQ 8 or subpageLinkLayoutBackup EQ 9 or subpageLinkLayoutBackup EQ 10){
+				writeoutput(out99);
+			}else if(application.zcore.app.getAppData("content").optionStruct.content_config_sidebar_tag NEQ ""){
+				application.zcore.template.setTag(application.zcore.app.getAppData("content").optionStruct.content_config_sidebar_tag,out99);
+			}else{
+				application.zcore.template.prependtag("content",out99);
+			}
+			if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0){
+				if(subpageLinkLayoutBackup EQ 1){
+					ts43=structnew();
+					ts43.disableChildContentSummary=true;
+					application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts43);
+				}
+				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+					echo('<p>Outputting children for page: #arguments.qContent.content_id#</p>');
+				}
+				application.zcore.app.getAppCFC("content").getPropertyInclude(row.content_id, false, arguments.arrOutputStruct);//, arguments.qContentChild, arguments.arrOutputStruct);
+			}
+			structdelete(request.zos,'contentPropertyIncludeQueryName');
+		}
+		if(arguments.qContent.content_include_listings NEQ ''){
+			echo('<br style="clear:both;" />');
+			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
+				echo('<p>Outputting content_include_listings: #arguments.qContent.content_include_listings#</p>');
+			}
+			arrListings=listToArray(arguments.qContent.content_include_listings, ",");
+			arguments.propertyCount+=arraylen(arrListings);
+			for(i=1;i LTE arraylen(arrListings);i++){
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i], false, arguments.arrOutputStruct);
+			}
+		}
+	}
+	return { propertyCount: arguments.propertyCount };
+	</cfscript>
+</cffunction>
 	
 <!--- split all the globals into function calls - then worry about mvc principles after it works with all the globals being updated. --->
 <cffunction name="includeFullContent" localmode="modern" access="public" output="yes" returntype="boolean">
@@ -1891,6 +2284,9 @@ configCom.includeContentByName(ts);
 		db.sql&=" and content_deleted=#db.param(0)# 
 		GROUP BY content.content_id ";
 	   	qContent=db.execute("qContent");
+	   	if(qContent.site_x_option_group_set_id NEQ 0){
+	   		form.site_x_option_group_set_id=qContent.site_x_option_group_set_id;
+	   	}
 		returnCountTotal=qContent.recordcount;
 		if(qContent.recordcount EQ 0 and contentConfig.disableContentMeta EQ false){
 			application.zcore.functions.z404("Content record was missing in includeFullContent");
@@ -2942,7 +3338,7 @@ displayMenuLinks(ts);
 	<cfscript>
 	var ts=0;
 	
-	if(structkeyexists(request.zos, 'currentContentIncludeConfigStruct') EQ false){
+	if(not structkeyexists(request.zos, 'currentContentIncludeConfigStruct') or not isStruct(request.zos.currentContentIncludeConfigStruct)){
 		request.zos.currentContentIncludeConfigStruct={
 			disableContentMeta=false,
 			arrContentReplaceKeywords=[],
@@ -2960,7 +3356,7 @@ displayMenuLinks(ts);
 			contentEmailFormat=false,
 			editLinksEnabled=true
 		};
-	}
+	} 
 	return request.zos.currentContentIncludeConfigStruct;
 	</cfscript>
 </cffunction>

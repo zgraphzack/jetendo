@@ -1888,6 +1888,10 @@ tabCom.enableSaveButtons();
 		</td>
 	</tr>
     
+    <cfscript>
+    
+    form.blog_show_all_sections=application.zcore.functions.zso(form, 'blog_show_all_sections', true, 0);
+    </cfscript>
             <tr>
                 <th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Show On All Sections?","member.blog.edit blog_show_all_sections")#</th>
                 <td>#application.zcore.functions.zInput_Boolean("blog_show_all_sections")# | If this site uses custom sections, setting this to yes, will allow the blog article to appear on them.</td>

@@ -2194,12 +2194,25 @@ Define this function in another CFC to override the default email format
 	application.zcore.siteOptionCom.displaySectionNav();
 
 	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+		echo('<h2>Pages</h2><p>');
+		echo('<a href="#application.zcore.app.getAppCFC("content").getSectionHomeLink(form.site_x_option_group_set_id)#" target="_blank">View Pages Section Home</a> | ');
 		echo('<a href="/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Pages</a> | ');
-		echo('<a href="/z/content/admin/content-admin/add?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Page</a><br />');
+		echo('<a href="/z/content/admin/content-admin/add?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Page</a></p>');
 	}
 	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
+		echo('<h2>Blog</h2><p>');
+		echo('<a href="#application.zcore.app.getAppCFC("blog").getSectionHomeLink(form.site_x_option_group_set_id)#" target="_blank">View Blog Section Home</a> | ');
 		echo('<a href="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Blog Articles</a> | ');
-		echo('<a href="/z/blog/admin/blog-admin/articleAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Article</a><br />');
+		echo('<a href="/z/blog/admin/blog-admin/articleAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Article</a></p>');
+		echo('<h2>Blog Category Section Links</h2>');
+		db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# 
+		ORDER BY blog_category_name ASC";
+		qCategory=db.execute("qCategory");
+		for(row in qCategory){
+			link=application.zcore.app.getAppCFC("blog").getBlogCategorySectionLink(row, form.site_x_option_group_set_id);
+			echo('<a href="#link#" target="_blank">'&row.blog_category_name&'</a><br />');
+		}
 	}
 	/*if(application.zcore.adminSecurityFilter.checkFeatureAccess("Menus")){
 		echo('<a href="/z/admin/menu/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Menus</a> | ');

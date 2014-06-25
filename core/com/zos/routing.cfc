@@ -1505,6 +1505,7 @@
 								local.arrDataId=listToArray(local.dataId,"_");
 								local.dataIdCount=arraylen(local.arrDataId);
 								if(local.dataIdCount EQ 1){
+									local.dataId=local.arrDataId[1];
 									local.urlMatched=true;	
 								}else if(local.dataIdCount EQ 2){
 									// has pagenav set
@@ -1531,6 +1532,23 @@
 										local.dataId2=local.arrT[local.count-2];
 										local.urlMatched=true;
 									}
+								}
+							}else if(local.curApp.type EQ 6){
+								// 2 numerics with optional pagenav
+								local.arrDataId=listToArray(local.dataId,"_");
+								local.dataIdCount=arraylen(local.arrDataId);
+								if(local.dataIdCount EQ 2){
+									local.dataId=local.arrDataId[1];
+									local.dataId2=local.arrDataId[2];
+									local.urlMatched=true;	
+								}else if(local.dataIdCount EQ 3){
+									// has pagenav set
+									local.dataId=local.arrDataId[1];
+									local.dataId2=local.arrDataId[2];
+									local.dataId3=local.arrDataId[3];
+									local.urlMatched=true;	
+								}else{
+									// unknown multiple page nav or other
 								}
 							}
 							if(local.urlMatched){

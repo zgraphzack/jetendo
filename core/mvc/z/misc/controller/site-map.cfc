@@ -16,6 +16,14 @@
 			uniqueStruct[arrURL[i].url]=true;
 		}
 	}
+
+	arrayAppend(arrURL2, { groupName: 'Miscellaneous', title:'Privacy Policy & Cookies', url:request.zos.currentHostName&'/z/user/privacy/index'});
+	arrayAppend(arrURL2, { groupName: 'Miscellaneous', title:'Terms of Use', url:request.zos.currentHostName&'/z/user/terms-of-use/index'});
+	arrayAppend(arrURL2, { groupName: 'Miscellaneous', title:'Legal Notices', url:request.zos.currentHostName&'/z/misc/system/legal'});
+	if(form.method EQ "index"){
+		arrayAppend(arrURL2, { groupName: 'Miscellaneous', title:'XML Site Map', url:request.zos.currentHostName&'/sitemap.xml.gz'});
+	}
+
 	return arrURL2;
 	</cfscript>
 </cffunction>
@@ -30,29 +38,38 @@
 	application.zcore.template.setTag("pagetitle","Site Map");
 	application.zcore.template.setTag("pagenav", '<a href="/">Home</a> /');
 	firstEmptyGroup=true;
+
+	groupOutput={};
 	for(i=1;i LTE arraylen(arrUrl);i++){
-		if(arrUrl[i].url CONTAINS "/z/misc/thank-you/index"){
-			continue;
+		if(not structkeyexists(arrUrl[i],'groupName')){
+			savecontent variable="out"{
+				writedump(arrURL[i]);
+			}
+			throw("groupName was missing in site map link: #arrURL[i]#");
 		}
-		if(firstEmptyGroup and structkeyexists(arrUrl[i],'groupName') EQ false){
-			writeoutput('<ul>');
-			firstEmptyGroup=false;
-		}else if(structkeyexists(arrUrl[i],'groupName') and arrUrl[i].groupName NEQ g){
-			if(i NEQ 1){ writeoutput('</ul>'); }
-			g=arrUrl[i].groupName;
-			writeoutput('<h2>'&htmleditformat(g)&'</h2><ul>');
+		if(not structkeyexists(groupOutput, arrUrl[i].groupName)){
+			groupOutput[arrUrl[i].groupName]={ groupName: arrUrl[i].groupName, arrLinks:[] };
 		}
-		if(structkeyexists(arrUrl[i],"indent")){
-			writeoutput('<li style="margin-left:'&(len(arrUrl[i].indent)*8)&'px;"><a href="'&replace(arrUrl[i].url,request.zos.globals.domain, request.zos.currentHostName)&'">'&htmleditformat(arrUrl[i].title)&'</a></li>');
-		}else{
-			writeoutput('<li><a href="'&replace(arrUrl[i].url,request.zos.globals.domain, request.zos.currentHostName)&'">'&htmleditformat(arrUrl[i].title)&'</a></li>');
+		arrayAppend(groupOutput[arrUrl[i].groupName].arrLinks, arrURL[i]);
+	}
+	arrGroup=structsort(groupOutput, "text", "asc", "groupName");
+	for(i=1;i LTE arraylen(arrGroup);i++){
+		group=arrGroup[i];
+		g=groupOutput[arrGroup[i]].arrLinks;
+		if(arraylen(g)){
+			echo('<h2>'&group&'</h2>
+				<ul>');
+			for(n=1;n LTE arraylen(g);n++){
+				if(structkeyexists(g[n],"indent")){
+					echo('<li style="margin-left:'&(len(g[n].indent)*8)&'px;">');
+				}else{
+					echo('<li>');
+				}
+				echo('<a href="'&replace(g[n].url,request.zos.globals.domain, request.zos.currentHostName)&'">'&g[n].title&'</a></li>');
+			}
+			echo('</ul>');
 		}
 	}
-	writeoutput('<li><a href="/z/user/privacy/index" target="_blank">Privacy Policy & Cookies</a></li>');
-	writeoutput('<li><a href="/z/user/terms-of-use/index" target="_blank">Terms of Use</a></li>');
-	writeoutput('<li><a href="/z/misc/system/legal" target="_blank">Legal Notices</a></li>');
-	writeoutput('<li><a href="/sitemap.xml.gz" target="_blank">XML Site Map</a></li>');
-	writeoutput('</ul>');
 	</cfscript>
 </cffunction>
 
