@@ -3,6 +3,7 @@ require("library.php");
 set_time_limit(70);
 /*
 Command reference:
+convertHTMLTOPDF#chr(9)#site_short_domain#chr(9)#htmlFile#chr(9)#pdfFile
 getDiskUsage#chr(9)#absolutePath
 getFileMD5Sum#chr(9)#absoluteFilePath
 getImageMagickIdentify#chr(9)#absoluteFilePath
@@ -72,8 +73,79 @@ function processContents($contents){
 		return mysqlDumpTable($a);
 	}else if($contents =="mysqlRestoreTable"){
 		return mysqlRestoreTable($a);
+	}else if($contents =="convertHTMLTOPDF"){
+		return convertHTMLTOPDF($a);
 	}
 	return "";
+}
+function convertHTMLTOPDF($a){
+	set_time_limit(30);
+	if(count($a) != 3){
+		echo "3 arguments are required: site_short_domain, absoluteFilePath and htmlWithoutBreaksOrTabs.\n";
+		return "0";
+	}
+	$site_short_domain=$a[0];
+	$htmlFile=$a[1];
+	$pdfFile=$a[2];
+	$sitePath=zGetDomainWritableInstallPath($site_short_domain);
+	if(!is_dir($sitePath)){
+		echo "sitePath doesn't exist: ".$sitePath."\n";
+		return "0";
+	}
+	if($htmlFile == ""){
+		echo "htmlFile is a required argument.\n";
+		return "0";
+	}
+	if($pdfFile == ""){
+		echo "pdfFile is a required argument.\n";
+		return "0";
+	}
+	$pdfFile=getAbsolutePath($pdfFile);
+	if(substr($pdfFile, 0, strlen($sitePath)) != $sitePath){
+		echo "pdfFile, ".$pdfFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
+		return "0";
+	}
+	$parentDir=dirname($pdfFile);
+	if(!is_dir($parentDir)){
+		echo "parent directory, ".$dirname($pdfFile).", doesn't exist.\n";
+		return "0";
+	}
+	if(substr($htmlFile, 0, 5) == "http:" || substr($htmlFile, 0, 6) == "https:"){
+		echo "htmlFile can't be a URL for security reasons";
+		return "0";
+		/*
+		Maybe allow urls with more validation later.
+			Must prevent other ports
+			Prevent connections to IPs
+			Prevent localhost and other local host names.
+			More?
+		if(strpos(substr($htmlFile, 6), ":") !== FALSE){
+			echo "htmlFile must be port 80 or 443.  No custom ports allowed for security.";
+			return "0";
+		}
+		$cmd="/usr/local/bin/wkhtmltopdf ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
+		*/
+	}else{
+		$htmlFile=getAbsolutePath($htmlFile);
+		if(substr($htmlFile, 0, strlen($sitePath)) != $sitePath){
+			echo "htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
+			return "0";
+		}
+
+		$cmd="/usr/local/bin/wkhtmltopdf ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
+	}
+	if(file_exists($pdfFile)){
+		unlink($pdfFile);
+	}
+	`$cmd`;
+	if(file_exists($pdfFile)){
+		chown($pdfFile, get_cfg_var("jetendo_www_user"));
+		chgrp($pdfFile, get_cfg_var("jetendo_www_user"));
+		chmod($pdfFile, 0660);
+		return "1";
+	}else{
+		return "0";
+	}
 }
 
 function mysqlDumpTable($a){
@@ -255,7 +327,7 @@ function installThemeToSite($a){
 		return "0";
 	}
 
-	$siteAbsolutePath=realpath($siteAbsolutePath);
+	$siteAbsolutePath=getAbsolutePath($siteAbsolutePath);
 	if($siteAbsolutePath == "" || !is_dir($siteAbsolutePath)){
 		echo "The site absolute directory doesn't exist: ".$siteAbsolutePath."\n";
 		return "0";
@@ -275,7 +347,7 @@ function installThemeToSite($a){
 		return "0";
 	}
 
-	$themePath=realpath($p.$themeName."/");
+	$themePath=getAbsolutePath($p.$themeName."/");
 	if($themePath == "" || !is_dir($themePath)){
 		echo "The theme directory doesn't exist: ".$themePath."\n";
 		return "0";
@@ -338,7 +410,7 @@ function gzipFilePath($a){
 	set_time_limit(1000);
 	$path=implode("", $a);
 	if(file_exists($path)){
-		$path=realpath($path);
+		$path=getAbsolutePath($path);
 		$p=get_cfg_var("jetendo_root_path");
 		$found=false;
 		if(substr($path, 0, strlen($p)) == $p){
@@ -379,10 +451,10 @@ function getImageMagickConvertApplyMask($a){
 		echo "absImageMaskPath was an empty string\n";
 		return "0";
 	}
-	$absImageInputPath=realpath($absImageInputPath);
+	$absImageInputPath=getAbsolutePath($absImageInputPath);
 	$absImageOutputPath=getAbsolutePath($absImageOutputPath);
-	$outputDir=realpath(dirname($absImageOutputPath));
-	$$absImageMaskPath=realpath($absImageMaskPath);
+	$outputDir=getAbsolutePath(dirname($absImageOutputPath));
+	$$absImageMaskPath=getAbsolutePath($absImageMaskPath);
 	if($absImageInputPath == "" || !file_exists($absImageInputPath)){
 		echo "The file for absImageInputPath doesn't exist: ".$absImageInputPath."\n";
 		return "0";
@@ -496,9 +568,9 @@ function getImageMagickConvertResize($a){
 		echo "destinationFilePath was an empty string\n";
 		return "0";
 	}
-	$sourceFilePath=realpath($sourceFilePath);
+	$sourceFilePath=getAbsolutePath($sourceFilePath);
 	$destinationFilePath=getAbsolutePath($destinationFilePath);
-	$outputDir=realpath(dirname($destinationFilePath));
+	$outputDir=getAbsolutePath(dirname($destinationFilePath));
 	if($sourceFilePath == "" || !file_exists($sourceFilePath)){
 		echo "The file for sourceFilePath doesn't exist: ".$sourceFilePath."\n";
 		return "0";
@@ -569,7 +641,7 @@ function getImageMagickIdentify($a){
 	set_time_limit(100);
 	$path=implode("", $a);
 	if(file_exists($path)){
-		$path=realpath($path);
+		$path=getAbsolutePath($path);
 		$p=get_cfg_var("jetendo_root_path");
 		$found=false;
 		if(substr($path, 0, strlen($p)) == $p){
@@ -777,8 +849,8 @@ function tarZipFilePath($a){
 	}
 	$tarDirectory=trim($a[1]);
 	$pathToTar=trim($a[2]);
-	$tarDirectory=realpath($tarDirectory);
-	$pathToTar=realpath($pathToTar);
+	$tarDirectory=getAbsolutePath($tarDirectory);
+	$pathToTar=getAbsolutePath($pathToTar);
 	if($pathToTar=="" || (!is_dir($pathToTar) && !file_exists($pathToTar))){
 		echo "pathToTar is invalid: ".$pathToTar."\n";
 		return "0";
@@ -823,7 +895,7 @@ function getDiskUsage($a){
 	set_time_limit(500);
 	$path=implode("", $a);
 	if(is_dir($path) || file_exists($path)){
-		$path=realpath($path);
+		$path=getAbsolutePath($path);
 		$p=get_cfg_var("jetendo_root_path");
 		$found=false;
 		if(substr($path, 0, strlen($p)) == $p){
@@ -843,7 +915,7 @@ function getDiskUsage($a){
 function getFileMD5Sum($a){
 	$path=implode("", $a);
 	if(file_exists($path)){
-		$path=realpath($path);
+		$path=getAbsolutePath($path);
 		$p=get_cfg_var("jetendo_root_path");
 		if(substr($path, 0, strlen($p)) != $p){
 			return "";

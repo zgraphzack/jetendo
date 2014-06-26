@@ -6,7 +6,7 @@ function microtimeFloat()
     list($usec, $sec) = explode(" ", microtime());
     return ((float)$usec + (float)$sec);
 }
-$debug=false;
+$debug=true;
 $timeout=60; // seconds
 $timeStart=microtimeFloat();
 $completePath=get_cfg_var("jetendo_root_path")."execute/complete/";
@@ -18,7 +18,7 @@ $runningThreads=0;
 
 $script='/usr/bin/php "'.get_cfg_var("jetendo_scripts_path").'railo-execute-commands-process.php" ';
 if($debug){
-	$background='';
+	$background=' ';
 }else{
 	$background=" > /dev/null 2>/dev/null &";
 }
@@ -34,7 +34,10 @@ while(true){
 				continue;
 			}
 			$phpCmd=$script.escapeshellarg($entry).$background;
-			`$phpCmd`;
+			if($debug){
+			//	echo $phpCmd."\n";
+			}
+			echo `$phpCmd`;
 			$arrEntry[$entry]=true;
 		}
 		closedir($handle);

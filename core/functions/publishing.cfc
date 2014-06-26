@@ -1,5 +1,22 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="zConvertHTMLTOPDF" access="public" localmode="modern" output="no" returntype="boolean">
+	<cfargument name="html" type="string" required="yes">
+	<cfargument name="pdfFile" type="string" required="yes">
+	<cfscript>
+	application.zcore.functions.zDeleteFile(arguments.pdfFile);
+	tempFile=request.zos.globals.privatehomedir&"tempHTMLFile"&gettickcount()&".html";
+	application.zcore.functions.zwritefile(tempFile, trim(arguments.html));
+	secureCommand="convertHTMLTOPDF"&chr(9)&request.zos.globals.shortDomain&chr(9)&tempFile&chr(9)&arguments.pdfFile;
+	output=application.zcore.functions.zSecureCommand(secureCommand, 30);
+	application.zcore.functions.zDeleteFile(tempFile);
+	if(trim(output) EQ 1 and fileexists(arguments.pdfFile)){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
 <!--- FUNCTION: zPublishURL(source, destinationFile, includeOnly, forceTemplate);
 source can be an absolute url (including remote URLs) or a root relative coldfusion template (must use template system)
  --->
