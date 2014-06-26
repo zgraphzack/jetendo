@@ -131,8 +131,8 @@ function convertHTMLTOPDF($a){
 			echo "htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
 			return "0";
 		}
-
-		$cmd="/usr/local/bin/wkhtmltopdf ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
+		// if we ever allow use to edit the html, we should parse the html for links that don't match site_short_domain.
+		$cmd="/usr/local/bin/wkhtmltopdf --disable-javascript --disable-local-file-access ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
 	}
 	if(file_exists($pdfFile)){
 		unlink($pdfFile);
