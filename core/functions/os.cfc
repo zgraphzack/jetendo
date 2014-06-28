@@ -2942,7 +2942,8 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	<td style="padding:10px;"><a href="/z/server-manager/admin/server-home/index">Dashboard</a>
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
 	 | <a href="/z/server-manager/admin/site-select/index?sid=">Sites</a> 
-	| <a href="/z/_com/zos/app?method=appList&zid=#arguments.zid#&sid=#form.sid#">Apps</a>
+	 | <a href="/z/server-manager/admin/dns-group/index">DNS</a> 
+	| <a href="/z/_com/zos/app?method=appList&amp;zid=#arguments.zid#&amp;sid=#form.sid#">Apps</a>
      | <a href="/z/server-manager/admin/log?sid=">Logs</a> 
      | <a href="/z/server-manager/admin/deploy/index">Deploy</a>
      

@@ -1217,6 +1217,7 @@ ts.email=false;
 ts.required=false;
 ts.number=false;
 ts.output=true;
+ts.onkeyup="";
 ts.onchange="alert('neat');";
 ts.defaultValue="";
 zInput_Text(ts);
