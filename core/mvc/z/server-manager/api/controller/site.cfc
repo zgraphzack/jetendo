@@ -1,6 +1,7 @@
 <cfcomponent>
 <cffunction name="getSiteById" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	var ts={
 		success:true
 	};
@@ -29,7 +30,7 @@
 
 <cffunction name="getActive" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
-	
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zReturnJson({});
 	</cfscript>
 </cffunction>

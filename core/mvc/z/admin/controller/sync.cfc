@@ -677,6 +677,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 
 <cffunction name="exportData" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.userGroupCom=createobject("component", "zcorerootmapping.com.user.user_group_admin");
 	header name="Content-Type" value="text/plain" charset="utf-8";
 	if(structkeyexists(form, 'download')){
@@ -1036,6 +1037,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 
 <cffunction name="importData" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	init();
 	db=request.zos.queryObject;
 	
@@ -1115,6 +1117,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 <cffunction name="index" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript> 
 	db=request.zos.queryObject; 
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	init();
 	application.zcore.functions.zSetPageHelpId("2.7.5");
 	application.zcore.functions.zStatusHandler(request.zsid);

@@ -58,6 +58,7 @@
 	<cfscript>
 	var qUser=0;
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.2");
 	db.sql="SELECT site_id, user_first_name, user_last_name, user_ip_blocked 
@@ -97,6 +98,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qUser=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.2");
 	db.sql=" SELECT site_id, user_first_name, user_last_name FROM #db.table("user", request.zos.zcoreDatasource)# user 
@@ -135,6 +137,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qUser=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql=" SELECT site_id, user_first_name, user_last_name FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(application.zcore.functions.zso(form, 'user_id'))# and 
@@ -167,6 +170,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qGroup=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql=" SELECT site_id, user_group_name FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE user_group_id = #db.param(application.zcore.functions.zso(form, 'user_group_id'))# and 
@@ -207,6 +211,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var inputStruct = structNew();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	// required 
 	inputStruct.user_username = application.zcore.functions.zso(form, 'user_username'); // make same as email to use email as login
@@ -280,6 +285,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var inputStruct = structNew();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	// required 
 	inputStruct.user_group_name = application.zcore.functions.zso(form, 'user_group_name');
@@ -313,6 +319,7 @@
 	var qFlush=0;
 	var qUpdate=0;
 	var i=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	if(application.zcore.functions.zso(form, 'user_group_primary') EQ ''){		
 		application.zcore.status.setStatus(Request.zsid, "Primary User Group is required.",false,true);
@@ -349,6 +356,7 @@
 	var qUserXGroup=0;
 	var pid=0;
 	var i=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.2");
 	db.sql="SELECT user_group.* 
@@ -360,7 +368,7 @@
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	<h2>Edit Site Permissions</h2>
-		<form action="/z/server-manager/admin/user/updateSitePermissions?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#" name="myform" id="myform" method="post">
+		<form action="/z/server-manager/admin/user/updateSitePermissions?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#" name="myform" id="myform" method="post">
 			
 	<table style="border-spacing:0px;" class="table-list">
 		<tr>
@@ -440,6 +448,7 @@
 	var selectStruct=0;
 	var qGroup=0;
 	var openIdCom=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.1");
 	form.user_id = application.zcore.functions.zso(form, 'user_id',false,-1);
@@ -620,6 +629,7 @@
 	var db=request.zos.queryObject;
 	var qGroup=0;
 	var currentMethod=form.method;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.3");
 	form.user_group_id = application.zcore.functions.zso(form, 'user_group_id',false,-1);
@@ -663,6 +673,7 @@
 	var rollOverCode=0;
 	var usergroupfriendlyname=0;
 	var inputStruct=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.1");
 	application.zcore.functions.zStatusHandler(Request.zsid);
@@ -759,6 +770,7 @@
 	var qUserList=0;
 	var inputStruct=0;
 	var rolloverCode=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.6");
 	application.zcore.functions.zStatusHandler(Request.zsid);

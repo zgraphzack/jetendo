@@ -573,6 +573,7 @@
 
 <cffunction name="dumpInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	// dump json file or create sql
 	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database");
 	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database/data/");
@@ -636,6 +637,7 @@
 
 <cffunction name="installInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	tempFile=request.zos.installPath&"share/database/jetendo-schema.json";
 	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
 	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));

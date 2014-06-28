@@ -6,6 +6,7 @@
 		var db=request.zos.queryObject;
 		var pagenav=0;
 		var local=structnew();
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 		</cfscript> 
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app,
@@ -378,6 +379,7 @@
 		var qremove=0;
 		var rCom=0;
 		var db=request.zos.queryObject;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 		var local=structnew();
 		</cfscript>
     	<cfsavecontent variable="db.sql">
@@ -430,6 +432,7 @@
 		var local=structnew();
 		var db=request.zos.queryObject;
 		var ___zr=0;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 		application.zcore.functions.zSetPageHelpId("8.1.1.7");
 		application.zcore.functions.zStatusHandler(request.zsid);
 		</cfscript>
@@ -518,6 +521,7 @@
 		var db=request.zos.queryObject;
 		var ___zr=0;
 		var local=structnew();
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 		application.zcore.functions.zSetPageHelpId("8.2.2"); 
 		application.zcore.functions.zStatusHandler(request.zsid);
 		</cfscript>
@@ -612,6 +616,7 @@
 		var finalAppXSiteId=0;
 		var updateType=0;
 		var result=0;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 		form.app_x_site_id=application.zcore.functions.zso(form, 'app_x_site_id',true);
 		finalAppXSiteId=form.app_x_site_id;
 		form.app_id=application.zcore.functions.zso(form, 'app_id',true);
@@ -659,6 +664,7 @@
 		var db=request.zos.queryObject;
 		var local=structnew();
 		var pagenav=0;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 		application.zcore.functions.zSetPageHelpId("8.2.2.1"); 
 		form.app_x_site_id=application.zcore.functions.zso(form, 'app_x_site_id',true);
 		form.app_id=application.zcore.functions.zso(form, 'app_id',true);
@@ -739,6 +745,7 @@
 		var enabledScript=0;
 		var d=0;
 		var cancelLink=0;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 		application.zcore.functions.zSetPageHelpId("8.2.2.1"); 
 		if(structkeyexists(form, 'configMethod') EQ false){
 			application.zcore.status.setStatus(request.zsid,"You must specify an application configuration method.",false,true);
@@ -843,6 +850,7 @@
 		var qsites=0;
 		var db=request.zos.queryObject;
 		var local=structnew();
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 		application.zcore.functions.zSetPageHelpId("8.2"); 
 		application.zcore.functions.zStatusHandler(request.zsid);
 		</cfscript>
@@ -1027,6 +1035,7 @@
 	var qa=0;
 	var local=structnew();
 	var db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT *, count(app_x_site_id) count 
 	FROM #db.table("app", request.zos.zcoreDatasource)# app 
 	LEFT JOIN #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
@@ -1064,6 +1073,7 @@
 	var qa=0;
 	var db=request.zos.queryObject;
 	var local=structnew();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT *, count(app_x_site_id) count 
 	FROM #db.table("app", request.zos.zcoreDatasource)# app 
 	LEFT JOIN #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
@@ -1097,6 +1107,7 @@
 		var g=0;
 		var dcur=0;
 		var result=0;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 		form.app_id=application.zcore.functions.zso(form, 'app_id',true,'-1');
 		ts=StructNew();
 		ts.table="app";
@@ -1131,6 +1142,7 @@
 		var qdata=0;
 		var pagenav=0;
 		var db=request.zos.queryObject;
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 		application.zcore.functions.zSetPageHelpId("8.2.1"); 
 		if(structkeyexists(form, 'app_id') EQ false){
 			form.app_id='0';
@@ -1175,6 +1187,7 @@
     
     <cffunction name="resetApplicationScope" localmode="modern" output="yes" roles="serveradministrator" access="remote" returntype="void" hint="publish the application cache">
        	<cfscript>
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 		this.onSiteStart();
 		application.zcore.functions.zabort();
 		</cfscript>

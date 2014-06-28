@@ -134,6 +134,37 @@
 </cffunction>
 
 
+<cffunction name="auditFeatureAccess" localmode="modern" returntype="any">
+	<cfargument name="featureName" type="string" required="yes">
+	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
+	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
+	<cfscript>
+
+	if(arguments.requiresWriteAccess or request.zos.auditTrackReadOnlyRequests){
+		ts={
+			table:"audit",
+			datasource:request.zos.zcoreDatasource,
+			struct:{
+				audit_description:"",
+				site_id:request.zos.globals.id,
+				audit_url:request.zos.originalURL&"?"&request.zos.cgi.query_string,
+				audit_updated_datetime:request.zos.mysqlnow,
+				audit_security_feature:arguments.featureName,
+				audit_ip:request.zos.cgi.remote_addr,
+				audit_user_agent:request.zos.cgi.http_user_agent
+			}
+		}
+		if(arguments.requiresWriteAccess){
+			ts.struct.audit_security_action_write=1;
+		}
+		if(isdefined('request.zsession.user.id')){
+			ts.struct.user_id=request.zsession.user.id;
+		}
+		application.zcore.functions.zInsert(ts);
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="requireFeatureAccess" localmode="modern" returntype="any">
 	<cfargument name="featureName" type="string" required="yes">
 	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
@@ -148,6 +179,7 @@
 		application.zcore.status.setStatus(request.zsid, "You don't have write access for the #arguments.featureName# feature because this web site is in demo mode.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
+	auditFeatureAccess(arguments.featureName, arguments.requiresWriteAccess, arguments.site_id);
 	</cfscript>
 </cffunction>
 

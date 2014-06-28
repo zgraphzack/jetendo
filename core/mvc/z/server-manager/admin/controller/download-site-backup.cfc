@@ -14,6 +14,7 @@
 
 <cffunction name="download" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	var siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
 	siteBackupCom.index();
 	</cfscript>
@@ -23,6 +24,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qSite=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.5");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 

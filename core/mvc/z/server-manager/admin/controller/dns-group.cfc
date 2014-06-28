@@ -10,6 +10,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group
 	WHERE dns_group_id= #db.param(application.zcore.functions.zso(form,'dns_group_id'))# ";
 	qCheck=db.execute("qCheck");
@@ -49,6 +50,7 @@
 	var ts={};
 	var db=request.zos.queryObject;
 	var result=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	ts.dns_group_name.required = true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
@@ -114,6 +116,7 @@
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;	
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	if(application.zcore.functions.zso(form,'dns_group_id') EQ ''){
 		form.dns_group_id = -1;
 	}
@@ -171,6 +174,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false){
 		application.zcore.functions.zredirect('/member/');	
@@ -226,7 +230,8 @@ abort;
 		dns_zone_soa_ttl: 3600,
 		dns_zone_ttl:3600,
 		dns_zone_expires:3600000,
-		dns_zone_refresh:7200,
+		dns_zone_refresh:86400,
+		dns_zone_retry:7200,
 		dns_zone_minimum:172800,
 		dns_zone_email:"hostmaster.zgraph.com",
 	};

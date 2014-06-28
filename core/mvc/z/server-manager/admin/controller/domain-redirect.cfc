@@ -11,6 +11,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("domain_redirect", request.zos.zcoreDatasource)# domain_redirect
 	WHERE domain_redirect_id= #db.param(application.zcore.functions.zso(form,'domain_redirect_id'))# and 
@@ -52,6 +53,7 @@
 	<cfscript>
 	var ts={};
 	var result=0; 
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	form.site_id = form.sid;
 	ts.domain_redirect_old_domain.required = true;
@@ -108,6 +110,7 @@
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.2.1");
 	if(application.zcore.functions.zso(form,'domain_redirect_id') EQ ''){
@@ -182,6 +185,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init(); 
 	application.zcore.functions.zSetPageHelpId("8.1.1.2");
 	application.zcore.functions.zStatusHandler(request.zsid); 

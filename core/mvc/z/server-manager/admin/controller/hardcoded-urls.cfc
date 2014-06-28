@@ -32,6 +32,7 @@
 	var str=0;
 	var qSites=0;
 	var selectStruct=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="delete from #request.zos.queryObject.table("link_hardcoded", request.zos.zcoreDatasource)#  
 	WHERE site_id = #db.param(form.sid)#";
@@ -80,6 +81,7 @@
 	var db=request.zos.queryObject; 
 	var qU=0;
 	var qSite=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.10");
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
@@ -182,6 +184,7 @@
 	<cfscript>
 	var db=request.zos.queryObject; 
 	var qU=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	if(form.sid EQ ""){
 		application.zcore.status.setStatus(request.zsid,"You must select a site before verifying links");
@@ -205,6 +208,7 @@
 	var db=request.zos.queryObject; 
 	var qSites=0;
 	var selectStruct=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id <> #db.param('1')# ORDER BY site_domain asc";

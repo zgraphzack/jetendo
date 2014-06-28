@@ -7,6 +7,7 @@
 	var db=request.zos.queryObject;
 	var qU=0;
 	var qSite=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id = #db.param(form.sid)#";
 	qSite=db.execute("qSite");
@@ -69,6 +70,7 @@
 
 <cffunction name="manualSync" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	var db=request.zos.queryObject;
 	form.sid=application.zcore.functions.zso(form, 'sid', true);
 	if(form.sid EQ 0){
@@ -127,6 +129,7 @@
 	var c=0;
 	var curDomain=0;
 	application.zcore.functions.zSetPageHelpId("8.1.1.4.1");
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	</cfscript>
 	<h2>Dreamweaver STE Generation</h2>
 
@@ -196,6 +199,7 @@
 	var qSite=0;
 	var curPath=0;
 	application.zcore.functions.zSetPageHelpId("8.1.1.4");
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
@@ -311,6 +315,7 @@
 	var foundtheme=0;
 	var updateMessage=0;
 	var currentMethod=form.method;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	if(structkeyexists(form, 'site_active') EQ false){
 		form.site_active=0;
 	}
@@ -899,6 +904,9 @@
 </cffunction>
 
 <cffunction name="newDomain" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+	</cfscript>
 	<h2>Add Site</h2>
 	<form action="/z/server-manager/admin/site/add" method="get">
     	New Domain: <input type="text" name="newdomain" value="" /> (format: domain.com)
@@ -943,6 +951,7 @@
 	var arrD=0;
 	var arrIp=0;
 	var d=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8.1.1.1");
 	form.sid=application.zcore.functions.zso(form, 'sid', false, '');
 	currentMethod=form.method;

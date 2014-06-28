@@ -4,6 +4,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8.1.2");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
@@ -133,6 +134,7 @@
 	var g=0;
 	var row=0;
 	var debug=false;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	setting requesttimeout="3600";
 	form.sid=application.zcore.functions.zso(form, 'sid');
 	form.ipAddress=application.zcore.functions.zso(form, 'ipAddress');

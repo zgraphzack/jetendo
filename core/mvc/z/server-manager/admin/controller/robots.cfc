@@ -27,6 +27,7 @@
 	var i=0;
 	var arrRules=0;
 	var tempFile=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("robots_global", request.zos.zcoreDatasource)# robots_global ";
 	qGlobal=db.execute("qGlobal");
@@ -131,6 +132,7 @@
 	 var qApps=0;
 	 var i=0;
 	 var tempfile=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id = #db.param(form.sid)#";
@@ -213,6 +215,7 @@
 	var db=request.zos.queryObject;
 	var qGroup=0;
 	var qin=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.9.1.1");
 	db.sql="SELECT * FROM #db.table("robots_global", request.zos.zcoreDatasource)# robots_global 
@@ -256,6 +259,7 @@ Rules:</td>
 	var qGroup=0;
 	var qSite=0;
 	var qin=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.9");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
@@ -307,6 +311,7 @@ Rules:</td>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
 	var qSites=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.9.1");
 	application.zcore.functions.zStatusHandler(Request.zsid,true);

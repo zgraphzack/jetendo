@@ -4,6 +4,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8.1.3");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
@@ -50,6 +51,7 @@
 	var g=0;
 	var row=0;
 	var debug=false;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	setting requesttimeout="3600";
 	throw("This feature is disabled until it is updated to work again.");
 	

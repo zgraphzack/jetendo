@@ -51,6 +51,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("dns_record", request.zos.zcoreDatasource)# dns_record
 	LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 	ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
@@ -96,6 +97,7 @@
 
 <cffunction name="autoCloseAndRefresh" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetModalWindow();
 	//application.zcore.functions.zStatusHandler(Request.zsid);
 	</cfscript>
@@ -119,6 +121,7 @@
 	<cfscript>
 	var ts={};
 	var result=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	init();
 	ts.dns_record_type.required = true;
 	error=false;
@@ -177,6 +180,7 @@
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;	
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	if(application.zcore.functions.zso(form,'dns_record_id') EQ ''){
 		form.dns_record_id = -1;
 	}
@@ -303,6 +307,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	init();
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false){
 		application.zcore.functions.zredirect('/member/');	

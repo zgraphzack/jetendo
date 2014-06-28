@@ -27,6 +27,7 @@ on front-end
 	var row=0;
 	var qOption=0;
 	var db=request.zos.queryObject;  
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	<h2>Import iCalendar</h2> 
@@ -66,6 +67,7 @@ on front-end
 <cffunction name="process" localmode="modern" access="remote" roles="serveradministrator">
 	<cfsetting requesttimeout="3000">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	fileName=application.zcore.functions.zUploadFile("filepath", request.zos.globals.privateHomedir&"zupload/user/");
 	newPath=request.zos.globals.privateHomedir&"zupload/user/"&fileName;
 	if(isBoolean(fileName) or not fileExists(newPath)){

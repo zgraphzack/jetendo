@@ -11,6 +11,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server
 	WHERE deploy_server_id= #db.param(application.zcore.functions.zso(form,'deploy_server_id'))#  ";
@@ -55,6 +56,7 @@
 	<cfscript>
 	var ts={};
 	var result=0; 
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init(); 
 	ts.deploy_server_host.required = true;
 	ts.deploy_server_email.required = true;
@@ -220,6 +222,7 @@
 	var db=request.zos.queryObject; 
 	var currentMethod=form.method;
 	var htmlEditor=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.4.2");
 	if(application.zcore.functions.zso(form,'deploy_server_id') EQ ''){
@@ -286,6 +289,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.4.1"); 
 	application.zcore.functions.zStatusHandler(request.zsid); 

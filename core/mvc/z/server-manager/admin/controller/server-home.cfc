@@ -1,6 +1,9 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="viewErrors" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+	</cfscript>
 	<h2>Verify Sites Error Log</h2>
 	<textarea name="name2" cols="100" rows="40">#application.zcore.functions.zreadfile(request.zos.globals.serverPrivateHomedir&"verifySitesLog.txt")#
 	</textarea>
@@ -8,6 +11,7 @@
 <cffunction name="countAllSites" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var i=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	setting requesttimeout="1000";
 	var db=request.zos.queryObject;
 	db.sql="select replace(replace(site_short_domain, #db.param('www.')#, #db.param('')#), #db.param('.'&request.zos.testDomain)#, #db.param('')#) domain
@@ -79,6 +83,7 @@
 
 <cffunction name="countLines" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	form.path=application.zcore.functions.zso(form, 'path');
 	if(form.path NEQ "" and directoryexists(form.path)){
 		local.rs=application.zcore.functions.zCountCFMLLinesInDirectory(form.path);
@@ -102,6 +107,7 @@
 
 <cffunction name="prepareForDistribution" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
 	result=dbUpgradeCom.dumpInitialDatabase();
 	if(not result){
@@ -117,6 +123,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>

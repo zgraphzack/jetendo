@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="publishZone" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	publishZoneFile(form.dns_group_id, form.dns_zone_id);
 
 	application.zcore.status.setStatus(request.zsid, "Zone published", form, true);
@@ -11,6 +12,7 @@
 
 <cffunction name="publishZones" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	publishZoneFile(form.dns_group_id, 0);
 
 	application.zcore.status.setStatus(request.zsid, "Zones published", form, true);
@@ -19,6 +21,7 @@
 </cffunction>
 <cffunction name="notifyZones" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	throw("not implemented");
 
 	application.zcore.status.setStatus(request.zsid, "Zone notified", form, true);
@@ -28,6 +31,7 @@
 
 <cffunction name="notifyZone" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	throw("not implemented");
 
 	application.zcore.status.setStatus(request.zsid, "Zone notified", form, true);
@@ -214,6 +218,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone
 	WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form,'dns_zone_id'))# ";
 	qCheck=db.execute("qCheck");
@@ -252,6 +257,7 @@
 	<cfscript>
 	var ts={};
 	var result=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	ts.dns_zone_name.required = true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
@@ -296,6 +302,44 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDefaultZoneStruct" localmode="modern" access="public">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
+	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	qGroup=db.execute("qGroup");
+
+	defaultStruct={
+		dns_zone_soa_ttl: 3600,
+		dns_zone_ttl:3600,
+		dns_zone_expires:3600000,
+		dns_zone_refresh:86400,
+		dns_zone_retry:7200,
+		dns_zone_minimum:172800,
+		dns_zone_email:request.zos.developerEmailTo
+	};
+	if(qGroup.dns_group_default_soa_ttl NEQ 0){
+		defaultStruct.dns_zone_soa_ttl=qGroup.dns_group_default_soa_ttl;
+	}
+	if(qGroup.dns_group_default_ttl NEQ 0){
+		defaultStruct.dns_zone_ttl=qGroup.dns_group_default_ttl;
+	}
+	if(qGroup.dns_group_default_expires NEQ 0){
+		defaultStruct.dns_zone_expires=qGroup.dns_group_default_expires;
+	}
+	if(qGroup.dns_group_default_refresh NEQ 0){
+		defaultStruct.dns_zone_refresh=qGroup.dns_group_default_refresh;
+	}
+	if(qGroup.dns_group_default_minimum NEQ 0){
+		defaultStruct.dns_zone_minimum=qGroup.dns_group_default_minimum;
+	}
+	if(qGroup.dns_group_default_email NEQ ""){
+		defaultStruct.dns_zone_email=qGroup.dns_group_default_email;
+	}
+	return defaultStruct;
+	</cfscript>
+</cffunction>
+
 <cffunction name="edit" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var ts=0;
@@ -303,6 +347,7 @@
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;	
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	if(application.zcore.functions.zso(form,'dns_zone_id') EQ ''){
 		form.dns_zone_id = -1;
 	}
@@ -311,6 +356,9 @@
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute, form, 'dns_group_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true);
+
+	defaultStruct=getDefaultZoneStruct();
+
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "add">
@@ -352,10 +400,37 @@
 				application.zcore.functions.zInput_Text(ts);
 				</cfscript></td>
 			</tr>
-			<!--- <tr>
-				<th>Phone</th>
-				<td><input type="text" name="dns_zone_phone" value="#htmleditformat(form.dns_zone_phone)#" /></td>
-			</tr> --->
+			<tr>
+				<td colspan="2">Leave the following blank to accept default values.</td>
+			</tr>
+			<tr>
+				<th>Zone TTL</th>
+				<td><input type="text" name="dns_zone_ttl" value="#htmleditformat(form.dns_zone_ttl)#" /> (Default: #defaultStruct.dns_zone_soa_ttl#)</td>
+			</tr>
+			<tr>
+				<th>Retry</th>
+				<td><input type="text" name="dns_zone_retry" value="#htmleditformat(form.dns_zone_retry)#" /> (Default: #defaultStruct.dns_zone_retry#)</td>
+			</tr>
+			<tr>
+				<th>Expires</th>
+				<td><input type="text" name="dns_zone_expires" value="#htmleditformat(form.dns_zone_expires)#" /> (Default: #defaultStruct.dns_zone_expires#)</td>
+			</tr>
+			<tr>
+				<th>Refresh</th>
+				<td><input type="text" name="dns_zone_refresh" value="#htmleditformat(form.dns_zone_refresh)#" /> (Default: #defaultStruct.dns_zone_refresh#)</td>
+			</tr>
+			<tr>
+				<th>Minimum</th>
+				<td><input type="text" name="dns_zone_minimum" value="#htmleditformat(form.dns_zone_minimum)#" /> (Default: #defaultStruct.dns_zone_minimum#)</td>
+			</tr>
+			<tr>
+				<th>SOA TTL</th>
+				<td><input type="text" name="dns_zone_soa_ttl" value="#htmleditformat(form.dns_zone_soa_ttl)#" /> (Default: #defaultStruct.dns_zone_soa_ttl#)</td>
+			</tr>
+			<tr>
+				<th>Email</th>
+				<td><input type="text" name="dns_zone_email" value="#htmleditformat(form.dns_zone_email)#" /> (Default: #qGroup.dns_group_default_email#)</td>
+			</tr>
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
@@ -374,6 +449,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false){
 		application.zcore.functions.zredirect('/member/');	

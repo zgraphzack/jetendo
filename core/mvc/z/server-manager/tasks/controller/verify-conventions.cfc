@@ -52,6 +52,7 @@
 
 <cffunction name="verifySiteConventions" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	arrLog=[];
 	db=request.zos.queryObject;
 	form.sid=application.zcore.functions.zso(form, 'sid');
@@ -96,6 +97,8 @@
 	
 <cffunction name="index" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+
 	arrLog=[];
 	echo('<h2>Verify Conventions</h2>');
 	

@@ -1333,6 +1333,7 @@
 	}
 	if(form.method EQ "internalGroupUpdate" or form.method EQ "publicMapInsertGroup" or 
 		form.method EQ "publicInsertGroup" or form.method EQ "publicAjaxInsertGroup" or form.method EQ "publicUpdateGroup"){
+		application.zcore.adminSecurityFilter.auditFeatureAccess("Site Options", true);
 	}else{
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);
 	}

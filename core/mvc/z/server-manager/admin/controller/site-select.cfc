@@ -32,6 +32,7 @@
 	var searchNav=0;
 	var searchStruct=0;
 	var myColumnOutput=0; 
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8.1");
 	form.zid=application.zcore.functions.zso(form, 'zid');
 	form.action=application.zcore.functions.zso(form, 'action',false,'list');
