@@ -104,7 +104,10 @@
 	};
 	// all admin write requests are logged, but you can optionally log read only requests too.
 	ts.zos.auditTrackReadOnlyRequests=false;
-	
+
+	// if bind is installed and configured, and you want to use jetendo to manage bind zone, set enableBind to true.
+	ts.zos.enableBind=false;
+
 	ts.zos.enableDatabaseVersioning=true; // set to true to allow the user to restore previous versions and/or to allow jetendo to synchronize records between multiple servers.
 	ts.zos.geocodeFrequency=1; // 1 is every request on a domain that has the listing app installed, set to a higher number to use a random interval
 	ts.zOS.railoAdminWriteEnabled=false; // must be enabled to allow deploying railo archives.

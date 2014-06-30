@@ -75,9 +75,53 @@ function processContents($contents){
 		return mysqlRestoreTable($a);
 	}else if($contents =="convertHTMLTOPDF"){
 		return convertHTMLTOPDF($a);
+	}else if($contents =="reloadBindZone"){
+		return reloadBindZone($a);
+	}else if($contents =="reloadBind"){
+		return reloadBind($a);
+	}else if($contents =="notifyBindZone"){
+		return notifyBindZone($a);
 	}
 	return "";
 }
+
+function reloadBindZone($a){
+	set_time_limit(30);
+	if(count($a) != 1){
+		echo "1 argument is required: zoneName.\n";
+		return "0";
+	}
+	$zoneName=$a[0];
+	$cmd="/usr/sbin/rndc reload ".escapeshellarg($zoneName);
+	`$cmd`;
+
+	// TODO: this might be optional - need to test it
+	//$cmd="/usr/sbin/rndc notify ".escapeshellarg($zoneName);
+	//`$cmd`;
+	return "1";
+}
+
+function notifyBindZone($a){
+	set_time_limit(30);
+	if(count($a) != 1){
+		echo "1 argument is required: zoneName.\n";
+		return "0";
+	}
+	$zoneName=$a[0];
+	$cmd="/usr/sbin/rndc notify zone ".escapeshellarg($zoneName);
+	`$cmd`;
+	return "1";
+}
+
+function reloadBind($a){
+	set_time_limit(30);
+	$cmd="/usr/sbin/rndc reload";
+	`$cmd`;
+
+	// TODO: It's possible this didn't send the notify messages. Will have to test.
+	return "1";
+}
+
 function convertHTMLTOPDF($a){
 	set_time_limit(30);
 	if(count($a) != 3){

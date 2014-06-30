@@ -3,7 +3,7 @@
 <cffunction name="publishZone" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
-	publishZoneFile(form.dns_group_id, form.dns_zone_id);
+	publishZoneFile(form.dns_group_id, form.dns_zone_id, true);
 
 	application.zcore.status.setStatus(request.zsid, "Zone published", form, true);
 	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
@@ -13,27 +13,27 @@
 <cffunction name="publishZones" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
-	publishZoneFile(form.dns_group_id, 0);
+	publishZoneFile(form.dns_group_id, 0, true);
 
 	application.zcore.status.setStatus(request.zsid, "Zones published", form, true);
 	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
 	</cfscript>
 </cffunction>
-<cffunction name="notifyZones" localmode="modern" access="remote" roles="serveradministrator">
-	<cfscript>
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
-	throw("not implemented");
 
-	application.zcore.status.setStatus(request.zsid, "Zone notified", form, true);
-	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
-	</cfscript>
-</cffunction>
 
 <cffunction name="notifyZone" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
-	throw("not implemented");
-
+	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
+	WHERE dns_zone_id= #db.param(form.dns_zone_id)# ";
+	qZone=db.execute("qZone");
+	if(request.zos.enableBind){
+		r=application.zcore.functions.zSecureCommand("notifyBindZone#chr(9)##qZone.dns_zone_name#", 30);
+		if(r EQ 0){
+			throw("Failed to notify bind zone: #qZone.dns_zone_name#");
+		}
+	}
 	application.zcore.status.setStatus(request.zsid, "Zone notified", form, true);
 	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
 	</cfscript>
@@ -41,12 +41,17 @@
 
 <cffunction name="incrementZoneSerial" localmode="modern" access="public">
 	<cfargument name="dns_zone_id" type="numeric" required="yes">
+	<cfargument name="publishIndex" type="boolean" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
-	WHERE dns_zone_id= #db.param(dns_zone_id)# ";
+	WHERE dns_zone_id= #db.param(arguments.dns_zone_id)# ";
 	qZone=db.execute("qZone");
-	serial=int(right(qZone.dns_zone_serial,2));
+	if(qZone.dns_zone_serial EQ ""){
+		serial=1;
+	}else{
+		serial=int(right(qZone.dns_zone_serial,2));
+	}
 	serial++;
 	if(serial LT 10){
 		serial=dateformat(now(), "YYYYMMDD")&"0"&serial;
@@ -55,12 +60,13 @@
 	}else{
 		serial=dateformat(now(), "YYYYMMDD")&serial;
 	}
-	db.sql="update #db.table("dns_zone", request.zos.zcoreDatasource)# SET dns_zone_serial= #db.param(dns_zone_serial)#, 
+	db.sql="update #db.table("dns_zone", request.zos.zcoreDatasource)# SET 
+	dns_zone_serial= #db.param(serial)#, 
 	dns_zone_updated_datetime = #db.param(request.zos.mysqlnow)# 
-	WHERE dns_zone_id = #db.param(dns_zone_id)# ";
+	WHERE dns_zone_id = #db.param(arguments.dns_zone_id)# ";
 	db.execute("qUpdate");
 
-	zoneCom.publishZoneFile(form.dns_group_id, arguments.dns_zone_id);
+	publishZoneFile(qZone.dns_group_id, arguments.dns_zone_id, arguments.publishIndex);
 	</cfscript>
 </cffunction>
 
@@ -75,8 +81,15 @@
 	r&="IN #record.dns_record_type# ";
 	if(record.dns_ip_address NEQ ""){
 		r&=record.dns_ip_address;
+	}else if(record.dns_record_type EQ "TXT"){
+		r&='"'&record.dns_record_value&'"';
 	}else{
 		r&=record.dns_record_value;
+	}
+	if(record.dns_record_type EQ "CNAME" or record.dns_record_type EQ "MX" or record.dns_record_type EQ "SRV" or record.dns_record_type EQ "NS"){
+		if(right(record.dns_record_value, 1) NEQ "."){
+			r&=".";
+		}
 	}
 	r&=" ; #record.dns_record_comment#";
 	return r;
@@ -86,6 +99,7 @@
 <cffunction name="publishZoneFile" localmode="modern" access="public">
 	<cfargument name="dns_group_id" type="numeric" required="yes">
 	<cfargument name="dns_zone_id" type="numeric" required="yes">
+	<cfargument name="publishIndex" type="boolean" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("dns_group", request.zos.zcoreDatasource)# dns_group LEFT JOIN
@@ -97,6 +111,17 @@
 	}
 	db.sql&=" ORDER BY dns_group.dns_group_name ASC ";
 	qGroups=db.execute("qGroups");
+
+
+	defaultStruct={
+		dns_group_default_soa_ttl: 3600,
+		dns_group_default_ttl:3600,
+		dns_group_default_expires:3600000,
+		dns_group_default_refresh:86400,
+		dns_group_default_retry:7200,
+		dns_group_default_minimum:172800,
+		dns_group_default_email:request.zos.developerEmailTo
+	};
 	for(group in qGroups){
 		db.sql="select * from #db.table("dns_zone", request.zos.zcoreDatasource)# 
 		WHERE dns_group_id = #db.param(group.dns_group_id)# and 
@@ -107,7 +132,6 @@
 		db.sql&=" ORDER BY dns_zone_name ASC ";
 		qZones=db.execute("qZones");
 
-
 		db.sql="select * from #db.table("dns_record", request.zos.zcoreDatasource)# 
 		LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 		ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
@@ -117,31 +141,109 @@
 
 		for(zone in qZones){
 			arrZone=[];
-			if(zone.dns_zone_primary_nameserver EQ ""){
-				primaryNameserver=zone.dns_zone_primary_nameserver;
+			if(zone.dns_zone_ttl EQ 0){
+				if(group.dns_group_default_ttl EQ 0){
+					zoneTTL=defaultStruct.dns_group_default_soa_ttl;
+				}else{
+					zoneTTL=group.dns_group_default_ttl;
+				}
 			}else{
-				primaryNameserver=listgetat(group.dns_group_default_ns, 1, chr(10));
+				zoneTTL=zone.dns_zone_ttl;
 			}
 			if(zone.dns_zone_soa_ttl EQ 0){
-				soaTTL=group.dns_group_default_soa_ttl;
+				if(group.dns_group_default_soa_ttl EQ 0){
+					soaTTL=defaultStruct.dns_group_default_soa_ttl;
+				}else{
+					soaTTL=group.dns_group_default_soa_ttl;
+				}
 			}else{
 				soaTTL=zone.dns_zone_soa_ttl;
 			}
-			arrayAppend(arrZone, "$TTL #zone.dns_zone_minimum# ;");
-			arrayAppend(arrZone, "#zone.dns_zone_name#.  #zone.dns_zone_soa_ttl#  IN     SOA #primaryNameserver#.    #replace(zone.dns_zone_email, "@", ".")#. (");
-			arrayAppend(arrZone, "	#zone.dns_zone_serial# ; serial");
-			arrayAppend(arrZone, "	#zone.dns_zone_refresh# ; refresh");
-			arrayAppend(arrZone, "	#zone.dns_zone_retry# ; retry");
-			arrayAppend(arrZone, "	#zone.dns_zone_expires# ; expire");
-			arrayAppend(arrZone, "	#zone.dns_zone_minimum# ; minimum");
-			arrayAppend(arrZone, ")");
-			arrayAppend(arrZone, "; custom resource records below");
+			if(zone.dns_zone_refresh EQ 0){
+				if(group.dns_group_default_refresh EQ 0){
+					soaRefresh=defaultStruct.dns_group_default_refresh;
+				}else{
+					soaRefresh=group.dns_group_default_refresh;
+				}
+			}else{
+				soaRefresh=zone.dns_zone_refresh;
+			}
+			if(zone.dns_zone_retry EQ 0){
+				if(group.dns_group_default_retry EQ 0){
+					soaretry=defaultStruct.dns_group_default_retry;
+				}else{
+					soaretry=group.dns_group_default_retry;
+				}
+			}else{
+				soaretry=zone.dns_zone_retry;
+			}
+			if(zone.dns_zone_expires EQ 0){
+				if(group.dns_group_default_expires EQ 0){
+					soaexpires=defaultStruct.dns_group_default_expires;
+				}else{
+					soaexpires=group.dns_group_default_expires;
+				}
+			}else{
+				soaexpires=zone.dns_zone_expires;
+			}
+			if(zone.dns_zone_minimum EQ 0){
+				if(group.dns_group_default_minimum EQ 0){
+					soaminimum=defaultStruct.dns_group_default_minimum;
+				}else{
+					soaminimum=group.dns_group_default_minimum;
+				}
+			}else{
+				soaminimum=zone.dns_zone_minimum;
+			}
+			if(zone.dns_zone_email EQ ""){
+				if(group.dns_group_default_email EQ 0){
+					soaemail=defaultStruct.dns_group_default_email;
+				}else{
+					soaemail=group.dns_group_default_email;
+				}
+			}else{
+				soaemail=zone.dns_zone_email;
+			}
 			db.sql="select * from #db.table("dns_record", request.zos.zcoreDatasource)# 
 			LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 			ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
 			WHERE dns_zone_id = #db.param(zone.dns_zone_id)# 
 			ORDER BY dns_record_host asc, dns_record_type asc, dns_record_value asc";
 			qRecords=db.execute("qRecords");
+			primaryNameserver="";
+			for(record in qRecords){
+				if(record.dns_record_type EQ "NS"){
+					primaryNameserver=record.dns_record_value;
+					break;
+				}
+			}
+			if(primaryNameserver EQ ""){
+				for(record in qGroupRecords){
+					if(record.dns_record_type EQ "NS"){
+						primaryNameserver=record.dns_record_value;
+						break;
+					}
+				}
+			}
+			if(primaryNameserver EQ ""){
+				application.zcore.status.setStatus(request.zsid, "The zone, ""#zone.dns_zone_name#"", is missing a nameserver (NS) record.  You must add at least one nameserver record before the zone can be published.", form, true);
+				return false;
+			}
+			if(zone.dns_zone_primary_nameserver NEQ primaryNameserver){
+				db.sql="update #db.table("dns_zone", request.zos.zcoreDatasource)# 
+				SET dns_zone_primary_nameserver = #db.param(primaryNameserver)# 
+				WHERE dns_zone_id = #db.param(zone.dns_zone_id)# ";
+				db.execute("qUpdate");
+			}
+			arrayAppend(arrZone, "$TTL #zoneTTL# ;");
+			arrayAppend(arrZone, "#zone.dns_zone_name#.  #soaTTL#  IN     SOA #primaryNameserver#.    #replace(soaemail, "@", ".")#. (");
+			arrayAppend(arrZone, "	#zone.dns_zone_serial# ; serial");
+			arrayAppend(arrZone, "	#soaRefresh# ; refresh");
+			arrayAppend(arrZone, "	#soaretry# ; retry");
+			arrayAppend(arrZone, "	#soaexpires# ; expire");
+			arrayAppend(arrZone, "	#soaminimum# ; minimum");
+			arrayAppend(arrZone, ")");
+			arrayAppend(arrZone, "; custom resource records below");
 			for(record in qRecords){
 				arrayAppend(arrZone, formatDNSRecord(record));
 			}
@@ -173,15 +275,114 @@
 					arrayAppend(arrZone, formatDNSRecord(record));
 				}
 			}
-			zoneOutput=arrayToList(arrZone, chr(10));
-			zonePath=request.zos.globals.privateHomedir&zone.dns_zone_name&".zone";
+			zoneOutput=arrayToList(arrZone, chr(10))&chr(10);
+			application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"dns-zones");
+			zonePath=request.zos.sharedPath&"dns-zones/"&zone.dns_zone_name&".zone";
 			application.zcore.functions.zWriteFile(zonePath, zoneOutput);
-			/*
-			execute bind reload:
-				rndc reload zone farbeyondcode.com
-				rndc notify zone farbeyondcode.com
-			*/
+
+
+			if(arguments.dns_zone_id NEQ 0){
+				publishZoneIndex(zone.dns_zone_id, false, arguments.publishIndex);
+				if(request.zos.enableBind){
+					r=application.zcore.functions.zSecureCommand("reloadBindZone"&chr(9)&zone.dns_zone_name, 30);
+					if(r EQ 0){
+						throw("Failed to reload bind zone: #zone.dns_zone_name#");
+					}
+				}
+			}
 		}
+	}
+	if(arguments.dns_zone_id EQ 0){
+		publishZoneIndex(0, true, arguments.publishIndex);
+		if(request.zos.enableBind){
+			// reload all configuration files and notify the ones that changed
+			r=application.zcore.functions.zSecureCommand("reloadBind", 30);
+			if(r EQ 0){
+				throw("Failed to reload all bind zones.");
+			}
+		}
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="publishZoneIndex" localmode="modern" access="public">
+	<cfargument name="dns_zone_id" type="numeric" required="yes">
+	<cfargument name="reloadBind" type="boolean" required="yes">
+	<cfargument name="forcePublish" type="boolean" required="yes">
+	<cfscript>
+	zonePath="#request.zos.sharedPath#dns-zones/jetendo.named.conf.zones";
+	if(not fileExists(zonePath)){
+		arguments.dns_zone_id=0;
+	}
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone,
+	#db.table("dns_group", request.zos.zcoreDatasource)# dns_group
+	WHERE dns_group.dns_group_id = dns_zone.dns_group_id and 
+	dns_zone_name <> #db.param('default')# ";
+	if(arguments.dns_zone_id NEQ 0){
+		db.sql&=" and dns_zone.dns_zone_id = #db.param(arguments.dns_zone_id)# ";
+	}
+	db.sql&=" ORDER BY dns_zone_name ASC ";
+	qZones=db.execute("qZones");
+	application.zcore.functions.zcreatedirectory("#request.zos.sharedPath#/dns-zones");
+	arrZone=[];
+	for(zone in qZones){
+		zoneFilePath="#request.zos.sharedPath#dns-zones/#zone.dns_zone_name#.zone";
+		if(not fileExists(zoneFilePath)){
+			continue;
+		}
+		if(zone.dns_group_notify_ip_list NEQ ""){
+			arrZ=listToArray(zone.dns_group_notify_ip_list, chr(10));
+			arrIp=[];
+			for(i=1;i LTE arraylen(arrZ);i++){
+				if(arrZ[i] CONTAINS "|"){
+					arrayAppend(arrIp, trim(listgetat(arrZ[i], 1, "|"))&";");
+				}else{
+					arrayAppend(arrIp, trim(arrZ[i])&";");
+				}
+			}
+			notifyIPList=arrayToList(arrIp, "");
+		}else{
+			notifyIPList="";
+		}
+		arrayAppend(arrZone, '//zonestart|#zone.dns_zone_name#');
+		arrayAppend(arrZone, 'zone "#zone.dns_zone_name#" in{');
+		arrayAppend(arrZone, chr(9)&'type master;');
+		arrayAppend(arrZone, chr(9)&'file "#zoneFilePath#";');
+		arrayAppend(arrZone, chr(9)&'notify explicit;'); 
+		if(notifyIPList NEQ ""){
+			arrayAppend(arrZone, chr(9)&'also-notify { #notifyIPList# };');
+			arrayAppend(arrZone, chr(9)&'allow-transfer { #notifyIPList# };');
+		}
+		arrayAppend(arrZone, '};');
+		arrayAppend(arrZone, '//zoneend|#zone.dns_zone_name#');
+	}
+	zoneOut=arrayToList(arrZone, chr(10))&chr(10);
+	if(arguments.dns_zone_id NEQ 0){
+		contents=application.zcore.functions.zreadfile(zonePath);
+		firstPos=find("//zonestart|#zone.dns_zone_name#", contents);
+		lastPos=find("//zoneend|#zone.dns_zone_name#", contents);
+		if(not arguments.forcePublish and firstPos NEQ 0){
+			return;
+		}
+		if(firstPos EQ 0 and lastPos EQ 0){
+			zoneOut=trim(contents)&chr(10)&trim(zoneOut);
+		}else if(firstPos EQ 0 or lastPos EQ 0){
+			throw("Zone file is formatted incorrectly.  You must go back and re-publish all zones to fix this.");
+		}else{
+			if(firstPos-1){
+				startContent=left(contents, firstPos-1);
+			}else{
+				startContent="";
+			}
+			pos=lastPos+len("//zoneend|#zone.dns_zone_name#");
+			endContent=mid(contents, pos, len(contents)-pos);
+			zoneOut=trim(startContent)&chr(10)&zoneOut&chr(10)&trim(endContent);
+		}
+	}
+	application.zcore.functions.zwritefile(zonePath, zoneOut&chr(10));
+	if(request.zos.enableBind and arguments.reloadBind){
+		application.zcore.functions.zSecureCommand("reloadBind", 30);
 	}
 	</cfscript>
 </cffunction>
@@ -230,9 +431,15 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
+		application.zcore.functions.zDeleteFile(request.zos.sharedPath&"dns-zones/"&qCheck.dns_zone_name&".zone");
+		db.sql="DELETE FROM #db.table("dns_record", request.zos.zcoreDatasource)#  
+		WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form, 'dns_zone_id'))# ";
+		q=db.execute("q");
+
 		db.sql="DELETE FROM #db.table("dns_zone", request.zos.zcoreDatasource)#  
 		WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form, 'dns_zone_id'))# ";
 		q=db.execute("q");
+		publishZoneIndex(0, true, true);
 		application.zcore.status.setStatus(Request.zsid, 'dns zone deleted');
 		application.zcore.functions.zRedirect('/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#');
 		</cfscript>
@@ -269,6 +476,15 @@
 			application.zcore.functions.zRedirect('/z/server-manager/admin/dns-zone/edit?dns_zone_id=#form.dns_zone_id#&dns_group_id=#form.dns_group_id#&zsid=#request.zsid#');
 		}
 	}
+	if(form.method EQ "insert"){
+		form.dns_zone_custom_ns="0";
+		form.dns_zone_custom_cname="0";
+		form.dns_zone_custom_a="0";
+		form.dns_zone_custom_aaaa="0";
+		form.dns_zone_custom_mx="0";
+		form.dns_zone_custom_srv="0";
+		form.dns_zone_custom_txt="0";
+	}
 	form.dns_zone_updated_datetime = request.zos.mysqlnow;
 	ts=StructNew();
 	ts.table='dns_zone';
@@ -291,7 +507,7 @@
 		}
 		
 	}
-	incrementZoneSerial(form.dns_zone_id);
+	incrementZoneSerial(form.dns_zone_id, true);
 	application.zcore.functions.zRedirect('/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#');
 	</cfscript>
 </cffunction>
@@ -324,6 +540,9 @@
 	if(qGroup.dns_group_default_ttl NEQ 0){
 		defaultStruct.dns_zone_ttl=qGroup.dns_group_default_ttl;
 	}
+	if(qGroup.dns_group_default_retry EQ 0){
+		defaultStruct.dns_zone_retry=qGroup.dns_group_default_retry;
+	}
 	if(qGroup.dns_group_default_expires NEQ 0){
 		defaultStruct.dns_zone_expires=qGroup.dns_group_default_expires;
 	}
@@ -351,6 +570,9 @@
 	if(application.zcore.functions.zso(form,'dns_zone_id') EQ ''){
 		form.dns_zone_id = -1;
 	}
+	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
+	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	qGroup=db.execute("qGroup");
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone 
 	WHERE dns_zone_id=#db.param(form.dns_zone_id)#";
 	qRoute=db.execute("qRoute");
@@ -358,7 +580,24 @@
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 
 	defaultStruct=getDefaultZoneStruct();
-
+	if(form.dns_zone_soa_ttl EQ 0){
+		form.dns_zone_soa_ttl="";
+	}
+	if(form.dns_zone_ttl EQ 0){
+		form.dns_zone_ttl="";
+	}
+	if(form.dns_zone_expires EQ 0){
+		form.dns_zone_expires="";
+	}
+	if(form.dns_zone_retry EQ 0){
+		form.dns_zone_retry="";
+	}
+	if(form.dns_zone_refresh EQ 0){
+		form.dns_zone_refresh="";
+	}
+	if(form.dns_zone_minimum EQ 0){
+		form.dns_zone_minimum="";
+	}
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "add">
@@ -405,7 +644,7 @@
 			</tr>
 			<tr>
 				<th>Zone TTL</th>
-				<td><input type="text" name="dns_zone_ttl" value="#htmleditformat(form.dns_zone_ttl)#" /> (Default: #defaultStruct.dns_zone_soa_ttl#)</td>
+				<td><input type="text" name="dns_zone_ttl" value="#htmleditformat(form.dns_zone_ttl)#" /> (Default: #defaultStruct.dns_zone_ttl#)</td>
 			</tr>
 			<tr>
 				<th>Retry</th>
@@ -441,6 +680,61 @@
 </cffunction>
 
 
+
+<cffunction name="listAllZones" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var qdns_zone=0;
+	var arrImages=0;
+	var ts=0;
+	var i=0;
+	var rs=0;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+	application.zcore.functions.zStatusHandler(request.zsid);
+
+ 
+	db.sql="SELECT *
+	FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone, 
+	#db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
+	WHERE dns_group.dns_group_id=dns_zone.dns_group_id 
+	GROUP BY dns_zone.dns_zone_id 
+	order by dns_zone_name asc";
+	qdns_zone=db.execute("qdns_zone");
+	</cfscript>
+	<p><a href="/z/server-manager/admin/dns-group/index">DNS Groups</a> / All Zones</p>
+	<h2>All DNS Zones</h2>
+	<cfif qdns_zone.recordcount EQ 0>
+		<p>No dns zones have been added.</p>
+	<cfelse>
+		<table  class="table-list">
+			<tr>
+				<th>Name</th>
+				<th>Group</td>
+				<th>Comment</th>
+				<th>Admin</th>
+			</tr>
+			<cfloop query="qdns_zone">
+				<tr <cfif qdns_zone.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
+					<td>#qdns_zone.dns_zone_name#</td>
+					<td>#qdns_zone.dns_group_name#</td>
+					<td>#qdns_zone.dns_zone_comment#</td>
+					<td>
+						<a href="/z/server-manager/admin/dns-record/index?dns_zone_id=#qdns_zone.dns_zone_id#&amp;dns_group_id=#qdns_zone.dns_group_id#">Manage Records</a>
+						<cfif qdns_zone.dns_zone_name NEQ "default">
+							 | 
+							<a href="/z/server-manager/admin/dns-zone/publishZone?dns_zone_id=#qdns_zone.dns_zone_id#&amp;dns_group_id=#qdns_zone.dns_group_id#">Publish</a> | 
+							<a href="/z/server-manager/admin/dns-zone/notifyZone?dns_zone_id=#qdns_zone.dns_zone_id#&amp;dns_group_id=#qdns_zone.dns_group_id#">Notify</a> |
+							<a href="/z/server-manager/admin/dns-zone/edit?dns_zone_id=#qdns_zone.dns_zone_id#&amp;dns_group_id=#qdns_zone.dns_group_id#">Edit</a>
+							 | 
+							<a href="/z/server-manager/admin/dns-zone/delete?dns_zone_id=#qdns_zone.dns_zone_id#&amp;dns_group_id=#qdns_zone.dns_group_id#">Delete</a>
+						</cfif>
+					</td>
+				</tr>
+			</cfloop>
+		</table>
+	</cfif>
+</cffunction>
+
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -460,11 +754,9 @@
 	WHERE dns_group_id=#db.param(form.dns_group_id)#";
 	qGroup=db.execute("qGroup");
  
-	db.sql="SELECT *, group_concat(dns_record.dns_record_value SEPARATOR #db.param(',')#) aRecords
+	db.sql="SELECT *
 	FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone 
-	LEFT JOIN #db.table("dns_record", request.zos.zcoreDatasource)# dns_record
-	ON dns_record.dns_record_type = #db.param('A')# and 
-	dns_record.dns_zone_id = dns_zone.dns_zone_id 
+	WHERE dns_group_id=#db.param(form.dns_group_id)# 
 	GROUP BY dns_zone.dns_zone_id 
 	order by dns_zone_name asc";
 	qdns_zone=db.execute("qdns_zone");
@@ -472,22 +764,19 @@
 	<p><a href="/z/server-manager/admin/dns-group/index">DNS Groups</a> / #qGroup.dns_group_name#</p>
 	<h2>Manage DNS Zones</h2>
 	<p><a href="/z/server-manager/admin/dns-zone/add?dns_group_id=#form.dns_group_id#">Add DNS Zone</a> | 
-	<a href="/z/server-manager/admin/dns-zone/publishZones?dns_group_id=#form.dns_group_id#">Publish All Zones</a> | 
-	<a href="/z/server-manager/admin/dns-zone/notifyZones?dns_group_id=#form.dns_group_id#">Notify All Zones</a></p>
+	<a href="/z/server-manager/admin/dns-zone/publishZones?dns_group_id=#form.dns_group_id#">Publish All Zones</a></p>
 	<cfif qdns_zone.recordcount EQ 0>
 		<p>No dns zones have been added.</p>
 	<cfelse>
 		<table  class="table-list">
 			<tr>
 				<th>Name</th>
-				<th>A Records</th>
 				<th>Comment</th>
 				<th>Admin</th>
 			</tr>
 			<cfloop query="qdns_zone">
 				<tr <cfif qdns_zone.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
 					<td>#qdns_zone.dns_zone_name#</td>
-					<td>#replace(qdns_zone.aRecords, ",", "<br />", "ALL")#</td>
 					<td>#qdns_zone.dns_zone_comment#</td>
 					<td>
 						<a href="/z/server-manager/admin/dns-record/index?dns_zone_id=#qdns_zone.dns_zone_id#&amp;dns_group_id=#form.dns_group_id#">Manage Records</a>

@@ -2280,14 +2280,15 @@ User's IP: #request.zos.cgi.remote_addr#
 	}
 	//output = application.zcore.functions.zStructToString("Request.zOS.globals", tempStruct, true);
 	for(i in tempStruct){
-		pos = find('_', i);
-		if(pos NEQ 0){
-			varName = removeChars(i, 1, pos);
+		if(left(i, 5) EQ "site_"){
+			varName=mid(i, 5, len(i)-4);
+		}else{
+			varName=i;
 		}
 		varName = replace(varName, '_','','ALL');
 		firstTempStruct[varName]=tempStruct[i];
 	}
-	tempStruct=firstTempStruct;
+	tempStruct=firstTempStruct; 
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE site_id = #db.param(arguments.site_id)#";
 	qGroup=db.execute("qGroup");
