@@ -41,7 +41,7 @@
 	  `audit_deleted` CHAR(1) NOT NULL DEFAULT '0',
 	  `audit_security_feature` VARCHAR(100) NOT NULL,
 	  `audit_security_action_write` CHAR(1) NOT NULL DEFAULT '0',
-	  PRIMARY KEY (`audit_id`),
+	  PRIMARY KEY (`site_id`,`audit_id`),
 	  INDEX `newindex1` (`user_id`, `audit_updated_datetime`),
 	  INDEX `newindex2` (`site_id`, `audit_updated_datetime`)
 	) ENGINE=InnoDB, CHARSET=utf8, COLLATE=utf8_general_ci")){
