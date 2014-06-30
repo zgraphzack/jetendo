@@ -5,7 +5,7 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	publishZoneFile(form.dns_group_id, form.dns_zone_id, true);
 
-	application.zcore.status.setStatus(request.zsid, "Zone published", form, true);
+	application.zcore.status.setStatus(request.zsid, "Zone published");
 	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
 	</cfscript>
 </cffunction>
@@ -13,10 +13,31 @@
 <cffunction name="publishZones" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
-	publishZoneFile(form.dns_group_id, 0, true);
+	if(structkeyexists(form, 'confirm')){
+		setting requesttimeout="200";
+		incrementAllZoneSerials();
+		publishZoneFile(0, 0, true);
 
-	application.zcore.status.setStatus(request.zsid, "Zones published", form, true);
-	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
+		application.zcore.status.setStatus(request.zsid, "All SOA serials were incremented, zones were re-published and bind notify messages were sent.");
+		application.zcore.functions.zRedirect("/z/server-manager/admin/dns-group/index?zsid=#request.zsid#");
+	}else{
+		echo('
+		<div style="font-size:14px; font-weight:bold; text-align:center; "> 
+			<div>Are you sure you want to publish all zones?<br />
+			<br />
+			It is not necessary to publish all zones in most cases since individual zone/record updates publish their changes automatically.<br />
+			This feature is meant mostly to help developers republish after adding features or fixing bugs.<br />
+			It may take a while for this operation to complete.  Please wait for it to complete.<br />
+			<br />
+			</div>
+			<div class="publishDiv">
+			<a href="/z/server-manager/admin/dns-zone/publishZones?confirm=1" onclick="$(''.loadPublishDiv'').show(); $(''.publishDiv'').hide();">Yes</a>&nbsp;&nbsp;&nbsp;
+			<a href="/z/server-manager/admin/dns-group/index">No</a> 
+			</div>
+			<div class="loadPublishDiv" style="display:none;">
+			Publishing, please wait...</div>
+		</div>');
+	}
 	</cfscript>
 </cffunction>
 
@@ -34,8 +55,38 @@
 			throw("Failed to notify bind zone: #qZone.dns_zone_name#");
 		}
 	}
-	application.zcore.status.setStatus(request.zsid, "Zone notified", form, true);
+	application.zcore.status.setStatus(request.zsid, "Zone notified");
 	application.zcore.functions.zRedirect("/z/server-manager/admin/dns-zone/index?zsid=#request.zsid#&dns_group_id=#form.dns_group_id#");
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="incrementAllZoneSerials" localmode="modern" access="public">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
+	ORDER BY dns_zone_id ASC ";
+	qZone=db.execute("qZone");
+	for(row in qZone){
+		if(row.dns_zone_serial EQ ""){
+			serial=1;
+		}else{
+			serial=int(right(row.dns_zone_serial,2));
+		}
+		serial++;
+		if(serial LT 10){
+			serial=dateformat(now(), "YYYYMMDD")&"0"&serial;
+		}else if(serial GT 100){
+			throw("More then 100 zone serial updates in a single day is not supported.");
+		}else{
+			serial=dateformat(now(), "YYYYMMDD")&serial;
+		}
+		db.sql="update #db.table("dns_zone", request.zos.zcoreDatasource)# SET 
+		dns_zone_serial= #db.param(serial)#, 
+		dns_zone_updated_datetime = #db.param(request.zos.mysqlnow)# 
+		WHERE dns_zone_id = #db.param(row.dns_zone_id)# ";
+		db.execute("qUpdate");
+	}
 	</cfscript>
 </cffunction>
 
@@ -763,8 +814,7 @@
 	</cfscript>
 	<p><a href="/z/server-manager/admin/dns-group/index">DNS Groups</a> / #qGroup.dns_group_name#</p>
 	<h2>Manage DNS Zones</h2>
-	<p><a href="/z/server-manager/admin/dns-zone/add?dns_group_id=#form.dns_group_id#">Add DNS Zone</a> | 
-	<a href="/z/server-manager/admin/dns-zone/publishZones?dns_group_id=#form.dns_group_id#">Publish All Zones</a></p>
+	<p><a href="/z/server-manager/admin/dns-zone/add?dns_group_id=#form.dns_group_id#">Add DNS Zone</a></p>
 	<cfif qdns_zone.recordcount EQ 0>
 		<p>No dns zones have been added.</p>
 	<cfelse>

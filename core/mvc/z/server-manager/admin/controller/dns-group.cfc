@@ -306,7 +306,8 @@ implement dns zone parser, instead of forcing many small fields.
 	<h2>Manage DNS Groups</h2>
 	<p><a href="/z/server-manager/admin/dns-group/add">Add DNS Group</a> | 
 	<a href="/z/server-manager/admin/dns-group/import">Import Nettica</a> | 
-	<a href="/z/server-manager/admin/dns-zone/listAllZones">List All Zones</a></p>
+	<a href="/z/server-manager/admin/dns-zone/listAllZones">List All Zones</a> | 
+	<a href="/z/server-manager/admin/dns-zone/publishZones">Publish All Zones</a></p>
 	<cfif qdns_group.recordcount EQ 0>
 		<p>No dns groups have been added.</p>
 	<cfelse>

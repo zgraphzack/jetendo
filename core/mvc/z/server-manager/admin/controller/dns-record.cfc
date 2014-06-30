@@ -37,7 +37,7 @@
 	dns_group.dns_group_id = dns_zone.dns_group_id";
 	qZone=db.execute("qZone");
 	if(qZone.recordcount EQ 0){
-		application.zcore.status.setStatus(request.zsid, "The selected dns zone doesn't exist.", form, true);
+		application.zcore.status.setStatus(request.zsid, "The selected DNS Zone doesn't exist.", form, true);
 		application.zcore.functions.zRedirect("/z/server-manager/admin/dns-record/index?zsid=#request.zsid#&dns_zone_id=#form.dns_zone_id#");
 	}
 	form.dns_group_id=qZone.dns_group_id;
