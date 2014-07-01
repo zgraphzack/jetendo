@@ -659,6 +659,10 @@ function getRets24SysId(){
 	global $mlsDataDatasource;
 	return array("select SQL_NO_CACHE rets24_list_1 as imageid, rets24_list_105 as listingid from rets24_property where rets24_list_1 IN ('", $mlsDataDatasource);
 }
+function getRets25SysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets25_matrix_unique_id as imageid, rets25_mlsnumber as listingid from rets25_property where rets25_matrix_unique_id IN ('", $mlsDataDatasource);
+}
 $arrQueryFunction=array();
 $arrQueryFunction["7"]="getRets7SysId";
 $arrQueryFunction["12"]="getRets12SysId";
@@ -667,6 +671,7 @@ $arrQueryFunction["16"]="getRets16SysId";
 $arrQueryFunction["20"]="getRets20SysId";
 $arrQueryFunction["22"]="getRets22SysId";
 $arrQueryFunction["24"]="getRets24SysId";
+$arrQueryFunction["25"]="getRets25SysId";
 
 
 echo "\ndelete runningFilePath before image processing:".$runningFilePath."\n";

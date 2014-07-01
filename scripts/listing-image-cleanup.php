@@ -112,6 +112,10 @@ function getRets24SysId($id){
 	global $mlsDatasource, $mlsDataDatasource;
 	return array("select listing_id as id from `listing_track` WHERE listing_id IN ('", $mlsDatasource, $id, true, "select SQL_NO_CACHE rets24_list_1 as imageid, rets24_list_105 as listingid from rets24_property where rets24_list_1 IN ('", $mlsDataDatasource);
 }
+function getRets25SysId($id){
+	global $mlsDatasource, $mlsDataDatasource;
+	return array("select listing_id as id from `listing_track` WHERE listing_id IN ('", $mlsDatasource, $id, true, "select SQL_NO_CACHE rets25_matrix_unique_id as imageid, rets25_mlsnumber as listingid from rets25_property where rets25_matrix_unique_id IN ('", $mlsDataDatasource);
+}
 
 
 	
@@ -133,6 +137,7 @@ $arrQueryFunction["19"]="getRets19SysId";
 $arrQueryFunction["20"]="getRets20SysId";
 $arrQueryFunction["22"]="getRets22SysId";
 $arrQueryFunction["24"]="getRets24SysId";
+$arrQueryFunction["25"]="getRets25SysId";
 
 function checkForListingId($sql, $arrId, $database){
 	global $cmysql, $queryCount;
