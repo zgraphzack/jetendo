@@ -26,6 +26,7 @@ var zValues=[];
 var zFormData=new Object();
 var zPositionObjSubtractId=false;
 var zPositionObjSubtractPos=new Array(0,0);
+var zArrMapFunctions=new Array();
 var zArrScrollFunctions=new Array();
 var zArrResizeFunctions=new Array();
 /*
@@ -161,6 +162,17 @@ function zModernizrLoaded(){
 		var zATemp=zArrDeferredFunctions;
 		for(var i=0;i<zATemp.length;i++){
 			zATemp[i]();
+		}
+	}
+}
+
+var zArrMapFunctionsLoaded=false;
+function zLoadMapFunctions(){
+	if(zArrMapFunctionsLoaded) return;
+	zArrMapFunctionsLoaded=true;
+	if(typeof zArrMapFunctions !== "undefined"){
+		for(var i=0;i<zArrMapFunctions.length;i++){
+			zArrMapFunctions[i]();
 		}
 	}
 }

@@ -3632,7 +3632,7 @@ function zGetMapDistance(lat1, lon1, lat2, lon2){
 function zGeocodeAddress() {
 	if(arrAddress.length <= curIndex) return;
 	if(debugajaxgeocoder) f1.value+="run geocode: "+arrAddress[curIndex]+" for listing_id="+arrListingId[curIndex]+"\n";
-	geocoder.geocode( { 'address': arrAddress[curIndex]+" "+arrAddressZip[curIndex]}, function(results, status) {
+		geocoder.geocode( { 'address': arrAddress[curIndex]+" "+arrAddressZip[curIndex]}, function(results, status) {
 		var r="";
 		if (status == google.maps.GeocoderStatus.OK) {
 			var a1=new Array();

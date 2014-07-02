@@ -2612,7 +2612,7 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			application.zcore.template.prependTag("topcontent","<div id=""sl894nsdh783"" style=""width:100%; float:left; clear:both;""></div><script type=""text/javascript"" src=""/z/listing/sl/index?saveAct=list&amp;zFPE=1""> </script>");
 		}
 	}
-	if (not request.zos.trackingspider and not request.zos.istestserver and request.zos.originalURL NEQ "/z/listing/ajax-geocoder/index" and (randrange(1, request.zos.geocodeFrequency) EQ 1)){
+	if (not request.zos.trackingspider and (not request.zos.istestserver or structkeyexists(form, 'debugajaxgeocoder')) and request.zos.originalURL NEQ "/z/listing/ajax-geocoder/index" and (randrange(1, request.zos.geocodeFrequency) EQ 1)){
 		savecontent variable="geocodeOutput"{
 			geocodeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.ajax-geocoder");
 			geocodeCom.index();
@@ -2832,6 +2832,7 @@ var arrK=arraynew(1);
 var ts=structnew();
 var db2=0;
 var db=0;
+setting requesttimeout="2000";
 local.c=application.zcore.db.getConfig();
 local.c.autoReset=false;
 local.c.datasource=request.zos.zcoreDatasource;

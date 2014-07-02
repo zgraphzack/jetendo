@@ -275,13 +275,14 @@
 	rs.latitude="";
 	rs.longitude="";
 	rs.accuracy="";
+	// Note: this table stores city name in listing_coordinates_address, but the feeds don't pass it into this function.
 	db.sql="SELECT * FROM #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates 
 	WHERE listing_id = #db.param(arguments.listing_id)# and 
-	listing_coordinates_address = #db.param(arguments.address)# and 
 	listing_coordinates_zip = #db.param(arguments.zip)# and 
 	listing_coordinates_latitude<>#db.param('')# and 
 	listing_coordinates_status=#db.param('OK')# and 
 	listing_coordinates_accuracy=#db.param('ROOFTOP')# ";
+	//listing_coordinates_address = #db.param(arguments.address)# and 
 	qD=db.execute("qD");
 	if(qD.recordcount NEQ 0){
 		rs.latitude=qD.listing_coordinates_latitude;

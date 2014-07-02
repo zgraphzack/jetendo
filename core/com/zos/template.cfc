@@ -4,7 +4,7 @@
 	<cfsavecontent variable="output">
 	<script type="text/javascript">/* <![CDATA[ */
 	#arguments.dynamicContent#
-	var zLoggedIn=<cfif application.zcore.user.checkGroupAccess("user")>true<cfelse>false</cfif>;var zModernizrLoadedRan=false;var zArrDeferredFunctions=[];var zArrLoadFunctions=[];function zOverEditDiv(){};function zImageMouseMove(){};function zImageMouseReset(){};function onGMAPLoad(){};zLoadMapID=false;function zMapInit(){ if(zModernizrLoadedRan){ onGMAPLoad(true); }else{ zArrDeferredFunctions.push(function(){ onGMAPLoad(true);  }); } };
+	var zLoggedIn=<cfif application.zcore.user.checkGroupAccess("user")>true<cfelse>false</cfif>;var zModernizrLoadedRan=false;var zArrDeferredFunctions=[];var zArrLoadFunctions=[];function zOverEditDiv(){};function zImageMouseMove(){};function zImageMouseReset(){};function onGMAPLoad(){};zLoadMapID=false;function zMapInit(){ if(zModernizrLoadedRan){ zLoadMapFunctions(); onGMAPLoad(true); }else{ zArrDeferredFunctions.push(function(){ zLoadMapFunctions(); onGMAPLoad(true);  }); } };
 	function zBindEvent(elem, evt, cb){if(elem.addEventListener){elem.addEventListener(evt,cb,false);}else if(elem.attachEvent){elem.attachEvent("on" + evt, function(){cb.call(event.srcElement,event);});}}
 	var zStackTraceLoaded=false;
 	var zJavascriptErrorLogged=false;

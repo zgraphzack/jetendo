@@ -39,7 +39,9 @@
 					listing_coordinates_address=#db.param(trim(form.address))#,
 					listing_coordinates_zip=#db.param(trim(form.zip))#,
 					listing_coordinates_accuracy=#db.param(trim(arrF[5]))#,
-					listing_coordinates_status=#db.param(trim(form.status))# ";
+					listing_coordinates_status=#db.param(trim(form.status))#,
+					listing_coordinates_updated_datetime = #db.param(request.zos.mysqlnow)#,
+					listing_coordinates_deleted=#db.param(0)# ";
 					db.execute("q"); 
 					if((trim(arrF[5]) EQ "ROOFTOP") and trim(form.status) EQ "OK"){
 						db.sql="UPDATE #db.table("listing", request.zos.zcoreDatasource)# listing 
@@ -101,9 +103,13 @@
 				}
 			}
 		}
+
 		db.sql="SELECT listing.listing_id, listing_address, listing_city, listing_state, listing_zip, listing_latitude, listing_longitude FROM 
 		#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
+		LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)#  ON
+		listing.listing_id = listing_coordinates.listing_id 
  		WHERE
+		listing_coordinates.listing_id IS NULL AND 
 		listing.listing_latitude =#db.param(0)# AND 
 		listing_address <> #db.param('')# and 
 		listing_zip <> #db.param('')# and 
@@ -121,7 +127,7 @@
 		db.sql&=","&db.param(10);
 		qG=db.execute("qG");
 		if(structkeyexists(form, 'debugajaxgeocoder')){
-			echo(db.sql);
+			writedump(qG);
 		}
 		request.ignoreSlowScript=true;
 		arrAddress=arraynew(1);
@@ -184,17 +190,19 @@
 		}
 		echo(';'&arraytolist(arrAddress,chr(10))&'
 		zArrDeferredFunctions.push(function(){
-			if(typeof google === "undefined" || typeof google.maps === "undefined" || typeof google.maps.Geocoder === "undefined"){
-				return;
-			}
-			if(debugajaxgeocoder){
-				f1=document.getElementById("zajaxgeocoderdiv");
-				f1.style.display="block";
-				f1=document.getElementById("zajaxgeocodertextarea");
-			}
-			if(debugajaxgeocoder) f1.value+="loaded\n";
-		    geocoder = new google.maps.Geocoder();
-			setTimeout(''zTimeoutGeocode();'',1500);
+			zArrMapFunctions.push(function(){
+				if(typeof google === "undefined" || typeof google.maps === "undefined" || typeof google.maps.Geocoder === "undefined"){
+					return;
+				}
+				if(debugajaxgeocoder){
+					f1=document.getElementById("zajaxgeocoderdiv");
+					f1.style.display="block";
+					f1=document.getElementById("zajaxgeocodertextarea");
+				}
+				if(debugajaxgeocoder) f1.value+="loaded\n";
+			    geocoder = new google.maps.Geocoder();
+				setTimeout(''zTimeoutGeocode();'',1500);
+			});
 		});
 		 /* ]]> */
 		</script> 
