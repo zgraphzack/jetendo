@@ -881,7 +881,9 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 	if(structkeyexists(request.zos, 'zAbortRan')){
 		return;
 	}
-	application.zcore.session.put(request.zsession);
+	if(structkeyexists(request, 'zsession')){
+		application.zcore.session.put(request.zsession);
+	}
 	request.zos.zAbortRan=true;
 	if(arguments.skipBack EQ false and structkeyexists(application.zcore,'tracking')){
 		application.zcore.tracking.backOneHit();

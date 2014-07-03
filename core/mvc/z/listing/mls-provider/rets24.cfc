@@ -437,6 +437,9 @@ variables.tableLookup["I"]="I";
 	return "INNER JOIN #db.table("rets24_property", request.zos.zcoreDatasource)# rets24_property ON rets24_property.rets24_list_105 = listing.listing_id";
 	</cfscript>
 </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets24_property.rets24_list_105">
+    </cffunction>
     
 <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
 	<cfargument name="query" type="query" required="yes">

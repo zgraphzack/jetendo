@@ -5,9 +5,9 @@
 	
 	this.mls_id=7;
 	if(request.zos.istestserver){
-		hqPhotoPath="#request.zos.sharedPath#mls-images/7/";
+		hqPhotoPath="#request.zos.sharedPath#mls-images/25/";
 	}else{
-		hqPhotoPath="#request.zos.sharedPath#mls-images/7/";
+		hqPhotoPath="#request.zos.sharedPath#mls-images/25/";
 	}
 	this.useRetsFieldName="system";
 	this.arrColumns=listtoarray("1,1005,1010,104,595,1055,106,3221,3220,3265,3131,108,3222,109,11,1117,112,3244,1213,2883,904,903,1215,1231,3283,1248,1296,1302,913,1303,1307,816,709,3264,1310,1314,1316,1317,1321,1328,1335,1349,3190,505,1350,1354,906,905,902,901,1368,2771,1374,1375,2777,3247,138,3262,1381,1384,1397,3161,140,1405,853,855,858,1415,1418,1420,3281,1425,1426,143,1432,1437,1455,1466,1495,15,151,1514,879,2352,1518,3211,3210,3218,3219,1522,165,1660,3179,1670,3198,3193,3191,17,1709,1711,1716,1717,1718,1720,1722,1723,607,1724,1725,1726,1727,1728,1729,1731,1732,1733,1734,62,1735,1736,1737,1739,174,1743,3256,175,1750,176,2836,1764,178,1790,919,18,3226,1812,1815,182,1823,1825,602,1833,907,520,3282,1835,2887,1840,1847,1852,1857,654,19,1968,1457,2075,2085,2124,3258,2126,3259,2128,3257,2133,3263,2134,2135,504,2137,564,2158,676,3203,3204,216,2292,2294,2296,2298,888,2300,2302,2304,2306,2308,2314,1139,2316,2320,2322,627,2326,2328,2334,3081,2338,2340,2344,2346,2350,2362,2364,2368,2386,2390,2429,2455,2497,2698,2606,649,2620,3216,3217,300,3214,3215,3212,2622,2624,3213,2632,890,2644,2646,2648,2650,886,3248,887,681,2652,673,3206,3207,2654,3208,3209,2664,2666,1827,2678,2704,2708,2759,2763,2765,2779,2781,2789,2791,2793,2795,2797,2801,507,2803,410,2805,3186,3187,3189,2809,2811,2813,641,2819,2823,2826,3008,2828,283,1334,2838,2844,2846,2848,2850,2852,2854,2856,2879,2893,2895,2899,2901,2935,1872,662,3168,2945,2889,2951,2952,2953,2955,2834,2956,2981,3245,588,3249,2983,2984,3246,2991,3255,1749,3253,2992,3234,3106,2993,2995,2996,2999,830,3250,3251,3254,3,3000,3001,3002,3005,3010,3011,918,3013,3014,3015,3020,893,894,3233,892,897,898,1826,895,3156,896,3021,899,3022,3026,3194,3027,3036,3044,668,3048,646,3062,3063,3064,2769,3065,3066,3067,3068,3074,3075,657,3076,3077,3078,3079,3080,3084,3085,2842,3086,3109,3146,3147,3285,3148,3149,3152,881,883,3153,3157,3158,3162,3163,32,33,35,3266,2612,384,391,3223,3224,4,406,519,421,425,840,432,443,46,2694,2688,465,466,468,566,567,47,473,475,486,487,488,49,490,590,491,499,5,545,55,1042,59,63,2840,77,79,80,86,3165,3167,9,927,931,934,982,sysid", ",");
@@ -654,6 +654,10 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("rets7_property", request.zos.zcoreDatasource)# rets7_property ON rets7_property.rets7_175 = listing.listing_id">
     </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets7_property.rets7_175">
+    </cffunction>
+    
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">
@@ -692,12 +696,12 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				
 				local.fNameTemp1=arguments.query.listing_id&"-"&i&".jpeg";
 				local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-				local.absPath='#request.zos.sharedPath#mls-images/7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+				local.absPath='#request.zos.sharedPath#mls-images/25/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 				//if(fileexists(local.absPath)){
 					if(i EQ 1){
 						request.lastPhotoId=arguments.query.listing_id;
 					}
-					idx["photo"&i]=request.zos.retsPhotoPath&'7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+					idx["photo"&i]=request.zos.retsPhotoPath&'25/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 				/*}else{
 					idx["photo"&i]='/z/a/listing/images/image-not-available.gif';
 					if(i EQ 1){
@@ -753,9 +757,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 		request.lastPhotoId=this.mls_id&"-"&arguments.mls_pid;
 		local.fNameTemp1=this.mls_id&"-"&arguments.mls_pid&"-"&arguments.num&".jpeg";
 		local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
-		local.absPath='#request.zos.sharedPath#mls-images/7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+		local.absPath='#request.zos.sharedPath#mls-images/25/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		if(fileexists(local.absPath)){
-			return request.zos.retsPhotoPath&'7/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
+			return request.zos.retsPhotoPath&'25/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}else{
 			request.lastPhotoId="";
 			return "";

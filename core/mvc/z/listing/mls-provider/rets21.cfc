@@ -464,6 +464,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("rets21_property", request.zos.zcoreDatasource)# rets21_property ON rets21_property.rets21_MLnumber = listing.listing_id">
     </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets21_property.rets21_MLnumber">
+    </cffunction>
     
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">

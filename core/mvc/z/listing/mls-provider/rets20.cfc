@@ -389,6 +389,9 @@ unlimited between 7pm and 5am hawaii time
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("rets20_property", request.zos.zcoreDatasource)# rets20_property ON rets20_property.rets20_mlsnumber = listing.listing_id">
     </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets20_property.rets20_mlsnumber">
+    </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">

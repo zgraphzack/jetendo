@@ -346,6 +346,9 @@
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("far", request.zos.zcoreDatasource)# far ON far.far_mls_listing_id = listing.listing_id">
     </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "far.far_mls_listing_id">
+    </cffunction>
     
     
     <cffunction name="getPhoto" localmode="modern" output="no" returntype="any">

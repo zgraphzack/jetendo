@@ -193,6 +193,9 @@
 		return "INNER JOIN #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ON manual_listing.manual_listing_id = listing.listing_id and manual_listing.site_id IN (#idList#) ";
 		</cfscript>
     </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "manual_listing.manual_listing_id">
+    </cffunction>
     
     
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">

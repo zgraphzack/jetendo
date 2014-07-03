@@ -19,6 +19,7 @@ fwrite($fRunningHandle, "1");
 fclose($fRunningHandle);
 /**/
 $debug=false;
+$time_start = microtime_float();
 $minutesToDelayProcessing=3;
 $host=`hostname`;
 
@@ -59,6 +60,11 @@ if ($handle = opendir($mp)) {
     }
 
     closedir($handle);
+}
+if(microtime_float()-$time_start > 290){
+	// take a break
+	echo "Timeout reached\n";
+	exit;
 }
 
 echo "before temp move\n";
@@ -103,6 +109,11 @@ if ($handle = opendir($mp)) {
     closedir($handle);
 }
 
+if(microtime_float()-$time_start > 290){
+	// take a break
+	echo "Timeout reached\n";
+	exit;
+}
 echo "after temp move\n";
 
 function imagecreatefrombmp( $filename ){
@@ -194,20 +205,22 @@ function imagecreatefrombmp( $filename ){
 
 
 function processImage($filesource, $filedestination){
-	global $debug;
+	global $debug, $lastMessage;
 	$source = @imagecreatefromjpeg($filesource);
 	if($source===FALSE){
 		$source=@imagecreatefrombmp($filesource);
 		if($source===FALSE){
 			echo "Deleting invalid image.";
-			unlink($filesource);
+
+			@unlink($filesource);
+			$lastMessage="Deleting invalid image";
 			return false;
 		}
 	}
 	if($source===FALSE){
 		echo "Failed without exception, deleting source image.";
 		@unlink($filesource);
-		return;
+		return false;
 	}
 	$temp=".".rand(1,100000);
 	
@@ -225,6 +238,7 @@ function processImage($filesource, $filedestination){
 		$r=copy($filesource, $filedestination.$temp);
 		if($r===FALSE){
 			echo "file copied failed\n";
+			$lastMessage="file copied failed";
 			return false;
 		}else{
 			$r=moveFile($filedestination.$temp, $filedestination);
@@ -431,6 +445,7 @@ function processImage($filesource, $filedestination){
 			if($r===FALSE){
 				echo "r3:".$r3."\nexists:".file_exists($filedestination.$temp)."\n";
 				echo "unable to copy file even without cropping it\n";
+				$lastMessage="unable to copy file even without cropping it";
 				return false;
 			}else{
 				chmod($filedestination, 0777);
@@ -453,12 +468,13 @@ function processImage($filesource, $filedestination){
 	
 	$r=moveFile($filedestination.$temp, $filedestination);
 	if($r===FALSE){
+		$lastMessage="unable to move file";
 		return false;
 	}else{
 		chmod($filedestination, 0777);
 		system("/bin/chown ".get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($filedestination));
 		if(file_exists($filesource)){
-			unlink($filesource);
+			@unlink($filesource);
 		}
 		return true;
 	}
@@ -467,13 +483,13 @@ function processImage($filesource, $filedestination){
 
 function moveFile($source, $destination){
 	if(file_exists($destination)){
-		unlink($destination);
+		@unlink($destination);
 	}
 	return rename($source, $destination);
 }
 
 function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
-	global $cmysql, $debug, $mysqldate, $mlsDatasource;
+	global $cmysql, $debug, $mysqldate, $mlsDatasource, $lastMessage2;
 	$sql="select mls_image_hash_mlsid, mls_image_hash_value FROM mls_image_hash WHERE mls_image_hash_mlsid IN ('".implode("','", $arrFID)."') ";//and mls_image_hash_datetime < '2012-10-19 15:00:00' ";
 	
 	$arrIdNew=array();
@@ -484,6 +500,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 		// echo "renaming\n";
 		if(!$cmysql->select_db($arrSQL[1])){
 			echo "failed to select db:".$arrSQL[1]."\n";
+			$lastMessage2="failed to select db:".$arrSQL[1];
 			return false;
 		}
 		$sql2=$arrSQL[0].implode("','", $arrFID2)."') ";
@@ -498,6 +515,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 		}
 		if(!$cmysql->select_db($mlsDatasource)){
 			echo "failed to select db:".$mlsDatasource."\n";
+			$lastMessage2="failed to select db:".$mlsDatasource;
 			return false;
 		}
 	}else{
@@ -566,7 +584,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 						$crop=true;
 					}else{*/
 						echo "deleting from remote-images: ".$arrFID[$i]."\n";
-						unlink($filesource);
+						@unlink($filesource);
 					//}
 				}else{
 					echo 'not exist - crop and store: '.$filedestination." | ".$arrFID[$i]."\n";
@@ -590,7 +608,8 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 				echo "moving: ".$arrFID[$i]." to ".$filedestination."\n";
 				$r=moveFile($filesource, $filedestination);
 				if($r===FALSE){
-					echo "non image copy failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
+					echo "non image copy failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination."\n";
+					$lastMessage2="non image copy failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
 					return false;
 				}else{
 					chmod($filedestination, 0777);
@@ -603,8 +622,11 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 				$r=processImage($filesource, $filedestination);
 				usleep(40000);
 				if($r===FALSE){
-					echo "processImage() failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
-					return false;
+					echo "process image failed - skipping\n";
+					continue;
+					/*echo "processImage() failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
+					$lastMessage2="processImage() failed.  Source: ".$filesource." Source ID: ".$arrFID[$i]." Destination: ".$filedestination;
+					return false;*/
 				}else{
 					array_push($arrV, "('".$arrFID[$i]."','".$newHash."', '".$mysqldate."', '".$mysqldate."')");
 				}
@@ -620,6 +642,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 		$r=$cmysql->query($sql2);
 		if($r===FALSE){
 			echo "Critical mysql failure:".$cmysql->error;
+			$lastMessage2="Critical mysql failure:".$cmysql->error;
 			return false;
 		}
 	}
@@ -675,7 +698,7 @@ $arrQueryFunction["25"]="getRets25SysId";
 
 
 echo "\ndelete runningFilePath before image processing:".$runningFilePath."\n";
-unlink($runningFilePath);
+@unlink($runningFilePath);
 
 //exit;
 
@@ -692,6 +715,9 @@ $arrF=array();
 $arrFD=array();
 $arrFN=array();
 $stopProcessing=false;
+
+$lastMessage2="";
+$lastMessage="";
 //$oneMinuteAgo=mktime(date("H"), date("i")-1, date("s"), date("m"),date("d"),date("Y"));
 if ($handle = opendir($mp)) {
     while (false !== ($entry = readdir($handle))) {
@@ -725,12 +751,11 @@ if ($handle = opendir($mp)) {
 							$arrFD=array();
 							$arrFN=array();
 							$fiveMinuteAgo=mktime(date("H"), date("i")-$minutesToDelayProcessing, date("s"), date("m"),date("d"),date("Y"));
-							/*if($iCount1 > 200){
+							if(microtime_float()-$time_start > 290){
 								// take a break
-								$stopProcessing=true;
-								echo "Stopping early\n";
-								break;
-							}*/
+								echo "Timeout reached\n";
+								exit;
+							}
 						}
 						$cmtime=@filemtime($cur);
 						if($cmtime !== FALSE && $cmtime < $fiveMinuteAgo){
@@ -754,7 +779,6 @@ if ($handle = opendir($mp)) {
 			}
 		}
     }
-	
 	if($stopProcessing){
 		
 		$to      = get_cfg_var('jetendo_developer_email_to');
@@ -762,7 +786,7 @@ if ($handle = opendir($mp)) {
 		$headers = 'From: ' .get_cfg_var('jetendo_developer_email_from'). "\r\n" .
 			'Reply-To: '.get_cfg_var('jetendo_developer_email_from') . "\r\n" .
 			'X-Mailer: PHP/' . phpversion();
-		$message = 'PHP move-mls-images.php stopped processing';
+		$message = 'PHP move-mls-images.php stopped processing'."\nLast Image Message:".$lastMessage."\nLast Process Files Message:".$lastMessage2;
 
 		mail($to, $subject, $message, $headers);
 	}else if(count($arrF) != 0){

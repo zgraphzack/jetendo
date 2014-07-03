@@ -1207,6 +1207,9 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	if(structkeyexists(form, 'first') EQ false){
 		ts.disableCount=true;
 	}
+    if(not structkeyexists(form, 'search_liststatus') or form.search_liststatus EQ ""){
+        form.search_liststatus="1";
+    }
 	qs=formVarsToURL(form);
 	/*
 	for(i in form){

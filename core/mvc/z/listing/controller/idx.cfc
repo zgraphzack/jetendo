@@ -195,7 +195,7 @@
 		variables.fileHandle=fileOpen("#request.zos.sharedPath&this.optionstruct.filePath#", 'read', "windows-1252");
 		 
 		if(this.optionstruct.skipBytes NEQ 0){
-			fileSkipBytes(variables.fileHandle, this.optionStruct.skipBytes); 
+			fileSkipBytes(variables.fileHandle, this.optionStruct.skipBytes-10); 
 		}
 		writeoutput(request.zos.sharedPath&this.optionstruct.filePath&'<br />');
 		
@@ -215,8 +215,7 @@
 		}else{
 			line2="ignore";	
 		}
-		fileComplete=false;
-		oldOffset=0;
+		fileComplete=false; 
 		currentOffset=0;
 		loopcount=0;
 		stillParsing=true;
@@ -228,7 +227,9 @@
 					fileComplete=true;
 					break;	
 				}
-				line=variables.csvParser.parseLineIntoArray(fileReadLine(variables.fileHandle));  
+				line=fileReadLine(variables.fileHandle);
+				this.optionstruct.skipBytes+=len(line)+1;
+				line=variables.csvParser.parseLineIntoArray(line);  
 				request.curline=line;
 				r1=this.addRow(line);
 				if(r1 EQ false){
@@ -266,10 +267,8 @@
 			this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct)),"\","/","ALL");
 			if(this.optionstruct.filePath EQ false){
 				this.optionstruct.filePath="";
-				mlsUpdateDate=" , mls_update_date = '#request.zos.mysqlnow#' ";
-			}
-		}else{
-			this.optionstruct.skipBytes=oldOffset;	
+				
+			} 
 		}
 	}catch(Any local.e){
 		if(structkeyexists(variables, 'fileHandle')){
@@ -277,14 +276,17 @@
 		}
 		rethrow;
 	}
-	writeoutput('last usable offset:'&oldOffset&"<br />");
+	writeoutput('last usable offset:'&this.optionstruct.skipBytes&"<br />");
 	
 	db.sql="UPDATE #db.table("mls", request.zos.zcoreDatasource)# mls 
 	SET mls_current_file_path=#db.param(this.optionstruct.filePath)#, 
 	mls_error_sent=#db.param('0')#, 
 	mls_updated_datetime=#db.param(request.zos.mysqlnow)# ,
-	mls_skip_bytes=#db.param(this.optionstruct.skipBytes)# #db.trustedSQL(mlsUpdateDate)# 
-	where mls_id = #db.param(this.optionstruct.mls_id)#";
+	mls_skip_bytes=#db.param(this.optionstruct.skipBytes)# ";
+	if(this.optionstruct.filePath EQ ""){
+		db.sql&=" , mls_update_date = #db.param(request.zos.mysqlnow)# ";
+	}
+	db.sql&=" where mls_id = #db.param(this.optionstruct.mls_id)#";
 	db.execute("q"); 
 	
 	if(gettickcount()-startTime LT this.optionstruct.timeLimitInSeconds*1000){

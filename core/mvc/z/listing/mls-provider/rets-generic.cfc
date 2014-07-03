@@ -238,7 +238,6 @@ variables.typeStruct["text"]="text";
 				}
 			}
 		}else if(this.retsVersion EQ "1.5"){
-			
 			if(structkeyexists(xmlBase[i],"METADATA-LOOKUP")){
 				if(structkeyexists(xmlBase[i]["METADATA-LOOKUP"],"lookuptype")){
 					curBase=xmlBase[i]["METADATA-LOOKUP"]["lookuptype"];

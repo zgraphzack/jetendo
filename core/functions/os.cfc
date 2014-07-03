@@ -1955,7 +1955,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	<cfdump var="#arguments.varName#" showudfs="no" format="html" label="#arguments.label#">
 	<style type="text/css"> 
 	div.-railo-dump  td span {font-weight:bold !important;}
-	div.-railo-dump table{ background-color:##FFF !important;font-family:Arial, Helvetica, sans-serif  !important; font-size:12px !important; empty-cells:show !important; color:##000 !important;border-spacing:0px !important; border:none !important;}
+	div.-railo-dump table{ background-color:##FFF !important;font-family:Arial, Helvetica, sans-serif  !important; font-size:12px !important; empty-cells:show !important; color:##000 !important;border-spacing:0px !important;color:##000 !important;  border:none !important;}
 	div.-railo-dump td.r99f {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;}
 	div.-railo-dump td.rc9c {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;} 
 	div.-railo-dump td.r99f:nth-child(even) {background-color:##F2F2F2 !important;  }

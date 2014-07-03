@@ -1534,7 +1534,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				content.site_id = #db.param(request.zos.globals.id)# 
 				#db.trustedSQL(rs2.leftJoin)#
 				WHERE listing.listing_id IN (#db.trustedSQL("'#idlist22#'")#) and 
-				listing.listing_id = listing_data.listing_id 
+				listing.listing_id = listing_data.listing_id and 
+				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getPropertyListingIdSQL())# IN (#db.trustedSQL("'#idlist22#'")#)
 				GROUP BY listing.listing_id ";
 			    if(arguments.ss.debug){
 					writeoutput('mls '&i654&';'&tsql232&';<hr />');

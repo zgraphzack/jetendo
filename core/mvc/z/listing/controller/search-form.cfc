@@ -710,6 +710,9 @@ for(i in form){
 		form[i]='';
 	}
 }
+if(not structkeyexists(form, 'search_liststatus') or form.search_liststatus EQ ""){
+	form.search_liststatus="1";
+}
 searchCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.search");
 searchCom.queryStringSearchToStruct(form);
 

@@ -1,6 +1,6 @@
 <cfcomponent extends="zcorerootmapping.mvc.z.listing.mls-provider.rets-generic">
 <cfoutput>	<cfscript>
-	this.retsVersion="1.7";
+	this.retsVersion="1.5";
 	
 	this.mls_id=16;
 	if(request.zos.istestserver){
@@ -380,6 +380,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
 		var db=request.zos.queryObject;
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("rets16_property", request.zos.zcoreDatasource)# rets16_property ON rets16_property.rets16_157 = listing.listing_id">
+    </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets16_property.rets16_157">
     </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">

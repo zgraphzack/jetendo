@@ -389,6 +389,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets12_property where rets12_157 LIK
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("rets12_property", request.zos.zcoreDatasource)# rets12_property ON rets12_property.rets12_157 = listing.listing_id">
     </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets12_property.rets12_157">
+    </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">

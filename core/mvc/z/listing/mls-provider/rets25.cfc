@@ -30,8 +30,14 @@
 	
 	variables.tableLookup=structnew();
 
-	variables.tableLookup["Listing"]="1";
-	
+	variables.tableLookup["listing"]="1";
+	/*
+	variables.tableLookup["RES"]="1";
+	variables.tableLookup["INC"]="1";
+	variables.tableLookup["COM"]="1";
+	variables.tableLookup["REN"]="1";
+	variables.tableLookup["VAC"]="1";
+	*/
 	variables.t5=structnew();
 
 	this.remapFieldStruct=variables.t5;
@@ -241,29 +247,29 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		ts2.foreclosureField="";
 		
 		s=this.processRawStatus(ts2);
-		
 		arrS=listtoarray(ts['Special Sale Provision'],",");
 		for(i=1;i LTE arraylen(arrS);i++){
 			c=trim(arrS[i]);
-			if(c EQ "Short Sale"){
+			if(c EQ "ShortSale"){
 				s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["short sale"]]=true;
 				break;
 			}
-			if(c EQ "REO/Bank Owned"){
+			// Special Sale Provision
+			if(c EQ "REOBankOwned"){
 				s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["bank owned"]]=true;
 				break;
 			}
 		}
-		if(ts['Realtor Info'] CONTAINS "In foreclosure"){
+		if(ts['Realtor Info'] CONTAINS "Inforeclosure"){
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["foreclosure"]]=true;
 		}
-		if(ts['Realtor Info'] CONTAINS "Pre-foreclosure"){
+		if(ts['Realtor Info'] CONTAINS "Preforeclosure"){
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["pre-foreclosure"]]=true;
 		}
 		if(ts['New Construction YN'] EQ "Y"){
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["new construction"]]=true;
 		}
-		if(ts['property type'] EQ "REN"){
+		if(ts.rets25_propertytype EQ "REN"){
 			structdelete(s,request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["for sale"]);
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["for rent"]]=true;
 		}else{
@@ -391,7 +397,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 				}
 			}
 		}
-		if(ts["location"] CONTAINS "Golf Course Frontage"){
+		if(ts["location"] CONTAINS "GolfCourseFrontage"){
 			tmp=this.listingLookupNewId("frontage", "GolfCourseFrontage");
 			arrayappend(arrT3, tmp);
 		}
@@ -401,34 +407,34 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		arrT2=[];
 		uns=structnew();
 
-		if(ts["location"] CONTAINS "Greenbelt View"){
+		if(ts["location"] CONTAINS "GreenbeltView"){
 			arrayappend(arrT2,257);
 		}
-		if(ts["location"] CONTAINS "Golf Course View"){
+		if(ts["location"] CONTAINS "GolfCourseView"){
 			arrayappend(arrT2,255);
 		}
-		if(ts["location"] CONTAINS "Tennis Ct View"){
+		if(ts["location"] CONTAINS "TennisCtView"){
 			arrayappend(arrT2,254);
 		}
-		if(ts["location"] CONTAINS "Pool View"){
+		if(ts["location"] CONTAINS "PoolView"){
 			arrayappend(arrT2,241);
 		}
-		if(ts["location"] CONTAINS "Park View"){
+		if(ts["location"] CONTAINS "ParkView"){
 			arrayappend(arrT2,244);
 		}
 		if(ts["Water Access"] CONTAINS "Lake"){
 			arrayappend(arrT2,262);
 		}
-		if(ts["Water Access"] CONTAINS "Gulf/Ocean"){
+		if(ts["Water Access"] CONTAINS "GulfOcean"){
 			arrayappend(arrT2,239);
 		}
 		if(ts["Water Access"] CONTAINS "River"){
 			arrayappend(arrT2,250);
 		}
-		if(ts["Water Access"] CONTAINS "Gulf/Ocean"){
+		if(ts["Water Access"] CONTAINS "GulfOcean"){
 			arrayappend(arrT2,253);
 		}
-		if(ts["Water View"] CONTAINS "Bay/Harbor"){
+		if(ts["Water View"] CONTAINS "BayHarbor"){
 			arrayappend(arrT2,263);
 		}
 		if(ts["Water View YN"] EQ "Y"){
@@ -460,15 +466,15 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 				}
 			}
 		}
-		if(ts["location"] CONTAINS "Pool View"){
-			tmp=this.listingLookupNewId("view","Pool View");
+		if(ts["location"] CONTAINS "PoolView"){
+			tmp=this.listingLookupNewId("view","PoolView");
 			if(tmp NEQ "" and structkeyexists(uns,tmp) EQ false){
 				uns[tmp]=true;
 				arrayappend(arrT2,tmp);
 			}
 		}
-		if(ts["location"] CONTAINS "Park View"){
-			tmp=this.listingLookupNewId("view","Park View");
+		if(ts["location"] CONTAINS "ParkView"){
+			tmp=this.listingLookupNewId("view","ParkView");
 			if(tmp NEQ "" and structkeyexists(uns,tmp) EQ false){
 				uns[tmp]=true;
 				arrayappend(arrT2,tmp);
@@ -481,9 +487,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		if(ts["pool"] EQ "private"){
 			local.listing_pool=1;	
 		}
-		if(structkeyexists(variables.tableLookup,ts.rets25_propertytype)){
-			ts=this.convertRawDataToLookupValues(ts, variables.tableLookup[ts.rets25_propertytype], ts.rets25_propertytype);
-		}
+		ts=this.convertRawDataToLookupValues(ts, 'listing', ts.rets25_propertytype);
 		dataCom=this.getRetsDataObject();
 		local.listing_data_detailcache1=dataCom.getDetailCache1(ts);
 		local.listing_data_detailcache2=dataCom.getDetailCache2(ts);
@@ -516,8 +520,8 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		rs.listing_square_feet=ts["Sq Ft Heated"];
 		rs.listing_subdivision=local.listing_subdivision;
 		rs.listing_year_built=ts["year built"];
-		rs.listing_office=ts["Selling Office MLSID"];
-		rs.listing_agent=ts["Selling Agent MLSID"];
+		rs.listing_office=ts["List Office MLSID"];
+		rs.listing_agent=ts["List Agent MLSID"];
 		rs.listing_latitude=curLat;
 		rs.listing_longitude=curLong;
 		rs.listing_pool=local.listing_pool;
@@ -549,6 +553,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		var db=request.zos.queryObject;
 		</cfscript>
     	<cfreturn "INNER JOIN #db.table("rets25_property", request.zos.zcoreDatasource)# rets25_property ON rets25_property.rets25_mlsnumber = listing.listing_id">
+    </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets25_property.rets25_mlsnumber">
     </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">

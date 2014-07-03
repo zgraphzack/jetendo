@@ -492,6 +492,9 @@ this.remapFieldStruct=t5;
 	return "INNER JOIN #db.table("rets22_property", request.zos.zcoreDatasource)# rets22_property ON rets22_property.rets22_list_105 = listing.listing_id";
 	</cfscript>
 </cffunction>
+    <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets22_property.rets22_list_105">
+    </cffunction>
     
 <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
 	<cfargument name="query" type="query" required="yes">

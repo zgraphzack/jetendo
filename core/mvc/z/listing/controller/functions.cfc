@@ -160,6 +160,10 @@ local.tempCom.index();
 	ts.table="mls_saved_search";
 	ts.datasource="#request.zos.zcoreDatasource#";
 	ts.struct=structnew();
+	if(not structkeyexists(arguments.searchCriteriaStruct, 'search_liststatus') or arguments.searchCriteriaStruct.search_liststatus EQ ""){
+		arguments.searchCriteriaStruct.search_liststatus="1";
+	}
+
 	request.zos.listing.functions.zMLSSetSearchStruct(ts.struct, arguments.searchCriteriaStruct);
 	ts.struct.site_id=request.zos.globals.id;
 	for(i in arguments.searchCriteriaStruct){
