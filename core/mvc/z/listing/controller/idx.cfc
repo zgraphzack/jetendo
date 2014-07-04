@@ -220,8 +220,12 @@
 		loopcount=0;
 		stillParsing=true;
 		addRowFailCount=0;
+		structdelete(application.zcore, 'abortIdxImport');
 		while(gettickcount()-startTime LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
 			for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
+				if(structkeyexists(application.zcore, 'abortIdxImport')){
+					throw("Aborting IDX Import due to manual cancellation");
+				}
 				loopcount++;
 				if(fileIsEOF(variables.fileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
 					fileComplete=true;

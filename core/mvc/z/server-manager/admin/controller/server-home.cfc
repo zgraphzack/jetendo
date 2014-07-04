@@ -218,7 +218,11 @@
 		<p><a href="/z/listing/tasks/update-metadata/index" target="_blank">Update Metadata</a></p>
 		<p><a href="/z/listing/admin/remap-data/index">Remap Real Estate Saved Search Data</a></p>
 		<p><a href="/z/listing/tasks/sendListingAlerts/index" target="_blank">Send Email Alerts</a></p>
-		<p><a href="/z/listing/tasks/importMLS/index" target="_blank">Import Data</a></p>
+		<p><a href="/z/listing/tasks/importMLS/index" target="_blank">Import Data</a> 
+		<cfif structkeyexists(application.zcore, 'importMLSRunning')>
+			(Running -
+				<a href="/z/listing/tasks/importMLS/abortImport">Cancel</a>)
+		</cfif></p>
 		<p><a href="/z/listing/tasks/generateData/index" target="_blank">Generate Cache Data</a></p>
 		<p><a href="/z/listing/tasks/listingLookupBuilder/index" target="_blank">Update Lookup Tables</a></p>
 		<p><a href="/z/listing/tasks/listingLookupBuilder/updateDistanceCache" target="_blank">Update City Distance Table</a></p>

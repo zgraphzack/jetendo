@@ -1,7 +1,7 @@
 <cfcomponent extends="zcorerootmapping.mvc.z.listing.mls-provider.rets-generic">
 <cfoutput>
 	<cfscript>
-	this.retsVersion="1.5";
+	this.retsVersion="1.7";
 	
 	this.mls_id=7;
 	if(request.zos.istestserver){

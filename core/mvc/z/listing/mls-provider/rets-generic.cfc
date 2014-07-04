@@ -539,7 +539,7 @@ variables.typeStruct["text"]="text";
 					arrV=listtoarray(trim(value),',',false);
 					arrV2=arraynew(1); 
 					for(n=1;n LTE arraylen(arrV);n++){
-						t2=arrV[n];//replace(arrV[n]," ","","ALL");
+						t2=trim(arrV[n]);//replace(arrV[n]," ","","ALL");
 						t4=curTableData.fieldLookup[shortColumn];
 						t3=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].typeStruct[t4].valueStruct; 
 						if(structkeyexists(t3, t2)){
