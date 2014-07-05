@@ -1,13 +1,13 @@
 <?php
-// Add this task to crontab manually if you want the server to download missing rets images automatically.  This will run it every 2 hours.
-// 10 */2 * * * /usr/bin/php /var/jetendo-server/jetendo/scripts/rets-download-missing-images.php >/dev/null 2>&1
+// Add this task to crontab manually if you want the server to download missing rets images automatically.  This will run it every hour.
+// 30 * * * * /usr/bin/php /var/jetendo-server/jetendo/scripts/rets-download-missing-images.php >/dev/null 2>&1
 require("library.php");
 error_reporting(E_ALL);
 
 $debug=false;
 $time_start = microtime_float();
 ini_set("memory_limit","256M");
-$timeoutInSeconds=6900; 
+$timeoutInSeconds=3200; 
 set_time_limit($timeoutInSeconds+250);
 
 $host=`hostname`;
@@ -23,9 +23,9 @@ if($cmysql->error != ""){
 	exit;
 }
 $mysqldate = date("Y-m-d H:i:s");
+$mysqlMidnightDate=date("Y-m-d")." 00:00:00";
 
-
-$perloop=30;
+$perloop=50;
 $destinationPath=get_cfg_var("jetendo_share_path")."mls-images/";
 $result=$cmysql->query("SELECT * FROM mls WHERE 
 mls_status = '1' and 
@@ -37,6 +37,9 @@ ORDER BY mls_update_date desc", MYSQLI_STORE_RESULT);
 // 19 = password is not working yet - need to test when it does
 // 20 = Authorization failed - need to test in the morning hours in case that it is why.
 
+$count1=0;
+$downloadCount=0;
+$arrError=array();
 while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 	$offset=0;
 	$type=getRetsImageType($mlsRow["mls_id"]);
@@ -49,7 +52,10 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 		continue;
 	}
 	while(true){
-		$result=$cmysql->query("select listing_id, listing_photocount, listing_liststatus from `zram#listing` listing where listing_id like '".$mlsRow["mls_id"]."-%' LIMIT ".$offset.", ".$perloop." ", MYSQLI_STORE_RESULT);
+		$result=$cmysql->query("select listing_id, listing_photocount, listing_liststatus from `listing` listing where 
+		listing_photocount<> '0' and 
+		listing_images_verified_datetime < '".$mysqlMidnightDate."' and 
+		listing_id like '".$mlsRow["mls_id"]."-%' LIMIT ".$offset.", ".$perloop." ", MYSQLI_STORE_RESULT);
 		if($result->num_rows == 0){
 			break;
 		}
@@ -63,6 +69,7 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 			$arrId=explode("-", $row["listing_id"]);
 			$mls_id=$arrId[0];
 			for($i=1;$i<=$c;$i++){
+				$count1++;
 				$fname=$row["listing_id"]."-".$i.".jpeg";
 				$md5name=md5($fname);
 				$fpath=$destinationPath.$mls_id."/".substr($md5name,0,2)."/".substr($md5name,2,1)."/";
@@ -72,10 +79,23 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 					$out=ob_get_clean();
 					echo $out;
 					if($r===false){
-						zEmailErrorAndExit("Failed to download rets images for listing_id=".$row["listing_id"], "Failed to download rets images for listing_id=".$row["listing_id"]."\n\nLast messages output:\n".$out);
+						echo "Failed to download rets images for listing_id=".$row["listing_id"]."\n\nLast messages output:\n".$out;
+						array_push($arrError, "Failed to download rets images for listing_id=".$row["listing_id"]."\n\nLast messages output:\n".$out);
+						if(count($arrError) > 10){
+							zEmailErrorAndExit("Failed to download rets images more then 10 times.", implode("\n\n", $arrError));
+						}
+					}else{
+						$downloadCount++;
+					}
+				}else{
+					if($count1 % 300 == 0){
+						echo "Processed ".$count1." images | mls_id = ".$mls_id." | Downloaded ".$downloadCount." missing images\n";
 					}
 				}
 			}
+			$mysqldate = date("Y-m-d H:i:s");
+			$cmysql->query("UPDATE listing SET listing_images_verified_datetime='".$mysqldate."' WHERE listing_id = '".$row["listing_id"]."'");
+			usleep(20000);
 		}
 		if(microtime_float() - $time_start > $timeoutInSeconds){
 			echo "Timeout reached - aborting\n";
@@ -84,115 +104,9 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 		$offset+=$perloop;
 	}
 }
-//$r=zDownloadRetsImages("25-A3980519", "", "1");
-
-exit;
-
-/*
-if(microtime_float()-$time_start > 290){
-	// take a break
-	echo "Timeout reached\n";
-	exit;
+if($downloadCount){
+	zEmailErrorAndExit("Downloaded ".$downloadCount." missing rets images", "Downloaded ".$downloadCount." missing rets images\nscript completed successfully.\n\n".implode("\n\n", $arrError));
+}else{
+	echo "No missing images found\n";
 }
-echo "after temp move\n";
-
-
-echo "start image processing\n";
-
-$mp="".get_cfg_var("jetendo_share_path")."mls-images/temp/";
-$destinationPath="".get_cfg_var("jetendo_share_path")."mls-images/";
-chdir($mp);
-if($debug) echo "Moving mls-images from windows to linux local\n\n";
-$iCount1=0;
-$arrFID=array();
-$arrFID2=array();
-$arrF=array();
-$arrFD=array();
-$arrFN=array();
-$stopProcessing=false;
-
-$lastMessage2="";
-$lastMessage="";
-//$oneMinuteAgo=mktime(date("H"), date("i")-1, date("s"), date("m"),date("d"),date("Y"));
-if ($handle = opendir($mp)) {
-    while (false !== ($entry = readdir($handle))) {
-		if($entry !="." && $entry !=".."){
-			$mp2=$mp.$entry."/";
-			if(isset($arrQueryFunction[$entry])){
-				$arrSQL=$arrQueryFunction[$entry]();
-			}else{
-				$arrSQL="";
-			}
-			echo "process:".$mp2."\n";
-			if ($handle2 = opendir($mp2)) {
-				while (false !== ($entry2 = readdir($handle2))) {
-					if(substr($entry2, strlen($entry2)-5,5) == ".jpeg" || substr($entry2, strlen($entry2)-4,4) == ".jpg" || substr($entry2, strlen($entry2)-4,4) == ".pdf"){// !="." && $entry2 !=".."){
-						$pos=strpos($entry2, "-");
-						$cur=$mp.$entry."/".$entry2;
-						$idname=$entry."-".$entry2;
-						$idonlyname=substr($entry2, 0, $pos);
-						if($iCount1 % 100 == 0){
-							if($iCount1 !=0){
-								echo "process ".$iCount1."\n";
-								$r=processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN);
-								if($r===FALSE){
-									$stopProcessing=true;
-									break;
-								}
-							}
-							$arrFID=array();
-							$arrFID2=array();
-							$arrF=array();
-							$arrFD=array();
-							$arrFN=array();
-							$fiveMinuteAgo=mktime(date("H"), date("i")-$minutesToDelayProcessing, date("s"), date("m"),date("d"),date("Y"));
-							if(microtime_float()-$time_start > 290){
-								// take a break
-								echo "Timeout reached\n";
-								exit;
-							}
-						}
-						$cmtime=@filemtime($cur);
-						if($cmtime !== FALSE && $cmtime < $fiveMinuteAgo){
-							$csize=@filesize($cur);
-							if($csize !== FALSE && $csize != 0){
-								$iCount1++;
-								// add
-								array_push($arrFID2, $idonlyname);
-								array_push($arrFID, $idname);
-								array_push($arrF, $cur);
-								array_push($arrFD, $destinationPath.$entry."/".$entry2);
-								array_push($arrFN, $entry2);
-							}
-						}
-					}
-				}
-				closedir($handle2);
-			}
-			if($stopProcessing){
-				break;
-			}
-		}
-    }
-	if($stopProcessing){
-		
-		$to      = get_cfg_var('jetendo_developer_email_to');
-		$subject = 'PHP move-mls-images.php stopped processing on '.$host;
-		$headers = 'From: ' .get_cfg_var('jetendo_developer_email_from'). "\r\n" .
-			'Reply-To: '.get_cfg_var('jetendo_developer_email_from') . "\r\n" .
-			'X-Mailer: PHP/' . phpversion();
-		$message = 'PHP move-mls-images.php stopped processing'."\nLast Image Message:".$lastMessage."\nLast Process Files Message:".$lastMessage2;
-
-		mail($to, $subject, $message, $headers);
-	}else if(count($arrF) != 0){
-		processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN);
-	}
-    closedir($handle);
-}
-
-echo "\ndelete:".$runningFilePath."\n";
-@unlink($runningFilePath);
-
-*/
-
 ?>
