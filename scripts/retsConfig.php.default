@@ -1,0 +1,51 @@
+<?php
+// this file must be configured and the path to it must be updated in jetendo/scripts/jetendo.ini - if you don't have access to some of the RETS servers, just leave the username blank.
+$arrRetsConfig=array(
+	"4"=> array(
+		"loginURL"=> "http://rets.day.offutt-innovia.com:8080/day/server/login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"12"=> array(
+		"loginURL"=> "http://sef.rets.interealty.com/Login.asmx/Login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"16"=> array(
+		"loginURL"=> "http://ragfl.retsiq.com/contact/rets/login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"19"=> array(
+		"loginURL"=> "http://sef.rets.interealty.com/Login.asmx/Login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"20"=> array(
+		"loginURL"=> "http://rets.hicentralmls.com/rets/login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"21"=> array(
+		"loginURL"=> "http://rets.mrmlsmatrix.com/rets/login.ashx",
+		"username"=> "",
+		"password"=> ""
+	),
+	"22"=> array(
+		"loginURL"=> "http://retsgw.flexmls.com:80/rets2_1/Login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"24"=> array(
+		"loginURL"=> "http://retsgw.flexmls.com:80/rets2_1/Login",
+		"username"=> "",
+		"password"=> ""
+	),
+	"25"=> array(
+		"loginURL"=> "http://rets.mfrmls.com/contact/rets/login",
+		"username"=> "",
+		"password"=> ""
+	)
+);
+
+?>

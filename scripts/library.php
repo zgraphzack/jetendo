@@ -1,5 +1,18 @@
 <?php
 
+function zEmailErrorAndExit($subject, $message){
+	$host=`hostname`;
+	$to      = get_cfg_var('jetendo_developer_email_to');
+	$subject = $subject.' on '.$host;
+	$headers = 'From: ' .get_cfg_var('jetendo_developer_email_from'). "\r\n" .
+		'Reply-To: '.get_cfg_var('jetendo_developer_email_from') . "\r\n" .
+		'X-Mailer: PHP/' . phpversion();
+
+	mail($to, $subject, $message, $headers);
+	echo $subject."\n";
+	echo "Execution aborted.";
+	exit;
+}
 function zRemoveEmptyValuesFromArray($arr){
 	$arrNew=array();
 	for($n=0;$n<count($arr);$n++){
@@ -9,6 +22,612 @@ function zRemoveEmptyValuesFromArray($arr){
 	}
 	return $arrNew;
 }
+function getRets12ByListingId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets12_sysid as imageid, rets12_157 as listingid from rets12_property where rets12_157 IN ('", $mlsDataDatasource);
+}
+function getRets16ByListingId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets16_sysid as imageid, rets16_157 as listingid from rets16_property where rets16_157 IN ('", $mlsDataDatasource);
+}
+function getRets18ByListingId(){
+	global $mlsDataDatasource;
+	echo "18 is not tested.";
+	exit;
+	//return array("select rets18_media.rets18_mediasource as id from rets18_property, rets18_media WHERE rets18_mediatype='pic' and rets18_media.rets18_tableuid = rets18_property.rets18_uid and concat('18-',rets18_property.rets18_mlsnum) IN ('", $mlsDataDatasource);
+}
+function getRets20ByListingId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets20_matrix_unique_id as imageid, rets20_mlsnumber as listingid from rets20_property where rets20_mlsnumber IN ('", $mlsDataDatasource);
+}
+function getRets22ByListingId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets22_list_1 as imageid, rets22_list_105 as listingid from rets22_property where rets22_list_105 IN ('", $mlsDataDatasource);
+}
+
+function getRets24ByListingId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets24_list_1 as imageid, rets24_list_105 as listingid from rets24_property where rets24_list_105 IN ('", $mlsDataDatasource);
+}
+function getRets25ByListingId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets25_matrix_unique_id as imageid, rets25_mlsnumber as listingid from rets25_property where rets25_mlsnumber IN ('", $mlsDataDatasource);
+}
+
+function getRets12BySysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets12_sysid as imageid, rets12_157 as listingid from rets12_property where rets12_sysid IN ('", $mlsDataDatasource);
+}
+function getRets16BySysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets16_sysid as imageid, rets16_157 as listingid from rets16_property where rets16_sysid IN ('", $mlsDataDatasource);
+}
+function getRets18BySysId(){
+	global $mlsDataDatasource;
+	echo "18 is not tested.";
+	exit;
+	//return array("select rets18_media.rets18_mediasource as id from rets18_property, rets18_media WHERE rets18_mediatype='pic' and rets18_media.rets18_tableuid = rets18_property.rets18_uid and concat('18-',rets18_property.rets18_mlsnum) IN ('", $mlsDataDatasource);
+}
+function getRets20BySysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets20_matrix_unique_id as imageid, rets20_mlsnumber as listingid from rets20_property where rets20_matrix_unique_id IN ('", $mlsDataDatasource);
+}
+function getRets22BySysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets22_list_1 as imageid, rets22_list_105 as listingid from rets22_property where rets22_list_1 IN ('", $mlsDataDatasource);
+}
+
+function getRets24BySysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets24_list_1 as imageid, rets24_list_105 as listingid from rets24_property where rets24_list_1 IN ('", $mlsDataDatasource);
+}
+function getRets25BySysId(){
+	global $mlsDataDatasource;
+	return array("select SQL_NO_CACHE rets25_matrix_unique_id as imageid, rets25_mlsnumber as listingid from rets25_property where rets25_matrix_unique_id IN ('", $mlsDataDatasource);
+}
+$arrQueryFunction=array();
+$arrQueryFunction["12"]="getRets12BySysId";
+$arrQueryFunction["16"]="getRets16BySysId";
+//$arrQueryFunction["18"]="getRets18SysId";
+$arrQueryFunction["20"]="getRets20BySysId";
+$arrQueryFunction["22"]="getRets22BySysId";
+$arrQueryFunction["24"]="getRets24BySysId";
+$arrQueryFunction["25"]="getRets25BySysId";
+$arrListingQueryFunction=array();
+$arrListingQueryFunction["12"]="getRets12ByListingId";
+$arrListingQueryFunction["16"]="getRets16ByListingId";
+//$arrListingQueryFunction["18"]="getRets18SysId";
+$arrListingQueryFunction["20"]="getRets20ByListingId";
+$arrListingQueryFunction["22"]="getRets22ByListingId";
+$arrListingQueryFunction["24"]="getRets24ByListingId";
+$arrListingQueryFunction["25"]="getRets25ByListingId";
+
+$retsConnections=array();
+
+function getSysIdByListingId($listingId){
+	global $arrListingQueryFunction;
+	$arrId=explode("-", $listingId);
+	$mls_id=$arrId[0];
+	if(isset($arrListingQueryFunction[$mls_id])){
+		$mlsDatasource=get_cfg_var("jetendo_datasource");
+		$mlsDataDatasource=get_cfg_var("jetendo_datasource");
+		$cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"),get_cfg_var("jetendo_mysql_default_password"), get_cfg_var("jetendo_datasource"));
+
+		if($cmysql->error != ""){
+			echo "Mysql error:".$cmysql."\n";
+			exit;
+		}
+		$arrSQL=$arrListingQueryFunction[$mls_id]();
+		$sql=$arrSQL[0].$listingId."')";
+
+		$result=$cmysql->query($sql);
+		$r=$cmysql->query($sql, MYSQLI_USE_RESULT);
+		if($cmysql->error != ""){ 
+			echo "db error:".$cmysql->error."\n";
+			return false;
+		}
+		$id="";
+		while($row=$r->fetch_array(MYSQLI_ASSOC)){
+			$id=$row["imageid"];
+		}
+		if($id == ""){
+			return false;
+		}else{
+			return $id;
+		}
+	}else{
+		return $listingId;
+	}
+}
+
+function getRetsImageType($mls_id){
+	if($mls_id == "4"){
+		return "HQPhoto";
+	}else if($mls_id == "12"){
+		return "Photo";
+	}else if($mls_id == "16"){
+		return "Photo";
+	}else if($mls_id == "20"){
+		return "LargePhoto";
+	}else if($mls_id == "19"){
+		return "Photo";
+	}else if($mls_id == "22"){
+		return "Photo";
+	}else if($mls_id == "24"){
+		return "HiRes";
+	}else if($mls_id == "25"){
+		return "LargePhoto";
+	}else{
+		return false;
+	}
+}
+
+$arrRetsConnections=array();
+$configPath=get_cfg_var("jetendo_rets_config_file");
+if(!file_exists($configPath)){
+	echo "configPath is missing: ".$configPath."\n";
+	exit;
+}
+require_once($configPath);
+require_once("phrets.php");
+function zDownloadRetsImages($listingId, $sysId, $photoIndex){
+	global $arrRetsConnections, $arrRetsConfig;
+
+	$arrId=explode("-", $listingId);
+	$mls_id=$arrId[0];
+
+
+	if(!isset($arrRetsConfig[$mls_id])){
+		echo "rets config is missing for mls_id = ".$mls_id."\n";
+		return false;
+	}
+	$arrConfig=$arrRetsConfig[$mls_id];
+
+	$type=getRetsImageType($mls_id);
+	if($type === false){
+		echo "getRetsImageType returned false for mls_id = ".$mls_id."\n";
+		return false;
+	}
+	 // SELECT rets25_mlsnumber, rets25_matrix_unique_id FROM rets25_property WHERE rets25_mlsnumber='25-O5190454';
+	if($photoIndex == 0){
+		$photoIndex="*";
+	}else{
+		$photoIndex--; // decrease because photo index starts at zero.
+	}
+	if($sysId == "" || $sysId == 0){
+		$sysId=getSysIdByListingId($listingId);
+		if($sysId === false){
+			echo "getSysIdByListingId returned false for listingId = ".$listingId."\n";
+			return false;
+		}
+	}
+	if(!isset($arrRetsConnections[$mls_id])){
+		$arrRetsConnections[$mls_id] = new phRETS;
+		$taskLogPath=get_cfg_var("jetendo_share_path")."task-log/";
+		//$arrRetsConnections[$mls_id]->SetParam("debug_mode", true);
+		//$arrRetsConnections[$mls_id]->SetParam("debug_file", $taskLogPath."retsImageDownloadLog.txt");
+		$arrRetsConnections[$mls_id]->AddHeader("RETS-Version", "RETS/1.7.2");
+		$arrRetsConnections[$mls_id]->AddHeader("User-Agent", "RETSConnector/1.0");
+	}
+
+	if(!$arrRetsConnections[$mls_id]->isLoggedIn()){
+		$connect = $arrRetsConnections[$mls_id]->Connect($arrConfig["loginURL"], $arrConfig["username"], $arrConfig["password"]);
+
+		if (!$connect) {
+			echo "  + Not connected:<br>\n";
+			print_r($arrRetsConnections[$mls_id]->Error());
+			return false;
+		}else{
+			echo "Connected to mls_id=".$mls_id."\n";
+		}
+	}else{
+		echo "Trying to re-use existing connection to mls_id=".$mls_id."\n";
+	}
+	// download binary images, instead of urls because some servers disable url access.
+	$photos = $arrRetsConnections[$mls_id]->GetObject("Property", $type, $sysId, $photoIndex, 0); 
+	if($photos === false){
+		unset($arrRetsConnections[$mls_id]); // force a new login session
+		return false;
+	}
+	$i=0;
+	$p=dirname(__FILE__)."/";
+
+	$destinationPath=get_cfg_var("jetendo_share_path")."mls-images/";
+	foreach ($photos as $arrPhoto) {
+		if(!$arrPhoto['Success']){
+			continue;
+		}
+		$i++;
+		$fname=$listingId."-".($arrPhoto['Object-ID']+1).".jpeg";
+		$md5name=md5($fname);
+		$fpath=$destinationPath.$mls_id."/".substr($md5name,0,2)."/".substr($md5name,2,1)."/";
+		if(!is_dir($fpath)){
+			mkdir($fpath, 0777, true);
+		}
+		$filedestination=$fpath.$fname;
+		echo "Saving image to: ".$filedestination."\n";
+		if(file_exists($filedestination)){
+			unlink($filedestination);
+		}
+		file_put_contents($filedestination.".temp", $arrPhoto['Data']);
+		cropWhiteEdgesFromImage($filedestination.".temp", $filedestination);
+		
+	}
+	return true;
+}
+function imagecreatefrombmp( $filename ){
+ //Ouverture du fichier en mode binaire
+   if (! $f1 = fopen($filename,"rb")) return FALSE;
+
+ //1 : Chargement des ent?tes FICHIER
+   $FILE = unpack("vfile_type/Vfile_size/Vreserved/Vbitmap_offset", fread($f1,14));
+   if ($FILE['file_type'] != 19778) return FALSE;
+
+ //2 : Chargement des ent?tes BMP
+   $BMP = unpack('Vheader_size/Vwidth/Vheight/vplanes/vbits_per_pixel'.
+                 '/Vcompression/Vsize_bitmap/Vhoriz_resolution'.
+                 '/Vvert_resolution/Vcolors_used/Vcolors_important', fread($f1,40));
+   $BMP['colors'] = pow(2,$BMP['bits_per_pixel']);
+   if ($BMP['size_bitmap'] == 0) $BMP['size_bitmap'] = $FILE['file_size'] - $FILE['bitmap_offset'];
+   $BMP['bytes_per_pixel'] = $BMP['bits_per_pixel']/8;
+   $BMP['bytes_per_pixel2'] = ceil($BMP['bytes_per_pixel']);
+   $BMP['decal'] = ($BMP['width']*$BMP['bytes_per_pixel']/4);
+   $BMP['decal'] -= floor($BMP['width']*$BMP['bytes_per_pixel']/4);
+   $BMP['decal'] = 4-(4*$BMP['decal']);
+   if ($BMP['decal'] == 4) $BMP['decal'] = 0;
+
+ //3 : Chargement des couleurs de la palette
+   $PALETTE = array();
+   if ($BMP['colors'] < 16777216)
+   {
+    $PALETTE = unpack('V'.$BMP['colors'], fread($f1,$BMP['colors']*4));
+   }
+
+ //4 : Cr?ation de l'image
+   $IMG = fread($f1,$BMP['size_bitmap']);
+   $VIDE = chr(0);
+
+   $res = imagecreatetruecolor($BMP['width'],$BMP['height']);
+   $P = 0;
+   $Y = $BMP['height']-1;
+   while ($Y >= 0)
+   {
+    $X=0;
+    while ($X < $BMP['width'])
+    {
+     if ($BMP['bits_per_pixel'] == 24)
+        $COLOR = unpack("V",substr($IMG,$P,3).$VIDE);
+     elseif ($BMP['bits_per_pixel'] == 16)
+     {  
+        $COLOR = unpack("n",substr($IMG,$P,2));
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     elseif ($BMP['bits_per_pixel'] == 8)
+     {  
+        $COLOR = unpack("n",$VIDE.substr($IMG,$P,1));
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     elseif ($BMP['bits_per_pixel'] == 4)
+     {
+        $COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
+        if (($P*2)%2 == 0) $COLOR[1] = ($COLOR[1] >> 4) ; else $COLOR[1] = ($COLOR[1] & 0x0F);
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     elseif ($BMP['bits_per_pixel'] == 1)
+     {
+        $COLOR = unpack("n",$VIDE.substr($IMG,floor($P),1));
+        if     (($P*8)%8 == 0) $COLOR[1] =  $COLOR[1]        >>7;
+        elseif (($P*8)%8 == 1) $COLOR[1] = ($COLOR[1] & 0x40)>>6;
+        elseif (($P*8)%8 == 2) $COLOR[1] = ($COLOR[1] & 0x20)>>5;
+        elseif (($P*8)%8 == 3) $COLOR[1] = ($COLOR[1] & 0x10)>>4;
+        elseif (($P*8)%8 == 4) $COLOR[1] = ($COLOR[1] & 0x8)>>3;
+        elseif (($P*8)%8 == 5) $COLOR[1] = ($COLOR[1] & 0x4)>>2;
+        elseif (($P*8)%8 == 6) $COLOR[1] = ($COLOR[1] & 0x2)>>1;
+        elseif (($P*8)%8 == 7) $COLOR[1] = ($COLOR[1] & 0x1);
+        $COLOR[1] = $PALETTE[$COLOR[1]+1];
+     }
+     else
+        return FALSE;
+     imagesetpixel($res,$X,$Y,$COLOR[1]);
+     $X++;
+     $P += $BMP['bytes_per_pixel'];
+    }
+    $Y--;
+    $P+=$BMP['decal'];
+   }
+
+ //Fermeture du fichier
+   fclose($f1);
+
+ return $res;
+}
+if(!isset($debug)){
+	$debug=false;
+}
+
+$lastMessage="";
+function cropWhiteEdgesFromImage($filesource, $filedestination){
+	global $debug, $lastMessage;
+	$source = @imagecreatefromjpeg($filesource);
+	if($source===FALSE){
+		$source=@imagecreatefrombmp($filesource);
+		if($source===FALSE){
+			echo "Deleting invalid image.";
+
+			@unlink($filesource);
+			$lastMessage="Deleting invalid image";
+			return false;
+		}
+	}
+	if($source===FALSE){
+		echo "Failed without exception, deleting source image.";
+		@unlink($filesource);
+		return false;
+	}
+	$temp=".".rand(1,100000);
+	
+	
+	$width=imagesx($source);
+	if($source===FALSE && $width===FALSE){
+		// don't bother cropping this file - it's not going to work well
+		$temp=".".rand(1,100000);
+		// imagejpeg($newImage, $filedestination.$temp,80);
+		if($debug) echo "file copied instead of cropped\n";
+		
+		if(file_exists($filedestination)){
+			unlink($filedestination);
+		}
+		$r=copy($filesource, $filedestination.$temp);
+		if($r===FALSE){
+			echo "file copied failed\n";
+			$lastMessage="file copied failed";
+			return false;
+		}else{
+			$r=moveFile($filedestination.$temp, $filedestination);
+			chmod($filedestination, 0777);
+			system("/bin/chown ".get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($filedestination));
+			if(file_exists($filesource)){
+				unlink($filesource);
+			}
+			return true;
+		}
+	}
+	$height=imagesy($source);
+	if($width===FALSE){
+		$r2=getimagesize($filesource);
+		if($r2===FALSE){
+			if($debug) echo "invalid image:".$filesource."\n";
+			unlink($filesource);
+		}
+		list($width, $height)=$r2;
+		if($debug) echo "fixed width:".$width."x".$height."\n";
+	}
+	
+	$xCheck1=round($width/5);
+	$yCheck1=round($height/5);
+	
+	if($debug) echo "\nx & y check 1:".$xCheck1."x".$yCheck1."\n";
+	$xcrop=0;
+	$xcrop2=0;
+	$ycrop=0;
+	$ycrop2=0;
+
+	// get 
+	$xmiddle=round($width/2);
+	$ymiddle=round($height/2);
+	if($debug) echo "\ntop search\n";
+	$inc=3;
+	for($i=0;$i<=$height;$i+=$inc){
+		if($i==3) $inc=10;
+		$rgb=@imagecolorat($source, $xmiddle, $i);
+		$r = ($rgb >> 16) & 0xFF;
+		$g = ($rgb >> 8) & 0xFF;
+		$b = $rgb & 0xFF;
+		//if($debug) echo "finding y: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+		$rgb2=@imagecolorat($source, max(1,$xmiddle-$xCheck1), $i);
+		$rgb3=@imagecolorat($source, min($width,$xmiddle+$xCheck1), $i);
+		$rgb4=@imagecolorat($source, max(1,$xmiddle-$xCheck1), $i);
+		$rgb5=@imagecolorat($source, min($width,$xmiddle+$xCheck1), $i);
+		
+		if($debug) echo "finding y: ".$rgb." | ".$rgb2." | ".$rgb3." | ".$rgb4." | ".$rgb5."\n";
+		if(($rgb+$rgb2+$rgb3+$rgb4+$rgb5)/5 < 16400000){
+		//if($rgb<16600000 || $rgb2<16600000 || $rgb3<16600000 || $rgb4<16600000 || $rgb5<16600000){
+			$ycrop=$i+6;
+			$newi=$i;
+			$i=max(0,$i-9);
+			for($i;$i<=$newi;$i++){
+				if($debug) echo $i." | refining y: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+				$rgb=@imagecolorat($source, $xmiddle, $i);
+				if($rgb<16600000){
+					if($debug) echo "final i:".$i."\n";
+					$ycrop=$i+6;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	
+	if($debug) echo "ycrop:".$ycrop."\n";
+	if($debug) echo "\nleft search\n";
+	$inc=3;
+	for($i=0;$i<=$width;$i+=$inc){
+		if($i==3) $inc=10;
+		$rgb=@imagecolorat($source, $i, $ymiddle);
+		$r = ($rgb >> 16) & 0xFF;
+		$g = ($rgb >> 8) & 0xFF;
+		$b = $rgb & 0xFF;
+		//if($debug) echo "finding x: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+		$rgb2=@imagecolorat($source, $i, max(1,$ymiddle-$yCheck1));
+		$rgb3=@imagecolorat($source, $i, min($height,$ymiddle+$yCheck1));
+		$rgb4=@imagecolorat($source, $i, max(1,$ymiddle-$yCheck1));
+		$rgb5=@imagecolorat($source, $i,min($height,$ymiddle+$yCheck1));
+		if($debug) echo "finding x: ".$rgb." | ".$rgb2." | ".$rgb3." | ".$rgb4." | ".$rgb5."\n";
+		if(($rgb+$rgb2+$rgb3+$rgb4+$rgb5)/5 < 16400000){
+		//if($rgb<16600000 || $rgb2<16600000 || $rgb3<16600000 || $rgb4<16600000 || $rgb5<16600000){
+			$xcrop=$i+6;
+			$newi=$i;
+			$i=max(0,$i-9);
+			for($i;$i<=$newi;$i++){
+				if($debug) echo $i." | refining x: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+				$rgb=@imagecolorat($source, $i, $ymiddle);
+				if($rgb<16600000){
+					if($debug) echo "final i:".$i."\n";
+					$xcrop=$i+6;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	
+	if($debug) echo "xcrop:".$xcrop."\n";
+	
+	if($debug) echo "\nbottom search\n";
+	$inc=3;
+	$i=1;
+	/*if($ycrop > 50){
+		$i=50;
+		$inc=10;	
+	}*/
+	for(;$i<=$height;$i+=$inc){
+		if($i==3) $inc=10;
+		$rgb=@imagecolorat($source, $width-$xmiddle, $height-$i);
+		$r = ($rgb >> 16) & 0xFF;
+		$g = ($rgb >> 8) & 0xFF;
+		$b = $rgb & 0xFF;
+		//if($debug) echo "finding y: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+		$rgb2=@imagecolorat($source, max(1,($width-$xmiddle)-$xCheck1), $height-$i);
+		$rgb3=@imagecolorat($source, min($width,($width-$xmiddle)+$xCheck1), $height-$i);
+		$rgb4=@imagecolorat($source, max(1,$xmiddle-$xCheck1), $height-$i);
+		$rgb5=@imagecolorat($source, min($width,$xmiddle+$xCheck1), $height-$i);
+		if($debug) echo "finding y: ".$rgb." | ".$rgb2." | ".$rgb3." | ".$rgb4." | ".$rgb5."\n";
+		if(($rgb+$rgb2+$rgb3+$rgb4+$rgb5)/5 < 16400000){
+		//if($rgb<16600000 || $rgb2<16600000 || $rgb3<16600000 || $rgb4<16600000 || $rgb5<16600000){
+			$ycrop2=$i+6;
+			$newi=$i;
+			$i=max(1,$i-9);
+			for($i;$i<$newi;$i++){
+				if($debug) echo $i." | refining y: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+				$rgb=@imagecolorat($source, $width-$xmiddle, $height-$i);
+				if($rgb<16600000){
+					if($debug) echo "final i:".$i."\n";
+					$ycrop2=$i+6;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	if($debug) echo "ycrop2:".$ycrop2."\n";
+	
+	if($debug) echo "\nright search\n";
+	$inc=3;
+	for($i=1;$i<=$width;$i+=$inc){
+		if($i==3) $inc=10;
+		$rgb=@imagecolorat($source, $width-$i, $height-$ymiddle);
+		$r = ($rgb >> 16) & 0xFF;
+		$g = ($rgb >> 8) & 0xFF;
+		$b = $rgb & 0xFF;
+		//if($debug) echo "finding x: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+		$rgb2=@imagecolorat($source, $width-$i, max(1,($height-$ymiddle)-$yCheck1));
+		$rgb3=@imagecolorat($source, $width-$i, min($height,($height-$ymiddle)+$yCheck1));
+		$rgb4=@imagecolorat($source, $width-$i, max(1,($height-$ymiddle)-$yCheck1));
+		$rgb5=@imagecolorat($source, $width-$i, min($height,($height-$ymiddle)+$yCheck1));
+		if($debug) echo "finding x: ".$rgb." | ".$rgb2." | ".$rgb3." | ".$rgb4." | ".$rgb5."\n";
+		if(($rgb+$rgb2+$rgb3+$rgb4+$rgb5)/5 < 16400000){
+		//if($rgb<16600000 || $rgb2<16600000 || $rgb3<16600000 || $rgb4<16600000 || $rgb5<16600000){
+			$xcrop2=$i+6;
+			$newi=$i;
+			$i=max(1,$i-9);
+			for($i;$i<=$newi;$i++){
+				if($debug) echo $i." | refining x: ".$rgb." | ".dechex ($rgb)." | red: $r | green: $g | blue: $b\n";
+				$rgb=@imagecolorat($source, $width-$i, $height-$ymiddle);
+				if($rgb<16600000){
+					if($debug) echo "final i:".$i."\n";
+					$xcrop2=$i+6;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	if($debug) echo "xcrop2:".$xcrop2."\n";
+	if($debug) echo "Crop coordinates: left:".$xcrop." top:".$ycrop." right:".$xcrop2." bottom:".$ycrop2."\n";
+	
+	
+	$originalheight=$height;
+	$originalwidth=$width;
+	if($debug) echo "original size:".$width."x".$height."\n";
+	$width=$width-$xcrop-$xcrop2;
+	$height=$height-$ycrop-$ycrop2;
+	if($height < 10 || $width < 10){
+		// prevent mistakes
+		if(abs($xcrop-$xcrop2) > 50){
+			$xcrop=min($xcrop, $xcrop2);
+		}else{
+			$xcrop=max($xcrop, $xcrop2);
+		}
+		if(abs($ycrop-$ycrop2) > 50){
+			$ycrop=min($ycrop, $ycrop2);
+		}else{
+			$ycrop=max($ycrop, $ycrop2);
+		}
+		$width=($originalwidth-($xcrop*2));
+		$height=($originalheight-($ycrop*2));
+		if($width < 10 || $height < 10){
+			// don't bother cropping this file - it's not going to work well
+			
+			if($debug) echo "width is wrong:".$width."x".$height."\n";
+			if($debug) echo $filedestination.$temp.":".file_exists($filedestination.$temp)."\n";
+			
+			$r3=imagejpeg($source, $filedestination.$temp,80);
+			
+			$r=moveFile($filedestination.$temp, $filedestination);
+			if($r===FALSE){
+				echo "r3:".$r3."\nexists:".file_exists($filedestination.$temp)."\n";
+				echo "unable to copy file even without cropping it\n";
+				$lastMessage="unable to copy file even without cropping it";
+				return false;
+			}else{
+				chmod($filedestination, 0777);
+				system("/bin/chown ".get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($filedestination));
+				if(file_exists($filesource)){
+					unlink($filesource);
+				}
+				return true;
+			}
+		}
+			
+	}
+	if($debug) echo "cropped original size:".$width."x".$height."\n";
+		
+	$newImage= imagecreatetruecolor($width, $height);
+	
+	imagecopy ( $newImage , $source, 0,0, $xcrop, $ycrop, $width , $height );
+	
+	imagejpeg($newImage, $filedestination.$temp,80);
+	
+	$r=moveFile($filedestination.$temp, $filedestination);
+	if($r===FALSE){
+		$lastMessage="unable to move file";
+		return false;
+	}else{
+		chmod($filedestination, 0777);
+		system("/bin/chown ".get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($filedestination));
+		if(file_exists($filesource)){
+			@unlink($filesource);
+		}
+		return true;
+	}
+}
+function moveFile($source, $destination){
+	if(file_exists($destination)){
+		@unlink($destination);
+	}
+	return rename($source, $destination);
+}
+
 
 function installJetendoCronTabs($debug){
 	$isTestServer=zIsTestServer();

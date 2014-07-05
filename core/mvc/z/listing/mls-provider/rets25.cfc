@@ -227,7 +227,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		}else{
 			address="";	
 		}
-		address&=trim(ts['street name']&" "&ts['street suffix']&" "&ts["street dir suffix"]);
+		address&=" "&trim(ts['street name']&" "&ts['street suffix']&" "&ts["street dir suffix"]);
 		curLat='';
 		curLong='';
 		if(trim(address) NEQ ""){
