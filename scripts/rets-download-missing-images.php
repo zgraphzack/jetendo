@@ -2,6 +2,9 @@
 // Add this task to crontab manually if you want the server to download missing rets images automatically.  This will run it every hour.
 // 30 * * * * /usr/bin/php /var/jetendo-server/jetendo/scripts/rets-download-missing-images.php >/dev/null 2>&1
 require("library.php");
+
+
+//zDownloadRetsImages("25-O5303409", "153355139", 0);exit;
 error_reporting(E_ALL);
 
 $debug=false;
