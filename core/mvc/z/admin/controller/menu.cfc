@@ -156,6 +156,8 @@
 				arrayappend(arrF, arrS[i]&"="&db.param(form.newname));
 			}else if(arrS[i] EQ "site_id"){
 				arrayappend(arrF, arrS[i]&"="&db.param(form.newsiteid));
+			}else if(arrS[i] EQ "menu_updated_datetime"){
+				arrayappend(arrF, arrS[i]&"="&db.param(request.zos.mysqlnow));
 			}else{
 				arrayappend(arrF, arrS[i]&"="&db.param(qS[arrS[i]][1]));
 			}
@@ -191,6 +193,8 @@
 				
 				}else if(arrT[i] EQ "site_id"){
 					arrayappend(arrF, arrT[i]&"="&db.param(form.newsiteid));
+				}else if(arrT[i] EQ "menu_button_updated_datetime"){
+					arrayappend(arrF, arrT[i]&"="&db.param(request.zos.mysqlnow));
 				}else{
 					if(application.zcore.functions.zso(form, 'removelinks', true, 0) EQ 1 and arrT[i] EQ "menu_button_link"){
 						arrayappend(arrF, arrT[i]&"=#db.param('##')#");
@@ -222,6 +226,8 @@
 							arrayappend(arrF, arrI[i]&"="&db.param(newmenubuttonid));
 						}else if(arrI[i] EQ "site_id"){
 							arrayappend(arrF, arrI[i]&"="&db.param(form.newsiteid));
+						}else if(arrI[i] EQ "menu_button_link_updated_datetime"){
+							arrayappend(arrF, arrI[i]&"="&db.param(request.zos.mysqlnow));
 						}else{
 							arrayappend(arrF, arrI[i]&"="&db.param(qI[arrI[i]][n2]));
 						}

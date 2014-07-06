@@ -232,6 +232,8 @@
 							arrayappend(arrF, arrM[i]&"="&db.param(dateformat(qM[arrM[i]][1],'yyyy-mm-dd')&' '&timeformat(qM[arrM[i]][1],'HH:mm:ss')));
 						}else if(arrM[i] EQ "site_id"){
 							arrayappend(arrF, arrM[i]&"="&db.param(form.newsiteid));
+						}else if(arrS[i] EQ "mls_saved_search_updated_datetime"){
+							arrayappend(arrF, arrS[i]&"="&db.param(request.zos.mysqlnow));
 						}else{
 							arrayappend(arrF, arrM[i]&"="&db.param(qM[arrM[i]][1]));
 						}
@@ -260,6 +262,8 @@
 					arrayappend(arrF, arrT[i]&"="&db.param(form.newsiteid));
 				}else if(arrT[i] EQ "mls_saved_search_id"){
 					arrayappend(arrF, arrT[i]&"="&db.param(newmlssavedsearchid));
+				}else if(arrT[i] EQ "slideshow_tab_updated_datetime"){
+					arrayappend(arrF, arrT[i]&"="&db.param(request.zos.mysqlnow));
 				}else{
 					arrayappend(arrF, arrT[i]&"="&db.param(qT[arrT[i]][n]));
 				}
@@ -284,6 +288,8 @@
 					arrayappend(arrF, arrI[i]&"="&db.param(tabidstruct[qI.slideshow_tab_id[n]]));
 				}else if(arrI[i] EQ "site_id"){
 					arrayappend(arrF, arrI[i]&"="&db.param(form.newsiteid));
+				}else if(arrI[i] EQ "slideshow_image_updated_datetime"){
+					arrayappend(arrF, arrI[i]&"="&db.param(request.zos.mysqlnow));
 				}else{
 					arrayappend(arrF, arrI[i]&"="&db.param(qI[arrI[i]][n]));
 				}
