@@ -3818,14 +3818,14 @@ this.app_id=10;
 		<table style="border-spacing:5px; font-family:Verdana, Geneva, sans-serif; font-size:12px; line-height:18px;">
 		<tr><td>Date Added:</td><td>#dateformat(now(),"m/d/yyyy")&" at "&timeformat(now(),"h:mm tt")#</td></tr>
 		<tr><td>Name:</td><td>#form.blog_comment_author#</td></tr>
-		<tr><td>Email:</td><td><a href="mailto:#blog_comment_author_email#">#form.blog_comment_author_email#</a></td></tr>
+		<tr><td>Email:</td><td><a href="mailto:#form.blog_comment_author_email#">#form.blog_comment_author_email#</a></td></tr>
 		<tr><td>Subject:</td><td>#form.blog_comment_title#</td></tr>
 		<tr><td>Comments:</td><td>#application.zcore.functions.zparagraphformat(form.blog_comment_text)#</td></tr>
 		</table><br />
 		 
 		<strong>You must choose to approve or delete this comment:</strong><br /><br />
 		
-		<a href="#application.zcore.functions.zvar('domain')##link#?t=1&action=approveComment2&blog_comment_id=#blog_comment_id#&blog_id=#form.blog_id#">Approve</a> | <a href="#application.zcore.functions.zvar('domain')##link#?t=1&action=deletecomment&blog_comment_id=#blog_comment_id#&blog_id=#form.blog_id#">Delete</a> (You may be asked to login)<br /><br />
+		<a href="#application.zcore.functions.zvar('domain')#/z/blog/admin/blog-admin/commentApprove?blog_comment_id=#blog_comment_id#&amp;blog_id=#form.blog_id#">Approve</a> | <a href="#application.zcore.functions.zvar('domain')#/z/blog/admin/blog-admin/commentDelete?blog_comment_id=#blog_comment_id#&amp;blog_id=#form.blog_id#">Delete</a> (You may be asked to login)<br /><br />
 		<a href="#ulink#">Click here to view blog article</a><br /><br />
 		If you see code or other unusual characters, this may be an attempt to add spam to your site and you should delete it.
 		</span>
