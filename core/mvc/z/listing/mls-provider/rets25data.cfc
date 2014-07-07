@@ -30,6 +30,7 @@ variables.allfields=structnew();
             </cfscript>
         </cfloop>
 		<cfscript>
+		idxExclude["rets25_virtualtoururl2"]="Virtual Tour Url 2";
 idxExclude["rets25_agentfax"]="Agent Fax";
 idxExclude["rets25_agenthomepage"]="Agent Home Page";
 idxExclude["rets25_agentofficeext"]="Agent Office Ext";
@@ -326,9 +327,11 @@ idxTemp2["rets25_transportationaccess"]="Transportation Access";
 idxTemp2["rets25_unitcount"]="Unit Count";
 idxTemp2["rets25_unitnumber"]="Unit Number";
 idxTemp2["rets25_units"]="Units";
-idxTemp2["rets25_virtualtourlink"]="Virtual Tour Link";
-idxTemp2["rets25_virtualtoururl2"]="Virtual Tour Url 2";
+
 idxTemp2["rets25_yearbuilt"]="Year Built";
+if(arguments.idx.rets25_virtualtoururl2 NEQ ""){
+	arrayAppend(arrR, '<a href="#arguments.idx.rets25_virtualtoururl2#" target="_blank">View Virtual Tour Link 2</a>');
+}
 		arrayappend(arrR, application.zcore.listingCom.getListingDetailRowOutput("Additional Information", arguments.idx, variables.idxExclude, idxTemp2, variables.allFields));
 		
 		
