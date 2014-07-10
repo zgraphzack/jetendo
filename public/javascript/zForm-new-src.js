@@ -108,6 +108,7 @@ function deleteImageId(id){
 }
 function setUploadField(){
 	var hasFlash = false;
+	return;
 	try {
 		var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
 		if(fo) hasFlash = true;
@@ -123,97 +124,8 @@ function setUploadField(){
 		document.getElementById("flashFileUpload").style.display="block";
 	}
 }
-function myImageLibraryUploadSuccess(file, serverData){ 
-	var r=eval('(' + serverData + ')'); 
-	var arrImage=new Array();  
-	var d=document.getElementById("sortable");
-	if(typeof r.arrErrors !== "undefined" && r.arrErrors.length){ 
-		alert(r.arrErrors.join("\n"));
-	}
-	for(n2=0;n2<r.arrImages.length;n2++){ 
-		var cur=r.arrImages[n2];
-		var NewLI = document.createElement("LI");
-		NewLI.className="ui-state-default";
-		NewLI.id="image"+cur.image_id; 
-		NewLI.innerHTML = '<div class="imageclosebutton" style="text-align:center;" onclick="confirmDeleteImageId('+cur.image_id+');">X<\/div><div class="imagedivclass"><img src="'+cur.image_link+'"  style="border:none;" /><\/div><div class="captionbar"><input class="captionClass" name="caption'+cur.image_id+'" id="caption'+cur.image_id+'" value="" onkeyup="toggleImageCaptionUpdate(\'imagecaptionupdate'+cur.image_id+'\',\'block\',true);" onblur="toggleImageCaptionUpdate(\'imagecaptionupdate'+cur.image_id+'\',\'none\',false);" type="text"> <div id="imagecaptionupdate'+cur.image_id+'" class="imagecaptionupdate">Update<\/div><\/div>';
-		d.appendChild(NewLI);
-		arrImageLibraryCaptions[cur.image_id]="";
-	} 
-	$("#imageLibraryDivCount", window.parent.document).html($("li", d).length+" images in library");
-	this.zSwfUploadUploadSuccess(file, serverData);
-}
+
    
-function zInitSWFUpload(imageLibraryId){ 
-	var settings = {
-		flash_url : "/z/javascript/swfupload/swfupload.swf",
-		upload_url: "/z/_com/app/image-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=imageprocessform&image_library_id="+imageLibraryId, 
-		file_size_limit : "100 MB",
-		file_post_name : "image_file",
-		file_types : "*.jpg;*.jpeg;*.gif;*.png;*.zip",
-		file_types_description : "All Files",
-		file_upload_limit : 0,
-		file_queue_limit : 0,
-		custom_settings : {
-			progressTarget : "fsUploadProgress",
-			cancelButtonId : "swfupload_btnCancel"
-		},
-		debug: debugImageLibrary,
-
-		// Button settings
-		//button_image_url: "/z/javascript/swfupload/TestImageNoText_65x29.png",
-		button_width: "260",
-		button_height: "32",
-		button_placeholder_id: "spanButtonPlaceHolder",
-		button_text: '<span class="swfupload-theFont">Click here to upload images<\/span>',
-		button_text_style: ".swfupload-theFont { font-size: 16px; font-weight:bold;cursor:pointer; font-family:Verdana, Geneva, sans-serif; line-height:18px; }",
-		button_text_left_padding: 15,
-		button_text_top_padding: 3,
-			button_action : SWFUpload.BUTTON_ACTION.SELECT_FILES,
-
-			button_cursor : SWFUpload.CURSOR.HAND,
-
-		// The event handler functions are defined in handlers.js
-		file_queued_handler : zSwfUploadFileQueued,
-		file_queue_error_handler : zSwfUploadFileQueueError,
-		file_dialog_complete_handler : zSwfUploadFileDialogComplete,
-		upload_start_handler : zSwfUploadUploadStart,
-		upload_progress_handler : zSwfUploadUploadProgress,
-		upload_error_handler : zSwfUploadUploadError,
-		upload_success_handler : myImageLibraryUploadSuccess,
-		upload_complete_handler : zSwfUploadUploadComplete,
-		queue_complete_handler : zSwfUploadQueueComplete	// Queue plugin event
-	};
-	if(zswfd(9)){
-		swfu = new SWFUpload(settings);
-		swfu.zSwfUploadUploadSuccess=zSwfUploadUploadSuccess;
-	}else{
-		document.getElementById('htmlFileUpload').style.display="block";
-		document.getElementById('flashFileUpload').style.display="none";
-	}
-	$( "#sortable" ).sortable({
-		cancel:".captionbar",
-		start: function(event, ui) {
-			imageSortingStarted=true;
-			imageSortingChanged=false;
-		},
-		stop: function(event, ui) {
-			var image_id=ui.item[0].id.substr(5);
-		    toggleImageCaptionUpdate("imagecaptionupdate"+image_id,'none',true);
-			if(debugImageLibrary) document.getElementById("forimagedata").value+="sortable stopped.\n";
-			if(imageSortingStarted && imageSortingChanged){
-				imageSortingChanged=false;
-				imageSortingStarted=false; 
-				if(debugImageLibrary) document.getElementById("forimagedata").value+=("I moved from "+ui.originalPosition+" to "+ui.position+" - updating via ajax!\n");
-				ajaxSaveSorting();
-		   }
-		   
-		},
-		change: function(event, ui) {
-			if(debugImageLibrary) document.getElementById("forimagedata").value+="sortable changed.\n";
-			imageSortingChanged=true;
-		}
-	});
-}
 
 
 function getAgentLeads(user_id){
@@ -226,7 +138,6 @@ function getAgentLeads(user_id){
 }
 
 // start video-library
-var swfu=false; 
 var debugVideoLibrary=false;
 var arrVideoLibrary=new Object();
 var zVideoLibraryIntervalId=false;
@@ -261,7 +172,7 @@ function zDeleteVideo(libraryId){
 		//document.getElementById('embedMenuDiv').style.display="none";
 		var tempObj={};
 		tempObj.id="zAjaxDeleteVideo";
-		tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=deleteVideo&video_id="+t.video_id+"&libraryid="+libraryId;
+		tempObj.url="/z/_com/app/video-library?method=deleteVideo&video_id="+t.video_id+"&libraryid="+libraryId;
 		tempObj.cache=false;
 		tempObj.callback=zAjaxDeleteVideoCallback;
 		tempObj.ignoreOldRequests=false;
@@ -308,6 +219,7 @@ function zAjaxEncodeProgressCallback(r){
 			t.divVideoError.innerHTML='There was an error encoding the video, please try again or contact the webmaster for assistance. Cause: '+r.errorMessage;
 		}else if(r.percent === 100){
 			if(r.previewImage){
+				$("#divprogressbar"+t.id).css("float", "none");
 				t.divProgress.style.width="110px";
 				t.divProgress.style.cssFloat="left";
 				t.divProgress.innerHTML='<img src="/zupload/video/'+r.filename+'-00001.jpg" width="100" alt="Video" />';
@@ -316,12 +228,13 @@ function zAjaxEncodeProgressCallback(r){
 				t.divProgress.innerHTML='Complete - Image Preview Not Available';
 				t.posterImage=false;
 			}
+			$("#divprogress2_"+t.id).html("Encoding complete.");
 			t.divProgressName.style.width="80%";
 			t.divProgressName.style.cssFloat="left";
 			t.videoFile='/zupload/video/'+r.filename;
 			var tempObj={};
 			tempObj.id="zAjaxSaveQueueToVideo";
-			tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=saveQueueToVideo&queue_id="+r.queue_id;
+			tempObj.url="/z/_com/app/video-library?method=saveQueueToVideo&queue_id="+r.queue_id;
 			tempObj.cache=false;
 			tempObj.callback=zAjaxSaveQueueToVideoCallback;
 			tempObj.ignoreOldRequests=false;
@@ -330,7 +243,7 @@ function zAjaxEncodeProgressCallback(r){
 			if(r.percent === 0){
 				remainingTime='Calculating';
 			}
-			t.divProgress.innerHTML='Encoding | Progress: '+r.percent+'% | Seconds remaining: '+(remainingTime);
+			$("#divprogress2_"+t.id).html('Encoding | Progress: '+r.percent+'% | Seconds remaining: '+(remainingTime));
 		}
 		t.divProgressBg2.style.width=Math.round((r.percent/100)*progressBarWidth)+"px";
 		if(r.percent < 100){
@@ -352,13 +265,11 @@ function zAjaxEncodeProgressCallback(r){
 function zAjaxEncodeProgress(){
 	var tempObj={};
 	tempObj.id="zAjaxVideoEncodeProgress";
-	tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=videoencodeprogress&queue_id_list="+arrProgressVideo.join(",");
+	tempObj.url="/z/_com/app/video-library?method=videoencodeprogress&queue_id_list="+arrProgressVideo.join(",");
 	tempObj.cache=false;
 	tempObj.callback=zAjaxEncodeProgressCallback;
 	tempObj.ignoreOldRequests=false;
 	zAjax(tempObj);	
-	var bc=document.getElementById('swfupload_btnCancel');
-	bc.disabled=false;
 }
 function zAjaxEncodeCancelCallback(r){
 	var r2=eval('(' + r + ')');
@@ -385,7 +296,7 @@ function cancelEncoding(){
 	}
 	var tempObj={};
 	tempObj.id="zAjaxVideoEncodeCancel";
-	tempObj.url="/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=videoencodecancel&queue_id_list="+arrProgressVideo.join(",");
+	tempObj.url="/z/_com/app/video-library?method=videoencodecancel&queue_id_list="+arrProgressVideo.join(",");
 	tempObj.cache=false;
 	tempObj.callback=zAjaxEncodeCancelCallback;
 	tempObj.ignoreOldRequests=false;
@@ -411,51 +322,12 @@ function myUploadSuccess(obj, serverData){
 		arrVideoLibrary[ac[i]].width=r.width;
 		arrVideoLibrary[ac[i]].height=r.height;
 		arrVideoLibrary[ac[i]].divProgressName.innerHTML=r.video_file;
-		//alert("queue_id: "+r.queue_id+" | uploadId:"+ac[i]);
-		//alert(arrVideoLibrary[ac[i]].name);
 	}
 	clearInterval(zVideoLibraryIntervalId);
 	zVideoLibraryIntervalId=setInterval(function(){zAjaxEncodeProgress();},1000);
-	this.zSwfUploadUploadSuccess(obj, serverData);
-	var bc=document.getElementById('swfupload_btnCancel');
-	bc.disabled=false;
 }
 function myUploadError(obj, serverData,s3){			
 	alert('Upload Cancelled');//:'+obj.name+" | "+serverData+" | "+s3);	
-}
-function myUploadStart(obj, b, c){
-	var t=new Object();
-	t.name=obj.name;
-	t.size=obj.size;
-	t.sizeMB=Math.round((obj.size/1024/1024)*100)/100;
-	t.id=obj.id;
-	var d=document.getElementById("sortable");
-	t.NewLI = document.createElement("LI");
-	t.NewLI.id='div'+obj.id;
-	t.NewLI.innerHTML = '<div id="divprogressname'+obj.id+'" class="videodivclass">'+t.name+'<\/div>			<div id="divprogress'+obj.id+'">Uploading '+t.sizeMB+'mb | Progress: 0% | Seconds remaining: Calculating<\/div><div id="divprogressbar'+obj.id+'" style="border:1px solid #999; width:100px; height:10px;"><div id="divprogressbg'+obj.id+'" style="background-color:#EEE; width:0px; height:10px;"><\/div>	<div id="divprogressbg2'+obj.id+'" style="background-color:#090; margin-top:-5px; width:0px; height:5px;"><\/div><\/div>		';
-	d.appendChild(t.NewLI);
-	t.startUploadDate=new Date();
-	t.div=document.getElementById('div'+obj.id);
-	t.divVideoError=document.getElementById('divvideoerror'+t.id);
-	t.divProgressName=document.getElementById('divprogressname'+obj.id);
-	t.divProgress=document.getElementById('divprogress'+obj.id);
-	t.divProgressBg=document.getElementById('divprogressbg'+obj.id);
-	t.divProgressBg2=document.getElementById('divprogressbg2'+obj.id);
-	arrVideoLibrary[obj.id]=t;
-	arrCurVideo.push(obj.id);
-	
-}
-function myUploadProgress(obj, bytesUploaded, bytesTotal){
-	var t=arrVideoLibrary[obj.id];
-	t.percentDone=Math.round((bytesUploaded/bytesTotal)*10000)/100;
-	var curDate=new Date();
-	var mult=(100/Math.max(0.01,t.percentDone));
-	var etaTime=mult*(curDate.getTime()-t.startUploadDate.getTime());
-	var remainingTime=Math.round(Math.round((etaTime-(curDate.getTime()-t.startUploadDate.getTime()))*100)/100);
-	t.divProgress.innerHTML='Uploading: '+t.sizeMB+'mb | Progress: '+t.percentDone+'% | Seconds Remaining: '+Math.round(remainingTime/1000)+'';
-	t.divProgressBg.style.width=Math.round((t.percentDone/100)*progressBarWidth)+"px";
-	//alert(a+":"+b+":"+c);	
-	
 }
 function zAjaxKeepSessionActiveCallback(file, serverdata){
 	// do nothing	
@@ -463,57 +335,11 @@ function zAjaxKeepSessionActiveCallback(file, serverdata){
 function keepSessionActive(){ 
 	var tempObj={};
 	tempObj.id="zKeepSessionActive";
-	tempObj.url="/z/_com/app/video-library?method=videokeepsessionactive&"+sessionIDName+"="+zGetCookie(sessionIDName);
+	tempObj.url="/z/_com/app/video-library?method=videokeepsessionactive";
 	tempObj.cache=false;
 	tempObj.callback=zAjaxKeepSessionActiveCallback;
 	tempObj.ignoreOldRequests=false;
 	zAjax(tempObj);	
-}
-function setupSWFUpload(){
-	document.getElementById("encodingRes").innerHTML=document.getElementById('video_width').value+"x"+document.getElementById('video_height').value;
-	var settings = {
-		flash_url : "/z/javascript/swfupload/swfupload.swf",
-		upload_url: "/z/_com/app/video-library?"+sessionIDName+"="+zGetCookie(sessionIDName)+"&method=videoprocessform&zFPE=1&video_width="+document.getElementById('video_width').value+"&video_height="+document.getElementById('video_height').value, 
-		file_size_limit : "1000 MB",
-		file_post_name : "video_file",
-		file_types : "*.3g2;*.3gp;*.asf;*.asx;*.avi;*.flv;*.mov;*.mp4;*.mpg;*.swf;*.vob;*.wmv;*.divx;*.f4v;*.m2p;*.m4v;*.mkv;*.mpeg;*.ogv;*.webm;*.xvid;",
-		file_types_description : "All Video Files",
-		file_upload_limit : 0,
-		file_queue_limit : 0,
-		custom_settings : {
-			progressTarget : "fsUploadProgress",
-			cancelButtonId : "swfupload_btnCancel"
-		},
-		debug: debugVideoLibrary,
-
-		// Button settings
-		//button_image_url: "/z/javascript/swfupload/TestImageNoText_65x29.png",
-		button_width: "260",
-		button_height: "32", 
-		button_placeholder_id: "spanButtonPlaceHolder",
-		button_text: '<span class="swfupload-theFont">Click here to upload videos<\/span>',
-		button_text_style: ".swfupload-theFont { font-size: 16px; font-weight:bold;cursor:pointer; font-family:Verdana, Geneva, sans-serif; line-height:18px; }",
-		button_text_left_padding: 15,
-		button_text_top_padding: 3,
-			button_action : SWFUpload.BUTTON_ACTION.SELECT_FILES,
-
-			button_cursor : SWFUpload.CURSOR.HAND,
-
-		// The event handler functions are defined in handlers.js
-		file_queued_handler : zSwfUploadFileQueued,
-		file_queue_error_handler : zSwfUploadFileQueueError,
-		file_dialog_complete_handler : zSwfUploadFileDialogComplete,
-		upload_start_handler : myUploadStart,
-		upload_progress_handler : myUploadProgress,
-		upload_error_handler : myUploadError,//zSwfUploadUploadError,
-		upload_success_handler : myUploadSuccess,
-		upload_complete_handler : zSwfUploadUploadComplete,
-		queue_complete_handler : zSwfUploadQueueComplete	// Queue plugin event
-	};
-
-	swfu = new SWFUpload(settings);
-	swfu.zSwfUploadUploadSuccess=zSwfUploadUploadSuccess;
-	
 }
 	
 function ajaxSaveVideo(id){

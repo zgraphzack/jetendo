@@ -688,7 +688,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 			application.zcore.functions.z404("No access to image_library_id");	
 		}
 	}
-	if(structkeyexists(form, 'image_file') EQ false or fileexists(form.image_file) EQ false or structkeyexists(form, 'image_library_id') EQ false){
+	if(structkeyexists(form, 'image_file') EQ false or fileexists(listGetAt(form.image_file, 1)) EQ false or structkeyexists(form, 'image_library_id') EQ false){
 		if(form.disableImageProcessOutput){
 			return {
 				success:false,
@@ -708,7 +708,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		ext=application.zcore.functions.zGetFileExt(filename); 
 	}else{ 
 		fileName=getfilefrompath(form.image_file);
-		application.zcore.functions.zcreatedirectory(tempPath);
+		/*application.zcore.functions.zcreatedirectory(tempPath);
 		var copyResult=application.zcore.functions.zCopyFile(form.image_file, tempPath&fileName, false);
 		form.image_file=tempPath&fileName;
 		if(copyResult EQ false){
@@ -720,7 +720,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 			}else{
 				application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - imageprocessform() failed to copy file.");
 			}
-		}
+		}*/
 		ext=application.zcore.functions.zGetFileExt(form.image_file); 
 	}
 	if(ext EQ 'zip'){
@@ -1371,7 +1371,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var qImages=0;
 	var r=0;
 	var theMeta=0;
-
+	application.zcore.template.setTag("title", "Image Library");
 	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
 	tempId=form.image_library_id
 	var qLibrary=this.getLibraryById(form.image_library_id);
@@ -1390,23 +1390,25 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
 		application.zcore.functions.z404("No access to image_library_id");	
 	}
-	if(structkeyexists(form, 'image_file') and form.image_file NEQ ""){
+	//if(structkeyexists(form, 'image_file') and form.image_file NEQ ""){
 		request.imageLibraryHTMLUpload=true;
 		local.failed=false;
-		if(not isArray(form.image_file) or fileexists(form.image_file)){
+		/*if(not isArray(form.image_file) or fileexists(form.image_file)){
 			r=this.imageprocessform();
 			if(not r){
 				local.failed=true;
 			}
-		}else{
-			throw('multiple file upload is not supported by Railo 4.1.011 currently | ticket: https://issues.jboss.org/browse/RAILO-2468', "custom");
-			file action="uploadAll" result="cffileresult" destination="#request.zos.globals.serverprivatehomedir&'_cache/temp_files/'#" nameconflict="makeunique" filefield="form.imagefiles[#i#]" charset="utf-8";
-			for(i=1;i LTE arraylen(cffileresult);i++){
-				form.image_file=cffileresult[i].clientfile;
-				r=this.imageprocessform();
-				if(not r){
-					local.failed=true;
-				}
+		}else{*/
+	tempPath=request.zos.globals.serverprivatehomedir&'_cache/temp_files/';
+	application.zcore.functions.zcreatedirectory(tempPath);
+	if(structkeyexists(form, 'imagefiles') and form.imagefiles NEQ ""){
+		// patched Railo 4.2.1.002 to support multiple file uploads
+		file action="uploadAll" result="cffileresult" destination="#tempPath#" nameconflict="makeunique" filefield="imagefiles" charset="utf-8";
+		for(n=1;n LTE arraylen(cffileresult);n++){
+			form.image_file=cffileresult[n].serverDirectory&"/"&cffileresult[n].clientfile;
+			r=this.imageprocessform();
+			if(not r){
+				local.failed=true;
 			}
 		}
 		if(not local.failed){
@@ -1423,7 +1425,6 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	
 	application.zcore.functions.zRequireJquery();
 	application.zcore.functions.zRequireJqueryUI();
-	application.zcore.functions.zRequireSWFUpload();
 	</cfscript>
 
 	<cfsavecontent variable="db.sql">
@@ -1436,10 +1437,32 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	#application.zcore.skin.includeCSS("/z/a/stylesheets/style.css")#
 	<script type="text/javascript">
 	/* <![CDATA[ */
-	var swfu;  
 	var debugImageLibrary=false; 
-	var sessionIDName="#ucase(request.zos.serverSessionVariable)#";
 	zArrDeferredFunctions.push(function() { 
+
+		$( "##sortable" ).sortable({
+			cancel:".captionbar",
+			start: function(event, ui) {
+				imageSortingStarted=true;
+				imageSortingChanged=false;
+			},
+			stop: function(event, ui) {
+				var image_id=ui.item[0].id.substr(5);
+			    toggleImageCaptionUpdate("imagecaptionupdate"+image_id,'none',true);
+				if(debugImageLibrary) document.getElementById("forimagedata").value+="sortable stopped.\n";
+				if(imageSortingStarted && imageSortingChanged){
+					imageSortingChanged=false;
+					imageSortingStarted=false; 
+					if(debugImageLibrary) document.getElementById("forimagedata").value+=("I moved from "+ui.originalPosition+" to "+ui.position+" - updating via ajax!\n");
+					ajaxSaveSorting();
+			   }
+			   
+			},
+			change: function(event, ui) {
+				if(debugImageLibrary) document.getElementById("forimagedata").value+="sortable changed.\n";
+				imageSortingChanged=true;
+			}
+		});
 		var f='#form.fieldId#';
 		if(f != ""){
 			var field=window.parent.document.getElementById(f);
@@ -1447,7 +1470,6 @@ application.zcore.imageLibraryCom.displayImages(ts);
 				field.value="#form.image_library_id#";
 			}
 		}
-		zInitSWFUpload("#form.image_library_id#"); 
 	});
 	 /* ]]> */
 	</script>
@@ -1481,27 +1503,12 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<h2>Upload Images</h2> 
 	<table style="width:100%; border-spacing:0px;">
 	<tr><td style="vertical-align:top; width:1%; white-space:nowrap;">
-	
 	<form id="form1" action="#request.cgi_script_name#?method=imageform&amp;image_library_id=#form.image_library_id#" enctype="multipart/form-data" method="post">
 		<div id="htmlFileUpload" style="padding-right:10px;">
-		<input type="file" name="image_file" id="imagefiles" <!--- multiple="multiple" ---> /><br /><br />
+		<input type="file" name="imagefiles" id="imagefiles" <cfif server.railo.version EQ request.zos.customRailoVersion> multiple="multiple" </cfif> /><br /><br />
 		<input type="submit" name="submit222" value="Upload" />
 		</div>
-		<div id="flashFileUpload" style="display:none;">
-			<div class="swfupload-fieldset swfupload-flash" id="fsUploadProgress">
-				<span class="swfupload-legend">Upload Queue</span>
-				</div>
-				<div id="divStatus">0 Files Uploaded</div>
-				<div>
-				<span id="spanButtonPlaceHolder"></span>
-				<input id="swfupload_btnCancel" type="button" value="Cancel All Uploads" onclick="swfu.cancelQueue();" disabled="disabled" style="margin-left: 5px; padding:7px; font-size: 11px; height: 28px;" />
-			</div>
-		</div>
-		<script type="text/javascript">
-		/* <![CDATA[ */
-		zArrDeferredFunctions.push(function(){ setUploadField(); });
-		/* ]]> */
-		</script>
+	
 	</form></td><td style="vertical-align:top;"><p>This tool lets you upload multiple images (.jpg, .gif or .png) at once.<br />
 	You may also upload a compressed zip file with these image formats inside.<br />
 	Please note any files inside the zip that are not jpg, gif or png will be ignored.<br />
