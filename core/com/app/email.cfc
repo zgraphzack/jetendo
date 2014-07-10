@@ -220,7 +220,7 @@ text=eCom.forceAbsoluteURLs(text);
 	var n3=0;
 	var matched=false;
 	var arrU=arraynew(1);
-	var curDomain=replacenocase(request.zos.currentHostName, "http://www.","http://","one");
+	var curDomain=request.zos.currentHostName;
 	rs.html=arguments.html;
 	rs.newhtml=arguments.html;
 	rs.arrCID=arraynew(1); 
@@ -246,7 +246,10 @@ text=eCom.forceAbsoluteURLs(text);
 	n2=1;
 	
 	if(isDefined('request.zdebugemail')){
-	request.sendEmailDataARRIMAGE=arrImage;
+		request.sendEmailDataARRIMAGE=arrImage;
+	}
+	if(not directoryexists(request.zos.globals.serverprivatehomedir&'cid_tmp/')){
+		application.zcore.functions.zcreatedirectory(request.zos.globals.serverprivatehomedir&'cid_tmp/');
 	}
 	// map or download all the files to the filesystem and replace the text with the content ids
 	for(i=1;i LTE arraylen(arrImage);i+=2){
@@ -255,11 +258,11 @@ text=eCom.forceAbsoluteURLs(text);
 		// ignore existing content ids
 		if(trim(u) EQ '' or left(trim(u),4) EQ 'cid:') continue;
 		// convert u to absolute url
-		up=application.zcore.functions.zForceAbsoluteURL(curDomain,u);
-		up1=up;
+		up=u;
+		up1=application.zcore.functions.zForceAbsoluteURL(curDomain,urldecode(up));
 		// check if the file is on our server
-		dt=left(up,len(curDomain));
-		ht=request.zos.globals.homedir&removeChars(up,1,len(curDomain)+1);
+		dt=left(up1,len(curDomain));
+		ht=request.zos.globals.privatehomedir&removeChars(up1,1,len(curDomain)+1);
 		matched=0;
 		for(n3=1;n3 LTE arraylen(arrU);n3++){
 			if(trim(u) EQ trim(arrU[n3])){
@@ -267,19 +270,19 @@ text=eCom.forceAbsoluteURLs(text);
 			}
 		}
 		if(matched EQ 0){
-			if(find("?",up) EQ 0 and dt EQ curDomain and isImageFile(ht)){
+			if(find("?",up1) EQ 0 and dt EQ curDomain and isImageFile(ht)){
 				// fast grab from filesystem - no download needed
-				up=ht;
-				upf=up;
+				up=up1;
+				upf=ht;
 			}else{
 				// get rewrite, dynamic or remote urls using http
-				u2=u;
+				u2=up1;
 				pos=find("?",u2);
 				if(pos NEQ 0){
 					u2=left(u2,pos-1);
 				}
 				ext=application.zcore.functions.zGetFileExt(getFileFromPath(u2));
-				p=request.zos.globals.serverhomedir&'static/e/cid_tmp/'&timeformat(now(),'mmss')&gettickcount();
+				p=request.zos.globals.serverprivatehomedir&'cid_tmp/'&timeformat(now(),'mmss')&gettickcount();
 				if(ext NEQ ''){
 					ext='.'&ext;
 				}
@@ -289,7 +292,7 @@ text=eCom.forceAbsoluteURLs(text);
 					n5++;
 				}
 				upf=p&n5&ext; // unique to the millisecond
-				
+
 				// ignore files that don't have an extension
 				if(find(','&ext&',', ',.jpg,.jpe,.gif,.png,') EQ 0){
 					//up='';
@@ -302,11 +305,9 @@ text=eCom.forceAbsoluteURLs(text);
 					}else{
 						up='{preview mode:#u# failed with status code #cfhttp.statuscode#}';
 					}*/
-				}else if(application.zcore.functions.zHTTPtoFile(up,upf) EQ false){
+				}else if(application.zcore.functions.zHTTPtoFile(up1,upf) EQ false){
 					// invalid link
-					up='';
-				}else{
-					up=upf;
+					upf='';
 				}
 			}
 		}
@@ -319,7 +320,7 @@ text=eCom.forceAbsoluteURLs(text);
 				arrayappend(rs.arrCID,up);	
 				matched=arraylen(rs.arrCID);
 			}
-			arrayappend(arrU,u);
+			arrayappend(arrU,upf);
 			ns=replace(ru,u,'cid:zcorecid'&matched,'ONE');
 			
 		}else if(up EQ ''){
@@ -471,18 +472,20 @@ if(rCom.isOK() EQ false){
 	ms["tif"]="image/tiff";*/
 	</cfscript>
 	<cfif arguments.ss.skipProcessing>
-		<cfif arguments.ss.preview EQ false><!--- server="#arguments.ss.popserver#" username="#arguments.ss.username#" password="#arguments.ss.password#" --->
+		<cfif arguments.ss.preview EQ false>
+			disabled<cfabort><!--- server="#arguments.ss.popserver#" username="#arguments.ss.username#" password="#arguments.ss.password#" --->
 <cfmail  TO = "#arguments.ss.to#" CC="#arguments.ss.cc#" BCC="#arguments.ss.bcc#" FROM="#arguments.ss.from#" replyto="#arguments.ss.replyto#" SUBJECT= "#arguments.ss.subject#" type="#cfmailType#" priority="#arguments.ss.priority#" mailerid="Web Mailer" charset="utf-8" failto="#arguments.ss.failto#" spoolenable="#arguments.ss.spoolenable#">
 <cfif emailType EQ 'text+html'>
 <cfmailpart wraptext="74" charset="utf-8" type="text/plain">#arguments.ss.text#</cfmailpart>
 </cfif><cfif emailType EQ 'text+html' or emailType EQ 'html'>
+ <cfmailparam name="Content-Type" value="multipart/related">
+#arguments.ss.html#<!---<cfmailpart  charset="utf-8" type="text/html"></cfmailpart>--->
 <cfloop index="count" from="1" to="#arraylen(arguments.ss.arrCID)#">
 <cfscript>
 mimetype=filegetmimetype(arguments.ss.arrCID[count]);
 </cfscript>
 <cfmailparam file="#arguments.ss.arrCID[count]#" disposition="inline" contentID="zcorecid#count#" type="#mimetype#">
-</cfloop>
-<cfmailpart  charset="utf-8" type="text/html">#arguments.ss.html#</cfmailpart></cfif><cfif emailType EQ 'html'>#arguments.ss.html#<cfelseif emailType EQ 'text'>
+</cfloop></cfif><cfif emailType EQ 'html'>#arguments.ss.html#<cfelseif emailType EQ 'text'>
 <cfmailpart charset="utf-8" type="text/plain">#arguments.ss.text#</cfmailpart></cfif>
 <cfloop index="count" from="1" to="#arraylen(arguments.ss.attachments)#">
 <cfscript>
@@ -491,11 +494,13 @@ mimetype=filegetmimetype(arguments.ss.attachments[count]);
 <cfmailparam file="#arguments.ss.attachments[count]#" disposition="attachment"><!---  type="#mimetype#"> --->
 </cfloop>
 </cfmail>
-<cfloop index="count" from="1" to="#arraylen(arguments.ss.arrCID)#">
-<cfscript>
-application.zcore.functions.zdeletefile(arguments.ss.arrCID[count]);
-</cfscript>
-</cfloop>
+			<cfloop index="count" from="1" to="#arraylen(arguments.ss.arrCID)#">
+				<cfscript>
+				if(arguments.ss.arrCID[count] contains "/cid_tmp/"){
+					application.zcore.functions.zdeletefile(arguments.ss.arrCID[count]);
+				}
+				</cfscript>
+			</cfloop>
 		</cfif>
 		<cfreturn>
 	</cfif>
@@ -599,15 +604,13 @@ application.zcore.functions.zdeletefile(arguments.ss.arrCID[count]);
 				arrayappend(arguments.ss.arrCID,rs2.arrCID[i]);
 			}
 		}			
-		arguments.ss.html=rereplacenocase(arguments.ss.html,'<(area|a)\s(.*)?\starget\s*=\s*(.*)?>','<\1 \2 target="_blank" z=\3>','ALL');
+		newhtml=rereplacenocase(newhtml,'<(area|a)\s(.*)?\starget\s*=\s*(.*)?>','<\1 \2 target="_blank" z=\3>','ALL');
 	}
 	if(isDefined('request.zdebugemail')){
 		rs.sendEmailData=arguments.ss;
 		rs.sendemaildata.newhtml=newhtml;
 	}
-	</cfscript>
-	<cfif arguments.ss.preview>
-		<cfscript>
+	if(arguments.ss.preview){
 		// add all cfmail fields to a debugging/preview object
 		rs.preview=StructNew();
 		rs.preview.insert=StructNew();
@@ -633,38 +636,49 @@ application.zcore.functions.zdeletefile(arguments.ss.arrCID[count]);
 		rs.preview.cfmail=ns;
 		rs.preview.text=arguments.ss.text;
 		rs.preview.html=arguments.ss.html;
-		</cfscript>
-	<cfelseif rCom.isOK() and arguments.ss.draft EQ false><!--- server="#arguments.ss.popserver#" username="#arguments.ss.username#" password="#arguments.ss.password#" --->
-<cfmail  TO = "#arguments.ss.to#" CC="#arguments.ss.cc#" BCC="#arguments.ss.bcc#" FROM="#arguments.ss.from#" replyto="#arguments.ss.replyto#" SUBJECT= "#arguments.ss.subject#" type="#cfmailType#" priority="#arguments.ss.priority#" mailerid="Web Mailer" charset="utf-8" failto="#arguments.ss.failto#" spoolenable="#arguments.ss.spoolenable#">
-<cfif emailType EQ 'text+html'>
-<cfmailpart wraptext="74" charset="utf-8" type="text/plain">#arguments.ss.text#</cfmailpart>
-</cfif><cfif emailType EQ 'text+html' or emailType EQ 'html'>
-<cfloop index="count" from="1" to="#arraylen(arguments.ss.arrCID)#">
-<cfscript>
-mimetype=filegetmimetype(arguments.ss.arrCID[count]);
-</cfscript>
-<cfmailparam file="#arguments.ss.arrCID[count]#" disposition="inline" contentID="zcorecid#count#" type="#mimetype#">
-</cfloop>
-<!---  <cfmailparam file="#arguments.ss.arrCID[count]#" disposition="inline" contentID="zcorecid#count#" type="image/#replace(application.zcore.functions.zGetFileExt(lcase(arguments.ss.arrCID[count])),'jpg','jpeg')#">
-</cfloop>
-<cfloop index="count" from="1" to="#arraylen(arguments.ss.attachments)#">
-<cfmailparam file="#arguments.ss.attachments[count]#" disposition="attachment" contentID="file#count#" type="image/#replace(application.zcore.functions.zGetFileExt(lcase(arguments.ss.attachments[count])),'jpg','jpeg')#">
-</cfloop> --->
-<cfmailpart  charset="utf-8" type="text/html">#newhtml#</cfmailpart></cfif><cfif emailType EQ 'html'>#newhtml#<cfelseif emailType EQ 'text'><cfmailpart charset="utf-8" type="text/plain">#arguments.ss.text#</cfmailpart></cfif>
-<cfloop index="count" from="1" to="#arraylen(arguments.ss.attachments)#">
-<cfscript>
-mimetype=filegetmimetype(arguments.ss.attachments[count]);
-</cfscript>
-<cfmailparam file="#arguments.ss.attachments[count]#" disposition="attachment"><!---  type="#mimetype#"> --->
-</cfloop>
-</cfmail>
-<cfloop index="count" from="1" to="#arraylen(arguments.ss.arrCID)#">
-<cfscript>
-application.zcore.functions.zdeletefile(arguments.ss.arrCID[count]);
-</cfscript>
-</cfloop>
-	</cfif>
-	<cfscript>
+	}else if(rCom.isOK() and arguments.ss.draft EQ false){
+		// server="#arguments.ss.popserver#" username="#arguments.ss.username#" password="#arguments.ss.password#"
+
+		if(arraylen(arguments.ss.arrCID)){
+			mail  TO = "#arguments.ss.to#" CC="#arguments.ss.cc#" BCC="#arguments.ss.bcc#" FROM="#arguments.ss.from#" replyto="#arguments.ss.replyto#" SUBJECT= "#arguments.ss.subject#" type="html" priority="#arguments.ss.priority#" mailerid="Web Mailer" charset="utf-8" failto="#arguments.ss.failto#" spoolenable="#arguments.ss.spoolenable#"{
+				for(count=1;count LTE arraylen(arguments.ss.arrCID);count++){
+					mimetype=filegetmimetype(arguments.ss.arrCID[count]);
+					mailparam file="#arguments.ss.arrCID[count]#" disposition="inline" contentID="zcorecid#count#" type="#mimetype#";
+				}
+				mailpart type="text/html"{
+					echo(newhtml);
+				}
+				for(count=1;count LTE arraylen(arguments.ss.attachments);count++){
+					mimetype=filegetmimetype(arguments.ss.attachments[count]);
+					mailparam file="#arguments.ss.attachments[count]#" disposition="attachment";
+				}
+			}
+		}else{
+			mail  TO = "#arguments.ss.to#" CC="#arguments.ss.cc#" BCC="#arguments.ss.bcc#" FROM="#arguments.ss.from#" replyto="#arguments.ss.replyto#" SUBJECT= "#arguments.ss.subject#" type="#cfmailType#" priority="#arguments.ss.priority#" mailerid="Web Mailer" charset="utf-8" failto="#arguments.ss.failto#" spoolenable="#arguments.ss.spoolenable#"{
+				if(emailType EQ 'text+html'){
+					mailpart wraptext="74" charset="utf-8" type="text/plain"{
+						echo(arguments.ss.text);
+					}
+				}
+				if(emailType EQ 'text+html' or emailType EQ 'html'){
+					mailpart  charset="utf-8" type="text/html"{
+						echo(newhtml);
+					}
+				}
+				if(emailType EQ 'html'){
+					echo(newhtml);
+				}else if(emailType EQ 'text'){
+					mailpart charset="utf-8" type="text/plain"{
+						echo(arguments.ss.text);
+					}
+				}
+				for(count=1;count LTE arraylen(arguments.ss.attachments);count++){
+					mimetype=filegetmimetype(arguments.ss.attachments[count]);
+					mailparam file="#arguments.ss.attachments[count]#" disposition="attachment";
+				}
+			}
+		}
+	}
 	if(arguments.ss.save and rCom.isOK()){
 		ts = structnew();	
 		ts.zemail_datetime = request.zos.mysqlnow;
@@ -1327,14 +1341,15 @@ if(rCom.isOK() EQ false){
 			zemail.confirmURL="##DELAYzemail.confirmURL##";
 			zemail.replaceDelayconfirmURL="#zemail.domain#/z/-ein#qE.user_id#.#qE.user_key#";
 			zemail.preferencesURL="#zemail.domain#/z/-epr#qE.user_id#.#qE.user_key#";
-	if(structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0){
-		zemail.unsubscribeURL="#zemail.domain#/z/-eou#qE.user_id#.#arguments.ss.zemail_campaign_id#.#qE.user_key#";
-		zemail.trackString="#zemail.domain#/z/-eck#qE.user_id#.#qE.user_key#.#arguments.ss.zemail_campaign_id#.";
-		zemail.viewEmailURL="#zemail.domain#/z/-evm#qE.user_id#.#arguments.ss.zemail_campaign_id#.#qE.user_key#.#qEmailTemplate.zemail_template_type_id##newParamList#";
-		zemail.openImageUrl="#zemail.domain#/z/-eck#qE.user_id#.#qE.user_key#.#arguments.ss.zemail_campaign_id#.1.0.0";
-	}else{
-		zemail.unsubscribeURL="#zemail.domain#/z/user/out/index";	
-	}
+			if(structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0){
+				zemail.unsubscribeURL="#zemail.domain#/z/-eou#qE.user_id#.#arguments.ss.zemail_campaign_id#.#qE.user_key#";
+				zemail.trackString="#zemail.domain#/z/-eck#qE.user_id#.#qE.user_key#.#arguments.ss.zemail_campaign_id#.";
+				zemail.viewEmailURL="#zemail.domain#/z/-evm#qE.user_id#.#arguments.ss.zemail_campaign_id#.#qE.user_key#.#qEmailTemplate.zemail_template_type_id##newParamList#";
+				zemail.openImageUrl="#zemail.domain#/z/-eck#qE.user_id#.#qE.user_key#.#arguments.ss.zemail_campaign_id#.1.0.0";
+			}else{
+				zemail.unsubscribeURL="#zemail.domain#/z/-eou#qE.user_id#.0.#qE.user_key#";
+				//zemail.unsubscribeURL="#zemail.domain#/z/user/out/index";	
+			}
 			</cfscript>
 		</cfloop>
 	</cfif>
@@ -1383,7 +1398,6 @@ if(rCom.isOK() EQ false){
 <meta charset="utf-8" />
 </head><body>
 <cfif structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0 and arguments.ss.hideViewEmailUrl EQ false><a href="#zemail.viewEmailUrl#" style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px; line-height:14px;">Email display problems? Click here to view full version</a><br /><br /></cfif>
-<table style="width:1%;"><tr><td>
 <table style="width:100%;font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px; line-height:14px; border:1px solid ##AA9999;">
 <cfif showOptinMessage>
 <tr><td style="padding:5px; background-color:##009900; color:##FFFFFF;"><strong>Opt-in Action Required Below:</strong></td></tr>
@@ -1396,12 +1410,9 @@ May we send you future emails? <a href="#zemail.confirmURL#">Yes, Opt-in</a> or 
 <tr><td></td></tr>
 </table><br />
 
-<table style="width:100%;font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px; line-height:14px; border:1px solid ##AA9999;">
 </cfif>
-<tr>
-<td>##htmlContent##</td>
-</tr>
-</table><br />
+##htmlContent##
+
 <table style="width:100%; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px; background-color:##EFEFEF; border:1px solid ##999999;">
 <!--- 
 removed since this is not secure
@@ -1423,7 +1434,7 @@ This email was sent to: #zemail.protectedData.emailStruct.to#
 <cfif zemail.preferencesURL NEQ "" and arguments.ss.user_id NEQ 0>
  | <a href="#zemail.preferencesURL#" style=" line-height:24px;">Contact Preferences</a>
 </cfif> | 
-<a href="#zemail.unsubscribeURL#" style="font-weight:bold;">Unsubscribe</a><!---  </cfif> ---><br /></td></tr></table></td></tr></table>
+<a href="#zemail.unsubscribeURL#" style="font-weight:bold;">Unsubscribe</a><!---  </cfif> ---><br /></td></tr></table>
 <cfif structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0><img src="#zemail.openImageUrl#" width="5" height="5"></cfif>
 </body></html>
 </cfsavecontent>
