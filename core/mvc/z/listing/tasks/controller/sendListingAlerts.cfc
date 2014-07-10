@@ -247,8 +247,9 @@
 	}
 	if(request.zos.istestserver EQ false){
 		db.sql&=" and site_live=#db.param('1')#";
+	}else{
+		db.sql&=" LIMIT #db.param(0)#, #db.param(1)# ";
 	}
-	db.sql&=" LIMIT #db.param(0)#, #db.param(1)# ";
 	local.qM=db.execute("qM");  
 	for(row in local.qM){
         // send email with zDownloadLink(); to run the alert on the correct domain
