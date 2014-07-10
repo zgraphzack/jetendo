@@ -75,7 +75,7 @@
 	}else{
 		output=rs.sendReturnData.preview.html;
 	}
-	writeoutput('<table style="width:1%;"><tr><td>'&output&'</td></tr></table>');
+	writeoutput('<table style="width:750px;"><tr><td>'&output&'</td></tr></table>');
 	application.zcore.template.setTemplate("zcorerootmapping.templates.nothing",true,true);
 	application.zcore.template.setTag("title",rs.sendReturnData.preview.cfmail.subject);
 	application.zcore.template.setTag("pagetitle",rs.sendReturnData.preview.cfmail.subject);

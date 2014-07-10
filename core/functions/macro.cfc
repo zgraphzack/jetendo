@@ -365,6 +365,9 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 </cfscript>
 </cffunction>
 
+<!--- 
+application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never", httponly:"false" });
+ --->
 <cffunction name="zCookie" localmode="modern" returntype="any" output="no">
 	<cfargument name="ss" type="struct" required="yes">
     <cfscript>
@@ -372,7 +375,11 @@ application.zcore.template.appendTag("meta",'<script type="text/javascript" src=
 	ts.expires="never";
 	structappend(arguments.ss,ts,false);
 	</cfscript>
-    <cfcookie name="#arguments.ss.name#" value="#arguments.ss.value#" expires="#arguments.ss.expires#">
+	<cfif structkeyexists(arguments.ss, 'httponly')>
+    	<cfcookie name="#arguments.ss.name#" value="#arguments.ss.value#" expires="#arguments.ss.expires#" httponly="#arguments.ss.httponly#">
+	<cfelse>
+    	<cfcookie name="#arguments.ss.name#" value="#arguments.ss.value#" expires="#arguments.ss.expires#">
+	</cfif>
 </cffunction>
 
 

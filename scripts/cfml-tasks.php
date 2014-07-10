@@ -100,6 +100,14 @@ function getTasks(){
 	$t->url=$adminDomain."/z/listing/tasks/sendListingAlerts/index";
 	array_push($arrTask, $t);
 
+
+	$t=new stdClass();
+	$t->logName="send-listing-email-alerts.html";
+	$t->interval="daily";
+	$t->startTimeOffsetSeconds=500;
+	$t->url=$adminDomain."/z/server-manager/tasks/send-mailing-list-alerts/index";
+	array_push($arrTask, $t);
+
 	$t=new stdClass();
 	$t->logName="listing-update-metadata.html";
 	$t->interval=3600;

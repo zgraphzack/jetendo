@@ -47,6 +47,21 @@ this.app_id=10;
 	</cfscript>
 </cffunction>
 
+<cffunction name="getBlogLinkFromStruct" localmode="modern" returntype="string" output="no">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfscript>
+	if(arguments.struct.blog_unique_name NEQ ''){
+		return arguments.struct.blog_unique_name;
+	}else{
+		return application.zcore.app.getAppCFC("blog").getBlogLink(
+			application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id, 
+			arguments.struct.blog_id,"html",
+			arguments.struct.blog_title,
+			arguments.struct.blog_datetime);
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="getBlogLink" localmode="modern" returntype="string" output="no">
 	<cfargument name="appid" type="string" required="yes">
 	<cfargument name="id" type="string" required="yes">
@@ -1259,6 +1274,18 @@ this.app_id=10;
 		<tr>
 		<th>Category Home URL</th>
 		<td><input type="text" name="blog_config_category_home_url" id="blog_config_category_home_url" value="#form.blog_config_category_home_url#" size="40"  maxlength="100"> <a href="##" onclick=" document.getElementById('blog_config_category_home_url').value='{default}';return false;">Restore default</a></td>
+		</tr>
+		<tr>
+		<th>Email Alerts Enabled?</th>
+		<td>#application.zcore.functions.zInput_Boolean("blog_config_email_alerts_enabled")#</td>
+		</tr>
+		<tr>
+		<th>Email Alert Subject</th>
+		<td><input type="text" name="blog_config_email_alert_subject" value="#form.blog_config_email_alert_subject#" size="60"  maxlength="100"></td>
+		</tr>
+		<tr>
+		<th>Email Full Article?</th>
+		<td>#application.zcore.functions.zInput_Boolean("blog_config_email_full_article")#</td>
 		</tr>
 		<tr>
 		<th>Archive Name</th>

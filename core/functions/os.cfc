@@ -1460,28 +1460,6 @@ application.zcore.functions.zLogError(ts);
 </cffunction>
 
 
-<!--- application.zcore.functions.zRequireSWFUpload(); --->
-<cffunction name="zRequireSWFUpload" localmode="modern" output="no" returntype="any">
-    <cfargument name="package" type="string" required="no" default="">
-	<cfscript>
-	var theMeta="";
-	var ts=structnew();
-    application.zcore.functions.zForceIncludePackage("zRequireSWFUpload", arguments.package);
-    if(structkeyexists(request.zos,'JavascriptRequiredSWFUpload') EQ false){
-		savecontent variable="theMeta"{
-			writeoutput(application.zcore.skin.includeJS("/z/javascript/swfupload/swfupload.js", "", 1));
-			writeoutput(application.zcore.skin.includeJS("/z/javascript/swfupload/swfupload.queue.js", "", 2));
-			writeoutput(application.zcore.skin.includeJS("/z/javascript/swfupload/fileprogress.js", "", 2));
-			writeoutput(application.zcore.skin.includeJS("/z/javascript/swfupload/handlers.js", "", 2));
-			writeoutput(application.zcore.skin.includeCSS("/z/javascript/swfupload/swfupload.css"));
-		}
-		application.zcore.template.appendTag("meta", theMeta);
-		request.zos.JavascriptRequiredSWFUpload=true;
-	}
-	</cfscript>
-</cffunction> 
-
-
 
 
 <cffunction name="zPublishCss" localmode="modern" returntype="any" output="no">

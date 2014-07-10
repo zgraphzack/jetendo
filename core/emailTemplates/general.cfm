@@ -27,8 +27,7 @@ Sent from our web site: #request.zos.globals.domain#/
 </cfif>
 -------------------------------
 
-#request.zTempNewEmailPlainText#
-
+#request.zTempNewEmailPlainText##chr(10)#
 <cfif application.zcore.functions.zVarSO("Global Email Plain Text Footer",request.zos.globals.id,true) NEQ "">
 #application.zcore.functions.zVarSO("Global Email Plain Text Footer",request.zos.globals.id,true)#
 <!--- <cfelse>

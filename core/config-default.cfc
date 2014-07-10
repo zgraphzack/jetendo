@@ -23,6 +23,8 @@
 		return duplicate(server["jetendo_"&ts.zos.installPath&"_globalscache"]); 
 	}
 	
+	ts.zos.customRailoVersion = ""; // if you build your own railo, and features for specific versions, then put in the custom railo version number here, i.e. 4.2.1.102
+
 	// sign up for grammarly's affiliate program and replace this url with a tracking url provided by their system to earn commission.
 	ts.zos.grammarlyTrackingURL="http://tr.grammarly.com/aff_c?offer_id=37&aff_id=3187";
 	ts.zos.mlsImagesDomain=""; // optionally change the domain that MLS images are served from. i.e. http://mls-images.mycompany.com, or leave blank.

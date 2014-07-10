@@ -167,6 +167,7 @@
 		<p><a href="/z/server-manager/tasks/site-backup/index" target="_blank">Backup All Sites</a></p>
 		<p><a href="/z/server-manager/tasks/search-index/index">Re-index All Site Content</a></p>
 		<p><a href="/z/server-manager/tasks/verify-apps/index" target="_blank">Verify Apps</a></p>
+		<p><a href="/z/server-manager/tasks/send-mailing-list-alerts/index?forceDebug=1" target="_blank">Debug Mailing List Alerts (Won't Send Email)</a></p>
 		<cfif request.zos.istestserver>
 			<h3>Unit Tests</h3>
 			<cfscript>
