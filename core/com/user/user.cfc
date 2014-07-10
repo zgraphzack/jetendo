@@ -688,7 +688,7 @@ userCom.checkLogin(inputStruct);
 	<cfcookie name="z_tmpusername2" value="" expires="now">
 	<cfcookie name="z_tmppassword2" value="" expires="now">
 	<cfif not arguments.retainToken>
-		<cfcookie name="ztoken" value="" expires="now">	
+		<cfcookie name="ztoken" value="" expires="now" httponly="true">	
 	</cfif>
 	<cfcookie name="inquiries_email" value="" expires="now">
 	<cfcookie name="inquiries_first_name" value="" expires="now">
@@ -1177,6 +1177,7 @@ formString = userCom.loginForm(inputStruct);
 	//new permanent token cookie is set
 	local.ts9=structnew();
 	local.ts9.name="ztoken";
+	local.ts9.httponly=true;
 	local.ts9.value=request.zsession.ztoken;
 	local.ts9.expires="never";
 	application.zcore.functions.zcookie(local.ts9);
@@ -1215,6 +1216,7 @@ formString = userCom.loginForm(inputStruct);
 			}
 			local.ts9=structnew();
 			local.ts9.name="ztoken";
+			local.ts9.httponly=true;
 			local.ts9.value=request.zsession.ztoken;
 			local.ts9.expires="never";
 			application.zcore.functions.zcookie(local.ts9);
@@ -1250,6 +1252,7 @@ formString = userCom.loginForm(inputStruct);
 		local.ts9=structnew();
 		local.ts9.name="ztoken";
 		local.ts9.value="";
+		local.ts9.httponly=true;
 		local.ts9.expires="now";
 		application.zcore.functions.zcookie(local.ts9);
 		return false;
@@ -1272,6 +1275,7 @@ formString = userCom.loginForm(inputStruct);
 		local.ts9=structnew();
 		local.ts9.name="ztoken";
 		local.ts9.value="";
+		local.ts9.httponly=true;
 		local.ts9.expires="now";
 		application.zcore.functions.zcookie(local.ts9);
 		this.setLoginLog(0);
@@ -1322,6 +1326,7 @@ formString = userCom.loginForm(inputStruct);
 			local.ts9.name="ztoken";
 			local.ts9.value=request.zsession.ztoken;
 			local.ts9.expires="never";
+			local.ts9.httponly=true;
 			application.zcore.functions.zcookie(local.ts9);
 			if(local.debug){
 				abort;	
@@ -1331,6 +1336,7 @@ formString = userCom.loginForm(inputStruct);
 			local.ts9=structnew();
 			local.ts9.name="ztoken";
 			local.ts9.value="";
+			local.ts9.httponly=true;
 			local.ts9.expires="now";
 			application.zcore.functions.zcookie(local.ts9);
 			if(local.debug){ 
@@ -1355,6 +1361,7 @@ formString = userCom.loginForm(inputStruct);
 	local.ts9=structnew();
 	local.ts9.name="ztoken";
 	local.ts9.value="";
+	local.ts9.httponly=true;
 	local.ts9.expires="now";
 	application.zcore.functions.zcookie(local.ts9);
 	if(local.debug){

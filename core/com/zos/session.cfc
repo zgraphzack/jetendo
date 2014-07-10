@@ -187,7 +187,7 @@ ssl session - lost on browser close - lost on server reboot
 		}*/
 	}
 	timeSpan=CreateTimeSpan(0, 0, request.zos.sessionExpirationInMinutes, 0);
-	application.zcore.functions.zCookie({name:request.zos.serverSessionVariable, value:currentId, expires: timeSpan });
+	application.zcore.functions.zCookie({name:request.zos.serverSessionVariable, value:currentId, expires: timeSpan, httponly:true });
 	request[request.zos.serverSessionVariable]=currentId;
 	return currentId;
 	</cfscript>
