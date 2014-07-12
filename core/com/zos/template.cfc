@@ -789,7 +789,7 @@ for(local.row in local.qSite){
 		request.zos.sharebuttonindex=0;
 	}
 	request.zos.sharebuttonindex++;
-		if(request.zos.istestserver){
+		if(1 EQ 0 and request.zos.istestserver){
 			return '';
 		}else{ 
 			if(request.zos.sharebuttonindex == 1){

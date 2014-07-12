@@ -375,8 +375,11 @@ link9&='&searchId='&application.zcore.functions.zso(form, 'searchId');
 <cfif form.virtualtoururl neq '' and findnocase("http://", form.virtualtoururl) NEQ 0><a href="#application.zcore.functions.zBlockURL(form.virtualtoururl)#" rel="nofollow" onclick="window.open(this.href); return false;">Virtual Tour</a></cfif>
 <a href="#request.zos.currentHostName&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
 
-<!--- <a href="##" onclick="zShowModalStandard('/z/misc/share-with-friend/index?title=#htmleditformat(urlencodedformat(application.zcore.template.getTagContent('pagetitle')))#&amp;link=#htmleditformat(urlencodedformat(request.zos.currenthostname&propertyLink))#', 540, 630);return false;" rel="nofollow">Share With Friend</a>
- --->
+<cfif application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) EQ 1>
+	
+	<a href="##" onclick="zShowModalStandard('/z/misc/share-with-friend/index?title=#htmleditformat(urlencodedformat(application.zcore.template.getTagContent('pagetitle')))#&amp;link=#htmleditformat(urlencodedformat(request.zos.currenthostname&propertyLink))#', 540, 630);return false;" rel="nofollow">Share With Friend</a>
+</cfif>
+
 <a href="/z/misc/mortgage-calculator/index<cfif form.listing_price NEQ 0>?mloan=#form.listing_price#</cfif>">Mortgage Calculator</a>
 <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 0 and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_enable_mortgage_quote',true,1) EQ 1>
 <a href="##" onclick="zShowModalStandard('/z/misc/mortgage-quote/index?modalpopforced=1', 540, 630);return false;" rel="nofollow">Get Pre-Qualified</a>

@@ -3373,7 +3373,13 @@ Define this function in another CFC to override the default email format
 	site_id=#db.param(request.zsession.user.site_id)#";
 	qU9=db.execute("qU9");
 	if(qu9.recordcount NEQ 0 and form.site_option_app_id EQ 0){
-		writeoutput('<a href="/z/-evm#request.zsession.user.id#.0.#qu9.user_key#.1" rel="external" onclick="window.open(this.href); return false;">View email autoresponder</a><br />
+		writeoutput('<a href="/z/-evm#request.zsession.user.id#.0.#qu9.user_key#.1" rel="external" onclick="window.open(this.href); return false;">View email autoresponder</a>');
+		if(application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) NEQ 1){
+			echo(" (Autoresponder DISABLED - contact web developer to enable)");
+		}else{
+			echo(" (Autoresponder Enabled)");
+		}
+		echo('<br />
 		<br />');
 	}
 	if(qS.recordcount EQ 0){

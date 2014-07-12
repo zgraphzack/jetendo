@@ -3942,7 +3942,7 @@ function zIsDeveloper(){
 }
 var zAddThisLoaded=false;
 function zLoadAddThisJs(){
-	if(zIsTestServer()) return;
+	if(1==0 && zIsTestServer()) return;
 	var a1=[];
 	/*if(!zAddThisLoaded){
 		zAddThisLoaded=true;
@@ -3953,6 +3953,7 @@ function zLoadAddThisJs(){
 	if(typeof addthis === "undefined") return;
 	addthis.init();
 	*/
+
 	for(var i=1;i<=5;i++){
 		d1=document.getElementById("zaddthisbox"+i);
 		if(d1){
@@ -3961,15 +3962,17 @@ function zLoadAddThisJs(){
 			}else{
 				d1.innerHTML='<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a><a class="addthis_button_tweet"></a><a class="addthis_button_pinterest_pinit"></a><a class="addthis_button_google_plusone" g:plusone:size="medium"></a><a class="addthis_pill_style"></a>';
 			}*/
-			
-			
-			
-			d1.innerHTML='<div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/tweet_button.1347008535.html#_=1347061585575&amp;count=horizontal&amp;counturl='+escape(window.location.href)+'&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer='+escape(window.location.href)+'&amp;url='+escape(window.location.href)+'" class="twitter-share-button twitter-count-horizontal" style="width: 110px; height: 20px; " title="Twitter Tweet Button" data-twttr-rendered="true"></iframe></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><a href="https://plus.google.com/share?url='+escape(window.location.href)+'" target="_blank"><img src="/z/images/icons/google-plusone.png" width="33" height="20" alt="Share this on Google Plus" /></a></div>';
+			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/tweet_button.1347008535.html#_=1347061585575&amp;count=horizontal&amp;counturl='+escape(window.location.href)+'&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer='+escape(window.location.href)+'&amp;url='+escape(window.location.href)+'" class="twitter-share-button twitter-count-horizontal" style="width: 110px; height: 20px; " title="Twitter Tweet Button" data-twttr-rendered="true"></iframe></div>';
+			//<a href="https://plus.google.com/share?url='+escape(window.location.href)+'" target="_blank"><img src="/z/images/icons/google-plusone.png" width="33" height="20" alt="Share this on Google Plus" /></a>
 			
 			d1.id="zaddthisbox"+i+"_loaded";// %23.UEqGHd2kgcw.twitter 
 			a1.push(d1);
 		}
 	}
+	zLoadFile("//platform.linkedin.com/in.js","js");
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/platform.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 }
 zArrLoadFunctions.push({functionName:zLoadAddThisJs});
 
