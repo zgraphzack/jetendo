@@ -275,11 +275,13 @@ still need to add all the meta data fields and photo display
 			<a href="/z/listing/admin/manual-listing/delete?confirm=1&amp;manual_listing_unique_id=#form.manual_listing_unique_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id)#">No</a> </h2>
 	</cfif>
 </cffunction>
+
 <cffunction name="insert" localmode="modern" access="remote" roles="member">
 	<cfscript>
 		this.update();
 		</cfscript>
 </cffunction>
+
 <cffunction name="update" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var datastruct=0;
@@ -429,37 +431,37 @@ still need to add all the meta data fields and photo display
 	structappend(form, local.rs, true);
 	local.idxCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.idx");
 	form.mls_id=0;
-	local.idxCom.processListingTableStruct(form);
-	application.zcore.listingStruct.mlsComObjects[0].baseProcessImport();
 	
-		application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'manual_listing_image_library_id'));
-		
-		if(form.method EQ 'insert'){
-			application.zcore.status.setStatus(request.zsid, "Listing added.");
-			if(isDefined('request.zsession.manual_listing_return')){
-				tempURL = request.zsession['manual_listing_return'];
-				StructDelete(request.zsession, 'manual_listing_return');
-				tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
-				application.zcore.functions.zRedirect(tempURL, true);
-			}
-		}else{
-			application.zcore.status.setStatus(request.zsid, "Listing updated.");
-		}
-		if(structkeyexists(form, 'manual_listing_unique_id') and isDefined('request.zsession.manual_listing_return'&form.manual_listing_unique_id)){// and uniqueChanged EQ false){	
-			tempURL = request.zsession['manual_listing_return'&form.manual_listing_unique_id];
-			StructDelete(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id);
+	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'manual_listing_image_library_id'));
+	
+	if(form.method EQ 'insert'){
+		application.zcore.status.setStatus(request.zsid, "Listing added.");
+		if(isDefined('request.zsession.manual_listing_return')){
+			tempURL = request.zsession['manual_listing_return'];
+			StructDelete(request.zsession, 'manual_listing_return');
 			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
 			application.zcore.functions.zRedirect(tempURL, true);
-		}else{	
-			application.zcore.functions.zRedirect('/z/listing/admin/manual-listing/index?zsid=#request.zsid#');
 		}
-		</cfscript>
+	}else{
+		application.zcore.status.setStatus(request.zsid, "Listing updated.");
+	}
+	if(structkeyexists(form, 'manual_listing_unique_id') and isDefined('request.zsession.manual_listing_return'&form.manual_listing_unique_id)){// and uniqueChanged EQ false){	
+		tempURL = request.zsession['manual_listing_return'&form.manual_listing_unique_id];
+		StructDelete(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id);
+		tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
+		application.zcore.functions.zRedirect(tempURL, true);
+	}else{	
+		application.zcore.functions.zRedirect('/z/listing/admin/manual-listing/index?zsid=#request.zsid#');
+	}
+	</cfscript>
 </cffunction>
+
 <cffunction name="add" localmode="modern" access="remote" roles="member">
 	<cfscript>
 		this.edit();
 		</cfscript>
 </cffunction>
+
 <cffunction name="edit" localmode="modern" access="remote" roles="member">
 	<cfscript>
 		var local={};

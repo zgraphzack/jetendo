@@ -23,6 +23,9 @@
 		return duplicate(server["jetendo_"&ts.zos.installPath&"_globalscache"]); 
 	}
 	
+
+	ts.zos.debugLeadRoutingSiteIdStruct={}; // if you want to debug leading routing in production for specific site_ids, add the site_id as a key to this struct.
+
 	ts.zos.customRailoVersion = ""; // if you build your own railo, and features for specific versions, then put in the custom railo version number here, i.e. 4.2.1.102
 
 	// sign up for grammarly's affiliate program and replace this url with a tracking url provided by their system to earn commission.

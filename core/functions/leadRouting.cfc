@@ -15,6 +15,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	var db=request.zos.queryObject;
 	var rs2=structnew();
 	var inquiries_id=arguments.ss.inquiries_id;
+	arrDebug=[];
 	rs.inquiries_id=arguments.ss.inquiries_id; 
 	if(not structkeyexists(arguments.ss, 'disableDebugAbort')){
 		arguments.ss.disableDebugAbort=false;
@@ -23,9 +24,12 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		rs.assignEmail=arguments.ss.assignEmail;
 		rs.leadEmail=arguments.ss.leadEmail;
 		rs.user_id=0;
+		rs.user_id_siteIDType=0;
 		rs.cc="";
+		m='force assign to #rs.assignEmail#<br />';
+		arrayAppend(arrDebug, m);
 		if(structkeyexists(request.zos, 'debugleadrouting')){
-			echo('force assign to #rs.assignEmail#<br />');
+			echo(m);
 		}
 	}else{
 		rs=application.zcore.functions.zFindLeadRouteForInquiryId(rs);
@@ -36,12 +40,19 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 			if(rs.assignEmail EQ ""){
 				rs.assignEmail=request.zos.developerEmailTo;
 			}
+			m='failed to find lead route | assigning to #rs.assignEmail#<br />';
+			arrayAppend(arrDebug, m);
 			if(structkeyexists(request.zos, 'debugleadrouting')){
-				echo('failed to find lead route | assigning to #rs.assignEmail#<br />');
+				echo(m);
 			}
 			//writeoutput(rs.errorMessage);
 		}else{
 			rs=application.zcore.functions.zProcessLeadRoute(rs);
+		}
+		if(structkeyexists(rs, 'arrDebug')){
+			for(i=1;i LTE arraylen(rs.arrDebug);i++){
+				arrayAppend(arrDebug, rs.arrDebug[i]);
+			}
 		}
 	}
 	if(not structkeyexists(rs, 'cc')){
@@ -79,7 +90,17 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	}else{
 		echo("Would send email to #rs.assignEmail#<br />");
 	}
+	rs2.arrDebug=arrDebug;
 	rs2.success=true;
+	if(structkeyexists(request.zos.debugLeadRoutingSiteIdStruct, request.zos.globals.id)){
+		mail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmaiLFrom#" subject="Assign debugging info for #request.zos.globals.shortDomain#" type="html"{
+			echo('<html><body>');
+			writedump(rs2);
+			writedump(request.zos.cgi);
+			writedump(form);
+			echo('</body></html>');
+		}
+	}
 	return rs2;
 	</cfscript>
 </cffunction>
@@ -166,6 +187,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	rs.assignUserId=0;
 	rs.autoAssignMember=false;
 	rs.autoAssignOffice=false;
+	rs.arrDebug=[];
 	if(structkeyexists(form, 'inquiries_email')){
 		rs.leadEmail=form.inquiries_email;	
 	}
@@ -174,8 +196,10 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	site_id = #db.param(request.zos.globals.id)# ";
 	qI=db.execute("qI"); 
 	if(qI.recordcount EQ 0){
+		m='inquiry doesn''t exist<br />';
+		arrayAppend(rs.arrDebug, m);
 		if(structkeyexists(request.zos, 'debugleadrouting')){
-			echo('inquiry doesn''t exist<br />');
+			echo(m);
 		}
 		rs.errorMessage="Inquiry doesn't exist.";
 		rs.success=false;
@@ -204,8 +228,10 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			rs.assignUserId=qI2.user_id;
 			rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qI2.site_id);
 
+			m='reassign lead to same member: #rs.assignEmail#<br />';
+			arrayAppend(rs.arrDebug, m);
 			if(structkeyexists(request.zos, 'debugleadrouting')){
-				echo('reassign lead to same member: #rs.assignEmail#<br />');
+				echo(m);
 			}
 			return rs;
 		}
@@ -242,16 +268,20 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 									if(c.data.inquiries_routing_office_auto_assign EQ 1){
 										rs.autoAssignOffice=true;
 										// member or email will be determined by route type id
+										m='autoAssignOffice<br />';
+										arrayAppend(rs.arrDebug, m);
 										if(structkeyexists(request.zos, 'debugleadrouting')){
-											echo('autoAssignOffice<br />');
+											echo(m);
 										}
 									}else{
 										rs.autoAssignMember=true;
 										rs.assignEmail=qMember.user_username;
 										rs.assignUserId=qMember.user_id; // this will fail until implemented.
 										rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qMember.site_id);
+										m='autoAssignMember: #rs.assignEmail#<br />';
+										arrayAppend(rs.arrDebug, m);
 										if(structkeyexists(request.zos, 'debugleadrouting')){
-											echo('autoAssignMember: #rs.assignEmail#<br />');
+											echo(m);
 										}
 									}
 									rs.routeIndex=i;
@@ -260,8 +290,10 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 							}
 							// apply the normal selected inquiries_routing_type_id condition
 							rs.routeIndex=i;
+							m='applied rs.routeIndex=#i# | 1<br />';
+							arrayAppend(rs.arrDebug, m);
 							if(structkeyexists(request.zos, 'debugleadrouting')){
-								echo('applied rs.routeIndex=#i# | 1<br />');
+								echo(m);
 							}
 							return;
 						}else{
@@ -276,8 +308,10 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			}
 			
 			// this route is the right one
+			m='applied rs.routeIndex=#i# | 2<br />';
+			arrayAppend(rs.arrDebug, m);
 			if(structkeyexists(request.zos, 'debugleadrouting')){
-				echo('applied rs.routeIndex=#i# | 2<br />');
+				echo(m);
 			}
 			rs.routeIndex=i;
 			return rs;
@@ -507,6 +541,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	rs.leademail=arguments.ss.leademail;
 	rs.user_id=0;
 	rs.cc="";
+	rs.arrDebug=[];
 	rs.assignEmail="";
 	if(arguments.ss.routeIndex EQ 0 or arraylen(application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData) LT arguments.ss.routeIndex){
 		c=structnew();
@@ -563,8 +598,10 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		rs.assignEmail=arguments.ss.assignEmail;
 		rs.user_id_siteIDType=arguments.ss.user_id_siteIDType;
 		rs.user_id=arguments.ss.assignUserId;
+		m='process assigned lead to #rs.assignEmail#<br />';
+		arrayAppend(rs.arrDebug, m);
 		if(structkeyexists(request.zos, 'debugleadrouting')){
-			echo('process assigned lead to #rs.assignEmail#<br />');
+			echo(m);
 		}
 		return rs;
 	}
@@ -584,16 +621,20 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		if(qAssignUser.recordcount EQ 0){
 			// assign to default email
 			rs.assignEmail=application.zcore.functions.zvarso('zofficeemail');
+			m='process assigned lead to zofficeemail: #rs.assignEmail#<br />';
+			arrayAppend(rs.arrDebug, m);
 			if(structkeyexists(request.zos, 'debugleadrouting')){
-				echo('process assigned lead to zofficeemail: #rs.assignEmail#<br />');
+				echo(m);
 			}
 		}else{
 			// assign to default user instead
 			rs.assignEmail=qAssignUser.user_username;
 			rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 			rs.user_id=qAssignUser.user_id;
+			m='process assigned lead to zofficeemail user_id: #qAssignUser.user_id# site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />';
+			arrayAppend(rs.arrDebug, m);
 			if(structkeyexists(request.zos, 'debugleadrouting')){
-				echo('process assigned lead to zofficeemail user_id: #qAssignUser.user_id# site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />');
+				echo(m);
 			}
 		}
 	}else if(c.data.inquiries_routing_type_id EQ 1){
@@ -623,24 +664,30 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				if(qAssignUser.recordcount EQ 0){
 					// assign to default email
 					rs.assignEmail=application.zcore.functions.zvarso('zofficeemail');
+					m='process assigned lead to default zofficeemail #rs.assignEmail#<br />';
+					arrayAppend(rs.arrDebug, m);
 					if(structkeyexists(request.zos, 'debugleadrouting')){
-						echo('process assigned lead to default zofficeemail #rs.assignEmail#<br />');
+						echo(m);
 					}
 				}else{
 					// assign to default user instead
 					rs.assignEmail=qAssignUser.user_username;
 					rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 					rs.user_id=qAssignUser.user_id;
+					m='process assigned lead to default user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />';
+					arrayAppend(rs.arrDebug, m);
 					if(structkeyexists(request.zos, 'debugleadrouting')){
-						echo('process assigned lead to default user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />');
+						echo(m);
 					}
 				}
 			}else{
 				rs.assignEmail=qAssignUser.user_username;
 				rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 				rs.user_id=qAssignUser.user_id;
+				m='process assigned lead to next user in rotation: user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />';
+				arrayAppend(rs.arrDebug, m);
 				if(structkeyexists(request.zos, 'debugleadrouting')){
-					echo('process assigned lead to next user in rotation: user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />');
+					echo(m);
 				}
 			}
 		}else{
@@ -682,38 +729,48 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			qAssignUser=db.execute("qAssignUser");
 			if(qAssignUser.recordcount EQ 0){
 				rs.assignEmail=application.zcore.functions.zvarso('zofficeemail');
+				m='process assigned lead to default #rs.assignEmail#<br />';
+				arrayAppend(rs.arrDebug, m);
 				if(structkeyexists(request.zos, 'debugleadrouting')){
-					echo('process assigned lead to default #rs.assignEmail#<br />');
+					echo(m);
 				}
 			}else{
 				rs.assignEmail=qAssignUser.user_username;
 				rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 				rs.user_id=qAssignUser.user_id;
+				m='process assigned lead to default user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />';
+				arrayAppend(rs.arrDebug, m);
 				if(structkeyexists(request.zos, 'debugleadrouting')){
-					echo('process assigned lead to default user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />');
+					echo(m);
 				}
 			}
 		}else{
 			rs.assignEmail=qAssignUser.user_username;
 			rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 			rs.user_id=qAssignUser.user_id;
+			m='process assigned lead to next user in rotation: user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />';
+			arrayAppend(rs.arrDebug, m);
 			if(structkeyexists(request.zos, 'debugleadrouting')){
-				echo('process assigned lead to next user in rotation: user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />');
+				echo(m);
 			}
 		}
 	}else if(c.data.inquiries_routing_type_id EQ 3){
 		// assign to email address
 		rs.assignEmail=c.data.inquiries_routing_assign_to_email;
+		m='process assigned lead to specific email | assignEmail: #rs.assignEmail#<br />';
+		arrayAppend(rs.arrDebug, m);
 		if(structkeyexists(request.zos, 'debugleadrouting')){
-			echo('process assigned lead to specific email | assignEmail: #rs.assignEmail#<br />');
+			echo(m);
 		}
 	}else{
 		application.zcore.template.fail("Invalid inquiries_routing_type_id");	
 	}
 	if(rs.assignEmail EQ ""){
 		rs.assignEmail=request.zos.developeremailto;
+		m='process failed to assign lead. Assigning to developer: #rs.assignEmail#<br />';
+		arrayAppend(rs.arrDebug, m);
 		if(structkeyexists(request.zos, 'debugleadrouting')){
-			echo('process failed to assign lead. Assigning to developer: #rs.assignEmail#<br />');
+			echo(m);
 		}
 	}
 	

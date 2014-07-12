@@ -340,10 +340,6 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		local.listing_data_detailcache2=dataCom.getDetailCache2(ts);
 		local.listing_data_detailcache3=dataCom.getDetailCache3(ts);
 		
-		newList=replace(application.zcore.functions.zescape(arraytolist(arguments.ss.arrData,chr(9))),chr(9),"','","ALL");
-		values="('"&newList&"')";  
-		arrayappend(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows,values);
-		 
 		rs=structnew();
 		rs.listing_id=arguments.ss.listing_id;
 		rs.listing_acreage=ts["Total Acreage"];
@@ -389,7 +385,11 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		rs.listing_data_detailcache1=listing_data_detailcache1;
 		rs.listing_data_detailcache2=listing_data_detailcache2;
 		rs.listing_data_detailcache3=listing_data_detailcache3;
-		return rs;
+		return {
+			listingData:rs,
+			columnIndex:columnIndex,
+			arrData:arguments.ss.arrData
+		};
 		</cfscript>
     </cffunction>
     

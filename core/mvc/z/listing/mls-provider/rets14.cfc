@@ -146,10 +146,6 @@
 		listing_data_detailcache2=dataCom.getDetailCache2(ts);
 		listing_data_detailcache3=dataCom.getDetailCache3(ts);
 		
-		newList=replace(application.zcore.functions.zescape(arraytolist(arguments.ss.arrData,chr(9))),chr(9),"','","ALL");
-		values="('"&newList&"')";
-		arrayappend(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows,values);
-		
 		rs=structnew();
 		rs.listing_id=arguments.ss.listing_id;
 		rs.listing_acreage=listing_acreage;
@@ -194,8 +190,11 @@
 		rs.listing_data_detailcache1=listing_data_detailcache1;
 		rs.listing_data_detailcache2=listing_data_detailcache2;
 		rs.listing_data_detailcache3=listing_data_detailcache3;
-		arrayappend(request.zos.importMlsStruct[this.mls_id].arrImportListingDataRows,values);
-		
+		return {
+			listingData:rs,
+			columnIndex:columnIndex,
+			arrData:arguments.ss.arrData
+		};
 		</cfscript>
     </cffunction>
     

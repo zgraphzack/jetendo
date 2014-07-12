@@ -369,13 +369,8 @@ variables.tableLookup["I"]="I";
 	local.listing_data_detailcache1=dataCom.getDetailCache1(ts);
 	local.listing_data_detailcache2=dataCom.getDetailCache2(ts);
 	local.listing_data_detailcache3=dataCom.getDetailCache3(ts);
-	 
-	newList=replace(application.zcore.functions.zescape(arraytolist(arguments.ss.arrData,chr(9))),chr(9),"','","ALL");
-	values="('"&newList&"')";  
-	arrayappend(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows,values);
 	
-	
-	 rs=structnew();
+	rs=structnew();
 	rs.listing_id=arguments.ss.listing_id;
 	rs.listing_acreage=ts["Acreage"];
 	if(structkeyexists(ts, "Full Baths")){
@@ -426,8 +421,11 @@ variables.tableLookup["I"]="I";
 	rs.listing_data_detailcache2=local.listing_data_detailcache2;
 	rs.listing_data_detailcache3=local.listing_data_detailcache3; 
 
-	//writedump(rs);	writedump(ts);abort;
-	return rs;
+	return {
+		listingData:rs,
+		columnIndex:columnIndex,
+		arrData:arguments.ss.arrData
+	};
 	</cfscript>
 </cffunction>
     

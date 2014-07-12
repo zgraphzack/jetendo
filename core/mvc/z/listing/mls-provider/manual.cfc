@@ -39,7 +39,7 @@
 			application.zcore.template.fail("Invalid resource, ""#arguments.resource#"".");
 		}
 		/*
-		arguments.sharedStruct.lookupStruct.table=db.table("manual_listing", request.zos.zcoreDatasource);
+		arguments.sharedStruct.lookupStruct.table="manual_listing";
 		arguments.sharedStruct.lookupStruct.primaryKey="manual_listing_listnum";
 		arguments.sharedStruct.lookupStruct.idColumnOffset=0;
 		for(i=1;i LTE arraylen(arguments.sharedStruct.lookupStruct.arrColumns);i++){
@@ -47,8 +47,6 @@
 				arguments.sharedStruct.lookupStruct.idColumnOffset=i;
 			}
 		}
-		arguments.sharedStruct.lookupStruct.idxsql="REPLACE INTO #arguments.sharedStruct.lookupStruct.table# (#arguments.sharedStruct.lookupStruct.idxcolumns#) values";
-		request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
 		arguments.sharedStruct.lookupStruct.cityRenameStruct=structnew();
 		</cfscript>
         <cfsavecontent variable="db.sql">
@@ -75,21 +73,6 @@
 	</cfscript>
     </cffunction>
     
-    <cffunction name="processImport" localmode="modern" output="yes" returntype="any">
-    	<cfscript>
-		var r1=0;
-		var db=request.zos.queryObject;
-		/*
-		if(arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows) EQ 0) return;
-		db.sql=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxsql&db.trustedsql(arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows));
-		r1=db.execute("r1"); 
-		if(r1 EQ false){
-			application.zcore.template.fail("Listings failed to import. See failed query in request.zos.arrQueryLog below.");
-		}
-		request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
-		*/
-		</cfscript>
-    </cffunction>
     
     <cffunction name="getDataObject" localmode="modern" output="no">
     	<cfscript>
@@ -173,7 +156,9 @@
 		rs.listing_tenure=ts.manual_listing_tenure;
 		rs.listing_liststatus=ts.manual_listing_liststatus;
 		
-		return rs;
+		return {
+			listingData:rs
+		};
 		</cfscript>
     </cffunction>
     

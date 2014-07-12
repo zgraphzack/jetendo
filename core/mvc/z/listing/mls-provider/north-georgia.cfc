@@ -36,7 +36,7 @@
 		if(arguments.resource NEQ "property"){
 			application.zcore.template.fail("Invalid resource, ""#arguments.resource#"".");
 		}
-		arguments.sharedStruct.lookupStruct.table=db.table("ngm", request.zos.zcoreDatasource);
+		arguments.sharedStruct.lookupStruct.table="ngm";
 		arguments.sharedStruct.lookupStruct.primaryKey="ngm_listnum";
 		arguments.sharedStruct.lookupStruct.idColumnOffset=0;
 		for(i=1;i LTE arraylen(arguments.sharedStruct.lookupStruct.arrColumns);i++){
@@ -44,8 +44,6 @@
 				arguments.sharedStruct.lookupStruct.idColumnOffset=i;
 			}
 		}
-		arguments.sharedStruct.lookupStruct.idxsql="REPLACE INTO #arguments.sharedStruct.lookupStruct.table# (#arguments.sharedStruct.lookupStruct.idxcolumns#) values";
-		request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
 		arguments.sharedStruct.lookupStruct.cityRenameStruct=structnew();
 		</cfscript>
         <cfsavecontent variable="db.sql">
@@ -75,21 +73,7 @@
 		db.execute("q"); 
 		</cfscript>
     </cffunction>
-    
-    <cffunction name="processImport" localmode="modern" output="yes" returntype="any">
-    	<cfscript>
-		var r1=0;
-		var db=request.zos.queryObject;
-		if(arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows) EQ 0) return;
-		db.sql=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxsql&db.trustedsql(arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows));
-		r1=db.execute("r1"); 
-		if(r1 EQ false){
-			application.zcore.template.fail("Listings failed to import. See failed query in request.zos.arrQueryLog below.");
-		}
-		request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
-		</cfscript>
-    </cffunction>
-    
+
     <cffunction name="getDataObject" localmode="modern" output="no">
     	<cfscript>
 		if(structkeyexists(variables, 'mlsDataCom') EQ false){
@@ -205,9 +189,7 @@
 		rs=getListingTypeWithCode(ts["ngm_lstpropertytype"]);
 		//ts["ngm_lstpropertytype"]=rs.id;
 		arguments.ss.arrData[columnIndex["ngm_city"]]=""&ts.ngm_city;
-		newList=replace(application.zcore.functions.zescape(arraytolist(arguments.ss.arrData,chr(9))),chr(9),"','","ALL");
-		values="('"&newList&"')";
-		arrayappend(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows,values);
+
 		rs=structnew();
 		rs.listing_id=arguments.ss.listing_id;
 		rs.listing_acreage=ts.ngm_acreage;
@@ -252,7 +234,12 @@
 		rs.listing_data_detailcache1=listing_data_detailcache1;
 		rs.listing_data_detailcache2=listing_data_detailcache2;
 		rs.listing_data_detailcache3=listing_data_detailcache3;
-		return rs;
+		
+		return {
+			listingData:rs,
+			columnIndex:columnIndex,
+			arrData:arguments.ss.arrData
+		};
 		</cfscript>
     </cffunction>
     

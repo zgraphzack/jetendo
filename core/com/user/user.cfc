@@ -620,6 +620,9 @@ userCom.checkLogin(inputStruct);
 			return false;
 		}
 	}else if(arguments.version EQ 1){
+		if(len(arguments.password) EQ 0 or len(arguments.salt) EQ 0){
+			return false;
+		}
 		result=variables.createSecurePasswordVersion1(arguments.password, arguments.salt, arguments.version, false); 
 		if(compare(result, arguments.hashedPassword) EQ 0){
 			return true;

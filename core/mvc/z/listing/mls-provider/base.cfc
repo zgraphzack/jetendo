@@ -213,41 +213,11 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="baseProcessImport" localmode="modern" output="yes" returntype="any">
-	<cfscript>
-	var r2=0;
-	var db=request.zos.queryObject;
-	var r3=0;
-	var r4=0;
-	var r5=0;
-	var db2=request.zos.noVerifyQueryObject;
-	var values=0;
-	if(arraylen(request.zos.importMlsStruct[this.mls_id].arrImportListingRows) EQ 0) return;
-	values=arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportListingRows);
-	db2.sql=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.listingsql&(values);
-	r2=db2.execute("r2"); 
-	
-	db2.sql=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.listingramsql&(values);
-	r3=db2.execute("r3"); 
-	
-	db2.sql=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.listingdatasql&(arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportListingDataRows));
-	r4=db2.execute("r4"); 
-	
-	 db2.sql=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.listingtrackSQL&(arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportListingTrackRows));
-	 r5=db2.execute("r5");
-	request.zos.importMlsStruct[this.mls_id].arrImportListingRows=arraynew(1);
-	request.zos.importMlsStruct[this.mls_id].arrImportListingDataRows=arraynew(1);
-	request.zos.importMlsStruct[this.mls_id].arrImportListingTrackRows=arraynew(1);
-	</cfscript>
-</cffunction>
 
 <cffunction name="initImport" localmode="modern" output="no" returntype="any">
 	<cfargument name="resource" type="string" required="yes">
 	<cfargument name="sharedStruct" type="struct" required="yes">
 	<cfscript>
-	request.zos.importMlsStruct[this.mls_id].arrImportListingRows=arraynew(1);
-	request.zos.importMlsStruct[this.mls_id].arrImportListingDataRows=arraynew(1);
-	request.zos.importMlsStruct[this.mls_id].arrImportListingTrackRows=arraynew(1);
 	</cfscript>
 </cffunction>
 
@@ -312,13 +282,7 @@
 	ts.lookupStruct.arrlistingtrackcolumns=listToArray(listingtrackcolumns);
 	ts.lookupStruct.arrlistingcolumns=listToArray(listingcolumns);
 	ts.lookupStruct.arrlistingdatacolumns=listToArray(listingdatacolumns);
-	ts.lookupStruct.listingtracksql="REPLACE INTO #db2.table("listing_track", request.zos.zcoreDatasource)#  (#listingtrackcolumns#) values";
-	ts.lookupStruct.listingsql="REPLACE INTO #db2.table("listing", request.zos.zcoreDatasource)#  (#listingcolumns#) values";
-	ts.lookupStruct.listingramsql="REPLACE INTO #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  (#listingcolumns#) values";
-	ts.lookupStruct.listingdatasql="REPLACE INTO #db2.table("listing_data", request.zos.zcoreDatasource)#  (#listingdatacolumns#) values";
-	request.zos.importMlsStruct[this.mls_id].arrImportListingRows=arraynew(1);
-	request.zos.importMlsStruct[this.mls_id].arrImportListingDataRows=arraynew(1);
-	request.zos.importMlsStruct[this.mls_id].arrImportListingTrackRows=arraynew(1);
+
 	ts.lookupStruct.statusStr=structnew();    
 	ts.lookupStruct.statusStr["for sale"]=1;
 	ts.lookupStruct.statusStr["foreclosure"]=2;

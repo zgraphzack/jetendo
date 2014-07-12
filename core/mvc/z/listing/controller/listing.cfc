@@ -447,7 +447,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 	</cfscript>
 	 <cfsavecontent variable="db.sql">
 	SELECT listing_condoname as condoName, count(listing_id) count 
-	FROM #db.table("zram##listing", request.zos.zcoreDatasource)# listing 
+	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 	WHERE listing_condoname<> #db.param('')# and 
 	listing_condoname<>#db.param('Other')# and 
 	listing_condoname <> #db.param('Not On List')# and 
@@ -1274,16 +1274,16 @@ Primary Cities:</th>
 		}
 	}
 	
-		for(i=1;i<=arraylen(arrTables);i++){
-			ts={};
-			ts.table=arrTables[i];
-			if(arrTables[i] EQ 'listing' or structkeyexists(form, 'zrebuildramtable')){
-				ts.force=true;
-			}
-			ts.allowFulltext=true;
-			this.zCreateMemoryTable(ts);
+	for(i=1;i<=arraylen(arrTables);i++){
+		ts={};
+		ts.table=arrTables[i];
+		if(arrTables[i] EQ 'listing' or structkeyexists(form, 'zrebuildramtable')){
+			ts.force=true;
 		}
-		</cfscript>
+		ts.allowFulltext=true;
+		this.zCreateMemoryTable(ts);
+	}
+	</cfscript>
 </cffunction>
 
 <cffunction name="updateSearchFilter" localmode="modern" output="no" returntype="any">
@@ -2837,7 +2837,7 @@ local.c=application.zcore.db.getConfig();
 local.c.autoReset=false;
 local.c.datasource=request.zos.zcoreDatasource;
 db=application.zcore.db.newQuery(local.c);
-ts.tablePrefix='zram##';
+ts.tablePrefix=request.zos.ramtableprefix;
 ts.force=false;
 ts.allowFulltext=false;
 structappend(arguments.ss,ts,false);

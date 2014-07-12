@@ -75,9 +75,6 @@
 		qMLS=db.execute("qMLS"); 
 		for(f=1;f LTE qMLS.recordcount;f++){
 			this.optionstruct.mls_id=qMLS.mls_id[f];
-			request.zos.importMlsStruct[this.optionstruct.mls_id].arrImportListingRows=arraynew(1);
-			request.zos.importMlsStruct[this.optionstruct.mls_id].arrImportListingDataRows=arraynew(1);
-			request.zos.importMlsStruct[this.optionstruct.mls_id].arrImportListingTrackRows=arraynew(1);
 			this.optionstruct.delimiter=qMLS.mls_delimiter[f];
 			this.optionstruct.csvquote=qMLS.mls_csvquote[f];
 			this.optionstruct.first_line_columns=qMLS.mls_first_line_columns[f];
@@ -300,314 +297,311 @@
 	}
 	</cfscript>
 </cffunction>
-    
-	<cffunction name="addRow" localmode="modern" access="public" returntype="any">
-		<cfargument name="arrRow" type="array" required="yes">
-        <cfscript>
-		var ts=structnew();
-		if(this.inited EQ false){
-			request.addRowErrorMessage="zcorerootmapping.com.apps.idx requires init() to be called before addRow(). Reverted to previous day's file to avoid data loss.";
+
+<cffunction name="addRow" localmode="modern" access="public" returntype="any">
+	<cfargument name="arrRow" type="array" required="yes">
+    <cfscript>
+	var ts=structnew();
+	if(this.inited EQ false){
+		request.addRowErrorMessage="zcorerootmapping.com.apps.idx requires init() to be called before addRow(). Reverted to previous day's file to avoid data loss.";
+		return false;
+	}
+	ts.hash=hash(arraytolist(arguments.arrRow,chr(10)));
+	ts.arrData=arguments.arrRow;
+	ts.new=true;
+	ts.hasListing=false;
+	ts.update=true;
+	ts.listing_mls_id=this.optionstruct.mls_id;
+	try{
+		if(arraylen(ts.arrData) LT request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset){
+			request.addRowErrorMessage="This row was not long enough to contain the listing_id column: "&application.zcore.functions.zparagraphformat(arraytolist(arguments.arrRow,chr(10)))&". Reverted to previous day's file to avoid data loss. ";
 			return false;
 		}
-		ts.hash=hash(arraytolist(arguments.arrRow,chr(10)));
-		ts.arrData=arguments.arrRow;
-		ts.new=true;
-		ts.update=true;
-		ts.listing_mls_id=this.optionstruct.mls_id;
-		//writedump(ts); 
-		try{
-			if(arraylen(ts.arrData) LT request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset){
-				request.addRowErrorMessage="This row was not long enough to contain the listing_id column: "&application.zcore.functions.zparagraphformat(arraytolist(arguments.arrRow,chr(10)))&". Reverted to previous day's file to avoid data loss. ";
-				return false;
-	//				application.zcore.template.fail("This row was not long enough to contain the listing_id column: "&application.zcore.functions.zparagraphformat(arraytolist(arguments.arrRow,chr(10)))&"");
-			}
-			ts.listing_id=this.optionstruct.mls_id&'-'&ts.arrData[request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset];
+		ts.listing_id=this.optionstruct.mls_id&'-'&ts.arrData[request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset];
+		
+		if(right(ts.listing_id,1) EQ "-"){
+			request.addRowErrorMessage="Invalid listing id. The field was empty.  Review the corrupt file starting with the current file path: "&this.optionstruct.filePath&". Reverted to previous day's file to avoid data loss.";
+			return false;	
+		}
+		ts.arrData[request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset]=ts.listing_id;
+	}catch(Any excpt){
+		request.addRowErrorMessage="MLS Import Add Row failed for mls_id, "&this.optionstruct.mls_id&". Length: #arraylen(ts.arrData)# | ID Offset: #request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset# | The column header row might be missing. Current file path: "&this.optionstruct.filePath&". Reverted to previous day's file to avoid data loss.";
+			return false;
 			
-			if(right(ts.listing_id,1) EQ "-"){
-				request.addRowErrorMessage="Invalid listing id. The field was empty.  Review the corrupt file starting with the current file path: "&this.optionstruct.filePath&". Reverted to previous day's file to avoid data loss.";
-				return false;	
-			}
-			/*if(ts.listing_id EQ "11-WBPR"){
-				//writedump(ts.arrData);
-			}*/
-			ts.arrData[request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset]=ts.listing_id;
-		}catch(Any excpt){
-			request.addRowErrorMessage="MLS Import Add Row failed for mls_id, "&this.optionstruct.mls_id&". Length: #arraylen(ts.arrData)# | ID Offset: #request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.idColumnOffset# | The column header row might be missing. Current file path: "&this.optionstruct.filePath&". Reverted to previous day's file to avoid data loss.";
-				return false;
-				
-		}
-		
-		this.dataStruct[ts.listing_id]=ts; 
-		return true;
-		</cfscript>
-	</cffunction>
-    <cffunction name="checkDuplicates" localmode="modern" access="public" returntype="any">
-    	<cfscript>
-		var sqllist=0;
-		var db=request.zos.queryObject;
-		var qt=0;
-		if(structcount(this.datastruct) EQ 0) return;
-		sqllist="'"&structkeylist(this.datastruct,"','")&"'";
-		db.sql="select * from #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-		where listing_id IN (#db.trustedSQL(sqllist)#)";
-		qT=db.execute("qT"); 
-		</cfscript>
-        <cfloop query="qT">
-        	<cfscript>
-			this.datastruct[qT.listing_id].listing_track_id=qT.listing_track_id;
-			this.datastruct[qT.listing_id].listing_track_price=qT.listing_track_price;
-			this.datastruct[qT.listing_id].listing_track_datetime=dateformat(qT.listing_track_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_datetime,"HH:mm:ss");
-			this.datastruct[qT.listing_id].listing_track_updated_datetime=dateformat(qT.listing_track_updated_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_updated_datetime,"HH:mm:ss");
-			this.datastruct[qT.listing_id].new=false;
-			if(this.datastruct[qT.listing_id].hash EQ qT.listing_track_hash){
-				this.datastruct[qT.listing_id].update=false;
-			}
-			</cfscript>
-        </cfloop>
-    </cffunction>
-    
-    <cffunction name="processListingTableStruct" localmode="modern" access="public">
-    	<cfargument name="ss" type="struct" required="yes">
-    	<cfscript>
-	var n=0;
-	var rs=arguments.ss;
-	local.arrTemp=[];
-	local.arrColumn=request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.arrlistingcolumns;
-	local.columnCount=request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.arrlistingcolumns;
-	local.arrDataColumn=request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.arrlistingdatacolumns;
-	local.dataColumnCount=request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.arrlistingdatacolumns;
-	local.arrTrackColumn=request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.arrlistingtrackcolumns;
-	local.trackColumnCount=request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.arrlistingtrackcolumns;
-	for(n=1;n LTE arraylen(local.columnCount);n++){
-		if(structkeyexists(rs, local.arrColumn[n])){
-			arrayappend(local.arrTemp, "'"&application.zcore.functions.zescape(rs[local.arrColumn[n]])&"'");
-		}else{
-			arrayappend(local.arrTemp, "''");
-		}
 	}
-	arrayappend(request.zos.importMlsStruct[rs.mls_id].arrImportListingRows, "("&arraytolist(local.arrTemp, ",")&") ");
 	
-	local.arrTemp=[];
-	for(n=1;n LTE arraylen(local.dataColumnCount);n++){
-		if(structkeyexists(rs, local.arrDataColumn[n])){
-			arrayappend(local.arrTemp, "'"&application.zcore.functions.zescape(rs[local.arrDataColumn[n]])&"'");
-		}else{
-			arrayappend(local.arrTemp, "''");
-		}
-	}
-	arrayappend(request.zos.importMlsStruct[rs.mls_id].arrImportListingDataRows, "("&arraytolist(local.arrTemp, ",")&") ");
-	
-	local.arrTemp=[];
-	for(n=1;n LTE arraylen(local.trackColumnCount);n++){
-		if(structkeyexists(rs, local.arrTrackColumn[n])){
-			if(rs[local.arrTrackColumn[n]] EQ "null"){
-				arrayappend(local.arrTemp, "null");
-			}else{
-				arrayappend(local.arrTemp, "'"&application.zcore.functions.zescape(rs[local.arrTrackColumn[n]])&"'");
-			}
-		}else{
-			arrayappend(local.arrTemp, "''");
-		}
-	}
-	arrayappend(request.zos.importMlsStruct[rs.mls_id].arrImportListingTrackRows, "("&arraytolist(local.arrTemp, ",")&") ");
-    	</cfscript>
-    </cffunction>
-    
-    <cffunction name="import" localmode="modern" access="public" returntype="any">
+	this.dataStruct[ts.listing_id]=ts; 
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="checkDuplicates" localmode="modern" access="public" returntype="any">
+	<cfscript>
+	var sqllist=0;
+	var db=request.zos.queryObject;
+	var qt=0;
+	if(structcount(this.datastruct) EQ 0) return;
+	sqllist="'"&structkeylist(this.datastruct,"','")&"'";
+	db.sql="select listing_track.*, if(listing.listing_id IS NULL, #db.param(0)#, #db.param(1)#) hasListing 
+	from #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
+	LEFT JOIN #db.table("listing")# ON listing.listing_id = listing_track.listing_id 
+	where listing_track.listing_id IN (#db.trustedSQL(sqllist)#)";
+	qT=db.execute("qT"); 
+	</cfscript>
+    <cfloop query="qT">
     	<cfscript>
-		var i=0;
-		var values=0;
-		var ts=0;
-		var db=request.zos.queryObject;
-		var listing_track_id=0;
-		var sql=0;
-		var r1=0;
-		var rs=0;
-		var n=0;
-		var arrP=arraynew(1);
-		var arrD=arraynew(1);
-		
-		
-		
-		for(i in this.datastruct){
-			arrayClear(request.zos.arrQueryLog);
-			if(this.datastruct[i].update EQ false){
-				arrayappend(arrP, i);		
-			}else{
-				arrayappend(arrD, i);	
-				if(this.datastruct[i].new){
-					this.datastruct[i].listing_track_datetime=this.nowDate;
-				}
-				this.datastruct[i].listing_track_updated_datetime=this.nowDate;
-				rs=this.optionstruct.mlsProviderCom.parseRawData(this.datastruct[i], this.optionstruct);
-				
-				
-				if(this.datastruct[i].new){
-					if(structkeyexists(this.datastruct[i], 'listing_track_price') EQ false){
-						this.datastruct[i].listing_track_price=this.optionstruct.mlsProviderCom.price;
-					}
-					if(structkeyexists(this.datastruct[i], 'listing_track_price_change') EQ false){
-						this.datastruct[i].listing_track_price_change=this.optionstruct.mlsProviderCom.price;
-					}
-				}else{
-					if(structkeyexists(this.datastruct[i], 'listing_track_price_change') EQ false){
-						this.datastruct[i].listing_track_price_change=this.optionstruct.mlsProviderCom.price;
-					}
-				}
-				if(this.datastruct[i].new){
-					rs.listing_track_id="null";
-					rs.listing_id=i;
-					rs.listing_track_price=this.datastruct[i].listing_track_price;
-					rs.listing_track_price_change=this.datastruct[i].listing_track_price_change;
-					rs.listing_track_hash=this.datastruct[i].hash;
-					rs.listing_track_deleted="0";
-					rs.listing_track_datetime=this.datastruct[i].listing_track_datetime
-					rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
-					rs.listing_track_processed_datetime=this.nowDate;
-				}else{
-					rs.listing_track_id=this.datastruct[i].listing_track_id;
-					rs.listing_id=i;
-					if(this.datastruct[i].listing_track_price GT 1000 and this.optionstruct.mlsProviderCom.price LT 200){
-						rs.listing_track_price=this.datastruct[i].listing_track_price;
-						rs.listing_track_price_change=this.datastruct[i].listing_track_price_change;
-					}else{
-						rs.listing_track_price=this.datastruct[i].listing_track_price;
-						rs.listing_track_price_change=this.optionstruct.mlsProviderCom.price;
-					}
-					rs.listing_track_hash=this.datastruct[i].hash;
-					rs.listing_track_deleted="0";
-					rs.listing_track_datetime=this.datastruct[i].listing_track_datetime;
-					rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
-					rs.listing_track_processed_datetime=this.nowDate;
-				}
-				rs.mls_id=this.optionStruct.mls_id;
-				this.processListingTableStruct(rs);
-			}
-         } 
-		this.optionstruct.mlsProviderCom.processImport();
-		this.optionstruct.mlsProviderCom.baseProcessImport();
-		
-		 if(arraylen(arrP) NEQ 0){
-		 	sql="'"&arraytolist(arrP,"','")&"'";
+		this.datastruct[qT.listing_id].listing_track_id=qT.listing_track_id;
+		this.datastruct[qT.listing_id].listing_track_price=qT.listing_track_price;
+		this.datastruct[qT.listing_id].listing_track_datetime=dateformat(qT.listing_track_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_datetime,"HH:mm:ss");
+		this.datastruct[qT.listing_id].listing_track_updated_datetime=dateformat(qT.listing_track_updated_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_updated_datetime,"HH:mm:ss");
+		this.datastruct[qT.listing_id].new=false;
+		if(qT.hasListing EQ 1){
+			this.datastruct[qT.listing_id].hasListing=true;
+		}
+		if(this.datastruct[qT.listing_id].hash EQ qT.listing_track_hash){
+			this.datastruct[qT.listing_id].update=false;
+		}
+		</cfscript>
+    </cfloop>
+</cffunction>
+
+    
+<cffunction name="import" localmode="modern" access="public" returntype="any">
+	<cfscript>
+	var db=request.zos.queryObject;
+
+	for(i in this.datastruct){
+		arrayClear(request.zos.arrQueryLog);
+		if(this.datastruct[i].update EQ false){
 			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 			set listing_track_processed_datetime = #db.param(this.nowDate)#, 
 			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			WHERE listing_id IN (#db.trustedSQL(sql)#)";
-			db.execute("q"); 
-		 }
-		arrayClear(request.zos.arrQueryLog);
-		 this.datastruct=structnew();
-		 return true;
-         </cfscript>
-    </cffunction>
-    
-    <cffunction name="cleanInactive" localmode="modern" access="remote" output="yes" returntype="any">
-    	<cfscript>
-		var f=0;
-		var qId=0;
-		var qid2=0;
-		var mpcom=0;
-		var arrSQL=0;
-		var i=0;
-		var foundCount=0;
-		var db=request.zos.queryObject;
-		var found1=false;
-		var qd=0;
-		var qmls=0;
-		var n2=0;
-		var arrFilelist=0;
-		var qmls2=0;
-		var arrTable=0;
-		var newTickTime=getTickCount();
-		var arrFound=0;
-		var arrFound2=0;
-		var arrTick=arraynew(1);
-		var nowTime=gettickcount();
-		var oneMonthAgo=dateadd("m",-2,now());
-		var oneDayAgo=dateadd("h",-55,now());
-		var todayDate=dateformat(now(),'yyyy-mm-dd')&' 00:00:00';
-		var arrMLSOnly=arraynew(1);
-		var arrMLSIdOnly=arraynew(1);
-		var mlsPSQL=0;
-		var arrErr2=0;
-		var mlsIdPSQL=0;
-		var qDeadListings=0;
-		var n=0;
-		var qtwodaysago=0;
-		var db2=request.zos.noVerifyQueryObject;
-		oneDayAgo=dateformat(oneDayAgo,'yyyy-mm-dd')&' '&timeformat(oneDayAgo,'HH:mm:ss');
-		
-		db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
-		FROM #db.table("zram##listing", request.zos.zcoreDatasource)# listing 
-		LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
-		listing_track.listing_id= listing.listing_id  
-		WHERE listing_track.listing_id IS NULL";
-		qDeadListings=db.execute("qDeadListings"); 
-		if(qDeadListings.recordcount NEQ 0 and qDeadListings.idlist NEQ ""){
-			writeoutput('dead listings:'&qDeadListings.idlist&'<br />');
-			db.sql="DELETE FROM #db.table("listing", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
-			db.execute("q"); 
-			db.sql="DELETE FROM #db.table("listing_data", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
-			db.execute("q"); 
-			 db.sql="DELETE FROM #db.table("zram##listing", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
-			 db.execute("q");
+			WHERE listing_id = #db.param(i)# ";
+			db.execute("q"); 	
 		}else{
-			writeoutput('no dead listings<br />');	
-		}
-		
-		db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
-		where mls_status=#db.param('1')# and 
-		(mls_update_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))# or 
-		mls_cleaned_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))#) and 
-		mls_error_sent=#db.param('0')#";
-		qTwoDaysAgo=db.execute("qTwoDaysAgo"); 
-		</cfscript>
-        <cfif qTwoDaysAgo.recordcount NEQ 0>
-        <cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="MLS database(s) failed to update." type="html">
-#application.zcore.functions.zHTMLDoctype()#
-<head>
-<meta charset="utf-8" />
-<title>MLS Error</title>
-</head>
+			if(this.datastruct[i].new){
+				this.datastruct[i].listing_track_datetime=this.nowDate;
+			}
+			this.datastruct[i].listing_track_updated_datetime=this.nowDate;
+			rs2=this.optionstruct.mlsProviderCom.parseRawData(this.datastruct[i], this.optionstruct);
+			rs=rs2.listingData;
+			
+			if(this.datastruct[i].new){
+				if(structkeyexists(this.datastruct[i], 'listing_track_price') EQ false){
+					this.datastruct[i].listing_track_price=this.optionstruct.mlsProviderCom.price;
+				}
+				if(structkeyexists(this.datastruct[i], 'listing_track_price_change') EQ false){
+					this.datastruct[i].listing_track_price_change=this.optionstruct.mlsProviderCom.price;
+				}
+			}else{
+				if(structkeyexists(this.datastruct[i], 'listing_track_price_change') EQ false){
+					this.datastruct[i].listing_track_price_change=this.optionstruct.mlsProviderCom.price;
+				}
+			}
+			if(this.datastruct[i].new){
+				rs.listing_track_id="null";
+				rs.listing_id=i;
+				rs.listing_track_price=this.datastruct[i].listing_track_price;
+				rs.listing_track_price_change=this.datastruct[i].listing_track_price_change;
+				rs.listing_track_hash=this.datastruct[i].hash;
+				rs.listing_track_deleted="0";
+				rs.listing_track_datetime=this.datastruct[i].listing_track_datetime
+				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
+				rs.listing_track_processed_datetime=this.nowDate;
+			}else{
+				rs.listing_track_id=this.datastruct[i].listing_track_id;
+				rs.listing_id=i;
+				if(this.datastruct[i].listing_track_price GT 1000 and this.optionstruct.mlsProviderCom.price LT 200){
+					rs.listing_track_price=this.datastruct[i].listing_track_price;
+					rs.listing_track_price_change=this.datastruct[i].listing_track_price_change;
+				}else{
+					rs.listing_track_price=this.datastruct[i].listing_track_price;
+					rs.listing_track_price_change=this.optionstruct.mlsProviderCom.price;
+				}
+				rs.listing_track_hash=this.datastruct[i].hash;
+				rs.listing_track_deleted="0";
+				rs.listing_track_datetime=this.datastruct[i].listing_track_datetime;
+				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
+				rs.listing_track_processed_datetime=this.nowDate;
+			}
+			rs.mls_id=this.optionStruct.mls_id;
 
-<body>
-<span style="font-family:Verdana, Geneva, sans-serif; font-size:12px;">
-<h2>The following mls providers have not been updated for more than 48 hours.</h2>
-<table style="border-spacing:0px;">
-<tr><td>ID</td><td>Name</td><td>Last Updated</td></tr>
-<cfloop query="qTwoDaysAgo">
-	<tr><td>#qTwoDaysAgo.mls_id#</td><td>#qTwoDaysAgo.mls_name#</td><td>#dateformat(qTwoDaysAgo.mls_update_date,"m/d/yyyy")#</td></tr>
-	<cfscript>
-	 db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
-	 SET mls_error_sent=#db.param('1')#, 
-	 mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
-	 where mls_id = #db.param(qTwoDaysAgo.mls_id)# ";
-	 db.execute("q");
+			ts2={
+				datasource:request.zos.zcoreDatasource,
+				table:"listing",
+				struct:rs
+			};
+			ts3={
+				datasource:request.zos.zcoreDatasource,
+				table:"listing_data",
+				struct:rs
+			};
+			ts4={
+				datasource:request.zos.zcoreDatasource,
+				table:"listing_track",
+				struct:rs
+			};
+			ts5={
+				datasource:request.zos.zcoreDatasource,
+				table:request.zos.ramtableprefix&"listing",
+				struct:rs
+			};
+			if(structkeyexists(rs2, 'columnIndex')){
+				ts1={
+					datasource:request.zos.zcoreDatasource,
+					table:request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.table,
+					struct:{}
+				};
+				for(i2 in rs2.columnIndex){
+					ts1.struct[i2]=rs2.arrData[rs2.columnIndex[i2]];
+				}
+			}
+
+			transaction action="begin"{
+				try{
+					if(structkeyexists(rs2, 'columnIndex')){
+						if(this.datastruct[i].new){
+							application.zcore.functions.zInsert(ts1);
+						}else{
+							application.zcore.functions.zUpdate(ts1);
+						}
+					}
+					if(this.datastruct[i].new){
+						application.zcore.functions.zInsert(ts4);
+					}else{
+						application.zcore.functions.zUpdate(ts4);
+					}
+					if(this.datastruct[i].hasListing){
+						application.zcore.functions.zUpdate(ts2);
+						application.zcore.functions.zUpdate(ts5);
+						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
+					}else{
+						application.zcore.functions.zInsert(ts2);
+						application.zcore.functions.zInsert(ts5);
+						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
+					}
+					transaction action="commit";
+				}catch(Any e){
+					transaction action="rollback";
+					rethrow;
+				}
+			}
+		}
+    } 
+	
+	arrayClear(request.zos.arrQueryLog);
+	this.datastruct=structnew();
+	return true;
 	</cfscript>
-</cfloop>
-</table>
-</span>
-</body>
-</html>
-</cfmail>
-</cfif>
-   		<cfscript>
-		db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
-		where mls_status=#db.param('1')# and 
-		mls_update_date >#db.param(todayDate)# and 
-		mls_cleaned_date< #db.param(dateformat(todayDate,'yyyy-mm-dd'))#";
-		qMLS2=db.execute("qMLS2");  
-		local.arrMLSClean=[];
-		</cfscript>
-        <cfloop from="1" to="#qmls2.recordcount#" index="n">
-        	<cfscript>
+</cffunction>
+    
+<cffunction name="cleanInactive" localmode="modern" access="remote" output="yes" returntype="any">
+	<cfscript>
+	var f=0;
+	var qId=0;
+	var qid2=0;
+	var mpcom=0;
+	var arrSQL=0;
+	var i=0;
+	var foundCount=0;
+	var db=request.zos.queryObject;
+	var found1=false;
+	var qd=0;
+	var qmls=0;
+	var n2=0;
+	var arrFilelist=0;
+	var qmls2=0;
+	var arrTable=0;
+	var newTickTime=getTickCount();
+	var arrFound=0;
+	var arrFound2=0;
+	var arrTick=arraynew(1);
+	var nowTime=gettickcount();
+	var oneMonthAgo=dateadd("m",-2,now());
+	var oneDayAgo=dateadd("h",-55,now());
+	var todayDate=dateformat(now(),'yyyy-mm-dd')&' 00:00:00';
+	var arrMLSOnly=arraynew(1);
+	var arrMLSIdOnly=arraynew(1);
+	var mlsPSQL=0;
+	var arrErr2=0;
+	var mlsIdPSQL=0;
+	var qDeadListings=0;
+	var n=0;
+	var qtwodaysago=0;
+	var db2=request.zos.noVerifyQueryObject;
+	oneDayAgo=dateformat(oneDayAgo,'yyyy-mm-dd')&' '&timeformat(oneDayAgo,'HH:mm:ss');
+	
+	db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
+	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
+	listing_track.listing_id= listing.listing_id  
+	WHERE listing_track.listing_id IS NULL";
+	qDeadListings=db.execute("qDeadListings"); 
+	if(qDeadListings.recordcount NEQ 0 and qDeadListings.idlist NEQ ""){
+		writeoutput('dead listings:'&qDeadListings.idlist&'<br />');
+		db.sql="DELETE FROM #db.table("listing", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
+		db.execute("q"); 
+		db.sql="DELETE FROM #db.table("listing_data", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
+		db.execute("q"); 
+		 db.sql="DELETE FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
+		 db.execute("q");
+	}else{
+		writeoutput('no dead listings<br />');	
+	}
+	
+	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
+	where mls_status=#db.param('1')# and 
+	(mls_update_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))# or 
+	mls_cleaned_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))#) and 
+	mls_error_sent=#db.param('0')#";
+	qTwoDaysAgo=db.execute("qTwoDaysAgo"); 
+	</cfscript>
+    <cfif qTwoDaysAgo.recordcount NEQ 0>
+        <cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="MLS database(s) failed to update." type="html">
+		#application.zcore.functions.zHTMLDoctype()#
+		<head>
+		<meta charset="utf-8" />
+		<title>MLS Error</title>
+		</head>
+
+		<body>
+		<span style="font-family:Verdana, Geneva, sans-serif; font-size:12px;">
+		<h2>The following mls providers have not been updated for more than 48 hours.</h2>
+		<table style="border-spacing:0px;">
+		<tr><td>ID</td><td>Name</td><td>Last Updated</td></tr>
+		<cfloop query="qTwoDaysAgo">
+			<tr><td>#qTwoDaysAgo.mls_id#</td><td>#qTwoDaysAgo.mls_name#</td><td>#dateformat(qTwoDaysAgo.mls_update_date,"m/d/yyyy")#</td></tr>
+			<cfscript>
+			 db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
+			 SET mls_error_sent=#db.param('1')#, 
+			 mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
+			 where mls_id = #db.param(qTwoDaysAgo.mls_id)# ";
+			 db.execute("q");
+			</cfscript>
+		</cfloop>
+		</table>
+		</span>
+		</body>
+		</html>
+		</cfmail>
+	</cfif>
+		<cfscript>
+	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
+	where mls_status=#db.param('1')# and 
+	mls_update_date >#db.param(todayDate)# and 
+	mls_cleaned_date< #db.param(dateformat(todayDate,'yyyy-mm-dd'))#";
+	qMLS2=db.execute("qMLS2");  
+	local.arrMLSClean=[];
+	</cfscript>
+    <cfloop from="1" to="#qmls2.recordcount#" index="n">
+    	<cfscript>
 		arrayAppend(local.arrMLSClean, " listing_id like '"&qMls2.mls_id[n]&"-%' ");
 		arrFileList=listtoarray(qmls2.mls_filelist[n],",");
 		foundCount=0;
 		arrFound=arraynew(1);
 		arrFound2=arraynew(1);
 		</cfscript>
-        	<cfdirectory action="list" directory="#request.zos.sharedPath#mls-data/#qmls2.mls_id[n]#/" filter="*-imported" name="qd">
+        <cfdirectory action="list" directory="#request.zos.sharedPath#mls-data/#qmls2.mls_id[n]#/" filter="*-imported" name="qd">
 		<cfloop query="qd">
 			<cfscript>
 			found1=false;
@@ -637,7 +631,7 @@
 			</cfscript>
 		</cfif>
 	</cfloop>
-        <cfscript> 
+    <cfscript> 
 	if(arraylen(local.arrMLSClean)){
 		if(arraylen(arrMLSOnly) NEQ 0){
 			mlsPSQL=" and ("&arraytolist(arrMLSOnly, " or ")&")";
@@ -658,9 +652,9 @@
 			while(true){
 				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
-				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+30)# ";
+				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# ";
 				qIdList=db.execute("qIdList");
-				offset+=30;
+				offset+=5;
 				if(qIdList.idlist EQ ""){
 					break;
 				}
@@ -694,9 +688,9 @@
 			while(true){
 				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
-				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+30)# ";
+				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# ";
 				qIdList=db.execute("qIdList");
-				offset+=30;
+				offset+=5;
 				if(qIdList.idlist EQ ""){
 					break;
 				}
@@ -716,7 +710,7 @@
 		} 
 	}
 	</cfscript> 
-    </cffunction>
-    
-    </cfoutput>
+</cffunction>
+
+</cfoutput>
 </cfcomponent>

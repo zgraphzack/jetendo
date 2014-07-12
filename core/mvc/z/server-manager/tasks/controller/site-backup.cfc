@@ -89,9 +89,9 @@ TODO: figure out why site backup doesn't get compressed.
 		"rets4_office": true,
 		"rets4_property": true,
 		"rets7_property": true,
-		"zram##city": true,
-		"zram##city_distance": true,
-		"zram##listing": true,
+		"#request.zos.ramtableprefix#city": true,
+		"#request.zos.ramtableprefix#city_distance": true,
+		"#request.zos.ramtableprefix#listing": true,
 	};
 	if(request.zos.zcoreDatasourcePrefix NEQ ""){
 		ts2={};

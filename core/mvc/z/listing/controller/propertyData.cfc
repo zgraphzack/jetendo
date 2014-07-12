@@ -650,13 +650,13 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         </cfif>
         <cfif structkeyexists(this.searchCriteria,'search_remarks') and this.searchCriteria.search_remarks NEQ "">
 			<cfset listingDataTable=true>
-			<!--- <cfif application.zcore.enableFullTextIndex>  --->
+			<cfif application.zcore.enableFullTextIndex><!---   --->
 				<cfif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
 					and match(listing_data.listing_data_remarks) AGAINST('#this.searchCriteria.search_remarks# #this.searchCriteria.search_remarks_negative#' in boolean mode) 
 				<cfelse>
 					and match(listing_data.listing_data_remarks) AGAINST('#replace(this.searchCriteria.search_remarks,"+","","all")#' )
 				</cfif>
-			<!--- <cfelse>
+			<cfelse>
 				<cfif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
 					<cfscript>
 					local.tempSearch=arraytolist(listtoarray(trim(replace(replace(this.searchCriteria.search_remarks_negative, "+","","all"), "-","","all"))," ",false), " ");
@@ -667,18 +667,18 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				local.tempSearch=arraytolist(listtoarray(trim(replace(this.searchCriteria.search_remarks, "+","","all"))," ",false), " ");
 				</cfscript>
 				and (listing_data.listing_data_remarks LIKE '%#replace(local.tempSearch," ","%' or listing_data.listing_data_remarks LIKE '%","all")#%')
-            </cfif> --->
+            </cfif><!---  --->
         <cfelseif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
         <cfset listingDataTable=true>
         <!--- <cfset listingDataTable=true> --->
-			 <!--- <cfif application.zcore.enableFullTextIndex> --->
+			 <cfif application.zcore.enableFullTextIndex><!---  --->
                 	and not match(listing_data.listing_data_remarks) AGAINST('#replace(this.searchCriteria.search_remarks_negative,"-","","all")#')
-                <!--- <cfelse>
+                <cfelse>
 					<cfscript>
 					local.tempSearch=arraytolist(listtoarray(trim(replace(replace(this.searchCriteria.search_remarks_negative, "+","","all"), "-","","all"))," ",false), " ");
 					</cfscript>
                 	and listing_data.listing_data_remarks NOT LIKE '%#replace(local.tempSearch," ", "%' and listing_data.listing_data_remarks NOT LIKE '%","all")#%' 
-            </cfif> --->
+            </cfif><!---  --->
         </cfif>
         <!--- <cfif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
         <cfset listingDataTable=true>

@@ -2040,6 +2040,7 @@ Define this function in another CFC to override the default email format
 		}
 		ts.disableDebugAbort=true;
 		rs=application.zcore.functions.zAssignAndEmailLead(ts);
+		
 		if(rs.success EQ false){
 			// failed to assign/email lead
 			//zdump(rs);
@@ -3096,10 +3097,10 @@ Define this function in another CFC to override the default email format
 		</table>
 	</form>
 	<div style="width:100%; <cfif form.site_option_group_id EQ "">min-height:1000px; </cfif> float:left; clear:both;"></div>
-	<cfif structkeyexists(local, 'jumptoanchor')>
+	<cfif structkeyexists(form, 'jumptoanchor')>
 		<script type="text/javascript">
 		/* <![CDATA[ */
-		var d1=document.getElementById("#local.jumptoanchor#");
+		var d1=document.getElementById("#form.jumptoanchor#");
 		var p=zGetAbsPosition(d1);
 		window.scrollTo(0, p.y);
 		/* ]]> */
@@ -3456,12 +3457,12 @@ Define this function in another CFC to override the default email format
 		</form>
 		<a name="s1"></a>
 		<div style="width:100%; height:1000px; float:left; clear:both;"></div>');
-		if(structkeyexists(local, 'jumptoanchor')){
+		if(structkeyexists(form, 'jumptoanchor')){
 			writeoutput('<script type="text/javascript">
 			/* <![CDATA[ */
 			zArrDeferredFunctions.push(function(){
 				setTimeout(function(){
-				var d1=document.getElementById("#local.jumptoanchor#");
+				var d1=document.getElementById("#form.jumptoanchor#");
 				var p=zGetAbsPosition(d1);
 				window.scrollTo(0, p.y);
 				},600);

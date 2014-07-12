@@ -3685,7 +3685,7 @@ function zGeocodeAddress() {
 		}
 		$.ajax({
 			type: "post",
-			url: "/z/listing/ajax-geocoder/index?action=save"+debugurlstring,
+			url: "/z/listing/ajax-geocoder/save?"+debugurlstring,
 			data:{ results: r, listing_id: arrListingId[curIndex], address: arrAddress[curIndex], zip: arrAddressZip[curIndex], status: curStatus },
 			dataType:"text",
 			success: function(data){

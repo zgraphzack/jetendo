@@ -889,6 +889,18 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 </cffunction>
 
 
+<cffunction name="zRemoveStringsFromSQL" localmode="modern" output="no" returntype="string">
+	<cfargument name="sqlString" type="string" required="yes">
+	<cfscript>
+	var c=arguments.sqlString;
+	c=replace(replace(replace(replace(replace(c,chr(10)," ","all"),chr(9)," ","all"),chr(13)," ","all"),")"," ) ","all"),"("," ( ","all");
+	c=" "&rereplace(replace(replace(replace(lcase(c),"\\"," ","all"),"\'"," ","all"),'\"'," ","all"), "/\*.*?\*/"," ", "all")&" ";
+	c=rereplace(c,"'[^']*?'","''","all");
+	c=rereplace(c,'"[^"]*?"',"''","all");
+	return c;
+	</cfscript>
+</cffunction>
+
 <!--- zVerifySiteIdsInQuery(sqlString, defaultDatabaseName) --->
 <cffunction name="zVerifySiteIdsInQuery" localmode="modern" output="yes" returntype="any">
 	<cfargument name="sqlString" type="string" required="yes">

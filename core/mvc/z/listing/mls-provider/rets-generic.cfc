@@ -844,11 +844,9 @@ variables.typeStruct["text"]="text";
 	}else{
 		path="#request.zos.sharedPath#mls-data/#this.mls_id#/";
 	}
-	arguments.sharedStruct.lookupStruct.table=db.table("rets#this.mls_id#_#lcase(arguments.resource)#", request.zos.zcoreDatasource);
+	arguments.sharedStruct.lookupStruct.table="rets#this.mls_id#_#lcase(arguments.resource)#";
 	arguments.sharedStruct.lookupStruct.primaryKey="rets#this.mls_id#_#variables.resourceStruct[arguments.resource].id#";
 	arguments.sharedStruct.lookupStruct.arrColumns=listtoarray(arguments.sharedStruct.lookupStruct.idxColumns);
-	arguments.sharedStruct.lookupStruct.idxsql="REPLACE INTO #arguments.sharedStruct.lookupStruct.table# (#arguments.sharedStruct.lookupStruct.idxColumns#) values";
-	request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
 	arguments.sharedStruct.lookupStruct.idColumnOffset=0;
 	
 	for(g=1;g LTE arraylen(arguments.sharedStruct.lookupStruct.arrColumns);g++){
@@ -892,19 +890,5 @@ Metadata paths listed below (missing if there are none)#chr(10)#');
 	</cfscript>
 </cffunction>
 
-<cffunction name="processImport" localmode="modern" output="yes" returntype="any">
-	<cfscript>
-	var db=request.zos.queryObject;
-	var r1=0;
-	if(arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows) EQ 0) return;
-	db.sql=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.lookupStruct.idxsql&db.trustedsql(arraytolist(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows));
-	r1=db.execute("r1"); 
-	 
-	if(r1 EQ false){ 
-		application.zcore.template.fail("Listings failed to import. See failed query in request.zos.arrQueryLog below. Columns Count: "&arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows)&" Rows Count: "&arraylen(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows));
-	}
-	request.zos.importMlsStruct[this.mls_id].arrImportIDXRows=arraynew(1);
-	</cfscript>
-</cffunction>
 </cfoutput>
 </cfcomponent>

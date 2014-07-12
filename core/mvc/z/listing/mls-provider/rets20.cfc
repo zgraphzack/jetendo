@@ -286,9 +286,6 @@ unlimited between 7pm and 5am hawaii time
 			local.listing_pool=1;
 		}
 		
-		newList=replace(application.zcore.functions.zescape(arraytolist(arguments.ss.arrData,chr(9))),chr(9),"','","ALL");
-		values="('"&newList&"')";  
-		arrayappend(request.zos.importMlsStruct[this.mls_id].arrImportIDXRows,values);
 		
 		livingsqfoot=application.zcore.functions.zso(ts, 'rets20_SQFTRoofedLiving');
 		if(livingsqfoot EQ "" or livingsqfoot EQ "0"){
@@ -379,7 +376,11 @@ unlimited between 7pm and 5am hawaii time
 		rs.listing_data_detailcache1=listing_data_detailcache1;
 		rs.listing_data_detailcache2=listing_data_detailcache2;
 		rs.listing_data_detailcache3=listing_data_detailcache3;
-		return rs;
+		return {
+			listingData:rs,
+			columnIndex:columnIndex,
+			arrData:arguments.ss.arrData
+		};
 		</cfscript>
     </cffunction>
     

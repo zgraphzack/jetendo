@@ -310,28 +310,28 @@ USER WAS PERMANENTLY BLOCKED.');
 	}else{
 		db.sql="INSERT INTO #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)#  SET ";
 	}
-        db.sql&=" inquiries_id=#db.param(request.zsession.tracking.inquiries_id)#, 
-        track_user_email=#db.param(request.zsession.tracking.track_user_email)#, 
-        track_user_parent_id=#db.param(request.zsession.tracking.track_user_parent_id)#, 
-        user_id=#db.param(request.zsession.tracking.user_id)#, 
-        track_user_datetime=#db.param(dateformat(request.zsession.tracking.track_user_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_datetime,'HH:mm:ss'))#, 
-        track_user_recent_datetime=#db.param(dateformat(request.zsession.tracking.track_user_recent_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_recent_datetime,'HH:mm:ss'))#, 
-        track_user_session_length=#db.param(request.zsession.tracking.track_user_session_length)#, 
-        track_user_agent=#db.param(request.zsession.tracking.track_user_agent)#, 
-        track_user_spider=#db.param(request.zsession.tracking.track_user_spider)#, 
-        track_user_ip=#db.param(request.zsession.tracking.track_user_ip)#, 
-        track_user_referer=#db.param(request.zsession.tracking.track_user_referer)#, 
-        track_user_hits=#db.param(request.zsession.tracking.track_user_hits)#, 
-        track_user_conversions=#db.param(request.zsession.tracking.track_user_conversions)#, 
-        track_user_ppc=#db.param(request.zsession.tracking.track_user_ppc)#, 
-        track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
-        track_user_updated_datetime=#db.param(request.zos.mysqlnow)# ,
-	track_user_source=#db.param(local.tempSource)#, 
-        zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
+    db.sql&=" inquiries_id=#db.param(request.zsession.tracking.inquiries_id)#, 
+    track_user_email=#db.param(request.zsession.tracking.track_user_email)#, 
+    track_user_parent_id=#db.param(request.zsession.tracking.track_user_parent_id)#, 
+    user_id=#db.param(request.zsession.tracking.user_id)#, 
+    track_user_datetime=#db.param(dateformat(request.zsession.tracking.track_user_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_datetime,'HH:mm:ss'))#, 
+    track_user_recent_datetime=#db.param(dateformat(request.zsession.tracking.track_user_recent_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_recent_datetime,'HH:mm:ss'))#, 
+    track_user_session_length=#db.param(request.zsession.tracking.track_user_session_length)#, 
+    track_user_agent=#db.param(request.zsession.tracking.track_user_agent)#, 
+    track_user_spider=#db.param(request.zsession.tracking.track_user_spider)#, 
+    track_user_ip=#db.param(request.zsession.tracking.track_user_ip)#, 
+    track_user_referer=#db.param(request.zsession.tracking.track_user_referer)#, 
+    track_user_hits=#db.param(request.zsession.tracking.track_user_hits)#, 
+    track_user_conversions=#db.param(request.zsession.tracking.track_user_conversions)#, 
+    track_user_ppc=#db.param(request.zsession.tracking.track_user_ppc)#, 
+    track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
+    track_user_updated_datetime=#db.param(request.zos.mysqlnow)# ,
+track_user_source=#db.param(local.tempSource)#, 
+    zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
 	if(hasSession){
 		db.sql&=" WHERE track_user_id = #db.param(request.zsession.tracking.track_user_id)# and ";
 	}
-        db.sql&=" site_id=#db.param(request.zsession.tracking.site_id)# ";
+    db.sql&=" site_id=#db.param(request.zsession.tracking.site_id)# ";
 	if(hasSession){
 		db.execute("qUpdate");
 	}else{
@@ -389,143 +389,161 @@ USER WAS PERMANENTLY BLOCKED.');
 	site_id = #db.param(request.zos.globals.id)#";
 	qUpdate=db.execute("qUpdate");
 	</cfscript>
-	</cffunction>
-	
-	<cffunction name="getSearchTerms" localmode="modern" output="false">
-		<cfargument name="link" type="string" required="yes">
-		<cfscript>
-		var arrParam='';
-		var paramcount='';
-		var keywords='';
-		var i='';
-		var startpos='';
-		var endpos='';
-		// this code matches keywords out of hundreds of search engine referer urls
-		if(len(trim(arguments.link)) EQ 0) return '';
-		arrParam=ListToArray("query=,q=,p=,keywords=,keyword=,searchfor=,qry=,ask=,s=,w=,string=,f_name=,qkw=,find=,searchstr=,k=,C=,N=");
-		paramcount=ArrayLen(arrParam);
-		
-		keywords="";
-		for(i=1;i LTE paramcount;i=i+1){
-			startpos=findnocase(arrParam[i], arguments.link);
-			if(startpos NEQ 0 and refindnocase("([a-z0-9])", mid(arguments.link, startpos-1,1)) EQ 0){
-				startpos = startpos+len(arrParam[i]);
-				endpos=findnocase("&", arguments.link, startpos);
-				if(endpos EQ 0) endpos = len(arguments.link);
-				keywords=trim(URLDecode(mid(arguments.link, startpos, endpos-(startpos-1))));
-				if(right(keywords,1) EQ '&'){
-					keywords=removeChars(keywords,len(keywords),1);
-				}
-			}
-		}
-		return lcase(keywords);
-		</cfscript>
-	</cffunction>
-	
-    <!--- trackCom.setEmailCampaign(zemail_campaign_id); --->
-	<cffunction name="setEmailCampaign" localmode="modern" returntype="any" output="false">
-    	<cfargument name="zemail_campaign_id" type="string" required="yes">
-		<cfscript>
-		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		request.zsession.zemail_campaign_id=arguments.zemail_campaign_id;
-		request.zsession.tracking.zemail_campaign_id=arguments.zemail_campaign_id;
-		</cfscript>
-        <cfcookie name="__#request.zos.zcoremapping#ecid" expires="never" value="#arguments.zemail_campaign_id#" domain=".#request.zCookieDomain#">
-    </cffunction>
-    
-    
-    <!--- trackCom.setEmailConversion(conversionId); --->
-    <cffunction name="setEmailConversion" localmode="modern" returntype="void" output="no">
-    	<cfargument name="conversionId" type="numeric" required="yes">
-    	<cfscript>
-		var db=request.zos.queryObject;
-		var q=0;
-		if(structkeyexists(request.zos,'trackingDisabled')) return;
-		if(isDefined('request.zsession.zemail_campaign_id') and isDefined('request.zsession.user.id')){
-			db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-			SET zemail_campaign_click_type=#db.param('5')#, 
-			zemail_campaign_click_html=#db.param('1')#, 
-			zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
-			zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
-			zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
-			zemail_campaign_id=#db.param(request.zsession.zemail_campaign_id)#, 
-			zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)# ,
-			user_id=#db.param(request.zsession.user.id)#,
-			site_id=#db.param(request.zos.globals.id)#";
-			db.execute("q");
-		}else if(isDefined('cookie.__#request.zos.zcoremapping#ecid') and isDefined('cookie.__#request.zos.zcoremapping#euid')){
-			db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click SET 
-			zemail_campaign_click_type=#db.param('5')#, 
-			zemail_campaign_click_html=#db.param('1')#, 
-			zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
-			zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
-			zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
-			zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#,
-			zemail_campaign_id=#db.param(cookie["__#request.zos.zcoremapping#ecid"])#, 
-			user_id=#db.param(cookie["__#request.zos.zcoremapping#euid"])#,
-			site_id=#db.param(request.zos.globals.id)#";
-			db.execute("q");
-		}
-		</cfscript>
-    </cffunction>
-    
-    
-    
-	<cffunction name="endRequest" localmode="modern" output="yes" returntype="any">
-    	<cfscript>
-		if(structkeyexists(form, 'zab') EQ false){
-			// disable slow script detection for ab.exe benchmarking
-			this.detectSlowScript();
-			try{
-			application.zcore.arrRequestcache[request.zos.trackingRequestCacheIndex].runtime=(gettickcount('nano')-request.zos.startTime)/1000000000;
-			}catch(Any excpt){	
-					
-			}
-			/*
-			if(isDefined('request.zos.processId') and isDefined('application.zcore.processList')){
-				StructDelete(application.zcore.processList, request.zos.processId);
-			}*/
-			if(request.zos.trackingspider and structcount(request.zsession)){
-				application.zcore.session.clear();
-			}
-		}
-		
-		</cfscript>
-    </cffunction>
-    
-    
-	<cffunction name="detectSlowScript" localmode="modern" output="false" returntype="void">
-     <cfif request.zos.istestserver EQ false and structkeyexists(request, 'ignoreSlowScript') EQ false and (gettickcount('nano')-request.zos.startTime)/1000000000 GT 15><cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="Jetendo CMS Slow Script Alert" type="html">
-#application.zcore.functions.zHTMLDoctype()#
-<head>
-<meta charset="utf-8" />
-<title>Slow Script</title>
-</head>
+</cffunction>
 
-<body>
-<strong style="font-size:14px;">Jetendo CMS Slow Script Alert</strong><br /><br />
-<a href="http://#request.zos.cgi.HTTP_HOST##request.zos.originalURL#?#request.zos.cgi.QUERY_STRING#">http://#request.zos.cgi.HTTP_HOST##request.zos.originalURL#?#request.zos.cgi.QUERY_STRING#</a><br />
-#(gettickcount('nano')-request.zos.startTime)/1000000000# seconds to complete<br />
-user ip: #request.zos.cgi.remote_addr#<br />
-user agent: #request.zos.cgi.HTTP_USER_AGENT#<br />
-<cfif request.zos.importMLSRunning>
-	Import MLS was running when this slow script alert was triggered.<br />
-</cfif>
-<br />
-<cfscript>	
-if(structkeyexists(request.zos, 'arrRunTime')){
-	writeoutput('<h2>Script Run Time Measurements</h2>');
-	arrayprepend(request.zos.arrRunTime, {time:request.zos.startTime, name:'Application.cfc onCoreRequest Start'});
-	for(i=2;i LTE arraylen(request.zos.arrRunTime);i++){
-		writeoutput(((request.zos.arrRunTime[i].time-request.zos.arrRunTime[i-1].time)/1000000000)&' seconds | '&request.zos.arrRunTime[i].name&'<br />');	
+<cffunction name="getSearchTerms" localmode="modern" output="false">
+	<cfargument name="link" type="string" required="yes">
+	<cfscript>
+	var arrParam='';
+	var paramcount='';
+	var keywords='';
+	var i='';
+	var startpos='';
+	var endpos='';
+	// this code matches keywords out of hundreds of search engine referer urls
+	if(len(trim(arguments.link)) EQ 0) return '';
+	arrParam=ListToArray("query=,q=,p=,keywords=,keyword=,searchfor=,qry=,ask=,s=,w=,string=,f_name=,qkw=,find=,searchstr=,k=,C=,N=");
+	paramcount=ArrayLen(arrParam);
+	
+	keywords="";
+	for(i=1;i LTE paramcount;i=i+1){
+		startpos=findnocase(arrParam[i], arguments.link);
+		if(startpos NEQ 0 and refindnocase("([a-z0-9])", mid(arguments.link, startpos-1,1)) EQ 0){
+			startpos = startpos+len(arrParam[i]);
+			endpos=findnocase("&", arguments.link, startpos);
+			if(endpos EQ 0) endpos = len(arguments.link);
+			keywords=trim(URLDecode(mid(arguments.link, startpos, endpos-(startpos-1))));
+			if(right(keywords,1) EQ '&'){
+				keywords=removeChars(keywords,len(keywords),1);
+			}
+		}
 	}
-}
-</cfscript>
-<a href="#request.zos.globals.serverDomain#/z/server-manager/admin/recent-requests/index?force=1">Click here to view recent request history.</a>
+	return lcase(keywords);
+	</cfscript>
+</cffunction>
 
-</body>
-</html>
-</cfmail></cfif>
-	</cffunction>
-    </cfoutput>
+<!--- trackCom.setEmailCampaign(zemail_campaign_id); --->
+<cffunction name="setEmailCampaign" localmode="modern" returntype="any" output="false">
+	<cfargument name="zemail_campaign_id" type="string" required="yes">
+	<cfscript>
+	if(structkeyexists(request.zos,'trackingDisabled')) return;
+	request.zsession.zemail_campaign_id=arguments.zemail_campaign_id;
+	request.zsession.tracking.zemail_campaign_id=arguments.zemail_campaign_id;
+	</cfscript>
+    <cfcookie name="__#request.zos.zcoremapping#ecid" expires="never" value="#arguments.zemail_campaign_id#" domain=".#request.zCookieDomain#">
+</cffunction>
+
+
+<!--- trackCom.setEmailConversion(conversionId); --->
+<cffunction name="setEmailConversion" localmode="modern" returntype="void" output="no">
+	<cfargument name="conversionId" type="numeric" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var q=0;
+	if(structkeyexists(request.zos,'trackingDisabled')) return;
+	if(isDefined('request.zsession.zemail_campaign_id') and isDefined('request.zsession.user.id')){
+		db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
+		SET zemail_campaign_click_type=#db.param('5')#, 
+		zemail_campaign_click_html=#db.param('1')#, 
+		zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
+		zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
+		zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
+		zemail_campaign_id=#db.param(request.zsession.zemail_campaign_id)#, 
+		zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)# ,
+		user_id=#db.param(request.zsession.user.id)#,
+		site_id=#db.param(request.zos.globals.id)#";
+		db.execute("q");
+	}else if(isDefined('cookie.__#request.zos.zcoremapping#ecid') and isDefined('cookie.__#request.zos.zcoremapping#euid')){
+		db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click SET 
+		zemail_campaign_click_type=#db.param('5')#, 
+		zemail_campaign_click_html=#db.param('1')#, 
+		zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
+		zemail_campaign_click_ip=#db.param(request.zos.cgi.remote_addr)#, 
+		zemail_campaign_click_datetime=#db.param(request.zos.mysqlnow)#, 
+		zemail_campaign_click_updated_datetime=#db.param(request.zos.mysqlnow)#,
+		zemail_campaign_id=#db.param(cookie["__#request.zos.zcoremapping#ecid"])#, 
+		user_id=#db.param(cookie["__#request.zos.zcoremapping#euid"])#,
+		site_id=#db.param(request.zos.globals.id)#";
+		db.execute("q");
+	}
+	</cfscript>
+</cffunction>
+
+
+
+<cffunction name="endRequest" localmode="modern" output="yes" returntype="any">
+	<cfscript>
+	if(structkeyexists(form, 'zab') EQ false){
+		// disable slow script detection for ab.exe benchmarking
+		this.detectSlowScript();
+		try{
+		application.zcore.arrRequestcache[request.zos.trackingRequestCacheIndex].runtime=(gettickcount('nano')-request.zos.startTime)/1000000000;
+		}catch(Any excpt){	
+				
+		}
+		/*
+		if(isDefined('request.zos.processId') and isDefined('application.zcore.processList')){
+			StructDelete(application.zcore.processList, request.zos.processId);
+		}*/
+		if(request.zos.trackingspider and structcount(request.zsession)){
+			application.zcore.session.clear();
+		}
+	}
+	
+	</cfscript>
+</cffunction>
+    
+    
+<cffunction name="detectSlowScript" localmode="modern" output="false" returntype="void">
+	<cfscript>
+	db=request.zos.queryObject;
+	</cfscript>
+     <cfif request.zos.istestserver EQ false and structkeyexists(request, 'ignoreSlowScript') EQ false and (gettickcount('nano')-request.zos.startTime)/1000000000 GT 15><cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="Jetendo CMS Slow Script Alert" type="html">
+		#application.zcore.functions.zHTMLDoctype()#
+		<head>
+		<meta charset="utf-8" />
+		<title>Slow Script</title>
+		</head>
+
+		<body>
+		<strong style="font-size:14px;">Jetendo CMS Slow Script Alert</strong><br /><br />
+		<a href="http://#request.zos.cgi.HTTP_HOST##request.zos.originalURL#?#request.zos.cgi.QUERY_STRING#">http://#request.zos.cgi.HTTP_HOST##request.zos.originalURL#?#request.zos.cgi.QUERY_STRING#</a><br />
+		#(gettickcount('nano')-request.zos.startTime)/1000000000# seconds to complete<br />
+		user ip: #request.zos.cgi.remote_addr#<br />
+		user agent: #request.zos.cgi.HTTP_USER_AGENT#<br />
+		<cfif request.zos.importMLSRunning>
+			Import MLS was running when this slow script alert was triggered.<br />
+		</cfif>
+		<br />
+		<cfscript>	
+		if(structkeyexists(request.zos, 'arrRunTime')){
+			writeoutput('<h2>Script Run Time Measurements</h2>');
+			arrayprepend(request.zos.arrRunTime, {time:request.zos.startTime, name:'Application.cfc onCoreRequest Start'});
+			for(i=2;i LTE arraylen(request.zos.arrRunTime);i++){
+				writeoutput(((request.zos.arrRunTime[i].time-request.zos.arrRunTime[i-1].time)/1000000000)&' seconds | '&request.zos.arrRunTime[i].name&'<br />');	
+			}
+		}
+		db.sql="show full processlist";
+		qProcess=db.execute("qProcess");
+		arrRow=[];
+		for(row in qProcess){
+			if(row.Info EQ "" or row.Info EQ "show full processlist"){
+				continue;
+			}
+			row.Info=application.zcore.functions.zRemoveStringsFromSQL(row.Info);
+			arrayAppend(arrRow, row);
+		}
+		if(arraylen(arrRow)){
+			echo("<h2>Mysql SHOW FULL PROCESSLIST with strings removed</h2>");
+			writedump(arrRow);
+		}
+		</cfscript>
+		<a href="#request.zos.globals.serverDomain#/z/server-manager/admin/recent-requests/index?force=1">Click here to view recent request history.</a>
+
+		</body>
+		</html>
+		</cfmail>
+	</cfif>
+</cffunction>
+</cfoutput>
 </cfcomponent>
