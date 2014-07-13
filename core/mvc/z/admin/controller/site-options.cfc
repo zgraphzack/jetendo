@@ -1198,8 +1198,14 @@
 	WHERE ("&db.trustedSQL(arraytolist(local.arrSQL, " or "))&")";
 	qD=db.execute("qD");
 	
+
 	var row=0;
 	for(row in qD){
+		if(row.site_x_option_updated_datetime EQ ""){
+			row.site_x_option_group_set_created_datetime=request.zos.mysqlnow;
+		}
+		row.site_x_option_group_set_updated_datetime=request.zos.mysqlnow;
+
 		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];  
 		nv=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
 		var optionStruct=deserializeJson(row.site_option_type_json);
@@ -1400,12 +1406,15 @@
 	nowDate="#request.zos.mysqlnow#";
 	if(not structkeyexists(curCache, 'qD')){
 		db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
+		LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set ON 
+		site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and 
+		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
+		site_x_option_group_set.site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# 
 		LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group ON 
-		site_x_option_group.site_option_app_id = #db.param(form.site_option_app_id)# and 
 		site_option.site_option_id = site_x_option_group.site_option_id and 
-		site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
 		site_x_option_group.site_option_group_id = site_option.site_option_group_id and 
-		site_x_option_group.site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# 
+		site_x_option_group_set.site_x_option_group_set_id = site_x_option_group.site_x_option_group_set_id and 
+		site_x_option_group_set.site_id = site_x_option_group.site_id 
 		WHERE ";
 		if(local.methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or local.methodBackup EQ "publicUpdateGroup"){
 			db.sql&=" (site_option_allow_public=#db.param(1)#";
@@ -1498,6 +1507,12 @@
 	var arrTempData=[];
 	local.newDataMappedStruct={};
 	for(row in qD){
+
+		if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
+			row.site_x_option_group_set_created_datetime=request.zos.mysqlnow;
+		}
+		row.site_x_option_group_set_updated_datetime=request.zos.mysqlnow;
+		
 		nv=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
 		nvdate="";
 		form.site_id=request.zos.globals.id;
@@ -1638,7 +1653,7 @@
 		db.sql="INSERT INTO #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  SET 
 		site_option_app_id=#db.param(form.site_option_app_id)#, 
 		site_x_option_group_set_sort=#db.param(form.site_x_option_group_set_sort)#,
-		site_x_option_group_set_datetime=#db.param(request.zos.mysqlnow)#, 
+		site_x_option_group_set_created_datetime=#db.param(request.zos.mysqlnow)#, 
 		 site_id=#db.param(request.zos.globals.id)#, 
 		 site_option_group_id=#db.param(form.site_option_group_id)#,  
 		 site_x_option_group_set_start_date=#db.param(form.site_x_option_group_set_start_date)#,
@@ -1699,7 +1714,6 @@
 	if(methodBackup NEQ "publicInsertGroup" and methodBackup NEQ "publicAjaxInsertGroup" and methodBackup NEQ "publicMapInsertGroup" and methodBackup NEQ "importInsertGroup"){
 		db.sql="update #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 		set site_x_option_group_set_override_url=#db.param(application.zcore.functions.zso(form,'site_x_option_group_set_override_url'))#,
-		site_x_option_group_set_datetime=#db.param(request.zos.mysqlnow)#, 
 		site_x_option_group_set_approved=#db.param(form.site_x_option_group_set_approved)#, 
 		 site_x_option_group_set_start_date=#db.param(form.site_x_option_group_set_start_date)#,
 		 site_x_option_group_set_end_date=#db.param(form.site_x_option_group_set_end_date)#,
@@ -2973,6 +2987,7 @@ Define this function in another CFC to override the default email format
 				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
 				var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form, labelStruct);
 				if(rs.hidden){
+					arrayAppend(local.arrEnd, '<input type="hidden" name="site_option_id" value="'&row.site_option_id&'" />');
 					arrayAppend(local.arrEnd, rs.value);
 				}else{
 					writeoutput('<tr ');

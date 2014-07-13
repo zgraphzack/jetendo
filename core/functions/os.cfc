@@ -2442,7 +2442,7 @@ User's IP: #request.zos.cgi.remote_addr#
 		ts=structnew();
 		ts.__sort=row.site_x_option_group_set_sort;
 		ts.__setId=row.site_x_option_group_set_id;
-		ts.__dateModified=row.site_x_option_group_set_datetime;
+		ts.__dateModified=row.site_x_option_group_set_updated_datetime;
 		ts.__groupId=row.site_option_group_id;
 		ts.__approved=row.site_x_option_group_set_approved;
 		ts.__title=row.site_x_option_group_set_title;
