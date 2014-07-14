@@ -355,6 +355,55 @@ rs=zGetHashPath(dir, id);
 	<cfreturn arguments.dirName>
 </cffunction>
 
+<cffunction name="zIsSafeFileExt" localmode="modern" returntype="boolean" output="no">
+	<cfargument name="filePath" type="string" required="yes">
+	<cfscript>
+	var badTypeList=",asp,aspx,asa,ini,htaccess,cfm,cfc,php,php3,vbs,bat,exe,js,shtml,reg,inc,perl,pl,cgi,php5,php4,php1,php2,phtml,ssi,xhtm,";
+	request.zUploadFileErrorCause="";
+	ext=application.zcore.functions.zGetFileExt(arguments.filePath);
+	if(isDefined('request.zsession.user') EQ false or (structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and application.zcore.user.checkServerAccess() EQ false)){
+		badTypeList&='html,htm,';
+	}
+	if(findnocase(","&ext&",", badTypeList) NEQ 0){
+		return false;
+	}else{
+		return true;
+	}
+	</cfscript>
+</cffunction>
+
+<!--- application.zcore.functions.zFileUploadAll(fieldName, destination, overwrite); --->
+<cffunction name="zFileUploadAll" localmode="modern" returntype="struct" output="yes">
+	<cfargument name="fieldName" required="true" type="string">
+	<cfargument name="destination" required="true" type="string">
+	<cfargument name="overwrite" required="false" type="boolean" default="#false#" hint="true/false value">
+	<cfscript>
+	if(arguments.overwrite){
+		nameconflict="overwrite";
+	}else{
+		nameconflict="makeunique";
+	}
+	if(not directoryexists(arguments.destination)){
+		throw("Directory doesn't exist: "&arguments.destination);
+	}
+	rs={
+		arrError:[],
+		arrFile:[]
+	};
+	file action="uploadAll" result="cffileresult" destination="#arguments.destination#" nameconflict="#nameconflict#" filefield="#arguments.fieldName#";
+	for(n=1;n LTE arraylen(cffileresult);n++){
+		currentFile=cffileresult[n].serverDirectory&"/"&cffileresult[n].clientfile;
+		if(not application.zcore.functions.zIsSafeFileExt(currentFile)){
+			arrayAppend(rs.arrError, "Security filter deleted "&cffileresult[n].clientfile&".  You can't upload this file type.");
+			application.zcore.functions.zdeletefile(currentFile);
+		}else{
+			arrayAppend(rs.arrFile, currentFile);
+		}
+	}
+	return rs;
+	</cfscript>
+</cffunction>
+
 <!--- FUNCTION: zUploadFile(fieldName, destination[, overwrite]) --->
 <cffunction name="zUploadFile" localmode="modern" returntype="any" output="yes">
 	<cfargument name="fieldName" required="true" type="string">
@@ -366,16 +415,7 @@ rs=zGetHashPath(dir, id);
 	var cfcatch=0;
 	var cffileresult=0;
 	var backupfilename="";
-	var invalidStruct=structnew();
-	var arrInvalidfiletypes=listtoarray("asp,aspx,asa,ini,htaccess,cfm,cfc,php,php3,vbs,bat,exe,js,shtml,reg,inc,perl,pl,cgi,php5,php4,php1,php2,phtml,ssi,xhtm");//,html
 	request.zUploadFileErrorCause="";
-	if(isDefined('request.zsession.user') EQ false or (structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and application.zcore.user.checkServerAccess() EQ false)){
-		arrayappend(arrInvalidfiletypes,'html');		
-		arrayappend(arrInvalidfiletypes,'htm');
-	}
-	for(i=1;i LTE arraylen(arrInvalidFileTypes);i++){
-		invalidStruct[arrInvalidFileTypes[i]]=true;
-	}
 	application.zcore.functions.zCreateDirectory(arguments.destination);
 	if(structkeyexists(form, arguments.fieldName) and trim(form[arguments.fieldName]) NEQ ""){
 		if(arguments.overwrite){
@@ -394,7 +434,7 @@ rs=zGetHashPath(dir, id);
 		request.zUploadFileErrorCause="Error: FieldName was not set.";
 		return false;
 	}
-	if(structkeyexists(invalidStruct, cffileresult.clientFileExt)){
+	if(not application.zcore.functions.zIsSafeFileExt(cffileresult.clientfile)){
 		application.zcore.functions.zdeletefile("#arguments.destination##cffileresult.serverfile#");
 		application.zcore.template.fail("Extremely dangerous file upload attempted with name: #cffileresult.serverfile#<br /><br />It has been automatically deleted with a 500 error displayed to the user.");
 	}

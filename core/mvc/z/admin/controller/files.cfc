@@ -533,42 +533,60 @@
 	</cfscript>
 </cffunction>
 
+	
+
 <cffunction name="updateFile" localmode="modern" access="remote" roles="member">
-<cfscript>
+	<cfscript>
 	var oldFilePath=0;
 	variables.init();
-    application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
-	
-if(trim(application.zcore.functions.zso(form, 'image_file')) EQ ''){
-    application.zcore.status.setStatus(request.zsid,"No File was uploaded.");
-    if(form.method EQ 'insertFile'){
-	application.zcore.functions.zRedirect('/z/admin/files/addFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');	
-    }else{
-	application.zcore.functions.zRedirect('/z/admin/files/editFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
-    }
-}
-form.image_file = variables.currentDir&application.zcore.functions.zUploadFile("image_file", variables.currentDir);	
-if('gif,jpg,png,bmp' CONTAINS application.zcore.functions.zgetfileext(getfilefrompath(form.image_file))){
-    application.zcore.status.setStatus(request.zsid,"You can't upload an image as a file.  <a href=""/z/admin/files/add?d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#"">Click here to upload an image</a>.");
-    application.zcore.functions.zdeletefile(form.image_file);
-    if(form.method EQ 'insertFile'){
-	application.zcore.functions.zRedirect('/z/admin/files/addFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');	
-    }else{
-	application.zcore.functions.zRedirect('/z/admin/files/editFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');	
-    }
-}
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 
-if(form.method EQ 'updateFile'){
-    oldFilePath=variables.currentDir&getfilefrompath(form.f); 
-    application.zcore.functions.zDeleteFile(oldFilePath); // kill the old file
-    application.zcore.functions.zRenameFile(variables.currentDir&image_file, oldFilePath); // make the new resized image the same name as the old file that was deleted.
-}
-if(form.image_file EQ false or left(form.image_file,6) EQ 'Error:'){
-    application.zcore.status.setStatus(request.zsid,"File Upload Failed.");
-    application.zcore.functions.zRedirect('/z/admin/files/index?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');		
-}else{
-    application.zcore.functions.zRedirect('/z/admin/files/editFile?d=&f='&urlencodedformat(replace(form.image_file, request.zos.globals.privatehomedir&'zupload/user', '')));
-}
+	if(trim(application.zcore.functions.zso(form, 'image_file')) EQ ''){
+	    application.zcore.status.setStatus(request.zsid,"No File was uploaded.");
+	    if(form.method EQ 'insertFile'){
+			application.zcore.functions.zRedirect('/z/admin/files/addFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');	
+	    }else{
+			application.zcore.functions.zRedirect('/z/admin/files/editFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');
+	    }
+	}
+
+
+	if(form.image_file CONTAINS ","){
+		// patched Railo 4.2.1.002 to support multiple file uploads
+		rs=application.zcore.functions.zFileUploadAll("image_file", variables.currentDir, false);
+		for(i=1;i LTE arraylen(rs.arrError);i++){
+			application.zcore.status.setStatus(request.zsid, rs.arrError[i], form, true);
+		}
+		if(arraylen(rs.arrFile)){
+			application.zcore.status.setStatus(request.zsid,"Files Uploaded.");
+		}
+		application.zcore.functions.zRedirect('/z/admin/files/index?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');	
+	}else{
+
+		form.image_file = variables.currentDir&application.zcore.functions.zUploadFile("image_file", variables.currentDir);	
+		if('gif,jpg,png,bmp' CONTAINS application.zcore.functions.zgetfileext(getfilefrompath(form.image_file))){
+			application.zcore.status.setStatus(request.zsid,"You can't upload an image as a file.  <a href=""/z/admin/files/add?d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#"">Click here to upload an image</a>.");
+			application.zcore.functions.zdeletefile(form.image_file);
+			if(form.method EQ 'insertFile'){
+				application.zcore.functions.zRedirect('/z/admin/files/addFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');	
+			}else{
+				application.zcore.functions.zRedirect('/z/admin/files/editFile?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#&f=#URLEncodedFormat(form.f)#');	
+			}
+		}
+
+		if(form.method EQ 'updateFile'){
+			oldFilePath=variables.currentDir&getfilefrompath(form.f); 
+			application.zcore.functions.zDeleteFile(oldFilePath); // kill the old file
+			application.zcore.functions.zRenameFile(variables.currentDir&image_file, oldFilePath); // make the new resized image the same name as the old file that was deleted.
+		}
+		if(form.image_file EQ false or left(form.image_file,6) EQ 'Error:'){
+			application.zcore.status.setStatus(request.zsid,"File Upload Failed.");
+			application.zcore.functions.zRedirect('/z/admin/files/index?zsid=#request.zsid#&d=#URLEncodedFormat(form.d)#');		
+		}else{
+			application.zcore.functions.zRedirect('/z/admin/files/editFile?d=&f='&urlencodedformat(replace(form.image_file, request.zos.globals.privatehomedir&'zupload/user', '')));
+		}
+	}
+
 </cfscript>
 </cffunction>
 
@@ -780,8 +798,8 @@ If you just want to add an file, <a href="/z/admin/files/addFile?d=#URLEncodedFo
 		Download: <a href="#variables.siteRootDir##urlencodedformat(form.f)#">#urlencodedformat(form.f)#</a><br />
 		<br />
 	</cfif>
-	Select file:
-	<input type="file" name="image_file" />
+	Select file(s):
+	<input type="file" name="image_file" multiple="multiple" />
 	<br />
 	<br />
 	<input type="submit" name="image_submit" value="Upload File" /> 
