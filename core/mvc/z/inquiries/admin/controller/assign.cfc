@@ -134,7 +134,7 @@
     selectStruct.queryValueField = 'user_id';
     application.zcore.functions.zInputSelectBox(selectStruct);
     </cfscript>
-    or Type Name: <input type="text" name="assign_name" value="#application.zcore.functions.zso(form, 'assign_name')#" /> and Email: <input type="text" name="assign_email" value="#application.zcore.functions.zso(form, 'assign_email')#" />
+    or Type Name: <input type="text" name="assign_name" value="#application.zcore.functions.zso(form, 'assign_name')#" /> and Email(s): <input type="text" name="assign_email" value="#application.zcore.functions.zso(form, 'assign_email')#" /> (Comma separated)
     <br />
     <div id="agentPhotoDiv"></div>
     </td>
@@ -173,13 +173,24 @@
     </cfif>
     <cfscript>
 	local.assignUserId=form.user_id;
+    if(application.zcore.functions.zso(form, 'assign_email') NEQ ''){
+        arrEmail=listToArray(form.assign_email, ",");
+        arrEmailFinal=[];
+        for(i=1;i LTE arraylen(arrEmail);i++){
+            e=trim(arrEmail[i]);
+            if(e NEQ ""){
+                if(application.zcore.functions.zEmailValidate(e) EQ false){
+                    application.zcore.status.setStatus(request.zsid,"Invalid email address format: #arrEmail[i]#",form,true);
+                    application.zcore.functions.zRedirect("/z/inquiries/admin/assign/select?inquiries_id=#form.inquiries_id#&zPageId=#form.zPageId#&zsid=#request.zsid#");  
+                }
+                arrayAppend(arrEmailFinal, e);
+            }
+        }
+        form.assign_email=arraytolist(arrEmailFinal, ", ");
+    }
 	</cfscript>
     <cfif application.zcore.functions.zso(form, 'assign_email') NEQ ''>
         <cfscript>
-        if(application.zcore.functions.zEmailValidate(form.assign_email) EQ false){
-            application.zcore.status.setStatus(request.zsid,"Invalid email address format: #form.assign_email#",form,true);
-            application.zcore.functions.zRedirect("/z/inquiries/admin/assign/select?inquiries_id=#form.inquiries_id#&zPageId=#form.zPageId#&zsid=#request.zsid#");	
-        }
         request.noleadsystemlinks=true;
         db.sql="SELECT inquiries_email from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
         WHERE inquiries_id = #db.param(form.inquiries_id)#  and 

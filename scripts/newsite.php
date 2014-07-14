@@ -18,7 +18,7 @@ if(strpos($host, $testDomain) !== FALSE){
 	$isTestServer=true;
 	$isInstalledOnSambaMount=get_cfg_var("jetendo_test_server_uses_samba");
 	$adminDomain=str_replace("http://", "", str_replace("https://", "", get_cfg_var("jetendo_admin_domain")));
-	$cmd="/bin/ping -c ".$adminDomain.".";
+	$cmd="/bin/ping -c 1 ".$adminDomain.".";
 	$r=`$cmd`;
 	if(strpos($r, 'bytes from') === false){
 		echo "restart networking because ping to ".$adminDomain." failed.\n";
@@ -30,7 +30,8 @@ if(strpos($host, $testDomain) !== FALSE){
 	$isInstalledOnSambaMount=get_cfg_var("jetendo_server_uses_samba");
 }
 $cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
-$sql="select * FROM site WHERE site_active='1' ";
+$sql="select * FROM site WHERE site_active='1' and 
+site_deleted='0' ";
 
 $arrSite=array();
 $r=$cmysql->query($sql, MYSQLI_STORE_RESULT);
@@ -42,9 +43,13 @@ while($row=$r->fetch_assoc()){
 $time_start = microtime_float();
 
 if($isTestServer){
-	$sql="select * FROM site WHERE (site_system_user_created='0' or site_system_user_modified ='1') and site_active='1' and site_ip_address <>'' and site_short_domain <>'' ";
+	$sql="select * FROM site WHERE (site_system_user_created='0' or site_system_user_modified ='1') and 
+	site_active='1' and site_ip_address <>'' and site_short_domain <>'' and 
+site_deleted='0'  ";
 }else{
-	$sql="select * FROM site WHERE (site_system_user_created='0' or site_system_user_modified ='1') and site_active='1' and site_ip_address <>'' and site_short_domain <>'' and site_username <>'' and site_password<>''";
+	$sql="select * FROM site WHERE (site_system_user_created='0' or site_system_user_modified ='1') and 
+	site_active='1' and site_ip_address <>'' and site_short_domain <>'' and site_username <>'' and site_password<>'' and 
+site_deleted='0' ";
 }
 
 $result=`cat /proc/sys/net/ipv4/tcp_syncookies`;
@@ -164,7 +169,7 @@ for($i4=0;$i4 < 62;$i4++){
 				deploy_server_deploy_enabled='1'  and 
 				site_x_deploy_server.site_id = '".$siteId."' and 
 				deploy_server_deleted = 0 and 
-				site_x_deploy_server = 0 "; 
+				site_x_deploy_server_deleted = 0 "; 
 				$r=$cmysql->query($sql2, MYSQLI_STORE_RESULT); 
 				while($row2=$r->fetch_assoc()){ 
 					$privateKeyPath=$row2["deploy_server_private_key_path"];
@@ -425,7 +430,8 @@ for($i4=0;$i4 < 62;$i4++){
 			site_short_domain_previous='', 
 			site_username_previous='', 
 			site_password_previous='',
-			site_updated_datetime='".$mysqldate."' where site_id='".$row["site_id"]."'");
+			site_updated_datetime='".$mysqldate."' where 
+			site_id='".$row["site_id"]."'");
 	}
 	sleep(1);
 	if(microtime_float() - $time_start > $timeout-3){
