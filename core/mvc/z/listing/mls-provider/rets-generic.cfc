@@ -836,7 +836,8 @@ variables.typeStruct["text"]="text";
 	var path=0;
 	var qdir=0;
 	var curday=dateformat(now(),'yyyy-mm-dd');
-	db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city";
+	db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city WHERE 
+	city_deleted = #db.param(0)#";
 	qC=db.execute("qC"); 
 	
 	if(request.zos.istestserver){

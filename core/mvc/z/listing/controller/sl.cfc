@@ -55,6 +55,7 @@ if(isDefined('request.zsession.user.id')){
 		db.sql="select * from #request.zos.queryObject.table("saved_listing", request.zos.zcoreDatasource)# saved_listing 
 		WHERE site_id=#db.param(request.zos.globals.id)# and 
 		user_id=#db.param(request.zsession.user.id)# and 
+		saved_listing_deleted = #db.param(0)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
 		qC=db.execute("qC"); 
 		if(qC.recordcount NEQ 0){

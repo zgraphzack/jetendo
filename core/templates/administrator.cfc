@@ -90,7 +90,8 @@
 			}else{
 				db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_id=#db.param(request.zsession.user.id)# and 
-				site_id=#db.param(request.zsession.user.site_id)#";
+				site_id=#db.param(request.zsession.user.site_id)# and
+				user_deleted = #db.param(0)#";
 				qUser=db.execute("qUser");
 				
 				arrSiteId=listtoarray(qUser.user_sync_site_id_list, ",",false);
@@ -102,7 +103,8 @@
 		site_domain 
 		from #db.table("site", request.zos.zcoreDatasource)# site
 		WHERE site_active=#db.param(1)# "&db.trustedSQL(siteIdSQL)&" and 
-		site_id <> #db.param(request.zos.globals.id)#
+		site_id <> #db.param(request.zos.globals.id)# and 
+		site_deleted = #db.param(0)#
 		order by shortDomain asc";
 		qSite=db.execute("qSite");
 		if(qSite.recordcount NEQ 0){

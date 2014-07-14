@@ -8,7 +8,9 @@
 	var ts=0;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Content Permissions", true); 
 	if(structkeyexists(form, 'groupcount')){
-		db.sql="DELETE FROM #request.zos.queryObject.table("content_permissions", request.zos.zcoreDatasource)#  WHERE site_id = #db.param(request.zos.globals.id)#";
+		db.sql="DELETE FROM #request.zos.queryObject.table("content_permissions", request.zos.zcoreDatasource)#  
+		WHERE site_id = #db.param(request.zos.globals.id)# and 
+		content_permissions_deleted = #db.param(0)#";
 		q=db.execute("q");
 		for(i=1;i LTE form.groupcount;i=i+1){			
 			ts=StructNew();
@@ -55,14 +57,20 @@
 	Use this form to set the editable home page for each user group. <span style="color:##FF0000;">WARNING:</span> Please note that they will automatically be given permission to add, edit and delete the selected page and all pages associated with it.<br />
 	<br />
 	<cfsavecontent variable="db.sql"> SELECT * FROM #request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content
-	WHERE  content.site_id = #db.param(request.zos.globals.id)# and content_deleted=#db.param('0')# ORDER BY content.content_name ASC </cfsavecontent>
+	WHERE  content.site_id = #db.param(request.zos.globals.id)# and 
+	content_deleted=#db.param('0')# 
+	ORDER BY content.content_name ASC </cfsavecontent>
 	<cfscript>
 	qPages=db.execute("qPages");
 	</cfscript>
 	<cfsavecontent variable="db.sql"> SELECT * FROM #request.zos.queryObject.table("user_group", request.zos.zcoreDatasource)# user_group 
 	LEFT JOIN #request.zos.queryObject.table("content_permissions", request.zos.zcoreDatasource)# content_permissions ON 
-	user_group.user_group_id = content_permissions.user_group_id and content_permissions.site_id = user_group.site_id
-	WHERE user_group.site_id = #db.param(request.zos.globals.id)# and user_group_name NOT IN #db.trustedsql("('administrator','member','user')")# ORDER BY user_group_name </cfsavecontent>
+	user_group.user_group_id = content_permissions.user_group_id and content_permissions.site_id = user_group.site_id and 
+	content_permissions_deleted = #db.param(0)#
+	WHERE user_group.site_id = #db.param(request.zos.globals.id)# and 
+	user_group_name NOT IN #db.trustedsql("('administrator','member','user')")# and 
+	user_group_deleted = #db.param(0)#
+	ORDER BY user_group_name </cfsavecontent>
 	<cfscript>
 	qgroups=db.execute("qGroups");
 	</cfscript>

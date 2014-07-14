@@ -69,12 +69,13 @@ versionSyncTableStruct is incomplete and the fileFieldStruct functions are not u
 				primaryKey:"content_id",
 				dateField:"content_updated_datetime",
 				hasSiteId: true
+			},
 			"blog":{
 				primaryKey:"blog_id",
 				dateField:"blog_updated_datetime",
 				hasSiteId: true
 			},
-			"image":{,
+			"image":{
 				primaryKey:"image_id",
 				dateField:"image_datetime",
 				hasSiteId: true,
@@ -109,7 +110,7 @@ versionSyncTableStruct is incomplete and the fileFieldStruct functions are not u
 			}
 			qId=db.execute("qId");
 			for(row in qId){
-				nextId=row.maxId - (row.maxId MOD arguments.sharedStruct.databaseIncrementIncrement))+arguments.sharedStruct.databaseIncrementIncrement+(arguments.sharedStruct.databaseIncrementOffset-1);
+				nextId=(row.maxId - (row.maxId MOD arguments.sharedStruct.databaseIncrementIncrement))+arguments.sharedStruct.databaseIncrementIncrement+(arguments.sharedStruct.databaseIncrementOffset-1);
 				if(c.hasSiteId){
 					idGenerationStruct[schema][table][row.site_id]=nextId;
 				}else{
@@ -262,7 +263,7 @@ versionSyncTableStruct is incomplete and the fileFieldStruct functions are not u
 		version_datetime >= #db.param(syncMysqlDate)# and 
 		server_id <> #db.param(application.zcore.currentServerID)# 
 		order by version_datetime asc 
-		LIMIT #db.param(0), #db.param(rowLimit)#";
+		LIMIT #db.param(0)#, #db.param(rowLimit)#";
 		qVersion=db.execute("qVersion");
 		for(row in qVersion){
 			rowStruct[row.version_id]={

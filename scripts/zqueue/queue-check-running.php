@@ -37,14 +37,14 @@ if($logDir !== FALSE && $logDir != ""){
 for($i101=0;$i101<70;$i101++){
 
 	// get a running queue entry
-	$sql="select * from queue where queue_status = '1'";
+	$sql="select * from queue where queue_status = '1' and queue_deleted = '0' ";
 	$r=mysql_query($sql);
 	$c=mysql_num_rows($r);
 	if($c!=0){
 		sleep(1);
 	}
 	// none running, find a new one to run	
-	$sql="select * from queue where  queue_status='0' order by queue_id asc limit 0,1";
+	$sql="select * from queue where  queue_status='0' and queue_deleted = '0'  order by queue_id asc limit 0,1";
 	$r=mysql_query($sql);
 	$c=mysql_num_rows($r);
 	if($c==0){
@@ -57,7 +57,7 @@ for($i101=0;$i101<70;$i101++){
 		$qSite=mysql_query($sql);
 		$count=mysql_num_rows($qSite);
 		if($count == 0){
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime=NOW(), queue_error='site_id is not an active site.' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='site_id is not an active site.' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
@@ -70,14 +70,14 @@ for($i101=0;$i101<70;$i101++){
 		
 		if(substr($originalPath, 0, strlen($siteInstallPath."zupload/video/")) != $siteInstallPath."zupload/video/"){
 			fwrite($fp, "Error: queue_original_file must be in ".$siteInstallPath."zupload/video/ - security breach attempt.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime=NOW(), queue_error='queue_original_file must be in ".mysql_real_escape_string($siteInstallPath)."zupload/video/ - security breach attempt' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file must be in ".mysql_real_escape_string($siteInstallPath)."zupload/video/ - security breach attempt' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
 		}
 		if(strpos(substr($originalPath, strlen($siteInstallPath."zupload/video/")), "/") !== FALSE){
 			fwrite($fp, "Error: queue_original_file must be in ".$siteInstallPath."zupload/video/, not in a subfolder - security breach attempt.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime=NOW(), queue_error='queue_original_file must be in ".mysql_real_escape_string($siteInstallPath)."zupload/video/, not in a subfolder - security breach attempt' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file must be in ".mysql_real_escape_string($siteInstallPath)."zupload/video/, not in a subfolder - security breach attempt' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fclose($fp);
 			continue; 
@@ -89,14 +89,14 @@ for($i101=0;$i101<70;$i101++){
 		
 		if(!file_exists($originalPath)){ 
 			fwrite($fp, "queue_original_file doesn't exist.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime=NOW(), queue_error='queue_original_file doesn\'t exist.' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file doesn\'t exist.' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
 		}
 		if($row->queue_file==""){
 			fwrite($fp, "Queue_file can't be empty and it must be a unique filename.\n");
-			$sql="update queue set queue_status='2', queue_updated_datetime=NOW(), queue_error='queue_file can\'t be empty and it must be a unique filename' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_file can\'t be empty and it must be a unique filename' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
@@ -112,13 +112,13 @@ for($i101=0;$i101<70;$i101++){
 		}
 		if(!is_numeric($row->queue_width) || !is_numeric($row->queue_height) || $row->queue_width < 100 || $row->queue_height < 100){
 			fwrite($fp, "Error: queue_width and queue_height must be a valid number greater or equal to 100 x 100.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime=NOW(), queue_error='queue_width and queue_height must be a valid number greater or equal to 100 x 100.' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_width and queue_height must be a valid number greater or equal to 100 x 100.' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
 		}
 		fwrite($fp, "Running queue id #".$row->queue_id."\n");
-		$sql="update queue set queue_progress='0',queue_status='1', queue_updated_datetime=NOW(), queue_run_datetime=NOW() where queue_id='".$row->queue_id."'";
+		$sql="update queue set queue_progress='0',queue_status='1', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_run_datetime='".date('Y-m-d H:i:s')."' where queue_id='".$row->queue_id."'";
 		mysql_query($sql);
 		// do the long command
 		// -B is audio biterate
@@ -131,7 +131,7 @@ for($i101=0;$i101<70;$i101++){
 		fwrite($fp, $encodeCmd."\n\n");
 		$r=`$encodeCmd`;
 		fwrite($fp, $r."\n");
-		$sql2="select * from queue where queue_id ='".$row->queue_id."'";
+		$sql2="select * from queue where queue_id ='".$row->queue_id."' and queue_deleted = '0' ";
 		$r2=mysql_query($sql2);
 		$c2=mysql_num_rows($r2);
 		if($c2 == 0){
@@ -146,7 +146,7 @@ for($i101=0;$i101<70;$i101++){
 			
 			if(file_exists($outputPath) === FALSE){
 				fwrite($fp, "Error: The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.\n");
-				$sql="update queue set queue_status='2', queue_updated_datetime=NOW(), queue_error='The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.' where queue_id='".$row->queue_id."'";
+				$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.' where queue_id='".$row->queue_id."'";
 				mysql_query($sql);
 				fclose($fp);
 				continue;
@@ -278,7 +278,7 @@ for($i101=0;$i101<70;$i101++){
 			$r=`$cmd`;
 			fwrite($fp, $cmd."\n"); 
 			fwrite($fp, $r."\n"); 
-			$sql="update queue set queue_width='".$queue_width."', queue_height='".$queue_height."', queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime=NOW(), queue_error='' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_width='".$queue_width."', queue_height='".$queue_height."', queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 			fwrite($fp, "Video encoding completed\n");
 			fclose($fp);

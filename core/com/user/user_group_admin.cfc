@@ -131,21 +131,25 @@
 		<cfsavecontent variable="db.sql">
 		DELETE FROM #db.table("user_group", request.zos.zcoreDatasource)#  
 		WHERE user_group_id = #db.param(arguments.user_group_id)# and 
+		user_group_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
 		<cfsavecontent variable="db.sql">
 		DELETE FROM #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
 		WHERE user_group_id = #db.param(arguments.user_group_id)# and 
+		user_group_x_group_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
 		<cfsavecontent variable="db.sql">
 		SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 		WHERE user_group_name = #db.param('administrator')# and 
+		user_group_deleted = #db.param(0)# and 
 		site_id = #db.param(Request.zos.globals.serverId)# 
 		</cfsavecontent><cfscript>qAdmin=db.execute("qAdmin");</cfscript>
 		<cfsavecontent variable="db.sql">
 		DELETE FROM #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
 		WHERE user_group_child_id = #db.param(arguments.user_group_id)# and 
+		user_group_x_group_deleted = #db.param(0)# and
 		(site_id = #db.param(arguments.site_id)# or 
 		user_group_id = #db.param(qAdmin.user_group_id)#)
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
@@ -153,6 +157,7 @@
 		UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 		SET user_group_id = #db.param(0)# 
 		WHERE user_group_id = #db.param(arguments.user_group_id)# and 
+		user_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
 		<cfreturn true>	
@@ -169,6 +174,7 @@
 		<cfsavecontent variable="db.sql">
 		SELECT user_group_id FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 		WHERE user_group_primary = #db.param(1)# and 
+		user_group_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)# 
 		</cfsavecontent><cfscript>qPrimary=db.execute("qPrimary");
 		if(qPrimary.recordcount EQ 0){
@@ -189,13 +195,15 @@
 			<cfsavecontent variable="db.sql">
 			UPDATE #db.table("user", request.zos.zcoreDatasource)# user_group 
 			SET user_group_primary = #db.param(0)# 
-			WHERE site_id = #db.param(arguments.site_id)#
+			WHERE site_id = #db.param(arguments.site_id)# and 
+			user_group_deleted = #db.param(0)#
 			</cfsavecontent><cfscript>qFlush=db.execute("qFlush");</cfscript>
 			<cfsavecontent variable="db.sql">
 			UPDATE #db.table("user", request.zos.zcoreDatasource)# user_group 
 			SET user_group_primary = #db.param(1)# 
 			WHERE user_group_id = #db.param(user_group_id)# and 
-			site_id = #db.param(arguments.site_id)#
+			site_id = #db.param(arguments.site_id)# and 
+			user_group_deleted = #db.param(0)#
 			</cfsavecontent><cfscript>qUpdate=db.execute("qUpdate");</cfscript>
 	</cffunction>
 	
@@ -218,7 +226,9 @@
 		WHERE user_group.user_group_id = user_group_x_group.user_group_id and 
 		user_group.site_id = user_group_x_group.site_id and 
 		user_group_x_group.site_id = #db.param(arguments.site_id)#  and 
-		user_group_x_group.user_group_id = #db.param(arguments.user_group_id)# 
+		user_group_x_group.user_group_id = #db.param(arguments.user_group_id)# and 
+		user_group_deleted = #db.param(0)# and 
+		user_group_x_group_deleted = #db.param(0)# 
 		</cfsavecontent><cfscript>qAccess=db.execute("qAccess");</cfscript>
 		<cfreturn qAccess>
 	</cffunction>
@@ -248,7 +258,8 @@
 		DELETE FROM #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
 		WHERE user_group_id = #db.param(arguments.user_group_id)# and 
 		user_group_child_id <> #db.param(arguments.user_group_id)# and 
-		site_id =#db.param(arguments.site_id)#
+		site_id =#db.param(arguments.site_id)# and 
+		user_group_x_group_deleted = #db.param(0)#
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
 		<cfsavecontent variable="db.sql">
 		UPDATE #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
@@ -256,7 +267,8 @@
 		user_group_modify_user =#db.param(0)# 
 		WHERE user_group_id = #db.param(arguments.user_group_id)# and 
 		user_group_child_id = user_group_id and 
-		site_id =#db.param(arguments.site_id)#
+		site_id =#db.param(arguments.site_id)# and 
+		user_group_x_group_deleted = #db.param(0)# 
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");
 		if(arguments.user_group_id_login_access NEQ ""){
 			for(i=1;i LTE listLen(arguments.user_group_id_login_access);i=i+1){
@@ -298,7 +310,8 @@
 					 user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)#  
 					WHERE user_group_id = #db.param(arguments.user_group_id)# and  
 					user_group_child_id = #db.param(current)# and  
-					site_id = #db.param(arguments.site_id)#";
+					site_id = #db.param(arguments.site_id)# and 
+					user_group_x_group_deleted = #db.param(0)#";
 					result=db.execute("result");
 				}
 			}
@@ -331,7 +344,8 @@
 					user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)# 
 					WHERE user_group_id = #db.param(arguments.user_group_id)# and  
 					user_group_child_id = #db.param(current)# and  
-					site_id = #db.param(arguments.site_id)#";
+					site_id = #db.param(arguments.site_id)# and 
+					user_group_x_group_deleted = #db.param(0)# ";
 					result=db.execute("result");
 				}
 			}
@@ -352,7 +366,8 @@
 					user_group_x_group_updated_datetime=#db.param(request.zos.mysqlnow)# 
 					WHERE user_group_id = #db.param(arguments.user_group_id)# and  
 					user_group_child_id = #db.param(current)# and  
-					site_id = #db.param(arguments.site_id)#";
+					site_id = #db.param(arguments.site_id)# and 
+					user_group_x_group_deleted = #db.param(0)#";
 					db.execute("q");
 				}
 			}
@@ -374,11 +389,13 @@
 		var local=structnew();
 		db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 		WHERE user_group_id = #db.param(arguments.user_group_id)# and 
-		site_id = #db.param(arguments.site_id)#";
+		site_id = #db.param(arguments.site_id)# and 
+		user_group_deleted = #db.param(0)#";
 		qGroup=db.execute("qGroup");
 		db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 		WHERE user_group_name = #db.param('administrator')# and 
-		site_id = #db.param(Request.zos.globals.serverId)# ";
+		site_id = #db.param(Request.zos.globals.serverId)# and 
+		user_group_deleted = #db.param(0)#";
 		qAdmin=db.execute("qAdmin");
 		// allow server manager administrators to access all groups
 		db.sql="REPLACE INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
@@ -387,7 +404,8 @@
 		user_group_login_access = #db.param(1)#, 
 		user_group_modify_user = #db.param(0)#, 
 		user_group_share_user = #db.param(0)#, 
-		site_id = #db.param(Request.zos.globals.serverId)#"; 
+		site_id = #db.param(Request.zos.globals.serverId)# and 
+		user_group_x_group_deleted = #db.param(0)#"; 
 		 db.execute("q"); 
 		// allow the group to access itself
 		 db.sql="REPLACE INTO #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
@@ -396,7 +414,8 @@
 		 user_group_login_access = #db.param('1')#, 
 		user_group_modify_user = #db.param(0)#, 
 		user_group_share_user = #db.param(0)#, 
-		 site_id = #db.param(qGroup.site_id)#"; 
+		 site_id = #db.param(qGroup.site_id)# and 
+		 user_group_x_group_deleted = #db.param(0)#"; 
 		 db.execute("q"); 
 		</cfscript>
 		<cfreturn true>
@@ -423,6 +442,7 @@
 			<cfsavecontent variable="db.sql">
 			SELECT user_group_name FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE user_group_id=#db.param(arguments.user_group_id)# and 
+			user_group_deleted = #db.param(0)# and 
 			site_id=#db.param(arguments.site_id)#
 			</cfsavecontent><cfscript>qSite=db.execute("qSite");
 			try{
@@ -458,6 +478,7 @@
 		<cfsavecontent variable="db.sql">
 		SELECT user_group_id FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 		WHERE user_group_name=#db.param(arguments.user_group_name)# and 
+		user_group_deleted = #db.param(0)# and 
 		site_id=#db.param(arguments.site_id)#
 		</cfsavecontent><cfscript>qSite=db.execute("qSite");
 		try{

@@ -61,7 +61,8 @@ application.zcore.template.prependTag("meta", theMeta);
 
 <cfscript>
 db.sql="select * from #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
-where site_id=#db.param(request.zos.globals.id)#";
+where site_id=#db.param(request.zos.globals.id)# and 
+mls_option_deleted = #db.param(0)#";
 qC=db.execute("qC"); 
 if(dateformat(qc.mls_option_site_map_update_datetime,'yyyymmdd') LT dateformat(now(),'yyyymmdd')){
 	// increment and update DB
@@ -70,7 +71,8 @@ if(dateformat(qc.mls_option_site_map_update_datetime,'yyyymmdd') LT dateformat(n
 	db.sql="update #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
 	SET mls_option_site_map_radius=#db.param(distanceRadius)#, 
 	mls_option_site_map_update_datetime=#db.param(nowDate)# 
-	where site_id=#db.param(request.zos.globals.id)#";
+	where site_id=#db.param(request.zos.globals.id)# and 
+	mls_option_deleted = #db.param(0)#";
 	db.execute("q"); 
 }else{
 	distanceRadius=max(0,qC.mls_option_site_map_radius);
@@ -90,6 +92,8 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	 FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
 	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  
 	 WHERE  
+	 listing_deleted = #db.param(0)# and 
+	 city_deleted = #db.param(0)# and 
    	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
        and city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
         AND city.city_id=listing.listing_city and 
@@ -112,6 +116,9 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	WHERE  listing_track.listing_id = listing.listing_id  and   
+	listing_deleted = #db.param(0)# and 
+	listing_lookup_deleted = #db.param(0)# and 
+	listing_track_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
        and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
         and listing_lookup_type=#db.param('listing_type')# AND 
@@ -136,6 +143,9 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	WHERE  listing_track.listing_id = listing.listing_id  and 
+	listing_deleted = #db.param(0)# and 
+	listing_lookup_deleted = #db.param(0)# and 
+	listing_track_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
 	and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#)  and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
@@ -177,6 +187,8 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
      SELECT city_name, city.city_id, COUNT(listing.listing_id) c 
 	 FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing,
 	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  WHERE  
+	 listing_deleted = #db.param(0)# and 
+	 city_deleted = #db.param(0)# and 
    #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
        and city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
         AND city.city_id=listing.listing_city  and 
@@ -199,6 +211,9 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	WHERE  listing_track.listing_id = listing.listing_id  and   
+	listing_deleted = #db.param(0)# and 
+	listing_lookup_deleted = #db.param(0)# and 
+	listing_track_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
 	and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -224,6 +239,9 @@ qD2=db.execute("qD2");
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track  
 	WHERE  listing_track.listing_id = listing.listing_id  and 
+	listing_deleted = #db.param(0)# and 
+	listing_lookup_deleted = #db.param(0)# and 
+	listing_track_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
 	and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -263,6 +281,8 @@ qD=db.execute("qD");
 	 SELECT city_name, city.city_id, COUNT(listing.listing_id) c FROM 
 	 #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
 	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  WHERE  
+	 city_deleted = #db.param(0)# and 
+	 listing_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
 	and city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -289,6 +309,9 @@ qD=db.execute("qD");
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track  
 	WHERE  listing_track.listing_id = listing.listing_id  and   
+	listing_deleted = #db.param(0)# and 
+	listing_lookup_deleted = #db.param(0)# and 
+	listing_track_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
        and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -352,7 +375,9 @@ Example of getting cities with listings within 10 mile radius
 	#db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  
 	WHERE city_parent_id=#db.param(primaryCityId)# and 
 	city_distance <=#db.param(distanceRadius)# and 
-	city.city_id = city_distance.city_id  
+	city.city_id = city_distance.city_id  and 
+	city_deleted = #db.param(0)# and 
+	city_distance_deleted = #db.param(0)#
 	ORDER BY city_distance ASC
       </cfsavecontent>
 <cfscript>
@@ -364,6 +389,8 @@ qCity2=db.execute("qCity2");
 	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
 	 #db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	 WHERE  
+	 listing_deleted = #db.param(0)# and 
+	 city_deleted = #db.param(0)# and 
        #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 listing.listing_liststatus=#db.param('1,4,7,16')#
        <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list NEQ ""> 
@@ -389,6 +416,8 @@ listing.listing_liststatus=#db.param('1,4,7,16')#
 		 FROM (#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
 		 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
 		 #db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  WHERE  
+		 listing_deleted = #db.param(0)# and 
+		 city_deleted = #db.param(0)# and 
        #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#  and 
 	   listing.listing_liststatus=#db.param('1,4,7,16')#
        and city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 

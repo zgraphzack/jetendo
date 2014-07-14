@@ -13,6 +13,8 @@
 	FROM (#request.zos.queryObject.table("blog", request.zos.zcoreDatasource)# blog,
 	#request.zos.queryObject.table("blog_config", request.zos.zcoreDatasource)# blog_config, 
 	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site) WHERE 
+	blog_deleted = #db.param(0)# and 
+	blog_config_deleted = #db.param(0)# and 
 	blog_config.site_id = blog.site_id and 
 	blog_config.site_id = site.site_id and 
 	site.site_active=#db.param('1')# and 

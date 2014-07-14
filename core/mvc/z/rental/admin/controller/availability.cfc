@@ -13,6 +13,7 @@
 	db.sql="SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental WHERE 
 	rental_active=#db.param(1)# and 
 	rental_enable_calendar = #db.param(1)# and 
+	rental_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)# ORDER BY rental_name ASC ";
 	qProperties=db.execute("qProperties");
 	</cfscript>
@@ -52,6 +53,7 @@
 	availability_date >= #db.param(dateformat(form.start_date, 'yyyy-mm-dd')&' 00:00:00')# and 
 	availability_date < #db.param(dateformat(form.end_date, 'yyyy-mm-dd')&' 00:00:00')# and 
 	inquiries_id = #db.param('0')# and 
+	availability_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)# ";
 	q=db.execute("q");
 	if(structkeyexists(form, 'avail_date')){
@@ -108,6 +110,7 @@
 	db.sql="SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_id = #db.param(form.rental_id)# and 
 	rental_enable_calendar = #db.param(1)# and 
+	rental_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)#";
 	qrental=db.execute("qrental");
 	if(qrental.recordcount EQ 0){
@@ -153,6 +156,7 @@
 	db.sql="SELECT max(availability_date) as availability_date
 	FROM #request.zos.queryObject.table("availability", request.zos.zcoreDatasource)# availability 
 	WHERE availability.rental_id = #db.param(form.rental_id)# and 
+	availability_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)#";
 	qLast=db.execute("qLast");
 	initdate = CreateDate(year(now()),month(now()),1);
@@ -196,6 +200,7 @@
 				db.sql="SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental  
 				WHERE rental_active = #db.param(1)# and 
 				rental_enable_calendar = #db.param(1)# and 
+				rental_deleted = #db.param(0)# and 
 				site_id = #db.param(request.zOS.globals.id)# 
 				ORDER BY rental_name ASC";
 				qProperties=db.execute("qProperties");
@@ -242,6 +247,7 @@
 	FROM #request.zos.queryObject.table("availability", request.zos.zcoreDatasource)# availability
 	WHERE rental_id = #db.param(form.rental_id)# and 
 	availability_date >= #db.param(dateformat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
+	availability_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)# ";
 	qAvailList=db.execute("qAvailList");
 	availStruct = StructNew();

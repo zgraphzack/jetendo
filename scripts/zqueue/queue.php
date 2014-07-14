@@ -28,7 +28,7 @@ queue_status error codes:
 for($i101=0;$i101<70;$i101++){
 
 	// get a running queue entry
-	$sql="select * from queue where queue_status = '1'";//queue_id='".$queue_id."' and
+	$sql="select * from queue where queue_status = '1' and queue_deleted = '0' ";//queue_id='".$queue_id."' and
 	$r=mysql_query($sql);
 	$c=mysql_num_rows($r);
 	if($c==0){
@@ -42,7 +42,7 @@ for($i101=0;$i101<70;$i101++){
 	if($row->queue_cancelled=="1"){
 		// kill linux process matching name HandBrakeCLI or Nice maybe...
 		echo "cancelling\n";
-		$sql2="delete from queue where queue_id='".$row->queue_id."'";
+		$sql2="update queue set queue_deleted='1', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_id='".$row->queue_id."'";
 		mysql_query($sql2);
 		$r=`pidof HandBrakeCLI`;
 		if($r != ""){
@@ -87,7 +87,7 @@ for($i101=0;$i101<70;$i101++){
 				'X-Mailer: PHP/' . phpversion();
 
 			mail($to, $subject, $message, $headers);
-			$sql="update queue set queue_progress='0', queue_status='0', queue_updated_datetime=NOW() where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0', queue_status='0', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 		}
 	}
@@ -131,7 +131,7 @@ for($i101=0;$i101<70;$i101++){
 		if($p!==FALSE && $p2 !==FALSE){
 			$percent=substr($l2, $p+1, $p2-($p+1)-1);
 			echo $percent."% complete\n";
-			$sql="update queue set queue_progress='".$percent."', queue_updated_datetime=NOW() where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='".$percent."', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_id='".$row->queue_id."'";
 
 			mysql_query($sql);
 			echo mysql_error();

@@ -48,6 +48,7 @@
 	select min(inquiries_datetime) as inquiries_datetime 
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	where site_id = #db.param(request.zOS.globals.id)# and 
+	inquiries_deleted = #db.param(0)# and 
 	inquiries.inquiries_status_id <> #db.param(0)# and 
 	inquiries_parent_id = #db.param(0)#
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
@@ -71,6 +72,7 @@
 	select max(inquiries_datetime) as inquiries_datetime 
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	where site_id = #db.param(request.zOS.globals.id)# and 
+	inquiries_deleted = #db.param(0)# and
 	inquiries.inquiries_status_id <> #db.param(0)# and 
 	inquiries_parent_id = #db.param(0)#
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
@@ -114,6 +116,8 @@
 		from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
 		#db.table("track_user", request.zos.zcoreDatasource)# track_user 
 		WHERE inquiries.inquiries_email = track_user.track_user_email AND 
+		track_user_deleted = #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and 
 		inquiries.site_id = track_user.site_id AND 
 		track_user.site_id = #db.param(request.zOS.globals.id)# AND 
 		track_user_keywords <> #db.param('')# and 
@@ -147,6 +151,8 @@
 		<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
 		#db.table("track_user", request.zos.zcoreDatasource)# track_user 
 		WHERE inquiries.inquiries_email = track_user.track_user_email AND 
+		track_user_deleted = #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and
 		inquiries.site_id = track_user.site_id AND 
 		track_user.site_id = #db.param(request.zOS.globals.id)# AND 
 		track_user_keywords <> #db.param('')# and 

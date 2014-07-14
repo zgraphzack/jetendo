@@ -27,7 +27,9 @@ menuCom.init(ts);
 		menu.menu_id = menu_button.menu_id and 
 		menu_button.site_id = menu.site_id 
 		WHERE menu.menu_name=#db.param(arguments.ss.menu_name)#  AND 
-		menu.site_id = #db.param(arguments.ss.site_id)# 
+		menu.site_id = #db.param(arguments.ss.site_id)# and 
+		menu_deleted = #db.param(0)# and 
+		menu_button_deleted = #db.param(0)# 
 		ORDER BY menu_button_sort";
 		variables.qView=db.execute("qView"); 
 		application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName]={
@@ -72,6 +74,7 @@ zMenu#variables.qView.menu_id#Vertical=true;/* ]]> */</script>');
 	<cfscript>
 	db.sql="SELECT *, menu.site_id FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu.menu_id = #db.param(arguments.menu_id)# AND 
+	menu_deleted = #db.param(0)# and 
 	menu.site_id = #db.param(arguments.site_id)#";
 	qView=db.execute("qView");
 	</cfscript> 
@@ -203,7 +206,9 @@ background-position:top; </cfif>
 	WHERE menu.menu_id = menu_button.menu_id and 
 	menu.menu_id = #db.param(arguments.menu_id)# AND 
 	menu.site_id = #db.param(arguments.site_id)# and 
-	menu.site_id = menu_button.site_id 
+	menu.site_id = menu_button.site_id and 
+	menu_deleted = #db.param(0)# and 
+	menu_button_deleted = #db.param(0)#
     ORDER BY menu_button_sort
 </cfsavecontent><cfscript>qView2=db.execute("qView2");</cfscript> 
 <cfloop query="qView2">
@@ -265,7 +270,8 @@ application.zcore.functions.zPublishCss(ts);
 		qB=false;
 		db.sql="SELECT * FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 		WHERE menu_button_id = #db.param(row.menu_button_id)# AND 
-		site_id = #db.param(request.zos.globals.id)# 
+		site_id = #db.param(request.zos.globals.id)# and 
+		menu_button_link_deleted = #db.param(0)#
 		ORDER BY #contentSort#";
 		qViewSubs=db.execute("qViewSubs");
 		
@@ -319,7 +325,8 @@ application.zcore.functions.zPublishCss(ts);
 			WHERE blog.site_id = #db.param(request.zos.globals.id)# 
 			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 			blog_event =#db.param(1)#) and 
-			blog_status <> #db.param(2)# 
+			blog_status <> #db.param(2)# and 
+			blog_deleted = #db.param(0)#
 			ORDER BY blog_datetime desc, #blogSort# 
 			LIMIT #db.param(0)#,#db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
@@ -334,7 +341,9 @@ application.zcore.functions.zPublishCss(ts);
 			blog.site_id = #db.param(request.zos.globals.id)# 
 			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 			blog_event =#db.param(1)#) and 
-			blog_status <> #db.param(2)# 
+			blog_status <> #db.param(2)# and 
+			blog_deleted = #db.param(0)# and 
+			blog_x_category_deleted = #db.param(0)# 
 			ORDER BY #blogSort# 
 			LIMIT #db.param(0)#, #db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
@@ -349,7 +358,9 @@ application.zcore.functions.zPublishCss(ts);
 			blog.site_id = #db.param(request.zos.globals.id)# 
 			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 			blog_event =#db.param(1)#) and 
-			blog_status <> #db.param(2)# 
+			blog_status <> #db.param(2)# and 
+			blog_deleted = #db.param(0)# and 
+			blog_x_tag_deleted = #db.param(0)# 
 			ORDER BY #blogSort# 
 			LIMIT #db.param(0)#,#db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");
@@ -360,7 +371,8 @@ application.zcore.functions.zPublishCss(ts);
 			WHERE blog.site_id = #db.param(request.zos.globals.id)# 
 			and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
 			blog_event =#db.param(1)#) and 
-			blog_status <> #db.param(2)# 
+			blog_status <> #db.param(2)# and 
+			blog_deleted = #db.param(0)# 
 			ORDER BY blog_views DESC, #blogSort# 
 			LIMIT #db.param(0)#,#db.param(row.menu_button_type_count)# ";
 			qB=db.execute("qB");

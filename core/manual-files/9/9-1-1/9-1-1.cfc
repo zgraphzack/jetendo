@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <p>Paragraph with a <a href="##">link</a></p>
 
 <p>Glossary terminology should be <em>emphasized</em>.</p>

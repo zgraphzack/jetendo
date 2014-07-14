@@ -130,14 +130,16 @@ This allows avoiding remaps more easily.  Less code when importing.
 	};
 	// setup destination data
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# 
-	WHERE site_id = #db.param(request.zos.globals.id)# ";
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	site_option_deleted = #db.param(0)# ";
 	qOption=db.execute("qOption");
 	for(row in qOption){
 		arrayAppend(ts.arrSiteOption, row);
 	}
 	
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
-	WHERE site_id = #db.param(request.zos.globals.id)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and
+	site_option_group_deleted = #db.param(0)# 
 	ORDER BY site_option_group_parent_id ASC ";
 	qGroup=db.execute("qGroup");
 	for(row in qGroup){
@@ -153,6 +155,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 			tempSiteId=application.zcore.functions.zGetSiteIdFromSiteIDType(row.inquiries_type_id_siteIDType);
 			db.sql="select * from #db.table("inquiries_type", request.zos.zcoreDatasource)# 
 			WHERE site_id = #db.param(tempSiteId)# and 
+			inquiries_type_deleted = #db.param(0)# and 
 			inquiries_type_id = #db.param(row.inquiries_type_id)#";
 			qType=db.execute("qType");
 			if(qType.recordcount EQ 0){
@@ -164,7 +167,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 	}
 	/*
 	db.sql="select * from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
-	WHERE site_id = #db.param(request.zos.globals.id)# ";
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_map_deleted = #db.param(0)# ";
 	qMap=db.execute("qMap");
 	for(row in qMap){
 		arrayAppend(ts.arrSiteOptionGroupMap, row);
@@ -302,6 +306,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		tempSiteId=application.zcore.functions.zGetSiteIdFromSiteIDType(row.inquiries_type_id_siteIDType);
 		db.sql="select * from #db.table("inquiries_type", request.zos.zcoreDatasource)# 
 		WHERE site_id = #db.param(tempSiteId)# and 
+		inquiries_type_deleted = #db.param(0)# and 
 		inquiries_type_name = #db.param(row.inquiriesTypeName)#";
 		qType=db.execute("qType");
 		if(qType.recordcount EQ 0){
@@ -523,6 +528,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		db.sql=arrayToList(arrSQL, " ")&" 
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
+		site_option_deleted = #db.param(0)# and
 		site_option_id = #db.param(arguments.row.site_option_id)# ";
 		result=db.insert("qSiteOptionInsert", request.zos.insertIDColumnForSiteIDTable);
 		if(rs.success){
@@ -539,6 +545,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		db.sql=arrayToList(arrSQL, " ")&" 
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
+		site_option_deleted = #db.param(0)# and
 		site_option_id = #db.param(arguments.row.site_option_id)# ";
 		return db.execute("qSiteOptionUpdate");
 	}
@@ -563,6 +570,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		db.sql=arrayToList(arrSQL, " ")&" 
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
+		site_option_group_deleted = #db.param(0)# and
 		site_option_group_id = #db.param(arguments.row.site_option_group_id)# ";
 		result=db.insert("qSiteOptionGroupInsert", request.zos.insertIDColumnForSiteIDTable);
 		if(rs.success){
@@ -579,6 +587,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		db.sql=arrayToList(arrSQL, " ")&" 
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
+		site_option_group_deleted = #db.param(0)# and
 		site_option_group_id = #db.param(arguments.row.site_option_group_id)# ";
 		return db.execute("qSiteOptionGroupUpdate");
 	}
@@ -602,6 +611,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		db.sql=arrayToList(arrSQL, " ")&" 
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
+		site_option_group_map_deleted = #db.param(0)# and
 		site_option_group_map_id = #db.param(arguments.row.site_option_group_map_id)# ";
 		result=db.insert("qSiteOptionGroupMapInsert", request.zos.insertIDColumnForSiteIDTable);
 		if(rs.success){
@@ -618,6 +628,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		db.sql=arrayToList(arrSQL, " ")&" 
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
+		site_option_group_map_deleted = #db.param(0)# and 
 		site_option_group_map_id = #db.param(arguments.row.site_option_group_map_id)# ";
 		return db.execute("qSiteOptionGroupMapUpdate");
 	}
@@ -861,6 +872,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 					#db.table("site_option", request.zos.zcoreDatasource)# s2
 					where s1.site_option_id = #db.param(siteOptionId)# and 
 					s1.site_id = #db.param(request.zos.globals.id)# and 
+					s1.site_x_option_deleted = #db.param(0)# and 
+					s2.site_option_deleted = #db.param(0)# and
 					s1.site_id = s2.site_id and 
 					s1.site_option_id = s2.site_option_id ";
 					qSiteXOption=db.execute("qSiteXOption");
@@ -874,6 +887,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 					}
 					db.sql="delete from #db.param("site_x_option", request.zos.zcoreDatasource)# 
 					where site_option_id = #db.param(siteOptionId)# and 
+					site_x_option_deleted = #db.param(0)# and
 					site_id = #db.param(request.zos.globals.id)#";
 					db.execute("qDelete");
 				}else{
@@ -881,6 +895,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 					#db.table("site_option", request.zos.zcoreDatasource)# site_option 
 					where site_x_option_group.site_option_id = #db.param(siteOptionId)# and 
 					site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
+					site_x_option_group_deleted = #db.param(0)# and 
+					site_option_deleted = #db.param(0)# and
 					site_x_option_group.site_option_id = site_option.site_option_id and 
 					site_x_option_group.site_id = site_option.site_id ";
 					qSiteXOptionGroup=db.execute("qSiteXOptionGroup");
@@ -894,6 +910,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 					}
 					db.sql="delete from #db.table("site_x_option_group", request.zos.zcoreDatasource)# 
 					where site_option_id = #db.param(siteOptionId)# and 
+					site_x_option_group_deleted = #db.param(0)# and
 					site_id = #db.param(request.zos.globals.id)#";
 					db.execute("qDelete");
 				} 
@@ -905,6 +922,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 				
 				db.sql="delete from #db.table("site_option", request.zos.zcoreDatasource)# 
 				WHERE site_option_id=#db.param(siteOptionId)# and 
+				site_option_deleted = #db.param(0)# and
 				site_id = #db.param(request.zos.globals.id)# ";
 				db.execute("qDeleteOption");
 			}
@@ -1012,6 +1030,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 			}else{
 				db.sql="delete from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
 				where site_option_group_map_updated_datetime < #db.param(request.zos.mysqlnow)# and 
+				site_option_group_map_deleted = #db.param(0)# and
 				site_id=#db.param(request.zos.globals.id)# and 
 				site_option_group_id IN (#db.trustedSQL(idlist)#)";
 				db.execute("qDelete");
@@ -1048,13 +1067,17 @@ This allows avoiding remaps more easily.  Less code when importing.
 	request.nextSiteOptionStruct={};
 	request.nextSiteOptionGroupStruct={};
 
-	db.sql="select IF(ISNULL(MAX(site_option_id)), #db.param(0)#, MAX(site_option_id)) id from #db.table("site_option", request.zos.zcoredatasource)# 
-	where site_id = #db.param(request.zos.globals.id)# ";
+	db.sql="select IF(ISNULL(MAX(site_option_id)), #db.param(0)#, MAX(site_option_id)) id from 
+	#db.table("site_option", request.zos.zcoredatasource)# 
+	where site_id = #db.param(request.zos.globals.id)# and 
+	site_option_deleted = #db.param(0)#";
 	qSiteOptionId=db.execute("qSiteOptionId");
 	request.nextSiteOptionId=qSiteOptionId.id+1;
 	
-	db.sql="select IF(ISNULL(MAX(site_option_group_id)), #db.param(0)#, MAX(site_option_group_id)) id from #db.table("site_option", request.zos.zcoredatasource)# 
-	where site_id = #db.param(request.zos.globals.id)# ";
+	db.sql="select IF(ISNULL(MAX(site_option_group_id)), #db.param(0)#, MAX(site_option_group_id)) id from 
+	#db.table("site_option", request.zos.zcoredatasource)# 
+	where site_id = #db.param(request.zos.globals.id)# and 
+	site_option_deleted = #db.param(0)# ";
 	qSiteOptionGroupId=db.execute("qSiteOptionGroupId");
 	request.nextSiteOptionGroupId=qSiteOptionGroupId.id+1;
 	

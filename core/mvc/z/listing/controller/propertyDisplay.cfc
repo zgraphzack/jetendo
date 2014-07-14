@@ -2623,6 +2623,7 @@ if(arguments.idx.listingPropertyType CONTAINS 'multi'){
 SELECT member_photo, user.site_id userSiteId 
 FROM #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user 
 WHERE member_mlsagentid=#db.param('#arguments.idx.urlMLSId#-#arguments.idx.listing_agent#')# and 
+user_deleted = #db.param(0)# and
 user.site_id = #db.param(request.zos.globals.id)# 
 </cfsavecontent><cfscript>qM=db.execute("qM");</cfscript>
 <cfif qm.recordcount NEQ 0 and qm.member_photo NEQ ''><agent_photo>#application.zcore.functions.zvar('domain',userSiteId)##request.zos.memberImagePath##qm.member_photo#</agent_photo></cfif>

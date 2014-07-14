@@ -650,7 +650,8 @@ listing_longitude<>'0'";
 		content.site_id = #db.param(request.zos.globals.id)# and 
 		content_search_mls= #db.param(1)# and 
 		content.content_id = #db.param(form.zsearch_cid)# and 
-		content_deleted=#db.param('0')#";
+		content_deleted=#db.param('0')# and 
+		mls_saved_search_deleted = #db.param(0)#";
 		qc23872=db.execute("qc23872");
 		if(qc23872.recordcount NEQ 0){
 			temp238722=structnew();
@@ -674,7 +675,9 @@ listing_longitude<>'0'";
 		mls_saved_search.mls_saved_search_id = blog.mls_saved_search_id and 
 		blog.blog_search_mls= #db.param(1)# and 
 		blog.site_id = #db.param(request.zos.globals.id)# and 
-		blog_id= #db.param(form.zsearch_bid)# ";
+		blog_id= #db.param(form.zsearch_bid)# and 
+		blog_deleted = #db.param(0)# and 
+		mls_saved_search_deleted = #db.param(0)# ";
 		qc23872=db.execute("qc23872");
 		if(qc23872.recordcount NEQ 0){
 			temp238722=structnew();
@@ -747,7 +750,8 @@ listing_longitude<>'0'";
 		if(structkeyexists(form, 'mls_saved_search_id') and form.mls_saved_search_id NEQ ''){
 			db.sql="SELECT mls_saved_search_id 
 			FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-			WHERE mls_saved_search_id = #db.param(form.mls_saved_search_id)#";
+			WHERE mls_saved_search_id = #db.param(form.mls_saved_search_id)# and 
+			mls_saved_search_deleted = #db.param(0)#";
 			qId=db.execute("qId");
 			form.mls_saved_search_id=qid.mls_saved_search_id;
 		}else{

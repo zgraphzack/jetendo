@@ -30,7 +30,8 @@
 		arrF=listtoarray(arrResults[i],chr(9),true);
 		if(arraylen(arrF) GTE 5){
 			db.sql="SELECT listing_id FROM #db.table("listing_coordinates", request.zos.zcoreDatasource)#  
-			WHERE listing_id = #db.param(form.listing_id)# ";
+			WHERE listing_id = #db.param(form.listing_id)# and 
+			listing_coordinates_deleted = #db.param(0)# ";
 			qC=db.execute("qC");
 			if(qC.recordcount EQ 0){
 				db.sql="INSERT INTO #db.table("listing_coordinates", request.zos.zcoreDatasource)# SET ";
@@ -86,13 +87,15 @@
 	application.zcore.skin.includeJS("/z/javascript/zListing-src.js");
 	if(request.zos.isDeveloper or request.zos.isServer){
 		db.sql="SELECT * FROM #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates 
-		WHERE listing_coordinates_status NOT IN (#db.param('OK')#,#db.param('ZERO_RESULTS')#) ";
+		WHERE listing_coordinates_status NOT IN (#db.param('OK')#,#db.param('ZERO_RESULTS')#) and 
+		listing_coordinates_deleted = #db.param(0)# ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount NEQ 0){
 			if(structkeyexists(form, 'resetErrors')){
 				structdelete(application,'updateLatLongError');
 				db.sql="DELETE FROM #db.table("listing_coordinates", request.zos.zcoreDatasource)#  
-				WHERE listing_coordinates_status NOT IN (#db.param('OK')#,#db.param('ZERO_RESULTS')#) ";
+				WHERE listing_coordinates_status NOT IN (#db.param('OK')#,#db.param('ZERO_RESULTS')#) and 
+				listing_coordinates_deleted = #db.param(0)#";
 				qCheck=db.execute("qCheck");
 				echo("Geocoding Reset.<br />");
 			}else{
@@ -121,9 +124,11 @@
 	if(structkeyexists(form, 'debugajaxgeocoder')){
 		db.sql="SELECT count(listing.listing_id) count FROM 
 		#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
-		LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)#  ON
-		listing.listing_id = listing_coordinates.listing_id 
+		LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates  ON
+		listing.listing_id = listing_coordinates.listing_id and 
+		listing_coordinates_deleted = #db.param(0)#
 			WHERE
+			listing_deleted = #db.param(0)# and 
 		listing_coordinates.listing_id IS NULL AND 
 		listing.listing_latitude =#db.param(0)# AND 
 		listing_address <> #db.param('')# and 
@@ -138,9 +143,11 @@
 	}
 	db.sql="SELECT listing.listing_id, listing_address, listing_city, listing_state, listing_zip, listing_latitude, listing_longitude FROM 
 	#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
-	LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)#  ON
-	listing.listing_id = listing_coordinates.listing_id 
+	LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates ON
+	listing.listing_id = listing_coordinates.listing_id and 
+	listing_coordinates_deleted = #db.param(0)#
 		WHERE
+		listing_deleted = #db.param(0)# and 
 	listing_coordinates.listing_id IS NULL AND 
 	listing.listing_latitude =#db.param(0)# AND 
 	listing_address <> #db.param('')# and 

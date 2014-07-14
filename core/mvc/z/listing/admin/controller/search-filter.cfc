@@ -36,7 +36,8 @@
 	}
 	db.sql="SELECT mls_saved_search_id, mls_filter_id 
 	FROM #request.zos.queryObject.table("mls_filter", request.zos.zcoreDatasource)# mls_filter 
-	WHERE site_id = #db.param(request.zos.globals.id)#";
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	mls_filter_deleted = #db.param(0)#";
 	qId=db.execute("qId"); 
 	if(qId.recordcount NEQ 0 and qId.mls_saved_search_id NEQ 0){
 		form.mls_saved_search_id=qid.mls_saved_search_id;
@@ -101,7 +102,8 @@
     request.zMLSHideCount=true;
 
 	db.sql="select * from #request.zos.queryObject.table("mls_filter", request.zos.zcoreDatasource)# mls_filter 
-	WHERE site_id =#db.param(request.zos.globals.id)#";
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	mls_filter_deleted = #db.param(0)#";
 	qM2=db.execute("qM2"); 
 	application.zcore.functions.zQueryToStruct(qM2, form);
 	

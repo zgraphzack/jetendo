@@ -7,6 +7,7 @@
 	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group  
 	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_parent_id = #db.param('0')# and 
+	site_option_group_deleted = #db.param(0)# and 
 	site_option_group_type =#db.param('1')# and 
 	site_option_group.site_option_group_disable_admin=#db.param(0)# 
 	ORDER BY site_option_group.site_option_group_display_name ASC ";

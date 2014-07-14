@@ -70,7 +70,8 @@
 	SET inquiries_primary=#db.param(0)#, 
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_deleted = #db.param(0)#";
 	db.execute("q"); 
 	inputStruct = StructNew();
 	inputStruct.struct=form;

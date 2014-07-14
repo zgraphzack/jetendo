@@ -85,7 +85,8 @@ for($i4=0;$i4 < 62;$i4++){
 			fwrite($handle, "1");
 			fclose($handle); 
 		}else{
-			$sql2="select * from deploy_server where deploy_server_deploy_enabled='1' "; 
+			$sql2="select * from deploy_server where deploy_server_deploy_enabled='1' and 
+			deploy_server_deleted = 0 "; 
 			$r=$cmysql->query($sql2, MYSQLI_STORE_RESULT); 
 			$handle=fopen($sharePath."__zdeploy-core-complete-temp.txt", "w");
 			fwrite($handle, "1");
@@ -161,7 +162,9 @@ for($i4=0;$i4 < 62;$i4++){
 				$sql2="select * from site_x_deploy_server, deploy_server 
 				WHERE deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
 				deploy_server_deploy_enabled='1'  and 
-				site_x_deploy_server.site_id = '".$siteId."'"; 
+				site_x_deploy_server.site_id = '".$siteId."' and 
+				deploy_server_deleted = 0 and 
+				site_x_deploy_server = 0 "; 
 				$r=$cmysql->query($sql2, MYSQLI_STORE_RESULT); 
 				while($row2=$r->fetch_assoc()){ 
 					$privateKeyPath=$row2["deploy_server_private_key_path"];

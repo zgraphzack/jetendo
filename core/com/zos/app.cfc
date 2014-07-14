@@ -12,8 +12,10 @@
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app,
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE app.app_id=app_x_site.app_id and 
+		app_x_site_deleted = #db.param(0)# and 
+		app_deleted = #db.param(0)# and 
 		app_x_site_id = #db.param(form.app_x_site_id)# and 
-	 app.app_built_in=#db.param(0)# and 
+		app.app_built_in=#db.param(0)# and 
 		app_x_site.site_id = #db.param(form.sid)#
         </cfsavecontent><cfscript>qa=db.execute("qa");
         if(qa.recordcount EQ 0){
@@ -218,6 +220,7 @@
 				db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 				WHERE site_option_group_parent_id= #db.param(0)# and 
 				site_id = #db.param(request.zos.globals.id)# and 
+				site_option_group_deleted = #db.param(0)# and 
 				site_option_group.site_option_group_disable_admin=#db.param(0)# and 
 				site_option_group_admin_app_only= #db.param(0)#
 				ORDER BY site_option_group_display_name ";
@@ -386,7 +389,9 @@
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app,
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE app.app_id=app_x_site.app_id and 
-	 app.app_built_in=#db.param(0)# and 
+		app.app_built_in=#db.param(0)# and 
+		app_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and 
 		app_x_site_id = #db.param(form.app_x_site_id)# and 
 		app_x_site.site_id = #db.param(form.sid)#
         </cfsavecontent><cfscript>qa=db.execute("qa");
@@ -398,7 +403,8 @@
         <cfsavecontent variable="db.sql">
         DELETE FROM #db.table("app_reserve", request.zos.zcoreDatasource)#  
 		WHERE 
-		site_id = #db.param(form.sid)#
+		site_id = #db.param(form.sid)# and 
+		app_reserve_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qRemove=db.execute("qRemove");
 		form.sid=qa.site_id;
 		form.site_id=qa.site_id;
@@ -438,7 +444,8 @@
 		</cfscript>
 		<cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-		WHERE site_id = #db.param(form.sid)# 
+		WHERE site_id = #db.param(form.sid)# and 
+		site_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qapp=db.execute("qapp");
 		if(qapp.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid,"Invalid site id.");
@@ -450,8 +457,10 @@
 		#db.table("app", request.zos.zcoreDatasource)# app
         
 		WHERE 
+		app_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and 
         app_x_site.app_id = app.app_id and 
-	 app.app_built_in=#db.param(0)# and 
+		app.app_built_in=#db.param(0)# and 
 		app_x_site.site_id = #db.param(form.sid)# and 
 		app_x_site_status IN (#db.param('0')#,#db.param('1')#) 
         ORDER BY app_name
@@ -473,7 +482,8 @@
         <input type="hidden" name="___zr" value="#request.cgi_script_name#?method=instanceSiteList&sid=#form.sid#">
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app  WHERE
-	 app.app_built_in=#db.param(0)# 
+		app.app_built_in=#db.param(0)# and 
+		app_deleted = #db.param(0)#
         ORDER BY app_name
         </cfsavecontent><cfscript>qapps=db.execute("qapps");</cfscript>
         Application: 
@@ -528,7 +538,8 @@
 		<cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app 
 		WHERE app_id = #db.param(form.app_id)# and 
-	 app.app_built_in=#db.param(0)# 
+		app_deleted = #db.param(0)# and 
+		app.app_built_in=#db.param(0)# 
         </cfsavecontent><cfscript>qapp=db.execute("qapp");
 		if(qapp.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid,"Invalid application id.");
@@ -541,6 +552,9 @@
 		#db.table("app", request.zos.zcoreDatasource)# app) 
         
 		WHERE app_x_site.site_id = site.site_id and 
+		site_deleted = #db.param(0)# and 
+		app_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and
 		app_x_site.app_id = app.app_id and 
 		 app.app_built_in=#db.param(0)# and 
 		app.app_id = #db.param(form.app_id)# and 
@@ -567,6 +581,7 @@
         <input type="hidden" name="___zr" value="#request.cgi_script_name#?method=instanceList&app_id=#form.app_id#">
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
+        WHERE site_deleted = #db.param(0)#
 		ORDER BY site_domain 
         </cfsavecontent><cfscript>qSites=db.execute("qSites");</cfscript>&nbsp;&nbsp;
          Site: 
@@ -680,6 +695,7 @@
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app 
 		WHERE app_id = #db.param(form.app_id)# and 
+		app_deleted = #db.param(0)# and
 	 app.app_built_in=#db.param(0)# 
         </cfsavecontent><cfscript>qa=db.execute("qa");
 		if(qa.recordcount EQ 0){
@@ -692,6 +708,7 @@
         SELECT * FROM #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE app_x_site_id = #db.param(form.app_x_site_id)# and 
 		app_id=#db.param(form.app_id)# and 
+		app_x_site_deleted = #db.param(0)# and 
 		site_id = #db.param(form.sid)# 
         </cfsavecontent><cfscript>qData=db.execute("qData");
 		//local.app_x_site_id=form.app_x_site_id;
@@ -768,6 +785,8 @@
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE app.app_id = app_x_site.app_id and 
 		app.app_built_in=#db.param(0)# and 
+		app_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and 
 		app_x_site.app_x_site_id = #db.param(local.app_x_site_id)#  and 
 		app_x_site.site_id =#db.param(local.sid)#";
 		qa=db.execute("qa");
@@ -809,6 +828,7 @@
 				SET app_x_site_status = #db.param(form.app_x_site_status)#,
 				app_x_site_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE app_x_site_id=#db.param(local.app_x_site_id)# and 
+				app_x_site_deleted = #db.param(0)# and 
 				site_id =#db.param(local.sid)#";
 				db.execute("q"); 
 				appUpdateCache(qa.site_id);
@@ -860,8 +880,10 @@
         LEFT JOIN #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
         ON app_x_site.app_id = app.app_id  and 
 	
-	 app.app_built_in=#db.param(0)# and 
-		app_x_site.site_id <>#db.param(-1)#
+		 app.app_built_in=#db.param(0)# and 
+		app_x_site.site_id <>#db.param(-1)# and 
+		app_x_site_deleted = #db.param(0)#
+		WHERE app_deleted = #db.param(0)#
         group by app.app_id
         ORDER BY app_name
         </cfsavecontent><cfscript>qa=db.execute("qa");
@@ -877,8 +899,9 @@
         <strong>Add Application Instance | </strong>
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app 
-	WHERE 
-	app_built_in = #db.param(0)#
+		WHERE 
+		app_built_in = #db.param(0)# and 
+		app_deleted = #db.param(0)#
         ORDER BY app_name
         </cfsavecontent><cfscript>qapps=db.execute("qapps");</cfscript>
         Application: 
@@ -894,7 +917,8 @@
 		</cfscript>
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-		WHERE site_id <> #db.param(-1)# 
+		WHERE site_id <> #db.param(-1)# and 
+		site_deleted = #db.param(0)#
 		ORDER BY site_domain 
         </cfsavecontent><cfscript>qSites=db.execute("qSites");</cfscript>&nbsp;&nbsp;
          Site: 
@@ -1039,18 +1063,21 @@
 	db.sql="SELECT *, count(app_x_site_id) count 
 	FROM #db.table("app", request.zos.zcoreDatasource)# app 
 	LEFT JOIN #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
-	ON app.app_id=app_x_site.app_id 
+	ON app.app_id=app_x_site.app_id and
+	app_x_site.site_id <> #db.param(-1)#  and 
+	 app_x_site_deleted = #db.param(0)#
 	WHERE app.app_id = #db.param(form.app_id)# and 
-	 app.app_built_in=#db.param(0)# 
+	 app.app_built_in=#db.param(0)# and 
+	 app_deleted = #db.param(0)#
 	GROUP BY app.app_id";
 	qa=db.execute("qa");
         if(qa.recordcount EQ 0){
             application.zcore.status.setStatus(request.zsid,"Application no longer exists.");
-            application.zcore.functions.zRedirect(request.cgi_script_name&"?method=sppList&zsid=#request.zsid#");
+            application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
         }
         if(qa.count NEQ 0){
             application.zcore.status.setStatus(request.zsid,"This application still has instances that must be deleted first.");
-            application.zcore.functions.zRedirect(request.cgi_script_name&"?method=sppList&zsid=#request.zsid#");
+            application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
         }
         </cfscript>
         <cfsavecontent variable="pagenav">
@@ -1077,24 +1104,27 @@
 	db.sql="SELECT *, count(app_x_site_id) count 
 	FROM #db.table("app", request.zos.zcoreDatasource)# app 
 	LEFT JOIN #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
-	ON app.app_id=app_x_site.app_id 
+	ON app.app_id=app_x_site.app_id  and 
+	app_x_site_deleted = #db.param(0)# and 
+	app_x_site.site_id <> #db.param(-1)#
 	WHERE app.app_id = #db.param(form.app_id)# and 
-	app.app_built_in=#db.param(0)# 
+	app.app_built_in=#db.param(0)# and 
+	app_deleted = #db.param(0)#
 	GROUP BY app.app_id";
 	qa=db.execute("qa");
 	if(qa.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Application no longer exists.");
-		application.zcore.functions.zRedirect(request.cgi_script_name&"?method=sppList&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
 	}
 	if(qa.count NEQ 0){
 		application.zcore.status.setStatus(request.zsid,"This application still has instances that must be deleted first.");
-		application.zcore.functions.zRedirect(request.cgi_script_name&"?method=sppList&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
 	}
 	application.zcore.functions.zDeleteRecord("app","app_id", request.zos.zcoreDatasource);
 	application.zcore.status.setStatus(request.zsid,"Application deleted.");
 	application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
 	</cfscript>
-    </cffunction> 
+</cffunction> 
     
     
     
@@ -1150,7 +1180,8 @@
         </cfscript>
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("app", request.zos.zcoreDatasource)# app 
-		WHERE app_id = #db.param(form.app_id)# 
+		WHERE app_id = #db.param(form.app_id)# and 
+		app_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qData=db.execute("qData");
 		application.zcore.functions.zQueryToStruct(qData);
 		application.zcore.functions.zStatusHandler(request.zsid,true);
@@ -1213,6 +1244,9 @@
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site, 
 		#db.table("app", request.zos.zcoreDatasource)# app 
 		WHERE
+		app_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and 
+		site_deleted = #db.param(0)# and 
 		app_x_site.site_id = site.site_id and 
 		app_x_site.app_x_site_status = #db.param('1')# and 
 		app.app_built_in=#db.param(0)# and 
@@ -1275,7 +1309,8 @@
     	<cfsavecontent variable="db.sql">
         SELECT CAST(group_concat(app_reserve_url_id SEPARATOR #db.param(',')#) AS CHAR) list 
 		FROM #db.table("app_reserve", request.zos.zcoreDatasource)# app_reserve 
-		WHERE site_id = #db.param(arguments.site_id)# 
+		WHERE site_id = #db.param(arguments.site_id)# and 
+		app_reserve_deleted = #db.param(0)# 
         </cfsavecontent><cfscript>qCheck=db.execute("qCheck");
 		siteList=application.zcore.functions.zvar("reservedUrlAppIds",arguments.site_id);
 		lists=sitelist&qcheck.list;
@@ -1357,6 +1392,7 @@
 		}
 		db.sql="SELECT app_reserve_url_id FROM #db.table("app_reserve", request.zos.zcoreDatasource)# app_reserve 
 		WHERE app_reserve_url_id IN (#db.trustedSQL("'#(list)#'")#) and 
+		app_reserve_deleted = #db.param(0)# and
 		site_id = #db.param(arguments.ss.site_id)# and 
 		app_id <> #db.param(arguments.ss.app_id)# ";
 		qCheck=db.execute("qCheck");
@@ -1373,6 +1409,7 @@
 			}
 			db.sql="DELETE FROM #db.table("app_reserve", request.zos.zcoreDatasource)#  
 			WHERE app_reserve_url_id NOT IN (#db.trustedSQL("'#(list)#'")#) and 
+			app_reserve_deleted = #db.param(0)# and
 			site_id = #db.param(arguments.ss.site_id)# and 
 			app_id = #db.param(arguments.ss.app_id)# ";
 			qCheck=db.execute("qCheck");
@@ -1403,6 +1440,7 @@
 	db.sql="select CAST(group_concat(app_reserve_url_id SEPARATOR #db.param(',')#) AS CHAR) idlist 
 	from #db.table("app_reserve", request.zos.zcoreDatasource)# app_reserve
 	WHERE app_id <> #db.param(arguments.app_id)# and 
+	app_reserve_deleted = #db.param(0)# and
 	site_id = #db.param(form.sid)# ";
 	qD=db.execute("qD");
 	</cfscript>
@@ -1546,7 +1584,8 @@
 	
 	// check for slideshows
 	db.sql="select slideshow_id from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-	WHERE site_id=#db.param(request.zos.globals.id)#";
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	slideshow_deleted = #db.param(0)#";
 	qI=db.execute("qI"); 
 	if(qI.recordcount NEQ 0){
 		arrayappend(arguments.ss.js, "/z/javascript/jquery/jquery.cycle.all.js");

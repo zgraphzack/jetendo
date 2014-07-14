@@ -65,10 +65,12 @@ if(request.zos.globals.parentid NEQ 0){
 	content_for_sale = #db.param('1')# and 
 	content_mls_number=#db.param('')# and 
 	content_deleted=#db.param('0')#  and 
-	content.site_id = #db.param(request.zos.globals.id)#
+	content.site_id = #db.param(request.zos.globals.id)# and 
+  content_deleted = #db.param(0)#
   </cfif>
   WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
-member_public_profile=#db.param('1')# 
+member_public_profile=#db.param('1')# and 
+user_deleted = #db.param(0)# 
   
   and user.user_group_id IN (#db.param(user_group_id)#,#db.param(user_group_id2)#,#db.param(user_group_id22)#,#db.param(user_group_id3)#
   <cfif request.zos.globals.parentid NEQ 0>

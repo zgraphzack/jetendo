@@ -118,6 +118,7 @@
 		db=request.zos.queryObject;
 		db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# WHERE 
 		site_id = #db.param(request.zos.globals.id)# and 
+		mls_saved_search_deleted = #db.param(0)# and
 		mls_saved_search_id = #db.param(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])# ";
 		qSearch=db.execute("qSearch");
 		
@@ -166,6 +167,7 @@
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
+	mls_saved_search_deleted = #db.param(0)# and
 	mls_saved_search_id = #db.param(arguments.value)# ";
 	qSearch=db.execute("qSearch");
 	

@@ -57,7 +57,8 @@
 	db=request.zos.queryObject;
 	form.sid=application.zcore.functions.zso(form, 'sid');
 	db.sql="select * from #db.table("site", request.zos.zcoreDatasource)# site 
-	where site_id = #db.param(form.sid)#";
+	where site_id = #db.param(form.sid)# and 
+	site_deleted = #db.param(0)#";
 	qSite=db.execute("qSite");
 	if(qSite.recordcount EQ 0){
 		echo("The site doesn't exist.");

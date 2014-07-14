@@ -42,7 +42,8 @@
 	}else{
 		db.sql="SELECT * FROM #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign 
 		WHERE zemail_campaign_id = #db.param(form.zemail_campaign_id)# and 
-		site_id = #db.param(request.zos.globals.id)#";
+		site_id = #db.param(request.zos.globals.id)# and
+		zemail_campaign_deleted = #db.param(0)#";
 		qEC=db.execute("qEC"); 
 		if(qEC.recordcount EQ 0){
 			application.zcore.functions.zRedirect('/');

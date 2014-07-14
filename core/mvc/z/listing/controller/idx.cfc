@@ -37,7 +37,8 @@
             </cfloop>
         	<cfsavecontent variable="db.sql">
             UPDATE #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-			set listing_track_hash = #db.param('')# 
+			set listing_track_hash = #db.param('')# and 
+			listing_track_deleted = #db.param(0)#
 			where listing_id like #db.param('#form.mls_id#-%')#
             </cfsavecontent><cfscript>qT=db.execute("qT");</cfscript>Done
             <cfelse>Denied
@@ -70,7 +71,8 @@
 		this.optionstruct.timeLimitInSeconds=75; // 75
 		// process the mls provider that is the most out of date first
 		db.sql="SELECT * FROM #db.table("mls", request.zos.zcoreDatasource)# mls 
-		WHERE mls_status=#db.param('1')# 
+		WHERE mls_status=#db.param('1')# and 
+		mls_deleted = #db.param(0)#
 		ORDER BY mls_update_date ASC ";
 		qMLS=db.execute("qMLS"); 
 		for(f=1;f LTE qMLS.recordcount;f++){
@@ -101,7 +103,8 @@
 			// update price only once each day
 			db.sql="select max(content_price_update_datetime) mdate 
 			FROM #db.table("content", request.zos.zcoreDatasource)# content 
-			where site_id <> #db.param(-1)#";
+			where site_id <> #db.param(-1)# and 
+			content_deleted = #db.param(0)#";
 			qP2=db.execute("qP2"); 
 			nd222=dateformat(now(),'yyyy-mm-dd')&' '&timeformat(now(),'HH:00:00');
 			if(dateformat(qP2.mdate,'yyyy-mm-dd')&' '&timeformat(qP2.mdate,'HH:00:00') NEQ nd222){
@@ -112,6 +115,8 @@
 				listing.listing_id = content.content_mls_number and 
 				content.content_mls_number<>#db.param('')# and 
 				content.content_mls_price=#db.param('1')# and 
+				listing_deleted = #db.param(0)# and 
+				content_deleted = #db.param(0)# and 
 				content.content_price_update_datetime<#db.param(nd222)#";
 				qP=db.execute("qP");
 				for (x=1; x LTE qP.recordcount; x++) {
@@ -345,7 +350,8 @@
 	db.sql="select listing_track.*, if(listing.listing_id IS NULL, #db.param(0)#, #db.param(1)#) hasListing 
 	from #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 	LEFT JOIN #db.table("listing")# ON listing.listing_id = listing_track.listing_id 
-	where listing_track.listing_id IN (#db.trustedSQL(sqllist)#)";
+	where listing_track.listing_id IN (#db.trustedSQL(sqllist)#) and 
+	listing_track_deleted = #db.param(0)#";
 	qT=db.execute("qT"); 
 	</cfscript>
     <cfloop query="qT">
@@ -376,7 +382,8 @@
 			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 			set listing_track_processed_datetime = #db.param(this.nowDate)#, 
 			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			WHERE listing_id = #db.param(i)# ";
+			WHERE listing_id = #db.param(i)# and 
+			listing_track_deleted = #db.param(0)#";
 			db.execute("q"); 	
 		}else{
 			if(this.datastruct[i].new){
@@ -534,8 +541,10 @@
 	db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
 	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 	LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
-	listing_track.listing_id= listing.listing_id  
-	WHERE listing_track.listing_id IS NULL";
+	listing_track.listing_id= listing.listing_id   and 
+	listing_track_deleted = #db.param(0)#
+	WHERE listing_track.listing_id IS NULL and 
+	listing_deleted = #db.param(0)#";
 	qDeadListings=db.execute("qDeadListings"); 
 	if(qDeadListings.recordcount NEQ 0 and qDeadListings.idlist NEQ ""){
 		writeoutput('dead listings:'&qDeadListings.idlist&'<br />');
@@ -553,7 +562,8 @@
 	where mls_status=#db.param('1')# and 
 	(mls_update_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))# or 
 	mls_cleaned_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))#) and 
-	mls_error_sent=#db.param('0')#";
+	mls_error_sent=#db.param('0')# and 
+	mls_deleted = #db.param(0)#";
 	qTwoDaysAgo=db.execute("qTwoDaysAgo"); 
 	</cfscript>
     <cfif qTwoDaysAgo.recordcount NEQ 0>
@@ -589,7 +599,8 @@
 	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
 	where mls_status=#db.param('1')# and 
 	mls_update_date >#db.param(todayDate)# and 
-	mls_cleaned_date< #db.param(dateformat(todayDate,'yyyy-mm-dd'))#";
+	mls_cleaned_date< #db.param(dateformat(todayDate,'yyyy-mm-dd'))# and 
+	mls_deleted = #db.param(0)#";
 	qMLS2=db.execute("qMLS2");  
 	local.arrMLSClean=[];
 	</cfscript>
@@ -695,7 +706,8 @@
 					break;
 				}
 				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#') and 
+				listing_track_deleted = #db.param(0)#";
 				db2.execute("qDelete");
 			}
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 

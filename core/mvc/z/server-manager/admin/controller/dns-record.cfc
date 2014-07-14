@@ -34,7 +34,9 @@
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone, 
 	#db.table("dns_group", request.zos.zcoreDatasource)# dns_group
 	WHERE dns_zone.dns_zone_id=#db.param(form.dns_zone_id)# and 
-	dns_group.dns_group_id = dns_zone.dns_group_id";
+	dns_group_deleted = #db.param(0)# and 
+	dns_group.dns_group_id = dns_zone.dns_group_id and 
+	dns_zone_deleted = #db.param(0)# ";
 	qZone=db.execute("qZone");
 	if(qZone.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, "The selected DNS Zone doesn't exist.", form, true);
@@ -56,7 +58,8 @@
 	db.sql="SELECT * FROM #db.table("dns_record", request.zos.zcoreDatasource)# dns_record
 	LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 	ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
-	WHERE dns_record_id= #db.param(application.zcore.functions.zso(form,'dns_record_id'))# ";
+	WHERE dns_record_id= #db.param(application.zcore.functions.zso(form,'dns_record_id'))# and 
+	dns_record_deleted = #db.param(0)#  ";
 	qCheck=db.execute("qCheck");
 	application.zcore.functions.zSetModalWindow();
 	if(qCheck.recordcount EQ 0){
@@ -67,8 +70,11 @@
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
 		setCustom(form.dns_record_id, qCheck.dns_record_type);
-		db.sql="DELETE FROM #db.table("dns_record", request.zos.zcoreDatasource)#  
-		WHERE dns_record_id= #db.param(application.zcore.functions.zso(form, 'dns_record_id'))#
+		db.sql="UPDATE #db.table("dns_record", request.zos.zcoreDatasource)#  
+		set dns_record_deleted = #db.param(1)#,
+		dns_record_updated_datetime=#db.param(request.zos.mysqlnow)#
+		WHERE dns_record_id= #db.param(application.zcore.functions.zso(form, 'dns_record_id'))# and 
+		dns_record_deleted = #db.param(0)# 
 		";
 		q=db.execute("q");
 		incrementZoneSerial(form.dns_zone_id);
@@ -201,12 +207,14 @@
 		form.dns_record_id = -1;
 	}
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone
-	WHERE dns_zone_id=#db.param(form.dns_zone_id)#";
+	WHERE dns_zone_id=#db.param(form.dns_zone_id)# and 
+	dns_zone_deleted = #db.param(0)# ";
 	qZone=db.execute("qZone");
 
 	application.zcore.functions.zSetModalWindow();
 	db.sql="SELECT * FROM #db.table("dns_record", request.zos.zcoreDatasource)# dns_record 
-	WHERE dns_record_id=#db.param(form.dns_record_id)#";
+	WHERE dns_record_id=#db.param(form.dns_record_id)# and 
+	dns_record_deleted = #db.param(0)# ";
 	qRoute=db.execute("qRoute");
 	if(structkeyexists(form, 'dns_record_type')){
 		application.zcore.functions.zQueryToStruct(qRoute, form, 'dns_zone_id,dns_record_type');
@@ -546,7 +554,8 @@
 
 	db.sql="SELECT *
 	FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone
-	WHERE dns_zone_id = #db.param(form.dns_zone_id)#";
+	WHERE dns_zone_id = #db.param(form.dns_zone_id)# and 
+	dns_zone_deleted = #db.param(0)# ";
 	qZone=db.execute("qZone");
 
 	db.sql="SELECT *
@@ -554,7 +563,8 @@
 	LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 	ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
 	WHERE
-	dns_record.dns_zone_id = #db.param(form.dns_zone_id)# 
+	dns_record.dns_zone_id = #db.param(form.dns_zone_id)#  and 
+	dns_record_deleted = #db.param(0)# 
 	order by dns_record_host asc, dns_record_type asc, dns_record_value ASC";
 	qRecords=db.execute("qdns_record");
 	</cfscript>
@@ -642,7 +652,9 @@
 			ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
 			WHERE dns_zone.dns_zone_id= dns_record.dns_zone_id and 
 			dns_zone.dns_group_id = #db.param(form.dns_group_id)# and 
-			dns_zone.dns_zone_name = #db.param('default')# ";
+			dns_zone.dns_zone_name = #db.param('default')# and 
+			dns_zone_deleted = #db.param(0)# and 
+			dns_record_deleted = #db.param(0)#   ";
 			qDefaultRecords=db.execute("qDefaultRecords");
 			if(qDefaultRecords.recordcount NEQ 0){
 				arrDefault=[];

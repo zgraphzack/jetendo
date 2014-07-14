@@ -31,6 +31,8 @@
 		db.sql="SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental, 
 		#db.table("rental_config", request.zos.zcoreDatasource)# rental_config
 		WHERE 
+		rental_deleted = #db.param(0)# and 
+		rental_config_deleted = #db.param(0)# and
 		rental_config.site_id = rental.site_id  and 
 		rental.rental_active = #db.param(1)# ";
 		if(arguments.indexeverything EQ false){
@@ -115,6 +117,8 @@
 		db.sql="SELECT *, rental_config_category_url_id FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category, 
 		#db.table("rental_config", request.zos.zcoreDatasource)# rental_config
 		WHERE 
+		rental_config_deleted = #db.param(0)# and 
+		rental_category_deleted = #db.param(0)# and
 		rental_config.site_id = rental_category.site_id  ";
 		if(arguments.indexeverything EQ false){
 			db.sql&=" and rental_category.site_id = #db.param(request.zos.globals.id)#  ";
@@ -223,7 +227,8 @@
 			db.sql="SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 			WHERE site_id = #db.param(row.site_id)# and 
 			rental_category_parent_id = #db.param(row.rental_category_id)# and 
-			rental_category_id <> #db.param(arguments.filterId)# 
+			rental_category_id <> #db.param(arguments.filterId)# and 
+			rental_category_deleted = #db.param(0)#
 			ORDER BY rental_category_name ASC";
 			qChildren=db.execute("qChildren");
 			if(qchildren.recordcount NEQ 0){
@@ -338,7 +343,8 @@
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 		WHERE rental_active = #db.param(1)# and 
-		site_id = #db.param(request.zos.globals.id)# 
+		site_id = #db.param(request.zos.globals.id)# and 
+		rental_deleted = #db.param(0)#
         ORDER BY rental_name ASC 
         </cfsavecontent><cfscript>qrental=db.execute("qrental");</cfscript>
         <cfloop query="qrental"><cfscript>
@@ -370,7 +376,8 @@
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 		WHERE rental_category_parent_id = #db.param('0')# and 
-		site_id = #db.param(request.zos.globals.id)#  
+		site_id = #db.param(request.zos.globals.id)# and 
+		rental_category_deleted = #db.param(0)#
 		ORDER BY rental_category_sort ASC, rental_category_name ASC
         </cfsavecontent><cfscript>qrentalcat=db.execute("qrentalcat");
         childStruct=this.getAllCategory(qrentalcat,0,0,structnew(),false);
@@ -484,7 +491,9 @@
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE rental_config.app_x_site_id = app_x_site.app_x_site_id and 
 		rental_config.site_id = #db.param(arguments.site_id)# and 
-		app_x_site.site_id = rental_config.site_id";
+		app_x_site.site_id = rental_config.site_id and 
+		rental_config_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)#";
 		qData=db.execute("qData");
 		arrColumns=listToArray(lcase(qdata.columnlist));
 		loop query="qdata"{
@@ -518,19 +527,24 @@
 		#db.table("site", request.zos.zcoreDatasource)# site 
 		WHERE site.site_id = app_x_site.site_id and  
 		app_x_site.app_x_site_id = rental_config.app_x_site_id and 
-		rental_config.site_id = #db.param(arguments.site_id)#";
+		rental_config.site_id = #db.param(arguments.site_id)# and 
+		rental_config_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and 
+		site_deleted = #db.param(0)#";
 		qConfig=db.execute("qConfig");
 		db.sql="SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 		WHERE rental_active = #db.param('1')# and 
 		site_id = #db.param(qConfig.site_id)# and 
 		rental_url <> #db.param('')# and 
-		rental_url NOT LIKE #db.param('/z/%')# 
+		rental_url NOT LIKE #db.param('/z/%')# and 
+		rental_deleted = #db.param(0)#
         ORDER BY rental_url DESC "; // put deleted rules at bottom so new pages don't conflict.
 		qrental=db.execute("qrental");
 		db.sql="SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 		WHERE site_id = #db.param(qConfig.site_id)# and 
 		rental_category_url <> #db.param('')# and 
-		rental_category_url NOT LIKE #db.param('/z/%')# 
+		rental_category_url NOT LIKE #db.param('/z/%')# and 
+		rental_category_deleted = #db.param(0)#
         ORDER BY rental_category_url DESC "; // put deleted rules at bottom so new pages don't conflict.
         qrentalcat=db.execute("qrentalcat");
 
@@ -658,7 +672,9 @@
 		</cfscript>
     	<!--- delete all rental and rental_group and images? --->
         <cfsavecontent variable="db.sql">
-        DELETE FROM #db.table("rental_config", request.zos.zcoreDatasource)#  
+        UPDATE #db.table("rental_config", request.zos.zcoreDatasource)# SET 
+        rental_config_deleted = #db.param(1)#, 
+        rental_config_updated_datetime = #db.param(request.zos.mysqlnow)# 
 		WHERE site_id = #db.param(request.zos.globals.id)#
         </cfsavecontent><cfscript>qConfig=db.execute("qConfig");</cfscript>        
         <cfreturn rCom>
@@ -1166,7 +1182,8 @@
 		rental_id = #db.param(arguments.ss.rental_id)# and 
 		rate_start_date <=#db.param(DateFormat(arguments.ss.endDate,'yyyy-mm-dd'))# and 
 		rate_end_date >= #db.param(DateFormat(checkDate,'yyyy-mm-dd'))# and 
-		site_id = #db.param(request.zos.globals.id)# 
+		site_id = #db.param(request.zos.globals.id)# and 
+		rate_deleted = #db.param(0)#
 		ORDER BY rate_period DESC, rate_sort asc 
 		LIMIT #db.param(0)#,#db.param(1)#";
 		qMultipleNightSpecial=db.execute("qMultipleNightSpecial");
@@ -1186,7 +1203,8 @@
 			rate_property NOT LIKE #db.param('%,#arguments.ss.rental_id#,%')# and 
 			rate_start_date <=#db.param(DateFormat(arguments.ss.endDate,'yyyy-mm-dd'))# and 
 			rate_end_date >= #db.param(DateFormat(checkDate,'yyyy-mm-dd'))# and 
-			site_id = #db.param(request.zos.globals.id)# 
+			site_id = #db.param(request.zos.globals.id)# and 
+			rate_deleted = #db.param(0)#
 			ORDER BY rate_period DESC,  rate_sort ASC 
 			LIMIT #db.param(0)#,#db.param(1)#";
 			qMultipleNightSpecial=db.execute("qMultipleNightSpecial");
@@ -1221,6 +1239,7 @@
 			rate_end_date >= #db.param(DateFormat(checkDate, 'yyyy-mm-dd'))# and 
 			rate_override_holiday= #db.param(1)# and 
 			rate_day like #db.param('%,#dw#,%')# and 
+			rate_deleted = #db.param(0)# and
 			site_id = #db.param(request.zos.globals.id)#  
 			ORDER BY rate_sort ASC";
 			qholidayOverride=db.execute("qholidayOverride");
@@ -1243,6 +1262,7 @@
 				WHERE availability.rental_id = #db.param('29')# and 
 				availability_date >= #db.param(DateFormat(checkDate, 'yyyy-mm-dd'))# and 
 				availability_date <= #db.param(DateFormat(checkDate, 'yyyy-mm-dd'))# and 
+				availability_deleted = #db.param(0)# and 
 				site_id = #db.param(request.zos.globals.id)#";
 				qholiday=db.execute("qholiday");
 				if(qholiday.recordcount neq 0){
@@ -1264,7 +1284,8 @@
 					rate_start_date <=#db.param(DateFormat(checkDate,'yyyy-mm-dd'))# and 
 					rate_end_date >= #db.param(DateFormat(checkDate,'yyyy-mm-dd'))# and 
 					rate_day like #db.param('%,#dw#,%')# and 
-					site_id = #db.param(request.zos.globals.id)# 
+					site_id = #db.param(request.zos.globals.id)# and 
+					rate_deleted = #db.param(0)#
 					ORDER BY rate_sort ASC ";
 					qOverride=db.execute("qOverride"); 		
 					if (qOverride.recordcount neq 0){

@@ -139,7 +139,11 @@
 	ts.image_library_id_field="rental.rental_image_library_id";
 	ts.count = 1; // how many images to get
 	rs=application.zcore.imageLibraryCom.getImageSQL(ts);
-	db.sql=" SELECT * #db.trustedSQL(rs.select)# FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental #db.trustedSQL(rs.leftJoin)# WHERE rental.site_id = #db.param(request.zOS.globals.id)# GROUP BY rental.rental_id 
+	db.sql=" SELECT * #db.trustedSQL(rs.select)# FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
+	#db.trustedSQL(rs.leftJoin)# 
+	WHERE rental.site_id = #db.param(request.zOS.globals.id)# and 
+	rental_deleted = #db.param(0)# 
+	GROUP BY rental.rental_id 
 	order by rental_sort ASC, rental_name";
 	qProp=db.execute("qProp");
 	</cfscript>
@@ -220,7 +224,8 @@
 	qProp=db.execute("qProp");
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rate", request.zos.zcoreDatasource)# rate 
 	WHERE rental_id = #db.param(form.rental_id)# and 
-	rate.site_id = #db.param(request.zOS.globals.id)# 
+	rate.site_id = #db.param(request.zOS.globals.id)# and 
+	rate_deleted = #db.param(0)#
 	ORDER BY rate_period DESC, rate_sort ASC ";
 	qRates=db.execute("qRates");
 	</cfscript>
@@ -325,8 +330,10 @@
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rate", request.zos.zcoreDatasource)# rate 
 	LEFT JOIN #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental ON 
 	rental.rental_id = rate.rental_id and 
-	rental.site_id = #db.param(request.zOS.globals.id)# 
+	rental.site_id = #db.param(request.zOS.globals.id)# and 
+	rental_deleted = #db.param(0)#
 	WHERE rate.rental_id = #db.param(form.rental_id)# and 
+	rate_deleted = #db.param(0)# and 
 	rate.site_id = #db.param(request.zOS.globals.id)# ";
 	qCheck=db.execute("qCheck");
     if(qCheck.recordcount EQ 0){
@@ -547,7 +554,8 @@
 	}else{
 		db.sql=" SELECT max(rental_sort) sort 
 		FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
-		WHERE  site_id = #db.param(request.zOS.globals.id)# ";
+		WHERE  site_id = #db.param(request.zOS.globals.id)# and 
+		rental_deleted = #db.param(0)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0 or qCheck.sort EQ ""){
 			form.rental_sort=1;
@@ -611,12 +619,14 @@
 	set rental_x_category_updating=#db.param('1')#,
 	rental_x_category_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	where rental_id = #db.param(form.rental_id)# and 
+	rental_x_category_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	q=db.execute("q");
 	for(i=1;i LTE arraylen(arrCatId);i++){
 		db.sql="select max(rental_x_category_sort) s 
 		from #request.zos.queryObject.table("rental_x_category", request.zos.zcoreDatasource)# rental_x_category 
 		where rental_category_id = #db.param(arrCatId[i])# and 
+		rental_x_category_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qC=db.execute("qC");
 		newSort=1;
@@ -637,6 +647,7 @@
 	db.sql="delete from #request.zos.queryObject.table("rental_x_category", request.zos.zcoreDatasource)#  
 	where rental_x_category_updating=#db.param('1')# and 
 	rental_id = #db.param(form.rental_id)# and 
+	rental_x_category_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	q=db.execute("q");
 	
@@ -650,6 +661,7 @@
 	set rental_x_amenity_updating=#db.param('1')#,
 	rental_x_amenity_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	where rental_id=#db.param(form.rental_id)# and 
+	rental_x_amenity_deleted = #db.param(0)# and 
 	site_id =#db.param(request.zos.globals.id)#";
 	q=db.execute("q");
 	for(i=1;i lte arraylen(arrD);i++){ 
@@ -663,6 +675,7 @@
 	} 
 	db.sql="delete from #request.zos.queryObject.table("rental_x_amenity", request.zos.zcoreDatasource)#  
 	where rental_x_amenity_updating=#db.param('1')# and 
+	rental_x_amenity_deleted = #db.param(0)# and 
 	rental_id=#db.param(form.rental_id)# and 
 	site_id =#db.param(request.zos.globals.id)#";
 	q=db.execute("q");
@@ -706,6 +719,7 @@
 	form.rental_id=application.zcore.functions.zso(form, 'rental_id',true);
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("rate", request.zos.zcoreDatasource)# rate 
 	WHERE rental_id = #db.param(form.rental_id)# and 
+	rate_deleted = #db.param(0)# and 
 	rate.site_id = #db.param(request.zOS.globals.id)# ";
 	qRate=db.execute("qRate");
 	application.zcore.functions.zQueryToStruct(qRate,form,'rental_id');
@@ -729,6 +743,7 @@
 				} 
 				db.sql="SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 				WHERE rental_active = #db.param(1)# and 
+				rental_deleted = #db.param(0)# and 
 				rental.site_id = #db.param(request.zOS.globals.id)# 
 				ORDER BY rental_name ";
 				qProperties=db.execute("qProperties");
@@ -805,6 +820,7 @@
 						db.sql=" select *
 						from #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental
 						where  rental_active=#db.param(1)# and 
+						rental_deleted = #db.param(0)# and 
 						rental.site_id = #db.param(request.zOS.globals.id)# 
 						ORDER BY rental_name ";
 						qCat=db.execute("qCat");
@@ -837,6 +853,7 @@
 							db.sql="
 							SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 							WHERE rental_id IN (#db.param(sql)#) and 
+							rental_deleted = #db.param(0)# and 
 							rental.site_id = #db.param(request.zOS.globals.id)#";
 							qCat=db.execute("qCat");</cfscript>
 							<cfloop query="qCat">arrBlockId.push(#qCat.rental_id#);arrBlock.push("#jsstringformat(qCat.rental_name)#");</cfloop>
@@ -1020,7 +1037,8 @@
 					<cfscript>
 					db.sql=" SELECT * FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 					WHERE rental_category_parent_id = #db.param(0)# and 
-					site_id = #db.param(request.zOS.globals.id)# 
+					site_id = #db.param(request.zOS.globals.id)# and 
+					rental_category_deleted = #db.param(0)#
 					order by rental_category_sort ASC, rental_category_name ASC";
 					qProp2=db.execute("qProp2");
 					childStruct=application.zcore.app.getAppCFC("rental").getAllCategory(qProp2,0,0);
@@ -1163,8 +1181,10 @@
 						LEFT JOIN #request.zos.queryObject.table("rental_x_amenity", request.zos.zcoreDatasource)# rental_x_amenity ON 
 						rental_id = #db.param(form.rental_id)# and 
 						rental_x_amenity.rental_amenity_id = rental_amenity.rental_amenity_id and 
-						rental_x_amenity.site_id = rental_amenity.site_id 
-						where rental_amenity.site_id = #db.param(request.zOS.globals.id)# 
+						rental_x_amenity.site_id = rental_amenity.site_id and 
+						rental_x_amenity_deleted = #db.param(0)#
+						where rental_amenity.site_id = #db.param(request.zOS.globals.id)#  and 
+						rental_amenity_deleted = #db.param(0)#
 						ORDER BY rental_amenity_name ASC ";
 						qCC=db.execute("qCC");
 						</cfscript>

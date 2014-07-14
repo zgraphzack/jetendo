@@ -45,7 +45,9 @@
 	application.zcore.functions.zSetPageHelpId("8.3.2");
 	if(structkeyexists(form, 'removeip')){
 		structdelete(application.zcore.abusiveIPStruct[application.zcore.abusiveIPDate],removeip);
-		 db.sql="delete from #db.table("ip_block", request.zos.zcoreDatasource)#  
+		 db.sql="update #db.table("ip_block", request.zos.zcoreDatasource)#  
+		 set ip_block_deleted = #db.param(1)#,
+		ip_block_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE ip_block_ip = #db.param(removeip)#";
 		db.execute("q");
 	}
@@ -156,11 +158,12 @@
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("log", request.zos.zcoreDatasource)# log 
+	WHERE log_deleted = #db.param(0)# 
 	<cfif structkeyexists(form, 'log_id')>
-		WHERE log_id = #db.param(form.log_id)#  
+		and log_id = #db.param(form.log_id)#  
 		LIMIT #db.param(0)#,#db.param(1)#
 	<cfelseif isDefined('request.zsession.zCFError_host_filter')>
-		#variables.getSelectedHosts("log",true)# 
+		#variables.getSelectedHosts("log",false)# 
 		ORDER BY log_datetime DESC
 		LIMIT #db.param(0)#,#db.param(30)#
 	<cfelse> 
@@ -174,9 +177,9 @@
 	}
 	application.zcore.functions.zQueryToStruct(qLog);
 	</cfscript>
-	<p></p><a href="#Request.zScriptName#&action=list">Back to Error Index</a>
+	<p></p><a href="#Request.zScriptName#&amp;action=list">Back to Error Index</a>
 	
-	| <span class="highlight"><cfif form.log_status EQ "Resolved">Resolved | <a href="#Request.zScriptName#&action=unresolved&amp;log_id=#form.log_id#">Mark as Unresolved</a><cfelse><a href="#Request.zScriptName#&action=resolved&amp;log_id=#form.log_id#">Mark as Resolved</a></cfif>
+	| <span class="highlight"><cfif form.log_status EQ "Resolved">Resolved | <a href="#Request.zScriptName#&amp;action=unresolved&amp;log_id=#form.log_id#">Mark as Unresolved</a><cfelse><a href="#Request.zScriptName#&amp;action=resolved&amp;log_id=#form.log_id#">Mark as Resolved</a></cfif>
 	</span></p>
 	<h2>#form.log_host#</h2>
 	<p>#DateFormat(form.log_datetime, "mm-dd-yyyy")# #TimeFormat(form.log_datetime, "HH:mm:ss")#</p>
@@ -214,7 +217,8 @@
 	SELECT COUNT(log_id) as count 
 	FROM #db.table("log", request.zos.zcoreDatasource)# log 
     
-	WHERE log_id <> #db.param(-1)# 
+	WHERE log_id <> #db.param(-1)# and 
+	log_deleted = #db.param(0)#
 	<cfif isDefined('request.zsession.zCFError_hideResolved') EQ false>
 	and log_status <> #db.param('Resolved')#
 	</cfif> 
@@ -227,7 +231,8 @@
 	SELECT log_id,log_host, log_title,log_ip,log_datetime,log_status,log_priority,log_type, 
 	replace(log_host,#db.param("www.")#,#db.param("")#) as log_short_host 
 	FROM #db.table("log", request.zos.zcoreDatasource)# log  
-	WHERE log_id <> #db.param(-1)# 
+	WHERE log_id <> #db.param(-1)# and 
+	log_deleted = #db.param(0)# 
 	<cfif isDefined('request.zsession.zCFError_hideResolved') EQ false>
 	and log_status <> #db.param('Resolved')#
 	</cfif>
@@ -352,7 +357,7 @@
 			return "";
 		}else if(arguments.where EQ true){
 			return " 
-WHERE ("&ArrayToList(arrFilter, " or ")&")";
+			 ("&ArrayToList(arrFilter, " or ")&")";
 		}else{
 			return " and ("&ArrayToList(arrFilter, " or ")&")";
 		}

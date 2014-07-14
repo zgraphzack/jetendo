@@ -3953,10 +3953,11 @@ function zLoadAddThisJs(){
 	if(typeof addthis === "undefined") return;
 	addthis.init();
 	*/
-
+	var found=false;
 	for(var i=1;i<=5;i++){
 		d1=document.getElementById("zaddthisbox"+i);
 		if(d1){
+			found=true;
 			/*if(d1.className.indexOf("addthis_floating_style addthis_counter_style") !== -1){
 				d1.innerHTML='<a class="addthis_button_facebook_like" fb:like:layout="box_count"></a><a class="addthis_button_tweet" tw:count="vertical"></a><a class="addthis_button_google_plusone" g:plusone:size="tall"></a><a class="addthis_pill_style"></a>';
 			}else{
@@ -3969,10 +3970,12 @@ function zLoadAddThisJs(){
 			a1.push(d1);
 		}
 	}
-	zLoadFile("//platform.linkedin.com/in.js","js");
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/platform.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	if(found){
+		zLoadFile("//platform.linkedin.com/in.js","js");
+	    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+	    po.src = 'https://apis.google.com/js/platform.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	}
 }
 zArrLoadFunctions.push({functionName:zLoadAddThisJs});
 

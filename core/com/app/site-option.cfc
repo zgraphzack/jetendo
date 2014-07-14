@@ -619,7 +619,9 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			groupId=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray([arguments.groupName]);
 			
 			arrTable=["site_x_option_group_set s1"];
-			arrWhere=["s1.site_id = '#request.zos.globals.id#' and s1.site_option_group_id = '#groupId#' and "&sql];
+			arrWhere=["s1.site_id = '#request.zos.globals.id#' and 
+			s1.site_x_option_group_set_deleted = #db.param(0)#  and 
+			s1.site_option_group_id = '#groupId#' and "&sql];
 			arrSelect=[];
 			for(i in fieldStruct){
 				tableName="sGroup"&fieldStruct[i];
@@ -627,13 +629,14 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 				arrayAppend(arrTable, "site_x_option_group "&tableName);
 				arrayAppend(arrWhere, "#tableName#.site_id = s1.site_id and 
 				#tableName#.site_x_option_group_set_id = s1.site_x_option_group_set_id and 
-				#tableName#.site_option_id = '#application.zcore.functions.zescape(i)#' ");
+				#tableName#.site_option_id = '#application.zcore.functions.zescape(i)#' and 
+				#tableName#.site_x_option_group_deleted = #db.param(0)# ");
 			}
 			db=request.zos.noVerifyQueryObject;
 			db.sql="select s1.site_x_option_group_set_id 
 			from #arrayToList(arrTable, ", ")# 
 			WHERE #arrayToList(arrWhere, " and ")# 
-			and site_x_option_group_set_approved=#db.param('1')#  
+			and site_x_option_group_set_approved=#db.param('1')# 
 			GROUP BY s1.site_x_option_group_set_id ";
 			if(structkeyexists(request.zos, 'siteOptionSearchDateRangeSortEnabled')){
 				db.sql&=" ORDER BY s1.site_x_option_group_set_start_date ASC ";
@@ -663,6 +666,8 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 			 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 			WHERE  s1.site_id = #db.param(request.zos.globals.id)# and 
+			s1.site_x_option_group_set_deleted = #db.param(0)# and 
+			s2.site_x_option_group_deleted = #db.param(0)# and 
 			s1.site_id = s2.site_id and 
 			s1.site_option_group_id = s2.site_option_group_id and 
 			s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and ";
@@ -720,7 +725,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	db=request.zos.queryObject;//  SEPARATOR #db.param("','")#) idlist
 	 db.sql="SELECT site_x_option_group_set_id FROM 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1
-	WHERE ";
+	WHERE 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	";
 	var groupId=application.zcore.functions.zGetSiteOptionGroupIdWithNameArray(ts.arrGroupName, arguments.site_id);
 	db.sql&="s1.site_option_group_id = #db.param(groupId)# and ";
 	if(structkeyexists(ts, 'endDate')){
@@ -769,6 +776,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 	 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 	WHERE  s1.site_id = #db.param(arguments.site_id)# and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_x_option_group_deleted = #db.param(0)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
 	s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and 
@@ -877,6 +886,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			from #db.table("site_option_group", request.zos.zcoreDatasource)# s1, 
 			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s2
 			where s1.site_id = s2.site_id and 
+			s1.site_option_group_deleted = #db.param(0)# and 
+			s2.site_x_option_group_set_deleted = #db.param(0)# and 
 			s1.site_id = #db.param(request.zos.globals.id)# and 
 			s1.site_option_group_id=s2.site_option_group_id and 
 			s2.site_x_option_group_set_id=#db.param(curParentSetId)# and 
@@ -969,7 +980,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	db=request.zos.queryObject;//  SEPARATOR #db.param("','")#) idlist
 	 db.sql="SELECT count(site_x_option_group_set_id) count FROM 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1
-	WHERE ";
+	WHERE s1.site_x_option_group_set_deleted = #db.param(0)# and ";
 	var groupId=application.zcore.functions.zGetSiteOptionGroupIdWithNameArray(ts.arrGroupName, arguments.site_id);
 	db.sql&="s1.site_option_group_id = #db.param(groupId)# and ";
 	if(structkeyexists(ts, 'endDate')){
@@ -1003,6 +1014,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 	 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 	WHERE s1.site_id = #db.param(arguments.site_id)# and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_x_option_group_deleted = #db.param(0)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
 	s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and ";
@@ -1040,6 +1053,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 	 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 	WHERE s1.site_id = #db.param(arguments.site_id)# and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_x_option_group_deleted = #db.param(0)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
 	s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and 
@@ -1079,6 +1094,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 	 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 	WHERE s1.site_id = #db.param(arguments.site_id)# and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_x_option_group_deleted = #db.param(0)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
 	s1.site_option_app_id = #db.param(arguments.site_option_app_id)# and 
@@ -1192,6 +1209,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
 		site_option_group_id = #db.param(form.site_option_group_id)# and 
 		site_option_type_id <> #db.param(11)# and 
+		site_option_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		qOption=db.execute("qOption");
 		var ts={}; 
@@ -1305,6 +1323,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	s4.site_option_id = s3.site_option_id and 
 	s4.site_id = s3.site_id 
 	WHERE s1.site_id = #db.param(arguments.site_id)#  and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s3.site_x_option_group_deleted = #db.param(0)# and 
+	s4.site_option_deleted = #db.param(0)# and 
 	s1.site_x_option_group_set_approved=#db.param(1)# and 
 	s1.site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)#
 	ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC ";
@@ -1347,6 +1368,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 					if(resort){
 						db.sql="select site_x_option_group_set_id from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#
 						WHERE 
+						site_x_option_group_set_deleted = #db.param(0)# and 
 						site_x_option_group_set_parent_id= #db.param(row.site_x_option_group_set_parent_id)# and 
 						site_option_group_id = #db.param(row.site_option_group_id)# and 
 						site_option_app_id = #db.param(row.site_option_app_id)# and 
@@ -1403,6 +1425,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 	 #db.table("site_option_group", request.zos.zcoreDatasource)# s2
 	WHERE s1.site_id = #db.param(arguments.site_id)# and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_option_group_deleted = #db.param(0)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
 	s1.site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# 
@@ -1509,6 +1533,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 				db.sql="select site_x_option_group_set_id 
 				from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#
 				WHERE site_x_option_group_set_id = #db.param(id)# and 
+				site_x_option_group_set_deleted = #db.param(0)# and 
 				site_id = #db.param(arguments.site_id)# 
 				ORDER BY site_x_option_group_set_sort";
 				var qSort=db.execute("qSort");
@@ -1552,6 +1577,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var i=0;
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where 
+	site_option_group_deleted = #db.param(0)# and 
 	site_option_group_parent_id = #db.param('0')# and 
 	site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_disable_site_map = #db.param(0)# and 
@@ -1586,6 +1612,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set,
 		#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group
 		where 
+		site_deleted = #db.param(0)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_option_group_deleted = #db.param(0)# and 
 		site_option_group.site_option_group_id = site_x_option_group_set.site_option_group_id and 
 		site_x_option_group_set.site_id = site.site_id and 
 		site_option_group.site_id = site.site_id and 
@@ -1613,6 +1642,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
 	site_id <> #db.param(-1)# and 
 	app_id = #db.param(14)# and 
+	search_deleted = #db.param(0)# and 
 	search_updated_datetime < #db.param(request.zos.mysqlnow)# ";
 	db.execute("qDelete");
 	</cfscript>
@@ -1637,6 +1667,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoredatasource)# 
 	WHERE site_id =#db.param(arguments.site_id)# and 
 	app_id = #db.param(14)# and 
+	search_deleted = #db.param(0)# and 
 	search_table_id = #db.param(arguments.setId)# ";
 	db.execute("qDelete");
 	</cfscript>
@@ -1658,10 +1689,12 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	site_x_option_group_set_approved=#db.param(approved)#,
 	site_x_option_group_set_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE site_id =#db.param(arguments.site_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and 
 	site_x_option_group_set_id = #db.param(arguments.setId)# ";
 	db.execute("qUpdate");
 	db.sql="select site_option_group_id, site_x_option_group_set_image_library_id from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# 
 	WHERE site_id =#db.param(arguments.site_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and 
 	site_x_option_group_set_id = #db.param(arguments.setId)# ";
 	qSet=db.execute("qSet");
 	if(qSet.recordcount){
@@ -1727,6 +1760,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			db.sql&=",  #db.table("site_option", request.zos.zcoredatasource)# s3 ";
 		 }
 		 db.sql&=" WHERE 
+		 s1.site_option_deleted = #db.param(0)# and 
+		 s2.site_option_deleted = #db.param(0)# and
 		s1.site_option_group_id = #db.param(ts.selectmenu_groupid)# and 
 		s1.site_option_name = #db.param(ts.selectmenu_labelfield)# and 
 		
@@ -1737,7 +1772,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		 if(structkeyexists(ts, 'selectmenu_parentfield') and ts.selectmenu_parentfield NEQ ""){
 			db.sql&=" s3.site_id = s1.site_id and 
 			s3.site_option_group_id = #db.param(ts.selectmenu_groupid)# and 
-			s3.site_option_name = #db.param(ts.selectmenu_parentfield)# and ";
+			s3.site_option_name = #db.param(ts.selectmenu_parentfield)# and 
+			s3.site_option_deleted = #db.param(0)# ";
 		 }
 		 db.sql&="
 		s2.site_id = #db.param(request.zos.globals.id)#
@@ -1758,6 +1794,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			db.sql&=" ,#db.table("site_x_option_group", request.zos.zcoredatasource)# s3";
 		 }
 		db.sql&=" WHERE 
+		s1.site_x_option_group_deleted = #db.param(0)# and 
+		s2.site_x_option_group_deleted = #db.param(0)# and 
 		s1.site_option_id = #db.param(local.qTemp.labelFieldId)# and 
 		s1.site_option_group_id = #db.param(ts.selectmenu_groupid)# and 
 		s1.site_x_option_group_set_id = s2.site_x_option_group_set_id AND 
@@ -1768,7 +1806,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			db.sql&=" s3.site_id = s1.site_id and 
 			s3.site_option_id = #db.param(local.qTemp.parentFieldID)# and 
 			s3.site_option_group_id = #db.param(ts.selectmenu_groupid)# and 
-			s1.site_x_option_group_set_id = s3.site_x_option_group_set_id and ";
+			s1.site_x_option_group_set_id = s3.site_x_option_group_set_id and 
+			s3.site_x_option_group_deleted = #db.param(0)# ";
 		 }
 		if(not structkeyexists(ts, 'selectmenu_parentfield') or ts.selectmenu_parentfield EQ ""){
 			if(arguments.site_option_group_id EQ ts.selectmenu_groupid){
@@ -1940,6 +1979,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 SET site_option_app_active = #db.param('1')#, 
 	 site_option_app_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	 WHERE site_option_app_id=#db.param(arguments.site_option_app_id)# and 
+	 site_option_app_deleted = #db.param(0)# and 
 	 site_id = #db.param(request.zos.globals.id)#";
 	 db.execute("q");
 	</cfscript>
@@ -2000,6 +2040,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var db=request.zos.queryObject;
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site_option_app", request.zos.zcoreDatasource)# site_option_app 
 	WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+	site_option_app_deleted = #db.param(0)# and 
 	site_id =#db.param(request.zos.globals.id)#";
 	qG=db.execute("qG");
 	if(qG.recordcount EQ 0){
@@ -2007,6 +2048,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			arguments.site_option_app_id=this.getNewSiteOptionAppId(arguments.app_id);
 			db.sql="SELECT * FROM #request.zos.queryObject.table("site_option_app", request.zos.zcoreDatasource)# site_option_app 
 			WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+			site_option_app_deleted = #db.param(0)# and
 			site_id =#db.param(request.zos.globals.id)#";
 			qG=db.execute("qG");
 		}else{
@@ -2028,6 +2070,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		db.sql="SELECT * FROM #request.zos.queryObject.table("site_x_option", request.zos.zcoreDatasource)# site_x_option, 
 		#request.zos.queryObject.table("site_option", request.zos.zcoreDatasource)# site_option 
 		WHERE site_x_option.site_id = #db.param(request.zos.globals.id)# and 
+		site_x_option_deleted = #db.param(0)# and 
+		site_option_deleted = #db.param(0)# and 
 		site_option.site_id=#db.param(arguments.site_id)# and  
 		site_x_option.site_option_id = site_option.site_option_id and 
 		site_x_option.site_option_app_id=#db.param(arguments.site_option_app_id)# and 
@@ -2057,6 +2101,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_x_option_group.site_option_app_id=#db.param(arguments.site_option_app_id)# and 
 		site_option_type_id IN (#db.param(3)#, #db.param(9)#) and 
 		site_x_option_group_value <> #db.param('')# and 
+		site_option_deleted = #db.param(0)# and 
+		site_x_option_group_deleted = #db.param(0)# and 
 		site_option_type_id=#db.param('3')#";
 		qS=db.execute("qS");
 		for(i=1;i LTE qS.recordcount;i++){
@@ -2074,18 +2120,22 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		
 		db.sql="DELETE FROM #request.zos.queryObject.table("site_x_option", request.zos.zcoreDatasource)#  
 		WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+		site_x_option_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		q=db.execute("q");
 		db.sql="DELETE FROM #request.zos.queryObject.table("site_x_option_group", request.zos.zcoreDatasource)#  
 		WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+		site_x_option_group_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		q=db.execute("q");
 		db.sql="DELETE FROM #request.zos.queryObject.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
 		WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		q=db.execute("q");
 		db.sql="DELETE FROM #request.zos.queryObject.table("site_option_app", request.zos.zcoreDatasource)#  
-		WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and
+		WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+		site_option_app_deleted = #db.param(0)# and 
 		 site_id = #db.param(arguments.site_id)#";
 		q=db.execute("q");
 		application.zcore.functions.zOS_cacheSiteAndUserGroups(arguments.site_id);

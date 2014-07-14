@@ -37,7 +37,8 @@ implement dns zone parser, instead of forcing many small fields.
 	var q=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group
-	WHERE dns_group_id= #db.param(application.zcore.functions.zso(form,'dns_group_id'))# ";
+	WHERE dns_group_id= #db.param(application.zcore.functions.zso(form,'dns_group_id'))# and 
+	dns_group_deleted = #db.param(0)# ";
 	qCheck=db.execute("qCheck");
 	
 	if(qCheck.recordcount EQ 0){
@@ -49,17 +50,24 @@ implement dns zone parser, instead of forcing many small fields.
 		<cfscript>
 		db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)#  
 		WHERE dns_group_id= #db.param(application.zcore.functions.zso(form, 'dns_group_id'))# and 
-		dns_zone_name = #db.param('default')# ";
+		dns_zone_name = #db.param('default')# and 
+		dns_zone_deleted = #db.param(0)#  ";
 		q=db.execute("q");
 		if(q.recordcount NEQ 0){
-			db.sql="DELETE FROM #db.table("dns_record", request.zos.zcoreDatasource)#  
+			db.sql="UPDATE #db.table("dns_record", request.zos.zcoreDatasource)#  
+			set dns_record_deleted = #db.param(1)#,
+			dns_record_updated_datetime=#db.param(request.zos.mysqlnow)#
 			WHERE dns_zone_id= #db.param(q.dns_zone_id)# ";
 			q=db.execute("q");
 		}
-		db.sql="DELETE FROM #db.table("dns_zone", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("dns_zone", request.zos.zcoreDatasource)#  
+		set dns_zone_deleted = #db.param(1)#,
+		dns_zone_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE dns_group_id= #db.param(application.zcore.functions.zso(form, 'dns_group_id'))# ";
 		q=db.execute("q");
-		db.sql="DELETE FROM #db.table("dns_group", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("dns_group", request.zos.zcoreDatasource)#  
+		set dns_group_deleted = #db.param(1)#,
+		dns_group_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE dns_group_id= #db.param(application.zcore.functions.zso(form, 'dns_group_id'))# ";
 		q=db.execute("q");
 		application.zcore.status.setStatus(Request.zsid, 'DNS Group deleted');
@@ -124,7 +132,8 @@ implement dns zone parser, instead of forcing many small fields.
 	}
 	db.sql="select * from #db.table("dns_zone", request.zos.zcoreDatasource)# 
 	WHERE dns_zone_name = #db.param('default')# and 
-	dns_group_id = #db.param(form.dns_group_id)# ";
+	dns_group_id = #db.param(form.dns_group_id)# and 
+	dns_zone_deleted = #db.param(0)#  ";
 	qZone=db.execute("qZone");
 	if(qZone.recordcount EQ 0){
 		ts=StructNew();
@@ -161,7 +170,8 @@ implement dns zone parser, instead of forcing many small fields.
 		form.dns_group_id = -1;
 	}
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
-	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	WHERE dns_group_id=#db.param(form.dns_group_id)# and 
+	dns_group_deleted = #db.param(0)#";
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
@@ -295,10 +305,14 @@ implement dns zone parser, instead of forcing many small fields.
 	FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
 	LEFT JOIN #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone 
 	ON dns_zone.dns_zone_name = #db.param('default')# and 
-	dns_zone.dns_group_id = dns_group.dns_group_id 
+	dns_zone.dns_group_id = dns_group.dns_group_id  and 
+	dns_zone.dns_zone_deleted = #db.param(0)# 
 	LEFT JOIN #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone2 
 	ON dns_zone2.dns_zone_name <> #db.param('default')# and 
-	dns_zone2.dns_group_id = dns_group.dns_group_id 
+	dns_zone2.dns_group_id = dns_group.dns_group_id  and 
+	dns_zone2.dns_zone_deleted = #db.param(0)# 
+	WHERE 
+	dns_group_deleted = #db.param(0)#
 	group by dns_group.dns_group_id 
 	order by dns_group_name asc";
 	qdns_group=db.execute("qdns_group");

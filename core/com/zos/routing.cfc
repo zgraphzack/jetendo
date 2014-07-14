@@ -464,6 +464,7 @@
 				}
 				db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 				WHERE mail_user_id=#db.param(form.mail_user_id)# and 
+				mail_user_deleted = #db.param(0)# and 
 				mail_user_key=#db.param(form.mail_user_key)# and 
 				site_id=#db.param(request.zos.globals.id)#";
 				qM=db.execute("qM"); 
@@ -486,6 +487,7 @@
 				user_confirm_ip=#db.param(request.zos.cgi.remote_addr)#,
 				user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE user_username=#db.param(qM.mail_user_email)# and 
+				user_deleted = #db.param(0)# and
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q"); 
 				db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
@@ -493,6 +495,7 @@
 				mail_user_confirm=#db.param(1)#,
 				mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE mail_user_id=#db.param(form.mail_user_id)# and 
+				mail_user_deleted = #db.param(0)# and 
 				mail_user_key=#db.param(form.mail_user_key)# and 
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q"); 
@@ -507,6 +510,7 @@
 				user_confirm_ip=#db.param(request.zos.cgi.remote_addr)#,
 				user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE user_username=#db.param(qM.mail_user_email)# and 
+				user_deleted = #db.param(0)# and 
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q"); 
 				 db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
@@ -516,6 +520,7 @@
 				 mail_user_confirm_ip=#db.param(request.zos.cgi.remote_addr)#,
 				 mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE mail_user_id=#db.param(form.mail_user_id)# and 
+				mail_user_deleted = #db.param(0)# and 
 				mail_user_key=#db.param(form.mail_user_key)# and 
 				site_id=#db.param(request.zos.globals.id)#";
 				db.execute("q");
@@ -593,6 +598,7 @@
 						db.sql="SELECT user_username, user_key, user_password 
 						FROM #db.table("user", request.zos.zcoreDatasource)# user 
 						WHERE user_id = #db.param(form.user_id)# and 
+						user_deleted = #db.param(0)# and
 						user_active= #db.param(1)# and 
 						(user_server_administrator= #db.param(1)# or 
 						site_id = #db.param(request.zos.globals.id)#) and 
@@ -631,6 +637,7 @@
 					 db.execute("q"); 
 					db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 					WHERE user_id = #db.param(form.user_id)# and 
+					user_deleted = #db.param(0)# and
 					(user_key=#db.param(form.user_key)# or 
 					site_id = #db.param(request.zos.globals.id)#) ";
 					qE=db.execute("qE"); 
@@ -655,6 +662,7 @@
 				 db.sql="SELECT user_username, user_key, user_password 
 				 FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_id = #db.param(form.user_id)# and 
+				user_deleted = #db.param(0)# and 
 				(user_server_administrator= #db.param(1)# or 
 				site_id = #db.param(request.zos.globals.id)#) and 
 				user_key = #db.param(form.user_key)# ";
@@ -835,6 +843,7 @@
 					 db.sql="SELECT user_username, user_key, user_password 
 					 FROM #db.table("user", request.zos.zcoreDatasource)# user 
 					WHERE user_id = #db.param(form.user_id)# and 
+					user_deleted = #db.param(0)# and 
 					((user_server_administrator= #db.param(1)# and 
 					site_id=#db.param(Request.zos.globals.serverId)#) or 
 					site_id = #db.param(request.zos.globals.id)#) and 
@@ -874,6 +883,7 @@
 				db.execute("q"); 
 				 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_id = #db.param(form.user_id)# and 
+				user_deleted = #db.param(0)# and 
 				((user_server_administrator= #db.param(1)# and 
 				site_id=#db.param(Request.zos.globals.serverId)#) or 
 				site_id = #db.param(request.zos.globals.id)#) ";
@@ -902,6 +912,7 @@
 			((user_server_administrator= #db.param(1)# and 
 			site_id=#db.param(Request.zos.globals.serverId)#) or 
 			site_id = #db.param(request.zos.globals.id)#) and 
+			user_deleted = #db.param(0)# and
 			user_key = #db.param(form.user_key)# ";
 			qE=db.execute("qE"); 
 			if(qE.recordcount NEQ 0){
@@ -1171,6 +1182,7 @@
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# site_option_group
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_allow_public=#db.param(1)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_option_group_public_form_url<> #db.param('')# ";
 	local.qS=db.execute("qS");
 	for(local.row in local.qS){
@@ -1196,6 +1208,7 @@
 		db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# site_x_option_group_set
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		site_x_option_group_set_override_url<> #db.param('')# and 
+		site_x_option_group_set_deleted = #db.param(0)# and
 		site_x_option_group_set_approved=#db.param(1)#";
 		local.qS=db.execute("qS");
 		for(local.row in local.qS){
@@ -1215,6 +1228,8 @@
 	WHERE app_x_site.site_id = #db.param(request.zos.globals.id)# and 
 	app.app_built_in=#db.param(0)# and 
 	app_x_site.app_x_site_status = #db.param('1')# and 
+	app_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)# and
 	app.app_id=app_x_site.app_id ";
 	local.qApps=db.execute("qApps");
 	for(row in local.qApps){
@@ -1237,6 +1252,7 @@
 	var db=request.zos.queryObject;
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# site_x_option_group_set
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and
 	site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# ";
 	local.qS=db.execute("qS");
 	if(local.qS.recordcount NEQ 0){
@@ -1254,6 +1270,7 @@
 	var db=request.zos.queryObject;
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# site_x_option_group_set
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and
 	site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and 
 	site_x_option_group_set.site_x_option_group_set_approved=#db.param(1)# ";
 	local.qS=db.execute("qS");
@@ -1681,6 +1698,8 @@
 	 db.sql="SELECT site.site_domain, rewrite_rule.* FROM #db.table("site", request.zos.zcoreDatasource)# site, 
 	 #db.table("rewrite_rule", request.zos.zcoreDatasource)# rewrite_rule 
 	WHERE site.site_id = rewrite_rule.site_id AND site.site_active= #db.param(1)# and 
+	rewrite_rule_deleted = #db.param(0)# and 
+	site_deleted = #db.param(0)# and 
 	CONCAT(rewrite_rule_image,rewrite_rule_zsa, rewrite_rule_site) <> #db.param('')# and 
 	site.site_id = #db.param(request.zos.globals.id)#";
 	local.qR=db.execute("qR");

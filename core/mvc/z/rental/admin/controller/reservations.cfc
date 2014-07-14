@@ -66,7 +66,8 @@
 	db.sql="
 	SELECT * from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_id = #db.param(form.inquiries_id)# and 
-	site_id = #db.param(request.zOS.globals.id)#";
+	site_id = #db.param(request.zOS.globals.id)# and 
+	inquiries_deleted = #db.param(0)#";
 	qinquiry=db.execute("qinquiry");
 	if(qInquiry.recordcount EQ 0){
 		location url="/z/inquiries/admin/manage-inquiries/index?message=#URLEncodedFormat('This inquiry doesn''t exist.')#";
@@ -77,7 +78,8 @@
 	db.sql="
 	SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_id = #db.param(form.rental_id)# and 
-	site_id = #db.param(request.zOS.globals.id)#";
+	site_id = #db.param(request.zOS.globals.id)# and 
+	rental_deleted = #db.param(0)#";
 	qprop=db.execute("qprop");
 	</cfscript>
 	<span class="small">
@@ -186,6 +188,7 @@
 	from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_reservation<> #db.param(0)# and 
 	inquiries_reservation_status <> #db.param(0)# and 
+	inquiries_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)# ";
 	qinquiriesFirst=db.execute("qinquiriesFirst");
 	application.zcore.functions.zStatusHandler(request.zsid);
@@ -209,11 +212,13 @@
 		<cfscript>
 		db.sql=" select max(inquiries_datetime) as inquiries_end_date from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 		WHERE inquiries_reservation<> #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and
 		inquiries_reservation_status <> #db.param(0)# and 
 		site_id = #db.param(request.zOS.globals.id)# ";
 		qinquiriesLast=db.execute("qinquiriesLast");
 		db.sql=" select inquiries_id from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries
 		WHERE inquiries_reservation<> #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and 
 		inquiries_reservation_status <> #db.param(0)# and 
 		inquiries_datetime >= #db.param(dateformat(qinquiriesfirst.inquiries_start_date,"YYYY-mm-dd")&' 00:00:00')# and 
 		inquiries_datetime <= #db.param(dateformat(qinquiriesLast.inquiries_end_date,"YYyy-mm-dd"))# and 
@@ -250,10 +255,12 @@
 		}
 		db.sql=" SELECT count(inquiries_id) as count from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries
 		WHERE inquiries.inquiries_manager_read = #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zOS.globals.id)# ";
 		qinquiriesNew=db.execute("qinquiriesNew");
 		db.sql=" SELECT count(inquiries_id) count from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries
 		WHERE inquiries_reservation<> #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and 
 		inquiries_reservation_status <> #db.param(0)# and 
 		site_id = #db.param(request.zOS.globals.id)# ";
 		if(application.zcore.functions.zso(form, 'inquiriessearchid') NEQ ''){
@@ -281,8 +288,10 @@
 		qinquiriesCount=db.execute("qinquiriesCount");
 		db.sql=" SELECT * from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 		LEFT JOIN #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental on 
-		inquiries.rental_id = rental.rental_id 
+		inquiries.rental_id = rental.rental_id and 
+		rental_deleted = #db.param(0)#
 		WHERE inquiries_reservation<> #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and 
 		inquiries_reservation_status <> #db.param(0)# and 
 		site_id = #db.param(request.zOS.globals.id)#";
 		if(application.zcore.functions.zso(form, 'inquiriessearchid') NEQ ''){

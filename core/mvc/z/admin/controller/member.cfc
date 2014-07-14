@@ -49,6 +49,7 @@
 	
 	db.sql="select * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	where site_id <> #db.param(request.zos.globals.id)# and 
+	site_deleted = #db.param(0)# and
 	site_parent_id = #db.param(request.zos.globals.id)#";
 	variables.qPAll323=db.execute("qPAll323");
 	</cfscript>
@@ -96,6 +97,7 @@
 	SET user_active = #db.param('1')#,
 	user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE user_id = #db.param(form.user_id)# and 
+	user_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qUp=db.execute("qUp");
 	application.zcore.status.setStatus(request.zsid,"User has been enabled.");
@@ -111,6 +113,7 @@
 	SET user_active = #db.param('0')#,
 	user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE user_id = #db.param(form.user_id)# and 
+	user_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	qUp=db.execute("qUp");
 	application.zcore.status.setStatus(request.zsid,"User has been disabled.");
@@ -125,7 +128,9 @@
 	var qCheck=0;
 	variables.init();
 	db.sql="SELECT *, user.site_id userSiteId FROM #db.table("user", request.zos.zcoreDatasource)# user  
-	WHERE user.user_id = #db.param(application.zcore.functions.zso(form,'user_id'))# and site_id =#db.param(request.zos.globals.id)# ";
+	WHERE user.user_id = #db.param(application.zcore.functions.zso(form,'user_id'))# and 
+	user_deleted = #db.param(0)# and 
+	site_id =#db.param(request.zos.globals.id)# ";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, 'Member no longer exists', false,true);
@@ -136,7 +141,10 @@
 		<cfscript>
 		
 		application.zcore.functions.zDeleteFile(application.zcore.functions.zVar('privatehomedir',qCheck.userSiteId)&removechars(request.zos.memberImagePath,1,1)&qCheck.member_photo);
-		db.sql="DELETE FROM #db.table("user", request.zos.zcoreDatasource)#  WHERE user_id = #db.param(qCheck.user_id)# and site_id = #db.param(request.zos.globals.id)# ";
+		db.sql="DELETE FROM #db.table("user", request.zos.zcoreDatasource)#  WHERE 
+		user_id = #db.param(qCheck.user_id)# and 
+		user_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
 		if(application.zcore.app.siteHasApp("listing")){
 			application.zcore.listingCom.updateAgentIdStruct(qCheck.user_id);
@@ -238,6 +246,8 @@
 		#db.table("site", request.zos.zcoreDatasource)# site 
 		where user.site_id = site.site_id and 
 		user_id <> #db.param(form.user_id)# and 
+		user_deleted = #db.param(0)# and 
+		site_deleted = #db.param(0)# and 
 		user_username = #db.param(form.member_email)# and 
 		site_parent_id=#db.param(request.zos.globals.id)#";
 		qCheck99=db.execute("qCheck99"); 
@@ -266,6 +276,7 @@
 	if(form.method NEQ 'insert'){
 		db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user_id = #db.param(form.user_id)# and 
+		user_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qU2=db.execute("qU2");
 	}
@@ -297,7 +308,10 @@
 	}
 	curGROUPID="";
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and (request.zsession.user.id NEQ form.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)){
-		db.sql="select user_group_id from #db.table("user_group", request.zos.zcoreDatasource)# user_group where user_group_id = #db.param(form.user_group_id)# and site_id=#db.param(request.zos.globals.id)#";
+		db.sql="select user_group_id from #db.table("user_group", request.zos.zcoreDatasource)# user_group where 
+		user_group_id = #db.param(form.user_group_id)# and 
+		user_group_deleted = #db.param(0)# and 
+		site_id=#db.param(request.zos.globals.id)#";
 		qG=db.execute("qG");
 		if(qG.recordcount EQ 1){
 			ts.user_group_id=qG.user_group_id;
@@ -399,6 +413,7 @@
 	}
 	db.sql="select member_id FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	where user_id =#db.param(form.user_id)# and 
+	user_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qu99=db.execute("qu99");
 	if(qu99.recordcount NEQ 0 and qu99.member_id EQ 0){
@@ -433,6 +448,8 @@
 		db.sql="select site_domain from #db.table("site", request.zos.zcoreDatasource)# site, 
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site  
 		where site.site_id = app_x_site.site_id and 
+		app_x_site_deleted = #db.param(0)# and 
+		site_deleted = #db.param(0)# and
 		app_x_site.app_id = #db.param(11)# and 
 		site_parent_id = #db.param(request.zos.globals.id)# and 
 		site_active=#db.param(1)# ";
@@ -478,6 +495,7 @@
 	form.user_id=application.zcore.functions.zso(form, 'user_id');
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user  
 	WHERE user.user_id = #db.param(form.user_id)# and 
+	user_deleted = #db.param(0)# and
 	site_id=#db.param(request.zos.globals.id)# ";
 	qMember=db.execute("qMember");
 	application.zcore.functions.zQueryToStruct(qMember);
@@ -513,7 +531,8 @@
 				<th>#application.zcore.functions.zOutputHelpToolTip("Office","member.member.edit office_id")#</th>
 				<td><cfscript>
 					db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
-					WHERE site_id = #db.param(request.zos.globals.id)# 
+					WHERE site_id = #db.param(request.zos.globals.id)# and 
+					office_deleted = #db.param(0)# 
 					ORDER BY office_name";
 					qOffice=db.execute("qOffice");
 					selectStruct = StructNew();
@@ -589,7 +608,9 @@
 			</tr>
 			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") and (request.zsession.user.id NEQ form.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)>
 				<cfscript>
-				db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group WHERE site_id = #db.param(request.zos.globals.id)#";
+				db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group WHERE 
+				user_group_deleted = #db.param(0)# and 
+				site_id = #db.param(request.zos.globals.id)#";
 				if(not application.zcore.app.siteHasApp("listing")){ 
 					db.sql&=" and user_group_name NOT IN (#db.param('broker')#, #db.param('agent')#)";
 				}
@@ -670,6 +691,8 @@
 						db.sql="SELECT * FROM #db.table("mls", request.zos.zcoreDatasource)# mls, 
 						#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls 
 						WHERE mls.mls_id = app_x_mls.mls_id and 
+						app_x_mls_deleted = #db.param(0)# and 
+						mls_deleted = #db.param(0)# and
 						app_x_mls.site_id=#db.param(request.zos.globals.id)# and 
 						mls_status = #db.param('1')#
 						ORDER BY mls_name";
@@ -904,6 +927,7 @@
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db.sql="SELECT count(user_id) count FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE 
+	user_deleted = #db.param(0)# and 
 	user.site_id = #db.param(request.zos.globals.id)#";
 	if(structkeyexists(form, 'searchtext') and trim(form.searchtext) NEQ ''){
 		db.sql&=" and concat(user.user_id,#db.param(' ')#,user_first_name,#db.param(' ')#,user_last_name,#db.param(' ')#,user_username) like #db.param('%#form.searchtext#%')#";
@@ -916,6 +940,8 @@
 	FROM #db.table("user", request.zos.zcoreDatasource)# user , 
 	#db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE  
+	user_deleted = #db.param(0)# and 
+	user_group_deleted = #db.param(0)# and 
 	user.site_id = user_group.site_id and 
 	user.user_group_id = user_group.user_group_id and 
 	user.site_id = #db.param(request.zos.globals.id)# and 
@@ -934,7 +960,8 @@
 	qMember=db.execute("qMember");
 
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-	WHERE site_id = #db.param(request.zos.globals.id)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	user_group_deleted = #db.param(0)#
 	ORDER BY user_group_name";
 	qUserGroup=db.execute("qUserGroup");
     </cfscript>
@@ -1098,7 +1125,8 @@
 		<h2>Select a user group for these users to be assigned to:</h2> 
 		<p><cfscript> 
 		db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-		WHERE site_id = #db.param(request.zos.globals.id)# 
+		WHERE site_id = #db.param(request.zos.globals.id)# and 
+		user_group_deleted = #db.param(0)# 
 		ORDER BY user_group_name";
 		qUserGroup=db.execute("qUserGroup");
 		selectStruct = StructNew();
@@ -1145,6 +1173,7 @@
 	defaultStruct.user_group_id=application.zcore.functions.zso(form, 'user_group_id');
 	db.sql="select * from #db.table("user_group", request.zos.zcoreDatasource)# WHERE 
 	user_group_id = #db.param(defaultStruct.user_group_id)# and 
+	user_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	qS=db.execute("qS");
 	if(qS.recordcount EQ 0){

@@ -466,6 +466,8 @@ if(table_id EQ false){
 	}
 	if(structkeyexists(ss,'struct')){
 		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+	}else{
+		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
 	}
 	</cfscript>
     <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
@@ -628,6 +630,8 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	}
 	if(structkeyexists(ss,'struct')){
 		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+	}else{
+		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
 	}
 	</cfscript>
     <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>

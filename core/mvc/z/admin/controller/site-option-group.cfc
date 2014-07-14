@@ -285,6 +285,7 @@
 	}
 	db.sql="delete from #db.table("site_option_group_map", request.zos.zcoredatasource)# 
 	where site_option_group_id=#db.param(form.site_option_group_id)# and 
+	site_option_group_map_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)# and 
 	site_option_group_map_updated_datetime < #db.param(request.zos.mysqlnow)#";
 	db.execute("qDelete");
@@ -305,6 +306,7 @@
 	// get group
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qGroup=db.execute("qGroup");
 	if(qGroup.recordcount EQ 0){
@@ -316,6 +318,7 @@
 	if(qGroup.site_option_group_map_group_id NEQ 0){
 		db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
 		WHERE site_option_group_id = #db.param(qGroup.site_option_group_map_group_id)# and 
+		site_option_group_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		qMapGroup=db.execute("qMapGroup");
 		if(qMapGroup.recordcount EQ 0){
@@ -328,6 +331,7 @@
 	}
 	db.sql="SELECT * FROM #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
 	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_map_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qMap=db.execute("qMap");
 	local.mapStruct={};
@@ -336,7 +340,8 @@
 	}
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# 
 	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
-	site_id = #db.param(request.zos.globals.id)# 
+	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_deleted = #db.param(0)#
 	ORDER BY site_option_sort ASC";
 	qOption=db.execute("qOption");
 	
@@ -345,6 +350,7 @@
 		// get second group
 		db.sql="SELECT site_option_display_name, site_option_id FROM #db.table("site_option", request.zos.zcoreDatasource)# 
 		WHERE site_option_group_id = #db.param(qGroup.site_option_group_map_group_id)# and 
+		site_option_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# and
 		site_option_allow_public = #db.param(1)#
 		ORDER BY site_option_display_name";
@@ -419,6 +425,7 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qGroup=db.execute("qGroup");
 	if(local.qGroup.recordcount EQ 0){
@@ -490,6 +497,7 @@
 	arguments.groupStruct[arguments.site_option_group_id]=local.newSiteOptionGroupId;
 	db.sql="select * from #db.table("site_option", request.zos.zcoredatasource)# 
 	where site_id = #db.param(request.zos.globals.id)# and 
+	site_option_deleted = #db.param(0)# and
 	site_option_group_id = #db.param(arguments.site_option_group_id)# ";
 	local.qOptions=db.execute("qOptions");
 	for(row2 in local.qOptions){
@@ -505,6 +513,7 @@
 	}
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where site_option_group_parent_id = #db.param(arguments.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qGroup=db.execute("qGroup");
 	for(row in local.qGroup){
@@ -532,6 +541,7 @@
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id', true, 0); 
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qGroup=db.execute("qGroup");
 	if(local.qGroup.recordcount EQ 0){
@@ -562,11 +572,13 @@
 	local.arrSQL=[];
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# WHERE 
 	site_option_group_id = #db.param(arguments.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qGroup=db.execute("qGroup");
 		
 	db.sql="select * from #db.table("site_option", request.zos.zcoredatasource)# WHERE 
 	site_option_group_id = #db.param(arguments.site_option_group_id)# and 
+	site_option_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qOption=db.execute("qOption");
 
@@ -635,6 +647,8 @@
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1,
 	 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 	WHERE 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_x_option_group_deleted = #db.param(0)# and
 	s1.site_option_group_id = #db.param(arguments.site_option_group_id)# and 
 	s1.site_id = #db.param(request.zos.globals.id)# and 
 	s1.site_id = s2.site_id and 
@@ -754,6 +768,7 @@
 	if(form.site_option_group_parent_id NEQ 0){
 		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 		where site_option_group_id=#db.param(form.site_option_group_parent_id)# and 
+		site_option_group_deleted = #db.param(0)# and
 		site_option_group.site_id =#db.param(request.zos.globals.id)#";
 		qGroup=db.execute("qGroup");
         if(qGroup.recordcount EQ 0){
@@ -764,8 +779,10 @@
 	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group
 	LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# child1 ON 
 	site_option_group.site_option_group_id = child1.site_option_group_parent_id and 
-	child1.site_id = site_option_group.site_id 
+	child1.site_id = site_option_group.site_id and 
+	child1.site_option_group_deleted = #db.param(0)# 
 	WHERE
+	site_option_group.site_option_group_deleted = #db.param(0)# and 
 	site_option_group.site_id =#db.param(request.zos.globals.id)# and 
 	site_option_group.site_option_group_parent_id = #db.param(form.site_option_group_parent_id)# 
 	group by site_option_group.site_option_group_id 
@@ -779,6 +796,7 @@
 			db.sql="select * 
 			from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 			where site_option_group_id = #db.param(curParentId)# and 
+			site_option_group_deleted = #db.param(0)# and
 			site_id = #db.param(request.zos.globals.id)#";
 			q1=db.execute("q1");
 			loop query="q1"{
@@ -840,6 +858,7 @@
 						db.sql="select count(site_option_group_map_id) count 
 						from #db.table("site_option_group_map", request.zos.zcoreDatasource)# site_option_group_map WHERE 
 						site_id = #db.param(qProp.site_id)# AND 
+						site_option_group_map_deleted = #db.param(0)# and
 						site_option_group_id = #db.param(qProp.site_option_group_id)# ";
 						qMap=db.execute("qMap");
 						if(qMap.recordcount EQ 0 or qMap.count EQ 0){
@@ -867,6 +886,7 @@
 	var result=0;
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)#  
 	WHERE  site_option_group_parent_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qGroups=db.execute("qGroups");
 	for(row in local.qGroups){
@@ -876,6 +896,7 @@
 	
 	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 	WHERE  site_x_option_group_set.site_option_group_id=#db.param(arguments.site_option_group_id)# and  
+	site_x_option_group_set_deleted = #db.param(0)# and
 	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)#  ";
 	local.qSets=db.execute("qSets");
 	for(row in local.qSets){
@@ -890,6 +911,8 @@
 	site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
 	site_option.site_id = site_x_option_group.site_id and 
 	site_x_option_group_value <> #db.param('')# and 
+	site_option_deleted = #db.param(0)# and 
+	site_x_option_group_deleted = #db.param(0)# and
 	site_option.site_option_id = site_x_option_group.site_option_id ";
 	local.qOptions=db.execute("qOptions");
 	path=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zupload/site-options/';
@@ -908,23 +931,28 @@
 	}
 	db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
 	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_x_option_group_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result");
 	db.sql="DELETE FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
 	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result");
 	
 	db.sql="DELETE FROM #db.table("site_option_group_map", request.zos.zcoreDatasource)#  
 	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_group_map_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result");
 	db.sql="DELETE FROM #db.table("site_option", request.zos.zcoreDatasource)#  
 	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result");
 	db.sql="DELETE FROM #db.table("site_option_group", request.zos.zcoreDatasource)#  
 	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result"); 
 	</cfscript>
@@ -940,7 +968,10 @@
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	form.site_option_group_id=application.zcore.functions.zso(form,'site_option_group_id');
-	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE site_option_group_id = #db.param(form.site_option_group_id)# and site_id = #db.param(request.zos.globals.id)#";
+	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
+	site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, "group is missing");
@@ -1003,6 +1034,7 @@
 	if(form.method EQ "update"){
 		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 		where site_option_group_id = #db.param(form.site_option_group_id)# and 
+		site_option_group_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.site_id EQ 0 and variables.allowGlobal EQ false){
@@ -1104,6 +1136,7 @@
 	form.site_option_group_id=application.zcore.functions.zso(form,'site_option_group_id',true);
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id =#db.param(request.zos.globals.id)# ";
 	qRate=db.execute("qRate");
 	application.zcore.functions.zQueryToStruct(qRate,form,'site_option_group_id,site_option_group_parent_id'); 
@@ -1120,9 +1153,11 @@
 	<form name="myForm" id="myForm" action="/z/admin/site-option-group/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#" method="post">
 		<table  style="border-spacing:0px;" class="table-list">
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
-			site_id = #db.param(request.zos.globals.id)#
+			site_id = #db.param(request.zos.globals.id)# and 
+			site_option_group_deleted = #db.param(0)# 
 			<cfif form.site_option_group_id NEQ 0 and form.site_option_group_id NEQ "">
-				and site_option_group_id <> #db.param(form.site_option_group_id)# and site_option_group_parent_id <> #db.param(form.site_option_group_id)#
+				and site_option_group_id <> #db.param(form.site_option_group_id)# and 
+				site_option_group_parent_id <> #db.param(form.site_option_group_id)#
 			</cfif>
 			ORDER BY site_option_group_display_name </cfsavecontent>
 			<cfscript>
@@ -1170,7 +1205,9 @@
 					#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 					WHERE app_x_site.site_id = #db.param(request.zos.globals.id)# and 
 	 				app.app_built_in=#db.param(0)# and 
-					app_x_site.app_id = app.app_id 
+					app_x_site.app_id = app.app_id and 
+					app_x_site_deleted = #db.param(0)# and 
+					app_deleted = #db.param(0)# 
 					order by app_name ";
 					qApp=db.execute("qApp");
 					
@@ -1327,7 +1364,8 @@
 					<td>
 					<cfscript>
 					db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-					WHERE site_id = #db.param(request.zos.globals.id)#  
+					WHERE site_id = #db.param(request.zos.globals.id)# and 
+					user_group_deleted = #db.param(0)# 
 					ORDER BY user_group_name asc"; 
 					var qGroup2=db.execute("qGroup2"); 
 					ts = StructNew();
@@ -1395,7 +1433,8 @@
 						form.inquiries_type_id=form.inquiries_type_id&"|"&application.zcore.functions.zGetSiteIDFromSiteIdType(form.inquiries_type_id_siteIDType);
 					}
 					db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("inquiries_type.site_id"))# as inquiries_type_id_siteIDType from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
-					WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) ";
+					WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
+					inquiries_type_deleted = #db.param(0)# ";
 					if(not application.zcore.app.siteHasApp("listing")){
 						db.sql&=" and inquiries_type_realestate = #db.param(0)# ";
 					}

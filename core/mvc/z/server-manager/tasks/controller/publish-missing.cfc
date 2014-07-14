@@ -14,6 +14,7 @@
 	request.ignoreSlowScript=true;
 	db.sql="select * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 	where site.site_active =#db.param('1')# and 
+	site_deleted = #db.param(0)# and 
 	site_id <> #db.param('1')#";
 	qs=db.execute("qs");
 	for(row in qS){

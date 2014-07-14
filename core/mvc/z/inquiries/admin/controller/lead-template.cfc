@@ -230,6 +230,8 @@
 	if(form.method EQ 'hide'){
 		db.sql="REPLACE INTO #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)#  
 		SET inquiries_lead_template_id=#db.param(form.inquiries_lead_template_id)#, 
+		inquiries_lead_template_x_site_deleted = #db.param(0)#,
+		inquiries_lead_template_x_site_updated_datetime=#db.param(request.zos.mysqlnow)#,
 		site_id = #db.param(form.sid)# ";
 		r=db.execute("r");
 		application.zcore.status.setStatus(request.zsid,"Lead template is now hidden");
@@ -256,8 +258,10 @@
 	from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
 	LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
 	inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
-	inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# 
-	WHERE inquiries_lead_template.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#)
+	inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_lead_template_x_site_deleted = #db.param(0)#
+	WHERE inquiries_lead_template.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
+	inquiries_lead_template_deleted = #db.param(0)# 
 	<cfif application.zcore.app.siteHasApp("listing") EQ false>
 		and inquiries_lead_template_realestate = #db.param(0)#
 	</cfif>

@@ -589,7 +589,8 @@
 var local=structnew();
 var db=request.zos.queryObject;
 db.sql="select * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-where site_active = #db.param('1')#";
+where site_active = #db.param('1')# and 
+site_deleted = #db.param(0)#";
 local.qSite=db.execute("qSite");
 for(local.row in local.qSite){
 	local.sphd=application.zcore.functions.zGetDomainWritableInstallPath(local.row.site_short_domain);

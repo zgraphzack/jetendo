@@ -43,7 +43,8 @@
 		db.sql="update 
 		#db.table("site", application.zcore.zcoreDatasource)#
 		set site_theme_name=#db.param(form.name)# 
-		where site_id = #db.param(request.zos.globals.id)#";
+		where site_id = #db.param(request.zos.globals.id)# and 
+		site_deleted = #db.param(0)#";
 		db.execute("qUpdate");
 		structdelete(request.zsession, 'zCurrentTheme');
 		application.zcore.functions.zOS_cacheSiteAndUserGroups();

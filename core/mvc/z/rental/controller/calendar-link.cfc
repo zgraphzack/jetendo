@@ -36,7 +36,9 @@ db.sql="select * from #db.table("rental_x_amenity", request.zos.zcoreDatasource)
 where rental_x_amenity.site_id = rental_amenity.site_id and 
 rental_amenity.rental_amenity_id = rental_x_amenity.rental_amenity_id and 
 rental_x_amenity.site_id = #db.param(request.zos.globals.id)# and 
-rental_id = #db.param(rental_id)#";
+rental_id = #db.param(rental_id)# and 
+rental_amenity_deleted = #db.param(0)# and 
+rental_x_amenity_deleted = #db.param(0)#";
 qXAmenity=db.execute("qXAmenity");
 </cfscript>
 <cfloop query="qXAmenity"><cfscript>

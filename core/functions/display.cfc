@@ -152,6 +152,7 @@ application.zcore.functions.zEnableContentTransition(); --->
     <cfsavecontent variable="db.sql">
     select * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 	WHERE slideshow_id = #db.param(arguments.slideshow_id)# and 
+	slideshow_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qS=db.execute("qS");</cfscript>
     <cfif qS.recordcount NEQ 0>
@@ -217,6 +218,7 @@ zSlideShow(ts);
 	if(structkeyexists(arguments.ss,'slideshow_codename')){
 		db.sql="select * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 		WHERE slideshow_codename=#db.param(arguments.ss.slideshow_codename)# and 
+		slideshow_deleted = #db.param(0)# and
 		site_id =#db.param(arguments.ss.site_id)# ";
 		local.qss=db.execute("qss");
 		if(local.qss.recordcount EQ 0){
@@ -229,6 +231,7 @@ zSlideShow(ts);
 	}else if(structkeyexists(arguments.ss,'slideshow_id')){
 		db.sql="select * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 		WHERE slideshow_id=#db.param(arguments.ss.slideshow_id)# and 
+		slideshow_deleted = #db.param(0)# and
 		site_id =#db.param(arguments.ss.site_id)# ";
 		local.qss=db.execute("qss");
 		if(local.qss.recordcount EQ 0){

@@ -139,7 +139,8 @@ local.tempCom.index();
 		SET saved_search_email = #db.param(arguments.newemail)#,
 		mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		where saved_search_email = #db.param(arguments.oldemail)# and 
-		site_id = #db.param(request.zos.globals.id)#";
+		site_id = #db.param(request.zos.globals.id)# and 
+		mls_saved_search_deleted = #db.param(0)#";
 		db.execute("q"); 
 		</cfscript>
 	</cffunction>
@@ -358,7 +359,8 @@ zGetLatLong(ts);
 	
 	db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 	where mls_saved_search_id= #db.param(arguments.mls_saved_search_id)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	mls_saved_search_deleted = #db.param(0)#";
 	qList=db.execute("qList");
 	application.zcore.functions.zquerytostruct(qList, t8942);
 	rs.mlsSearchSearchQuery=qList;
@@ -997,7 +999,8 @@ zGetLatLong(ts);
 		<cfsavecontent variable="db.sql">
 		SELECT cast(group_concat(city_name SEPARATOR #db.param(", ")#) AS CHAR) idlist 
 		FROM #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
-		WHERE city_id IN (#db.trustedSQL(arguments.searchStr.search_city_id)#)
+		WHERE city_id IN (#db.trustedSQL(arguments.searchStr.search_city_id)#) and 
+		city_deleted = #db.param(0)#
 		</cfsavecontent><cfscript>qCity=db.execute("qCity");
 		if(qCity.recordcount NEQ 0){
 			ArrayAppend(searchCri,s9.city&qCity.idlist);
@@ -1346,7 +1349,8 @@ zGetLatLong(ts);
 	}else{
 		db.sql="select count(mls_saved_search_id) count from #db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 		WHERE saved_search_email = #db.param(local.email)# and 
-		site_id = #db.param(request.zos.globals.id)#";
+		site_id = #db.param(request.zos.globals.id)# and 
+		mls_saved_search_deleted = #db.param(0)#";
 		local.qSaved=db.execute("qSaved");
 		if(local.qSaved.count){
 			return true;

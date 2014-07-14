@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <p>Purpose: Generate sprite images and minified CSS from multiple existing CSS files.</p>
   <p>Version: 0.1.000</p>
   <p>Language(s) used: ColdFusion Markup Language (CFML)</p>

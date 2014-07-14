@@ -32,6 +32,9 @@ still need to add all the meta data fields and photo display
 			#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls, 
 			#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site) 
 			WHERE mls.mls_id = app_x_mls.mls_id and 
+			mls_deleted = #db.param(0)# and 
+			app_x_mls_deleted = #db.param(0)# and 
+			app_x_site_deleted = #db.param(0)# and 
 			app_x_mls.site_id = app_x_site.site_id and 
 			app_x_site.site_id=#db.param(request.zos.globals.id)#  AND 
 			app_x_site.app_id=#db.param(11)#";
@@ -88,6 +91,7 @@ still need to add all the meta data fields and photo display
 	FROM ( #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ) 
 	#db.trustedSQL(rs2.leftJoin)# 
 	WHERE 
+	manual_listing_deleted = #db.param(0)# and 
 	manual_listing.site_id = #db.param(request.zos.globals.id)#
 	<cfif searchtext NEQ ''>
 		<cfif searchexactonly EQ 1>
@@ -233,7 +237,8 @@ still need to add all the meta data fields and photo display
 	}
 	db.sql="SELECT * FROM #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing 
 	WHERE manual_listing_unique_id = #db.param(form.manual_listing_unique_id)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
+	site_id = #db.param(request.zos.globals.id)# and 
+	manual_listing_deleted = #db.param(0)# ";
 	qCheck=db.execute("qCheck"); 
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this manual_listing.',false,true);
@@ -313,7 +318,8 @@ still need to add all the meta data fields and photo display
 		}
 	}
 	if(form.method EQ "update"){
-		db.sql="select * from #db.table("manual_listing", request.zos.zcoreDatasource)# where site_id = #db.param(request.zos.globals.id)# and manual_listing_unique_id=#db.param(form.manual_listing_unique_id)#";
+		db.sql="select * from #db.table("manual_listing", request.zos.zcoreDatasource)# where site_id = #db.param(request.zos.globals.id)# and manual_listing_unique_id=#db.param(form.manual_listing_unique_id)# and 
+		manual_listing_deleted = #db.param(0)#";
 		qCheck=db.execute("qCheck");	
 	}
 	
@@ -404,13 +410,15 @@ still need to add all the meta data fields and photo display
 	
 	db.sql="select * from #db.table("manual_listing", request.zos.zcoreDatasource)#
 	where manual_listing_unique_id = #db.param(form.manual_listing_unique_id)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	manual_listing_deleted = #db.param(0)#";
 	qManual=db.execute("qManual");
 	application.zcore.functions.zQueryToStruct(qManual, form);
 	form.manual_listing_updated_datetime=dateformat(form.manual_listing_updated_datetime, 'yyyy-mm-dd')&' '&timeformat(form.manual_listing_updated_datetime, 'HH:mm:ss');
 	form.manual_listing_created_datetime=dateformat(form.manual_listing_created_datetime, 'yyyy-mm-dd')&' '&timeformat(form.manual_listing_created_datetime, 'HH:mm:ss');
 	db.sql="select * from #db.table("listing_track", request.zos.zcoreDatasource)#
-	where listing_id = #db.param(form.manual_listing_unique_id)# ";
+	where listing_id = #db.param(form.manual_listing_unique_id)# and 
+	listing_track_deleted = #db.param(0)#";
 	qTrackId=db.execute("qTrackId");
 	if(qTrackId.recordcount NEQ 0){
 		form.listing_track_id=qTrackId.listing_track_id;
@@ -482,6 +490,7 @@ still need to add all the meta data fields and photo display
 		
 		db.sql="SELECT * FROM #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing 
 		WHERE manual_listing_unique_id = #db.param(form.manual_listing_unique_id)# and 
+		manual_listing_deleted = #db.param(0)# and 
 		manual_listing.site_id = #db.param(request.zos.globals.id)#";
 		qmanual_listing=db.execute("qmanual_listing");
 		if(currentMethod EQ 'edit'){
@@ -494,6 +503,8 @@ still need to add all the meta data fields and photo display
 			#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls, 
 			#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site) 
 			WHERE mls.mls_id = app_x_mls.mls_id and 
+			mls_deleted = #db.param(0)# and 
+			app_x_mls_deleted = #db.param(0)# and 
 			app_x_mls.site_id = app_x_site.site_id and 
 			app_x_site.site_id=#db.param(request.zos.globals.id)#  AND 
 			app_x_site.app_id=#db.param(11)# and mls.mls_id = #db.param(application.zcore.functions.zso(form,'manual_listing_mls_id'))#";
@@ -689,7 +700,7 @@ still need to add all the meta data fields and photo display
 		from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 		WHERE 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
-
+	listing_deleted = #db.param(0)# and 
 		listing_city not in #db.trustedSQL("('','0','#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#')")#
 		<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE '%,7,%' </cfif>
 		<cfif structkeyexists(form, 'zdisablesearchfilter') EQ false and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'whereOptionsSQL')> #db.trustedSQL(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.whereOptionsSQL)# </cfif>
@@ -699,7 +710,8 @@ still need to add all the meta data fields and photo display
 		from #db.table("city_x_mls", request.zos.zcoreDatasource)# city_x_mls 
 		WHERE city_x_mls.city_id IN (#db.trustedSQL("'#qtype.idlist#'")#) and 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("city_x_mls"))#  and 
-		city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#)  
+		city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#)  and 
+		city_x_mls_deleted = #db.param(0)#
 			  
 		</cfsavecontent><cfscript>qCity=db.execute("qCity");</cfscript>
 		<cfloop query="qCity"><cfscript>if(structkeyexists(cityUnq,qCity.label) EQ false){cityUnq[qCity.label]=qCity.value;}</cfscript></cfloop>
@@ -707,7 +719,8 @@ still need to add all the meta data fields and photo display
 		<cfsavecontent variable="db.sql">
 		select city.city_name label, city.city_id value 
 		from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
-		WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) 
+		WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) and 
+		city_deleted = #db.param(0)#
 		ORDER BY label 
 		</cfsavecontent><cfscript>qCity10=db.execute("qCity10");
 		arrK2=arraynew(1);

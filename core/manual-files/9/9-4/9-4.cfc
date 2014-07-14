@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <p>Note: This is an early draft of the security documentation for Jetendo.</p>
 <h2>Outline</h2>
 <ul>

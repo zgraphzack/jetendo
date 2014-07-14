@@ -283,6 +283,7 @@
 			<cfscript>
 			db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 			WHERE site_id = #db.param(request.zos.globals.id)#  and 
+			site_option_group_deleted = #db.param(0)# and 
 			site_option_group_parent_id=#db.param(0)# 
 			ORDER BY site_option_group_display_name"; 
 			var qGroup2=db.execute("qGroup2");
@@ -346,6 +347,8 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 		db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)# s1, 
 		#db.table("site_option", request.zos.zcoreDatasource)# s2
 		WHERE 
+		s1.site_x_option_group_deleted = #db.param(0)# and
+		s2.site_option_deleted = #db.param(0)# and
 		s2.site_option_id = s1.site_option_id and 
 		s2.site_option_group_id = s1.site_option_group_id and 
 		s2.site_id = s1.site_id and 

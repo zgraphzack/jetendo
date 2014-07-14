@@ -11,6 +11,7 @@
 
 	db.sql="SELECT site_id FROM #db.table("site", request.zos.zcoreDatasource)# 
 	WHERE site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)# and 
 	site_enable_demo_mode=#db.param('1')#";
 	qDemo=db.execute("qDemo");
 	arrSite=[];
@@ -42,6 +43,7 @@
 	db.sql&=" user_password <> #db.param('')# and 
 	user_updated_datetime <= #db.param(dateformat(pastDate, "yyyy-mm-dd")&" "&timeformat(pastDate, "HH:mm:ss"))# and 
 	user_encrypted_key = #db.param('')# and 
+	user_deleted = #db.param(0)# and
 	site_id <> #db.param(-1)#";
 	db.execute("qUpdate");
 	writeoutput("Old passwords were expired.");

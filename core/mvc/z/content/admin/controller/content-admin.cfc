@@ -100,10 +100,12 @@
 		application.zcore.app.getAppCFC("content").updateContentAccessCache(application.siteStruct[request.zos.globals.id]);
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(qcheck.content_parent_id)# and 
+		content_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qParent=db.execute("qParent");
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_parent_id = #db.param(qcheck.content_parent_id)# and 
+		content_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qChildren=db.execute("qChildren");
 		if(qchildren.recordcount EQ 0){
@@ -185,6 +187,7 @@
 	if(form.method EQ 'update'){
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(form.content_id)# and 
+		content_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
@@ -258,7 +261,8 @@
 		if(form.content_mls_number NEQ '' and form.content_mls_price EQ 1){
 			db.sql="select listing_price,listing_longitude,listing_latitude 
 			 from #db.table("listing", request.zos.zcoreDatasource)# listing 
-			WHERE listing_id = #db.param(form.content_mls_number)#";
+			WHERE listing_id = #db.param(form.content_mls_number)# and 
+			listing_deleted = #db.param(0)#";
 			qP=db.execute("qP");
 			if(qP.recordcount NEQ 0){
 				form.content_price=qP.listing_price;
@@ -622,6 +626,7 @@
 		}
 		db.sql="SELECT content_id FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_featured_listing_parent_page= #db.param(1)# and 
+		content_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# ";
 		qFeaturedListingCheck=db.execute("qFeaturedListingCheck");
 		if(qFeaturedListingCheck.recordcount NEQ 0){
@@ -696,6 +701,9 @@
 			#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site) 
 			WHERE mls.mls_id = app_x_mls.mls_id and 
 			app_x_mls.site_id = app_x_site.site_id and 
+			mls_deleted = #db.param(0)# and 
+			app_x_mls_deleted = #db.param(0)# and 
+			app_x_site_deleted = #db.param(0)# and
 			app_x_site.site_id=#db.param(request.zos.globals.id)# and 
 			mls_status = #db.param('1')#";
 			qMLS=db.execute("qMLS");
@@ -908,7 +916,7 @@
 			from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 			WHERE 
 			#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
-			
+			listing_deleted = #db.param(0)# and 
 			listing_city not in #db.trustedSQL("('','0','#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#')")#";
 			if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1){
 				db.sql&=" and listing_status LIKE '%,7,%' ";
@@ -921,6 +929,7 @@
 			from #db.table("city_x_mls", request.zos.zcoreDatasource)# city_x_mls 
 			WHERE city_x_mls.city_id IN (#db.trustedSQL("'#qtype.idlist#'")#) and 
 			#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("city_x_mls"))#  and 
+			city_x_mls_deleted = #db.param(0)# and
 			city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#)  ";
 			qCity=db.execute("qCity");
 			for(local.row in qCity){
@@ -930,7 +939,8 @@
 			}
 			db.sql="select city.city_name label, city.city_id value 
 			from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
-			WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) 
+			WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) and 
+			city_deleted = #db.param(0)#
 			ORDER BY label ";
 			qCity10=db.execute("qCity10");
 			arrK2=arraynew(1);
@@ -1060,6 +1070,7 @@
 	db.sql="SELECT *, user.site_id userSiteId FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE  user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# 
 	and (user_server_administrator=#db.param('0')# )   and 
+	user_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# 
 	ORDER BY member_first_name ASC, member_last_name ASC";
 	qAgents=db.execute("qAgents");
@@ -1111,6 +1122,7 @@
 		<td style="vertical-align:top; ">
 			<cfscript>
 			db.sql="SELECT * FROM #db.table("content_property_type", request.zos.zcoreDatasource)# content_property_type 
+			WHERE content_property_type_deleted = #db.param(0)#
 			ORDER BY content_property_type_name ASC";
 			qPType=db.execute("qPType");
 			selectStruct = StructNew();
@@ -1188,7 +1200,8 @@
 		<td style="vertical-align:top; ">
 			<cfscript>
 			db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-			WHERE site_id = #db.param(request.zos.globals.id)#
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			slideshow_deleted = #db.param(0)#
 			ORDER BY slideshow_name ASC";
 			qslide=db.execute("qslide");
 			selectStruct = StructNew();
@@ -1391,7 +1404,8 @@
 			<td style="vertical-align:top; ">
 				<cfscript>
 				db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-				WHERE site_id = #db.param(request.zos.globals.id)#
+				WHERE site_id = #db.param(request.zos.globals.id)# and 
+				user_group_deleted = #db.param(0)#
 				ORDER BY user_group_name ASC";
 				qUserGroups=db.execute("qUserGroups");
 				selectStruct = StructNew();
@@ -1953,7 +1967,8 @@
 		<cfscript>
 		db.sql="SELECT (content_id) idlist FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		content_featured_listing_parent_page=#db.param('1')#";
+		content_featured_listing_parent_page=#db.param('1')# and 
+		content_deleted = #db.param(0)#";
 		qCheckExclusiveListingPage=db.execute("qCheckExclusiveListingPage");
 		</cfscript>
 		<cfif qCheckExclusiveListingPage.recordcount NEQ 0>

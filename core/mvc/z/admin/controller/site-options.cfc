@@ -20,6 +20,7 @@
 		application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
 		db.sql="select * FROM #db.table("site_option_app", request.zos.zcoreDatasource)# site_option_app 
 		where site_option_app_id=#db.param(form.site_option_app_id)# and 
+		site_option_app_deleted = #db.param(0)# and
 		site_id=#db.param(request.zos.globals.id)#";
 		qSiteOptionApp=db.execute("qSiteOptionApp");
 		if(qSiteOptionApp.recordcount EQ 0){
@@ -83,6 +84,7 @@
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qS=db.execute("qS");
 	if(local.qS.recordcount EQ 0){
@@ -94,6 +96,7 @@
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
 	site_option_type_id <> #db.param(11)# and 
+	site_option_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	qOption=db.execute("qOption");
 	local.arrRequired=arraynew(1);
@@ -161,6 +164,7 @@
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qS=db.execute("qS");
 	if(local.qS.recordcount EQ 0){
@@ -170,6 +174,7 @@
 	// all options except for html separator
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_deleted = #db.param(0)# and
 	site_option_type_id <> #db.param(11)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qOption=db.execute("qOption");
@@ -328,12 +333,16 @@
 	LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group ON 
 	site_option.site_option_group_id = site_x_option_group.site_option_group_id and 
 	site_option.site_option_id = site_x_option_group.site_option_id and 
-	site_x_option_group.site_id = #db.param(arguments.site_id)#
+	site_x_option_group.site_id = #db.param(arguments.site_id)# and 
+	site_x_option_group_deleted = #db.param(0)#
 	LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set ON 
 	site_x_option_group_set.site_option_group_id = site_x_option_group.site_option_group_id and 
 	site_x_option_group_set.site_x_option_group_set_id = site_x_option_group.site_x_option_group_set_id and 
-	site_x_option_group_set.site_id = site_x_option_group.site_id 
-    WHERE site_option.site_id IN (#db.param('0')#,#db.param(arguments.site_id)#) 
+	site_x_option_group_set.site_id = site_x_option_group.site_id and 
+	site_x_option_group_set_deleted = #db.param(0)#
+    WHERE site_option.site_id IN (#db.param('0')#,#db.param(arguments.site_id)#) and 
+    site_option_deleted = #db.param(0)# and 
+    site_option_group_deleted = #db.param(0)# and
 	"&local.setSQL&" and
     site_option_group.site_id = site_option.site_id and
     site_option_group.site_option_group_id = site_option.site_option_group_id and 
@@ -417,6 +426,7 @@
 	}
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 	WHERE site_option_id = #db.param(form.site_option_id)# and 
+	site_option_deleted = #db.param(0)# and
 	site_id=#db.param(form.site_id)#";
 	qS2=db.execute("qS2");
 	if(qS2.recordcount EQ 0){
@@ -443,6 +453,8 @@
 		#db.table("site_option", request.zos.zcoreDatasource)# site_option 
 		WHERE site_x_option.site_id = #db.param(request.zos.globals.id)# and 
 		site_option.site_id=#db.param(form.site_id)# and 
+		site_option_deleted = #db.param(0)# and 
+		site_x_option_deleted = #db.param(0)# and
 		site_x_option.site_option_id = site_option.site_option_id and 
 		site_option.site_option_id IN (#db.trustedSQL("'"&arrayToList(arrSiteOptionIdCustomDeleteStruct, "','")&"'")#) and 
 		site_option.site_option_id=#db.param(form.site_option_id)#";
@@ -458,6 +470,8 @@
 		#db.table("site_option", request.zos.zcoreDatasource)# site_option 
 		WHERE site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
 		site_option.site_id=#db.param(form.site_id)# and 
+		site_option_deleted = #db.param(0)# and 
+		site_x_option_group_deleted = #db.param(0)# and 
 		site_x_option_group.site_option_id = site_option.site_option_id and 
 		site_option.site_option_id IN (#db.trustedSQL("'"&arrayToList(arrSiteOptionIdCustomDeleteStruct, "','")&"'")#) and 
 		site_option.site_option_id=#db.param(form.site_option_id)#";
@@ -471,10 +485,12 @@
 		db.sql="DELETE FROM #db.table("site_x_option", request.zos.zcoreDatasource)#  
 		WHERE site_option_id = #db.param(form.site_option_id)# and 
 		site_option_id_siteIDType=#db.param(form.siteIDType)# and 
+		site_x_option_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		q=db.execute("q");
 		db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
 		WHERE site_option_id = #db.param(form.site_option_id)# and 
+		site_x_option_group_deleted = #db.param(0)# and 
 		site_option_id_siteIDType=#db.param(form.siteIDType)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		q=db.execute("q");
@@ -585,7 +601,9 @@
 	
 	if(form.method EQ "update"){
 		db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# site_option 
-		where site_option_id = #db.param(form.site_option_id)# and site_id = #db.param(form.site_id)#"; 
+		where site_option_id = #db.param(form.site_option_id)# and 
+		site_option_deleted = #db.param(0)# and 
+		site_id = #db.param(form.site_id)#"; 
 		qCheck=db.execute("qCheck");
 		if(qCheck.site_id EQ 0 and variables.allowGlobal EQ false){
 			application.zcore.functions.zRedirect("/z/admin/site-options/index");
@@ -613,6 +631,7 @@
 	db.sql="SELECT count(site_option_id) count 
 	FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 	WHERE site_option_name = #db.param(form.site_option_name)# and 
+	site_option_deleted = #db.param(0)# and
 	site_option_group_id =#db.param(form.site_option_group_id)# and 
 	site_option_id <> #db.param(form.site_option_id)# and 
 	site_id = #db.param(form.site_id)#";
@@ -703,7 +722,8 @@
 	form.site_option_id=application.zcore.functions.zso(form, 'site_option_id');
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
-	WHERE site_option_id = #db.param(form.site_option_id)# ";
+	WHERE site_option_id = #db.param(form.site_option_id)# and 
+	site_option_deleted = #db.param(0)# ";
 	if(structkeyexists(form, 'globalvar')){
 		db.sql&="and site_id = #db.param('0')#";
 	}else{
@@ -723,6 +743,7 @@
 		variables.allowGlobal=false;
 		db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 		WHERE site_option_group_id = #db.param(form.site_option_group_id)#  and 
+		site_option_group_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qOptionGroup=db.execute("qOptionGroup");
 	}
@@ -755,7 +776,8 @@
 		<table style="border-spacing:0px;" class="table-list">
 			<cfscript>
 			db.sql="SELECT *  FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE
-			site_option_group.site_id =#db.param(request.zos.globals.id)# 
+			site_option_group.site_id =#db.param(request.zos.globals.id)# and 
+			site_option_group_deleted = #db.param(0)#
 			order by site_option_group.site_option_group_display_name ASC ";
 			qGroup=db.execute("qGroup");
 			</cfscript>
@@ -855,6 +877,8 @@
 				#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 				WHERE app_x_site.site_id = #db.param(request.zos.globals.id)# and 
 	 			app.app_built_in=#db.param(0)# and 
+	 			app_deleted = #db.param(0)# and 
+	 			app_x_site_deleted = #db.param(0)# and
 				app_x_site.app_id = app.app_id order by app_name ";
 				qApp=db.execute("qApp");
 				
@@ -1065,16 +1089,20 @@
 		db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 		LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group ON 
 		site_option_group.site_option_group_id = site_option.site_option_group_id and 
-		site_option_group.site_id=#db.param(-1)# 
-		WHERE site_option.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
+		site_option_group.site_id=#db.param(-1)# and 
+		site_option_group_deleted = #db.param(0)#
+		WHERE site_option.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#) and 
+		site_option_deleted = #db.param(0)#
 		and site_option.site_option_group_id = #db.param('0')# 
 		ORDER BY site_option_group.site_option_group_display_name asc, site_option.site_option_sort ASC, site_option.site_option_name ASC";
 	}else{
 		db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 		LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group ON 
+		site_option_group_deleted = #db.param(0)# and
 		site_option_group.site_option_group_id = site_option.site_option_group_id and 
 		site_option_group.site_id = site_option.site_id 
 		WHERE site_option.site_id =#db.param(request.zos.globals.id)# and 
+		site_option_deleted = #db.param(0)# and
 		site_option.site_option_group_id = #db.param(form.site_option_group_id)# 
 		ORDER BY site_option_group.site_option_group_display_name asc, site_option.site_option_sort ASC, site_option.site_option_name ASC";
 	}
@@ -1086,6 +1114,7 @@
 		loop from="1" to="25" index="i"{
 			db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 			where site_option_group_id = #db.param(curParentId)# and 
+			site_option_group_deleted = #db.param(0)# and
 			site_id = #db.param(request.zos.globals.id)#";
 			q1=db.execute("q1");
 			loop query="q1"{
@@ -1191,11 +1220,13 @@
 	db.sql="SELECT *, site_option.site_id siteOptionSiteId 
 	FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 	LEFT JOIN #db.table("site_x_option", request.zos.zcoreDatasource)# site_x_option ON 
+	site_x_option_deleted = #db.param(0)# and
 	site_x_option.site_option_app_id = #db.param(form.site_option_app_id)# and 
 	site_option.site_option_id = site_x_option.site_option_id and 
 	site_x_option.site_id = #db.param(request.zos.globals.id)# 
 	and site_option.site_id = "&db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("site_x_option.site_option_id_siteIDType"))&" 
-	WHERE ("&db.trustedSQL(arraytolist(local.arrSQL, " or "))&")";
+	WHERE ("&db.trustedSQL(arraytolist(local.arrSQL, " or "))&") and 
+	site_option_deleted = #db.param(0)#";
 	qD=db.execute("qD");
 	
 
@@ -1231,6 +1262,7 @@
 		site_option_id_siteIDType=#db.param(form.siteIDType)#, 
 		site_x_option_value=#db.param(nv)#, 
 		site_x_option_date_value=#db.param(nvdate)#, 
+		site_x_option_deleted=#db.param(0)#, 
 		site_option_id=#db.param(row.site_option_id)#, 
 		site_x_option_updated_datetime=#db.param(nowDate)# ";
 		qD2=db.execute("qD2");
@@ -1240,6 +1272,7 @@
 	db.sql="DELETE FROM #db.table("site_x_option", request.zos.zcoreDatasource)#  
 	WHERE site_x_option.site_option_app_id = #db.param(form.site_option_app_id)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_deleted = #db.param(0)# and
 	site_x_option_updated_datetime<#db.param(nowDate)#";
 	q=db.execute("q");
 	application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
@@ -1358,6 +1391,7 @@
 	if(not structkeyexists(curCache, 'qCheck')){
 		db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# 
 		WHERE site_option_group_id=#db.param(form.site_option_group_id)# and 
+		site_option_group_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# ";
 		local.qCheck=db.execute("qCheck");
 		if(local.qCheck.recordcount EQ 0){
@@ -1409,13 +1443,16 @@
 		LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set ON 
 		site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and 
 		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
-		site_x_option_group_set.site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# 
+		site_x_option_group_set.site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
+		site_x_option_group_set_deleted = #db.param(0)# 
 		LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group ON 
 		site_option.site_option_id = site_x_option_group.site_option_id and 
 		site_x_option_group.site_option_group_id = site_option.site_option_group_id and 
 		site_x_option_group_set.site_x_option_group_set_id = site_x_option_group.site_x_option_group_set_id and 
-		site_x_option_group_set.site_id = site_x_option_group.site_id 
-		WHERE ";
+		site_x_option_group_set.site_id = site_x_option_group.site_id and 
+		site_x_option_group_deleted = #db.param(0)# 
+		WHERE 
+		site_option_deleted = #db.param(0)# and ";
 		if(local.methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or local.methodBackup EQ "publicUpdateGroup"){
 			db.sql&=" (site_option_allow_public=#db.param(1)#";
 			if(structkeyexists(arguments.struct, 'arrForceFields')){
@@ -1616,6 +1653,7 @@
 				// must force approval status to stay the same on updates.
 				db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 				site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
+				site_x_option_group_set_deleted = #db.param(0)# and
 				site_id = #db.param(request.zos.globals.id)# ";
 				qSetCheck=db.execute("qSetCheck");
 				if(not application.zcore.user.checkGroupAccess("administrator") and qSetCheck.site_x_option_group_set_approved EQ 2){
@@ -1634,6 +1672,7 @@
 			db.sql="select max(site_x_option_group_set_sort) sortid 
 			from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set 
 			WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+			site_x_option_group_set_deleted = #db.param(0)# and
 			site_id = #db.param(request.zos.globals.id)#";
 			qG2=db.execute("qG2");
 			if(qG2.recordcount EQ 0 or qG2.sortid EQ ""){
@@ -1722,6 +1761,7 @@
 		site_x_option_group_set_title=#db.param(form.siteOptionTitle)# , 
 		site_x_option_group_set_summary=#db.param(form.siteOptionSummary)#
 		WHERE 
+		site_x_option_group_set_deleted = #db.param(0)# and
 		site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("qUpdate");
@@ -1736,7 +1776,8 @@
 	site_id = #db.param(request.zos.globals.id)# and 
 	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
-	site_x_option_group_updated_datetime<#db.param(nowDate)#";
+	site_x_option_group_updated_datetime<#db.param(nowDate)# and 
+	site_x_option_group_deleted = #db.param(0)# ";
 	q=db.execute("q");
 	*/
 	application.zcore.routing.updateSiteOptionGroupSetUniqueURL(form.site_x_option_group_set_id);
@@ -1947,12 +1988,15 @@ Define this function in another CFC to override the default email format
 	form.inquiries_spam=application.zcore.functions.zso(form, 'inquiries_spam', false, 0);
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	WHERE site_option_group_id = #db.param(ts.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# "; 
 	local.qGroup=db.execute("qGroup"); 
 	db.sql="select site_option_group_map.*, s2.site_option_display_name, s2.site_option_name originalFieldName from 
 	#db.table("site_option_group_map", request.zos.zcoredatasource)# site_option_group_map,  
 	#db.table("site_option", request.zos.zcoredatasource)# s2
 	WHERE site_option_group_map.site_option_group_id = #db.param(ts.site_option_group_id)# and 
+	site_option_group_map_deleted = #db.param(0)# and 
+	s2.site_option_deleted = #db.param(0)# and
 	site_option_group_map.site_id = #db.param(request.zos.globals.id)# and  
 	site_option_group_map.site_id = s2.site_id and 
 	site_option_group_map.site_option_id = s2.site_option_id and 
@@ -2030,6 +2074,7 @@ Define this function in another CFC to override the default email format
 		SET inquiries_primary=#db.param(0)#,
 		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_email=#db.param(form.inquiries_email)# and 
+		inquiries_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# ";
 		db.execute("q"); 
 		application.zcore.tracking.setUserEmail(form.inquiries_email);
@@ -2090,7 +2135,9 @@ Define this function in another CFC to override the default email format
 	site_option_group_map.site_id = site_option.site_id and 
 	site_option_group_map.site_option_group_map_fieldname = site_option.site_option_id and 
 	site_option.site_option_group_id = #db.param(ts.site_option_group_map_group_id)# and
-	
+	site_option_deleted = #db.param(0)# and 
+	s2.site_option_deleted = #db.param(0)# and 
+	site_option_group_map_deleted = #db.param(0)# and
 	site_option_group_map.site_id = s2.site_id and 
 	site_option_group_map.site_option_id = s2.site_option_id and 
 	site_option_group_map.site_option_group_id =s2.site_option_group_id
@@ -2158,6 +2205,7 @@ Define this function in another CFC to override the default email format
 	arraySort(arguments.arrKey, "text", "asc");
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# 
 	WHERE site_option_group_id = #db.param(ts.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qD=db.execute("qD");
 	rs.subject='New '&local.qd.site_option_group_display_name&' submitted on '&request.zos.globals.shortDomain;
@@ -2222,7 +2270,8 @@ Define this function in another CFC to override the default email format
 		echo('<a href="/z/blog/admin/blog-admin/articleAdd?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Add Article</a></p>');
 		echo('<h2>Blog Category Section Links</h2>');
 		db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# WHERE 
-		site_id = #db.param(request.zos.globals.id)# 
+		site_id = #db.param(request.zos.globals.id)# and 
+		blog_category_deleted = #db.param(0)# 
 		ORDER BY blog_category_name ASC";
 		qCategory=db.execute("qCategory");
 		for(row in qCategory){
@@ -2301,6 +2350,7 @@ Define this function in another CFC to override the default email format
 	form.site_x_option_group_set_parent_id=application.zcore.functions.zso(form, 'site_x_option_group_set_parent_id',true);
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
 	site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id IN (#db.trustedsql(variables.siteIdList)# ) ";
 	qGroup=db.execute("qGroup");
 	if(qGroup.recordcount EQ 0){
@@ -2333,6 +2383,7 @@ Define this function in another CFC to override the default email format
 	if(form.site_option_group_id NEQ 0){
 		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 		where site_option_group_id = #db.param(form.site_option_group_id)# and 
+		site_option_group_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# 
 		ORDER BY site_option_group_display_name";
 		q1=db.execute("q1");
@@ -2342,6 +2393,7 @@ Define this function in another CFC to override the default email format
 	}
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 	where site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_deleted = #db.param(0)# and
 	site_id =#db.param(request.zos.globals.id)# 
 	ORDER BY site_option_sort";
 	qS2=db.execute("qS2");
@@ -2434,8 +2486,10 @@ Define this function in another CFC to override the default email format
 	from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	left join #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s3 ON 
 	site_option_group.site_option_group_id = s3.site_option_group_id and 
-	s3.site_id = site_option_group.site_id  
+	s3.site_id = site_option_group.site_id  and 
+	s3.site_x_option_group_set_deleted = #db.param(0)#
 	where 
+	site_option_group_deleted = #db.param(0)# and
 	site_option_group.site_option_group_parent_id = #db.param(form.site_option_group_id)# and 
 	site_option_group.site_id = #db.param(request.zos.globals.id)# 
 	GROUP BY site_option_group.site_option_group_id
@@ -2541,10 +2595,13 @@ Define this function in another CFC to override the default email format
 				s#i#.site_option_id = #db.param(arrVal[i])# and 
 				s#i#.site_option_group_id = site_option_group.site_option_group_id and 
 				s#i#.site_id = site_option_group.site_id and 
-				s#i#.site_option_app_id = #db.param(form.site_option_app_id)# ";
+				s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
+				s#i#.site_x_option_group_deleted = #db.param(0)# ";
 			}
 		}
 		db.sql&="WHERE  
+		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_option_group_deleted = #db.param(0)# and 
 		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
 		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
@@ -2574,10 +2631,13 @@ Define this function in another CFC to override the default email format
 		s#i#.site_option_id = #db.param(arrVal[i])# and 
 		s#i#.site_option_group_id = site_option_group.site_option_group_id and 
 		s#i#.site_id = site_option_group.site_id and 
-		s#i#.site_option_app_id = #db.param(form.site_option_app_id)# ";
+		s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
+		s#i#.site_x_option_group_deleted = #db.param(0)# ";
 	}
 	db.sql&="
 	WHERE  
+	site_option_group_deleted = #db.param(0)# and
+	site_x_option_group_set_deleted = #db.param(0)# and 
 	site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
 	site_option_group.site_id=site_x_option_group_set.site_id and 
 	site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
@@ -2803,10 +2863,14 @@ Define this function in another CFC to override the default email format
 	db.sql="SELECT * FROM (#db.table("site_option", request.zos.zcoreDatasource)# site_option, 
 	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group) 
 	LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group ON 
+	site_x_option_group_deleted = #db.param(0)# and
 	site_option.site_option_group_id = site_x_option_group.site_option_group_id and 
 	site_option.site_option_id = site_x_option_group.site_option_id and 
 	site_x_option_group.site_id = site_option_group.site_id and 
-	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# WHERE 
+	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# 
+	WHERE 
+	site_option_deleted = #db.param(0)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_option.site_id = site_option_group.site_id and 
 	site_option.site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
@@ -2833,7 +2897,9 @@ Define this function in another CFC to override the default email format
 				s1.site_id = #db.param(request.zos.globals.id)# and 
 				s1.site_option_group_id=s2.site_option_group_id and 
 				s2.site_x_option_group_set_id=#db.param(curParentSetId)# and 
-				s1.site_option_group_id = #db.param(curParentId)# 
+				s1.site_option_group_id = #db.param(curParentId)# and 
+				s1.site_option_group_deleted = #db.param(0)# and 
+				s2.site_x_option_group_set_deleted = #db.param(0)#
 				LIMIT #db.param(0)#,#db.param(1)#";
 				q12=db.execute("q12");
 				loop query="q12"{
@@ -2856,6 +2922,7 @@ Define this function in another CFC to override the default email format
 	}
 	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoredatasource)# 
 	WHERE
+	site_x_option_group_set_deleted = #db.param(0)# and
 	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
 	site_id = #db.param(request.zos.globals.id)#  ";
 	
@@ -2868,6 +2935,7 @@ Define this function in another CFC to override the default email format
 	
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# 
 	WHERE site_option_group_id=#db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qCheck=db.execute("qCheck");
 	if(local.qCheck.recordcount EQ 0){
@@ -3174,6 +3242,8 @@ Define this function in another CFC to override the default email format
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
 	#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set WHERE
+	site_option_group_deleted = #db.param(0)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and
 	site_x_option_group_set.site_id = site_option_group.site_id and 
 	site_option_group.site_option_group_id = site_x_option_group_set.site_option_group_id and 
 	site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
@@ -3199,6 +3269,8 @@ Define this function in another CFC to override the default email format
 		site_option.site_id = site_x_option_group.site_id and 
 		site_x_option_group.site_option_app_id=#db.param(form.site_option_app_id)# and 
 		site_x_option_group.site_option_id = site_option.site_option_id and 
+		site_x_option_group_deleted = #db.param(0)# and 
+		site_option_deleted = #db.param(0)# and
 		site_option.site_option_group_id=#db.param(form.site_option_group_id)# and 
 		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
 		site_x_option_group.site_id =#db.param(request.zos.globals.id)#";
@@ -3213,6 +3285,7 @@ Define this function in another CFC to override the default email format
 		}
 		db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
 		WHERE site_option_app_id=#db.param(form.site_option_app_id)# and 
+		site_x_option_group_deleted = #db.param(0)# and
 		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
 		site_option_group_id=#db.param(form.site_option_group_id)#  and 
 		site_id= #db.param(request.zos.globals.id)# ";
@@ -3220,6 +3293,7 @@ Define this function in another CFC to override the default email format
 		application.zcore.routing.deleteSiteOptionGroupSetUniqueURL(form.site_x_option_group_set_id);
 		db.sql="DELETE FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
 		WHERE site_option_app_id=#db.param(form.site_option_app_id)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and
 		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
 		site_option_group_id=#db.param(form.site_option_group_id)#  and 
 		site_id= #db.param(request.zos.globals.id)#  ";
@@ -3298,9 +3372,11 @@ Define this function in another CFC to override the default email format
 	site_option.site_option_id = site_x_option.site_option_id and 
 	site_x_option.site_id = #db.param(request.zos.globals.id)# and 
 	site_option.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("site_x_option.site_option_id_siteIDType"))# and 
-	site_x_option.site_option_app_id=#db.param(form.site_option_app_id)# 
+	site_x_option.site_option_app_id=#db.param(form.site_option_app_id)# and 
+	site_x_option_deleted = #db.param(0)#
 	LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group ON 
 	site_option_group.site_option_group_id = site_option.site_option_group_id and 
+	site_option_group_deleted = #db.param(0)# and
 	site_option_group.site_id = site_x_option.site_id and 
 	site_option_group.site_id = #db.param(request.zos.globals.id)# and 
 	(site_option_group.site_option_group_appidlist like #db.param('%,#variables.currentAppId#,%')#";
@@ -3310,6 +3386,7 @@ Define this function in another CFC to override the default email format
 	}
 	db.sql&=")
 	WHERE site_option.site_id IN (#db.trustedSQL(variables.publicSiteIdList)#) and 
+	site_option_deleted = #db.param(0)# and
 	(site_option_group.site_option_group_id IS NULL or 
 	site_option_group.site_option_group_type =#db.param('0')#)
 	and (site_option.site_option_appidlist like #db.param('%,#variables.currentAppId#,%')#";
@@ -3333,8 +3410,10 @@ Define this function in another CFC to override the default email format
 	LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set ON 
 	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and 
 	site_x_option_group_set.site_option_group_id = site_option_group.site_option_group_id and 
-	site_option_app_id=#db.param(form.site_option_app_id)# 
+	site_option_app_id=#db.param(form.site_option_app_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# 
 	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_deleted = #db.param(0)# and
 	site_option_group_parent_id = #db.param('0')# and 
 	site_option_group_type =#db.param('1')# and 
 	(site_option_group.site_option_group_appidlist like #db.param('%,#variables.currentAppId#,%')# ";
@@ -3385,6 +3464,7 @@ Define this function in another CFC to override the default email format
 	writeoutput('<h2>Global Site Options</h2>');
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	where user_id = #db.param(request.zsession.user.id)# and 
+	user_deleted = #db.param(0)# and
 	site_id=#db.param(request.zsession.user.site_id)#";
 	qU9=db.execute("qU9");
 	if(qu9.recordcount NEQ 0 and form.site_option_app_id EQ 0){

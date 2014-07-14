@@ -95,6 +95,8 @@
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
 	#db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback
 	WHERE 
+	inquiries_deleted = #db.param(0)# and 
+	inquiries_feedback_deleted = #db.param(0)# and 
 	inquiries.inquiries_id = inquiries_feedback.inquiries_id and
 	<cfif trim(application.zcore.functions.zso(form, 'searchtext')) NEQ ''>
 		(inquiries_feedback_comments LIKE #db.param('%#form.searchtext#%')# or 
@@ -112,7 +114,10 @@
 	#db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback 
 	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 	user.user_id = inquiries_feedback.user_id and 
+	user_deleted = #db.param(0)# and 
 	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries_feedback.user_id_siteIDType"))# WHERE 
+	inquiries_deleted = #db.param(0)# and 
+	inquiries_feedback_deleted = #db.param(0)# and 
 	inquiries.inquiries_id = inquiries_feedback.inquiries_id and
 	<cfif trim(application.zcore.functions.zso(form, 'searchtext')) NEQ ''>
 		(inquiries_feedback_comments LIKE #db.param('%#form.searchtext#%')# or 
@@ -194,10 +199,14 @@
 	LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 	inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
-	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# 
+	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+	inquiries_type_deleted = #db.param(0)#
 	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
-	user.user_id = inquiries.user_id and user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# 
+	user.user_id = inquiries.user_id and user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
+	user_deleted = #db.param(0)#
 	WHERE inquiries.site_id = #db.param(request.zos.globals.id)# and 	
+	inquiries_status_deleted = #db.param(0)# and 
+	inquiries_deleted = #db.param(0)# and 
 	inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
 	(( inquiries_id = #db.param(form.inquiries_id)# and 
 	inquiries_parent_id = #db.param(0)# ) or 
@@ -285,7 +294,8 @@
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	where site_id = #db.param(request.zos.globals.id)# and 
 	inquiries.inquiries_status_id <> #db.param(0)# and 
-	inquiries_parent_id = #db.param(0)#
+	inquiries_parent_id = #db.param(0)# and 
+	inquiries_deleted = #db.param(0)#
 	<cfif variables.isReservationSystem>
 		and inquiries_reservation_status=#db.param(0)#
 	</cfif>
@@ -305,7 +315,8 @@
 	select max(inquiries_datetime) as inquiries_datetime 
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	where site_id = #db.param(request.zos.globals.id)# and 
-	inquiries.inquiries_status_id <> #db.param(0)#
+	inquiries.inquiries_status_id <> #db.param(0)# and 
+	inquiries_deleted = #db.param(0)# 
 	<cfif variables.isReservationSystem>
 		and inquiries_reservation_status=#db.param(0)#
 	</cfif>
@@ -349,6 +360,7 @@
 		SELECT count(inquiries_id) as count 
 		from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
 		WHERE inquiries.inquiries_status_id = #db.param('1')# and 
+		inquiries_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# and 
 		inquiries.inquiries_status_id <> #db.param(0)#
 		<cfif variables.isReservationSystem>
@@ -379,10 +391,14 @@
 		LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 		inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 		inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
-		inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# 
+		inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and
+		inquiries_type_deleted = #db.param(0)#
 		LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 		user.user_id = inquiries.user_id and 
-		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# WHERE  
+		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
+		user_deleted = #db.param(0)#
+		WHERE  
+		inquiries_deleted = #db.param(0)# and 
 		inquiries.site_id = #db.param(request.zos.globals.id)# and 
 		inquiries.inquiries_status_id <> #db.param(0)#
 		<cfif variables.isReservationSystem>
@@ -461,7 +477,8 @@
 		inquiries.inquiries_email) count 
 		from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
 		WHERE inquiries.site_id = #db.param(request.zos.globals.id)# and 
-		inquiries.inquiries_status_id <> #db.param(0)#
+		inquiries.inquiries_status_id <> #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# 
 		<cfif variables.isReservationSystem>
 			and inquiries_reservation_status=#db.param(0)#
 		</cfif>
@@ -678,7 +695,8 @@
 				<th>Admin</th>
 			</tr>
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-			WHERE user_id = #db.param(request.zsession.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user"))# and 
+			WHERE user_id = #db.param(request.zsession.user.id)# and 
+			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user"))# and 
 			user_server_administrator=#db.param('0')# </cfsavecontent>
 			<cfscript>
 			qMember=db.execute("qMember");

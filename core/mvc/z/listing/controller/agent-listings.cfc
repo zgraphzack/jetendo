@@ -31,6 +31,7 @@ from #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user
 where user.user_id = #db.param(form.content_listing_user_id)#  and 
 user_active=#db.param('1')# and 
 member_public_profile=#db.param('1')# and 
+user_deleted = #db.param(0)# and 
 #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())#";
 qM=db.execute("qM"); 
 if(isQuery(qM) EQ false or qM.recordcount EQ 0){
@@ -58,7 +59,8 @@ if(application.zcore.app.siteHasApp("content")){
 	db.sql="select * FROM #request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content 
 	where content_listing_user_id = #db.param(form.content_listing_user_id)# and 
 	content_for_sale = #db.param('1')# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	content_deleted = #db.param(0)#";
 	qC=db.execute("qC"); 
 	if(tempName NEQ form.zURLName){
 		application.zcore.functions.z301Redirect("/#tempName#-#urlappid#-#qM.user_id#.html");

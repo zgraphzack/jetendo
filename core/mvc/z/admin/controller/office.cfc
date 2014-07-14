@@ -21,6 +21,7 @@ enable round robin for offices - need a new option to disable for staff.
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices", true);	
 	db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office
 	WHERE office_id= #db.param(application.zcore.functions.zso(form,'office_id'))# and 
+	office_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	
@@ -34,6 +35,7 @@ enable round robin for offices - need a new option to disable for staff.
 		application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.office_image_library_id);
 		db.sql="DELETE FROM #db.table("office", request.zos.zcoreDatasource)#  
 		WHERE office_id= #db.param(application.zcore.functions.zso(form, 'office_id'))# and 
+		office_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
 		application.zcore.status.setStatus(Request.zsid, 'Office deleted');
@@ -119,6 +121,7 @@ enable round robin for offices - need a new option to disable for staff.
 	}
 	db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	office_deleted = #db.param(0)# and 
 	office_id=#db.param(form.office_id)#";
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute);
@@ -249,7 +252,8 @@ enable round robin for offices - need a new option to disable for staff.
 	db.sql="SELECT * #db.trustedsql(rs.select)# 
 	FROM #db.table("office", request.zos.zcoreDatasource)# office 
 	#db.trustedsql(rs.leftJoin)# 
-	WHERE office.site_id = #db.param(request.zos.globals.id)# 
+	WHERE office.site_id = #db.param(request.zos.globals.id)# and 
+	office_deleted = #db.param(0)# 
 	GROUP BY office.office_id 
 	order by office_sort, office_name";
 	qOffice=db.execute("qOffice");

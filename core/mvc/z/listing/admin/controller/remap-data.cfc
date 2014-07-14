@@ -53,7 +53,8 @@
 	show all USED values for each mls, map left to right, then submit.
 		query for used values
 	*/
-	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# ";
+	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# 
+	WHERE mls_deleted = #db.param(0)# ";
 	local.qMLS=db.execute("qMLS");
 	
 	writeoutput('<form action="/z/listing/admin/remap-data/select" method="get">
@@ -119,7 +120,9 @@
 	FROM #db.table("app_x_mls", request.zos.zcoreDatasource)#, 
 	#db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 	WHERE app_x_mls.mls_id=#db.param(form.mls_id1)# AND 
-	mls_saved_search.site_id = app_x_mls.site_id 
+	mls_saved_search.site_id = app_x_mls.site_id and
+	app_x_mls_deleted = #db.param(0)# and 
+	mls_saved_search_deleted = #db.param(0)# 
 	and `#form.searchCriteria#` <> '' ";
 	local.qId=db.execute("qId"); 
 	
@@ -137,12 +140,14 @@
 	db.sql="select listing_lookup.* from 
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup 
 	where listing_lookup_id in ("&db.trustedSQL("'"&structkeylist(local.uniqueStruct, "','")&"'")&") and
+	listing_lookup_deleted = #db.param(0)# and
 	(listing_lookup.listing_lookup_type =#db.param(variables.searchCriteriaSQLStruct[form.searchCriteria])# "; 
 	local.qLookup=db.execute("qLookup"); //
 	*/
 	db.sql="select listing_lookup.* from 
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup 
 	where 
+	listing_lookup_deleted = #db.param(0)# and
 	(listing_lookup.listing_lookup_type =#db.param(variables.searchCriteriaSQLStruct[form.searchCriteria])# or
 	listing_lookup.listing_lookup_type =#db.param(variables.searchCriteriaSQLStruct[form.searchCriteria2])#) AND 
 	(listing_lookup_mls_provider= #db.param(variables.qM.mls_provider)# or listing_lookup_mls_provider= #db.param(variables.qM2.mls_provider)# )  "; 
@@ -156,6 +161,7 @@
 	db.sql="select group_concat(listing_lookup.listing_lookup_id SEPARATOR #db.param(",")#) idlist, listing_lookup.listing_lookup_value from 
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup
 	where
+	lisitng_lookup_deleted = #db.param(0)# and
 	listing_lookup_mls_provider = #db.param(variables.qM2.mls_provider)#
 	and listing_lookup.listing_lookup_type = #db.param(variables.searchCriteriaSQLStruct[form.searchCriteria2])# 
 	GROUP BY listing_lookup.listing_lookup_value";
@@ -214,7 +220,9 @@
 	FROM #db.table("app_x_mls", request.zos.zcoreDatasource)#, 
 	#db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 	WHERE app_x_mls.mls_id IN (#db.trustedSQL("'"&form.mls_id1&"','"&form.mls_id2&"'")#) AND 
-	mls_saved_search.site_id = app_x_mls.site_id 
+	mls_saved_search.site_id = app_x_mls.site_id and 
+	mls_saved_search_deleted = #db.param(0)# and 
+	app_x_mls_deleted = #db.param(0)# 
 	and (`#form.searchCriteria#` <> '' or `#form.searchCriteria2#` <> '' ) 
 	GROUP BY mls_saved_search.site_id, `#form.searchCriteria#`, `#form.searchCriteria2#`  ";
 	local.qId=db.execute("qId");  

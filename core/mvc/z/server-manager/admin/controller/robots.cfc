@@ -29,7 +29,8 @@
 	var tempFile=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
-	db.sql="SELECT * FROM #db.table("robots_global", request.zos.zcoreDatasource)# robots_global ";
+	db.sql="SELECT * FROM #db.table("robots_global", request.zos.zcoreDatasource)# robots_global WHERE 
+	robots_global_deleted = #db.param(0)#";
 	qGlobal=db.execute("qGlobal");
 	fileexisted=false;
 	error=false;
@@ -63,8 +64,9 @@
 	}
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	LEFT JOIN #db.table("robots", request.zos.zcoreDatasource)# robots ON 
-	site.site_id = robots.site_id 
+	site.site_id = robots.site_id and robots_deleted = #db.param(0)#
 	WHERE site.site_active=#db.param('1')# and 
+	site_deleted = #db.param(0)# and
 	site.site_id<>#db.param('0')#";
 	qSite=db.execute("qSite");
 	loop query="qsite"{
@@ -90,7 +92,9 @@
 		WHERE app_x_site.site_id = #db.param(qsite.site_id)# and 
 		app_x_site.app_x_site_status = #db.param('1')# and 
 		app.app_built_in=#db.param(0)# and 
-		app.app_id=app_x_site.app_id ";
+		app.app_id=app_x_site.app_id and 
+		app_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# ";
 		qApps=db.execute("qApps"); 
 		for(i=1;i LTE qApps.recordcount;i++){
 			configCom=createobject("component",application.zcore.appComPathStruct[qapps.app_id[i]].cfcPath);
@@ -181,7 +185,9 @@
 	 WHERE app_x_site.site_id = #db.param(form.sid)# and 
 	 app.app_built_in=#db.param(0)# and 
 	app_x_site.app_x_site_status = #db.param('1')# and 
-	app.app_id=app_x_site.app_id ";
+	app.app_id=app_x_site.app_id and 
+	app_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)#";
 	qApps=db.execute("qApps");
 	for(i=1;i LTE qApps.recordcount;i++){
 		configCom=createobject("component",application.zcore.appComPathStruct[qapps.app_id[i]].cfcPath);
@@ -223,7 +229,8 @@
 	qGroup=db.execute("qGroup");
 	if(qgroup.recordcount EQ 0){
 		db.sql="REPLACE INTO #db.table("robots_global", request.zos.zcoreDatasource)#  
-		SET robots_global_id = #db.param('1')#";
+		SET robots_global_id = #db.param('1')#, 
+		robots_global_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 		qin=db.execute("qin");
 	}
 	application.zcore.functions.zQueryToStruct(qGroup, form);
@@ -323,6 +330,8 @@ Rules:</td>
 	</tr>
 	<cfscript>
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site  
+	WHERE site_deleted = #db.param(0)# and 
+	site_id <> #db.param(-1)#
 	ORDER BY site_domain asc";
 	qSites=db.execute("qSites");
 	</cfscript>

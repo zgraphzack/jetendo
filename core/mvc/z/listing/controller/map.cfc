@@ -195,6 +195,7 @@
 				SELECT (listing_latitude) `lat`, (listing_longitude) `long` 
 				from #db.table("listing", request.zos.zcoreDatasource)# 
 				where listing_latitude<>#db.param('')# and 
+				listing_deleted = #db.param(0)# and 
 				listing_city = #db.param(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_site_map_primary_city)# and 
 				#db.trustedSQL(tempSQL)#  
 				LIMIT #db.param(0)#,#db.param(1)#

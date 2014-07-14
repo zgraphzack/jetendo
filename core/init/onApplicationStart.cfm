@@ -313,7 +313,7 @@
 		ts.abusiveBlockedIpStruct=application.zcore.abusiveBlockedIpStruct;
 	}else{
 		query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
-			writeoutput('SELECT ip_block_ip FROM ip_block');
+			writeoutput('SELECT ip_block_ip FROM ip_block WHERE ip_block_deleted=0 ');
 		}
 		ts.abusiveBlockedIpStruct=structnew();
 		for(local.i=1;local.i LTE local.qs.recordcount;local.i++){

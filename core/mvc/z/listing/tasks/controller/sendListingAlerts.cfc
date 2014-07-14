@@ -34,6 +34,7 @@
 	}
 	db.sql="select group_concat(mls_saved_search_id SEPARATOR #db.param(',')#) idlist, min(mail_user_id) mail_user_id, saved_search_email, min(mls_saved_search.user_id) user_id from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 	WHERE saved_search_email<>#db.param('')# and 
+	mls_saved_search_deleted = #db.param(0)# and 
 	saved_search_sent_date < #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	if(dayofweek(now()) EQ 6){
@@ -55,6 +56,7 @@
 			// convert record to a real user if possible.
 			db.sql="select * FROM #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 			WHERE mail_user_email = #db.param(row.saved_search_email)# and 
+			mail_user_deleted = #db.param(0)# and 
 			site_id= #db.param(request.zos.globals.id)#";
 			qU=db.execute("qU");
 			if(qU.recordcount NEQ 0){
@@ -70,6 +72,7 @@
 			// convert record to a real user if possible.
 			db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_username = #db.param(row.saved_search_email)# and 
+			user_deleted = #db.param(0)# and 
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))#";
 			qU=db.execute("qU");
 			if(qU.recordcount NEQ 0){
@@ -234,6 +237,10 @@
 	#db.table("mls_option", request.zos.zcoreDatasource)# mls_option, 
 	#db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search
 	where site.site_id = app_x_site.site_id and 
+	site_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)# and 
+	mls_option_deleted = #db.param(0)# and 
+	mls_saved_search_deleted = #db.param(0)# and  
 	mls_option.site_id = site.site_id and 
 	site.site_id = mls_saved_search.site_id and 
 	mls_saved_search.saved_search_email <> #db.param('')# and 

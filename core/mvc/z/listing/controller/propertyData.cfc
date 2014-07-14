@@ -400,6 +400,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			FROM  #db.table("#request.zos.ramtableprefix#city_distance", request.zos.zcoreDatasource)# city_distance 
 			WHERE city_parent_id = #db.param(c)# and 
 			city_distance < #db.param(arguments.ss.distance)# and 
+			city_distance_deleted = #db.param(0)# and 
 			city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#) 
             
            </cfsavecontent><cfscript>qC=db.execute("qC");
@@ -812,7 +813,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     )
     </cfif>
         <cfif listingDataTable>
-    and listing_data.listing_id = listing.listing_id
+    and listing_data.listing_id = listing.listing_id and 
+    listing_data_deleted = '0'
     </cfif>
     <!---  --->
         
@@ -854,7 +856,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     
     #whereSQL#
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
-   		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id </cfif>
+   		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id and 
+   		listing_track_deleted = 0 </cfif>
         </cfif>
     <cfif arguments.ss.perpage EQ 0> and 1=0 </cfif>
     </cfsavecontent>
@@ -904,7 +907,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
        </cfif> --->
              
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
-   		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id </cfif> 
+   		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id and 
+   		listing_track_deleted = 0 </cfif> 
         </cfif>
     
     <cfif isDefined('arguments.ss.noSorting') EQ false>
@@ -1052,13 +1056,10 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 		</cfif>
     </cfif> --->
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
-   		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id </cfif> 
+   		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id and 
+   		listing_track_deleted = 0 </cfif> 
         </cfif>
     
-    
-             <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
-    <cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id </cfif>
-    </cfif>
     #arguments.ss.zwhere#
     
     #arguments.ss.zgroupby# 
@@ -1315,7 +1316,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				// get all mls_dir
 				db.sql="SELECT SQL_NO_CACHE * FROM #db.table("mls_dir", request.zos.zcoreDatasource)# mls_dir 
 				where mls_dir_hash IN (#db.trustedSQL("'#arraytolist(structkeyarray(hashStruct),"','")#'")#) and 
-				site_id=#db.param(request.zos.globals.id)#";
+				site_id=#db.param(request.zos.globals.id)# and 
+				mls_dir_deleted = #db.param(0)# ";
 				qdir=db.execute("qdir");
 				//application.zcore.functions.zdump(qdir);
 				perfect=false;
@@ -1525,7 +1527,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL())#  
 				#db.trustedSQL(local.rs3.leftJoin)#
 				LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
-				listing.listing_id = listing_track.listing_id
+				listing.listing_id = listing_track.listing_id and 
+				listing_track_deleted = #db.param(0)#
 				LEFT JOIN #db.table("content", request.zos.zcoreDatasource)# content ON 
 				content.content_mls_number = listing.listing_id and 
 				content_mls_override=#db.param('1')# and 
@@ -1534,6 +1537,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				content.site_id = #db.param(request.zos.globals.id)# 
 				#db.trustedSQL(rs2.leftJoin)#
 				WHERE listing.listing_id IN (#db.trustedSQL("'#idlist22#'")#) and 
+				listing_deleted = #db.param(0)# and 
+				listing_data_deleted = #db.param(0)# and 
 				listing.listing_id = listing_data.listing_id and 
 				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getPropertyListingIdSQL())# IN (#db.trustedSQL("'#idlist22#'")#)
 				GROUP BY listing.listing_id ";
@@ -1935,7 +1940,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	var arrDefaultSort=listtoarray("filter_city_id,filter_rate,filter_listing_type_id,filter_listing_sub_type_id,filter_bedrooms,filter_bathrooms,filter_sqfoot,filter_lot_square_feet,filter_year_built,filter_acreage,filter_county,filter_view,filter_status,filter_style,filter_frontage,filter_region,filter_tenure,filter_parking,filter_condition,filter_near_address,filter_more_options,filter_condoname,filter_subdivision,filter_remarks,filter_remarks_negative,filter_zip,filter_address,filter_within_map");
 	var db2=request.zos.noVerifyQueryObject;
 	db.sql="select * from #db.table("mls_filter", request.zos.zcoreDatasource)# mls_filter 
-	where mls_filter.site_id = #db.param(request.zos.globals.id)#";
+	where mls_filter.site_id = #db.param(request.zos.globals.id)# and 
+	mls_filter_deleted = #db.param(0)#";
 	qList=db.execute("qList");
 	rs.whereSQL="";
 	rs.whereOptionsSQL="";
@@ -1987,7 +1993,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			db.sql="update #db.table("mls_filter", request.zos.zcoreDatasource)#  
 			set "&db.trustedSQL(arraytolist(local.arrC2, ", "))&" ,
 			mls_filter_updated_datetime=#db.param(request.zos.mysqlnow)# 
-			where site_id = #db.param(request.zos.globals.id)#";
+			where site_id = #db.param(request.zos.globals.id)# and 
+			mls_filter_deleted = #db.param(0)#";
 			db.execute("q");
 		}
 	}

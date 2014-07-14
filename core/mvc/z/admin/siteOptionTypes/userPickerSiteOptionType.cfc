@@ -134,7 +134,8 @@
 	db=request.zos.queryObject;
 	db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("user.user_id"))# as siteIDType
 	FROM #db.table("user", request.zos.zcoreDatasource)# user 
-	WHERE site_id = #db.param(request.zos.globals.id)#  ";
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	user_deleted = #db.param(0)# ";
 	if(arrayLen(arrGroup)){
 		db.sql&=" and user_group_id in ("&db.trustedSQL(userGroupIdSQL)&")";
 	}
@@ -177,6 +178,7 @@
 	if(arraylen(arrUser) EQ 2){
 		db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
 		where site_id = #db.param(application.zcore.functions.zGetSiteIdFromSiteIdType(arrUser[2]))# and 
+		user_deleted = #db.param(0)# and
 		user_id = #db.param(arrUser[1])# ";
 		qUser=db.execute("qUser");
 		if(qUser.recordcount NEQ 0){
@@ -284,7 +286,8 @@
 			<cfscript>
 			form.user_group_id_list=application.zcore.functions.zso(arguments.optionStruct, 'user_group_id_list');
 			db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-			WHERE site_id = #db.param(request.zos.globals.id)#  
+			WHERE site_id = #db.param(request.zos.globals.id)#  and 
+			user_group_deleted = #db.param(0)#
 			ORDER BY user_group_name asc"; 
 			var qGroup2=db.execute("qGroup2"); 
 			ts = StructNew();

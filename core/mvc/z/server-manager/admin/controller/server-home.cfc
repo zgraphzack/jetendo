@@ -17,7 +17,8 @@
 	db.sql="select replace(replace(site_short_domain, #db.param('www.')#, #db.param('')#), #db.param('.'&request.zos.testDomain)#, #db.param('')#) domain
 	from #db.table("site", request.zos.zcoredatasource)#
 	where site_active=#db.param(1)# and 
-	site_id <> #db.param(-1)#
+	site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)#
 	ORDER BY domain ASC";
 	local.qSite=db.execute("qSite");
 	
@@ -165,14 +166,18 @@
 		<p><a href="/z/server-manager/tasks/memory-dump/index" target="_blank">Memory Dump</a></p>
 		<p><a href="/z/misc/system/index" target="_blank">Railo uptime and session clearing</a></p>
 		<p><a href="/z/server-manager/tasks/site-backup/index" target="_blank">Backup All Sites</a></p>
-		<p><a href="/z/server-manager/tasks/search-index/index">Re-index All Site Content</a></p>
+		<p><a href="/z/server-manager/tasks/search-index/index" target="_blank">Re-index All Site Content</a></p>
 		<p><a href="/z/server-manager/tasks/verify-apps/index" target="_blank">Verify Apps</a></p>
 		<p><a href="/z/server-manager/tasks/send-mailing-list-alerts/index?forceDebug=1" target="_blank">Debug Mailing List Alerts (Won't Send Email)</a></p>
 		<cfif request.zos.istestserver>
 			<h3>Unit Tests</h3>
 			<cfscript>
 			db.sql="select site_domain from #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-			where site_active=#db.param('1')#  and site_unit_testing_domain=#db.param(1)# and site_id <> #db.param(-1)# LIMIT #db.param(0)#,#db.param(1)#";
+			where site_active=#db.param('1')#  and 
+			site_unit_testing_domain=#db.param(1)# and 
+			site_deleted = #db.param(0)# and 
+			site_id <> #db.param(-1)# 
+			LIMIT #db.param(0)#,#db.param(1)#";
 			local.qm=db.execute("qm");
 			</cfscript>
 			<cfif local.qm.recordcount EQ 0>
@@ -187,7 +192,8 @@
 		<p>These tasks may take a while to complete. Be patient and don't run the same task multiple times simultaneously.</p>
 		<cfscript>
 		db.sql="select * from #request.zos.queryObject.table("mls", request.zos.zcoreDatasource)# mls 
-		where mls_status=#db.param('1')# 
+		where mls_status=#db.param('1')# and 
+		mls_deleted = #db.param(0)#
 		order by mls_id";
 		local.qm=db.execute("qm");
 		</cfscript>

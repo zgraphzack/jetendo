@@ -690,14 +690,17 @@ variables.tableLookup["I"]="I";
 			tempState="FL"; 
 			if(fd[i] NEQ "SEE REMARKS" and fd[i] NEQ "NOT AVAILABLE" and fd[i] NEQ "NONE"){
 				 db.sql="select * from #db.table("city_rename", request.zos.zcoreDatasource)# city_rename 
-				WHERE city_name =#db.param(fd[i])# and state_abbr=#db.param(tempState)#";
+				WHERE city_name =#db.param(fd[i])# and 
+				state_abbr=#db.param(tempState)# and 
+				city_rename_deleted = #db.param(0)#";
 				qD2=db.execute("qD2");
 				if(qD2.recordcount NEQ 0){
 					fd[i]=qD2.city_renamed;
 				}
 				 db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city 
 				WHERE city_name =#db.param(fd[i])# and 
-				state_abbr=#db.param(tempState)#";
+				state_abbr=#db.param(tempState)# and 
+				city_deleted = #db.param(0)#";
 				qD=db.execute("qD");
 				if(qD.recordcount EQ 0){
 					 db.sql="INSERT INTO #db.table("city", request.zos.zcoreDatasource)#  

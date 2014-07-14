@@ -47,7 +47,8 @@
 	db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
-	WHERE dns_zone_id= #db.param(form.dns_zone_id)# ";
+	WHERE dns_zone_id= #db.param(form.dns_zone_id)# and 
+	dns_zone_deleted = #db.param(0)#  ";
 	qZone=db.execute("qZone");
 	if(request.zos.enableBind){
 		r=application.zcore.functions.zSecureCommand("notifyBindZone#chr(9)##qZone.dns_zone_name#", 30);
@@ -64,7 +65,8 @@
 <cffunction name="incrementAllZoneSerials" localmode="modern" access="public">
 	<cfscript>
 	db=request.zos.queryObject;
-	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
+	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# WHERE 
+	dns_zone_deleted = #db.param(0)# 
 	ORDER BY dns_zone_id ASC ";
 	qZone=db.execute("qZone");
 	for(row in qZone){
@@ -84,7 +86,7 @@
 		db.sql="update #db.table("dns_zone", request.zos.zcoreDatasource)# SET 
 		dns_zone_serial= #db.param(serial)#, 
 		dns_zone_updated_datetime = #db.param(request.zos.mysqlnow)# 
-		WHERE dns_zone_id = #db.param(row.dns_zone_id)# ";
+		WHERE dns_zone_id = #db.param(row.dns_zone_id)#  ";
 		db.execute("qUpdate");
 	}
 	</cfscript>
@@ -96,7 +98,8 @@
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
-	WHERE dns_zone_id= #db.param(arguments.dns_zone_id)# ";
+	WHERE dns_zone_id= #db.param(arguments.dns_zone_id)# and 
+	dns_zone_deleted = #db.param(0)#  ";
 	qZone=db.execute("qZone");
 	if(qZone.dns_zone_serial EQ ""){
 		serial=1;
@@ -156,7 +159,9 @@
 	db.sql="select * from #db.table("dns_group", request.zos.zcoreDatasource)# dns_group LEFT JOIN
 	#db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone ON 
 	dns_zone.dns_group_id = dns_group.dns_group_id and 
-	dns_zone.dns_zone_name = #db.param('default')# ";
+	dns_zone_deleted = #db.param(0)#  and 
+	dns_zone.dns_zone_name = #db.param('default')# and 
+	dns_group_deleted = #db.param(0)# ";
 	if(arguments.dns_group_id NEQ 0){
 		db.sql&=" WHERE dns_group.dns_group_id = #db.param(arguments.dns_group_id)# ";
 	}
@@ -176,6 +181,7 @@
 	for(group in qGroups){
 		db.sql="select * from #db.table("dns_zone", request.zos.zcoreDatasource)# 
 		WHERE dns_group_id = #db.param(group.dns_group_id)# and 
+		dns_zone_deleted = #db.param(0)#  and 
 		dns_zone_name <> #db.param('default')# ";
 		if(arguments.dns_zone_id NEQ 0){
 			db.sql&=" and dns_zone_id = #db.param(arguments.dns_zone_id)# ";
@@ -186,7 +192,8 @@
 		db.sql="select * from #db.table("dns_record", request.zos.zcoreDatasource)# 
 		LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 		ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
-		WHERE dns_zone_id = #db.param(group.dns_zone_id)# 
+		WHERE dns_zone_id = #db.param(group.dns_zone_id)#  and 
+		dns_record_deleted = #db.param(0)# 
 		ORDER BY dns_record_host asc, dns_record_type asc, dns_record_value asc";
 		qGroupRecords=db.execute("qGroupRecords");
 
@@ -258,7 +265,8 @@
 			db.sql="select * from #db.table("dns_record", request.zos.zcoreDatasource)# 
 			LEFT JOIN #db.table("dns_ip", request.zos.zcoreDatasource)# dns_ip 
 			ON dns_record.dns_ip_id = dns_ip.dns_ip_id 
-			WHERE dns_zone_id = #db.param(zone.dns_zone_id)# 
+			WHERE dns_zone_id = #db.param(zone.dns_zone_id)# and 
+			dns_record_deleted = #db.param(0)# 
 			ORDER BY dns_record_host asc, dns_record_type asc, dns_record_value asc";
 			qRecords=db.execute("qRecords");
 			primaryNameserver="";
@@ -369,7 +377,9 @@
 	db.sql="select * from #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone,
 	#db.table("dns_group", request.zos.zcoreDatasource)# dns_group
 	WHERE dns_group.dns_group_id = dns_zone.dns_group_id and 
-	dns_zone_name <> #db.param('default')# ";
+	dns_zone_deleted = #db.param(0)#  and 
+	dns_zone_name <> #db.param('default')# and 
+	dns_group_deleted = #db.param(0)# ";
 	if(arguments.dns_zone_id NEQ 0){
 		db.sql&=" and dns_zone.dns_zone_id = #db.param(arguments.dns_zone_id)# ";
 	}
@@ -456,7 +466,8 @@
 	form.dns_group_id=application.zcore.functions.zso(form, 'dns_group_id', true, 0);
 	db=request.zos.queryObject;
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
-	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	WHERE dns_group_id=#db.param(form.dns_group_id)# and 
+	dns_group_deleted = #db.param(0)#";
 	qGroup=db.execute("qGroup");
 	if(qGroup.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, "The selected dns group doesn't exist.", form, true);
@@ -472,7 +483,8 @@
 	var q=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone
-	WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form,'dns_zone_id'))# ";
+	WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form,'dns_zone_id'))# and 
+	dns_zone_deleted = #db.param(0)#  ";
 	qCheck=db.execute("qCheck");
 	
 	if(qCheck.recordcount EQ 0){
@@ -483,11 +495,15 @@
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
 		application.zcore.functions.zDeleteFile(request.zos.sharedPath&"dns-zones/"&qCheck.dns_zone_name&".zone");
-		db.sql="DELETE FROM #db.table("dns_record", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("dns_record", request.zos.zcoreDatasource)#  
+		set dns_record_deleted = #db.param(1)#,
+		dns_record_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form, 'dns_zone_id'))# ";
 		q=db.execute("q");
 
-		db.sql="DELETE FROM #db.table("dns_zone", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("dns_zone", request.zos.zcoreDatasource)#  
+		set dns_zone_deleted = #db.param(1)#,
+		dns_zone_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form, 'dns_zone_id'))# ";
 		q=db.execute("q");
 		publishZoneIndex(0, true, true);
@@ -573,7 +589,8 @@
 	<cfscript>
 	db=request.zos.queryObject;
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
-	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	WHERE dns_group_id=#db.param(form.dns_group_id)# and 
+	dns_group_deleted = #db.param(0)#";
 	qGroup=db.execute("qGroup");
 
 	defaultStruct={
@@ -622,10 +639,12 @@
 		form.dns_zone_id = -1;
 	}
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
-	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	WHERE dns_group_id=#db.param(form.dns_group_id)# and 
+	dns_group_deleted = #db.param(0)#";
 	qGroup=db.execute("qGroup");
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone 
-	WHERE dns_zone_id=#db.param(form.dns_zone_id)#";
+	WHERE dns_zone_id=#db.param(form.dns_zone_id)# and 
+	dns_zone_deleted = #db.param(0)# ";
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute, form, 'dns_group_id');
 	application.zcore.functions.zStatusHandler(request.zsid,true);
@@ -665,7 +684,8 @@
 			<tr>
 				<th>Group</th>
 				<td><cfscript>
-					db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# 
+					db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# WHERE 
+					dns_group_deleted = #db.param(0)#
 					ORDER BY dns_group_name";
 					qGroups=db.execute("qGroups");
 					selectStruct = StructNew();
@@ -747,7 +767,9 @@
 	db.sql="SELECT *
 	FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone, 
 	#db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
-	WHERE dns_group.dns_group_id=dns_zone.dns_group_id 
+	WHERE dns_group.dns_group_id=dns_zone.dns_group_id  and 
+	dns_zone_deleted = #db.param(0)#  and 
+	dns_group_deleted = #db.param(0)#
 	GROUP BY dns_zone.dns_zone_id 
 	order by dns_zone_name asc";
 	qdns_zone=db.execute("qdns_zone");
@@ -802,12 +824,14 @@
 	application.zcore.functions.zStatusHandler(request.zsid);
 
 	db.sql="SELECT * FROM #db.table("dns_group", request.zos.zcoreDatasource)# dns_group 
-	WHERE dns_group_id=#db.param(form.dns_group_id)#";
+	WHERE dns_group_id=#db.param(form.dns_group_id)# and 
+	dns_group_deleted = #db.param(0)# ";
 	qGroup=db.execute("qGroup");
  
 	db.sql="SELECT *
 	FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone 
-	WHERE dns_group_id=#db.param(form.dns_group_id)# 
+	WHERE dns_group_id=#db.param(form.dns_group_id)# and 
+	dns_zone_deleted = #db.param(0)# 
 	GROUP BY dns_zone.dns_zone_id 
 	order by dns_zone_name asc";
 	qdns_zone=db.execute("qdns_zone");

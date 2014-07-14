@@ -20,7 +20,8 @@
 		this.getDataObject();
 		</cfscript>
 		<cfsavecontent variable="db.sql">
-		SELECT * FROM #db.table("far_feature", request.zos.zcoreDatasource)# far_feature
+		SELECT * FROM #db.table("far_feature", request.zos.zcoreDatasource)# far_feature 
+		WHERE far_feature_deleted = #db.param(0)#
 		ORDER BY `far_feature`.far_feature_type ASC, `far_feature`.far_feature_description ASC
 		</cfsavecontent><cfscript>qFeatures=db.execute("qFeatures");</cfscript>
         <cfloop query="qFeatures"><cfscript>
@@ -42,7 +43,8 @@
 		var db=request.zos.queryObject;
 		var i=0;
 		db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city 
-		WHERE state_abbr = #db.param('FL')#";
+		WHERE state_abbr = #db.param('FL')# and 
+		city_deleted = #db.param(0)#";
 		var qC=db.execute("qC"); 
 		if(request.zos.istestserver){
 			variables.hqPhotoPath="#request.zos.sharedPath#mls-images/#this.mls_id#/";
@@ -338,8 +340,8 @@
     	<cfargument name="mls_pid" type="string" required="yes">
         <cfargument name="num" type="numeric" required="no" default="#1#">
     	<cfscript>
-	var qP=0;
-	var photo=0;
+		var qP=0;
+		var photo=0;
 		var db=request.zos.queryObject;
 		 db.sql="SELECT far_photo_url FROM #db.table("far", request.zos.zcoreDatasource)# far 
 		 WHERE far.far_mls_listing_id = #db.param(this.mls_id&"-"&arguments.mls_pid)#";

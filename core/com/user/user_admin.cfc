@@ -48,7 +48,8 @@
 	</cfscript>
          <cfsavecontent variable="db.sql">
         select * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-		WHERE user_username = #db.param(arguments.ss.email)# 
+		WHERE user_username = #db.param(arguments.ss.email)# and 
+		user_deleted = #db.param(0)#
 		<cfif arguments.ss.force EQ false> and user_key = #db.param(arguments.ss.key)# </cfif> and 
 		site_id = #db.param(arguments.ss.site_id)#
         </cfsavecontent><cfscript>qcheckEmail=db.execute("qcheckemail");
@@ -87,6 +88,7 @@
 	user_updated_ip=#db.param(request.zos.cgi.remote_addr)# 
 	
 	WHERE user_id = #db.param(qcheckemail.user_id)# and 
+	user_deleted = #db.param(0)# and
 	site_id = #db.param(arguments.ss.site_id)#
         </cfsavecontent><cfscript>qIn=db.execute("qIn");
 		if(arguments.ss.login){
@@ -245,6 +247,8 @@
 			 db.sql="SELECT user_id FROM #db.table("user", request.zos.zcoreDatasource)# user, 
 			 #db.table("site", request.zos.zcoreDatasource)# site 
 			WHERE user_username = #db.param(str.user_username)# and 
+			user_deleted = #db.param(0)# and 
+			site_deleted = #db.param(0)# and 
 			user.site_id = site.site_id and 
 			site.site_parent_id = #db.param(str.site_id)# ";
 			qUser=db.execute("qUser");
@@ -255,6 +259,7 @@
 		if(str.user_server_administrator EQ 1){
 			 db.sql="SELECT user_id FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_username = #db.param(str.user_username)# and 
+			user_deleted = #db.param(0)# and 
 			site_id = #db.param(application.zcore.functions.zVar('serverId'))# ";
 			qUser=db.execute("qUser");
 			if(qUser.recordcount NEQ 0){
@@ -264,6 +269,7 @@
 			db.sql="SELECT user_id FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_username = #db.param(str.user_username)# and 
 			site_id = #db.param(application.zcore.functions.zVar('serverId'))#  and 
+			user_deleted = #db.param(0)# and 
 			user_server_administrator=#db.param(1)#";
 			qUser=db.execute("qUser"); 
 			if(quser.recordcount neq 0){
@@ -296,6 +302,7 @@
 				FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_username = #db.param(str.user_username)# and 
 				site_id = #db.param(str.site_id)# and 
+				user_deleted = #db.param(0)# and 
 				user_confirm = #db.param('0')# and 
 				user_confirm_count = #db.param('3')#";
 				qCheck=db.execute("qCheck");
@@ -318,11 +325,14 @@
 		}
 		 db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 		WHERE mail_user_email=#db.param(str.user_email)# and 
+		mail_user_deleted = #db.param(0)# and 
 		site_id=#db.param(str.site_id)#";
 		local.qU=db.execute("qU");
 		if(local.qU.recordcount NEQ 0){
-			db.sql="delete from #db.table("mail_user", request.zos.zcoreDatasource)#  
-			WHERE mail_user_id=#db.param(local.qU.mail_user_id)# and 
+			db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)#  
+			set mail_user_deleted = #db.param(1)#,
+			mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#
+			WHERE mail_user_id=#db.param(local.qU.mail_user_id)# 
 			site_id=#db.param(local.qU.site_id)#";
 			db.execute("q"); 
 		}
@@ -436,6 +446,7 @@ To view more info about this new user, click the following link:
 		WHERE user_username = #db.param(str.user_username)# and 
 		site_id = #db.param(str.site_id)# and 
 		user_confirm = #db.param('0')# and 
+		user_deleted = #db.param(0)# and
 		user_confirm_count = #db.param('3')#
         </cfsavecontent><cfscript>qCheck=db.execute("qCheck");</cfscript>
         <cfif qCheck.recordcount NEQ 0>
@@ -444,6 +455,7 @@ To view more info about this new user, click the following link:
 			SET user_confirm_count = #db.param('0')#, 
 			user_sent_datetime=#db.param('0000-00-00 00:00:00')# 
 			WHERE user_username = #db.param(str.user_username)# and 
+			user_deleted = #db.param(0)# and
 			site_id = #db.param(str.site_id)#
             </cfsavecontent><cfscript>qUpdate=db.execute("qUpdate");			
             ts=StructNew();
@@ -528,6 +540,7 @@ To view more info about this new user, click the following link:
 		<cfsavecontent variable="db.sql">
 		SELECT *  FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user_id = #db.param(str.user_id)# and 
+		user_deleted = #db.param(0)# and
 		site_id = #db.param(arguments.inputStruct.site_id)# 
 		</cfsavecontent><cfscript>qCheck=db.execute("qCheck");</cfscript>
 		<cfif qCheck.recordcount EQ 0>
@@ -570,6 +583,7 @@ To view more info about this new user, click the following link:
 			 db.sql="SELECT user_id, user.site_id FROM #db.table("user", request.zos.zcoreDatasource)# user, 
 			 #db.table("site", request.zos.zcoreDatasource)# site 
 			WHERE user_username = #db.param(str.user_username)# and 
+			user_deleted = #db.param(0)# and
 			user.site_id = site.site_id and 
 			site.site_parent_id = #db.param(str.site_id)# ";
 			qUser=db.execute("qUser");
@@ -581,6 +595,7 @@ To view more info about this new user, click the following link:
 		if(qCheck.user_server_administrator EQ 1 and application.zcore.functions.zVar('serverId') NEQ str.site_id){
 			 db.sql="SELECT user_id FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_username = #db.param(str.user_username)# and 
+			user_deleted = #db.param(0)# and
 			site_id = #db.param(application.zcore.functions.zVar('serverId'))# ";
 			qUser=db.execute("qUser");
 			if(qUser.recordcount NEQ 0){
@@ -659,6 +674,7 @@ To view more info about this new user, click the following link:
 		SET user_active = #db.param('1')# ,
 		user_ip_blocked = #db.param(0)# 
 		WHERE user_id = #db.param(arguments.user_id)# and 
+		user_deleted = #db.param(0)# and
 		site_id = #db.param(arguments.site_id)# 
 		</cfsavecontent><cfscript>qActive=db.execute("qActive");</cfscript>
 		<!--- do code for IP block... --->
@@ -685,6 +701,7 @@ To view more info about this new user, click the following link:
 		,user_ip_blocked = #db.param('1')# 
 		</cfif> 
 		WHERE user_id = #db.param(arguments.user_id)# and 
+		user_deleted = #db.param(0)# and
 		site_id = #db.param(arguments.site_id)# 
 		</cfsavecontent><cfscript>qInactive=db.execute("qInactive");</cfscript>
 		<!--- do code for IP block... --->
@@ -735,6 +752,7 @@ To view more info about this new user, click the following link:
 		<cfsavecontent variable="db.sql">
 		DELETE FROM #db.table("user", request.zos.zcoreDatasource)#  
 		WHERE user_id = #db.param(arguments.user_id)# and 
+		user_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#
 		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
 		<cfreturn true>

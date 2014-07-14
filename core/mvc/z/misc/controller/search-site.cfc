@@ -45,6 +45,7 @@ search sql generator has to be able to search on child group data for paging to 
 			// check for listing id and redirect to it if it exists.
 			db.sql="select * from #db.table("listing", request.zos.zcoreDatasource)# 
 			WHERE 
+			listing_deleted = #db.param(0)# and 
 			#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 			listing_id like #db.param("%-"&form.searchtext)# ";
     			if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1){
@@ -76,7 +77,8 @@ search sql generator has to be able to search on child group data for paging to 
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	WHERE site_option_group_public_searchable = #db.param(1)# and 
-	site_id = #db.param(request.zos.globals.id)# 
+	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_deleted = #db.param(0)#
 	ORDER BY site_option_group_display_name ASC";
 	qGroup=db.execute("qGroup");
 	
@@ -184,12 +186,14 @@ search sql generator has to be able to search on child group data for paging to 
 	/*db.sql="select count(search_id) count
 	from #db.table("search", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	match(search_fulltext) against(#db.param(form.searchtext)#) ";
+	match(search_fulltext) against(#db.param(form.searchtext)#) and 
+	search_deleted = #db.param(0)#";
 	qCount=db.execute("qCount");*/
 	db.sql="select *, match(search_fulltext) against(#db.param(form.searchtext)#) relevance
 	from #db.table("search", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	match(search_fulltext) against(#db.param(form.searchtext)#) 
+	match(search_fulltext) against(#db.param(form.searchtext)#) and 
+	search_deleted = #db.param(0)#
 	ORDER BY relevance DESC 
 	LIMIT #db.param((form.zIndex-1)*10)#, #db.param(11)#";
 	qSearch=db.execute("qSearch");   
@@ -446,7 +450,8 @@ search sql generator has to be able to search on child group data for paging to 
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_id = #db.param(form.groupId)# and 
-	site_option_group_public_searchable = #db.param(1)# ";
+	site_option_group_public_searchable = #db.param(1)# and 
+	site_option_group_deleted = #db.param(0)# ";
 	qGroup=db.execute("qGroup");
 	if(qGroup.recordcount EQ 0){
 		rs.success=false;
@@ -458,7 +463,8 @@ search sql generator has to be able to search on child group data for paging to 
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_option_group_id = #db.param(form.groupId)# and 
-	site_option_public_searchable = #db.param(1)# 
+	site_option_public_searchable = #db.param(1)# and 
+	site_option_deleted = #db.param(0)#
 	ORDER BY site_option_sort ASC";
 	qOption=db.execute("qOption");
 	if(qOption.recordcount EQ 0){
@@ -491,7 +497,8 @@ search sql generator has to be able to search on child group data for paging to 
 		db.sql="select site_option_group_display_name, site_option_group_id from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		site_option_group_parent_id = #db.param(form.groupId)# and 
-		site_option_group_public_searchable = #db.param(1)# 
+		site_option_group_public_searchable = #db.param(1)# and 
+		site_option_group_deleted = #db.param(0)#
 		ORDER BY site_option_group_display_name ASC";
 		qChildGroup=db.execute("qChildGroup");
 		arrChildGroupID=[];
@@ -503,7 +510,8 @@ search sql generator has to be able to search on child group data for paging to 
 		db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		site_option_group_id IN (#db.trustedSQL("'"&arrayToList(arrChildGroupId, "','")&"'")#) and 
-		site_option_public_searchable = #db.param(1)# 
+		site_option_public_searchable = #db.param(1)# and 
+		site_option_deleted = #db.param(0)#
 		ORDER BY 
 		FIELD(site_option_group_id, #db.trustedSQL("'"&arrayToList(arrChildGroupId, "','")&"'")#), 
 		site_option_sort ASC";
@@ -618,7 +626,8 @@ search sql generator has to be able to search on child group data for paging to 
         <!--- update all sites --->
        <cfsavecontent variable="db.sql">
         SELECT * from #request.zos.queryObject.table("blog", request.zos.zcoreDatasource)# blog 
-		WHERE blog.site_id <> #db.param('0')#
+		WHERE blog.site_id <> #db.param('0')# and 
+		blog_deleted = #db.param(0)#
         </cfsavecontent>
 		<cfscript>
         qC=db.execute("qC");
@@ -867,9 +876,11 @@ search sql generator has to be able to search on child group data for paging to 
 				#request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search
 				WHERE mls_saved_search.mls_saved_search_id = content.content_saved_search_id and 
 				mls_saved_search.site_id = content.site_id and 
+				mls_saved_search_deleted = #db.param(0)# and 
 			<cfelse>
 				WHERE 
 			</cfif>
+			content_deleted = #db.param(0)#
 			((
 			<cfif application.zcore.enableFullTextIndex>
 				MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or
@@ -917,9 +928,11 @@ search sql generator has to be able to search on child group data for paging to 
 				#request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search
 				WHERE mls_saved_search.mls_saved_search_id = content.content_saved_search_id and 
 				mls_saved_search.site_id = content.site_id and 
+				mls_saved_search_deleted = #db.param(0)# and 
 			<cfelse>
 				WHERE 
 			</cfif>
+			content_deleted = #db.param(0)# and 
 			((
 			<cfif application.zcore.enableFullTextIndex>
 				MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or
@@ -972,6 +985,7 @@ search sql generator has to be able to search on child group data for paging to 
 			<cfsavecontent variable="db.sql">
 			SELECT count(content_id) as count
 			FROM #request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content WHERE 
+			content_deleted = #db.param(0)# and 
 			((
 			<cfif application.zcore.enableFullTextIndex>
 				MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or 
@@ -1011,6 +1025,7 @@ search sql generator has to be able to search on child group data for paging to 
 			MATCH(content_search) AGAINST (#db.param(searchTextOriginal)#) as score2 
 		</cfif>
 		FROM #request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content WHERE 
+		content_deleted = #db.param(0)# and 
 		((
 		<cfif application.zcore.enableFullTextIndex>
 			MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or 
@@ -1064,6 +1079,7 @@ search sql generator has to be able to search on child group data for paging to 
 		SELECT count(blog_id) as count
 		from #db.table("blog", request.zos.zcoreDatasource)# blog
 		WHERE 
+		blog_deleted = #db.param(0)# and 
 		((
 		<cfif application.zcore.enableFullTextIndex>
 			MATCH(blog_search) AGAINST (#db.param(form.searchtext)#) or 
@@ -1096,15 +1112,19 @@ search sql generator has to be able to search on child group data for paging to 
 		#db.trustedsql(rs2.leftJoin)#
 		left join #request.zos.queryObject.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
 		blog_category.blog_category_id = blog.blog_category_id and 
-		blog_category.site_id = blog.site_id 
+		blog_category.site_id = blog.site_id and 
+		blog_category_deleted = #db.param(0)#
 		left join #request.zos.queryObject.table("blog_comment", request.zos.zcoreDatasource)# blog_comment on 
 		blog.blog_id = blog_comment.blog_id and 
 		blog_comment_approved=#db.param(1)# and 
-		blog_comment.site_id = blog.site_id 
+		blog_comment.site_id = blog.site_id and 
+		blog_comment_deleted = #db.param(0)#
 		LEFT JOIN #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user ON 
 		blog.user_id = user.user_id  and 
-		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
+		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))# and 
+		user_deleted = #db.param(0)#
 		WHERE 
+		blog_deleted = #db.param(0)# and 
 		((
 		<cfif application.zcore.enableFullTextIndex>
 			MATCH(blog_search) AGAINST (#db.param(form.searchtext)#) or 

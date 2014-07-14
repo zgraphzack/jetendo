@@ -109,7 +109,8 @@
 	variables.init(); 
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', false, 0);
 	if(application.zcore.functions.zso(form, 'inquiries_city_id') NEQ ''){
-		db.sql="SELECT * FROM `mls`.city WHERE city_id = #db.param(form.inquiries_city_id)#";
+		db.sql="SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# WHERE city_id = #db.param(form.inquiries_city_id)# WHERE
+		city_deleted = #db.param(0)#";
 		qCity=db.execute("qCity");
 		if(qCity.recordcount NEQ 0){
 			inquiries_property_city= qCity.city_name;
@@ -167,7 +168,8 @@
 	SET inquiries_primary=#db.param(0)#,
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_deleted = #db.param(0)#";
 	db.execute("q"); 
 	inputStruct = StructNew();
 	inputStruct.table = "inquiries";
@@ -184,13 +186,18 @@
 	LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 	inquiries_type.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#) and 
-	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# 
+	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+	inquiries_type_deleted = #db.param(0)#
 	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 	user.user_id = inquiries.user_id  and 
-	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# 
+	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
+	user_deleted = #db.param(0)#
 	WHERE inquiries.site_id = #db.param(request.zOS.globals.id)# and 	
 	inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
-	inquiries_id = #db.param(form.inquiries_id)# ";
+	inquiries_id = #db.param(form.inquiries_id)# and 
+	inquiries_deleted = #db.param(0)# and 
+	inquiries_status_deleted = #db.param(0)#
+	 ";
 	qinquiry=db.execute("qinquiry");
 	application.zcore.functions.zQueryToStruct(qinquiry);
 

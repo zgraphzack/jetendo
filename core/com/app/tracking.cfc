@@ -92,6 +92,7 @@
 			if(request.zos.istestserver EQ false and local.trackingAbuseCount GTE 500 and structkeyexists(application.zcore.abusiveBlockedIpStruct, request.zos.cgi.remote_addr) EQ false){
 				db.sql="INSERT INTO #request.zos.queryObject.table("ip_block", request.zos.zcoreDatasource)#  
 				SET `ip_block_datetime`=#db.param(request.zos.mysqlnow)#, 
+				ip_block_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 				`ip_block_user_agent`=#db.param(request.zos.cgi.http_user_agent)#, 
 				ip_block_ip=#db.param(request.zos.cgi.remote_addr)#, 
 				ip_block_url=#db.param(request.zos.cgi.http_host&request.zos.cgi.script_name&"?"&request.zos.cgi.QUERY_STRING)#";
@@ -264,6 +265,7 @@ USER WAS PERMANENTLY BLOCKED.');
 		<cfsavecontent variable="db.sql">
 		SELECT * FROM #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
 		WHERE track_user_email = #db.param(arguments.track_user_email)# and 
+		track_user_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)#
 		</cfsavecontent><cfscript>qUser=db.execute("qUser");
 		if(qUser.recordcount NEQ 0){
@@ -329,7 +331,8 @@ USER WAS PERMANENTLY BLOCKED.');
 track_user_source=#db.param(local.tempSource)#, 
     zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
 	if(hasSession){
-		db.sql&=" WHERE track_user_id = #db.param(request.zsession.tracking.track_user_id)# and ";
+		db.sql&=" WHERE track_user_id = #db.param(request.zsession.tracking.track_user_id)# and 
+		track_user_deleted = #db.param(0)# ";
 	}
     db.sql&=" site_id=#db.param(request.zsession.tracking.site_id)# ";
 	if(hasSession){
@@ -364,7 +367,8 @@ track_user_source=#db.param(local.tempSource)#,
 		track_page_id=0;
 	}
 	db.sql="SELECT * FROM #request.zos.queryObject.table("track_convert", request.zos.zcoreDatasource)# track_convert 
-	WHERE track_convert_name = #db.param(arguments.track_convert_name)# ";
+	WHERE track_convert_name = #db.param(arguments.track_convert_name)# and 
+	track_convert_deleted = #db.param(0)# ";
 	qConvert=db.execute("qConvert");
 	if(qConvert.recordcount EQ 0){
 		ts.struct.track_convert_name=arguments.track_convert_name;
@@ -386,6 +390,7 @@ track_user_source=#db.param(local.tempSource)#,
 	SET track_user_conversions=track_user_conversions+#db.param(1)#,
 	track_user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE track_user_id = #db.param(track_user_id)# and 
+	track_user_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qUpdate=db.execute("qUpdate");
 	</cfscript>

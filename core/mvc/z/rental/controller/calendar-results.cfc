@@ -63,19 +63,23 @@ SELECT rental_id, count(availability_date) count FROM rental
 LEFT JOIN availability ON 
 (availability_date >= #db.param(DateFormat(now(), "yyyy-mm-dd"))#  and 
 availability.rental_id = rental.rental_id) 
-WHERE rental.rental_active=#db.param(1)# 
+WHERE rental.rental_active=#db.param(1)# and 
+rental_deleted = #db.param(0)#
 </cfsavecontent><cfscript>qSort=db.execute("qSort");</cfscript> --->
   <cfsavecontent variable="db.sql">
     SELECT *, count(a2.rental_id) unavailableCount FROM rental 
     LEFT JOIN availability a1 ON 
 	(a1.availability_date BETWEEN #db.param(DateFormat(tsd, "yyyy-mm-dd"))# and 
 	#db.param(DateFormat(ted, "yyyy-mm-dd"))# and 
-	a1.rental_id = rental.rental_id)  and rental.site_id=a1.site_id
+	a1.rental_id = rental.rental_id)  and rental.site_id=a1.site_id and
+  a1.availability_deleted = #db.param(0)#
     LEFT JOIN availability a2 ON 
 	(a2.availability_date >= #db.param(DateFormat(now(), "yyyy-mm-dd"))#  and 
 	a2.rental_id = rental.rental_id) and 
-	rental.site_id=a2.site_id
+	rental.site_id=a2.site_id and 
+  a2.availability_deleted = #db.param(0)#
     WHERE a1.rental_id IS NULL and 
+    rental_deleted = #db.param(0)# and 
 	rental.rental_active=#db.param(1)# and 
 rental.rental_id <> #db.param('7')#  and 
 rental.site_id=#db.param(request.zos.globals.id)#
@@ -103,13 +107,15 @@ nights=datediff("d",search_start_date,search_end_date);
     <cfsavecontent variable="db.sql">
     SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_id=#db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
-	rental_active=#db.param('1')#
+	rental_active=#db.param('1')# and 
+  rental_deleted = #db.param(0)#
     </cfsavecontent><cfscript>qPPPP=db.execute("qPPPP");</cfscript>
     <!---  <cfif qPPPP.recordcount NEQ 0 and qPPPP.rental_7nightmin EQ 1 and nights lt 7>
         <cfsavecontent variable="db.sql">
         SELECT count(availability_date) count 
         FROM availability 
         WHERE availability.rental_id = #db.param('43')# and 
+        availability_deleted = #db.param(0)# and 
 		availability_date >= #db.param(DateFormat(search_start_date, 'yyyy-mm-dd')&' 00:00:00')# and 
 		availability_date <= #db.param(DateFormat(search_end_date, 'yyyy-mm-dd')&' 00:00:00')#
         </cfsavecontent><cfscript>q7Night=db.execute("q7Night");</cfscript>
@@ -124,6 +130,7 @@ nights=datediff("d",search_start_date,search_end_date);
         SELECT count(availability_date) count 
         FROM availability 
         WHERE availability.rental_id = #db.param('35')# and 
+        availability_deleted = #db.param(0)# and 
 		availability_date >= #db.param(DateFormat(search_start_date, 'yyyy-mm-dd')&' 00:00:00')# and 
 		availability_date <= #db.param(DateFormat(search_end_date, 'yyyy-mm-dd')&' 00:00:00')#
         </cfsavecontent><cfscript>q4Night=db.execute("q4Night");</cfscript>
@@ -137,6 +144,7 @@ nights=datediff("d",search_start_date,search_end_date);
         SELECT count(availability_date) count 
         FROM availability 
         WHERE availability.rental_id = #db.param('34')# and 
+        availability_deleted = #db.param(0)# and
 		availability_date >= #db.param(DateFormat(search_start_date, 'yyyy-mm-dd')&' 00:00:00')# and 
 availability_date <= #db.param(DateFormat(search_end_date, 'yyyy-mm-dd')&' 00:00:00')#
         </cfsavecontent><cfscript>q3Night=db.execute("q3Night");</cfscript>
@@ -163,6 +171,7 @@ availability_date <= #db.param(DateFormat(search_end_date, 'yyyy-mm-dd')&' 00:00
        <cfsavecontent variable="db.sql">
                 SELECT * FROM #db.param("availability", request.zos.zcoreDatasource)# availability 
 				WHERE availability_date BETWEEN #db.param(DateFormat(dateadd("d",-1,tsd), "yyyy-mm-dd"))# and 
+        availability_deleted = #db.param(0)# and 
 				#db.param(DateFormat(DateAdd("d",1,ted), "yyyy-mm-dd"))# and 
 				availability.rental_id = #db.param(rental_id)# 
                 </cfsavecontent><cfscript>qAvail222=db.execute("qAvail222");</cfscript>

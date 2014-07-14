@@ -42,6 +42,9 @@
 			#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls, 
 			#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site) 
 			WHERE mls.mls_id = app_x_mls.mls_id and 
+			mls_deleted = #db.param(0)# and 
+			app_x_mls_deleted = #db.param(0)# and 
+			app_x_site_deleted = #db.param(0)# and 
 			app_x_mls.site_id = app_x_site.site_id and 
 			app_x_site.site_id=#db.param(request.zos.globals.id)#  AND 
 			app_x_site.app_id=#db.param(11)# and 
@@ -121,6 +124,7 @@
 	FROM ( #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ) 
 	#db.trustedSQL(rs2.leftJoin)# 
 	WHERE 
+	manual_listing_deleted = #db.param(0)# and 
 	manual_listing.site_id = #db.param(request.zos.globals.id)#
 	<cfif searchtext NEQ ''>
 		<cfif searchexactonly EQ 1>
@@ -264,7 +268,7 @@
 	WHERE manual_listing_id = #db.param(form.manual_listing_id)# and 
 	site_id = #db.param(request.zos.globals.id)# </cfsavecontent>
 	<cfscript>
-qCheck=db.execute("qCheck");
+	qCheck=db.execute("qCheck");
 
         if(qCheck.recordcount EQ 0){
             application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this manual_listing.',false,true);
@@ -316,7 +320,9 @@ qCheck=db.execute("qCheck");
             }
         }
 		if(form.method EQ "update"){
-			db.sql="select * from #db.table("manual_listing", request.zos.zcoreDatasource)# where site_id = #db.param(request.zos.globals.id)# and manual_listing_id=#db.param(manual_listing_id)#";
+			db.sql="select * from #db.table("manual_listing", request.zos.zcoreDatasource)# where 
+			site_id = #db.param(request.zos.globals.id)# and 
+			manual_listing_id=#db.param(manual_listing_id)#";
 			qCheck=db.execute("qCheck");	
 		}
 		
@@ -453,6 +459,7 @@ qCheck=db.execute("qCheck");
 		
 		db.sql="SELECT * FROM #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing 
 		WHERE manual_listing_id = #db.param(form.manual_listing_id)# and 
+		manual_listing_deleted = #db.param(0)# and 
 		manual_listing.site_id = #db.param(request.zos.globals.id)#";
 		qmanual_listing=db.execute("qmanual_listing");
         if(currentMethod EQ 'edit'){
@@ -468,6 +475,9 @@ qCheck=db.execute("qCheck");
 			app_x_mls.site_id = app_x_site.site_id and 
 			app_x_site.site_id=#db.param(request.zos.globals.id)#  AND 
 			app_x_site.app_id=#db.param(11)# and 
+			mls_deleted = #db.param(0)# and 
+			app_x_mls_deleted = #db.param(0)# and 
+			app_x_site_deleted = #db.param(0)# and 
 			mls.mls_id = #db.param(application.zcore.functions.zso(form,'manual_listing_mls_id'))# and 
 			mls_status = #db.param('1')#";
 		local.qMLS=db.execute("qMLS");
@@ -661,6 +671,7 @@ qCheck=db.execute("qCheck");
         SELECT cast(group_concat(distinct listing_city SEPARATOR #db.param("','")#) AS CHAR) idlist 
 		from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 		WHERE 
+		listing_deleted = #db.param(0)# and 
         #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 
         listing_city not in #db.trustedSQL("('','0','#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#')")#
@@ -672,6 +683,7 @@ qCheck=db.execute("qCheck");
 		from #db.table("city_x_mls", request.zos.zcoreDatasource)# city_x_mls 
 		WHERE city_x_mls.city_id IN (#db.trustedSQL("'#qtype.idlist#'")#) and 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("city_x_mls"))#  and 
+		city_x_mls_deleted = #db.param(0)# and
 		city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#)  
               
         </cfsavecontent><cfscript>qCity=db.execute("qCity");</cfscript>
@@ -680,7 +692,8 @@ qCheck=db.execute("qCheck");
         <cfsavecontent variable="db.sql">
         select city.city_name label, city.city_id value 
 		from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
-		WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) 
+		WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) and 
+		city_deleted = #db.param(0)#
 		ORDER BY label 
         </cfsavecontent><cfscript>qCity10=db.execute("qCity10");
         arrK2=arraynew(1);

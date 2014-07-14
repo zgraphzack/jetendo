@@ -186,6 +186,7 @@ more?
         <cfsavecontent variable="db.sql">
         SELECT * from #request.zos.queryObject.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE blog_story <> #db.param('')# and 
+		blog_deleted = #db.param(0)# and 
 		site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) 
 		ORDER BY site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
@@ -231,6 +232,7 @@ more?
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 		WHERE blog_category_description <> #db.param('')# and 
+		blog_category_deleted = #db.param(0)# and
 		site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) ORDER BY site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
         </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
@@ -275,6 +277,7 @@ more?
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 		WHERE blog_tag_description <> #db.param('')# and 
+		blog_tag_deleted = #db.param(0)# and
 		site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) ORDER BY site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
         </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
@@ -320,7 +323,11 @@ more?
         SELECT * FROM #request.zos.queryObject.table("menu_button", request.zos.zcoreDatasource)# menu_button, 
 		#request.zos.queryObject.table("menu_button_link", request.zos.zcoreDatasource)# 
 		WHERE menu_button_link <> #db.param('')# and 
-		menu_button.site_id = menu_button_link.site_id and menu_button.site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) ORDER BY menu_button.site_id ASC
+		menu_button_deleted = #db.param(0)# and 
+		menu_button_link_deleted = #db.param(0)# and
+		menu_button.site_id = menu_button_link.site_id and 
+		menu_button.site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) 
+		ORDER BY menu_button.site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
         </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
         <cfset application.siteReportCurrentPosition="zVerifyInternalMenuButtonLinks:"&local.lastOffset>
@@ -382,6 +389,8 @@ more?
         SELECT * FROM #request.zos.queryObject.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link, 
 		#request.zos.queryObject.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 		WHERE menu_button_link.menu_button_id = menu_button.menu_button_id and 
+		menu_button_link_deleted = #db.param(0)# and 
+		menu_button_deleted = #db.param(0)# and
 		menu_button_link_url <> #db.param('')# and 
 		menu_button_link.site_id = menu_button.site_id and 
 		menu_button_link.site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) 
@@ -450,6 +459,8 @@ more?
 		FROM #request.zos.queryObject.table("site_option", request.zos.zcoreDatasource)# site_option, 
 		#request.zos.queryObject.table("site_x_option", request.zos.zcoreDatasource)# site_x_option 
 		WHERE site_option_name NOT IN (#db.param('Visitor Tracking Code')#,#db.param('Lead Conversion Tracking Code')#) and 
+		site_option_deleted = #db.param(0)# and 
+		site_x_option_deleted = #db.param(0)# and 
 		site_option.site_option_id = site_x_option.site_option_id and 
 		site_option.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("site_x_option.site_option_id_siteIDType"))# and 
 		site_x_option_value <> #db.param('')#  and 
@@ -522,6 +533,9 @@ more?
 		#request.zos.queryObject.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group, 
 		#request.zos.queryObject.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set 
 		WHERE site_x_option_group.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
+		site_option_deleted = #db.param(0)# and 
+		site_x_option_group_deleted = #db.param(0)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and
 		site_option.site_option_id = site_x_option_group.site_option_id and 
 		site_option.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("site_x_option_group.site_option_id_siteIDType"))# and 
 		site_x_option_group_set.site_id = site_x_option_group.site_id and 
@@ -591,7 +605,8 @@ more?
     <cfloop condition="#true#">
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-		WHERE site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) 
+		WHERE site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) and 
+		site_deleted = #db.param(0)#
 		ORDER BY site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
         </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
@@ -646,7 +661,9 @@ more?
     <cfloop condition="#true#">
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
-		WHERE site_id IN (#db.param(request.siteIdListTemp99)#) ORDER BY site_id ASC
+		WHERE site_id IN (#db.param(request.siteIdListTemp99)#) and 
+		rental_deleted = #db.param(0)# 
+		ORDER BY site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
         </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
         
@@ -709,7 +726,9 @@ more?
     <cfloop condition="#true#">
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
-		WHERE site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) ORDER BY site_id ASC
+		WHERE site_id IN (#db.trustedSQL(request.siteIdListTemp99)#) and 
+		rental_category_deleted = #db.param(0)# 
+		ORDER BY site_id ASC
         limit #db.param(local.lastOffset)#, #db.param(request.tempPerLoop99)#
         </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
         
@@ -771,6 +790,7 @@ more?
     SELECT link_verify_link_id FROM 
 	#request.zos.queryObject.table("link_verify_link", request.zos.zcoreDatasource)# link_verify_link 
 	WHERE link_verify_link_url=#db.param(local.hashLink)# and 
+	link_verify_link_deleted = #db.param(0)# and
 	((link_verify_link_status = #db.param(1)# and 
 	link_verify_link_datetime>#db.param(variables.oneWeekAgoMysql)# ) or 
 	(link_verify_link_status = #db.param(0)# and 
@@ -880,7 +900,9 @@ more?
 		WHERE app_x_site.site_id = site.site_id and 
 		app_x_site.app_id =#db.param('12')# and 
 		site.site_active=#db.param('1')# and 
-		site.site_id <>#db.param('1')#
+		site.site_id <>#db.param('1')# and 
+		site_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# 
 		<cfif structkeyexists(form, 'siteOnly')> and site.site_id = #db.param(request.zos.globals.id)# 
 		<cfelse>
 		<cfif structkeyexists(application,'siteReportCurrentSiteId')> and site.site_id >=#db.param(application.siteReportCurrentSiteId)# </cfif> 
@@ -889,7 +911,8 @@ more?
 		ORDER BY site.site_id ASC
 		</cfsavecontent><cfscript>qSites=db.execute("qSites");
 		
-		db.sql="delete from #db.table('link_verify_status', request.zos.zcoreDatasource)# WHERE ";
+		db.sql="delete from #db.table('link_verify_status', request.zos.zcoreDatasource)# WHERE 
+		link_verify_status_deleted = #db.param(0)# and ";
 		if(structkeyexists(form, 'siteOnly')){
 			db.sql&=" site_id = "&db.param(request.zos.globals.id);
 		}else{
@@ -957,7 +980,9 @@ more?
 	WHERE app_x_site.site_id = site.site_id and 
 	app_x_site.app_id =#db.param('12')# and 
 	site.site_active=#db.param('1')#  and 
-	site.site_id <>#db.param('1')#
+	site.site_id <>#db.param('1')# and 
+	site_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)#
 	ORDER BY site.site_id ASC
 	</cfsavecontent><cfscript>qSites=db.execute("qSites");
 	request.siteIdListTemp99=qSites.idlist;
@@ -965,13 +990,15 @@ more?
 	<cfif request.zos.isDeveloper>
 		<cfsavecontent variable="db.sql">
 		DELETE FROM #request.zos.queryObject.table("link_verify_status", request.zos.zcoreDatasource)#  
-		WHERE site_id NOT IN (#db.trustedSQL(request.siteIdListTemp99)#)
+		WHERE site_id NOT IN (#db.trustedSQL(request.siteIdListTemp99)#) and 
+		link_verify_status_deleted = #db.param(0)#
 		</cfsavecontent><cfscript>qd=db.execute("qd");</cfscript>
 	</cfif>
 	
 	<cfsavecontent variable="db.sql">
 	SELECT count(*) count FROM #request.zos.queryObject.table("link_verify_status", request.zos.zcoreDatasource)# link_verify_status 
 	WHERE link_verify_status_status = #db.param(0)# and 
+	link_verify_status_deleted = #db.param(0)# and
 	site_id IN (#db.trustedSQL(request.siteIdListTemp99)#)
 	<cfif request.zos.isDeveloper EQ false or structkeyexists(form, 'testnondev')>
 	and site_id = #db.param(request.zos.globals.id)# 
@@ -1005,7 +1032,8 @@ more?
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #request.zos.queryObject.table("link_verify_status", request.zos.zcoreDatasource)# link_verify_status 
-	WHERE link_verify_status_status = #db.param(0)# 
+	WHERE link_verify_status_status = #db.param(0)# and 
+	link_verify_status_deleted = #db.param(0)#
 	<cfif request.zos.isDeveloper EQ false or structkeyexists(form, 'testnondev')>
 	and site_id = #db.param(request.zos.globals.id)# 
 	<cfelse>
@@ -1017,7 +1045,8 @@ more?
 	<cfsavecontent variable="db.sql">
 	SELECT max(link_verify_status_datetime) md FROM 
 	#request.zos.queryObject.table("link_verify_status", request.zos.zcoreDatasource)# link_verify_status 
-	WHERE link_verify_status_status = #db.param(0)# 
+	WHERE link_verify_status_status = #db.param(0)# and 
+	link_verify_status_deleted = #db.param(0)# 
 	<cfif request.zos.isDeveloper EQ false or structkeyexists(form, 'testnondev')>
 	and site_id = #db.param(request.zos.globals.id)# 
 	<cfelse>

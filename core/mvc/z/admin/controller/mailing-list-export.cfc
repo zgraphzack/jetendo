@@ -27,12 +27,19 @@
 	<p>Copy and paste the following mailing list data into a spreadsheet for us in another system.</p>
 	<cfscript>
 	arrayAppend(arrLine, '"Email","First Name","Last Name","Phone","Opt In","Opt In Confirmed"');
-	db.sql="select * from #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user WHERE user_active=#db.param('1')# and site_id=#db.param(request.zos.globals.id)# #db.trustedSQL(filterSQL1)#";
+	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
+	WHERE user_active=#db.param('1')# and 
+	user_deleted = #db.param(0)# and 
+	site_id=#db.param(request.zos.globals.id)# 
+	#db.trustedSQL(filterSQL1)#";
 	qU=db.execute("qU");
 	loop query="qU"{
 		arrayAppend(arrLine, '"'&qU.user_username&'","'&qU.user_first_name&'","'&qU.user_last_name&'","'&qU.user_phone&'","'&qU.user_pref_email&'","'&qU.user_confirm&'"');
 	}
-	db.sql="select * from #request.zos.queryObject.table("mail_user", request.zos.zcoreDatasource)# mail_user WHERE site_id=#db.param(request.zos.globals.id)# #db.trustedSQL(filterSQL2)#";
+	db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	mail_user_deleted = #db.param(0)# 
+	#db.trustedSQL(filterSQL2)#";
 	qM=db.execute("qM");
 	loop query="qM"{
 		arrayAppend(arrLine, '"'&qM.mail_user_email&'","'&qM.mail_user_first_name&'","'&qM.mail_user_last_name&'","'&qM.mail_user_phone&'","'&qM.mail_user_opt_in&'","'&qM.mail_user_confirm&'"');

@@ -557,6 +557,7 @@
 		#db.table("site", request.zos.zcoreDatasource)#
 		where site_id <> #db.param(form.sid)# and 
 		site_ssl_manager_domain = #db.param(form.site_ssl_manager_domain)# and 
+		site_deleted = #db.param(0)# and
 		site_active = #db.param(1)# ";
 		qCheckManagerDomain=db.execute("qCheckManagerDomain");
 		if(qCheckManagerDomain.recordcount){
@@ -592,6 +593,7 @@
 			var idList=arraytolist(arrId,"','");
 			db.sql="select * from #db.table("app_reserve", request.zos.zcoreDatasource)# app_reserve 
 			WHERE app_reserve_url_id IN (#db.trustedSQL("'#idList#'")#) and 
+			app_reserve_deleted = #db.param(0)# and
 			site_id = #db.param(form.sid)# ";
 			qCheck2=db.execute("qCheck2"); 
 			if(qcheck2.recordcount NEQ 0){
@@ -959,7 +961,8 @@
 	WHERE site_id = #db.param(form.sid)#";
 	qWebSite=db.execute("qWebSite");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id <> #db.param(form.sid)# 
+	WHERE site_id <> #db.param(form.sid)# and 
+	site_deleted = #db.param(0)#
 	ORDER BY site_sitename ASC";
 	qSites=db.execute("qSites");
 	if(qWebSite.recordcount EQ 0 and currentMethod EQ "edit"){
@@ -1386,7 +1389,8 @@
 			<cfscript>
 			db.sql="select * from #db.table("site", request.zos.zcoreDatasource)# 
 			WHERE site_active = #db.param(1)# and 
-			site_id <> #db.param(-1)#
+			site_id <> #db.param(-1)# and 
+			site_deleted = #db.param(0)#
 			ORDER BY site_short_domain ASC";
 			local.qActiveSites=db.execute("qActiveSites");
 			selectStruct = StructNew();

@@ -23,15 +23,18 @@ this.customStruct = StructNew();
 </cffunction>
 <cffunction name="getPublicMembers" localmode="modern" returntype="any" output="false">
 	<cfscript> 
-        var qmember=0;
+	var qmember=0;
 	var db=request.zos.queryObject;
 	var local=structnew();
-        var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
-        var user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
-        var user_group_id2 = userGroupCom.getGroupId('broker',request.zos.globals.id);
-        var user_group_id3 = userGroupCom.getGroupId('administrator',request.zos.globals.id);
-        db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-	WHERE user.site_id = #db.param(request.zos.globals.id)# and user.user_group_id IN (#db.param(user_group_id)#,#db.param(user_group_id2)#,#db.param(user_group_id3)#) and member_public_profile=#db.param('1')# ORDER BY member_sort ASC, member_first_name ASC ";
+	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
+	var user_group_id2 = userGroupCom.getGroupId('broker',request.zos.globals.id);
+	var user_group_id3 = userGroupCom.getGroupId('administrator',request.zos.globals.id);
+	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
+	WHERE user.site_id = #db.param(request.zos.globals.id)# and 
+	user_deleted = #db.param(0)# and 
+	user.user_group_id IN (#db.param(user_group_id)#,#db.param(user_group_id2)#,#db.param(user_group_id3)#) and member_public_profile=#db.param('1')# 
+	ORDER BY member_sort ASC, member_first_name ASC ";
 	qMember=db.execute("qMember");
 	return qMember;
 	</cfscript>
@@ -51,6 +54,7 @@ this.customStruct = StructNew();
 	}
 	db.sql="select user_id, user_pref_email from #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_username=#db.param(arguments.ss.user_username)# and 
+	user_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	qU=db.execute("qU"); 
 	if(qU.recordcount NEQ 0){
@@ -63,6 +67,7 @@ this.customStruct = StructNew();
 			user_pref_email=#db.param(1)#,
 			user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE user_id=#db.param(qU.user_id)# and 
+			user_deleted = #db.param(0)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q"); 
 		}
@@ -71,6 +76,7 @@ this.customStruct = StructNew();
 	db.sql="select mail_user_id, mail_user_opt_in, mail_user_confirm 
 	from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 	WHERE mail_user_email=#db.param(arguments.ss.user_username)# and 
+	mail_user_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	qU=db.execute("qU"); 
 	if(qU.recordcount NEQ 0){
@@ -81,6 +87,7 @@ this.customStruct = StructNew();
 			mail_user_opt_in=#db.param(1)#,
 			mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE mail_user_id=#db.param(qU.mail_user_id)# and 
+			mail_user_deleted = #db.param(0)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q"); 
 			mail_user_id=qU.mail_user_id;
@@ -260,6 +267,7 @@ userCom.checkLogin(inputStruct);
 		oldDate=DateFormat(oldDate,'yyyy-mm-dd')&' '&TimeFormat(oldDate,'HH:mm:ss');
 		db.sql="SELECT * FROM #db.table("login_log", request.zos.zcoreDatasource)# login_log 
 		WHERE login_log_ip=#db.param(request.zos.cgi.remote_addr)# and 
+		login_log_deleted = #db.param(0)# and 
 		login_log_user_agent=#db.param(left(cgi.HTTP_USER_AGENT,150))# and 
 		login_log_datetime > #db.param(oldDate)# and 
 		login_log_username=#db.param(form.zUsername)# and 
@@ -295,6 +303,7 @@ userCom.checkLogin(inputStruct);
 				SET login_log_email_sent =#db.param(1)#,
 				login_log_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				WHERE login_log_ip=#db.param(request.zos.cgi.remote_addr)# and 
+				login_log_deleted = #db.param(0)# and 
 				login_log_user_agent=#db.param(left(cgi.HTTP_USER_AGENT,150))# and 
 				login_log_datetime > #db.param(oldDate)# and 
 				site_id <> #db.param(-1)# ";
@@ -327,6 +336,7 @@ userCom.checkLogin(inputStruct);
 		db.sql="SELECT *
 		FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user.user_username = #db.param(form.zUsername)# and 
+		user_deleted = #db.param(0)# and 
 		user_active = #db.param(1)# and 
 		(user.site_id = #db.param(ss.site_id)# or 
 		(user.user_server_administrator = #db.param('1')# and 
@@ -375,6 +385,7 @@ userCom.checkLogin(inputStruct);
 								user_password_version = #db.param(request.zos.defaultPasswordVersion)#,
 								user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 								WHERE user_id = #db.param(qUserCheck.user_id)# and 
+								user_deleted = #db.param(0)# and 
 								site_id = #db.param(qUserCheck.site_id)#";
 								db.execute("qDeleteUserPassword");
 							}
@@ -389,6 +400,7 @@ userCom.checkLogin(inputStruct);
 							user_password_version = #db.param(request.zos.defaultPasswordVersion)#,
 							user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 							WHERE user_id = #db.param(qUserCheck.user_id)# and 
+							user_deleted = #db.param(0)# and 
 							site_id = #db.param(qUserCheck.site_id)#";
 							db.execute("qUpdateUserPassword");
 						}
@@ -417,6 +429,7 @@ userCom.checkLogin(inputStruct);
 			SET user_updated_ip = #db.param(request.zos.cgi.remote_addr)#, 
 			user_updated_datetime = #db.param(request.zos.mysqlnow)# 
 			WHERE user.user_id = #db.param(qUserCheck.user_id)# and 
+			user_deleted = #db.param(0)# and 
 			site_id = #db.param(qUserCheck.site_id)#";
 			db.execute("q"); 
 			application.zcore.tracking.setUserEmail(qUserCheck.user_username);
@@ -726,6 +739,7 @@ userCom.checkLogin(inputStruct);
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(request.zsession[userSiteId].id)# and  
 	user_active = #db.param(1)# and 
+	user_deleted = #db.param(0)# and 
 	user_username = #db.param(request.zsession[userSiteId].email)# and 
 	(site_id = #db.param(ss.site_id)# or 
 	(user_server_administrator = #db.param('1')# and 
@@ -780,10 +794,12 @@ userCom.checkLogin(inputStruct);
 		//if(not hasAllGroups){
 			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE user_group_id = #db.param(qUser.user_group_id)# and 
+			user_group_deleted = #db.param(0)# and 
 			site_id = #db.param(qUser.site_id)# ";
 			qGroupCheck=db.execute("qGroupCheck");
 			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE user_group_name = #db.param(qGroupCheck.user_group_name)# and 
+			user_group_deleted = #db.param(0)# and 
 			site_id = #db.param(request.zos.globals.id)# ";
 			qGroupCheck2=db.execute("qGroupCheck");
 
@@ -792,6 +808,8 @@ userCom.checkLogin(inputStruct);
 			#db.table("user_group_x_group", request.zos.zcoreDatasource)# user_group_x_group
 			WHERE user_group.user_group_id = user_group_x_group.user_group_child_id and 
 			user_group.site_id = user_group_x_group.site_id and 
+			user_group_deleted = #db.param(0)# and 
+			user_group_x_group_deleted = #db.param(0)# and 
 			user_group.site_id = #db.param(request.zos.globals.id)# and 
 			user_group_x_group.user_group_id = #db.param(qGroupCheck2.user_group_id)# 
 			ORDER BY user_group_primary DESC";
@@ -801,6 +819,8 @@ userCom.checkLogin(inputStruct);
 			#db.table("user_group_x_group", request.zos.zcoreDatasource)# user_group_x_group 
 			WHERE user_group.user_group_id = user_group_x_group.user_group_child_id and 
 			user_group.site_id = user_group_x_group.site_id and 
+			user_group_deleted = #db.param(0)# and 
+			user_group_x_group_deleted = #db.param(0)# and 
 			user_group.site_id = #db.param(request.zos.globals.id)# and 
 			user_group_x_group.user_group_id = #db.param(qUser.user_group_id)#  ";
 			db.sql&=" ORDER BY user_group_primary DESC";
@@ -1240,6 +1260,7 @@ formString = userCom.loginForm(inputStruct);
 	db.sql="select * from #db.table("user_token", request.zos.zcoreDatasource)# user_token 
 	WHERE 
 	user_token_version=#db.param(local.arrToken[1])# and 
+	user_token_deleted = #db.param(0)# and 
 	user_token_id=#db.param(local.arrToken[2])# and 
 	user_token_username=#db.param(local.arrToken[3])# and 
 	user_token_datetime>=#db.param(dateformat(dateadd("d",-30,now()),"yyyy-mm-dd")&" 00:00:00")# and 
@@ -1271,6 +1292,7 @@ formString = userCom.loginForm(inputStruct);
 		WHERE 
 		user_token_version=#db.param(local.arrToken[1])# and 
 		user_token_id=#db.param(local.arrToken[2])# and 
+		user_token_deleted = #db.param(0)# and 
 		user_token_username=#db.param(local.arrToken[3])# and 
 		site_id=#db.param(request.zos.globals.id)# 
 		";
@@ -1315,6 +1337,7 @@ formString = userCom.loginForm(inputStruct);
 			user_token_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			WHERE 
 			user_token_version=#db.param(local.arrToken[1])# and 
+			user_token_deleted = #db.param(0)# and
 			user_token_id=#db.param(local.arrToken[2])# and 
 			user_token_username=#db.param(local.arrToken[3])# and 
 			site_id=#db.param(request.zos.globals.id)# 
@@ -1357,6 +1380,7 @@ formString = userCom.loginForm(inputStruct);
 	WHERE 
 	user_token_version=#db.param(local.arrToken[1])# and 
 	user_token_id=#db.param(local.arrToken[2])# and 
+	user_deleted = #db.param(0)# and 
 	user_token_username=#db.param(local.arrToken[3])# and 
 	site_id=#db.param(request.zos.globals.id)# 
 	";
@@ -1381,6 +1405,7 @@ formString = userCom.loginForm(inputStruct);
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
 	user_id = #db.param(arguments.user_id)# and 
+	user_deleted = #db.param(0)# and
 	site_id = #db.param(arguments.site_id)#";
 	qUser=db.execute("qUser");
 	row={};

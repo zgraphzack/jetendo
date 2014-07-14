@@ -171,7 +171,8 @@ inquiries_address2=c_address2;
 db.sql="SELECT * FROM availability 
 WHERE rental_id = #db.param(rental_id)# and 
 availability_date >=#db.param(DateFormat(inquiries_start_date,'yyyy-mm-dd'))# and 
-availability_date <= #db.param(DateFormat(inquiries_end_date,'yyyy-mm-dd'))#";
+availability_date <= #db.param(DateFormat(inquiries_end_date,'yyyy-mm-dd'))# and 
+availability_deleted = #db.param(0)#";
 qAvail=db.execute("qAvail"); 
 
 if(qAvail.recordcount NEQ 0){
@@ -274,7 +275,8 @@ if(r_approved EQ 'APPROVED'){
 	db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	set inquiries_primary=#db.param(0)#,
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)# 
-	where inquiries_email=#db.param(inquiries_email)#";
+	where inquiries_email=#db.param(inquiries_email)# and 
+	inquiries_deleted = #db.param(0)#";
 	db.execute("q"); 
 	ts=StructNew();
 	ts.datasource="#request.zos.zcoreDatasource#";
@@ -292,6 +294,7 @@ if(r_approved EQ 'APPROVED'){
 		db.sql="INSERT INTO availability 
 		SET rental_id = #db.param(rental_id)#,
 		availability_date = #db.param(DateFormat(curDay, 'yyyy-mm-dd'))#, 
+		availability_updated_datetime = #db.param(request.zos.mysqlnow)#, 
 		inquiries_id = #db.param(inquiries_id)#";
 		db.execute("q");  
 	}
@@ -354,7 +357,8 @@ if(r_approved EQ 'APPROVED'){
 			db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 			set inquiries_primary=#db.param(0)#,
 			inquiries_updated_datetime=#db.param(request.zos.mysqlnow)# 
-			 where inquiries_email=#db.param(inquiries_email)#";
+			 where inquiries_email=#db.param(inquiries_email)# and 
+			 inquiries_deleted = #db.param(0)#";
 			db.execute("q"); 
 			ts=StructNew();
 			ts.table="inquiries";
@@ -449,13 +453,17 @@ Login and view inquiry:
         LEFT JOIN inquiries_type ON 
 		inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 		inquiries_type.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#) and 
-		inquiries.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))#
+		inquiries.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+		inquiries_type_deleted = #db.param(0)#
         LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 		user.user_id = inquiries.user_id and 
-		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))#
+		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
+		user_deleted = #db.param(0)#
         WHERE inquiries.site_id = #db.param(request.zOS.globals.id)#  and 		
 		inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
-        inquiries_id = #db.param(inquiries_id)#
+        inquiries_id = #db.param(inquiries_id)# and 
+        inquiries_status_deleted = #db.param(0)# and 
+        inquiries_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qinquiry2=db.execute("qinquiry2");
 	zquerytostruct(qinquiry2);
 	</cfscript>
@@ -527,18 +535,22 @@ Login and view inquiry:
       <h2>Reservation Confirmation Details</h2>
 		  <p>Please ensure all  information below is accurate.&nbsp; If there  is a discrepancy in the information please call our office immediately.&nbsp; Make sure you scroll to the end of the  statement to read important information.&nbsp;  The statement will end with our address and phone numbers.</p>
       <cfsavecontent variable="db.sql">
-SELECT * FROM (inquiries_status, inquiries) 
+		SELECT * FROM (inquiries_status, inquiries) 
       LEFT JOIN inquiries_type ON 
 	  inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 	  inquiries_type.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#) and 
-	  inquiries.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))#
+	  inquiries.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+	  inquiries_type_deleted = #db.param(0)#
       LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 	  user.user_id = inquiries.user_id and 
-	  user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))#
-      WHERE inquiries.site_id = #db.param(request.zOS.globals.id)#  and 		
+	  user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
+	  user_deleted = #db.param(0)#
+      WHERE inquiries.site_id = #db.param(request.zOS.globals.id)#  and 	
+      inquiries_deleted = #db.param(0)# and 
+      inquiries_status_deleted = #db.param(0)# and 	
 	  inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
       inquiries_id = #db.param(application.zcore.functions.zso(form, 'inquiries_id'))# and 
-inquiries_email = #db.param(application.zcore.functions.zso(form, 'inquiries_email'))#
+		inquiries_email = #db.param(application.zcore.functions.zso(form, 'inquiries_email'))#
       </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");
 			if(qInquiry.recordcount EQ 0){
 				application.zcore.status.setStatus(request.zsid, 'Invalid request');
@@ -627,7 +639,9 @@ inquiries_email = #db.param(application.zcore.functions.zso(form, 'inquiries_ema
    <!---  <cfsavecontent variable="db.sql">
 	SELECT *
     from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
-    WHERE inquiries_id = #db.param(-1)# and site_id=#db.param(request.zos.globals.id)# 
+    WHERE inquiries_id = #db.param(-1)# and 
+    inquiries_deleted = #db.param(0)# and 
+    site_id=#db.param(request.zos.globals.id)# 
     </cfsavecontent><cfscript>qInquiries=db.execute("qInquiries");
 		for(i=1;i LTE listlen(qInquiries.columnlist);i=i+1){
 			StructInsert(variables, listgetat(qInquiries.columnlist,i), qInquiries[listgetat(qInquiries.columnlist,i)][1], true);
@@ -733,13 +747,14 @@ if(rental_id EQ 36 and zso(form, 'inquiries_adults',true) + zso(form, 'inquiries
       LEFT JOIN availability a1 ON 
 	  (a1.availability_date BETWEEN #db.param(DateFormat(tsd, "yyyy-mm-dd"))# and 
 		#db.param(DateFormat(ted, "yyyy-mm-dd"))# and 
-		a1.rental_id = rental.rental_id) 
+		a1.rental_id = rental.rental_id) and a1_deleted = #db.param(0)# 
       LEFT JOIN availability a2 ON 
 	  (a2.availability_date >= #db.param(DateFormat(now(), "yyyy-mm-dd"))#  and 
 	  a2.rental_id = rental.rental_id)
-      <!--- WHERE rental.rental_active=#db.param(1)#  --->
+      <!--- WHERE rental.rental_active=#db.param(1)#  ---> and a2_deleted = #db.param(0)#
       WHERE a1.rental_id IS NULL and 
-	  rental.rental_active=#db.param(1)# 
+	  rental.rental_active=#db.param(1)# and  
+	  rental_deleted = #db.param(0)# 
       and rental.rental_id = #db.param(form.rental_id)#
       </cfsavecontent><cfscript>qAvail=db.execute("qAvail");</cfscript>
       <cfif qAvail.recordcount EQ 0>
@@ -972,7 +987,8 @@ if(rental_id EQ 26 or rental_id EQ 47 or rental_id EQ 49 or rental_id EQ 52){
         <td>Select Cabin</td>
         <td><cfsavecontent variable="db.sql">
 			SELECT * FROM rental WHERE rental_active=#db.param(1)# and 
-			rental_id <> #db.param('7')#
+			rental_id <> #db.param('7')# and 
+			rental_deleted = #db.param(0)#
           ORDER BY rental_name ASC
           </cfsavecontent><cfscript>qProperties=db.execute("qProperties");
 if(structkeyexists(form, 'rental_id')){

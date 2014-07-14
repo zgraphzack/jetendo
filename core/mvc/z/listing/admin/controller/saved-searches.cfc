@@ -13,7 +13,8 @@
 		}
 		db.sql="delete from #db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 		WHERE saved_search_email = #db.param(form.saved_search_email)# and 
-		site_id = #db.param(request.zos.globals.id)#";
+		site_id = #db.param(request.zos.globals.id)# and 
+        mls_saved_search_deleted = #db.param(0)#";
 		db.execute("q"); 
 		application.zcore.status.setStatus(request.zsid, 'Saved search deleted');
 		application.zcore.functions.zRedirect('/z/listing/admin/saved-searches/index?zsid=#request.zsid#');
@@ -59,7 +60,8 @@
     <cfsavecontent variable="db.sql">
     SELECT count(distinct saved_search_email) count 
 	FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-    WHERE  site_id = #db.param(request.zos.globals.id)#
+    WHERE  site_id = #db.param(request.zos.globals.id)# and 
+    mls_saved_search_deleted = #db.param(0)#
     <cfif structkeyexists(form, 'searchemail')>
      and saved_search_email like #db.param('%#form.searchemail#%')#
     </cfif>  and saved_search_email <>#db.param('')#
@@ -67,7 +69,8 @@
     <cfsavecontent variable="db.sql">
     SELECT *, count(mls_saved_search_id) count, max(mls_saved_search_id) maxid 
 	FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search
-    WHERE  site_id = #db.param(request.zos.globals.id)#
+    WHERE  site_id = #db.param(request.zos.globals.id)# and 
+    mls_saved_search_deleted = #db.param(0)#
     <cfif structkeyexists(form, 'searchemail')>
     and saved_search_email like #db.param('%#form.searchemail#%')#
     </cfif> and saved_search_email <>#db.param('')#

@@ -57,7 +57,9 @@ this.app_id=12;
 	var db=request.zos.queryObject;
 	</cfscript>
 	<cfsavecontent variable="db.sql">
-	SELECT * FROM #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site where site_id = #db.param(arguments.site_id)# 
+	SELECT * FROM #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
+	where site_id = #db.param(arguments.site_id)# and 
+	app_x_site_deleted = #db.param(0)#
 	</cfsavecontent><cfscript>qa=db.execute("qa");
 	if(application.zcore.functions.zvar('live',qa.site_id) EQ 1){
 		rs&="Sitemap: "&application.zcore.functions.zvar('domain',qa.site_id)&"/sitemap.xml.gz"&chr(10);
@@ -85,7 +87,8 @@ this.app_id=12;
 		content_show_site_map = #db.param(1)# and 
 		content.site_x_option_group_set_id <> #db.param(0)# and 
 		content.site_x_option_group_set_id = s.site_x_option_group_set_id and 
-		content.site_id = s.site_id 
+		content.site_id = s.site_id and 
+		s.site_x_option_group_set_deleted = #db.param(0)#
 		group by content.site_x_option_group_set_id
 		order by s.site_x_option_group_set_title ASC
 		</cfsavecontent><cfscript>qsection=db.execute("qsection");
@@ -344,7 +347,8 @@ this.app_id=12;
 	var db=request.zos.queryObject;
 	db.sql="SELECT * FROM #db.table("content_config", request.zos.zcoreDatasource)# content_config 
 	where 
-	site_id = #db.param(arguments.site_id)#";
+	site_id = #db.param(arguments.site_id)# and 
+	content_config_deleted = #db.param(0)#";
 	qData=db.execute("qData");
 	arrColumns=listToArray(lcase(qdata.columnlist));
 	loop query="qdata"{
@@ -384,7 +388,10 @@ this.app_id=12;
 	#db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site.site_id = app_x_site.site_id and 
 	app_x_site.app_x_site_id = content_config.app_x_site_id and 
-	content_config.site_id = #db.param(arguments.site_id)#";
+	content_config.site_id = #db.param(arguments.site_id)# and 
+	content_config_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)# and 
+	site_deleted = #db.param(0)#";
 	qConfig=db.execute("qConfig");
 	db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE
 	content_system_url=#db.param(0)# and 
@@ -475,7 +482,8 @@ this.app_id=12;
 	var qconfig=0;
 	var rCom=createObject("component","zcorerootmapping.com.zos.return");
 	db.sql="DELETE FROM #db.table("content_config", request.zos.zcoreDatasource)#  
-	WHERE site_id = #db.param(request.zos.globals.id)#	";
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	content_config_deleted = #db.param(0)#	";
 	qConfig=db.execute("qConfig");
 	return rCom;
 	</cfscript>   
@@ -569,7 +577,8 @@ this.app_id=12;
 	var rCom=createObject("component","zcorerootmapping.com.zos.return");
 	savecontent variable="theText"{
 		db.sql="SELECT * FROM #db.table("content_config", request.zos.zcoreDatasource)# content_config 
-		WHERE site_id = #db.param(form.sid)#";
+		WHERE site_id = #db.param(form.sid)# and 
+		content_config_deleted = #db.param(0)#";
 		qConfig=db.execute("qConfig");
 		application.zcore.functions.zQueryToStruct(qConfig);//, "configStruct");
 		if(qConfig.recordcount EQ 0){
@@ -1533,6 +1542,7 @@ configCom.includeContentByName(ts);
 		db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
 		site_id <> #db.param(-1)# and 
 		app_id = #db.param(this.app_id)# and 
+		search_deleted = #db.param(0)# and
 		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
 		db.execute("qDelete");
 	}
@@ -1547,7 +1557,8 @@ configCom.includeContentByName(ts);
 	db=request.zos.queryObject;
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	app_id = #db.param(this.app_id)# ";
+	app_id = #db.param(this.app_id)# and 
+	search_deleted = #db.param(0)#";
 	db.execute("qDelete");
 	</cfscript>
 </cffunction>
@@ -1638,7 +1649,8 @@ configCom.includeContentByName(ts);
 			}
 			if(row.content_property_type_id NEQ 0 and row.content_property_type_id NEQ ""){
 				db.sql="SELECT * FROM #db.table("content_property_type", request.zos.zcoreDatasource)# content_property_type 
-				WHERE content_property_type_id = #db.param(row.content_property_type_id)#";
+				WHERE content_property_type_id = #db.param(row.content_property_type_id)# and 
+				content_property_type_deleted = #db.param(0)#";
 				qCp3i2=db.execute("qCp3i2");
 				if(qCp3i2.recordcount NEQ 0){
 					echo('<br />#qCp3i2.content_property_type_name#');

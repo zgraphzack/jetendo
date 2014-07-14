@@ -56,7 +56,8 @@
     <cfsavecontent variable="db.sql">
     SELECT * from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 	WHERE blog_category_parent_id = #db.param(arguments.id)# and 
-	site_id=#db.param(request.zos.globals.id)#  
+	site_id=#db.param(request.zos.globals.id)#  and 
+    blog_category_deleted = #db.param(0)#
 	ORDER BY blog_category_name ASC 
     </cfsavecontent><cfscript>local.qC=db.execute("qC");</cfscript>
     <cfloop query="local.qC">
@@ -66,6 +67,7 @@
 		SET blog_category_sort=#db.param(arguments.cur)#, 
 		blog_category_level=#db.param(arguments.level)#  
 		WHERE blog_category_id = #db.param(local.qC.blog_category_id)#  and 
+        blog_category_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#
         </cfsavecontent><cfscript>local.qU=db.execute("qU");
         arguments.cur=this.sortCat(local.qC.blog_category_id, arguments.cur, arguments.level+1);
@@ -123,6 +125,7 @@
         if(structkeyexists(form, 'blog_category_id') and form.blog_category_id NEQ ''){
             db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 			WHERE blog_category_id=#db.param(form.blog_category_id)# and 
+            blog_category_deleted = #db.param(0)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			qCheck=db.execute("qCheck"); 
             if(qcheck.recordcount EQ 0){
@@ -140,6 +143,7 @@
                 db.sql="SELECT blog_category_saved_search_id, blog_category_search_mls 
 				from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 				WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+                blog_category_deleted = #db.param(0)# and 
 				site_id = #db.param(request.zos.globals.id)#";
 				qId=db.execute("qId"); 
                 form.blog_category_saved_search_id=qid.blog_category_saved_search_id;
@@ -172,6 +176,7 @@
     if(structkeyexists(form, 'blog_category_id') and form.blog_category_id NEQ ''){
         db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 		WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+        blog_category_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		qCheck=db.execute("qCheck"); 
         if(application.zcore.functions.zso(form, 'blog_category_metakey') EQ qCheck.blog_category_metakey and qCheck.blog_category_metakey NEQ ""){
@@ -205,6 +210,7 @@
     
      db.sql="select * from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+    blog_category_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qT9=db.execute("qT9");
     application.zcore.functions.zQueryToStruct(qT9, form);
@@ -249,6 +255,7 @@
 	db.sql="select *
     from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
 	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+    blog_category_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#";
     qList=db.execute("qList");
     if(qList.recordcount EQ 0){
@@ -267,6 +274,7 @@
             from #db.table("blog_category", request.zos.zcoreDatasource)# 
             
     	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+        blog_category_deleted = #db.param(0)# and 
     	site_id=#db.param(request.zos.globals.id)#";
     	qDelete=db.execute("qDelete");
         this.sortCat(0);
@@ -281,6 +289,7 @@
         from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
         
 		WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+        blog_category_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#";
         qList=db.execute("qList");
         </cfscript>
@@ -304,6 +313,7 @@
     select *
     from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment
 	WHERE blog_id = #db.param(form.blog_id)# and 
+    blog_comment_deleted = #db.param(0)# and 
 	blog_comment_id = #db.param(form.blog_comment_id)# and 
 	site_id=#db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qList=db.execute("qList");
@@ -317,6 +327,7 @@
         db.sql="DELETE FROM #db.table("blog_comment", request.zos.zcoreDatasource)#  
 		WHERE blog_id=#db.param(form.blog_id)# and 
 		site_id=#db.param(request.zos.globals.id)# and 
+        blog_comment_deleted = #db.param(0)# and 
 		blog_comment_id =#db.param(form.blog_comment_id)#";
 		db.execute("q"); 
         application.zcore.status.setStatus(request.zsid,"Comment deleted.");
@@ -345,6 +356,7 @@
 	 SET blog_comment_approved=#db.param(1)#, 
      blog_comment_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE site_id=#db.param(request.zos.globals.id)# and 
+    blog_comment_deleted = #db.param(0)# and
 	blog_comment_id =#db.param(form.blog_comment_id)#";
 	db.execute("q");
 	application.zcore.status.setStatus(request.zsid,"Comment approved");	
@@ -368,6 +380,7 @@
     if(structkeyexists(form, 'deletef') and form.deletef EQ 1){
         db.sql="DELETE FROM #db.table("blog_comment", request.zos.zcoreDatasource)#  
 		WHERE blog_id=#db.param(form.blog_id)# and 
+        blog_comment_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)# and 
 		blog_comment_id =#db.param(form.blog_comment_id)#";
 		db.execute("q"); 
@@ -376,6 +389,7 @@
     }
 	db.sql="select * from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment 
 	WHERE blog_comment_id =#db.param(form.blog_comment_id)# and 
+    blog_comment_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	qC=db.execute("qC"); 
 	if(qC.recordcount EQ 0){
@@ -386,6 +400,7 @@
 	if(form.blog_comment_title eq ''){
 		db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE blog_id = #db.param(form.blog_id)# and 
+        blog_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		query=db.execute("query"); 
 		form.blog_comment_title = 'Re: '&query.blog_title;
@@ -506,6 +521,7 @@ if(arraylen(arrUser) EQ 1){
 	if(form.method EQ 'articleUpdate'){
 		db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE blog_id=#db.param(form.blog_id)# and 
+        blog_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)# and 
         site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#";
 		qCheck=db.execute("qCheck"); 
@@ -522,6 +538,7 @@ if(arraylen(arrUser) EQ 1){
                  db.sql="SELECT mls_saved_search_id, blog_search_mls 
 				 from #db.table("blog", request.zos.zcoreDatasource)# blog 
 				WHERE blog_id = #db.param(form.blog_id)# and 
+                blog_deleted = #db.param(0)# and 
 				site_id = #db.param(request.zos.globals.id)# and 
                 site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#";
 				qId=db.execute("qId");
@@ -544,6 +561,7 @@ if(arraylen(arrUser) EQ 1){
     if(form.method EQ "articleUpdate"){
         db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		WHERE blog_id = #db.param(form.blog_id)# and 
+        blog_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)# and 
         site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#";
 		qCheck=db.execute("qCheck"); 
@@ -596,6 +614,7 @@ if(arraylen(arrUser) EQ 1){
         arrCat=listtoarray(form.ccid,',');
          db.sql="DELETE FROM #db.table("blog_x_category", request.zos.zcoreDatasource)#  
 		WHERE blog_id = #db.param(form.blog_id)# and 
+        blog_x_category_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)# ";
 		db.execute("q");
         for(i=1;i LTE arraylen(ArrCat);i++){
@@ -604,6 +623,7 @@ if(arraylen(arrUser) EQ 1){
 				SET blog_category_id = #db.param(arrCat[i])#,
                 blog_updated_datetime = #db.param(request.zos.mysqlnow)#
 				WHERE blog_id = #db.param(form.blog_id)# and 
+                blog_deleted = #db.param(0)# and 
 				site_id=#db.param(request.zos.globals.id)# ";
 				a=db.execute("q"); 
             }
@@ -617,6 +637,7 @@ if(arraylen(arrUser) EQ 1){
     }
      db.sql="DELETE from #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
 	WHERE blog_id = #db.param(form.blog_id)# and 
+    blog_x_tag_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	db.execute("q"); 
     form.site_id=request.zos.globals.id;
@@ -632,6 +653,7 @@ if(arraylen(arrUser) EQ 1){
             if(form.blog_tag_id EQ false){
                 db.sql="SELECT blog_tag_id FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 				WHERE blog_tag_name = #db.param(form.blog_tag_name)# and 
+                blog_tag_deleted = #db.param(0)# and
 				site_id=#db.param(request.zos.globals.id)#";
 				qId=db.execute("qId"); 
                 form.blog_tag_id=qid.blog_tag_id;
@@ -648,6 +670,7 @@ if(arraylen(arrUser) EQ 1){
 	
     db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 	WHERE blog_id = #db.param(form.blog_id)# and 
+    blog_deleted = #db.param(0)# and
 	site_id=#db.param(request.zos.globals.id)#";
 	qT9=db.execute("qT9"); 
     application.zcore.functions.zQueryToStruct(qT9, form);
@@ -697,6 +720,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
     
 	WHERE blog_id = #db.param(form.blog_id)# and
     site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
+    blog_deleted = #db.param(0)# and
 	site_id=#db.param(request.zos.globals.id)#";
     qList=db.execute("qList");
     if(qList.recordcount EQ 0){
@@ -713,16 +737,19 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
     	application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogArticle(form.blog_id);
     	db.sql="delete
     	from #db.table("blog", request.zos.zcoreDatasource)# 
-    	WHERE blog_id = #db.param(form.blog_id)# and 
+    	WHERE blog_id = #db.param(form.blog_id)# and
+        blog_deleted = #db.param(0)# and 
     	site_id=#db.param(request.zos.globals.id)#";
     	qDelete=db.execute("qDelete");
             
     	db.sql="DELETE FROM #db.table("blog_x_category", request.zos.zcoreDatasource)#  
     	WHERE blog_id = #db.param(form.blog_id)# and 
+        blog_x_category_deleted = #db.param(0)# and 
     	site_id=#db.param(request.zos.globals.id)# ";
     	db.execute("q");
     	db.sql="DELETE from #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
     	WHERE blog_id = #db.param(form.blog_id)# and 
+        blog_x_tag_deleted = #db.param(0)# and
     	site_id=#db.param(request.zos.globals.id)# ";
     	db.execute("q");
             
@@ -808,15 +835,20 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
     #db.trustedSQL(rs2.select)#  
     from #db.table("blog", request.zos.zcoreDatasource)# blog
     left join #db.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
-    blog_category.blog_category_id = blog.blog_category_id  and blog.site_id = blog_category.site_id
+    blog_category.blog_category_id = blog.blog_category_id  and 
+    blog.site_id = blog_category.site_id and 
+    blog_category_deleted = #db.param(0)#
     left join #db.table("blog_comment", request.zos.zcoreDatasource)# c1 ON 
     c1.blog_id = blog.blog_id and 
-    blog.site_id = c1.site_id
+    blog.site_id = c1.site_id and 
+    c1.blog_comment_deleted = #db.param(0)#
     left join #db.table("blog_comment", request.zos.zcoreDatasource)# c2 ON 
     c2.blog_id = blog.blog_id and c2.blog_comment_approved=#db.param(0)#  and 
-    blog.site_id = c2.site_id
+    blog.site_id = c2.site_id and 
+    c2.blog_comment_deleted = #db.param(0)#
     #db.trustedSQL(rs2.leftJoin)#
     WHERE blog.site_id=#db.param(request.zos.globals.id)# and 
+    blog_deleted = #db.param(0)# and 
     site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
 	<cfif searchTextOriginal NEQ ''>
 		and 
@@ -855,7 +887,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
     select count(blog_id) as count 
 	from #db.table("blog", request.zos.zcoreDatasource)# blog 
 	WHERE site_id=#db.param(request.zos.globals.id)# and 
-    site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
+    site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
+    blog_deleted = #db.param(0)#
 	<cfif searchTextOriginal NEQ ''>
 		and 
 		
@@ -999,7 +1032,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
         if(form.method EQ 'tagUpdate'){
              db.sql="select * from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 			WHERE blog_tag_id=#db.param(form.blog_tag_id)# and 
-			site_id=#db.param(request.zos.globals.id)#";
+			site_id=#db.param(request.zos.globals.id)# and 
+            blog_tag_deleted = #db.param(0)#";
 			qCheck=db.execute("qCheck");
             if(qcheck.recordcount EQ 0){
                 application.zcore.status.setStatus(request.zsid,"This tag no longer exists.");
@@ -1033,7 +1067,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 		db.sql="SELECT blog_tag_saved_search_id, blog_tag_search_mls 
 		FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
-		site_id = #db.param(request.zos.globals.id)#";
+		site_id = #db.param(request.zos.globals.id)# and 
+        blog_tag_deleted = #db.param(0)#";
 		qId=db.execute("qId"); 
 		form.blog_tag_saved_search_id=qid.blog_tag_saved_search_id;
 	}else{
@@ -1054,7 +1089,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
     if(form.method EQ "tagUpdate"){
         db.sql="select * from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
-		site_id=#db.param(request.zos.globals.id)#"; 
+		site_id=#db.param(request.zos.globals.id)# and 
+        blog_tag_deleted = #db.param(0)#"; 
 		qCheck=db.execute("qCheck");
         if(application.zcore.functions.zso(form, 'blog_tag_metakey') EQ qCheck.blog_tag_metakey and qCheck.blog_tag_metakey NEQ ""){
             if(replace(replace(qCheck.blog_tag_name,"|"," ","ALL"),","," ","ALL") EQ qCheck.blog_tag_metakey){
@@ -1104,7 +1140,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 	
      db.sql="select * from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 	WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+    blog_tag_deleted = #db.param(0)#";
 	qT9=db.execute("qT9");
     application.zcore.functions.zQueryToStruct(qT9, form);
     ts=StructNew();
@@ -1176,16 +1213,18 @@ ts.struct=form;
     <cfsavecontent variable="db.sql">
     SELECT count(blog_tag.blog_tag_id) count 
 	FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
-	WHERE  site_id=#db.param(request.zos.globals.id)#
+	WHERE  site_id=#db.param(request.zos.globals.id)# and 
+    blog_tag_deleted = #db.param(0)#
     </cfsavecontent><cfscript>qCount=db.execute("qCount");</cfscript>
     <cfsavecontent variable="db.sql">
     SELECT *, if(blog_x_tag.blog_tag_id IS NULL,#db.param(0)#,count(blog_x_tag.blog_tag_id)) count 
 	FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
     LEFT JOIN #db.table("blog_x_tag", request.zos.zcoreDatasource)# blog_x_tag on 
 	blog_x_tag.blog_tag_id = blog_tag.blog_tag_id and 
-	blog_tag.site_id = blog_x_tag.site_id 
-    
-	WHERE  blog_tag.site_id=#db.param(request.zos.globals.id)# 
+	blog_tag.site_id = blog_x_tag.site_id and
+    blog_x_tag_deleted = #db.param(0)#
+	WHERE  blog_tag.site_id=#db.param(request.zos.globals.id)# and 
+    blog_tag_deleted = #db.param(0)#
     GROUP BY blog_tag.blog_tag_id ORDER BY blog_tag_name ASC 
     LIMIT #db.param((form.zIndex-1)*searchStruct.perpage)#,#db.param(searchStruct.perpage)#
     </cfsavecontent><cfscript>qT=db.execute("qT");
@@ -1230,8 +1269,8 @@ ts.struct=form;
     <cfsavecontent variable="db.sql">
     select *
     from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag
-    
 	WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
+    blog_tag_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qList=db.execute("qList");
     if(qList.recordcount EQ 0){
@@ -1250,11 +1289,13 @@ ts.struct=form;
         <cfsavecontent variable="db.sql">
         delete from #db.table("blog_tag", request.zos.zcoreDatasource)# 
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
-		site_id=#db.param(request.zos.globals.id)#
+		site_id=#db.param(request.zos.globals.id)# and 
+        blog_tag_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
         <cfsavecontent variable="db.sql">
         delete from #db.table("blog_x_tag", request.zos.zcoreDatasource)# 
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
+        blog_x_tag_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#
         </cfsavecontent><cfscript>qDelete=db.execute("qDelete");
             application.zcore.status.setStatus(request.zsid, 'Your tag has been deleted.');
@@ -1265,7 +1306,8 @@ ts.struct=form;
 		select *
 		from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
-		site_id=#db.param(request.zos.globals.id)#
+		site_id=#db.param(request.zos.globals.id)# and 
+        blog_tag_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
         <h2>Are you sure you want to delete #qList.blog_tag_name#?<br />
         <br />
@@ -1301,6 +1343,7 @@ ts.struct=form;
         select *
         from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
+        blog_tag_deleted = #db.param(0)# and
 		site_id=#db.param(request.zos.globals.id)#
         </cfsavecontent><cfscript>qEdit=db.execute("qEdit");</cfscript>
         <cfif form.method EQ 'tagForm'>
@@ -1447,6 +1490,7 @@ tabCom.enableSaveButtons();
 	db.sql="select *
 	from #db.table("blog", request.zos.zcoreDatasource)# blog
 	WHERE blog_id = #db.param(form.blog_id)# and 
+    blog_deleted = #db.param(0)# and
     site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	qEdit=db.execute("qEdit");
@@ -1516,6 +1560,7 @@ tabCom.enableSaveButtons();
     	local.useruser_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
     	db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)# user 
     	WHERE user_group_id <> #db.param(local.useruser_group_id)# and 
+        user_deleted = #db.param(0)# and
     	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
     	user_server_administrator=#db.param(0)#";
     	qUser=db.execute("qUser"); 
@@ -1584,7 +1629,8 @@ tabCom.enableSaveButtons();
                 select *,concat(repeat(#db.param("_")#,blog_category_level*#db.param(3)#),blog_category_name) catname
                 from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
                 
-				WHERE  site_id=#db.param(request.zos.globals.id)# 
+				WHERE  site_id=#db.param(request.zos.globals.id)# and 
+                blog_category_deleted = #db.param(0)#
                 ORDER BY blog_category_sort 
             </cfsavecontent><cfscript>qCat=db.execute("qCat");
         if(qcat.recordcount EQ 0){
@@ -1611,7 +1657,8 @@ tabCom.enableSaveButtons();
                 SELECT blog_category_name, blog_category_id, #db.param(1)# catassociated 
 				from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 				WHERE blog_category_id IN (#db.trustedSQL(sql)#) and 
-				site_id = #db.param(request.zos.globals.id)# 
+				site_id = #db.param(request.zos.globals.id)# and 
+                blog_category_deleted = #db.param(0)#
                 ORDER BY blog_category_name ASC
                 </cfsavecontent><cfscript>qCat=db.execute("qCat");</cfscript>
                 <cfelse>
@@ -1622,9 +1669,10 @@ tabCom.enableSaveButtons();
 				left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
 				blog_x_category.blog_category_id = blog_category.blog_category_id and 
 				blog_x_category.blog_id = #db.param(form.blog_id)# and 
-				blog_x_category.site_id = blog_category.site_id 
-                
-				WHERE blog_category.site_id = #db.param(request.zos.globals.id)#
+				blog_x_category.site_id = blog_category.site_id and
+                blog_x_category_deleted = #db.param(0)#
+				WHERE blog_category.site_id = #db.param(request.zos.globals.id)# and 
+                blog_category_deleted = #db.param(0)#
                 ORDER BY blog_category.blog_category_name ASC
                 </cfsavecontent><cfscript>qCat=db.execute("qCat");</cfscript>
                 </cfif>
@@ -1693,9 +1741,10 @@ tabCom.enableSaveButtons();
 				FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
                 LEFT JOIN #db.table("blog_x_tag", request.zos.zcoreDatasource)# blog_x_tag on 
 				blog_x_tag.blog_tag_id = blog_tag.blog_tag_id and 
-				blog_x_tag.site_id = blog_tag.site_id 
-                
-				WHERE  blog_tag.site_id=#db.param(request.zos.globals.id)# 
+				blog_x_tag.site_id = blog_tag.site_id and 
+                blog_x_tag_deleted = #db.param(0)#
+				WHERE  blog_tag.site_id=#db.param(request.zos.globals.id)# and 
+                blog_tag_deleted = #db.param(0)# 
 				GROUP BY blog_tag.blog_tag_id ORDER BY blog_tag_name ASC 
                 
             </cfsavecontent><cfscript>qTag=db.execute("qTag");
@@ -1724,7 +1773,9 @@ tabCom.enableSaveButtons();
                 
 				WHERE blog_tag.blog_tag_id = blog_x_tag.blog_tag_id and 
 				blog_x_tag.blog_id = #db.param(form.blog_id)# and 
-				blog_tag.site_id = #db.param(request.zos.globals.id)# 
+				blog_tag.site_id = #db.param(request.zos.globals.id)# and 
+                blog_x_tag_deleted = #db.param(0)# and 
+                blog_tag_deleted = #db.param(0)#
                 and blog_tag.site_id = blog_x_tag.site_id 
                 ORDER BY blog_tag.blog_tag_name ASC
                 </cfsavecontent><cfscript>qTag=db.execute("qTag");</cfscript>
@@ -1804,7 +1855,8 @@ tabCom.enableSaveButtons();
                 <th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Office","member.blog.edit office_id")#</th>
                 <td><cfscript>
                     db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
-                    WHERE site_id = #db.param(request.zos.globals.id)# 
+                    WHERE site_id = #db.param(request.zos.globals.id)# and 
+                    office_deleted = #db.param(0)#
                     ORDER BY office_name";
                     qOffice=db.execute("qOffice");
                     selectStruct = StructNew();
@@ -1911,7 +1963,8 @@ tabCom.enableSaveButtons();
             
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-		WHERE site_id = #db.param(request.zos.globals.id)#
+		WHERE site_id = #db.param(request.zos.globals.id)# and 
+        slideshow_deleted = #db.param(0)#
         ORDER BY slideshow_name ASC
         </cfsavecontent><cfscript>qslide=db.execute("qslide");</cfscript>
         <tr> 
@@ -1987,7 +2040,8 @@ tabCom.enableSaveButtons();
     <cfsavecontent variable="db.sql">
     SELECT * from #db.table("blog", request.zos.zcoreDatasource)# blog 
 	WHERE blog_id = #db.param(form.blog_id)#  and 
-	site_id=#db.param(request.zos.globals.id)#
+	site_id=#db.param(request.zos.globals.id)# and 
+    blog_deleted = #db.param(0)#
     </cfsavecontent><cfscript>qR=db.execute("qR");
     if(qR.recordcount EQ 0){
         application.zcore.status.setStatus(request.zsid,"Invalid request.");
@@ -2009,12 +2063,14 @@ function textCounter(field,cntfield,maxlimit) {
     select *
     from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment
 	WHERE blog_id = #db.param(form.blog_id)# and 
-	site_id=#db.param(request.zos.globals.id)# 
+	site_id=#db.param(request.zos.globals.id)# and 
+    blog_comment_deleted = #db.param(0)#
     </cfsavecontent><cfscript>qComments=db.execute("qComments");</cfscript>
     <cfsavecontent variable="db.sql">
     select count(*) as count from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment 
 	WHERE blog_id = #db.param(form.blog_id)# and 
-	site_id=#db.param(request.zos.globals.id)#
+	site_id=#db.param(request.zos.globals.id)# and 
+    blog_comment_deleted = #db.param(0)#
     </cfsavecontent><cfscript>qCount=db.execute("qCount");
   if(qR.blog_unique_name NEQ ''){
      viewlink= application.zcore.functions.zvar('domain')&qR.blog_unique_name;
@@ -2073,7 +2129,9 @@ function textCounter(field,cntfield,maxlimit) {
   <h2>Add your own comments</h2>
     <cfsavecontent variable="db.sql">
     select * from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment 
-	WHERE blog_id = #db.param('-1')# and site_id = #db.param('-1')#
+	WHERE blog_id = #db.param('-1')# and 
+    site_id = #db.param('-1')# and 
+    blog_comment_deleted = #db.param(0)#
     </cfsavecontent><cfscript>qC=db.execute("qC");
 local.blogIdBackup=form.blog_id;
     application.zcore.functions.zquerytostruct(qc, form);
@@ -2132,9 +2190,11 @@ local.blogIdBackup=form.blog_id;
         from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
         left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
 		blog_x_category.blog_category_id=blog_category.blog_category_id and 
-		blog_x_category.site_id = blog_category.site_id 
+		blog_x_category.site_id = blog_category.site_id and
+        blog_x_category_deleted = #db.param(0)#
         
-		WHERE blog_category.site_id=#db.param(request.zos.globals.id)# 
+		WHERE blog_category.site_id=#db.param(request.zos.globals.id)# and 
+        blog_category_deleted = #db.param(0)# 
         group by blog_category.blog_category_id
         ORDER BY blog_category_sort
     </cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
@@ -2190,6 +2250,7 @@ local.blogIdBackup=form.blog_id;
         from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
         
 	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
+    blog_category_deleted = #db.param(0)# and
 	site_id=#db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qEdit=db.execute("qEdit");
     if(structkeyexists(form, 'return')){
@@ -2285,18 +2346,19 @@ tabCom.enableSaveButtons();
             from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
             
 			WHERE blog_category_id <> #db.param(form.blog_category_id)# and 
-			site_id=#db.param(request.zos.globals.id)# 
+			site_id=#db.param(request.zos.globals.id)# and 
+            blog_category_deleted = #db.param(0)# 
             ORDER BY blog_category_sort 
         </cfsavecontent><cfscript>qCat=db.execute("qCat");
-    selectStruct = StructNew();
-    selectStruct.name = "blog_category_parent_id";
-	selectStruct.selectedValues=form.blog_category_parent_id;
-    selectStruct.query = qCat;
-    //selectStruct.style="monoMenu";
-    selectStruct.queryLabelField = "catname";
-    selectStruct.queryValueField = "blog_category_id";
-    application.zcore.functions.zInputSelectBox(selectStruct);
-    </cfscript>
+            selectStruct = StructNew();
+            selectStruct.name = "blog_category_parent_id";
+        	selectStruct.selectedValues=form.blog_category_parent_id;
+            selectStruct.query = qCat;
+            //selectStruct.style="monoMenu";
+            selectStruct.queryLabelField = "catname";
+            selectStruct.queryValueField = "blog_category_id";
+            application.zcore.functions.zInputSelectBox(selectStruct);
+            </cfscript>
             </td>
         </tr>
         <tr>
@@ -2392,6 +2454,7 @@ tabCom.enableSaveButtons();
         from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment
 		WHERE blog_id = #db.param(form.blog_id)# and 
 		blog_comment_id=#db.param(form.blog_comment_id)#  and 
+        blog_comment_deleted = #db.param(0)# and
 		site_id=#db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qComments=db.execute("qComments");
 	if(qComments.recordcount eq 0){

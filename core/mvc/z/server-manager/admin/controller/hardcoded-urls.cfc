@@ -34,34 +34,46 @@
 	var selectStruct=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
-	db.sql="delete from #request.zos.queryObject.table("link_hardcoded", request.zos.zcoreDatasource)#  
-	WHERE site_id = #db.param(form.sid)#";
-	db.execute("q"); 
 	urlStruct=structnew();
 	urlIndex=0;
+	db.sql="select * from #request.zos.queryObject.table("link_hardcoded", request.zos.zcoreDatasource)#  
+	WHERE link_hardcoded_deleted = #db.param(0)# and 
+	site_id = #db.param(form.sid)#";
+	qCheck=db.execute("qCheck"); 
+	uniqueStruct={};
+	for(row in qCheck){
+		uniqueStruct[row.link_hardcoded_url]=row.link_hardcoded_id;
+	}
 	for(i=1;i LTE form.linkcount;i++){
 		ts=StructNew();
 		ts.url=application.zcore.functions.zso(form, 'url'&i);
 		ts.title=application.zcore.functions.zso(form, 'title'&i);
 		form.link_hardcoded_url=ts.url;
-		form.link_hardcoded_url=replace(form.link_hardcoded_url,replace(application.zcore.functions.zvar('domain', form.sid),"www.",""),"","ALL");
-		form.link_hardcoded_url=replace(form.link_hardcoded_url,application.zcore.functions.zvar('domain', form.sid),"","ALL");
-		if(left(form.link_hardcoded_url,7) EQ "http://" or left(form.link_hardcoded_url,8) EQ "https://"){
-			application.zcore.status.setStatus(request.zsid,"Invalid URL, ""#form.link_hardcoded_url#"", was deleted. The title was: ""#ts.title#"".");
-		}else{
-			form.link_hardcoded_url=application.zcore.functions.zvar('domain', form.sid)&form.link_hardcoded_url;
-			ts.url=form.link_hardcoded_url;
-			form.link_hardcoded_title=ts.title;
-			form.site_id=form.sid;
-			ts2=structnew();
-			ts2.table="link_hardcoded";
-			ts2.struct=form;
-			ts2.datasource=request.zos.zcoreDatasource;
-			application.zcore.functions.zInsert(ts2);
-			urlIndex++;
-			urlStruct[urlIndex]=ts;
+		if(form.link_hardcoded_url EQ ""){
+			continue;
 		}
+		form.link_hardcoded_updated_datetime = request.zos.mysqlnow;
+		form.link_hardcoded_title=ts.title;
+		form.site_id=form.sid;
+		ts2=structnew();
+		ts2.table="link_hardcoded";
+		ts2.struct=form;
+		ts2.datasource=request.zos.zcoreDatasource;
+		if(structkeyexists(uniqueStruct, ts.url)){
+			ts2.struct.link_hardcoded_id=uniqueStruct[ts.url];
+			application.zcore.functions.zUpdate(ts2);
+		}else{
+			application.zcore.functions.zInsert(ts2);
+		}
+		urlIndex++;
+		urlStruct[urlIndex]=ts;
 	}
+	db.sql="update #request.zos.queryObject.table("link_hardcoded", request.zos.zcoreDatasource)#  
+	set link_hardcoded_deleted = #db.param(1)#,
+	link_hardcoded_updated_datetime=#db.param(request.zos.mysqlnow)#
+	WHERE site_id = #db.param(form.sid)# and 
+	link_hardcoded_updated_datetime < #db.param(request.zos.mysqlnow)#";
+	db.execute("q"); 
 	arrKey=structsort(urlStruct, "textnocase", "asc", "title");
 	arrURL2=arraynew(1);
 	for(i=1;i LTE arraylen(arrKey);i++){
@@ -92,11 +104,14 @@
 		application.zcore.functions.zRedirect("/z/server-manager/admin/hardcoded-urls/index?zsid=#request.zsid#");
 	}
 	db.sql="SELECT * FROM #request.zos.queryObject.table("link_hardcoded", request.zos.zcoreDatasource)# link_hardcoded 
-	WHERE site_id = #db.param(form.sid)# ORDER BY link_hardcoded_id ASC";
+	WHERE site_id = #db.param(form.sid)# and 
+	link_hardcoded_deleted=#db.param(0)# 
+	ORDER BY link_hardcoded_id ASC";
 	qU=db.execute("qU");
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript> 
 	<h2>Edit Hardcoded URLs for #qsite.site_domain#</h2>
+	<p>Type a title and url, and click add for each link.  Then click Save to save all the links.</p>
 	<form name="editForm" action="/z/server-manager/admin/hardcoded-urls/update?sid=#form.sid#" method="post" style="margin:0px;">
 		<table style="width:100%; border-spacing:0px;" class="table-white">
 			<tr>
@@ -154,7 +169,7 @@
 				arrBlockUrl.push(cUrl);
 				arrBlock.push(cname);
 			}
-			document.editForm.linkcount.value=arrBlock.length;
+			document.editForm.linkcount.value=arrBlock.length+1;
 			var cb=document.getElementById("categoryBlock");
 			arrBlock2=new Array();
 			arrBlock2.push('<table style="border-spacing:0px;border:1px solUrl ##CCCCCC;"><tr class="table-list" ><td>Title</td><td>URL</td><td>Admin</td></tr>');
@@ -191,7 +206,9 @@
 		application.zcore.functions.zRedirect("/z/server-manager/admin/hardcoded-urls/index?zsid=#request.zsid#");
 	}
 	db.sql="SELECT * FROM #request.zos.queryObject.table("link_hardcoded", request.zos.zcoreDatasource)# link_hardcoded 
-	WHERE site_id = #db.param(form.sid)# ORDER BY link_hardcoded_id ASC";
+	WHERE site_id = #db.param(form.sid)# and 
+	link_hardcoded_deleted=#db.param(0)# 
+	ORDER BY link_hardcoded_id ASC";
 	qU=db.execute("qU");
 	for(local.row in qU){
 		if(application.zcore.functions.zVerifyLink(local.row.link_hardcoded_url) EQ false){
@@ -211,7 +228,9 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id <> #db.param('1')# ORDER BY site_domain asc";
+	WHERE site_id <> #db.param('1')# and 
+	site_deleted = #db.param(0)#
+	ORDER BY site_domain asc";
 	qSites=db.execute("qSites");
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript> 

@@ -59,6 +59,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	SET image_library_active = #db.param('1')#,
 	image_library_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_library_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	</cfscript>
@@ -72,6 +73,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	SET image_library_approved = #db.param('1')#,
 	image_library_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_library_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	
@@ -79,6 +81,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	SET image_approved = #db.param('1')#,
 	image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	</cfscript>
@@ -92,6 +95,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	SET image_library_approved = #db.param('0')#,
 	image_library_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_library_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	
@@ -99,11 +103,13 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	SET image_approved = #db.param('0')#,
 	image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	
 	db.sql="select * from #request.zos.queryObject.table("image_cache", request.zos.zcoreDatasource)#  
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_cache_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qCache=db.execute("qCache");
 	for(row in qCache){
@@ -111,6 +117,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	}
 	db.sql="delete from #request.zos.queryObject.table("image_cache", request.zos.zcoreDatasource)# 
 	WHERE image_library_id=#db.param(arguments.image_library_id)# and 
+	image_cache_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("qDelete");
 	</cfscript>
@@ -180,6 +187,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		db.sql="SELECT * FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# image 
 		WHERE image_library_id=#db.param(arguments.image_library_id)# and 
 		image_id = #db.param(arguments.image_id)# and 
+		image_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qImage=db.execute("qImage");
 	}
@@ -261,6 +269,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		db.sql&=" image_approved = #db.param('1')#  and ";
 	}
 	 db.sql&="image.image_id = #db.param(arguments.image_id)# and 
+	 image_deleted = #db.param(0)# and 
 	 image.site_id=#db.param(request.zos.globals.id)#";
 	qImage=db.execute("qImage");
 	if(qImage.recordcount EQ 0 or qImage.image_file EQ ""){
@@ -295,6 +304,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 			SET image_intermediate_file=#db.param(image_intermediate_file)# ,
 			image_updated_datetime=#db.param(request.zos.mysqlnow)#
 			WHERE image_id = #db.param(arguments.image_id)# and 
+			image_deleted = #db.param(0)# and 
 			site_id =#db.param(request.zos.globals.id)#";
 			db.execute("q");
 			if(zdebug){
@@ -398,6 +408,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	}else{
 		db.sql="SELECT * FROM #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)# image_library 
 		WHERE image_library_id = #db.param(arguments.image_library_id)# and 
+		image_library_deleted = #db.param(0)# and 
 		site_id =#db.param(request.zos.globals.id)#";
 		qLibrary=db.execute("qLibrary");
 		if(qLibrary.recordcount EQ 0){
@@ -405,6 +416,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 				arguments.image_library_id=this.getNewLibraryId();
 				db.sql="SELECT * FROM #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)# image_library 
 				WHERE image_library_id = #db.param(arguments.image_library_id)# and 
+				image_library_deleted = #db.param(0)# and 
 				site_id =#db.param(request.zos.globals.id)#";
 				qLibrary=db.execute("qLibrary");
 			}else{
@@ -461,6 +473,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		}
 		db.sql="SELECT count(*) count from #db.table("image", request.zos.zcoreDatasource)# 
 		WHERE image_library_id = #db.param(image_library_id)# and 
+		image_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)# ";
 		qImageCount=db.execute("qImageCount");
 	}
@@ -521,6 +534,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		db.sql="SELECT * FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# image 
 		WHERE image_library_id = #db.param(s9.image_library_id)# and 
 		image_id = #db.param(s9.image_id)# and 
+		image_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#"; 
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
@@ -556,6 +570,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		oldFilePath="";
 		db.sql="SELECT max(image_sort) maxsort FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# image 
 		WHERE image_library_id = #db.param(s9.image_library_id)# and 
+		image_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#"; 
 		qCheck=db.execute("qCheck");
 		s9.image_sort=1;
@@ -631,6 +646,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 			SET image_file = #db.param(s9.image_file)#,
 			image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			WHERE image_id = #db.param(s9.image_id)# and 
+			image_deleted = #db.param(0)# and 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q");
 		}
@@ -1003,7 +1019,8 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 	if(arguments.ss.count){
 		rs.leftJoin&=" image#i#.image_sort <= '#application.zcore.functions.zescape(arguments.ss.count)#' and ";
 	}
-	rs.leftJoin&=" image#i#.site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#'";
+	rs.leftJoin&=" image#i#.site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#' and 
+	image#i#.image_deleted = 0 ";
 	rs.select=", cast(GROUP_CONCAT(image#i#.image_id ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageIdList, 
 	cast(GROUP_CONCAT(image#i#.image_caption ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageCaptionList, 
 	cast(GROUP_CONCAT(image#i#.image_file ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageFileList, 
@@ -1129,7 +1146,8 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfif arguments.ss.image_id NEQ ""> 
 		and image_id=#db.param(arguments.ss.image_id)# 
 	</cfif> 
-	and site_id = #db.param(request.zos.globals.id)# 
+	and site_id = #db.param(request.zos.globals.id)# and 
+	image_deleted = #db.param(0)#
 	ORDER BY image_sort, image_caption, image_id 
 	<cfif arguments.ss.offset NEQ 0 or arguments.ss.limit NEQ 0>LIMIT #db.param(arguments.ss.offset)# 
 		<cfif arguments.ss.limit NEQ 0>, #db.param(arguments.ss.limit)#<cfelse>,#db.param(1000)#</cfif>
@@ -1430,6 +1448,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfsavecontent variable="db.sql">
 		SELECT * FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# image 
 		WHERE image_library_id = #db.param(form.image_library_id)# and 
+		image_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# 
 		ORDER BY image_sort, image_caption, image_id
 	</cfsavecontent><cfscript>qImages=db.execute("qImages");</cfscript>
@@ -1557,6 +1576,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		SET image_sort = #db.param(i)#,
 		image_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE image_library_id = #db.param(form.image_library_id)# and 
+		image_deleted = #db.param(0)# and 
 		image_id = #db.param(arrImageId[i])# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		db.execute("q");
@@ -1582,6 +1602,8 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site.site_active = #db.param(1)# and 
 	image_library.site_id = site.site_id and 
+	site_deleted = #db.param(0)# and 
+	image_library_deleted = #db.param(0)# and 
 	image_library_active=#db.param(0)# and 
 	image_library_datetime <= #db.param(dateformat(dateadd("d",-1,now()),'yyyy-mm-dd')&" 00:00:00")#";
 	qLibrary=db.execute("qLibrary");
@@ -1607,14 +1629,17 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		application.zcore.functions.zdeletedirectory(application.zcore.functions.zvar('privatehomedir',arguments.site_id)&"zupload/library/"&application.zcore.functions.zURLEncode(arguments.image_library_id,"-")&"/");
 		db.sql="DELETE FROM #request.zos.queryObject.table("image_cache", request.zos.zcoreDatasource)#  
 		WHERE image_library_id = #db.param(arguments.image_library_id)# and 
+		image_cache_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		db.execute("q");
 		db.sql="DELETE FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)#  
 		WHERE image_library_id = #db.param(arguments.image_library_id)# and 
+		image_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		db.execute("q");
 		db.sql="DELETE FROM #request.zos.queryObject.table("image_library", request.zos.zcoreDatasource)#  
 		WHERE image_library_id = #db.param(arguments.image_library_id)# and 
+		image_library_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		db.execute("q");
 	}
@@ -1645,6 +1670,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var db=request.zos.queryObject;
 	db.sql="SELECT * FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# image 
 	WHERE image_id = #db.param(arguments.image_id)# and 
+	image_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	var qImages=db.execute("qImages");
 	if(qImages.recordcount EQ 0){
@@ -1658,6 +1684,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	this.clearImageIdCache(arguments.image_id);
 	db.sql="DELETE FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)#  
 	WHERE image_id = #db.param(arguments.image_id)# and 
+	image_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	</cfscript>
@@ -1670,6 +1697,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var db=request.zos.queryObject;
 	db.sql="SELECT * FROM #request.zos.queryObject.table("image_cache", request.zos.zcoreDatasource)# image_cache 
 	WHERE image_id = #db.param(arguments.image_id)# and 
+	image_cache_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	var qImages=db.execute("qImages");
 	</cfscript>
@@ -1681,6 +1709,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfscript>
 	db.sql="DELETE FROM #request.zos.queryObject.table("image_cache", request.zos.zcoreDatasource)#  
 	WHERE image_id = #db.param(arguments.image_id)# and 
+	image_cache_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q"); 
 	</cfscript>

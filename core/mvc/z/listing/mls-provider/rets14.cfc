@@ -113,7 +113,8 @@
 		if(listing_city NEQ ""){
 			db.sql="SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city 
 			WHERE city_name = #db.param(listing_city)# and 
-			state_abbr = #db.param(listing_state)#";
+			state_abbr = #db.param(listing_state)# and 
+			city_deleted = #db.param(0)#";
 			qC=db.execute("qC"); 
 			listing_city=qC.city_id;
 			cid=listing_city;

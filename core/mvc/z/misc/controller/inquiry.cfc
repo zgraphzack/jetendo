@@ -110,6 +110,7 @@
 	SET inquiries_primary=#db.param(0)#,
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
+	inquiries_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	db.execute("q"); 
 	//	Insert Into Inquiry Database
@@ -393,7 +394,7 @@
             <cfsavecontent variable="db.sql">
             SELECT cast(group_concat(distinct listing_city SEPARATOR #db.param("','")#) AS CHAR) idlist 
 			from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing where
-            
+            listing_deleted = #db.param(0)# and 
             #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
             listing_city not in (#db.trustedSQL("'','0'")#) 
             <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE #db.param('%,7,%')# </cfif> #db.trustedSQL(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.whereOptionsSQL)#  
@@ -403,7 +404,8 @@
             
             db.sql="select city_x_mls.city_name label, city_x_mls.city_id value 
 			from #db.table("city_x_mls", request.zos.zcoreDatasource)# city_x_mls 
-			where city_x_mls.city_id IN (#db.trustedSQL("'#qtype.idlist#'")#)and 
+			where city_x_mls.city_id IN (#db.trustedSQL("'#qtype.idlist#'")#) and 
+			city_x_mls_deleted = #db.param(0)# and 
 			#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("city_x_mls"))# ";
 			qCity=db.execute("qCity"); 
             </cfscript>

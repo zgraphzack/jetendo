@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->
 <!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8" xmlns="http://www.w3.org/1999/xhtml"> <![endif]-->

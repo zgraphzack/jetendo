@@ -37,6 +37,9 @@
 		#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls, 
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE site.site_id = app_x_site.site_id and 
+		site_deleted = #db.param(0)# and 
+		app_x_mls_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and 
 		app_x_site.app_id = #db.param(11)# and 
 		site.site_active=#db.param(1)# AND 
 		site.site_id = app_x_mls.site_id 
@@ -49,6 +52,9 @@
 		#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls, 
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 		WHERE site.site_id = app_x_site.site_id and 
+		site_deleted = #db.param(0)# and 
+		app_x_mls_deleted = #db.param(0)# and 
+		app_x_site_deleted = #db.param(0)# and
 		app_x_site.app_id = #db.param(11)# and 
 		site.site_active=#db.param(1)# AND 
 		site.site_id = app_x_mls.site_id and 
@@ -59,20 +65,24 @@
 	db.sql="select listing_mls_id, city.city_name, city.city_id, count(city.city_id) count 
 	from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
 	#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
-	where city.city_id = listing.listing_city  
+	where city.city_id = listing.listing_city  and 
+	city_deleted = #db.param(0)# and 
+	listing_deleted = #db.param(0)# 
 	group by listing_mls_id, city_id ";
 	qCity=db.execute("qCity");
 	arrvalues=arraynew(1);
 	city_x_mls_updated_datetime=request.zos.mysqlnow;
 	for(ts in qCity){
-		arrayappend(arrvalues,"('#ts.city_id#','#application.zcore.functions.zescape(ts.city_name)#','#ts.count#','#ts.listing_mls_id#','#city_x_mls_updated_datetime#')");
+		arrayappend(arrvalues,"('#ts.city_id#','#application.zcore.functions.zescape(ts.city_name)#','#ts.count#','#ts.listing_mls_id#','#city_x_mls_updated_datetime#', '0')");
 	}
 	if(arrayLen(arrValues) EQ 0){
 		echo("The city table may be empty since no records were found while generating the city_x_mls table.<br />");
 	}else{
-		db.sql="REPLACE INTO #db.table("city_x_mls", request.zos.zcoreDatasource)#  (city_id, city_name, city_x_mls_count, listing_mls_id,city_x_mls_updated_datetime) VALUES #db.trustedSQL(arraytolist(arrValues))#";
+		db.sql="REPLACE INTO #db.table("city_x_mls", request.zos.zcoreDatasource)#  (city_id, city_name, city_x_mls_count, listing_mls_id,city_x_mls_updated_datetime, city_x_mls_deleted) VALUES #db.trustedSQL(arraytolist(arrValues))#";
 		db.execute("q"); 
-		db.sql="DELETE FROM #db.table("city_x_mls", request.zos.zcoreDatasource)#  WHERE city_x_mls_updated_datetime<#db.param(city_x_mls_updated_datetime)#";
+		db.sql="DELETE FROM #db.table("city_x_mls", request.zos.zcoreDatasource)#  WHERE 
+		city_x_mls_updated_datetime<#db.param(city_x_mls_updated_datetime)# and 
+		city_x_mls_deleted = #db.param(0)#";
 		db.execute("q"); 
 	}
 	if(request.zos.globals.id EQ request.zos.globals.serverid){
@@ -83,7 +93,8 @@
 	fourHoursAgo=dateformat(fourHoursAgo,"yyyy-mm-dd")&" "&timeformat(fourHoursAgo,"HH:mm:ss");
 	uniqueIdStruct=structnew();
 	db.sql="DELETE FROM #db.table("search_count", request.zos.zcoreDatasource)# 
-	WHERE search_count_datetime <=#db.param(fourHoursAgo)#";
+	WHERE search_count_datetime <=#db.param(fourHoursAgo)# and 
+	search_count_deleted = #db.param(0)#";
 	qC=db.execute("qC"); 
 	for(ts in qM){ 
 		if(structkeyexists(application.siteStruct, ts.site_id)){

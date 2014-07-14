@@ -14,7 +14,8 @@
 	}
 	if(isDefined('application.zcore.realestate.search_criteria') EQ false){
 		ts=structnew();
-		db.sql="SELECT * FROM #db.table("search_criteria", request.zos.zcoreDatasource)#  ";
+		db.sql="SELECT * FROM #db.table("search_criteria", request.zos.zcoreDatasource)#  WHERE 
+		search_criteria_deleted = #db.param(0)#";
 		qC=db.execute("qC"); 
 		for(i=1;i LTE arraylen(qc.recordcount);i++){
 			if(structkeyexists(ts,qc.mls_id[i]) EQ false){
@@ -48,6 +49,7 @@
 	db.sql="SELECT search_criteria_id FROM #db.table("search_criteria", request.zos.zcoreDatasource)# search_criteria 
 	WHERE search_criteria_type=#db.param(ts.search_criteria_type)# and 
 	search_criteria_value=#db.param(ts.value)# and 
+	search_criteria_deleted = #db.param(0)# and
 	mls_id=#db.param(ts.mls_id)#";
 	qC=db.execute("qC"); 
 	if(qC.recordcount EQ 0){
@@ -251,7 +253,8 @@
 	listing_coordinates_zip = #db.param(arguments.zip)# and 
 	listing_coordinates_latitude<>#db.param('')# and 
 	listing_coordinates_status=#db.param('OK')# and 
-	listing_coordinates_accuracy=#db.param('ROOFTOP')# ";
+	listing_coordinates_accuracy=#db.param('ROOFTOP')# and 
+	listing_coordinates_deleted = #db.param(0)#";
 	//listing_coordinates_address = #db.param(arguments.address)# and 
 	qD=db.execute("qD");
 	if(qD.recordcount NEQ 0){
@@ -321,7 +324,8 @@
 	ts.lookupStruct.propertyTypeCode=structnew();
 	ts.lookupStruct.propertyType=structnew();
 	db.sql="SELECT * FROM #db.table("listing_type", request.zos.zcoreDatasource)# listing_type 
-	WHERE mls_id_list LIKE #db.trustedSQL("'%,#this.mls_id#,%'")#";
+	WHERE mls_id_list LIKE #db.trustedSQL("'%,#this.mls_id#,%'")# and 
+	listing_type_deleted = #db.param(0)#";
 	qP=db.execute("qP"); 
 	loop query="qP"{
 		ts2=structnew();
@@ -339,7 +343,8 @@
 	}
 	db.sql="SELECT listing_lookup_value,listing_lookup_id,listing_lookup_type,listing_lookup_oldid  
 	FROM #db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup 
-	WHERE (listing_lookup_mls_provider = #db.param(this.mls_provider)# 
+	WHERE (listing_lookup_mls_provider = #db.param(this.mls_provider)# and 
+	listing_lookup_deleted = #db.param(0)#
 	#db.trustedSQL(orsql)#) 
 	ORDER BY listing_lookup_type";
 	qLookup=db.execute("qLookup");

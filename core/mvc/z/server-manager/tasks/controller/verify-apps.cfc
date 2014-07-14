@@ -8,7 +8,9 @@
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls, 
 	#db.table("site", request.zos.zcoreDatasource)# site WHERE 
-	site.site_id = app_x_mls.site_id 
+	site.site_id = app_x_mls.site_id and 
+	site_deleted = #db.param(0)# and 
+	app_x_mls_deleted = #db.param(0)#
 	LIMIT #db.param(0)#, #db.param(1)#";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount NEQ 0){

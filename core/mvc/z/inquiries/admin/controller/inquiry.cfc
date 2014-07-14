@@ -60,6 +60,7 @@
 	SET inquiries_primary=#db.param(0)#, 
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
+	inquiries_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	r=db.execute("r");
 	inputStruct = StructNew();
@@ -113,7 +114,8 @@
 	</cfscript>
 	<cfsavecontent variable="db.sql"> SELECT *
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
-	WHERE inquiries_id = #db.param(form.inquiries_id)# and site_id = #db.param(request.zos.globals.id)#
+	WHERE inquiries_id = #db.param(form.inquiries_id)# and site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_deleted = #db.param(0)# 
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
 		and user_id = #db.param(request.zsession.user.id)# and user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
@@ -149,7 +151,8 @@
 					<cfscript>
 					form.inquiries_type_id=form.inquiries_type_id&"|"&form.inquiries_type_id_siteIDType;
 					db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("inquiries_type.site_id"))# as inquiries_type_id_siteIDType from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
-					WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) ";
+					WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
+					inquiries_type_deleted = #db.param(0)# ";
 					if(not application.zcore.app.siteHasApp("listing")){
 						db.sql&=" and inquiries_type_realestate = #db.param(0)# ";
 					}
@@ -238,7 +241,8 @@
 					<th>Change Status:</th>
 					<td>
 						<cfscript>
-						db.sql="SELECT * from #db.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status
+						db.sql="SELECT * from #db.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status 
+						WHERE inquiries_status_deleted = #db.param(0)#
 						ORDER BY inquiries_status_name ";
 						qInquiryStatus=db.execute("qInquiryStatus");
 						selectStruct = StructNew();
@@ -258,6 +262,7 @@
 						userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
 						db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 						WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
+						user_deleted = #db.param(0)# and
 						user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and (user_server_administrator=#db.param(0)# )
 						ORDER BY member_first_name ASC, member_last_name ASC ";
 						qAgents=db.execute("qAgents");

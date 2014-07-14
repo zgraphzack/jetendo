@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <p>Purpose: Enhances cfquery by analyzing SQL to enforce security &amp; framework conventions.</p>
   <p>Version: 0.1.001</p>
   <p>Language(s) used: ColdFusion Markup Language (CFML)</p>

@@ -37,7 +37,9 @@
 	db.sql="select * from #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# site_x_deploy_server,
 	#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
 	WHERE deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
-	site_x_deploy_server.site_id = #db.param(form.sid)# "; 
+	site_x_deploy_server.site_id = #db.param(form.sid)# and 
+	site_x_deploy_server_deleted = #db.param(0)# and 
+	deploy_server_deleted = #db.param(0)# "; 
 	var qDeploy=db.execute("qDeploy");
 	if(qDeploy.recordcount EQ 0){
 		throw("No deploy servers has been configured for this site yet.");
@@ -47,7 +49,7 @@
 		if(not rs.success){
 			throw(rs.errorMessage);
 		}
-		db.sql="update  #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# 
+		db.sql="update #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# 
 		set site_x_deploy_server_remote_path = #db.param(rs.dataStruct.installPath)#,
 		site_x_deploy_server_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		where site_id = #db.param(row.site_id)# and 
@@ -103,11 +105,13 @@
 	db=request.zos.queryObject;
 	db.sql="select *, replace(site_short_domain, #db.param('www.')#, #db.param('')#) shortDomain from 
 	#db.table("site", request.zos.zcoreDatasource)# site,
-	 #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# site_x_deploy_server,
-	 #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
+	#db.table("site_x_deploy_server", request.zos.zcoreDatasource)# site_x_deploy_server,
+	#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
 	where deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
-	 deploy_server.deploy_server_deploy_enabled = #db.param(1)# and
-	 site.site_active = #db.param(1)# and 
+	deploy_server_deleted = #db.param(0)# and 
+	site_x_deploy_server_deleted = #db.param(0)# and 
+	deploy_server.deploy_server_deploy_enabled = #db.param(1)# and
+	site.site_active = #db.param(1)# and 
 	site_x_deploy_server.site_id = site.site_id and
 	site.site_id <> #db.param(-1)# ";
 	if(structkeyexists(form, 'confirm')){
@@ -183,6 +187,8 @@
 		}
 		db.sql=" replace into #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# set 
 		site_id=#db.param(form.sid)#, 
+		site_x_deploy_server_deleted=#db.param(0)#,
+		site_x_deploy_server_updated_datetime=#db.param(request.zos.mysqlnow)#,
 		deploy_server_id =#db.param(form["deploy_server_id#index#"])#,
 		site_x_deploy_server_remote_site_id=#db.param(form["site_x_deploy_server_remote_site_id#index#"])#,
 		site_x_deploy_server_remote_path=#db.param(form["site_x_deploy_server_remote_path#index#"])#,
@@ -209,6 +215,8 @@
 		}
 		db.sql=" replace into #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# set 
 		site_id=#db.param(form["sid#index#"])#, 
+		site_x_deploy_server_deleted=#db.param(0)#,
+		site_x_deploy_server_updated_datetime=#db.param(request.zos.mysqlnow)#,
 		deploy_server_id =#db.param(form["deploy_server_id#index#"])#,
 		site_x_deploy_server_remote_site_id=#db.param(form["site_x_deploy_server_remote_site_id#index#"])#,
 		site_x_deploy_server_source_only=#db.param(form["site_x_deploy_server_source_only#index#"])#";
@@ -232,7 +240,8 @@
 	}
 	db.sql="select * from 
 	#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
-	WHERE deploy_server_deploy_enabled = #db.param(1)#
+	WHERE deploy_server_deploy_enabled = #db.param(1)# and 
+	deploy_server_deleted = #db.param(0)#
 	ORDER BY deploy_server_host asc";
 	var qDeployServer=db.execute("qDeployServer");
 	db.sql="select *, replace(site.site_short_domain, #db.param('www.')#, #db.param('')#) shortDomain from 
@@ -240,9 +249,11 @@
 	#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server)
 	LEFT JOIN #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# site_x_deploy_server 
 	ON deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
-	site_x_deploy_server.site_id = site.site_id 
+	site_x_deploy_server.site_id = site.site_id  and 
+	site_x_deploy_server_deleted = #db.param(0)#
 	WHERE site.site_active = #db.param(1)# and 
-	site.site_id <> #db.param(-1)#  and 
+	site.site_id <> #db.param(-1)# and 
+	deploy_server_deleted = #db.param(0)#  and 
 	deploy_server_deploy_enabled = #db.param(1)#
 	ORDER BY shortDomain asc, deploy_server_host asc";
 	var qDeploy=db.execute("qDeploy");
@@ -385,7 +396,10 @@
 	#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
 	LEFT JOIN #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# site_x_deploy_server 
 	ON deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
-	site_x_deploy_server.site_id = #db.param(form.sid)# ";
+	site_x_deploy_server.site_id = #db.param(form.sid)#  and 
+	site_x_deploy_server_deleted = #db.param(0)#
+	WHERE 
+	deploy_server_deleted = #db.param(0)#";
 	var qDeploy=db.execute("qDeploy");
 	writeoutput('
 	<h2>Edit Site Deployment Configuration</h2>
@@ -489,7 +503,8 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	startTime=gettickcount();
 	db.sql="select * from #db.table("deploy_server", request.zos.zcoredatasource)# 
-	where deploy_server_deploy_enabled=#db.param(1)#";
+	where deploy_server_deploy_enabled=#db.param(1)# and 
+	deploy_server_deleted = #db.param(0)#";
 	qDeploy=db.execute("qDeploy");
 	if(qDeploy.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, "No deployment servers are enabled. Create and enable a deploy server first.", form, true);
@@ -640,7 +655,9 @@
 		#db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server, 
 		#db.table("site_x_deploy_server", request.zos.zcoreDatasource)# site_x_deploy_server 
 		WHERE deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
-		site_x_deploy_server.site_id = #db.param(form.sid)# ";
+		site_x_deploy_server.site_id = #db.param(form.sid)#  and 
+		deploy_server_deleted = #db.param(0)# and 
+		site_x_deploy_server_deleted = #db.param(0)#";
 		var qDeploy=db.execute("qDeploy");
 		</cfscript>
 		

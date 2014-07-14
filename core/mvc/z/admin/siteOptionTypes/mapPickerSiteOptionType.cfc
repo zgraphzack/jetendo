@@ -257,6 +257,7 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_deleted = #db.param(0)# and
 	site_option_group_id = #db.param(arguments.dataStruct.site_option_group_id)# 	";
 	qGroup=db.execute("qGroup");
 	</cfscript>

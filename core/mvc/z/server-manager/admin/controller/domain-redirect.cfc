@@ -15,6 +15,7 @@
 	variables.init();
 	db.sql="SELECT * FROM #db.table("domain_redirect", request.zos.zcoreDatasource)# domain_redirect
 	WHERE domain_redirect_id= #db.param(application.zcore.functions.zso(form,'domain_redirect_id'))# and 
+	domain_redirect_deleted = #db.param(0)#  and 
 	site_id = #db.param(form.sid)#";
 	qCheck=db.execute("qCheck");
 	
@@ -25,7 +26,9 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript> 
-		db.sql="DELETE FROM #db.table("domain_redirect", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("domain_redirect", request.zos.zcoreDatasource)# 
+		set domain_redirect_deleted = #db.param(1)#,
+		domain_redirect_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE domain_redirect_id= #db.param(application.zcore.functions.zso(form, 'domain_redirect_id'))# and 
 		site_id = #db.param(form.sid)# ";
 		q=db.execute("q"); 
@@ -118,6 +121,7 @@
 	}
 	db.sql="SELECT * FROM #db.table("domain_redirect", request.zos.zcoreDatasource)# domain_redirect 
 	WHERE site_id =#db.param(form.sid)# and 
+	domain_redirect_deleted = #db.param(0)#  and 
 	domain_redirect_id=#db.param(form.domain_redirect_id)#";
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute, form);
@@ -191,7 +195,8 @@
 	application.zcore.functions.zStatusHandler(request.zsid); 
 	db.sql="SELECT * 
 	FROM #db.table("domain_redirect", request.zos.zcoreDatasource)# domain_redirect  
-	WHERE domain_redirect.site_id = #db.param(form.sid)#  
+	WHERE domain_redirect.site_id = #db.param(form.sid)# and 
+	domain_redirect_deleted = #db.param(0)# 
 	order by domain_redirect_old_domain";
 	qDomainRedirect=db.execute("qDomainRedirect");
 	</cfscript>

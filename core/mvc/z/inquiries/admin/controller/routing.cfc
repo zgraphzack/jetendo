@@ -42,7 +42,7 @@ enable round robin for users - need a new option to disable for staff.
 	var q=0;
 	variables.init();
 	db.sql="SELECT * from #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing
-	WHERE inquiries_routing_id = #db.param(inquiries_routing_id)# and 
+	WHERE inquiries_routing_id = #db.param(form.inquiries_routing_id)# and 
 	site_id = #db.param(request.zOS.globals.id)# ";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
@@ -56,7 +56,7 @@ enable round robin for users - need a new option to disable for staff.
 			request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qcheck.mls_saved_search_id);
 		} 
 		db.sql="DELETE from #db.table("inquiries_routing", request.zos.zcoreDatasource)#  
-		WHERE inquiries_routing_id = #db.param(inquiries_routing_id)# and 
+		WHERE inquiries_routing_id = #db.param(form.inquiries_routing_id)# and 
 		site_id = #db.param(request.zOS.globals.id)# ";
 		q=db.execute("q");
 		variables.queueSortCom.sortAll();
@@ -67,7 +67,7 @@ enable round robin for users - need a new option to disable for staff.
 	<cfelse>
 		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this lead route?<br />
 			<br />
-			<a href="/z/inquiries/admin/routing/delete?confirm=1&amp;inquiries_routing_id=#inquiries_routing_id#">Yes</a>&nbsp;&nbsp;&nbsp;
+			<a href="/z/inquiries/admin/routing/delete?confirm=1&amp;inquiries_routing_id=#form.inquiries_routing_id#">Yes</a>&nbsp;&nbsp;&nbsp;
 			<a href="/z/inquiries/admin/routing/index">No</a> </div>
 	</cfif>
 </cffunction>
@@ -173,7 +173,8 @@ enable round robin for users - need a new option to disable for staff.
 				<td><cfsavecontent variable="db.sql"> 
 					SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("site_id"))# siteIDType 
 					from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
-					WHERE site_id IN (#db.param(0)#,#db.param(request.zOS.globals.id)#)
+					WHERE site_id IN (#db.param(0)#,#db.param(request.zOS.globals.id)#) and 
+					inquiries_type_deleted = #db.param(0)#
 					<cfif not application.zcore.app.siteHasApp("listing")>
 						and inquiries_type_realestate = #db.param(0)#
 					</cfif>
@@ -223,7 +224,8 @@ enable round robin for users - need a new option to disable for staff.
 			FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
-			user_server_administrator=#db.param(0)# 
+			user_server_administrator=#db.param(0)# and 
+			user_deleted = #db.param(0)#
 			ORDER BY member_first_name ASC, member_last_name ASC ";
 			qAgents=db.execute("qAgents");
 		    </cfscript>
@@ -453,8 +455,11 @@ enable round robin for users - need a new option to disable for staff.
 	db.sql="SELECT * from #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing 
 	LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries_type.inquiries_type_id = inquiries_routing.inquiries_type_id and 
+	inquiries_type_deleted = #db.param(0)# and 
 	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries_routing.inquiries_type_id_siteIDType"))# 
-	WHERE inquiries_routing.site_id =#db.param(request.zOS.globals.id)# ORDER BY inquiries_routing_sort ";
+	WHERE inquiries_routing.site_id =#db.param(request.zOS.globals.id)# and 
+	inquiries_routing_deleted = #db.param(0)# 
+	ORDER BY inquiries_routing_sort ";
 	qRoutes=db.execute("qRoutes");
 	</cfscript>
 	<h2>Lead Routing</h2>

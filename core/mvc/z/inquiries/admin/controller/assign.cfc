@@ -24,8 +24,12 @@
     , #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
     ) 
     LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type
-    ON inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))#
-    WHERE inquiries.site_id = #db.param(request.zos.globals.id)#  and 		inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
+    ON inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+    inquiries_type_deleted = #db.param(0)#
+    WHERE inquiries.site_id = #db.param(request.zos.globals.id)#  and 		
+    inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
+    inquiries_deleted = #db.param(0)# and 
+    inquiries_status_deleted = #db.param(0)# and 
     inquiries.inquiries_status_id NOT IN (#db.trustedSQL("4,5,0")#) and 
      inquiries_id = #db.param(form.inquiries_id)#  
     </cfsavecontent><cfscript>
@@ -60,6 +64,7 @@
     WHERE inquiries_id <> #db.param(form.inquiries_id)# and 
     inquiries_email = #db.param(form.inquiries_email)# and
     site_id = #db.param(request.zos.globals.id)# and 
+    inquiries_deleted = #db.param(0)# and 
     (user_id <> #db.param(0)# or 
     inquiries_assign_email <> #db.param('')#) 
     ORDER BY inquiries_datetime DESC   ";
@@ -98,6 +103,7 @@
     SELECT *, user.site_id userSiteId FROM  #db.table("user", request.zos.zcoreDatasource)# user
 
     WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
+    user_deleted = #db.param(0)# and
     user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# 
      and (user_server_administrator=#db.param(0)#)
     ORDER BY member_first_name ASC, member_last_name ASC
@@ -182,6 +188,7 @@
         db.sql="SELECT count(inquiries_feedback_id) count 
         from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback 
         WHERE inquiries_id = #db.param(form.inquiries_id)#  and 
+        inquiries_feedback_deleted = #db.param(0)# and
         site_id = #db.param(request.zos.globals.id)#";
         qFeedback=db.execute("qFeedback");
         </cfscript>
@@ -217,11 +224,13 @@
     <cfelse>
         <cfsavecontent variable="db.sql">
         SELECT inquiries_email from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
-        WHERE inquiries_id = #db.param(form.inquiries_id)#  and site_id = #db.param(request.zos.globals.id)# 
+        WHERE inquiries_id = #db.param(form.inquiries_id)#  and 
+        site_id = #db.param(request.zos.globals.id)# 
         </cfsavecontent><cfscript>qGetInquiry=db.execute("qGetInquiry");</cfscript> 
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user
-        WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and user_id = #db.param(local.assignUserId)# 
+        WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
+        user_id = #db.param(local.assignUserId)# 
         </cfsavecontent><cfscript>qMember=db.execute("qMember");</cfscript>
         <cfsavecontent variable="db.sql">
         SELECT count(inquiries_feedback_id) count 

@@ -24,6 +24,7 @@
 	}
 	// get all non-event blog articles published and made active yesterday.
 	db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog WHERE 
+	blog_deleted = #db.param(0)# and
 	blog_datetime <#db.param(midnightDate)# and ";
 	if(not request.zos.istestserver){
 		db.sql&="blog_datetime >=#db.param(yesterdayDate)# and ";
@@ -45,6 +46,7 @@
 	// convert record to a real user if possible.
 	db.sql="select mail_user_email, mail_user_id FROM #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 	WHERE site_id= #db.param(request.zos.globals.id)# and 
+	mail_user_deleted = #db.param(0)# and 
 	mail_user_opt_in = #db.param(1)# ";
 	if(form.debug){
 		db.sql&=" LIMIT #db.param(1)# ";
@@ -61,7 +63,8 @@
 	db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	user_pref_email = #db.param(1)# and 
-	user_active = #db.param(1)# ";
+	user_active = #db.param(1)# and 
+	user_deleted = #db.param(0)#";
 	if(form.debug){
 		db.sql&=" LIMIT #db.param(1)# ";
 	}
@@ -235,6 +238,10 @@
 	#db.table("blog_config", request.zos.zcoreDatasource)# blog_config, 
 	#db.table("blog", request.zos.zcoreDatasource)# blog)
 	where site.site_id = app_x_site.site_id and 
+	site_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)# and 
+	blog_config_deleted = #db.param(0)# and 
+	blog_deleted = #db.param(0)# and
 	app_x_site.app_id = #db.param('10')# and  
 	blog_config.site_id = site.site_id and 
 	blog_config_email_alerts_enabled = #db.param(1)# and 

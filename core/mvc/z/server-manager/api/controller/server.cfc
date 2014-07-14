@@ -17,7 +17,8 @@
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("site", request.zos.zcoreDatasource)# 
 	WHERE site_active = #db.param(1)# and 
-	site_id <> #db.param(-1)# 
+	site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)#
 	ORDER BY site_short_domain ASC ";
 	qSite=db.execute("qSite");
 	for(row in qSite){

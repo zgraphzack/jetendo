@@ -22,7 +22,8 @@ zArrDeferredFunctions.push(function(){
 <cfsavecontent variable="db.sql">
 SELECT * FROM rental 
 WHERE rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
-rental_active=#db.param(1)#
+rental_active=#db.param(1)# and 
+rental_deleted = #db.param(0)#
 </cfsavecontent><cfscript>qrental=db.execute("qrental");
 calendarInclude=true;
 if(qrental.recordcount EQ 0){
@@ -42,7 +43,8 @@ application.zcore.functions.zQueryToStruct(qrental);
 </cfif>
 <cfsavecontent variable="db.sql">
 SELECT * FROM rental WHERE rental_active=#db.param(1)# and 
-rental_id <> #db.param('7')#
+rental_id <> #db.param('7')# and 
+rental_deleted = #db.param(0)#
 ORDER BY rental_name ASC
 </cfsavecontent><cfscript>qProperties=db.execute("qProperties");</cfscript>
 <!--- <cfif request.cgi_SCRIPT_NAME EQ '/z/_a/rental/check-availability' and structkeyexists(form, 'ifmdisable') EQ false> --->
@@ -83,7 +85,8 @@ function getCalendar(val){
 		<cfsavecontent variable="db.sql">
 			SELECT max(availability_date) as availability_date
 			FROM availability 
-			WHERE availability.rental_id = #db.param(rental_id)# 
+			WHERE availability.rental_id = #db.param(rental_id)# and 
+			availability_deleted = #db.param(0)#
 		</cfsavecontent><cfscript>qLast=db.execute("qLast");</cfscript>
 		</cfif>
 		<cfscript>
@@ -130,6 +133,7 @@ function getCalendar(val){
 			SELECT left(availability_date,#db.param(10)#) as availability_date
 			FROM availability 
 			WHERE availability.rental_id = #db.param('31')# and 
+			availability_deleted = #db.param(0)# and 
 			availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
 			availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')# 
 		</cfsavecontent><cfscript>qpeak=db.execute("qpeak");</cfscript>
@@ -143,6 +147,7 @@ function getCalendar(val){
 			SELECT left(availability_date,#db.param(10)#) as availability_date
 			FROM availability 
 			WHERE availability.rental_id = #db.param('29')# and 
+			availability_deleted = #db.param(0)# and 
 			availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
 			availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')# 
 		</cfsavecontent><cfscript>qholiday=db.execute("qholiday");</cfscript>
@@ -157,6 +162,7 @@ function getCalendar(val){
 			SELECT left(availability_date,#db.param(10)#) as availability_date
 			FROM availability 
 			WHERE availability.rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
+			availability_deleted = #db.param(0)# and 
 			availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
 			availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')# 
 		</cfsavecontent><cfscript>qAvailList=db.execute("qAvailList");</cfscript>

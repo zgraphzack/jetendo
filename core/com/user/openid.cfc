@@ -281,6 +281,7 @@ WHERE site_id <>'16'
 				 db.sql="select user_id, user_username, user_password 
 				 FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_openid_provider=#db.param(form.providerId)# and 
+				user_deleted = #db.param(0)# and
 				user_openid_id=#db.param(form["openid.identity"])# and 
 				user_active= #db.param(1)# and 
 				(site_id =#db.param(request.zos.globals.id)# or 
@@ -482,7 +483,8 @@ WHERE site_id <>'16'
 						if(request.zos.globals.parentId NEQ 0){
 							 db.sql="select site_developer_email 
 							 FROM #db.table("site", request.zos.zcoreDatasource)# site 
-							WHERE site_id=#db.param(request.zos.globals.parentId)#";
+							WHERE site_id=#db.param(request.zos.globals.parentId)# and 
+							site_deleted = #db.param(0)# ";
 							local.qSiteTemp=db.execute("qSiteTemp");
 							if(local.qSiteTemp.recordcount NEQ 0 and local.qSiteTemp.site_developer_email NEQ ""){
 								local.webdeveloperemail=local.qSiteTemp.site_developer_email;
@@ -564,6 +566,7 @@ WHERE site_id <>'16'
 				 user_openid_id=#db.param(form["openid.identity"])#,
 				 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE user_id=#db.param(arguments.user_id)# and 
+				user_deleted = #db.param(0)# and 
 				site_id = #db.param(arguments.site_id)#";
 				db.execute("q");
 				</cfscript>
@@ -602,6 +605,7 @@ WHERE site_id <>'16'
 			  user_openid_id=#db.param('')#,
 			  user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE user_id=#db.param(arguments.user_id)# and 
+			user_deleted = #db.param(0)# and 
 			site_id = #db.param(arguments.site_id)#";
 			db.execute("q");
 			return '<h2>External Account Removed.</h2>';
@@ -628,6 +632,7 @@ WHERE site_id <>'16'
 		 db.sql="select user_id, site_id, user_openid_provider, user_openid_id, user_openid_email, user_openid_required 
 		 FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user_id=#db.param(arguments.user_id)# and 
+		user_deleted = #db.param(0)# and 
 		site_id = #db.param(arguments.site_id)#";
 		local.qUser=db.execute("qUser");
 		</cfscript>

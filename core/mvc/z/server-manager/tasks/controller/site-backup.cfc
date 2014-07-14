@@ -240,7 +240,8 @@ TODO: figure out why site backup doesn't get compressed.
 	}
 	
 	db.sql="select * from #db.table("site", request.zos.zcoredatasource)# site 
-	where site_active='1' 
+	where site_active='1' and 
+	site_deleted = #db.param(0)#
 	#local.siteSQL# ";
 	qs=db.execute("qs"); 
 	local.sitePathStruct={};
@@ -281,7 +282,8 @@ TODO: figure out why site backup doesn't get compressed.
 	db.sql="SELECT site_id, site_datasource FROM `#request.zos.zcoreDatasource#`.`site`  site
 	WHERE site_active='1' AND
 	site_id <> -1 AND 
-	site_datasource<>'' 
+	site_datasource<>'' and 
+	site_deleted = #db.param(0)#
 	#local.siteSQL#
 	GROUP BY site_datasource";
 	qSites=db.execute("qSites");
@@ -443,9 +445,11 @@ TODO: figure out why site backup doesn't get compressed.
 	db.sql="select site.*, group_concat(app_x_site.app_id SEPARATOR #db.param(',')#) appidlist 
 	from `#request.zos.zcoreDatasource#`.`site` 
 	left join #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site ON 
-	app_x_site.site_id = site.site_id 
+	app_x_site.site_id = site.site_id and 
+	app_x_site_deleted = #db.param(0)#
 	WHERE site_active=#db.param('1')# AND 
-	site.site_id <> #db.param(request.zos.globals.serverid)# 
+	site.site_id <> #db.param(request.zos.globals.serverid)# and 
+	site_deleted = #db.param(0)#
 	#local.siteSQL#
 	GROUP BY site.site_id ";
 	qSites2=db.execute("qSites2");

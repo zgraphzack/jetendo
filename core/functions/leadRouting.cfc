@@ -63,6 +63,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		SET inquiries_assign_email=#db.param(rs.assignemail)#,
 		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_id=#db.param(arguments.ss.inquiries_id)# and 
+		inquiries_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("q");
 	}else{
@@ -71,6 +72,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		user_id_siteIDType=#db.param(rs.user_id_siteIDType)#,
 		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_id=#db.param(arguments.ss.inquiries_id)# and 
+		inquiries_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		db.execute("q"); 
 	} 
@@ -193,6 +195,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	}
 	db.sql="select * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_id = #db.param(rs.inquiries_id)# and 
+	inquiries_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	qI=db.execute("qI"); 
 	if(qI.recordcount EQ 0){
@@ -215,6 +218,8 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		 #db.table("user", request.zos.zcoreDatasource)# user) 
 		WHERE user.user_id = inquiries.user_id and 
 		user.user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and 
+		inquiries_deleted = #db.param(0)# and
 		inquiries_email = #db.param(qI.inquiries_email)# and 
 		inquiries_id <> #db.param(rs.inquiries_id)# and 
 		inquiries_datetime >=#db.param(dateformat(dateadd("m",-6,now()),"yyyy-mm-dd")&" 00:00:00")# and 
@@ -261,6 +266,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 								db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
 								WHERE member_mlsagentid = #db.param(r9.query.listing_agent[1])# and 
 								user.site_id = #db.param(request.zos.globals.id)# and 
+								user_deleted = #db.param(0)# and
 								user_active=#db.param('1')#";
 								qMember=db.execute("qMember"); 
 								if(qMember.recordcount NEQ 0){
@@ -359,7 +365,8 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	// detect if autoresponder was sent yet by querying user table
 	 db.sql="select user_id from #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_username = #db.param(qI.inquiries_email)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
+	site_id = #db.param(request.zos.globals.id)# and 
+	user_deleted = #db.param(0)#";
 	qUser=db.execute("qUser");
 	if(qUser.recordcount EQ 0){
 		if(c.data.inquiries_routing_autoresponder_enabled EQ 1 and (c.data.inquiries_routing_autoresponder_html NEQ "" or c.data.inquiries_routing_autoresponder_text NEQ "")){
@@ -404,6 +411,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 		user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))# 
 		 LIMIT #db.param(0)#,#db.param(1)#";
@@ -422,6 +430,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and 
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# 	
 		ORDER BY user_next_lead DESC, user_id asc 
 		LIMIT #db.param(0)#,#db.param(1)#";
@@ -430,6 +439,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE site_id = #db.param(request.zos.globals.id)# and 
 			user_active= #db.param(1)# and 
+			user_deleted = #db.param(0)# and
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 			user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))# 	
 			ORDER BY user_next_lead DESC, user_id asc 
@@ -468,18 +478,22 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# ";
 		db.execute("q"); 
 		db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 		SET user_next_lead = #db.param(0)#,
 		user_updated_datetime=#db.param(request.zos.mysqlnow)#  
-		WHERE user_id = #db.param(qAssignUser.user_id)# and site_id = #db.param(qAssignUser.site_id)#";
+		WHERE user_id = #db.param(qAssignUser.user_id)# and 
+		user_deleted = #db.param(0)# and 
+		site_id = #db.param(qAssignUser.site_id)#";
 		db.execute("q"); 
 	}else if(c.data.inquiries_routing_type_id EQ 2){
 		// assign to user id
 		db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and 
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 		user_id =#db.param(c.data.inquiries_routing_assign_to_user_id)# 	
 		ORDER BY user_next_lead DESC, user_id asc 
@@ -489,6 +503,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE site_id = #db.param(request.zos.globals.id)# and 
 			user_active= #db.param(1)# and 
+			user_deleted = #db.param(0)# and
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 			user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))# 	
 			ORDER BY user_next_lead DESC, user_id asc 
@@ -561,6 +576,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	// detect if autoresponder was sent yet by querying user table
 	 db.sql="select user_id from #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_username = #db.param(arguments.ss.leadEmail)# and 
+	user_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	qUser=db.execute("qUser");
 	if(qUser.recordcount EQ 0){
@@ -614,6 +630,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and 
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 		user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))#  
 		LIMIT #db.param(0)#,#db.param(1)#";
@@ -642,6 +659,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# 	
 		ORDER BY user_next_lead DESC, user_id asc LIMIT #db.param(0)#,#db.param(1)#";
 		qAssignUser=db.execute("qAssignUser"); 
@@ -649,6 +667,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE site_id = #db.param(request.zos.globals.id)# and 
 			user_active= #db.param(1)# and 
+			user_deleted = #db.param(0)# and 
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 			user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))# 	
 			ORDER BY user_next_lead DESC, user_id asc LIMIT #db.param(0)#,#db.param(1)#";
@@ -657,6 +676,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE site_id = #db.param(request.zos.globals.id)# and 
 				user_active= #db.param(1)# and 
+				user_deleted = #db.param(0)# and
 				user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 				user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))#  
 				LIMIT #db.param(0)#,#db.param(1)#";
@@ -701,12 +721,14 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# ";
 		db.execute("q");
 		 db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 		 SET user_next_lead = #db.param(0)#, 
 		 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE user_id = #db.param(qAssignUser.user_id)# and 
+		user_deleted = #db.param(0)# and
 		site_id = #db.param(qAssignUser.site_id)#";
 		db.execute("q");
 	}else if(c.data.inquiries_routing_type_id EQ 2){
@@ -714,6 +736,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		user_active= #db.param(1)# and 
+		user_deleted = #db.param(0)# and
 		user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 		user_id =#db.param(c.data.inquiries_routing_assign_to_user_id)# 	
 		ORDER BY user_next_lead DESC, user_id asc LIMIT #db.param(0)#,#db.param(1)#";
@@ -722,6 +745,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE site_id = #db.param(request.zos.globals.id)# and 
 			user_active= #db.param(1)# and 
+			user_deleted = #db.param(0)# and
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 			user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))# 	
 			ORDER BY user_next_lead DESC, user_id asc 
@@ -888,7 +912,8 @@ application.zcore.functions.zLeadRecordLog(ts);
 	// figure out a way to only query leads that need to have reminder logic or cc for inactivity
 	 db.sql="select count(inquiries_routing_id) c 
 	 from #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing 
-	WHERE site_id = #db.param(request.zos.globals.id)# ";
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_routing_deleted = #db.param(0)# ";
 	qRoute=db.execute("qRoute");
 	if(qRoute.recordcount EQ 0 or qRoute.c EQ 0){
 		return; // no routing reminders needed for this web site.
@@ -899,6 +924,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#) AND 
 	user_id <> #db.param('0')# and 
+	inquiries_deleted = #db.param(0)# and
 	inquiries_datetime > #db.param('2010-02-08 14:00:00')# ";
 	qI=db.execute("qI"); 
 	</cfscript><cfloop query="qI"><cfscript>
@@ -968,6 +994,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 						 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 						WHERE site_id = #db.param(request.zos.globals.id)# and 
 						user_active= #db.param(1)# and 
+						user_deleted = #db.param(0)# and
 						user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 						user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))#  
 						LIMIT #db.param(0)#,#db.param(1)#";
@@ -984,6 +1011,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 						 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 						WHERE site_id = #db.param(request.zos.globals.id)# and 
 						user_active= #db.param(1)# and 
+						user_deleted = #db.param(0)# and
 						user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# 	
 						ORDER BY user_next_lead DESC, user_id asc 
 						LIMIT #db.param(0)#,#db.param(1)#";
@@ -992,6 +1020,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 							 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 							WHERE site_id = #db.param(request.zos.globals.id)# and 
 							user_active= #db.param(1)# and 
+							user_deleted = #db.param(0)# and
 							user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 							user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))#  
 							LIMIT #db.param(0)#,#db.param(1)#";
@@ -1011,12 +1040,14 @@ application.zcore.functions.zLeadRecordLog(ts);
 							user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 							WHERE site_id = #db.param(request.zos.globals.id)# and 
 							user_active= #db.param(1)# and 
+							user_deleted = #db.param(0)# and
 							user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# ";
 							db.execute("q");
 							 db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
 							 SET user_next_lead = #db.param(0)#,
 							 user_updated_datetime=#db.param(request.zos.mysqlnow)#  
 							WHERE user_id = #db.param(qAssignUser.user_id)# and 
+							user_deleted = #db.param(0)# and
 							site_id = #db.param(request.zos.globals.id)#";
 							db.execute("q");
 						}
@@ -1025,6 +1056,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 						db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 						WHERE site_id = #db.param(request.zos.globals.id)# and 
 						user_active= #db.param(1)# and 
+						user_deleted = #db.param(0)# and
 						user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 						user_id =#db.param(c.inquiries_routing_assign_to_user_id)# 	
 						ORDER BY user_next_lead DESC, user_id asc 
@@ -1034,6 +1066,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 							 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 							WHERE site_id = #db.param(request.zos.globals.id)# and 
 							user_active= #db.param(1)# and 
+							user_deleted = #db.param(0)# and
 							user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
 							user_username =#db.param(application.zcore.functions.zvarso('zofficeemail'))# 	
 							ORDER BY user_next_lead DESC, user_id asc 
@@ -1061,7 +1094,8 @@ application.zcore.functions.zLeadRecordLog(ts);
 					 db.sql="update #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 					set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 					inquiries_reminders_sent=#db.param(0)# 
-					WHERE inquiries_id = #db.param(inquiries_id)#";
+					WHERE inquiries_id = #db.param(inquiries_id)# and 
+					inquiries_deleted = #db.param(0)#";
 					db.execute("q");
 					
 					
@@ -1070,7 +1104,8 @@ application.zcore.functions.zLeadRecordLog(ts);
 					WHERE site_id = #db.param(request.zos.globals.id)# and 
 					user_active= #db.param(1)# and 
 					user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# and 
-					user_id =#db.param(c.inquiries_routing_assign_to_user_id)# 	
+					user_id =#db.param(c.inquiries_routing_assign_to_user_id)# and 
+					user_deleted = #db.param(0)# 	
 					ORDER BY user_next_lead DESC, user_id asc 
 					LIMIT #db.param(0)#,#db.param(1)#";
 					qAssignUser=db.execute("qAssignUser");
@@ -1084,7 +1119,8 @@ application.zcore.functions.zLeadRecordLog(ts);
 					 db.sql="update #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 					 set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 					 inquiries_reminders_sent=#db.param(totalReminders)# 
-					WHERE inquiries_id = #db.param(inquiries_id)#";
+					WHERE inquiries_id = #db.param(inquiries_id)# and 
+					inquiries_deleted = #db.param(0)#";
 					db.execute("q");
 				}
 			}
@@ -1120,9 +1156,11 @@ inquiries_updated_datetime --->
     SELECT * FROM #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing 
     LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries_type.inquiries_type_id = inquiries_routing.inquiries_type_id and 
+	inquiries_type_deleted = #db.param(0)# and
 	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries_routing.inquiries_type_id_siteIDType"))#
      
-	WHERE inquiries_routing.site_id =#db.param(request.zos.globals.id)# 
+	WHERE inquiries_routing.site_id =#db.param(request.zos.globals.id)# and 
+	inquiries_routing_deleted = #db.param(0)#
 	ORDER BY inquiries_routing_sort
     </cfsavecontent><cfscript>q=db.execute("q");
 	rs.arrData=arraynew(1);
@@ -1142,6 +1180,7 @@ inquiries_updated_datetime --->
             <cfsavecontent variable="db.sql">
             SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user.user_id = #db.param(q.inquiries_routing_assign_to_user_id)# and 
+			user_deleted = #db.param(0)# and
 			user.site_id =#db.param(request.zos.globals.id)# 
             </cfsavecontent><cfscript>qM=db.execute("qM");
             arrM=listtoarray(qM.columnlist,",");
@@ -1159,6 +1198,7 @@ inquiries_updated_datetime --->
             <cfsavecontent variable="db.sql">
             SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user.user_id = #db.param(q.inquiries_routing_reassignment_to_user_id)# and 
+			user_deleted = #db.param(0)# and
 			user.site_id =#db.param(request.zos.globals.id)# 
             </cfsavecontent><cfscript>qM=db.execute("qM");
             arrM=listtoarray(qM.columnlist,",");

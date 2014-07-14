@@ -41,7 +41,9 @@
 	userGroupAdminCom=createobject("component","zcorerootmapping.com.user.user_group_admin");
 	ugid=userGroupAdminCom.getGroupId("user");
 	db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-	where user_username = #db.param(form.e)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# ";
+	where user_username = #db.param(form.e)# and 
+	user_deleted = #db.param(0)# and
+	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# ";
 	variables.qcheckemail=db.execute("qcheckemail");
 	variables.secureLogin=false;
 	if(form.e EQ '' and form.k EQ '' and  structkeyexists(request.zos.userSession.groupAccess, "user")){
@@ -125,6 +127,7 @@
 			user_updated_datetime = #db.param(form.user_updated_datetime)#, 
 			member_password = #db.param(variables.qcheckemail.user_password_new)# 
 			WHERE user_username = #db.param(form.e)# and 
+			user_deleted = #db.param(0)# and
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# ";
 			qP=db.execute("qP");
 			
@@ -162,6 +165,7 @@
 			user_confirm_datetime = #db.param(form.user_updated_datetime)# , 
 			member_email = #db.param(variables.qcheckemail.user_email_new)# 
 			WHERE user_username = #db.param(form.e)# and 
+			user_deleted = #db.param(0)# and
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())#";
 			qP=db.execute("qP");
 			
@@ -233,6 +237,7 @@
 	}
 	db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	where user_username = #db.param(form.e)# and 
+	user_deleted = #db.param(0)# and
 	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# ";
 	qcheckemail10=db.execute("qcheckemail10");
 	if(qcheckemail10.recordcount neq 0 and (form.submitPref EQ 'Login' or (form.submitPref EQ 'Update Communication Preferences' and trim(application.zcore.functions.zso(form, 'user_password')) NEQ ''))){
@@ -346,11 +351,13 @@
 	user_key=#db.param(user_key)#,
 	user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE user_username = #db.param(form.e)# and 
+	user_deleted = #db.param(0)# and
 	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# ";
 	qP=db.execute("qP");
 	db.sql="select * from  #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(variables.qcheckemail.user_id)# and 
-	site_id= #db.param(variables.qcheckemail.site_id)# ";
+	site_id= #db.param(variables.qcheckemail.site_id)# and
+	user_deleted = #db.param(0)# ";
 	variables.qcheckemail=db.execute("qcheckemail");
 	mail  charset="utf-8" to="#form.e#" from="#variables.emailfrom1#" subject="Reset Password for #application.zcore.functions.zvar('shortdomain')#"{
 		writeoutput('Hello,
@@ -430,10 +437,13 @@ If the link does not work, please copy and paste the entire link in your browser
 	
 	db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 	where mail_user_email=#db.param(form.user_email)# and 
+	mail_user_deleted = #db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)#";
 	qU=db.execute("qU"); 
 	if(qU.recordcount NEQ 0){
-		db.sql="delete from #db.table("mail_user", request.zos.zcoreDatasource)#  
+		db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)#  
+		set mail_user_deleted = #db.param(1)#,
+		mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#
 		where mail_user_id=#db.param(qU.mail_user_id)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		db.execute("q"); 
@@ -534,7 +544,9 @@ If the link does not work, please copy and paste the entire link in your browser
 		}
 	
 		if(structkeyexists(form, 'user_email') and form.user_email NEQ variables.qcheckemail.user_email){
-			db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user WHERE user_email =#db.param(form.user_email)# and 
+			db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
+			WHERE user_email =#db.param(form.user_email)# and 
+			user_deleted = #db.param(0)# and 
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())#";
 			qU=db.execute("qU"); 
 			if(qU.recordcount NEQ 0){
@@ -579,6 +591,7 @@ To view more info about this new user, click the following link:
 		set user_key =#db.param(form.user_key)#,
 		user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE user_username = #db.param(form.e)# and 
+		user_deleted = #db.param(0)# and
 		site_id=#db.param(request.zos.globals.id)# ";
 		addKey=db.execute("addKey");
 	}else{
@@ -660,6 +673,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		user_updated_datetime = #db.param(form.user_updated_datetime)#, 
 		user_confirm_count=#db.param('3')# 
 		where user_username = #db.param(form.e)# and 
+		user_deleted = #db.param(0)# and
 		#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())#";
 		qUpdateOut=db.execute("qUpdateOut");
 	}

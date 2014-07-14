@@ -104,7 +104,10 @@
 	variables.init();
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id <> #db.param('1')# ORDER BY site_domain asc ";
+	WHERE site_id <> #db.param('1')# and 
+	site_deleted = #db.param(0)#
+
+	ORDER BY site_domain asc ";
 	qSites=db.execute("qSites");
 	</cfscript> 
 	<table style="width:100%; border-spacing:0px;" class="table-list">

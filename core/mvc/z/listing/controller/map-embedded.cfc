@@ -30,6 +30,8 @@ db.sql="select * from
 where mls_saved_search.mls_saved_search_id = content.content_saved_search_id and 
 mls_saved_search.site_id = content.site_id and 
 content_for_sale <> #db.param('2')# and 
+mls_saved_search_deleted = #db.param(0)# and 
+content_deleted = #db.param(0)# and 
 content_id = #db.param(form.content_id)# and 
 mls_saved_search.site_id=#db.param(request.zos.globals.id)#";
 qC=db.execute("qC");

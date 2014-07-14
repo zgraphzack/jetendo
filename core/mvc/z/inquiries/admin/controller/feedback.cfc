@@ -236,10 +236,13 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 	inquiries_type.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#) and 
-	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# 
+	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+	inquiries_type_deleted = #db.param(0)#
 	LEFT JOIN #db.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status
-	ON inquiries.inquiries_status_id = inquiries_status.inquiries_status_id
+	ON inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
+	inquiries_status_deleted = #db.param(0)#
 	WHERE inquiries_id = #db.param(form.inquiries_id)# and 
+	inquiries_deleted = #db.param(0)# and 
 	inquiries.site_id = #db.param(request.zos.globals.id)#";
 	if(structkeyexists(request.zos.userSession.groupAccess, 'administrator') EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
 		db.sql&=" AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
@@ -264,7 +267,9 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	</cfscript>
 	<cfif form.inquiries_email NEQ "">
 		<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
-		WHERE inquiries_email = #db.param(form.inquiries_email)# and site_id = #db.param(request.zos.globals.id)#
+		WHERE inquiries_email = #db.param(form.inquiries_email)# and 
+		inquiries_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, 'administrator') EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
 			AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
@@ -333,7 +338,8 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		</td>
 		<td style="vertical-align:top; width:30%;padding-left:10px; padding-right:0px;">
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-			WHERE user_id = #db.param(request.zsession.user.id)# and #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
+			WHERE user_id = #db.param(request.zsession.user.id)# and 
+			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
 			user_server_administrator=#db.param('0')# </cfsavecontent>
 			<cfscript>
 			qAgent=db.execute("qAgent");
@@ -342,8 +348,10 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
 			LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
 			inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
-			inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# 
-			WHERE inquiries_lead_template_x_site.site_id IS NULL and 
+			inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# and 
+			inquiries_lead_template_x_site_deleted = #db.param(0)#
+			WHERE inquiries_lead_template_x_site.site_id IS NULL and
+			inquiries_lead_template_deleted = #db.param(0)# and  
 			inquiries_lead_template_type = #db.param('2')# and 
 			inquiries_lead_template.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
 			<cfif application.zcore.app.siteHasApp("listing") EQ false>
@@ -504,7 +512,10 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
 			LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
 			inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
-			inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# WHERE inquiries_lead_template_x_site.site_id IS NULL and 
+			inquiries_lead_template_x_site_deleted = #db.param(0)# and 
+			inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# 
+			WHERE inquiries_lead_template_x_site.site_id IS NULL and 
+			inquiries_lead_template_deleted = #db.param(0)# and 
 			inquiries_lead_template_type = #db.param('1')# and 
 			inquiries_lead_template.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
 			<cfif application.zcore.app.siteHasApp("listing") EQ false>
@@ -606,7 +617,9 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	db.sql="SELECT * from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback
 	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 	user.user_id = inquiries_feedback.user_id and 
-	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries_feedback.user_id_siteIDType"))# WHERE 
+	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries_feedback.user_id_siteIDType"))# and 
+	user_deleted = #db.param(0)#
+	WHERE 
 	inquiries_id = #db.param(form.inquiries_id)# and 
 	inquiries_feedback.site_id = #db.param(request.zos.globals.id)# 
 	ORDER BY inquiries_feedback_datetime DESC ";

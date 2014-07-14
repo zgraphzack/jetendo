@@ -43,10 +43,12 @@
 	FROM #db.table("track_user", request.zos.zcoreDatasource)# track_user 
 	LEFT JOIN #db.table("track_page", request.zos.zcoreDatasource)# track_page ON 
 	track_user.track_user_id=track_page.track_user_id AND 
+	track_page_deleted = #db.param(0)# and 
 	( track_page_qs LIKE #db.param('%gclid=%')#) and 
 	track_page.site_id = track_user.site_id 
 	
 	WHERE  track_user_conversions >#db.param(0)# AND 
+	track_user_deleted = #db.param(0)# and 
 	track_user.site_id = #db.param(request.zos.globals.id)# AND track_user_email <>#db.param('')# and 
 	(DATE_FORMAT(track_user_recent_datetime,#db.param("%Y-%m-%d")#) >= #db.param(dateformat(form.start_date, "yyyy-mm-dd"))# and 
 	DATE_FORMAT(track_user_datetime,#db.param("%Y-%m-%d")#) <= #db.param(dateformat(form.end_date, "yyyy-mm-dd"))#)

@@ -626,6 +626,8 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
         SELECT * FROM #request.zos.queryObject.table("file", request.zos.zcoreDatasource)# file, 
 		#request.zos.queryObject.table("file_version", request.zos.zcoreDatasource)# file_version 
 		WHERE file.file_id = #db.param(form.file_id)# and 
+		file_deleted = #db.param(0)# and 
+		file_version_deleted = #db.param(0)# and
 		file.file_id = file_version.file_id and 
 		file.site_id = #db.param(request.zos.globals.id)#
         </cfsavecontent><cfscript>qCheck=db.execute("qCheck");
@@ -656,6 +658,8 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
     SELECT * FROM #request.zos.queryObject.table("file", request.zos.zcoreDatasource)# file, 
 	#request.zos.queryObject.table("file_version", request.zos.zcoreDatasource)# file_version 
 	WHERE file.file_path= #db.param(form.file_path)# and 
+	file_deleted = #db.param(0)# and 
+	file_version_deleted = #db.param(0)# and
 	file.file_id = file_version.file_id and 
 	file.file_id <> #db.param(form.file_id)# and 
 	file.site_id = #db.param(request.zos.globals.id)#
@@ -713,6 +717,7 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
 		set file_version_active=#db.param(0)#,
 		file_version_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		where file_id=#db.param(form.file_id)# and 
+		file_version_deleted = #db.param(0)# and
 		file_version_id <> #db.param(form.file_version_id)#";
 		r=db.execute("r");
 	}
@@ -754,6 +759,8 @@ writeoutput(((getTickcount()-start)/1000)&" seconds<br />");
 	#request.zos.queryObject.table("file_version", request.zos.zcoreDatasource)# file_version 
 	WHERE file.file_id = #db.param(file_id)# and 
 	file.file_id = file_version.file_id and 
+	file_deleted = #db.param(0)# and 
+	file_version_deleted = #db.param(0)# and
 	file_version_active=#db.param(1)# and 
 	file.site_id = #db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qFile=db.execute("qFile");</cfscript>

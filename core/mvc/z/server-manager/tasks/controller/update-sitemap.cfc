@@ -19,7 +19,10 @@
 	site.site_live =#db.param('1')# and 
 	app.app_name=#db.param('content')# and 
 	app_x_site.app_id = app.app_id and 
-	app_x_site.site_id = site.site_id";
+	app_x_site.site_id = site.site_id and 
+	site_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)# and 
+	app_deleted = #db.param(0)#";
 	qC=db.execute("qC");
 	a1=arraynew(1);
 	loop query="qc"{

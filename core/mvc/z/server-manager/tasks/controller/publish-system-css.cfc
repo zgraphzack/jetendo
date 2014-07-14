@@ -11,7 +11,9 @@
 	db.sql="SELECT menu.menu_id, menu.site_id 
 	FROM #db.table("menu", request.zos.zcoreDatasource)# menu,
 	#db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE
+	WHERE 
+	site_deleted = #db.param(0)# and 
+	menu_deleted = #db.param(0)# and
 	site.site_id = menu.site_id and 
 	site.site_active=#db.param(1)#";
 	local.q=db.execute("q");
@@ -23,7 +25,8 @@
 	db.sql="UPDATE #db.table("slideshow", request.zos.zcoreDatasource)# slideshow
 	SET	slideshow_hash=#db.param('')#,
 	slideshow_updated_datetime=#db.param(request.zos.mysqlnow)#  
-	WHERE
+	WHERE 
+	slideshow_deleted = #db.param(0)# and 
 	site_id <> #db.param(-1)#";
 	local.q=db.execute("q");
 	

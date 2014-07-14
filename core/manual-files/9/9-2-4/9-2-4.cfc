@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <p>Purpose: A jQuery Slideshow with support for multiple layers of animation within each slide.</p>
   <p>Version: 0.1.000</p>
   <p>Language(s) used: Javascript</p>

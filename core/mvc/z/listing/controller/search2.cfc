@@ -138,8 +138,9 @@
 	
 		<cfsavecontent variable="db.sql">
 		SELECT cast(group_concat(distinct listing_city SEPARATOR #db.trustedSQL("','")#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
-	WHERE 
+		from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+		WHERE 
+		listing_deleted = #db.param(0)# and 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	
 		listing_city not in #db.trustedSQL("('','0','#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#')")#
@@ -149,7 +150,9 @@
 		<cfsavecontent variable="db.sql">
 		select city_x_mls.city_name label, city_x_mls.city_id value 
 		from #db.table("city_x_mls", request.zos.zcoreDatasource)# city_x_mls 
-		WHERE city_x_mls.city_id IN (#db.trustedSQL(qtype.idlist)#) and 
+		WHERE 
+		city_x_mls_deleted = #db.param(0)# and 
+		city_x_mls.city_id IN (#db.trustedSQL(qtype.idlist)#) and 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("city_x_mls"))#  and 
 		city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#)  
 			  
@@ -159,7 +162,8 @@
 		<cfsavecontent variable="db.sql">
 		select city.city_name label, city.city_id value 
 		from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
-		WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) 
+		WHERE city_deleted = #db.param(0)# and 
+		city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) 
 		ORDER BY label 
 		</cfsavecontent><cfscript>qCity10=db.execute("qCity10");
 		arrK2=arraynew(1);
@@ -210,6 +214,7 @@
 		db.sql="SELECT cast(group_concat(distinct #arguments.fieldName# SEPARATOR #db.param(',')#) AS CHAR) idlist 
 		from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 		WHERE 
+		listing_deleted = #db.param(0)# and 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 		#arguments.fieldName# not in (#db.trustedSQL("'','0'")#) ";
 		if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1){
@@ -399,6 +404,7 @@
 		db.sql="SELECT #arguments.fieldName# value 
 		from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 		WHERE 
+		listing_deleted = #db.param(0)# and 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 		#arguments.fieldName# not in (#db.trustedSQL("'','0'")#) ";
 		if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1){
@@ -797,6 +803,7 @@
 			content.site_id = #db.param(request.zos.globals.id)# and 
 			content_search_mls= #db.param(1)# and 
 			content.content_id = #db.param(form.zsearch_cid)#  and 
+			mls_saved_search_deleted = #db.param(0)# and 
 			content_deleted=#db.param('0')#";
 			qc23872=db.execute("qc23872"); 
 			if(qc23872.recordcount NEQ 0){
@@ -818,6 +825,7 @@
 			WHERE mls_saved_search.mls_saved_search_id = blog.mls_saved_search_id and 
 			blog.blog_search_mls= #db.param(1)# and 
 			blog.site_id = #db.param(request.zos.globals.id)# and 
+			mls_saved_search_deleted = #db.param(0)#
 			blog_id= #db.param(form.zsearch_bid)# ";
 			qc23872=db.execute("qc23872");
 			if(qc23872.recordcount NEQ 0){

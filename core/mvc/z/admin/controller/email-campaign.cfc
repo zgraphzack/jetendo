@@ -57,16 +57,22 @@ request.zscriptname=request.cgi_script_name&"?zid=#form.zid#&sid=#form.sid#";
     </script>
             <cfsavecontent variable="db.sql">
 
-            SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site WHERE site_id =#db.param(form.sid)# ORDER BY site_domain asc
+            SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site WHERE 
+            site_id =#db.param(form.sid)# and 
+            site_deleted = #db.param(0)#
+            ORDER BY site_domain asc
             
 </cfsavecontent><cfscript>qSite=db.execute("qSite");</cfscript>
     <cfif application.zcore.user.checkServerAccess()>
     <table style="border-spacing:0px; width:100%;" class="table-list">
             <cfsavecontent variable="db.sql">
 
-            SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site WHERE site_id <> #db.param('1')# ORDER BY site_domain asc
+            SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site WHERE 
+            site_id <> #db.param('1')# and 
+            site_deleted = #db.param(0)# 
+            ORDER BY site_domain asc
             
-</cfsavecontent><cfscript>qSites=db.execute("qSites");</cfscript>
+            </cfsavecontent><cfscript>qSites=db.execute("qSites");</cfscript>
             <tr>
                 <td class="table-white">
                 Select a site: 
@@ -103,16 +109,24 @@ request.zscriptname=request.cgi_script_name&"?zid=#form.zid#&sid=#form.sid#";
 	
         <cfsavecontent variable="db.sql">
 
-        SELECT count(zemail_campaign_id) count FROM #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign WHERE site_id =#db.param(form.sid)#
+        SELECT count(zemail_campaign_id) count FROM #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign 
+        WHERE site_id =#db.param(form.sid)# and 
+        zemail_campaign_deleted = #db.param(0)#
         
-</cfsavecontent><cfscript>qCampaignCount=db.execute("");</cfscript>
+        </cfsavecontent><cfscript>qCampaignCount=db.execute("");</cfscript>
         <cfsavecontent variable="db.sql">
 
-        SELECT * FROM (#db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign, #db.table("zemail_template", request.zos.zcoreDatasource)# zemail_template, #db.table("zemail_template_type", request.zos.zcoreDatasource)# zemail_template_type) WHERE 
-        zemail_campaign.zemail_template_id=zemail_template.zemail_template_id and  zemail_template.zemail_template_type_id= zemail_template_type.zemail_template_type_id and 
+        SELECT * FROM (#db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign, 
+        #db.table("zemail_template", request.zos.zcoreDatasource)# zemail_template, 
+        #db.table("zemail_template_type", request.zos.zcoreDatasource)# zemail_template_type) WHERE 
+        zemail_campaign.zemail_template_id=zemail_template.zemail_template_id and  
+        zemail_template.zemail_template_type_id= zemail_template_type.zemail_template_type_id and 
+        zemail_template_deleted = #db.param(0)# and 
+        zemail_campaign_deleted = #db.param(0)#
+        zemail_template_type_deleted = #db.param(0)# and 
         zemail_campaign.site_id =#db.param(form.sid)# ORDER BY zemail_campaign_created_datetime desc
         
-</cfsavecontent><cfscript>qCampaign=db.execute("qCampaign");
+        </cfsavecontent><cfscript>qCampaign=db.execute("qCampaign");
         if(qCampaignCount.count GT 30){
             // required
             searchStruct = StructNew();
@@ -238,26 +252,34 @@ request.zscriptname=request.cgi_script_name&"?zid=#form.zid#&sid=#form.sid#";
     <span style="font-weight:bold; font-size:14px;">#zvar('domain', form.sid)# email campaign:</span><br /><br />
     <cfsavecontent variable="db.sql">
 
-    select * from #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign where zemail_campaign_id = #db.param(zemail_campaign_id)#
+    select * from #db.table("zemail_campaign", request.zos.zcoreDatasource)# zemail_campaign where 
+    zemail_campaign_id = #db.param(zemail_campaign_id)# and 
+    zemail_campaign_deleted = #db.param(0)#
     
-</cfsavecontent><cfscript>qcampaign=db.execute("qcampaign");</cfscript>
+    </cfsavecontent><cfscript>qcampaign=db.execute("qcampaign");</cfscript>
     <a href="#zvar('domain', form.sid)#/z/-evm1.#zemail_campaign_id#" target="_blank">Click here to view example of the sent email</a><br />
     <br />
     
     <cfsavecontent variable="db.sql">
 
-    select count(user_id) count from #db.table("zemail_campaign_x_user", request.zos.zcoreDatasource)# zemail_campaign_x_user where zemail_campaign_id = #db.param(zemail_campaign_id)#
+    select count(user_id) count from #db.table("zemail_campaign_x_user", request.zos.zcoreDatasource)# zemail_campaign_x_user where 
+    zemail_campaign_id = #db.param(zemail_campaign_id)# and 
+    zemail_campaign_x_user_deleted = #db.param(0)#
     
-</cfsavecontent><cfscript>q=db.execute("q");</cfscript>
+    </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
     <cfif q.recordcount neq 0 and q.count neq 0>
     <strong>Total emails sent: #q.count#</strong><br />
     Email campaign started on #dateformat(qcampaign.zemail_campaign_scheduled_datetime,'m/d/yyyy')# at #timeformat(qcampaign.zemail_campaign_scheduled_datetime,'h:mm tt')# and completed on #dateformat(qcampaign.zemail_campaign_completed_datetime,'m/d/yyyy')# at #timeformat(qcampaign.zemail_campaign_completed_datetime,'h:mm tt')#<br style="clear:both;" />
     <cfset totalemails=q.count>
     <cfsavecontent variable="db.sql">
 
-    select zemail_campaign_click_type, count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click where zemail_campaign_id = #db.param(zemail_campaign_id)# group by zemail_campaign_click_type order by zemail_campaign_click_type asc
+    select zemail_campaign_click_type, count(distinct user_id) count from 
+    #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click where 
+    zemail_campaign_id = #db.param(zemail_campaign_id)# and 
+    zemail_campaign_click_deleted = #db.param(0)# 
+    group by zemail_campaign_click_type order by zemail_campaign_click_type asc
     
-</cfsavecontent><cfscript>q=db.execute("q");
+    </cfsavecontent><cfscript>q=db.execute("q");
     arrType=["opens","unsubscribes", "bounces", "clicks", "conversions", "out of office", "temporary bounce", "challenge response", "anti-spam bounce", "other/replies"];
     </cfscript>
     <table style="border-spacing:0px;  color:##000000; text-align:left;">
@@ -279,7 +301,12 @@ request.zscriptname=request.cgi_script_name&"?zid=#form.zid#&sid=#form.sid#";
     
     
     <cfsavecontent variable="db.sql">
-    select zemail_campaign_click_offset, count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click where zemail_campaign_id = #db.param(zemail_campaign_id)# and zemail_campaign_click_type=#db.param('5')# group by zemail_campaign_click_offset
+    select zemail_campaign_click_offset, count(distinct user_id) count from 
+    #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click where 
+    zemail_campaign_id = #db.param(zemail_campaign_id)# and 
+    zemail_campaign_click_type=#db.param('5')# and 
+    zemail_campaign_click_deleted = #db.param(0)# 
+    group by zemail_campaign_click_offset
     </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
     <cfif q.recordcount NEQ 0 and q.count NEQ 0>
         <strong>Conversion Type Breakdown:</strong><br />
@@ -444,39 +471,55 @@ selectAll or zemail_campaign_force_optin_datetime
 
 <!--- <cfsavecontent variable="db.sql">
 select count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('3')#;
+where zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_type=#db.param('3')# and 
+zemail_campaign_click_deleted = #db.param(0)#
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 ## of bounces:  #q.count#<br />
 <cfsavecontent variable="db.sql">
 select count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('2')#;
+where zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_type=#db.param('2')# and 
+zemail_campaign_click_deleted = #db.param(0)#
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 ## of unsubscribes:  #q.count#<br />
 <cfsavecontent variable="db.sql">
 select count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('1')#;
+where zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_type=#db.param('1')# and 
+zemail_campaign_click_deleted = #db.param(0)#
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 ## of opens:  #q.count#<br />
 <cfsavecontent variable="db.sql">
 select count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('4')#;
+where zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_type=#db.param('4')# and 
+zemail_campaign_click_deleted = #db.param(0)#
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 ## of clicks:  #q.count#<br />
 
 <cfsavecontent variable="db.sql">
 select count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('10')#;
+where zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_type=#db.param('10')# and 
+zemail_campaign_click_deleted = #db.param(0)#
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 ## of total conversions:  #q.count#<br />
 
 <cfsavecontent variable="db.sql">
 select count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
-where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('5')#;
+where zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_type=#db.param('5')# and 
+zemail_campaign_click_deleted = #db.param(0)#
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 ## of total conversions:  #q.count#<br />
 <cfif q.count neq 0>
 <cfsavecontent variable="db.sql">
-select zemail_campaign_click_offset, count(distinct user_id) count from #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click where zemail_campaign_id = #db.param('5')# and zemail_campaign_click_type=#db.param('5')# group by zemail_campaign_click_offset;
+select zemail_campaign_click_offset, count(distinct user_id) count from 
+#db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click where 
+zemail_campaign_id = #db.param('5')# and 
+zemail_campaign_click_deleted = #db.param(0)# and 
+zemail_campaign_click_type=#db.param('5')# group by zemail_campaign_click_offset;
 </cfsavecontent><cfscript>q=db.execute("q");</cfscript>
 <cfif q.recordcount NEQ 0 and q.count NEQ 0>
     Conversion Type Breakdown:<br />
@@ -579,7 +622,10 @@ nowDate=request.zos.mysqlnow;
 oldDate=DateFormat(dateAdd("s",-30,now()),"yyyy-mm-dd")&" "&TimeFormat(dateAdd("s",-30,now()),"HH:mm:ss");
 </cfscript>
 <cfsavecontent variable="db.sql">
-SELECT zemail_smtp_domain_id FROM #db.table("zemail_smtp_domain", request.zos.zcoreDatasource)#  WHERE site_id = #db.param(request.zos.globals.id)# and zemail_smtp_domain_name=#db.param(domain)# and zemail_smtp_domain_datetime < #db.param(nowDate)#
+SELECT zemail_smtp_domain_id FROM #db.table("zemail_smtp_domain", request.zos.zcoreDatasource)#  WHERE 
+site_id = #db.param(request.zos.globals.id)# and zemail_smtp_domain_name=#db.param(domain)# and 
+zemail_smtp_domain_deleted = #db.param(0)# and 
+zemail_smtp_domain_datetime < #db.param(nowDate)#
 </cfsavecontent><cfscript>qC=db.execute("qU");</cfscript>
 <cfif qC.recordcount NEQ 0>
 	
@@ -591,7 +637,9 @@ SELECT zemail_smtp_domain_id FROM #db.table("zemail_smtp_domain", request.zos.zc
     zemail_smtp_domain_weekly_count=zemail_smtp_domain_weekly_count+#db.param(1)#, 
     zemail_smtp_domain_monthly_count=zemail_smtp_domain_monthly_count+#db.param(1)#, 
     zemail_smtp_domain_updated_datetime=#db.param(request.zos.mysqlnow)#
-    WHERE  zemail_smtp_domain_id =#db.param(zemail_smtp_domain_id)# and site_id = #db.param(request.zos.globals.id)#
+    WHERE  zemail_smtp_domain_id =#db.param(zemail_smtp_domain_id)# and 
+    zemail_smtp_domain_deleted = #db.param(0)# and 
+    site_id = #db.param(request.zos.globals.id)#
     </cfsavecontent><cfscript>qU=db.execute("qU");</cfscript>
 <cfelse>
     <cfsavecontent variable="db.sql">

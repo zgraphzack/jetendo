@@ -401,7 +401,8 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
     SELECT user_id, site.site_id, zemail_template_id, user_pref_html 
 	FROM #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user, 
 	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site WHERE  
-    
+    site_deleted = #db.param(0)# and 
+    user_deleted = #db.param(0)# and 
     <cfif arguments.user_id NEQ "">
      user_id=#db.param(arguments.user_id)# and 
 	<cfelse>
@@ -519,6 +520,8 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
     FROM #request.zos.queryObject.table("mail_user", request.zos.zcoreDatasource)# mail_user, 
 	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
     WHERE  mail_user_confirm_count < #db.param(3)# and 
+    site_deleted = #db.param(0)# and 
+	mail_user_deleted = #db.param(0)# and 
 	mail_user_confirm = #db.param(0)# and 
 	site.site_id = mail_user.site_id and 
 	site_active=#db.param('1')# 

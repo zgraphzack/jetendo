@@ -199,7 +199,9 @@
     	runDatabaseUpgrade=true;
 	}else{
 		db=request.zos.queryObject;
-		db.sql="select * from #db.table("jetendo_setup", request.zos.zcoreDatasource)# LIMIT #db.param(0)#, #db.param(1)#";
+		db.sql="select * from #db.table("jetendo_setup", request.zos.zcoreDatasource)# 
+		WHERE jetendo_setup_deleted = #db.param(0)# 
+		LIMIT #db.param(0)#, #db.param(1)#";
 		qSetup=db.execute("qSetup");
 	}
     application.zcore.databaseVersion=ts2.databaseVersion;

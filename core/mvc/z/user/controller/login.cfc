@@ -202,7 +202,8 @@
 			
 			db.sql="select * from #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_id = #db.param(user_id)# and 
-			site_id = #db.param(site_id)#";
+			site_id = #db.param(site_id)# and 
+			user_deleted = #db.param(0)#";
 			qUser=db.execute("qUser"); 
 			if(qUser.recordcount EQ 0){
 				writeoutput('{"success":false,"s":4}');

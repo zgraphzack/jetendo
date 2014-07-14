@@ -806,6 +806,7 @@ mimetype=filegetmimetype(arguments.ss.attachments[count]);
 				zemail_rename_number = #db.param(ts.zemail_rename_number)#,
 				zemail_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				WHERE zemail_id = #db.param(zemail_id)# and 
+				zemail_deleted = #db.param(0)# and 
 				user_id = #db.param(arguments.ss.user_id)# and 
 				site_id = #db.param(arguments.ss.site_id)# ";
 				db.execute("q"); 
@@ -833,6 +834,7 @@ mimetype=filegetmimetype(arguments.ss.attachments[count]);
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("zemail_template_type", request.zos.zcoreDatasource)# zemail_template_type WHERE 
 	zemail_template_type.site_id =#db.param(arguments.site_id)# and 
+	zemail_template_type_deleted = #db.param(0)# and 
 	zemail_template_type.zemail_template_type_name = #db.param(arguments.zemail_template_type_name)# 
 	</cfsavecontent><cfscript>qD=db.execute("qD");
 	if(qD.recordcount EQ 0){
@@ -856,6 +858,8 @@ mimetype=filegetmimetype(arguments.ss.attachments[count]);
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("zemail_template", request.zos.zcoreDatasource)# zemail_template, 
 	#db.table("zemail_template_type", request.zos.zcoreDatasource)# zemail_template_type WHERE 
+	zemail_template_deleted = #db.param(0)# and 
+	zemail_template_type_deleted = #db.param(0)# and 
 	zemail_template_type.site_id = zemail_template.site_id and 
 	zemail_template.zemail_template_type_id = zemail_template_type.zemail_template_type_id and 
 	zemail_template.site_id IN (#db.param(arguments.site_id)#,#db.param(0)#) and 
@@ -881,6 +885,8 @@ mimetype=filegetmimetype(arguments.ss.attachments[count]);
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("zemail_template", request.zos.zcoreDatasource)# zemail_template, 
 	#db.table("zemail_template_type", request.zos.zcoreDatasource)# zemail_template_type WHERE 
+	zemail_template_type_deleted = #db.param(0)# and 
+	zemail_template_deleted = #db.param(0)# and 
 	zemail_template_type.site_id = zemail_template.site_id and 
 	zemail_template.zemail_template_type_id = zemail_template_type.zemail_template_type_id and 
 	zemail_template.site_id IN (#db.param(arguments.site_id)#,#db.param('0')#) and 
@@ -907,6 +913,7 @@ mimetype=filegetmimetype(arguments.ss.attachments[count]);
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("zemail_template", request.zos.zcoreDatasource)# zemail_template, 
 	#db.table("zemail_template_type", request.zos.zcoreDatasource)# zemail_template_type WHERE 
+	zemail_template_deleted = #db.param(0)# and 
 	zemail_template_type.site_id = zemail_template.site_id and 
 	zemail_template.zemail_template_type_id = zemail_template_type.zemail_template_type_id and 
 	zemail_template.site_id IN (#db.param(arguments.site_id)#,#db.param('0')#) and 
@@ -1232,7 +1239,8 @@ if(rCom.isOK() EQ false){
 		<cfsavecontent variable="db.sql">
 		SELECT * FROM #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 		WHERE mail_user_id = #db.param(arguments.ss.mail_user_id)# and 
-	mail_user_opt_in = #db.param(1)# and 
+		mail_user_opt_in = #db.param(1)# and 
+		mail_user_deleted = #db.param(0)# and 
 		(site_id = #db.param(arguments.ss.site_id)# 
 		<cfif arguments.ss.mail_user_key NEQ ""> or mail_user_key = #db.param(arguments.ss.mail_user_key)# </cfif>
 		) 
@@ -1288,7 +1296,7 @@ if(rCom.isOK() EQ false){
 		<cfsavecontent variable="db.sql">
 		SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user_id = #db.param(arguments.ss.user_id)# and 
-		
+		user_deleted = #db.param(0)# and 
 		(site_id = #db.param(application.zcore.functions.zGetSiteIdFromSiteIdType(arguments.ss.user_id_siteIDType))# or site_id = #db.param(arguments.ss.site_id)# 
 		<cfif arguments.ss.user_key NEQ ""> or user_key = #db.param(arguments.ss.user_key)# </cfif>)
 		<cfif arguments.ss.force EQ false>
@@ -1554,6 +1562,7 @@ Privacy Policy:
 				SET mail_user_sent_datetime = #db.param(request.zos.mysqlnow)#
 				<cfif qEmailTemplate.zemail_template_type_name EQ 'confirm opt-in'>,  mail_user_confirm_count=mail_user_confirm_count+#db.param(1)#</cfif>
 				WHERE mail_user_id = #db.param(arguments.ss.mail_user_id)# and 
+				mail_user_deleted = #db.param(0)# and 
 				site_id = #db.param(arguments.ss.site_id)# 
 				</cfsavecontent><cfscript>qE=db.execute("qE");</cfscript>
 			</cfif>
@@ -1565,6 +1574,7 @@ Privacy Policy:
 				SET user_sent_datetime = #db.param(request.zos.mysqlnow)#
 				<cfif qEmailTemplate.zemail_template_type_name EQ 'confirm opt-in'>,  user_confirm_count=user_confirm_count+#db.param(1)#</cfif>
 				WHERE user_id = #db.param(arguments.ss.user_id)# and 
+				user_deleted = #db.param(0)# and 
 				site_id = #db.param(arguments.ss.site_id)# 
 				</cfsavecontent><cfscript>qE=db.execute("qE");</cfscript>
 			</cfif>

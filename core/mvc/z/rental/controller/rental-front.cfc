@@ -35,6 +35,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("rate", request.zos.zcoreDatasource)# rate 
 WHERE rental_id = #db.param('0')# and rate_property NOT IN (#db.param(',#rental_id#,')#) and 
+rate_deleted = #db.param(0)# and 
 rate_start_date <=#db.param(DateFormat(dateadd("yyyy",1,now()),'yyyy-mm-dd'))# and 
 rate_end_date >= #db.param(DateFormat(now(),'yyyy-mm-dd'))# 
 ORDER BY rate_period DESC, rate_sort asc
@@ -43,6 +44,7 @@ ORDER BY rate_period DESC, rate_sort asc
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("rate", request.zos.zcoreDatasource)# rate 
 WHERE  rental_id = #db.param(rental_id)# and 
+rate_deleted = #db.param(0)# and 
 rate_start_date <=#db.param(DateFormat(dateadd("yyyy",1,now()),'yyyy-mm-dd'))# and 
 rate_end_date >= #db.param(DateFormat(now(),'yyyy-mm-dd'))# 
 ORDER BY rate_period DESC, rate_sort asc
@@ -324,6 +326,8 @@ if(rental_riverview EQ 1){
  db.sql="select * from #db.table("rental_x_amenity", request.zos.zcoreDatasource)# rental_x_amenity, 
  #db.table("rental_amenity", request.zos.zcoreDatasource)# rental_amenity 
 WHERE rental_x_amenity.site_id = rental_amenity.site_id and 
+rental_amenity_deleted = #db.param(0)# and 
+rental_x_amenity_deleted = #db.param(0)# and 
 rental_amenity.rental_amenity_id = rental_x_amenity.rental_amenity_id and 
 rental_x_amenity.site_id = #db.param(request.zos.globals.id)# and 
 rental_id = #db.param(rental_id)#";
@@ -570,6 +574,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 WHERE rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
 rental_active = #db.param(1)# and 
+rental_deleted = #db.param(0)# and 
 rental_enable_calendar = #db.param('1')# and 
 rental.site_id = #db.param(request.zos.globals.id)#
 </cfsavecontent><cfscript>qRental=db.execute("qRental");
@@ -592,6 +597,7 @@ request.rental_id = rental_id;
 SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 WHERE rental_active = #db.param(1)# and 
 rental_enable_calendar = #db.param('1')#  and 
+rental_deleted = #db.param(0)# and
 rental.site_id = #db.param(request.zos.globals.id)#
 ORDER BY rental_name ASC
 </cfsavecontent><cfscript>qProperties=db.execute("qProperties");</cfscript>
@@ -608,6 +614,7 @@ arrCatId=listtoarray(rental_category_id_list,",",true);
 if(arraylen(arrCatId) GTE 2){
 	 db.sql="SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 	WHERE rental_category_id=#db.param(arrCatId[2])# and 
+	rental_category_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# ";
 	qCat=db.execute("qCat");
 	if(qCat.recordcount NEQ 0){
@@ -649,6 +656,7 @@ function getCalendar(val){
 			SELECT max(availability_date) as availability_date
 			FROM #db.table("availability", request.zos.zcoreDatasource)# availability 
 			WHERE availability.rental_id = #db.param(rental_id)#  and 
+			availability_deleted = #db.param(0)# and
 			site_id = #db.param(request.zos.globals.id)#
 		</cfsavecontent><cfscript>qLast=db.execute("qLast");</cfscript>
 		</cfif>
@@ -696,6 +704,7 @@ function getCalendar(val){
 			SELECT availability_date
 			FROM #db.table("availability", request.zos.zcoreDatasource)# availability 
 			WHERE availability.rental_id = #db.param('31')# and 
+			availability_deleted = #db.param(0)# and 
 			availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
 			availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
 			site_id = #db.param(request.zos.globals.id)#
@@ -713,6 +722,8 @@ function getCalendar(val){
                 FROM #db.table("availability_type_calendar", request.zos.zcoreDatasource)# availability_type_calendar , 
 				#db.table("availability_type", request.zos.zcoreDatasource)# availability_type
                 WHERE 
+                availability_type_deleted = #db.param(0)# and 
+                availability_type_calendar_deleted = #db.param(0)# and
                 availability_type_calendar.site_id = availability_type.site_id and 
                 availability_type_calendar.availability_type_id = availability_type.availability_type_id and 
 				availability_type_calendar_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
@@ -734,12 +745,13 @@ function getCalendar(val){
             </cfloop>
 		<!--- get only current month and future dates --->
 		<cfsavecontent variable="db.sql">
-			SELECT availability_date
-			FROM #db.table("availability", request.zos.zcoreDatasource)# availability 
-			WHERE availability.rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
-			availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
-			availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
-			site_id = #db.param(request.zos.globals.id)#
+		SELECT availability_date
+		FROM #db.table("availability", request.zos.zcoreDatasource)# availability 
+		WHERE availability.rental_id = #db.param(application.zcore.functions.zso(form, 'rental_id'))# and 
+		availability_deleted = #db.param(0)# and
+		availability_date >= #db.param(DateFormat(CreateDate(year(start_date), month(start_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
+		availability_date <= #db.param(DateFormat(CreateDate(year(end_date), month(end_date), 1), 'yyyy-mm-dd')&' 00:00:00')#  and 
+		site_id = #db.param(request.zos.globals.id)#
 		</cfsavecontent><cfscript>qAvailList=db.execute("qAvailList");</cfscript> 
 		<cfset availStruct = StructNew()>
 		<cfloop query="qAvailList">
@@ -852,7 +864,9 @@ Rates are color coded so you can see what dates they fall on the calendar.<!--- 
 <!--- 
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("availability_type", request.zos.zcoreDatasource)# availability_type 
-WHERE site_id = #db.param(request.zos.globals.id)# ORDER BY availability_type_name ASC
+WHERE site_id = #db.param(request.zos.globals.id)# and 
+availability_type_deleted = #db.param(0)# 
+ORDER BY availability_type_name ASC
 </cfsavecontent><cfscript>qtype=db.execute("qtype");</cfscript>
 <cfloop query="qtype">
 <div class="zrental-ratetypediv"><div class="zrental-ratetypecolordiv" style="background-color:###qtype.availability_type_color#;"></div> #qtype.availability_type_name# Rate: #DollarFormat(qtype.rental_rate_holiday)# per night</div>
@@ -1104,7 +1118,8 @@ if(application.zcore.functions.zso(form, 'rental_id',true) NEQ 0){
 	SET inquiries_primary=#db.param(0)#,
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_deleted = #db.param(0)#";
 	db.execute("q");
 	inputStruct = StructNew();
 	inputStruct.struct=form;
@@ -1123,12 +1138,15 @@ if(application.zcore.functions.zso(form, 'rental_id',true) NEQ 0){
 	LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 	inquiries_type.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#) and 
-	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))#
+	inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
+	inquiries_type_deleted = #db.param(0)#
 	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 	user.user_id = inquiries.user_id  and 
-	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))#
+	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
+	user_deleted = #db.param(0)#
 	WHERE inquiries.site_id = #db.param(request.zos.globals.id)#  and 	
 	inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
+	inquiries_deleted = #db.param(0)# and 
 	inquiries_id = #db.param(form.inquiries_id)# ";
 	qinquiry=db.execute("qinquiry");
 	application.zcore.functions.zQueryToStruct(qinquiry);
@@ -1147,6 +1165,7 @@ if(application.zcore.functions.zso(form, 'rental_id',true) NEQ 0){
 			 from #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 			WHERE rental_category_id IN (#db.trustedSQL("'#arraytolist(listtoarray(qrental.rental_category_id_list,",",false),"','")#'")#) and 
 			rental_category_email <> #db.param('')# and 
+			rental_category_deleted = #db.param(0)# and
 			site_id = #db.param(request.zos.globals.id)#";
 			qD=db.execute("qD");
 			if(qD.recordcount NEQ 0){
@@ -1353,54 +1372,54 @@ application.zcore.template.appendTag("meta",tempMeta);
     </cffunction>
     
     
-    <cffunction name="photoTemplate" localmode="modern" access="remote" returntype="any">
-    	<cfscript>
-		var db=request.zos.queryObject;
-application.zcore.app.getAppCFC("rental").onRentalPage();
-if(structkeyexists(form, 'rental_id') EQ false){
-	application.zcore.functions.z404("form.rental_id was undefined");	
-}
-</cfscript>
-<cfsavecontent variable="db.sql">
-SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
-WHERE rental_id = #db.param(rental_id)# and 
-site_id = #db.param(request.zos.globals.id)#
-</cfsavecontent><cfscript>qRental=db.execute("qrental");
-application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
-if(qRental.recordcount EQ 0 or (qRental.rental_active EQ 0)){
-	application.zcore.functions.zRedirect(application.zcore.app.getAppCFC("rental").getRentalHomeLink());
-}
+<cffunction name="photoTemplate" localmode="modern" access="remote" returntype="any">
+	<cfscript>
+	var db=request.zos.queryObject;
+	application.zcore.app.getAppCFC("rental").onRentalPage();
+	if(structkeyexists(form, 'rental_id') EQ false){
+		application.zcore.functions.z404("form.rental_id was undefined");	
+	}
+	</cfscript>
+	<cfsavecontent variable="db.sql">
+	SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
+	WHERE rental_id = #db.param(form.rental_id)# and 
+	site_id = #db.param(request.zos.globals.id)#
+	</cfsavecontent><cfscript>qRental=db.execute("qrental");
+	application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
+	if(qRental.recordcount EQ 0 or (qRental.rental_active EQ 0)){
+		application.zcore.functions.zRedirect(application.zcore.app.getAppCFC("rental").getRentalHomeLink());
+	}
 
 
 	ts=structnew();
 	ts.output=false;
 	ts.image_library_id=qRental.rental_image_library_id;
-	ts.image_id=image_id;
+	ts.image_id=form.image_id;
 	ts.size=application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main");
 	ts.crop=0;
-arrImages=application.zcore.imageLibraryCom.displayImages(ts);
-if(arraylen(arrImages) NEQ 0){
-	title=arrImages[1].caption&" | "&qRental.rental_name&" Photo "&arrImages[1].id;
-	if(compare(zURLName, application.zcore.functions.zURLEncode(title,"-")) NEQ 0){
-		link=application.zcore.app.getAppCFC("rental").getPhotoLink(qRental.rental_id, title, qRental.rental_url, arrImages[1].id);
-		application.zcore.functions.z301Redirect(link);
+	arrImages=application.zcore.imageLibraryCom.displayImages(ts);
+	if(arraylen(arrImages) NEQ 0){
+		title=arrImages[1].caption&" | "&qRental.rental_name&" Photo "&arrImages[1].id;
+		if(compare(zURLName, application.zcore.functions.zURLEncode(title,"-")) NEQ 0){
+			link=application.zcore.app.getAppCFC("rental").getPhotoLink(qRental.rental_id, title, qRental.rental_url, arrImages[1].id);
+			application.zcore.functions.z301Redirect(link);
+		}
+		
+		tempMeta='
+		<meta name="keywords" content="#htmleditformat(application.zcore.functions.zurlencode(title," "))#" />
+		<meta name="description" content="#htmleditformat(title)#" />
+		';
+		application.zcore.template.setTag('meta',tempMeta);
+		application.zcore.template.setTag("title","Photo ##"&form.image_id&" for "&title);
+		application.zcore.imageLibraryCom.registerSize(qRental.rental_image_library_id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0);
+		link=application.zcore.imageLibraryCom.getImageLink(qRental.rental_image_library_id, arrImages[1].id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0, true, arrImages[1].caption, arrImages[1].file);
+		// temporarily disabled the popup images.
+		writeoutput('<div style="padding:5px; height:299px; text-align:center; width:#application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main")#px;"><img src="#link#" alt="#htmleditformat(arrImages[1].caption)#" style="border:none; text-align:center; " /></div>
+		<div style="padding:5px; text-align:center;">#arrImages[1].caption#</div>');
 	}
-	
-	tempMeta='
-	<meta name="keywords" content="#htmleditformat(application.zcore.functions.zurlencode(title," "))#" />
-	<meta name="description" content="#htmleditformat(title)#" />
-	';
-	application.zcore.template.setTag('meta',tempMeta);
-	application.zcore.template.setTag("title","Photo ##"&image_id&" for "&title);
-	application.zcore.imageLibraryCom.registerSize(qRental.rental_image_library_id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0);
-	link=application.zcore.imageLibraryCom.getImageLink(qRental.rental_image_library_id, arrImages[1].id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0, true, arrImages[1].caption, arrImages[1].file);
-	// temporarily disabled the popup images.
-	writeoutput('<div style="padding:5px; height:299px; text-align:center; width:#application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main")#px;"><img src="#link#" alt="#htmleditformat(arrImages[1].caption)#" style="border:none; text-align:center; " /></div>
-	<div style="padding:5px; text-align:center;">#arrImages[1].caption#</div>');
-}
-	
-</cfscript>
-    </cffunction>
+		
+	</cfscript>
+</cffunction>
     
     <cffunction name="compareRentalAmenitiesTemplate" localmode="modern" access="remote" returntype="any">
     	
@@ -1419,6 +1438,7 @@ SELECT * #db.trustedSQL(rs.select)#
 FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 #db.trustedSQL(rs.leftJoin)# 
 WHERE rental_active = #db.param(1)# and 
+rental_deleted = #db.param(0)# and 
 rental.site_id = #db.param(request.zos.globals.id)# 
 <cfif form.method EQ "categoryListTemplate"> and rental_home_featured=#db.param('1')# </cfif>   
 GROUP BY rental.rental_id 
@@ -1568,6 +1588,7 @@ inquiries_coupon="";
 		FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 		#db.trustedSQL(rs.leftJoin)# 
 		WHERE rental_active = #db.param(1)# and 
+		rental_deleted = #db.param(0)# and 
 		rental.site_id = #db.param(form.site_id)# and 
 		rental_id IN (#db.trustedSQL(arguments.ss.rental_id_list)#)  
 		GROUP BY rental.rental_id 
@@ -1615,6 +1636,8 @@ inquiries_coupon="";
 		#db.table("rental_x_category", request.zos.zcoreDatasource)# rental_x_category) 
 		#db.trustedSQL(rs.leftJoin)# 
 		WHERE rental.site_id = rental_x_category.site_id and 
+		rental_deleted = #db.param(0)# and 
+		rental_x_category_deleted = #db.param(0)# and 
 		rental.rental_id = rental_x_category.rental_id and 
 		rental_x_category.rental_category_id = #db.param(arguments.ss.rental_category_id)# and 
 		rental_active = #db.param(1)# and 
@@ -1760,7 +1783,9 @@ if(arguments.query.rental_riverview EQ 1){
 WHERE rental_x_amenity.site_id = rental_amenity.site_id and 
 rental_amenity.rental_amenity_id = rental_x_amenity.rental_amenity_id and 
 rental_x_amenity.site_id = #db.param(request.zos.globals.id)# and 
-rental_id = #db.param(arguments.query.rental_id)#";
+rental_id = #db.param(arguments.query.rental_id)# and 
+rental_x_amenity_deleted = #db.param(0)# and 
+rental_amenity_deleted = #db.param(0)#";
 qXAmenity=db.execute("qXAmenity");
 </cfscript>
 <cfloop query="qXAmenity"><cfscript>
@@ -1841,7 +1866,8 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	rental_category_id=#db.param(form.rental_category_id)#
+	rental_category_id=#db.param(form.rental_category_id)# and 
+	rental_category_deleted = #db.param(0)#
 	</cfsavecontent><cfscript>qrental=db.execute("qrental");
 	if(qrental.recordcount EQ 0 and application.zcore.functions.zso(form, 'zIgnoreMissingrental',false,false) EQ false){
 		application.zcore.functions.z301Redirect('/');
@@ -1918,7 +1944,8 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 		<cfsavecontent variable="db.sql">
 		SELECT *  FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category  
 		WHERE rental_category_parent_id = #db.param(rental_category_id)# and 
-		site_id = #db.param(request.zos.globals.id)# 
+		site_id = #db.param(request.zos.globals.id)# and 
+		rental_category_deleted = #db.param(0)#
 		ORDER BY rental_category_sort ASC, rental_category_name ASC
 		</cfsavecontent><cfscript>qchild=db.execute("qchild");</cfscript>	
 	<cfelse>
@@ -2133,7 +2160,8 @@ Pet Friendly:  Yes  No
 	FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 	#db.trustedSQL(rs.leftJoin)# 
 	WHERE rental_category.site_id = #db.param(request.zos.globals.id)# and 
-	rental_category_parent_id = #db.param('0')# 
+	rental_category_parent_id = #db.param('0')# and 
+	rental_category_deleted = #db.param(0)#
 	GROUP BY rental_category.rental_category_id  
 	ORDER BY rental_category_sort ASC, rental_category_name ASC
 	</cfsavecontent><cfscript>qpar=db.execute("qpar");</cfscript>	 
@@ -2232,6 +2260,9 @@ FROM (#db.table("rental", request.zos.zcoreDatasource)# rental,
 #db.table("rental_x_category", request.zos.zcoreDatasource)# rental_x_category, 
 #db.table("rental_category", request.zos.zcoreDatasource)# rental_category) 
 WHERE 
+rental_deleted = #db.param(0)# and 
+rental_x_category_deleted = #db.param(0)# and 
+rental_category_deleted = #db.param(0)# and
 rental.site_id = rental_x_category.site_id and 
 rental_x_category.site_id = rental_category.site_id and 
 rental.rental_id = rental_x_category.rental_id and 
@@ -2264,7 +2295,8 @@ SELECT rental_city FROM #db.table("rental", request.zos.zcoreDatasource)# rental
 WHERE rental_active = #db.param(1)# and 
 rental.site_id = #db.param(form.site_id)# and 
 rental_available_start_date <=#db.param(dateformat(now(), 'yyyy-mm-dd'))#
- and rental_city <> #db.param('')# 
+ and rental_city <> #db.param('')# and 
+ rental_deleted = #db.param(0)#
  GROUP BY rental.rental_city 
  ORDER BY rental.rental_city 
 </cfsavecontent><cfscript>var qC=db.execute("qC");</cfscript>
@@ -2289,7 +2321,8 @@ WHERE rental_active = #db.param(1)# and
 rental.site_id = #db.param(form.site_id)# and 
 rental_available_start_date <=#db.param(dateformat(now(), 'yyyy-mm-dd'))#
  and rental_beds <> #db.param('')# 
-  and rental_beds <> #db.param(0)# 
+  and rental_beds <> #db.param(0)# and 
+  rental_deleted = #db.param(0)#
  GROUP BY rental.rental_beds 
  ORDER BY rental.rental_beds 
 </cfsavecontent>
@@ -2312,7 +2345,8 @@ WHERE rental_active = #db.param(1)# and
 rental.site_id = #db.param(form.site_id)# and 
 rental_available_start_date <=#db.param(dateformat(now(), 'yyyy-mm-dd'))#
  and rental_bath <> #db.param('')# 
-  and rental_bath <> #db.param(0)# 
+  and rental_bath <> #db.param(0)# and 
+  rental_deleted = #db.param(0)#
  GROUP BY rental.rental_bath
  ORDER BY rental.rental_bath
 </cfsavecontent>
@@ -2335,7 +2369,8 @@ WHERE rental_active = #db.param(1)# and
 rental.site_id = #db.param(form.site_id)# and 
 rental_available_start_date <=#db.param(dateformat(now(), 'yyyy-mm-dd'))#
  and rental_max_guest  <> #db.param('')# 
-  and rental_max_guest  <> #db.param(0)# 
+  and rental_max_guest  <> #db.param(0)# and 
+  rental_deleted = #db.param(0)#
  GROUP BY rental.rental_max_guest 
  ORDER BY rental.rental_max_guest 
 </cfsavecontent>
@@ -2421,7 +2456,9 @@ FROM (#db.table("rental", request.zos.zcoreDatasource)# rental,
 #db.table("rental_x_category", request.zos.zcoreDatasource)# rental_x_category) 
 #db.trustedSQL(rs.leftJoin)# 
 WHERE rental.rental_id = rental_x_category.rental_id and 
-rental.site_id = rental_x_category.site_id 
+rental.site_id = rental_x_category.site_id and 
+rental_deleted = #db.param(0)# and 
+rental_x_category_deleted = #db.param(0)# 
 
 <cfif form.search_rental_category_id NEQ "">
 and rental_x_category.rental_category_id = #db.param(form.search_rental_category_id)# 

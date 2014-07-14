@@ -381,6 +381,8 @@ this.app_id=11;
 	#db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls 
 	
 	WHERE mls.mls_id = app_x_mls.mls_id and 
+	mls_deleted = #db.param(0)# and 
+	app_x_mls_deleted = #db.param(0)# and 
 	app_x_mls.site_id = #db.param(request.zos.globals.id)# and 
 	mls_status = #db.param('1')#
 	</cfsavecontent><cfscript>qM=db.execute("qM");</cfscript>
@@ -449,6 +451,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 	SELECT listing_condoname as condoName, count(listing_id) count 
 	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 	WHERE listing_condoname<> #db.param('')# and 
+	listing_deleted = #db.param(0)# and
 	listing_condoname<>#db.param('Other')# and 
 	listing_condoname <> #db.param('Not On List')# and 
 	#db.trustedSQL(this.getMLSIDWhereSQL("listing"))# 
@@ -512,7 +515,8 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 		}
 		db.sql="SELECT content_id cid FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		content_featured_listing_parent_page=#db.param('1')#";
+		content_featured_listing_parent_page=#db.param('1')# and 
+		content_deleted = #db.param(0)#";
 		qCheckExclusiveListingPage=db.execute("qCheckExclusiveListingPage"); 
 		if(qCheckExclusiveListingPage.recordcount NEQ 0){
 			ts=structnew();
@@ -599,16 +603,20 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 SELECT * FROM #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site, 
 	#db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site.site_id = app_x_site.site_id and 
-	app_x_site.site_id = #db.param(arguments.site_id)#
+	app_x_site.site_id = #db.param(arguments.site_id)# and 
+	site_deleted = #db.param(0)# and 
+	app_x_site_deleted = #db.param(0)#
 </cfsavecontent><cfscript>qConfig2=db.execute("qConfig2");</cfscript>
 <cfsavecontent variable="db.sql">
 SELECT app_x_mls_url_id FROM #db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls 
-	WHERE site_id = #db.param(qconfig2.site_id)#
+	WHERE site_id = #db.param(qconfig2.site_id)# and 
+	app_x_mls_deleted = #db.param(0)#
 </cfsavecontent><cfscript>qConfig=db.execute("qConfig");</cfscript>
 <cfsavecontent variable="db.sql">
 SELECT mls_option_dir_url_id, mls_option_site_map_url_id 
 	FROM #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
-	WHERE site_id = #db.param(qconfig2.site_id)#
+	WHERE site_id = #db.param(qconfig2.site_id)# and 
+	mls_option_deleted = #db.param(0)#
 </cfsavecontent><cfscript>qC=db.execute("qC");</cfscript>
 <cfif qConfig.recordcount NEQ 0>
 <cfloop query="qConfig">
@@ -743,7 +751,8 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 		return rCom;
 	}
 	db.sql="DELETE FROM #db.table("app_x_mls", request.zos.zcoreDatasource)#  
-	WHERE site_id=#db.param(this.site_id)# ";
+	WHERE site_id=#db.param(this.site_id)# and 
+	app_x_mls_deleted = #db.param(0)# ";
 	db.execute("q"); 
 	for(i=1;i LTE arraylen(arrMLS);i++){
 		form.app_x_mls_url_id=trim(application.zcore.functions.zso(form, 'app_x_mls_url_id'&arrMLS[i]));
@@ -758,7 +767,9 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 		app_x_mls_url_id=#db.param(form.app_x_mls_url_id)#, 
 		app_x_mls_primary=#db.param(primaryMLS)#, 
 		mls_id=#db.param(arrMLS[i])#, 
-		site_id=#db.param(this.site_id)#
+		site_id=#db.param(this.site_id)#,
+		app_x_mls_deleted = #db.param(0)#,
+		app_x_mls_updated_datetime=#db.param(request.zos.mysqlnow)#
 		";
 		db.execute("q"); 
 	}
@@ -772,12 +783,14 @@ if(structkeyexists(form, 'forceupdatelistlayout')){
 	 db.sql="UPDATE #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		 SET search_result_layout = #db.param(form.mls_option_list_layout)#, 
 		 search_result_limit =#db.param(newLimit)# 
-		WHERE site_id = #db.param(form.sid)#";
+		WHERE site_id = #db.param(form.sid)# and 
+		mls_saved_search_deleted = #db.param(0)#";
 		db.execute("q");
 }
 	
 	db.sql="select * from #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
-	WHERE site_id=#db.param(this.site_id)#";
+	WHERE site_id=#db.param(this.site_id)# and 
+	mls_option_deleted = #db.param(0)#";
 	qC=db.execute("qC"); 
 	ts=structnew();
 	ts.datasource="#request.zos.zcoreDatasource#";
@@ -824,9 +837,11 @@ if(structkeyexists(form, 'forceupdatelistlayout')){
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("mls", request.zos.zcoreDatasource)# mls 
 LEFT JOIN #db.table("app_x_mls", request.zos.zcoreDatasource)# app_x_mls ON 
-	mls.mls_id = app_x_mls.mls_id and 
-	app_x_mls.site_id=#db.param(this.site_id)# and 
-	mls_status = #db.param('1')#
+mls.mls_id = app_x_mls.mls_id and 
+app_x_mls.site_id=#db.param(this.site_id)# and 
+mls_status = #db.param('1')# and 
+app_x_mls_deleted = #db.param(0)# 
+WHERE mls_deleted = #db.param(0)#
  ORDER BY mls_name
 </cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 <table style="border-spacing:0px;">
@@ -874,7 +889,8 @@ if(application.zcore.functions.zso(form, 'mls_option_listing_title_format') EQ "
 
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
-	WHERE site_id=#db.param(this.site_id)#
+	WHERE site_id=#db.param(this.site_id)# and 
+	mls_option_deleted = #db.param(0)#
 </cfsavecontent><cfscript>qM=db.execute("qM");
 	application.zcore.functions.zquerytostruct(qM);
    application.zcore.functions.zstatushandler(request.zsid,true,true);
@@ -1006,7 +1022,8 @@ Page count: <input type="text" name="mls_option_inquiry_pop_count" size="3" valu
 Primary Cities:</th>
 <td>
 	<cfsavecontent variable="db.sql">
-	SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city 
+	SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city WHERE 
+	city_deleted = #db.param(0)#
 	ORDER BY city_name ASC
 	</cfsavecontent><cfscript>qpcity=db.execute("qpcity");</cfscript> 
 	Select a city and click add to override the default cities shown in the search form.<br /><br />
@@ -1024,7 +1041,8 @@ Primary Cities:</th>
 	 <cfscript>
 			 form.mls_option_primary_city_list=replace(form.mls_option_primary_city_list,chr(9),"','","ALL");
 			 db.sql="SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city 
-			WHERE city_id IN (#db.trustedSQL("'#form.mls_option_primary_city_list#'")#) 
+			WHERE city_id IN (#db.trustedSQL("'#form.mls_option_primary_city_list#'")#) and 
+			city_deleted = #db.param(0)#
 			ORDER BY city_name ASC";
 			qpcity=db.execute("qpcity");
 			</cfscript>
@@ -1105,7 +1123,9 @@ Primary Cities:</th>
 <th>Exclude Cities:</th>
 <td>
 	<cfsavecontent variable="db.sql">
-	SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city ORDER BY city_name ASC
+	SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city WHERE 
+	city_deleted = #db.param(0)# 
+	ORDER BY city_name ASC
 	</cfsavecontent><cfscript>qexcity2=db.execute("qexcity2");</cfscript> 
 	Select a city and click add to override the default cities shown in the search form.<br /><br />
 	<cfscript>
@@ -1122,7 +1142,9 @@ Primary Cities:</th>
 	<div id="excityBlock"></div>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# city 
-	WHERE city_id IN (#db.trustedSQL("'#replace(application.zcore.functions.zescape(form.mls_option_exclude_city_list),chr(9),"','","ALL")#'")#) ORDER BY city_name ASC
+	WHERE city_id IN (#db.trustedSQL("'#replace(application.zcore.functions.zescape(form.mls_option_exclude_city_list),chr(9),"','","ALL")#'")#) and 
+	city_deleted = #db.param(0)#
+	ORDER BY city_name ASC
 	</cfsavecontent><cfscript>qexcity=db.execute("qexcity");</cfscript>
 	<script type="text/javascript">
 	/* <![CDATA[ */
@@ -1265,7 +1287,8 @@ Primary Cities:</th>
 		arrTables=arraynew(1);
 		arrQ2=arraynew(1);
 		for(i=1;i<=arraylen(arrTables2);i++){
-			arrayappend(arrQ2,"SELECT #arrTables3[i]# id FROM #db.table("#request.zos.ramtableprefix##arrTables2[i]#", request.zos.zcoreDatasource)#   LIMIT #db.param(0)#,#db.param(1)#");
+			arrayappend(arrQ2,"SELECT #arrTables3[i]# id FROM #db.table("#request.zos.ramtableprefix##arrTables2[i]#", request.zos.zcoreDatasource)#  
+				LIMIT #db.param(0)#,#db.param(1)#");
 		}
 		 db.sql=arraytolist(arrQ2,' UNION ALL ')&' UNION ALL SELECT #db.param(0)# id LIMIT #db.param(4)#';
 		 qC=db.execute("qC");
@@ -1330,6 +1353,8 @@ Primary Cities:</th>
 
 	WHERE mls.mls_id = app_x_mls.mls_id and 
 	app_x_mls.site_id = #db.param(request.zos.globals.id)# and 
+	mls_deleted = #db.param(0)# and 
+	app_x_mls_deleted = #db.param(0)# and
 	mls_status=#db.param(1)#";
 	qMLS=db.execute("qMLS");
 	arrMlsId=ArrayNew(1);
@@ -1344,7 +1369,8 @@ Primary Cities:</th>
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
-	WHERE site_id = #db.param(request.zos.globals.id)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	mls_option_deleted = #db.param(0)#
 	</cfsavecontent><cfscript>qM=db.execute("qM");
 	arrM343=listtoarray(qm.columnlist,",");
 	</cfscript>
@@ -1382,6 +1408,7 @@ Primary Cities:</th>
 		user_group_id <>#db.param(userusergroupid)# and 
 		user_active= #db.param(1)# and 
 		member_public_profile= #db.param(1)# and 
+		user_deleted = #db.param(0)# and
 		member_mlsagentid LIKE #db.param('%,#qMLS.mls_id#-%')#"; 
 		qM=db.execute("qM"); 
 		for(x=1; x LTE qM.recordcount; x++) {
@@ -1439,7 +1466,8 @@ local.primaryCityId=ts.mls_primary_city_id;
 	if(local.primaryCityId NEQ 0){
 		db.sql="SELECT city_latitude avgLat, city_longitude avgLong 
 		FROM #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
-		WHERE city_id = #db.param(local.primaryCityId)#";
+		WHERE city_id = #db.param(local.primaryCityId)# and 
+		city_deleted = #db.param(0)#";
 		local.qCenterMap=db.execute("qCenterMap"); 
 		if(local.qCenterMap.recordcount NEQ 0 and local.qCenterMap.avgLat NEQ "0"){
 			ts.avgLat=local.qCenterMap.avgLat;
@@ -1447,7 +1475,9 @@ local.primaryCityId=ts.mls_primary_city_id;
 		}else{
 			db.sql="SELECT AVG(listing_latitude) avgLat, AVG(listing_longitude) avgLong 
 			FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
-			WHERE listing_city = #db.param(local.primaryCityId)# AND listing_latitude<> #db.param('')# and 
+			WHERE listing_city = #db.param(local.primaryCityId)# AND 
+			listing_latitude<> #db.param('')# and 
+			listing_deleted = #db.param(0)# and 
 			listing_longitude<> #db.param('')# and 
 			listing_latitude #db.trustedSQL("BETWEEN -180 AND 180 AND listing_longitude BETWEEN -180 AND 180")# AND listing_latitude<> #db.param(0)# and 
 			listing_longitude<> #db.param(0)#";
@@ -1551,6 +1581,7 @@ local.primaryCityId=ts.mls_primary_city_id;
 		arrTables=arraynew(1);
 		for(i=1;i<=arraylen(arrTables2);i++){
 			db.sql="SELECT * FROM #db.table("#request.zos.ramtableprefix##arrTables2[i]#", request.zos.zcoreDatasource)# c 
+			WHERE #arrTables2[i]#_deleted = #db.param(0)#
 			LIMIT #db.param(0)#,#db.param(1)#";
 			qC=db.execute("qC"); 
 			if(isQuery(qC) EQ false or qC.recordcount EQ 0){
@@ -1572,7 +1603,8 @@ local.primaryCityId=ts.mls_primary_city_id;
 	ts.functions=createobject("component", "zcorerootmapping.mvc.z.listing.controller.functions");
 	ts.cacheStruct=StructNew();
 	
-	db.sql="select city_id, city_name, state_abbr from #db.table("city", request.zos.zcoreDatasource)# city";
+	db.sql="select city_id, city_name, state_abbr from #db.table("city", request.zos.zcoreDatasource)# city 
+	WHERE city_deleted = #db.param(0)#";
 	qC2=db.execute("qC2"); 
 	ts.cityNameStruct=structnew();
 	ts.cityStruct=structnew();
@@ -1584,7 +1616,8 @@ local.primaryCityId=ts.mls_primary_city_id;
 		</cfscript>
 	</cfloop>
 	<cfsavecontent variable="db.sql">
-	SELECT * FROM #db.table("listing_type", request.zos.zcoreDatasource)# listing_type 
+	SELECT * FROM #db.table("listing_type", request.zos.zcoreDatasource)# listing_type WHERE 
+	listing_type_deleted = #db.param(0)#
 	</cfsavecontent><cfscript>qTypes=db.execute("qTypes");
 	ts.cacheStruct.listing_type=StructNew();
 	ts.cacheStruct.listing_type_seo=StructNew();
@@ -1597,7 +1630,8 @@ local.primaryCityId=ts.mls_primary_city_id;
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("mls", request.zos.zcoreDatasource)# mls 
-	WHERE mls_status = #db.param('1')#
+	WHERE mls_status = #db.param('1')# and 
+	mls_deleted = #db.param(0)#
 	</cfsavecontent><cfscript>qMLS=db.execute("qMLS");
 	arrMlsId=ArrayNew(1);
 	arrMlsId2=ArrayNew(1);
@@ -1648,7 +1682,8 @@ local.primaryCityId=ts.mls_primary_city_id;
 	ts.listingToAbbr["listing_condition"]="condition";
 	ts.listingToAbbr["listing_tenure"]="tenure";
 	db.sql="SELECT * FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-	WHERE site_id = #db.param(-1)#";
+	WHERE site_id = #db.param(-1)# and 
+	mls_saved_search_deleted = #db.param(0)#";
 	qSavedSearchFields=db.execute("qSavedSearchFields"); 
 	arrN=listtoarray(qSavedSearchFields.columnlist);
 	ts.arrSearchFields=arraynew(1);
@@ -2055,7 +2090,8 @@ db.sql="select *, user.site_id userSiteId from #db.table("user", request.zos.zco
 	#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
 	user_group_id <>#db.param(userusergroupid)# and 
 	user_active= #db.param(1)# and 
-	member_public_profile=#db.param('1')#";
+	member_public_profile=#db.param('1')# and 
+	user_deleted = #db.param(0)#";
 	qM=db.execute("qM"); 
 x=1;
 	
@@ -2111,7 +2147,8 @@ mTemp=application.sitestruct[request.zos.globals.id].app.appCache[this.app_id].s
 	arguments.sharedStruct.listingLookupStruct=structnew();
 	db.sql="SELECT listing_lookup_value,listing_lookup_id,listing_lookup_type,listing_lookup_oldid, listing_lookup_mls_provider 
 	FROM #db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup 
-	WHERE listing_lookup_mls_provider IN (#db.trustedSQL("'#arraytolist(arrK2,"','")#'")#) 
+	WHERE listing_lookup_mls_provider IN (#db.trustedSQL("'#arraytolist(arrK2,"','")#'")#) and 
+	listing_lookup_deleted = #db.param(0)#
 	ORDER BY listing_lookup_type";
 	qLookup=db.execute("qLookup"); 
 	//application.zcore.functions.zdump(qLookup);
@@ -2507,7 +2544,8 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
     <cfsavecontent variable="db.sql">
     SELECT listing_id FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing  
 		WHERE #db.trustedSQL(tempSQL)# and 
-		listing_latitude<> #db.param('')# 
+		listing_latitude<> #db.param('')# and 
+		listing_deleted = #db.param(0)# 
 		LIMIT #db.param(0)#,#db.param(1)#
     </cfsavecontent><cfscript>qMapCheck=db.execute("qMapCheck");</cfscript>
     <cfif qMapCheck.recordcount EQ 0><cfset application.sitestruct[request.zos.globals.id].zListingMapCheck=false><cfelse><cfset application.sitestruct[request.zos.globals.id].zListingMapCheck=true></cfif>
@@ -2519,6 +2557,7 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 		saved_search_email =#db.param(form.saved_search_email)# and 
 		saved_search_key =#db.param(form.saved_search_key)# and 
 		saved_search_email<> #db.param('')# and 
+		mls_saved_search_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#
 		</cfsavecontent><cfscript>qSaved=db.execute("qSaved");</cfscript>
 		<cfif qsaved.recordcount NEQ 0>
@@ -2526,7 +2565,8 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 			SELECT * FROM #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 			WHERE inquiries_email <> #db.param('')# and 
 			inquiries_email =#db.param(saved_search_email)# and 
-			site_id = #db.param(request.zos.globals.id)#
+			site_id = #db.param(request.zos.globals.id)# and 
+			inquiries_deleted = #db.param(0)#
 			</cfsavecontent><cfscript>qinquiry=db.execute("qInquiry");</cfscript>
 			<cfif qinquiry.recordcount NEQ 0>
 				<cfset request.zsession.inquiries_email = qinquiry.inquiries_email>
@@ -2735,7 +2775,9 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	 city_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE `city`.city_name = zipcode.city_name AND 
 	`city`.state_abbr = zipcode.state_abbr AND 
-	`city`.country_code = zipcode.country_code ";
+	`city`.country_code = zipcode.country_code and 
+	city_deleted = #db.param(0)# and 
+	zipcode_deleted = #db.param(0)# ";
 	db.execute("q"); 
 	db.sql="UPDATE #db.table("city", request.zos.zcoreDatasource)# city, 
 	#db.table("zipcode", request.zos.zcoreDatasource)#  
@@ -2744,7 +2786,9 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	city_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE `city`.city_name = zipcode.city_name AND 
 	`city`.state_abbr = zipcode.state_abbr AND 
-	`city`.country_code = zipcode.country_code  ";
+	`city`.country_code = zipcode.country_code and 
+	city_deleted = #db.param(0)# and 
+	zipcode_deleted = #db.param(0)# ";
     db.execute("q"); 
 	db.sql="INSERT INTO 
 	#db.table("city_distance_safe_update", request.zos.zcoreDatasource)# 
@@ -3063,6 +3107,8 @@ drop table if exists
 			  saved_listing_datetime=#db.param(request.zos.mysqlnow)#,  
 			  site_id=#db.param(request.zos.globals.id)#, 
 			  user_id=#db.param(request.zsession.user.id)#, 
+			  saved_listing_deleted=#db.param(0)#,
+			  saved_listing_updated_datetime=#db.param(request.zos.mysqlnow)#,
 			  user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
 			 db.execute("q");
 		}

@@ -14,6 +14,7 @@
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE saved_search_email<>#db.param('')# and 
+		mls_saved_search_deleted = #db.param(0)# and 
 		(saved_search_email = #db.param(form.saved_search_email)# 
         <cfif isDefined('request.zsession.user.id')> 
 			or (user_id=#db.param(request.zsession.user.id)# and 
@@ -46,6 +47,7 @@
         SELECT * FROM 
 		#request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE saved_search_email<>#db.param('')# and 
+		mls_saved_search_deleted = #db.param(0)# and 
 		(saved_search_email = #db.param(form.saved_search_email)# 
         <cfif isDefined('request.zsession.user.id')> 
 			or (user_id=#db.param(request.zsession.user.id)# and 
@@ -104,6 +106,7 @@
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE saved_search_email<>#db.param('')# and 
+		mls_saved_search_deleted = #db.param(0)# and 
 		(saved_search_email = #db.param(form.saved_search_email)# 
         <cfif isDefined('request.zsession.user.id')> 
 			or (user_id=#db.param(request.zsession.user.id)# and 
@@ -185,6 +188,7 @@
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE saved_search_email<>#db.param('')# and 
+		mls_saved_search_deleted = #db.param(0)# and 
 		(saved_search_email = #db.param(form.saved_search_email)# 
         <cfif isDefined('request.zsession.user.id')> 
 			or (user_id=#db.param(request.zsession.user.id)# and 
@@ -229,6 +233,7 @@
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 	WHERE saved_search_email<>#db.param('')# and 
+	mls_saved_search_deleted = #db.param(0)# and 
 	(saved_search_email = #db.param(form.saved_search_email)# 
 	<cfif isDefined('request.zsession.user.id')>
 		 or (user_id=#db.param(request.zsession.user.id)# and 
@@ -353,6 +358,7 @@ application.zcore.template.setTag("pagetitle","Edit Saved Search");
     <cfsavecontent variable="db.sql">
     SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 	WHERE saved_search_email<>#db.param('')# and 
+	mls_saved_search_deleted = #db.param(0)# and 
 	(saved_search_email = #db.param(form.saved_search_email)# 
     <cfif isDefined('request.zsession.user.id')> 
 	or (user_id=#db.param(request.zsession.user.id)# and 

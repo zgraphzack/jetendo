@@ -646,7 +646,8 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 				}
 				 db.sql="select * from #db.table("city_rename", request.zos.zcoreDatasource)# city_rename 
 				WHERE city_name =#db.param(fd[i])# and 
-				state_abbr=#db.param(tempState)#";
+				state_abbr=#db.param(tempState)# and 
+				city_rename_deleted = #db.param(0)#";
 				qD2=db.execute("qD2");
 				if(qD2.recordcount NEQ 0){
 					fd[i]=qD2.city_renamed;
@@ -654,13 +655,15 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 				//arrayappend(arrC,application.zcore.functions.zescape(application.zcore.functions.zFirstLetterCaps(fd[i])));
 				 db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city 
 				WHERE city_name =#db.param(fd[i])# and 
-				state_abbr=#db.param(tempState)#";
+				state_abbr=#db.param(tempState)# and 
+				city_deleted = #db.param(0)#";
 				qD=db.execute("qD");
 				if(qD.recordcount EQ 0){
 					//writeoutput(fd[i]&" missing<br />");
 					 db.sql="select	* from #db.table("zipcode", request.zos.zcoreDatasource)# zipcode 
 					WHERE city_name =#db.param(fd[i])# and 
-					state_abbr=#db.param(tempState)#";
+					state_abbr=#db.param(tempState)# and 
+					zipcode_deleted = #db.param(0)#";
 					qZ=db.execute("qZ");
 					if(qZ.recordcount NEQ 0){
 						db.sql="INSERT INTO #db.table("city", request.zos.zcoreDatasource)#  

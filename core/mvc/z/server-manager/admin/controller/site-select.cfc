@@ -56,6 +56,7 @@
 			logs = siteSearch("log",false);*/
 			db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 			WHERE site_id <> #db.param(-1)# and 
+			site_deleted = #db.param(0)# and 
 			(site_sitename LIKE #db.param('%#ss#%')# or 
 			site_domain LIKE #db.param('%#ss#%')#)"; 
 			qSites = db.execute("qSites"); 
@@ -122,7 +123,8 @@
 		<cfif structkeyexists(local, 'qSites') EQ false or qSites.recordcount EQ 0>
 			<cfsavecontent variable="db.sql"> SELECT count(site_id) as count 
 			FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-			WHERE site_id <> #db.param(-1)#
+			WHERE site_id <> #db.param(-1)# and 
+			site_deleted = #db.param(0)#
 			<cfif len(selectedChar) NEQ 0>
 				and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#
 			</cfif>
@@ -131,12 +133,13 @@
 			</cfif>
 			</cfsavecontent>
 			<cfscript>
-qCount=db.execute("qCount");
-
-        perpage = 200;
-        </cfscript>
-			<cfsavecontent variable="db.sql"> SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-			WHERE site_id <> #db.param(-1)#
+			qCount=db.execute("qCount");
+			perpage = 200;
+        	</cfscript>
+			<cfsavecontent variable="db.sql"> 
+			SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
+			WHERE site_id <> #db.param(-1)# and 
+			site_deleted = #db.param(0)# 
 			<cfif len(selectedChar) NEQ 0>
 				and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#
 			</cfif>
@@ -146,8 +149,8 @@ qCount=db.execute("qCount");
 			ORDER BY site_sitename ASC 
 			LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)# </cfsavecontent>
 			<cfscript>
-qSites=db.execute("qSites");
-</cfscript>
+			qSites=db.execute("qSites");
+			</cfscript>
 			<cfelse>
 			<cfset qCount.count = qSites.recordcount>
 		</cfif>

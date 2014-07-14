@@ -38,7 +38,8 @@
 	application.zcore.functions.zSetPageHelpId("7.6");
 	db.sql="SELECT *  FROM #request.zos.queryObject.table("rental_amenity", request.zos.zcoreDatasource)# rental_amenity 
 	WHERE
-	rental_amenity.site_id = #db.param(request.zOS.globals.id)# 
+	rental_amenity.site_id = #db.param(request.zOS.globals.id)# and 
+	rental_amenity_deleted = #db.param(0)#
 	order by rental_amenity.rental_amenity_sort ASC, rental_amenity.rental_amenity_name ASC";
 	qProp=db.execute("qProp");
 	</cfscript>
@@ -127,7 +128,8 @@
 	if(form.method EQ "insert"){
 		db.sql="SELECT max(rental_amenity_sort) sort 
 		FROM #request.zos.queryObject.table("rental_amenity", request.zos.zcoreDatasource)# rental_amenity 
-		WHERE  site_id = #db.param(request.zOS.globals.id)#";
+		WHERE  site_id = #db.param(request.zOS.globals.id)# and 
+		rental_amenity_deleted = #db.param(0)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0 or qCheck.sort EQ ""){
 			form.rental_amenity_sort=1;

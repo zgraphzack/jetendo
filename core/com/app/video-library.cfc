@@ -138,6 +138,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	if(arraylen(local.arrQueue2) NEQ 0){
 		 db.sql="select * from #db.table("queue", request.zos.zcoreDatasource)# queue 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
+		queue_deleted = #db.param(0)#  and 
 		queue_id IN ("&db.trustedSQL(arraytolist(local.arrQueue2,","))&")";
 		local.q=db.execute("q");
 		for(local.i=1;local.i LTE local.q.recordcount;local.i++){
@@ -174,6 +175,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 		set queue_cancelled=#db.param(1)# ,
 		queue_updated_datetime=#db.param(request.zos.mysqlnow)# 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
+		queue_deleted = #db.param(0)# and 
 		queue_id IN ("&db.trustedSQL(arraytolist(local.arrQueue2,","))&")";
 		q=db.execute("q");
 	}
@@ -205,6 +207,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	
 	db.sql="select * from #db.table("queue", request.zos.zcoreDatasource)# queue 
 	WHERE queue_id = #db.param(form.queue_id)# and 
+	queue_deleted = #db.param(0)#  and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qR=db.execute("qR"); 
 	if(qR.recordcount EQ 0){
@@ -234,8 +237,11 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 			application.zcore.functions.zabort();
 		}
 	}
-	db.sql="delete from #db.table("queue", request.zos.zcoreDatasource)#  
+	db.sql="update #db.table("queue", request.zos.zcoreDatasource)#  SET
+	queue_deleted = #db.param(1)#, 
+	queue_updated_datetime = #db.param(request.zos.mysqlnow)#
 	WHERE queue_id = #db.param(local.row.queue_id)# and 
+	queue_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	q=db.execute("q");
 	writeoutput('{"success":true,"video_id":#local.video_id#,"queue_id":#form.queue_id#}');
@@ -254,6 +260,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library", true);
 	db.sql="select * from #db.table("video", request.zos.zcoreDatasource)# video 
 	WHERE video_id = #db.param(form.video_id)# and 
+	video_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	local.q=db.execute("q"); 
 	if(local.q.recordcount EQ 0){
@@ -278,6 +285,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	}
 	db.sql="delete from #db.table("video", request.zos.zcoreDatasource)#  
 	WHERE video_id = #db.param(form.video_id)# and 
+	video_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("q");
 	writeoutput('{"success":true,"video_id":"#jsstringformat(form.video_id)#","libraryId":"#jsstringformat(form.libraryId)#"}');
@@ -462,7 +470,8 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 
 	<cfscript>
 	db.sql="SELECT * FROM #db.table("queue", request.zos.zcoreDatasource)# queue 
-	WHERE site_id=#db.param(request.zos.globals.id)# ";
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	queue_deleted = #db.param(0)# ";
 	qF=db.execute("qF");
 	</cfscript>
 	<cfloop query="qF"> 
@@ -524,7 +533,8 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 
 	<cfscript>
 	db.sql="SELECT * FROM #db.table("video", request.zos.zcoreDatasource)# video 
-	WHERE site_id=#db.param(request.zos.globals.id)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	video_deleted = #db.param(0)#
 	ORDER BY video_id DESC ";
 	qF=db.execute("qF");
 	</cfscript>

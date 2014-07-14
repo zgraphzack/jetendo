@@ -70,6 +70,7 @@
 		<cfscript>
         db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu 
 		WHERE menu_id = #db.param(form.menu_id)# and 
+		menu_deleted = #db.param(0)# and 
 		site_id =#db.param(request.zos.globals.id)#";
 		qS=db.execute("qS");
 		</cfscript>
@@ -123,12 +124,21 @@
 	        form.newsiteid=request.zos.globals.id;
 		}
         
-		db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu WHERE menu_id = #db.param(form.menu_id)# and site_id =#db.param(request.zos.globals.id)#";
+		db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
+		menu_id = #db.param(form.menu_id)# and 
+		menu_deleted = #db.param(0)# and 
+		site_id =#db.param(request.zos.globals.id)#";
 		qS=db.execute("qS");
-		db.sql="select * from #db.table("menu_button", request.zos.zcoreDatasource)# menu_button WHERE menu_id = #db.param(form.menu_id)# and site_id =#db.param(request.zos.globals.id)#";
+		db.sql="select * from #db.table("menu_button", request.zos.zcoreDatasource)# menu_button WHERE 
+		menu_id = #db.param(form.menu_id)# and 
+		menu_button_deleted = #db.param(0)# and 
+		site_id =#db.param(request.zos.globals.id)#";
 		qT=db.execute("qT");
 		if(application.zcore.functions.zso(form, 'renameexisting', true, 0) EQ 1){
-			db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu WHERE menu_name = #db.param(form.newname)# and site_id = #db.param(newsiteid)#";
+			db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
+			menu_name = #db.param(form.newname)# and 
+			menu_deleted = #db.param(0)# and 
+			site_id = #db.param(newsiteid)#";
 			qS2=db.execute("qS2");
 			if(qS2.recordcount NEQ 0){
 				newcodename22=qS2.menu_name&" (renamed on "&dateformat(now(),"m/d/yy")&" at "&timeformat(now(),"HH:mm:ss")&")";
@@ -138,6 +148,7 @@
 				menu_codename=#db.param(newcodename22)#,
 				menu_updated_datetime=#db.param(request.zos.mysqlnow)#  
 				WHERE menu_id = #db.param(qs2.menu_id)#  and 
+				menu_deleted = #db.param(0)# and
 				site_id =#db.param(qs2.site_id)#";
 				qC=db.execute("qC");
 			}
@@ -212,7 +223,10 @@
 				throw("menu_button failed to insert");
 			}
 			if(application.zcore.functions.zso(form, 'removelinks', true, 0) NEQ 1){
-				db.sql="select * from #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link WHERE menu_button_id = #db.param(qT.menu_button_id[n])# and site_id=#db.param(request.zos.globals.id)#";
+				db.sql="select * from #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link WHERE 
+				menu_button_id = #db.param(qT.menu_button_id[n])# and 
+				site_id=#db.param(request.zos.globals.id)# and 
+				menu_button_link_deleted = #db.param(0)# ";
 				qI=db.execute("qI");
 				arrI=listtoarray(lcase(qI.columnlist));
 				for(n2=1;n2 LTE qI.recordcount;n2++){
@@ -275,6 +289,7 @@
 	if(form.method EQ 'updateItemLink'){
 		db.sql="SELECT * FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 		WHERE menu_button_link_id = #db.param(form.menu_button_link_id)# and 
+		menu_button_link_deleted = #db.param(0)# and 
 		site_id = #db.param(form.site_id)# ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
@@ -300,6 +315,7 @@
 	if(form.method EQ 'insertItemLink'){
 		db.sql="select count(menu_button_link_id) count from #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 		WHERE menu_button_id = #db.param(form.menu_button_id)# and 
+		menu_button_link_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		qC=db.execute("qC");
 		if(qC.recordcount NEQ 0){
@@ -361,11 +377,13 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# and 
+	menu_deleted = #db.param(0)# and 
 	site_id = #db.param(form.site_id)#";
 	qMenu2=db.execute("qMenu2");
 	if(form.method EQ "updateItem"){
 		db.sql="SELECT * FROM #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 		WHERE menu_button_id = #db.param(form.menu_button_id)# and 
+		menu_button_deleted = #db.param(0)# and 
 		site_id = #db.param(form.site_id)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
@@ -447,6 +465,7 @@
 		db.sql="select count(menu_button_id) count 
 		from #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 		WHERE menu_id = #db.param(form.menu_id)# and 
+		menu_button_deleted = #db.param(0)# and 
 		site_id =#db.param(request.zos.globals.id)#";
 		qC=db.execute("qC");
 		if(qC.recordcount NEQ 0){
@@ -482,6 +501,7 @@
 		menu_button_height=#db.param(image123.height)#, 
 		menu_button_url = #db.param(form.menu_button_url)# 
 		WHERE menu_button_id = #db.param(form.menu_button_id)# and 
+		menu_button_deleted = #db.param(0)# and
 		site_id=#db.param(form.site_id)#';
 		q=db.execute("q");
 	}
@@ -527,6 +547,7 @@
 	if(form.method EQ 'update'){
 		db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 		WHERE menu_id = #db.param(form.menu_id)# and 
+		menu_deleted = #db.param(0)# and
 		site_id = #db.param(form.site_id)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
@@ -690,6 +711,7 @@
 	variables.init();
 	db.sql="SELECT * FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 	WHERE menu_button_link_id = #db.param(form.menu_button_link_id)# and 
+	menu_button_link_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	</cfscript>
@@ -698,6 +720,7 @@
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		db.sql="DELETE FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# 
 		WHERE menu_button_link_id = #db.param(form.menu_button_link_id)# and 
+		menu_button_link_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)#;";
 		qMenuItemLinkDel=db.execute("qMenuItemLinkDel");
 		application.zcore.status.setStatus(request.zsid, 'Button deleted.');
@@ -730,6 +753,7 @@
 	}
 	db.sql="SELECT * FROM #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 	WHERE menu_button.menu_button_id = #db.param(form.menu_button_id)# and 
+	menu_button_deleted = #db.param(0)# and 
 	menu_button.site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
@@ -748,10 +772,12 @@
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		db.sql="DELETE FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# 
 		WHERE menu_button_id = #db.param(form.menu_button_id)# and 
+		menu_button_link_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#;";
 		qMenuItemDel=db.execute("qMenuItemDel");
 		db.sql="DELETE FROM #db.table("menu_button", request.zos.zcoreDatasource)# 
 		WHERE menu_button_id = #db.param(form.menu_button_id)# and 
+		menu_button_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#;";
 		qMenuItemDel=db.execute("qMenuItemDel");
 		if(qCheck.menu_button_url NEQ ''){  
@@ -789,7 +815,9 @@
 		StructInsert(request.zsession, "menu_return"&form.menu_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
-	WHERE menu.menu_id = #db.param(form.menu_id)# and menu.site_id = #db.param(request.zos.globals.id)#";
+	WHERE menu.menu_id = #db.param(form.menu_id)# and 
+	menu_deleted = #db.param(0)# and 
+	menu.site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'This menu no longer exists.',false,true);
@@ -806,17 +834,23 @@
 		<cfscript>
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Menus", true);	
 		db.sql="DELETE menu_button_link, menu_button 
-		FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link, #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
+		FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link, 
+		#db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 		WHERE menu_button.menu_button_id = menu_button_link.menu_button_id and 
 		menu_button.menu_id = #db.param(form.menu_id)# and 
+		menu_button_link_deleted = #db.param(0)# and 
+		menu_button_deleted = #db.param(0)# and
 		menu_button.site_id = #db.param(request.zos.globals.id)# and 
 		menu_button_link.site_id = menu_button.site_id";
 		qMenuItemDel=db.execute("qMenuItemDel");
 		db.sql="DELETE FROM #db.table("menu_button", request.zos.zcoreDatasource)# 
 		WHERE menu_id = #db.param(form.menu_id)# and 
+		menu_button_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)# ";
 		qMenuItemDel=db.execute("qMenuItemDel");
-		db.sql="DELETE FROM #db.table("menu", request.zos.zcoreDatasource)# WHERE menu_id = #db.param(form.menu_id)# and 
+		db.sql="DELETE FROM #db.table("menu", request.zos.zcoreDatasource)# WHERE 
+		menu_id = #db.param(form.menu_id)# and 
+		menu_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)#";
 		qMenuDel=db.execute("qMenuDel");
 		if (DirectoryExists(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/')) {
@@ -848,20 +882,24 @@
 	application.zcore.functions.zSetPageHelpId("2.3.4");
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# and 
+	menu_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenu=db.execute("qMenu");
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	db.sql="SELECT * FROM #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 	WHERE menu_button_id = #db.param(form.menu_button_id)# and 
+	menu_button_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenuButton=db.execute("qMenuButton");
 	db.sql="SELECT * FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 	WHERE menu_button_id = #db.param(form.menu_button_id)# AND 
-	site_id = #db.param(request.zos.globals.id)# 
+	site_id = #db.param(request.zos.globals.id)# and
+	menu_button_link_deleted = #db.param(0)# 
 	ORDER BY menu_button_link_sort";
 	qMenuItemLinks=db.execute("qMenuItemLinks");
 	db.sql="SELECT menu_link_limit FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# AND 
+	menu_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenuProps=db.execute("qMenuProps");
 	</cfscript>
@@ -912,16 +950,19 @@
 	application.zcore.functions.zSetPageHelpId("2.3");
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# and 
+	menu_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenu=db.execute("qMenu");
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	db.sql="SELECT * FROM #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 	WHERE menu_id = #db.param(form.menu_id)# AND 
+	menu_button_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)# 
 	ORDER BY menu_button_sort";
 	qMenuItems=db.execute("qMenuItems");
 	db.sql="SELECT menu_size_limit FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# AND 
+	menu_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenuProps=db.execute("qMenuProps");
 	</cfscript>
@@ -981,6 +1022,7 @@
 	form.menu_button_link_id=application.zcore.functions.zso(form, 'menu_button_link_id');	
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# AND 
+	menu_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenu=db.execute("qMenu");
 	if(qMenu.recordcount EQ 0){
@@ -990,6 +1032,7 @@
 	db.sql="SELECT menu_button_link_id, menu_button_link_url, menu_button_link_text, menu_button_link_target, menu_button_link_sort,  site_id 
 	FROM #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link 
 	WHERE menu_button_link_id = #db.param(form.menu_button_link_id)# AND 
+	menu_button_link_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenuItemLink=db.execute("qMenuItemLink");
 	if(currentMethod EQ 'editItemLink'){
@@ -1071,6 +1114,7 @@
 	form.menu_button_id=application.zcore.functions.zso(form, 'menu_button_id');
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 	WHERE menu_id = #db.param(form.menu_id)# AND 
+	menu_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#;";
 	qMenu=db.execute("qMenu");
 	if(qMenu.recordcount EQ 0){
@@ -1079,6 +1123,7 @@
 	}
 	db.sql="SELECT * FROM #db.table("menu_button", request.zos.zcoreDatasource)# menu_button 
 	WHERE menu_button_id = #db.param(form.menu_button_id)# AND 
+	menu_button_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 	qMenuItem=db.execute("qMenuItem");
 	if(currentMethod EQ 'editItem'){
@@ -1203,13 +1248,22 @@
 						</div>
 						<cfscript>
 						if(application.zcore.app.siteHasApp("content")){
-							db.sql="SELECT content_id, content_name FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE site_id =#db.param(request.zos.globals.id)# and content_deleted = #db.param(0)# ORDER BY content_name ASC";
+							db.sql="SELECT content_id, content_name FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE 
+							site_id =#db.param(request.zos.globals.id)# and 
+							content_deleted = #db.param(0)# 
+							ORDER BY content_name ASC";
 							qC=db.execute("qC");
 						}
 						if(application.zcore.app.siteHasApp("blog")){
-							db.sql="SELECT blog_category_id, blog_category_name FROM #db.table("blog_category", request.zos.zcoreDatasource)# blog_category WHERE site_id =#db.param(request.zos.globals.id)# ORDER BY blog_category_name ASC";
+							db.sql="SELECT blog_category_id, blog_category_name FROM #db.table("blog_category", request.zos.zcoreDatasource)# blog_category WHERE 
+							site_id =#db.param(request.zos.globals.id)# and 
+							blog_category_deleted = #db.param(0)# 
+							ORDER BY blog_category_name ASC";
 							qB=db.execute("qB");
-							db.sql="SELECT blog_tag_id, blog_tag_name FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag WHERE site_id =#db.param(request.zos.globals.id)# ORDER BY blog_tag_name ASC";
+							db.sql="SELECT blog_tag_id, blog_tag_name FROM #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag WHERE 
+							site_id =#db.param(request.zos.globals.id)# and 
+							blog_tag_deleted = #db.param(0)# 
+							ORDER BY blog_tag_name ASC";
 							qB2=db.execute("qB2");
 						}
 						</cfscript>
@@ -1308,7 +1362,10 @@
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("2.3.1");
 	form.menu_id=application.zcore.functions.zso(form, 'menu_id');
-	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE menu_id = #db.param(form.menu_id)# AND site_id = #db.param(request.zos.globals.id)#";
+	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
+	menu_id = #db.param(form.menu_id)# AND 
+	menu_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)#";
 	qMenu=db.execute("qMenu");
 	if(currentMethod EQ 'edit'){
 		if(qMenu.recordcount EQ 0){
@@ -1664,7 +1721,8 @@
 	<cfscript>
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
-	WHERE  site_id = #db.param(request.zos.globals.id)#";
+	WHERE  site_id = #db.param(request.zos.globals.id)# and 
+	menu_deleted = #db.param(0)# ";
 	qSite=db.execute("qSite");
 	</cfscript>
 	<cfif qSite.recordcount NEQ 0>
@@ -1701,7 +1759,10 @@
 	var qView=0;
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("2.3.7");
-	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE menu.menu_id = #db.param(form.menu_id)# AND menu.site_id = #db.param(request.zos.globals.id)#";
+	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
+	menu.menu_id = #db.param(form.menu_id)# AND 
+	menu.site_id = #db.param(request.zos.globals.id)# and 
+	menu_deleted = #db.param(0)# ";
 	qView=db.execute("qView");
 	</cfscript>
 	<a href="/z/admin/menu/index">Manage Menus</a> /<br />

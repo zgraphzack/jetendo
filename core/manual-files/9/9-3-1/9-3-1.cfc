@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <h2>Outline</h2>
   <ul>
   <li><a href="##whyintegrate">Why integrate with Wordpress?</a></li>

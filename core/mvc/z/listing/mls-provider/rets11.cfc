@@ -101,7 +101,8 @@ this.remapFieldStruct=t5;
 		from #db.table("zipcode", request.zos.zcoreDatasource)# zipcode 
 		where zipcode_zip IN 
 		#db.trustedSQL("(32949,32937,32950,34947,32935,32940,32931,32904,32909,32951,32953,34744,32952,28467,32927,37752,34771,
-		32903,34773,32905,32780,99999,92011,32948,21452,32958,32754,32976,32759,32934,34949,34983)")#
+		32903,34773,32905,32780,99999,92011,32948,21452,32958,32754,32976,32759,32934,34949,34983)")# and 
+		zipcode_deleted = #db.param(0)#
         </cfsavecontent><cfscript>qZ=db.execute("qZ");</cfscript>
         <cfloop query="qZ">
             <cfscript>arguments.sharedStruct.lookupStruct.cityRenameStruct[qZ.zipcode_zip]=qZ.city_name&"|"&qZ.state_abbr;</cfscript>

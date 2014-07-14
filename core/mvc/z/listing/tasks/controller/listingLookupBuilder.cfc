@@ -31,6 +31,7 @@
 	if(request.zos.istestserver EQ false and application.zcore.functions.zso(form,'zforcelisting') NEQ 1){
 		db.sql="SELECT * FROM #db.table("mls", request.zos.zcoreDatasource)# 
 		WHERE mls_update_date< #db.param(todayDateTime)# and  
+		mls_deleted = #db.param(0)# and 
 		mls_status=#db.param('1')#";
 		qMC=db.execute("qMC");
 		loop query="qMC"{

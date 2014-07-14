@@ -53,7 +53,8 @@
 				db.sql="SELECT site_id, replace(replace(site_short_domain, #db.param('.#request.zos.testDomain#')#, #db.param('')#), 
 					#db.param('www.')#, #db.param('')#) site_short_domain 
 				FROM #db.table("site", request.zos.zcoreDatasource)# site 
-				WHERE site_id <> #db.param(-1)#
+				WHERE site_id <> #db.param(-1)# and 
+				site_deleted = #db.param(0)#
 				ORDER BY site_short_domain ASC";
 				qSites=db.execute("qSites");
 				selectStruct = StructNew();
@@ -289,7 +290,8 @@
 	}else if(form.importType EQ "insert"){
 		// verify domain doesn't exist in site table or on filesystem
 		db.sql="select * from #db.table("site", request.zos.zcoreDatasource)#
-		where site_short_domain = #db.param(globals.site_short_domain)# ";
+		where site_short_domain = #db.param(globals.site_short_domain)# and 
+		site_deleted = #db.param(0)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount NEQ 0){
 			application.zcore.status.setStatus(request.zsid, "Domain already exists in site table.  You must delete the existing domain and files before importing.", form, true);
@@ -300,7 +302,8 @@
 			if(globals.site_username NEQ ""){
 				// linux user must be unique
 				db.sql="select * from #db.table("site", request.zos.zcoreDatasource)#
-				where site_username = #db.param(globals.site_username)# ";
+				where site_username = #db.param(globals.site_username)# and 
+				site_deleted = #db.param(0)#";
 				qCheck=db.execute("qCheck");
 				if(qCheck.recordcount NEQ 0){
 					application.zcore.status.setStatus(request.zsid, "Linux user, #globals.site_username#, already exists for domain, #qCheck.site_short_domain#.  You must specify a different linux user before importing again.", form, true);
@@ -483,7 +486,8 @@
 	SET site_system_user_created=#db.param(0)#, 
 	site_system_user_modified=#db.param(1)#, 
 	site_updated_datetime=#db.param(request.zos.mysqlnow)# 
-	WHERE site_id=#db.param(globals.site_id)# ";
+	WHERE site_id=#db.param(globals.site_id)# and 
+	site_deleted = #db.param(0)#";
 	db.execute("qUpdate");
 	application.zcore.functions.zdeletedirectory(curImportPath);
 	

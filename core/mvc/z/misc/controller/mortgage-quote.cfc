@@ -46,7 +46,8 @@ application.zcore.template.setTag("pagenav",tempPageNav);
     <cfsavecontent variable="db.sql">
     SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_id = #db.param(-1)# and 
-	site_id = #db.param('0')# 
+	site_id = #db.param('0')# and 
+	inquiries_deleted = #db.param(0)#
     </cfsavecontent>
 	<cfscript>
     qInquiries=db.execute("qInquiries");

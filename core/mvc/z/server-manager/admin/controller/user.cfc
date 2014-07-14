@@ -64,7 +64,8 @@
 	db.sql="SELECT site_id, user_first_name, user_last_name, user_ip_blocked 
 	FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(application.zcore.functions.zso(form, 'user_id'))# and 
-	site_id =#db.param(form.sid)#";
+	site_id =#db.param(form.sid)# and 
+	user_deleted = #db.param(0)#";
 	qUser=db.execute("qUser");
 	if(qUser.recordcount EQ 0){	
 		application.zcore.status.setStatus(Request.zsid, "User no longer exists.",false,true);		
@@ -103,7 +104,8 @@
 	application.zcore.functions.zSetPageHelpId("8.1.1.6.1.2");
 	db.sql=" SELECT site_id, user_first_name, user_last_name FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(application.zcore.functions.zso(form, 'user_id'))# and 
-	site_id = #db.param(form.sid)# ";
+	site_id = #db.param(form.sid)# and 
+	user_deleted = #db.param(0)#";
 	qUser=db.execute("qUser");
 	if(qUser.recordcount EQ 0){	
 		application.zcore.status.setStatus(Request.zsid, "User no longer exists.",false,true);
@@ -141,7 +143,8 @@
 	variables.init();
 	db.sql=" SELECT site_id, user_first_name, user_last_name FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(application.zcore.functions.zso(form, 'user_id'))# and 
-	site_id = #db.param(form.sid)#";
+	site_id = #db.param(form.sid)# and 
+	user_deleted = #db.param(0)#";
 	qUser=db.execute("qUser");
 	if(qUser.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, "User no longer exists.",false,true);
@@ -174,7 +177,8 @@
 	variables.init();
 	db.sql=" SELECT site_id, user_group_name FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE user_group_id = #db.param(application.zcore.functions.zso(form, 'user_group_id'))# and 
-	site_id = #db.param(form.sid)#";
+	site_id = #db.param(form.sid)# and 
+	user_group_deleted = #db.param(0)#";
 	qGroup=db.execute("qGroup");
 	if(qGroup.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, "User Group no longer exists.",false,true);
@@ -328,12 +332,14 @@
 	db.sql=" UPDATE #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	SET user_group_primary = #db.param(0)#,
 	user_group_updated_datetime=#db.param(request.zos.mysqlnow)#  
-	WHERE site_id = #db.param(form.sid)# ";
+	WHERE site_id = #db.param(form.sid)# and 
+	user_group_deleted = #db.param(0)# ";
 	qFlush=db.execute("qFlush");
 	db.sql="UPDATE #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	SET user_group_primary = #db.param(1)#,
 	user_group_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE user_group_id = #db.param(form.user_group_primary)# and 
+	user_group_deleted = #db.param(0)# and
 	site_id = #db.param(form.sid)# ";
 	qUpdate=db.execute("qUpdate");	
 	if(application.zcore.functions.zso(form, 'user_group_id') NEQ ''){
@@ -362,7 +368,8 @@
 	db.sql="SELECT user_group.* 
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE 
-	user_group.site_id = #db.param(form.sid)# 
+	user_group.site_id = #db.param(form.sid)# and 
+	user_group_deleted = #db.param(0)#
 	ORDER BY user_group_name ASC ";
 	qUserGroup=db.execute("qUserGroup");
 	application.zcore.functions.zStatusHandler(request.zsid);
@@ -389,11 +396,16 @@
 			<cfset sitename = "">
 			<cfset arrGroups = ArrayNew(1)>
 			<cfloop query="qUserGroup">
-				<cfsavecontent variable="db.sql"> SELECT *, user_group_x_group.user_group_id as parentid FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
+				<cfsavecontent variable="db.sql"> SELECT *, user_group_x_group.user_group_id as parentid FROM 
+				#db.table("user_group", request.zos.zcoreDatasource)# user_group 
 				LEFT JOIN #db.table("user_group_x_group", request.zos.zcoreDatasource)# user_group_x_group ON  
 				user_group_x_group.site_id = user_group.site_id   
 				and user_group_x_group.user_group_child_id = user_group.user_group_id  
-				and user_group_x_group.user_group_id = #db.param(qUserGroup.user_group_id)# WHERE user_group.site_id = #db.param(form.sid)# ORDER BY user_group_name ASC </cfsavecontent>
+				and user_group_x_group.user_group_id = #db.param(qUserGroup.user_group_id)# and 
+				user_group_x_group_deleted = #db.param(0)#
+				WHERE user_group.site_id = #db.param(form.sid)# and 
+				user_group_deleted = #db.param(0)#
+				ORDER BY user_group_name ASC </cfsavecontent>
 				<cfscript>
 				qUserXGroup=db.execute("qUserXGroup");
 				i = qUserGroup.currentRow;
@@ -460,7 +472,9 @@
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	db.sql=" SELECT user_group.user_group_id, user_group.user_group_name, user_group.user_group_friendly_name 
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-	WHERE site_id = #db.param(form.sid)# ORDER BY user_group_friendly_name ASC ";
+	WHERE site_id = #db.param(form.sid)# and 
+	user_group_deleted = #db.param(0)# 
+	ORDER BY user_group_friendly_name ASC ";
 	qGroup=db.execute("qGroup");
 	</cfscript>
 	<h2><cfif currentMethod EQ "editUser">
@@ -552,6 +566,7 @@
 								');
 								db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 								WHERE site_id <> #db.param(form.sid)# and 
+								site_deleted = #db.param(0)# and
 								site_active = #db.param(1)# 
 								ORDER BY site_sitename ASC";
 								qSites=db.execute("qSites");
@@ -635,6 +650,7 @@
 	form.user_group_id = application.zcore.functions.zso(form, 'user_group_id',false,-1);
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE user_group_id = #db.param(form.user_group_id)# and 
+	user_group_deleted = #db.param(0)# and
 	site_id = #db.param(form.sid)# ";
 	qGroup=db.execute("qGroup");
 	application.zcore.functions.zQueryToStruct(qGroup);
@@ -679,10 +695,12 @@
 	application.zcore.functions.zStatusHandler(Request.zsid);
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE user_group_id = #db.param(application.zcore.functions.zso(form, 'user_group_id'))# and 
+	user_group_deleted = #db.param(0)# and 
 	site_id =#db.param(form.sid)#";
 	qGroup=db.execute("qGroup");
 	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user
 	WHERE user_group_id = #db.param(application.zcore.functions.zso(form, 'user_group_id'))# and 
+	user_deleted = #db.param(0)# and 
 	site_id = #db.param(form.sid)#";
 	if(isDefined('request.zsession.zsaUsersOnly')){
 		db.sql&=" and user_system = #db.param('1')#";
@@ -776,7 +794,9 @@
 	application.zcore.functions.zStatusHandler(Request.zsid);
 	db.sql=" SELECT *
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-	WHERE site_id = #db.param(form.sid)# ORDER BY user_group_name ASC";
+	WHERE site_id = #db.param(form.sid)# and 
+	user_group_deleted = #db.param(0)# 
+	ORDER BY user_group_name ASC";
 	qUserList=db.execute("qUserList");
 	</cfscript>
 	<h2>User Groups</h2>

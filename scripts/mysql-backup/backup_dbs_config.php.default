@@ -41,7 +41,7 @@ $COMPRESSOR = 'bzip2';
 // Email the backup file when finished?
 $EMAIL_BACKUP = false;
 
-// If using email backup, delete from server afterwards?
+// If using email backup, delete on server afterwards?
 $DEL_AFTER = false;
 
 // The backup email's 'FROM' field

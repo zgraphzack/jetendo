@@ -29,7 +29,9 @@ form.zIndex=max(form.zIndex,1);
 	#db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 	WHERE mls_saved_search.mls_saved_search_id = mls_dir.mls_saved_search_id AND 
 	mls_dir.site_id = #db.param(request.zos.globals.id)# and 
-	mls_dir.mls_dir_id = #db.param(mls_dir_id)# ";
+	mls_dir.mls_dir_id = #db.param(mls_dir_id)# and 
+	mls_dir_deleted = #db.param(0)# and 
+	mls_saved_search_deleted = #db.param(0)#";
 	qD=db.execute("qD"); 
     if(qD.recordcount EQ 0){
         z301Redirect('/Real-Estate-#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_dir_url_id#-0.html');	
@@ -134,7 +136,8 @@ form.zIndex=max(form.zIndex,1);
 	// get all mls_dir for the hash of current criteria
 	db.sql="SELECT *, length(mls_dir_title) tlen FROM mls_dir 
 	where site_id = #db.param(request.zos.globals.id)# and 
-	mls_dir_hash IN (#db.trustedSQL("'#arraytolist(arrHash,"','")#'")#) 
+	mls_dir_hash IN (#db.trustedSQL("'#arraytolist(arrHash,"','")#'")#) and 
+	mls_dir_deleted = #db.param(0)#
 	ORDER BY tlen ASC";
 	qD=db.execute("qD"); 
 	//zdump(arrHash);
@@ -191,7 +194,8 @@ form.zIndex=max(form.zIndex,1);
 <cfelse>
     <cfscript>
 	db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-	where mls_saved_search_id =#db.param('-1')#";
+	where mls_saved_search_id =#db.param('-1')# and 
+	mls_saved_search_deleted = #db.param(0)#";
 	qd=db.execute("qd"); 
 	zquerytostruct(qd);
     application.zcore.template.setTag("title","Real Estate Directory");

@@ -367,8 +367,8 @@ function showEmbedOptions(libraryid){
 function generateEmbedCode(){
 	var libraryid = document.getElementById('video_embed_id').value;
 	var t=arrVideoLibraryComplete[libraryid];
-	var video_embed_width=document.getElementById('video_embed_width').value;
-	var video_embed_height=document.getElementById('video_embed_height').value;
+	var video_embed_width=document.getElementById('video_width').value;
+	var video_embed_height=document.getElementById('video_height').value;
 	var video_embed_autoplay=0;
 	if(document.getElementById('video_embed_autoplay').checked){
 		video_embed_autoplay=1;

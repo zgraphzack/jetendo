@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="public">
+<cffunction name="index" access="public" localmode="modern">
 <p>Purpose: Provides session memory storage for temporary messages and data that must be sent between requests.</p>
   <p>Version: 0.1.002</p>
   <p>Language(s) used: ColdFusion Markup Language (CFML)</p>

@@ -120,7 +120,9 @@ todo: open source projects
 		}
 	}
 	db.sql="select site_id from #db.table("site", request.zos.zcoreDatasource)# 
-	where site_active=#db.param(1)# and site_id <> #db.param(1)# ";
+	where site_active=#db.param(1)# and 
+	site_id <> #db.param(1)# and 
+	site_deleted = #db.param(0)#";
 	q=db.execute("q");
 	for(ts1 in q){
 		writeoutput("site_id:"&ts1.site_id&"<br>");
@@ -157,7 +159,8 @@ todo: open source projects
 	} 
 	db.sql="select *
 	from #db.table("file", request.zos.zcoreDatasource)# file 
-	WHERE file.site_id = #db.param(request.zos.globals.id)# ";
+	WHERE file.site_id = #db.param(request.zos.globals.id)# and 
+	file_deleted = #db.param(0)# ";
 	if(request.zos.globals.id EQ request.zos.globals.serverId){
 		db.sql&=" and left(file_path, #db.param(3)#) <> #db.param('/z/')# ";
 	}
@@ -186,6 +189,7 @@ todo: open source projects
 		*/
 		db.sql="delete from #db.table("file", request.zos.zcoreDatasource)# 
 		WHERE site_id=#db.param(request.zos.globals.id)# and 
+		file_deleted = #db.param(0)# and 
 		file_id IN ("&db.trustedSQL("'"&arraytolist(local.arrDeleteID,"','")&"'")&")";
 		db.execute("q");
 	}
@@ -206,7 +210,8 @@ todo: open source projects
 	db.sql="select *
 	from #db.table("file", request.zos.zcoreDatasource)# file 
 	WHERE file.site_id =#db.param(Request.zos.globals.serverId)# 
-	and left(file_path, #db.param(3)#) = #db.param('/z/')# 
+	and left(file_path, #db.param(3)#) = #db.param('/z/')# and 
+	file_deleted = #db.param(0)# 
 	GROUP BY file.file_id";
 	application.zcore.functions.zCreateDirectory(request.zos.globals.serverPrivateHomedir&"zcache/global/");
 	qFile=db.execute("qFile");
@@ -227,6 +232,7 @@ todo: open source projects
 		*/
 		db.sql="delete from #db.table("file", request.zos.zcoreDatasource)# 
 		WHERE site_id=#db.param(request.zos.globals.serverid)# and 
+		file_deleted = #db.param(0)# and 
 		file_id IN ("&db.trustedSQL("'"&arraytolist(local.arrDeleteID,"','")&"'")&")";
 		db.execute("q");
 	} 

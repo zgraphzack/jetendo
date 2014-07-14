@@ -77,7 +77,8 @@
 		for(g=1;g LTE 255;g++){
 			db.sql=" SELECT * FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category
 			where rental_category_id = #db.param(cpi)# and 
-			site_id = #db.param(request.zOS.globals.id)#";
+			site_id = #db.param(request.zOS.globals.id)# and 
+			rental_category_deleted = #db.param(0)#";
 			qpar=db.execute("qpar");
 			if(qpar.recordcount EQ 0){
 				break;
@@ -94,7 +95,8 @@
 		}
 		db.sql=" SELECT * FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category
 		where rental_category_id = #db.param(form.rental_category_parent_id)# and 
-		site_id = #db.param(request.zOS.globals.id)# ";
+		site_id = #db.param(request.zOS.globals.id)# and 
+		rental_category_deleted = #db.param(0)# ";
 		qpar=db.execute("qpar");
 		if(qpar.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid, "The selected rental category doesn't exist.");
@@ -119,12 +121,14 @@
 		#db.trustedSQL(rs.leftJoin)# 
 		LEFT JOIN #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rc2 
 		on rc2.rental_category_parent_id = rental_category.rental_category_id and 
-		rental_category.site_id = rc2.site_id 
+		rental_category.site_id = rc2.site_id and 
+		rc2.rental_category_deleted = #db.param(0)#
 		WHERE";
 		if(form.rental_category_parent_id NEQ ""){
 			db.sql&=" rental_category.rental_category_parent_id = #db.param(form.rental_category_parent_id)# and";
 		}
-		db.sql&=" rental_category.site_id = #db.param(request.zOS.globals.id)# 
+		db.sql&=" rental_category.site_id = #db.param(request.zOS.globals.id)# and 
+		rental_category.rental_category_deleted = #db.param(0)#
 		GROUP BY rental_category.rental_category_id 
 		order by rental_category.rental_category_sort ASC, rental_category.rental_category_name ASC";
 		qProp=db.execute("qProp");
@@ -188,6 +192,8 @@
 				#request.zos.queryObject.table("rental_x_category", request.zos.zcoreDatasource)# rental_x_category) 
 				#db.trustedSQL(rs2.leftJoin)# 
 				where rental.site_id = rental_x_category.site_id and 
+				rental_deleted = #db.param(0)# and 
+				rental_x_category_deleted = #db.param(0)# and 
 				rental_x_category.rental_category_id= #db.param(qProp.rental_category_id)# and 
 				rental.rental_id = rental_x_category.rental_id and 
 				rental_x_category.site_id = #db.param(request.zOS.globals.id)# 
@@ -236,12 +242,14 @@
 		#request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category  
 		LEFT JOIN #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rc2 
 		on rc2.rental_category_parent_id = rental_category.rental_category_id and 
-		rental_category.site_id = rc2.site_id 
+		rental_category.site_id = rc2.site_id and 
+		rc2.rental_category_deleted = #db.param(0)#
 		WHERE";
 		if(form.rental_category_parent_id NEQ ""){
 			db.sql&=" rental_category.rental_category_parent_id = #db.param(form.rental_category_parent_id)# and";
 		}
-		db.sql&=" rental_category.site_id = #db.param(request.zOS.globals.id)# 
+		db.sql&=" rental_category.site_id = #db.param(request.zOS.globals.id)# and 
+		rental_category.rental_category_deleted = #db.param(0)#
 		GROUP BY rental_category.rental_category_id 
 		order by rental_category.rental_category_sort ASC, rental_category.rental_category_name ASC";
 		qProp=db.execute("qProp");
@@ -353,7 +361,8 @@
 	}else{
 		db.sql=" SELECT max(rental_category_sort) sort 
 		FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
-		WHERE  site_id = #db.param(request.zOS.globals.id)# ";
+		WHERE  site_id = #db.param(request.zOS.globals.id)# and 
+		rental_category_deleted = #db.param(0)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0 or qCheck.sort EQ ""){
 			form.rental_category_sort=1;
@@ -499,7 +508,8 @@
 			<cfscript>
 			db.sql=" SELECT *  FROM #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 			WHERE site_id = #db.param(request.zOS.globals.id)# and 
-			rental_category_parent_id = #db.param(0)# 
+			rental_category_parent_id = #db.param(0)# and 
+			rental_category_deleted = #db.param(0)#
 			ORDER BY rental_category_name ASC ";
 			qAll=db.execute("qAll");
 			defaultCategoryId=0;
@@ -539,7 +549,8 @@
 			</tr>
 			<cfscript>
 			db.sql=" SELECT * FROM #request.zos.queryObject.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-			WHERE site_id = #db.param(request.zOS.globals.id)# 
+			WHERE site_id = #db.param(request.zOS.globals.id)# and 
+			slideshow_deleted = #db.param(0)#
 			ORDER BY slideshow_name ASC ";
 			qslide=db.execute("qslide");
 			</cfscript>

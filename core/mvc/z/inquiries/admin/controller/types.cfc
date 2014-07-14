@@ -136,12 +136,14 @@
 	form.sid=application.zcore.functions.zGetSiteIdFromSiteIdType(form.siteIdType);
 	db.sql="SELECT * from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
 	WHERE inquiries_type_id = #db.param(application.zcore.functions.zso(form, 'inquiries_type_id'))# and 
-	site_id=#db.param(form.sid)# GROUP BY inquiries_type_id 
+	site_id=#db.param(form.sid)# GROUP BY inquiries_type_id and 
+	inquiries_type_deleted = #db.param(0)#
 	ORDER BY inquiries_type_name ASC";
 	qTypes=db.execute("qTypes");
 	db.sql="SELECT inquiries_id from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_type_id = #db.param(application.zcore.functions.zso(form, 'inquiries_type_id'))# and 
 	inquiries_type_id_siteIDType=#db.param(application.zcore.functions.zGetSiteIDType(form.sid))# and 
+	inquiries_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)# 
 	LIMIT #db.param(0)#,#db.param(1)#";
 	qInquiryCheck=db.execute("qInquiryCheck");
@@ -191,7 +193,8 @@
 	</cfscript>
 	<cfsavecontent variable="db.sql"> 
 	SELECT * from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
-	WHERE  inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zOS.globals.id)#)
+	WHERE  inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zOS.globals.id)#) and 
+	inquiries_type_deleted = #db.param(0)# 
 	<cfif not application.zcore.app.siteHasApp("listing")>
 		and inquiries_type_realestate = #db.param(0)#
 	</cfif>
@@ -219,6 +222,7 @@
 			db.sql="SELECT inquiries_id from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 			WHERE inquiries_type_id = #db.param(qTypes.inquiries_type_id)# and 
 			site_id = #db.param(request.zOS.globals.id)# and 
+			inquiries_deleted = #db.param(0)# and
 			inquiries_type_id_siteIDType=#db.param(siteIdType)# 
 			LIMIT #db.param(0)#,#db.param(1)#";
 			qInquiryCheck=db.execute("qInquiryCheck");

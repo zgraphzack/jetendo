@@ -129,6 +129,7 @@
 	var db=request.zos.queryObject;
 	db.sql="select site_domain, site_short_domain, site_domainaliases, site_ssl_manager_domain from #db.table("site", request.zos.zcoreDatasource)# 
 	where site_active=#db.param(1)# and 
+	site_deleted = #db.param(0)# and 
 	site_id <> #db.param(-1)# 
 	GROUP BY site_short_domain 
 	ORDER BY site_domain ";
@@ -163,7 +164,10 @@
 	#db.table("site", request.zos.zcoreDatasource)# site
 	where site.site_active=#db.param(1)# and 
 	site.site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)# and 
+	domain_redirect_deleted = #db.param(0)# and 
 	domain_redirect.site_id = site.site_id and 
+	domain_redirect_deleted = #db.param(0)#  and 
 	domain_redirect_type=#db.param(0)# and 
 	domain_redirect_old_domain <> #db.param('')# and 
 	domain_redirect_old_domain <> domain_redirect_new_domain
@@ -211,6 +215,9 @@
 	#db.table("domain_redirect", request.zos.zcoreDatasource)#, 
 	#db.table("site", request.zos.zcoreDatasource)# 
 	WHERE site.site_id = domain_redirect.site_id and 
+	domain_redirect_deleted = #db.param(0)#  and 
+	site_deleted = #db.param(0)# and 
+	domain_redirect_deleted = #db.param(0)# and 
 	site.site_id <> #db.param(-1)# ";
 	var qDomain=db.execute("qDomain"); 
 	var domainRedirectStruct={};
@@ -313,6 +320,8 @@ if(not rs.success){
 	 site_option.site_id = site_option_group.site_id and 
 	 site_option.site_option_group_id = site_option_group.site_option_group_id and 
 	site_option_group.site_option_group_id = #db.param(arguments.struct.site_option_group_id)# and 
+	site_option_deleted = #db.param(0)# and 
+	site_option_group_deleted = #db.param(0)# and 
 	site_option_group.site_id = #db.param(arguments.struct.site_id)#  ";
 	var qD=db.execute("qD");
 	structappend(form, arguments.struct, true);
@@ -343,6 +352,7 @@ if(not rs.success){
 	}
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 	site_x_option_group_set_id= #db.param(arguments.site_x_option_group_set_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and 
 	site_id = #db.param(arguments.site_id)# ";
 	var qS=db.execute("qS");
 	if(qS.recordcount EQ 0){
@@ -2238,7 +2248,8 @@ User's IP: #request.zos.cgi.remote_addr#
 	var db=request.zos.queryObject;
 	tempStruct=0;
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(arguments.site_id)#";
+	WHERE site_id = #db.param(arguments.site_id)# and 
+	site_deleted = #db.param(0)#";
 	qSite=db.execute("qSite");
 	local.tempPath=application.zcore.functions.zGetDomainInstallPath(qSite.site_short_domain);
 	if(directoryExists(local.tempPath) EQ false){
@@ -2268,11 +2279,14 @@ User's IP: #request.zos.cgi.remote_addr#
 	}
 	tempStruct=firstTempStruct; 
 	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-	WHERE site_id = #db.param(arguments.site_id)#";
+	WHERE site_id = #db.param(arguments.site_id)# and 
+	user_group_deleted = #db.param(0)#";
 	qGroup=db.execute("qGroup");
 	db.sql="SELECT * FROM #db.table("user_group_x_group", request.zos.zcoreDatasource)# user_group_x_group, 
 	#db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE 
+	user_group_deleted = #db.param(0)# and 
+	user_group_x_group_deleted = #db.param(0)# and 
 	user_group_x_group.user_group_child_id = user_group.user_group_id and 
 	user_group_x_group.site_id = #db.param(arguments.site_id)# and 
 	user_group_x_group.site_id = user_group.site_id";
@@ -2323,6 +2337,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	
 	 db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
 	WHERE site_option_group_id<> #db.param(0)# and  
+	site_option_deleted = #db.param(0)# and 
 	site_id = #db.param(arguments.site_id)#";
 	qS=db.execute("qS");
 	for(row in qS){
@@ -2347,7 +2362,8 @@ User's IP: #request.zos.cgi.remote_addr#
 		}
 	}
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
-	WHERE site_id =#db.param(arguments.site_id)# 
+	WHERE site_id =#db.param(arguments.site_id)# and 
+	site_option_group_deleted = #db.param(0)# 
 	ORDER BY site_option_group_parent_id asc";
 	qS=db.execute("qS"); 
 	
@@ -2365,6 +2381,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	db.sql="SELECT s1.* 
 	FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1   
 	WHERE s1.site_id = #db.param(arguments.site_id)#  and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
 	s1.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) 
 	ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC "; 
 	qS=db.execute("qS"); 
@@ -2400,6 +2417,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	s3.site_x_option_group_value groupSetValue 
 	FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3 
 	WHERE s3.site_id = #db.param(arguments.site_id)#  and 
+	s3.site_x_option_group_deleted = #db.param(0)# and 
 	s3.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) "; 
 	qS=db.execute("qS"); 
 	tempUniqueStruct=structnew();
@@ -2430,6 +2448,8 @@ User's IP: #request.zos.cgi.remote_addr#
 	 #db.table("site_option_group", request.zos.zcoreDatasource)# s2
 	WHERE s1.site_id = #db.param(arguments.site_id)# and 
 	s1.site_id = s2.site_id and 
+	s1.site_x_option_group_set_deleted = #db.param(0)# and 
+	s2.site_option_group_deleted = #db.param(0)# and 
 	s1.site_option_group_id = s2.site_option_group_id and 
 	s2.site_option_group_enable_cache = #db.param(1)#
 	ORDER BY s1.site_x_option_group_set_sort asc";
@@ -2494,13 +2514,16 @@ User's IP: #request.zos.cgi.remote_addr#
 	LEFT JOIN #db.table("site_x_option", request.zos.zcoreDatasource)# site_x_option ON 
 	site_x_option.site_id =#db.param(arguments.site_id)# and 
 	site_x_option.site_option_id = site_option.site_option_id and 
-	site_option.site_id = if(site_x_option.site_option_id_siteIDType = #db.param(1)#, #db.param(qSite.site_id)#, if(site_x_option.site_option_id_siteIDType = #db.param(4)#, #db.param(0)#, #db.param(qSite.site_id)#))  
+	site_option.site_id = if(site_x_option.site_option_id_siteIDType = #db.param(1)#, #db.param(qSite.site_id)#, if(site_x_option.site_option_id_siteIDType = #db.param(4)#, #db.param(0)#, #db.param(qSite.site_id)#)) and 
+	site_x_option_deleted = #db.param(0)#
 	WHERE site_option.site_id IN (#db.param('0')#,#db.param(arguments.site_id)#) and 
+	site_option_deleted = #db.param(0)# and 
 	site_option_group_id = #db.param(0)#";
 	/*LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group ON 
 	site_option_group.site_option_group_id = site_option.site_option_group_id and 
 	site_option_group_type= #db.param(0)# and 
-site_option_group.site_id = #db.param(arguments.site_id)# 
+	site_option_group_deleted = #db.param(0)# and
+	site_option_group.site_id = #db.param(arguments.site_id)# 
 	site_option.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) */
 	qS=db.execute("qS"); 
 	tempStruct.site_options=structnew();
@@ -2778,7 +2801,8 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	var qSite=0;
 	application.zcore.functions.zOS_cacheSitePaths();
 	db.sql="SELECT site_id from #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id <> #db.param(-1)#";
+	WHERE site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)#";
 	qSite=db.execute("qSite");
 	for(local.row in qSite){
 	        application.zcore.functions.zOS_cacheSiteAndUserGroups(local.row.site_id);
@@ -2806,6 +2830,7 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	var theOut="";
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)# and
 	site_active=#db.param(1)#";
 	qSites=db.execute("qSites");
 	tempStruct = StructNew();
@@ -2900,11 +2925,14 @@ site_option_group.site_id = #db.param(arguments.site_id)#
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id <> #db.param(-1)# and 
-	site_active= #db.param(1)# ORDER BY site_domain
+	site_deleted = #db.param(0)# and
+	site_active= #db.param(1)# 
+	ORDER BY site_domain
 	</cfsavecontent><cfscript>qSites=db.execute("qSites");</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(form.sid)#
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted = #db.param(0)#
 	</cfsavecontent><cfscript>qSite=db.execute("qSite");</cfscript>
 	<cfsavecontent variable="zsaHeader">
 	<script type="text/javascript">/* <![CDATA[ */
@@ -3030,7 +3058,8 @@ writeoutput(rs.output);
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_active= #db.param(1)# and 
-	site_id <> #db.param(-1)# 
+	site_id <> #db.param(-1)# and 
+	site_deleted = #db.param(0)#
 	ORDER BY site_sitename ASC
 	</cfsavecontent><cfscript>local.qSites=db.execute("qSites");
     local.selectStruct = StructNew();

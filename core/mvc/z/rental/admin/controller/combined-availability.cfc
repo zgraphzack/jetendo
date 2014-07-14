@@ -32,7 +32,8 @@
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db.sql="SELECT max(availability_date) as availability_date
 	FROM #request.zos.queryObject.table("availability", request.zos.zcoreDatasource)# availability 
-	WHERE  site_id = #db.param(request.zOS.globals.id)# ";
+	WHERE  site_id = #db.param(request.zOS.globals.id)# and 
+	availability_deleted = #db.param(0)#";
 	qLast=db.execute("qLast");
 	form.search_start_date=application.zcore.functions.zso(form, 'search_start_date',false,DateAdd("d",1,now()));
 	form.search_end_date = application.zcore.functions.zso(form, 'search_end_date',false,DateAdd('d', 7, form.search_start_date));	
@@ -84,6 +85,7 @@
 	db.sql="SELECT * FROM #request.zos.queryObject.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_active = #db.param(1)# and 
 	rental_enable_calendar = #db.param(1)# and 
+	rental_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zOS.globals.id)# ORDER BY rental_name asc ";
 	qrental=db.execute("qrental");
 	</cfscript>
@@ -98,6 +100,7 @@
 		db.sql="SELECT availability_date, inquiries_id
 		FROM #request.zos.queryObject.table("availability", request.zos.zcoreDatasource)# availability 
 		WHERE availability.rental_id = #db.param(qrental.rental_id)# and 
+		availability_deleted = #db.param(0)# and 
 		availability_date >= #db.param(dateformat(CreateDate(year(form.start_date), month(form.start_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
 		availability_date <= #db.param(dateformat(CreateDate(year(form.end_date), month(form.end_date), 1), 'yyyy-mm-dd')&' 00:00:00')# and 
 		site_id = #db.param(request.zOS.globals.id)# ";

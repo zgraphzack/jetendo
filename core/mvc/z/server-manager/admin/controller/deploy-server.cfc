@@ -14,7 +14,8 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server
-	WHERE deploy_server_id= #db.param(application.zcore.functions.zso(form,'deploy_server_id'))#  ";
+	WHERE deploy_server_id= #db.param(application.zcore.functions.zso(form,'deploy_server_id'))# and 
+	deploy_server_deleted = #db.param(0)#  ";
 	qCheck=db.execute("qCheck");
 	
 	if(qCheck.recordcount EQ 0){
@@ -24,11 +25,15 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript> 
-		db.sql="DELETE FROM #db.table("site_x_deploy_server", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("site_x_deploy_server", request.zos.zcoreDatasource)#  
+		set site_x_deploy_server_deleted = #db.param(1)#,
+		site_x_deploy_server_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE deploy_server_id= #db.param(form.deploy_server_id)#  and 
 		site_id <> #db.param(-1)#";
 		q=db.execute("q");
-		db.sql="DELETE FROM #db.table("deploy_server", request.zos.zcoreDatasource)#  
+		db.sql="UPDATE #db.table("deploy_server", request.zos.zcoreDatasource)#  
+		set deploy_server_deleted = #db.param(1)#,
+		deploy_server_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE deploy_server_id= #db.param(form.deploy_server_id)#  ";
 		q=db.execute("q"); 
 		application.zcore.functions.zUpdateDomainRedirectCache();
@@ -67,10 +72,10 @@
 	if(not structkeyexists(form, 'deploy_server_deploy_enabled')){
 		form.deploy_server_deploy_enabled=0;
 	}
-	if(not fileexists(form.deploy_server_private_key_path)){
+	/*if(not fileexists(form.deploy_server_private_key_path)){
 		application.zcore.status.setStatus(request.zsid, "The private key path, ""#form.deploy_server_private_key_path#"", doesn't exist.  You must specify a path to a valid RSA key generated using ssh-keygen.  This file will be used by ssh to connect with the remote deploy server securely.", form, true);
 		result=true;
-	}
+	}*/
 	if(form.deploy_server_ssh_host EQ ""){
 		application.zcore.status.setStatus(request.zsid, "SSH Host is required.", form, true);
 		result=true;
@@ -230,7 +235,8 @@
 	}
 	db.sql="SELECT * FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server 
 	WHERE 
-	deploy_server_id=#db.param(form.deploy_server_id)#";
+	deploy_server_id=#db.param(form.deploy_server_id)# and 
+	deploy_server_deleted = #db.param(0)#";
 	var qD=db.execute("qD");
 	application.zcore.functions.zQueryToStruct(qD, form);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
@@ -294,7 +300,8 @@
 	application.zcore.functions.zSetPageHelpId("8.4.1"); 
 	application.zcore.functions.zStatusHandler(request.zsid); 
 	db.sql="SELECT * 
-	FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server   
+	FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server WHERE 
+	deploy_server_deleted = #db.param(0)#
 	order by deploy_server_host";
 	qDomainRedirect=db.execute("qDomainRedirect");
 	</cfscript>

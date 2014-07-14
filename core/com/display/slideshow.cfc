@@ -369,6 +369,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 	 set slideshow_hash = #db.param(arguments.ss.slideshowHash)#,
 	 slideshow_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE slideshow_id = #db.param(qss.slideshow_id)# and 
+	slideshow_deleted = #db.param(0)# and 
 	site_id =#db.param(arguments.ss.site_id)#";
 	db.execute("q");
 	</cfscript>
@@ -449,7 +450,8 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 	if(structkeyexists(form,'tab') EQ false){
 		db.sql="select slideshow_tab_id FROM #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab 
 		WHERE slideshow_id = #db.param(form.slideshow_id)# and 
-		site_id=#db.param(request.zos.globals.id)# 
+		site_id=#db.param(request.zos.globals.id)# and 
+		slideshow_tab_deleted = #db.param(0)#
 		ORDER BY slideshow_tab_sort ASC";
 		qT=db.execute("qT"); 
 		local.curtab=qT.slideshow_tab_id;
@@ -458,12 +460,14 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		db.sql="select slideshow_tab_id FROM #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab 
 		WHERE slideshow_tab_id = #db.param(local.curtab)# and 
 		slideshow_id = #db.param(form.slideshow_id)# and 
-		site_id=#db.param(request.zos.globals.id)#";
+		site_id=#db.param(request.zos.globals.id)# and 
+		slideshow_tab_deleted = #db.param(0)#";
 		qT=db.execute("qT"); 
 		if(qT.recordcount EQ 0){
 			 db.sql="select slideshow_tab_id FROM #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab 
 			WHERE slideshow_id = #db.param(form.slideshow_id)# and 
-			site_id=#db.param(request.zos.globals.id)# 
+			site_id=#db.param(request.zos.globals.id)# and 
+			slideshow_tab_deleted = #db.param(0)#
 			ORDER BY slideshow_tab_sort ASC";
 			qT=db.execute("qT");
 			tab=qT.slideshow_tab_id;
@@ -475,19 +479,25 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 	slideshow.slideshow_id = slideshow_tab.slideshow_id and 
 	slideshow_tab.slideshow_tab_id = #db.param(local.curtab)# and 
 	slideshow.slideshow_id=#db.param(form.slideshow_id)#  and 
-	slideshow.site_id = #db.param(request.zos.globals.id)#";
+	slideshow.site_id = #db.param(request.zos.globals.id)# and 
+	slideshow_deleted = #db.param(0)# and 
+	slideshow_tab_deleted = #db.param(0)# ";
 	variables.qslideshow=db.execute("qslideshow");
 	
 
 	sqlT="select * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 	LEFT JOIN #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab ON 
 	slideshow_tab.slideshow_id = slideshow.slideshow_id and 
-	slideshow_tab.slideshow_tab_id = #db.param(local.curtab)# and slideshow_tab.site_id = slideshow.site_id 
+	slideshow_tab.slideshow_tab_id = #db.param(local.curtab)# and 
+	slideshow_tab.site_id = slideshow.site_id and 
+	slideshow_tab_deleted = #db.param(0)#
 	LEFT JOIN #db.table("slideshow_image", request.zos.zcoreDatasource)# slideshow_image ON 
 	slideshow.slideshow_id = slideshow_image.slideshow_id and 
-	slideshow_image.site_id = slideshow.site_id 
+	slideshow_image.site_id = slideshow.site_id and 
+	slideshow_image_deleted = #db.param(0)# 
 	WHERE  slideshow.slideshow_id=#db.param(form.slideshow_id)# and 
-	slideshow.site_id=#db.param(request.zos.globals.id)# 
+	slideshow.site_id=#db.param(request.zos.globals.id)# and 
+	slideshow_deleted = #db.param(0)# 
 	ORDER BY slideshow_image_sort ASC ";
 	if(variables.qslideshow.slideshow_tab_ajax_enabled EQ 1){
 	   sqlT&="LIMIT #db.param(form.offset)#,#db.param(variables.qslideshow.slideshow_moved_tile_count)#";
@@ -499,6 +509,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		from #db.table("slideshow_image", request.zos.zcoreDatasource)# slideshow_image 
 		WHERE slideshow_tab_id = #db.param(local.curtab)# and 
 		slideshow_id=#db.param(form.slideshow_id)#  and 
+		slideshow_image_deleted = #db.param(0)# and 
 		site_id=#db.param(request.zos.globals.id)#";
 		db.sql=sqlTCount;
 		qssCount=db.execute("qssCount");
@@ -567,7 +578,8 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		}
 		 db.sql="select * from #db.table("slideshow_tab", request.zos.zcoreDatasource)# slideshow_tab 
 		WHERE slideshow_id=#db.param(form.slideshow_id)# and 
-		site_id=#db.param(request.zos.globals.id)# 
+		site_id=#db.param(request.zos.globals.id)# and 
+		slideshow_tab_deleted = #db.param(0)# 
 		ORDER BY slideshow_tab_sort ASC";
 		qss2=db.execute("qss2");
 		arr1=arraynew(1);
