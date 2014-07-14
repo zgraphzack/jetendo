@@ -257,8 +257,8 @@ ssl session - lost on browser close - lost on server reboot
 	<cfargument name="v" type="any" required="yes">
 	<cfscript>
 	savecontent variable="meta"{
-		writedump(getmetadata(arguments.v));
-		writedump(arguments.v);
+		writedump(getmetadata(arguments.v), true, 'simple');
+		writedump(arguments.v, true, 'simple');
 	}
 	throw("Session data type must be struct, array or a simple value to allow safe replication/serialization and the following type was found:<br />"&meta);
 	</cfscript>

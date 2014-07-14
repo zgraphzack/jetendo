@@ -5,7 +5,7 @@
 	<cfscript>
 	if(request.zos.istestserver){
 		writeoutput('oncfcrequest');
-		writedump(arguments);
+		writedump(arguments, true, 'simple');
 		abort;
 	}
 	</cfscript>

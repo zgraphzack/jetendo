@@ -122,7 +122,7 @@ weatherHTML=zGetWeather(ts);
 	if(not structkeyexists(d.rss.channel.item, "yweather:condition")){
 		/*if(request.zos.isDeveloper){
 			writeoutput('Failed to download weather with this url: <a href="http://weather.yahooapis.com/forecastrss?p=#arguments.ss.zip#" target="_blank">http://weather.yahooapis.com/forecastrss?p=#arguments.ss.zip#</a>');
-			writedump(d);
+			writedump(d, true, 'simple');
 			abort;
 		}*/
 		return "";

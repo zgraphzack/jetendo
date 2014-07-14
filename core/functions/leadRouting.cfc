@@ -95,12 +95,15 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	rs2.arrDebug=arrDebug;
 	rs2.success=true;
 	if(structkeyexists(request.zos.debugLeadRoutingSiteIdStruct, request.zos.globals.id)){
-		mail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmaiLFrom#" subject="Assign debugging info for #request.zos.globals.shortDomain#" type="html"{
+		savecontent variable="debugout"{
 			echo('<html><body>');
-			writedump(rs2);
-			writedump(request.zos.cgi);
-			writedump(form);
+			writedump(rs2, true, 'simple');
+			writedump(request.zos.cgi, true, 'simple');
+			writedump(form, true, 'simple');
 			echo('</body></html>');
+		}
+		mail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmaiLFrom#" subject="Assign debugging info for #request.zos.globals.shortDomain#" type="html"{
+			echo(replace(debugout, '>', '>'&chr(10), "all"));
 		}
 	}
 	return rs2;

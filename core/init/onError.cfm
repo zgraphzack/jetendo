@@ -48,7 +48,7 @@
 		<cfif structkeyexists(form, 'zab')>
 			<cfif structkeyexists(arguments.exception, 'message') and arguments.exception.message CONTAINS "timeout">
 				<cfheader statuscode="500" statustext="Internal Server Error">timeout<cfabort></cfif>
-				<cfsavecontent variable="theDump"><cfdump var="#exception#"></cfsavecontent>
+				<cfsavecontent variable="theDump"><cfdump var="#exception#" format="simple"></cfsavecontent>
 				<cffile action="append" file="#request.zos.zcoreRootPrivatePath#_cache/error-log.txt" output="#now()# | #application.applicationname# | #arguments.eventName#: #arguments.exception.message#" addnewline="yes"><!--- #chr(10)##theDump# --->
 				<cfabort>
 			</cfif> 
@@ -62,7 +62,7 @@
 			<table  style="border-spacing:0px; width:100%; "><tr><td style="padding:10px; background-color:##FFF !important;"><h1>Error in Application.cfc event: #arguments.eventName#</h1>
 			<cfif structkeyexists(form, request.zos.urlRoutingParameter) EQ false>
 				#cferror.message#
-				<cfdump var="#cferror#">
+				<cfdump var="#cferror#" format="simple">
 			<cfelse>
 			<cftry>
 				<!--- to force an error to be logged even for a developer set: 
@@ -96,10 +96,10 @@
 					</cfif>
 					<cfsavecontent variable="theError">
 						<h2>Normal error handler failed.</h2>
-						<cfdump var="#cfcatch#">
+						<cfdump var="#cfcatch#" format="simple">
 						
 						<h2>The original error</h2>
-						<cfdump var="#arguments.exception#">
+						<cfdump var="#arguments.exception#" format="simple">
 					</cfsavecontent>
 					#theError# 
 					<cfif request.zos.isDeveloper EQ false>
@@ -114,7 +114,7 @@
 								
 								<body>
 								<h1>Error in Application.cfc event: #arguments.eventName#</h1>
-								<cfdump var="#cgi#">
+								<cfdump var="#cgi#" format="simple">
 								<br />
 								<br />
 								
@@ -141,8 +141,8 @@
 		</cfif>
 		<cfcatch type="any">
 			<cfheader statuscode="500" statustext="Internal Server Error">
-			<cfdump var="#cfcatch#">
-			<cfdump var="#arguments#">
+			<cfdump var="#cfcatch#" format="simple">
+			<cfdump var="#arguments#" format="simple">
 			<cfabort>
 		</cfcatch>
 	</cftry>
@@ -158,7 +158,7 @@
 	<cfargument name="nodumpcode" type="boolean" required="no" default="#false#">
 	<cfargument name="hideKeys" type="string" required="no" default="">
     <cftry>
-	<cfdump var="#arguments.varName#" hide="#arguments.hideKeys#" showudfs="no" format="html" label="#arguments.label#">
+	<cfdump var="#arguments.varName#" hide="#arguments.hideKeys#" showudfs="no" format="simple" label="#arguments.label#">
     <cfcatch type="any"></cfcatch>
     </cftry>
 </cffunction>
@@ -410,7 +410,7 @@ StructDelete(request, 'cfdumpinited');
 			writeoutput(i&": "&form[i]&"<br />");
 		}else{
 			echo(i&":");
-			writedump(form[i]);
+			writedump(form[i], true, 'simple');
 			echo("<br>");
 		}
 	}
@@ -440,7 +440,7 @@ StructDelete(request, 'cfdumpinited');
  
 <cfset testServerFlagged=false>
 <cfif isDefined('request.zos.testDomain') EQ false>
-	<cfdump var="#arguments.cferror#">
+	<cfdump var="#arguments.cferror#" format="simple">
     <cfabort>
 </cfif>
 <cfif request.zOS.CGI.http_host contains '.'&request.zos.testDomain>
@@ -455,7 +455,7 @@ StructDelete(request, 'cfdumpinited');
 
 <cfif isDefined('request.zautoformsql')>
 <h2>Request.zAutoFormSQL</h2>
-<cfdump var="#request.zautoformsql#"><br><br>
+<cfdump var="#request.zautoformsql#" format="simple"><br><br>
 </cfif>
 <cfif isDefined('cookie') and StructCount(cookie) NEQ 0>
 <h2>COOKIE Variables</h2>
@@ -474,7 +474,7 @@ if(isDefined('application.zcore.abusiveIPStruct')){
 		for(i in application.zcore.abusiveIPStruct){
 			writeoutput(structcount(application.zcore.abusiveIPStruct[i])&' ips in abusiveIPStruct<br />');
 		}
-		//writedump(application.zcore.abusiveIPStruct);
+		//writedump(application.zcore.abusiveIPStruct, true, 'simple');
 	}
 }*/
 if(isDefined('request.zos.arrRunTime')){
@@ -512,7 +512,7 @@ try{
 	echo("<br />");
 }catch(Any e){
 	echo('<h2>Failed to display mysql processlist</h2>');
-	writedump(e);
+	writedump(e, true, 'simple');
 }
 </cfscript>
 
@@ -619,7 +619,7 @@ newId=0;
 			log_ip = '#(request.zos.cgi.remote_addr)#'<br>
 			log_user_agent='#(request.zos.cgi.http_user_agent)#'<br>
 			log_message = <br>
-			#(zAllRequestVars)#<br>
+			#replace(zAllRequestVars, ">", ">"&chr(10), "all")#<br>
 		</cfif>
 		You will have to login using an account with Server Administrator access..<br><br>
 		User's IP: #request.zos.cgi.remote_addr# 
@@ -648,7 +648,7 @@ newId=0;
 				log_ip = '#(request.zos.cgi.remote_addr)#'<br>
 				log_user_agent='#(request.zos.cgi.http_user_agent)#',
 				log_message = <br>
-				#(zAllRequestVars)#<br>
+				#replace(zAllRequestVars, ">", ">"&chr(10), "all")#<br>
 		    
 			</cfif>
 				You will have to login using an account with Server Administrator access..<br><br>
