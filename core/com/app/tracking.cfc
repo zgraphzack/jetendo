@@ -332,7 +332,7 @@ track_user_source=#db.param(local.tempSource)#,
     zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
 	if(hasSession){
 		db.sql&=" WHERE track_user_id = #db.param(request.zsession.tracking.track_user_id)# and 
-		track_user_deleted = #db.param(0)# ";
+		track_user_deleted = #db.param(0)# and ";
 	}
     db.sql&=" site_id=#db.param(request.zsession.tracking.site_id)# ";
 	if(hasSession){

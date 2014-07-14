@@ -880,7 +880,6 @@ search sql generator has to be able to search on child group data for paging to 
 			<cfelse>
 				WHERE 
 			</cfif>
-			content_deleted = #db.param(0)#
 			((
 			<cfif application.zcore.enableFullTextIndex>
 				MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or
