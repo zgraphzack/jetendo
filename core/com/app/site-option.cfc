@@ -1773,7 +1773,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			db.sql&=" s3.site_id = s1.site_id and 
 			s3.site_option_group_id = #db.param(ts.selectmenu_groupid)# and 
 			s3.site_option_name = #db.param(ts.selectmenu_parentfield)# and 
-			s3.site_option_deleted = #db.param(0)# ";
+			s3.site_option_deleted = #db.param(0)# and ";
 		 }
 		 db.sql&="
 		s2.site_id = #db.param(request.zos.globals.id)#
@@ -1807,7 +1807,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			s3.site_option_id = #db.param(local.qTemp.parentFieldID)# and 
 			s3.site_option_group_id = #db.param(ts.selectmenu_groupid)# and 
 			s1.site_x_option_group_set_id = s3.site_x_option_group_set_id and 
-			s3.site_x_option_group_deleted = #db.param(0)# ";
+			s3.site_x_option_group_deleted = #db.param(0)# and ";
 		 }
 		if(not structkeyexists(ts, 'selectmenu_parentfield') or ts.selectmenu_parentfield EQ ""){
 			if(arguments.site_option_group_id EQ ts.selectmenu_groupid){
