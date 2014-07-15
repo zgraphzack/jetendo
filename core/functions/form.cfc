@@ -887,7 +887,7 @@ writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
 		}else{
 			output = output&' /> ';
 		}
-		output = output&label&" ";
+		output = output&'<label for="#arguments.ss.name#_#i#">'&label&"</label> ";
 	}
 	if(arguments.ss.style NEQ ''){
 		output = output&'</span>';

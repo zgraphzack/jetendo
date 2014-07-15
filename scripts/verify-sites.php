@@ -160,6 +160,8 @@ function verifySite($row){
 					}else if($arrTemp[$i] == $row["site_ip_address"]){
 						// ip matches - ignore it
 						$ipmatch=true;
+					}else if(strpos(strtolower($output1), 'connection timed out') !== false){
+						continue; // skip timeout
 					}else{
 						$siteHasError=true;
 						array_push($arrError, "Attention required: DNS for ".$curDomain." didn't match with the site's assigned IP address or had additional records, ".$row["site_ip_address"].".  Full response:".$output1."<br />");
@@ -192,6 +194,8 @@ function verifySite($row){
 						}else if($arrTemp[$i] == $row["site_ip_address"]){
 							// ip matches, ignore it
 							$ipmatch=true;
+						}else if(strpos(strtolower($output2), 'connection timed out') !== false){
+							continue; // skip timeout
 						}else{
 							$siteHasError=true;
 							array_push($arrError, "Attention required: DNS for ".$curDomain." didn't match with the site's assigned IP address or had additional records, ".$row["site_ip_address"].".  Full response:".$output2."<br />");
