@@ -73,6 +73,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	var queue_id=0;
 	var arrOut=arraynew(1);
 	var ts=structnew();
+	setting requesttimeout="18000";
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Video Library", true);
 	if(structkeyexists(form, 'video_file') EQ false){
 		writeoutput('{"arrVideos":[{"success":false,"message":"A video must be uploaded."}]}');

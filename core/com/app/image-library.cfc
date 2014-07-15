@@ -1389,6 +1389,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var qImages=0;
 	var r=0;
 	var theMeta=0;
+	setting requesttimeout="3600";
 	application.zcore.template.setTag("title", "Image Library");
 	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
 	tempId=form.image_library_id

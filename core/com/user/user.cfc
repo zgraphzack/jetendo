@@ -1380,7 +1380,7 @@ formString = userCom.loginForm(inputStruct);
 	WHERE 
 	user_token_version=#db.param(local.arrToken[1])# and 
 	user_token_id=#db.param(local.arrToken[2])# and 
-	user_deleted = #db.param(0)# and 
+	user_token_deleted = #db.param(0)# and 
 	user_token_username=#db.param(local.arrToken[3])# and 
 	site_id=#db.param(request.zos.globals.id)# 
 	";

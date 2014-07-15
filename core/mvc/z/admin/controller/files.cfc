@@ -121,11 +121,11 @@
 	cdir='';
 	arrLinks=ArrayNew(1);
 	if(form.d EQ ''){
-	if(form.method EQ "index" or form.method EQ 'gallery'){
-	    ArrayAppend(arrLinks, 'Root');
-	}else{
-	    ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=">Root</a>');
-	}
+		if(form.method EQ "index" or form.method EQ 'gallery'){
+		    ArrayAppend(arrLinks, 'Root');
+		}else{
+		    ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=">Root</a>');
+		}
 	}else{
 		ArrayAppend(arrLinks, '<a href="/z/admin/files/#form.curListMethod#?d=">Root</a>');
 		for(i=1;i LTE arrayLen(arrFolders);i=i+1){
@@ -308,6 +308,7 @@
 	var image_file=0;
 	var arrList=0;
 	variables.init();
+	setting requesttimeout="3600";
     application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 	returnMethod="edit";
 	if(form.method EQ "galleryInsert"){
@@ -539,6 +540,7 @@
 	<cfscript>
 	var oldFilePath=0;
 	variables.init();
+	setting requesttimeout="3600";
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Files & Images", true);
 
 	if(trim(application.zcore.functions.zso(form, 'image_file')) EQ ''){
