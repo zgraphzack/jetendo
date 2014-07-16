@@ -1,6 +1,7 @@
 *.sublime-*
 _notes
 sites
+public/javascript-compiled/*
 phptemp
 railovhosts
 share/*
@@ -9,7 +10,6 @@ share/task-log/*
 !share/database/data
 !share/database/jetendo-schema.json
 share/database/jetendo-schema-current.json
-public/javascript-compiled/*
 !share/task-log
 !share/task-log/placeholder.txt
 !jetendo-schema.json
@@ -21,6 +21,7 @@ sites-writable
 logs
 scripts/jetendo.ini
 scripts/mysql-backup/backup_dbs_config.php
+
 
 #################
 ## Eclipse
