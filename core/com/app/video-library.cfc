@@ -245,7 +245,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	queue_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)#";
 	q=db.execute("q");
-	writeoutput('{"success":true,"video_id":#local.video_id#,"queue_id":#form.queue_id#}');
+	writeoutput('{"success":true,"video_id":#local.video_id#,"queue_id":#form.queue_id#, "video_width":#form.video_width#, "video_height":#form.video_height#}');
 	header name="x_ajax_id" value="#form.x_ajax_id#";
 	application.zcore.functions.zabort();
 	</cfscript>
@@ -541,7 +541,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	</cfscript>
 	<script type="text/javascript">
 	/* <![CDATA[ */ 
-	var arrVideoLibraryComplete=new Array();
+	var arrVideoLibraryComplete={};
 	 /* ]]> */
 	 </script>
 	<cfloop query="qF"> 
@@ -601,7 +601,8 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 		Autoplay:</td><td><cfscript>
 			form.video_embed_autoplay=application.zcore.functions.zso(form, 'video_embed_autoplay',true);
 			</cfscript>
-			<input type="checkbox" name="video_embed_autoplay" id="video_embed_autoplay" onclick="var s=this; setTimeout(function(){if(!s.checked){s.checked=true;}else{ this.checked=false;} }, 10);" value="1" />
+			<input type="radio" name="video_embed_autoplay" id="video_embed_autoplay1" onclick="var s=this; setTimeout(function(){if(!s.checked){s.checked=true;}else{ this.checked=false;} }, 10);" value="1" /> <label for="video_embed_autoplay1">Yes</label> 
+			<input type="radio" name="video_embed_autoplay" id="video_embed_autoplay2" onclick="var s=this; setTimeout(function(){if(!s.checked){s.checked=true;}else{ this.checked=false;} }, 10);" value="0" checked="checked" /> <label for="video_embed_autoplay2">No</label> 
 		</td></tr>
 		<tr><td>
 		Viewing Method:</td><td> <cfscript>
@@ -614,8 +615,8 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 		ts.listLabelsDelimiter="|";
 		ts.listLabels="Play In Place";
 		ts.listValues="0";
-		//ts.listLabels="Lightbox Popup	Play In Place";
-		//ts.listValues="1	0";
+		//ts.listLabels="Lightbox Popup|Play In Place";
+		//ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
 			</cfscript>
 		</td></tr>

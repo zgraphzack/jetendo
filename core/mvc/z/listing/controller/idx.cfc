@@ -707,7 +707,7 @@
 				}
 				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN ('#qIdList.idlist#') and 
-				listing_track_deleted = #db.param(0)#";
+				listing_track_deleted = #db2.param(0)#";
 				db2.execute("qDelete");
 			}
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 

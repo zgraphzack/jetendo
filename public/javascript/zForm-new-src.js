@@ -186,6 +186,8 @@ function zAjaxSaveQueueToVideoCallback(r){
 		return;
 	}
 	var uploadId=arrQueueVideoMap[r2.queue_id];
+	arrVideoLibrary[uploadId].width=r2.video_width;
+	arrVideoLibrary[uploadId].height=r2.video_height;
 	arrVideoLibrary[uploadId].video_id=r2.video_id;
 	document.getElementById('divprogressbar'+uploadId).style.display="none";
 	arrVideoLibrary[uploadId].divProgressBg.style.display="none";
@@ -367,10 +369,10 @@ function showEmbedOptions(libraryid){
 function generateEmbedCode(){
 	var libraryid = document.getElementById('video_embed_id').value;
 	var t=arrVideoLibraryComplete[libraryid];
-	var video_embed_width=document.getElementById('video_width').value;
-	var video_embed_height=document.getElementById('video_height').value;
+	var video_embed_width=document.getElementById('video_embed_width').value;
+	var video_embed_height=document.getElementById('video_embed_height').value;
 	var video_embed_autoplay=0;
-	if(document.getElementById('video_embed_autoplay').checked){
+	if(document.getElementById('video_embed_autoplay1').checked){
 		video_embed_autoplay=1;
 	}
 	var video_embed_viewing_method=0;

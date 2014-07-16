@@ -42,7 +42,7 @@ for($i101=0;$i101<70;$i101++){
 	if($row->queue_cancelled=="1"){
 		// kill linux process matching name HandBrakeCLI or Nice maybe...
 		echo "cancelling\n";
-		$sql2="update queue set queue_deleted='1', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_id='".$row->queue_id."'";
+		$sql2="update queue set queue_deleted='1', queue_updated_datetime='".date('Y-m-d H:i:s')."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
 		mysql_query($sql2);
 		$r=`pidof HandBrakeCLI`;
 		if($r != ""){
@@ -87,7 +87,7 @@ for($i101=0;$i101<70;$i101++){
 				'X-Mailer: PHP/' . phpversion();
 
 			mail($to, $subject, $message, $headers);
-			$sql="update queue set queue_progress='0', queue_status='0', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0', queue_status='0', queue_updated_datetime='".date('Y-m-d H:i:s')."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
 			mysql_query($sql);
 		}
 	}

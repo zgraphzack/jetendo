@@ -594,7 +594,15 @@ To view more info about this new user, click the following link:
 		user_deleted = #db.param(0)# and
 		site_id=#db.param(request.zos.globals.id)# ";
 		addKey=db.execute("addKey");
+		db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
+		WHERE user_username = #db.param(form.e)# and 
+		user_deleted = #db.param(0)# and
+		site_id=#db.param(request.zos.globals.id)#";
+		qU=db.execute("qU"); 
+		form.user_id=qU.user_id;
+		form.user_key=qU.user_key;
 	}else{
+		form.user_id=variables.qcheckemail.user_id;
 		form.user_key = variables.qcheckemail.user_key;
 	}
 	if(sendEmailChangeEmail){

@@ -11,7 +11,8 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	<cfargument name="crop" type="numeric" required="no" default="#0#">
 	<cfscript>
 	if(arguments.image_library_id EQ "" or isnumeric(arguments.image_library_id) EQ false){
-		application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - registerSize() failed because arguments.image_library_id is not a number greater then or equal to zero.");
+		return;
+		//application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - registerSize() failed because arguments.image_library_id is not a number greater then or equal to zero.");
 	}
 	if(structkeyexists(request, 'app') and structkeyexists(application.sitestruct[request.zos.globals.id].imageLibraryStruct.sizeStruct, arguments.image_library_id&"-"&arguments.size&"-"&arguments.crop) EQ false){
 	    application.sitestruct[request.zos.globals.id].imageLibraryStruct.sizeStruct[arguments.image_library_id&"-"&arguments.size&"-"&arguments.crop]=true;
