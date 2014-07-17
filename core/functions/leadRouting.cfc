@@ -99,7 +99,6 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 			echo('<html><body>');
 			writedump(rs2, true, 'simple');
 			writedump(request.zos.cgi, true, 'simple');
-			writedump(form, true, 'simple');
 			echo('</body></html>');
 		}
 		mail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmaiLFrom#" subject="Assign debugging info for #request.zos.globals.shortDomain#" type="html"{

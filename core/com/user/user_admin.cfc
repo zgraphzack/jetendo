@@ -403,6 +403,7 @@ To view more info about this new user, click the following link:
 				ts.from=request.zos.globals.emailCampaignFrom;
 			}
 			if(ts.from NEQ ""){
+				ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(str.site_id);
 				ts.user_id=str.user_id;
 				emailCom=CreateObject("component","zcorerootmapping.com.app.email");
 				emailCom.sendEmailTemplate(ts); // should i continue ignoring failures?
@@ -466,6 +467,7 @@ To view more info about this new user, click the following link:
             }else{
                 ts.zemail_template_type_name = 'confirm opt-in';
             }
+			ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(arguments.ss.site_id);
             ts.user_id=arguments.ss.user_id;
             emailCom=CreateObject("component","zcorerootmapping.com.app.email");
             emailCom.sendEmailTemplate(ts); // should i continue ignoring failures?
@@ -648,6 +650,7 @@ To view more info about this new user, click the following link:
 			if(str.from NEQ false){
 				ts.from=str.from;
 			}
+			ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(str.site_id);
 			ts.user_id=str.user_id;
 			emailCom=CreateObject("component","zcorerootmapping.com.app.email");
 			emailCom.sendEmailTemplate(ts); // should i continue ignoring failures?

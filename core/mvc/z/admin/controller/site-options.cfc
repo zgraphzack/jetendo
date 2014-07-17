@@ -3472,9 +3472,12 @@ Define this function in another CFC to override the default email format
 		if(application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) NEQ 1){
 			echo(" (Autoresponder DISABLED - contact web developer to enable)");
 		}else{
-			echo(" (Autoresponder Enabled)");
+			echo(' (Autoresponder Enabled)');
 		}
-		echo('<br />
+		echo('<br /><br />
+			<form action="/z/admin/site-options/sendAutoresponderTest" method="get">
+			Send Autoresponder To Email: <input type="text" name="email" value="#request.zsession.user.email#" /> <input type="submit" name="submit1" value="Send" />
+			</form><br />
 		<br />');
 	}
 	if(qS.recordcount EQ 0){
@@ -3572,6 +3575,61 @@ Define this function in another CFC to override the default email format
 			</script>');
 		}
 	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="sendAutoresponderTest" localmode="modern" access="remote">
+	<cfscript>
+	db=request.zos.queryObject;
+
+	form.email=application.zcore.functions.zso(form, 'email');
+	if(not application.zcore.functions.zEmailValidate(form.email)){
+		application.zcore.status.setStatus(request.zsid, "Invalid email address.", form, true);
+		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
+	}
+	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
+	user_username = #db.param(form.email)# and 
+	site_id IN (#db.param(request.zos.globals.serverId)#, #db.param(request.zos.globals.id)#, #db.param(request.zos.globals.parentId)#) 
+	LIMIT #db.param(1)#";
+	qCheck=db.execute("qCheck");
+	ts=StructNew();
+	// optional
+	ts.force=1; // force ignores opt-in status // TEMPORARY FOR DEBUG
+	ts.zemail_template_type_name="confirm opt-in";
+	ts.site_id=request.zos.globals.id; // TEMPORARY FOR DEBUG
+	if(qCheck.recordcount){
+		ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qCheck.site_id);
+        if(qCheck.zemail_template_id NEQ 0){
+            ts.zemail_template_id=qCheck.zemail_template_id;
+        }
+        if(qCheck.user_pref_html EQ 1){
+            ts.html=true;
+        }else{
+            ts.html=false;
+        }
+		ts.user_id=qCheck.user_id;
+    }else{
+		db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# WHERE 
+		mail_user_email = #db.param(form.email)# and 
+		site_id IN (#db.param(request.zos.globals.id)#) 
+		LIMIT #db.param(1)#";
+		qCheck=db.execute("qCheck");
+		if(qCheck.recordcount){
+			ts.mail_user_id=qCheck.mail_user_id;
+		}else{
+    		ts.to=form.email;
+    	}
+    }
+	rCom=request.zos.email.sendEmailTemplate(ts);
+	if(rCom.isOK() EQ false){
+		savecontent variable="out"{
+			echo(arraytolist(rCom.getErrors(), "<br />"));
+		}
+		application.zcore.status.setStatus(request.zsid, "Failed to send autoresponder. Errors:<br />"&out, form, true);
+		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
+	}
+	application.zcore.status.setStatus(request.zsid, "Autoresponder sent.");
+	application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
 	</cfscript>
 </cffunction>
 </cfoutput>

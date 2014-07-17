@@ -57,6 +57,7 @@
 		emailStruct[row.mail_user_email]={
 			mail_user_id:row.mail_user_id,
 			user_id:0,
+			user_id_siteIDType:0,
 			html:1
 		};
 	}
@@ -73,6 +74,7 @@
 		emailStruct[row.user_username]={
 			mail_user_id:0,
 			user_id:row.user_id,
+			user_id_siteIDType:application.zcore.functions.zGetSiteIdType(row.site_id),
 			html:row.user_pref_html
 		};
 	}
@@ -154,6 +156,7 @@
 	for(email in emailStruct){
 		row=emailStruct[email];
 		curMailUserId=row.mail_user_id;
+		curUserSiteIdType=request.user_id_siteIDType;
 		curUserId=row.user_id;
 
 		ts=StructNew(); 
@@ -182,7 +185,7 @@
 				ts.mail_user_id=curMailUserId;
 			}else{
 				ts.user_id=curUserId;
-				ts.user_id_siteIDType=0;
+				ts.user_id_siteIDType=curUserSiteIdType;
 			}
 		} 
 		if(form.debug){

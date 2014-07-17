@@ -385,6 +385,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 
 <cffunction name="zSendUserAutoresponder" localmode="modern" output="no" returntype="any">
 	<cfargument name="user_id" type="string" required="no" default="">
+	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
     <cfscript>
 	if(application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) NEQ 1){
 		return;
@@ -404,14 +405,16 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
     site_deleted = #db.param(0)# and 
     user_deleted = #db.param(0)# and 
     <cfif arguments.user_id NEQ "">
-     user_id=#db.param(arguments.user_id)# and 
+		user_id=#db.param(arguments.user_id)# and 
+		user.site_id = #db.param(arguments.site_id)# and 
 	<cfelse>
-    user_sent_datetime BETWEEN #db.param('2008-02-12 00:09:00')# and 
-	#db.param(previousDateFormatted)# and 
+		user_sent_datetime BETWEEN #db.param('2008-02-12 00:09:00')# and 
+		#db.param(previousDateFormatted)# and 
     </cfif>
     user_confirm_count < #db.param(3)# and 
 	user_confirm = #db.param(0)# and 
 	site.site_id = user.site_id and 
+	site.site_active = #db.param(1)# and 
 	site.site_send_confirm_opt_in=#db.param('1')# and 
 	(user_pref_list = #db.param(1)# or 
 	user_pref_email = #db.param('1')#)
@@ -420,8 +423,8 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
         <cfscript>			
         ts=StructNew();
         // optional
-        ts.force=1; // force ignores opt-in status // TEMPORARY FOR DEBUG
-        ts.site_id=qCheck.site_id; // TEMPORARY FOR DEBUG
+        ts.force=1; // force ignores opt-in status
+        ts.site_id=request.zos.globals.id;
         ts.zemail_template_type_name="confirm opt-in";
         if(qCheck.zemail_template_id NEQ 0){
             ts.zemail_template_id=qCheck.zemail_template_id;
@@ -432,6 +435,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
             ts.html=false;
         } 
         ts.user_id=qCheck.user_id;
+		ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qCheck.site_id);
         rCom=emailCom.sendEmailTemplate(ts);
         //rs=rCom.getData();
         </cfscript>

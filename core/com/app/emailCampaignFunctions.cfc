@@ -113,9 +113,6 @@
 		this.runEmailCampaign();
 		return;
 	}else{
-		// force #request.zos.developerEmailTo# to end of list
-		QueryAddRow(qE);
-		QuerySetCell(qE, "user_id", 1, qe.recordcount);
 		// loop users and send emails			
 		for(i=1;i LTE qE.recordcount;i++){
 			// check for server scope status change before sending each email
@@ -144,6 +141,7 @@
 			// ignore duplicate errors since email campaign was already sent to that user_id
 			if(result.success){
 				ts=StructNew();
+				ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qE.site_id[i]);
 				ts.user_id=qE.user_id[i]; // DEBUGsend to myself only
 				ts.site_id=qemail.site_id;
 				//ts.preview=true;
