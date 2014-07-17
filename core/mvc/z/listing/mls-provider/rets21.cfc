@@ -674,11 +674,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						city_longitude=#db.param(qZ.zipcode_longitude)#, 
 						city_latitude=#db.param(qZ.zipcode_latitude)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
-						db.execute("q"); 
-						 db.sql="SELECT last_insert_id() as city_id";
-						 qId=db.execute("qId");
+						city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 						 db.sql="INSERT INTO #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)#  
-						 SET city_id=#db.param(qId.city_id)#, 
+						 SET city_id=#db.param(city_id)#, 
 						 city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
@@ -687,7 +685,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						 city_latitude=#db.param(qZ.zipcode_latitude)#,
 					 	city_updated_datetime=#db.param(request.zos.mysqlnow)#  ";
 						 db.execute("q");
-						//writeoutput("created #i#: "&qId.city_id&"<br>");
+						//writeoutput("created #i#: "&city_id&"<br>");
 						cityCreated=true; // need to run zipcode calculations
 					}else{
 						db.sql="INSERT INTO #db.table("city", request.zos.zcoreDatasource)#  

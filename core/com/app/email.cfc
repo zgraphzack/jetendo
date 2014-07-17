@@ -1259,37 +1259,37 @@ if(rCom.isOK() EQ false){
 		showOptinMessage=false;
 		</cfscript>
 		<cfloop query="qE">
-	<cfscript>
-	// setup autoresponder variables
-	zemail=StructNew();
-	zemail.username=qE.mail_user_email;
-	//zemail.password=qE.mail_user_password;
-	if(qE.mail_user_first_name NEQ ''){
-		zemail.name=qE.mail_user_first_name;
-	}else{
-		zemail.name='Customer';
-	}
-	if(arguments.ss.showOptInReminder and qE.mail_user_confirm NEQ '1'){
-		showOptinMessage=true;
-	}
-	zemail.fromEmail=arguments.ss.from;
-	zemail.domain=application.zcore.functions.zvar('domain',arguments.ss.site_id);
-	if(request.zos.istestserver EQ false){
-		zemail.domain=replace(zemail.domain,'http://www.','http://','all');
-	}
-	//zemail.subject="Registration confirmation for #zemail.domain#";
-	zemail.shortdomain=replace(zemail.domain,'http://','','all');
-			zemail.confirmURL="##DELAYzemail.confirmURL##";
-			zemail.replaceDelayconfirmURL="#zemail.domain#/z/-einm#qE.mail_user_id#.#qE.mail_user_key#";
-			zemail.preferencesURL="";//#zemail.domain#/z/-eprm#qE.mail_user_id#.#qE.mail_user_key#";
-	if(structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0){
-		zemail.unsubscribeURL="#zemail.domain#/z/-eoum#qE.mail_user_id#.#arguments.ss.zemail_campaign_id#.#qE.mail_user_key#";
-		zemail.trackString="#zemail.domain#/z/-eckm#qE.mail_user_id#.#qE.mail_user_key#.#arguments.ss.zemail_campaign_id#.";
-		zemail.viewEmailURL="#zemail.domain#/z/-evmm#qE.mail_user_id#.#arguments.ss.zemail_campaign_id#.#qE.mail_user_key#.#qEmailTemplate.zemail_template_type_id##newParamList#";
-		zemail.openImageUrl="#zemail.domain#/z/-eckm#qE.mail_user_id#.#qE.mail_user_key#.#arguments.ss.zemail_campaign_id#.1.0.0";
-	}else{
-		zemail.unsubscribeURL="#zemail.domain#/z/user/out/index";
-	}
+			<cfscript>
+			// setup autoresponder variables
+			zemail=StructNew();
+			zemail.username=qE.mail_user_email;
+			//zemail.password=qE.mail_user_password;
+			if(qE.mail_user_first_name NEQ ''){
+				zemail.name=qE.mail_user_first_name;
+			}else{
+				zemail.name='Customer';
+			}
+			if(arguments.ss.showOptInReminder and qE.mail_user_confirm NEQ '1'){
+				showOptinMessage=true;
+			}
+			zemail.fromEmail=arguments.ss.from;
+			zemail.domain=application.zcore.functions.zvar('domain',arguments.ss.site_id);
+			if(request.zos.istestserver EQ false){
+				zemail.domain=replace(zemail.domain,'http://www.','http://','all');
+			}
+			//zemail.subject="Registration confirmation for #zemail.domain#";
+			zemail.shortdomain=replace(zemail.domain,'http://','','all');
+					zemail.confirmURL="##DELAYzemail.confirmURL##";
+					zemail.replaceDelayconfirmURL="#zemail.domain#/z/-einm#qE.mail_user_id#.#qE.mail_user_key#";
+					zemail.preferencesURL="";//#zemail.domain#/z/-eprm#qE.mail_user_id#.#qE.mail_user_key#";
+			if(structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0){
+				zemail.unsubscribeURL="#zemail.domain#/z/-eoum#qE.mail_user_id#.#arguments.ss.zemail_campaign_id#.#qE.mail_user_key#";
+				zemail.trackString="#zemail.domain#/z/-eckm#qE.mail_user_id#.#qE.mail_user_key#.#arguments.ss.zemail_campaign_id#.";
+				zemail.viewEmailURL="#zemail.domain#/z/-evmm#qE.mail_user_id#.#arguments.ss.zemail_campaign_id#.#qE.mail_user_key#.#qEmailTemplate.zemail_template_type_id##newParamList#";
+				zemail.openImageUrl="#zemail.domain#/z/-eckm#qE.mail_user_id#.#qE.mail_user_key#.#arguments.ss.zemail_campaign_id#.1.0.0";
+			}else{
+				zemail.unsubscribeURL="#zemail.domain#/z/user/out/index";
+			}
 			</cfscript>
 		</cfloop>
 	<cfelse>

@@ -901,7 +901,7 @@
 	local.qSets=db.execute("qSets");
 	for(row in local.qSets){
 		if(row.site_x_option_group_set_image_library_id NEQ 0){
-			application.zcore.imageLibraryCom.deleteImageLibraryId(site_x_option_group_set_image_library_id);
+			application.zcore.imageLibraryCom.deleteImageLibraryId(row.site_x_option_group_set_image_library_id);
 		}
 	}
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)#, 

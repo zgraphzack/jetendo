@@ -524,18 +524,16 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acc
 						 country_code=#db.param('US')#, 
 						 city_mls_id=#db.param(i)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
-						 db.execute("q");
-						 db.sql="SELECT last_insert_id() as city_id";
-						 qId=db.execute("qId");
+						 city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable);
 						 db.sql="INSERT INTO #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)#  
-						 SET city_id=#db.param(qId.city_id)#, 
+						 SET city_id=#db.param(city_id)#, 
 						 city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
 						 city_mls_id=#db.param(i)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						 db.execute("q");
-						//writeoutput(qId.city_id);
+						//writeoutput(city_id);
 						cityCreated=true; // need to run zipcode calculations
 					}else{
 						failStr&=("<a href=""http://maps.google.com/maps?q=#urlencodedformat(fd[i]&', florida')#"" rel=""external"" onclick=""window.open(this.href); return false;"">#fd[i]#, florida</a> is missing in `#request.zos.zcoreDatasource#`.zipcode.<br />");

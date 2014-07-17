@@ -527,38 +527,40 @@ if(table_id EQ false){
 		}
 		ArrayAppend(request.zos.arrQueryLog, sqlInsert);
 	}
-	</cfscript>
-	<cftry>
-		<cfquery name="qInsert" datasource="#ss.datasource#">
-		#preserveSingleQuotes(sqlInsert)#
-		</cfquery>
-		<cfif ss.enableReplace>
-			<cfreturn true>
-		</cfif>
-		<cfquery name="qId" datasource="#ss.datasource#">
-		SELECT @zLastInsertId id2, LAST_INSERT_ID() as id
-		</cfquery>
-        <cfscript>
-		if(structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ss.datasource&"."&ss.table) and ss.datasource&"."&ss.table NEQ request.zos.zcoredatasource&".site"){
-			newId=qId.id2;
-		}else{
-			newId=qId.id;
-		}
-		</cfscript>
-		<cfcatch type="database">
-			<cfscript>
-			if(ss.norequestsql EQ false){
-				ArrayAppend(request.zos.arrQueryLog, "Query ##"& ArrayLen(request.zos.arrQueryLog)&" failed to execute for datasource, #ss.datasource#. Mysql Error:"&cfcatch.Message);
+
+	transaction action="begin"{
+		try{
+			query name="qInsert" datasource="#ss.datasource#"{
+				echo(preserveSingleQuotes(sqlInsert));
 			}
-			</cfscript>
-			<cfif ss.debug>
-				<cfrethrow>
-			</cfif>
-			<cfreturn false>
-		</cfcatch>
-        <cfcatch type="any"><cfrethrow></cfcatch>
-	</cftry>
-	<cfreturn newId>
+			if(ss.enableReplace){
+				return true;
+			}
+			query name="qId" datasource="#ss.datasource#"{
+				echo('SELECT @zLastInsertId id2, LAST_INSERT_ID() as id');
+			}
+			if(structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ss.datasource&"."&ss.table) and ss.datasource&"."&ss.table NEQ request.zos.zcoredatasource&".site"){
+				newId=qId.id2;
+			}else{
+				newId=qId.id;
+			}
+		}catch(database e){
+			transaction action="rollback";
+			if(ss.norequestsql EQ false){
+				ArrayAppend(request.zos.arrQueryLog, "Query ##"& ArrayLen(request.zos.arrQueryLog)&" failed to execute for datasource, #ss.datasource#. Mysql Error:"&e.Message);
+			}
+			if(ss.debug){
+				rethrow;
+			}
+			return false;
+		}catch(Any e){
+			transaction action="rollback";
+			rethrow;
+		}
+		transaction action="commit";
+	}
+	return newId;
+	</cfscript>
 </cffunction>
 
 

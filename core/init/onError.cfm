@@ -584,18 +584,23 @@ newId=0;
         log_message = '#variables._zTempEscape(zAllRequestVars)#' , 
 		log_updated_datetime='#variables._zTempEscape(request.zos.mysqlnow)#'
         </cfsavecontent>
-        <cftry>
-        <cfquery name="qInsertError" datasource="#Request.zOS.globals.serverDatasource#">
-        #preserveSingleQuotes(saveSQL)#
-        </cfquery>
-        <cfquery name="qId" datasource="#Request.zOS.globals.serverDatasource#">
-        SELECT last_insert_id() as id
-        </cfquery>
-        <cfscript>
-		newId=qId.id;
-		</cfscript>
-        <cfcatch type="any"></cfcatch>
-        </cftry>
+        <cftransaction action="begin">
+	        <cftry>
+		        <cfquery name="qInsertError" datasource="#Request.zOS.globals.serverDatasource#">
+		        #preserveSingleQuotes(saveSQL)#
+		        </cfquery>
+		        <cfquery name="qId" datasource="#Request.zOS.globals.serverDatasource#">
+		        SELECT last_insert_id() as id
+		        </cfquery>
+		        <cftransaction action="commit">
+		        <cfscript>
+				newId=qId.id;
+				</cfscript>
+		        <cfcatch type="any">
+		        	<cftransaction action="rollback">
+		    	</cfcatch>
+		    </cftry>
+		</cftransaction>
     </cfif>
     
 	<!--- true EQ server ip | false EQ user ip --->

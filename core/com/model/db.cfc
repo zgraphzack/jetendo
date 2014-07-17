@@ -243,23 +243,33 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		<cfargument name="idColumn" type="string" required="no" default="id" hint="The name of the sql id column.">
 		<cfargument name="configStruct" type="struct" required="yes">
 		<cfscript>
-	var db=structnew();
-	var cfquery=0;
-	var queryStruct={
-		lazy=arguments.configStruct.lazy,
-		datasource=arguments.configStruct.datasource,
-		name:"db."&arguments.name&"_id"
-	};
-	var result=variables.execute(arguments.name, arguments.configStruct);
-	</cfscript>
-	<cfif result.success>
-		<cfquery attributeCollection="#queryStruct#">
-		#preserveSingleQuotes(arguments.configStruct.insertIDSQL)#
-		</cfquery>
-		<cfreturn {success:true, result:db[arguments.name&"_id"][arguments.idColumn]}>
-	<cfelse>
-		<cfreturn {success:false, result:result}>
-	</cfif>
+		var db=structnew();
+		var cfquery=0;
+		var queryStruct={
+			lazy=arguments.configStruct.lazy,
+			datasource=arguments.configStruct.datasource,
+			name:"db."&arguments.name&"_id"
+		};
+		transaction action="begin"{
+			try{
+				var result=variables.execute(arguments.name, arguments.configStruct);
+				if(result.success){
+					query attributeCollection="#queryStruct#"{
+						echo(preserveSingleQuotes(arguments.configStruct.insertIDSQL));
+					}
+					transaction action="commit";
+					return {success:true, result:db[arguments.name&"_id"][arguments.idColumn]};
+				}else{
+					transaction action="commit";
+					return {success:false, result:result};
+				}
+			}catch(Any e){
+				transaction action="rollback";
+				rethrow;
+			}
+		}
+		</cfscript>
+		
 	</cffunction>
 	
 	<cffunction name="execute" localmode="modern" access="package" returntype="struct" output="yes">
