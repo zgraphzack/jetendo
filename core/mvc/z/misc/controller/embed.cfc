@@ -87,7 +87,13 @@
 	function loadFlashPlayer(){
 		var videoDiv=$(".embedVideoDiv").show();
 		videoDiv.html('<object width="100%" height="100" id="customFlashPlayer"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always"><param name="movie" value="/z/javascript/osflvplayer/OSplayer.swf?movie=/zupload/video/#qV.video_file#&amp;btncolor=0x333333&amp;accentcolor=0x31b8e9&amp;txtcolor=0xffffff&amp;volume=30&amp;autoload=on&amp;autoplay=<cfif autoplay>on<cfelse>off</cfif>&amp;vTitle=&amp;showTitle=no"><embed id="customFlashPlayerEmbed"  src="/z/javascript/osflvplayer/OSplayer.swf?movie=/zupload/video/#qV.video_file#&amp;btncolor=0x333333&amp;accentcolor=0x31b8e9&amp;txtcolor=0xffffff&amp;volume=30&amp;autoload=on&amp;autoplay=<cfif autoplay>on<cfelse>off</cfif>&amp;vTitle=&amp;showTitle=no" width="100%" height="100" allowFullScreen="true" type="application/x-shockwave-flash" allowScriptAccess="always"></object> ');
-		zArrResizeFunctions.push(resizeFlashPlayer);
+		if(typeof zArrResizeFunctions != "undefined"){
+			zArrResizeFunctions.push(resizeFlashPlayer);
+		}else{
+			zArrDeferredFunctions.push(function(){
+				zArrResizeFunctions.push(resizeFlashPlayer);
+			});
+		}
 		resizeFlashPlayer();
 		setTimeout(resizeFlashPlayer, 100);
 	}
@@ -97,14 +103,16 @@
 		if(!hasVideoTagSupport <cfif structkeyexists(form, 'forceFlash')> || 1 ==1</cfif>){
 			loadFlashPlayer();
 		}else{ 
-			zArrResizeFunctions.push(function(){
+			if(document.getElementById("embedVideoTag")){
+				zArrResizeFunctions.push(function(){
+					$("##embedVideoTag").height($(window).height());
+					$("##embedVideoTag").width($(window).width());
+					scaleToFill(document.getElementById("embedVideoTag"));
+				});
 				$("##embedVideoTag").height($(window).height());
 				$("##embedVideoTag").width($(window).width());
 				scaleToFill(document.getElementById("embedVideoTag"));
-			});
-			$("##embedVideoTag").height($(window).height());
-			$("##embedVideoTag").width($(window).width());
-			scaleToFill(document.getElementById("embedVideoTag"));
+			}
 			
 		}
 	});
@@ -112,9 +120,16 @@
 	</cfsavecontent>
 	<cfscript>
 	application.zcore.template.appendTag("meta",theMeta);
+	if(not structkeyexists(form, 'poster')){
+		if(fileexists(request.zos.globals.privatehomedir&"zupload/video/"&qV.video_file&"-00001.jpg")){
+			form.poster="/zupload/video/"&qV.video_file&"-00001.jpg";
+		}else{
+			form.poster="";
+		}
+	}
 	</cfscript>
 	<div class="embedVideoDiv" style="display:none;">
-		<video id="embedVideoTag"  controls="controls" onerror="loadFlashPlayer();" <cfif autoplay>autoplay="autoplay"</cfif> <cfif fileexists(request.zos.globals.privatehomedir&"zupload/video/"&qV.video_file&"-00001.jpg")>poster="/zupload/video/#qV.video_file#-00001.jpg"</cfif>>
+		<video id="embedVideoTag"  controls="controls" onerror="loadFlashPlayer();" onclick="this.play();" style="cursor:pointer;" <cfif autoplay>autoplay="autoplay"</cfif> <cfif form.poster NEQ "">poster="#form.poster#"</cfif>>
 			<source type="video/mp4" src="/zupload/video/#qV.video_file#" />
 		</video>
 	</div> 
