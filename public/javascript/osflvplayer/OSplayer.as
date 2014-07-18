@@ -553,7 +553,7 @@
 		public function playVideo(e:MouseEvent)
 		{
 			_videoPlayback.play();
-			
+			_playGraphic.visible=false;
 			_preLoader.stop();
 			_preLoader.visible = false;
 			if(_imgContainer.visible == true)
@@ -562,11 +562,9 @@
 			if (_playBkg.visible == true && _playGraphic.visible == true)
 			{
 				//_playBkg.visible = false;
-				_playGraphic.visible = false;
 			} else if (_playGraphic.visible == true)
 			{
 				_imgContainer.visible = false;
-				_playGraphic.visible = false;
 			}
 
 			_playBtn.visible = false;
@@ -673,6 +671,9 @@
 				_timeTotal.text = tMinutes +":"+ tSeconds;
 			}
 			
+			if(_videoPlayback.playheadTime > 0.1){
+				_playGraphic.visible = false;
+			}
 			if(_videoPlayback.playheadTime >= 58)
 			{
 				minutes = Math.floor(time/60);
