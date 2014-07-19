@@ -403,6 +403,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 		if(structkeyexists(destinationStruct.siteOptionGroupNameStruct, i)){
 			newGroupStruct=remapSiteOptionGroup(sourceStruct, destinationStruct, groupId);
 			currentDestinationStruct=destinationStruct.siteOptionGroupStruct[destinationStruct.siteOptionGroupNameStruct[i]];
+			structdelete(newGroupStruct, 'site_option_group_updated_datetime');
+			structdelete(currentDestinationStruct, 'site_option_group_updated_datetime');
 			if(not objectequals(newGroupStruct, currentDestinationStruct)){
 				if(form.debugEnabled){
 					echo("changed group: "&i&"<br>");	
@@ -431,6 +433,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 					// check for field option changes
 					sourceFieldStruct=remapSiteOption(sourceStruct, destinationStruct, siteOptionId);
 					destinationFieldStruct=destinationStruct.siteOptionStruct[destinationStruct.siteOptionNameStruct[i][n]];
+					structdelete(sourceFieldStruct, 'site_option_updated_datetime');
+					structdelete(destinationFieldStruct, 'site_option_updated_datetime');
 					if(not objectequals(sourceFieldStruct, destinationFieldStruct)){
 						if(form.debugEnabled){
 							echo("changed field: "&i&" | "&n&"<br>");	
@@ -937,6 +941,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		ts.table="site_option_group";
 		ts.enableReplace=true;
 		ts.struct=fieldChangeStruct.newGroups[i];
+		ts.struct.site_option_group_updated_datetime=request.zos.mysqlnow;
 		ts.datasource=request.zos.zcoreDatasource;
 		ts.forcePrimaryInsert={
 			"site_option_group_id":true,
@@ -956,6 +961,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		ts={};
 		ts.table="site_option_group";
 		ts.struct=fieldChangeStruct.changedGroups[i];
+		ts.struct.site_option_group_updated_datetime=request.zos.mysqlnow;
 		ts.datasource=request.zos.zcoreDatasource;
 		if(form.debugEnabled){
 			echo("update site_option_group<br>");
@@ -973,6 +979,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 			ts.table="site_option";
 			ts.enableReplace=true;
 			ts.struct=fieldChangeStruct.newFields[i][n];
+			ts.struct.site_option_updated_datetime=request.zos.mysqlnow;
 			ts.datasource=request.zos.zcoreDatasource;
 			ts.forcePrimaryInsert={
 				"site_option_id":true,
@@ -994,6 +1001,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 			ts={};
 			ts.table="site_option";
 			ts.struct=fieldChangeStruct.changedFields[i][n];
+			ts.struct.site_option_updated_datetime=request.zos.mysqlnow;
 			ts.datasource=request.zos.zcoreDatasource;
 			if(form.debugEnabled){
 				echo("update site_option<br>");
@@ -1013,6 +1021,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 				ts={};
 				ts.table="site_option_group_map";
 				ts.struct=mapStruct.struct;
+				ts.struct.site_option_group_map_updated_datetime=request.zos.mysqlnow;
 				ts.datasource=request.zos.zcoreDatasource;
 				if(form.debugEnabled){
 					echo("insert site_option_group_map<br>");
