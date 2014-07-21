@@ -585,14 +585,14 @@ variables.typeStruct["text"]="text";
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	var i=0;
-	var path=request.zos.sharedPath&"mls-data/"&arguments.ss.qMLS.mls_id[arguments.ss.query_row]&"/";
+	var path=request.zos.sharedPath&"mls-data/"&arguments.ss.row.mls_id&"/";
 	var qD=application.zcore.functions.zReadDirectory(path, "listings-*.txt");
 	for(i=1;i LTE qD.recordcount;i++){
 		if(left(qd.name[i], 14) EQ "listings-sold-" and this.mls_id NEQ "20"){
 			// store sold data in separate table
 		}else{
 			if(qd.size[i] NEQ 0 and datecompare(qD.dateLastModified[i],dateadd("n",-1,now())) LT 0){
-				return "mls-data/"&arguments.ss.qMLS.mls_id[arguments.ss.query_row]&"/"&qd.name[i];	
+				return "mls-data/"&arguments.ss.row.mls_id&"/"&qd.name[i];	
 			}
 		}
 	}

@@ -226,8 +226,7 @@
 <cffunction name="getImportFilePath" localmode="modern" output="no" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	var path=request.zos.sharedPath&"mls-data/"&arguments.ss.qMLS.mls_id[arguments.ss.query_row]&"/"&arguments.ss.qMLS.mls_file[arguments.ss.query_row];
-	//var path=arguments.ss.qMLS.mls_path[arguments.ss.query_row]&arguments.ss.qMLS.mls_file[arguments.ss.query_row];
+	var path=request.zos.sharedPath&"mls-data/"&arguments.ss.row.mls_id&"/"&arguments.ss.row.mls_file;
 	if(fileexists(path)){
 		return replace(path, request.zos.sharedPath, "");
 	}else{

@@ -75,13 +75,13 @@
 		mls_deleted = #db.param(0)#
 		ORDER BY mls_update_date ASC ";
 		qMLS=db.execute("qMLS"); 
+		this.optionstruct.filePath=false;
 		for(row in qMLS){
 			this.optionstruct.mls_id=row.mls_id;
 			this.optionstruct.delimiter=row.mls_delimiter;
 			this.optionstruct.csvquote=row.mls_csvquote;
 			this.optionstruct.first_line_columns=row.mls_first_line_columns;
-			this.optionstruct.qMLS=qMLS;
-			this.optionstruct.query_row=f;
+			this.optionstruct.row=row;
 			this.optionstruct.mlsProviderCom=createobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#row.mls_com#");
 			this.optionstruct.mlsproviderCom.setMLS(this.optionstruct.mls_id); 
 			if(row.mls_current_file_path NEQ "" and fileexists(request.zos.sharedPath&row.mls_current_file_path)){
@@ -89,9 +89,12 @@
 				this.optionstruct.skipBytes=row.mls_skip_bytes;
 				break;
 			}else{
-				this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct)),"\","/","ALL");
-				this.optionstruct.skipBytes=0;
-				if(this.optionstruct.filePath NEQ false){
+				nextFile=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct)),"\","/","ALL");
+				if(nextFile EQ false){
+					continue;
+				}else{
+					this.optionstruct.filePath=nextFile;
+					this.optionstruct.skipBytes=0;
 					break;
 				}
 			}
