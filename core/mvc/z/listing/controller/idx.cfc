@@ -75,18 +75,18 @@
 		mls_deleted = #db.param(0)#
 		ORDER BY mls_update_date ASC ";
 		qMLS=db.execute("qMLS"); 
-		for(f=1;f LTE qMLS.recordcount;f++){
-			this.optionstruct.mls_id=qMLS.mls_id[f];
-			this.optionstruct.delimiter=qMLS.mls_delimiter[f];
-			this.optionstruct.csvquote=qMLS.mls_csvquote[f];
-			this.optionstruct.first_line_columns=qMLS.mls_first_line_columns[f];
+		for(row in qMLS){
+			this.optionstruct.mls_id=row.mls_id;
+			this.optionstruct.delimiter=row.mls_delimiter;
+			this.optionstruct.csvquote=row.mls_csvquote;
+			this.optionstruct.first_line_columns=row.mls_first_line_columns;
 			this.optionstruct.qMLS=qMLS;
 			this.optionstruct.query_row=f;
-			this.optionstruct.mlsProviderCom=createobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#qMLS.mls_com[f]#");
+			this.optionstruct.mlsProviderCom=createobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#row.mls_com#");
 			this.optionstruct.mlsproviderCom.setMLS(this.optionstruct.mls_id); 
-			if(qMLS.mls_current_file_path[f] NEQ "" and fileexists(qMLS.mls_current_file_path[f])){
-				this.optionstruct.filePath=replace(trim(qMLS.mls_current_file_path[f]),"\","/","ALL");
-				this.optionstruct.skipBytes=qMLS.mls_skip_bytes[f];
+			if(row.mls_current_file_path NEQ "" and fileexists(request.zos.sharedPath&row.mls_current_file_path)){
+				this.optionstruct.filePath=replace(trim(row.mls_current_file_path),"\","/","ALL");
+				this.optionstruct.skipBytes=row.mls_skip_bytes;
 				break;
 			}else{
 				this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct)),"\","/","ALL");
@@ -196,6 +196,7 @@
 		
 		variables.fileHandle=fileOpen("#request.zos.sharedPath&this.optionstruct.filePath#", 'read', "windows-1252");
 		 
+
 		if(this.optionstruct.skipBytes NEQ 0){
 			fileSkipBytes(variables.fileHandle, this.optionStruct.skipBytes-10); 
 		}
@@ -228,6 +229,7 @@
 				if(structkeyexists(application.zcore, 'abortIdxImport')){
 					throw("Aborting IDX Import due to manual cancellation");
 				}
+				application.zcore.idxImportStatus="Bytes read: "&this.optionStruct.skipBytes&" of "&request.zos.sharedPath&this.optionstruct.filepath;
 				loopcount++;
 				if(fileIsEOF(variables.fileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
 					fileComplete=true;
@@ -538,6 +540,8 @@
 	var db2=request.zos.noVerifyQueryObject;
 	oneDayAgo=dateformat(oneDayAgo,'yyyy-mm-dd')&' '&timeformat(oneDayAgo,'HH:mm:ss');
 	
+	application.zcore.idxImportStatus="cleanInactive executed";
+
 	db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
 	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 	LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 

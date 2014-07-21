@@ -228,7 +228,11 @@
 		<p><a href="/z/listing/tasks/importMLS/index" target="_blank">Import Data</a> 
 		<cfif structkeyexists(application.zcore, 'importMLSRunning')>
 			(Running -
-				<a href="/z/listing/tasks/importMLS/abortImport">Cancel</a>)
+				<a href="/z/listing/tasks/importMLS/abortImport">Cancel</a> 
+				<cfif structkeyexists(application.zcore, 'idxImportStatus')>
+					| #application.zcore.idxImportStatus#
+				</cfif>
+			)
 		</cfif></p>
 		<p><a href="/z/listing/tasks/generateData/index" target="_blank">Generate Cache Data</a></p>
 		<p><a href="/z/listing/tasks/listingLookupBuilder/index" target="_blank">Update Lookup Tables</a></p>
