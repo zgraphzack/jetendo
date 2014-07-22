@@ -156,7 +156,7 @@
 	for(email in emailStruct){
 		row=emailStruct[email];
 		curMailUserId=row.mail_user_id;
-		curUserSiteIdType=request.user_id_siteIDType;
+		curUserSiteIdType=row.user_id_siteIDType;
 		curUserId=row.user_id;
 
 		ts=StructNew(); 
