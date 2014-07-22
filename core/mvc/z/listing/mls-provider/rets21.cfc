@@ -673,10 +673,10 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						city_mls_id=#db.param(i)#, 
 						city_longitude=#db.param(qZ.zipcode_longitude)#, 
 						city_latitude=#db.param(qZ.zipcode_latitude)#,
-					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
-						city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
+					 	city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
+						rs=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 						 db.sql="INSERT INTO #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)#  
-						 SET city_id=#db.param(city_id)#, 
+						 SET city_id=#db.param(rs.result)#, 
 						 city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
@@ -684,7 +684,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						 city_longitude=#db.param(qZ.zipcode_longitude)#, 
 						 city_latitude=#db.param(qZ.zipcode_latitude)#,
 					 	city_updated_datetime=#db.param(request.zos.mysqlnow)#  ";
-						 db.execute("q");
+						db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 						//writeoutput("created #i#: "&city_id&"<br>");
 						cityCreated=true; // need to run zipcode calculations
 					}else{
@@ -694,7 +694,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						country_code=#db.param('US')#, 
 						city_mls_id=#db.param(i)#,
 						 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
-						db.execute("q"); 
+						city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 						//writeoutput('Missing: #fd[i]#, california<br />');
 						//arrayAppend(arrError, "<a href=""http://maps.google.com/maps?q=#urlencodedformat(fd[i]&', california')#"" rel=""external"" onclick=""window.open(this.href); return false;"">#fd[i]#, california</a> is missing in `#request.zos.zcoreDatasource#`.zipcode.<br />");
 					}
