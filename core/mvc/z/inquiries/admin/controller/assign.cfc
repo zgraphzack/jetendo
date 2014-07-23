@@ -74,7 +74,7 @@
     	if(local.qPrevious.user_id NEQ 0){
     		db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user
     		WHERE user_id = #db.param(local.qPrevious.user_id)# and 
-    		site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL(local.qPrevious.user_id_siteIDType))#";
+    		site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdFromSiteIdType(local.qPrevious.user_id_siteIDType))#";
     		local.qUserTemp=db.execute("qUserTemp");
     		if(local.qUserTemp.recordcount NEQ 0){
     			writeoutput(local.qUserTemp.user_first_name&" "&local.qUserTemp.user_last_name&" "&local.qUserTemp.user_username);
@@ -120,18 +120,20 @@
     }
     var arrAgentPhoto=new Array();
     <cfloop query="qAgents">
-    arrAgentPhoto["#qAgents.user_id#"]=<cfif qAgents.member_photo NEQ "">"#jsstringformat('#application.zcore.functions.zvar('domain',qAgents.userSiteId)##request.zos.memberImagePath##qAgents.member_photo#')#"<cfelse>""</cfif>;
+    arrAgentPhoto["#qAgents.user_id#|#qAgents.site_id#"]=<cfif qAgents.member_photo NEQ "">"#jsstringformat('#application.zcore.functions.zvar('domain',qAgents.userSiteId)##request.zos.memberImagePath##qAgents.member_photo#')#"<cfelse>""</cfif>;
     </cfloop>
 	/* ]]> */
     </script>
     <cfscript>
+    form.user_id = form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIDType);
     selectStruct = StructNew();
     selectStruct.name = "user_id";
     selectStruct.query = qAgents;
     selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
     selectStruct.onchange="showAgentPhoto(this.options[this.selectedIndex].value);";
     selectStruct.queryParseLabelVars = true;
-    selectStruct.queryValueField = 'user_id';
+    selectStruct.queryParseValueVars = true;
+    selectStruct.queryValueField = '##user_id##|##site_id##';
     application.zcore.functions.zInputSelectBox(selectStruct);
     </cfscript>
     or Type Name: <input type="text" name="assign_name" value="#application.zcore.functions.zso(form, 'assign_name')#" /> and Email(s): <input type="text" name="assign_email" value="#application.zcore.functions.zso(form, 'assign_email')#" /> (Comma separated)
@@ -172,7 +174,9 @@
         </cfscript>
     </cfif>
     <cfscript>
-	local.assignUserId=form.user_id;
+	local.assignUserId=listGetAt(form.user_id, 1, "|");
+    local.assignSiteId=listGetAt(form.user_id, 2, "|");
+    local.assignSiteIdType=application.zcore.functions.zGetSiteIdType(local.assignSiteId);
     if(application.zcore.functions.zso(form, 'assign_email') NEQ ''){
         arrEmail=listToArray(form.assign_email, ",");
         arrEmailFinal=[];
@@ -240,7 +244,7 @@
         </cfsavecontent><cfscript>qGetInquiry=db.execute("qGetInquiry");</cfscript> 
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user
-        WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
+        WHERE site_id =#db.param(local.assignSiteId)# and 
         user_id = #db.param(local.assignUserId)# 
         </cfsavecontent><cfscript>qMember=db.execute("qMember");</cfscript>
         <cfsavecontent variable="db.sql">
@@ -266,7 +270,7 @@
         </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");</cfscript> 
         <cfset form.groupEmail=false>
         <cfscript>
-        toEmail=qMember.member_email;
+        toEmail=qMember.user_username;
         </cfscript>
         <cfmail  to="#toEmail#" from="#request.fromemail#" replyto="#qGetInquiry.inquiries_email#" subject="A new lead assigned to you" type="html">
             <cfscript>
