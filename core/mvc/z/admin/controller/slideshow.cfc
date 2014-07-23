@@ -814,7 +814,7 @@
 	st.site_id = s.site_id and 
 	st.slideshow_tab_deleted = #db.param(0)#
 	where s.slideshow_id=#db.param(form.slideshow_id)# and 
-	s.slideshow_tab_deleted = #db.param(0)# and 
+	s.slideshow_deleted = #db.param(0)# and 
 	s.site_id =#db.param(request.zos.globals.id)# ";
 	qTabData=db.execute("qTabData");
     if(qTabData.recordcount EQ 0){

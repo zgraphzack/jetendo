@@ -607,19 +607,19 @@ zGetLatLong(ts);
 	
 	// flag the available fields
 	avs={
-		city:false,
-		remarks:false,
-		address:false,
-		subdivision:false,
-		bedrooms:false,
-		bathrooms:false,
-		type:false,
-		subtype:false,
-		style:false,
-		view:false,
-		frontage:false,
-		pool:false,
-		condo:false
+		city:"",
+		remarks:"",
+		address:"",
+		subdivision:"",
+		bedrooms:"",
+		bathrooms:"",
+		type:"",
+		subtype:"",
+		style:"",
+		view:"",
+		frontage:"",
+		pool:"",
+		condo:""
 	};
 	d2="";
 	d2="Real Estate";
@@ -698,28 +698,28 @@ zGetLatLong(ts);
 		avs.address=application.zcore.functions.zFirstLetterCaps(arguments.idx.listing_address);
 	}
 	arrT=[];
-	if(structkeyexists(avs, 'address')){
+	if(structkeyexists(avs, 'address') and avs.address NEQ ""){
 		arrayAppend(arrT, avs.address);
 	}
-	if(structkeyexists(avs, 'city')){
+	if(structkeyexists(avs, 'city') and avs.city NEQ ""){
 		arrayAppend(arrT, avs.city);
 	}
-	if(structkeyexists(avs, 'frontage') and avs.frontage NEQ "" and avs.frontage NEQ false){
+	if(structkeyexists(avs, 'frontage') and avs.frontage NEQ ""){
 		arrayAppend(arrT, avs.frontage);
 	}
-	if(structkeyexists(avs, 'type')){
+	if(structkeyexists(avs, 'type') and avs.type NEQ ""){
 		arrayAppend(arrT, avs.type);
 	}
 	// remove false values
-	lbackup23=false;
-	if(structkeyexists(avs, 'address')){
+	lbackup23="";
+	if(structkeyexists(avs, 'address') and avs.address NEQ ""){
 		lbackup23=avs.address;
 	}
-	if(trim(lbackup23) EQ "" or lbackup23 EQ false){
-		if(avs.subdivision NEQ false){
+	if(trim(lbackup23) EQ ""){
+		if(avs.subdivision NEQ ""){
 			lbackup23=avs.subdivision;
 			structdelete(avs,'subdivision');	
-		}else if(avs.city NEQ false){
+		}else if(avs.city NEQ ""){
 			lbackup23=avs.city;
 			structdelete(avs,'city');	
 		}
@@ -727,7 +727,7 @@ zGetLatLong(ts);
 	structdelete(avs,"address");
 
 	for(i in avs){
-		if(avs[i] EQ false){
+		if(avs[i] EQ ""){
 			structdelete(avs,i);
 			continue;
 		}
@@ -736,7 +736,7 @@ zGetLatLong(ts);
 		}
 	} 
 	arrK=structkeyarray(avs);
-	if(trim(lbackup23) NEQ "" and lbackup23 NEQ false){
+	if(trim(lbackup23) NEQ ""){
 		arrayprepend(arrK,"address");
 		avs.address=lbackup23;
 	} 
