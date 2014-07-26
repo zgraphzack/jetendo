@@ -54,8 +54,14 @@
 		}
 	}
 
+	configCom=createobject("component", "zcorerootmapping.config-default");
+	defaultStruct=configCom.getConfig(request.zos.cgi, true);
+	structdelete(defaultStruct.zos, 'serverStruct');
+
 	configCom=createobject("component", "zcorerootmapping.config");
-	ts=configCom.getConfig(request.zos.cgi);
+	ts=configCom.getConfig(arguments.tempCGI, false);
+
+	structappend(ts.zos, defaultStruct.zos, false);
 	structappend(request.zos, ts.zos, true);
     
 

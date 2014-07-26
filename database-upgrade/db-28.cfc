@@ -32,7 +32,7 @@
 	}
 
 	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "CREATE TABLE `#request.zos.zcoredatasourceprefix#audit`(  
-	  `audit_id` INT(11) NOT NULL,
+	  `audit_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 	  `audit_description` VARCHAR(500) NOT NULL,
 	  `user_id` INT(11) UNSIGNED NOT NULL,
 	  `site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,

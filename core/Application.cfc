@@ -54,9 +54,11 @@ this.scopeCascading = "standard";
 	<cfscript>
 
 	configCom=createobject("component", "zcorerootmapping.config-default");
-	defaultStruct=configCom.getConfig(arguments.tempCGI);
+	defaultStruct=configCom.getConfig(arguments.tempCGI, true);
+	structdelete(defaultStruct.zos, 'serverStruct');
+
 	configCom=createobject("component", "zcorerootmapping.config");
-	ts=configCom.getConfig(arguments.tempCGI);
+	ts=configCom.getConfig(arguments.tempCGI, false);
 	if(structkeyexists(ts, 'timezone')){
 		this.timezone=ts.timezone;
 	}
@@ -64,6 +66,7 @@ this.scopeCascading = "standard";
 		this.locale=ts.locale;
 	}
 	structappend(ts, defaultStruct, false);
+	structappend(ts.zos, defaultStruct.zos, false);
     ts.zos.databaseVersion=1; // increment manually when database structure changes
 
 	ts.zos.isServer=false;

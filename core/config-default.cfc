@@ -3,6 +3,7 @@
 <cfoutput>
 <cffunction name="getConfig" localmode="modern" returntype="struct">
 	<cfargument name="tempCGI" type="struct" required="yes">
+	<cfargument name="defaultConfig" type="boolean" required="yes">
 	<cfscript>
 	
 	var ts=structnew();
@@ -20,7 +21,7 @@
 		ts.zos.installPath="/var/jetendo-server/jetendo/";
 		ts.zOS.istestserver=false;
 	}
-	if(structkeyexists(server, "jetendo_"&ts.zos.installPath&"_globalscache") and structkeyexists(form,'zreset') EQ false){
+	if(not arguments.defaultConfig and structkeyexists(server, "jetendo_"&ts.zos.installPath&"_globalscache") and structkeyexists(form,'zreset') EQ false){
 		return duplicate(server["jetendo_"&ts.zos.installPath&"_globalscache"]); 
 	}
 	
@@ -219,8 +220,9 @@
     
     // A third datasource can be defined in the global settings for each site in the admin portal.
 
-	server["jetendo_"&ts.zos.installPath&"_globalscache"]=ts;
-
+    if(not arguments.defaultConfig){
+		server["jetendo_"&ts.zos.installPath&"_globalscache"]=ts;
+	}
     return ts;
 	</cfscript>
 </cffunction>
