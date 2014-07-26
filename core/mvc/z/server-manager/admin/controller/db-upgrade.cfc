@@ -54,7 +54,7 @@
 	<cfargument name="datasource" type="string" required="yes">
 	<cfscript>
 	if(not structkeyexists(request.zos, 'noVerifyQueryObject')){
-		dbCom=createobject("component", "zcorerootmapping.com.db.db");
+		dbCom=createobject("component", "zcorerootmapping.com.model.db");
 		c=dbCom.getConfig();
 		c.datasource=arguments.datasource;
 		c.verifyQueriesEnabled=false;
