@@ -1,6 +1,7 @@
 <cfcomponent>
 	<cffunction name="index" localmode="modern" access="remote">
 		<cfargument name="returnErrors" type="boolean" required="false" default="#false#">
+		<cfargument name="datasource" type="string" required="false" default="">
 		<cfscript>
 		var i=0;
 		var q=0;
@@ -15,6 +16,9 @@
 		var qKey=0;
 		var keyRow=0;
 		var debug=false;
+		if(arguments.datasource EQ ""){
+			arguments.datasource=request.zos.zcoreDatasource;
+		}
 
 		if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
 			application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
@@ -39,8 +43,9 @@
 		triggerTemplate=rereplace(triggerTemplate, "\s+", "", "all");
 
 		//writeoutput(triggerTemplate);
-		for(i=1;i LTE arraylen(application.zcore.arrGlobalDatasources);i++){
-			local.curDatasource=application.zcore.arrGlobalDatasources[i];
+		//for(i=1;i LTE arraylen(application.zcore.arrGlobalDatasources);i++){
+			//local.curDatasource=application.zcore.arrGlobalDatasources[i];
+			local.curDatasource=arguments.datasource;
 			local.c=application.zcore.db.getConfig();
 			local.c.autoReset=false;
 			local.c.datasource=local.curDatasource;
@@ -108,7 +113,7 @@
 						}
 						if(not local.siteIdFoundForKey){
 							local.uniqueStruct[local.k].site_id=true;
-							db.sql="ALTER TABLE`"&local.curDatasource&"`.`"&local.curTableName&"` 
+							db.sql="ALTER TABLE `"&local.curDatasource&"`.`"&local.curTableName&"` 
 							DROP INDEX `"&local.k&"`, 
 							ADD UNIQUE INDEX `"&local.k&"` (`"&structkeylist(local.uniqueStruct[local.k], "`, `")&"`)";
 							//writeoutput(db.sql&"<hr />");
@@ -132,7 +137,7 @@
 						if(local.autoIncrementFound){
 							local.autoIncrementFixSQL&=", ";
 						}
-						db.sql="ALTER TABLE`"&local.curDatasource&"`.`"&local.curTableName&"` 
+						db.sql="ALTER TABLE `"&local.curDatasource&"`.`"&local.curTableName&"` 
 						#local.autoIncrementFixSQL#
 						DROP PRIMARY KEY, 
 						ADD PRIMARY KEY (`site_id`, `#local.curPrimaryKeyId#`)";
@@ -143,7 +148,7 @@
 							local.autoIncrementFixSQL&=", ";
 						}
 						// delete primary key, and recreate as compound primary key	
-						db.sql="ALTER TABLE`"&local.curDatasource&"`.`"&local.curTableName&"` 
+						db.sql="ALTER TABLE `"&local.curDatasource&"`.`"&local.curTableName&"` 
 						#local.autoIncrementFixSQL#
 						DROP PRIMARY KEY, 
 						ADD PRIMARY KEY (`site_id`, `#local.curPrimaryKeyId#`)";
@@ -175,9 +180,9 @@
 					}
 					if((not local.triggerFound or not local.triggerMatch)){
 							// create new trigger
-							db.sql="DROP TRIGGER /*!50032 IF EXISTS */ `#local.curTableName#_auto_inc`";
+							db.sql="DROP TRIGGER /*!50032 IF EXISTS */ `"&local.curDatasource&"`.`#local.curTableName#_auto_inc`";
 							if(not debug) db.execute("q");
-							db.sql="CREATE TRIGGER `#local.curTableName#_auto_inc` BEFORE INSERT ON `#local.curTableName#` 
+							db.sql="CREATE TRIGGER `"&local.curDatasource&"`.`#local.curTableName#_auto_inc` BEFORE INSERT ON `#local.curTableName#` 
 							    FOR EACH ROW BEGIN
 								IF (@zDisableTriggers IS NULL) THEN
 									IF (NEW.`#local.curPrimaryKeyId#` > 0) THEN
@@ -212,12 +217,12 @@
 				}
 			}
 			//break;
-		}
+		//}
 
-		if(not structkeyexists(request.zos, 'disabeVerifyTablesVerify')){
+		if(not structkeyexists(request.zos, 'disableVerifyTablesVerify')){
 			tempFile2=request.zos.sharedPath&"database/jetendo-schema-current.json";
 			dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-			if(not dbUpgradeCom.verifyDatabaseStructure(tempFile2)){
+			if(not dbUpgradeCom.verifyDatabaseStructure(tempFile2, arguments.datasource)){
 				arrayAppend(arrError, "<hr />Database schema didn't match source code schema file: #tempFile2#.  
 					This is a serious problem that must be manually fixed before performing an upgrade. 
 					The queries to run to fix the schema were generated above.<br />");

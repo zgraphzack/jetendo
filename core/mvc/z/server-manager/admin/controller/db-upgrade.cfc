@@ -13,21 +13,25 @@
 
 <cffunction name="verifyDatabaseStructure" localmode="modern" access="public">
 	<cfargument name="schemaFilePath" type="string" required="yes">
+	<cfargument name="datasource" type="string" required="no">
 	<cfscript>
 	init();
 	curDSStruct={};
 	renameStruct={};
-	query name="qVersion" datasource="#request.zos.zcoreDatasource#"{
+	if(arguments.datasource EQ ""){
+		arguments.datasource=request.zos.zcoreDatasource;
+	}
+	query name="qVersion" datasource="#arguments.datasource#"{
 		echo("SELECT * FROM jetendo_setup LIMIT 0,1");
 	}
 	// verify integrity of currentVersion to ensure upgrade will be successfull
-	newDsStruct=deserializeJson(replace(application.zcore.functions.zreadfile(arguments.schemaFilePath), "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
+	newDsStruct=deserializeJson(replace(application.zcore.functions.zreadfile(arguments.schemaFilePath), "zcoreDatasource.", arguments.datasource&".", "ALL"));
 	if(newDsStruct.databaseVersion GTE qVersion.jetendo_setup_database_version){
-		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
-		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
+		curDSStruct=application.zcore.functions.zGetDatabaseStructure(arguments.datasource, curDSStruct);
+		schemaStruct=variables.siteBackupCom.generateSchemaBackup(arguments.datasource, curDSStruct); 
 		
 		existingDsStruct=schemaStruct.struct; 
-		verifyStruct=runDatabaseUpgrade(request.zos.zcoreDatasource, renameStruct, existingDsStruct, newDsStruct, true);
+		verifyStruct=runDatabaseUpgrade(arguments.datasource, renameStruct, existingDsStruct, newDsStruct, true);
 		if(not verifyStruct.success){
 			writeoutput('A database upgrade can''t be performed.<br />
 				The current database schema (#newDSStruct.databaseVersion#)  doesn''t match 
@@ -145,8 +149,7 @@
 		curDsStruct={};
 		renameStruct={};
 		curDSStruct=application.zcore.functions.zGetDatabaseStructure(request.zos.zcoreDatasource, curDSStruct);
-		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct); 
-		tempFile=request.zos.sharedPath&"database/jetendo-schema.json";
+		schemaStruct=variables.siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct);  
 		if(newDsStruct.databaseVersion NEQ application.zcore.databaseVersion){
 			writeoutput('Database schema validation can''t be executed post-upgrade because this is a new version of the database on the test server. 
 				It is safe to ignore this if you wanted to change the database structure with a newly written upgrade script.<br />');
@@ -653,30 +656,215 @@
 	
 </cffunction>
 
-
+<!--- /z/server-manager/admin/db-upgrade/installDatabaseVersion --->
 <cffunction name="installDatabaseVersion" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
+	application.zcore.functions.zStatusHandler(request.zsid);
+	</cfscript>
+	<h2>Install Test Database</h2>
+	<p>You can use this form to install a second copy of the database for the purpose of testing the database upgrade scripts from version X to the current version where X is the version you select below.</p>
+	<form action="/z/server-manager/admin/db-upgrade/processInstallDatabaseVersion" method="post">
+		<table class="table-list">
+			<tr><th>
+		Version:</th><td><cfscript>
+		versionCom=createobject("component", "zcorerootmapping.version");
+	    ts2=versionCom.getVersion();
+	    arrId=[];
+		for(i=35;i LTE ts2.databaseVersion;i++){
+			arrayAppend(arrId, i);
+		}
+		ts = StructNew();
+		ts.name="version";
+		ts.hideSelect=true;
+		ts.listLabels=arrayToList(arrId, ",");
+		ts.listValues=ts.listLabels;
+		ts.output=true;
+		application.zcore.functions.zInputSelectBox(ts);
+		</cfscript></td>
+		</tr>
+		<tr><th>Datasource:</th><td>
+		<input type="text" name="datasource" value="jetendotest" /> (This must exist as a valid datasource first.)
+		</td>
+		</tr>
+		<tr><th>Action:</th><td>
+		<input type="radio" name="action" value="install" checked="checked" /> Install
+		<input type="radio" name="action" value="upgrade" /> Upgrade (Warning: No backups are made)
+		</td>
+		</tr> 
+		<tr><th>&nbsp;</th><td>
+		<input type="submit" name="submit1" value="Submit" /></td></tr>
+		</table>
+	</form>
+
+</cffunction>
+
+<cffunction name="processInstallDatabaseVersion" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	form.version=application.zcore.functions.zso(form, 'version', true, 0);
-	if(form.version GTE 35){
-		throw("The version number must be 35 or higher because previous version are not supported.");
+	form.datasource=application.zcore.functions.zso(form, 'datasource');
+	form.action=application.zcore.functions.zso(form, 'action');
+
+	if(not request.zos.isTestServer){
+		application.zcore.status.setStatus(request.zsid, "This can only be run on the test server.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
+	}
+	if(form.datasource EQ "" or form.datasource EQ request.zos.zcoreDatasource){
+		throw("The datasource must not be the same as request.zos.zcoreDatasource when testing an upgrade from an old version."); 
+	}
+	if(form.action EQ "upgrade"){
+		checkTestVersion(form.datasource, form.version);
+		return;
+	}
+	query name="qCheck" datasource="#form.datasource#"{
+		echo("show tables in #form.datasource#");
+	}
+	if(qCheck.recordcount){
+		application.zcore.status.setStatus(request.zsid, "The datasource must be empty before installing.<br />Please manually run:<br />
+			drop database #form.datasource#;<br />create database #form.datasource#;", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
+	}
+	if(form.version LT 35){
+		application.zcore.status.setStatus(request.zsid, "The version number must be 35 or higher because previous versions are not supported.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
 	}
 	tempFile=request.zos.installPath&"share/database/jetendo-schema-#form.version#.json";
 	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
-	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
+	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", form.datasource&".", "ALL"));
 	getCreateTableSQL(dsStruct);
 	restoreDataDumps();
+
+	query name="qInsert" datasource="#form.datasource#"{
+		echo("INSERT INTO jetendo_setup SET jetendo_setup_database_version = '#form.version#', jetendo_setup_updated_datetime='#request.zos.mysqlnow#' ");
+	}
+
+	request.zos.disableVerifyTablesVerify=true;
+	verifyCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
+	verifyCom.index(false, form.datasource);
+
+	application.zcore.status.setStatus(request.zsid, "Database installed successfully");
+	application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
 	</cfscript>
 </cffunction>
 
+
+
+<cffunction name="checkTestVersion" localmode="modern" access="public">
+	<cfargument name="datasource" type="string" required="yes">
+	<cfargument name="version" type="numeric" required="yes">
+	<cfscript>
+	versionCom=createobject("component", "zcorerootmapping.version");
+    ts2=versionCom.getVersion();
+    application.zcore.databaseVersion=ts2.databaseVersion;
+	if(not request.zos.isTestServer){
+		application.zcore.status.setStatus(request.zsid, "This can only be run on the test server.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
+	}
+	try{
+		query name="qCheck" datasource="#arguments.datasource#"{
+			echo("SHOW TABLES IN `#arguments.datasource#` LIKE 'jetendo_setup'");
+		}
+	}catch(Any e){
+		throw("arguments.datasource, ""#arguments.datasource#"", must be a valid datasource.");
+	}
+	tempFile=request.zos.sharedPath&"database/jetendo-schema-"&ts2.databaseVersion&".json";
+	tempFile2=request.zos.sharedPath&"database/jetendo-schema-"&arguments.version&".json";
+
+	if(qCheck.recordcount NEQ 0){
+		query name="qVersion" datasource="#arguments.datasource#"{
+			echo("SELECT * FROM jetendo_setup LIMIT 0,1");
+		}
+		if(qVersion.recordcount EQ 0){
+			throw("The database is not installed properly.  Please re-install.");
+		}else{
+			if(qVersion.jetendo_setup_database_version EQ ts2.databaseVersion){
+				application.zcore.status.setStatus(request.zsid, "The database is already upgraded to the latest version", form, true);
+				application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
+			}else if(qVersion.jetendo_setup_database_version GT application.zcore.databaseVersion){
+				application.zcore.status.setStatus(request.zsid, "The database is already upgraded to version that is newer then the source code (version #qVersion.jetendo_setup_database_version#).  Please upgrade the source code before running this again.", form, true);
+				application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
+			}
+			currentVersion=qVersion.jetendo_setup_database_version;
+		}
+	}else{
+		application.zcore.status.setStatus(request.zsid, "You must install the test database first.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/db-upgrade/installDatabaseVersion?zsid=#request.zsid#");
+	}
+	setting requesttimeout="500";
+	
+
+	newDsStruct=deserializeJson(replace(application.zcore.functions.zreadfile(tempFile), "zcoreDatasource.", arguments.datasource&".", "ALL"));
+	if(newDsStruct.databaseVersion NEQ application.zcore.databaseVersion){
+		if(not request.zos.isTestServer){
+			echo('Database upgrade aborted during pre-upgrade phase (no changes were made).<br />
+				Upgrading the database on a production server requires the schema version to match the source code version.<br />');
+			return false;
+		}
+	}
+	if(not verifyDatabaseStructure(tempFile2, arguments.datasource)){
+		return false;
+	} 
+	echo('Upgrading from database version: '&currentVersion&' to '&application.zcore.databaseVersion&'<br />');
+	for(i=currentVersion+1;i LTE application.zcore.databaseVersion;i++){
+		comPath=getDatabaseUpgradeComponent(i);
+
+		
+		echo("Executing #comPath# executeUpgrade()<br />");
+		upgradeCom=createobject("component", comPath);
+		result=upgradeCom.executeUpgrade(this);
+		if(not result){
+			echo("Database upgrade aborted during upgrade phase. Changes may have been made.");
+			//restoreTables(backupStruct);
+			return false;
+		}else{
+			echo('Upgrade scripts completed successfully for version: #i#.<br />');
+		}
+	}
+	curDsStruct={};
+	renameStruct={};
+	curDSStruct=application.zcore.functions.zGetDatabaseStructure(arguments.datasource, curDSStruct);
+	schemaStruct=variables.siteBackupCom.generateSchemaBackup(arguments.datasource, curDSStruct); 
+	if(newDsStruct.databaseVersion NEQ application.zcore.databaseVersion){
+		writeoutput('Database schema validation can''t be executed post-upgrade because this is a new version of the database on the test server. 
+			It is safe to ignore this if you wanted to change the database structure with a newly written upgrade script.<br />');
+	}else{
+		existingDsStruct=schemaStruct.struct; 
+		verifyStruct=runDatabaseUpgrade(arguments.datasource, renameStruct, existingDsStruct, newDsStruct, true);
+		if(not verifyStruct.success){
+			writeoutput('Database schema validation failed post-upgrade. Changes were made. 
+			The upgrade scripts may be broken.  You must verify your installation is still working.');
+			echo(" | disk current version: "&newDsStruct.databaseVersion&" | database version: "&application.zcore.functions.zso(curDSStruct, 'databaseVersion')); 
+			writedump(verifyStruct);
+			return false;
+		}
+	}
+
+	query name="qUpdate" datasource="#arguments.datasource#"{
+		echo("UPDATE jetendo_setup 
+		SET jetendo_setup_database_version = '#application.zcore.databaseVersion#',
+		jetendo_setup_updated_datetime='#request.zos.mysqlnow#' ");
+	}
+	echo("Database upgrade complete.");
+	application.zcore.functions.zabort();
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="installInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	versionCom=createobject("component", "zcorerootmapping.version");
+    ts2=versionCom.getVersion();
+    application.zcore.databaseVersion=ts2.databaseVersion;
+
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
-	tempFile=request.zos.installPath&"share/database/jetendo-schema.json";
+	tempFile=request.zos.installPath&"share/database/jetendo-schema-#application.zcore.databaseVersion#.json";
 	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
 	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
 	getCreateTableSQL(dsStruct);
 	restoreDataDumps();
+
+
 	</cfscript>
 </cffunction>
 

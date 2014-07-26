@@ -147,6 +147,9 @@
 		<p><a href="/z/server-manager/admin/site-import/index" target="_blank">Site Import</a></p>
 		<p><a href="/z/server-manager/admin/server-home/countLines">CFML Line Counter</a></p> 
 		<p><a href="/z/server-manager/admin/server-home/prepareForDistribution" target="_blank">Prepare For Distribution</a></p>
+		<cfif request.zos.istestserver>
+			<p><a href="/z/server-manager/admin/db-upgrade/installDatabaseVersion">Install Test Database</a></p>
+		</cfif>
 		<h3>Scheduled Tasks</h3>
 		<p><a href="/z/server-manager/tasks/password-expiration/index" target="_blank">Delete passwords for inactive accounts</a></p>
 		<p><a href="/z/server-manager/tasks/verify-tables/index" target="_blank">Verify Table Structure</a></p>

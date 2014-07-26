@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	request.zos.disabeVerifyTablesVerify=true;
+	request.zos.disableVerifyTablesVerify=true;
 	verifyCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.verify-tables");
 	verifyCom.index(false);
 
