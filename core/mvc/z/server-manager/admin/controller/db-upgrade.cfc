@@ -54,7 +54,18 @@
 	<cfargument name="datasource" type="string" required="yes">
 	<cfscript>
 	if(not structkeyexists(request.zos, 'noVerifyQueryObject')){
+		dbInitConfigStruct={
+			insertIdSQL:"select @zLastInsertId id2, last_insert_id() id",
+			datasource:arguments.datasource,
+			tablePrefix:request.zos.zcoreDatasourcePrefix,
+			parseSQLFunctionStruct:{
+			},
+			verifyQueriesEnabled:true,
+			cacheStructKey:'application.zcore.queryCache'
+		}
 		dbCom=createobject("component", "zcorerootmapping.com.model.db");
+		dbCom.init(dbInitConfigStruct);
+		request.zos.queryObject=dbCom.newQuery();
 		c=dbCom.getConfig();
 		c.datasource=arguments.datasource;
 		c.verifyQueriesEnabled=false;
