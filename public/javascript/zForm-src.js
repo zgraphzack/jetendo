@@ -3255,6 +3255,12 @@ function zFixModalPos(){
 	];
 	zGetClientWindowSize();
 	var windowSize=zWindowSize;
+	if(isNaN(zModalWidth)){
+		zModalWidth=10000;
+	}
+	if(isNaN(zModalHeight)){
+		zModalHeight=10000;
+	}
 	el.style.top=zModalScrollPosition[1]+"px";
 	el.style.left=zModalScrollPosition[0]+"px";
 	var newWidth=Math.min(zModalWidth, Math.min(windowSize.width-100,((zModalMaxWidth))));

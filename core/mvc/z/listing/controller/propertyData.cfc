@@ -1496,7 +1496,11 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			orderStruct=structnew();
 			n22=1;
 			for(row in qProperty){
-				mls_id=listgetat(row.listing_id,1,"-");
+				if(row.listing_id CONTAINS "-"){
+					mls_id=listgetat(row.listing_id,1,"-");
+				}else{
+					mls_id=0;
+				}
 				if(structkeyexists(mlsStruct,mls_id) EQ false){
 					mlsStruct[mls_id]=arraynew(1);	
 				}
