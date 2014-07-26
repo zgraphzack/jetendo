@@ -128,11 +128,11 @@
 		backupStruct=backupAffectedTablesInVersionRange(currentVersion+1, application.zcore.databaseVersion);
 		echo('Upgrading from database version: '&currentVersion&' to '&application.zcore.databaseVersion&'<br />');
 		for(i=currentVersion+1;i LTE application.zcore.databaseVersion;i++){
-			if(not fileexists(request.zos.installPath&"database-upgrade/db-"&i&".cfc")){
-				throw("No database upgrade CFC exists for version, #i#, in "&request.zos.installPath&"database-upgrade/");
-			} 
-			echo("Executing jetendo-database-upgrade.db-#i# executeUpgrade()<br />");
-			upgradeCom=createobject("component", "jetendo-database-upgrade.db-"&i);
+			comPath=getDatabaseUpgradeComponent(i);
+	
+			
+			echo("Executing #comPath# executeUpgrade()<br />");
+			upgradeCom=createobject("component", comPath);
 			result=upgradeCom.executeUpgrade(this);
 			if(not result){
 				echo("Database upgrade aborted during upgrade phase. Changes may have been made.");
@@ -185,6 +185,21 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDatabaseUpgradeComponent" localmode="modern" access="public">
+	<cfargument name="version" type="numeric" required="yes">
+	<cfscript>
+	if(not fileexists(request.zos.installPath&"database-upgrade/newer-versions/db-"&i&".cfc")){
+		if(not fileexists(request.zos.installPath&"database-upgrade/older-versions/db-"&i&".cfc")){
+			throw("No database upgrade CFC exists for version, #i#, in "&request.zos.installPath&"database-upgrade/");
+		}else{
+			comPath="jetendo-database-upgrade.older-versions.db-"&i;
+		}
+	}else{
+		comPath="jetendo-database-upgrade.newer-versions.db-"&i;
+	} 
+	return comPath;
+	</cfscript>
+</cffunction>
 
 <cffunction name="executeQuery" localmode="modern" access="public" returntype="any">
 	<cfargument name="datasource" type="string" required="yes">
@@ -230,10 +245,9 @@
 	backupStruct={};
 
 	for(n=arguments.startVersion;n LTE arguments.endVersion;n++){
-		if(not fileexists(request.zos.installPath&"database-upgrade/db-"&n&".cfc")){
-			throw("No database upgrade CFC exists for version, #n#, in "&request.zos.installPath&"database-upgrade/");
-		}
-		upgradeCom=createobject("component", "jetendo-database-upgrade.db-"&n);
+		comPath=getDatabaseUpgradeComponent(n);
+		
+		upgradeCom=createobject("component", comPath);
 		arrChanged=upgradeCom.getChangedTableArray();
 
 		for(i=1;i LTE arrayLen(arrChanged);i++){
@@ -637,6 +651,22 @@
 
 	</cfscript>
 	
+</cffunction>
+
+
+<cffunction name="installDatabaseVersion" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
+	form.version=application.zcore.functions.zso(form, 'version', true, 0);
+	if(form.version GTE 35){
+		throw("The version number must be 35 or higher because previous version are not supported.");
+	}
+	tempFile=request.zos.installPath&"share/database/jetendo-schema-#form.version#.json";
+	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
+	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
+	getCreateTableSQL(dsStruct);
+	restoreDataDumps();
+	</cfscript>
 </cffunction>
 
 <cffunction name="installInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
