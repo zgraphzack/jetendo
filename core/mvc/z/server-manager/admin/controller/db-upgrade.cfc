@@ -65,7 +65,7 @@
 	}catch(Any e){
 		throw("request.zos.zcoreDatasource, ""#request.zos.zcoreDatasource#"", must be a valid datasource.");
 	}
-	tempFile=request.zos.sharedPath&"database/jetendo-schema.json";
+	tempFile=request.zos.sharedPath&"database/jetendo-schema-"&ts2.databaseVersion&".json";
 	tempFile2=request.zos.sharedPath&"database/jetendo-schema-current.json";
 	if(not fileexists(tempFile2)){
 		application.zcore.functions.zcopyfile(tempFile, tempFile2, true);
@@ -575,6 +575,8 @@
 
 <cffunction name="dumpInitialDatabase" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	versionCom=createobject("component", "zcorerootmapping.version");
+    ts2=versionCom.getVersion();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	// dump json file or create sql
 	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database");
@@ -585,7 +587,7 @@
 	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
 	schemaStruct=siteBackupCom.generateSchemaBackup(request.zos.zcoreDatasource, curDSStruct);
 	schemaString=replace(serializeJson(schemaStruct.struct), request.zos.zcoreDatasource&".", "zcoreDatasource.", "ALL");
-	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema.json", schemaString); 
+	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema-"&ts2.databaseVersion&".json", schemaString); 
 	application.zcore.functions.zwritefile(request.zos.sharedPath&"database/jetendo-schema-current.json", schemaString); 
 	// these tables need a key that allows the infile to replace on unique values easily.
 

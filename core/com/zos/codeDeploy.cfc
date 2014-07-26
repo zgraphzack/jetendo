@@ -59,7 +59,7 @@
 	structdelete(defaultStruct.zos, 'serverStruct');
 
 	configCom=createobject("component", "zcorerootmapping.config");
-	ts=configCom.getConfig(arguments.tempCGI, false);
+	ts=configCom.getConfig(request.zos.cgi, false);
 
 	structappend(ts.zos, defaultStruct.zos, false);
 	structappend(request.zos, ts.zos, true);
