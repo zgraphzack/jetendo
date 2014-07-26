@@ -19,7 +19,9 @@
 	ADD COLUMN `site_x_option_group_set_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `office_id`")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix#blog_version`   
+	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix#blog_version` 
+	ADD COLUMN `blog_sticky` char(1) DEFAULT 0  NOT NULL AFTER `blog_image_library_id`,
+	ADD COLUMN `office_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `blog_sticky`,
 	ADD COLUMN `site_x_option_group_set_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `office_id`")){
 		return false;
 	}
