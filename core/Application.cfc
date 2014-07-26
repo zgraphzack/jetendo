@@ -53,6 +53,8 @@ this.scopeCascading = "standard";
 	<cfargument name="tempCGI" type="struct" required="yes">
 	<cfscript>
 
+	configCom=createobject("component", "zcorerootmapping.config-default");
+	defaultStruct=configCom.getConfig(arguments.tempCGI);
 	configCom=createobject("component", "zcorerootmapping.config");
 	ts=configCom.getConfig(arguments.tempCGI);
 	if(structkeyexists(ts, 'timezone')){
@@ -61,6 +63,7 @@ this.scopeCascading = "standard";
 	if(structkeyexists(ts, 'locale')){
 		this.locale=ts.locale;
 	}
+	structappend(ts, defaultStruct, false);
     ts.zos.databaseVersion=1; // increment manually when database structure changes
 
 	ts.zos.isServer=false;
@@ -107,7 +110,7 @@ if(structkeyexists(requestData.headers,'remote_addr')){
 if(structkeyexists(requestData.headers,'http_host')){
 	local.tempCGI.http_host=requestData.headers.http_host;
 }
-variables.setupGlobals(local.tempCGI);
+setupGlobals(local.tempCGI);
 request.zos.requestData=requestData;
 request.zos.cgi=local.tempCGI;
 </cfscript>

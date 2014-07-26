@@ -1,3 +1,4 @@
+<!--- Don't edit this file if you want to be able to upgrade Jetendo automatically. --->
 <cfcomponent>
 <cfoutput>
 <cffunction name="getConfig" localmode="modern" returntype="struct">
