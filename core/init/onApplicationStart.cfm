@@ -251,7 +251,7 @@
 
 
 	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-	if(not dbUpgradeCom.checkVersion()){
+	if(not dbUpgradeCom.checkVersion(ts.serverGlobals.serverdatasource)){
 		if(request.zos.isTestServer or request.zos.isDeveloper){
 			echo('Database upgrade failed');
 			abort;
@@ -268,7 +268,11 @@
 	
 	var qDomain=0;
 	query name="qDomain" datasource="#ts.serverGlobals.serverdatasource#"{
-		writeoutput("SELECT domain_redirect.*, site.site_domain FROM domain_redirect, site WHERE site.site_id = domain_redirect.site_id and site.site_id <> -1 ");
+		writeoutput("SELECT domain_redirect.*, site.site_domain FROM domain_redirect, site 
+		WHERE site.site_id = domain_redirect.site_id and 
+		site.site_id <> -1 and
+		site_deleted=0 and  
+		domain_redirect_deleted=0");
 	}
 	ts.domainRedirectStruct={};
 	for(var row in qDomain){
@@ -645,13 +649,6 @@
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3'});
 		application.zcore=ts.zcore;
 	}
-	/*dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-	if(not dbUpgradeCom.checkVersion()){
-		if(request.zos.isTestServer or request.zos.isDeveloper){
-			echo('Database upgrade failed');
-			abort;
-		}
-	}*/
 	if(request.zos.allowRequestCFC){
 		request.zos.functions=application.zcore.functions;
 	}

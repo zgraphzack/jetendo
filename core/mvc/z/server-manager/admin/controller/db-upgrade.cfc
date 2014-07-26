@@ -51,7 +51,17 @@
 </cffunction>
 
 <cffunction name="checkVersion" localmode="modern" access="public">
+	<cfargument name="datasource" type="string" required="yes">
 	<cfscript>
+	if(not structkeyexists(request.zos, 'noVerifyQueryObject')){
+		dbCom=createobject("component", "zcorerootmapping.com.db.db");
+		c=dbCom.getConfig();
+		c.datasource=arguments.datasource;
+		c.verifyQueriesEnabled=false;
+		c.cacheDisabled=false;
+		c.autoReset=false;
+		request.zos.noVerifyQueryObject=dbCom.newQuery(c);
+	}
 	//if(not structkeyexists(application.zcore, 'databaseVersion')){
 		versionCom=createobject("component", "zcorerootmapping.version");
 	    ts2=versionCom.getVersion();

@@ -208,7 +208,7 @@
     application.zcore.sourceVersion=ts2.sourceVersion;
 	if(runDatabaseUpgrade or qSetup.recordcount EQ 0 or qSetup.jetendo_setup_database_version NEQ application.zcore.databaseVersion){
 		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-		if(not dbUpgradeCom.checkVersion()){
+		if(not dbUpgradeCom.checkVersion(application.zcore.serverGlobals.serverdatasource)){
 			if(request.zos.isTestServer or request.zos.isDeveloper){
 				echo('Database upgrade failed');
 				abort;
