@@ -36,7 +36,8 @@
 		END IF;
 		END";
 		setting requesttimeout="3000";
-		triggerTemplate=rereplace(triggerTemplate, "\s+", "", "all");;
+		triggerTemplate=rereplace(triggerTemplate, "\s+", "", "all");
+
 		//writeoutput(triggerTemplate);
 		for(i=1;i LTE arraylen(application.zcore.arrGlobalDatasources);i++){
 			local.curDatasource=application.zcore.arrGlobalDatasources[i];

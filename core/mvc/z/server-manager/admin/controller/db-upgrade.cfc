@@ -53,26 +53,6 @@
 <cffunction name="checkVersion" localmode="modern" access="public">
 	<cfargument name="datasource" type="string" required="yes">
 	<cfscript>
-	if(not structkeyexists(request.zos, 'noVerifyQueryObject')){
-		dbInitConfigStruct={
-			insertIdSQL:"select @zLastInsertId id2, last_insert_id() id",
-			datasource:arguments.datasource,
-			tablePrefix:request.zos.zcoreDatasourcePrefix,
-			parseSQLFunctionStruct:{
-			},
-			verifyQueriesEnabled:true,
-			cacheStructKey:'application.zcore.queryCache'
-		}
-		dbCom=createobject("component", "zcorerootmapping.com.model.db");
-		dbCom.init(dbInitConfigStruct);
-		request.zos.queryObject=dbCom.newQuery();
-		c=dbCom.getConfig();
-		c.datasource=arguments.datasource;
-		c.verifyQueriesEnabled=false;
-		c.cacheDisabled=false;
-		c.autoReset=false;
-		request.zos.noVerifyQueryObject=dbCom.newQuery(c);
-	}
 	//if(not structkeyexists(application.zcore, 'databaseVersion')){
 		versionCom=createobject("component", "zcorerootmapping.version");
 	    ts2=versionCom.getVersion();
@@ -198,7 +178,7 @@
 		}
 		application.zcore.functions.zwritefile(tempFile2, jsonOutput);
 
-		echo("Database upgrade complete.");
+		echo("Database upgrade complete.  You must run <a href=""http://#request.zos.cgi.http_host#/?zreset=app"" target=""_blank"">http://#request.zos.cgi.http_host#/?zreset=app</a> now to flush global db structure cache.");
 		application.zcore.functions.zabort();
 	}
 	</cfscript>

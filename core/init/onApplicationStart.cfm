@@ -250,13 +250,6 @@
 	ts.serverGlobals.datasource=request.zos.zcoreDatasource;
 
 
-	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-	if(not dbUpgradeCom.checkVersion(ts.serverGlobals.serverdatasource)){
-		if(request.zos.isTestServer or request.zos.isDeveloper){
-			echo('Database upgrade failed');
-			abort;
-		}
-	}
 
 	
 	query name="qA" datasource="#ts.serverGlobals.serverdatasource#"{
@@ -519,7 +512,14 @@
 	}else{
 		ts.installedDatabaseVersion=0;
 	}
-
+   
+	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+	if(not dbUpgradeCom.checkVersion(ts.serverGlobals.serverdatasource)){
+		if(request.zos.isTestServer or request.zos.isDeveloper){
+			echo('Database upgrade failed');
+			abort;
+		}
+	}
 
 
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4'});
