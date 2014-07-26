@@ -140,7 +140,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	retryCount=0;
 	retryLimit=3;
 	retrySleep=500;
-	enableRetry=false;
+	enableRetry=false; 
 	try{
 		if(paramCount){
 			query attributeCollection="#queryStruct#"{
@@ -516,9 +516,6 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			local.c2=mid(tempSQL, parseStruct.fromPos+5, parseStruct.endOfFromPos-(parseStruct.fromPos+5));
 			local.c2=replacenocase(replacenocase(replacenocase(replacenocase(replace(replace(local.c2,")"," ","all"),"("," ","all"), " STRAIGHT_JOIN ", " , ","all"), " CROSS JOIN ", " , ","all"), " INNER JOIN ", " , ","all"), " JOIN ", " , ","all");
 			local.arrT2=listtoarray(local.c2, ","); 
-			if(arguments.sqlString CONTAINS 'manual_listing'){
-				writedump(local.arrT2);	
-			}
 			for(i=1;i LTE arraylen(local.arrT2);i++){
 				local.arrT2[i]=trim(local.arrT2[i]);
 				if(local.arrT2[i] EQ "''"){

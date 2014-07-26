@@ -14,17 +14,17 @@
 	ts=siteBackupCom.getExcludedTableStruct();
 
 
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix##request.zos.ramtableprefix#city`  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#city`  
 		ADD COLUMN `city_updated_datetime` DATETIME NOT NULL, 
 		ADD COLUMN `city_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix##request.zos.ramtableprefix#city_distance`  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#city_distance`  
 		ADD COLUMN `city_distance_updated_datetime` DATETIME NOT NULL, 
 		ADD COLUMN `city_distance_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix##request.zos.ramtableprefix#listing` 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#listing` 
 		ADD COLUMN `listing_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;
 	}
@@ -39,22 +39,22 @@
 			continue;
 		}
 		if(not structkeyexists(c, '#table#_updated_datetime')){
-			sql="ALTER TABLE `#request.zos.zcoredatasourceprefix##table#`  ADD COLUMN `#table#_updated_datetime` DATETIME NOT NULL ";
+			sql="ALTER TABLE `#request.zos.zcoreDatasourcePrefix##table#`  ADD COLUMN `#table#_updated_datetime` DATETIME NOT NULL ";
 			if(not structkeyexists(c, '#table#_deleted')){
 				sql&=", ADD COLUMN `#table#_deleted` CHAR(1) DEFAULT '0'   NOT NULL  ";
 			}
 		}else{
 			if(not structkeyexists(c, '#table#_deleted')){
-				sql="ALTER TABLE `#request.zos.zcoredatasourceprefix##table#`   ADD COLUMN `#table#_deleted` CHAR(1) DEFAULT '0'   NOT NULL  ";
+				sql="ALTER TABLE `#request.zos.zcoreDatasourcePrefix##table#`   ADD COLUMN `#table#_deleted` CHAR(1) DEFAULT '0'   NOT NULL  ";
 			}
 		}
 		if(sql NEQ ""){
-			if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, sql)){
+			if(!arguments.dbUpgradeCom.executeQuery(this.datasource, sql)){
 				return false;
 			}
 		}
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "ALTER TABLE `#request.zos.zcoredatasourceprefix#city_distance_safe_update`  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#city_distance_safe_update`  
 		ADD COLUMN `city_distance_updated_datetime` DATETIME NOT NULL, 
 		ADD COLUMN `city_distance_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;

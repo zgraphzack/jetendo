@@ -87,7 +87,7 @@
         <cfscript>
 		variables.config.sql=this.sql;
 		if(arguments.datasource NEQ ""){
-			viarables.config.datasource=arguments.datasource;
+			variables.config.datasource=arguments.datasource;
 		}
 		var executeResult=variables.db.execute(arguments.name, variables.config);
 		variables.lastSQL=this.sql;

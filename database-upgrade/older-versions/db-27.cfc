@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "CREATE TABLE `#request.zos.zcoredatasourceprefix#dns_health`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#dns_health`(  
 	  `dns_health_id` INT(11) NOT NULL AUTO_INCREMENT,
 	  `dns_health_url` VARCHAR(255) NOT NULL,
 	  `dns_health_failed` CHAR(1) NOT NULL DEFAULT '0',
@@ -23,7 +23,7 @@
 		return false;
 	}
 	
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "CREATE TABLE `#request.zos.zcoredatasourceprefix#dns_ip`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#dns_ip`(  
 	  `dns_ip_id` INT(11) NOT NULL AUTO_INCREMENT,
 	  `dns_ip_address` VARCHAR(45) NOT NULL,
 	  `dns_ip_comment` TEXT NOT NULL,
@@ -39,7 +39,7 @@
 	}
 
 
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "CREATE TABLE `#request.zos.zcoredatasourceprefix#dns_zone`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#dns_zone`(  
 	  `dns_zone_id` INT(11) NOT NULL AUTO_INCREMENT,
 	  `dns_zone_name` VARCHAR(255) NOT NULL,
 	  `dns_zone_updated_datetime` DATETIME NOT NULL,
@@ -70,7 +70,7 @@
 	}
 
 
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "CREATE TABLE `#request.zos.zcoredatasourceprefix#dns_record`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#dns_record`(  
 	  `dns_record_id` INT(11) NOT NULL AUTO_INCREMENT,
 	  `dns_record_type` VARCHAR(10) NOT NULL,
 	  `dns_zone_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
@@ -88,7 +88,7 @@
 	}
 
 
-if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, "CREATE TABLE `#request.zos.zcoredatasourceprefix#dns_group`(  
+if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#dns_group`(  
 	  `dns_group_id` INT(11) NOT NULL AUTO_INCREMENT,
 	  `dns_group_name` VARCHAR(255) NOT NULL,
 	  `dns_group_comment` TEXT NOT NULL,

@@ -3,8 +3,8 @@
 <cffunction name="getChangedTableArray" localmode="modern" access="public" returntype="array">
 	<cfscript>
 	arr1=[];
-	arrayAppend(arr1, { schema: request.zos.zcoreDatasource, table: 'tooltip'  });
-	arrayAppend(arr1, { schema: request.zos.zcoreDatasource, table: 'tooltip_section'  });
+	arrayAppend(arr1, { schema: this.datasource, table: 'tooltip'  });
+	arrayAppend(arr1, { schema: this.datasource, table: 'tooltip_section'  });
 	return arr1;
 	</cfscript>
 </cffunction>
@@ -12,12 +12,12 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, 
-		"DROP TABLE `#request.zos.zcoreDatasource#`.`#request.zos.zcoredatasourceprefix#tooltip`")){
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
+		"DROP TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#tooltip`")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(request.zos.zcoreDatasource, 
-		"DROP TABLE `#request.zos.zcoreDatasource#`.`#request.zos.zcoredatasourceprefix#tooltip_section`")){
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
+		"DROP TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#tooltip_section`")){
 		return false;
 	}
 	return true;
