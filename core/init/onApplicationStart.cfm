@@ -261,14 +261,19 @@
 	
 	var qDomain=0;
 	query name="qDomain" datasource="#ts.serverGlobals.serverdatasource#"{
-		writeoutput("SELECT domain_redirect.*, site.site_domain FROM domain_redirect, site 
+		writeoutput("SELECT domain_redirect.*, site.site_domain 
+		FROM domain_redirect, site 
 		WHERE site.site_id = domain_redirect.site_id and 
-		site.site_id <> -1 and
-		site_deleted=0 and  
-		domain_redirect_deleted=0");
+		site.site_id <> -1");
 	}
 	ts.domainRedirectStruct={};
 	for(var row in qDomain){
+		if(structkeyexists(row, 'site_deleted') and row.site_deleted EQ 0){
+			continue;
+		}
+		if(structkeyexists(row, 'domain_redirect_deleted') and row.domain_redirect_deleted EQ 0){
+			continue;
+		}
 		ts.domainRedirectStruct[row.domain_redirect_old_domain]=row;
 	}
 	
@@ -347,7 +352,8 @@
 		application[request.zos.installPath&":displaySetupScreen"]=true;
 	}
 	query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
-		writeoutput("SELECT site_id, site_short_domain FROM `#request.zos.zcoreDatasourcePrefix#site` WHERE site_active='1' ");
+		writeoutput("SELECT site_id, site_short_domain FROM `#request.zos.zcoreDatasourcePrefix#site` 
+		WHERE site_active='1' ");
 	}
 	if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'siteglobals')){
 		ts.siteglobals=application.zcore.siteglobals;
@@ -355,6 +361,9 @@
 		ts.siteglobals={};
 	}
 	for(local.row in local.qS){
+		if(structkeyexists(row, 'site_deleted') and row.site_deleted EQ 0){
+			continue;
+		}
 		local.tempPath=application.zcore.functions.zGetDomainInstallPath(local.row.site_short_domain);
 		local.tempPath2=application.zcore.functions.zGetDomainWritableInstallPath(local.row.site_short_domain);
 		if(not structkeyexists(ts.siteglobals, local.row.site_id) and fileexists(local.tempPath2&"_cache/scripts/global.json")){
@@ -462,36 +471,9 @@
 
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-3'});
 
-	query name="local.qD" datasource="#request.zos.zcoredatasource#"{
-		writeoutput(" SELECT concat(TABLE_SCHEMA, '.', TABLE_NAME) `table` , COLUMN_NAME, COLUMN_DEFAULT
-		FROM information_schema.COLUMNS 
-		WHERE  TABLE_SCHEMA IN ('#preserveSingleQuotes(arraytolist(ts.arrGlobalDatasources, "','"))#') ");
-	}
-	for(local.row in local.qD){
-		if(not structkeyexists(ts.tableColumns, local.row.table)){
-			ts.tableColumns[local.row.table]={};
-		}
-		ts.tableColumns[local.row.table][local.row.COLUMN_NAME]=local.row.COLUMN_DEFAULT;
-	}
-	ts.siteTableColumns={};
-	for(local.i in ts.tableColumns[request.zos.zcoreDatasource&".site"]){
-		ts.siteTableColumns[replace(replace(local.i, "site_", ""), "_", "", "all")]=ts.tableColumns[request.zos.zcoreDatasource&".site"][local.i];
-	}
-	for(local.i in ts.siteglobals){
-		// force new site table fields to exist immediately after application cache is cleared!
-		structappend(ts.siteglobals[local.i], ts.siteTableColumns, false); 
-	}
-	query name="local.qD" datasource="#request.zos.zcoredatasource#"{
-		writeoutput("SELECT concat(TABLE_SCHEMA, '.', TABLE_NAME) `table` 
-		FROM information_schema.COLUMNS 
-		WHERE COLUMN_NAME = 'site_id' AND 
-		TABLE_SCHEMA IN ('#preserveSingleQuotes(arraytolist(ts.arrGlobalDatasources, "','"))#') ");
-	}
-	for(local.row in local.qD){
-		ts.tablesWithSiteIdStruct[local.row.table]=true;
-	}
-	//structdelete(ts.tablesWithSiteIdStruct, request.zos.zcoreDatasource&".manual_listing");
-	
+
+	application.zcore.functions.zUpdateTableColumnCache(ts);
+
 	application.zcore.arrGlobalDatasources=ts.arrGlobalDatasources;
 	application.zcore.verifyTablesExcludeStruct=ts.verifyTablesExcludeStruct;
 	application.zcore.primaryKeyMapStruct=ts.primaryKeyMapStruct;
@@ -514,7 +496,7 @@
 	}
    
 	dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
-	if(not dbUpgradeCom.checkVersion(ts.serverGlobals.serverdatasource)){
+	if(not dbUpgradeCom.checkVersion()){
 		if(request.zos.isTestServer or request.zos.isDeveloper){
 			echo('Database upgrade failed');
 			abort;

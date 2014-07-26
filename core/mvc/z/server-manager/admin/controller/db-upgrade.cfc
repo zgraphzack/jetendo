@@ -51,7 +51,6 @@
 </cffunction>
 
 <cffunction name="checkVersion" localmode="modern" access="public">
-	<cfargument name="datasource" type="string" required="yes">
 	<cfscript>
 	//if(not structkeyexists(application.zcore, 'databaseVersion')){
 		versionCom=createobject("component", "zcorerootmapping.version");
@@ -177,6 +176,8 @@
 			application.zcore.functions.zwritefile(tempFile, jsonOutput);
 		}
 		application.zcore.functions.zwritefile(tempFile2, jsonOutput);
+		
+		application.zcore.functions.zUpdateTableColumnCache(application.zcore);
 
 		echo("Database upgrade complete.  You must run <a href=""http://#request.zos.cgi.http_host#/?zreset=app"" target=""_blank"">http://#request.zos.cgi.http_host#/?zreset=app</a> now to flush global db structure cache.");
 		application.zcore.functions.zabort();
