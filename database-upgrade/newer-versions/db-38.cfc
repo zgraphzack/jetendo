@@ -73,9 +73,10 @@
 		return false;
 	} 
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#far_feature`   
-	  ADD COLUMN `far_feature_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
+	  ADD COLUMN `far_feature_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST,   
 	  DROP PRIMARY KEY,
-	  ADD PRIMARY KEY (`far_feature_id`, `far_feature_code`)")){
+	  ADD PRIMARY KEY (`far_feature_id`),
+	  ADD  UNIQUE INDEX `NewIndex1` (`far_feature_code`)")){
 		return false;
 	} 
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#mls_image_hash`   
@@ -114,16 +115,20 @@
 			return false;
 		} 
 	}
+	
+
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#state`   
 	  ADD COLUMN `state_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
-	  ADD PRIMARY KEY (`state_id`, `state_code`)")){
+	  ADD PRIMARY KEY (`state_id`),
+	  ADD  UNIQUE INDEX `NewIndex1` (`state_code`)")){
 		return false;
 	} 
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#country`   
 	  ADD COLUMN `country_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
-	  ADD PRIMARY KEY (`country_id`, `country_code`)")){
+	  ADD PRIMARY KEY (`country_id`),
+	  ADD  UNIQUE INDEX `NewIndex1` (`country_code`)")){
 		return false;
 	} 
 	return true;
