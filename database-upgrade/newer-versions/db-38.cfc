@@ -131,6 +131,21 @@
 	  ADD  UNIQUE INDEX `NewIndex1` (`country_code`)")){
 		return false;
 	} 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#company`   
+	  ADD COLUMN `company_deleted` CHAR(1) NOT NULL AFTER `company_name`,
+	  ADD COLUMN `company_updated_datetime` DATETIME NOT NULL AFTER `company_deleted`")){
+		return false;
+	} 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#sync`   
+	  ADD COLUMN `sync_deleted` CHAR(1) NOT NULL AFTER `sync_type`,
+	  ADD COLUMN `sync_updated_datetime` DATETIME NOT NULL AFTER `sync_deleted`")){
+		return false;
+	} 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#version`   
+	  ADD COLUMN `version_deleted` CHAR(1) NOT NULL AFTER `version_table`,
+	  ADD COLUMN `version_updated_datetime` DATETIME NOT NULL AFTER `version_deleted`")){
+		return false;
+	} 
 	return true;
 	</cfscript>
 </cffunction>

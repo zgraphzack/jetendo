@@ -1,5 +1,48 @@
 <cfcomponent>
 <cfoutput>
+
+<!--- application.zcore.functions.zMarkDeleted("table", { table_id: form.table_id }, request.zos.zcoreDatasource); --->
+<cffunction name="zMarkDeleted" localmode="modern" returntype="any" output="true">
+	<cfargument name="tableName" type="string" required="yes">
+	<cfargument name="deleteWhereStruct" type="struct" required="yes">
+	<cfargument name="datasource" type="string" required="no" default="#request.zos.zcoreDatasource#">
+	<cfscript>
+	db=request.zos.queryObject;
+	if(structcount(arguments.deleteWhereStruct) EQ 0){
+		throw("At least one key must be set on deleteWhereStruct");
+	}
+	if(structkeyexists(application.zcore.tablesWithSiteIdStruct, arguments.tableName) and not structkeyexists(arguments.deleteWhereStruct, 'site_id')){
+		throw("deleteWhereStruct.site_id is required for this table: #arguments.tableName#");
+	}
+	if(structkeyexists(application.zcore.tableConventionExceptionStruct, arguments.tableName) and structkeyexists(application.zcore.tableConventionExceptionStruct[arguments.tableName], 'primaryKey')){
+		primaryField=application.zcore.tableConventionExceptionStruct[arguments.tableName].primaryKey;
+	}else{
+		primaryField="#arguments.tableName#_id";
+	}
+	if(structkeyexists(application.zcore.tableConventionExceptionStruct, arguments.tableName) and structkeyexists(application.zcore.tableConventionExceptionStruct[arguments.tableName], 'deleted')){
+		deletedField=application.zcore.tableConventionExceptionStruct[arguments.tableName].deleted;
+	}else{
+		deletedField="#arguments.tableName#_deleted";
+	}
+	if(structkeyexists(application.zcore.tableConventionExceptionStruct, arguments.tableName) and structkeyexists(application.zcore.tableConventionExceptionStruct[arguments.tableName], 'updatedDatetime')){
+		updatedDatetimeField=application.zcore.tableConventionExceptionStruct[arguments.tableName].updatedDatetime;
+	}else{
+		updatedDatetimeField="#arguments.tableName#_updated_datetime";
+	}
+	db.sql = "UPDATE "& request.zos.queryObject.table(arguments.tableName, arguments.datasource) &" SET 
+	`#deletedField#` = `#primaryField#`, 
+	`#updatedDatetimeField#`=#db.param(request.zos.mysqlnow)# ";
+	arrWhere = ArrayNew(1);
+	for(i in arguments.deleteWhereStruct){
+		v=arguments.deleteWhereStruct[i];
+		arrayAppend(arrWhere, '`#i#` = #db.param(v)# ');
+	}
+	db.sql&=" WHERE "&arrayToList(arrWhere, " and ");
+	db.execute("qDelete", arguments.datasource);
+	return true;
+	</cfscript>
+</cffunction>
+
 <cffunction name="zUpdateTableColumnCache" localmode="modern" access="remote">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>

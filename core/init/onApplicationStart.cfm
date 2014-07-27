@@ -63,6 +63,35 @@
 	ts.mysqlDataTypeStruct["tinytext"]="cf_sql_varchar";
 	ts.mysqlDataTypeStruct["enum"]="cf_sql_varchar";
 	ts.mysqlDataTypeStruct["set"]="cf_sql_varchar";
+
+
+	ts.tableConventionExceptionStruct={
+		"manual_listing":{
+			"primaryKey":"manual_listing_unique_id"
+		},
+		"listing": {
+			"primaryKey":"listing_unique_id"
+		},
+		"city_distance_safe_update": {
+			"deleted":"city_distance_deleted",
+			"updatedDatetime": "city_distance_updated_datetime",
+		},
+		"#request.zos.ramTablePrefix#city": {
+			"primaryKey": "city_id",
+			"deleted":"city_deleted",
+			"updatedDatetime": "city_updated_datetime",
+		},
+		"#request.zos.ramTablePrefix#city_distance": {
+			"primaryKey": "city_distance_id",
+			"deleted":"city_distance_deleted",
+			"updatedDatetime": "city_distance_updated_datetime",
+		},
+		"#request.zos.ramTablePrefix#listing": {
+			"primaryKey": "listing_unique_id",
+			"deleted":"listing_deleted",
+			"updatedDatetime": "listing_updated_datetime",
+		}
+	};
  
 	ts.siteOptionTypeStruct={
 		"0": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textSiteOptionType"),
