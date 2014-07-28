@@ -17,11 +17,15 @@
 		return false;
 	} 
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramTablePrefix#listing`   
- 	 CHANGE `listing_unique_id` `listing_unique_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT")){
-		return false;
-	} 
-
+	query name="qCheck" datasource="#this.datasource#"{
+		echo("show tables in `#this.datasource#` LIKE '#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#listing' ");
+	};
+	if(qCheck.recordcount NEQ 0){
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramTablePrefix#listing`   
+	 	 CHANGE `listing_unique_id` `listing_unique_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT")){
+			return false;
+		} 
+	}
 	return true;
 	</cfscript>
 </cffunction>

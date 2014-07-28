@@ -2846,222 +2846,243 @@ ts.tablePrefix="";
 zCreateMemoryTable(ts);
 --->
 <cffunction name="zCreateMemoryTable" localmode="modern" output="yes" returntype="any">    
-<cfargument name="ss" type="struct" required="yes">
-<cfscript>
-var qmls="";
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	var qmls="";
 	var db=request.zos.queryObject;
-var qCheck="";
+	var qCheck="";
 	var local=structnew();
-var keyString="";
-var i=0;
-var arrF=[];
-var arrF2=[];
-var arrF22=[];
-var arrAlter=[];
-var endPos=0;
-var notNumberField=0;
-var numberTypeList=0;
-var typeName=0;
-var theNull=0;
-var fieldString=0;
-var qFieldLengths=0;
-var qC2=0;
-var qFields=0;
-var str=0;
-var curName=0;
-var collation2=0;
-var arrKeyOrder=arraynew(1);
-var theErr="";
-var ks={};
-var arrK=arraynew(1);
-var ts=structnew();
-var db2=0;
-var db=0;
-setting requesttimeout="2000";
-local.c=application.zcore.db.getConfig();
-local.c.autoReset=false;
-local.c.datasource=request.zos.zcoreDatasource;
-db=application.zcore.db.newQuery(local.c);
-ts.tablePrefix=request.zos.ramtableprefix;
-ts.force=false;
-ts.allowFulltext=false;
-structappend(arguments.ss,ts,false);
-</cfscript>
-<cflock name="zCreateMemoryTable" type="exclusive" timeout="1000">
-<cfsavecontent variable="db.sql">
-SHOW TABLES like #db.param('#request.zos.zcoreDatasourcePrefix##(arguments.ss.tablePrefix)####(arguments.ss.table)#')#
-</cfsavecontent><cfscript>qC2=db.execute("qC2");
-</cfscript>
-<cfif structkeyexists(form, 'zrebuildramtable') or (qC2.recordcount EQ 0)>
-<cfif arguments.ss.force EQ false>
-    <cfsavecontent variable="db.sql">
-    SHOW TABLES like #db.param('#request.zos.zcoreDatasourcePrefix##(arguments.ss.tablePrefix)##(arguments.ss.table)#')#
-    </cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
-    <cfif qmls.recordcount NEQ 0>
-	<cfsavecontent variable="db.sql">
-	SELECT count(*) c FROM #db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#
-	</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
-	<cfif qMLS.c NEQ 0>
-	    <cfreturn 2>
-	</cfif>
-    </cfif>
-</cfif>
-<!--- check for invalid column types --->
-<cfsavecontent variable="db.sql">
-show full fields from #db.table(arguments.ss.table, request.zos.zcoreDatasource)#
-</cfsavecontent><cfscript>qFields=db.execute("qFields");</cfscript>
-<cfloop query="qFields">
-	<!--- check the fields are a valid type --->
-<cfif findnocase(',#qFields.field#,', ',text,blob,tinyblob,mediumblob,longblob,tinytext,longtext,mediumtext,') NEQ 0>
-    <cfset arrF=arraynew(1)>
-    <cfsavecontent variable="theErr">
-    Validation Error: You can't create a table using ENGINE=MEMORY that contains a field using a text or blob data type.<br /><br />
-    <strong>Text/Blog Fields in #arguments.ss.table#</strong><br />
-    <cfloop query="qMLS">#qFields.field#<br /></cfloop>                
-    </cfsavecontent>
-    <cfthrow type="exception" message="#theErr#">    
-</cfif>
-<cfscript>
-	theNull=' NULL ';
-	if(qFields.null EQ 'NO'){
-		theNull=' NOT NULL ';
-	}
-	collation2="";
-	if(qFields.collation NEQ ''){
-		collation2='COLLATE '&qFields.collation;
-	}
-	notNumberField=true;
-	endPos=findnocase("(",qFields.type);
-	if(endPos EQ 0){
-		typeName=qFields.type;
-	}else{
-		typeName=mid(qFields.type,1,endPos-1);
-	}
-	numberTypeList=",smallint,mediumint,tinyint,int,integer,bigint,serial,float,double,double precision,decimal,dec,";
-	if(findnocase(',#typeName#,',numberTypeList) NEQ 0){
-		notNumberField=false;
-	}
+	var keyString="";
+	var i=0;
+	var arrF=[];
+	var arrF2=[];
+	var arrF22=[];
+	var arrAlter=[];
+	var endPos=0;
+	var notNumberField=0;
+	var numberTypeList=0;
+	var typeName=0;
+	var theNull=0;
+	var fieldString=0;
+	var qFieldLengths=0;
+	var qC2=0;
+	var qFields=0;
+	var str=0;
+	var curName=0;
+	var collation2=0;
+	var arrKeyOrder=arraynew(1);
+	var theErr="";
+	var ks={};
+	var arrK=arraynew(1);
+	var ts=structnew();
+	var db2=0;
+	var db=0;
+	arrCreate=[];
+	setting requesttimeout="2000";
+	local.c=application.zcore.db.getConfig();
+	local.c.autoReset=false;
+	local.c.datasource=request.zos.zcoreDatasource;
+	db=application.zcore.db.newQuery(local.c);
+	ts.tablePrefix=request.zos.ramtableprefix;
+	ts.force=false;
+	ts.allowFulltext=false;
+	structappend(arguments.ss,ts,false);
 	</cfscript>
-<cfif notNumberField>
-		<cfset arrayAppend(arrF2, qFields.field)>
-    <cfset arrayappend(arrF22,'max(length(`'&qFields.field&'`)) as `'&qFields.field&'`')>
-		<cfset arrayappend(arrAlter,' change `#qFields.field#` `#qFields.field#` varchar (1z_count) DEFAULT ''#qFields.default#'' #theNull# #collation2# ')>
-</cfif>
-</cfloop> 
-<!--- all columns are ok - build the sql for the indexes --->
-<cfsavecontent variable="db.sql">
-show keys from #db.table(arguments.ss.table, request.zos.zcoreDatasource)# 
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");
-curName="";
-ks=structnew();
-</cfscript>
-<cfloop query="qMLS">
-<cfscript>
-	if(curName NEQ qMLS.key_name){
-		curName=qMLS.key_name;
-		arrayappend(arrKeyOrder, curName);
-		ks[curName]=structnew();
-		ks[curName].arrField=arraynew(1);
-		if(qMLS.key_name EQ 'primary'){
-			ks[curName].type=" primary key ";
-		}else if(qMLS.index_type EQ 'btree' and qMLS.non_unique EQ 0){
-			ks[curName].type=" unique `#qMLS.key_name#` ";
-		}else if(qMLS.index_type EQ 'btree' and qMLS.non_unique EQ 1){
-			ks[curName].type=" key `#qMLS.key_name#` ";
-		}else{
-			ks[curName].type=" key `#qMLS.key_name#` ";
-			if(arguments.ss.allowFulltext EQ false){
-				application.zcore.template.fail('FULLTEXT indexes can not be used with MEMORY tables in MySQL 5.0.  Please set "ts.allowFullText" to "true" when calling "zCreateMemoryTable" to ignore this error and use "KEY" instead of "FULLTEXT KEY". Full text searches will not work on a memory table.');
+	<cflock name="zCreateMemoryTable" type="exclusive" timeout="1000">
+		<cfsavecontent variable="db.sql">
+		SHOW TABLES like #db.param('#request.zos.zcoreDatasourcePrefix##(arguments.ss.tablePrefix)####(arguments.ss.table)#')#
+		</cfsavecontent><cfscript>qC2=db.execute("qC2");
+		</cfscript>
+		<cfif structkeyexists(form, 'zrebuildramtable') or (qC2.recordcount EQ 0)>
+			<cfif arguments.ss.force EQ false>
+			    <cfsavecontent variable="db.sql">
+			    SHOW TABLES like #db.param('#request.zos.zcoreDatasourcePrefix##(arguments.ss.tablePrefix)##(arguments.ss.table)#')#
+			    </cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
+			    <cfif qmls.recordcount NEQ 0>
+					<cfsavecontent variable="db.sql">
+					SELECT count(*) c FROM #db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#
+					</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
+					<cfif qMLS.c NEQ 0>
+					    <cfreturn 2>
+					</cfif>
+			    </cfif>
+			</cfif>
+			<!--- check for invalid column types --->
+			<cfsavecontent variable="db.sql">
+			show full fields from #db.table(arguments.ss.table, request.zos.zcoreDatasource)#
+			</cfsavecontent><cfscript>qFields=db.execute("qFields");</cfscript>
+			<cfloop query="qFields">
+				<!--- check the fields are a valid type --->
+				<cfif findnocase(',#qFields.field#,', ',text,blob,tinyblob,mediumblob,longblob,tinytext,longtext,mediumtext,') NEQ 0>
+					<cfset arrF=arraynew(1)>
+					<cfsavecontent variable="theErr">
+					Validation Error: You can't create a table using ENGINE=MEMORY that contains a field using a text or blob data type.<br /><br />
+					<strong>Text/Blog Fields in #arguments.ss.table#</strong><br />
+					<cfloop query="qMLS">#qFields.field#<br /></cfloop>                
+					</cfsavecontent>
+					<cfthrow type="exception" message="#theErr#">    
+				</cfif>
+				<cfscript>
+				theNull=' NULL ';
+				if(qFields.null EQ 'NO'){
+					theNull=' NOT NULL ';
+				}
+				collation2="";
+				if(qFields.collation NEQ ''){
+					collation2='COLLATE '&qFields.collation;
+				}
+				notNumberField=true;
+				endPos=findnocase("(",qFields.type);
+				if(endPos EQ 0){
+					typeName=qFields.type;
+				}else{
+					typeName=mid(qFields.type,1,endPos-1);
+				}
+				numberTypeList=",smallint,mediumint,tinyint,int,integer,bigint,serial,float,double,double precision,decimal,dec,";
+				if(findnocase(',#typeName#,',numberTypeList) NEQ 0){
+					notNumberField=false;
+				}
+				if(notNumberField){
+					arrayAppend(arrF2, qFields.field);
+			    	arrayappend(arrF22,'max(length(`'&qFields.field&'`)) as `'&qFields.field&'`');
+			    	if(qFields.type EQ "date"){
+			    		defaultValue="0000-00-00";
+			    	}else if(qFields.type EQ "datetime"){
+			    		defaultValue="0000-00-00 00:00:00";
+			    	}else if(qFields.type EQ "time"){
+			    		defaultValue="00:00:00";
+			    	}else{
+			    		defaultValue=qFields.default;
+			    	}
+					arrayappend(arrCreate,' `#qFields.field#` #qFields.type# DEFAULT ''#defaultValue#'' #theNull# #collation2# ');
+					arrayappend(arrAlter,' change `#qFields.field#` `#qFields.field#` varchar (1z_count) DEFAULT ''#defaultValue#'' #theNull# #collation2# ');
+				}else{
+					defaultValue="";
+					if(qFields.default NEQ ""){
+						defaultValue="DEFAULT '"&qFields.default&"'";
+					}
+					arrayappend(arrCreate,'`#qFields.field#` #qFields.type# #defaultValue# #theNull# #qFields.extra# ');
+
+				}
+				</cfscript>
+			</cfloop> 
+			<!--- all columns are ok - build the sql for the indexes --->
+			<cfsavecontent variable="db.sql">
+			show keys from #db.table(arguments.ss.table, request.zos.zcoreDatasource)# 
+			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");
+			curName="";
+			ks=structnew();
+			</cfscript>
+			<cfloop query="qMLS">
+				<cfscript>
+				if(curName NEQ qMLS.key_name){
+					curName=qMLS.key_name;
+					arrayappend(arrKeyOrder, curName);
+					ks[curName]=structnew();
+					ks[curName].arrField=arraynew(1);
+					if(qMLS.key_name EQ 'primary'){
+						ks[curName].type=" primary key ";
+					}else if(qMLS.index_type EQ 'btree' and qMLS.non_unique EQ 0){
+						ks[curName].type=" unique `#qMLS.key_name#` ";
+					}else if(qMLS.index_type EQ 'btree' and qMLS.non_unique EQ 1){
+						ks[curName].type=" key `#qMLS.key_name#` ";
+					}else{
+						ks[curName].type=" key `#qMLS.key_name#` ";
+						if(arguments.ss.allowFulltext EQ false){
+							application.zcore.template.fail('FULLTEXT indexes can not be used with MEMORY tables in MySQL 5.0.  Please set "ts.allowFullText" to "true" when calling "zCreateMemoryTable" to ignore this error and use "KEY" instead of "FULLTEXT KEY". Full text searches will not work on a memory table.');
+						}
+					}
+				}
+				arrayappend(ks[curName].arrField, "`#qMLS.column_name#`");
+				</cfscript>
+			</cfloop>
+			<cfscript>
+			for(i=1;i LTE arraylen(arrKeyOrder);i=i+1){
+				arrayappend(arrK, ks[arrKeyOrder[i]].type&'('&arraytolist(ks[arrKeyOrder[i]].arrField)&')');
 			}
-		}
-	}
-	arrayappend(ks[curName].arrField, "`#qMLS.column_name#`");
-	</cfscript>
-</cfloop>
-<cfscript>
-for(i=1;i LTE arraylen(arrKeyOrder);i=i+1){
-	arrayappend(arrK, ks[arrKeyOrder[i]].type&'('&arraytolist(ks[arrKeyOrder[i]].arrField)&')');
-}
-keyString=arraytolist(arrK);
-</cfscript>
-<!--- Make the new table in ram and then rename so the operation is locked and instantaneous --->
-<cfsavecontent variable="db.sql">
-drop table if exists #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# 
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript><!---  --->
-<cfsavecontent variable="db.sql">
-create table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
-<cfif trim(keyString) NEQ ''>(#db.trustedSQL(keyString)#)</cfif> ENGINE=MEMORY 
-SELECT * FROM #db.table(arguments.ss.table, request.zos.zcoreDatasource)#  
-WHERE #db.param(1)#=#db.param(0)#
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
+			keyString=arraytolist(arrK);
+			</cfscript>
+			<!--- Make the new table in ram and then rename so the operation is locked and instantaneous --->
+			<cfsavecontent variable="db.sql">
+			drop table if exists #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# 
+			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript><!---  --->
 
-<!--- resize the fields to minimum size possible except for number data types--->
-<cfscript>
-fieldString='select '&arrayToList(arrF22,',')&' from '&db.table(arguments.ss.table, request.zos.zcoreDatasource)&'';
-</cfscript>
-<cfsavecontent variable="db.sql">
-#db.trustedSQL(fieldString)#
-</cfsavecontent><cfscript>qFieldLengths=db.execute("qFieldLengths");
-for(i=1;i<=arraylen(arrF2);i++){
-	if(arrAlter[i] NEQ ''){
-	arrAlter[i]=replacenocase(arrAlter[i], '1z_count',max(1,qFieldLengths[arrF2[i]][1]));
-	}else{
-		arraydeleteat(arrAlter,i);
-		i--;
-	}
-}
-str=arraytolist(arrAlter,',');
-</cfscript>
-<cfsavecontent variable="db.sql">
-alter table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
-#db.trustedSQL(str)#
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>  
+			<cfsavecontent variable="db.sql">
+			create table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
+			(
+				#db.trustedSQL(arrayToList(arrCreate, ", "))#
+				<cfif trim(keyString) NEQ ''>, #db.trustedSQL(keyString)# </cfif>
+			)
+			 ENGINE=MEMORY 
+			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 
-<cfsavecontent variable="db.sql">
-INSERT INTO #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
-SELECT * FROM #db.table(arguments.ss.table, request.zos.zcoreDatasource)# 
-<cfif request.zos.istestserver and arguments.ss.table EQ "listing"> 
-	WHERE CEILING(RAND()*#db.param(10)#) >= #db.param(7)# 
-</cfif>
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");
-local.c=application.zcore.db.getConfig();
-local.c.datasource=request.zos.zcoreDatasource;
-structdelete(local.c, 'checkSiteId');
-local.c.autoReset=false;
-local.c.verifyQueriesEnabled=false;
-db2=application.zcore.db.newQuery(c);
-</cfscript>  
-<cfsavecontent variable="db2.sql">
-show table status from `#request.zos.zcoreDatasource#` 
-WHERE name = '#arguments.ss.tablePrefix&arguments.ss.table#'
-</cfsavecontent><cfscript>
-qMLS=db2.execute("qMLS");</cfscript>
+			<!--- resize the fields to minimum size possible except for number data types--->
+			<cfscript>
+			fieldString='select '&arrayToList(arrF22,',')&' from '&db.table(arguments.ss.table, request.zos.zcoreDatasource)&'';
+			</cfscript>
+			<cfsavecontent variable="db.sql">
+			#db.trustedSQL(fieldString)#
+			</cfsavecontent><cfscript>qFieldLengths=db.execute("qFieldLengths");
+			for(i=1;i<=arraylen(arrF2);i++){
+				if(arrAlter[i] NEQ ''){
+				arrAlter[i]=replacenocase(arrAlter[i], '1z_count',max(1,qFieldLengths[arrF2[i]][1]));
+				}else{
+					arraydeleteat(arrAlter,i);
+					i--;
+				}
+			}
+			str=arraytolist(arrAlter,',');
+			</cfscript>
+			<cfsavecontent variable="db.sql">
+			alter table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
+			#db.trustedSQL(str)#
+			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>  
+
+			<cfsavecontent variable="db.sql">
+			INSERT INTO #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
+			SELECT * FROM #db.table(arguments.ss.table, request.zos.zcoreDatasource)# 
+			<cfif request.zos.istestserver and arguments.ss.table EQ "listing"> 
+				WHERE CEILING(RAND()*#db.param(10)#) >= #db.param(7)# 
+			</cfif>
+			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");
+			local.c=application.zcore.db.getConfig();
+			local.c.datasource=request.zos.zcoreDatasource;
+			structdelete(local.c, 'checkSiteId');
+			local.c.autoReset=false;
+			local.c.verifyQueriesEnabled=false;
+			db2=application.zcore.db.newQuery(c);
+			</cfscript>  
+			<cfsavecontent variable="db2.sql">
+			show table status from `#request.zos.zcoreDatasource#` 
+			WHERE name = '#arguments.ss.tablePrefix&arguments.ss.table#'
+			</cfsavecontent><cfscript>
+			qMLS=db2.execute("qMLS");</cfscript>
 
 
-<cfif qMLS.recordcount NEQ 0>
-<cfsavecontent variable="db.sql">
-rename table 
-#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to  <!--- #zram##table --->
-#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# , <!--- 2 ##zram##table --->
-#db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#  to  <!--- zram#table --->
-#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# ,  <!--- 2 #zram##table --->
-#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to <!--- ##zram##table --->
-#db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#  <!--- 2 zram#table --->
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
-<cfelse>
-<cfsavecontent variable="db.sql">
-rename table 
-#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to #db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)# 
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
-</cfif>
-<cfsavecontent variable="db.sql">
-drop table if exists 
-#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# , 
-#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# 
-</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
-</cfif>
-</cflock>
-<cfreturn 1>
+			<cfif qMLS.recordcount NEQ 0>
+				<cfsavecontent variable="db.sql">
+				rename table 
+				#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to  <!--- #zram##table --->
+				#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# , <!--- 2 ##zram##table --->
+				#db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#  to  <!--- zram#table --->
+				#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# ,  <!--- 2 #zram##table --->
+				#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to <!--- ##zram##table --->
+				#db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#  <!--- 2 zram#table --->
+				</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
+			<cfelse>
+				<cfsavecontent variable="db.sql">
+				rename table 
+				#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to #db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)# 
+				</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
+			</cfif>
+			<cfsavecontent variable="db.sql">
+			drop table if exists 
+			#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# , 
+			#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# 
+			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
+		</cfif>
+	</cflock>
+	<cfreturn 1>
 </cffunction>
 
 

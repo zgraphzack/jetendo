@@ -505,10 +505,13 @@
 						ts3.forceWhereFields="listing_id,listing_data_deleted";
 						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
 					}else{
-						listing_unique_id=application.zcore.functions.zInsert(ts2);
-						ts5.struct.listing_unique_id=listing_unique_id;
-						application.zcore.functions.zInsert(ts5);
+						application.zcore.functions.zInsert(ts2);
 						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
+						structdelete(ts5.struct, 'listing_unique_id');
+						d=application.zcore.functions.zInsert(ts5);
+						if(d EQ false){
+							throw("Duplicate key error on #ts5.struct.listing_id#");
+						}
 					}
 					transaction action="commit";
 				}catch(Any e){
