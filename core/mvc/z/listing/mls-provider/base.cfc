@@ -276,14 +276,7 @@
 	var ts2=0;
 	var orsql=0;
 	var qlookup=0;
-	var listingcolumns="listing_id,listing_acreage,listing_baths,listing_halfbaths,listing_beds,listing_city,listing_county,listing_frontage,listing_frontage_name,listing_price,listing_status,listing_state,listing_type_id,listing_sub_type_id,listing_style,listing_view,listing_lot_square_feet,listing_square_feet,listing_subdivision,listing_year_built,listing_office,listing_agent,listing_latitude,listing_longitude,listing_pool,listing_photocount,listing_coded_features,listing_updated_datetime,listing_primary,listing_mls_id,listing_condoname,listing_address,listing_zip,listing_condition,listing_parking,listing_region,listing_tenure,listing_liststatus";
-	var listingdatacolumns="listing_id,listing_data_remarks,listing_data_address,listing_data_zip,listing_data_detailcache1,listing_data_detailcache2,listing_data_detailcache3";
-	var listingtrackcolumns="listing_track_id,listing_id,listing_track_price,listing_track_price_change,listing_track_hash,listing_track_deleted,listing_track_datetime,listing_track_updated_datetime,listing_track_processed_datetime";
-	
 	ts.lookupStruct=StructNew();
-	ts.lookupStruct.arrlistingtrackcolumns=listToArray(listingtrackcolumns);
-	ts.lookupStruct.arrlistingcolumns=listToArray(listingcolumns);
-	ts.lookupStruct.arrlistingdatacolumns=listToArray(listingdatacolumns);
 
 	ts.lookupStruct.statusStr=structnew();    
 	ts.lookupStruct.statusStr["for sale"]=1;

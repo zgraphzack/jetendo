@@ -418,7 +418,8 @@ still need to add all the meta data fields and photo display
 	form.manual_listing_created_datetime=dateformat(form.manual_listing_created_datetime, 'yyyy-mm-dd')&' '&timeformat(form.manual_listing_created_datetime, 'HH:mm:ss');
 	db.sql="select * from #db.table("listing_track", request.zos.zcoreDatasource)#
 	where listing_id = #db.param(form.manual_listing_unique_id)# and 
-	listing_track_deleted = #db.param(0)#";
+	listing_track_deleted = #db.param(0)# and 
+	listing_track_inactive = #db.param(0)#";
 	qTrackId=db.execute("qTrackId");
 	if(qTrackId.recordcount NEQ 0){
 		form.listing_track_id=qTrackId.listing_track_id;
@@ -431,6 +432,7 @@ still need to add all the meta data fields and photo display
 	form.listing_track_price_change=application.zcore.functions.zso(form,'manual_listing_price');
 	form.listing_track_hash="";
 	form.listing_track_deleted="0";
+	form.listing_track_inactive = "0";
 	form.listing_track_updated_datetime=form.manual_listing_updated_datetime;
 	form.listing_track_processed_datetime=form.manual_listing_updated_datetime;
 	

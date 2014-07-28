@@ -430,10 +430,11 @@ variables.tableLookup["I"]="I";
 </cffunction>
     
 <cffunction name="getJoinSQL" localmode="modern" output="yes" returntype="any">
+	<cfargument name="joinType" type="string" required="no" default="INNER">
 	<cfscript>
 	var db=request.zos.queryObject;
-	return "INNER JOIN #db.table("rets24_property", request.zos.zcoreDatasource)# rets24_property ON rets24_property.rets24_list_105 = listing.listing_id";
 	</cfscript>
+	<cfreturn "#arguments.joinType# JOIN #db.table("rets24_property", request.zos.zcoreDatasource)# rets24_property ON rets24_property.rets24_list_105 = listing.listing_id">
 </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets24_property.rets24_list_105">

@@ -857,7 +857,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     #whereSQL#
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
    		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id and 
-   		listing_track_deleted = 0 </cfif>
+   		listing_track_deleted = 0 and 
+	   listing_track.listing_track_inactive=0  </cfif>
         </cfif>
     <cfif arguments.ss.perpage EQ 0> and 1=0 </cfif>
     </cfsavecontent>
@@ -908,7 +909,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
              
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
    		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id and 
-   		listing_track_deleted = 0 </cfif> 
+   		listing_track_deleted = 0 and 
+	   listing_track.listing_track_inactive=0 </cfif> 
         </cfif>
     
     <cfif isDefined('arguments.ss.noSorting') EQ false>
@@ -1057,7 +1059,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     </cfif> --->
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
    		<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> and listing.listing_id = listing_track.listing_id and 
-   		listing_track_deleted = 0 </cfif> 
+   		listing_track_deleted = 0 and 
+	   listing_track.listing_track_inactive=0 </cfif> 
         </cfif>
     
     #arguments.ss.zwhere#
@@ -1517,6 +1520,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			local.queryColumnStruct=structnew();
 			for(i654 in mlsStruct){
 				if(i654 EQ 0){
+					if(not structkeyexists(request.zos.listingMlsComObjects, i654)){
+						continue;
+					}
 					ts=structnew();
 					ts.image_library_id_field="manual_listing.manual_listing_image_library_id";
 					ts.count =  1; // how many images to get
@@ -1528,11 +1534,12 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				tsql232="select * #db.trustedSQL(rs2.select)# #db.trustedSQL(rs3.select)# from (
 				#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
 				#db.table("listing_data", request.zos.zcoreDatasource)# listing_data) 				
-				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL())#  
+				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL("INNER"))#  
 				#db.trustedSQL(local.rs3.leftJoin)#
 				LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
 				listing.listing_id = listing_track.listing_id and 
-				listing_track_deleted = #db.param(0)#
+				listing_track_deleted = #db.param(0)# and 
+	   			listing_track.listing_track_inactive=#db.param('0')#
 				LEFT JOIN #db.table("content", request.zos.zcoreDatasource)# content ON 
 				content.content_mls_number = listing.listing_id and 
 				content_mls_override=#db.param('1')# and 

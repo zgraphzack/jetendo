@@ -164,6 +164,7 @@
     </cffunction>
     
     <cffunction name="getJoinSQL" localmode="modern" output="yes" returntype="any">
+    	<cfargument name="joinType" type="string" required="no" default="INNER">
 		<cfscript>
 		var db=request.zos.queryObject;
 		var idList="";
@@ -176,7 +177,7 @@
 			idList="'#request.zos.globals.id#'";
 			//local.sql=" concat(manual_listing.manual_listing_id, '#numberFormat(request.zos.globals.id, application.zcore.listingStruct.zeroPadString)#') = listing.listing_id "; 
 		}
-		return "INNER JOIN #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ON manual_listing.manual_listing_id = listing.listing_id and manual_listing.site_id IN (#idList#) ";
+		return "#arguments.joinType# JOIN #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ON manual_listing.manual_listing_id = listing.listing_id and manual_listing.site_id IN (#idList#) ";
 		</cfscript>
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">

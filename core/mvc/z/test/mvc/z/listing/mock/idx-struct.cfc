@@ -46,6 +46,7 @@ idx["listing_parking"] = 0;
 idx["content_created_user_id"] = "";
 idx["photo5"] = "/zretsphotos/4/27/f/493898-5.jpeg";
 idx["listing_track_deleted"] = 0;
+idx["listing_track_inactive"] = 0;
 idx["photo1"] = "/zretsphotos/4/5a/5/493898-1.jpeg";
 idx["listing_track_price"] = 249900;
 idx["rets4_transportation"] = "";

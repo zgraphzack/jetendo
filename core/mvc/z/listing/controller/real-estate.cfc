@@ -119,6 +119,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	listing_deleted = #db.param(0)# and 
 	listing_lookup_deleted = #db.param(0)# and 
 	listing_track_deleted = #db.param(0)# and 
+	   listing_track.listing_track_inactive=#db.param('0')# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
        and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
         and listing_lookup_type=#db.param('listing_type')# AND 
@@ -146,6 +147,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	listing_deleted = #db.param(0)# and 
 	listing_lookup_deleted = #db.param(0)# and 
 	listing_track_deleted = #db.param(0)# and 
+	   listing_track.listing_track_inactive=#db.param('0')# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
 	and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#)  and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
@@ -214,6 +216,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	listing_deleted = #db.param(0)# and 
 	listing_lookup_deleted = #db.param(0)# and 
 	listing_track_deleted = #db.param(0)# and 
+	   listing_track.listing_track_inactive=#db.param('0')# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
 	and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -242,6 +245,7 @@ qD2=db.execute("qD2");
 	listing_deleted = #db.param(0)# and 
 	listing_lookup_deleted = #db.param(0)# and 
 	listing_track_deleted = #db.param(0)# and 
+	   listing_track.listing_track_inactive=#db.param('0')# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
 	and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -312,6 +316,7 @@ qD=db.execute("qD");
 	listing_deleted = #db.param(0)# and 
 	listing_lookup_deleted = #db.param(0)# and 
 	listing_track_deleted = #db.param(0)# and 
+	   listing_track.listing_track_inactive=#db.param('0')# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing.listing_liststatus=#db.param('1,4,7,16')#
        and listing_city NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
@@ -397,7 +402,8 @@ listing.listing_liststatus=#db.param('1,4,7,16')#
 	   		and city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
 	   </cfif>
         and listing.listing_id = listing_track.listing_id and 
-		listing_track.listing_track_deleted=#db.param('0')# AND 
+		listing_track.listing_track_deleted=#db.param('0')# and 
+	   listing_track.listing_track_inactive=#db.param('0')# AND 
 		city.city_id=listing.listing_city AND 
 		listing_city IN (<cfif qCity2.idlist NEQ "">#db.trustedSQL(qCity2.idlist)#<cfelse>#db.param(primaryCityId)#</cfif>)
 		<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE #db.param('%,7,%')# </cfif>
@@ -423,7 +429,8 @@ listing.listing_liststatus=#db.param('1,4,7,16')#
        and city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#) 
        AND city.city_id=listing.listing_city and 
 	   listing.listing_id = listing_track.listing_id and 
-	   listing_track.listing_track_deleted=#db.param('0')#
+	   listing_track.listing_track_deleted=#db.param('0')# and 
+	   listing_track.listing_track_inactive=#db.param('0')#
 <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE #db.param('%,7,%')# </cfif>
 
     <cfif structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'whereSQL')> #db.trustedSQL(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.whereSQL)# </cfif>

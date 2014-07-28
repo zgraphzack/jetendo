@@ -381,7 +381,7 @@ for(i in form){
 <table cellpadding="20" cellspacing="0" border="0" class="table-list" width="100%">
 <tr>
 <td><b>The following SQL statement generated an error:</b><br><br>
-#arguments.cferror.rootcause.sql#</td>
+#htmleditformat(arguments.cferror.rootcause.sql)#</td>
 </tr>
 </table>
 </cfif>

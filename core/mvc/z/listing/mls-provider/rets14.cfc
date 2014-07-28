@@ -200,10 +200,11 @@
     </cffunction>
     
     <cffunction name="getJoinSQL" localmode="modern" output="yes" returntype="any">
-    	<cfscript>
+    	<cfargument name="joinType" type="string" required="no" default="INNER">
+		<cfscript>
 		var db=request.zos.queryObject;
 		</cfscript>
-    	<cfreturn "INNER JOIN #db.table("rets14_property", request.zos.zcoreDatasource)# rets14_property ON rets14_property.rets14_listingid = listing.listing_id">
+    	<cfreturn "#arguments.joinType# JOIN #db.table("rets14_property", request.zos.zcoreDatasource)# rets14_property ON rets14_property.rets14_listingid = listing.listing_id">
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets14_property.rets14_listingid">

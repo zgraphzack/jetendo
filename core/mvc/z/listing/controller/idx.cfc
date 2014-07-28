@@ -37,9 +37,9 @@
             </cfloop>
         	<cfsavecontent variable="db.sql">
             UPDATE #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-			set listing_track_hash = #db.param('')# and 
+			set listing_track_hash = #db.param('')#
+			where listing_id like #db.param('#form.mls_id#-%')# and 
 			listing_track_deleted = #db.param(0)#
-			where listing_id like #db.param('#form.mls_id#-%')#
             </cfsavecontent><cfscript>qT=db.execute("qT");</cfscript>Done
             <cfelse>Denied
         </cfif>
@@ -320,6 +320,7 @@
 	ts.arrData=arguments.arrRow;
 	ts.new=true;
 	ts.hasListing=false;
+	ts.hasListing2=false;
 	ts.update=true;
 	ts.listing_mls_id=this.optionstruct.mls_id;
 	try{
@@ -353,8 +354,10 @@
 	if(structcount(this.datastruct) EQ 0) return;
 	sqllist="'"&structkeylist(this.datastruct,"','")&"'";
 	db.sql="select listing_track.*, if(listing.listing_id IS NULL, #db.param(0)#, #db.param(1)#) hasListing 
+	, if(#this.optionstruct.mlsProviderCom.getPropertyListingIdSQL()# IS NULL, #db.param(0)#, #db.param(1)#) hasListing2 
 	from #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-	LEFT JOIN #db.table("listing")# ON listing.listing_id = listing_track.listing_id 
+	LEFT JOIN #db.table("listing")# listing ON listing.listing_id = listing_track.listing_id 
+	#this.optionstruct.mlsProviderCom.getJoinSQL("LEFT")#
 	where listing_track.listing_id IN (#db.trustedSQL(sqllist)#) and 
 	listing_track_deleted = #db.param(0)#";
 	qT=db.execute("qT"); 
@@ -366,6 +369,9 @@
 		this.datastruct[qT.listing_id].listing_track_datetime=dateformat(qT.listing_track_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_datetime,"HH:mm:ss");
 		this.datastruct[qT.listing_id].listing_track_updated_datetime=dateformat(qT.listing_track_updated_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_updated_datetime,"HH:mm:ss");
 		this.datastruct[qT.listing_id].new=false;
+		if(qT.hasListing2 EQ 1){
+			this.datastruct[qT.listing_id].hasListing2=true;
+		}
 		if(qT.hasListing EQ 1){
 			this.datastruct[qT.listing_id].hasListing=true;
 		}
@@ -417,6 +423,7 @@
 				rs.listing_track_price_change=this.datastruct[i].listing_track_price_change;
 				rs.listing_track_hash=this.datastruct[i].hash;
 				rs.listing_track_deleted="0";
+				rs.listing_track_inactive='0';
 				rs.listing_track_datetime=this.datastruct[i].listing_track_datetime
 				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
 				rs.listing_track_processed_datetime=this.nowDate;
@@ -432,6 +439,7 @@
 				}
 				rs.listing_track_hash=this.datastruct[i].hash;
 				rs.listing_track_deleted="0";
+				rs.listing_track_inactive='0';
 				rs.listing_track_datetime=this.datastruct[i].listing_track_datetime;
 				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
 				rs.listing_track_processed_datetime=this.nowDate;
@@ -443,21 +451,25 @@
 				table:"listing",
 				struct:rs
 			};
+			ts2.struct.listing_deleted='0';
 			ts3={
 				datasource:request.zos.zcoreDatasource,
 				table:"listing_data",
 				struct:rs
 			};
+			ts3.struct.listing_data_deleted='0';
 			ts4={
 				datasource:request.zos.zcoreDatasource,
 				table:"listing_track",
 				struct:rs
 			};
+			ts4.struct.listing_track_deleted='0';
 			ts5={
 				datasource:request.zos.zcoreDatasource,
 				table:request.zos.ramtableprefix&"listing",
 				struct:rs
 			};
+			ts5.struct.listing_deleted='0';
 			if(structkeyexists(rs2, 'columnIndex')){
 				ts1={
 					datasource:request.zos.zcoreDatasource,
@@ -472,20 +484,25 @@
 			transaction action="begin"{
 				try{
 					if(structkeyexists(rs2, 'columnIndex')){
-						if(this.datastruct[i].new){
+						if(this.datastruct[i].new or not this.datastruct[i].hasListing2){
 							application.zcore.functions.zInsert(ts1);
 						}else{
+							//ts1.forceWhereFields="table_id,table_deleted";
 							application.zcore.functions.zUpdate(ts1);
 						}
 					}
 					if(this.datastruct[i].new){
 						application.zcore.functions.zInsert(ts4);
 					}else{
+						ts4.forceWhereFields="listing_id,listing_track_deleted";
 						application.zcore.functions.zUpdate(ts4);
 					}
 					if(this.datastruct[i].hasListing){
+						ts2.forceWhereFields="listing_id,listing_deleted";
 						application.zcore.functions.zUpdate(ts2);
+						ts5.forceWhereFields="listing_id,listing_deleted";
 						application.zcore.functions.zUpdate(ts5);
+						ts3.forceWhereFields="listing_id,listing_data_deleted";
 						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
 					}else{
 						application.zcore.functions.zInsert(ts2);
@@ -549,7 +566,7 @@
 	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
 	LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
 	listing_track.listing_id= listing.listing_id   and 
-	listing_track_deleted = #db.param(0)#
+	listing_track_deleted = #db.param(0)# 
 	WHERE listing_track.listing_id IS NULL and 
 	listing_deleted = #db.param(0)#";
 	qDeadListings=db.execute("qDeadListings"); 
@@ -661,6 +678,7 @@
 			SELECT listing_id, #db2.param(request.zos.mysqlnow)# 
 			FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_deleted=#db2.param('0')# and 
+	   		listing_track.listing_track_inactive=#db2.param('1')# and 
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
 			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
 			#db2.trustedSQL(mlsPSQL)#";
@@ -687,9 +705,10 @@
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
-				listing_track_deleted=#db2.param(1)#, 
+				listing_track_inactive=#db2.param(1)#, 
 				listing_track_updated_datetime=#db2.param(request.zos.mysqlnow)#  
-				WHERE listing_id IN ('#qIdList.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#') and 
+				listing_track_deleted = #db2.param(0)#";
 				db2.execute("qDelete");
 			}
 
@@ -714,7 +733,7 @@
 				}
 				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN ('#qIdList.idlist#') and 
-				listing_track_deleted = #db2.param(0)#";
+				listing_track_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 			}
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
