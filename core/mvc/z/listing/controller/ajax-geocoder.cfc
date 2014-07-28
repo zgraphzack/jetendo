@@ -34,7 +34,7 @@
 			listing_coordinates_deleted = #db.param(0)# ";
 			qC=db.execute("qC");
 			if(qC.recordcount EQ 0){
-				db.sql="INSERT INTO #db.table("listing_coordinates", request.zos.zcoreDatasource)# SET ";
+				db.sql="INSERT IGNORE INTO #db.table("listing_coordinates", request.zos.zcoreDatasource)# SET ";
 			}else{
 				db.sql="UPDATE #db.table("listing_coordinates", request.zos.zcoreDatasource)# SET ";
 			}

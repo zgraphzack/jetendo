@@ -347,6 +347,14 @@ this.isPropertyDisplayCom=true;
 			rs.arrData[idx.arrayindex]=t2;
 		}
 	}
+	arrNew=[];
+	for(i=1;i LTE arraylen(rs.arrData);i++){
+		if(isstruct(rs.arrData[i])){
+			arrayAppend(arrNew, rs.arrData[i]);
+		}
+	}
+	rs.count=arraylen(arrNew);
+	rs.arrData=arrNew;
 	return rs;
 	</cfscript>
 </cffunction>
