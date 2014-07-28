@@ -17,6 +17,11 @@
 		return false;
 	} 
 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramTablePrefix#listing`   
+ 	 CHANGE `listing_unique_id` `listing_unique_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT")){
+		return false;
+	} 
+
 	return true;
 	</cfscript>
 </cffunction>

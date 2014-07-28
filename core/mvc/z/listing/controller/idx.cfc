@@ -484,7 +484,7 @@
 			transaction action="begin"{
 				try{
 					if(structkeyexists(rs2, 'columnIndex')){
-						if(this.datastruct[i].new or not this.datastruct[i].hasListing2){
+						if(not this.datastruct[i].hasListing2){
 							application.zcore.functions.zInsert(ts1);
 						}else{
 							//ts1.forceWhereFields="table_id,table_deleted";
@@ -505,7 +505,8 @@
 						ts3.forceWhereFields="listing_id,listing_data_deleted";
 						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
 					}else{
-						application.zcore.functions.zInsert(ts2);
+						listing_unique_id=application.zcore.functions.zInsert(ts2);
+						ts5.struct.listing_unique_id=listing_unique_id;
 						application.zcore.functions.zInsert(ts5);
 						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
 					}
