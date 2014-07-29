@@ -494,8 +494,13 @@
 							try{
 								application.zcore.functions.zInsert(ts1);
 							}catch(Any e){
-								writedump(e);
-								writedump(ts1);
+								ts1.forceWhereFields=lcase(this.optionstruct.mlsProviderCom.getListingIdField());
+								// later uncomment this when field exists: 
+								//ts1.forceWhereFields&=","&ts1.table&"_deleted";
+								// ts1.struct[ts1.table&"_deleted"]=0;
+
+								ts1.struct[lcase(ts1.forceWhereFields)]=rs.listing_id;
+								application.zcore.functions.zUpdate(ts1);
 							}
 						}else{
 							ts1.forceWhereFields=lcase(this.optionstruct.mlsProviderCom.getListingIdField());
