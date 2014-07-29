@@ -2944,7 +2944,7 @@ zCreateMemoryTable(ts);
 				}
 				if(notNumberField){
 					arrayAppend(arrF2, qFields.field);
-			    	arrayappend(arrF22,'max(length(`'&qFields.field&'`)) as `'&qFields.field&'`');
+			    	//arrayappend(arrF22,'max(length(`'&qFields.field&'`)) as `'&qFields.field&'`');
 			    	if(qFields.type EQ "date"){
 			    		defaultValue="0000-00-00";
 			    	}else if(qFields.type EQ "datetime"){
@@ -2955,7 +2955,7 @@ zCreateMemoryTable(ts);
 			    		defaultValue=qFields.default;
 			    	}
 					arrayappend(arrCreate,' `#qFields.field#` #qFields.type# DEFAULT ''#defaultValue#'' #theNull# #collation2# ');
-					arrayappend(arrAlter,' change `#qFields.field#` `#qFields.field#` varchar (1z_count) DEFAULT ''#defaultValue#'' #theNull# #collation2# ');
+					//arrayappend(arrAlter,' change `#qFields.field#` #qFields.type#  DEFAULT ''#defaultValue#'' #theNull# #collation2# '); // `#qFields.field#` varchar (1z_count)
 				}else{
 					defaultValue="";
 					if(qFields.default NEQ ""){
@@ -3017,6 +3017,7 @@ zCreateMemoryTable(ts);
 			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 
 			<!--- resize the fields to minimum size possible except for number data types--->
+			<!--- 
 			<cfscript>
 			fieldString='select '&arrayToList(arrF22,',')&' from '&db.table(arguments.ss.table, request.zos.zcoreDatasource)&'';
 			</cfscript>
@@ -3024,8 +3025,10 @@ zCreateMemoryTable(ts);
 			#db.trustedSQL(fieldString)#
 			</cfsavecontent><cfscript>qFieldLengths=db.execute("qFieldLengths");
 			for(i=1;i<=arraylen(arrF2);i++){
-				if(arrAlter[i] NEQ ''){
-				arrAlter[i]=replacenocase(arrAlter[i], '1z_count',max(1,qFieldLengths[arrF2[i]][1]));
+				if(arrF2[i] EQ "listing_id"){
+					arrAlter[i]=replacenocase(arrAlter[i], '1z_count',15);
+				}else if(arrAlter[i] NEQ ''){
+					arrAlter[i]=replacenocase(arrAlter[i], '1z_count',max(1,qFieldLengths[arrF2[i]][1]));
 				}else{
 					arraydeleteat(arrAlter,i);
 					i--;
@@ -3037,7 +3040,7 @@ zCreateMemoryTable(ts);
 			alter table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
 			#db.trustedSQL(str)#
 			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>  
-
+			 --->
 			<cfsavecontent variable="db.sql">
 			INSERT INTO #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
 			SELECT * FROM #db.table(arguments.ss.table, request.zos.zcoreDatasource)# 

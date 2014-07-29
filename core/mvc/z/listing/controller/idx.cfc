@@ -128,6 +128,7 @@
 					 content_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 					 content_price_update_datetime=#db.param(nd222)# 
 					 WHERE site_id <> #db.param(-1)# and 
+					 content_deleted = #db.param(0)# and 
 					 content_id = #db.param(qP.content_id[x])#";
 					 qU = db.execute("qU");
 				}
@@ -447,24 +448,28 @@
 			rs.mls_id=this.optionStruct.mls_id;
 
 			ts2={
+				debug:true,
 				datasource:request.zos.zcoreDatasource,
 				table:"listing",
 				struct:rs
 			};
 			ts2.struct.listing_deleted='0';
 			ts3={
+				debug:true,
 				datasource:request.zos.zcoreDatasource,
 				table:"listing_data",
 				struct:rs
 			};
 			ts3.struct.listing_data_deleted='0';
 			ts4={
+				debug:true,
 				datasource:request.zos.zcoreDatasource,
 				table:"listing_track",
 				struct:rs
 			};
 			ts4.struct.listing_track_deleted='0';
 			ts5={
+				debug:true,
 				datasource:request.zos.zcoreDatasource,
 				table:request.zos.ramtableprefix&"listing",
 				struct:rs
@@ -472,6 +477,7 @@
 			ts5.struct.listing_deleted='0';
 			if(structkeyexists(rs2, 'columnIndex')){
 				ts1={
+					debug:true,
 					datasource:request.zos.zcoreDatasource,
 					table:request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.table,
 					struct:{}
@@ -485,7 +491,12 @@
 				try{
 					if(structkeyexists(rs2, 'columnIndex')){
 						if(not this.datastruct[i].hasListing2){
+						try{
 							application.zcore.functions.zInsert(ts1);
+							}catch(Any e){
+								writedump(e);
+								writedump(ts1);
+							}
 						}else{
 							//ts1.forceWhereFields="table_id,table_deleted";
 							application.zcore.functions.zUpdate(ts1);
@@ -505,13 +516,10 @@
 						ts3.forceWhereFields="listing_id,listing_data_deleted";
 						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
 					}else{
-						application.zcore.functions.zInsert(ts2);
-						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
+						application.zcore.functions.zInsert(ts2); 
+						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade 
 						structdelete(ts5.struct, 'listing_unique_id');
-						d=application.zcore.functions.zInsert(ts5);
-						if(d EQ false){
-							throw("Duplicate key error on #ts5.struct.listing_id#");
-						}
+						application.zcore.functions.zInsert(ts5);
 					}
 					transaction action="commit";
 				}catch(Any e){
@@ -576,11 +584,17 @@
 	qDeadListings=db.execute("qDeadListings"); 
 	if(qDeadListings.recordcount NEQ 0 and qDeadListings.idlist NEQ ""){
 		writeoutput('dead listings:'&qDeadListings.idlist&'<br />');
-		db.sql="DELETE FROM #db.table("listing", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
+		db.sql="DELETE FROM #db.table("listing", request.zos.zcoreDatasource)#  
+		WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
+		listing_deleted = #db.param(0)# ";	
 		db.execute("q"); 
-		db.sql="DELETE FROM #db.table("listing_data", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
+		db.sql="DELETE FROM #db.table("listing_data", request.zos.zcoreDatasource)#  
+		WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
+		listing_deleted = #db.param(0)# ";	
 		db.execute("q"); 
-		 db.sql="DELETE FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#)";	
+		 db.sql="DELETE FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
+		 WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
+		 listing_deleted = #db.param(0)# ";	
 		 db.execute("q");
 	}else{
 		writeoutput('no dead listings<br />');	
@@ -613,7 +627,8 @@
 			 db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
 			 SET mls_error_sent=#db.param('1')#, 
 			 mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			 where mls_id = #db.param(qTwoDaysAgo.mls_id)# ";
+			 where mls_id = #db.param(qTwoDaysAgo.mls_id)# and 
+			 mls_deleted=#db.param(0)#";
 			 db.execute("q");
 			</cfscript>
 		</cfloop>
@@ -692,20 +707,21 @@
 			while(true){
 				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
-				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# ";
+				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)#  and 
+				listing_delete_deleted = #db.param(0)# ";
 				qIdList=db.execute("qIdList");
 				offset+=5;
 				if(qIdList.idlist EQ ""){
 					break;
 				}
 				db2.sql="DELETE FROM #db2.table("listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#')";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
@@ -722,6 +738,7 @@
 			db2.sql="INSERT INTO #db2.table("listing_delete", request.zos.zcoreDatasource)# (listing_id, listing_delete_updated_datetime) 
 			SELECT listing_id, #db2.param(request.zos.mysqlnow)# FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
+			listing_track_deleted = #db.param(0)# and 
 			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
 			#db2.trustedSQL(mlsPSQL)#";
 			db2.execute("qInsert");
@@ -729,6 +746,7 @@
 			while(true){
 				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
+				listing_delete_deleted = #db.param(0)# and 
 				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# ";
 				qIdList=db.execute("qIdList");
 				offset+=5;
@@ -743,7 +761,8 @@
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
 			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))#, 
 			mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			WHERE mls_id IN (#db.trustedSQL(mlsIdPSQL)#)";
+			WHERE mls_id IN (#db.trustedSQL(mlsIdPSQL)#) and 
+			mls_deleted = #db.param(0)# ";
 			db.execute("q"); 
 			writeoutput('<br />#listlen(qIdList.idlist, ",")# Inactive listings were removed.');	
 		}else{
