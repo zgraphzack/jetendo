@@ -164,7 +164,7 @@ this.remapFieldStruct=t5;
 			ts[col]=application.zcore.functions.zescape(arguments.ss.arrData[i]);
 		}
 		//ts[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=ts[col];
-		columnIndex[col]=i;
+		columnIndex[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=i;
 	}
 	if(not structkeyexists(ts, "list price")){
 		ts["list price"]=replace(ts["original list price"],",","","ALL");
@@ -495,6 +495,9 @@ this.remapFieldStruct=t5;
 
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets22_property.rets22_list_105">
+    </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets22_list_105">
     </cffunction>
     
 <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">

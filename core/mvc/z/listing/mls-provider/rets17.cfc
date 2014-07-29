@@ -360,6 +360,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acc
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets17_property.rets17_mls_acct">
     </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets17_mls_acct">
+    </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">

@@ -209,6 +209,9 @@
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets14_property.rets14_listingid">
     </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets14_listingid">
+    </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">

@@ -348,6 +348,9 @@
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "ngm.ngm_listnum">
     </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "ngm_listnum">
+    </cffunction>
     
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">

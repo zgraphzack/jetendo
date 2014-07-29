@@ -121,7 +121,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
 			}else{ 
 				ts[col]=application.zcore.functions.zescape(arguments.ss.arrData[i]);
 			}
-			columnIndex[col]=i;
+			columnIndex[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=i;
 		}
 		ts["list price"]=replace(ts["list price"],",","","ALL");
 		
@@ -384,6 +384,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets16_property.rets16_157">
+    </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets16_157">
     </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">

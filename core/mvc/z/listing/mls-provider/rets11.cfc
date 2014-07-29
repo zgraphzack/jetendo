@@ -175,7 +175,7 @@ this.remapFieldStruct=t5;
 				ts[col]=application.zcore.functions.zescape(arguments.ss.arrData[i]);
 			}
 			//ts[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=ts[col];
-			columnIndex[col]=i;
+			columnIndex[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=i;
 		}
 		ts["list price"]=replace(ts["list price"],",","","ALL");
 		// need to clean this data - remove not in subdivision, 0 , etc.
@@ -441,6 +441,9 @@ this.remapFieldStruct=t5;
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets11_property.rets11_listingid">
+    </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets11_listingid">
     </cffunction>
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
     	<cfargument name="query" type="query" required="yes">

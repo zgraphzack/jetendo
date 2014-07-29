@@ -117,7 +117,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 			}else{ 
 				ts[col]=application.zcore.functions.zescape(arguments.ss.arrData[i]);
 			}
-			columnIndex[col]=i;
+			columnIndex[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=i;
 		}
 		ts["rets21_listprice"]=replace(ts["rets21_listprice"],",","","ALL");
 		
@@ -466,6 +466,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets21_property.rets21_MLnumber">
+    </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets21_MLnumber">
     </cffunction>
     
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">

@@ -734,7 +734,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		}else{
 			FieldValue = fields.Field;
 		}
-		listPosition = listFind(ss.forceWhereFields, fields.Field);
+		listPosition = listFindNoCase(ss.forceWhereFields, fields.Field);
 		if(fields.field EQ "site_id"){
 			if(structkeyexists(ss,'struct')){
 				if(StructKeyExists(ss.struct, FieldValue) EQ false){

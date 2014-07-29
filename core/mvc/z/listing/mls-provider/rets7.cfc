@@ -172,7 +172,8 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 		}
 		for(i=1;i LTE arraylen(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns);i++){
 			col=(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].tableFields[removechars(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i],1,6)].longname);
-			ts["rets7_"&removechars(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i],1,6)]=arguments.ss.arrData[i];
+			cname=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i];
+			ts[cname]=arguments.ss.arrData[i];
 			if(arguments.ss.arrData[i] EQ '0'){
 				arguments.ss.arrData[i]="";	
 			}
@@ -185,7 +186,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{ 
 				ts[col]=application.zcore.functions.zescape(arguments.ss.arrData[i]);
 			}
-			columnIndex[col]=i;
+			columnIndex[cname]=i;
 		}
 		
 		
@@ -655,6 +656,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets7_property.rets7_175">
+    </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets7_175">
     </cffunction>
     
     <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">

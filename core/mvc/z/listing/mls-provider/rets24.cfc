@@ -131,7 +131,7 @@ variables.tableLookup["I"]="I";
 			ts[col]=application.zcore.functions.zescape(arguments.ss.arrData[i]);
 		}
 		//ts[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=ts[col];
-		columnIndex[col]=i;
+		columnIndex[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i]]=i;
 	}
 	if(not structkeyexists(ts, "list price")){
 		ts["list price"]=replace(ts["original list price"],",","","ALL");
@@ -438,6 +438,9 @@ variables.tableLookup["I"]="I";
 </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">
     	<cfreturn "rets24_property.rets24_list_105">
+    </cffunction>
+    <cffunction name="getListingIdField" localmode="modern" output="yes" returntype="any">
+    	<cfreturn "rets24_list_105">
     </cffunction>
     
 <cffunction name="getDetails" localmode="modern" output="yes" returntype="any">
