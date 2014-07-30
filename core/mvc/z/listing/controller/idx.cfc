@@ -155,7 +155,7 @@
 		//	throw("failed to set columns for mls_id = #this.optionStruct.mls_id#");
 		} 
 		this.optionstruct.mlsproviderCom.initImport("property", application.zcore.listingStruct.mlsStruct[this.optionstruct.mls_id].sharedStruct);
-		if(structkeyexists(request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct,"arrColumns")){
+		if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct,"arrColumns")){
 			this.optionstruct.arrColumns=request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.arrColumns;
 		}
 		return false;
@@ -368,7 +368,7 @@
 	qT2=db.execute("qT2"); 
 
 	db.sql="select #this.optionstruct.mlsProviderCom.getListingIdField()# id 
-	from #db.table(request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.table, request.zos.zcoreDatasource)#
+	from #db.table(application.zcore.listingStruct.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.table, request.zos.zcoreDatasource)#
 	where #this.optionstruct.mlsProviderCom.getListingIdField()# IN (#db.trustedSQL(sqllist)#) ";
 	qT3=db.execute("qT3"); 
 	</cfscript>
@@ -493,7 +493,7 @@
 				ts1={
 					debug:true,
 					datasource:request.zos.zcoreDatasource,
-					table:request.zos.listing.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.table,
+					table:application.zcore.listingStruct.mlsStruct[rs.mls_id].sharedStruct.lookupStruct.table,
 					struct:{}
 				};
 				for(i2 in rs2.columnIndex){
@@ -673,6 +673,7 @@
 	</cfscript>
     <cfloop from="1" to="#qmls2.recordcount#" index="n">
     	<cfscript>
+    	mlsID=qMLS2.mls_id[n];
 		arrayAppend(local.arrMLSClean, " listing_id like '"&qMls2.mls_id[n]&"-%' ");
 		arrFileList=listtoarray(qmls2.mls_filelist[n],",");
 		foundCount=0;
@@ -699,50 +700,40 @@
 			</cfscript>
 		</cfloop>
 		<cfif foundCount EQ arraylen(arrFilelist)>
-			<cfscript>
-			arrayappend(arrMLSOnly," listing_id like '#qMLS2.mls_id[n]#-%' ");
-			arrayappend(arrMLSIdOnly,"'#qMLS2.mls_id[n]#'");
-			</cfscript>
-		<cfelse>
-			<cfscript>
-			writeoutput(qMLS2.mls_id[n]&" was updated but not completed. Imported file list: <br /><br />"&arraytolist(arrFound)&"<br />Required File list: <br />"&arraytolist(arrFileList)&"<br /><br />Required Files that were missing: <br />"&arraytolist(arrFound2)&"<br /><br />");
-			</cfscript>
-		</cfif>
-	</cfloop>
-    <cfscript> 
-	if(arraylen(local.arrMLSClean)){
-		if(arraylen(arrMLSOnly) NEQ 0){
-			mlsPSQL=" and ("&arraytolist(arrMLSOnly, " or ")&")";
-			mlsIdPSQL=arraytolist(arrMLSIdOnly, ",");
-
-			db2.sql="TRUNCATE TABLE #db2.table("listing_delete", request.zos.zcoreDatasource)# ";
-			db2.execute("qTruncate");
+			<cfscript> 
 			db2.sql="INSERT INTO listing_delete (listing_id, listing_delete_updated_datetime) 
 			SELECT listing_id, #db2.param(request.zos.mysqlnow)# 
 			FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_deleted=#db2.param('0')# and 
-	   		listing_track.listing_track_inactive=#db2.param('1')# and 
+	   		listing_track.listing_track_inactive=#db2.param('0')# and 
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
-			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
-			#db2.trustedSQL(mlsPSQL)#";
+			listing_id LIKE '#mlsID#-%' ";
 			db2.execute("qInsert");
 
 			offset=1;
+			deleteCount=0;
 			while(true){
 				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
 				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)#  and 
-				listing_delete_deleted = #db.param(0)# ";
+				listing_delete_deleted = #db.param(0)#  and 
+				listing_id LIKE #db.param('#mlsID#-%')# ";
 				qIdList=db.execute("qIdList");
 				offset+=5;
 				if(qIdList.idlist EQ ""){
 					break;
 				}
+				deleteCount+=listlen(qIdList.idlist, ",");
+
+				db2.sql="delete from #db2.table(application.zcore.listingStruct.mlsStruct[mlsId].sharedStruct.lookupStruct.table, request.zos.zcoreDatasource)#
+				where `#this.optionstruct.mlsProviderCom.getListingIdField()#` IN ('#qIdList.idlist#') ";
+				db2.execute("qDelete");
+
 				db2.sql="DELETE FROM #db2.table("listing", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_data_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
@@ -755,46 +746,59 @@
 				listing_track_deleted = #db2.param(0)#";
 				db2.execute("qDelete");
 			}
+			db.sql="delete FROM 
+			#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
+			listing_id LIKE #db.param('#mlsID#-%')# and 
+			listing_delete_deleted=#db.param(0)# ";
+			db.execute("qDelete");
 
-			oneMonthAgo=dateformat(oneMonthAgo,'yyyy-mm-dd')&' '&timeformat(oneMonthAgo,'HH:mm:ss');
-			db2.sql="TRUNCATE TABLE #db2.table("listing_delete", request.zos.zcoreDatasource)# ";
-			db2.execute("qTruncate");
+			oneMonthAgo=dateformat(oneMonthAgo,'yyyy-mm-dd')&' '&timeformat(oneMonthAgo,'HH:mm:ss'); 
 			db2.sql="INSERT INTO #db2.table("listing_delete", request.zos.zcoreDatasource)# (listing_id, listing_delete_updated_datetime) 
 			SELECT listing_id, #db2.param(request.zos.mysqlnow)# FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
-			listing_track_deleted = #db2.param(0)# and 
-			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
-			#db2.trustedSQL(mlsPSQL)#";
+			listing_track_deleted = #db2.param(0)#  and 
+	   		listing_track_inactive <> #db2.param(-1)# and 
+			listing_id LIKE '#mlsID#-%'";
 			db2.execute("qInsert");
 			offset=1;
+			deleteCount2=0;
 			while(true){
 				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
 				listing_delete_deleted = #db.param(0)# and 
-				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# ";
+				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# and 
+				listing_id LIKE #db.param('#mlsID#-%')# ";
 				qIdList=db.execute("qIdList");
 				offset+=5;
 				if(qIdList.idlist EQ ""){
 					break;
 				}
+				deleteCount2+=listlen(qIdList.idlist, ",");
 				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN ('#qIdList.idlist#') and 
 				listing_track_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 			}
+			db.sql="delete FROM 
+			#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
+			listing_id LIKE #db.param('#mlsID#-%')# and 
+			listing_delete_deleted=#db.param(0)# ";
+			db.execute("qDelete");
+
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
 			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))#, 
 			mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE mls_id IN (#db.trustedSQL(mlsIdPSQL)#) and 
 			mls_deleted = #db.param(0)# ";
 			db.execute("q"); 
-			writeoutput('<br />#listlen(qIdList.idlist, ",")# Inactive listings were removed.');	
-		}else{
-			writeoutput('<br />No inactive listings were removed.');	
-			
-		} 
-	}
-	</cfscript> 
+			writeoutput('<br />#deleteCount# listings made inactive | #deleteCount2# permanently removed.');
+			</cfscript>
+		<cfelse>
+			<cfscript>
+			writeoutput(qMLS2.mls_id[n]&" was updated but not completed. Imported file list: <br /><br />"&arraytolist(arrFound)&"<br />Required File list: <br />"&arraytolist(arrFileList)&"<br /><br />Required Files that were missing: <br />"&arraytolist(arrFound2)&"<br /><br /><hr />");
+			</cfscript>
+		</cfif>
+	</cfloop> 
 </cffunction>
 
 </cfoutput>
