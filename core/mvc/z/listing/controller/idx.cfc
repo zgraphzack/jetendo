@@ -354,14 +354,23 @@
 	var qt=0;
 	if(structcount(this.datastruct) EQ 0) return;
 	sqllist="'"&structkeylist(this.datastruct,"','")&"'";
-	db.sql="select listing_track.*, if(listing.listing_id IS NULL, #db.param(0)#, #db.param(1)#) hasListing 
-	, if(#this.optionstruct.mlsProviderCom.getPropertyListingIdSQL()# IS NULL, #db.param(0)#, #db.param(1)#) hasListing2 
+	db.sql="select *
 	from #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-	LEFT JOIN #db.table("listing")# listing ON listing.listing_id = listing_track.listing_id 
-	#this.optionstruct.mlsProviderCom.getJoinSQL("LEFT")#
-	where listing_track.listing_id IN (#db.trustedSQL(sqllist)#) and 
+	where listing_id IN (#db.trustedSQL(sqllist)#) and 
 	listing_track_deleted = #db.param(0)#";
 	qT=db.execute("qT"); 
+
+
+	db.sql="select listing.listing_id 
+	from #db.table("listing", request.zos.zcoreDatasource)# listing
+	where listing_id IN (#db.trustedSQL(sqllist)#) and 
+	listing_deleted = #db.param(0)#";
+	qT2=db.execute("qT2"); 
+
+	db.sql="select #this.optionstruct.mlsProviderCom.getListingIdField()# id 
+	from #db.table(request.zos.listing.mlsStruct[this.optionstruct.mls_id].sharedStruct.lookupStruct.table, request.zos.zcoreDatasource)#
+	where #this.optionstruct.mlsProviderCom.getListingIdField()# IN (#db.trustedSQL(sqllist)#) ";
+	qT3=db.execute("qT3"); 
 	</cfscript>
     <cfloop query="qT">
     	<cfscript>
@@ -370,17 +379,22 @@
 		this.datastruct[qT.listing_id].listing_track_datetime=dateformat(qT.listing_track_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_datetime,"HH:mm:ss");
 		this.datastruct[qT.listing_id].listing_track_updated_datetime=dateformat(qT.listing_track_updated_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_updated_datetime,"HH:mm:ss");
 		this.datastruct[qT.listing_id].new=false;
-		if(qT.hasListing2 EQ 1){
-			this.datastruct[qT.listing_id].hasListing2=true;
-		}
-		if(qT.hasListing EQ 1){
-			this.datastruct[qT.listing_id].hasListing=true;
-		}
 		if(this.datastruct[qT.listing_id].hash EQ qT.listing_track_hash){
 			this.datastruct[qT.listing_id].update=false;
 		}
 		</cfscript>
     </cfloop>
+    <cfloop query="qT2">
+    	<cfscript>
+		this.datastruct[qT2.listing_id].hasListing=true;
+		</cfscript>
+    </cfloop>
+    <cfloop query="qT3">
+    	<cfscript>
+		this.datastruct[qT3.id].hasListing2=true;
+		</cfscript>
+    </cfloop>
+	
 </cffunction>
 
     
