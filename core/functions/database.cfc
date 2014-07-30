@@ -716,12 +716,12 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	}
 	</cfscript>
     <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
-	<cfquery name="fields" datasource="#ss.datasource#">
-	SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
-	</cfquery>
-	<cfif ss.enableTableFieldCache>
-    		<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
-	</cfif>
+		<cfquery name="fields" datasource="#ss.datasource#">
+		SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
+		</cfquery>
+		<cfif ss.enableTableFieldCache>
+	    		<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
+		</cfif>
     <cfelse>
     	<cfset fields=request.zos.tableFieldsCache[ss.datasource&" "&ss.table]>
     </cfif>

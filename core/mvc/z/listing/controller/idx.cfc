@@ -600,7 +600,7 @@
 		db.execute("q"); 
 		db.sql="DELETE FROM #db.table("listing_data", request.zos.zcoreDatasource)#  
 		WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
-		listing_deleted = #db.param(0)# ";	
+		listing_data_deleted = #db.param(0)# ";	
 		db.execute("q"); 
 		 db.sql="DELETE FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
 		 WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
