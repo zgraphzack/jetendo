@@ -739,13 +739,13 @@
 					break;
 				}
 				db2.sql="DELETE FROM #db2.table("listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db.param(0)# ";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db.param(0)# ";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db.param(0)# ";
+				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
@@ -762,7 +762,7 @@
 			db2.sql="INSERT INTO #db2.table("listing_delete", request.zos.zcoreDatasource)# (listing_id, listing_delete_updated_datetime) 
 			SELECT listing_id, #db2.param(request.zos.mysqlnow)# FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
-			listing_track_deleted = #db.param(0)# and 
+			listing_track_deleted = #db2.param(0)# and 
 			(#db2.trustedSQL(arrayToList(local.arrMLSClean, ' or '))# )
 			#db2.trustedSQL(mlsPSQL)#";
 			db2.execute("qInsert");
