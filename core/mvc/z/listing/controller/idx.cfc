@@ -788,7 +788,7 @@
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
 			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))#, 
 			mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			WHERE mls_id IN (#db.trustedSQL(mlsIdPSQL)#) and 
+			WHERE mls_id =#db.param(mlsID)# and 
 			mls_deleted = #db.param(0)# ";
 			db.execute("q"); 
 			writeoutput('<br />#deleteCount# listings made inactive | #deleteCount2# permanently removed.');
