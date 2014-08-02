@@ -123,7 +123,9 @@ echo "after temp move\n";
 
 function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 	global $cmysql, $debug, $mysqldate, $mlsDatasource, $lastMessage2;
-	$sql="select mls_image_hash_mlsid, mls_image_hash_value FROM mls_image_hash WHERE mls_image_hash_mlsid IN ('".implode("','", $arrFID)."') ";//and mls_image_hash_datetime < '2012-10-19 15:00:00' ";
+	$sql="select mls_image_hash_mlsid, mls_image_hash_value FROM mls_image_hash 
+	WHERE mls_image_hash_deleted = '0' and 
+	mls_image_hash_mlsid IN ('".implode("','", $arrFID)."') ";//and mls_image_hash_datetime < '2012-10-19 15:00:00' ";
 	
 	$arrIdNew=array();
 	$renameEnabled=false;
@@ -270,6 +272,7 @@ function processFiles($arrSQL, $arrF, $arrFID, $arrFID2, $arrFD, $arrFN){
 		$sql2="INSERT INTO mls_image_hash (mls_image_hash_mlsid, mls_image_hash_value, mls_image_hash_datetime, mls_image_hash_updated_datetime) 
 		VALUES ".implode(", ", $arrV)." ON DUPLICATE KEY UPDATE 
 		mls_image_hash_value=VALUES(mls_image_hash_value), 
+		mls_image_hash_deleted=0,
 		mls_image_hash_datetime=VALUES(mls_image_hash_datetime), 
 		mls_image_hash_updated_datetime=VALUES(mls_image_hash_updated_datetime) ";
 		$r=$cmysql->query($sql2);

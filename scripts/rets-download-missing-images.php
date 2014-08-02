@@ -32,6 +32,7 @@ $perloop=50;
 $destinationPath=get_cfg_var("jetendo_share_path")."mls-images/";
 $result=$cmysql->query("SELECT * FROM mls WHERE 
 mls_status = '1' and 
+mls_deleted='0' and 
 mls_provider LIKE 'rets%' 
 and mls_id NOT IN ('12', '19', '20')
 ORDER BY mls_update_date desc", MYSQLI_STORE_RESULT);
@@ -42,6 +43,7 @@ ORDER BY mls_update_date desc", MYSQLI_STORE_RESULT);
 
 $count1=0;
 $downloadCount=0;
+$errorCount=0;
 $arrError=array();
 while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 	$offset=0;
@@ -57,6 +59,7 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 	while(true){
 		$result=$cmysql->query("select listing_id, listing_photocount, listing_liststatus from `listing` listing where 
 		listing_photocount<> '0' and 
+		listing_deleted='0' and 
 		listing_images_verified_datetime < '".$mysqlMidnightDate."' and 
 		listing_id like '".$mlsRow["mls_id"]."-%' LIMIT ".$offset.", ".$perloop." ", MYSQLI_STORE_RESULT);
 		if($result->num_rows == 0){
@@ -82,11 +85,13 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 					$out=ob_get_clean();
 					echo $out;
 					if($r===false){
+						$errorCount++;
+						/*
 						echo "Failed to download rets images for listing_id=".$row["listing_id"]."\n\nLast messages output:\n".$out;
 						array_push($arrError, "Failed to download rets images for listing_id=".$row["listing_id"]."\n\nLast messages output:\n".$out);
 						if(count($arrError) > 10){
 							zEmailErrorAndExit("Failed to download rets images more then 10 times.", implode("\n\n", $arrError));
-						}
+						}*/
 					}else{
 						$downloadCount++;
 					}
@@ -97,7 +102,7 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 				}
 			}
 			$mysqldate = date("Y-m-d H:i:s");
-			$cmysql->query("UPDATE listing SET listing_images_verified_datetime='".$mysqldate."' WHERE listing_id = '".$row["listing_id"]."'");
+			$cmysql->query("UPDATE listing SET listing_images_verified_datetime='".$mysqldate."' WHERE listing_id = '".$row["listing_id"]."' and listing_deleted = '0'");
 			usleep(20000);
 		}
 		if(microtime_float() - $time_start > $timeoutInSeconds){
@@ -107,8 +112,8 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 		$offset+=$perloop;
 	}
 }
-if($downloadCount){
-	zEmailErrorAndExit("Downloaded ".$downloadCount." missing rets images", "Downloaded ".$downloadCount." missing rets images\nscript completed successfully.\n\n".implode("\n\n", $arrError));
+if($downloadCount || $errorCount){
+	zEmailErrorAndExit("Downloaded ".$downloadCount." missing rets images", "Downloaded ".$downloadCount." missing rets images\nDownload failure count: ".$errorCount."\nScript completed successfully.\n\n".implode("\n\n", $arrError));
 }else{
 	echo "No missing images found\n";
 }

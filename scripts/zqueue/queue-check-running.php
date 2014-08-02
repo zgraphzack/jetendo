@@ -56,7 +56,7 @@ for($i101=0;$i101<70;$i101++){
 		$qSite=mysql_query($sql);
 		$count=mysql_num_rows($qSite);
 		if($count == 0){
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='site_id is not an active site.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='site_id is not an active site.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
@@ -88,14 +88,14 @@ for($i101=0;$i101<70;$i101++){
 		
 		if(!file_exists($originalPath)){ 
 			fwrite($fp, "queue_original_file doesn't exist.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file doesn\'t exist.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file doesn\'t exist.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
 		}
 		if($row->queue_file==""){
 			fwrite($fp, "Queue_file can't be empty and it must be a unique filename.\n");
-			$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_file can\'t be empty and it must be a unique filename' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_file can\'t be empty and it must be a unique filename' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
@@ -111,7 +111,7 @@ for($i101=0;$i101<70;$i101++){
 		}
 		if(!is_numeric($row->queue_width) || !is_numeric($row->queue_height) || $row->queue_width < 100 || $row->queue_height < 100){
 			fwrite($fp, "Error: queue_width and queue_height must be a valid number greater or equal to 100 x 100.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_width and queue_height must be a valid number greater or equal to 100 x 100.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_width and queue_height must be a valid number greater or equal to 100 x 100.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
 			mysql_query($sql);
 			fclose($fp);
 			continue;
@@ -138,14 +138,14 @@ for($i101=0;$i101<70;$i101++){
 		}else if(preg_replace("/Rip done!/","",$r) != $r){
 			// failed with error	
 			fwrite($fp, "Error: \"rip done\" not found after running HandBrakeCLI video encoding command line. \n");
-			$sql="update queue set queue_status='2', queue_error='\"rip done\" not found after running HandBrakeCLI video encoding command line.  Result:".mysql_real_escape_string($r)."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_status='2', queue_error='\"rip done\" not found after running HandBrakeCLI video encoding command line.  Result:".mysql_real_escape_string($r)."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
 			mysql_query($sql);
 		}else{
 			$r2=explode("/",get_cfg_var("jetendo_root_path").$row->queue_original_file);
 			
 			if(file_exists($outputPath) === FALSE){
 				fwrite($fp, "Error: The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.\n");
-				$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+				$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
 				mysql_query($sql);
 				fclose($fp);
 				continue;
@@ -277,7 +277,7 @@ for($i101=0;$i101<70;$i101++){
 			$r=`$cmd`;
 			fwrite($fp, $cmd."\n"); 
 			fwrite($fp, $r."\n"); 
-			$sql="update queue set queue_width='".$queue_width."', queue_height='".$queue_height."', queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$sql="update queue set queue_width='".$queue_width."', queue_height='".$queue_height."', queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
 			mysql_query($sql);
 			fwrite($fp, "Video encoding completed\n");
 			fclose($fp);

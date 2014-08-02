@@ -23,7 +23,7 @@ function deleteMissingListingId($arrId, $arrFile){
 	if(count($arrId) == 0){
 		return;
 	}
-	$sql="select listing_id as id from `listing_track` WHERE listing_id IN ('".implode("','", $arrId)."')";
+	$sql="select listing_id as id from `listing_track` WHERE listing_id IN ('".implode("','", $arrId)."') and listing_deleted='0'";
 	echo $sql."\n";
 	$result=$cmysql->query($sql, MYSQLI_USE_RESULT);
 	if($cmysql->error != ""){
