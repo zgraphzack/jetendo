@@ -106,7 +106,7 @@ propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.contr
       <cfif qMember.member_phone NEQ ''>
         <strong>Phone:</strong> #qMember.member_phone#<br />
       </cfif>
-      <cfif qMember.member_email NEQ ''>
+      <cfif qMember.member_email NEQ '' and qMember.user_hide_public_email EQ 0>
         <strong>Email:</strong> #application.zcore.functions.zEncodeEmail(qMember.member_email,true)#<br />
       </cfif>
       <cfif qMember.member_website NEQ ''>

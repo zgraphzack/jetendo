@@ -77,7 +77,7 @@ if(application.zcore.app.siteHasApp("content")){
 		
          <cfif qM.member_title NEQ ''><strong>Title:</strong> #qM.member_title#<br /> </cfif>
           <cfif qM.member_phone NEQ ''><strong>Phone:</strong> #qM.member_phone#<br /></cfif>
-		  <cfif qM.member_email NEQ ''><strong>Email:</strong> #application.zcore.functions.zEncodeEmail(qM.member_email,true)#<br /></cfif>
+		  <cfif qM.member_email NEQ '' and qM.user_hide_public_email EQ 0><strong>Email:</strong> #application.zcore.functions.zEncodeEmail(qM.member_email,true)#<br /></cfif>
 		  <cfif qM.member_website NEQ ''><strong>Web Site:</strong> <a href="#qM.member_website#" target="_blank">Visit Web Site</a><br /></cfif>
 		  <cfif qM.user_googleplus_url NEQ ''><strong>Google+:</strong> <a href="#qM.user_googleplus_url#" target="_blank">Find me on Google+</a><br /></cfif>
 		  <cfif qM.user_twitter_url NEQ ''><strong>Twitter:</strong> <a href="#qM.user_twitter_url#" target="_blank">Find me on Twitter</a><br /></cfif>
