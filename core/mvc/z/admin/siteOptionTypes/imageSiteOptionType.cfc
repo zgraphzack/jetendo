@@ -191,8 +191,13 @@
 		}
 		photoresize=application.zcore.functions.zso(arguments.optionStruct, 'imagewidth',false,'1000')&"x"&application.zcore.functions.zso(arguments.optionStruct, 'imageHeight',false,'1000');
 		nvd=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_delete');
-		arguments.dataStruct.site_x_option_group_id=arguments.row.site_x_option_group_id;
-		arguments.dataStruct.site_x_option_group_value=nv; 
+		if(structkeyexists(arguments.row, 'site_x_option_group_id')){
+			arguments.dataStruct.site_x_option_group_id=arguments.row.site_x_option_group_id;
+			arguments.dataStruct.site_x_option_group_value=nv; 
+		}else{
+			arguments.dataStruct.site_x_option_id=arguments.row.site_x_option_id;
+			arguments.dataStruct.site_x_option_value=nv; 
+		}
 		if(application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ '1'){
 			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', photoresize,'','','',request.zos.globals.datasource,'1');
 		}else{
@@ -207,9 +212,17 @@
 				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);	
 				oldnv='';
 			}else{
-				oldnv=arguments.row.site_x_option_group_value;
+				if(structkeyexists(arguments.row, 'site_x_option_group_id')){
+					oldnv=arguments.row.site_x_option_group_value;
+				}else{
+					oldnv=arguments.row.site_x_option_value;
+				}
 			}
-			nv=arguments.dataStruct.site_x_option_group_value;
+			if(structkeyexists(arguments.row, 'site_x_option_group_id')){
+				nv=arguments.dataStruct.site_x_option_group_value;
+			}else{
+				nv=arguments.dataStruct.site_x_option_value;
+			}
 			nv=arrList[1];
 			local.tempPath9=application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'; 
 			arguments.optionStruct.imagemaskpath=application.zcore.functions.zso(arguments.optionStruct, 'imagemaskpath');
@@ -249,11 +262,19 @@
 			nv=oldnv;
 		}
 	}else{
-		nv=arguments.row.site_x_option_group_value;	
+		if(structkeyexists(arguments.row, 'site_x_option_group_id')){
+			nv=arguments.row.site_x_option_group_value;	
+		}else{
+			nv=arguments.row.site_x_option_value;
+		}
 		structdelete(form, arguments.prefixString&arguments.row.site_option_id);
 		nvd=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_delete');
 		if(nvd EQ 1){
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);
+			if(structkeyexists(arguments.row, 'site_x_option_group_id')){
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);
+			}else{
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_value);
+			}
 			nv='';	
 		}
 	}

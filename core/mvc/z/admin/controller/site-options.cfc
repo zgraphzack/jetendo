@@ -3500,22 +3500,22 @@ Define this function in another CFC to override the default email format
 				if(form.jumpto EQ "soid_#application.zcore.functions.zurlencode(row.site_option_name,"_")#"){
 					local.jumptoanchor="soid_#row.site_option_id#";
 				}
-				if(not structkeyexists(variables, "newvalue"&row.site_option_id)){
-					variables["newvalue"&row.site_option_id]=row.site_x_option_value;
+				if(not structkeyexists(form, "newvalue"&row.site_option_id)){
+					form["newvalue"&row.site_option_id]=row.site_x_option_value;
 					if(row.site_x_option_id EQ ""){
-						variables["newvalue"&row.site_option_id]=row.site_option_default_value;
+						form["newvalue"&row.site_option_id]=row.site_option_default_value;
 					}
 				}
-				variables[row.site_option_name]=variables["newvalue"&row.site_option_id];
+				form[row.site_option_name]=form["newvalue"&row.site_option_id];
 				if(row.site_x_option_id EQ ""){
-					if(not structkeyexists(variables, "newvalue"&row.site_option_id)){
-						variables["newvalue"&row.site_option_id]=row.site_option_default_value;
+					if(not structkeyexists(form, "newvalue"&row.site_option_id)){
+						form["newvalue"&row.site_option_id]=row.site_option_default_value;
 					}
 				}
 				optionStruct[row.site_option_id]=deserializeJson(row.site_option_type_json);
 				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
-				dataStruct=currentCFC.onBeforeListView(row, optionStruct[row.site_option_id], variables);
-				value=currentCFC.getListValue(dataStruct, optionStruct[row.site_option_id], application.zcore.functions.zso(variables, "newvalue"&row.site_option_id));
+				dataStruct=currentCFC.onBeforeListView(row, optionStruct[row.site_option_id], form);
+				value=currentCFC.getListValue(dataStruct, optionStruct[row.site_option_id], application.zcore.functions.zso(form, "newvalue"&row.site_option_id));
 				if(value EQ ""){
 					value=row.site_option_default_value;
 				}
@@ -3543,7 +3543,7 @@ Define this function in another CFC to override the default email format
 					<input type="hidden" name="siteidtype" value="#application.zcore.functions.zGetSiteIdType(row.site_id)#" />
 					<br style="clear:both;" />');
 					var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
-					var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', variables, labelStruct);
+					var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form, labelStruct);
 					writeoutput(rs.value);
 					writeoutput('</td>
 				</tr>');
