@@ -83,6 +83,14 @@
 		ms["Manage Product Categories"]={ parent:'Ecommerce', label:chr(9)&"Manage Product Categories"};
 		ms["Manage Customers"]={parent:'Ecommerce', label: chr(9)&"Manage Customers"};
 	}
+	if(application.zcore.app.siteHasApp("reservation")){
+		ms["reservations"]={ parent:'', label:"Reservations"};
+		ms["Manage Reservations"]={ parent:'reservations', label:chr(9)&"Manage Reservations"};
+	}
+	if(application.zcore.app.siteHasApp("event")){
+		ms["events"]={ parent:'', label:"Events"};
+		ms["Manage Events"]={ parent:'events', label:chr(9)&"Manage Events"};
+	}
 
 	ms["Users"]={ parent:'', label:"Users"};
 	ms["Manage Users"]={ parent:'Users', label:chr(9)&"Manage Users"};

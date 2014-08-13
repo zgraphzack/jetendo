@@ -52,7 +52,7 @@
 	var qProp2=0;
 	var rs2=0;
 	variables.init();
-	application.zcore.functions.zSetPageHelpId("7.4");
+	//application.zcore.functions.zSetPageHelpId("7.4");
 	ts=structnew();
 	ts.image_library_id_field="product_category.product_category_image_library_id";
 	ts.count = 1; // how many images to get
@@ -474,7 +474,7 @@
 	var qRate=0;
 	var currentMethod=form.method;
 	variables.init();
-	application.zcore.functions.zSetPageHelpId("7.5");
+	//application.zcore.functions.zSetPageHelpId("7.5");
 	form.product_category_id=application.zcore.functions.zso(form, 'product_category_id',true);
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# product_category 
 	WHERE product_category_id = #db.param(form.product_category_id)# and 

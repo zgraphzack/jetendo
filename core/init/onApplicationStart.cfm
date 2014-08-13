@@ -264,6 +264,8 @@
 	ts.appComPathStruct[12]={name:"content", cfcPath:"zcorerootmapping.mvc.z.content.controller.content", cache:true};
 	ts.appComPathStruct[13]={name:"rental", cfcPath:"zcorerootmapping.mvc.z.rental.controller.rental", cache:false};
 	ts.appComPathStruct[15]={name:"ecommerce", cfcPath:"zcorerootmapping.mvc.z.ecommerce.controller.ecommerce", cache:true};
+	ts.appComPathStruct[16]={name:"reservation", cfcPath:"zcorerootmapping.mvc.z.reservation.controller.reservation", cache:true};
+	ts.appComPathStruct[17]={name:"event", cfcPath:"zcorerootmapping.mvc.z.event.controller.event", cache:true};
 	ts.appComName={};
 	for(i in ts.appComPathStruct){
 		ts.appComName[ts.appComPathStruct[i].name]=i;

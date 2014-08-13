@@ -367,7 +367,7 @@ Future Features:
 		}
 		if(structkeyexists(arguments.linkStruct["Ecommerce"].children,"Manage Orders") EQ false){
 			ts=structnew();
-			ts.featureName="Problem Link Report";
+			ts.featureName="Manager Orders";
 			ts.link="/z/ecommerce/admin/order/index";
 			arguments.linkStruct["Ecommerce"].children["Manage Orders"]=ts;
 		}

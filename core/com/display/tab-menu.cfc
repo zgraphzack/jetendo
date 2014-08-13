@@ -64,11 +64,23 @@
 		zArrDeferredFunctions.push(function(){
 			$(".zmember-tabs#variables.tabMenuIndex#-1").show();
             var user_tabs = $("##zmember-tabs#variables.tabMenuIndex#").tabs({
-                show: function(event, ui) {
-                    if (ui.index == #arraylen(variables.arrTab)#) {
-                        $("fieldset[id^='zmember-tabs#variables.tabMenuIndex#-']").removeClass('ui-tabs-hide');
-                        $("fieldset[id='zmember-tabs#variables.tabMenuIndex#-#arraylen(variables.arrTab)+1#']").addClass('ui-tabs-hide');
-                    } 
+                activate: function(event, ui) {
+                    if(ui.newTab.text()=="All"){
+                      $(".zmember-tabs fieldset").each(function(){
+
+                        $(this).show();
+                      });
+                    }else{
+                      $(".zmember-tabs fieldset").each(function(){
+
+                        $(this).hide();
+                      });
+                      ui.newPanel.show();
+                    }
+                    /*if (ui.index == #arraylen(variables.arrTab)#) {
+                        $("fieldset[id^='zmember-tabs#variables.tabMenuIndex#-']").show().removeClass('ui-tabs-hide');
+                        $("fieldset[id='zmember-tabs#variables.tabMenuIndex#-#arraylen(variables.arrTab)+1#']").hide().addClass('ui-tabs-hide');
+                    } */
                 },
 				cookie: {
 					expires: 3000,

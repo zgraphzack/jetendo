@@ -123,8 +123,8 @@
 	
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation_config`(  
 	  `reservation_config_id` INT(11) UNSIGNED NOT NULL,
-	  `reservation_config_order_confirmation_email_list` VARCHAR(100) NOT NULL,
-	  `reservation_config_order_change_email_list` VARCHAR(100) NOT NULL,
+	  `reservation_config_confirmation_email_list` VARCHAR(100) NOT NULL,
+	  `reservation_config_change_email_list` VARCHAR(100) NOT NULL,
 	  `reservation_config_payment_failure_email_list` VARCHAR(100) NOT NULL,
 	  `reservation_config_destination_on_email` CHAR(1) NOT NULL DEFAULT '0',
 	  `reservation_config_email_reminder_subject` VARCHAR(255) NOT NULL,
