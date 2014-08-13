@@ -200,6 +200,21 @@
 	ADD COLUMN `site_option_group_reservation_type_id_list` VARCHAR(255) NOT NULL AFTER `site_option_group_deleted`")){
 		return false;
 	} 
+	
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO `#request.zos.zcoreDatasourcePrefix#app` SET 
+app_id='16',
+app_name='Reservation',
+app_built_in='0',
+app_updated_datetime='2014-08-13 00:00:00'")){
+		return false;
+	} 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO `#request.zos.zcoreDatasourcePrefix#app` SET 
+app_id='17',
+app_name='Event',
+app_built_in='0',
+app_updated_datetime='2014-08-13 00:00:00'")){
+		return false;
+	} 
 	return true;
 	</cfscript>
 </cffunction>
