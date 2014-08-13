@@ -1930,12 +1930,12 @@
 		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');
 		application.zcore.status.setStatus(request.zsid,"Saved successfully.");
 		if(structkeyexists(arguments.struct, 'successURL')){
-			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.successURL, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#local.setIdBackup#"));
+			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.successURL, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#local.setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"));
 		}else{
 			if(local.qCheck.site_option_group_public_thankyou_url NEQ ""){
-				application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(local.qCheck.site_option_group_public_thankyou_url, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#"));
+				application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(local.qCheck.site_option_group_public_thankyou_url, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#local.setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"));
 			}else{
-				application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#");
+				application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#local.setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#");
 			}
 		}
 	}else{

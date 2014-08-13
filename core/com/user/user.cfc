@@ -233,6 +233,7 @@ userCom.checkLogin(inputStruct);
 		secureLogin=true,
 		site_id = request.zos.globals.id
 	}
+	rs.arrDebugLog=[];
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin start'});
 	local.failedLogin=false;
 	StructAppend(ss, ts, false);
@@ -252,7 +253,7 @@ userCom.checkLogin(inputStruct);
 		arguments.inputStruct = ss;
 		arguments.inputStruct.loginMessage = "You've been logged out.";
 		overrideContent = this.loginForm(arguments.inputStruct);
-		if(isDefined('ss.template')){
+		if(structkeyexists(ss,'template')){
 			if(ss.template EQ false){
 				application.zcore.template.setTemplate("zcorerootmapping.templates.nothing",true,true);
 			}else{
@@ -297,6 +298,9 @@ userCom.checkLogin(inputStruct);
 				emailSent=true;
 			}
 		}
+		if(structkeyexists(form, 'zdebug')){
+			arrayAppend(rs.arrDebugLog, "FailCount is #failCount#");
+		}
 		if(failCount EQ 10){
 			if(emailSent EQ false){
 				db.sql="UPDATE #db.table("login_log", request.zos.zcoreDatasource)# login_log 
@@ -313,8 +317,10 @@ userCom.checkLogin(inputStruct);
 					writeoutput('Domain: #request.zos.cgi.http_host##chr(10)#Username: #form.zUsername##chr(10)#IP: #request.zos.cgi.remote_addr##chr(10)#User Agent: #cgi.HTTP_USER_AGENT##chr(10)#Date: #request.zos.mysqlnow##chr(10)#Last 10 login attempts failed within 4 hours:#chr(10)##arraytolist(arrLogOut,chr(10))##chr(10)&chr(10)#This IP+User Agent+username will not be able to login until there are fewer then 10 failures in the `#request.zos.zcoreDatasource#`.login_log in the last 4 hours.');
 				}
 			}
+			if(structkeyexists(form, 'zdebug')){
+				arrayAppend(rs.arrDebugLog, "Too many login failures");
+			}
 			if(ss.noLoginForm){
-				rs=structnew();
 				rs.error=2;
 				rs.success=false;
 				return rs;
@@ -353,16 +359,24 @@ userCom.checkLogin(inputStruct);
 		qUserCheck=db.execute("qUserCheck");
 		failedLogin=false;
 		if(qUserCheck.recordcount EQ 1){
+
+			if(structkeyexists(form, 'zdebug')){
+				arrayAppend(rs.arrDebugLog, "Found user_id: #qUserCheck.user_id#");
+			}
 			if(qUserCheck.user_password EQ "" and qUserCheck.user_password_new EQ ""){
-				rs=structnew();
+				if(structkeyexists(form, 'zdebug')){
+					arrayAppend(rs.arrDebugLog, "Password missing in database");
+				}
 				rs.error=3;
 				rs.success=false;
 				return rs;
 			}
 			if(qUserCheck.user_openid_required EQ 1 and qUserCheck.user_openid_id NEQ ""){
 				if(arguments.inputStruct.openIdEnabled EQ false and arguments.inputStruct.tokenLoginEnabled EQ false){
+					if(structkeyexists(form, 'zdebug')){
+						arrayAppend(rs.arrDebugLog, "openid login method is required for this user.");
+					}
 					failedLogin=true;
-					rs=structnew();
 					rs.error=4;
 					rs.success=false;
 					return rs;
@@ -375,9 +389,15 @@ userCom.checkLogin(inputStruct);
 					if(arguments.inputStruct.disableSecurePassword EQ false){
 						passwordVerificationResult=application.zcore.user.verifySecurePassword(form.zPassword, qUserCheck.user_salt, qUserCheck.user_password, qUserCheck.user_password_version);
 						
+						if(structkeyexists(form, 'zdebug')){
+							arrayAppend(rs.arrDebugLog, "Password verification result: #passwordVerificationResult#");
+						}
 						if(not passwordVerificationResult){
 							failedLogin=true; // password didn't match
 							if(structkeyexists(request, 'hashThreadDeathOccurred')){
+								if(structkeyexists(form, 'zdebug')){
+									arrayAppend(rs.arrDebugLog, "hashThreadDeathOccurred");
+								}
 								db.sql="update #db.table("user", request.zos.zcoreDatasource)# 
 								SET user_salt = #db.param('')#,
 								user_password = #db.param('')#,
@@ -388,9 +408,16 @@ userCom.checkLogin(inputStruct);
 								user_deleted = #db.param(0)# and 
 								site_id = #db.param(qUserCheck.site_id)#";
 								db.execute("qDeleteUserPassword");
+							}else{
+								if(structkeyexists(form, 'zdebug')){
+									arrayAppend(rs.arrDebugLog, "Password didn't match");
+								}
 							}
 						}else if(qUserCheck.user_password_version NEQ request.zos.defaultPasswordVersion){
 							// auto-upgrade this user to the new default password version
+							if(structkeyexists(form, 'zdebug')){
+								arrayAppend(rs.arrDebugLog, "Password version was upgraded");
+							}
 							var userSalt=application.zcore.functions.zGenerateStrongPassword(256,256);
 							var userPasswordHash=application.zcore.user.convertPlainTextToSecurePassword(form.zPassword, userSalt, request.zos.defaultPasswordVersion, false);
 							db.sql="update #db.table("user", request.zos.zcoreDatasource)# 
@@ -403,15 +430,23 @@ userCom.checkLogin(inputStruct);
 							user_deleted = #db.param(0)# and 
 							site_id = #db.param(qUserCheck.site_id)#";
 							db.execute("qUpdateUserPassword");
+						}else{
 						}
 					}
 				}
 			}else{
+				if(structkeyexists(form, 'zdebug')){
+					arrayAppend(rs.arrDebugLog, "user doesn't exist");
+				}
 				failedLogin=true; // user doesn't exist.
 			} 
 		} 
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin after password hashing'}); 
 		if(not failedLogin){
+
+			if(structkeyexists(form, 'zdebug')){
+				arrayAppend(rs.arrDebugLog, "Login successful, updating session and database.");
+			}
 			request.zsession.member_id = qUserCheck.member_id;
 			local.config=application.zcore.db.getConfig();
 			local.config.cacheEnabled=false;
@@ -444,7 +479,6 @@ userCom.checkLogin(inputStruct);
 			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin after createToken'});
 			
 			if(ss.noLoginForm){
-				rs=structnew();
 				rs.error=0;
 				rs.success=true;
 				return rs;
@@ -479,11 +513,13 @@ userCom.checkLogin(inputStruct);
 				}
 			}
 		}else{
-			if(isDefined('request.zsession')){
+			if(structkeyexists(form, 'zdebug')){
+				arrayAppend(rs.arrDebugLog, "Login failed");
+			}
+			if(structkeyexists(request, 'zsession')){
 				StructDelete(request.zsession, "user");
 			}
 			if(ss.noLoginForm){
-				rs=structnew();
 				rs.error=1;
 				rs.success=false;
 				return rs;

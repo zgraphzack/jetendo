@@ -115,6 +115,7 @@
 	componentObjectCache.hook=CreateObject("component","zcorerootmapping.com.zos.hook");
 	componentObjectCache.app=CreateObject("component","zcorerootmapping.com.zos.app");
 	componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db");
+	componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 	componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
 	if(request.zos.isdeveloper and structkeyexists(request.zsession, 'verifyQueries') and request.zsession.verifyQueries){
 		local.verifyQueriesEnabled=true;

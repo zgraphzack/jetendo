@@ -9,6 +9,15 @@ div.-railo-dump tr:nth-child(even) {background: #F2F2F2  !important;}
 div.-railo-dump tr tr:nth-child(even) {background: #F2F2F2  !important;}
 div.-railo-dump tr:hover{ background-color:#e6faeb !important;} 
 
+
+.zPaypalButton{ width:230px; float:left;text-align:center;}
+.zPaypalSelectMessage{width:100%; float:left;}
+.zPaypalSelect{width:100%; float:left;}
+.zPaypalImageDiv{width:100%; float:left;}
+.zPaypalImageDiv input{background:none; border:none;}
+.zPaypalBottomMessage{width:100%; float:left;}
+
+
 .zMorgagePaymentTextTotal{ font-size:18px; line-height:24px;}
 .zMortgagePaymentFieldDiv{ width:100%; margin-bottom:10px; float:left;}
 .zMortgagePaymentResults{float:left; width:100%; margin-top:10px;}

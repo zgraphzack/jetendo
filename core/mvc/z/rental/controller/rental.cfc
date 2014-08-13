@@ -489,19 +489,16 @@
 		var ts=StructNew();
 		db.sql="SELECT * FROM #db.table("rental_config", request.zos.zcoreDatasource)# rental_config, 
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
-		WHERE rental_config.app_x_site_id = app_x_site.app_x_site_id and 
+		WHERE rental_config.site_id = app_x_site.site_id and 
 		rental_config.site_id = #db.param(arguments.site_id)# and 
 		app_x_site.site_id = rental_config.site_id and 
 		rental_config_deleted = #db.param(0)# and 
 		app_x_site_deleted = #db.param(0)#";
 		qData=db.execute("qData");
-		arrColumns=listToArray(lcase(qdata.columnlist));
-		loop query="qdata"{
-			for(i=1;i LTE arraylen(arrColumns);i++){
-                ts[arrColumns[i]]=qdata[arrColumns[i]];
-			}
+		for(row in qData){
+			return row;
 		}
-		return ts;
+		throw("rental_config record is missing for site_id=#arguments.site_id#.");
 		</cfscript>
     </cffunction>
     
@@ -526,7 +523,7 @@
 		#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site, 
 		#db.table("site", request.zos.zcoreDatasource)# site 
 		WHERE site.site_id = app_x_site.site_id and  
-		app_x_site.app_x_site_id = rental_config.app_x_site_id and 
+		app_x_site.site_id = rental_config.site_id and 
 		rental_config.site_id = #db.param(arguments.site_id)# and 
 		rental_config_deleted = #db.param(0)# and 
 		app_x_site_deleted = #db.param(0)# and 

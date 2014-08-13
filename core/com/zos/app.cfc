@@ -718,7 +718,7 @@
 		</cfscript>
         
         <cfsavecontent variable="pagenav">
-        <a href="#request.cgi_script_name#?method=appList">Applications</a> / <a href="#request.cgi_script_name#?method=instanceList&app_id=#form.app_id#">#qa.app_name# Application Instances</a> /
+        <a href="#request.cgi_script_name#?method=appList">Applications</a> / <a href="#request.cgi_script_name#?method=instanceList&amp;app_id=#form.app_id#">#qa.app_name# Application Instances</a> /
         </cfsavecontent>
         <cfscript>
 		application.zcore.template.setTag("pagenav",pagenav);
@@ -729,7 +729,7 @@
 			application.zcore.template.setTag("pagetitle","Edit Application: ""#qa.app_name#""");
 		}
 		</cfscript> 
-        <form action="#request.cgi_script_name#?method=instanceSave&app_id=#form.app_id#&sid=#form.sid#&app_x_site_id=#form.app_x_site_id#" method="post" style="display:inline;">
+        <form action="#request.cgi_script_name#?method=instanceSave&app_id=#form.app_id#&amp;sid=#form.sid#&amp;app_x_site_id=#form.app_x_site_id#" method="post" style="display:inline;">
         <table class="table-list" style="border-spacing:0px;">
         
         <cfif qData.recordcount NEQ 0>
@@ -743,7 +743,7 @@
         <cfif qData.recordcount EQ 0>
         <input type="hidden" name="app_x_site_status" value="0" />
         </cfif>
-        <br style="clear:both;" /><button type="submit" name="submitForm"><cfif form.app_x_site_id EQ 0>Yes<cfelse>Save</cfif></button> <button type="button" name="cancelForm" onclick="window.location.href='/z/_com/zos/app?method=instanceSiteList&sid=#form.sid#';">Cancel</button>
+        <br style="clear:both;" /><button type="submit" name="submitForm"><cfif form.app_x_site_id EQ 0>Yes<cfelse>Save</cfif></button> <button type="button" name="cancelForm" onclick="window.location.href='/z/_com/zos/app?method=instanceSiteList&amp;sid=#form.sid#';">Cancel</button>
         </form>
         
     </cffunction>

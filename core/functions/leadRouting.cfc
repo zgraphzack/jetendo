@@ -1,5 +1,43 @@
 <cfcomponent>
 <cfoutput>
+
+<cffunction name="zGetInquiryById" localmode="modern" access="public">
+	<cfargument name="inquiries_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_id = #db.param(arguments.inquiries_id)# and 
+	inquiries_deleted=#db.param(0)#";
+	qInquiry=db.execute("qInquiry");
+	for(row in qInquiry){
+		return row;
+	};
+	return {};
+	</cfscript>
+</cffunction>
+
+<!--- zGetInquiryCustomField(inquiries_id, "field", "default"); --->
+<cffunction name="zGetInquiryCustomField" localmode="modern" access="public">
+	<cfargument name="inquiries_id" type="string" required="yes">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfargument name="defaultValue" type="string" required="no" default="">
+	<cfscript>
+	inquiryStruct=application.zcore.functions.zGetInquiryById(arguments.inquiries_id);
+	if(structcount(inquiryStruct) NEQ 0){
+		struct=deserializeJSON(inquiryStruct.inquiries_custom_json);
+		if(structkeyexists(struct, 'arrCustom')){
+			for(i=1;i LTE arraylen(struct.arrCustom);i++){
+				c=struct.arrCustom[i];
+				if(c.label EQ arguments.fieldName){
+					return c.value;
+				}
+			}
+		}
+	}
+	return arguments.defaultValue;
+	</cfscript>
+</cffunction>
 <!--- 
 ts=structnew();
 ts.inquiries_id=inquiries_id;

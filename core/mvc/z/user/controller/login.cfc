@@ -47,10 +47,12 @@
 	}else{
 		errorMessage="Unknown Error";	
 	}
-	/*if(request.zos.isdeveloper){
-		local.debugSQL=',"debugsql":'''&jsstringformat(arraytolist(request.zos.arrQueryLog, "; "))&'''';
-	}*/
-	jsonText='{"success":#success#,"errorMessage":"#jsstringformat(errorMessage)#", "developer": #local.isDeveloper#}';// #local.debugSQL#
+	if(request.zos.isdeveloper and structkeyexists(form, 'zdebug')){
+		local.debugSQL=',"arrDebugLog": #serializeJson(rs.arrDebugLog)#, "debugsql":'''&jsstringformat(arraytolist(request.zos.arrQueryLog, "; "))&'''';
+	}else{
+		local.debugSQL="";
+	}
+	jsonText='{"success":#success#,"errorMessage":"#jsstringformat(errorMessage)#", "developer": #local.isDeveloper##local.debugSQL#}';
 	header name="x_ajax_id" value="#application.zcore.functions.zso(form, 'x_ajax_id')#";
 	writeoutput(jsonText);
 	application.zcore.functions.zabort();

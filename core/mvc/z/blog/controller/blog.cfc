@@ -821,13 +821,10 @@ this.app_id=10;
 	site_id=#db.param(arguments.site_id)# 
 	LIMIT #db.param(0)#,#db.param(1)#";
 	qData=db.execute("qData");
-	arrColumns=listToArray(lcase(qdata.columnlist));
-	loop query="qdata"{
-		for(i=1;i LTE arraylen(arrColumns);i++){
-			ts[arrColumns[i]]=qdata[arrColumns[i]];
-		}
+	for(row in qData){
+		return row;
 	}
-	return ts;
+	throw("blog_config record is missing for site_id=#arguments.site_id#.");
 	</cfscript>
 </cffunction>
 

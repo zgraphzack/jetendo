@@ -447,6 +447,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 		for(i=1;i LTE arraylen(arrId);i++){
 			for(i654 in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
 				arrayappend(arguments.ss.arrMLSPID, i654&"-"&arrId[i]);
+			}
+			
+			for(i654 in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
 				arrId[i]=rereplace(arrId[i],"[a-zA-Z]*","","all");
 				arrayappend(arguments.ss.arrMLSPID, i654&"-"&arrId[i]);
 			}

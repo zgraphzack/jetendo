@@ -263,6 +263,7 @@
 	ts.appComPathStruct[11]={name:"listing", cfcPath:"zcorerootmapping.mvc.z.listing.controller.listing", cache:false};
 	ts.appComPathStruct[12]={name:"content", cfcPath:"zcorerootmapping.mvc.z.content.controller.content", cache:true};
 	ts.appComPathStruct[13]={name:"rental", cfcPath:"zcorerootmapping.mvc.z.rental.controller.rental", cache:false};
+	ts.appComPathStruct[15]={name:"ecommerce", cfcPath:"zcorerootmapping.mvc.z.ecommerce.controller.ecommerce", cache:true};
 	ts.appComName={};
 	for(i in ts.appComPathStruct){
 		ts.appComName[ts.appComPathStruct[i].name]=i;
@@ -421,7 +422,8 @@
 	ts.componentObjectCache.imageLibraryCom=CreateObject("component","zcorerootmapping.com.app.image-library");
 	ts.componentObjectCache.hook=CreateObject("component","zcorerootmapping.com.zos.hook");
 	ts.componentObjectCache.app=CreateObject("component","zcorerootmapping.com.zos.app");
-	ts.componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db");
+	ts.componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db"); 
+	ts.componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 	ts.componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
 
 

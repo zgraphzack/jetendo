@@ -7,6 +7,31 @@ zArrDeferredFunctions.push(function(){
 	}
 });
 
+function zConvertToMilitaryTime( ampm, hours, minutes, leadingZero ) {
+	var militaryHours;
+	ampm=ampm.toLowerCase();
+	hours=parseInt(hours);
+	minutes=parseInt(minutes);
+	if( ampm == "pm" || ampm == "p.m." ) {
+		if(hours!=12){
+			hours+=12;
+		}
+	}
+	if(minutes < 10){
+		if(leadingZero){
+			return "0"+parseInt(hours+"0"+minutes);
+		}else{
+			return parseInt(hours+"0"+minutes);
+		}
+	}else{
+		if(leadingZero){
+			return "0"+hours + minutes;
+		}else{
+			return hours + minutes;
+		}
+	}
+}
+
 function gotoReimport(){
 	var d2=document.getElementById('mls_id1');
 	var d1=d2.options[d2.selectedIndex].value;

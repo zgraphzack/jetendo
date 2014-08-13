@@ -350,13 +350,10 @@ this.app_id=12;
 	site_id = #db.param(arguments.site_id)# and 
 	content_config_deleted = #db.param(0)#";
 	qData=db.execute("qData");
-	arrColumns=listToArray(lcase(qdata.columnlist));
-	loop query="qdata"{
-		for(i=1;i LTE arraylen(arrColumns);i++){
-			ts[arrColumns[i]]=qdata[arrColumns[i]];
-		}
+	for(row in qData){
+		return row;
 	}
-	return ts;
+	throw("config_config record is missing for site_id=#arguments.site_id#.");
 	</cfscript>
 </cffunction>
 
@@ -387,7 +384,7 @@ this.app_id=12;
 	#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site, 
 	#db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site.site_id = app_x_site.site_id and 
-	app_x_site.app_x_site_id = content_config.app_x_site_id and 
+	app_x_site.site_id = content_config.site_id and 
 	content_config.site_id = #db.param(arguments.site_id)# and 
 	content_config_deleted = #db.param(0)# and 
 	app_x_site_deleted = #db.param(0)# and 

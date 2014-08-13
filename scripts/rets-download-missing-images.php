@@ -113,7 +113,20 @@ while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
 	}
 }
 if($downloadCount || $errorCount){
-	zEmailErrorAndExit("Downloaded ".$downloadCount." missing rets images", "Downloaded ".$downloadCount." missing rets images\nDownload failure count: ".$errorCount."\nScript completed successfully.\n\n".implode("\n\n", $arrError));
+	$logText="";
+	$errorLogText="";
+	$mysqldate = date("Y-m-d H:i:s");
+	if($downloadCount){
+		$logText="Downloaded ".$downloadCount." missing rets images";
+	}
+	if($errorCount){
+		$errorLogText="Download failure count: ".$errorCount;
+	}
+	$sql="INSERT INTO rets_download_log SET 
+	rets_download_log_text = '".$cmysql->real_escape_string($logText)."', 
+	rets_download_log_error_text = '".$cmysql->real_escape_string($errorLogText)."', 
+	rets_download_log_updated_datetime = '".$cmysql->real_escape_string($mysqldate)."' ";
+	$cmysql->query($sql);
 }else{
 	echo "No missing images found\n";
 }
