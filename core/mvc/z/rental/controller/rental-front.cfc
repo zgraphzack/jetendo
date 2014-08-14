@@ -273,7 +273,7 @@ ts.crop=1;
 arrImages=application.zcore.imageLibraryCom.displayImages(ts);
 if(arraylen(arrImages) NEQ 0){
 	application.zcore.imageLibraryCom.registerSize(rental_image_library_id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0);
-	link=application.zcore.imageLibraryCom.getImageLink(rental_image_library_id, arrImages[1].id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0, true, arrImages[1].caption, arrImages[1].file);
+	link=application.zcore.imageLibraryCom.getImageLink(rental_image_library_id, arrImages[1].id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0, true, arrImages[1].caption, arrImages[1].file, arrImages[1].updatedDatetime);
 	// temporarily disabled the popup images.
 	writeoutput('<img src="#link#" alt="#htmleditformat(arrImages[1].caption)#" style="border:none; text-align:middle; " />');
 }
@@ -1412,7 +1412,7 @@ application.zcore.template.appendTag("meta",tempMeta);
 		application.zcore.template.setTag('meta',tempMeta);
 		application.zcore.template.setTag("title","Photo ##"&form.image_id&" for "&title);
 		application.zcore.imageLibraryCom.registerSize(qRental.rental_image_library_id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0);
-		link=application.zcore.imageLibraryCom.getImageLink(qRental.rental_image_library_id, arrImages[1].id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0, true, arrImages[1].caption, arrImages[1].file);
+		link=application.zcore.imageLibraryCom.getImageLink(qRental.rental_image_library_id, arrImages[1].id, application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main"), 0, true, arrImages[1].caption, arrImages[1].file, arrImages[1].updatedDatetime);
 		// temporarily disabled the popup images.
 		writeoutput('<div style="padding:5px; height:299px; text-align:center; width:#application.zcore.app.getAppCFC("rental").getImageSize("rental-page-main")#px;"><img src="#link#" alt="#htmleditformat(arrImages[1].caption)#" style="border:none; text-align:center; " /></div>
 		<div style="padding:5px; text-align:center;">#arrImages[1].caption#</div>');
@@ -2002,7 +2002,7 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 	arrImages=application.zcore.imageLibraryCom.displayImages(ts);
 	if(arraylen(arrImages) NEQ 0){
 		application.zcore.imageLibraryCom.registerSize(rental_category_image_library_id, "350x232", 0);
-		link=application.zcore.imageLibraryCom.getImageLink(rental_category_image_library_id, arrImages[1].id, "350x232", 0, true, arrImages[1].caption, arrImages[1].file);
+		link=application.zcore.imageLibraryCom.getImageLink(rental_category_image_library_id, arrImages[1].id, "350x232", 0, true, arrImages[1].caption, arrImages[1].file, arrImages[1].updatedDatetime);
 		// temporarily disabled the popup images.
 		writeoutput('<img src="#link#" alt="#htmleditformat(arrImages[1].caption)#" style="padding-right:10px; padding-bottom:10px; border:none; text-align:left; " />');
 	}

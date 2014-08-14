@@ -182,7 +182,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		}else if(ss.reservation_period EQ "hourly"){
 			s=dateformat(ss.reservation_start_datetime, "m/d/yyyy");
 			e=dateformat(ss.reservation_end_datetime, "m/d/yyyy");
-			echo(timeformat(ss.reservation_start_datetime, "h:mm tt")&" to "&timeformat(ss.reservation_start_datetime, "h:mm tt")&" on "&s);
+			echo(timeformat(ss.reservation_start_datetime, "h:mm tt")&" to "&timeformat(ss.reservation_end_datetime, "h:mm tt")&" on "&s);
 			if(s NEQ e){
 				echo(" through "&e);
 			}
@@ -203,18 +203,18 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 	<cfscript>
 	var ts=0;
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
-		if(structkeyexists(arguments.linkStruct,"reservation") EQ false){
+		if(structkeyexists(arguments.linkStruct,"Reservation") EQ false){
 			ts=structnew();
 			ts.featureName="Reservations";
 			ts.link='/z/reservation/admin/reservation-admin/index';
 			ts.children=structnew();
-			arguments.linkStruct["reservation"]=ts;
+			arguments.linkStruct["Reservation"]=ts;
 		}
 		if(structkeyexists(arguments.linkStruct["reservation"].children,"Manage Reservations") EQ false){
 			ts=structnew();
 			ts.featureName="Manage Reservations";
 			ts.link="/z/reservation/admin/reservation-admin/index";
-			arguments.linkStruct["reservation"].children["Manage Reservations"]=ts;
+			arguments.linkStruct["Reservation"].children["Manage Reservations"]=ts;
 		}
 	}
 	return arguments.linkStruct;
@@ -411,7 +411,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		ts = StructNew();
 		ts.name = "reservation_config_reminder_days_list";
 		application.zcore.functions.zInput_Text(ts);
-		echo(' (Comma separate list of X days before a reservation that an reminder email should be sent.  Leave blank to disable reminder emails. i.e. 15,7,1)</td>
+		echo(' (The number of days before a reservation to send an email reminder notification.  Leave blank to disable reminder emails.  You can comma separate multiple values. i.e. 15,7,1)</td>
 		</tr>
 		<tr>
 		<th>Soonest Reservation Allowed:</th>
@@ -428,20 +428,13 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		ts.name = "reservation_config_furthest_reservation_days";
 		application.zcore.functions.zInput_Text(ts);
 		echo(' (## of days | 0 is unlimited)</td>
-		</tr>
-		<tr>
-		<th>Email Reminder Days:</th>
-		<td>');
-		ts = StructNew();
-		ts.name = "reservation_config_reminder_days_list";
-		application.zcore.functions.zInput_Text(ts);
-		echo(' (Comma separate list of X days before a reservation that an reminder email should be sent. i.e. 15,7,1)</td>
-		</tr>
+		</tr> 
 		<tr>
 		<th>Reminder Email Subject:</th>
 		<td>');
 		ts = StructNew();
 		ts.name = "reservation_config_email_reminder_subject";
+		ts.style="width:100%;";
 		application.zcore.functions.zInput_Text(ts);
 		echo('</td>
 		</tr>
@@ -461,6 +454,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		<td>');
 		ts = StructNew();
 		ts.name = "reservation_config_email_creation_subject";
+		ts.style="width:100%;";
 		application.zcore.functions.zInput_Text(ts);
 		echo('</td>
 		</tr>
@@ -480,6 +474,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		<td>');
 		ts = StructNew();
 		ts.name = "reservation_config_email_change_subject";
+		ts.style="width:100%;";
 		application.zcore.functions.zInput_Text(ts);
 		echo('</td>
 		</tr>
@@ -499,6 +494,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		<td>');
 		ts = StructNew();
 		ts.name = "reservation_config_email_cancelled_subject";
+		ts.style="width:100%;";
 		application.zcore.functions.zInput_Text(ts);
 		echo('</td>
 		</tr>

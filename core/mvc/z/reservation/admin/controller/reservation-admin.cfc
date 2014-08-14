@@ -6,12 +6,100 @@
 	var rateCom=0;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Reservations");
 	</cfscript>
-	<h2 style="display:inline;">Manage Reservations | </h2>
+	<div style="padding-bottom:10px; width:100%; float:left;"><h2 style="display:inline;">Manage Reservations |</h2>
+	 <a href="/z/reservation/admin/reservation-admin/add">Add Reservation</a> | View: <cfif form.method EQ "calendarView">
+		Calendar | <a href="/z/reservation/admin/reservation-admin/index">List</a>
+	<cfelse>
+		<a href="/z/reservation/admin/reservation-admin/calendarView">Calendar</a> | List
+	</cfif>
+
+	 </div>
 	<cfscript> 
 	application.zcore.functions.zstatushandler(request.zsid);
 	</cfscript>
 </cffunction>
 
+<cffunction name="getCalendarJsonForDateRange" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	form.start=application.zcore.functions.zso(form, 'start');
+	form.end=application.zcore.functions.zso(form, 'end');
+	db=request.zos.queryObject;
+	db.sql="select * from 
+	#request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation   
+	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
+	reservation.reservation_deleted = #db.param(0)# and 
+	reservation_end_datetime >= #db.param(form.start)# and
+	reservation_start_datetime <= #db.param(form.end)#  ";
+	qCalendar=db.execute("qCalendar");
+	arrJ=[];
+	for(row in qCalendar){
+		ts={
+			title:row.reservation_first_name&" "&row.reservation_last_name,
+			start:dateformat(row.reservation_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.reservation_start_datetime, "HH:mm:ss"),
+			link:"/z/reservation/admin/reservation-admin/edit?reservation_id=#row.reservation_id#"
+		}
+		if(row.reservation_start_datetime NEQ row.reservation_end_datetime){
+			ts.end=dateformat(row.reservation_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.reservation_end_datetime, "HH:mm:ss");
+		}
+		arrayAppend(arrJ, ts);
+	}
+	application.zcore.functions.zReturnJson(arrJ);
+	</cfscript>
+</cffunction>
+	
+<cffunction name="calendarView" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	init();
+	</cfscript>
+	<h2>Reservation Calendar View</h2>
+
+
+	<cfscript>
+
+	application.zcore.functions.zRequireJqueryUI();
+	application.zcore.skin.includeCSS("/fullcalendar-2.0.2/fullcalendar.css");
+	savecontent variable="meta"{
+		echo('<link href="/fullcalendar-2.0.2/fullcalendar.print.css" rel="stylesheet" media="print" />
+		<style type="text/css">
+		.fc-event-inner{ cursor:pointer; }
+		</style>');
+	}
+	application.zcore.template.appendTag("stylesheets", meta);
+
+	application.zcore.skin.includeCSS("/fullcalendar-2.0.2/fullcalendar.print.css");
+	application.zcore.skin.includeJS("/fullcalendar-2.0.2/lib/moment.min.js", "", 2);
+	application.zcore.skin.includeJS("/fullcalendar-2.0.2/fullcalendar.min.js", "", 3); 
+	
+	</cfscript>
+
+	<script>
+	zArrDeferredFunctions.push(function() {
+		
+		$('##calendar').fullCalendar({ 
+		    eventClick: function(calEvent, jsEvent, view) {
+				if(typeof calEvent.link != "undefined"){
+					window.location.href=calEvent.link;
+
+				}
+		    },
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,basicWeek,basicDay'
+			},
+			defaultDate: '#dateformat(now(), "yyyy-mm-dd")#',
+			editable: false,
+			events: '/z/reservation/admin/reservation-admin/getCalendarJsonForDateRange'
+		});
+		if(navigator.userAgent.indexOf("MSIE 7.0") != -1){
+			$(".fc-icon-left-single-arrow").html("&lt;");
+			$(".fc-icon-right-single-arrow").html("&gt;");
+		}
+	});
+	</script> 
+	<div id='calendar'></div>
+</cffunction>
+	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject; 
@@ -19,8 +107,9 @@
 	//application.zcore.functions.zSetPageHelpId("7.4");   
 	</cfscript> 
 	
+	<h2>Reservation List View</h2>
 	<cfscript>	
-	defaultStartDate=now();
+	defaultStartDate=parsedatetime(dateformat(now(), "yyyy-mm-dd"));
 	defaultEndDate=dateadd("m", 1, now());
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	form.startDate=application.zcore.functions.zso(form, 'startDate', false, defaultStartDate);
@@ -31,25 +120,50 @@
 	if(not isdate(form.endDate)){
 		form.endDate=defaultEndDate;
 	}
-	db.sql=" SELECT * FROM 
+	form.startDate=application.zcore.functions.zGetDateTimeSelect("startDate", "yyyy-mm-dd", "HH:mm:ss");
+	form.endDate=application.zcore.functions.zGetDateTimeSelect("endDate", "yyyy-mm-dd", "HH:mm:ss");
+	form.keyword=application.zcore.functions.zso(form, 'keyword');
+	db.sql=" SELECT count(reservation_id) count FROM 
 	#request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation   
 	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
 	reservation.reservation_deleted = #db.param(0)# and 
 	reservation_end_datetime >= #db.param(form.startDate)# and
 	reservation_start_datetime <= #db.param(form.endDate)# ";
+	if(form.keyword NEQ ""){
+		db.sql&=" and reservation_search like #db.param('%#form.keyword#')# ";
+	}
 	qCount=db.execute("qCount");
 	db.sql=" SELECT * FROM 
 	#request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation   
 	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
 	reservation.reservation_deleted = #db.param(0)# and 
 	reservation_end_datetime >= #db.param(form.startDate)# and
-	reservation_start_datetime <= #db.param(form.endDate)#  
-	order by reservation.reservation_start_datetime ASC, reservation.reservation_name ASC
+	reservation_start_datetime <= #db.param(form.endDate)#  ";
+	if(form.keyword NEQ ""){
+		db.sql&=" and reservation_search like #db.param('%#form.keyword#%')# ";
+	}
+	db.sql&=" order by reservation.reservation_start_datetime ASC
 	LIMIT #db.param((form.zIndex-1)*30)#, #db.param(30)#";
 	qProp=db.execute("qProp");
-
-
-
+	</cfscript>
+	<form action="/z/reservation/admin/reservation-admin/index" method="get">
+		<table class="table-list" style="border-spacing:0px; width:100%;">
+			<tr>
+				<td>Search By Keyword: 
+				<cfscript>
+				ts = StructNew();
+				ts.name = "keyword";
+				ts.style="width:150px;";
+				application.zcore.functions.zInput_Text(ts);
+				</cfscript></td>
+				<td>Start Date: #application.zcore.functions.zDateTimeSelect("startDate", form.startDate, 15)#</td>
+				<td>End Date: #application.zcore.functions.zDateTimeSelect("endDate", form.endDate, 15)#</td>
+				<td><input type="submit" name="search1" value="Search" /></td>
+			</tr>
+		</table>
+	</form>
+	<cfscript>
+	
 	if(qCount.count GT 30){
 		// required
 		searchStruct = StructNew();
@@ -75,21 +189,26 @@
 	<table class="table-list" style="border-spacing:0px; width:100%;">
 		<tr>
 			<th>Name</th>
+			<th>Email</th>
+			<th>Phone</th>
 			<th>Date Received</th>
-			<th>Start Date</th>
-			<th>End Date</th>
+			<th>Reservation Date</th> 
 			<th>Admin</th>
 		</tr>
 		<cfscript>
+		currentRow=0;
 		for(row in qProp){
+			currentRow++;
 			echo('<tr ');
-			if(row.currentRow MOD 2 EQ 0){
+			if(currentRow MOD 2 EQ 0){
 				echo('class="row1"');
 			}else{
 				echo('class="row2"');
 			}
 			echo('>
 				<td>#row.reservation_first_name# #row.reservation_last_name#</td>
+				<td><a href="mailto:#row.reservation_email#">#row.reservation_email#</a></td>
+				<td>#row.reservation_phone#</td>
 				<td>#dateformat(row.reservation_created_datetime, "m/d/yyyy")# #timeformat(row.reservation_created_datetime, "h:mm tt")#</td>
 				<td>');
 					echo(application.zcore.app.getAppCFC("reservation").getReservationDateRange(row));
@@ -127,10 +246,15 @@
     </cfscript>
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
+        /*db.sql="DELETE FROM #request.zos.queryObject.table("reservation_availability", request.zos.zcoreDatasource)#  
+		WHERE  reservation_id=#db.param(form.reservation_id)# and 
+		site_id = #db.param(request.zOS.globals.id)# ";
+		result = db.execute("result");  */
         db.sql="DELETE FROM #request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)#  
 		WHERE  reservation_id=#db.param(form.reservation_id)# and 
 		site_id = #db.param(request.zOS.globals.id)# ";
 		result = db.execute("result");  
+		application.zcore.status.setStatus(request.zsid, "Reservation deleted");
 		application.zcore.functions.zRedirect("/z/reservation/admin/reservation-admin/index?reservation_id="&form.reservation_id&"&zsid="&request.zsid); 
         </cfscript>
 	<cfelse>
@@ -138,7 +262,9 @@
 			<br />
 			Reservation: 
 			<cfscript>
-			echo(application.zcore.app.getAppCFC("reservation").getReservationDateRange(row));
+			for(row in qCheck){
+				echo(application.zcore.app.getAppCFC("reservation").getReservationDateRange(row));
+			}
 			</cfscript> for #qcheck.reservation_first_name# #qcheck.reservation_last_name# (#qcheck.reservation_email#)<br />
 			<br />
 			<a href="/z/reservation/admin/reservation-admin/delete?confirm=1&amp;reservation_id=#form.reservation_id#">Yes</a>&nbsp;&nbsp;&nbsp;
@@ -168,7 +294,16 @@
 			application.zcore.functions.zRedirect("/z/reservation/admin/reservation-admin/index?zsid="&request.zsid);
 		}  
 	}
+	form.reservation_search=form.reservation_first_name&" "&form.reservation_last_name&" "&form.reservation_email&" "&form.reservation_phone&" "&form.reservation_comments;
+	form.reservation_search=application.zcore.functions.zCleanSearchText(form.reservation_search, true);
+	if(form.method EQ "insert"){
+		form.reservation_created_datetime=request.zos.mysqlnow;
+	}
+	form.reservation_start_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_start_datetime", "yyyy-mm-dd", "HH:mm:ss");
+	form.reservation_end_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_end_datetime", "yyyy-mm-dd", "HH:mm:ss");
+	myForm.reservation_period.required=true;
 	myForm.reservation_email.required=true;
+	myForm.reservation_email.email=true;
 	myForm.reservation_last_name.required=true;
 	myForm.reservation_start_datetime.required=true;
 	myForm.reservation_end_datetime.required=true;
@@ -217,17 +352,7 @@
 	</cfscript>
 </cffunction>
 
-
-<!--- zDateTimeSelect(fieldName, selectedDate, firstYear, lastYear, onChange); --->
-<cffunction name="zDateTimeSelect" localmode="modern" output="yes" returntype="any">
-	<cfargument name="fieldName" type="string" required="yes">
-	<cfargument name="selectedDate" type="string" required="no">
-	<cfscript>
-	throw("zDateTimeSelect not implemented");
-	</cfscript>
-</cffunction>
 	
-
 <cffunction name="edit" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject; 
@@ -252,6 +377,23 @@
 			</cfscript>
 		</cfif>
 		Reservation</h2>
+		<p>Email notifications are sent to
+		<cfscript>
+		d=application.zcore.app.getAppData("reservation");
+		arr1=listToArray(d.optionstruct.reservation_config_change_email_list, ",");
+		arr2=[];
+		for(i=1;i LTE arraylen(arr1);i++){
+			if(arr1[i] EQ "1"){
+				arrayAppend(arr2, "the developer");
+			}else if(arr1[i] EQ "2"){
+				arrayAppend(arr2, "the administrator");
+			}else if(arr1[i] EQ "3"){
+				arrayAppend(arr2, "the customer");
+			}
+		}
+		echo(arrayToList(arr2, ", "));
+		</cfscript>
+		 each time you update a reservation.</p>
 	<form name="myForm" id="myForm" action="/z/reservation/admin/reservation-admin/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?reservation_id=#form.reservation_id#" method="post">
 		<cfscript>
 		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
@@ -263,54 +405,88 @@
 		</cfscript>
 		#tabCom.beginTabMenu()# 
 		#tabCom.beginFieldSet("Basic")#
+
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>
-				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Start Date","member.reservation.edit reservation_start_datetime")#</th>
-				<td class="table-white">#zDateTimeSelect("reservation_start_datetime", "reservation_start_datetime", "2000", year(dateadd("y", 5, now())))#</td>
+				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Status","member.reservation.edit reservation_period")#</th>
+				<td class="table-white"><cfscript>
+					
+					selectStruct = StructNew();
+					selectStruct.name = "reservation_status";
+					selectStruct.hideSelect=true; 
+					selectStruct.size=1;
+					selectStruct.listLabels="Approved,Pending Approval,Cancelled";
+					selectStruct.listValues = "1,0,2";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
+			</tr>
+			<tr>
+				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Period","member.reservation.edit reservation_period")#</th>
+				<td class="table-white"><cfscript>
+					
+					selectStruct = StructNew();
+					selectStruct.name = "reservation_period"; 
+					selectStruct.size=1;
+					selectStruct.listLabels="Event,Hourly,Nightly,Weekly,Monthly";
+					selectStruct.listValues = "event,hourly,nightly,weekly,monthly";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
+			</tr>
+			<tr>
+				<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Start Date","member.reservation.edit reservation_start_datetime")#</th>
+				<td class="table-white">#application.zcore.functions.zDateTimeSelect("reservation_start_datetime", form.reservation_start_datetime, 15)#</td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("End Date","member.reservation.edit reservation_end_datetime")#</th>
-				<td class="table-white">#zDateTimeSelect("reservation_end_datetime", "reservation_end_datetime", "2000", year(dateadd("y", 5, now())))#</td>
+				<td class="table-white">#application.zcore.functions.zDateTimeSelect("reservation_end_datetime", form.reservation_end_datetime, 15)#</td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("First Name","member.reservation.edit reservation_first_name")#</th>
-				<td class="table-white"><input name="reservation_first_name" size="50" type="text" value="#form.reservation_first_name#" maxlength="50" /></td>
+				<td class="table-white"><input name="reservation_first_name" size="50" type="text" value="#htmleditformat(form.reservation_first_name)#" maxlength="50" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Last Name","member.reservation.edit reservation_last_name")#</th>
-				<td class="table-white"><input name="reservation_last_name" size="50" type="text" value="#form.reservation_last_name#" maxlength="50" /></td>
+				<td class="table-white"><input name="reservation_last_name" size="50" type="text" value="#htmleditformat(form.reservation_last_name)#" maxlength="50" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Email","member.reservation.edit reservation_email")#</th>
-				<td class="table-white"><input name="reservation_email" size="50" type="text" value="#form.reservation_email#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_email" size="50" type="text" value="#htmleditformat(form.reservation_email)#" maxlength="100" /></td>
 			</tr> 
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Phone","member.reservation.edit reservation_phone")#</th>
-				<td class="table-white"><input name="reservation_phone" size="50" type="text" value="#form.reservation_phone#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_phone" size="50" type="text" value="#htmleditformat(form.reservation_phone)#" maxlength="100" /></td>
 			</tr> 
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Company","member.reservation.edit reservation_company")#</th>
-				<td class="table-white"><input name="reservation_company" size="50" type="text" value="#form.reservation_company#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_company" size="50" type="text" value="#htmleditformat(form.reservation_company)#" maxlength="100" /></td>
 			</tr> 
 			<tr>
+				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Comments","member.reservation.edit reservation_comments")#</th>
+				<td class="table-white"><textarea name="reservation_comments" cols="100" rows="10">#htmleditformat(form.reservation_comments)#</textarea></td>
+			</tr> 
+		</table>
+		#tabCom.endFieldSet()#
+		#tabCom.beginFieldSet("Advanced")#
+		<table style="width:100%; border-spacing:0px;" class="table-list">
+			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Title","member.reservation.edit reservation_destination_title")#</th>
-				<td class="table-white"><input name="reservation_destination_title" size="50" type="text" value="#form.reservation_destination_title#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_destination_title" size="50" type="text" value="#htmleditformat(form.reservation_destination_title)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination URL","member.reservation.edit reservation_destination_url")#</th>
-				<td class="table-white"><input name="reservation_destination_url" size="50" type="text" value="#form.reservation_destination_url#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_destination_url" size="50" type="text" value="#htmleditformat(form.reservation_destination_url)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Address","member.reservation.edit reservation_destination_address")#</th>
-				<td class="table-white"><input name="reservation_destination_address" size="50" type="text" value="#form.reservation_destination_address#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_destination_address" size="50" type="text" value="#htmleditformat(form.reservation_destination_address)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Address 2","member.reservation.edit reservation_destination_address2")#</th>
-				<td class="table-white"><input name="reservation_destination_address2" size="50" type="text" value="#form.reservation_destination_address2#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_destination_address2" size="50" type="text" value="#htmleditformat(form.reservation_destination_address2)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination City","member.reservation.edit reservation_destination_city")#</th>
-				<td class="table-white"><input name="reservation_destination_city" size="50" type="text" value="#form.reservation_destination_city#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_destination_city" size="50" type="text" value="#htmleditformat(form.reservation_destination_city)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Address","member.reservation.edit reservation_destination_state")#</th>
@@ -318,16 +494,14 @@
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Zip","member.reservation.edit reservation_destination_zip")#</th>
-				<td class="table-white"><input name="reservation_destination_zip" size="50" type="text" value="#form.reservation_destination_zip#" maxlength="100" /></td>
+				<td class="table-white"><input name="reservation_destination_zip" size="50" type="text" value="#htmleditformat(form.reservation_destination_zip)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Country","member.reservation.edit reservation_destination_country")#</th>
 				<td class="table-white">#application.zcore.functions.zCountrySelect("reservation_destination_country", form.reservation_destination_country)#</td>
 			</tr>
 		</table>
-		#tabCom.endFieldSet()#
-		#tabCom.beginFieldSet("Advanced")#
-		#tabCom.endFieldSet()#
+		#tabCom.endFieldSet()#  
 		#tabCom.endTabMenu()#
 	</form>
 </cffunction>

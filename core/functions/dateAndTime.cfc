@@ -28,6 +28,32 @@
 </cffunction>
 
 
+	
+<!--- zDateTimeSelect(fieldName, selectedDate, firstYear, lastYear, onChange); --->
+<cffunction name="zDateTimeSelect" localmode="modern" output="yes" returntype="any">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfargument name="selectedDateTime" type="string" required="no">
+	<cfargument name="minutesPerOption" type="numeric" required="no" default="15">
+	<cfscript>
+	/*if(not structkeyexists(request.zos, 'dateTimeSelectIndex')){
+		request.zos.dateTimeSelectIndex=0;
+	}
+	request.zos.dateTimeSelectIndex++;*/
+	application.zcore.functions.zRequireTimePicker();
+	application.zcore.skin.addDeferredScript('
+	$( "###arguments.fieldName#_date" ).datepicker();
+	$("###arguments.fieldName#_time").timePicker({
+		show24Hours: false,
+		step: #arguments.minutesPerOption#
+	});
+	');
+	if(!isDate(arguments.selectedDateTime)){
+		arguments.selectedDateTime=now();
+	}
+	echo('<input type="text" name="#arguments.fieldName#_date" id="#arguments.fieldName#_date" value="#dateformat(arguments.selectedDateTime, 'm/d/yyyy')#" size="9" />
+	 Time: <input type="text" name="#arguments.fieldName#_time" id="#arguments.fieldName#_time" value="#timeformat(arguments.selectedDateTime, 'h:mm tt')#" size="10" />');
+	</cfscript>
+</cffunction>
 
 <!--- zDateSelect(fieldName, selectedDate, firstYear, lastYear, onChange); --->
 <cffunction name="zDateSelect" localmode="modern" output="yes" returntype="any">
@@ -241,6 +267,50 @@
 		}
 	}else{
 		return false;
+	}
+	</cfscript>
+</cffunction>
+
+
+<!--- application.zcore.functions.zGetDateTimeSelect("field_datetime", "yyyy-mm-dd", "HH:mm:ss"); --->
+<cffunction name="zGetDateTimeSelect" localmode="modern" output="yes" returntype="any">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfargument name="dateMask" type="string" required="no">
+	<cfargument name="timeMask" type="string" required="no">
+	<cfargument name="enumerate" type="numeric" required="no">
+	<cfscript>
+	if(structkeyexists(arguments,'enumerate')){
+		arguments.fieldName = arguments.fieldName & arguments.enumerate;
+	}
+	if(structkeyexists(form, arguments.fieldName&"_date")){
+		curDate=dateformat(form[arguments.fieldName&"_date"], "yyyy-mm-dd");
+	}else if(structkeyexists(form, arguments.fieldName)){
+		if(arguments.dateMask EQ "" and arguments.timeMask EQ ""){
+			return parsedatetime(dateformat(form[arguments.fieldName], "yyyy-mm-dd")&" "&timeformat(form[arguments.fieldName], "HH:mm:ss"));
+		}else{
+			if(arguments.dateMask EQ ""){
+				arguments.dateMask="yyyy-mm-dd";
+			}
+			if(arguments.timeMask EQ ""){
+				arguments.timeMask="HH:mm:ss";
+			}
+			curDate=dateformat(form[arguments.fieldName], arguments.dateMask)&" "&timeformat(form[arguments.fieldName], arguments.timeMask);
+		}
+	}else{
+		return '';
+	}
+	if(structkeyexists(form, arguments.fieldName&"_time")){
+		curDate&=" "&timeformat(form[arguments.fieldName&"_time"], "HH:mm:ss");
+		if(isdate(curDate)){
+			curDate=parsedatetime(curDate);
+		}
+	}else{
+		curDate=parsedatetime(curDate);
+	}
+	if(arguments.dateMask EQ "" and arguments.timeMask EQ ""){
+		return curDate;
+	}else{
+		return dateformat(curDate, arguments.dateMask)&" "&timeformat(curDate, arguments.timeMask);
 	}
 	</cfscript>
 </cffunction>

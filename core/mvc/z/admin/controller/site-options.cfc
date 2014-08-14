@@ -1444,10 +1444,12 @@
 		site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and 
 		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
 		site_x_option_group_set.site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
+		site_x_option_group_set.site_x_option_group_set_id<>#db.param(0)# and 
 		site_x_option_group_set_deleted = #db.param(0)# 
 		LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group ON 
 		site_option.site_option_id = site_x_option_group.site_option_id and 
 		site_x_option_group.site_option_group_id = site_option.site_option_group_id and 
+		site_x_option_group.site_x_option_group_set_id<>#db.param(0)# and 
 		site_x_option_group_set.site_x_option_group_set_id = site_x_option_group.site_x_option_group_set_id and 
 		site_x_option_group_set.site_id = site_x_option_group.site_id and 
 		site_x_option_group_deleted = #db.param(0)# 
@@ -1739,6 +1741,9 @@
 		db.sql=arrayToList(arrSQL, "");
 		db.execute("qReplace");
 		
+	}
+	if(form.site_x_option_group_set_id EQ 0){
+		throw("An error occurred when creating the site_x_option_group_set record.");
 	}
 	libraryId=application.zcore.functions.zso(form, 'site_x_option_group_set_image_library_id');
 	if(libraryId NEQ 0 and libraryId NEQ ""){
@@ -2867,7 +2872,8 @@ Define this function in another CFC to override the default email format
 	site_option.site_option_group_id = site_x_option_group.site_option_group_id and 
 	site_option.site_option_id = site_x_option_group.site_option_id and 
 	site_x_option_group.site_id = site_option_group.site_id and 
-	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# 
+	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
+	site_x_option_group.site_x_option_group_set_id<>#db.param(0)#
 	WHERE 
 	site_option_deleted = #db.param(0)# and 
 	site_option_group_deleted = #db.param(0)# and

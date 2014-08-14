@@ -2203,7 +2203,10 @@ application.zcore.siteOptionCom.getImageSQL(ts);
 		application.zcore.template.fail("Error: zcorerootmapping.com.app.site-option.cfc - displayImages() failed because arguments.ss.site_option_app_id_field is required.");	
 	}
 	rs.leftJoin="LEFT JOIN `"&request.zos.zcoreDatasource&"`.image ON "&arguments.ss.site_option_app_id_field&" = image.site_option_app_id and image_sort <= #db.param(arguments.ss.count)# and image.site_id = #db.param(request.zos.globals.id)#";
-	rs.select=", cast(GROUP_CONCAT(image_id ORDER BY image_sort SEPARATOR '\t') as char) imageIdList, cast(GROUP_CONCAT(image_caption ORDER BY image_sort SEPARATOR '\t') as char) imageCaptionList, cast(GROUP_CONCAT(image_file ORDER BY image_sort SEPARATOR '\t') as char) imageFileList";
+	rs.select=", cast(GROUP_CONCAT(image_id ORDER BY image_sort SEPARATOR '\t') as char) imageIdList, 
+	cast(GROUP_CONCAT(image_caption ORDER BY image_sort SEPARATOR '\t') as char) imageCaptionList, 
+	cast(GROUP_CONCAT(image_file ORDER BY image_sort SEPARATOR '\t') as char) imageFileList, 
+	cast(GROUP_CONCAT(image_updated_datetime ORDER BY image_sort SEPARATOR '\t') as char) imageUpdatedDateList";
 	return rs;
 	</cfscript>
 </cffunction>
@@ -2258,29 +2261,32 @@ application.zcore.siteOptionCom.displayImageFromSQL(ts);
 	</cfscript>
 	<cfif arguments.ss.output>
 		<cfloop query="arguments.ss.query" startrow="#arguments.ss.row#" endrow="#arguments.ss.row#">
-			<cfscript>arrCaption=listtoarray(imageCaptionList,chr(9),true);
-			arrId=listtoarray(imageIdList,chr(9),true);
-			arrImageFile=listtoarray(imageFileList,chr(9),true);
+			<cfscript>arrCaption=listtoarray(arguments.ss.query.imageCaptionList,chr(9),true);
+			arrId=listtoarray(arguments.ss.query.imageIdList,chr(9),true);
+			arrImageFile=listtoarray(arguments.ss.query.imageFileList,chr(9),true);
+			arrImageUpdatedDate=listtoarray(arguments.ss.query.imageUpdatedDateList, chr(9), true);
 			</cfscript>
 			<cfloop from="1" to="#arguments.ss.count#" index="g2">
-				<img src="#application.zcore.siteOptionCom.getImageLink(arguments.ss.site_option_app_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2])#" <cfif image_caption NEQ "">alt="#htmleditformat(arrCaption[g2])#"</cfif> style="border:none;" />
+				<img src="#application.zcore.siteOptionCom.getImageLink(arguments.ss.site_option_app_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2], arrImageUpdatedDate[g2])#" <cfif arrCaption[g2] NEQ "">alt="#htmleditformat(arrCaption[g2])#"</cfif> style="border:none;" />
 				<cfif arrCaption[g2] NEQ ""><br /><div style="padding-top:5px;">#arrCaption[g2]#</div></cfif><br /><br />
 			</cfloop>
 		</cfloop>
 	<cfelse>
 		<cfloop query="arguments.ss.query" startrow="#arguments.ss.row#" endrow="#arguments.ss.row#">
 			<cfscript>
-			arrCaption=listtoarray(imageCaptionList,chr(9),true);
-			arrId=listtoarray(imageIdList,chr(9),true);
-			arrImageFile=listtoarray(imageFileList,chr(9),true);
+			arrCaption=listtoarray(arguments.ss.query.imageCaptionList,chr(9),true);
+			arrId=listtoarray(arguments.ss.query.imageIdList,chr(9),true);
+			arrImageFile=listtoarray(arguments.ss.query.imageFileList,chr(9),true);
+			arrImageUpdatedDate=listtoarray(arguments.ss.query.imageUpdatedDateList, chr(9), true);
 			if(arraylen(arrCaption) EQ 0){ arrayappend(arrCaption,""); }
 			if(arraylen(arrId) EQ 0){ arrayappend(arrId,""); }
 			if(arraylen(arrImageFile) EQ 0){ arrayappend(arrImageFile,""); }
+			if(arraylen(arrImageUpdatedDate) EQ 0){ arrayappend(arrImageUpdatedDate,""); }
 			</cfscript>
 			<cfloop from="1" to="#arguments.ss.count#" index="g2">
 				<cfscript>
 				ts=structnew();
-				ts.link=application.zcore.siteOptionCom.getImageLink(arguments.ss.site_option_app_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2]);
+				ts.link=application.zcore.siteOptionCom.getImageLink(arguments.ss.site_option_app_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2], arrImageUpdatedDate[g2]);
 				ts.caption=arrCaption[g2];
 				ts.id=arrId[g2];
 				arrayappend(arrOutput,ts);

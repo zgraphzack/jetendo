@@ -139,7 +139,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	}
 	loop query="arguments.qImage" startrow="#arguments.row#" endrow="#arguments.row#"{
 		if(arguments.size EQ "original"){
-			return 	"/zupload/library/"&arguments.qImage.image_library_id&"/"&arguments.qImage.image_file;
+			return 	"/zupload/library/"&arguments.qImage.image_library_id&"/"&arguments.qImage.image_file&"?ztv=#dateformat(arguments.qImage.image_updated_datetime, "yyyymmdd")&timeformat(arguments.qImage.image_updated_datetime, "HHmmss")#";
 		}
 		if(structkeyexists(application.sitestruct[request.zos.globals.id].imageLibraryStruct.sizeStruct, arguments.qImage.image_library_id&"-"&arguments.size&"-"&arguments.crop) EQ false){
 			// check for global size to avoid errors for requests without http referrers
@@ -150,7 +150,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		ext=lcase(application.zcore.functions.zGetFileExt(arguments.qImage.image_file));
 		filePath="zupload/library/"&image_library_id&"/"&application.zcore.functions.zURLEncode(arguments.qImage.image_caption,'-')&"-"&arguments.qImage.image_id&"-"&arguments.size&"-"&arguments.crop&"."&ext;
 		if(fileexists(request.zos.globals.privatehomedir&filePath)){
-			return "/"&filePath;
+			return "/"&filePath&"?ztv=#dateformat(arguments.qImage.image_updated_datetime, "yyyymmdd")&timeformat(arguments.qImage.image_updated_datetime, "HHmmss")#";
 		}else{
 			return replace("/z/_com/app/image-library?method=generateImage&image_library_id="&arguments.qImage.image_library_id&"&image_id="&arguments.qImage.image_id&"&size="&arguments.size&"&crop="&arguments.crop&"&ztv="&gettickcount(),"&","&amp;","ALL");
 		}
@@ -158,7 +158,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	</cfscript>
 </cffunction>
 
-<!--- application.zcore.imageLibraryCom.getImageLink(image_library_id, image_id, size, crop, captionAvailable, image_caption); --->
+<!--- application.zcore.imageLibraryCom.getImageLink(image_library_id, image_id, size, crop, captionAvailable, image_caption, image_file, image_updated_datetime); --->
 <cffunction name="getImageLink" localmode="modern" access="public" returntype="any" output="no">
 	<cfargument name="image_library_id" type="string" required="yes">
 	<cfargument name="image_id" type="string" required="yes">
@@ -167,6 +167,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	<cfargument name="captionAvailable" type="boolean" required="no" default="#false#">
 	<cfargument name="image_caption" type="string" required="no" default="">
 	<cfargument name="image_file" type="string" required="no" default="">
+	<cfargument name="image_updated_datetime" type="string" required="no" default="">
 	<cfscript>
 	var filePath=0;
 	var ext=0;
@@ -184,6 +185,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		qImage.image_caption=arguments.image_caption;
 		qImage.image_file=arguments.image_file;
 		qImage.recordcount=1;
+		qImage.image_updated_datetime=arguments.image_updated_datetime;
 	}else{
 		db.sql="SELECT * FROM #request.zos.queryObject.table("image", request.zos.zcoreDatasource)# image 
 		WHERE image_library_id=#db.param(arguments.image_library_id)# and 
@@ -199,7 +201,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		filePath="zupload/library/"&arguments.image_library_id&"/"&application.zcore.functions.zURLEncode(qImage.image_caption,'-')&"-"&arguments.image_id&"-"&arguments.size&"-"&arguments.crop&"."&ext;
 	}
 	if(fileexists(request.zos.globals.privatehomedir&filePath)){
-		return "/"&filePath;
+		return "/"&filePath&"?ztv=#dateformat(qImage.image_updated_datetime, "yyyymmdd")&timeformat(qImage.image_updated_datetime, "HHmmss")#";
 	}else{
 		return replace("/z/_com/app/image-library?method=generateImage&image_library_id=#arguments.image_library_id#&image_id=#arguments.image_id#&size=#arguments.size#&crop=#arguments.crop#&ztv=#gettickcount()#","&","&amp;","ALL");
 	}
@@ -513,6 +515,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	ts.datasource=request.zos.zcoreDatasource;
 	ts.table="image";
 	s9.image_datetime=request.zos.mysqlnow;
+	s9.image_updated_datetime=request.zos.mysqlnow;
 	if(structkeyexists(form, 'image_caption')){
 		s9.image_caption=form.image_caption;
 	}else if(structkeyexists(form,'image_caption')){
@@ -800,7 +803,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 					form.action="insert";
 					try{
 						image_id=this.saveImageId();
-						arrayappend(arrOut,'{"message":"Image saved with image id ###image_id#.","image_id":"#image_id#","image_link":"#application.zcore.imageLibraryCom.getImageLink(form.image_library_id, image_id, "200x128", "0")#"}');
+						arrayappend(arrOut,'{"message":"Image saved with image id ###image_id#.","image_id":"#image_id#","image_link":"#application.zcore.imageLibraryCom.getImageLink(form.image_library_id, image_id, "200x128", "0", false, '', '', now())#"}');
 					}catch(Any e){
 						arrayappend(arrErrors,"Error Message: failed to save #newFileName#");
 					}
@@ -830,7 +833,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		try{
 			deletePath=tempPath&fileName;
 			image_id=this.saveImageId();
-			returnValue=('{"arrImages":[{"message":"Image saved with image id ###image_id#.","image_id":"#image_id#","image_link":"#application.zcore.imageLibraryCom.getImageLink(form.image_library_id, image_id, "200x128", "0")#"}]}'); 
+			returnValue=('{"arrImages":[{"message":"Image saved with image id ###image_id#.","image_id":"#image_id#","image_link":"#application.zcore.imageLibraryCom.getImageLink(form.image_library_id, image_id, "200x128", "0", false, '', '', now())#"}]}'); 
 			if(fileexists(deletePath)){
 				application.zcore.functions.zdeletefile(deletePath);
 			}
@@ -949,9 +952,10 @@ application.zcore.imageLibraryCom.displayImageFromSQL(ts);
 			arrId=listtoarray(arguments.ss.query.imageIdList,chr(9),true);
 			arrImageFile=listtoarray(arguments.ss.query.imageFileList,chr(9),true);
 			arrApproved=listtoarray(arguments.ss.query.imageApprovedList, chr(9), true);
+			arrUpdatedDate=listtoarray(arguments.ss.query.imageUpdatedDateList, chr(9), true);
 			loop from="1" to="#arguments.ss.count#" index="g2"{
 				if(arrApproved[g2] EQ 1){
-					writeoutput('<img src="#application.zcore.imageLibraryCom.getImageLink(arguments.ss.image_library_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2])#" ');
+					writeoutput('<img src="#application.zcore.imageLibraryCom.getImageLink(arguments.ss.image_library_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2], arrUpdatedDate[g])#" ');
 					if(image_caption NEQ ""){
 						writeoutput('alt="#htmleditformat(arrCaption[g2])#"');
 					}
@@ -969,14 +973,16 @@ application.zcore.imageLibraryCom.displayImageFromSQL(ts);
 			arrId=listtoarray(arguments.ss.query.imageIdList,chr(9),true);
 			arrImageFile=listtoarray(arguments.ss.query.imageFileList,chr(9),true);
 			arrApproved=listtoarray(arguments.ss.query.imageApprovedList, chr(9), true);
+			arrImageUpdatedDate=listtoarray(arguments.ss.query.imageUpdatedDateList, chr(9), true);
 			if(arraylen(arrCaption) EQ 0){ arrayappend(arrCaption,""); }
 			if(arraylen(arrId) EQ 0){ arrayappend(arrId,""); }
 			if(arraylen(arrImageFile) EQ 0){ arrayappend(arrImageFile,""); }
 			if(arraylen(arrApproved) EQ 0){ arrayappend(arrApproved,""); }
+			if(arraylen(arrImageUpdatedDate) EQ 0){ arrayappend(arrImageUpdatedDate, ""); }
 			loop from="1" to="#arguments.ss.count#" index="g2"{
 				if(arrApproved[g2] EQ 1){
 					ts=structnew();
-					ts.link=application.zcore.imageLibraryCom.getImageLink(arguments.ss.image_library_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2]);
+					ts.link=application.zcore.imageLibraryCom.getImageLink(arguments.ss.image_library_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2], arrImageUpdatedDate[g2]);
 					ts.caption=arrCaption[g2];
 					ts.id=arrId[g2];
 					arrayappend(arrOutput,ts);
@@ -1025,7 +1031,8 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 	rs.select=", cast(GROUP_CONCAT(image#i#.image_id ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageIdList, 
 	cast(GROUP_CONCAT(image#i#.image_caption ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageCaptionList, 
 	cast(GROUP_CONCAT(image#i#.image_file ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageFileList, 
-	cast(GROUP_CONCAT(image#i#.image_approved ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageApprovedList";
+	cast(GROUP_CONCAT(image#i#.image_approved ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageApprovedList, 
+	cast(GROUP_CONCAT(image#i#.image_updated_datetime ORDER BY image#i#.image_sort SEPARATOR '\t') as char) imageUpdatedDateList";
 	return rs;
 	</cfscript>
 </cffunction>
@@ -1187,7 +1194,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		</cfscript>
 		<cfloop query="qImages" startrow="1" endrow="1">
 			<div style="float:left; margin-right:20px; margin-bottom:20px;">
-				<img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file)#" />
+				<img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
 			</div>
 		</cfloop>
 	<cfelseif arguments.ss.layoutType EQ "contentflow">
@@ -1210,7 +1217,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<div class="flow">
 	    <cfloop query="qImages">
 	    <div class="item">
-	    <img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file)#" />
+	    <img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
 	    <div class="caption">#htmleditformat(qImages.image_caption)#</div>
 	    </div>
 	    </cfloop>
@@ -1268,7 +1275,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	
 			<div id="zThumbnailLightgallery">
 			    <ul>
-				<cfloop query="qImages"><li><a class="zNoContentTransition" href="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">title="#htmleditformat(qImages.image_caption)#"<cfelse>title="Image ###qImages.currentrow#"</cfif>><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, 1, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> /></a></li></cfloop>
+				<cfloop query="qImages"><li><a class="zNoContentTransition" href="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">title="#htmleditformat(qImages.image_caption)#"<cfelse>title="Image ###qImages.currentrow#"</cfif>><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, 1, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> /></a></li></cfloop>
 			    </ul>
 			</div>
 
@@ -1359,7 +1366,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<div class="zGalleryViewSlideshowContainer">
 		<ul id="zGalleryViewSlideshow#request.zGalleryViewSlideShowIndex#" class="zGalleryViewSlideshow">
 		<cfloop query="qImages">
-			<li><img  data-frame="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, '160x80', 1, true, qImages.image_caption, qImages.image_file)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#" title="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#" title=""</cfif> /></li>
+			<li><img  data-frame="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, '160x80', 1, true, qImages.image_caption, qImages.image_file)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#" title="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#" title=""</cfif> /></li>
 		</cfloop>
 		</ul> 
 	</div>
@@ -1367,16 +1374,17 @@ application.zcore.imageLibraryCom.displayImages(ts);
     <cfscript>
 	application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, arguments.ss.size, arguments.ss.crop);
 	</cfscript>
-	<cfloop query="qImages"><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.image_id#"</cfif> style="border:none;" />
+	<cfloop query="qImages"><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.image_id#"</cfif> style="border:none;" />
 	<cfif qImages.image_caption NEQ ""><br /><div style="padding-top:5px;">#qImages.image_caption#</div></cfif><hr class="zdisplayimageshr" /><br />
 	</cfloop>
     </cfif>
 <cfelse><cfloop query="qImages"><cfscript>
 		ts=structnew();
-		ts.link=application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file);
+		ts.link=application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime);
 		ts.caption=qImages.image_caption;
 		ts.id=qImages.image_id;
 		ts.file=qImages.image_file;
+		ts.updatedDatetime=qImages.image_updated_datetime;
 		arrayappend(arrOutput,ts);
 		</cfscript></cfloop><cfscript>return arrOutput;</cfscript>
 </cfif>
@@ -1542,7 +1550,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	
 		<ul id="sortable">
 	<cfloop query="qImages">
-	<li class="ui-state-default" id="image#qImages.image_id#"><div class="imageclosebutton" onclick="confirmDeleteImageId(#qImages.image_id#);">X</div><div class="imagedivclass"><img style="border:none; text-align:center; " src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, "200x128", "0", true, qImages.image_caption, qImages.image_file)#" /></div><div class="captionbar"><input class="captionClass" type="text" name="caption#qImages.image_id#" id="caption#qImages.image_id#" value="#htmleditformat(qImages.image_caption)#" onkeyup="toggleImageCaptionUpdate('imagecaptionupdate#qImages.image_id#','block',true);" onblur="toggleImageCaptionUpdate('imagecaptionupdate#qImages.image_id#','none',false);"> <div id="imagecaptionupdate#qImages.image_id#" class="imagecaptionupdate">Update</div></div></li>
+	<li class="ui-state-default" id="image#qImages.image_id#"><div class="imageclosebutton" onclick="confirmDeleteImageId(#qImages.image_id#);">X</div><div class="imagedivclass"><img style="border:none; text-align:center; " src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, "200x128", "0", true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" /></div><div class="captionbar"><input class="captionClass" type="text" name="caption#qImages.image_id#" id="caption#qImages.image_id#" value="#htmleditformat(qImages.image_caption)#" onkeyup="toggleImageCaptionUpdate('imagecaptionupdate#qImages.image_id#','block',true);" onblur="toggleImageCaptionUpdate('imagecaptionupdate#qImages.image_id#','none',false);"> <div id="imagecaptionupdate#qImages.image_id#" class="imagecaptionupdate">Update</div></div></li>
 	</cfloop>
 	</ul>
 	<br style="clear:both;" />
