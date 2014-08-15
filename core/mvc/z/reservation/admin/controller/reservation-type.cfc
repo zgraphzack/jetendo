@@ -99,6 +99,7 @@
 	</script> 
 	<div id='calendar'></div>
 </cffunction>
+
 	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -130,7 +131,7 @@
 	reservation_type_end_datetime >= #db.param(form.startDate)# and
 	reservation_type_start_datetime <= #db.param(form.endDate)# ";
 	if(form.keyword NEQ ""){
-		db.sql&=" and reservation_type_search like #db.param('%#form.keyword#')# ";
+		db.sql&=" and reservation_type_name like #db.param('%#form.keyword#')# ";
 	}
 	qCount=db.execute("qCount");
 	db.sql=" SELECT * FROM 
@@ -140,7 +141,7 @@
 	reservation_type_end_datetime >= #db.param(form.startDate)# and
 	reservation_type_start_datetime <= #db.param(form.endDate)#  ";
 	if(form.keyword NEQ ""){
-		db.sql&=" and reservation_type_search like #db.param('%#form.keyword#%')# ";
+		db.sql&=" and reservation_type_name like #db.param('%#form.keyword#%')# ";
 	}
 	db.sql&=" order by reservation_type.reservation_type_start_datetime ASC
 	LIMIT #db.param((form.zIndex-1)*30)#, #db.param(30)#";
@@ -149,7 +150,7 @@
 	<form action="/z/reservation/admin/reservation-type/index" method="get">
 		<table class="table-list" style="border-spacing:0px; width:100%;">
 			<tr>
-				<td>Search By Keyword: 
+				<td>Name: 
 				<cfscript>
 				ts = StructNew();
 				ts.name = "keyword";
@@ -158,7 +159,8 @@
 				</cfscript></td>
 				<td>Start Date: #application.zcore.functions.zDateTimeSelect("startDate", form.startDate, 15)#</td>
 				<td>End Date: #application.zcore.functions.zDateTimeSelect("endDate", form.endDate, 15)#</td>
-				<td><input type="submit" name="search1" value="Search" /></td>
+				<td><input type="submit" name="search1" value="Search" /> 
+				<input type="button" name="clearSearch" value="Clear" onclick="window.location.href='/z/reservation/admin/reservation-type/index?clearSearch=1';" /></td></td>
 			</tr>
 		</table>
 	</form>
@@ -189,9 +191,9 @@
 	<table class="table-list" style="border-spacing:0px; width:100%;">
 		<tr>
 			<th>Name</th>
-			<th>Email</th>
-			<th>Phone</th>
+			<th>Period</th> 
 			<th>Date Range</th> 
+			<th>Status</th>
 			<th>Admin</th>
 		</tr>
 		<cfscript>
@@ -206,12 +208,13 @@
 			}
 			echo('>
 				<td>#row.reservation_type_name#</td>
-				<td><a href="mailto:#row.reservation_type_email#">#row.reservation_type_email#</a></td>
-				<td>#row.reservation_type_phone#</td>
+				<td>#row.reservation_type_period#</td>
 				<td>');
-					echo(application.zcore.app.getAppCFC("reservation_type").getReservationTypeDateRange(row));
+					echo(application.zcore.app.getAppCFC("reservation").getReservationTypeDateRange(row));
 					
-			echo('</td><td>
+			echo('</td>
+				<td>'&application.zcore.app.getAppCFC("reservation").getTypeStatusName(row.reservation_type_status)&'</td>
+				<td>
 				<a href="/z/reservation/admin/reservation-type/edit?reservation_type_id=#row.reservation_type_id#&amp;return=1">Edit</a> | 
 				<a href="/z/reservation/admin/reservation-type/delete?reservation_type_id=#row.reservation_type_id#&amp;return=1">Delete</a></td>
 				</tr>');
@@ -256,14 +259,15 @@
 		application.zcore.functions.zRedirect("/z/reservation/admin/reservation-type/index?reservation_type_id="&form.reservation_type_id&"&zsid="&request.zsid); 
         </cfscript>
 	<cfelse>
-		<h2> Are you sure you want to delete this reservation_type?<br />
+		<h2> Are you sure you want to delete this Reservation Type?<br />
 			<br />
-			reservation_type: 
 			<cfscript>
 			for(row in qCheck){
-				echo(application.zcore.app.getAppCFC("reservation_type").getReservationTypeDateRange(row));
+				echo('Name: #row.reservation_type_name#<br />
+				Period: #row.reservation_type_period#<br />
+				Date Range: '&application.zcore.app.getAppCFC("reservation").getReservationTypeDateRange(row));
 			}
-			</cfscript> for #qcheck.reservation_type_name#<br />
+			</cfscript><br />
 			<br />
 			<a href="/z/reservation/admin/reservation-type/delete?confirm=1&amp;reservation_type_id=#form.reservation_type_id#">Yes</a>&nbsp;&nbsp;&nbsp;
 			<a href="/z/reservation/admin/reservation-type/index">No</a> </h2>
@@ -288,7 +292,7 @@
 		site_id = #db.param(request.zOS.globals.id)# ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
-			application.zcore.status.setStatus(request.zsid, "reservation_type is missing");
+			application.zcore.status.setStatus(request.zsid, "Reservation Type is missing");
 			application.zcore.functions.zRedirect("/z/reservation/admin/reservation-type/index?zsid="&request.zsid);
 		}  
 	}
@@ -318,19 +322,19 @@
 	if(form.method EQ "insert"){
 		form.reservation_type_id = application.zcore.functions.zInsert(ts);
 		if(form.reservation_type_id EQ false){
-			application.zcore.status.setStatus(request.zsid, "reservation_type couldn't be added at this time.",form,true);
+			application.zcore.status.setStatus(request.zsid, "Reservation Type couldn't be added at this time.",form,true);
 			application.zcore.functions.zredirect("/z/reservation/admin/reservation-type/add?zsid="&request.zsid);
 		}else{ 
-			application.zcore.status.setStatus(request.zsid, "reservation_type added successfully.");
+			application.zcore.status.setStatus(request.zsid, "Reservation Type added successfully.");
 			application.zcore.functions.zredirect("/z/reservation/admin/reservation-type/index?zsid="&request.zsid);
 		}
 	
 	}else{
 		if(application.zcore.functions.zUpdate(ts) EQ false){
-			application.zcore.status.setStatus(request.zsid, "reservation_type failed to update.",form,true);
+			application.zcore.status.setStatus(request.zsid, "Reservation Type failed to update.",form,true);
 			application.zcore.functions.zredirect("/z/reservation/admin/reservation-type/edit?reservation_type_id=#form.reservation_type_id#&zsid="&request.zsid);
 		}else{
-			application.zcore.status.setStatus(request.zsid, "reservation_type updated successfully.");
+			application.zcore.status.setStatus(request.zsid, "Reservation Type updated successfully.");
 			application.zcore.functions.zredirect("/z/reservation/admin/reservation-type/index?zsid="&request.zsid);
 		}
 	}
@@ -357,6 +361,10 @@
 	qData=db.execute("qData");
 	application.zcore.functions.zQueryToStruct(qData,form,'reservation_type_id,site_id'); 
 	application.zcore.functions.zStatusHandler(request.zsid, true,true);
+
+
+	form.reservation_type_max_reservations=application.zcore.functions.zso(form, 'reservation_type_max_reservations', true, 1);
+	form.reservation_type_max_guests=application.zcore.functions.zso(form, 'reservation_type_max_guests', true, 0);
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "edit">
@@ -383,7 +391,7 @@
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Name","member.reservation_type.edit reservation_type_name")#</th>
-				<td><input name="reservation_type_last_name" size="50" type="text" value="#htmleditformat(form.reservation_type_name)#" maxlength="50" /></td>
+				<td><input name="reservation_type_name" size="50" type="text" value="#htmleditformat(form.reservation_type_name)#" maxlength="50" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Status","member.reservation_type.edit reservation_type_status")#</th>
@@ -393,8 +401,8 @@
 					selectStruct.name = "reservation_type_status";
 					selectStruct.hideSelect=true; 
 					selectStruct.size=1;
-					selectStruct.listLabels="Approved,Pending Approval,Cancelled";
-					selectStruct.listValues = "1,0,2";
+					selectStruct.listLabels="Active,Inactive";
+					selectStruct.listValues = "1,0";
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
 			</tr>
@@ -405,8 +413,8 @@
 					selectStruct = StructNew();
 					selectStruct.name = "reservation_type_period"; 
 					selectStruct.size=1;
-					selectStruct.listLabels="Event,Hourly,Nightly,Weekly,Monthly";
-					selectStruct.listValues = "event,hourly,nightly,weekly,monthly";
+					selectStruct.listLabels="hourly";//"Event,Hourly,Nightly,Weekly,Monthly";
+					selectStruct.listValues = "hourly";//"event,hourly,nightly,weekly,monthly";
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
 			</tr>
@@ -430,6 +438,14 @@
 					</cfscript></p>
 					<p>If not forever, then select an end date:<br />
 					#application.zcore.functions.zDateTimeSelect("reservation_type_end_datetime", form.reservation_type_end_datetime, 15)#</p></td>
+			</tr>
+			<tr>
+				<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Max Reservations","member.reservation_type.edit reservation_type_max_reservations")#</th>
+				<td><input name="reservation_type_max_reservations" size="10" type="text" value="#htmleditformat(form.reservation_type_max_reservations)#" maxlength="10" /> (To allow more then 1 reservation at the same time, set to this 2 or more.  To allow unlimited reservations at the same time, set to 0)</td>
+			</tr>
+			<tr>
+				<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Max Guests","member.reservation_type.edit reservation_type_max_guests")#</th>
+				<td><input name="reservation_type_max_guests" size="10" type="text" value="#htmleditformat(form.reservation_type_max_guests)#" maxlength="10" /> (To allow more then 1 guest per reservation, set to this 2 or more.  To allow unlimited guests, set to 0)</td>
 			</tr>
 
 			<cfif application.zcore.user.checkServerAccess()>

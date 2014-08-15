@@ -4,6 +4,8 @@
 this.app_id=16;
 </cfscript>
 <!--- 
+Allow adding custom fields to reservation_type_id so that you can add reservation with those fields in site manager and also support other form element types.  and set default values for all records...
+	
 
 Reservation Options for a service
 	must be able to set rates per reservation_type_id
@@ -174,7 +176,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 
 
 <cffunction name="getReservationTypeByName" localmode="modern" access="public">
-	<cfargument name="reservation_type_name" type="numeric" required="yes">
+	<cfargument name="reservation_type_name" type="string" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject; 
 	db.sql="select * from #db.table("reservation_type", request.zos.zcoreDatasource)# 
@@ -192,7 +194,7 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 </cffunction>
 
 <cffunction name="getReservationTypeById" localmode="modern" access="public">
-	<cfargument name="reservation_type_id" type="numeric" required="yes">
+	<cfargument name="reservation_type_id" type="string" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject; 
 	db.sql="select * from #db.table("reservation_type", request.zos.zcoreDatasource)# 
@@ -208,38 +210,148 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 	</cfscript>
 </cffunction>
 
-<cffunction name="isDateRangeAvailableForEvent" localmode="modern" access="remote">
-	<cfargument name="reservationTypeStruct" type="struct" required="yes">
-	<cfargument name="event_id" type="string" required="yes">
-	<cfargument name="reservation_start_datetime" type="string" required="yes">
-	<cfargument name="reservation_end_datetime" type="string" required="yes">
+<!--- 
+
+/z/reservation/reservation/ajaxCheckAvailability
+ --->
+<cffunction name="ajaxCheckAvailability" localmode="modern" access="remote">
 	<cfscript>
-	throw("not implemented");
+	form.reservation_type_id=application.zcore.functions.zso(form, 'reservation_type_id');
+	form.reservation_type_name=application.zcore.functions.zso(form, 'reservation_type_name');
+	form.reservation_start_datetime=application.zcore.functions.zso(form, 'reservation_start_datetime');
+	form.reservation_end_datetime=application.zcore.functions.zso(form, 'reservation_end_datetime');
+	form.event_id=application.zcore.functions.zso(form, 'event_id');
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
+	
+	t1=isDateRangeAvailable(form);
+	application.zcore.functions.zReturnJson(t1);
 	</cfscript>
 </cffunction>
 
 
 <!--- 
-ts=application.zcore.reservation.getReservationTypeByName("event");
-ss={
-	reservation_start_datetime:form.reservation_start_datetime,
-	reservation_end_datetime:form.reservation_end_datetime
-	
-	// for site_option_group records
-	site_x_option_group_set_id:form.site_x_option_group_set_id,
+ts={
+	reservation_type_id=application.zcore.functions.zso(form, 'reservation_type_id'),
+	// or 
+	reservation_type_name=application.zcore.functions.zso(form, 'reservation_type_name'),
 
-	// for event records
-	event_id:form.event_id
-};
-if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
+	reservation_start_datetime=application.zcore.functions.zso(form, 'reservation_start_datetime'),
+	reservation_end_datetime=application.zcore.functions.zso(form, 'reservation_end_datetime'),
+
+	event_id=application.zcore.functions.zso(form, 'event_id')
+	// or
+	site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id')
+}
+if(not application.zcore.app.getAppCFC("reservation").checkAvailability(ts)){
 	application.zcore.status.setStatus(request.zsid, "Not available", form, true);
 	application.zcore.functions.zRedirect();
 }
  --->
-<cffunction name="isDateRangeAvailable" localmode="modern" access="remote" returntype="struct">
-	<cfargument name="reservationTypeStruct" type="struct" required="yes">
+<cffunction name="checkAvailability" localmode="modern" access="public">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.struct;
+	ss.reservation_type_id=application.zcore.functions.zso(ss, 'reservation_type_id');
+	ss.reservation_type_name=application.zcore.functions.zso(ss, 'reservation_type_name');
+	ss.reservation_start_datetime=application.zcore.functions.zso(ss, 'reservation_start_datetime');
+	ss.reservation_end_datetime=application.zcore.functions.zso(ss, 'reservation_end_datetime');
+	ss.event_id=application.zcore.functions.zso(ss, 'event_id');
+	ss.site_x_option_group_set_id=application.zcore.functions.zso(ss, 'site_x_option_group_set_id');
+
+	t1=isDateRangeAvailable(ss);
+	return t1;
+	</cfscript>
+</cffunction>
+
+<cffunction name="isDateRangeAvailable" localmode="modern" access="public" returntype="struct">
 	<cfargument name="searchStruct" type="struct" required="yes">
 
+	<cfscript>
+	os=application.zcore.app.getAppData("reservation").optionStruct;
+	ss=arguments.searchStruct;
+	ssDefault={
+		site_x_option_group_set_id:"",
+		event_id:"",
+		reservation_type_id:"",
+		reservation_type_name:""
+	}
+	structappend(ss, ssDefault, false);
+	if(not structkeyexists(ss, 'reservation_start_datetime') or not isdate(ss.reservation_start_datetime)){
+		t1={
+			errorMessage:"Reservation start date/time is not a valid date.",
+			success:false
+		};
+		return t1;
+	}
+	if(not structkeyexists(ss, 'reservation_end_datetime') or not isdate(ss.reservation_end_datetime)){
+		t1={
+			errorMessage:"Reservation end date/time is not a valid date.",
+			success:false
+		};
+		return t1;
+	}
+	try{
+		if(ss.reservation_type_id NEQ ""){
+			ts=getReservationTypeById(ss.reservation_type_id);
+		}else if(ss.reservation_type_name NEQ ""){
+			ts=getReservationTypeByName(ss.reservation_type_name);
+		}else{
+			throw("Missing reservation type");
+		}
+	}catch(Any e){
+		t1={
+			errorMessage:"Reservation Type doesn't exist.",
+			success:false
+		};
+		return t1;
+	}
+	if(ts.reservation_type_minimum_hours_before_reservation NEQ 0 and datecompare(dateadd("h", ts.reservation_type_minimum_hours_before_reservation, now()), ss.reservation_start_datetime) EQ 1){
+		return {
+			errorMessage:"The reservation must be at least #ts.reservation_type_minimum_hours_before_reservation# hours in the future.",
+			success:false
+		};
+	}else if(os.reservation_config_soonest_reservation_days NEQ 0 and datecompare(dateadd("d", os.reservation_config_soonest_reservation_days, now()), ss.reservation_start_datetime) EQ 1){
+		return {
+			errorMessage:"The reservation must be at least #os.reservation_config_soonest_reservation_days# days in the future.",
+			success:false
+		};
+	}
+	if(os.reservation_config_furthest_reservation_days NEQ 0 and datecompare(ss.reservation_start_datetime, dateadd("d", os.reservation_config_furthest_reservation_days, now())) GTE 0){
+		return {
+			errorMessage:"The reservation must be less then #os.reservation_config_furthest_reservation_days# days in the future.",
+			success:false
+		};
+	}
+	if(datecompare(ss.reservation_start_datetime, ts.reservation_type_start_datetime) LTE 0){
+		return {
+			errorMessage:"The reservation start date must be on or after #dateformat(ts.reservation_type_start_datetime, "m/d/yyyy")#.",
+			success:false
+		};
+	}
+	if(ts.reservation_type_forever EQ 0 and datecompare(ss.reservation_end_datetime, ts.reservation_type_end_datetime) GTE 0){
+		return {
+			errorMessage:"The reservation end date must be on or before #dateformat(ts.reservation_type_end_datetime, "m/d/yyyy")#.",
+			success:false
+		};
+	}
+	if(ts.reservation_type_max_guests NEQ 0 and ss.reservation_guests GT ts.reservation_type_max_guests){
+		return {
+			errorMessage:"There can be no more then #ts.reservation_type_max_guests# guests per reservation.",
+			success:false
+		};
+	}
+	if(ts.reservation_type_period EQ "hourly"){
+		return isDateRangeAvailableHourly(ts, ss);
+	}else if(ts.reservation_type_period EQ "event"){
+		throw("not implemented");
+	}else{
+		// nightly/weekly/monthly
+		throw("not implemented");
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getAvailabilityStruct" localmode="modern" access="public" returntype="struct">
 	<cfscript>
 	ds=application.zcore.app.getAppData("reservation");
 	if(not structkeyexists(ds, 'availabilityStruct')){
@@ -248,22 +360,62 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 			siteOptionGroupCache:{}
 		};
 	}
+	return ds;
+	</cfscript>
+</cffunction>
+	
+<cffunction name="isDateRangeAvailableEvent" localmode="modern" access="private" returntype="struct">
+	<cfargument name="reservationTypeStruct" type="struct" required="yes">
+	<cfargument name="searchStruct" type="struct" required="yes">
+	<cfscript>
 	os=application.zcore.app.getAppData("reservation").optionStruct;
-	os.reservation_config_furthest_reservation_days	
 	ts=arguments.reservationTypeStruct;
 	ss=arguments.searchStruct;
-	if(datecompare(dateadd("d", os.reservation_config_soonest_reservation_days, now()), ss.reservation_start_datetime) EQ -1){
+	ds=getAvailabilityStruct();
+	throw("not implemented");
+	</cfscript>
+</cffunction>
+
+<cffunction name="isDateRangeAvailableHourly" localmode="modern" access="private" returntype="struct">
+	<cfargument name="reservationTypeStruct" type="struct" required="yes">
+	<cfargument name="searchStruct" type="struct" required="yes">
+	<cfscript>
+
+	os=application.zcore.app.getAppData("reservation").optionStruct;
+	ts=arguments.reservationTypeStruct;
+	ss=arguments.searchStruct;
+	ds=getAvailabilityStruct();
+	
+	startTime=int(timeformat(ss.reservation_start_datetime, 'HHmm'));
+	endTime=int(timeformat(ss.reservation_end_datetime, 'HHmm'));
+	if(startTime>endTime){
 		return {
-			errorMessage:"The reservation must be at least #os.reservation_config_soonest_reservation_days# days in the future.",
+			errorMessage:"The reservation start date must be before the end date.",
 			success:false
 		};
 	}
-	if(ts.reservation_type_period NEQ "hourly"){
-		throw("not implemented");
+	reservationLength=(endTime-startTime)/100;
+	if(reservationLength LT ts.reservation_type_minimum_length){
+		return {
+			errorMessage:"The minimum reservation length is #ts.reservation_type_minimum_length# hours.",
+			success:false
+		};
+	}else if(reservationLength GT ts.reservation_type_maximum_length){
+		return {
+			errorMessage:"The maximum reservation length is #ts.reservation_type_maximum_length# hours.",
+			success:false
+		};
+	}
+
+	if(ss.site_x_option_group_set_id EQ "" and ss.event_id EQ ""){
+		return {
+			errorMessage:"Invalid availability search request",
+			success:true
+		};
 	}
 	if(application.zcore.app.getAppData("reservation").optionstruct.reservation_config_availability_in_memory EQ "1"){
 
-		if(structkeyexists(ss, 'site_x_option_group_set_id')){
+		if(ss.site_x_option_group_set_id NEQ ""){
 			if(structkeyexists(ds.availabilityStruct.siteOptionGroupCache, ss.site_x_option_group_set_id)){
 				setStruct=ds.availabilityStruct.siteOptionGroupCache[ss.site_x_option_group_set_id];
 				startDay=dateformat(ss.reservation_start_datetime, 'yyyy-mm-dd');
@@ -273,15 +425,24 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 						success:true
 					};
 				}else{
-					startTime=int(timeformat(ss.reservation_start_datetime, 'HHmm'));
-					endTime=int(timeformat(ss.reservation_end_datetime, 'HHmm'));
+					reservationCount=0;
 					for(i in setStruct[startDay]){
 						r=setStruct[startDay][i];
 						if(endTime GT r.startTime and startTime LT r.endTime){
-							return {
-								errorMessage:"A reservation already exists for this time.",
-								success:false
-							};
+							reservationCount++;
+							if(reservationCount GTE ts.reservation_type_max_reservations){
+								if(ts.reservation_type_max_reservations EQ 1){
+									return {
+										errorMessage:"A reservation already exists for this time. Please select another time.",
+										success:false
+									};
+								}else{
+									return {
+										errorMessage:"The maximum number of reservations has been met for this time. Please select another time.",
+										success:false
+									};
+								}
+							}
 						}
 					}
 					return {
@@ -295,16 +456,16 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 					success:true
 				};
 			}
-		}else if(structkeyexists(ss, 'event_id')){
+		}else if(ss.event_id NEQ ""){
 			throw("in memory search not implemented yet");
 		}
 	}else{
 		db=request.zos.queryObject; 
-		if(structkeyexists(ss, 'site_x_option_group_set_id')){
+		if(ss.site_x_option_group_set_id NEQ ""){
 			db.sql="SELECT count(site_x_option_group_set_id) count FROM 
-			#db.table("site_x_option_group_set_id", request.zos.zcoreDatasource)# WHERE 
+			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 			site_id = #db.param(request.zos.globals.id)# and 
-			site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and 
+			site_x_option_group_set_id = #db.param(ss.site_x_option_group_set_id)# and 
 			site_x_option_group_set_deleted=#db.param(0)# ";
 			qSet=db.execute("qSet");
 			if(qSet.count EQ 0){
@@ -313,7 +474,7 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 					success:false
 				};
 			}
-		}else if(structkeyexists(ss, 'event_id')){
+		}else if(ss.event_id NEQ ""){
 			throw("Not implemented");
 		}else{
 			throw("arguments.searchStruct.site_x_option_group_set_id or arguments.searchStruct.event_id is required.");
@@ -322,26 +483,30 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 		db.sql="SELECT count(reservation_id) count FROM 
 		#db.table("reservation", request.zos.zcoreDatasource)# reservation
 		WHERE ";
-		if(structkeyexists(ss, 'site_x_option_group_set_id')){
-			db.sql&=" site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and ";
-		}else if(structkeyexists(ss, 'event_id')){
-			db.sql&=" event_id = #db.param(arguments.event_id)# and ";
+		if(ss.site_x_option_group_set_id NEQ ""){
+			db.sql&=" site_x_option_group_set_id = #db.param(ss.site_x_option_group_set_id)# and ";
+		}else if(ss.event_id NEQ ""){
+			db.sql&=" event_id = #db.param(ss.event_id)# and ";
 		}
 		db.sql&=" reservation.site_id = #db.param(request.zOS.globals.id)# and 
-		reservation.reservation_deleted = #db.param(0)# and ";
-		if(ts.reservation_type_period EQ "hourly"){
-			db.sql&=" reservation_end_datetime >= #db.param(dateformat(arguments.reservation_start_datetime, 'yyyy-mm-dd')&' '&timeformat(arguments.reservation_start_datetime, "HH:mm:ss"))# and
-			reservation_start_datetime <= #db.param(dateformat(arguments.reservation_end_datetime, 'yyyy-mm-dd')&' '&timeformat(arguments.reservation_end_datetime, "HH:mm:ss"))# and ";
-		}else{
-
-		}
-		db.sql&=" reservation_status = #db.param(1)#";
+		reservation.reservation_deleted = #db.param(0)# and 
+		reservation_end_datetime > #db.param(dateformat(ss.reservation_start_datetime, 'yyyy-mm-dd')&' '&timeformat(ss.reservation_start_datetime, "HH:mm:ss"))# and
+		reservation_start_datetime < #db.param(dateformat(ss.reservation_end_datetime, 'yyyy-mm-dd')&' '&timeformat(ss.reservation_end_datetime, "HH:mm:ss"))# and 
+		reservation_status = #db.param(1)#";
 		qCount=db.execute("qCount");
-		if(qCount.count NEQ 0){
-			return {
-				errorMessage:"A reservation already exists at this time.",
-				success:false
-			};
+		//writedump(qCount);
+		if(qCount.count GTE ts.reservation_type_max_reservations){
+			if(ts.reservation_type_max_reservations EQ 1){
+				return {
+					errorMessage:"A reservation already exists for this time. Please select another time.",
+					success:false
+				};
+			}else{
+				return {
+					errorMessage:"The maximum number of reservations has been met for this time. Please select another time.",
+					success:false
+				};
+			}
 		}
 	}
 	return {
@@ -352,7 +517,88 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 </cffunction>
 
 
-<cffunction name="rebuildMemoryCache" localmode="modern" access="remote">
+
+<cffunction name="getPublicCalendarJsonForDateRange" localmode="modern" access="remote">
+	<cfscript>
+	form.start=application.zcore.functions.zso(form, 'start');
+	form.end=application.zcore.functions.zso(form, 'end');
+	form.reservation_type_name=application.zcore.functions.zso(form, 'reservation_type_name');
+	form.reservation_type_id=application.zcore.functions.zso(form, 'reservation_type_id');
+	form.event_id=application.zcore.functions.zso(form, 'event_id');
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
+	db=request.zos.queryObject;
+	if(form.reservation_type_name NEQ ""){
+		typeStruct=getReservationTypeByName(form.reservation_type_name);
+	}else if(form.reservation_type_id NEQ ""){
+		typeStruct=getReservationTypeById(form.reservation_type_id);
+	}else{
+		throw("A valid active reservation type must be specified using form.reservation_type_name or form.reservation_type_id.");
+	}
+	
+	db.sql="select * from 
+	#request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation   
+	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
+	reservation.reservation_type_id = #db.param(typeStruct.reservation_type_id)# and 
+	reservation.reservation_deleted = #db.param(0)# and 
+	reservation_end_datetime >= #db.param(form.start)# and
+	reservation_start_datetime <= #db.param(form.end)#  ";
+	if(form.event_id NEQ ""){
+		db.sql&=" and event_id = #db.param(form.event_id)# ";
+	}else if(form.site_x_option_group_set_id NEQ ""){
+		db.sql&=" and site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+	}
+	qCalendar=db.execute("qCalendar");
+	arrJ=[];
+	for(row in qCalendar){
+		ts={
+			title:"Occupied",
+			start:dateformat(row.reservation_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.reservation_start_datetime, "HH:mm:ss")
+		}
+		if(datecompare(dateadd("h", typeStruct.reservation_type_minimum_hours_before_reservation,now()), row.reservation_start_datetime) LTE 0){
+			ts.reservable=1;
+			ts.date=dateformat(row.reservation_start_datetime,"yyyy-mm-dd");
+		}else{
+			ts.reservable=0;
+		}
+		if(row.reservation_start_datetime NEQ row.reservation_end_datetime){
+			ts.end=dateformat(row.reservation_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.reservation_end_datetime, "HH:mm:ss");
+		}
+		arrayAppend(arrJ, ts);
+	}
+	application.zcore.functions.zReturnJson(arrJ);
+	</cfscript>
+</cffunction>
+	
+
+<cffunction name="getStatusName" localmode="modern" access="public">
+	<cfargument name="reservation_status_id" type="numeric" required="yes">
+	<cfscript>
+	if(arguments.reservation_status_id EQ 0){
+		return "Pending Approval";
+	}else if(arguments.reservation_status_id EQ 1){
+		return "Approved";
+	}else if(arguments.reservation_status_id EQ 2){
+		return "Cancelled";
+	}else{
+		return "";
+	}
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getTypeStatusName" localmode="modern" access="public">
+	<cfargument name="reservation_type_status_id" type="numeric" required="yes">
+	<cfscript>
+	if(arguments.reservation_type_status_id EQ 0){
+		return "Inactive";
+	}else if(arguments.reservation_type_status_id EQ 1){
+		return "Active";
+	}else{
+		return "";
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="rebuildMemoryCache" localmode="modern" access="private">
 	<cfscript>
 	
 	availabilityStruct={
@@ -383,74 +629,503 @@ if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
 	</cfscript>
 </cffunction>
 
-<cffunction name="validateReservationAgainstReservationType" localmode="modern" access="remote">
-	<cfargument name="reservationTypeStruct" type="struct" required="yes">
-	<cfargument name="reservationStruct" type="struct" required="yes">
-	<cfscript>
-	var db=request.zos.queryObject; 
-
-	ts=arguments.reservationTypeStruct;
-	rs=arguments.reservationStruct;
-	if(ts.reservation_type_period EQ "hourly"){
-	}else{
-		throw(ts.reservation_type_period&" not implemented");
-	}
-
-	</cfscript>
-</cffunction>
 	
+<!--- 
+ts{
+	reservation_type_name:"type"
+	// or
+	reservation_type_id:1
+	struct: form,
 
-<cffunction name="publicNewReservation" localmode="modern" access="remote">
+};
+rs=application.zcore.app.getAppCFC("reservation").publicNewReservation(ts);
+if(not rs.success){
+	application.zcore.functions.zRedirect("/error-url?zsid=#request.zsid#");
+}
+ --->
+<cffunction name="publicNewReservation" localmode="modern" access="public">
+	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject; 
 	var myForm=structnew(); 
-	form.reservation_search=form.reservation_first_name&" "&form.reservation_last_name&" "&form.reservation_email&" "&form.reservation_phone&" "&form.reservation_comments;
-	form.reservation_search=application.zcore.functions.zCleanSearchText(form.reservation_search, true);
-	if(form.method EQ "insert"){
-		form.reservation_created_datetime=request.zos.mysqlnow;
+	formStruct={
+		reservation_first_name:"",
+		reservation_last_name:"",
+		reservation_email:"",
+		reservation_phone:"",
+		reservation_comments:"",
+		reservation_start_datetime:"",
+		reservation_end_datetime:"",
+		reservation_updated_datetime:"",
+		site_id:"",
+		reservation_created_datetime:"",
+		reservation_guests:"",
+		reservation_search:"",
+		reservation_status:"",
+		reservation_type_id:"",
+		reservation_custom_json:"",
+		reservation_period:"",
+		event_id:"",
+		site_x_option_group_set_id:"",
+		reservation_key:""
+	};
+	ssDefault={
+		reservation_type_name:"",
+		reservation_type_id:""
+	};
+
+	ss=arguments.struct;
+	structappend(ss, ssDefault, false);
+	structAppend(ss.struct, formStruct, false);
+	try{
+		if(ss.reservation_type_name NEQ ""){
+			typeStruct=getReservationTypeByName(ss.reservation_type_name);
+		}else if(ss.reservation_type_id NEQ ""){
+			typeStruct=getReservationTypeById(ss.reservation_type_id);
+		}else{
+			throw("A valid active reservation type must be specified using arguments.struct.reservation_type_name or arguments.struct.reservation_type_id.");
+		}
+	}catch(Any e){
+		application.zcore.status.setStatus(request.zsid, "Reservation type is missing", ss.struct, true);
+		return {
+			zsid:request.zsid,
+			success:false
+		};
 	}
-	form.reservation_start_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_start_datetime", "yyyy-mm-dd", "HH:mm:ss");
-	form.reservation_end_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_end_datetime", "yyyy-mm-dd", "HH:mm:ss");
-	myForm.reservation_period.required=true;
+	ss.struct.reservation_type_id=typeStruct.reservation_type_id;
+	ss.struct.reservation_status=typeStruct.reservation_type_new_reservation_status;
+
+	ss.struct.reservation_search=ss.struct.reservation_first_name&" "&ss.struct.reservation_last_name&" "&ss.struct.reservation_email&" "&ss.struct.reservation_phone&" "&ss.struct.reservation_comments;
+	ss.struct.reservation_search=application.zcore.functions.zCleanSearchText(ss.struct.reservation_search, true);
+	ss.struct.reservation_created_datetime=request.zos.mysqlnow;
+	
+	ss.struct.reservation_period=typeStruct.reservation_type_period;
+	myForm.reservation_phone.required=true;
 	myForm.reservation_email.required=true;
 	myForm.reservation_email.email=true;
 	myForm.reservation_last_name.required=true;
 	myForm.reservation_start_datetime.required=true;
 	myForm.reservation_end_datetime.required=true;
-	errors=application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
+	errors=application.zcore.functions.zValidateStruct(ss.struct, myForm, request.zsid, true);
 	 
+	ss.struct.reservation_updated_datetime=request.zos.mysqlnow;
+	ss.struct.site_id=request.zos.globals.id;
+	ss.struct.reservation_key=hash(application.zcore.functions.zGenerateStrongPassword(80,200),'sha-256');
+
+	ss.struct.reservation_custom_json=serializeJson(ss.struct.reservation_custom_json);
+
+	rs=application.zcore.app.getAppCFC("reservation").checkAvailability(ss.struct);
+	if(not rs.success){
+		application.zcore.status.setStatus(request.zsid, rs.errorMessage, ss.struct, true);
+		return {
+			zsid:request.zsid,
+			success:false
+		};
+	}
+
 	if(errors){
-		application.zcore.status.setStatus(request.zsid, false, form,true);
-		application.zcore.functions.zRedirect("/z/reservation/admin/reservation-admin/add?zsid=#request.zsid#");
+		application.zcore.status.setStatus(request.zsid, false, ss.struct, true);
+		return {
+			zsid:request.zsid,
+			success:false
+		};
 	}
-	if(structkeyexists(form, 'reservation_type_name')){
-		typeStruct=getReservationTypeByName(form.reservation_type_name);
-	}else if(structkeyexists(form, 'reservation_type_id')){
-		typeStruct=getReservationTypeByName(form.reservation_type_name);
-	}else{
-		throw("A valid active reservation type must be specified using form.reservation_type_name or form.reservation_type_id.");
-	}
-
-	form=validateReservationAgainstReservationType(typeStruct, form);
-
-	form.reservation_status=typeStruct.reservation_type_new_reservation_status;
 	
-	form.reservation_updated_datetime=request.zos.mysqlnow;
-	form.site_id=request.zos.globals.id;
 	ts=StructNew();
 	ts.table="reservation";
-	ts.struct=form;
+	ts.struct={};
+	for(i in formStruct){
+		ts.struct[i]=ss.struct[i];
+	}
 	ts.datasource=request.zos.zcoreDatasource;
-	form.reservation_id = application.zcore.functions.zInsert(ts);
-	if(form.reservation_id EQ false){
-		application.zcore.status.setStatus(request.zsid, "Reservation couldn't be added at this time.",form,true);
-		application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/add?zsid="&request.zsid);
+	reservation_id = application.zcore.functions.zInsert(ts);
+	if(reservation_id EQ false){
+		application.zcore.status.setStatus(request.zsid, "Reservation couldn't be added at this time.",ss.struct,true);
+		return {
+			zsid:request.zsid,
+			success:false
+		};
 	}else{ 
-		application.zcore.status.setStatus(request.zsid, "Reservation added successfully.");
-		application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/index?zsid="&request.zsid);
+
+		sendReservationEmail(reservation_id, "new");
+
+		return {
+			reservation_id:reservation_id,
+			success:true
+		};
 	}
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="getReservationEmailHTML" localmode="modern" access="public">
+	<cfargument name="reserveStruct" type="struct" required="yes">
+	<cfscript>
+	row=arguments.reserveStruct;
+	</cfscript>
+	<cfsavecontent variable="out">
+	<table style="width:100%; border-spacing:0px;">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Status:</th>
+			<td>#getStatusName(row.reservation_status)#</td>
+		</tr>
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Period:</th>
+			<td>#row.reservation_period#</td>
+		</tr>
+		<tr>
+			<th style="width:1%; text-align:left;width:1%;white-space:nowrap; vertical-align:top;">Reservation:</th>
+			<td>#getReservationDateRange(row)#</td>
+		</tr>
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">First Name: </th>
+			<td>#row.reservation_first_name#</td>
+		</tr>
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Last Name: </th>
+			<td>#row.reservation_last_name#</td>
+		</tr>
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Email: </th>
+			<td>#row.reservation_email#</td>
+		</tr> 
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Phone: </th>
+			<td>#row.reservation_phone#</td>
+		</tr> 
+		<cfif row.reservation_company NEQ "">
+			<tr>
+				<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Company: </th>
+				<td>#row.reservation_company#</td>
+			</tr> 
+		</cfif>
+		<cfif row.reservation_comments NEQ "">
+			<tr>
+				<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Comments: </th>
+				<td>#row.reservation_comments#</textarea></td>
+			</tr> 
+		</cfif>
+		<cfscript>
+		customStruct=deserializeJson(row.reservation_custom_json);
+		</cfscript>
+		<cfif structcount(customStruct)>
+			<cfscript>
+			index=1;
+			for(fieldName in customStruct){
+				value=customStruct[fieldName];
+				echo('<tr><th style="width:1%; text-align:left; white-space:nowrap; vertical-align:top;">'&application.zcore.functions.zFirstLetterCaps(fieldName)&': </th><td>');
+				echo(value);
+				echo('</td></tr>');
+			}
+			</cfscript>
+		</cfif>
+		<cfif row.reservation_destination_title NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Title: </th>
+			<td>#row.reservation_destination_title#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_url NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination URL: </th>
+			<td>#row.reservation_destination_url#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_address NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Address: </th>
+			<td>#row.reservation_destination_address#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_address2 NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Address 2: </th>
+			<td>#row.reservation_destination_address2#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_city NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination City: </th>
+			<td>#row.reservation_destination_city#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_state NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Address: </th>
+			<td>#row.reservation_destination_state#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_zip NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Zip: </th>
+			<td>#row.reservation_destination_zip#</td>
+		</tr>
+		</cfif>
+		<cfif row.reservation_destination_country NEQ "">
+		<tr>
+			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Country: </th>
+			<td>#row.reservation_destination_country#</td>
+		</tr>
+		</cfif>
+	</table>
+
+	<p><a href="#request.zos.globals.domain#/z/reservation/reservation/cancel?id=#row.reservation_id#&amp;key=#row.reservation_key#">Cancel Reservation</a></p>
+	</cfsavecontent>
+	<cfreturn trim(out)>
+</cffunction>
+
+<cffunction name="cancel" localmode="modern" access="remote">
+	<cfscript>
+	db=request.zos.queryObject;
+	form.reservation_id=application.zcore.functions.zso(form, 'id');
+	form.reservation_key=application.zcore.functions.zso(form, 'key');
+	if(form.reservation_key EQ ""){
+		application.zcore.functions.z404("Invalid request.");
+	}
+	db.sql="select * from #db.table("reservation", request.zos.zcoreDatasource)# reservation 
+	WHERE  
+	reservation.site_id = #db.param(request.zos.globals.id)# and 
+	reservation.reservation_id = #db.param(form.reservation_id)# and 
+	reservation.reservation_status in (#db.param(1)#, #db.param(0)#) and 
+	reservation_key=#db.param(form.reservation_key)# and 
+	reservation.reservation_deleted=#db.param(0)# ";
+	qReservation=db.execute("qReservation");
+	application.zcore.template.setTag("title", "Cancel Reservation");
+	application.zcore.template.setTag("pagetitle", "Cancel Reservation");
+	if(qReservation.recordcount EQ 0){
+		echo('This reservation doesn''t exist or has already been cancelled.');
+		return;
+	}
+	if(structkeyexists(form, 'confirm')){
+		db.sql="update #db.table("reservation", request.zos.zcoreDatasource)# 
+		set 
+		reservation_status=#db.param(2)#,
+		reservation_updated_datetime =#db.param(request.zos.mysqlnow)# 
+		WHERE  
+		site_id = #db.param(request.zos.globals.id)# and 
+		reservation.reservation_id = #db.param(form.reservation_id)# and 
+		reservation_key=#db.param(form.reservation_key)# and 
+		reservation_status in (#db.param(1)#, #db.param(0)#) and 
+		reservation_deleted=#db.param(0)# ";
+		db.execute("qUpdate");
+
+		sendReservationEmail(form.reservation_id, 'cancelled');
+		application.zcore.functions.zRedirect("/z/reservation/reservation/cancelConfirm");
+	}
+	</cfscript>
+	<h2>Are you sure you want to cancel this reservation?</h2>
+	<p>ID: #qReservation.reservation_id#<br />
+	Reservation: 
+	<cfscript>
+	for(row in qReservation){
+		echo(application.zcore.app.getAppCFC("reservation").getReservationDateRange(row));
+	}
+	</cfscript><br />
+	Your Name: #qReservation.reservation_first_name# #qReservation.reservation_last_name#<br />
+	Your Email: #qReservation.reservation_email#)</p>
+
+	<h2><a href="/z/reservation/reservation/cancel?confirm=1&amp;id=#qReservation.reservation_id#&amp;key=#qReservation.reservation_key#">Yes</a>&nbsp;&nbsp;&nbsp;
+	<a href="/z/reservation/reservation/cancelAbort">No</a> </h2>
+</cffunction>
+
+<cffunction name="cancelConfirm" localmode="modern" access="remote">
+	<cfscript>
+	application.zcore.template.setTag("title", "Reservation cancelled.");
+	application.zcore.template.setTag("pagetitle", "Reservation cancelled.");
+	</cfscript>
+	<p>You may close this window or continue browsing our web site.</p>
+</cffunction>
+	
+<cffunction name="cancelAbort" localmode="modern" access="remote">
+	<cfscript>
+	application.zcore.template.setTag("title", "Reservation not cancelled.");
+	application.zcore.template.setTag("pagetitle", "Reservation not cancelled.");
+	</cfscript>
+	<p>You may close this window or continue browsing our web site.</p>
+</cffunction>
+
+<cffunction name="getReservationEmailText" localmode="modern" access="public">
+	<cfargument name="reserveStruct" type="struct" required="yes">
+	<cfscript>
+	row=arguments.reserveStruct;
+	</cfscript>
+<cfsavecontent variable="out">
+Status: #getStatusName(row.reservation_status)#Period:#row.reservation_period#
+Reservation Date: #getReservationDateRange(row)#
+First Name: #row.reservation_first_name#
+Last Name: #row.reservation_last_name#
+Email: #row.reservation_email#
+Phone: #row.reservation_phone#
+<cfif row.reservation_company NEQ "">Company: #row.reservation_company#</cfif>
+<cfif row.reservation_comments NEQ "">Comments: #row.reservation_comments#</cfif>
+<cfscript>customStruct=deserializeJson(row.reservation_custom_json);</cfscript>
+<cfif structcount(customStruct)><cfscript>index=1;
+for(fieldName in customStruct){
+	value=customStruct[fieldName];
+	echo(application.zcore.functions.zFirstLetterCaps(fieldName)&': '&value&chr(10)); 
+}</cfscript></cfif>
+<cfif row.reservation_destination_title NEQ "">Destination Title: #row.reservation_destination_title#</cfif>
+<cfif row.reservation_destination_url NEQ "">Destination URL: #row.reservation_destination_url#</cfif>
+<cfif row.reservation_destination_address NEQ "">Destination Address: #row.reservation_destination_address#</cfif>
+<cfif row.reservation_destination_address2 NEQ "">Destination Address 2: #row.reservation_destination_address2#</cfif>
+<cfif row.reservation_destination_city NEQ "">Destination City: #row.reservation_destination_city#</cfif>
+<cfif row.reservation_destination_state NEQ "">Destination Address: #row.reservation_destination_state#</cfif>
+<cfif row.reservation_destination_zip NEQ "">Destination Zip: #row.reservation_destination_zip#</cfif>
+<cfif row.reservation_destination_country NEQ "">Destination Country: #row.reservation_destination_country#</cfif>
+#chr(10)#
+Cancel Reservation:#chr(10)#
+#request.zos.globals.domain#/z/reservation/reservation/cancel?id=#row.reservation_id#&key=#row.reservation_key#
+</cfsavecontent>
+<cfreturn trim(out)>
+</cffunction>
+
+
+<cffunction name="getEmailAddressesFromList" localmode="modern" access="public" returntype="array">
+	<cfargument name="emailIdList" type="string" required="yes">
+	<cfargument name="reservationEmail" type="string" required="yes">
+	<cfscript>
+	arrId=listToArray(arguments.emailIdList, ",");
+	uniqueStruct={};
+	for(i=1;i LTE arraylen(arrId);i++){
+		if(arrId[i] EQ "1"){
+			uniqueStruct[request.zos.developerEmailTo]=true;
+		}else if(arrId[i] EQ "2"){
+			e=application.zcore.functions.zvarso("zofficeemail");
+			if(e NEQ ""){
+				uniqueStruct[e]=true;
+			}
+		}else if(arrId[i] EQ "3"){
+			uniqueStruct[arguments.reservationEmail]=true;
+		}
+	}
+	return structkeyarray(uniqueStruct);
+	</cfscript>
+</cffunction>
+
+<cffunction name="sendReservationEmail" localmode="modern" access="public">
+	<cfargument name="reservation_id" type="numeric" required="yes">
+	<cfargument name="type" type="string" required="yes" hint="Can be: new, updated, or cancelled">
+	<cfscript>
+	db=request.zos.queryObject;
+
+	if((request.zos.istestserver EQ false or structkeyexists(form, 'forceEmail')) and not structkeyexists(form, 'forceDebug')){
+		form.debug=false;
+	}else{
+		form.debug=true;
+	}
+	form.site_id=request.zos.globals.id;
+
+	os=application.zcore.app.getAppData("reservation").optionStruct;
+
+	db.sql="select * from #db.table("reservation", request.zos.zcoreDatasource)# reservation 
+	WHERE  
+	reservation.site_id = #db.param(request.zos.globals.id)# and 
+	reservation.reservation_id = #db.param(arguments.reservation_id)# and 
+	reservation.reservation_status = #db.param(1)# and 
+	reservation.reservation_deleted=#db.param(0)# ";
+	qReservation=db.execute("qReservation");
+
+	for(row in qReservation){
+		arrOut=[];
+		arrPlainOut=[];
+		ts=StructNew(); 
+		if(arguments.type EQ "new"){
+			if(os.reservation_config_confirmation_email_list EQ ""){
+				return;
+			}
+			arrEmail=getEmailAddressesFromList(os.reservation_config_confirmation_email_list, row.reservation_email);
+			ts.subject=os.reservation_config_email_creation_subject;
+			arrayAppend(arrOut, '<p>'&os.reservation_config_email_creation_header&'</p>');
+			arrayAppend(arrPlainOut, os.reservation_config_email_creation_header);
+		}else if(arguments.type EQ "updated"){
+			if(os.reservation_config_change_email_list EQ ""){
+				return;
+			}
+			arrEmail=getEmailAddressesFromList(os.reservation_config_change_email_list, row.reservation_email);
+			ts.subject=os.reservation_config_email_change_subject;
+			arrayAppend(arrOut, '<p>'&os.reservation_config_email_change_header&'</p>');
+			arrayAppend(arrPlainOut, os.reservation_config_email_change_header);
+		}else if(arguments.type EQ "cancelled"){
+			if(os.reservation_config_change_email_list EQ ""){
+				return;
+			}
+			arrEmail=getEmailAddressesFromList(os.reservation_config_change_email_list, row.reservation_email);
+			row.reservation_status = '2';
+			ts.subject=os.reservation_config_email_cancelled_subject;
+			arrayAppend(arrOut, '<p>'&os.reservation_config_email_cancelled_header&'</p>');
+			arrayAppend(arrPlainOut, os.reservation_config_email_cancelled_header);
+		}else if(arguments.type EQ "reminder"){
+			if(os.reservation_config_change_email_list EQ "" or os.reservation_reminder_email_sent_x_days EQ ""){
+				return;
+			}
+			arrEmail=[row.reservation_email];
+			ts.subject=os.reservation_config_email_reminder_subject;
+			arrayAppend(arrOut, '<p>'&os.reservation_config_email_reminder_header&'</p>');
+			arrayAppend(arrPlainOut, os.reservation_config_email_reminder_header);
+		}else{
+			throw("Type, ""#arguments.type#"", must be new, updated or cancelled");
+		}
+		arrayAppend(arrOut, getReservationEmailHTML(row));
+		arrayAppend(arrPlainOut, getReservationEmailText(row));
+
+
+		t1={};
+		ts.site_id=request.zos.globals.id;
+		
+		// change this to be a custom script in the database, so that the variables read in.
+		ts.zemail_template_type_name="general";
+		request.zTempNewEmailHTML=arrayToList(arrOut, chr(10));
+		ts.html=true;
+		request.zTempNewEmailPlainText=arrayToList(arrPlainOut, chr(10));
+		if(request.zos.globals.emailCampaignFrom EQ ""){
+			throw("request.zos.globals.emailCampaignFrom is missing, can't send listing alerts.");
+		}
+		ts.from=request.zos.globals.emailCampaignFrom;
+		/*if(form.debug){
+			ts.preview=true;
+		}else{
+			ts.preview=false;
+		}  */
+		if(form.debug or request.zos.istestserver){
+			ts.to=request.zos.developerEmailTo;
+			rCom=application.zcore.email.sendEmailTemplate(ts); 
+			if(rCom.isOK() EQ false){
+				// user has opt out probably...
+				if(form.debug){
+					rCom.setStatusErrors(request.zsid);
+					application.zcore.functions.zstatushandler(request.zsid); 
+				}
+			}
+		}else{
+			if(arrayLen(arrEmail)){
+				for(i=1;i LTE arraylen(arrEmail);i++){
+					ts.to=arrEmail[i];
+					rCom=application.zcore.email.sendEmailTemplate(ts); 
+					if(rCom.isOK() EQ false){
+						// user has opt out probably...
+						if(form.debug){
+							rCom.setStatusErrors(request.zsid);
+							application.zcore.functions.zstatushandler(request.zsid); 
+						}
+					}
+				}
+			}
+		}
+		/*if(form.debug or request.zos.istestserver){
+			emailRS=rCom.getData();
+			if(structkeyexists(emailRS, 'emailData')){
+				writeoutput(emailRS.emailData.html);
+				writeoutput('<pre>'&emailRS.emailData.text&'</pre>');
+			}
+			writedump(emailRS);
+			application.zcore.functions.zabort(); 
+		}*/
+		return;
+	}
+	</cfscript>
+
+</cffunction>
+	
 
 <cffunction name="getReservationDateRange" localmode="modern" output="no" access="public">
 	<cfargument name="struct" type="struct" required="yes">

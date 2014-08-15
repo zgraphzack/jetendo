@@ -13,7 +13,10 @@
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#reservation`   
 	CHANGE `reservation_reminder_datetime` `reservation_reminder_email_sent_x_days` INT(11) UNSIGNED DEFAULT 0  NOT NULL
   ADD COLUMN `reservation_search` LONGTEXT NOT NULL AFTER `site_id`,
-  ADD COLUMN `site_x_option_group_set_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `reservation_search`")){
+  ADD COLUMN `site_x_option_group_set_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `reservation_search`,
+  ADD COLUMN `reservation_guests` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `site_x_option_group_set_id`,
+  ADD COLUMN `reservation_custom_json` LONGTEXT NOT NULL AFTER `reservation_guests`,
+  ADD COLUMN `reservation_key` VARCHAR(40) NOT NULL AFTER `reservation_custom_json`")){
 		return false;
 	} 
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#reservation_allowed_hours`   
@@ -26,6 +29,7 @@ if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.
 	} 
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#reservation_type`   
   ADD COLUMN `reservation_type_max_guests` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `site_id`,
+  ADD COLUMN `reservation_type_max_reservations` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `reservation_type_max_guests`,
   ADD  UNIQUE INDEX `NewIndex1` (`site_id`, `reservation_type_name`, `reservation_type_deleted`)")){
 		return false;
 	} 

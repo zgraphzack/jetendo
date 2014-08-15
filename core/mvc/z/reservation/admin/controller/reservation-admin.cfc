@@ -23,13 +23,33 @@
 	<cfscript>
 	form.start=application.zcore.functions.zso(form, 'start');
 	form.end=application.zcore.functions.zso(form, 'end');
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
+	form.event_id=application.zcore.functions.zso(form, 'event_id');
+	form.reservation_type_id=application.zcore.functions.zso(form, 'reservation_type_id');
+	form.keyword=application.zcore.functions.zso(form, 'keyword');
+	form.status=application.zcore.functions.zso(form, 'status');
+
 	db=request.zos.queryObject;
 	db.sql="select * from 
 	#request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation   
 	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
 	reservation.reservation_deleted = #db.param(0)# and 
 	reservation_end_datetime >= #db.param(form.start)# and
-	reservation_start_datetime <= #db.param(form.end)#  ";
+	reservation_start_datetime <= #db.param(form.end)#  and 
+	reservation_status IN (#db.trustedSQL("'"&replace(form.status, ',', "','", "all")&"'")#)";
+	if(form.keyword NEQ ""){
+		db.sql&=" and reservation_search like #db.param('%#form.keyword#%')# ";
+	}
+	if(form.reservation_type_id NEQ ""){
+		db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+	}
+	if(form.site_x_option_group_set_id NEQ ""){
+		db.sql&=" and reservation.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+	}
+	if(form.event_id NEQ ""){
+		db.sql&=" and reservation.event_id = #db.param(form.event_id)# ";
+	}
+
 	qCalendar=db.execute("qCalendar");
 	arrJ=[];
 	for(row in qCalendar){
@@ -55,6 +75,7 @@
 
 
 	<cfscript>
+	showReservationSearchForm();
 
 	application.zcore.functions.zRequireJqueryUI();
 	application.zcore.skin.includeCSS("/fullcalendar-2.0.2/fullcalendar.css");
@@ -70,6 +91,15 @@
 	application.zcore.skin.includeJS("/fullcalendar-2.0.2/lib/moment.min.js", "", 2);
 	application.zcore.skin.includeJS("/fullcalendar-2.0.2/fullcalendar.min.js", "", 3); 
 	
+
+	eventLink="/z/reservation/admin/reservation-admin/getCalendarJsonForDateRange?ztv=1";
+
+
+	eventLink&="&site_x_option_group_set_id="&form.site_x_option_group_set_id;
+	eventLink&="&event_id="&application.zcore.functions.zso(form, 'event_id');
+	eventLink&="&reservation_type_id="&form.reservation_type_id;
+	eventLink&="&keyword="&form.keyword;
+	eventLink&="&status="&form.status;
 	</cfscript>
 
 	<script>
@@ -89,7 +119,7 @@
 			},
 			defaultDate: '#dateformat(now(), "yyyy-mm-dd")#',
 			editable: false,
-			events: '/z/reservation/admin/reservation-admin/getCalendarJsonForDateRange'
+			events: '#eventLink#'
 		});
 		if(navigator.userAgent.indexOf("MSIE 7.0") != -1){
 			$(".fc-icon-left-single-arrow").html("&lt;");
@@ -97,7 +127,164 @@
 		}
 	});
 	</script> 
-	<div id='calendar'></div>
+	<div id='calendar' style="margin-top:20px;"></div>
+</cffunction>
+
+
+<cffunction name="showReservationSearchForm" localmode="modern" access="public" roles="member">
+	<cfscript>
+	var db=request.zos.queryObject; 
+
+	defaultStartDate=parsedatetime(dateformat(now(), "yyyy-mm-dd"));
+	defaultEndDate=dateadd("m", 1, now());
+
+	if(structkeyexists(form, 'startDate_date')){
+		form.startDate=application.zcore.functions.zGetDateTimeSelect("startDate", "yyyy-mm-dd", "HH:mm:ss");
+		form.endDate=application.zcore.functions.zGetDateTimeSelect("endDate", "yyyy-mm-dd", "HH:mm:ss");
+	}else{
+		form.startDate=application.zcore.functions.zso(form, 'startDate', false, defaultStartDate);
+		form.endDate=application.zcore.functions.zso(form, 'endDate', false, defaultEndDate);
+	}
+	if(not isdate(form.startDate)){
+		form.startDate=defaultStartDate;
+	}
+	if(not isdate(form.endDate)){
+		form.endDate=defaultEndDate;
+	}
+	form.startDate=dateformat(form.startDate, "yyyy-mm-dd")&" "&timeformat(form.startDate, "HH:mm:ss");
+	form.endDate=dateformat(form.endDate, "yyyy-mm-dd")&" "&timeformat(form.endDate, "HH:mm:ss");
+	if(structkeyexists(form, 'clearSearch')){
+		structdelete(request.zsession, 'reservationSearchStruct');
+	}
+	if(structkeyexists(request.zsession, 'reservationSearchStruct') and structkeyexists(form, 'zIndex')){
+		request.zsession.reservationSearchStruct.zIndex=form.zIndex;
+	}
+	if(structkeyexists(form, 'search1')){
+		request.zsession.reservationSearchStruct={
+			startDate:form.startDate,
+			endDate:form.endDate,
+			site_x_option_group_set_id:form.site_x_option_group_set_id,
+			event_id:application.zcore.functions.zso(form, 'event_id'),
+			reservation_type_id: form.reservation_type_id,
+			keyword: form.keyword,
+			status: form.status,
+			zIndex:1
+		};
+	}else{
+		if(structkeyexists(request.zsession, 'reservationSearchStruct')){
+			structappend(form, request.zsession.reservationSearchStruct, true);
+		}
+		form.status=application.zcore.functions.zso(form, 'status', false, '0,1');
+		form.event_id=application.zcore.functions.zso(form, 'event_id');
+		form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
+		form.reservation_type_id=application.zcore.functions.zso(form, 'reservation_type_id');
+		form.keyword=application.zcore.functions.zso(form, 'keyword');
+	}
+	if(application.zcore.app.siteHasApp("event")){
+		db.sql="select reservation.event_id, event_summary from 
+		(#db.table("reservation", request.zos.zcoreDatasource)# reservation, 
+		#db.table("event", request.zos.zcoreDatasource)# event)
+		WHERE reservation.site_id = #db.param(request.zos.globals.id)# and 
+		event.site_id = reservation.site_id and 
+		event.event_deleted=#db.param(0)# and 
+		reservation.event_id = event.event_id and 
+		reservation_deleted=#db.param(0)# ";
+		if(form.reservation_type_id NEQ ""){
+			db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+		}
+		db.sql&=" GROUP BY reservation.event_id
+		ORDER BY event_summary ASC ";
+		qEvent=db.execute("qEvent"); 
+	}
+	db.sql="select site_x_option_group_set_title, site_x_option_group_set.site_x_option_group_set_id, site_option_group_name from 
+	(#db.table("reservation", request.zos.zcoreDatasource)# reservation, 
+	#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set, 
+	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group)
+	WHERE reservation.site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group.site_id = reservation.site_id and 
+	site_option_group.site_option_group_deleted=#db.param(0)# and 
+	site_option_group.site_option_group_id = site_x_option_group_set.site_option_group_id and 
+	reservation_deleted=#db.param(0)# and 
+	reservation.site_id = site_x_option_group_set.site_id and 
+	site_x_option_group_set_deleted=#db.param(0)# and 
+	reservation.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id ";
+	if(form.reservation_type_id NEQ ""){
+		db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+	}
+	db.sql&=" GROUP BY reservation.site_x_option_group_set_id
+	ORDER BY site_x_option_group_set_title ASC ";
+	qSet=db.execute("qSet"); 
+
+	db.sql="select * from #db.table("reservation_type", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	reservation_type_deleted = #db.param(0)#  and 
+	reservation_type_status = #db.param(1)# 
+	ORDER BY reservation_type_name";
+	qType=db.execute("qType");
+	request.typeStruct={};
+	for(row in qType){
+		request.typeStruct[row.reservation_type_id]=row;
+	}
+	</cfscript>
+	<form action="#request.zos.originalURL#" method="get">
+		<table class="table-list" style="border-spacing:0px; width:100%;">
+			<tr>
+				<td>Search By Keyword:<br /> 
+				<cfscript>
+				ts = StructNew();
+				ts.name = "keyword";
+				ts.style="width:150px;";
+				application.zcore.functions.zInput_Text(ts);
+				</cfscript></td>
+				<cfif request.zos.originalURL NEQ "/z/reservation/admin/reservation-admin/calendarView">
+					<td>Start Date:<br />#application.zcore.functions.zDateTimeSelect("startDate", form.startDate, 15)#</td>
+					<td>End Date:<br />#application.zcore.functions.zDateTimeSelect("endDate", form.endDate, 15)#</td>
+				</cfif>
+				<td>Status:<br /><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "status";
+					selectStruct.multiple=true;
+					selectStruct.size=1;
+					selectStruct.listLabels="Approved,Pending Approval,Cancelled";
+					selectStruct.listValues = "1,0,2";
+					application.zcore.functions.zSetupMultipleSelect("status", form.status);
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
+				<td>Type:<br /><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "reservation_type_id";
+					selectStruct.size=1;
+					selectStruct.query=qType;
+					selectStruct.queryLabelField="reservation_type_name";
+					selectStruct.queryValueField="reservation_type_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
+				<td>Custom Records:<br /><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "site_x_option_group_set_id";
+					selectStruct.size=1;
+					selectStruct.query=qSet;
+					selectStruct.queryLabelField="##site_x_option_group_set_title## (##site_option_group_name##)";
+					selectStruct.queryParseLabelVars=true;
+					selectStruct.queryValueField="site_x_option_group_set_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
+				<cfif application.zcore.app.siteHasApp("event")>
+					<td>Events:<br /><cfscript>
+						selectStruct = StructNew();
+						selectStruct.name = "event_id";
+						selectStruct.size=1;
+						selectStruct.query=qEvent;
+						selectStruct.queryLabelField="event_summary";
+						selectStruct.queryValueField="event_id";
+						application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
+				</cfif>
+				<td><input type="submit" name="search1" value="Search" /> 
+				<input type="button" name="clearSearch" value="Clear" onclick="window.location.href='#request.zos.originalURL#?clearSearch=1';" /></td>
+			</tr>
+		</table>
+	</form>
 </cffunction>
 	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
@@ -109,21 +296,12 @@
 	
 	<h2>Reservation List View</h2>
 	<cfscript>	
-	defaultStartDate=parsedatetime(dateformat(now(), "yyyy-mm-dd"));
-	defaultEndDate=dateadd("m", 1, now());
-	form.status=application.zcore.functions.zso(form, 'status', false, '0,1');
+	showReservationSearchForm();
+
+
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
-	form.startDate=application.zcore.functions.zso(form, 'startDate', false, defaultStartDate);
-	form.endDate=application.zcore.functions.zso(form, 'endDate', false, defaultEndDate);
-	if(not isdate(form.startDate)){
-		form.startDate=defaultStartDate;
-	}
-	if(not isdate(form.endDate)){
-		form.endDate=defaultEndDate;
-	}
-	form.startDate=application.zcore.functions.zGetDateTimeSelect("startDate", "yyyy-mm-dd", "HH:mm:ss");
-	form.endDate=application.zcore.functions.zGetDateTimeSelect("endDate", "yyyy-mm-dd", "HH:mm:ss");
-	form.keyword=application.zcore.functions.zso(form, 'keyword');
+
+
 	db.sql=" SELECT count(reservation_id) count FROM 
 	#request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation   
 	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
@@ -133,6 +311,15 @@
 	reservation_status IN (#db.trustedSQL("'"&replace(form.status, ',', "','", "all")&"'")#)";
 	if(form.keyword NEQ ""){
 		db.sql&=" and reservation_search like #db.param('%#form.keyword#')# ";
+	}
+	if(form.reservation_type_id NEQ ""){
+		db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+	}
+	if(form.site_x_option_group_set_id NEQ ""){
+		db.sql&=" and reservation.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+	}
+	if(form.event_id NEQ ""){
+		db.sql&=" and reservation.event_id = #db.param(form.event_id)# ";
 	}
 	qCount=db.execute("qCount");
 	db.sql=" SELECT * FROM 
@@ -145,38 +332,19 @@
 	if(form.keyword NEQ ""){
 		db.sql&=" and reservation_search like #db.param('%#form.keyword#%')# ";
 	}
-	db.sql&=" order by reservation.reservation_start_datetime ASC
+	if(form.reservation_type_id NEQ ""){
+		db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+	}
+	if(form.site_x_option_group_set_id NEQ ""){
+		db.sql&=" and reservation.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+	}
+	if(form.event_id NEQ ""){
+		db.sql&=" and reservation.event_id = #db.param(form.event_id)# ";
+	}
+	db.sql&=" order by reservation.reservation_status ASC, reservation.reservation_start_datetime ASC
 	LIMIT #db.param((form.zIndex-1)*30)#, #db.param(30)#";
 	qProp=db.execute("qProp");
-	</cfscript>
-	<form action="/z/reservation/admin/reservation-admin/index" method="get">
-		<table class="table-list" style="border-spacing:0px; width:100%;">
-			<tr>
-				<td>Search By Keyword: 
-				<cfscript>
-				ts = StructNew();
-				ts.name = "keyword";
-				ts.style="width:150px;";
-				application.zcore.functions.zInput_Text(ts);
-				</cfscript></td>
-				<td>Start Date: #application.zcore.functions.zDateTimeSelect("startDate", form.startDate, 15)#</td>
-				<td>End Date: #application.zcore.functions.zDateTimeSelect("endDate", form.endDate, 15)#</td>
-				<td>Status: <cfscript>
-					selectStruct = StructNew();
-					selectStruct.name = "status";
-					selectStruct.multiple=true;
-					selectStruct.size=1;
-					selectStruct.listLabels="Approved,Pending Approval,Cancelled";
-					selectStruct.listValues = "1,0,2";
-					application.zcore.functions.zSetupMultipleSelect("status", form.status);
-					application.zcore.functions.zInputSelectBox(selectStruct);
-				</cfscript></td>
-				<td><input type="submit" name="search1" value="Search" /></td>
-			</tr>
-		</table>
-	</form>
-	<cfscript>
-	
+
 	if(qCount.count GT 30){
 		// required
 		searchStruct = StructNew();
@@ -198,6 +366,8 @@
 		searchNav = "";
 	}
 	writeoutput(searchNav);
+
+
 	</cfscript>
 	<table class="table-list" style="border-spacing:0px; width:100%;">
 		<tr>
@@ -206,6 +376,8 @@
 			<th>Phone</th>
 			<th>Date Received</th>
 			<th>Reservation Date</th> 
+			<th>Type</th>
+			<th>Status</th>
 			<th>Admin</th>
 		</tr>
 		<cfscript>
@@ -225,8 +397,15 @@
 				<td>#dateformat(row.reservation_created_datetime, "m/d/yyyy")# #timeformat(row.reservation_created_datetime, "h:mm tt")#</td>
 				<td>');
 					echo(application.zcore.app.getAppCFC("reservation").getReservationDateRange(row));
-					
-			echo('</td><td>
+					echo('<td>');
+					if(structkeyexists(request.typeStruct, row.reservation_type_id)){
+						echo(request.typeStruct[row.reservation_type_id].reservation_type_name);
+					}else{
+						echo('Type missing');
+					}
+					echo('</td>');
+			echo('</td>
+				<td>'&application.zcore.app.getAppCFC("reservation").getStatusName(row.reservation_status)&'<td>
 				<a href="/z/reservation/admin/reservation-admin/edit?reservation_id=#row.reservation_id#&amp;return=1">Edit</a> | 
 				<a href="/z/reservation/admin/reservation-admin/delete?reservation_id=#row.reservation_id#&amp;return=1">Delete</a></td>
 				</tr>');
@@ -259,6 +438,8 @@
     </cfscript>
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
+		application.zcore.app.getAPPCFC("reservation").sendReservationEmail(form.reservation_id, 'cancelled');
+
         /*db.sql="DELETE FROM #request.zos.queryObject.table("reservation_availability", request.zos.zcoreDatasource)#  
 		WHERE  reservation_id=#db.param(form.reservation_id)# and 
 		site_id = #db.param(request.zOS.globals.id)# ";
@@ -311,10 +492,13 @@
 	form.reservation_search=application.zcore.functions.zCleanSearchText(form.reservation_search, true);
 	if(form.method EQ "insert"){
 		form.reservation_created_datetime=request.zos.mysqlnow;
+		form.reservation_key=hash(application.zcore.functions.zGenerateStrongPassword(80,200),'sha-256');
 	}
+
 	form.reservation_start_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_start_datetime", "yyyy-mm-dd", "HH:mm:ss");
 	form.reservation_end_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_end_datetime", "yyyy-mm-dd", "HH:mm:ss");
 	myForm.reservation_period.required=true;
+	myForm.reservation_phone.required=true;
 	myForm.reservation_email.required=true;
 	myForm.reservation_email.email=true;
 	myForm.reservation_last_name.required=true;
@@ -322,6 +506,18 @@
 	myForm.reservation_end_datetime.required=true;
 	errors=application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
 	 
+	jsonStruct={};
+	for(i=1;i LTE form.reservation_custom_count;i++){
+		fieldName=application.zcore.functions.zso(form, 'reservation_custom_field'&i);
+		if(fieldName NEQ ""){
+			jsonStruct[fieldName]=application.zcore.functions.zso(form, 'reservation_custom_value'&i);
+		}
+	}
+	if(form.method EQ "insert" and reservation_status EQ 2){
+		application.zcore.status.setStatus(request.zsid, "You can't create a new reservation with a status of cancelled.", form, true);
+		errors=true;
+	}
+	form.reservation_custom_json=serializeJson(jsonStruct);
 	if(errors){
 		if(form.method EQ 'insert'){
 			application.zcore.status.setStatus(request.zsid, false, form,true);
@@ -344,7 +540,6 @@
 			application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/add?zsid="&request.zsid);
 		}else{ 
 			application.zcore.status.setStatus(request.zsid, "Reservation added successfully.");
-			application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/index?zsid="&request.zsid);
 		}
 	
 	}else{
@@ -353,9 +548,17 @@
 			application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/edit?reservation_id=#form.reservation_id#&zsid="&request.zsid);
 		}else{
 			application.zcore.status.setStatus(request.zsid, "Reservation updated successfully.");
-			application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/index?zsid="&request.zsid);
 		}
 	}
+	if(form.method EQ "insert"){
+		application.zcore.app.getAPPCFC("reservation").sendReservationEmail(form.reservation_id, 'new');
+	}else if(form.reservation_status EQ "2"){
+		application.zcore.app.getAPPCFC("reservation").sendReservationEmail(form.reservation_id, 'cancelled');
+	}else{
+		application.zcore.app.getAPPCFC("reservation").sendReservationEmail(form.reservation_id, 'updated');
+	}
+
+	application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/index?zsid="&request.zsid);
 	</cfscript>
 </cffunction>
 
@@ -407,6 +610,7 @@
 		echo(arrayToList(arr2, ", "));
 		</cfscript>
 		 each time you update a reservation.</p>
+		 <p>Note: availability is not checked when you add / update reservations.  Make sure you don't double book.</p>
 	<form name="myForm" id="myForm" action="/z/reservation/admin/reservation-admin/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?reservation_id=#form.reservation_id#" method="post">
 		<cfscript>
 		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
@@ -428,8 +632,13 @@
 					selectStruct.name = "reservation_status";
 					selectStruct.hideSelect=true; 
 					selectStruct.size=1;
-					selectStruct.listLabels="Approved,Pending Approval,Cancelled";
-					selectStruct.listValues = "1,0,2";
+					if(form.method EQ "add"){
+						selectStruct.listLabels="Approved,Pending Approval";
+						selectStruct.listValues = "1,0";
+					}else{
+						selectStruct.listLabels="Approved,Pending Approval,Cancelled";
+						selectStruct.listValues = "1,0,2";
+					}
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
 			</tr>
@@ -440,8 +649,8 @@
 					selectStruct = StructNew();
 					selectStruct.name = "reservation_period"; 
 					selectStruct.size=1;
-					selectStruct.listLabels="Event,Hourly,Nightly,Weekly,Monthly";
-					selectStruct.listValues = "event,hourly,nightly,weekly,monthly";
+					selectStruct.listLabels="hourly";//"Event,Hourly,Nightly,Weekly,Monthly";
+					selectStruct.listValues = "hourly";//"event,hourly,nightly,weekly,monthly";
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
 			</tr>
@@ -477,7 +686,32 @@
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Comments","member.reservation.edit reservation_comments")#</th>
 				<td><textarea name="reservation_comments" cols="100" rows="10">#htmleditformat(form.reservation_comments)#</textarea></td>
 			</tr> 
+			<cfscript>
+			customStruct=deserializeJson(form.reservation_custom_json);
+			</cfscript>
+			<cfif structcount(customStruct)>
+				<cfscript>
+				index=1;
+				for(fieldName in customStruct){
+					value=customStruct[fieldName];
+					echo('<tr><th style="width:1%; white-space:nowrap; vertical-align:top;">'&application.zcore.functions.zFirstLetterCaps(fieldName)&'</th><td>');
+					ts = StructNew();
+					ts.name = "reservation_custom_value"&index;
+					form["reservation_custom_value"&index]=value;
+					ts.style="width:95%;";
+					application.zcore.functions.zInput_Text(ts);
+					ts = StructNew();
+					ts.name = "reservation_custom_field"&index;
+					form["reservation_custom_field"&index]=fieldName;
+					application.zcore.functions.zInput_Hidden(ts);
+					echo('</td></tr>');
+					index++;
+				}
+				</cfscript>
+			</cfif>
 		</table>
+		<input type="hidden" name="reservation_custom_count" value="#structcount(customStruct)#" />
+
 		#tabCom.endFieldSet()#
 		#tabCom.beginFieldSet("Advanced")#
 		<table style="width:100%; border-spacing:0px;" class="table-list">
