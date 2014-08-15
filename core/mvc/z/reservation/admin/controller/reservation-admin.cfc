@@ -111,6 +111,7 @@
 	<cfscript>	
 	defaultStartDate=parsedatetime(dateformat(now(), "yyyy-mm-dd"));
 	defaultEndDate=dateadd("m", 1, now());
+	form.status=application.zcore.functions.zso(form, 'status', false, '0,1');
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	form.startDate=application.zcore.functions.zso(form, 'startDate', false, defaultStartDate);
 	form.endDate=application.zcore.functions.zso(form, 'endDate', false, defaultEndDate);
@@ -128,7 +129,8 @@
 	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
 	reservation.reservation_deleted = #db.param(0)# and 
 	reservation_end_datetime >= #db.param(form.startDate)# and
-	reservation_start_datetime <= #db.param(form.endDate)# ";
+	reservation_start_datetime <= #db.param(form.endDate)# and 
+	reservation_status IN (#db.trustedSQL("'"&replace(form.status, ',', "','", "all")&"'")#)";
 	if(form.keyword NEQ ""){
 		db.sql&=" and reservation_search like #db.param('%#form.keyword#')# ";
 	}
@@ -138,7 +140,8 @@
 	WHERE reservation.site_id = #db.param(request.zOS.globals.id)# and 
 	reservation.reservation_deleted = #db.param(0)# and 
 	reservation_end_datetime >= #db.param(form.startDate)# and
-	reservation_start_datetime <= #db.param(form.endDate)#  ";
+	reservation_start_datetime <= #db.param(form.endDate)# and 
+	reservation_status IN (#db.trustedSQL("'"&replace(form.status, ',', "','", "all")&"'")#) ";
 	if(form.keyword NEQ ""){
 		db.sql&=" and reservation_search like #db.param('%#form.keyword#%')# ";
 	}
@@ -158,6 +161,16 @@
 				</cfscript></td>
 				<td>Start Date: #application.zcore.functions.zDateTimeSelect("startDate", form.startDate, 15)#</td>
 				<td>End Date: #application.zcore.functions.zDateTimeSelect("endDate", form.endDate, 15)#</td>
+				<td>Status: <cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "status";
+					selectStruct.multiple=true;
+					selectStruct.size=1;
+					selectStruct.listLabels="Approved,Pending Approval,Cancelled";
+					selectStruct.listValues = "1,0,2";
+					application.zcore.functions.zSetupMultipleSelect("status", form.status);
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
 				<td><input type="submit" name="search1" value="Search" /></td>
 			</tr>
 		</table>
@@ -408,8 +421,8 @@
 
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>
-				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Status","member.reservation.edit reservation_period")#</th>
-				<td class="table-white"><cfscript>
+				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Status","member.reservation.edit reservation_status")#</th>
+				<td><cfscript>
 					
 					selectStruct = StructNew();
 					selectStruct.name = "reservation_status";
@@ -422,7 +435,7 @@
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Period","member.reservation.edit reservation_period")#</th>
-				<td class="table-white"><cfscript>
+				<td><cfscript>
 					
 					selectStruct = StructNew();
 					selectStruct.name = "reservation_period"; 
@@ -434,35 +447,35 @@
 			</tr>
 			<tr>
 				<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Start Date","member.reservation.edit reservation_start_datetime")#</th>
-				<td class="table-white">#application.zcore.functions.zDateTimeSelect("reservation_start_datetime", form.reservation_start_datetime, 15)#</td>
+				<td>#application.zcore.functions.zDateTimeSelect("reservation_start_datetime", form.reservation_start_datetime, 15)#</td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("End Date","member.reservation.edit reservation_end_datetime")#</th>
-				<td class="table-white">#application.zcore.functions.zDateTimeSelect("reservation_end_datetime", form.reservation_end_datetime, 15)#</td>
+				<td>#application.zcore.functions.zDateTimeSelect("reservation_end_datetime", form.reservation_end_datetime, 15)#</td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("First Name","member.reservation.edit reservation_first_name")#</th>
-				<td class="table-white"><input name="reservation_first_name" size="50" type="text" value="#htmleditformat(form.reservation_first_name)#" maxlength="50" /></td>
+				<td><input name="reservation_first_name" size="50" type="text" value="#htmleditformat(form.reservation_first_name)#" maxlength="50" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Last Name","member.reservation.edit reservation_last_name")#</th>
-				<td class="table-white"><input name="reservation_last_name" size="50" type="text" value="#htmleditformat(form.reservation_last_name)#" maxlength="50" /></td>
+				<td><input name="reservation_last_name" size="50" type="text" value="#htmleditformat(form.reservation_last_name)#" maxlength="50" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Email","member.reservation.edit reservation_email")#</th>
-				<td class="table-white"><input name="reservation_email" size="50" type="text" value="#htmleditformat(form.reservation_email)#" maxlength="100" /></td>
+				<td><input name="reservation_email" size="50" type="text" value="#htmleditformat(form.reservation_email)#" maxlength="100" /></td>
 			</tr> 
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Phone","member.reservation.edit reservation_phone")#</th>
-				<td class="table-white"><input name="reservation_phone" size="50" type="text" value="#htmleditformat(form.reservation_phone)#" maxlength="100" /></td>
+				<td><input name="reservation_phone" size="50" type="text" value="#htmleditformat(form.reservation_phone)#" maxlength="100" /></td>
 			</tr> 
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Company","member.reservation.edit reservation_company")#</th>
-				<td class="table-white"><input name="reservation_company" size="50" type="text" value="#htmleditformat(form.reservation_company)#" maxlength="100" /></td>
+				<td><input name="reservation_company" size="50" type="text" value="#htmleditformat(form.reservation_company)#" maxlength="100" /></td>
 			</tr> 
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Comments","member.reservation.edit reservation_comments")#</th>
-				<td class="table-white"><textarea name="reservation_comments" cols="100" rows="10">#htmleditformat(form.reservation_comments)#</textarea></td>
+				<td><textarea name="reservation_comments" cols="100" rows="10">#htmleditformat(form.reservation_comments)#</textarea></td>
 			</tr> 
 		</table>
 		#tabCom.endFieldSet()#
@@ -470,35 +483,35 @@
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Title","member.reservation.edit reservation_destination_title")#</th>
-				<td class="table-white"><input name="reservation_destination_title" size="50" type="text" value="#htmleditformat(form.reservation_destination_title)#" maxlength="100" /></td>
+				<td><input name="reservation_destination_title" size="50" type="text" value="#htmleditformat(form.reservation_destination_title)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination URL","member.reservation.edit reservation_destination_url")#</th>
-				<td class="table-white"><input name="reservation_destination_url" size="50" type="text" value="#htmleditformat(form.reservation_destination_url)#" maxlength="100" /></td>
+				<td><input name="reservation_destination_url" size="50" type="text" value="#htmleditformat(form.reservation_destination_url)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Address","member.reservation.edit reservation_destination_address")#</th>
-				<td class="table-white"><input name="reservation_destination_address" size="50" type="text" value="#htmleditformat(form.reservation_destination_address)#" maxlength="100" /></td>
+				<td><input name="reservation_destination_address" size="50" type="text" value="#htmleditformat(form.reservation_destination_address)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Address 2","member.reservation.edit reservation_destination_address2")#</th>
-				<td class="table-white"><input name="reservation_destination_address2" size="50" type="text" value="#htmleditformat(form.reservation_destination_address2)#" maxlength="100" /></td>
+				<td><input name="reservation_destination_address2" size="50" type="text" value="#htmleditformat(form.reservation_destination_address2)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination City","member.reservation.edit reservation_destination_city")#</th>
-				<td class="table-white"><input name="reservation_destination_city" size="50" type="text" value="#htmleditformat(form.reservation_destination_city)#" maxlength="100" /></td>
+				<td><input name="reservation_destination_city" size="50" type="text" value="#htmleditformat(form.reservation_destination_city)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Address","member.reservation.edit reservation_destination_state")#</th>
-				<td class="table-white">#application.zcore.functions.zStateSelect("reservation_destination_state", form.reservation_destination_state)#</td>
+				<td>#application.zcore.functions.zStateSelect("reservation_destination_state", form.reservation_destination_state)#</td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Zip","member.reservation.edit reservation_destination_zip")#</th>
-				<td class="table-white"><input name="reservation_destination_zip" size="50" type="text" value="#htmleditformat(form.reservation_destination_zip)#" maxlength="100" /></td>
+				<td><input name="reservation_destination_zip" size="50" type="text" value="#htmleditformat(form.reservation_destination_zip)#" maxlength="100" /></td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Destination Country","member.reservation.edit reservation_destination_country")#</th>
-				<td class="table-white">#application.zcore.functions.zCountrySelect("reservation_destination_country", form.reservation_destination_country)#</td>
+				<td>#application.zcore.functions.zCountrySelect("reservation_destination_country", form.reservation_destination_country)#</td>
 			</tr>
 		</table>
 		#tabCom.endFieldSet()#  

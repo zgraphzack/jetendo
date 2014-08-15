@@ -86,6 +86,7 @@
 	if(application.zcore.app.siteHasApp("reservation")){
 		ms["reservations"]={ parent:'', label:"Reservations"};
 		ms["Manage Reservations"]={ parent:'reservations', label:chr(9)&"Manage Reservations"};
+		ms["Reservation Types"]={ parent:'reservation', label:chr(9)&"Reservation Types"};
 	}
 	if(application.zcore.app.siteHasApp("event")){
 		ms["events"]={ parent:'', label:"Events"};

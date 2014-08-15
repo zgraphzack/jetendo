@@ -179,7 +179,6 @@
 		ts.from=request.zos.globals.emailCampaignFrom;
 		if(form.debug or request.zos.istestserver){
 			ts.to=request.zos.developerEmailTo;
-			ts.to="bruce.kirkpatrick@zgraph.com";
 		}else{
 			if(curMailUserId NEQ 0){
 				ts.mail_user_id=curMailUserId;

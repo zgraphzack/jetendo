@@ -28,6 +28,7 @@ if(reservation_period_type_name EQ "event"){
 
 reservation_allowed_hours  - add more then one for the same day if there is lunch break, etc.
 	reservation_allowed_hours_id
+	reservation_type_id // 0 for global settings, otherwise it will allow overriding the settings for a specific reservation type
 	reservation_allowed_hours_day_of_week (monday through sunday)
 	reservation_allowed_hours_start_time
 	reservation_allowed_hours_end_time
@@ -37,6 +38,7 @@ reservation_allowed_hours  - add more then one for the same day if there is lunc
 	site_id
 reservation_excluded_hours  - Used to disable times or entire days from being booked
 	reservation_excluded_hours_id
+	reservation_type_id // 0 for global settings, otherwise it will allow overriding the settings for a specific reservation type
 	reservation_excluded_hours_date
 	reservation_excluded_hours_start_time
 	reservation_excluded_hours_end_time
@@ -63,73 +65,46 @@ how could reservation be used for an event instead of letting user select any ti
 reservation siteOptionType
 	select fields for start / end date, date description, title, etc?
 
-reservation_type
-	
-	reservation_type_id
-	reservation_type_name varchar(255)
-	reservation_type_period_list like nightly|weekly 
-	reservation_type_start_datetime
-	reservation_type_end_datetime
-	reservation_type_forever char(1) 0 // 1 will ignore reservation_type_end_datetime and allow this reservation to persist forever.
+	link any record with a reservation
+		type options
+			Period (event/hourly etc)
+			For Event Only:
+				Start Date: 
+				End Date: 
+			Map Fields:
+				Title: field
+				Date Description: 
+		reservation_type_id_list
 
-	reservation_type_contract_enabled char(1) 0 // enable display of contract fields
-	reservation_type_payment_enabled char(1) 0 // enables online payment optionally.
-	reservation_type_payment_required char(1) 0 // forces payment before reservation is stored.
-	reservation_type_payment_type_list multiple select for allowed payment types
-	reservation_type_new_reservation_status int(11) 1 // 1 = Approved, 0=Pending Approval, 2=Cancelled
-	reservation_type_minimum_length=2 // measured in the period unit (i.e. day, hour)
-	reservation_type_maximum_length=8
-	reservation_type_minimum_hours_before_reservation=24 // minimum 24 hours
-	reservation_type_validator_cfc_path // could be a visual thing someday
-	reservation_type_validator_cfc_method
-	reservation_type_view_cfc_path
-	reservation_type_view_cfc_method
-	reservation_type_list_cfc_path
-	reservation_type_list_cfc_method
-	reservation_type_status char(1) 1 // 1 = active, 0 = inactive - inactive types stay in system forever to prevent layout from breaking for old reservations.
-	reservation_type_updated_datetime
-	reservation_type_deleted
-	site_id
+	site_x_option_group_set_x_reservation
+		site_x_option_group_set_x_reservation_id
+		site_x_option_group_set_id
+		reservation_id
+		site_x_option_group_set_x_reservation_updated_datetime
+		site_x_option_group_set_x_reservation_deleted
+		site_id
+
+
+	select * from reservation 
+	left join on 
+	site_x_option_group_set_x_reservation s1 ON 
+	reservation.reservation_id = s1.reservation_id and 
+	reservation.site_id = s1.site_id and 
+	s1.site_x_option_group_set_x_reservation_deleted = #db.param(0)# 
+	left join on 
+	site_x_option_group_set s2 ON 
+	s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and 
+	s2.site_id = s1.site_id and 
+	s2.site_x_option_group_set_deleted = #db.param(0)# 
+	
+	// loop each search field as a left join
+	
 
 Where "Associate With Apps" is, add a new field called "Associate With Reservation Types" when application.zcore.app.siteHasApp("reservation")
 	Add these fields:
 		site_option_reservation_type_id_list
 		site_option_group_reservation_type_id_list
 
-
-
-
-reservation
-	reservation_id
-	reservation_period (event | hourly | nightly | weekly | monthly | yearly
-	event_id int(11) 0 // optional - only when reservation is for an event.
-	payment_id int(11) 0
-	reservation_type_id // used to render the custom fields
-	reservation_record_table
-	reservation_record_where_json // { key: value, site_id: value } used to query correct record for display.
-	reservation_first_name
-	reservation_last_name
-	reservation_company
-	reservation_phone
-	reservation_email
-	reservation_comments
-	reservation_destination_title
-	reservation_destination_url
-	reservation_destination_address
-	reservation_destination_address2
-	reservation_destination_city
-	reservation_destination_state
-	reservation_destination_zip
-	reservation_destination_country
-	reservation_start_datetime
-	reservation_end_datetime
-	reservation_reminder_datetime
-	reservation_created_datetime
-	reservation_updated_datetime
-	reservation_deleted
-	reservation_status int(11) default 1  // 0 pending approval, 1 = approved, 2 = reschedule, 3 rejected
-	site_option_app_id // allows custom fields to be collected with a reservation
-	site_id
 
 
 Another idea is to let the user modify / cancel their own reservation as a feature from the email alert or reservation ID + email address.  I wouldn't do this feature yet unless required.
@@ -169,6 +144,311 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 	ts=application.zcore.app.getInstance(this.app_id);
 	db=request.zos.queryObject;
 	return arguments.arrURL;
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="getReservationTypeDateRange" localmode="modern" output="no" access="public">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.struct;
+	savecontent variable="out"{
+		if(ss.reservation_type_period EQ "event"){
+			throw("event date description not implemented");
+		}else if(ss.reservation_type_period EQ "hourly"){
+			s=dateformat(ss.reservation_type_start_datetime, "m/d/yyyy");
+			e=dateformat(ss.reservation_type_end_datetime, "m/d/yyyy");
+			echo(timeformat(ss.reservation_type_start_datetime, "h:mm tt")&" to "&timeformat(ss.reservation_type_end_datetime, "h:mm tt")&" on "&s);
+			if(s NEQ e){
+				echo(" through "&e);
+			}
+		}else{
+			s=dateformat(ss.reservation_type_start_datetime, "m/d/yyyy");
+			e=dateformat(ss.reservation_type_end_datetime, "m/d/yyyy");
+			echo(s&" to "&e);
+		}
+	}
+	return out;
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="getReservationTypeByName" localmode="modern" access="public">
+	<cfargument name="reservation_type_name" type="numeric" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject; 
+	db.sql="select * from #db.table("reservation_type", request.zos.zcoreDatasource)# 
+	WHERE reservation_type_name = #db.param(arguments.reservation_type_name)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	reservation_type_deleted = #db.param(0)# and 
+	reservation_type_status = #db.param(1)# ";
+	qType=db.execute("qType"); 
+	for(row in qType){
+		return row;
+	}
+	throw("reservation_type_name=#arguments.reservation_type_name# is not available or doesn't exist.");
+	</cfscript>
+	
+</cffunction>
+
+<cffunction name="getReservationTypeById" localmode="modern" access="public">
+	<cfargument name="reservation_type_id" type="numeric" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject; 
+	db.sql="select * from #db.table("reservation_type", request.zos.zcoreDatasource)# 
+	WHERE reservation_type_id = #db.param(arguments.reservation_type_id)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	reservation_type_deleted = #db.param(0)# and 
+	reservation_type_status = #db.param(1)# ";
+	qType=db.execute("qType"); 
+	for(row in qType){
+		return row;
+	}
+	throw("reservation_type_id=#arguments.reservation_type_id# is not available or doesn't exist.");
+	</cfscript>
+</cffunction>
+
+<cffunction name="isDateRangeAvailableForEvent" localmode="modern" access="remote">
+	<cfargument name="reservationTypeStruct" type="struct" required="yes">
+	<cfargument name="event_id" type="string" required="yes">
+	<cfargument name="reservation_start_datetime" type="string" required="yes">
+	<cfargument name="reservation_end_datetime" type="string" required="yes">
+	<cfscript>
+	throw("not implemented");
+	</cfscript>
+</cffunction>
+
+
+<!--- 
+ts=application.zcore.reservation.getReservationTypeByName("event");
+ss={
+	reservation_start_datetime:form.reservation_start_datetime,
+	reservation_end_datetime:form.reservation_end_datetime
+	
+	// for site_option_group records
+	site_x_option_group_set_id:form.site_x_option_group_set_id,
+
+	// for event records
+	event_id:form.event_id
+};
+if(not application.zcore.reservation.isDateRangeAvailable(ts, ss)){
+	application.zcore.status.setStatus(request.zsid, "Not available", form, true);
+	application.zcore.functions.zRedirect();
+}
+ --->
+<cffunction name="isDateRangeAvailable" localmode="modern" access="remote" returntype="struct">
+	<cfargument name="reservationTypeStruct" type="struct" required="yes">
+	<cfargument name="searchStruct" type="struct" required="yes">
+
+	<cfscript>
+	ds=application.zcore.app.getAppData("reservation");
+	if(not structkeyexists(ds, 'availabilityStruct')){
+		ds.availabilityStruct={
+			eventCache:{},
+			siteOptionGroupCache:{}
+		};
+	}
+	os=application.zcore.app.getAppData("reservation").optionStruct;
+	os.reservation_config_furthest_reservation_days	
+	ts=arguments.reservationTypeStruct;
+	ss=arguments.searchStruct;
+	if(datecompare(dateadd("d", os.reservation_config_soonest_reservation_days, now()), ss.reservation_start_datetime) EQ -1){
+		return {
+			errorMessage:"The reservation must be at least #os.reservation_config_soonest_reservation_days# days in the future.",
+			success:false
+		};
+	}
+	if(ts.reservation_type_period NEQ "hourly"){
+		throw("not implemented");
+	}
+	if(application.zcore.app.getAppData("reservation").optionstruct.reservation_config_availability_in_memory EQ "1"){
+
+		if(structkeyexists(ss, 'site_x_option_group_set_id')){
+			if(structkeyexists(ds.availabilityStruct.siteOptionGroupCache, ss.site_x_option_group_set_id)){
+				setStruct=ds.availabilityStruct.siteOptionGroupCache[ss.site_x_option_group_set_id];
+				startDay=dateformat(ss.reservation_start_datetime, 'yyyy-mm-dd');
+				if(not structkeyexists(setStruct, startDay)){
+					return {
+						errorMessage:"",
+						success:true
+					};
+				}else{
+					startTime=int(timeformat(ss.reservation_start_datetime, 'HHmm'));
+					endTime=int(timeformat(ss.reservation_end_datetime, 'HHmm'));
+					for(i in setStruct[startDay]){
+						r=setStruct[startDay][i];
+						if(endTime GT r.startTime and startTime LT r.endTime){
+							return {
+								errorMessage:"A reservation already exists for this time.",
+								success:false
+							};
+						}
+					}
+					return {
+						errorMessage:"",
+						success:true
+					};
+				}
+			}else{
+				return {
+					errorMessage:"",
+					success:true
+				};
+			}
+		}else if(structkeyexists(ss, 'event_id')){
+			throw("in memory search not implemented yet");
+		}
+	}else{
+		db=request.zos.queryObject; 
+		if(structkeyexists(ss, 'site_x_option_group_set_id')){
+			db.sql="SELECT count(site_x_option_group_set_id) count FROM 
+			#db.table("site_x_option_group_set_id", request.zos.zcoreDatasource)# WHERE 
+			site_id = #db.param(request.zos.globals.id)# and 
+			site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and 
+			site_x_option_group_set_deleted=#db.param(0)# ";
+			qSet=db.execute("qSet");
+			if(qSet.count EQ 0){
+				return {
+					errorMessage:"The associated record for this reservation doesn't exist.",
+					success:false
+				};
+			}
+		}else if(structkeyexists(ss, 'event_id')){
+			throw("Not implemented");
+		}else{
+			throw("arguments.searchStruct.site_x_option_group_set_id or arguments.searchStruct.event_id is required.");
+		}
+		db=request.zos.queryObject; 
+		db.sql="SELECT count(reservation_id) count FROM 
+		#db.table("reservation", request.zos.zcoreDatasource)# reservation
+		WHERE ";
+		if(structkeyexists(ss, 'site_x_option_group_set_id')){
+			db.sql&=" site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and ";
+		}else if(structkeyexists(ss, 'event_id')){
+			db.sql&=" event_id = #db.param(arguments.event_id)# and ";
+		}
+		db.sql&=" reservation.site_id = #db.param(request.zOS.globals.id)# and 
+		reservation.reservation_deleted = #db.param(0)# and ";
+		if(ts.reservation_type_period EQ "hourly"){
+			db.sql&=" reservation_end_datetime >= #db.param(dateformat(arguments.reservation_start_datetime, 'yyyy-mm-dd')&' '&timeformat(arguments.reservation_start_datetime, "HH:mm:ss"))# and
+			reservation_start_datetime <= #db.param(dateformat(arguments.reservation_end_datetime, 'yyyy-mm-dd')&' '&timeformat(arguments.reservation_end_datetime, "HH:mm:ss"))# and ";
+		}else{
+
+		}
+		db.sql&=" reservation_status = #db.param(1)#";
+		qCount=db.execute("qCount");
+		if(qCount.count NEQ 0){
+			return {
+				errorMessage:"A reservation already exists at this time.",
+				success:false
+			};
+		}
+	}
+	return {
+		errorMessage:"",
+		success:true
+	};
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="rebuildMemoryCache" localmode="modern" access="remote">
+	<cfscript>
+	
+	availabilityStruct={
+		eventCache:{},
+		siteOptionGroupCache:{}
+	};
+	db.sql="SELECT count(reservation_id) count FROM 
+	#db.table("reservation", request.zos.zcoreDatasource)# reservation WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	reservation_status = #db.param(1)# and 
+	reservation_deleted = #db.param(0)#";
+	qReserve=db.execute("qReserve");
+	for(row in qReserve){
+		if(not structkeyexists(availabilityStruct.siteOptionGroupCache, row.site_x_option_group_set_id)){
+			availabilityStruct.siteOptionGroupCache[row.site_x_option_group_set_id]={};
+		}
+		if(row.reservation_period EQ "hourly"){
+			availabilityStruct.siteOptionGroupCache[row.site_x_option_group_set_id][dateformat(row.reservation_start_datetime, 'yyyy-mm-dd')]={
+				startTime:int(timeformat(row.reservation_start_datetime, 'HHmm')),
+				endTime:int(timeformat(row.reservation_end_datetime, 'HHmm'))
+			};
+		}else if(row.reservation_period EQ "event"){
+
+		}
+	}
+	ds=application.zcore.app.getAppData("reservation");
+	ds.availabilityStruct=availabilityStruct;
+	</cfscript>
+</cffunction>
+
+<cffunction name="validateReservationAgainstReservationType" localmode="modern" access="remote">
+	<cfargument name="reservationTypeStruct" type="struct" required="yes">
+	<cfargument name="reservationStruct" type="struct" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject; 
+
+	ts=arguments.reservationTypeStruct;
+	rs=arguments.reservationStruct;
+	if(ts.reservation_type_period EQ "hourly"){
+	}else{
+		throw(ts.reservation_type_period&" not implemented");
+	}
+
+	</cfscript>
+</cffunction>
+	
+
+<cffunction name="publicNewReservation" localmode="modern" access="remote">
+	<cfscript>
+	var db=request.zos.queryObject; 
+	var myForm=structnew(); 
+	form.reservation_search=form.reservation_first_name&" "&form.reservation_last_name&" "&form.reservation_email&" "&form.reservation_phone&" "&form.reservation_comments;
+	form.reservation_search=application.zcore.functions.zCleanSearchText(form.reservation_search, true);
+	if(form.method EQ "insert"){
+		form.reservation_created_datetime=request.zos.mysqlnow;
+	}
+	form.reservation_start_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_start_datetime", "yyyy-mm-dd", "HH:mm:ss");
+	form.reservation_end_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_end_datetime", "yyyy-mm-dd", "HH:mm:ss");
+	myForm.reservation_period.required=true;
+	myForm.reservation_email.required=true;
+	myForm.reservation_email.email=true;
+	myForm.reservation_last_name.required=true;
+	myForm.reservation_start_datetime.required=true;
+	myForm.reservation_end_datetime.required=true;
+	errors=application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
+	 
+	if(errors){
+		application.zcore.status.setStatus(request.zsid, false, form,true);
+		application.zcore.functions.zRedirect("/z/reservation/admin/reservation-admin/add?zsid=#request.zsid#");
+	}
+	if(structkeyexists(form, 'reservation_type_name')){
+		typeStruct=getReservationTypeByName(form.reservation_type_name);
+	}else if(structkeyexists(form, 'reservation_type_id')){
+		typeStruct=getReservationTypeByName(form.reservation_type_name);
+	}else{
+		throw("A valid active reservation type must be specified using form.reservation_type_name or form.reservation_type_id.");
+	}
+
+	form=validateReservationAgainstReservationType(typeStruct, form);
+
+	form.reservation_status=typeStruct.reservation_type_new_reservation_status;
+	
+	form.reservation_updated_datetime=request.zos.mysqlnow;
+	form.site_id=request.zos.globals.id;
+	ts=StructNew();
+	ts.table="reservation";
+	ts.struct=form;
+	ts.datasource=request.zos.zcoreDatasource;
+	form.reservation_id = application.zcore.functions.zInsert(ts);
+	if(form.reservation_id EQ false){
+		application.zcore.status.setStatus(request.zsid, "Reservation couldn't be added at this time.",form,true);
+		application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/add?zsid="&request.zsid);
+	}else{ 
+		application.zcore.status.setStatus(request.zsid, "Reservation added successfully.");
+		application.zcore.functions.zredirect("/z/reservation/admin/reservation-admin/index?zsid="&request.zsid);
+	}
 	</cfscript>
 </cffunction>
 
@@ -215,6 +495,12 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 			ts.featureName="Manage Reservations";
 			ts.link="/z/reservation/admin/reservation-admin/index";
 			arguments.linkStruct["Reservation"].children["Manage Reservations"]=ts;
+		}
+		if(structkeyexists(arguments.linkStruct["reservation"].children,"Manage Reservation Types") EQ false){
+			ts=structnew();
+			ts.featureName="Manage Reservation Types";
+			ts.link="/z/reservation/admin/reservation-type/index";
+			arguments.linkStruct["Reservation"].children["Manage Reservation Types"]=ts;
 		}
 	}
 	return arguments.linkStruct;
@@ -309,6 +595,8 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 	df.reservation_config_reminder_days_list="15,7,1";
 	df.reservation_config_soonest_reservation_days="1";
 	df.reservation_config_furthest_reservation_days="365";
+	df.reservation_config_availability_in_memory="0";
+	df.reservation_config_new_reservation_status=1;
 	for(i in df){	
 		if(arguments.validate){
 			if(structkeyexists(form,i) EQ false or form[i] EQ ""){	
@@ -430,6 +718,18 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		echo(' (## of days | 0 is unlimited)</td>
 		</tr> 
 		<tr>
+			<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("New Reservation Status","member.reservation_type.edit reservation_type_new_reservation_status")#</th>
+			<td>');
+				selectStruct = StructNew();
+				selectStruct.name = "reservation_config_new_reservation_status";
+				selectStruct.hideSelect=true; 
+				selectStruct.size=1;
+				selectStruct.listLabels="Approved,Pending Approval";
+				selectStruct.listValues = "1,0";
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				echo('</td>
+		</tr>
+		<tr>
 		<th>Reminder Email Subject:</th>
 		<td>');
 		ts = StructNew();
@@ -514,6 +814,20 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 		<td>'); 
 		ts = StructNew();
 		ts.name = "reservation_config_destination_on_email";
+		ts.radio=true;
+		ts.separator=" ";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
+		application.zcore.functions.zInput_Checkbox(ts);
+		echo(' </td>
+		</tr>');
+		echo('<tr>
+		<th>Availability Search In Memory?</th>
+		<td>'); 
+		ts = StructNew();
+		ts.name = "reservation_config_availability_in_memory";
 		ts.radio=true;
 		ts.separator=" ";
 		ts.listValuesDelimiter="|";
