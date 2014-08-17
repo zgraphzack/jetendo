@@ -9,7 +9,7 @@
 		var calendarWidth=160; 
 		var calendarColumns=0;
 		var arrMarked=[];
-		var calendarRows=5;
+		var calendarRows=3;
 		var disableFormOnChange=false;
 		if(typeof options === undefined){
 			options={};
@@ -475,10 +475,10 @@
 
 			var ruleObj=self.getRulesFromForm();
 
-			console.log("projectedDateCount:"+projectedDateCount);
+			//console.log("projectedDateCount:"+projectedDateCount);
 			var arrDebugDate=[];
 			var recurCount=0;
-			console.log(ruleObj);
+			//console.log(ruleObj);
 
 
 			var lastDate=new Date(currentDate.getTime());
@@ -495,8 +495,7 @@
 				5:false,
 				6:false
 			};
-			var weeklyLookupCount=ruleObj.arrWeeklyDays.length;
-			var weeklyEventCount=0;
+			var weeklyLookupCount=ruleObj.arrWeeklyDays.length; 
 			for(var i=0;i<ruleObj.arrWeeklyDays.length;i++){
 				arrWeeklyDayLookup[ruleObj.arrWeeklyDays[i]]=true;
 			}
@@ -552,20 +551,30 @@
 			var wasLastDayOfMonth=false;
 			var firstMonth=true;
 			var totalMonthCount=0;
+			var firstWeek=true;
+			var firstYear=true;
+			var lastYear=currentDate.getFullYear();
+			var firstDay=true;
 			for(var i=0;i<projectedDateCount;i++){
+				if(!firstDay && ruleObj.recurType == "Daily" && ruleObj.skipDays-1){
+					currentDate.setDate(currentDate.getDate()+(ruleObj.skipDays-1));
+				}
+				if(!firstWeek && ruleObj.recurType == "Weekly" && currentDate.getDay()==0){
+					if(ruleObj.skipWeeks-1){
+						currentDate.setDate(currentDate.getDate()+((ruleObj.skipWeeks-1)*7));
+					}
+				}
 				if(monthDayCountMonth != currentDate.getMonth()){
 					totalMonthCount++;
 					if(ruleObj.recurType == "Monthly"){
 						if(!firstMonth && currentDate.getDate() == 1 && ruleObj.skipMonths-1){
 							currentDate.setMonth(currentDate.getMonth()+(ruleObj.skipMonths-1));
-							//continue;
 						}
 						firstMonth=false;
 					}else if(ruleObj.recurType == "Annually"){
-						if(totalMonthCount ==12 && ruleObj.skipYears-1){
-							totalMonthCount=0;
+						if(currentDate.getFullYear()!=lastYear && ruleObj.skipYears-1){
 							currentDate.setFullYear(currentDate.getFullYear()+(ruleObj.skipYears-1));
-							console.log('yearChange:'+currentDate.getFullYear());
+							lastYear=currentDate.getFullYear();
 						}
 					}
 					monthDayCount=0;
@@ -601,19 +610,8 @@
 						}
 					}else{
 						isEvent=true;
-						if(ruleObj.skipDays-1){
-							currentDate.setDate(currentDate.getDate()+(ruleObj.skipDays-1));
-						}
 					}
 				}else if(ruleObj.recurType == "Weekly"){
-					if(weeklyEventCount==weeklyLookupCount){
-						// the weekly offset doesn't start from the start, or even january 1, it starts way back according to ical standard - must read docs: http://www.kanzaki.com/docs/ical/rrule.html
-						if(ruleObj.skipWeeks-1){
-							currentDate.setDate(currentDate.getDate()+((ruleObj.skipWeeks-1)*7));
-							weeklyEventCount=0;
-							continue;
-						}
-					}
 					if(arrWeeklyDayLookup[day]){
 						isEvent=true;
 					}
@@ -716,6 +714,9 @@
 					}
 				}
 				if(currentTime==startTime){
+					if(!isEvent){
+						recurCount--;
+					}
 					isEvent=true;
 				}
 				currentDate.setDate(currentDate.getDate()+1);
@@ -724,14 +725,15 @@
 						arrDate[currentTime]=true;
 						arrDebugDate.push(debugDate.toGMTString());
 						recurCount++;
-						weeklyEventCount++;
+						firstDay=false;
+						firstWeek=false;
 					}
 				}
-				if(ruleObj.recurLimit != 0 && recurCount==ruleObj.recurLimit+1){
+				if(ruleObj.recurLimit != 0 && recurCount==ruleObj.recurLimit){
 					break;
 				}
 			}
-			console.log(arrDebugDate);
+			//console.log(arrDebugDate);
 			return arrDate;
 		}
 		init(options);

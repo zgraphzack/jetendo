@@ -1,5 +1,10 @@
 <cfcomponent>
 <cfoutput>
+	<!--- 
+
+					// read docs: http://www.kanzaki.com/docs/ical/rrule.html
+					http://www.kanzaki.com/docs/ical/rrule.html
+	 --->
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.functions.zRequireJqueryUI();
@@ -11,17 +16,17 @@
 	<script type="text/javascript">
 	zArrDeferredFunctions.push(function(){
 		var ruleObj={};
-		ruleObj.recurType="Monthly";
+		ruleObj.recurType="Weekly";
 		ruleObj.noEndDate=false;
 		ruleObj.everyWeekday=true;
 		ruleObj.skipDays=3;
-		ruleObj.recurLimit=0;
-		//ruleObj.endDate=false;
-		ruleObj.endDate="12/20/2014";
-		ruleObj.skipWeeks=2;
+		ruleObj.recurLimit=5;
+		ruleObj.endDate=false;
+		//ruleObj.endDate="12/20/2014";
+		ruleObj.skipWeeks=1;
 		ruleObj.skipMonths=2;
 		ruleObj.skipYears=2;
-		ruleObj.arrWeeklyDays=[0,1,2,6];
+		ruleObj.arrWeeklyDays=[6];
 		ruleObj.monthlyWhich="Every";
 		ruleObj.monthlyDay="Sunday";
 		ruleObj.arrMonthlyCalendarDay=[];//1,10,15,20,21,0];
@@ -33,8 +38,8 @@
 		arrExclude.push("10/1/2014");
 		arrExclude.push("1/1/2015");
 		var options={ 
-			ruleObj:ruleObj,
-			arrExclude:arrExclude
+			//ruleObj:ruleObj,
+			//arrExclude:arrExclude
 		};
 		var recur=new zRecurringEvent(options);
 		//recur.setFormFromRules(ruleObj);
