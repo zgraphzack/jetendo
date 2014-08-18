@@ -4,17 +4,76 @@
 
 					// read docs: http://www.kanzaki.com/docs/ical/rrule.html
 					http://www.kanzaki.com/docs/ical/rrule.html
+
+	consider using this for RRULE I/O
+		https://www.npmjs.org/package/rrule
+		https://raw.githubusercontent.com/jakubroztocil/rrule/master/lib/rrule.js
 	 --->
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.functions.zRequireJqueryUI();
+	application.zcore.skin.includeJs("/z/javascript/rrule/lib/rrule.js", '', 1);
+	application.zcore.skin.includeJs("/z/javascript/rrule/lib/nlp.js", '', 2);
 	application.zcore.skin.includeJs("/z/javascript/zRecurringEvent.js");
 
 	form.event_start_datetime=application.zcore.functions.zso(form, 'event_start_datetime', false, now());
 	form.event_end_datetime=application.zcore.functions.zso(form, 'event_end_datetime', false, now());
 	</cfscript>
 	<script type="text/javascript">
+	function testRules(){
+		// might have to remove RRULE: from beginning of rules.
+		var r='FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=2';
+		r='FREQ=MONTHLY;UNTIL=20151224T000000Z;BYDAY=1FR'; // first friday every month
+		r='FREQ=MONTHLY;UNTIL=20151224T000000Z;BYDAY=FR'; // fridays every month
+		r='FREQ=YEARLY;UNTIL=20151224T000000Z;BYMONTH=2;BYDAY=FR'; // march fridays
+		//r='FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13'; // friday the 13 forever
+		r='FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYDAY=-1SU'; // first and last sunday - limit to 10 - every other // 1SU,
+
+		//daily
+		r='COUNT=0;FREQ=DAILY;INTERVAL=2;UNTIL=20171224T000000Z';
+		//r='BYDAY=MO,TU,WE,TH,FR;COUNT=0;FREQ=DAILY;INTERVAL=1';
+
+		// weekly
+		//r='BYDAY=MO,WE,FR;COUNT=0;FREQ=WEEKLY;INTERVAL=2';
+		//monthly
+		//r='BYDAY=SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
+		//r='BYDAY=+1SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
+		//r='BYDAY=-1SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
+		//r='BYMONTHDAY=-1;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
+		//r='BYDAY=MO,TU,WE,TH,FR,SA,SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
+		//r='BYMONTHDAY=2;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
+
+		//annually
+		//r='BYMONTH=3;BYMONTHDAY=3;COUNT=0;FREQ=YEARLY;INTERVAL=1';
+		//r='BYMONTH=3;BYDAY=+1SU;COUNT=0;FREQ=YEARLY;INTERVAL=1';
+		//r='BYMONTH=3;BYDAY=-1FR;COUNT=0;FREQ=YEARLY;INTERVAL=1';
+		//r='BYMONTH=4;BYDAY=SU;COUNT=0;FREQ=YEARLY;INTERVAL=1';
+		var options={ 
+			//ruleObj:ruleObj,
+			//arrExclude:arrExclude
+		};
+		var recur=new zRecurringEvent(options);
+		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
+		console.log(ruleObj);
+		recur.setFormFromRules(ruleObj, false);
+		return;
+
+		var rule=recur.convertFromRecurringEventToRRule(ruleObj);
+
+
+		/*var rule = RRule.fromString(r);
+		rule.options.count=3;
+		console.log(rule);
+		console.log(rule.toString());
+		console.log(rule.all());
+		console.log(rule.between(new Date(2014, 7, 1), new Date(2015, 8, 1)));
+		*/
+	}
+
+
 	zArrDeferredFunctions.push(function(){
+		testRules();
+		return;
 		var ruleObj={};
 		ruleObj.recurType="Weekly";
 		ruleObj.noEndDate=false;
@@ -217,7 +276,7 @@
 			<p><input type="radio" name="zRecurTypeRangeRadio" id="zRecurTypeRangeRadio2" value="1" /> Limit to 
 			<input type="text" name="zRecurTypeRangeDays" id="zRecurTypeRangeDays" style="width:30px;" value="1" /> recurrences(s)</p>
 			<p><input type="radio" name="zRecurTypeRangeRadio" id="zRecurTypeRangeRadio3"  value="2" /> Repeat until 
-			<input type="text" name="zRecurTypeRangeDate" id="zRecurTypeRangeDate" style="width:90px;"value="#dateformat(now(), "m/d/yyyy")#" /> Days</p>
+			<input type="text" name="zRecurTypeRangeDate" id="zRecurTypeRangeDate" style="width:90px;"value="#dateformat(now(), "m/d/yyyy")#" /></p>
 		</div>
 		<div class="zRecurBox">
 			<h3>Exclude Days</h3>

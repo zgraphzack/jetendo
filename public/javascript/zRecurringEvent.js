@@ -11,6 +11,103 @@
 		var arrMarked=[];
 		var calendarRows=3;
 		var disableFormOnChange=false;
+
+		var monthLookup={
+			"January":0, 
+			"February":1, 
+			"March":2, 
+			"April":3, 
+			"May":4, 
+			"June":5,
+			"July":6,
+			"August":7, 
+			"September":8, 
+			"October":9, 
+			"November":10, 
+			"December":11
+		};
+
+		var dayLookup={
+			"Sunday":0,
+			"Monday":1,
+			"Tuesday":2,
+			"Wednesday":3,
+			"Thursday":4,
+			"Friday":5,
+			"Saturday":6,
+			"Day":-1
+		};
+		var whichNameLookup={
+			1:"The First",
+			2:"The Second",
+			3:"The Third",
+			4:"The Fourth",
+			5:"The Fifth",
+			"-1":"The Last"
+		};
+		var whichLookup={
+			"The First":1,
+			"The Second":2,
+			"The Third":3,
+			"The Fourth":4,
+			"The Fifth":5,
+			"The Last":-1
+		};
+		var pythonDayToJs={
+			6:0,
+			0:1,
+			1:2,
+			2:3,
+			3:4,
+			4:5,
+			5:6
+		};
+		var pythonDayToRRuleName={
+			6:"SU",
+			0:"MO",
+			1:"TU",
+			2:"WE",
+			3:"TH",
+			4:"FR",
+			5:"SA"
+		};
+		var jsDayToPython={
+			0:6,
+			1:0,
+			2:1,
+			3:2,
+			4:3,
+			5:4,
+			6:5
+		};
+		var pythonDayNameLookup={
+			6:"Sunday",
+			0:"Monday",
+			1:"Tuesday",
+			2:"Wednesday",
+			3:"Thursday",
+			4:"Friday",
+			5:"Saturday"
+		};
+		var pythonDayLookup={
+			"Sunday":6,
+			"Monday":0,
+			"Tuesday":1,
+			"Wednesday":2,
+			"Thursday":3,
+			"Friday":4,
+			"Saturday":5
+		};
+		var dayNameLookup={
+			0:"Sunday",
+			1:"Monday",
+			2:"Tuesday",
+			3:"Wednesday",
+			4:"Thursday",
+			5:"Friday",
+			6:"Saturday"
+		};
+
 		if(typeof options === undefined){
 			options={};
 		}
@@ -27,7 +124,7 @@
 				arrExclude[d.getTime()]=d;
 			}
 
-			self.setFormFromRules(options.ruleObj, true);
+			self.setFormFromRules(options.ruleObj, true); 
 
 			recurType=$("#zRecurTypeSelect").val();
 			$("#zRecurType"+recurType).show();
@@ -75,6 +172,8 @@
 				if(disableFormOnChange){
 					return false;
 				}
+				var ruleObj=self.getRulesFromForm();
+				var rule=self.convertFromRecurringEventToRRule(ruleObj);
 				arrMarked=self.getMarkedDates();
 
 				self.drawPreviewCalendars();
@@ -251,6 +350,7 @@
 			}
 			disableFormOnChange=true;
 			$("#zRecurTypeSelect").val(ruleObj.recurType);
+			$("#zRecurTypeSelect").trigger("change");
 
 			if(ruleObj.recurType == "Daily"){
 				if(!ruleObj.everyWeekday){
@@ -278,7 +378,7 @@
 				if(ruleObj.arrMonthlyCalendarDay.length == 0){
 					$("#zRecurTypeMonthlyType1").prop("checked", true);
 
-					$("#zRecurTypeMonthlyWhich").val(ruleObj.monthlyWhich);
+					$("#zRecurTypeMonthlyWhich").val(ruleObj.monthlyWhich); 
 					$("#zRecurTypeMonthlyDay").val(ruleObj.monthlyDay);
 				}else{
 					
@@ -304,7 +404,7 @@
 					$("#zRecurTypeAnnuallyWhich2").val(ruleObj.annuallyWhich);
 					$("#zRecurTypeAnnuallyDay2").val(ruleObj.annuallyDay);
 					$("#zRecurTypeAnnuallyMonth2").val(ruleObj.annuallyMonth);
-				}
+				} 
 			}
 			if(typeof ruleObj.endDate != "boolean"){
 				$("#zRecurTypeRangeRadio3").prop("checked", true);
@@ -500,33 +600,6 @@
 				arrWeeklyDayLookup[ruleObj.arrWeeklyDays[i]]=true;
 			}
 
-			// year fields
-			var monthLookup={
-				"January":0, 
-				"February":1, 
-				"March":2, 
-				"April":3, 
-				"May":4, 
-				"June":5,
-				"July":6,
-				"August":7, 
-				"September":8, 
-				"October":9, 
-				"November":10, 
-				"December":11
-			};
-
-			// month fields
-			var dayLookup={
-				"Sunday":0,
-				"Monday":1,
-				"Tuesday":2,
-				"Wednesday":3,
-				"Thursday":4,
-				"Friday":5,
-				"Saturday":6,
-				"Day":-1
-			};
 			var monthlyDayLookup=[];
 			for(var i=0;i<ruleObj.arrMonthlyCalendarDay.length;i++){
 				monthlyDayLookup[ruleObj.arrMonthlyCalendarDay[i]]=true;
@@ -736,6 +809,304 @@
 			//console.log(arrDebugDate);
 			return arrDate;
 		}
+
+		self.convertFromRRuleToRecurringEvent=function(r){
+			var rule = RRule.fromString(r);
+			var options=rule.options;
+			console.log(rule);
+			console.log(rule.toString()); 
+			/*
+
+			docs: 
+			https://www.npmjs.org/package/rrule
+			http://www.kanzaki.com/docs/ical/rrule.html
+
+			byeaster: null
+			byhour: Array[1]
+			byminute: Array[1]
+			bymonth: Array[1]
+			bymonthday: Array[1]
+			bynmonthday: Array[0]
+			bynweekday: null
+			bysecond: Array[1]
+			bysetpos: null
+			byweekday: null
+			byweekno: null
+			byyearday: null
+			count: 3
+			dtstart: Sun Aug 17 2014 09:45:07 GMT-0400 (Eastern Daylight Time)
+			freq: 0
+			interval: 1
+			until: null
+			wkst: 0
+
+			TODO: need to add support for dtstart and until
+			*/
+			if(options.byeaster == null){
+				options.byeaster=[];
+			}
+			if(options.byhour == null){
+				options.byhour=[];
+			}
+			if(options.byminute == null){
+				options.byminute=[];
+			}
+			if(options.bymonth == null){
+				options.bymonth=[];
+			}
+			if(options.bymonthday == null){
+				options.bymonthday=[];
+			}
+			if(options.bynmonthday == null){
+				options.bynmonthday=[];
+			}
+			if(options.bynweekday == null){
+				options.bynweekday=[];
+			}
+			if(options.bysecond == null){
+				options.bysecond=[];
+			}
+			if(options.bysetpos == null){
+				options.bysetpos=[];
+			}
+			if(options.byweekday == null){
+				options.byweekday=[];
+			}
+			if(options.byweekno == null){
+				options.byweekno=[];
+			}
+			if(options.byyearday == null){
+				options.byyearday=[];
+			}
+			if(options.bymonth.length > 1 || options.bynweekday.length > 1 || options.bymonthday.length > 1 || 
+				options.byeaster.length > 0 || options.bynmonthday.length > 1 || options.bysetpos.length > 0){
+				throw("Unsupported RRule: "+r);
+			}
+			var ruleObj={};
+			ruleObj.recurLimit=options.count;
+			/*if(options.dtstart != null){
+				$("#event_start_datetime_date").val((options.dtstart.getMonth()+1)+"/"+options.dtstart.getDate()+"/"+options.dtstart.getFullYear());
+				var hours=options.dtstart.getHours();
+				var ampm="am";
+				if(hours>12){
+					hours-12;
+					ampm="pm";
+				}
+				$("#event_start_datetime_time").val(hours+":"+options.dtstart.getMinutes()+" "+ampm);
+			}
+			if(options.dtend != null){
+				$("#event_end_datetime_date").val((options.dtstart.getMonth()+1)+"/"+options.dtstart.getDate()+"/"+options.dtstart.getFullYear());
+				var hours=options.dtend.getHours();
+				var ampm="am";
+				if(hours>12){
+					hours-12;
+					ampm="pm";
+				}
+				$("#event_end_datetime_time").val(hours+":"+options.dtend.getMinutes()+" "+ampm);
+			}*/
+			if(options.until != null){
+				ruleObj.endDate=options.until;
+				ruleObj.recurLimit=0;
+			}
+			if(options.freq == RRule.YEARLY){
+				ruleObj.recurType="Annually";
+				if(options.bynweekday.length){
+					ruleObj.annuallyDay=dayNameLookup[pythonDayToJs[options.bynweekday[0][0]]];
+					if(options.bynweekday[0][1]==-1){
+						ruleObj.annuallyWhich="The Last";
+					}else if(options.bynweekday[0][1]<0){
+						throw("Unsupported RRule: "+r);
+					}else{
+						ruleObj.annuallyWhich=whichNameLookup[options.bynweekday[0][1]];
+					}
+				}else if(options.byweekday.length){
+					ruleObj.annuallyWhich="Every";
+					ruleObj.annuallyDay=dayNameLookup[pythonDayNameLookup[options.byweekday[0]]];
+					if(options.byweekday.length == 7){
+						ruleObj.monthlyDay="Day";
+					}else if(options.byweekday.length>1){
+						throw("Unsupported RRule: "+r);
+					}
+				}else if(options.byyearday.length){
+					throw("RRULE BYYEARDAY is not implemented in zRecurringEvent");
+				}else if(options.bymonthday.length){
+					ruleObj.annuallyWhich=options.bymonthday[0];
+				}else if(options.bynmonthday.length){
+					ruleObj.annuallyDay="Day";
+					ruleObj.annuallyWhich="The Last";
+				}else{
+					throw("Unsupported RRule: "+r);
+				}
+				ruleObj.skipYears=options.interval;
+				ruleObj.annuallyMonth=options.bymonth[0];
+			}else if(options.freq == RRule.MONTHLY){
+				ruleObj.recurType="Monthly";
+				ruleObj.skipMonths=options.interval;
+				if(options.bynweekday.length){
+					ruleObj.monthlyDay=dayNameLookup[pythonDayNameLookup[options.bynweekday[0][0]]];
+					if(options.bynweekday[0][1]==-1){
+						ruleObj.monthlyWhich="The Last";
+					}else if(options.bynweekday[0][1]<0){
+						throw("Unsupported RRule: "+r);
+					}else{
+						ruleObj.monthlyWhich=whichNameLookup[options.bynweekday[0][1]];
+					}
+				}else if(options.byweekday.length){
+					ruleObj.monthlyWhich="Every";
+					ruleObj.monthlyDay=dayNameLookup[pythonDayNameLookup[options.byweekday[0]]];
+					if(options.byweekday.length == 7){
+						ruleObj.monthlyDay="Day";
+					}else if(options.byweekday.length>1){
+						throw("Unsupported RRule: "+r);
+					}
+
+					if(options.bymonthday.length){
+						throw("Unsupported RRule (bymonthday is missing from monthly interface in zRecurringEvent): "+r);
+					}
+				}else if(options.bymonthday.length){
+					ruleObj.arrMonthlyCalendarDay=options.bymonthday;
+				}else if(options.bynmonthday.length){
+					ruleObj.monthlyDay="Day";
+					ruleObj.monthlyWhich="The Last";
+				}else{
+					throw("Unsupported RRule: "+r);
+				}
+
+			}else if(options.freq == RRule.WEEKLY){
+				ruleObj.recurType="Weekly";
+				ruleObj.skipWeeks=options.interval;
+				if(options.byweekday.length){
+					ruleObj.arrWeeklyDays=[];
+					for(var i=0;i<options.byweekday.length;i++){
+						ruleObj.arrWeeklyDays.push(pythonDayToJs[options.byweekday[i]]);
+					}
+				}else{
+					throw("Unsupported RRule: "+r);
+				}
+			}else if(options.freq == RRule.DAILY){
+				ruleObj.recurType="Daily";
+				if(options.byweekday.length){
+					if(options.byweekday.length != 5){
+						throw("Unsupported RRule: "+r);
+					}
+					for(var i=0;i<options.byweekday.length;i++){
+						if(options.byweekday[i] == 6 || options.byweekday[i] == 5){
+							throw("Unsupported RRule: "+r);
+						}
+					}
+					ruleObj.everyWeekday=true;
+					ruleObj.skipDays=1;
+				}else{
+					ruleObj.skipDays=options.interval;
+				}
+			}else if(options.freq == RRule.HOURLY){
+				throw("FREQ=HOURLY is not implemented in zRecurringEvent");
+			}else if(options.freq == RRule.MINUTELY){
+				throw("FREQ=MINUTELY is not implemented in zRecurringEvent");
+			}else if(options.freq == RRule.SECONDLY){
+				throw("FREQ=SECONDLY is not implemented in zRecurringEvent");
+			}
+			return ruleObj;
+		};
+
+
+		self.convertFromRecurringEventToRRule=function(ruleObj){
+			var options={
+				byeaster: [],
+				byhour: [],
+				byminute: [],
+				bymonth: [],
+				bymonthday: [],
+				bynmonthday: [],
+				bynweekday: [],
+				bysecond: [],
+				bysetpos: [],
+				byweekday: [],
+				byweekno: [],
+				byyearday: [],
+				count: 0,
+				dtstart: null,
+				freq: 0,
+				interval: 1,
+				until: null,
+				//wkst: 0,
+			};
+			if(ruleObj.recurType=="Annually"){
+				options.freq=RRule.YEARLY;
+				if(ruleObj.annuallyDay !="" && ruleObj.annuallyWhich!="" && ruleObj.annuallyWhich!="Every"){
+					//?
+					if(ruleObj.annuallyDay == "Day"){
+						options.bymonthday[0]=whichLookup[ruleObj.annuallyWhich];
+					}else{
+						options.byweekday[0]=pythonDayLookup[ruleObj.annuallyDay];
+						if(ruleObj.annuallyWhich=="The Last"){
+							options.byweekday[0]=RRule[pythonDayToRRuleName[options.byweekday[0]]].nth(-1); // The Last
+						}else{
+							options.byweekday[0]=RRule[pythonDayToRRuleName[options.byweekday[0]]].nth(whichLookup[ruleObj.annuallyWhich]);
+						}
+					}
+				}else if(ruleObj.annuallyDay!="" && ruleObj.annuallyWhich=="Every"){
+					if(ruleObj.annuallyDay == "Day"){
+						options.byweekday=("0,1,2,3,4,5,6").split(",");
+					}else{
+						options.byweekday[0]=pythonDayLookup[ruleObj.annuallyDay];
+					}
+				}else{
+					options.bymonthday[0]=ruleObj.annuallyWhich;
+				}
+				options.interval=ruleObj.skipYears;
+				options.bymonth[0]=ruleObj.annuallyMonth;
+			}else if(ruleObj.recurType=="Monthly"){
+				options.freq = RRule.MONTHLY;
+				options.interval=ruleObj.skipMonths;
+				if(ruleObj.monthlyWhich!="" && ruleObj.monthlyWhich!="Every"){
+					if(ruleObj.monthlyDay == "Day"){
+						options.bymonthday[0]=whichLookup[ruleObj.monthlyWhich];
+					}else{
+						options.byweekday[0]=pythonDayLookup[ruleObj.monthlyDay];
+						if(ruleObj.monthlyWhich=="The Last"){
+							options.byweekday[0]=RRule[pythonDayToRRuleName[options.byweekday[0]]].nth(-1);
+						}else{
+							options.byweekday[0]=RRule[pythonDayToRRuleName[options.byweekday[0]]].nth(whichLookup[ruleObj.monthlyWhich]);
+						}
+					}
+				}else if(ruleObj.monthlyWhich=="Every"){
+					if(ruleObj.monthlyDay == "Day"){
+						options.byweekday=("0,1,2,3,4,5,6").split(",");
+					}else{
+						options.byweekday[0]=pythonDayLookup[ruleObj.monthlyDay];
+					}
+
+				}else{
+					options.bymonthday=ruleObj.arrMonthlyCalendarDay;
+				}
+
+			}else if(ruleObj.recurType == "Weekly"){
+				options.freq = RRule.WEEKLY;
+				options.interval=ruleObj.skipWeeks;
+				if(ruleObj.arrWeeklyDays.length){
+					for(var i=0;i<ruleObj.arrWeeklyDays.length;i++){
+						options.byweekday.push(jsDayToPython[ruleObj.arrWeeklyDays[i]]);
+					}
+				}
+			}else if(ruleObj.recurType == "Daily"){
+				options.interval=ruleObj.skipDays;
+				options.freq = RRule.DAILY;
+				if(ruleObj.everyWeekday){
+					options.byweekday=[0,1,2,3,4];
+				}
+			}
+			console.log(options);
+			for(var i in options){
+				if(options[i] != null && typeof options[i].length != "undefined" && options[i].length == 0){
+					delete options[i];
+				}
+			}
+			var rule = new RRule(options);
+			console.log(rule);
+			console.log(rule.toString()); 
+			return rule;
+		};
 		init(options);
 		return this;
 	}; 
