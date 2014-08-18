@@ -536,7 +536,7 @@
 		</cfif>
 		</cfsavecontent>
 		<cfscript>
-		qinquiriesActive=db.execute("qinquiriesActive");
+		qinquiriesActive=db.execute("qinquiriesActive"); 
 		</cfscript>
 		<h2 style="display:inline; ">Search Leads | </h2>
 		<a href="/z/inquiries/admin/search-engine-keyword-report/index">Search Engine Keyword Inquiry Search <strong style="color:##FF0000;">(NEW)</strong></a><br />
@@ -667,7 +667,7 @@
 		if(structkeyexists(form, 'searchOn')){		
 			searchStruct.perpage = 10;
 		}else{
-			searchStruct.perpage = 50;
+			searchStruct.perpage = 30;
 		}
 		if(searchStruct.count LTE searchStruct.perpage){
 			searchNav="";
