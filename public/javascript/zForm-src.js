@@ -1620,8 +1620,11 @@ function zAjax(obj){
 				}
 				//return;
 			}else if(id===null || id===""){
-				alert("Invalid ajax response - missing id");
-				//alert("zAjax() Error: The ajax URL MUST output the x_ajax_id.\nColdfusion Example: <cf"+"header name=\"x_ajax_id\" value=\"#x_ajax_id#\">\nNote: x_ajax_id is passed via zAjax, do not put this in the url yourself!\n"+zAjaxData[obj.id].url);	
+				if(!zIsDeveloper()){
+					alert("Invalid response.  You may need to login again or refresh the page.");
+				}else{
+					alert("zAjax() Error: The following ajax URL MUST output the x_ajax_id as an http header.\n"+zAjaxData[obj.id].url);	
+				}
 				return;
 			}
 			if(typeof zAjaxData[id] !== "undefined"){
@@ -4514,4 +4517,77 @@ function zSetEqualWidthMenuButtons(containerDivId, marginSize){
 		//$(currentMenu.arrItem[i]).css("padding", "0 "+padding+"px 0 "+padding+"px");
 	}
 	$("#"+containerDivId).append(currentMenu.ul);
+}
+
+
+var zAjaxSortURLCache=[];
+function zSetupAjaxTableSort(tableId, ajaxURL, ajaxVarName){
+	var validated=true;
+	var arrError=[];
+	zAjaxSortURLCache[tableId]={
+		url:ajaxURL
+		/*,
+		cache:$("#"+tableId).html()*/
+	};
+	if($( '#'+tableId).length == 0){
+		validated=false;
+		return;
+	}
+	if($( '#'+tableId+' thead' ).length == 0){
+		validated=false;
+		arrError.push('queueSortCom.ajaxTableId is set to "'+tableId+'", but this table is missing the <thead> tag around the header rows, which is required for table row sorting to function.');
+	}
+	if($( '#'+tableId+' tbody' ).length == 0){
+		validated=false;
+		arrError.push('queueSortCom.ajaxTableId is set to "'+tableId+'", but this table is missing the <tbody> tag around the body rows, which is required for table row sorting to function.');
+	}
+	$( '#'+tableId+' tbody tr' ).each(function(){
+		if(this.id == '' || this.getAttribute('data-ztable-sort-primary-key-id') == ''){
+			validated=false;
+		}
+	});
+	if(validated){
+		$('#'+tableId+' tbody' ).sortable({
+			handle: '.'+tableId+'_handle',
+			stop:function(e, e2){
+				var arrId=$("#"+tableId+" tbody").sortable("toArray");
+				var arrId2=[]; 
+				for(var i=0;i<arrId.length;i++){
+					var id=parseInt($("#"+arrId[i]).attr("data-ztable-sort-primary-key-id"));
+					arrId2.push(id);
+				}
+				var sortOrderList=arrId2.join("|");
+				//console.log("sorted list:"+sortOrderList);
+				var tempObj={};
+				tempObj.id="zAjaxChangeSortOrder";
+				var u=zAjaxSortURLCache[tableId].url;
+				if(u.indexOf("?") != -1){
+					tempObj.url=u+"&"+ajaxVarName+"="+escape(sortOrderList);
+				}else{
+					tempObj.url=u+"?"+ajaxVarName+"="+escape(sortOrderList);
+				}
+				tempObj.callback=function(r){
+					var d=eval('('+r+')');
+					if(!d.success){
+						//$("#"+tableId).html(zAjaxSortURLCache[tableId].cache);
+						alert("Failed to sort records.");
+					}else{
+						zAjaxSortURLCache[tableId].cache=$("#"+tableId).html();
+					}
+				};
+				tempObj.errorCallback=function(){
+					//$("#"+tableId).html(zAjaxSortURLCache[tableId].cache);
+					alert("Failed to sort records.");
+				};
+				tempObj.cache=false; 
+				tempObj.ignoreOldRequests=false;
+				zAjax(tempObj);
+			}
+		});
+	}else{
+		arrError.push('Each <tr> row must have a unique id attribute and a data-ztable-sort-primary-key-id attribute with the value set to the primary key id for the current record.');
+	}
+	if(arrError.length){
+		alert(arrError.join("\n"));
+	}
 }

@@ -43,9 +43,13 @@
 	variables.queueSortStruct.primaryKeyName = "user_id";
 	variables.queueSortStruct.where="user.site_id = '#request.zos.globals.id#'  and 
 	member_public_profile='1' ";
+
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/admin/member/index';
 	
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
+	variables.queueSortCom.returnJson(); 
 	
 	db.sql="select * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	where site_id <> #db.param(request.zos.globals.id)# and 
@@ -1031,7 +1035,8 @@
 	}
 	</cfscript>
 	#searchNav#
-	<table style="width:100%;"  class="table-list">
+	<table id="sortRowTable" style="width:100%;"  class="table-list">
+		<thead>
 		<tr>
 			<th>ID</th>
 			<th>Photo</th>
@@ -1039,62 +1044,67 @@
 			<th>Email</th>
 			<th>Phone</th>
 			<th>Access Rights</th>
+			<th>Sort</th>
 			<th>Admin</th>
 		</tr>
-		<cfloop query="qMember">
-		<tr <cfif qMember.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
-			<td>#qMember.user_id#</td>
-			<td><cfif qMember.member_photo NEQ ''>
-					<img src="#application.zcore.functions.zvar('domain',qMember.userSiteId)##request.zos.memberImagePath##qMember.member_photo#" width="90" />
-				<cfelse>
-					&nbsp;
-				</cfif></td>
-			<td><cfif qMember.member_first_name EQ ''>
-					#qMember.user_first_name# #qMember.user_last_name#
-				<cfelse>
-					#qMember.member_first_name# #qMember.member_last_name#
-				</cfif>
-				&nbsp;</td>
-			<td><cfif qMember.member_email EQ ''>
-					#qMember.user_username#
-				<cfelse>
-					#qMember.member_email#
-				</cfif>
-				&nbsp;</td>
-			<td>#qMember.member_phone#&nbsp;</td>
-			<td>#qMember.user_group_name#</td>
-			<td><cfif qMember.member_public_profile EQ 1>
-#variables.queueSortCom.getLinks(qMember.recordcount, qMember.currentrow, '/z/admin/member/index?user_id=#qMember.user_id#', "vertical-arrows")#
-				</cfif>
-				<cfif variables.userUserGroupIdCopy EQ qMember.user_group_id>
-					<cfif qMember.user_active EQ 1>
-						<a href="/z/admin/member/disable?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Disable</a>
+		</thead>
+		<tbody>
+			<cfloop query="qMember">
+			<tr #variables.queueSortCom.getRowHTML(qMember.user_id)# <cfif qMember.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
+				<td>#qMember.user_id#</td>
+				<td><cfif qMember.member_photo NEQ ''>
+						<img src="#application.zcore.functions.zvar('domain',qMember.userSiteId)##request.zos.memberImagePath##qMember.member_photo#" width="90" />
 					<cfelse>
-						<a href="/z/admin/member/enable?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Enable</a>
+						&nbsp;
+					</cfif></td>
+				<td><cfif qMember.member_first_name EQ ''>
+						#qMember.user_first_name# #qMember.user_last_name#
+					<cfelse>
+						#qMember.member_first_name# #qMember.member_last_name#
 					</cfif>
-					|
-				<cfelse>
-					<cfif qMember.member_public_profile EQ 1>
-						<cfif application.zcore.functions.zso(application.zcore.app.getAppData("content").optionstruct,'content_config_url_listing_user_id',true) NEQ 0>
-							<a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#qMember.user_id#.html" target="_blank">View</a> |
+					&nbsp;</td>
+				<td><cfif qMember.member_email EQ ''>
+						#qMember.user_username#
+					<cfelse>
+						#qMember.member_email#
+					</cfif>
+					&nbsp;</td>
+				<td>#qMember.member_phone#&nbsp;</td>
+				<td>#qMember.user_group_name#</td>
+				<td><cfif qMember.member_public_profile EQ 1>#variables.queueSortCom.getAjaxHandleButton()#</cfif></td> 
+				<td><!--- <cfif qMember.member_public_profile EQ 1>
+						#variables.queueSortCom.getLinks(qMember.recordcount, qMember.currentrow, '/z/admin/member/index?user_id=#qMember.user_id#', "vertical-arrows")#
+					</cfif> --->
+					<cfif variables.userUserGroupIdCopy EQ qMember.user_group_id>
+						<cfif qMember.user_active EQ 1>
+							<a href="/z/admin/member/disable?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Disable</a>
+						<cfelse>
+							<a href="/z/admin/member/enable?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Enable</a>
+						</cfif>
+						|
+					<cfelse>
+						<cfif qMember.member_public_profile EQ 1>
+							<cfif application.zcore.functions.zso(application.zcore.app.getAppData("content").optionstruct,'content_config_url_listing_user_id',true) NEQ 0>
+								<a href="/#application.zcore.functions.zURLEncode(lcase(qMember.member_first_name&'-'&qMember.member_last_name),'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#qMember.user_id#.html" target="_blank">View</a> |
+							</cfif>
 						</cfif>
 					</cfif>
-				</cfif>
-				<cfif request.zos.globals.enableDemoMode>
-					DEMO | Admin disabled
-					<cfelse>
-					<cfif qMember.userSiteId EQ qMember.memberSiteId>
-						<a href="/z/admin/member/edit?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Edit</a>
-						<cfif qMember.usersiteid EQ qMember.memberSiteId and (request.zsession.user.id NEQ qMember.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)>
-							| <a href="/z/admin/member/delete?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Delete</a>
+					<cfif request.zos.globals.enableDemoMode>
+						DEMO | Admin disabled
+						<cfelse>
+						<cfif qMember.userSiteId EQ qMember.memberSiteId>
+							<a href="/z/admin/member/edit?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Edit</a>
+							<cfif qMember.usersiteid EQ qMember.memberSiteId and (request.zsession.user.id NEQ qMember.user_id or request.zsession.user.site_id NEQ request.zos.globals.id)>
+								| <a href="/z/admin/member/delete?user_id=#qMember.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#">Delete</a>
+							</cfif>
+						<cfelse>
+							<a href="#application.zcore.functions.zvar('domain',qMember.userSiteId)#/z/admin/member/edit?user_id=#qMember.user_id#" rel="external" onclick="window.open(this.href); return false;">Edit on Parent Site</a>
 						</cfif>
-					<cfelse>
-						<a href="#application.zcore.functions.zvar('domain',qMember.userSiteId)#/z/admin/member/edit?user_id=#qMember.user_id#" rel="external" onclick="window.open(this.href); return false;">Edit on Parent Site</a>
 					</cfif>
-				</cfif>
-				&nbsp;</td>
-		</tr>
+					&nbsp;</td>
+			</tr>
 		</cfloop>
+		</tbody>
 	</table>
 	#searchNav#
 </cffunction>

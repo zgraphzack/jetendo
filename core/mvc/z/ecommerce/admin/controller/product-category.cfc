@@ -10,7 +10,7 @@
 		application.zcore.status.setStatus(request.zsid,"Access denied");
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
-	
+	form.parent_category_parent_id=application.zcore.functions.zso(form, 'parent_category_parent_id', true);
 	if(structkeyexists(form, 'return') and structkeyexists(form, 'product_category_id')){
 		StructInsert(request.zsession, "product_category_return"&form.product_category_id, request.zos.cgi.http_referer, true);		
 	}
@@ -22,10 +22,13 @@
 	// optional
 	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
 	
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&action=#form.method#';
 	variables.queueSortStruct.where ="  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#'  ";
 	
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
+	variables.queueSortCom.returnJson();
 	</cfscript>
 	<h2 style="display:inline;">Manage Product Categories | </h2>
 	<cfscript>
@@ -112,167 +115,49 @@
 	<cfelse>
 		<a href="/z/ecommerce/admin/product-category/index?product_category_parent_id=#form.product_category_parent_id#&enableProductCategorySortingMode=1">Enable Product Sorting Mode</a>
 	</cfif><p>
-	
-	<cfif structkeyexists(request.zsession, 'enableProductCategorySortingMode')>
-		<cfscript>	
-		db.sql=" SELECT * #db.trustedSQL(rs.select)#, 
-		if(rc2.product_category_id IS NOT NULL,#db.param(1)#,#db.param(0)#) hasChildren FROM 
-		#request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# product_category 
-		#db.trustedSQL(rs.leftJoin)# 
-		LEFT JOIN #request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# rc2 
-		on rc2.product_category_parent_id = product_category.product_category_id and 
-		product_category.site_id = rc2.site_id and 
-		rc2.product_category_deleted = #db.param(0)#
-		WHERE";
-		if(form.product_category_parent_id NEQ ""){
-			db.sql&=" product_category.product_category_parent_id = #db.param(form.product_category_parent_id)# and";
-		}
-		db.sql&=" product_category.site_id = #db.param(request.zOS.globals.id)# and 
-		product_category.product_category_deleted = #db.param(0)#
-		GROUP BY product_category.product_category_id 
-		order by product_category.product_category_sort ASC, product_category.product_category_name ASC";
-		qProp=db.execute("qProp");
-		</cfscript>
-		<table class="table-list" style="border-spacing:0px; width:100%;">
-			<tr>
-				<th>Photo</th>
-				<th>Product Category</th>
-				<th>Admin</th>
-			</tr>
-			<cfloop query="qProp">
-				<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-					<td><h2>
-						#qProp.product_category_name#
-						</h2></td>
-					<td style="vertical-align:top; width:100px; "><cfscript>
-			
-					ts=structnew();
-					ts.image_library_id=qProp.product_category_image_library_id;
-					ts.output=false;
-					ts.query=qProp;
-					ts.row=qProp.currentrow;
-					ts.size="100x70";
-					ts.crop=0;
-					ts.count = 1; // how many images to get
-					//application.zcore.functions.zdump(ts);
-					var arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-					for(i=1;i LTE arraylen(arrImages);i++){
-						writeoutput('<img src="'&arrImages[i].link&'">');
-					}
-					</cfscript></td>
-					<td>#variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&product_category_id=#qProp.product_category_id#&action=#form.method#', "vertical-arrows")# 
-					<a href="#application.zcore.app.getAppCFC("ecommerce").getCategoryLink(qProp.product_category_id,qProp.product_category_name,qProp.product_category_url)#">View</a> | 
-					<cfif qProp.hasChildren EQ 1>
-						<a href="/z/ecommerce/admin/product-category/index?product_category_parent_id=#qProp.product_category_id#">Sub-Categories</a> | 
-					</cfif>
-					<a href="/z/ecommerce/admin/product-category/edit?product_category_id=#qProp.product_category_id#&amp;return=1">Edit</a> | 
-					<a href="/z/ecommerce/admin/product-category/delete?product_category_id=#qProp.product_category_id#&amp;return=1">Delete</a></td>
-				</tr>
-				<cfscript>
-				variables.queueSortStruct2 = StructNew();
-				// required
-				variables.queueSortStruct2.tableName = "product_x_category";
-				variables.queueSortStruct2.sortFieldName = "product_x_category_sort";
-				variables.queueSortStruct2.primaryKeyName = "product_id";
-				// optional
-				variables.queueSortStruct2.datasource = request.zos.zcoreDatasource;
-				variables.queueSortStruct2.sortVarName="ProductQueueSort"&qProp.product_category_id;
-				
-				variables.queueSortStruct2.where ="product_x_category.product_category_id='#application.zcore.functions.zescape(qProp.product_category_id)#' and  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#'  ";
-				
-				variables.queueSortCom2 = CreateObject("component", "zcorerootmapping.com.display.queueSort");
-				variables.queueSortCom2.init(variables.queueSortStruct2);
-				// you must have a group by in your query or it may miss rows
-				ts=structnew();
-				ts.image_library_id_field="Product.product_image_library_id";
-				ts.count = 1; // how many images to get
-				rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
-				db.sql=" SELECT * #db.trustedSQL(rs2.select)# 
-				FROM (#request.zos.queryObject.table("Product", request.zos.zcoreDatasource)# Product, 
-				#request.zos.queryObject.table("product_x_category", request.zos.zcoreDatasource)# product_x_category) 
-				#db.trustedSQL(rs2.leftJoin)# 
-				where Product.site_id = product_x_category.site_id and 
-				product_deleted = #db.param(0)# and 
-				product_x_category_deleted = #db.param(0)# and 
-				product_x_category.product_category_id= #db.param(qProp.product_category_id)# and 
-				Product.product_id = product_x_category.product_id and 
-				product_x_category.site_id = #db.param(request.zOS.globals.id)# 
-				group by Product.product_id 
-				order by product_x_category.product_x_category_sort ASC, product_sort ASC ";
-				qProp2=db.execute("qProp2");
-				</cfscript>
-				<cfif qProp2.recordcount NEQ 0>
-					<tr style="<cfif qProp.currentrow MOD 2 EQ 0>background-color:##EFEFEF;<cfelse>background-color:##E2E2E2;</cfif>">
-						<td colspan="3" style="padding:50px; padding-top:0px;"><p>Sort Products In This Category</p>
-							<table style="border-spacing:0px; padding:5px; width:100%;">
-								<cfloop query="qProp2">
-								<tr <cfif qProp2.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-									<td><cfscript>
-									ts=structnew();
-									ts.image_library_id=qProp2.product_image_library_id;
-									ts.output=false;
-									ts.query=qProp2;
-									ts.row=qProp2.currentrow;
-									ts.size="100x70";
-									ts.crop=0;
-									ts.count = 1; // how many images to get
-									//application.zcore.functions.zdump(ts);
-									var arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-									for(i=1;i LTE arraylen(arrImages);i++){
-										writeoutput('<img src="'&arrImages[i].link&'">');
-									}
-									</cfscript></td>
-									<td>#qProp2.product_name#
-										<cfif qProp2.product_active NEQ '1'>
-											<br />
-											<strong><em>(Inactive)</em></strong>
-										</cfif></td>
-									<td>#variables.queueSortCom2.getLinks(qProp2.recordcount, qProp2.currentrow, '/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&amp;product_category_id=#qProp2.product_category_id#&amp;product_id=#qProp2.product_id#', "vertical-arrows")# </td>
-								</tr>
-							</cfloop>
-						</table></td>
-					</tr>
-				</cfif>
-			</cfloop>
-		</table>
-	<cfelse>
-		<cfscript>	
-		db.sql=" SELECT *  , 
-		if(rc2.product_category_id IS NOT NULL,#db.param(1)#,#db.param(0)#) hasChildren FROM 
-		#request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# product_category  
-		LEFT JOIN #request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# rc2 
-		on rc2.product_category_parent_id = product_category.product_category_id and 
-		product_category.site_id = rc2.site_id and 
-		rc2.product_category_deleted = #db.param(0)#
-		WHERE";
-		if(form.product_category_parent_id NEQ ""){
-			db.sql&=" product_category.product_category_parent_id = #db.param(form.product_category_parent_id)# and";
-		}
-		db.sql&=" product_category.site_id = #db.param(request.zOS.globals.id)# and 
-		product_category.product_category_deleted = #db.param(0)#
-		GROUP BY product_category.product_category_id 
-		order by product_category.product_category_sort ASC, product_category.product_category_name ASC";
-		qProp=db.execute("qProp");
-		</cfscript>
-		<table class="table-list" style="border-spacing:0px; width:100%;">
-			<tr>
-				<th>Product Category</th>
-				<th>Admin</th>
-			</tr>
-			<cfloop query="qProp">
-				<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-					<td>#qProp.product_category_name#</td>
-					<td>#variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&product_category_id=#qProp.product_category_id#&action=#form.method#', "vertical-arrows")# 
-					<a href="#application.zcore.app.getAppCFC("ecommerce").getCategoryLink(qProp.product_category_id,qProp.product_category_name,qProp.product_category_url)#">View</a> | 
-					<cfif qProp.hasChildren EQ 1>
-						<a href="/z/ecommerce/admin/product-category/index?product_category_parent_id=#qProp.product_category_id#">Sub-Categories</a> | 
-					</cfif>
-					<a href="/z/ecommerce/admin/product-category/edit?product_category_id=#qProp.product_category_id#&amp;return=1">Edit</a> | 
-					<a href="/z/ecommerce/admin/product-category/delete?product_category_id=#qProp.product_category_id#&amp;return=1">Delete</a></td>
-					</tr> 
-			</cfloop>
-		</table>
-	</cfif>
+
+	<cfscript>	
+	db.sql=" SELECT *  , 
+	if(rc2.product_category_id IS NOT NULL,#db.param(1)#,#db.param(0)#) hasChildren FROM 
+	#request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# product_category  
+	LEFT JOIN #request.zos.queryObject.table("product_category", request.zos.zcoreDatasource)# rc2 
+	on rc2.product_category_parent_id = product_category.product_category_id and 
+	product_category.site_id = rc2.site_id and 
+	rc2.product_category_deleted = #db.param(0)#
+	WHERE";
+	if(form.product_category_parent_id NEQ ""){
+		db.sql&=" product_category.product_category_parent_id = #db.param(form.product_category_parent_id)# and";
+	}
+	db.sql&=" product_category.site_id = #db.param(request.zOS.globals.id)# and 
+	product_category.product_category_deleted = #db.param(0)#
+	GROUP BY product_category.product_category_id 
+	order by product_category.product_category_sort ASC, product_category.product_category_name ASC";
+	qProp=db.execute("qProp");
+	</cfscript>
+	<table id="sortRowTable" class="table-list" style="border-spacing:0px; width:100%;">
+		<thead>
+		<tr>
+			<th>Product Category</th>
+			<th>Sort</th>
+			<th>Admin</th>
+		</tr>
+		</thead>
+		<tbody>
+		<cfloop query="qProp">
+			<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+			<td>#qProp.product_category_name#</td>
+			<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+			<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&product_category_id=#qProp.product_category_id#&action=#form.method#', "vertical-arrows")#  --->
+			<a href="#application.zcore.app.getAppCFC("ecommerce").getCategoryLink(qProp.product_category_id,qProp.product_category_name,qProp.product_category_url)#">View</a> | 
+			<cfif qProp.hasChildren EQ 1>
+				<a href="/z/ecommerce/admin/product-category/index?product_category_parent_id=#qProp.product_category_id#">Sub-Categories</a> | 
+			</cfif>
+			<a href="/z/ecommerce/admin/product-category/edit?product_category_id=#qProp.product_category_id#&amp;return=1">Edit</a> | 
+			<a href="/z/ecommerce/admin/product-category/delete?product_category_id=#qProp.product_category_id#&amp;return=1">Delete</a></td>
+			</tr> 
+		</cfloop>
+		</tbody>
+	</table>
 </cffunction>
 
 <cffunction name="delete" localmode="modern" access="remote" roles="member">

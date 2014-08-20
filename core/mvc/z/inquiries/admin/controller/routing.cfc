@@ -24,11 +24,17 @@ enable round robin for users - need a new option to disable for staff.
 	variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#'  ";
 	variables.queueSortStruct.datasource=request.zos.zcoreDatasource;
 	variables.queueSortStruct.disableRedirect=true;
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/inquiries/admin/routing/index';
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	if(structkeyexists(form, 'zQueueSort')){
 		application.sitestruct[request.zos.globals.id].leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();	
 		application.zcore.functions.zredirect("/z/inquiries/admin/routing/index?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+	}
+	if(structkeyexists(form, 'zQueueSortAjax')){
+		application.sitestruct[request.zos.globals.id].leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();	
+		variables.queueSortCom.returnJson();
 	}
 	hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
@@ -465,21 +471,27 @@ enable round robin for users - need a new option to disable for staff.
 	<h2>Lead Routing</h2>
 	<p>By default, leads go to the E-Mail Address(es) listed in the site option called: "<a href="/z/admin/site-options/index?return=1&amp;jumpto=soid_zofficeemail" title="Click to Edit">Office Email</a>".  To override this for specific lead types, click "Add Lead Route" or "Edit" the existing rules below.</p>
 	<p><a href="/z/inquiries/admin/routing/add">Add Lead Route</a></p>
-	<table  class="table-list">
+	<table id="sortRowTable" class="table-list">
+		<thead>
 		<tr>
 			<th>Route ID</th>
 			<th>Type</th>
+			<th>Sort</th>
 			<th>Admin</th>
 		</tr>
+		</thead>
+		<tbody>
 		<cfloop query="qRoutes">
-			<tr <cfif qRoutes.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
+			<tr #variables.queueSortCom.getRowHTML(qRoutes.inquiries_routing_id)# <cfif qRoutes.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
 				<td>#qRoutes.inquiries_routing_id#</td>
 				<td>#qRoutes.inquiries_type_name#</td>
-				<td>#variables.queueSortCom.getLinks(qRoutes.recordcount, qRoutes.currentrow, '/z/inquiries/admin/routing/index?inquiries_routing_id=#qRoutes.inquiries_routing_id#', "vertical-arrows")# 
+				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td><!--- #variables.queueSortCom.getLinks(qRoutes.recordcount, qRoutes.currentrow, '/z/inquiries/admin/routing/index?inquiries_routing_id=#qRoutes.inquiries_routing_id#', "vertical-arrows")#  --->
 				<a href="/z/inquiries/admin/routing/edit?inquiries_routing_id=#qRoutes.inquiries_routing_id#">Edit</a> | 
 				<a href="/z/inquiries/admin/routing/delete?inquiries_routing_id=#qRoutes.inquiries_routing_id#">Delete</a>&nbsp;</td>
 			</tr>
 		</cfloop>
+		</tbody>
 	</table>
 </cffunction>
 </cfoutput>

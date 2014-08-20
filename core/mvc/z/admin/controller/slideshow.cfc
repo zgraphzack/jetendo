@@ -24,6 +24,7 @@
 		variables.queueSortStruct = StructNew();
 		// required 
 		if (structkeyexists(form, 'slideshow_image_id') AND structkeyexists(form, 'slideshow_tab_id')) {
+			variables.queueSortStruct.ajaxURL='/z/admin/slideshow/managePhoto?slideshow_id=#form.slideshow_id#&slideshow_tab_id=#form.slideshow_tab_id#';
 			variables.queueSortStruct.tableName = "slideshow_image";
 			variables.queueSortStruct.sortFieldName = "slideshow_image_sort";
 			variables.queueSortStruct.primaryKeyName = "slideshow_image_id";
@@ -39,20 +40,45 @@
 			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#'  and 
 			slideshow_tab.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' ";
 	
-		} else {
+		} else { 
+			variables.queueSortStruct.ajaxURL='/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#';
+			variables.queueSortStruct.tableName = "slideshow_image";
+			variables.queueSortStruct.sortFieldName = "slideshow_image_sort";
+			variables.queueSortStruct.primaryKeyName = "slideshow_image_id";
+
+			// optional
+			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#' and 
+			slideshow_image.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"'  ";
+		}
+		if(form.method EQ "managePhoto"){
+			variables.queueSortStruct.ajaxURL='/z/admin/slideshow/managePhoto?slideshow_id=#form.slideshow_id#&slideshow_tab_id=#form.slideshow_tab_id#';
 			variables.queueSortStruct.tableName = "slideshow_image";
 			variables.queueSortStruct.sortFieldName = "slideshow_image_sort";
 			variables.queueSortStruct.primaryKeyName = "slideshow_image_id";
 			// optional
-			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#' and 
+			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#' AND 
+			slideshow_tab_id = '#application.zcore.functions.zescape(form.slideshow_tab_id)#' and 
 			slideshow_image.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"'  ";
-		}	
+		}else if(form.method EQ "manageTabs"){
+			variables.queueSortStruct.ajaxURL='/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#';
+			variables.queueSortStruct.tableName = "slideshow_tab";
+			variables.queueSortStruct.sortFieldName = "slideshow_tab_sort";
+			variables.queueSortStruct.primaryKeyName = "slideshow_tab_id";
+			// optional
+			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#'  and 
+			slideshow_tab.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' ";
+		}
+		variables.queueSortStruct.ajaxTableId='sortRowTable';
 		variables.queueSortStruct.datasource=request.zos.zcoreDatasource;
 		variables.queueSortStruct.disableRedirect=true;
 		variables.queueSortCom.init(variables.queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
 			application.zcore.functions.zSlideshowClearCache(form.slideshow_id);
 			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+		}
+		if(structkeyexists(form, 'zQueueSortAjax')){
+			application.zcore.functions.zSlideshowClearCache(form.slideshow_id);
+			variables.queueSortCom.returnJson();
 		}
 	}
 	</cfscript>
@@ -1816,29 +1842,35 @@
 	<h2>Manage Slideshow Photos: #qS.slideshow_name#</h2>
 	<a href="/z/admin/slideshow/addPhoto?slideshow_id=#form.slideshow_id#&amp;slideshow_tab_id=#form.slideshow_tab_id#&amp;return=1">Add Photo</a><br />
 	<br />
-	<table style="border-spacing:0px; width:100%;" class="table-list">
+	<table id="sortRowTable" style="border-spacing:0px; width:100%;" class="table-list">
+		<thead>
 		<tr>
 			<th style="width:100px;">&nbsp;</th>
 			<th>Image Caption</th>
 			<th>Admin</th>
+			<th>Sort</th>
 		</tr>
+		</thead>
+		<tbody>
 		<cfif qImages.recordcount EQ 0>
 			<tr>
 				<td colspan="2">No tab photos added yet, click Add Tab Photos above.</td>
 			</tr>
 		</cfif>
 		<cfloop query="qImages">
-			<tr <cfif qImages.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
+			<tr #variables.queueSortCom.getRowHTML(qImages.slideshow_image_id)# <cfif qImages.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
 				<td style="width:100px;"><img src="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_thumbnail_url#" /></td>
 				<td>#qImages.slideshow_image_caption#</td>
-				<td>#variables.queueSortCom.getLinks(qImages.recordcount, qImages.currentrow, 
+				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td><!--- #variables.queueSortCom.getLinks(qImages.recordcount, qImages.currentrow, 
 				'/z/admin/slideshow/managePhoto?slideshow_id=#qImages.slideshow_id#&slideshow_tab_id=#qImages.slideshow_tab_id#&slideshow_image_id=#qImages.slideshow_image_id#', 
-				"vertical-arrows")# 
+				"vertical-arrows")#  --->
 				<a href="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_url#">Download</a> | 
 				<a href="/z/admin/slideshow/editPhoto?slideshow_id=#qImages.slideshow_id#&amp;slideshow_image_id=#qImages.slideshow_image_id#&amp;slideshow_tab_id=#qImages.slideshow_tab_id#&amp;return=1">Edit</a> | 
 				<a href="/z/admin/slideshow/deletePhoto?slideshow_id=#qImages.slideshow_id#&amp;slideshow_image_id=#qImages.slideshow_image_id#&amp;slideshow_tab_id=#qImages.slideshow_tab_id#&amp;return=1">Delete</a></td>
 			</tr>
 		</cfloop>
+		</tbody>
 	</table>
 </cffunction>
 
@@ -1878,20 +1910,24 @@
 	</cfif>
 	<a href="/z/admin/slideshow/addTab?slideshow_id=#form.slideshow_id#&amp;return=1">Add Tab</a> | You must create at least 1 tab to have a slideshow. Images or other information are associates with tabs<br />
 	<br />
-	<table style="border-spacing:0px; width:100%;" class="table-list">
+	<table id="sortRowTable" style="border-spacing:0px; width:100%;" class="table-list">
+		<thead>
 		<tr>
 			<th>&nbsp;</th>
 			<th>Tab Caption</th>
 			<th>Tab Link</th>
-			<th>&nbsp;</th>
+			<th>Sort</th>
+			<th>Admin</th>
 		</tr>
+		</thead>
+		<tbody>
 		<cfif qTabs.recordcount EQ 0>
 			<tr>
 				<td colspan="2">No Tabs added yet, click Add Tab above.</td>
 			</tr>
 		</cfif>
 		<cfloop query="qTabs">
-			<tr <cfif qTabs.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
+			<tr #variables.queueSortCom.getRowHTML(qTabs.slideshow_tab_id)# <cfif qTabs.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
 				<td><cfif trim(qTabs.slideshow_tab_url) NEQ ''>
 						<img src="/zupload/slideshow/#qTabs.slideshow_id#/tabs/#qTabs.slideshow_tab_url#" width="100" />
 					<cfelse>
@@ -1899,7 +1935,8 @@
 					</cfif></td>
 				<td>#qTabs.slideshow_tab_caption#</td>
 				<td>#qTabs.slideshow_tab_link#</td>
-				<td>#variables.queueSortCom.getLinks(qTabs.recordcount, qTabs.currentrow, '/z/admin/slideshow/manageTabs?slideshow_id=#qTabs.slideshow_id#&slideshow_tab_id=#qTabs.slideshow_tab_id#', "vertical-arrows")# <a href="/z/admin/slideshow/editTab?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Edit</a> |
+				<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td><!--- #variables.queueSortCom.getLinks(qTabs.recordcount, qTabs.currentrow, '/z/admin/slideshow/manageTabs?slideshow_id=#qTabs.slideshow_id#&slideshow_tab_id=#qTabs.slideshow_tab_id#', "vertical-arrows")# ---> <a href="/z/admin/slideshow/editTab?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Edit</a> |
 				<cfif qTabs.slideshow_tab_type_id EQ 1>
 					<a href="/z/admin/slideshow/managePhoto?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Manage Photos</a> |
 				<cfelseif qTabs.slideshow_tab_type_id EQ 2>
@@ -1908,6 +1945,7 @@
 				<a href="/z/admin/slideshow/deleteTab?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Delete</a></td>
 			</tr>
 		</cfloop>
+		</tbody>
 	</table>
 </cffunction>
 

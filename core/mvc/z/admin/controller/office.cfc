@@ -225,7 +225,10 @@ enable round robin for offices - need a new option to disable for staff.
 	queueSortStruct.sortFieldName = "office_sort";
 	queueSortStruct.primaryKeyName = "office_id";
 	queueSortStruct.where="site_id = '#request.zos.globals.id#' ";
+	queueSortStruct.ajaxURL="/z/admin/office/index";
+	queueSortStruct.ajaxTableId="sortRowTable";
 	variables.queueSortCom.init(queueSortStruct);
+	variables.queueSortCom.returnJson();
 	</cfscript>
 </cffunction>	
 
@@ -263,44 +266,50 @@ enable round robin for offices - need a new option to disable for staff.
 	<cfif qOffice.recordcount EQ 0>
 		<p>No offices have been added.</p>
 		<cfelse>
-		<table  class="table-list">
+		<table id="sortRowTable" class="table-list">
+			<thead>
 			<tr>
 				<th>Photo</th>
 				<th>Office Name</th>
 				<th>Address</th>
 				<th>Phone</th>
+				<th>Sort</th>
 				<th>Admin</th>
 			</tr>
-			<cfloop query="qOffice">
-			<tr <cfif qOffice.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
-				<td style="vertical-align:top; width:100px; ">
-				<cfscript>
-				ts=structnew();
-				ts.image_library_id=qOffice.office_image_library_id;
-				ts.output=false;
-				ts.query=qOffice;
-				ts.row=qOffice.currentrow;
-				ts.size="100x70";
-				ts.crop=0;
-				ts.count = 1; // how many images to get
-				//zdump(ts);
-				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-				for(i=1;i LTE arraylen(arrImages);i++){
-					writeoutput('<img src="'&arrImages[i].link&'">');
-				}
-				</cfscript></td>
-				<td>#qOffice.office_name#</td>
-				<td>#qOffice.office_address#<br />
-					#qOffice.office_address#<br />
-					#qOffice.office_city#, #qOffice.office_state# 
-					#qOffice.office_zip# #qOffice.office_country#
-					</td>
-				<td>#qOffice.office_phone#</td>
-				<td>#variables.queueSortCom.getLinks(qOffice.recordcount, qOffice.currentrow, "/z/admin/office/index?office_id=#qOffice.office_id#", "vertical-arrows")# 
-				<a href="/z/admin/office/edit?office_id=#qOffice.office_id#">Edit</a> | 
-				<a href="/z/admin/office/delete?office_id=#qOffice.office_id#">Delete</a></td>
-			</tr>
-			</cfloop>
+			</thead>
+			<tbody>
+				<cfloop query="qOffice">
+				<tr #variables.queueSortCom.getRowHTML(qOffice)# <cfif qOffice.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
+					<td style="vertical-align:top; width:100px; ">
+					<cfscript>
+					ts=structnew();
+					ts.image_library_id=qOffice.office_image_library_id;
+					ts.output=false;
+					ts.query=qOffice;
+					ts.row=qOffice.currentrow;
+					ts.size="100x70";
+					ts.crop=0;
+					ts.count = 1; // how many images to get
+					//zdump(ts);
+					arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
+					for(i=1;i LTE arraylen(arrImages);i++){
+						writeoutput('<img src="'&arrImages[i].link&'">');
+					}
+					</cfscript></td>
+					<td>#qOffice.office_name#</td>
+					<td>#qOffice.office_address#<br />
+						#qOffice.office_address#<br />
+						#qOffice.office_city#, #qOffice.office_state# 
+						#qOffice.office_zip# #qOffice.office_country#
+						</td>
+					<td>#qOffice.office_phone#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td><!--- #variables.queueSortCom.getLinks(qOffice.recordcount, qOffice.currentrow, "/z/admin/office/index?office_id=#qOffice.office_id#", "vertical-arrows")#  --->
+					<a href="/z/admin/office/edit?office_id=#qOffice.office_id#">Edit</a> | 
+					<a href="/z/admin/office/delete?office_id=#qOffice.office_id#">Delete</a></td>
+				</tr>
+				</cfloop>
+			</tbody>
 		</table>
 	</cfif>
 </cffunction>

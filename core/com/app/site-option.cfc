@@ -1298,7 +1298,51 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	return tempStruct;
 	</cfscript>
 </cffunction>
- 
+
+
+<!--- <cffunction name="updateSiteOptionGroupIdCache" localmode="modern" access="public">
+	<cfargument name="site_id" type="numeric" required="yes">
+	<cfargument name="site_option_group_id" type="numeric" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
+	site_option_group_id = #db.param(arguments.site_option_group_id)# and 
+	site_id = #db.param(arguments.site_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# 
+	";
+	qSet=db.execute("qSet");
+	for(row in qSet){
+		updateSiteOptionGroupSetIdCache(row.site_id, row.site_x_option_group_set_id);
+	}
+	</cfscript>
+</cffunction> --->
+
+
+<cffunction name="resortSiteOptionGroupSets" localmode="modern" access="public">
+	<cfargument name="site_id" type="numeric" required="yes">
+	<cfargument name="site_option_app_id" type="numeric" required="yes">
+	<cfargument name="site_option_group_id" type="numeric" required="yes">
+	<cfargument name="site_x_option_group_set_parent_id" type="numeric" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	db.sql="select site_x_option_group_set_id from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#
+	WHERE 
+	site_x_option_group_set_deleted = #db.param(0)# and 
+	site_x_option_group_set_parent_id= #db.param(arguments.site_x_option_group_set_parent_id)# and 
+	site_option_group_id = #db.param(arguments.site_option_group_id)# and 
+	site_option_app_id = #db.param(arguments.site_option_app_id)# and 
+	site_id = #db.param(arguments.site_id)# 
+	ORDER BY site_x_option_group_set_sort";
+	var qSort=db.execute("qSort");
+	var arrTemp=[];
+	for(var row2 in qSort){
+		arrayAppend(arrTemp, row2.site_x_option_group_set_id);
+	}
+	var tempStruct=application.zcore.siteGlobals[arguments.site_id];
+	tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_parent_id&"_childGroup"][arguments.site_option_group_id]=arrTemp;
+	</cfscript>
+</cffunction>
+	
 <cffunction name="updateSiteOptionGroupSetIdCache" localmode="modern" access="public">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">

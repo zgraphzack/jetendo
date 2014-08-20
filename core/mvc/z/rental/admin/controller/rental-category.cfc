@@ -11,6 +11,7 @@
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
 	
+	form.rental_category_parent_id=application.zcore.functions.zso(form, 'rental_category_parent_id');
 	if(structkeyexists(form, 'return') and structkeyexists(form, 'rental_category_id')){
 		StructInsert(request.zsession, "rental_category_return"&form.rental_category_id, request.zos.cgi.http_referer, true);		
 	}
@@ -20,12 +21,57 @@
 	variables.queueSortStruct.sortFieldName = "rental_category_sort";
 	variables.queueSortStruct.primaryKeyName = "rental_category_id";
 	// optional
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&action=#form.method#';
 	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
+
 	
 	variables.queueSortStruct.where ="  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#'  ";
 	
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
+	variables.queueSortCom.returnJson();
+
+	if(structkeyexists(request.zsession, 'enableRentalCategorySortingMode')){
+		db.sql=" SELECT *, 
+		if(rc2.rental_category_id IS NOT NULL,#db.param(1)#,#db.param(0)#) hasChildren FROM 
+		#request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
+		LEFT JOIN #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rc2 
+		on rc2.rental_category_parent_id = rental_category.rental_category_id and 
+		rental_category.site_id = rc2.site_id and 
+		rc2.rental_category_deleted = #db.param(0)#
+		WHERE";
+		if(form.rental_category_parent_id NEQ ""){
+			db.sql&=" rental_category.rental_category_parent_id = #db.param(form.rental_category_parent_id)# and";
+		}
+		db.sql&=" rental_category.site_id = #db.param(request.zOS.globals.id)# and 
+		rental_category.rental_category_deleted = #db.param(0)#
+		GROUP BY rental_category.rental_category_id 
+		order by rental_category.rental_category_sort ASC, rental_category.rental_category_name ASC";
+		qProp=db.execute("qProp");
+		variables.qProp=qProp;
+		for(row in qProp){
+			variables.queueSortStruct2 = StructNew();
+			// required
+			variables.queueSortStruct2.tableName = "rental_x_category";
+			variables.queueSortStruct2.sortFieldName = "rental_x_category_sort";
+			variables.queueSortStruct2.primaryKeyName = "rental_id";
+			// optional
+			variables.queueSortStruct2.datasource = request.zos.zcoreDatasource;
+			variables.queueSortStruct2.sortVarName="rentalQueueSort"&row.rental_category_id;
+			variables.queueSortStruct2.sortVarNameAjax="rentalQueueSortAjax"&row.rental_category_id;
+			variables.queueSortStruct2.ajaxTableId='sortRowTable'&row.rental_category_id;
+			variables.queueSortStruct2.ajaxURL='/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&rental_category_id=#row.rental_category_id#';
+			
+			variables.queueSortStruct2.where ="rental_x_category.rental_category_id='#application.zcore.functions.zescape(row.rental_category_id)#' and  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#'  ";
+			
+			variables["queueSortCom"&row.rental_category_id] = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+			variables["queueSortCom"&row.rental_category_id].init(variables.queueSortStruct2);
+			if(structkeyexists(form, "rentalQueueSortAjax"&row.rental_category_id)){
+				variables["queueSortCom"&row.rental_category_id].returnJson();
+			}
+		}
+	}
 	</cfscript>
 	<h2 style="display:inline;">Manage Rental Categories | </h2>
 	<cfscript>
@@ -65,6 +111,8 @@
 			request.zsession.enableRentalCategorySortingMode=true;
 		}
 	}
+	qProp=variables.qProp;
+
 	</cfscript>
 	<cfif form.rental_category_parent_id NEQ 0>
 		<a href="/z/rental/admin/rental-category/index">Rental Category Root</a> /
@@ -114,74 +162,18 @@
 	</cfif><p>
 	
 	<cfif structkeyexists(request.zsession, 'enableRentalCategorySortingMode')>
-		<cfscript>	
-		db.sql=" SELECT * #db.trustedSQL(rs.select)#, 
-		if(rc2.rental_category_id IS NOT NULL,#db.param(1)#,#db.param(0)#) hasChildren FROM 
-		#request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rental_category 
-		#db.trustedSQL(rs.leftJoin)# 
-		LEFT JOIN #request.zos.queryObject.table("rental_category", request.zos.zcoreDatasource)# rc2 
-		on rc2.rental_category_parent_id = rental_category.rental_category_id and 
-		rental_category.site_id = rc2.site_id and 
-		rc2.rental_category_deleted = #db.param(0)#
-		WHERE";
-		if(form.rental_category_parent_id NEQ ""){
-			db.sql&=" rental_category.rental_category_parent_id = #db.param(form.rental_category_parent_id)# and";
-		}
-		db.sql&=" rental_category.site_id = #db.param(request.zOS.globals.id)# and 
-		rental_category.rental_category_deleted = #db.param(0)#
-		GROUP BY rental_category.rental_category_id 
-		order by rental_category.rental_category_sort ASC, rental_category.rental_category_name ASC";
-		qProp=db.execute("qProp");
-		</cfscript>
 		<table class="table-list" style="border-spacing:0px; width:100%;">
 			<tr>
-				<th>Photo</th>
 				<th>Rental Category</th>
-				<th>Admin</th>
 			</tr>
 			<cfloop query="qProp">
 				<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<td><h2>
 						#qProp.rental_category_name#
 						</h2></td>
-					<td style="vertical-align:top; width:100px; "><cfscript>
-			
-					ts=structnew();
-					ts.image_library_id=qProp.rental_category_image_library_id;
-					ts.output=false;
-					ts.query=qProp;
-					ts.row=qProp.currentrow;
-					ts.size="100x70";
-					ts.crop=0;
-					ts.count = 1; // how many images to get
-					//application.zcore.functions.zdump(ts);
-					var arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-					for(i=1;i LTE arraylen(arrImages);i++){
-						writeoutput('<img src="'&arrImages[i].link&'">');
-					}
-					</cfscript></td>
-					<td>#variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&rental_category_id=#qProp.rental_category_id#&action=#form.method#', "vertical-arrows")# 
-					<a href="#application.zcore.app.getAppCFC("rental").getCategoryLink(qProp.rental_category_id,qProp.rental_category_name,qProp.rental_category_url)#">View</a> | 
-					<cfif qProp.hasChildren EQ 1>
-						<a href="/z/rental/admin/rental-category/index?rental_category_parent_id=#qProp.rental_category_id#">Sub-Categories</a> | 
-					</cfif>
-					<a href="/z/rental/admin/rental-category/edit?rental_category_id=#qProp.rental_category_id#&amp;return=1">Edit</a> | 
-					<a href="/z/rental/admin/rental-category/delete?rental_category_id=#qProp.rental_category_id#&amp;return=1">Delete</a></td>
+					
 				</tr>
 				<cfscript>
-				variables.queueSortStruct2 = StructNew();
-				// required
-				variables.queueSortStruct2.tableName = "rental_x_category";
-				variables.queueSortStruct2.sortFieldName = "rental_x_category_sort";
-				variables.queueSortStruct2.primaryKeyName = "rental_id";
-				// optional
-				variables.queueSortStruct2.datasource = request.zos.zcoreDatasource;
-				variables.queueSortStruct2.sortVarName="rentalQueueSort"&qProp.rental_category_id;
-				
-				variables.queueSortStruct2.where ="rental_x_category.rental_category_id='#application.zcore.functions.zescape(qProp.rental_category_id)#' and  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#'  ";
-				
-				variables.queueSortCom2 = CreateObject("component", "zcorerootmapping.com.display.queueSort");
-				variables.queueSortCom2.init(variables.queueSortStruct2);
 				// you must have a group by in your query or it may miss rows
 				ts=structnew();
 				ts.image_library_id_field="rental.rental_image_library_id";
@@ -202,38 +194,50 @@
 				qProp2=db.execute("qProp2");
 				</cfscript>
 				<cfif qProp2.recordcount NEQ 0>
-					<tr style="<cfif qProp.currentrow MOD 2 EQ 0>background-color:##EFEFEF;<cfelse>background-color:##E2E2E2;</cfif>">
-						<td colspan="3" style="padding:50px; padding-top:0px;"><p>Sort Rentals In This Category</p>
-							<table style="border-spacing:0px; padding:5px; width:100%;">
-								<cfloop query="qProp2">
-								<tr <cfif qProp2.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-									<td><cfscript>
-									ts=structnew();
-									ts.image_library_id=qProp2.rental_image_library_id;
-									ts.output=false;
-									ts.query=qProp2;
-									ts.row=qProp2.currentrow;
-									ts.size="100x70";
-									ts.crop=0;
-									ts.count = 1; // how many images to get
-									//application.zcore.functions.zdump(ts);
-									var arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-									for(i=1;i LTE arraylen(arrImages);i++){
-										writeoutput('<img src="'&arrImages[i].link&'">');
-									}
-									</cfscript></td>
-									<td>#qProp2.rental_name#
-										<cfif qProp2.rental_active NEQ '1'>
-											<br />
-											<strong><em>(Inactive)</em></strong>
-										</cfif></td>
-									<td>#variables.queueSortCom2.getLinks(qProp2.recordcount, qProp2.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&amp;rental_category_id=#qProp2.rental_category_id#&amp;rental_id=#qProp2.rental_id#', "vertical-arrows")# </td>
+					<tr style="background-color:##FFF;">
+						<td colspan="3" style="padding:15px; border-bottom:none;padding-top:15px;"><p>Sort Rentals In This Category</p>
+							<table id="sortRowTable#qProp.rental_category_id#" class="table-list" style="border-spacing:0px; padding:5px; ">
+								<thead>
+								<tr>
+									<th>Photo</th>
+									<th>Rental Title</th>
+									<th>Sort</th>
 								</tr>
-							</cfloop>
-						</table></td>
-					</tr>
+								</thead>
+								<tbody>
+									<cfloop query="qProp2">
+										<tr #variables["queueSortCom"&qProp.rental_category_id].getRowHTML(qProp2.rental_id)# <cfif qProp2.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+											<td><cfscript>
+											ts=structnew();
+											ts.image_library_id=qProp2.rental_image_library_id;
+											ts.output=false;
+											ts.query=qProp2;
+											ts.row=qProp2.currentrow;
+											ts.size="100x70";
+											ts.crop=0;
+											ts.count = 1; // how many images to get
+											//application.zcore.functions.zdump(ts);
+											var arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
+											for(i=1;i LTE arraylen(arrImages);i++){
+												writeoutput('<img src="'&arrImages[i].link&'">');
+											}
+											</cfscript></td>
+											<td>#qProp2.rental_name#
+												<cfif qProp2.rental_active NEQ '1'>
+													<br />
+													<strong><em>(Inactive)</em></strong>
+												</cfif></td>
+											<td style="vertical-align:top; ">#variables["queueSortCom"&qProp.rental_category_id].getAjaxHandleButton()#</td>
+											<!--- <td>#variables.queueSortCom2.getLinks(qProp2.recordcount, qProp2.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&amp;rental_category_id=#qProp2.rental_category_id#&amp;rental_id=#qProp2.rental_id#', "vertical-arrows")# </td> --->
+										</tr>
+									</cfloop>
+								</table></td>
+							</tr>
+						</tbody>
+					</table>
 				</cfif>
 			</cfloop>
+			</tbody>
 		</table>
 	<cfelse>
 		<cfscript>	
@@ -254,23 +258,29 @@
 		order by rental_category.rental_category_sort ASC, rental_category.rental_category_name ASC";
 		qProp=db.execute("qProp");
 		</cfscript>
-		<table class="table-list" style="border-spacing:0px; width:100%;">
+		<table id="sortRowTable" class="table-list" style="border-spacing:0px; width:100%;">
+			<thead>
 			<tr>
 				<th>Rental Category</th>
+				<th>Sort</th>
 				<th>Admin</th>
 			</tr>
+			</thead>
+			<tbody>
 			<cfloop query="qProp">
-				<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+				<tr #variables.queueSortCom.getRowHTML(qProp.rental_category_id)# <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<td>#qProp.rental_category_name#</td>
-					<td>#variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&rental_category_id=#qProp.rental_category_id#&action=#form.method#', "vertical-arrows")# 
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&rental_category_id=#qProp.rental_category_id#&action=#form.method#', "vertical-arrows")#  --->
 					<a href="#application.zcore.app.getAppCFC("rental").getCategoryLink(qProp.rental_category_id,qProp.rental_category_name,qProp.rental_category_url)#">View</a> | 
 					<cfif qProp.hasChildren EQ 1>
 						<a href="/z/rental/admin/rental-category/index?rental_category_parent_id=#qProp.rental_category_id#">Sub-Categories</a> | 
 					</cfif>
 					<a href="/z/rental/admin/rental-category/edit?rental_category_id=#qProp.rental_category_id#&amp;return=1">Edit</a> | 
 					<a href="/z/rental/admin/rental-category/delete?rental_category_id=#qProp.rental_category_id#&amp;return=1">Delete</a></td>
-					</tr> 
+				</tr> 
 			</cfloop>
+			</tbody>
 		</table>
 	</cfif>
 </cffunction>

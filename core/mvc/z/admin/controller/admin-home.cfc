@@ -27,11 +27,13 @@
 	</div>
 </cffunction>
 
+
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.functions.zSetPageHelpId("1");
 	application.zcore.functions.zstatushandler(request.zsid);
 	</cfscript>
+
 </cffunction>
 </cfoutput>
 </cfcomponent>

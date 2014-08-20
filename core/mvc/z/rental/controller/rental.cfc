@@ -941,7 +941,7 @@
 			 SET availability_type_sort = #db.param('1')# , 
 			 availability_type_name=#db.param('Holiday')#, 
 			 availability_type_color=#db.param('BBDDFF')#, 
-			availability_type_updated_datetime='#request.zos.mysqlnow#',
+			availability_type_updated_datetime=#db.param(request.zos.mysqlnow)#,
 			 site_id=#db.param(request.zos.globals.id)# ";
 			 db.execute("q");
 		} 

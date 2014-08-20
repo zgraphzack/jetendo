@@ -28,6 +28,9 @@
 	variables.queueSortWhere="site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#' and content_deleted=0 ";
 	variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#application.zcore.functions.zescape(form.content_parent_id)#' ";
 	variables.queueSortStruct.disableRedirect=true;
+
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/content/admin/content-admin/#form.method#?content_parent_id=#form.content_parent_id#';
 	
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
@@ -35,6 +38,10 @@
 	if(structkeyexists(form, 'zQueueSort')){
 		application.zcore.functions.zMenuClearCache({content=true});
 		application.zcore.functions.zredirect("/z/content/admin/content-admin/index?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+	}
+	if(structkeyexists(form, 'zQueueSortAjax')){
+		application.zcore.functions.zMenuClearCache({content=true});
+		variables.queueSortCom.returnJson();
 	}
 	application.zcore.template.appendTag("meta",'<style type="text/css">
 	/* <![CDATA[ */ .monodrop {
@@ -2103,7 +2110,8 @@
 			<div style="float:left;">Sorting method: <cfif parentChildSorting EQ 1>Price Descending<cfelseif parentChildSorting EQ 2>Price Ascending<cfelseif parentChildSorting EQ 3>Alphabetic<cfelse>Manual (Click black arrows)</cfif> | </div>
 			<div style="float:left; width:150px;"><a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Change Sorting Method","member.content.list changeSortingMethod")#</a></div><br />
 		</cfif><br />
-		<table style="border-spacing:0px; width:100%;" class="table-list">
+		<table id="sortRowTable" style="border-spacing:0px; width:100%;" class="table-list">
+			<thead>
 			<tr>
 				<th><a href="#qSortCom.getColumnURL("content.content_id", Request.zScriptName2)#">ID</a> #qSortCom.getColumnIcon("content.content_id")#</th>
 				<th>Photo</th>
@@ -2117,13 +2125,15 @@
 						 <a href="#qSortCom.getColumnURL("content_price2", Request.zScriptName2)#">Price</a> #qSortCom.getColumnIcon("content_price2")#
 					 </cfif>
 				 </th>
-		
+			
 				<th style="width:60px;">
 					<cfif parentChildSorting EQ 0 and application.zcore.functions.zso(form, 'searchtext') EQ '' and qsortcom.getorderby(false) EQ ''>
-						#application.zcore.functions.zOutputHelpToolTip("Sorting","member.content.list sorting")#
+						Sort
 					</cfif></th>
 				<th>Admin</th>
 			</tr>
+			</thead>
+			<tbody>
 			<cfloop query="qSite">
 				<cfscript>
 				ts=structnew();
@@ -2140,7 +2150,7 @@
 					contentphoto99=(arrImages[1].link);
 				}
 				</cfscript>
-				<tr <cfif qsite.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+				<tr #variables.queueSortCom.getRowHTML(qSite.content_id)# <cfif qsite.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 				<td style="vertical-align:top; width:30px; ">#qSite.content_id#</td>
 				<td style="vertical-align:top; width:100px; ">
 					<cfif contentphoto99 NEQ "">
@@ -2236,7 +2246,8 @@
 			</td>
 			<td style="vertical-align:top; white-space:nowrap;" >
 			<cfif parentChildSorting EQ 0 and application.zcore.functions.zso(form, 'searchtext') EQ '' and qsortcom.getorderby(false) EQ ''>
-				#variables.queueSortCom.getLinks(qSite.recordcount, qSite.currentrow, "/z/content/admin/content-admin/"&form.method&"?content_id="&qSite.content_id&"&content_parent_id="&qSite.content_parent_id, "vertical-arrows")#
+				#variables.queueSortCom.getAjaxHandleButton()#
+				<!--- #variables.queueSortCom.getLinks(qSite.recordcount, qSite.currentrow, "/z/content/admin/content-admin/"&form.method&"?content_id="&qSite.content_id&"&content_parent_id="&qSite.content_parent_id, "vertical-arrows")# --->
 			</cfif></td><td style="vertical-align:top; ">
 				<cfif (structkeyexists(form, 'qcontentp') EQ false or qcontentp.content_featured_listing_parent_page NEQ 1)>
 				<a href="/z/content/admin/content-admin/add?content_parent_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Add Child Page","member.content.list addChildPage")#</a> | 
@@ -2259,6 +2270,7 @@
 			</tr>
 			
 		</cfloop>
+			</tbody>
 		</table>
 	</cfif>
 </cffunction>

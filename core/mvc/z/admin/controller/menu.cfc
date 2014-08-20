@@ -25,6 +25,12 @@
 		// optional
 		variables.queueSortStruct.disableRedirect=true;
 		variables.queueSortStruct.datasource=request.zos.zcoreDatasource;
+		variables.queueSortStruct.ajaxTableId="menuLinkTable";
+		if(form.method EQ "manageItemLinks"){
+			variables.queueSortStruct.ajaxURL='/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&menu_button_id=#form.menu_button_id#';
+		}else if(form.method EQ "manageMenu"){
+			variables.queueSortStruct.ajaxURL='/z/admin/menu/manageMenu?menu_id=#form.menu_id#';
+		} 
 		
 		variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 		
@@ -34,6 +40,10 @@
 		if(structkeyexists(form, 'zQueueSort')){
 			application.zcore.functions.zMenuClearCache({all=true});
 			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+		}
+		if(structkeyexists(form, 'zQueueSortAjax')){
+			application.zcore.functions.zMenuClearCache({all=true});
+			variables.queueSortCom.returnJson();
 		}
 	}
 	</cfscript>
@@ -916,30 +926,37 @@
 	<br />
 	<br />
 	<cfif qMenuItemLinks.recordcount NEQ 0>
-		<table style="border-spacing:0px; width:100%;" class="table-list">
+		<table id="menuLinkTable" style="border-spacing:0px; width:100%;" class="table-list">
+			<thead>
 			<tr>
 				<th>ID</th>
 				<th>Text</th>
 				<th>Link</th>
+				<th>Sort</th>
 				<th>Admin</th>
 			</tr>
-			<cfloop query="qMenuItemLinks">
-			<tr <cfif qMenuItemLinks.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-				<td style="vertical-align:top; width:30px; ">#qMenuItemLinks.menu_button_link_id#</td>
-				<td style="vertical-align:top; ">#qMenuItemLinks.menu_button_link_text#</td>
-				<td style="vertical-align:top; ">#application.zcore.functions.zLimitStringLength(qMenuItemLinks.menu_button_link_url, 80)#</td>
-				<td style="vertical-align:top; white-space:nowrap;">
-				#variables.queueSortCom.getLinks(qMenuItemLinks.recordcount, qMenuItemLinks.currentrow, 
-				'/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#', "vertical-arrows")# 
-				<a href="/z/admin/menu/editItemLink?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#&amp;return=1">Edit</a> | 
-					
-					<a href="/z/admin/menu/deleteItemLink?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#&amp;return=1">Delete</a> 
-					</td>
-			</tr>
-			</cfloop>
+			</thead>
+			<tbody>
+				<cfloop query="qMenuItemLinks">
+				<tr #variables.queueSortCom.getRowHTML(qMenuItemLinks.menu_button_link_id)# <cfif qMenuItemLinks.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+					<td style="vertical-align:top; width:30px; ">#qMenuItemLinks.menu_button_link_id#</td>
+					<td style="vertical-align:top; ">#qMenuItemLinks.menu_button_link_text#</td>
+					<td style="vertical-align:top; ">#application.zcore.functions.zLimitStringLength(qMenuItemLinks.menu_button_link_url, 80)#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td style="vertical-align:top; white-space:nowrap;">
+					<!--- #variables.queueSortCom.getLinks(qMenuItemLinks.recordcount, qMenuItemLinks.currentrow, 
+					'/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#', "vertical-arrows")#  --->
+					<a href="/z/admin/menu/editItemLink?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#&amp;return=1">Edit</a> | 
+						
+						<a href="/z/admin/menu/deleteItemLink?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#&amp;return=1">Delete</a> 
+						</td>
+				</tr>
+				</cfloop>
+			</tbody>
 		</table>
 	</cfif>
 </cffunction>
+
 <cffunction name="manageMenu" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -976,29 +993,35 @@
 	<br />
 	<cfif qMenuItems.recordcount NEQ 0>
 		<br />
-		<table style="border-spacing:0px; width:100%;" class="table-list">
+		<table id="menuLinkTable" style="border-spacing:0px; width:100%;" class="table-list">
+			<thead>
 			<tr>
 				<th>ID</th>
 				<th>Name</th>
 				<th>URL</th>
+				<th>Sort</th>
 				<th>Admin</th>
 			</tr>
-			<cfloop query="qMenuItems">
-			<tr <cfif qMenuItems.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-				<td style="vertical-align:top; width:30px; ">#qMenuItems.menu_button_id#</td>
-				<td style="vertical-align:top; ">#qMenuItems.menu_button_text#</td>
-				<td style="vertical-align:top;">#application.zcore.functions.zLimitStringLength(qMenuItems.menu_button_link, 80)#</td>
-				<td style="vertical-align:top; white-space:nowrap;">
-					#variables.queueSortCom.getLinks(qMenuItems.recordcount, qMenuItems.currentrow, '/z/admin/menu/manageMenu?menu_id=#qMenuItems.menu_id#&menu_button_id=#qMenuItems.menu_button_id#', "vertical-arrows")# 
-					<a href="/z/admin/menu/editItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit</a> | 
-					<cfif qMenu.menu_disable_popup EQ 0>
-		
-						<a href="/z/admin/menu/manageItemLinks?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit Links</a> | 
-					</cfif>
-					<a href="/z/admin/menu/deleteItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Delete</a> 
-				</td>
-			</tr>
-			</cfloop>
+			</thead>
+			<tbody>
+				<cfloop query="qMenuItems">
+				<tr #variables.queueSortCom.getRowHTML(qMenuItems.menu_button_id)# <cfif qMenuItems.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+					<td style="vertical-align:top; width:30px; ">#qMenuItems.menu_button_id#</td>
+					<td style="vertical-align:top; ">#qMenuItems.menu_button_text#</td>
+					<td style="vertical-align:top;">#application.zcore.functions.zLimitStringLength(qMenuItems.menu_button_link, 80)#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td style="vertical-align:top; white-space:nowrap;">
+						<!--- #variables.queueSortCom.getLinks(qMenuItems.recordcount, qMenuItems.currentrow, '/z/admin/menu/manageMenu?menu_id=#qMenuItems.menu_id#&menu_button_id=#qMenuItems.menu_button_id#', "vertical-arrows")#  --->
+						<a href="/z/admin/menu/editItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit</a> | 
+						<cfif qMenu.menu_disable_popup EQ 0>
+			
+							<a href="/z/admin/menu/manageItemLinks?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit Links</a> | 
+						</cfif>
+						<a href="/z/admin/menu/deleteItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Delete</a> 
+					</td>
+				</tr>
+				</cfloop>
+			</tbody>
 		</table>
 	</cfif>
 </cffunction>

@@ -24,14 +24,26 @@ queueSortCom.init(inputStruct);
 	this.sortFieldName = "";
 	this.primaryKeyName = "";
 	this.where = "";
+	this.sortVarNameAjax="zQueueSortAjax";
+	this.ajaxTableId="";
+	this.ajaxURL="";
 	this.disableRedirect=false;
+	variables.rowIndex=0;
 	//this.groupBy="";
 	this.comName="queueSort.cfc";
 
 	// prepend this var name for query string variable
 	this.sortVarName = "zQueueSort";
+
+
 	var ts=0;
 	StructAppend(this, arguments.inputStruct, true);
+	if(this.ajaxTableId NEQ "" and this.ajaxURL NEQ ""){
+		application.zcore.functions.zRequireJqueryUI();
+		application.zcore.skin.addDeferredScript("
+			zSetupAjaxTableSort('#this.ajaxTableId#', '#this.ajaxURL#', '#this.sortVarNameAjax#');
+		");
+	}
 	if(len(this.tableName) EQ 0){
 		application.zcore.template.fail("#this.comName#: init: inputStruct.tableName is required",true);
 	}
@@ -41,7 +53,10 @@ queueSortCom.init(inputStruct);
 	if(len(this.primaryKeyName) EQ 0){
 		application.zcore.template.fail("#this.comName#: init: inputStruct.primaryKeyName is required",true);
 	}
-	if(structkeyexists(form, this.sortVarName) and structkeyexists(form, this.primaryKeyName)){
+	if(structkeyexists(form, this.sortVarNameAjax)){
+		arrId=listToArray(form[this.sortVarNameAjax], "|");
+		processAjaxSortChange(arrId);
+	}else if(structkeyexists(form, this.sortVarName) and structkeyexists(form, this.primaryKeyName)){
 		ts = StructNew();
 		ts.id = form[this.primaryKeyName];
 		application.zcore.functions.zInvoke(this, form[this.sortVarName], ts);
@@ -54,6 +69,64 @@ queueSortCom.init(inputStruct);
 	}
 	</cfscript>
  </cffunction>
+
+<cffunction name="returnJson" localmode="modern" access="public">
+	<cfscript>
+	if(structkeyexists(form, this.sortVarNameAjax)){
+		rs={
+			success:true
+		};
+		application.zcore.functions.zReturnJson(rs);
+	}
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getRowHTML" localmode="modern" access="public">
+	<cfargument name="primaryKeyId" type="string" required="yes">
+	<cfscript>
+	variables.rowIndex++;
+	return ' id="#this.ajaxTableId#_row#variables.rowIndex#" data-ztable-sort-primary-key-id="#arguments.primaryKeyId#" ';
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="getAjaxHandleButton" localmode="modern" access="public">
+	<cfscript>
+	return '<span class="#this.ajaxTableId#_handle" title="Click and drag the arrow up or down to change the sort order." style="font-size:200%;cursor:move;">&##x21C5;</span>';
+	</cfscript>
+</cffunction>
+
+<cffunction name="processAjaxSortChange" localmode="modern" access="private">
+	<cfargument name="arrId" type="array" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	arrId=arguments.arrId;
+	transaction action="begin"{
+		try{
+			for(i=1;i LTE arraylen(arrId);i++){
+				id=deserializeJson(arrId[i]); 
+				db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
+				SET `#this.sortFieldName#` = #db.param(i)#, 
+				`#this.tablename#_updated_datetime` = #db.param(request.zos.mysqlnow)# 
+				WHERE  `#this.primaryKeyName#` = #db.param(id)#";
+				if(len(this.where) NEQ 0){
+					db.sql&=" and #db.trustedSQL(this.where)#";
+				}
+				qSortUpdate=db.execute("qSortUpdate");
+			}
+			transaction action="commit";
+		}catch(Any e2){
+			// transaction failed.
+			try{
+				transaction action="rollback";
+			}catch(Any e3){
+				// ignore rollback failures
+			}
+			rethrow;
+		}
+	}
+	</cfscript>
+</cffunction>
 
 <cffunction name="moveTop" localmode="modern" returntype="any" output="false">
 	<cfargument name="id" type="string" required="yes">
@@ -393,6 +466,13 @@ queueSortCom.init(inputStruct);
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="getAjaxLink" localmode="modern" returntype="any">
+	<cfscript>
+	return application.zcore.functions.zURLAppend(arguments.prependURL, this.sortVarNameAjax&'=');
+	</cfscript>
+</cffunction>
+	
 <!--- queueSortCom.getLinks(recordcount, currentrow, prependURL, outputDefaultLinks); --->
 <cffunction name="getLinks" localmode="modern" returntype="any" output="true">
 	<cfargument name="recordcount" type="numeric" required="yes">

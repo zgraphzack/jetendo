@@ -17,10 +17,14 @@
 	variables.queueSortStruct.tableName = "rental_amenity";
 	variables.queueSortStruct.sortFieldName = "rental_amenity_sort";
 	variables.queueSortStruct.primaryKeyName = "rental_amenity_id";
+
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/rental/admin/rental-amenity/index';
 	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
 	variables.queueSortStruct.where ="  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#'  ";
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
+	variables.queueSortCom.returnJson();
 	</cfscript>
 	<h2 style="display:inline;">Manage Rental Amenities | </h2>
 	<cfscript>
@@ -43,19 +47,25 @@
 	order by rental_amenity.rental_amenity_sort ASC, rental_amenity.rental_amenity_name ASC";
 	qProp=db.execute("qProp");
 	</cfscript>
-	<table style="border-spacing:0px;" class="table-list">
+	<table id="sortRowTable" style="border-spacing:0px;" class="table-list">
+		<thead>
 		<tr>
 			<th>Rental Amenity</th>
+			<th>Sort</th>
 			<th>Admin</th>
 		</tr>
+		</thead>
+		<tbody>
 		<cfloop query="qProp">
-			<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+			<tr #variables.queueSortCom.getRowHTML(qProp.rental_amenity_id)# <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 				<td>#qProp.rental_amenity_name#</td>
-				<td>#variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-amenity/index?rental_amenity_id=#qProp.rental_amenity_id#', "vertical-arrows")# 
+				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-amenity/index?rental_amenity_id=#qProp.rental_amenity_id#', "vertical-arrows")#  --->
 				<a href="/z/rental/admin/rental-amenity/edit?rental_amenity_id=#qProp.rental_amenity_id#&amp;return=1">Edit</a> | 
 				<a href="/z/rental/admin/rental-amenity/delete?rental_amenity_id=#qProp.rental_amenity_id#&amp;return=1">Delete</a></td>
 			</tr>
 		</cfloop>
+		</tbody>
 	</table>
 </cffunction>
 

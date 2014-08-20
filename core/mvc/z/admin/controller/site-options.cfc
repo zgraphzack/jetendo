@@ -1047,6 +1047,7 @@
 	application.zcore.functions.zSetPageHelpId("2.7.3");
     application.zcore.functions.zstatusHandler(request.zsid);
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id',true);
+	form.site_option_group_parent_id=application.zcore.functions.zso(form, 'site_option_group_parent_id', true);
     db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
@@ -1076,13 +1077,20 @@
 		queueSortStruct.datasource=request.zos.zcoreDatasource;
 		queueSortStruct.where ="  site_option_group_id = '#application.zcore.functions.zescape(qGroup.site_option_group_id)#' and 
 		site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' ";
+
 		
+		queueSortStruct.ajaxTableId='sortRowTable';
+		queueSortStruct.ajaxURL='/z/admin/site-options/manageOptions?site_option_group_parent_id=#form.site_option_group_parent_id#&site_option_group_id=#form.site_option_group_id#';
+
 		queueSortStruct.disableRedirect=true;
 		queueComStruct["obj"&qGroup.site_option_group_id] = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 		queueComStruct["obj"&qGroup.site_option_group_id].init(queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
 			application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+		}
+		if(structkeyexists(form, 'zQueueSortAjax')){
+			queueComStruct["obj"&qGroup.site_option_group_id].returnJson();
 		}
 	}
 	if(form.site_option_group_id EQ 0){
@@ -1137,19 +1145,23 @@
 	<cfif qGroup.recordcount NEQ 0>
 		<p><a href="/z/admin/site-options/add?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_option_group_parent_id=#qgroup.site_option_group_parent_id#&amp;return=1">Add Site Option</a> | <a href="/z/admin/site-option-group/index?site_option_group_parent_id=#form.site_option_group_id#">Manage Sub-Groups</a></p>
 	</cfif>
-	<table class="table-list">
+	<table id="sortRowTable" class="table-list">
+		<thead>
 		<tr>
 			<th>Name</th>
 			<th>Type</th>
 			<cfif variables.allowGlobal>
 				<th>Global</th>
 			</cfif>
+			<th>Sort</th>
 			<th>Admin</th>
 		</tr>
+		</thead>
+		<tbody>
 		<cfscript>
 		var row=0;
 		for(row in qS){
-			writeoutput('<tr ');
+			writeoutput('<tr #queueComStruct["obj"&qS.site_option_group_id].getRowHTML(qS.site_option_id)# ');
 			if(qS.currentrow MOD 2 EQ 0){
 				writeoutput('class="row1"');
 			}else{
@@ -1170,11 +1182,18 @@
 					}
 					writeoutput('</td>');
 				}
-				writeoutput('<td>');
+				echo('<td>');
 				if(qS.site_id NEQ 0 or variables.allowGlobal){
 					if(lastGroup NEQ ""){
-						writeoutput('#queueComStruct["obj"&qS.site_option_group_id].getLinks(qS.recordcount, qS.currentrow, '/z/admin/site-options/manageOptions?site_option_group_parent_id=#qS.site_option_group_parent_id#&amp;site_option_group_id=#qS.site_option_group_id#&amp;site_option_id=#qS.site_option_id#', "vertical-arrows")#');
+						echo('#queueComStruct["obj"&qS.site_option_group_id].getAjaxHandleButton()#');
 					}
+				}
+				echo('</td>');
+				writeoutput('<td>');
+				if(qS.site_id NEQ 0 or variables.allowGlobal){
+					/*if(lastGroup NEQ ""){
+						writeoutput('#queueComStruct["obj"&qS.site_option_group_id].getLinks(qS.recordcount, qS.currentrow, '/z/admin/site-options/manageOptions?site_option_group_parent_id=#qS.site_option_group_parent_id#&amp;site_option_group_id=#qS.site_option_group_id#&amp;site_option_id=#qS.site_option_id#', "vertical-arrows")#');
+					}*/
 					var globalTemp="";
 					if(qS.site_id EQ 0){
 						globalTemp="&amp;globalvar=1";
@@ -1186,6 +1205,7 @@
 			</tr>');
 		}
 		</cfscript>
+		</tbody>
 	</table>
 </cffunction>
 
@@ -2366,6 +2386,8 @@ Define this function in another CFC to override the default email format
 		queueSortStruct.sortFieldName = "site_x_option_group_set_sort";
 		queueSortStruct.primaryKeyName = "site_x_option_group_set_id";
 		queueSortStruct.datasource=request.zos.zcoreDatasource;
+		queueSortStruct.ajaxTableId='sortRowTable';
+		queueSortStruct.ajaxURL=application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#");
 		
 		queueSortStruct.where =" site_x_option_group_set.site_option_app_id = '#application.zcore.functions.zescape(form.site_option_app_id)#' and  
 		site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
@@ -2383,6 +2405,13 @@ Define this function in another CFC to override the default email format
 			//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 			// redirect with zqueuesort renamed
 			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+		}
+		if(structkeyexists(form, 'zQueueSortAjax')){
+			// update cache
+			if(qGroup.site_option_group_enable_cache EQ 1){
+				application.zcore.siteOptionCom.resortSiteOptionGroupSets(request.zos.globals.id, form.site_option_app_id, form.site_option_group_id, form.site_x_option_group_set_parent_id); 
+			}
+			queueSortCom.returnJson();
 		}
 	}
 	if(form.site_option_group_id NEQ 0){
@@ -2681,7 +2710,8 @@ Define this function in another CFC to override the default email format
 	}
 	writeoutput(arraytolist(local.arrSearch, ""));
 	if(qS.recordcount){
-		writeoutput('<table style="border-spacing:0px; width:100%; " class="table-list" >
+		writeoutput('<table id="sortRowTable" style="border-spacing:0px; width:100%; " class="table-list" >
+		<thead>
 		<tr>');
 		for(i=1;i LTE arraylen(arrVal);i++){
 			if(arrDisplay[i]){
@@ -2691,9 +2721,13 @@ Define this function in another CFC to override the default email format
 		if(qGroup.site_option_group_enable_approval EQ 1){
 			echo('<th>Approval Status</th>');
 		}
+		if(qGroup.site_option_group_enable_sorting EQ 1){
+			echo('<th>Sort</th>');
+		}
 		writeoutput('
 		<th style="white-space:nowrap;">Admin</th>
-		</tr>');
+		</tr>
+		</thead><tbody>');
 		var row=0;
 		var currentRowIndex=0;
 		for(row in qS){
@@ -2739,11 +2773,18 @@ Define this function in another CFC to override the default email format
 				if(qGroup.site_option_group_enable_approval EQ 1){
 					echo('<td>'&application.zcore.siteOptionCom.getStatusName(row.site_x_option_group_set_approved)&'</td>');
 				}
+				if(qGroup.site_option_group_enable_sorting EQ 1){
+					echo('<td>');
+					if(row.site_id NEQ 0 or variables.allowGlobal){
+						echo(queueSortCom.getAjaxHandleButton());
+					}
+					echo('</td>');
+				}
 				writeoutput('<td style="white-space:nowrap;white-space: nowrap;">');
 				if(row.site_id NEQ 0 or variables.allowGlobal){
-					if(qGroup.site_option_group_enable_sorting EQ 1){
+					/*if(qGroup.site_option_group_enable_sorting EQ 1){
 						writeoutput(queueSortCom.getLinks(qS.recordcount, currentRowIndex, application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#"), "vertical-arrows"));
-					}
+					}*/
 					if(q1.recordcount NEQ 0){
 						writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
 						<option value="">-- Edit Sub-group --</option>');
@@ -2786,20 +2827,30 @@ Define this function in another CFC to override the default email format
 				}
 				writeoutput('</td>'); 
 			}
-			local.rowStruct[local.curRowIndex]=local.rowOutput;
+			local.rowStruct[local.curRowIndex]={
+				index:local.curRowIndex,
+				row:local.rowOutput,
+				trHTML:""
+			};
+
+			if(qGroup.site_option_group_enable_sorting EQ 1){
+				if(row.site_id NEQ 0 or variables.allowGlobal){
+					local.rowStruct[local.curRowIndex].trHTML=queueSortCom.getRowHTML(row.site_x_option_group_set_id);
+				}
+			}
 		}
-		local.arrKey=structkeyarray(local.rowStruct);
+		local.arrKey=structsort(local.rowStruct, "numeric", "asc", "index");
 		arraysort(local.arrKey, "numeric", "asc");
 		for(i=1;i LTE arraylen(local.arrKey);i++){
-			writeoutput('<tr ');
+			writeoutput('<tr '&local.rowStruct[local.arrKey[i]].trHTML&' ');
 			if(i MOD 2 EQ 0){
 				writeoutput('class="row2"');
 			}else{
 				writeoutput('class="row1"');
 			}
-			writeoutput('>'&local.rowStruct[local.arrKey[i]]&'</tr>');
+			writeoutput('>'&local.rowStruct[local.arrKey[i]].row&'</tr>');
 		} 
-		writeoutput('</table>');
+		writeoutput('</tbody></table>');
 		if(form.site_option_group_id NEQ 0){
 			if(qGroup.site_option_group_admin_paging_limit NEQ 0){
 				searchStruct = StructNew();

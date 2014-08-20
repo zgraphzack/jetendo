@@ -37,21 +37,25 @@
 	if(structkeyexists(form, 'return') and structkeyexists(form, 'rental_id')){
 		StructInsert(request.zsession, "rental_rates_return"&form.rental_id, request.zos.cgi.http_referer, true);		
 	};
+	variables.queueSortStruct = StructNew();
+	variables.queueSortStruct.tableName = "rental";
+	variables.queueSortStruct.sortFieldName = "rental_sort";
+	variables.queueSortStruct.primaryKeyName = "rental_id";
+	variables.queueSortStruct.ajaxTableId='sortRowTable';
+	variables.queueSortStruct.ajaxURL='/z/rental/admin/rates/#form.method#';
+	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
+
+	variables.queueSortStruct.where =" rental_active='1' and 
+	rental.site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' ";
+	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom.init(variables.queueSortStruct);
+	variables.queueSortCom.returnJson();
 	application.zcore.functions.zRequireJquery();
 	application.zcore.functions.zRequireJqueryUI();
 	</cfscript> 
 	<h2 style="display:inline;">Manage Rentals | </h2>
 	<cfscript>
 	this.displayNavigation();
-	variables.queueSortStruct = StructNew();
-	variables.queueSortStruct.tableName = "rental";
-	variables.queueSortStruct.sortFieldName = "rental_sort";
-	variables.queueSortStruct.primaryKeyName = "rental_id";
-	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
-	variables.queueSortStruct.where =" rental_active='1' and 
-	rental.site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' ";
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
-	variables.queueSortCom.init(variables.queueSortStruct);
 	application.zcore.functions.zstatushandler(request.zsid);
 	</cfscript>
 	<script type="text/javascript">
@@ -148,7 +152,8 @@
 	qProp=db.execute("qProp");
 	</cfscript>
 	<p>To display promotional text for a rental, click "edit" and enter text in the "Special Message" field.</p>
-	<table class="table-list" style="border-spacing:0px; width:100%;">
+	<table id="sortRowTable" class="table-list" style="border-spacing:0px; width:100%;">
+		<thead>
 		<tr>
 			<th>ID</th>
 			<th>Photo</th>
@@ -156,6 +161,7 @@
 			<th>Address</th>
 			<th>BR/BA</th>
 			<th>Regular Rate</th>
+			<th>Sort</th>
 			<th>Admin</th>
 		</tr>
 		<cfif application.zcore.app.getAppData("rental").optionstruct.rental_config_reserve_online EQ 1>
@@ -168,8 +174,10 @@
 				<a href="/z/rental/admin/rates/rentalRates?rental_id=">Special Rates</a></td>
 			</tr>
 		</cfif>
+		</thead>
+		<tbody>
 		<cfloop query="qProp">
-		<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+		<tr #variables.queueSortCom.getRowHTML(qProp.rental_id)# <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 			<td>#qProp.rental_id#</td>
 			<td style="vertical-align:top; width:100px; "><cfscript>
 			ts=structnew();
@@ -196,7 +204,8 @@
 					#qProp.rental_bath#
 				</cfif>
 			<td>#qProp.rental_rate#</td>
-			<td>#variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rates/#form.method#?rental_id=#qProp.rental_id#', "vertical-arrows")# 
+			<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+			<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rates/#form.method#?rental_id=#qProp.rental_id#', "vertical-arrows")#  --->
 			<a href="#application.zcore.app.getAppCFC("rental").getRentalLink(qProp.rental_id,qProp.rental_name,qProp.rental_url)#" target="_blank">View</a> | 
 			<a href="/z/rental/admin/rates/editRental?rental_id=#qProp.rental_id#">Edit</a> |
 				<cfif application.zcore.app.getAppData("rental").optionstruct.rental_config_reserve_online EQ 1>
@@ -208,6 +217,7 @@
 				<a href="/z/rental/admin/rates/deleteRental?rental_id=#qProp.rental_id#">Delete</a></td>
 		</tr>
 		</cfloop>
+		</tbody>
 	</table>
 </cffunction>
 
@@ -638,7 +648,7 @@
 		rental_x_category_updating=#db.param('0')#, 
 		rental_category_id = #db.param(arrCatId[i])#, 
 		rental_id = #db.param(form.rental_id)#, 
-		rental_x_category_updated_datetime='#request.zos.mysqlnow#',
+		rental_x_category_updated_datetime=#db.param(request.zos.mysqlnow)#,
 		site_id = #db.param(request.zos.globals.id)#
 		 on duplicate key update rental_x_category_updating=#db.param('0')#";
 		db.execute("q");
@@ -669,7 +679,7 @@
 		set site_id=#db.param(request.zos.globals.id)#, 
 		rental_x_amenity_updating=#db.param('0')#, 
 		rental_id=#db.param(form.rental_id)#, 
-		rental_x_amenity_updated_datetime='#request.zos.mysqlnow#',
+		rental_x_amenity_updated_datetime=#db.param(request.zos.mysqlnow)#,
 		rental_amenity_id=#db.param(arrD[i])#	";
 		db.execute("q");
 	} 
