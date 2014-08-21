@@ -233,9 +233,13 @@ ssl session - lost on browser close - lost on server reboot
 	<cfscript>
 	oldDate=dateadd("n", -request.zos.sessionExpirationInMinutes, now());
 	for(i in application.customSessionStruct){
-		c=application.customSessionStruct[i];
-		if(datecompare(c.date, oldDate) LTE 0){
-			structdelete(application.customSessionStruct, i);
+		try{
+			c=application.customSessionStruct[i];
+			if(datecompare(c.date, oldDate) LTE 0){
+				structdelete(application.customSessionStruct, i);
+			}
+		}catch(Any e){
+			// ignore errors due to uncommon multiple thread issues.
 		}
 	}
 	</cfscript>

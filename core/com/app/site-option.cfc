@@ -620,7 +620,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			
 			arrTable=["site_x_option_group_set s1"];
 			arrWhere=["s1.site_id = '#request.zos.globals.id#' and 
-			s1.site_x_option_group_set_deleted = #db.param(0)#  and 
+			s1.site_x_option_group_set_deleted = 0  and 
 			s1.site_option_group_id = '#groupId#' and "&sql];
 			arrSelect=[];
 			for(i in fieldStruct){
@@ -630,7 +630,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 				arrayAppend(arrWhere, "#tableName#.site_id = s1.site_id and 
 				#tableName#.site_x_option_group_set_id = s1.site_x_option_group_set_id and 
 				#tableName#.site_option_id = '#application.zcore.functions.zescape(i)#' and 
-				#tableName#.site_x_option_group_deleted = #db.param(0)# ");
+				#tableName#.site_x_option_group_deleted = 0");
 			}
 			db=request.zos.noVerifyQueryObject;
 			db.sql="select s1.site_x_option_group_set_id 

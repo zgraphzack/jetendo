@@ -4,12 +4,8 @@ $debug=false; // set to true to allow non-destructive debugging of this script
 
 
 $dir=__DIR__;
-if(!file_exists($dir."/jetendo.ini")){
-	echo("Error: You must create ".$dir."/jetendo.ini and make a symbolic link using this command:\n/bin/ln -sf ".$dir."/jetendo.ini /etc/php5/mods-available/jetendo.ini\n");
-	exit;
-}
 if(get_cfg_var("jetendo_scripts_path") == ""){
-	echo("Error: You must create a symbolic link using this command: /bin/ln -sf ".$dir."/jetendo.ini /etc/php5/mods-available/jetendo.ini\n");
+	echo("Error: You must create a symbolic link using this command: /bin/ln -sf /var/jetendo-server/system/php/jetendo.ini /etc/php5/mods-available/jetendo.ini\n");
 	exit;
 }
 $arrLog=array();
