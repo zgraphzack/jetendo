@@ -14,7 +14,7 @@
 	<style type="text/css">
 	.zPublicDashboardButton:link, .zPublicDashboardButton:visited{ width:150px;text-decoration:none; color:##000;padding:1%;display:block; border:1px solid ##CCC; margin-right:2%; margin-bottom:2%; background-color:##F3F3F3; border-radius:10px; text-align:center; float:left; }
 	.zPublicDashboardButton:hover{background-color:##FFF; border:1px solid ##666;display:block; color:##666;}
-	.zPublicDashboardButtonImage{width:100%; float:left;margin-bottom:5px;display:block;}
+	.zPublicDashboardButtonImage{width:100%; height:64px; float:left;margin-bottom:5px;display:block;}
 	.zPublicDashboardButtonTitle{width:100%; float:left;margin-bottom:5px; font-size:115%; display:block;font-weight:bold;}
 	.zPublicDashboardButtonSummary{width:100%; float:left;}
 	</style>
@@ -63,11 +63,11 @@
 				}else{
 					link=bs.whitelabel_button_builtin;
 				}
-				echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zPublicDashboardButton">');
+				echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zPublicDashboardButton"><span class="zPublicDashboardButtonImage">');
 				if(bs.whitelabel_button_image64 NEQ ""){
-					echo('<span class="zPublicDashboardButtonImage"><img src="#ws.imagePath&bs.whitelabel_button_image64#" alt="#htmleditformat(bs.whitelabel_button_label)#" /></span>');
+					echo('<img src="#ws.imagePath&bs.whitelabel_button_image64#" alt="#htmleditformat(bs.whitelabel_button_label)#" />');
 				}
-				echo('<span class="zPublicDashboardButtonTitle">#bs.whitelabel_button_label#</span>
+				echo('</span><span class="zPublicDashboardButtonTitle">#bs.whitelabel_button_label#</span>
 					<span class="zPublicDashboardButtonSummary">#bs.whitelabel_button_summary#</span></a>');
 
 			}

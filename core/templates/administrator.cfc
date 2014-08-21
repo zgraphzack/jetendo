@@ -74,11 +74,14 @@
 			.zDashboardHeader{width:98%; padding:1%; float:left;}
 			.zDashboardMainContainer{width:100%; float:left;}
 			<cfif ws.whitelabel_dashboard_sidebar_html NEQ "">
-				.zDashboardMain{max-width:71%; padding:1%; width:100%; float:left;}
-				.zDashboardSidebar{ margin-left:2%; padding:1%; width:23%; float:left; }
+				.zDashboardMain{max-width:67%; padding:1%; width:100%; float:left;}
+				.zDashboardSidebar{ margin-left:2%; padding:1%; width:26%; float:left; }
 			<cfelse>
 				.zDashboardMain{ width:98%; padding:1%; float:left;}
 			</cfif>
+			.zdashboard-header-image320 img{float:left;}
+			.zdashboard-header-image640 img{float:left;}
+			.zdashboard-header-image960 img{float:left;}
 			.zdashboard-header-image320{float:left; width:100%;background-color:###ws.whitelabel_dashboard_header_background_color#;  display:none;}
 			.zdashboard-header-image640{float:left; width:100%;background-color:###ws.whitelabel_dashboard_header_background_color#; display:none;}
 			.zdashboard-header-image960{float:left; width:100%;background-color:###ws.whitelabel_dashboard_header_background_color#; display:block;}
@@ -86,7 +89,7 @@
 			.zDashboardFooter{width:98%; padding:1%;  float:left;}
 			.zDashboardButton:link, .zDashboardButton:visited{ width:150px;text-decoration:none; color:##000;padding:1%;display:block; border:1px solid ##CCC; margin-right:2%; margin-bottom:2%; background-color:##F3F3F3; border-radius:10px; text-align:center; float:left; }
 			.zDashboardButton:hover{background-color:##FFF; border:1px solid ##666;display:block; color:##666;}
-			.zDashboardButtonImage{width:100%; float:left;margin-bottom:5px;display:block;}
+			.zDashboardButtonImage{width:100%; height:64px; float:left;margin-bottom:5px;display:block;}
 			.zDashboardButtonTitle{width:100%; float:left;margin-bottom:5px; font-size:115%; display:block;font-weight:bold;}
 			.zDashboardButtonSummary{width:100%; float:left;}
 
@@ -109,6 +112,7 @@
 				.zdashboard-header-image640{display:none;}
 				.zdashboard-header-image320{display:block;}
 			}
+			#ws.whitelabel_css#
 			</style>
 			<cfif ws.whitelabel_dashboard_header_image_320 NEQ "">
 	

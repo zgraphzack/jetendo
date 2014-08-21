@@ -312,15 +312,27 @@
 	ORDER BY user_id DESC 
 	LIMIT #db.param(0)#, #db.param(1)#";
 	qData=db.execute("qData");
-	if(qData.recordcount EQ 0 and request.zos.globals.parentId NEQ 0){
-		db.sql=" SELECT * FROM #request.zos.queryObject.table("whitelabel", request.zos.zcoreDatasource)# whitelabel 
-		WHERE 
-		whitelabel_deleted=#db.param(0)# and 
-		user_id =#db.param(0)# and 
-		site_id = #db.param(request.zos.globals.parentId)# 
-		ORDER BY user_id DESC 
-		LIMIT #db.param(0)#, #db.param(1)#";
-		qData=db.execute("qData");
+	if(qData.recordcount EQ 0){
+		if(request.zos.globals.parentId NEQ 0){
+			db.sql=" SELECT * FROM #request.zos.queryObject.table("whitelabel", request.zos.zcoreDatasource)# whitelabel 
+			WHERE 
+			whitelabel_deleted=#db.param(0)# and 
+			user_id =#db.param(0)# and 
+			site_id = #db.param(request.zos.globals.parentId)# 
+			ORDER BY user_id DESC 
+			LIMIT #db.param(0)#, #db.param(1)#";
+			qData=db.execute("qData");
+		}
+		if(qData.recordcount EQ 0 and request.zos.globals.serverId NEQ request.zos.globals.id and request.zos.globals.parentId NEQ request.zos.globals.serverId){
+			db.sql=" SELECT * FROM #request.zos.queryObject.table("whitelabel", request.zos.zcoreDatasource)# whitelabel 
+			WHERE 
+			whitelabel_deleted=#db.param(0)# and 
+			user_id =#db.param(0)# and 
+			site_id = #db.param(request.zos.globals.serverId)# 
+			ORDER BY user_id DESC 
+			LIMIT #db.param(0)#, #db.param(1)#";
+			qData=db.execute("qData");
+		}
 	}
 	ts={};
 	application.zcore.functions.zQueryToStruct(qData, ts);
@@ -346,6 +358,9 @@
 
 	}
 	request.whiteLabelStruct=ts;
+	if(ts.whitelabel_css NEQ ""){
+		ts.whitelabel_css=replaceNoCase(ts.whitelabel_css, "url(/", "url("&application.zcore.functions.zvar("domain", qData.site_id)&"/", "all");
+	}
 	return ts;
 	</cfscript>
 </cffunction>
@@ -1031,7 +1046,7 @@
 <cffunction name="siteHasApp" localmode="modern"  returntype="boolean" output="no">
 	<cfargument name="app_name" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(request.zos.globals, 'id') and structkeyexists(application.zcore.appComName,arguments.app_name) and structkeyexists(application.sitestruct, request.zos.globals.id) and structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, application.zcore.appComName[arguments.app_name])){
+	if(structkeyexists(request.zos.globals, 'id') and structkeyexists(application.zcore.appComName,arguments.app_name) and structkeyexists(application.sitestruct, request.zos.globals.id) and structkeyexists(application.sitestruct[request.zos.globals.id], 'app') and structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, application.zcore.appComName[arguments.app_name])){
 		return true;
 	}else{
 		return false;

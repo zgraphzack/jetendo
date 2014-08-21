@@ -163,6 +163,9 @@
 	for(n in application.siteStruct){
 		application.sitestruct[n].comCache={};
 		application.sitestruct[n].fileExistsCache={};
+		if(not structkeyexists(application.sitestruct[n], 'globals')){
+			continue;
+		}
 		request.zRootDomain=replace(replace(application.sitestruct[n].globals.shortDomain,'www.',''),"."&request.zos.testDomain,"");
 		request.zRootPath="/"&replace(request.zRootDomain, ".","_","all")&"/"; 
 		request.zRootSecureCfcPath="jetendo-sites.writable."&replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";

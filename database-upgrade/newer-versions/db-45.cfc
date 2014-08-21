@@ -32,6 +32,7 @@
   `whitelabel_login_header_html` LONGTEXT NOT NULL,
   `whitelabel_updated_datetime` DATETIME NOT NULL,
   `whitelabel_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  `whitelabel_css` LONGTEXT NOT NULL,
   PRIMARY KEY (`whitelabel_id`, `site_id`),
   UNIQUE INDEX `NewIndex` (`site_id`, `user_id`, `whitelabel_deleted`)
 ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin")){

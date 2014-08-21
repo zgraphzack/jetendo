@@ -58,11 +58,11 @@
 							}else{
 								link=bs.whitelabel_button_builtin;
 							}
-							echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zDashboardButton">');
+							echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zDashboardButton"><span class="zDashboardButtonImage">');
 							if(bs.whitelabel_button_image64 NEQ ""){
-								echo('<span class="zDashboardButtonImage"><img src="#ws.imagePath&bs.whitelabel_button_image64#" alt="#htmleditformat(bs.whitelabel_button_label)#" /></span>');
+								echo('<img src="#ws.imagePath&bs.whitelabel_button_image64#" alt="#htmleditformat(bs.whitelabel_button_label)#" />');
 							}
-							echo('<span class="zDashboardButtonTitle">#bs.whitelabel_button_label#</span>
+							echo('</span><span class="zDashboardButtonTitle">#bs.whitelabel_button_label#</span>
 								<span class="zDashboardButtonSummary">#bs.whitelabel_button_summary#</span></a>');
 
 						}

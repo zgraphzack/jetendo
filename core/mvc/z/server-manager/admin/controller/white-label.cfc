@@ -81,7 +81,9 @@
 	<cfargument name="site_id" type="string" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
-	application.siteStruct[arguments.site_id].administratorTemplateMenuCache={};
+	if(structkeyexists(application.siteStruct, arguments.site_id)){
+		application.siteStruct[arguments.site_id].administratorTemplateMenuCache={};
+	}
 	db.sql="select site_id from #db.table("site", request.zos.zcoreDatasource)# WHERE 
 	site_parent_id=#db.param(arguments.site_id)# and 
 	site_id <> #db.param(-1)# and 
@@ -669,6 +671,10 @@
 				<th>#application.zcore.functions.zOutputHelpToolTip("Login Header Image 320","member.whitelabel.edit whitelabel_login_header_image_320")#</th>
   				<td>#application.zcore.functions.zInputImage('whitelabel_login_header_image_320', imagePath, imageDisplayPath&'/zupload/whitelabel/')# </td>
   			</tr>
+			<tr>
+				<th class="table-white" style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("CSS","member.whitelabel.edit whitelabel_css")#</th>
+				<td style="vertical-align:top; "><textarea type="text" cols="10" rows="5"  name="whitelabel_css" style="width:95%; height:400px;">#HTMLEditFormat(form.whitelabel_css)#</textarea></td>
+			</tr> 
 		</table>
 		#tabCom.endFieldSet()#
 		<!--- #tabCom.beginFieldSet("Advanced")#

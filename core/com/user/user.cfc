@@ -1099,11 +1099,14 @@ formString = userCom.loginForm(inputStruct);
 			.zloginHeader{width:98%; padding:1%; float:left;}
 			.zloginMainContainer{width:100%; float:left;}
 			<cfif ws.whitelabel_login_sidebar_html NEQ "">
-				.zloginMain{max-width:71%; padding:1%; width:100%; float:left;}
-				.zloginSidebar{ margin-left:2%; padding:1%; width:23%; float:left; }
+				.zloginMain{max-width:67%; padding:1%; width:100%; float:left;}
+				.zloginSidebar{ margin-left:2%; padding:1%; width:26%; float:left; }
 			<cfelse>
 				.zloginMain{ width:98%; padding:1%; float:left;}
 			</cfif>
+			.zlogin-header-image320 img{float:left;}
+			.zlogin-header-image640 img{float:left;}
+			.zlogin-header-image960 img{float:left;}
 			.zlogin-header-image320{float:left; width:100%;background-color:###ws.whitelabel_login_header_background_color#;  display:none;}
 			.zlogin-header-image640{float:left; width:100%;background-color:###ws.whitelabel_login_header_background_color#; display:none;}
 			.zlogin-header-image960{float:left; width:100%;background-color:###ws.whitelabel_login_header_background_color#; display:block;}
@@ -1130,6 +1133,7 @@ formString = userCom.loginForm(inputStruct);
 				.zlogin-header-image640{display:none;}
 				.zlogin-header-image320{display:block;}
 			}
+			#ws.whitelabel_css#
 			</style>
 			<cfif ws.whitelabel_login_header_image_320 NEQ "">
 	
