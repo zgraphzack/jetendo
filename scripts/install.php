@@ -157,6 +157,6 @@ if(zIsTestServer()){
 	$adminDomain=get_cfg_var("jetendo_admin_domain");
 }
 echo "Pre-installation complete.\n\nVisit the following URL in your browser to complete installation:\n\n".
-$adminDomain."/z/server-manager/admin/server-home/index?zreset=app&zforce=1\n\n";
+$adminDomain.":8888/zcorerootmapping/index.cfm?_zsa3_path=/&zreset=app&zforce=1\n\n";
 
 ?>

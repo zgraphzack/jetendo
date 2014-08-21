@@ -1286,14 +1286,20 @@ Primary Cities:</th>
 		arrTables3=['city_id','city_id','listing_id'];
 		arrTables=arraynew(1);
 		arrQ2=arraynew(1);
-		for(i=1;i<=arraylen(arrTables2);i++){
+		db.sql="SHOW TABLES IN `#request.zos.zcoreDatasource#` LIKE #db.param(request.zos.ramtableprefix&"%")# ";
+		qCheckRamTables=db.execute("qCheckRamTables");
+		if(qCheckRamTables.recordcount NEQ 3){
+			arrTables=['city','city_distance','listing'];
+		}else{
+			for(i=1;i<=arraylen(arrTables2);i++){
 			arrayappend(arrQ2,"SELECT #arrTables3[i]# id FROM #db.table("#request.zos.ramtableprefix##arrTables2[i]#", request.zos.zcoreDatasource)#  
 				LIMIT #db.param(0)#,#db.param(1)#");
-		}
-		 db.sql=arraytolist(arrQ2,' UNION ALL ')&' UNION ALL SELECT #db.param(0)# id LIMIT #db.param(4)#';
-		 qC=db.execute("qC");
-		if(isQuery(qC) EQ false or qC.recordcount NEQ 4){
-			arrTables=arrTables2;
+			}
+			db.sql=arraytolist(arrQ2,' UNION ALL ')&' UNION ALL SELECT #db.param(0)# id LIMIT #db.param(4)#';
+			qC=db.execute("qC");
+			if(isQuery(qC) EQ false or qC.recordcount NEQ 4){
+				arrTables=arrTables2;
+			}
 		}
 	}
 	

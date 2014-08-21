@@ -291,24 +291,6 @@
 		throw("zcorerootmapping ERROR: The database and datasource name must be identical. #ts.serverGlobals.datasource# does not exist in database server. Please correct site globals.", "custom");
 	} 
 	
-	var qDomain=0;
-	query name="qDomain" datasource="#ts.serverGlobals.serverdatasource#"{
-		writeoutput("SELECT domain_redirect.*, site.site_domain 
-		FROM domain_redirect, site 
-		WHERE site.site_id = domain_redirect.site_id and 
-		site.site_id <> -1");
-	}
-	ts.domainRedirectStruct={};
-	for(var row in qDomain){
-		if(structkeyexists(row, 'site_deleted') and row.site_deleted EQ 0){
-			continue;
-		}
-		if(structkeyexists(row, 'domain_redirect_deleted') and row.domain_redirect_deleted EQ 0){
-			continue;
-		}
-		ts.domainRedirectStruct[row.domain_redirect_old_domain]=row;
-	}
-	
 	// default environment variables
 	es=structnew();
 	es.live=true;
@@ -382,6 +364,33 @@
 		ts.sitePaths=deserializeJson(application.zcore.functions.zreadfile(ts.serverglobals.serverprivatehomedir&"_cache/scripts/sites.json"));
 	}else{
 		application[request.zos.installPath&":displaySetupScreen"]=true;
+		dbUpgradeCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.admin.controller.db-upgrade");
+		if(not dbUpgradeCom.checkVersion()){
+			if(request.zos.isTestServer or request.zos.isDeveloper){
+				echo('Database upgrade failed');
+				abort;
+			}
+		}
+	}
+
+	
+	
+	var qDomain=0;
+	query name="qDomain" datasource="#ts.serverGlobals.serverdatasource#"{
+		writeoutput("SELECT domain_redirect.*, site.site_domain 
+		FROM domain_redirect, site 
+		WHERE site.site_id = domain_redirect.site_id and 
+		site.site_id <> -1");
+	}
+	ts.domainRedirectStruct={};
+	for(var row in qDomain){
+		if(structkeyexists(row, 'site_deleted') and row.site_deleted EQ 0){
+			continue;
+		}
+		if(structkeyexists(row, 'domain_redirect_deleted') and row.domain_redirect_deleted EQ 0){
+			continue;
+		}
+		ts.domainRedirectStruct[row.domain_redirect_old_domain]=row;
 	}
 	query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
 		writeoutput("SELECT site_id, site_short_domain FROM `#request.zos.zcoreDatasourcePrefix#site` 

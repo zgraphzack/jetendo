@@ -20,7 +20,7 @@
 		this.getDataObject();
 
 
-		db.sql="show tables in `#request.zos.zcoreDatasource#` LIKE #db.param('ngm')# ";
+		db.sql="show tables in `#request.zos.zcoreDatasource#` LIKE #db.param('far')# ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
 			query name="qCreate" datasource="#request.zos.zcoreDatasource#"{

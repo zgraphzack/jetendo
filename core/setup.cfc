@@ -30,7 +30,7 @@
 			}
 			ipStruct=application.zcore.functions.getSystemIpStruct();
 			</cfscript>
-			<form action="/z/server-manager/admin/server-home/index" method="post">
+			<form action="#request.zos.cgi.script_name#?#request.zos.cgi.query_string#" method="post">
 				<table class="table-list" style="width:100%;">
 					<tr>
 						<th colspan="2"><h3>Server Manager Admin Site Configuration</h3></td>

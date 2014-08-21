@@ -98,14 +98,14 @@
 			}
 			currentVersion=qVersion.jetendo_setup_database_version;
 		}
-	}
-	setting requesttimeout="500";
-	if(not fileexists(tempFile)){
-		tempFile=request.zos.sharedPath&"database/jetendo-schema-"&currentVersion&".json";
 		if(not fileexists(tempFile)){
-			throw("The current database version's schema json file is missing: "&request.zos.sharedPath&"database/jetendo-schema-"&currentVersion&".json");
+			tempFile=request.zos.sharedPath&"database/jetendo-schema-"&currentVersion&".json";
+			if(not fileexists(tempFile)){
+				throw("The current database version's schema json file is missing: "&request.zos.sharedPath&"database/jetendo-schema-"&currentVersion&".json");
+			}
 		}
 	}
+	setting requesttimeout="500";
 	application[request.zos.installPath&":dbUpgradeCheckVersion"]=true;
 
 	// verify the rest of the config.cfc values before installing database & application.
@@ -865,8 +865,9 @@
 	versionCom=createobject("component", "zcorerootmapping.version");
     ts2=versionCom.getVersion();
     application.zcore.databaseVersion=ts2.databaseVersion;
-
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
+    if(structkeyexists(application.zcore, 'adminSecurityFilter')){
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
+	}
 	tempFile=request.zos.installPath&"share/database/jetendo-schema-#application.zcore.databaseVersion#.json";
 	file charset="utf-8" action="read" file="#tempFile#" variable="contents";
 	dsStruct=deserializeJson(replace(contents, "zcoreDatasource.", request.zos.zcoreDatasource&".", "ALL"));
