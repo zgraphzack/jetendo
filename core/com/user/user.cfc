@@ -1087,7 +1087,69 @@ formString = userCom.loginForm(inputStruct);
 	</cfif>
 	<cfsavecontent variable="returnString">
 	<cfif request.zos.globals.loginIframeEnabled NEQ 1>
-		<div style="width:580px; margin:0 auto;">
+			<cfscript>
+			ws=application.zcore.app.getWhitelabelStruct();
+			</cfscript>
+			<style type="text/css">
+			<cfif ws.whitelabel_login_header_image_960 NEQ "">
+				.zblanktemplatedivcontainer{ padding:0px !important;}
+			</cfif>
+			.zloginContainerPad{width:97%; padding:1.5%; float:left;}
+			.zloginContainer{width:100%; }
+			.zloginHeader{width:98%; padding:1%; float:left;}
+			.zloginMainContainer{width:100%; float:left;}
+			<cfif ws.whitelabel_login_sidebar_html NEQ "">
+				.zloginMain{max-width:71%; padding:1%; width:100%; float:left;}
+				.zloginSidebar{ margin-left:2%; padding:1%; width:23%; float:left; }
+			<cfelse>
+				.zloginMain{ width:98%; padding:1%; float:left;}
+			</cfif>
+			.zlogin-header-image320{float:left; width:100%;background-color:###ws.whitelabel_login_header_background_color#;  display:none;}
+			.zlogin-header-image640{float:left; width:100%;background-color:###ws.whitelabel_login_header_background_color#; display:none;}
+			.zlogin-header-image960{float:left; width:100%;background-color:###ws.whitelabel_login_header_background_color#; display:block;}
+			
+			.zloginFooter{width:98%; padding:1%;  float:left;}
+			
+
+			@media only screen and (max-width: 980px) { 
+				.zloginContainer{width:100%;}
+				<cfif ws.whitelabel_login_sidebar_html NEQ ""> 
+				</cfif>
+			}
+
+			@media only screen and (max-width: 660px) { 
+				.zlogin-header-image960{display:none;}
+				.zlogin-header-image640{display:block;}
+				.zloginContainer{width:100%;}
+				.zloginMain{max-width:100%;width:98%;}
+				.zloginSidebar{margin-left:0px; width:98%; float:left;}
+
+			}
+			@media only screen and (max-width: 340px) { 
+				.zlogin-header-image960{display:none;}
+				.zlogin-header-image640{display:none;}
+				.zlogin-header-image320{display:block;}
+			}
+			</style>
+			<cfif ws.whitelabel_login_header_image_320 NEQ "">
+	
+				<div class="zlogin-header-image320" style="background-color:###ws.whitelabel_login_header_background_color#;"><img src="#ws.imagePath##ws.whitelabel_login_header_image_320#" style="width:100%; " alt="Site Manager"></div>
+				<div class="zlogin-header-image640" style="background-color:###ws.whitelabel_login_header_background_color#;"><img src="#ws.imagePath##ws.whitelabel_login_header_image_640#" style="width:100%; " alt="Site Manager"></div>
+				<div class="zlogin-header-image960" style="background-color:###ws.whitelabel_login_header_background_color#;"><img src="#ws.imagePath##ws.whitelabel_login_header_image_960#" style="max-width:100%; " alt="Site Manager"></div>
+			</cfif>
+
+
+			<div class="zloginContainerPad">
+				<div class="zloginContainer">
+					<cfif ws.whitelabel_login_header_html NEQ "">
+						<div class="zloginHeader">
+							#ws.whitelabel_login_header_html#
+						</div>
+					</cfif>
+					
+					<div class="zloginMainContainer">
+						<div class="zloginMain">
+		<div style="width:100%; margin:0 auto;">
 	</cfif>
 	<cfscript>
 	if(application.zcore.app.siteHasApp("content") and left(request.cgi_script_name,8) NEQ '/member/'){
@@ -1114,8 +1176,10 @@ formString = userCom.loginForm(inputStruct);
 		<cfelse>
 		<div style="display:none; clear:both; color:##000; font-size:120%;" id="statusDiv"></div>
 	</cfif>
-	<div style="float:left; width:100%;">
-		<div style="float:left; width:180px;">
+
+
+	<div style="float:left;width:100%;">
+		<div style="float:left;margin-bottom:20px;  margin-right:20px;  width:180px;">
 			<cfscript>
 			local.actionVar="";
 			if(structkeyexists(form,  request.zos.urlRoutingParameter)){
@@ -1188,6 +1252,20 @@ formString = userCom.loginForm(inputStruct);
 	</cfif>
 	<cfif request.zos.globals.loginIframeEnabled NEQ 1>
 		</div>
+						</div>
+						<cfif ws.whitelabel_login_sidebar_html NEQ "">
+							<div class="zloginSidebar">
+								#ws.whitelabel_login_sidebar_html#
+							</div>
+						</cfif>
+					</div>
+					<cfif ws.whitelabel_login_footer_html NEQ "">
+						<div class="zloginFooter">
+							#ws.whitelabel_login_footer_html#
+						</div>
+					</cfif>
+				</div>
+			</div>
 	</cfif>
 	</cfsavecontent>
 	<cfreturn returnString>

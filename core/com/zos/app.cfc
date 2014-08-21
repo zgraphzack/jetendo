@@ -295,6 +295,60 @@
 		return arguments.sharedStruct;
 		</cfscript>
     </cffunction>
+
+<cffunction name="getWhitelabelStruct" localmode="modern" access="public" roles="member">
+	<cfscript>
+	db=request.zos.queryObject;
+	if(structkeyexists(request, 'whiteLabelStruct')){
+		return request.whiteLabelStruct;
+	}
+	db.sql=" SELECT * FROM #request.zos.queryObject.table("whitelabel", request.zos.zcoreDatasource)# whitelabel 
+	WHERE 
+	whitelabel_deleted=#db.param(0)# and ";
+	if(structkeyexists(request.zsession, 'user')){
+		db.sql&=" user_id IN (#db.param(0)#, #db.param(request.zsession.user.id)#) and ";
+	}
+	db.sql&=" site_id = #db.param(request.zos.globals.id)# 
+	ORDER BY user_id DESC 
+	LIMIT #db.param(0)#, #db.param(1)#";
+	qData=db.execute("qData");
+	if(qData.recordcount EQ 0 and request.zos.globals.parentId NEQ 0){
+		db.sql=" SELECT * FROM #request.zos.queryObject.table("whitelabel", request.zos.zcoreDatasource)# whitelabel 
+		WHERE 
+		whitelabel_deleted=#db.param(0)# and 
+		user_id =#db.param(0)# and 
+		site_id = #db.param(request.zos.globals.parentId)# 
+		ORDER BY user_id DESC 
+		LIMIT #db.param(0)#, #db.param(1)#";
+		qData=db.execute("qData");
+	}
+	ts={};
+	application.zcore.functions.zQueryToStruct(qData, ts);
+	ts.imagePath=application.zcore.functions.zvar('domain', ts.site_id)&"/zupload/whitelabel/";
+	ts.arrPublicButton=[];
+	ts.arrAdminButton=[];
+
+	if(qData.recordcount NEQ 0){  
+		db.sql="select * from #request.zos.queryObject.table("whitelabel_button", request.zos.zcoreDatasource)# whitelabel_button 
+		WHERE whitelabel_id = #db.param(qData.whitelabel_id)# and 
+		whitelabel_button_deleted=#db.param(0)# and 
+		site_id = #db.param(qData.site_id)# 
+		ORDER BY whitelabel_button_public ASC, whitelabel_button_sort ASC";
+		qButton=db.execute("qButton");
+		for(row in qButton){
+			row.whitelabel_button_image128=row.whitelabel_button_image128;
+			if(row.whitelabel_button_public EQ "1"){
+				arrayAppend(ts.arrPublicButton, row);
+			}else{
+				arrayAppend(ts.arrAdminButton, row);
+			}
+		}
+
+	}
+	request.whiteLabelStruct=ts;
+	return ts;
+	</cfscript>
+</cffunction>
     
     <!--- application.zcore.app.setAdminMenu(sharedMenuStruct); --->
     <cffunction name="setAdminMenu" localmode="modern" returntype="any" output="yes">
@@ -317,6 +371,7 @@
 		var target="";
 		var n=0;
 		writeoutput('<div class="zMenuWrapper"><ul id="zMenuDivDefault" class="zMenuBarDiv">');
+		writeoutput('<li><a class="trigger" href="/z/admin/admin-home/index">Dashboard</a></li> ');
 		arrKey2=structkeyarray(arguments.sharedStruct);
 		arrKey=[];
 		for(i=1;i LTE arraylen(arrKey2);i++){

@@ -34,7 +34,7 @@
 	arrJ=[];
 	for(row in qCalendar){
 		ts={
-			title:row.reservation_type_first_name&" "&row.reservation_type_last_name,
+			title:row.reservation_type_name,
 			start:dateformat(row.reservation_type_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.reservation_type_start_datetime, "HH:mm:ss"),
 			link:"/z/reservation/admin/reservation-type/edit?reservation_type_id=#row.reservation_type_id#"
 		}

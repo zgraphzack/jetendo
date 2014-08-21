@@ -553,7 +553,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	</cfscript>
 </cffunction>
 
-<!--- zUploadResizedImagesToDb(fieldName, destination, resizeList, [tableName], [primary_key_id], [delete], [datasource]); 
+<!--- zUploadResizedImagesToDb(fieldName, destination, resizeList, [tableName], [primary_key_id], [delete], [datasource], [autocroplist], [site_id]); 
 notes: optionally delete an existing image that has a field in the specified database ---> 
 <cffunction name="zUploadResizedImagesToDb" localmode="modern" returntype="any" output="true">
 	<cfargument name="fieldName" required="yes" type="string">
@@ -564,6 +564,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	<cfargument name="delete" required="no" type="string" default="">
 	<cfargument name="datasource" required="no" type="string" default="#request.zos.globals.datasource#">
 	<cfargument name="autocropList" required="no" type="string" default="">
+	<cfargument name="site_id" required="no" type="string" default="#request.zos.globals.id#">
 	<cfscript>
 	var local=structnew();
 	var arrFiles = ArrayNew(1);
@@ -573,15 +574,20 @@ notes: optionally delete an existing image that has a field in the specified dat
 	var db=request.zos.queryObject;
 	request.zImageErrorCause="";
 	if(arguments.tableName NEQ "" and trim(arguments.tableName) NEQ "" and arguments.primary_key_id NEQ "" and structkeyexists(form, arguments.primary_key_id)){
-    		db.sql="SHOW FIELDS FROM #db.table(arguments.tableName, arguments.datasource)# LIKE #db.param('site_id')#";
+    	db.sql="SHOW FIELDS FROM #db.table(arguments.tableName, arguments.datasource)# LIKE #db.param('site_id')#";
 		local.qC=db.execute("qC");
+    	db.sql="SHOW FIELDS FROM #db.table(arguments.tableName, arguments.datasource)# LIKE #db.param(arguments.tableName&'_deleted')#";
+		local.qC2=db.execute("qC");
 		db.sql="SELECT #arguments.fieldName# FROM #db.table(arguments.tableName, arguments.datasource)# #arguments.tableName# 
 		WHERE #arguments.primary_key_id# = #db.param(form[arguments.primary_key_id])#";
 		if(local.qC.recordcount NEQ 0){
-			db.sql&=" and site_id = #db.param(request.zos.globals.id)# ";
+			db.sql&=" and site_id = #db.param(arguments.site_id)# ";
+		}
+		if(local.qC2.recordcount NEQ 0){
+			db.sql&=" and `#arguments.tableName#_deleted` = #db.param(0)# ";
 		}
 		qImage=db.execute("qImage");
-		if(arguments.delete NEQ "" and isDefined(arguments.delete)){
+		if(arguments.delete NEQ "" and structkeyexists(form, arguments.delete)){
 			for(i=1;i LTE listLen(arguments.fieldName);i=i+1){
 				application.zcore.functions.zDeleteFile(arguments.destination & qImage[listGetAt(arguments.fieldName, i)]);
 			}	
@@ -757,9 +763,7 @@ notes: optionally delete an existing image that has a field in the specified dat
     }
     request.arrLastImageWidth=arraynew(1);
     request.arrLastImageHeight=arraynew(1);
-    </cfscript>
-    <cfloop from="1" to="#arraylen(arrSizes)#" index="n">
-        <cfscript>
+    for(n=1;n LTE arraylen(arrSizes);n++){
         currentWidth=backupWidth;
         currentHeight=backupHeight;
         if(arguments.autocropList NEQ "" and arrCrop[n] NEQ "0"){
@@ -777,10 +781,13 @@ notes: optionally delete an existing image that has a field in the specified dat
         }else{
             if(fileexists(tempDestination&fileName&finalExt)){
                 for(i=1;i LTE 1000;i=i+1){
-                    filePath = tempDestination&fileName&i&finalExt;				
+                    filePath = tempDestination&fileName&i&finalExt;
                     if(fileexists(filePath) EQ false){
                         break;
                     }
+                }
+                if(i EQ 1000){
+                	throw("Unable to make filename unique");
                 }
             }else{
                 filePath = tempDestination&fileName&finalExt;
@@ -800,102 +807,104 @@ notes: optionally delete an existing image that has a field in the specified dat
             nw=round(currentWidth*ratio);
             nh=round(currentHeight*ratio);
         }
-	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-		writeoutput(backupWidth&"<br />"); 
-		writeoutput("#nw#x#nh#<br />"); 
-	}
-	
-	resizeCMD='-resize "#nw#x#nh#>" ';
-	cs={};
-	cs.resizeWidth=nw;
-	cs.resizeHeight=nh;
-	cs.cropWidth=0;
-	cs.cropHeight=0;
-	cs.cropXOffset=0;
-	cs.cropYOffset=0;
-	cs.destinationFilePath="";
-	cs.sourceFilePath="";
-	
-	if(currentWidth GT nw){
-		qtype="highQuality";
-		currentHeight=nh;
-	}
-	if(autocrop){
-		nhBackup=nh;
-		nh=currentHeight;
-		dooffset=false;
 		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-			writeoutput('nw-newWidth: '&(nw-newWidth)&'<br />');
-			writeoutput('nh-newHeight: '&(nh-newHeight)&'<br />');
+			writeoutput(backupWidth&"<br />"); 
+			writeoutput("#nw#x#nh#<br />"); 
 		}
-		if(nh-newHeight GTE 0){
-			nw=0;
-			nh=round((nh-newHeight)/2);	 
-			dooffset=true;
+		
+		resizeCMD='-resize "#nw#x#nh#>" ';
+		cs={};
+		cs.resizeWidth=nw;
+		cs.resizeHeight=nh;
+		cs.cropWidth=0;
+		cs.cropHeight=0;
+		cs.cropXOffset=0;
+		cs.cropYOffset=0;
+		cs.destinationFilePath="";
+		cs.sourceFilePath="";
+		
+		if(currentWidth GT nw){
+			qtype="highQuality";
+			currentHeight=nh;
+		}
+		if(autocrop){
+			nhBackup=nh;
+			nh=currentHeight;
+			dooffset=false;
 			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-				writeoutput("height crop updated: #nh#<br />"); 
+				writeoutput('nw-newWidth: '&(nw-newWidth)&'<br />');
+				writeoutput('nh-newHeight: '&(nh-newHeight)&'<br />');
 			}
-		}else{
-			resizeCMD='-resize "#currentWidth#x#newHeight#>" ';
-			cs.resizeWidth=currentWidth;
-			cs.resizeHeight=newHeight;
-			nw=0;
-			nh=0;
-			if(currentWidth GT newWidth){
-				// convert to the new small width, before calculating below 
-				tempWidth=round((newHeight/backupHeight)*backupWidth);
-				if(tempWidth-newWidth GT 0){
-					resizeCMD='-resize "#tempWidth#x#newHeight#>" ';
-					cs.resizeWidth=tempWidth;
-					cs.resizeHeight=newHeight;
-					if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-						writeoutput("tempWidth: #tempWidth#<br />"); 
-					}
-					nw=round((tempWidth-newWidth)/2);
-					dooffset=true;
-					if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-						writeoutput("width crop updated: #nw#<br />"); 
+			if(nh-newHeight GTE 0){
+				nw=0;
+				nh=round((nh-newHeight)/2);	 
+				dooffset=true;
+				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
+					writeoutput("height crop updated: #nh#<br />"); 
+				}
+			}else{
+				resizeCMD='-resize "#currentWidth#x#newHeight#>" ';
+				cs.resizeWidth=currentWidth;
+				cs.resizeHeight=newHeight;
+				nw=0;
+				nh=0;
+				if(currentWidth GT newWidth){
+					// convert to the new small width, before calculating below 
+					tempWidth=round((newHeight/backupHeight)*backupWidth);
+					if(tempWidth-newWidth GT 0){
+						resizeCMD='-resize "#tempWidth#x#newHeight#>" ';
+						cs.resizeWidth=tempWidth;
+						cs.resizeHeight=newHeight;
+						if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
+							writeoutput("tempWidth: #tempWidth#<br />"); 
+						}
+						nw=round((tempWidth-newWidth)/2);
+						dooffset=true;
+						if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
+							writeoutput("width crop updated: #nw#<br />"); 
+						}
 					}
 				}
 			}
-		}
-		if(dooffset){
-			resizeCMD&="-crop #newWidth#x#newHeight#+#nw#+#nh# ";
-			cs.cropWidth=newWidth;
-			cs.cropHeight=newHeight;
-			cs.cropXOffset=nw;
-			cs.cropYOffset=nh;
-			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-				writeoutput("autocrop final<br />"); 
-				writeoutput("#newWidth#x#newHeight#<br />");  
-				//application.zcore.functions.zabort();
+			if(dooffset){
+				resizeCMD&="-crop #newWidth#x#newHeight#+#nw#+#nh# ";
+				cs.cropWidth=newWidth;
+				cs.cropHeight=newHeight;
+				cs.cropXOffset=nw;
+				cs.cropYOffset=nh;
+				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
+					writeoutput("autocrop final<br />"); 
+					writeoutput("#newWidth#x#newHeight#<br />");  
+					//application.zcore.functions.zabort();
+				}
 			}
 		}
-	}
-	resizeCMD&=' "#arguments.source#" "#filePath#"'
-	cs.sourceFilePath=arguments.source;
-	cs.destinationFilePath=filePath;
-	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-		writeoutput(resizeCMD&"<br />");
-	}
-	secureCommand="getImageMagickConvertResize"&chr(9)&cs.resizeWidth&chr(9)&cs.resizeHeight&chr(9)&cs.cropWidth&chr(9)&cs.cropHeight&chr(9)&cs.cropXOffset&chr(9)&cs.cropYOffset&chr(9)&cs.sourceFilePath&chr(9)&cs.destinationFilePath;
-	output=application.zcore.functions.zSecureCommand(secureCommand, 10);
-	if(output NEQ "1"){
-		if(request.zos.isDeveloper){
-			throw("Failed to resize image with zSecureCommand: "&secureCommand&" | Output: "&output);
+		resizeCMD&=' "#arguments.source#" "#filePath#"';
+		cs.sourceFilePath=arguments.source;
+		cs.destinationFilePath=filePath;
+		/*tempFile="##"&gettickcount();
+		tempDest=cs.destinationFilePath&tempFile&"."&application.zcore.functions.zgetFileExt(cs.destinationFilePath);
+		application.zcore.functions.zCopyFile(cs.sourceFilePath, tempDest);
+
+		cs.sourceFilePath=tempDest;*/
+		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
+			writeoutput(resizeCMD&"<br />");
 		}
-		return false;
-	}
-	local.imageSize=application.zcore.functions.zGetImageSize(filePath);    
-	arrayAppend(request.arrLastImageWidth,local.imageSize.width);
-	arrayAppend(request.arrLastImageHeight,local.imageSize.height);
-	</cfscript>
-        <cftry>
-        <cfcatch type="any">
-            <cfreturn false>
-        </cfcatch>
-        </cftry>
-        <cfscript>
+		secureCommand="getImageMagickConvertResize"&chr(9)&cs.resizeWidth&chr(9)&cs.resizeHeight&chr(9)&cs.cropWidth&chr(9)&cs.cropHeight&chr(9)&cs.cropXOffset&chr(9)&cs.cropYOffset&chr(9)&cs.sourceFilePath&chr(9)&cs.destinationFilePath;
+		output=application.zcore.functions.zSecureCommand(secureCommand, 10);
+		if(output NEQ "1"){
+			if(request.zos.isDeveloper){
+				throw("Failed to resize image with zSecureCommand: "&secureCommand&" | Output: "&output);
+			}
+			return false;
+		}
+		local.imageSize=application.zcore.functions.zGetImageSize(filePath);    
+		arrayAppend(request.arrLastImageWidth,local.imageSize.width);
+		arrayAppend(request.arrLastImageHeight,local.imageSize.height);
+		/*try{
+		}catch(Any e){
+			return false;
+		}*/
         if(fileexists(filePath) EQ false){
             return false;
         } 
@@ -907,9 +916,7 @@ notes: optionally delete an existing image that has a field in the specified dat
             // save filename
             ArrayAppend(arrFiles, GetFileFromPath(filePath));
         }
-        </cfscript>
-    </cfloop> 
-    <cfscript>
+    }
     return arrFiles;
     </cfscript>
 </cffunction>

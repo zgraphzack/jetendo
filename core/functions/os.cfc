@@ -2979,6 +2979,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	<a href="/z/server-manager/admin/site/edit?zid=#arguments.zid#&amp;sid=#form.sid#">Globals</a>
 	| <a href="/z/server-manager/admin/domain-redirect/index?zid=#arguments.zid#&amp;sid=#form.sid#">Domain Redirects</a>
 	| <a href="/z/server-manager/admin/deploy/index?zid=#arguments.zid#&amp;sid=#form.sid#">Deploy</a>
+	| <a href="/z/server-manager/admin/white-label/index?zid=#arguments.zid#&amp;sid=#form.sid#">White-Label</a>
 	
 	| <a href="/z/server-manager/admin/site/downloadste?zid=#arguments.zid#&amp;sid=#form.sid#">Dreamweaver STE</a>
 	<cfif qSite.site_theme_sync_site_id NEQ 0> | <a href="/z/server-manager/admin/site/manualSync?zid=#arguments.zid#&amp;sid=#form.sid#">Sync Source Code</a></cfif>

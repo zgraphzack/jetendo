@@ -128,7 +128,7 @@
 		var theOutput="";
 		</cfscript>
 		<cfsavecontent variable="theOutput">
-        <div class="zmember-openid" style="float:left; width:375px; padding-left:20px; <cfif request.zos.globals.disableOpenID EQ 1 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 1)>display:none;</cfif>">
+        <div class="zmember-openid" style="float:left; width:100%; max-width:375px;<cfif request.zos.globals.disableOpenID EQ 1 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 1)>display:none;</cfif>">
         <h2><span style="display:block;float:left;">Sign in with OpenID </span> <span style="color:##F00;font-size:12px; margin-top:-5px; margin-left:3px; display:block; float:left;">New</span></h2><br style="clear:both;" />
         <cfscript>
         local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");

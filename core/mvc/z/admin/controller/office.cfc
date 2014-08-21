@@ -279,7 +279,7 @@ enable round robin for offices - need a new option to disable for staff.
 			</thead>
 			<tbody>
 				<cfloop query="qOffice">
-				<tr #variables.queueSortCom.getRowHTML(qOffice)# <cfif qOffice.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
+				<tr #variables.queueSortCom.getRowHTML(qOffice.office_id)# <cfif qOffice.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
 					<td style="vertical-align:top; width:100px; ">
 					<cfscript>
 					ts=structnew();

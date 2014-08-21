@@ -235,14 +235,14 @@ button{
 .zapp-shell-foot { float:left; width:100%; padding-top:10px; padding-bottom:10px; font-size:10px; color:#999999;}
 .zapp-shell-foot a:link, .zapp-shell-foot a:visited { color:#999999; }
 .zapp-shell-logout{
-	padding:0px; background-color:#336699;width:70px;
+	padding:0px;  width:70px;
 }
 .zapp-shell-logout a:link, .zapp-shell-logout a:visited{ 
-	color:#FFFFFF;background-color:#336699;
-width:70px; font-size:13px; font-weight:bold; text-decoration:none; line-height:21px; height:40px;padding-top:15px; text-align:center; vertical-align:middle; display:block;
+	color:#FFFFFF; 
+width:70px; font-size:13px; font-weight:bold; text-decoration:none; line-height:21px; height:30px;padding-top:12px; text-align:center; vertical-align:middle; display:block;
 }
 .zapp-shell-logout a:hover, .zapp-shell-logout a:active{
-	color:#FFFF00;background-color:#114477;
+	color:#FFFFFF;background-color:#1e5799;border-radius:10px;
 }
 table{border-collapse:separate !important;border-spacing:0px; empty-cells:show !important;}
 

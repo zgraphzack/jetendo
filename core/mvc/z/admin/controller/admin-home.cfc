@@ -28,11 +28,60 @@
 </cffunction>
 
 
+	
+
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.functions.zSetPageHelpId("1");
 	application.zcore.functions.zstatushandler(request.zsid);
+
+	ws=application.zcore.app.getWhitelabelStruct();
+	//writedump(ws);
+
 	</cfscript>
+	<div class="zDashboardContainerPad">
+		<div class="zDashboardContainer">
+			<cfif ws.whitelabel_dashboard_header_html NEQ "">
+				<div class="zDashboardHeader">
+					#ws.whitelabel_dashboard_header_html#
+				</div>
+			</cfif>
+			
+			<div class="zDashboardMainContainer">
+				<div class="zDashboardMain">
+					<cfscript> 
+					if(structkeyexists(ws, 'arrAdminButton')){
+						for(i=1;i LTE arraylen(ws.arrAdminButton);i++){
+							bs=ws.arrAdminButton[i];
+							if(bs.whitelabel_button_builtin EQ ""){
+								link=bs.whitelabel_button_url;
+							}else{
+								link=bs.whitelabel_button_builtin;
+							}
+							echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zDashboardButton">');
+							if(bs.whitelabel_button_image64 NEQ ""){
+								echo('<span class="zDashboardButtonImage"><img src="#ws.imagePath&bs.whitelabel_button_image64#" alt="#htmleditformat(bs.whitelabel_button_label)#" /></span>');
+							}
+							echo('<span class="zDashboardButtonTitle">#bs.whitelabel_button_label#</span>
+								<span class="zDashboardButtonSummary">#bs.whitelabel_button_summary#</span></a>');
+
+						}
+					}
+					</cfscript>
+				</div>
+				<cfif ws.whitelabel_dashboard_sidebar_html NEQ "">
+					<div class="zDashboardSidebar">
+						#ws.whitelabel_dashboard_sidebar_html#
+					</div>
+				</cfif>
+			</div>
+			<cfif ws.whitelabel_dashboard_footer_html NEQ "">
+				<div class="zDashboardFooter">
+					#ws.whitelabel_dashboard_footer_html#
+				</div>
+			</cfif>
+		</div>
+	</div>
 
 </cffunction>
 </cfoutput>

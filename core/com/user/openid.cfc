@@ -174,7 +174,7 @@ WHERE site_id <>'16'
             </cfscript>
 			<cfif variables.arrOpenIdProvider[n].name EQ "Custom">
             	<div class="zmember-openid-subheader">Or enter another OpenID Provider URL</div>
-            	<div class="zmember-openid-buttons"><input type="text" name="openidurl" id="openidurl" value="<cfif isDefined('cookie.zopenidurl')>#htmleditformat(urldecode(cookie.zopenidurl))#</cfif>" /></div>
+            	<div class="zmember-openid-buttons" style="width:95%;"><input type="text" name="openidurl" id="openidurl" value="<cfif isDefined('cookie.zopenidurl')>#htmleditformat(urldecode(cookie.zopenidurl))#</cfif>" /></div>
                 <div class="zmember-openid-buttons"><button type="button" name="openidsubmit" onclick="<cfif structkeyexists(request.zos, 'inMemberArea') and request.zos.inMemberArea and application.zcore.user.checkGroupAccess("user")>zLogin.zOpenidLogin(false);<cfelse>openidAutoConfirm(false);</cfif>" value="">Login with <cfif variables.arrOpenIdProvider[n].icon NEQ ""><img src="#variables.arrOpenIdProvider[n].icon#" alt="Login with OpenID" width="80" style="vertical-align:middle;margin-top:-3px;" /></cfif></button> 
                 
                 <input type="hidden" name="openidhiddenurl" id="openidhiddenurl" value="?openid.return_to=#urlencodedformat(local.curReturnTo)#&amp;#arraytolist(arrURL,"&amp;")#&amp;openid.realm=#urlencodedformat(request.zos.currentHostName&"/")#" />

@@ -249,7 +249,8 @@
 	
 	form.user_group_id = application.zcore.functions.zso(form, 'uai');
 	inputStruct.user_openid_required=application.zcore.functions.zso(form, 'user_openid_required',false,0);
-	if(form.user_id NEQ request.zsession.user.id){
+	if(form.user_id EQ request.zsession.user.id and request.zsession.user.site_id EQ form.sid){
+	}else{
 		inputStruct.user_access_site_children = application.zcore.functions.zso(form, 'user_access_site_children',true); // set to 1 to give user full access to children sites
 		inputStruct.user_site_administrator = application.zcore.functions.zso(form, 'user_site_administrator',true); // set to 1 to give user full access to all groups on a site
 		inputStruct.user_server_administrator = application.zcore.functions.zso(form, 'user_server_administrator',true); // set to 1 to give user full access to all sites & groups
@@ -527,7 +528,7 @@
 			<tr>
 				<td style="vertical-align:top; width:140px;">Site Administrator:</td>
 				<td>
-					<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
+					<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id and request.zsession.user.site_id EQ qUser.site_id>
 						<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 					<cfelse>
 						<input name="user_site_administrator" id="user_site_administrator" type="checkbox" onClick="checkUser(1);" value="1" <cfif form.user_site_administrator EQ 1>checked="checked"</cfif>>
@@ -537,7 +538,7 @@
 			<tr>
 				<td style="vertical-align:top; width:140px;">Access Site Children:</td>
 				<td>
-					<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
+					<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id and request.zsession.user.site_id EQ qUser.site_id>
 						<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 					<cfelse>
 						<input name="user_access_site_children" id="user_access_site_children" type="checkbox" onClick="checkUser(2);" value="1" <cfif form.user_access_site_children EQ 1>checked="checked"</cfif>>
@@ -547,7 +548,7 @@
 			<cfif form.sid EQ '1'>
 				<tr>
 					<td style="vertical-align:top; width:140px;">Server Administrator:</td>
-					<td><cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
+					<td><cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id and request.zsession.user.site_id EQ qUser.site_id>
 							<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 							<cfelse>
 							<input name="user_server_administrator" id="user_server_administrator" type="checkbox" onClick="checkUser(2);" value="1" <cfif form.user_server_administrator EQ 1>checked="checked"</cfif>>
@@ -600,7 +601,7 @@
 				}else{
 					document.getElementById("serverAdminDiv").style.display='none';
 				}
-			<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id>
+			<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id and request.zsession.user.site_id EQ qUser.site_id>
 				if(num == 1){
 					if(document.userForm.user_site_administrator.checked == false){
 						document.userForm.user_server_administrator.checked = false;
