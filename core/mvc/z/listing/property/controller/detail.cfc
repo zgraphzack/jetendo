@@ -2,53 +2,32 @@
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" returntype="any">
 <cfscript>
-var detailCom=0;
-var ts=0;
-var firstImageToShow=0;
-var urlMLSId=0;
-var listingHasMap=0;
-var cfcatch=0;
-var urlMLSPId=0;
-var excpt=0;
 var temp=structnew();
-var ps=0;
-var propertyDataCom=0;
-var propertyDisplayCom=0;
-var hideSearchBar=0;
-var returnStruct=0;
-var isOfficeListing=0;
-var idx=0;
-var titleStruct=0;
-var tempURL=0;
-var propertyLink=0;
-var fullPropertyLink=0;
-var tempText=0;
-var theBegin=0;
-var theEnd=0;
-var pos=0;
-var hideSearchBar=0;
-var searchStruct=0;
-var i=0;
-var newD=0;
-var message1=0;
-var message2=0;
-var message3=0;
-var message4=0;
-var mapStageStruct=0;
-var hideControls=0;
-var mapHTML=0;
-var ms=0;
-var mapCom=0;
-var d3=0;
-var metacontent=0;
-var featureText=0;
-var metaKey=0;
 request.zos.tempObj.listingDetailPage=true;
-</cfscript>
-<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_detail_layout') EQ 2 and not structkeyexists(request.zos, 'forceDefaultListingPage')><cfinclude template="#request.zRootPath&application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_detail_template#"><cfelseif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_detail_layout') EQ 1><cfscript>
-detailCom=createobject("component", "detail-new");
-detailCom.index();
-</cfscript><cfelse><cfscript>
+
+if(isDefined('request.zsession.zlistingdetailhitcount2') EQ false){
+	request.zsession.zlistingdetailhitcount2=1;
+}else{
+	request.zsession.zlistingdetailhitcount2++;
+}
+os=application.zcore.app.getAppData("listing").sharedStruct.optionStruct;
+if(application.zcore.functions.zso(os, 'mls_option_detail_layout') EQ 2 and not structkeyexists(request.zos, 'forceDefaultListingPage')){
+	if(application.zcore.functions.zso(os, 'mls_option_detail_cfc') NEQ "" and application.zcore.functions.zso(os, 'mls_option_detail_method') NEQ ""){
+		if(left(os.mls_option_detail_cfc,5) EQ "root."){
+			comPath=replaceNoCase(os.mls_option_detail_cfc, "root.", request.zRootCFCPath);
+		}else{
+			comPath=os.mls_option_detail_cfc;
+		}
+		detailCom=application.zcore.functions.zcreateobject("component", comPath);
+		detailCom[os.mls_option_detail_method]();
+		return;
+	}
+}else if(application.zcore.functions.zso(os, 'mls_option_detail_layout') EQ 1){
+	detailCom=createobject("component", "detail-new");
+	detailCom.index();
+	return;
+}
+
 application.zcore.template.setTag("title","Property Detail");
 ts=StructNew();
 ts.list='';
@@ -56,12 +35,6 @@ ts.list='';
 if(structkeyexists(form, 'searchId') EQ false and isDefined('request.zsession.tempVars.zListingSearchId')){
 	form.searchId=request.zsession.tempVars.zListingSearchId;
 }
-if(isDefined('request.zsession.zlistingdetailhitcount') EQ false){
-	request.zsession.zlistingdetailhitcount=1;
-}else{
-	request.zsession.zlistingdetailhitcount++;
-}
-
 firstImageToShow=1;
 </cfscript>
 
@@ -114,7 +87,7 @@ if(returnStruct.count EQ 0 or returnStruct.query.recordcount EQ 0 or arraylen(re
 		writedump(returnStruct);
 		application.zcore.functions.zabort();
 	}
-	if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_missing_listing_behavior',true, 1) EQ 1){
+	if(application.zcore.functions.zso(os, 'mls_option_missing_listing_behavior',true, 1) EQ 1){
 		application.zcore.functions.z404("listing record is missing.");
 	}else{
 		application.zcore.functions.z301Redirect('/');
@@ -179,7 +152,7 @@ fullPropertyLink=htmleditformat(fullPropertyLink);
 <cfsavecontent variable="temp.pageNav">
 	<a href="#request.zos.globals.siteroot#/">#request.zos.globals.homelinktext#</a> /
 	
-<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_search',true) EQ 0>
+<cfif application.zcore.functions.zso(os, 'mls_option_disable_search',true) EQ 0>
 <cfif hideSearchBar EQ false or structkeyexists(form, 'searchId')>
 <cfelse>
 	<a href="#request.zos.listing.functions.getSearchFormLink()#" class="zNoContentTransition">Property Search</a> /
@@ -261,7 +234,7 @@ writeoutput(propertyDisplayCom.display());
 
 <div class="listing-d-div-l">
 
-<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 0>
+<cfif os.mls_option_rentals_only EQ 0>
 
 <cfscript>
 message1=application.zcore.functions.zVarSO("Listing: Sales Message 1");
@@ -283,7 +256,7 @@ This listing was first listed on this web site on #dateformat(variables.listing_
 </div>
 </cfif>
 
-	<cfif listingHasMap and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_enable_walkscore',true,1) EQ 1>
+	<cfif listingHasMap and application.zcore.functions.zso(os, 'mls_option_enable_walkscore',true,1) EQ 1>
 <div style=" width:480px; font-size:18px; margin-bottom:10px; margin-top:10px;" id="walkscore-div"><a href="##" onclick="zAjaxWalkscore({'latitude':'#variables.listing_latitude#','longitude':'#variables.listing_longitude#'}); return false;">Click here to check Walkscore</a></div>
 </cfif>
 <span style="font-size:80%;">Source: #request.zos.globals.shortdomain#</span>
@@ -347,7 +320,7 @@ d3=application.zcore.listingCom.listingLookupValue("listing_type",variables.list
 	metaKey=rereplacenocase(titleStruct.title&" "&idx.features,"<.*?>"," ","ALL");
 	</cfscript>
     <link rel="canonical" href="#request.zos.currentHostName##propertyLink#" />
-    <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>
+    <cfif application.zcore.functions.zso(os, 'mls_option_disable_detail_indexing',true,0) EQ 1>
     <meta name="robots" content="noindex,nofollow,noarchive" />
     </cfif>
 	<meta name="keywords" content="#htmleditformat(metaKey)#" />
@@ -378,7 +351,7 @@ document.getElementById("zmlslistingphoto#i#").onerror=function(){this.style.dis
 </cfloop>
 </div>
 <cfif structkeyexists(idx, 'officeName')><!--- isOfficeListing EQ false and  --->
-	<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_compliantIDX EQ 1>
+	<cfif os.mls_option_compliantIDX EQ 1>
         <hr />
         <span >Listing courtesy of #idx.officeName#</span> <br />
     <cfelse>
@@ -389,7 +362,6 @@ document.getElementById("zmlslistingphoto#i#").onerror=function(){this.style.dis
 </cfif>
 </td></tr>
 </table> 
-</cfif>
 </cffunction>
 </cfoutput>
 </cfcomponent>

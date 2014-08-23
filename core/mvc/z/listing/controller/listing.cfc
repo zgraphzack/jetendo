@@ -774,19 +774,19 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 		db.execute("q"); 
 	}
 	
-if(structkeyexists(form, 'forceupdatelistlayout')){
+	if(structkeyexists(form, 'forceupdatelistlayout')){
 		if(form.mls_option_list_layout EQ 2){
 			newLimit=9;	
 		}else{
 			newLimit=10;
 		}
-	 db.sql="UPDATE #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
+		db.sql="UPDATE #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		 SET search_result_layout = #db.param(form.mls_option_list_layout)#, 
 		 search_result_limit =#db.param(newLimit)# 
 		WHERE site_id = #db.param(form.sid)# and 
 		mls_saved_search_deleted = #db.param(0)#";
 		db.execute("q");
-}
+	}
 	
 	db.sql="select * from #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
 	WHERE site_id=#db.param(this.site_id)# and 
@@ -799,9 +799,9 @@ if(structkeyexists(form, 'forceupdatelistlayout')){
 	form.site_id=this.site_id;
 	if(qC.recordcount EQ 0){
 		application.zcore.functions.zInsert(ts);
-	}else{
+	}else{ 
 		ts.forceWhereFields="site_id";
-		application.zcore.functions.zUpdate(ts);
+		a=application.zcore.functions.zUpdate(ts); 
 	}
 	application.zcore.status.setStatus(request.zsid,"Configuration saved.");
 	return rCom;
@@ -947,9 +947,16 @@ Page count: <input type="text" name="mls_option_inquiry_pop_count" size="3" valu
 <input type="radio" name="mls_option_detail_layout" value="0" <cfif form.mls_option_detail_layout EQ 0>checked="checked"</cfif>> Old
 <input type="radio" name="mls_option_detail_layout" value="2" <cfif form.mls_option_detail_layout EQ 2>checked="checked"</cfif>> Custom</td>
 </tr>
-<tr><th>Detail Custom Template:</th>
-<td>Template: <input type="text" name="mls_option_detail_template" value="#htmleditformat(form.mls_option_detail_template)#" /> (Only works with "Detail Layout" set to "custom")
+<tr>
+<th>Detail CFC:</th>
+<td>
+<input type="template" name="mls_option_detail_cfc" value="#form.mls_option_detail_cfc#" /> (i.e. root.mvc.controller.listing) (Only works with "Detail Layout" set to "custom")
 </td></tr>
+<tr>
+<th>Detail Method:</th>
+<td>
+<input type="template" name="mls_option_detail_method" value="#form.mls_option_detail_method#" /> (i.e. index)
+</td></tr>  
 <tr><th>Search Custom Template:</th>
 <td>Template: <input type="text" name="mls_option_search_template" value="#htmleditformat(form.mls_option_search_template)#" /> Override listing search form url with custom url.
 </td></tr>
@@ -2609,6 +2616,9 @@ var funcType=0;
 var metaContent="";
 var metaContent2=""
 application.zcore.functions.zrequirejquery();
+if(structkeyexists(request.zsession, 'zlistingpageviewcount')){
+	request.zsession.zlistingpageviewcount++;
+}
 if(structkeyexists(application.zcore.app.getAppData("listing"),'checkSearchFormJs') EQ false){
 	application.zcore.app.getAppData("listing").checkSearchFormJs=true;
 	if(fileexists(request.zos.globals.privatehomedir&"zcache/listing-search-form.js") EQ false){
@@ -2677,8 +2687,6 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled NEQ 0 and left(request.zos.templateData.template, 3) NEQ "/z/" and request.cgi_script_name NEQ "/z/listing/inquiry-pop/index" and request.cgi_script_name NEQ "/z/user/privacy/index"){
 		if(structkeyexists(request.zsession, 'zlistingpageviewcount') EQ false){
 			request.zsession.zlistingpageviewcount=1;
-		}else{
-			request.zsession.zlistingpageviewcount++;
 		}
 		showModalForm=false;
 		hitCount=5;
@@ -2700,7 +2708,7 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			}
 		}else if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 2){
 			// show on Xth listing detail page
-			if(structkeyexists(request.zsession, 'zlistingdetailhitcount') and request.zsession.zlistingdetailhitcount GTE hitCount){
+			if(structkeyexists(request.zsession, 'zlistingdetailhitcount2') and request.zsession.zlistingdetailhitcount2 GTE hitCount){
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
 					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(request.zsession, 'zPopinquiryPopSent') EQ false){
 						showModalForm=true;

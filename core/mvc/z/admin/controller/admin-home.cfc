@@ -36,8 +36,6 @@
 	application.zcore.functions.zstatushandler(request.zsid);
 
 	ws=application.zcore.app.getWhitelabelStruct();
-	//writedump(ws);
-
 	</cfscript>
 	<div class="zDashboardContainerPad">
 		<div class="zDashboardContainer">

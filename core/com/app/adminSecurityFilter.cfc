@@ -190,32 +190,61 @@
 	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, arguments.site_id)){ 
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, false, arguments.site_id)){ 
 		application.zcore.status.setStatus(request.zsid, "You don't have permission to use that feature.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
 	// check for write access
-	if(arguments.requiresWriteAccess and not application.zcore.user.checkServerAccess() and request.zos.globals.enableDemoMode EQ 1){
-		application.zcore.status.setStatus(request.zsid, "You don't have write access for the #arguments.featureName# feature because this web site is in demo mode.", form, true);
-		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+	if(arguments.requiresWriteAccess){
+
+		if(request.zos.globals.enableDemoMode EQ 1 and not application.zcore.user.checkServerAccess()){
+			application.zcore.status.setStatus(request.zsid, "You don't have write access for the #arguments.featureName# feature because this web site is in demo mode.", form, true);
+			application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+		}else if(structkeyexists(application, 'zReadOnlyModeEnabled') and application.zReadOnlyModeEnabled){
+			application.zcore.status.setStatus(request.zsid, "The server is undergoing maintenance at this time, and the manager is set in read-only mode.  Please try again later.", form, true);
+			application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+		}
 	}
 	auditFeatureAccess(arguments.featureName, arguments.requiresWriteAccess, arguments.site_id);
 	</cfscript>
 </cffunction>
 
+<cffunction name="checkFeatureWriteAccess" localmode="modern" returntype="boolean">
+	<cfargument name="featureName" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
+	<cfscript>
+	
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, false, arguments.site_id)){ 
+		return false;
+	}
+	if(request.zos.globals.enableDemoMode EQ 1 and not application.zcore.user.checkServerAccess()){
+		return false;
+	}else if(structkeyexists(application, 'zReadOnlyModeEnabled') and application.zReadOnlyModeEnabled){
+		return false;
+	}
+	return true;
+	</cfscript>
+</cffunction>
+	
+
 <cffunction name="checkFeatureAccess" localmode="modern" returntype="boolean">
 	<cfargument name="featureName" type="string" required="yes">
+	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
 	userSiteId='user';
 	if(arguments.site_id NEQ request.zos.globals.id){
 		userSiteId='user'&arguments.site_id;
 	} 
+	if(arguments.requiresWriteAccess){
+		if(not checkFeatureWriteAccess(arguments.featureName, arguments.site_id)){
+			return false;
+		}
+	}
 	if(structkeyexists(request.zsession,userSiteId)){
 		if(not structkeyexists(request.zsession[userSiteId], 'limitManagerFeatureStruct') or structcount(request.zsession[userSiteId].limitManagerFeatureStruct) EQ 0){
 			return true;
 		}else{
-			//if(structkeyexists(arguments.functionMetaData, 'jetendo-admin-feature')){
 			arrFeature=listToArray(arguments.featureName, ",");
 			for(i=1;i LTE arraylen(arrFeature);i++){
 				if(not structkeyexists(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct, arrFeature[i])){

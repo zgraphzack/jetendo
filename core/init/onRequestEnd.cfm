@@ -7,6 +7,9 @@
 	if(not structkeyexists(form, request.zos.urlRoutingParameter)){
 		return; 
 	}
+	if(not structkeyexists(application.sitestruct, request.zos.globals.id)){
+		echo("Site cache missing | <a href=""/?zreset=site"">Reset</a>");abort;
+	}
 	savecontent variable="local.output"{
 		writeoutput(request.zos.onRequestStartOutput&request.zos.onRequestOutput);
 		if(structkeyexists(application.sitestruct[request.zos.globals.id],'onSiteRequestEndEnabled') and application.sitestruct[request.zos.globals.id].onSiteRequestEndEnabled){

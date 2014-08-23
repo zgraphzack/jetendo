@@ -562,7 +562,7 @@
 	ts.registeredControllerStruct=structnew();
 	ts.registeredControllerPathStruct=structnew();
 	ts.hookAppCom=structnew();
-	request.zos.functions.zUpdateGlobalMVCData(ts);
+	request.zos.functions.zUpdateGlobalMVCData(ts, false);
 	if(fileexists(request.zos.installPath&"database-upgrade/tooltips.json")){
 		ts.helpStruct=deserializeJson(application.zcore.functions.zreadfile(request.zos.installPath&"database-upgrade/tooltips.json"));
 	}

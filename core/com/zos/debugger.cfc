@@ -39,6 +39,13 @@
 						structdelete(request.zsession, 'forceHealthFailure2');
 					}
 
+				}else if(form.zOS_MODE EQ "enableReadOnlyMode"){
+					if(form.zOS_modeValue EQ "true"){
+						application.zReadOnlyModeEnabled=true;
+					}else{
+						structdelete(application, 'zReadOnlyModeEnabled');
+					}
+
 				}
 				if(structkeyexists(form, 'zOS_modeValue') and form.zOS_modeValue){
 					request.zsession.modes[form.zOS_Mode] = true;
@@ -147,8 +154,13 @@
                  <a href="##" onclick="zOS_mode_submit('forceHealthFailure2','false');return false;">On 2</a>
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('forceHealthFailure2','true');return false;">Off 2</a>
+                </cfif> 
+              | <a title="Write access will be disabled for all users including inquiry forms.">Read-only Mode</a>: 
+                <cfif structkeyexists(application, 'zReadOnlyModeEnabled') and application.zReadOnlyModeEnabled>
+                 <a href="##" onclick="zOS_mode_submit('enableReadOnlyMode','false');return false;" title="Click to turn off read-only mode">On</a>
+                <cfelse>
+                &nbsp; <a href="##" onclick="zOS_mode_submit('enableReadOnlyMode','true');return false;" title="Click to turn on read-only mode">Off</a>
                 </cfif>
-                
                 <br />
                 <cfif structkeyexists(request.zos.requestData.headers, 'ssl_session_id')>
 					<cfif structkeyexists(request.zsession, 'ssl_session_id')>
@@ -169,7 +181,7 @@
             <div class="zOS_mode_td">
               <cfif isDefined('request.zsession.tracking.track_user_hits')>Hits: #request.zsession.tracking.track_user_hits#</cfif>
               <cfif isDefined('request.zsession.zlistingpageviewcount')> Listing Pages: #request.zsession.zlistingpageviewcount#</cfif>
-              <cfif isDefined('request.zsession.zlistingdetailhitcount')>  Detail Hits: #request.zsession.zlistingdetailhitcount#</cfif>
+              <cfif isDefined('request.zsession.zlistingdetailhitcount2')>  Detail Hits: #request.zsession.zlistingdetailhitcount2#</cfif>
               
               <cfscript>
 			if(structkeyexists(form, 'zOS_viewXHTMLError')){

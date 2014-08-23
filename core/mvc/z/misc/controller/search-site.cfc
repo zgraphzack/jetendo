@@ -657,14 +657,20 @@ search sql generator has to be able to search on child group data for paging to 
 </cffunction>
 
 <cffunction name="searchForm" localmode="modern" access="private">
-<form action="/z/misc/search-site/results" method="get" style="margin:0px; padding:0px;">
-<table>
-<tr>
-<td style="font-size:14px; padding:0px;">Enter a search phrase: <input type="text" name="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="font-size:14px; width:200px; padding:5px;" /></td><td style="padding-left:10px;"><button type="submit" name="submitForm" style="font-size:14px; padding:5px;">Search Site</button></td>
-</tr>
-</table>
-<input type="hidden" name="action" value="search" />
-</form><br />
+	<cfscript>
+	form.searchtext=application.zcore.functions.zso(form, 'searchtext');
+	if(not isSimpleValue(form.searchtext)){
+		form.searchtext="";
+	}
+	</cfscript>
+	<form action="/z/misc/search-site/results" method="get" style="margin:0px; padding:0px;">
+	<table>
+	<tr>
+	<td style="font-size:14px; padding:0px;">Enter a search phrase: <input type="text" name="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="font-size:14px; width:200px; padding:5px;" /></td><td style="padding-left:10px;"><button type="submit" name="submitForm" style="font-size:14px; padding:5px;">Search Site</button></td>
+	</tr>
+	</table>
+	<input type="hidden" name="action" value="search" />
+	</form><br />
 </cffunction>
     
 <cffunction name="results" localmode="modern" access="remote">

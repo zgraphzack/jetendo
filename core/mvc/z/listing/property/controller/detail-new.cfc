@@ -71,11 +71,6 @@ ts.list='';
 if(structkeyexists(form, 'searchId') EQ false and isDefined('request.zsession.tempVars.zListingSearchId')){
 	form.searchId=request.zsession.tempVars.zListingSearchId;
 }
-if(isDefined('request.zsession.zlistingdetailhitcount') EQ false){
-	request.zsession.zlistingdetailhitcount=1;
-}else{
-	request.zsession.zlistingdetailhitcount++;
-}
 
 //application.zcore.template.prependTag("topcontent",'<div id="ztopofdetailpage" style="width:1px; height:1px;display:inline;"></div>');
 //application.zcore.template.appendTag("content",'<script type="text/javascript">/* <![CDATA[ */ zJumpToId("ztopofdetailpage"); /* ]]> */</script>');

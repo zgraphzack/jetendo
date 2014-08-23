@@ -1236,9 +1236,7 @@
 		local.configCom=createobject("component",application.zcore.appComPathStruct[row.app_id].cfcPath);
 		local.configCom.setURLRewriteStruct(row.site_id,local.ts2);
 	}
-	if(fileexists(request.zos.globals.homedir&"zrewriterules.cfc")){
-		local.ts2.siteRewriteRuleCom=createobject("component",request.zRootCFCPath&"zrewriterules");
-	}else if(fileexists(request.zos.globals.homedir&"zCoreCustomFunctions.cfc")){
+	if(fileexists(request.zos.globals.homedir&"zCoreCustomFunctions.cfc")){
 		local.ts2.siteRewriteRuleCom=createobject("component",request.zRootCFCPath&"zCoreCustomFunctions");
 	}
 	ts.urlRewriteStruct=local.ts2;

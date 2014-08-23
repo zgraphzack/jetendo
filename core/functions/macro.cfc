@@ -902,7 +902,6 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	if(arguments.skipBack EQ false and structkeyexists(application.zcore,'tracking')){
 		application.zcore.tracking.backOneHit();
 	} 
-	if(isDefined('request.zsession.zlistingpageviewcount')){ request.zsession.zlistingpageviewcount--;}
 	application.zcore.functions.zEndOfRunningScript();
 	request.zos.scriptAborted=true; 
 	request.zOS.templateData.notemplate=true;
