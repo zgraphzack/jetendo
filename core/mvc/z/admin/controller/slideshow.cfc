@@ -1842,36 +1842,36 @@
 	<h2>Manage Slideshow Photos: #qS.slideshow_name#</h2>
 	<a href="/z/admin/slideshow/addPhoto?slideshow_id=#form.slideshow_id#&amp;slideshow_tab_id=#form.slideshow_tab_id#&amp;return=1">Add Photo</a><br />
 	<br />
-	<table id="sortRowTable" style="border-spacing:0px; width:100%;" class="table-list">
-		<thead>
-		<tr>
-			<th style="width:100px;">&nbsp;</th>
-			<th>Image Caption</th>
-			<th>Admin</th>
-			<th>Sort</th>
-		</tr>
-		</thead>
-		<tbody>
-		<cfif qImages.recordcount EQ 0>
+	<cfif qImages.recordcount EQ 0>
+		<p>No tab photos added yet, click Add Tab Photos above.</p>
+	<cfelse>
+		<table id="sortRowTable" style="border-spacing:0px; width:100%;" class="table-list">
+			<thead>
 			<tr>
-				<td colspan="2">No tab photos added yet, click Add Tab Photos above.</td>
+				<th style="width:100px;">&nbsp;</th>
+				<th>Image Caption</th>
+				<th>Sort</th>
+				<th>Admin</th>
 			</tr>
-		</cfif>
-		<cfloop query="qImages">
-			<tr #variables.queueSortCom.getRowHTML(qImages.slideshow_image_id)# <cfif qImages.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
-				<td style="width:100px;"><img src="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_thumbnail_url#" /></td>
-				<td>#qImages.slideshow_image_caption#</td>
-				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
-				<td><!--- #variables.queueSortCom.getLinks(qImages.recordcount, qImages.currentrow, 
-				'/z/admin/slideshow/managePhoto?slideshow_id=#qImages.slideshow_id#&slideshow_tab_id=#qImages.slideshow_tab_id#&slideshow_image_id=#qImages.slideshow_image_id#', 
-				"vertical-arrows")#  --->
-				<a href="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_url#">Download</a> | 
-				<a href="/z/admin/slideshow/editPhoto?slideshow_id=#qImages.slideshow_id#&amp;slideshow_image_id=#qImages.slideshow_image_id#&amp;slideshow_tab_id=#qImages.slideshow_tab_id#&amp;return=1">Edit</a> | 
-				<a href="/z/admin/slideshow/deletePhoto?slideshow_id=#qImages.slideshow_id#&amp;slideshow_image_id=#qImages.slideshow_image_id#&amp;slideshow_tab_id=#qImages.slideshow_tab_id#&amp;return=1">Delete</a></td>
-			</tr>
-		</cfloop>
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+			<cfloop query="qImages">
+				<tr #variables.queueSortCom.getRowHTML(qImages.slideshow_image_id)# <cfif qImages.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
+					<td style="width:100px;"><img src="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_thumbnail_url#" /></td>
+					<td>#qImages.slideshow_image_caption#</td>
+					<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td><!--- #variables.queueSortCom.getLinks(qImages.recordcount, qImages.currentrow, 
+					'/z/admin/slideshow/managePhoto?slideshow_id=#qImages.slideshow_id#&slideshow_tab_id=#qImages.slideshow_tab_id#&slideshow_image_id=#qImages.slideshow_image_id#', 
+					"vertical-arrows")#  --->
+					<a href="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_url#">Download</a> | 
+					<a href="/z/admin/slideshow/editPhoto?slideshow_id=#qImages.slideshow_id#&amp;slideshow_image_id=#qImages.slideshow_image_id#&amp;slideshow_tab_id=#qImages.slideshow_tab_id#&amp;return=1">Edit</a> | 
+					<a href="/z/admin/slideshow/deletePhoto?slideshow_id=#qImages.slideshow_id#&amp;slideshow_image_id=#qImages.slideshow_image_id#&amp;slideshow_tab_id=#qImages.slideshow_tab_id#&amp;return=1">Delete</a></td>
+				</tr>
+			</cfloop>
+			</tbody>
+		</table>
+	</cfif>
+	
 </cffunction>
 
 <cffunction name="manageTabs" localmode="modern" access="remote" roles="member">

@@ -2040,7 +2040,8 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	}
 	db.sql="select * FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 	where mls_saved_search_id=#db.param(qList.mls_saved_search_id)# and 
-	site_id=#db.param(request.zos.globals.id)#";
+	site_id=#db.param(request.zos.globals.id)# and 
+	mls_saved_search_deleted =#db.param(0)# " ;
 	qList2=db.execute("qList2");
 	if(qList2.recordcount EQ 0){
 		return rs;

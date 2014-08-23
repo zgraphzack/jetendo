@@ -372,6 +372,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		parseStruct.arrTable=arraynew(1);
 		tempSQL=replace(replace(replace(replace(replace(tempSQL,chr(10)," ","all"),chr(9)," ","all"),chr(13)," ","all"),")"," ) ","all"),"("," ( ","all");
 		tempSQL=" "&rereplace(replace(replace(replace(lcase(tempSQL),"\\"," ","all"),"\'"," ","all"),'\"'," ","all"), "/\*.*?\*/"," ", "all")&" ";
+		tempSQL=replace(replace(replace(tempSQL, ".`", ".","all"), "`.", ".","all"), "`", " ", "all");
 		tempSQL=rereplace(tempSQL,"'[^']*?'","''","all");
 		tempSQL=rereplace(tempSQL,'"[^"]*?"',"''","all");
 		

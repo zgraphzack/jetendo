@@ -934,7 +934,8 @@
 		application.zcore.imageLibraryCom.registerSize(0, this.getImageSize("rental-page-thumbnail"), 1); */
 		// force at least one availability type to exist.
 		 db.sql="SELECT * FROM #db.table("availability_type", request.zos.zcoreDatasource)# availability_type 
-		WHERE site_id = #db.param(request.zos.globals.id)# ";
+		WHERE site_id = #db.param(request.zos.globals.id)# and 
+		availability_type_deleted = #db.param(0)# ";
 		qtype=db.execute("qtype");
 		if(qtype.recordcount EQ 0){
 			 db.sql="INSERT INTO #db.table("availability_type", request.zos.zcoreDatasource)#  

@@ -740,6 +740,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}else if(structkeyexists(ts, 'startDate')){
 		db.sql&=" s1.site_x_option_group_set_start_date >= #db.param(dateformat(ts.startDate, 'yyyy-mm-dd'))# and ";
 	}
+	if(structkeyexists(ts, 'excludeBeforeStartDate')){
+		db.sql&=" s1.site_x_option_group_set_start_date >= #db.param(dateformat(ts.excludeBeforeStartDate, "yyyy-mm-dd")&" 00:00:00")# and ";
+	}
 	db.sql&="  s1.site_id = #db.param(arguments.site_id)# and  
 	s1.site_x_option_group_set_approved=#db.param(1)# ";
 	if(structkeyexists(ts, 'orderBy')){

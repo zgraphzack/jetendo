@@ -469,7 +469,7 @@
 		tablePrefix:request.zos.zcoreDatasourcePrefix,
 		parseSQLFunctionStruct:{
 			checkSiteId:application.zcore.functions.zVerifySiteIdsInDBCFCQuery
-			//, checkDeletedField:application.zcore.functions.zVerifyDeletedInDBCFCQuery
+			, checkDeletedField:application.zcore.functions.zVerifyDeletedInDBCFCQuery
 		},
 		verifyQueriesEnabled:local.verifyQueriesEnabled,
 		cacheStructKey:'application.zcore.queryCache'

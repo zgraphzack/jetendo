@@ -171,20 +171,20 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 </cffunction>
 
 <cffunction name="zViewQueryError" localmode="modern" output="yes" returntype="any">
-    <cfargument name="ss" type="struct" required="yes">
-    <cfscript>
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
 	var local=structnew();
-    if(arguments.ss.cfcatch.message CONTAINS "No value specified for parameter"){
-        writeoutput('<div style="border:1px solid ##CCC; background-color:##EFEFEF; padding:20px; color:##000; font-size:18px;"><p style="color:##000;font-weight:bold; font-size:24px; line-height:30px;">Jetendo CMS Database Error Help</p><p style="font-size:18px; line-height:24px; color:##000;">This error occurs when the data type for one of the parameters doesn''t match the cfsqltype value in the &lt;cfqueryparam&gt; tag.</p>');
+	if(arguments.ss.cfcatch.message CONTAINS "No value specified for parameter"){
+		writeoutput('<div style="border:1px solid ##CCC; background-color:##EFEFEF; padding:20px; color:##000; font-size:18px;"><p style="color:##000;font-weight:bold; font-size:24px; line-height:30px;">Jetendo CMS Database Error Help</p><p style="font-size:18px; line-height:24px; color:##000;">This error occurs when the data type for one of the parameters doesn''t match the cfsqltype value in the &lt;cfqueryparam&gt; tag.</p>');
 		local.pos=listgetat(arguments.ss.cfcatch.message,listlen(arguments.ss.cfcatch.message," ")," ");
 		if(local.pos LTE arraylen(arguments.ss.arrOrder)){
 			writeoutput('<p style="font-size:18px; line-height:24px; color:##000;">Incorrect Data Type for "'&arguments.ss.arrOrder[local.pos]&'". The current value is "'&arguments.ss.arguments[arguments.ss.arrOrder[local.pos]]&'" and it should be corrected to be this type: "'&arguments.ss.arrFieldType[local.pos]&'"</p>');	
 		}
 		writeoutput('</div>');
-    }
+	}
 	application.zcore.functions.zdump(arguments.ss.cfcatch);
 	application.zcore.functions.zabort();
-    </cfscript>
+	</cfscript>
 </cffunction>
  
 <!--- application.zcore.functions.zAppendSiteTableDefaults(); --->
@@ -214,7 +214,7 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 <!--- application.zcore.functions.zGetSiteIdTypeSQL("siteIdTypeFieldName"); --->
 <cffunction name="zGetSiteIdTypeSQL" localmode="modern" output="no" returntype="any">
 	<cfargument name="siteIdTypeFieldName" type="string" required="yes">
-    <cfscript>
+	<cfscript>
 	/*
 	1 is current site
 	2 is parent site
@@ -229,7 +229,7 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 <!--- application.zcore.functions.zGetSiteIdSQL("siteIdFieldName"); --->
 <cffunction name="zGetSiteIdSQL" localmode="modern" output="no" returntype="any">
 	<cfargument name="siteIdFieldName" type="string" required="yes">
-    <cfscript>
+	<cfscript>
 	/*
 	1 is current site
 	2 is parent site
@@ -241,7 +241,7 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 </cffunction>
 <cffunction name="zGetSiteIdType" localmode="modern" output="no" returntype="any">
 	<cfargument name="siteId" type="string" required="yes">
-    <cfscript>
+	<cfscript>
 	/*
 	1 is current site
 	2 is parent site
@@ -261,7 +261,7 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 </cffunction>
 <cffunction name="zGetSiteIdFromSiteIdType" localmode="modern" output="no" returntype="any">
 	<cfargument name="siteIdType" type="string" required="yes">
-    <cfscript>
+	<cfscript>
 	/*
 	1 is current site
 	2 is parent site
@@ -279,12 +279,12 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 	}
 	</cfscript>
 </cffunction>
-    
+	
 <!--- application.zcore.functions.zGetLastDatabaseError(); --->
 <cffunction name="zGetLastDatabaseError" localmode="modern" output="no" returntype="any">
-    <cfscript>
-    return request.zos.arrRequestQueries[arraylen(request.zos.arrRequestQueries)];
-    </cfscript>
+	<cfscript>
+	return request.zos.arrRequestQueries[arraylen(request.zos.arrRequestQueries)];
+	</cfscript>
 </cffunction>
 
 <!--- 
@@ -294,18 +294,18 @@ ts.datasource=request.zos.zcoredatasource;
 application.zcore.functions.zQueueQuery(ts);
  --->
 <cffunction name="zQueueQuery" localmode="modern" output="no" returntype="any">
-    <cfargument name="ss" type="component" required="yes" hint="pass in an instance of dbQuery.cfc">
-    <cfscript>
+	<cfargument name="ss" type="component" required="yes" hint="pass in an instance of dbQuery.cfc">
+	<cfscript>
 	arguments.ss.queryComplete=false;
-    arrayappend(request.zos.arrQueryQueue, arguments.ss);
-    </cfscript>
+	arrayappend(request.zos.arrQueryQueue, arguments.ss);
+	</cfscript>
 </cffunction>
 
 <!--- application.zcore.functions.zProcessQueryQueue(); --->
 <cffunction name="zProcessQueryQueue" localmode="modern" output="no" returntype="any">
-    <cfscript>
-    var i=1;
-    
+	<cfscript>
+	var i=1;
+	
 		if(isDefined('request.zos.arrQueryQueue')){
 			for(i=1;i LTE arraylen(request.zos.arrQueryQueue);i++){
 				if(request.zos.arrQueryQueue[i].queryComplete EQ false){
@@ -314,7 +314,7 @@ application.zcore.functions.zQueueQuery(ts);
 				}
 			}
 		}
-        </cfscript>
+		</cfscript>
 </cffunction>
 
 <cffunction name="zNewRecord" localmode="modern" output="no" returntype="struct">
@@ -331,8 +331,8 @@ application.zcore.functions.zQueueQuery(ts);
 
 <!--- application.zcore.functions.zProcessQueryQueueThreaded(); --->
 <cffunction name="zProcessQueryQueueThreaded" localmode="modern" output="no" returntype="any">
-    <cfscript>
-    var i=1;
+	<cfscript>
+	var i=1;
 	var ts=0;
 		var db=request.zos.queryObject;
 	var arrQueue=0;
@@ -346,9 +346,9 @@ application.zcore.functions.zQueueQuery(ts);
 	if(arraylen(request.zos.arrQueryQueue) EQ 0){
 		return;
 	}
-    </cfscript>
-    <cfthread action="run" name="zcoreasyncquerythread#request.zos.queryQueueThreadIndex#" timeout="30" arrQueue="#request.zos.arrQueryQueue#"><!---  --->
-         <cfscript>
+	</cfscript>
+	<cfthread action="run" name="zcoreasyncquerythread#request.zos.queryQueueThreadIndex#" timeout="30" arrQueue="#request.zos.arrQueryQueue#"><!---  --->
+		 <cfscript>
 		 thread.arrComplete=arraynew(1);
 		// arrQueue=request.zos.arrQueryQueue;
 		for(i=1;i LTE arraylen(arrQueue);i++){
@@ -359,8 +359,8 @@ application.zcore.functions.zQueueQuery(ts);
 				//arrayappend(thread.arrComplete, ts);
 			}
 		}
-        </cfscript>
-    </cfthread><!---  --->
+		</cfscript>
+	</cfthread><!---  --->
 </cffunction>
 
 
@@ -369,7 +369,7 @@ application.zcore.functions.zQueueQuery(ts);
 	<cfargument name="name" type="string" required="yes" hint="Table name">
 	<cfargument name="alias" type="any" required="no" default="" hint="Set to false to disable the alias.">
 	<cfargument name="datasource" type="string" required="no" default="" hint="Set the datasource the table is in. Datasource must match database name.">
-    <cfscript>
+	<cfscript>
 	var dbname=replace(replace(arguments.name,"\","\\","ALL"),"'","\'","ALL");
 	var aliasSQL="";
 	var zt="";
@@ -412,7 +412,7 @@ application.zcore.functions.zQueueQuery(ts);
 	var done=false;
 	arrayresize(arrId,arguments.count);
 	</cfscript> 
-    <cflock name="server_zcore_zGetUUID" type="exclusive" throwontimeout="yes" timeout="60">
+	<cflock name="server_zcore_zGetUUID" type="exclusive" throwontimeout="yes" timeout="60">
 		<cfscript>
 		while(true){
 			k=structcount(application.zcore.uuidCacheStruct);
@@ -442,15 +442,15 @@ application.zcore.functions.zQueueQuery(ts);
 			}
 		}
 		return arrId;
-        </cfscript>
-    </cflock>
+		</cfscript>
+	</cflock>
 </cffunction>
 
 
 <!--- sql=application.zcore.functions.zDisplayResultSQL(result); --->
 <cffunction name="zDisplayResultSQL" localmode="modern" returntype="any" output="true">
 	<cfargument name="result" type="struct" required="yes" hint="This should be the result structure from a successfully run CFQUERY tag.">
-    <cfscript>
+	<cfscript>
 	var i=0;
 	var arrS=listtoarray(arguments.result.sql,"?",true);
 	var arrR=arraynew(1);
@@ -466,19 +466,19 @@ application.zcore.functions.zQueueQuery(ts);
 
 <!--- application.zcore.functions.zGetUUIDFromDatabase(); --->
 <cffunction name="zGetUUIDFromDatabase" localmode="modern" output="no" returntype="any" hint="Pregenerate primary key ids for mysql's bigint columns and store then in server scope.">
-    <cfscript> 
+	<cfscript> 
 	var q331=0;
 	var ts=structnew();
-    </cfscript>
-    <cfquery blockfactor="1" name="q331" datasource="#request.zos.globals.datasource#">
-    SELECT SQL_NO_CACHE cast(UUID_SHORT() as char) auuid1, cast(UUID_SHORT() as char) auuid2, cast(UUID_SHORT() as char) auuid3, cast(UUID_SHORT() as char) auuid4, cast(UUID_SHORT() as char) auuid5, cast(UUID_SHORT() as char) auuid6, cast(UUID_SHORT() as char) auuid7, cast(UUID_SHORT() as char) auuid8, cast(UUID_SHORT() as char) auuid9, cast(UUID_SHORT() as char) auuid10 , 
-    cast(UUID_SHORT() as char) a2uuid1, cast(UUID_SHORT() as char) a2uuid2, cast(UUID_SHORT() as char) a2uuid3, cast(UUID_SHORT() as char) a2uuid4, cast(UUID_SHORT() as char) a2uuid5, cast(UUID_SHORT() as char) a2uuid6, cast(UUID_SHORT() as char) a2uuid7, cast(UUID_SHORT() as char) a2uuid8, cast(UUID_SHORT() as char) a2uuid9, cast(UUID_SHORT() as char) a2uuid10 ,
+	</cfscript>
+	<cfquery blockfactor="1" name="q331" datasource="#request.zos.globals.datasource#">
+	SELECT SQL_NO_CACHE cast(UUID_SHORT() as char) auuid1, cast(UUID_SHORT() as char) auuid2, cast(UUID_SHORT() as char) auuid3, cast(UUID_SHORT() as char) auuid4, cast(UUID_SHORT() as char) auuid5, cast(UUID_SHORT() as char) auuid6, cast(UUID_SHORT() as char) auuid7, cast(UUID_SHORT() as char) auuid8, cast(UUID_SHORT() as char) auuid9, cast(UUID_SHORT() as char) auuid10 , 
+	cast(UUID_SHORT() as char) a2uuid1, cast(UUID_SHORT() as char) a2uuid2, cast(UUID_SHORT() as char) a2uuid3, cast(UUID_SHORT() as char) a2uuid4, cast(UUID_SHORT() as char) a2uuid5, cast(UUID_SHORT() as char) a2uuid6, cast(UUID_SHORT() as char) a2uuid7, cast(UUID_SHORT() as char) a2uuid8, cast(UUID_SHORT() as char) a2uuid9, cast(UUID_SHORT() as char) a2uuid10 ,
 cast(UUID_SHORT() as char) a3uuid1, cast(UUID_SHORT() as char) a3uuid2, cast(UUID_SHORT() as char) a3uuid3, cast(UUID_SHORT() as char) a3uuid4, cast(UUID_SHORT() as char) a3uuid5, cast(UUID_SHORT() as char) a3uuid6, cast(UUID_SHORT() as char) a3uuid7, cast(UUID_SHORT() as char) a3uuid8, cast(UUID_SHORT() as char) a3uuid9, cast(UUID_SHORT() as char) a3uuid10 ,
 cast(UUID_SHORT() as char) a4uuid1, cast(UUID_SHORT() as char) a4uuid2, cast(UUID_SHORT() as char) a4uuid3, cast(UUID_SHORT() as char) a4uuid4, cast(UUID_SHORT() as char) a4uuid5, cast(UUID_SHORT() as char) a4uuid6, cast(UUID_SHORT() as char) a4uuid7, cast(UUID_SHORT() as char) a4uuid8, cast(UUID_SHORT() as char) a4uuid9, cast(UUID_SHORT() as char) a4uuid10 
-    </cfquery> 
+	</cfquery> 
 	<cfscript>
 	structappend(application.zcore.uuidCacheStruct, q331,true);  
-    </cfscript> 
+	</cfscript> 
 </cffunction>
 
 
@@ -549,16 +549,16 @@ if(table_id EQ false){
 		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
 	}
 	</cfscript>
-    <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
-        <cfquery name="fields" datasource="#ss.datasource#">
-        SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
-        </cfquery>
+	<cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
+		<cfquery name="fields" datasource="#ss.datasource#">
+		SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
+		</cfquery>
 	<cfif ss.enableTableFieldCache>
-    		<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
+			<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
 	</cfif>
-    <cfelse>
-    	<cfset fields=request.zos.tableFieldsCache[ss.datasource&" "&ss.table]>
-    </cfif>
+	<cfelse>
+		<cfset fields=request.zos.tableFieldsCache[ss.datasource&" "&ss.table]>
+	</cfif>
 	<cfset arrInsert = ArrayNew(1)>
 	<cfset i = 1>
 	<cfloop query="fields">
@@ -715,16 +715,16 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
 	}
 	</cfscript>
-    <cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
+	<cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
 		<cfquery name="fields" datasource="#ss.datasource#">
 		SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
 		</cfquery>
 		<cfif ss.enableTableFieldCache>
-	    		<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
+				<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
 		</cfif>
-    <cfelse>
-    	<cfset fields=request.zos.tableFieldsCache[ss.datasource&" "&ss.table]>
-    </cfif>
+	<cfelse>
+		<cfset fields=request.zos.tableFieldsCache[ss.datasource&" "&ss.table]>
+	</cfif>
 	<cfloop query="fields">
 		<cfscript>
 		if(structkeyexists(ss,'struct') and StructKeyExists(ss.struct, fields.Field&ss.enumerate)){
@@ -799,7 +799,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		</cftry>
 	<cfelse>
 		<cftry>
-        	<cfscript>
+			<cfscript>
 			if(request.zos.isdeveloper){
 				if(isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
 					sqlUpdate=application.zcore.functions.zVerifySiteIdsInQuery(sqlUpdate, ss.datasource);	
@@ -807,25 +807,25 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 					sqlUpdate=replace(sqlUpdate, ":ztablesql:", "", "all");
 				}
 			}
-            if(ss.norequestsql EQ false){
-                ArrayAppend(request.zos.arrQueryLog, sqlUpdate);
-            }
-            </cfscript>
+			if(ss.norequestsql EQ false){
+				ArrayAppend(request.zos.arrQueryLog, sqlUpdate);
+			}
+			</cfscript>
 			<cfquery name="qUpdate" datasource="#ss.datasource#">
 			#preserveSingleQuotes(sqlUpdate)#
 			</cfquery>
 			<cfcatch type="any">
-            	<cfif cfcatch.Message CONTAINS "Duplicate entry">
+				<cfif cfcatch.Message CONTAINS "Duplicate entry">
 					<cfscript>				
-                    if(ss.norequestsql EQ false){
-                        ArrayAppend(request.zos.arrQueryLog, "Query ##"& ArrayLen(request.zos.arrQueryLog)&" failed to execute for datasource, #ss.datasource#.");
-                    }
-                    </cfscript>
+					if(ss.norequestsql EQ false){
+						ArrayAppend(request.zos.arrQueryLog, "Query ##"& ArrayLen(request.zos.arrQueryLog)&" failed to execute for datasource, #ss.datasource#.");
+					}
+					</cfscript>
 					<cfif ss.debug>
-                        <cfrethrow>
-                    </cfif>
-                	<cfreturn false>
-                <cfelse>
+						<cfrethrow>
+					</cfif>
+					<cfreturn false>
+				<cfelse>
 					<cfrethrow>
 				</cfif>
 			</cfcatch>
@@ -836,141 +836,151 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 
 
 <cffunction name="zVerifySiteIdsInDBCFCQuery" localmode="modern" access="public" returntype="struct">
-    <cfargument name="parsedSQLStruct" type="struct" required="yes">
-    <cfscript>
-    var local=structnew();
-    var ps=arguments.parsedSQLStruct;
-    for(local.i2=1;local.i2 LTE arraylen(ps.arrLeftJoin);local.i2++){
-        if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrLeftJoin[local.i2].table)){
-            // search for reference to tableAlias.site_id in onstatement OR wherestatement
-            if(ps.arrLeftJoin[local.i2].onstatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".site_id" and ps.whereStatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".site_id"){
-                arrayappend(ps.arrError, ps.arrLeftJoin[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&ps.arrLeftJoin[local.i2].tableAlias);
-            }
-        }
-    }
-    for(local.i2=1;local.i2 LTE arraylen(ps.arrTable);local.i2++){
-        if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrTable[local.i2].table)){
-            // search for reference to tableAlias.site_id in onstatement OR wherestatement
-            if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
-                local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
-                if(local.c43 DOES NOT CONTAIN "site_id"){
-                    arrayappend(ps.arrError, "site_id must be in the COLUMN LIST.");
-                }
-            }
-            if(ps.intoPos){
-                if(ps.selectPos){
-                    if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "into"){
-                        if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
-                            arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.1");
-                        }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN "site_id"){
-                            arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.2");
-                        }
-                    }
-                }
-            }else{
-                if(ps.setPos){
-                    if(ps.setStatement DOES NOT CONTAIN "site_id"){
-                        arrayappend(ps.arrError, "site_id must be in the SET STATEMENT.3");
-                    }
-                    if(ps.wherePos and ps.whereStatement NEQ ""){
-                        if(arraylen(ps.arrTable) EQ 1){
-                            if(ps.whereStatement DOES NOT CONTAIN "site_id"){
-                                arrayappend(ps.arrError, "site_id must be in the WHERE STATEMENT.4");
-                            }
-                        }else{
-                            if(ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
-                                arrayappend(ps.arrError, "site_id must be in the WHERE STATEMENT.5");
-                            }
-                        }
-                    }
-                    
-                }else if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "from"){
-                    if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
-                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.6"); 
-                    }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN "site_id"){
-                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.7");
-                    }
-                }
-            }
-        }
-    }
-    return ps;
-    </cfscript>
+	<cfargument name="parsedSQLStruct" type="struct" required="yes">
+	<cfscript>
+	var local=structnew();
+	var ps=arguments.parsedSQLStruct;
+	for(local.i2=1;local.i2 LTE arraylen(ps.arrLeftJoin);local.i2++){
+		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrLeftJoin[local.i2].table)){
+			// search for reference to tableAlias.site_id in onstatement OR wherestatement
+			if(ps.arrLeftJoin[local.i2].onstatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".site_id" and ps.whereStatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".site_id"){
+				arrayappend(ps.arrError, ps.arrLeftJoin[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&ps.arrLeftJoin[local.i2].tableAlias);
+			}
+		}
+	}
+	for(local.i2=1;local.i2 LTE arraylen(ps.arrTable);local.i2++){
+		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrTable[local.i2].table)){
+			// search for reference to tableAlias.site_id in onstatement OR wherestatement
+			if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
+				local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
+				if(local.c43 DOES NOT CONTAIN "site_id"){
+					arrayappend(ps.arrError, "site_id must be in the COLUMN LIST.");
+				}
+			}
+			if(ps.intoPos){
+				if(ps.selectPos){
+					if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "into"){
+						if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
+							arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.1");
+						}else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN "site_id"){
+							arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.2");
+						}
+					}
+				}
+			}else{
+				if(ps.setPos){
+					if(ps.setStatement DOES NOT CONTAIN "site_id"){
+						arrayappend(ps.arrError, "site_id must be in the SET STATEMENT.3");
+					}
+					if(ps.wherePos and ps.whereStatement NEQ ""){
+						if(arraylen(ps.arrTable) EQ 1){
+							if(ps.whereStatement DOES NOT CONTAIN "site_id"){
+								arrayappend(ps.arrError, "site_id must be in the WHERE STATEMENT.4");
+							}
+						}else{
+							if(ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
+								arrayappend(ps.arrError, "site_id must be in the WHERE STATEMENT.5");
+							}
+						}
+					}
+					
+				}else if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "from"){
+					if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".site_id"){
+						arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.6"); 
+					}else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN "site_id"){
+						arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.7");
+					}
+				}
+			}
+		}
+	}
+	return ps;
+	</cfscript>
 </cffunction>
 
 
 
 <cffunction name="zVerifyDeletedInDBCFCQuery" localmode="modern" access="public" returntype="struct">
-    <cfargument name="parsedSQLStruct" type="struct" required="yes">
-    <cfscript>
-    var local=structnew();
-    var ps=arguments.parsedSQLStruct; 
-    if(not structkeyexists(application, 'zcore')){
-    	return ps;
-    }
-    for(local.i2=1;local.i2 LTE arraylen(ps.arrLeftJoin);local.i2++){
-        if(not structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrLeftJoin[local.i2].table)){
-        	continue;
-        }
-        deletedField=listgetat(ps.arrLeftJoin[local.i2].table, 2, ".")&"_deleted";
-        // search for reference to tableAlias.site_id in onstatement OR wherestatement
-        if(ps.arrLeftJoin[local.i2].onstatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".#deletedField#" and ps.whereStatement DOES NOT CONTAIN ps.arrLeftJoin[local.i2].tableAlias&".#deletedField#"){
-            arrayappend(ps.arrError, ps.arrLeftJoin[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&ps.arrLeftJoin[local.i2].tableAlias);
-        }
-    }
-    for(local.i2=1;local.i2 LTE arraylen(ps.arrTable);local.i2++){
-        if(not structkeyexists(application.zcore.tableColumns, ps.arrTable[local.i2].table)){
-        	continue;
-        }
-        deletedField=listgetat(ps.arrTable[local.i2].table, 2, ".")&"_deleted"; 	
-        if(not structkeyexists(application.zcore.tableColumns[ps.arrTable[local.i2].table], deletedField)){
-        	continue;
-        }
-        // search for reference to tableAlias.table_deleted in onstatement OR wherestatement
-        if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
-            local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
-            if(local.c43 DOES NOT CONTAIN deletedField){
-                arrayappend(ps.arrError, "#deletedField# must be in the COLUMN LIST.");
-            }
-        }
-        if(ps.intoPos){
-            if(ps.selectPos){
-                if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "into"){
-                    if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&"."&deletedField){
-                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.1");
-                    }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN deletedField){
-                        arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.2");
-                    }
-                }
-            }
-        }else{
-            if(ps.setPos){
-                if(ps.setStatement DOES NOT CONTAIN deletedField){
-                    arrayappend(ps.arrError, "#deletedField# must be in the SET STATEMENT.3");
-                }
-                if(ps.wherePos and ps.whereStatement NEQ ""){
-                    if(arraylen(ps.arrTable) EQ 1){
-                        if(ps.whereStatement DOES NOT CONTAIN deletedField){
-                            arrayappend(ps.arrError, "#deletedField# must be in the WHERE STATEMENT.4");
-                        }
-                    }else{
-                        if(ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".#deletedField#"){
-                            arrayappend(ps.arrError, "#deletedField# must be in the WHERE STATEMENT.5");
-                        }
-                    }
-                }
-                
-            }else if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "from"){
-                if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".#deletedField#"){
-                    arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.6"); 
-                }else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN deletedField){
-                    arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.7");
-                }
-            }
-        }
-    }
-    return ps;
-    </cfscript>
+	<cfargument name="parsedSQLStruct" type="struct" required="yes">
+	<cfscript>
+	var local=structnew();
+	var ps=arguments.parsedSQLStruct; 
+	if(not structkeyexists(application, 'zcore')){
+		return ps;
+	} 
+	ps.verifyUniqueStruct={};
+	for(local.i2=1;local.i2 LTE arraylen(ps.arrLeftJoin);local.i2++){
+		deletedField=listgetat(ps.arrLeftJoin[local.i2].table, 2, ".")&"_deleted";
+		if(not structkeyexists(application.zcore.tableColumns, ps.arrLeftJoin[local.i2].table)){
+			continue;
+		}
+		if(not structkeyexists(application.zcore.tableColumns[ps.arrLeftJoin[local.i2].table], deletedField)){
+			continue;
+		}
+		// search for reference to tableAlias.site_id in onstatement OR wherestatement
+		if(ps.arrLeftJoin[local.i2].onstatement CONTAINS ps.arrLeftJoin[local.i2].tableAlias&"."&deletedField or ps.arrLeftJoin[local.i2].onstatement CONTAINS " "&deletedField){
+			ps.verifyUniqueStruct[ps.arrLeftJoin[local.i2].tableAlias&"."&deletedField]=true;
+		}else if(ps.whereStatement CONTAINS ps.arrLeftJoin[local.i2].tableAlias&"."&deletedField or ps.whereStatement CONTAINS " "&deletedField){
+			ps.verifyUniqueStruct[ps.arrLeftJoin[local.i2].tableAlias&"."&deletedField]=true;
+		}else{
+			arrayappend(ps.arrError, ps.arrLeftJoin[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&ps.arrLeftJoin[local.i2].tableAlias);
+		}
+	}
+	for(local.i2=1;local.i2 LTE arraylen(ps.arrTable);local.i2++){
+		if(not structkeyexists(application.zcore.tableColumns, ps.arrTable[local.i2].table)){
+			continue;
+		}
+		deletedField=listgetat(ps.arrTable[local.i2].table, 2, ".")&"_deleted"; 	
+		if(not structkeyexists(application.zcore.tableColumns[ps.arrTable[local.i2].table], deletedField)){
+			continue;
+		}
+		// check insert/replace statements
+		if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
+			local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
+			if(local.c43 DOES NOT CONTAIN deletedField){
+				arrayappend(ps.arrError, "#deletedField# must be in the COLUMN LIST.");
+			}
+		}
+		// search for reference to tableAlias.table_deleted in onstatement OR wherestatement
+		if(ps.intoPos){
+			if(ps.selectPos){
+				if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "into"){
+					if((arraylen(ps.arrTable) GT 1 or arraylen(ps.arrLeftJoin) NEQ 0) and ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&"."&deletedField){
+						arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.1");
+					}else if(arraylen(ps.arrTable) EQ 1 and arraylen(ps.arrLeftJoin) EQ 0 and ps.whereStatement DOES NOT CONTAIN " "&deletedField){
+						arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.2");
+					}
+				}
+			}
+		}else{
+			if(ps.setPos){
+				if(ps.setStatement DOES NOT CONTAIN deletedField){
+					arrayappend(ps.arrError, "#deletedField# must be in the SET STATEMENT.3");
+				}
+				if(ps.wherePos and ps.whereStatement NEQ ""){
+					if(arraylen(ps.arrTable) EQ 1){
+						if(ps.whereStatement DOES NOT CONTAIN deletedField){
+							arrayappend(ps.arrError, "#deletedField# must be in the WHERE STATEMENT.4");
+						}
+					}else{
+						if(ps.whereStatement DOES NOT CONTAIN ps.arrTable[local.i2].tableAlias&".#deletedField#"){
+							arrayappend(ps.arrError, "#deletedField# must be in the WHERE STATEMENT.5");
+						}
+					}
+				}
+				
+			}else if(ps.whereStatement NEQ "" and ps.arrTable[local.i2].type EQ "from"){
+				if(structkeyexists(ps.verifyUniqueStruct, ps.arrTable[local.i2].tableAlias&"."&deletedField)){
+				}else if(ps.whereStatement CONTAINS ps.arrTable[local.i2].tableAlias&"."&deletedField or ps.whereStatement CONTAINS " "&deletedField){
+					// ignore
+				}else{
+					arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.6"); 
+				}
+			}
+		}
+	}
+	return ps;
+	</cfscript>
 </cffunction>
 
 
@@ -989,252 +999,332 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 <!--- zVerifySiteIdsInQuery(sqlString, defaultDatabaseName) --->
 <cffunction name="zVerifySiteIdsInQuery" localmode="modern" output="yes" returntype="any">
 	<cfargument name="sqlString" type="string" required="yes">
-    <cfargument name="defaultDatabaseName" type="string" required="yes">
-    <cfscript>
+	<cfargument name="defaultDatabaseName" type="string" required="yes">
+	<cfscript>
 	var local=structnew();
 	var c=arguments.sqlString;
-	local.arrError=arraynew(1);
-	local.arrTable=arraynew(1);
-	local.c=replace(replace(replace(replace(replace(local.c,chr(10)," ","all"),chr(9)," ","all"),chr(13)," ","all"),")"," ) ","all"),"("," ( ","all");
-	local.c=" "&rereplace(replace(replace(replace(lcase(local.c),"\\"," ","all"),"\'"," ","all"),'\"'," ","all"), "/\*.*?\*/"," ", "all")&" ";
-	local.c=rereplace(local.c,"'[^']*?'","''","all");
-	local.c=rereplace(local.c,'"[^"]*?"',"''","all");
+	arrError=arraynew(1);
+	arrTable=arraynew(1);
+	c=replace(replace(replace(replace(replace(c,chr(10)," ","all"),chr(9)," ","all"),chr(13)," ","all"),")"," ) ","all"),"("," ( ","all");
+	c=" "&rereplace(replace(replace(replace(lcase(c),"\\"," ","all"),"\'"," ","all"),'\"'," ","all"), "/\*.*?\*/"," ", "all")&" ";
+	c=replace(replace(replace(c, ".`", ".","all"), "`.", ".","all"), "`", " ", "all");
+	c=rereplace(c,"'[^']*?'","''","all");
+	c=rereplace(c,'"[^"]*?"',"''","all");
 	
-	local.wherePos=findnocase(" where ",local.c);
-	local.setPos=findnocase(" set ",local.c);
-	local.valuesPos=refindnocase("\)\s*values",local.c);
-	local.fromPos=findnocase(" from ",local.c);
-	local.selectPos=findnocase(" select ",local.c);
-	local.insertPos=findnocase(" insert ",local.c);
-	local.replacePos=findnocase(" replace ",local.c);
-	local.intoPos=findnocase(" into ",local.c);
-	local.limitPos=findnocase(" limit ",local.c);
-	local.groupByPos=findnocase(" group by ",local.c);
-	local.orderByPos=findnocase(" order by ",local.c);
-	local.havingPos=findnocase(" having ",local.c);
-	local.firstLeftJoinPos=findnocase(" left join ",local.c);
-	local.firstParenthesisPos=findnocase(" ( ",local.c);
-	local.firstWHEREPos=len(local.c);
-	if(left(trim(local.c), 5) EQ "show "){
-		if(local.fromPos EQ 0){
+	wherePos=findnocase(" where ",c);
+	setPos=findnocase(" set ",c);
+	valuesPos=refindnocase("\)\s*values",c);
+	fromPos=findnocase(" from ",c);
+	selectPos=findnocase(" select ",c);
+	insertPos=findnocase(" insert ",c);
+	replacePos=findnocase(" replace ",c);
+	intoPos=findnocase(" into ",c);
+	limitPos=findnocase(" limit ",c);
+	groupByPos=findnocase(" group by ",c);
+	orderByPos=findnocase(" order by ",c);
+	havingPos=findnocase(" having ",c);
+	firstLeftJoinPos=findnocase(" left join ",c);
+	firstParenthesisPos=findnocase(" ( ",c);
+	firstWHEREPos=len(c);
+	if(left(trim(c), 5) EQ "show "){
+		if(fromPos EQ 0){
 			return arguments.sqlString;
 		}
 	}
-	if(local.wherePos){
-		local.firstWHEREPos=local.wherePos;
-	}else if(local.groupByPos){
-		local.firstWHEREPos=local.groupByPos;
-	}else if(local.orderByPos){
-		local.firstWHEREPos=local.orderByPos;
-	}else if(local.orderByPos){
-		local.firstWHEREPos=local.orderByPos;
-	}else if(local.havingPos){
-		local.firstWHEREPos=local.havingPos;
-	}else if(local.limitPos){
-		local.firstWHEREPos=local.limitPos;
+	if(wherePos){
+		firstWHEREPos=wherePos;
+	}else if(groupByPos){
+		firstWHEREPos=groupByPos;
+	}else if(orderByPos){
+		firstWHEREPos=orderByPos;
+	}else if(orderByPos){
+		firstWHEREPos=orderByPos;
+	}else if(havingPos){
+		firstWHEREPos=havingPos;
+	}else if(limitPos){
+		firstWHEREPos=limitPos;
 	}
-	local.lastWHEREPos=len(local.c);
-	if(local.groupByPos){
-		local.lastWHEREPos=local.groupByPos;
-	}else if(local.orderByPos){
-		local.lastWHEREPos=local.orderByPos;
-	}else if(local.havingPos){
-		local.lastWHEREPos=local.havingPos;
-	}else if(local.limitPos){
-		local.lastWHEREPos=local.limitPos;
+	lastWHEREPos=len(c);
+	if(groupByPos){
+		lastWHEREPos=groupByPos;
+	}else if(orderByPos){
+		lastWHEREPos=orderByPos;
+	}else if(havingPos){
+		lastWHEREPos=havingPos;
+	}else if(limitPos){
+		lastWHEREPos=limitPos;
 	}
-	local.setStatement="";
-	if(local.setPos){
-		if(local.wherePos){
-			local.setStatement=mid(local.c, local.setPos+5, local.wherePos-(local.setPos+5));
+	setStatement="";
+	if(setPos){
+		if(wherePos){
+			setStatement=mid(c, setPos+5, wherePos-(setPos+5));
 		}else{
-			local.setStatement=mid(local.c, local.setPos+5, len(local.c)-(local.setPos+5));
+			setStatement=mid(c, setPos+5, len(c)-(setPos+5));
 		}
 	}
-	if(local.wherePos){
-		local.whereStatement=mid(local.c, local.wherePos+6, local.lastWHEREPos-(local.wherePos+6));
+	if(wherePos){
+		whereStatement=mid(c, wherePos+6, lastWHEREPos-(wherePos+6));
 	}else{
-		local.whereStatement="";
+		whereStatement="";
 	}
-	local.arrLeftJoin=arraynew(1);
-	local.matching=true;
-	local.curPos=1;
-	while(local.matching){
-		local.t9=structnew();
-		local.t9.leftJoinPos=findnocase(" left join ",local.c, local.curPos);
-		if(local.t9.leftJoinPos EQ 0) break;
-		local.t9.onPos=findnocase(" on ",local.c, local.t9.leftJoinPos+1);
-		if(local.t9.onPos EQ 0 or local.t9.onPos GT local.firstWHEREPos){
-			local.t9.onPos=local.firstWHEREPos;
+	arrLeftJoin=arraynew(1);
+	matching=true;
+	curPos=1;
+	while(matching){
+		t9=structnew();
+		t9.leftJoinPos=findnocase(" left join ",c, curPos);
+		if(t9.leftJoinPos EQ 0) break;
+		t9.onPos=findnocase(" on ",c, t9.leftJoinPos+1);
+		if(t9.onPos EQ 0 or t9.onPos GT firstWHEREPos){
+			t9.onPos=firstWHEREPos;
 		}
-		local.t9.table=trim(replace(mid(local.c, local.t9.leftJoinPos+11, local.t9.onPos-(local.t9.leftJoinPos+11)),"`","","all"));
-		if(local.t9.table CONTAINS " as "){
-			local.pos=findnocase(" as ",local.t9.table);
-			local.t9.tableAlias=trim(mid(local.t9.table, local.pos+4, len(local.t9.table)-(local.pos+3)));
-			local.t9.table=trim(left(local.t9.table,local.pos-1));
-		}else if(local.t9.table CONTAINS " "){
-			local.pos=findnocase(" ",local.t9.table);
-			local.t9.tableAlias=trim(mid(local.t9.table, local.pos+1, len(local.t9.table)-(local.pos)));
-			local.t9.table=trim(left(local.t9.table,local.pos-1));
+		t9.table=trim(replace(mid(c, t9.leftJoinPos+11, t9.onPos-(t9.leftJoinPos+11)),"`","","all"));
+		if(t9.table CONTAINS " as "){
+			pos=findnocase(" as ",t9.table);
+			t9.tableAlias=trim(mid(t9.table, pos+4, len(t9.table)-(pos+3)));
+			t9.table=trim(left(t9.table,pos-1));
+		}else if(t9.table CONTAINS " "){
+			pos=findnocase(" ",t9.table);
+			t9.tableAlias=trim(mid(t9.table, pos+1, len(t9.table)-(pos)));
+			t9.table=trim(left(t9.table,pos-1));
 		}else{
-			local.t9.table=trim(local.t9.table);
-			local.t9.tableAlias=trim(local.t9.table);
+			t9.table=trim(t9.table);
+			t9.tableAlias=trim(t9.table);
 		}
-		if(findnocase(":ztablesql:",local.t9.table) EQ 0){
-			arrayappend(local.arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&local.t9.table);
+		if(findnocase(":ztablesql:",t9.table) EQ 0){
+			arrayappend(arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&t9.table);
 		}else{
-			local.t9.table=replacenocase(local.t9.table,":ztablesql:","");	
+			t9.table=replacenocase(t9.table,":ztablesql:","");	
 		}
-		local.t9.onstatement="";
-		if(local.t9.table DOES NOT CONTAIN "."){
-			local.t9.table=arguments.defaultDatabaseName&"."&local.t9.table;
+		t9.onstatement="";
+		if(t9.table DOES NOT CONTAIN "."){
+			t9.table=arguments.defaultDatabaseName&"."&t9.table;
 		}else{
-			if(local.t9.tableAlias CONTAINS "."){
-				local.t9.tableAlias=trim(listgetat(local.t9.tableAlias,2,"."));
+			if(t9.tableAlias CONTAINS "."){
+				t9.tableAlias=trim(listgetat(t9.tableAlias,2,"."));
 			}
 		}
-		local.curPos=local.t9.onPos+1;
-		arrayappend(local.arrLeftJoin, local.t9);
-		// must check on statement for table.site_id in a left join to ensure it is strictly following conventions
+		curPos=t9.onPos+1;
+		arrayappend(arrLeftJoin, t9);
 	}
-	for(local.i2=1;local.i2 LTE arraylen(local.arrLeftJoin);local.i2++){
-		if(local.i2 EQ arraylen(local.arrLeftJoin)){
-			local.np=local.firstWHEREPos;
+	for(i2=1;i2 LTE arraylen(arrLeftJoin);i2++){
+		if(i2 EQ arraylen(arrLeftJoin)){
+			np=firstWHEREPos;
 		}else{
-			local.np=local.arrLeftJoin[local.i2+1].leftJoinPos;
+			np=arrLeftJoin[i2+1].leftJoinPos;
 		}
-		if(local.np NEQ local.arrLeftJoin[local.i2].onPos){
-			local.arrLeftJoin[local.i2].onstatement=mid(local.c, local.arrLeftJoin[local.i2].onPos+4, local.np-(local.arrLeftJoin[local.i2].onPos+4));
-		}
-		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, local.arrLeftJoin[local.i2].table)){
-			// search for reference to tableAlias.site_id in onstatement OR wherestatement
-			if(local.arrLeftJoin[local.i2].onstatement DOES NOT CONTAIN local.arrLeftJoin[local.i2].tableAlias&".site_id" and local.whereStatement DOES NOT CONTAIN local.arrLeftJoin[local.i2].tableAlias&".site_id"){
-				arrayappend(local.arrError, local.arrLeftJoin[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&local.arrLeftJoin[local.i2].tableAlias);
-			}
+		if(np NEQ arrLeftJoin[i2].onPos){
+			arrLeftJoin[i2].onstatement=mid(c, arrLeftJoin[i2].onPos+4, np-(arrLeftJoin[i2].onPos+4));
 		}
 	}
 	
-	if(local.firstLeftJoinPos){
-		local.endOfFromPos=local.firstLeftJoinPos;
-	}else if(local.firstWHEREPos){
-		local.endOfFromPos=local.firstWHEREPos;
+	if(firstLeftJoinPos){
+		endOfFromPos=firstLeftJoinPos;
+	}else if(firstWHEREPos){
+		endOfFromPos=firstWHEREPos;
 	}else{
-		local.endOfFromPos=len(local.c);
+		endOfFromPos=len(c);
 	}
 	
-	if(local.intoPos and (local.selectPos EQ 0 or local.selectPos GT local.intoPos)){
-		if(local.setPos){
-			local.t9=structnew();
-			local.t9.type="into";
-			local.t9.table=mid(local.c, local.intoPos+5, local.setPos-(local.intoPos+5));
-			local.t9.tableAlias=local.t9.table;
-			arrayappend(local.arrTable, local.t9);
-		}else if(local.firstParenthesisPos){
-			local.t9=structnew();
-			local.t9.type="into";
-			local.t9.table=mid(local.c, local.intoPos+5, local.firstParenthesisPos-(local.intoPos+5));
-			local.t9.tableAlias=local.t9.table;
-			arrayappend(local.arrTable, local.t9);
+	if(intoPos and (selectPos EQ 0 or selectPos GT intoPos)){
+		if(setPos){
+			t9=structnew();
+			t9.type="into";
+			t9.table=mid(c, intoPos+5, setPos-(intoPos+5));
+			t9.tableAlias=t9.table;
+			arrayappend(arrTable, t9);
+		}else if(firstParenthesisPos){
+			t9=structnew();
+			t9.type="into";
+			t9.table=mid(c, intoPos+5, firstParenthesisPos-(intoPos+5));
+			t9.tableAlias=t9.table;
+			arrayappend(arrTable, t9);
 		}else{
-			if(local.selectPos){
-				local.t9=structnew();
-				local.t9.type="into";
-				local.t9.table=mid(local.c, local.intoPos+5, local.selectPos-(local.intoPos+5));
-				local.t9.tableAlias=local.t9.table;
-				arrayappend(local.arrTable, local.t9);
+			if(selectPos){
+				t9=structnew();
+				t9.type="into";
+				t9.table=mid(c, intoPos+5, selectPos-(intoPos+5));
+				t9.tableAlias=t9.table;
+				arrayappend(arrTable, t9);
 			}
 		}
 	}
-	if(local.fromPos){
+	if(fromPos){
 		
-		local.c2=mid(local.c, local.fromPos+5, local.endOfFromPos-(local.fromPos+5))
+		c2=mid(c, fromPos+5, endOfFromPos-(fromPos+5))
 		
-		local.c2=replacenocase(replacenocase(replacenocase(replacenocase(replace(replace(local.c2,")"," ","all"),"("," ","all"), " STRAIGHT_JOIN ", " , ","all"), " CROSS JOIN ", " , ","all"), " INNER JOIN ", " , ","all"), " JOIN ", " , ","all");
-		local.arrT2=listtoarray(local.c2, ",");
-		for(local.i2=1;local.i2 LTE arraylen(local.arrT2);local.i2++){
-			local.arrT2[local.i2]=trim(local.arrT2[local.i2]);
-			local.t9=structnew();
-			local.t9.type="from";
-			if(local.arrT2[local.i2] CONTAINS " as "){
-				local.pos=findnocase(" as ", local.arrT2[local.i2]);
-				local.t9.tableAlias=trim(mid(local.arrT2[local.i2], local.pos+4, len(local.arrT2[local.i2])-(local.pos+3)));
-				local.t9.table=trim(left(local.arrT2[local.i2],local.pos-1));
-			}else if(local.arrT2[local.i2] CONTAINS " "){
-				local.pos=findnocase(" ", local.arrT2[local.i2]);
-				local.t9.tableAlias=trim(mid(local.arrT2[local.i2], local.pos+1, len(local.arrT2[local.i2])-(local.pos)));
-				local.t9.table=trim(left(local.arrT2[local.i2],local.pos-1));
+		c2=replacenocase(replacenocase(replacenocase(replacenocase(replace(replace(c2,")"," ","all"),"("," ","all"), " STRAIGHT_JOIN ", " , ","all"), " CROSS JOIN ", " , ","all"), " INNER JOIN ", " , ","all"), " JOIN ", " , ","all");
+		arrT2=listtoarray(c2, ",");
+		for(i2=1;i2 LTE arraylen(arrT2);i2++){
+			arrT2[i2]=trim(arrT2[i2]);
+			t9=structnew();
+			t9.type="from";
+			if(arrT2[i2] CONTAINS " as "){
+				pos=findnocase(" as ", arrT2[i2]);
+				t9.tableAlias=trim(mid(arrT2[i2], pos+4, len(arrT2[i2])-(pos+3)));
+				t9.table=trim(left(arrT2[i2],pos-1));
+			}else if(arrT2[i2] CONTAINS " "){
+				pos=findnocase(" ", arrT2[i2]);
+				t9.tableAlias=trim(mid(arrT2[i2], pos+1, len(arrT2[i2])-(pos)));
+				t9.table=trim(left(arrT2[i2],pos-1));
 			}else{
-				local.t9.table=trim(local.arrT2[local.i2]);
-				local.t9.tableAlias=trim(local.arrT2[local.i2]);
+				t9.table=trim(arrT2[i2]);
+				t9.tableAlias=trim(arrT2[i2]);
 			}
-			if(findnocase(":ztablesql:",local.t9.table) EQ 0){
-				arrayappend(local.arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&local.t9.table);
+			if(findnocase(":ztablesql:",t9.table) EQ 0){
+				arrayappend(arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&t9.table);
 			}else{
-				local.t9.table=replacenocase(local.t9.table,":ztablesql:","`");	
+				t9.table=replacenocase(t9.table,":ztablesql:","`");	
 			}
-			arrayappend(local.arrTable, local.t9);
+			arrayappend(arrTable, t9);
 		}
 	}
 	arguments.sqlString=replace(arguments.sqlString, ":ztablesql:","","all");
 	
-	for(local.i2=1;local.i2 LTE arraylen(local.arrTable);local.i2++){
-		local.arrTable[local.i2].table=trim(replace(local.arrTable[local.i2].table,"`","","all"));
-		local.arrTable[local.i2].tableAlias=trim(replace(local.arrTable[local.i2].tableAlias,"`","","all"));
-		if(local.arrTable[local.i2].table DOES NOT CONTAIN "."){
-			local.arrTable[local.i2].table=arguments.defaultDatabaseName&"."&local.arrTable[local.i2].table;
+	for(i2=1;i2 LTE arraylen(arrTable);i2++){
+		arrTable[i2].table=trim(replace(arrTable[i2].table,"`","","all"));
+		arrTable[i2].tableAlias=trim(replace(arrTable[i2].tableAlias,"`","","all"));
+		if(arrTable[i2].table DOES NOT CONTAIN "."){
+			arrTable[i2].table=arguments.defaultDatabaseName&"."&arrTable[i2].table;
 		}else{
-			if(local.arrTable[local.i2].tableAlias CONTAINS "."){
-				local.arrTable[local.i2].tableAlias=trim(listgetat(local.arrTable[local.i2].tableAlias,2,"."));
+			if(arrTable[i2].tableAlias CONTAINS "."){
+				arrTable[i2].tableAlias=trim(listgetat(arrTable[i2].tableAlias,2,"."));
 			}
 		}
-		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, local.arrTable[local.i2].table)){
+	}
+
+	// check for deleted column
+	verifyUniqueStruct={};
+	for(i2=1;i2 LTE arraylen(arrLeftJoin);i2++){
+		deletedField=listgetat(arrLeftJoin[i2].table, 2, ".")&"_deleted";
+		if(not structkeyexists(application.zcore.tableColumns, arrLeftJoin[i2].table)){
+			continue;
+		}
+		if(not structkeyexists(application.zcore.tableColumns[arrLeftJoin[i2].table], deletedField)){
+			continue;
+		}
+		// search for reference to tableAlias.site_id in onstatement OR wherestatement
+		if(arrLeftJoin[i2].onstatement CONTAINS arrLeftJoin[i2].tableAlias&"."&deletedField or arrLeftJoin[i2].onstatement CONTAINS " "&deletedField){
+			verifyUniqueStruct[arrTable[i2].tableAlias&"."&deletedField]=true;
+		}else if(whereStatement CONTAINS arrLeftJoin[i2].tableAlias&"."&deletedField or whereStatement CONTAINS " "&deletedField){
+			verifyUniqueStruct[arrLeftJoin[i2].tableAlias&"."&deletedField]=true;
+		}else{
+			arrayappend(arrError, arrLeftJoin[i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&arrLeftJoin[i2].tableAlias);
+		}
+	}
+	for(i2=1;i2 LTE arraylen(arrTable);i2++){
+		if(not structkeyexists(application.zcore.tableColumns, arrTable[i2].table)){
+			continue;
+		}
+		deletedField=listgetat(arrTable[i2].table, 2, ".")&"_deleted"; 	
+		if(not structkeyexists(application.zcore.tableColumns[arrTable[i2].table], deletedField)){
+			continue;
+		}
+		// check insert/replace statements
+		if(valuesPos and (insertPos or replacePos)){
+			c43=mid(c, intoPos+6, valuesPos-(intoPos+6));
+			if(c43 DOES NOT CONTAIN deletedField){
+				arrayappend(arrError, "#deletedField# must be in the COLUMN LIST.");
+			}
+		}
+		// search for reference to tableAlias.table_deleted in onstatement OR wherestatement
+		if(intoPos){
+			if(selectPos){
+				if(whereStatement NEQ "" and arrTable[i2].type EQ "into"){
+					if((arraylen(arrTable) GT 1 or arraylen(arrLeftJoin) NEQ 0) and whereStatement DOES NOT CONTAIN arrTable[i2].tableAlias&"."&deletedField){
+						arrayappend(arrError, arrTable[i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.1");
+					}else if(arraylen(arrTable) EQ 1 and arraylen(arrLeftJoin) EQ 0 and whereStatement DOES NOT CONTAIN " "&deletedField){
+						arrayappend(arrError, arrTable[i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.2");
+					}
+				}
+			}
+		}else{
+			if(setPos){
+				if(setStatement DOES NOT CONTAIN deletedField){
+					arrayappend(arrError, "#deletedField# must be in the SET STATEMENT.3");
+				}
+				if(wherePos and whereStatement NEQ ""){
+					if(arraylen(arrTable) EQ 1){
+						if(whereStatement DOES NOT CONTAIN deletedField){
+							arrayappend(arrError, "#deletedField# must be in the WHERE STATEMENT.4");
+						}
+					}else{
+						if(whereStatement DOES NOT CONTAIN arrTable[i2].tableAlias&".#deletedField#"){
+							arrayappend(arrError, "#deletedField# must be in the WHERE STATEMENT.5");
+						}
+					}
+				}
+				
+			}else if(whereStatement NEQ "" and arrTable[i2].type EQ "from"){
+				if(structkeyexists(verifyUniqueStruct, arrTable[i2].tableAlias&"."&deletedField)){
+				}else if(whereStatement CONTAINS arrTable[i2].tableAlias&"."&deletedField or whereStatement CONTAINS " "&deletedField){
+					// ignore
+				}else{
+					arrayappend(arrError, arrTable[i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.6"); 
+				}
+			}
+		}
+	}
+
+
+	// check for site_id column
+	for(i2=1;i2 LTE arraylen(arrLeftJoin);i2++){
+		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, arrLeftJoin[i2].table)){
+			// search for reference to tableAlias.site_id in onstatement OR wherestatement
+			if(arrLeftJoin[i2].onstatement DOES NOT CONTAIN arrLeftJoin[i2].tableAlias&".site_id" and whereStatement DOES NOT CONTAIN arrLeftJoin[i2].tableAlias&".site_id"){
+				arrayappend(arrError, arrLeftJoin[i2].tableAlias&".site_id must be in the WHERE STATEMENT or the ON statement of LEFT JOIN "&arrLeftJoin[i2].tableAlias);
+			}
+		}
+	}
+	for(i2=1;i2 LTE arraylen(arrTable);i2++){
+		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, arrTable[i2].table)){
 			// search for reference to tableAlias.site_id in onstatement OR wherestatement
 			if(valuesPos and (insertPos or replacePos)){
-				local.c43=mid(c, intoPos+6, valuesPos-(intoPos+6));
-				if(local.c43 DOES NOT CONTAIN "site_id"){
-					arrayappend(local.arrError, "site_id must be in the COLUMN LIST.");
+				c43=mid(c, intoPos+6, valuesPos-(intoPos+6));
+				if(c43 DOES NOT CONTAIN "site_id"){
+					arrayappend(arrError, "site_id must be in the COLUMN LIST.");
 				}
 			}
 			if(intoPos){
 				if(selectPos){
-					if(local.whereStatement NEQ "" and local.arrTable[local.i2].type EQ "into"){
-						if((arraylen(local.arrTable) GT 1 or arraylen(local.arrLeftJoin) NEQ 0) and local.whereStatement DOES NOT CONTAIN local.arrTable[local.i2].tableAlias&".site_id"){
-							arrayappend(local.arrError, local.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.1");
-						}else if(arraylen(local.arrTable) EQ 1 and arraylen(local.arrLeftJoin) EQ 0 and local.whereStatement DOES NOT CONTAIN "site_id"){
-							arrayappend(local.arrError, local.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.2");
+					if(whereStatement NEQ "" and arrTable[i2].type EQ "into"){
+						if((arraylen(arrTable) GT 1 or arraylen(arrLeftJoin) NEQ 0) and whereStatement DOES NOT CONTAIN arrTable[i2].tableAlias&".site_id"){
+							arrayappend(arrError, arrTable[i2].tableAlias&".site_id must be in the WHERE STATEMENT.1");
+						}else if(arraylen(arrTable) EQ 1 and arraylen(arrLeftJoin) EQ 0 and whereStatement DOES NOT CONTAIN "site_id"){
+							arrayappend(arrError, arrTable[i2].tableAlias&".site_id must be in the WHERE STATEMENT.2");
 						}
 					}
 				}
 			}else{
 				if(setPos){
 					if(setStatement DOES NOT CONTAIN "site_id"){
-						arrayappend(local.arrError, "site_id must be in the SET STATEMENT.3");
+						arrayappend(arrError, "site_id must be in the SET STATEMENT.3");
 					}
 					if(wherePos and whereStatement NEQ ""){
-						if(arraylen(local.arrTable) EQ 1){
+						if(arraylen(arrTable) EQ 1){
 							if(whereStatement DOES NOT CONTAIN "site_id"){
-								arrayappend(local.arrError, "site_id must be in the WHERE STATEMENT.4");
+								arrayappend(arrError, "site_id must be in the WHERE STATEMENT.4");
 							}
 						}else{
-							if(whereStatement DOES NOT CONTAIN local.arrTable[local.i2].tableAlias&".site_id"){
-								arrayappend(local.arrError, "site_id must be in the WHERE STATEMENT.5");
+							if(whereStatement DOES NOT CONTAIN arrTable[i2].tableAlias&".site_id"){
+								arrayappend(arrError, "site_id must be in the WHERE STATEMENT.5");
 							}
 						}
 					}
 					
-				}else if(local.whereStatement NEQ "" and local.arrTable[local.i2].type EQ "from"){
-					if((arraylen(local.arrTable) GT 1 or arraylen(local.arrLeftJoin) NEQ 0) and local.whereStatement DOES NOT CONTAIN local.arrTable[local.i2].tableAlias&".site_id"){
-						arrayappend(local.arrError, local.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.6");
-					}else if(arraylen(local.arrTable) EQ 1 and arraylen(local.arrLeftJoin) EQ 0 and local.whereStatement DOES NOT CONTAIN "site_id"){
-						arrayappend(local.arrError, local.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.7");
+				}else if(whereStatement NEQ "" and arrTable[i2].type EQ "from"){
+					if((arraylen(arrTable) GT 1 or arraylen(arrLeftJoin) NEQ 0) and whereStatement DOES NOT CONTAIN arrTable[i2].tableAlias&".site_id"){
+						arrayappend(arrError, arrTable[i2].tableAlias&".site_id must be in the WHERE STATEMENT.6");
+					}else if(arraylen(arrTable) EQ 1 and arraylen(arrLeftJoin) EQ 0 and whereStatement DOES NOT CONTAIN "site_id"){
+						arrayappend(arrError, arrTable[i2].tableAlias&".site_id must be in the WHERE STATEMENT.7");
 					}
 				}
 			}
 		}
 	}
-	//writedump(local.arrTable);
-	if(arraylen(local.arrError) NEQ 0){
-		application.zcore.functions.zError("The following query is missing site_id columns which are required for this system to function correctly.  The code for this query is probably occurring in the file below database.cfc in the error stack trace below.<br />"&arguments.sqlString&";<br />Errors:<br />"&arraytolist(local.arrError, "<br />"));
+	//writedump(arrTable);
+	if(arraylen(arrError) NEQ 0){
+		application.zcore.functions.zError("The following query is missing site_id columns which are required for this system to function correctly.  The code for this query is probably occurring in the file below database.cfc in the error stack trace below.<br />"&arguments.sqlString&";<br />Errors:<br />"&arraytolist(arrError, "<br />"));
 	}
 	return arguments.sqlString;
 	</cfscript>
@@ -1275,9 +1365,9 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	<cfargument name="sql" type="string" required="yes">
 	<cfargument name="datasource" type="any" required="no">
 	<cfargument name="debug" type="boolean" required="no" default="#false#">
-    <cfargument name="cacheTimeSpan" type="any" required="no" default="#createtimespan(0,0,0,0)#">
-    <cfargument name="disableSiteIdVerification" type="any" required="no" default="#false#">
-    <cfargument name="lazy" type="any" required="no" default="#false#">
+	<cfargument name="cacheTimeSpan" type="any" required="no" default="#createtimespan(0,0,0,0)#">
+	<cfargument name="disableSiteIdVerification" type="any" required="no" default="#false#">
+	<cfargument name="lazy" type="any" required="no" default="#false#">
 	<cfscript>
 	var cfcatch=0;
 	var qQuery = true;
@@ -1330,14 +1420,14 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		<cfquery  name="qQuery" datasource="#arguments.datasource#" >
 			#PreserveSingleQuotes(arguments.sql)#
 		</cfquery>
-        <cfset success=true>
-        <cfscript>
+		<cfset success=true>
+		<cfscript>
 		if(left(arguments.sql, 7) EQ "INSERT "){
 			return true;	
 		}
 		</cfscript>
 		<cfcatch type="database">
-        	<cfif left(arguments.sql, 7) NEQ "INSERT "><cfrethrow></cfif>
+			<cfif left(arguments.sql, 7) NEQ "INSERT "><cfrethrow></cfif>
 			<cfscript>
 			ArrayAppend(request.zos.arrQueryLog, "Query ##"& ArrayLen(request.zos.arrQueryLog)&" failed to execute for datasource, #arguments.datasource#.<br />CFcatch.message: "&CFcatch.message&"<br />cfcatch.detail: "&cfcatch.detail);
 			</cfscript>
@@ -1349,10 +1439,10 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			</cfif>
 			<cfreturn false>
 		</cfcatch>
-        <cfcatch type="any"><cfrethrow></cfcatch>
+		<cfcatch type="any"><cfrethrow></cfcatch>
 	</cftry>
 	<cfif success>
-    	<cfscript>
+		<cfscript>
 		if(cacheEnabled and isSelect){
 			application.zcore.queryCache[hashCode]={date:curDate, result:qQuery};
 		}
@@ -1376,15 +1466,15 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	if(isDefined('request.zos.arrQueryLog') EQ false){
 		arrayClear(request.zos.arrQueryLog);
 	}
-    arrayappend(request.zos.arrQueryLog, "zSP ##"& ArrayLen(request.zos.arrQueryLog)&' PROCEDURE=#arguments.ss.procedure# DATASOURCE=#arguments.ss.datasource# VALUELIST=#arraytolist(arguments.ss.arrValue)#');
+	arrayappend(request.zos.arrQueryLog, "zSP ##"& ArrayLen(request.zos.arrQueryLog)&' PROCEDURE=#arguments.ss.procedure# DATASOURCE=#arguments.ss.datasource# VALUELIST=#arraytolist(arguments.ss.arrValue)#');
 	</cfscript>
 	<cftry>
-        <CFSTOREDPROC PROCEDURE="#arguments.ss.procedure#" DATASOURCE="#arguments.ss.datasource#">
-            <cfloop from="1" to="#arraylen(arguments.ss.arrValue)#" index="__i383n">
-                <CFPROCPARAM VALUE="#arguments.ss.arrValue[__i383n]#" CFSQLTYPE="cf_sql_varchar">
-          </cfloop>
-          <CFPROCRESULT NAME="qResult">
-        </CFSTOREDPROC>
+		<CFSTOREDPROC PROCEDURE="#arguments.ss.procedure#" DATASOURCE="#arguments.ss.datasource#">
+			<cfloop from="1" to="#arraylen(arguments.ss.arrValue)#" index="__i383n">
+				<CFPROCPARAM VALUE="#arguments.ss.arrValue[__i383n]#" CFSQLTYPE="cf_sql_varchar">
+		  </cfloop>
+		  <CFPROCRESULT NAME="qResult">
+		</CFSTOREDPROC>
 		<cfcatch type="any">
 			<cfscript>
 			ArrayAppend(request.zos.arrQueryLog, "zSP ##"& ArrayLen(request.zos.arrQueryLog)&" failed to execute for datasource, #arguments.ss.datasource#.");
@@ -1392,7 +1482,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			<cfreturn false>
 		</cfcatch>
 	</cftry>
-    <cfreturn qResult>
+	<cfreturn qResult>
 </cffunction>
 
 

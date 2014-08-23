@@ -1612,7 +1612,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	#request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site.site_active = #db.param(1)# and 
 	image_library.site_id = site.site_id and 
-	site_deleted = #db.param(0)# and 
+	site.site_deleted = #db.param(0)# and 
 	image_library_deleted = #db.param(0)# and 
 	image_library_active=#db.param(0)# and 
 	image_library_datetime <= #db.param(dateformat(dateadd("d",-1,now()),'yyyy-mm-dd')&" 00:00:00")#";

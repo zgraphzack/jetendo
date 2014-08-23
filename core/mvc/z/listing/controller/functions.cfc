@@ -71,7 +71,8 @@
 <tr><td><cfsavecontent variable="db.sql">
 			select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
             where mls_saved_search_id= #db.param(arguments.saved_search_id)# and 
-			site_id = #db.param(request.zos.globals.id)#
+			site_id = #db.param(request.zos.globals.id)# and 
+			mls_saved_search_deleted =#db.param(0)# 
 		</cfsavecontent><cfscript>qList=db.execute("qList");
 		application.zcore.functions.zquerytostruct(qList, form);
 		request.zos.listing.functions.zMLSSetSearchStruct(form, form);
@@ -216,7 +217,8 @@ local.tempCom.index();
 	}else if(arguments.MLSSavedSearchAction EQ "delete"){
 		 db.sql="delete from #db.table("mls_saved_search", request.zos.zcoreDatasource)#  
 		 WHERE mls_saved_search_id=#db.param(arguments.mls_saved_search_id)# and 
-		site_id=#db.param(request.zos.globals.id)#";
+		site_id=#db.param(request.zos.globals.id)# and 
+		mls_saved_search_deleted =#db.param(0)# ";
 		db.execute("q");
 	}
 	</cfscript>
@@ -235,7 +237,8 @@ local.tempCom.index();
 	<cfsavecontent variable="db.sql">
 		select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		where mls_saved_search_id= #db.param(arguments.mls_saved_search_id)# and 
-		site_id = #db.param(request.zos.globals.id)#
+		site_id = #db.param(request.zos.globals.id)# and 
+			mls_saved_search_deleted =#db.param(0)# 
 	</cfsavecontent><cfscript>qList=db.execute("qList");
 	return qList;
 	</cfscript>

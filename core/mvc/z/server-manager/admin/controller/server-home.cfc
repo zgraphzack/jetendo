@@ -85,6 +85,7 @@
 <cffunction name="countLines" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+	setting requesttimeout="1000";
 	form.path=application.zcore.functions.zso(form, 'path');
 	if(form.path NEQ "" and directoryexists(form.path)){
 		local.rs=application.zcore.functions.zCountCFMLLinesInDirectory(form.path);
@@ -127,6 +128,7 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8");
 	application.zcore.functions.zStatusHandler(request.zsid);
+ 
 	</cfscript>
 	<cfsavecontent variable="local.theMeta"> 
 		<style type="text/css">
