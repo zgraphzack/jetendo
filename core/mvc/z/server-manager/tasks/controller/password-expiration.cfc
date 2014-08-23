@@ -47,7 +47,20 @@
 	site_id <> #db.param(-1)#";
 	db.execute("qUpdate");
 	writeoutput("Old passwords were expired.");
+
+
+	db.sql="delete from #db.table("user_token", request.zos.zcoreDatasource)# WHERE 
+	user_token_updated_datetime <= #db.param(dateformat(pastDate, "yyyy-mm-dd")&" "&timeformat(pastDate, "HH:mm:ss"))# and 
+	user_token_deleted = #db.param(0)# and 
+	site_id <> #db.param(-1)#";
+	db.execute("qDeleteToken");
 	abort;
+	</cfscript>
+</cffunction>
+
+<cffunction name="deleteOldUserToken" access="remote" localmode="modern">
+	<cfscript>
+	
 	</cfscript>
 </cffunction>
 </cfoutput>

@@ -1222,7 +1222,7 @@
 				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Section?","member.site-option-group.edit site_option_group_enable_section")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_section")#</td>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_section")# (Requires Enable Unique URL to be set to Yes)</td>
 				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Only Show App Admin?","member.site-option-group.edit site_option_group_admin_app_only")#</th>

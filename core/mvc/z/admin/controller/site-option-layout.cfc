@@ -1,6 +1,22 @@
 <cfcomponent>
 <cfoutput>
 <!--- 
+Layout
+	Breakpoint - 960+
+		Row 1 - set number of divisions and how they are sized to auto create the panels below
+				Panel 1
+					Widget 1
+					Widget 2
+					Widget 3
+				Panel 2	
+					Widget 1
+		Row 2
+			Panel 1
+				Widget 1
+	Breakpoint - 750+
+		Row 1
+
+		
 TODO: Help with layout builder: Building a feature that lets you visually connect widgets to custom data sources that have different field names.
 	This feature would let you take existing widgets and feed them different data sources that don't match the original variable names.
 	Widgets could be placed anywhere in the layout - They wouldn't have a fixed position or sort order like it does on security first.

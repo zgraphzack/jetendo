@@ -175,7 +175,7 @@ ssl session - lost on browser close - lost on server reboot
 	}else{
 		// verify security
 		c=application.customSessionStruct[currentID];
-		if(request.zos.cgi.http_user_agent does not contain "Shockwave Flash" and c.userAgent NEQ request.zos.cgi.http_user_agent){
+		if(c.userAgent NEQ request.zos.cgi.http_user_agent){
 			currentId=createUUID();
 		}else if(c.ip NEQ request.zos.cgi.remote_addr){
 			currentId=createUUID();
