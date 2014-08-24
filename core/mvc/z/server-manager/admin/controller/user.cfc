@@ -44,6 +44,7 @@
 				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#">Add User</a> | 
 				<a href="/z/server-manager/admin/user/addUserGroup?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#">Add User Group</a> |
 				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&amp;sid=#request.zos.globals.serverId#&amp;returnId=#form.returnId#&amp;user_server_administrator=1">Add Server Administrator</a> | 
+				<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#request.zos.globals.serverId#">Manage Server Administrators</a> | 
 					<cfif isDefined('request.zsession.zsaUsersOnly')>
 						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=0">Hide Server Manager Users.</a>
 					<cfelse>

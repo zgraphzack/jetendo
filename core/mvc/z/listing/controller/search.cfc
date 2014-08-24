@@ -1764,7 +1764,7 @@ for drop down, sort the primary cities to top.
 	from #db.table("city_x_mls", request.zos.zcoreDatasource)# city_x_mls 
 	WHERE city_x_mls.city_id IN (#db.trustedSQL(qtype.idlist)#) and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("city_x_mls"))#  and 
-    city_x_mls_deleted = #db.param(0)#
+    city_x_mls_deleted = #db.param(0)# and
 	city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#)  
           
     </cfsavecontent><cfscript>qCity=db.execute("qCity");</cfscript>

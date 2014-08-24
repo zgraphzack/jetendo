@@ -250,7 +250,7 @@
 			$(".siteSelect1").bind("mouseover", function(){
 				$('.site-links', this).css('visibility', 'visible');
 			});
-			$(".siteSelect1").bind("mouseover", function(){
+			$(".siteSelect1").bind("mouseout", function(){
 				$('.site-links', this).css('visibility', 'hidden');
 			});
 		});
@@ -264,8 +264,8 @@
 	.siteSelect4{padding:3px;float:left; width:100%; }
 	.siteSelect1:hover .siteSelect4{ background-color:##69C !important; color:##FFF !important;}
 	.siteSelect1:hover .siteSelect4 a:link, .siteSelect1:hover .siteSelect4 a:visited{ color:##FFF !important;}
-	.siteSelect2{float:left;}
-	.siteSelect3{visibility:hidden;float:left;}
+	.siteSelect2{float:left;white-space: nowrap !important;width: 200px;}
+	.siteSelect3{visibility:hidden;background-color:##69C !important; float:left;}
 	</style>');
 	</cfscript>
 	</cfif>
