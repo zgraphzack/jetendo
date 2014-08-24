@@ -900,6 +900,7 @@ this.app_id=12;
 				db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_id = #db.param(request.zsession.user.id)# and 
 				user_active=#db.param(1)# and 
+				user_deleted=#db.param(0)# and 
 				site_id = #db.param(request.zsession.user.site_id)#";
 				qc=db.execute("qc");
 				ts=structnew();
@@ -926,6 +927,7 @@ this.app_id=12;
 			WHERE user_id = #db.param(cookie.z_user_id)# and 
 			user_key = #db.param(cookie.z_user_key)# and 
 			user_active=#db.param(1)# and 
+			user_deleted=#db.param(0)# and 
 			site_id = #db.param(request.zos.globals.id)#";
 			qc=db.execute("qc");
 		}

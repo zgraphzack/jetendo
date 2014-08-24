@@ -472,6 +472,7 @@
 	}
 	db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 	WHERE content_id = #db.param(form.content_id)# and 
+	content_deleted=#db.param(0)# and 
 	content.site_id = #db.param(request.zos.globals.id)# ";
 	qContent=db.execute("qContent");
 	if(currentMethod EQ 'edit'){

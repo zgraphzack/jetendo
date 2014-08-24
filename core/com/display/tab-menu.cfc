@@ -74,8 +74,9 @@ variables.hasWriteAccess=true;
 					});
 					}else{
 					$(".zmember-tabs fieldset").each(function(){
-
-					$(this).hide();
+						if(!$(this).hasClass("zmember-tabs-buttons-bottom")){
+							$(this).hide();
+						}
 					});
 					ui.newPanel.show();
 				}

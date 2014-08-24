@@ -289,6 +289,7 @@ function checkFilesystem(){
 	$result=zCheckDirectoryPermissions($dir, $wwwUser, $wwwUser, "660", "770", false, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."jetendo/", $wwwUser, $wwwUser, "660", "770", false, $preview, $arrError, $isTestServer);
 
+	$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_nginx_sites_config_path"), "root", "root", "640", "770", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_nginx_ssl_path"), "root", "root", "400", "400", false, $preview, $arrError, $isTestServer);
 
 	$result=zCheckDirectoryPermissions(get_cfg_var("jetendo_root_private_path"), $wwwUser, $wwwUser, "660", "770", false, $preview, $arrError, $isTestServer);

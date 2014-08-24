@@ -469,7 +469,7 @@
 		application.zcore.status.setStatus(Request.zsid, "Site Developer Email must be left blank or be a valid email address.",form,true);
 		application.zcore.status.setFieldError(Request.zsid, "site_admin_email");
 	}
-	if(form.site_email_link_from NEQ '' and application.zcore.functions.zEmailValidate(form.site_email_link_from) EQ false){
+	if(application.zcore.functions.zso(form, 'site_email_link_from') NEQ '' and application.zcore.functions.zEmailValidate(form.site_email_link_from) EQ false){
 		application.zcore.status.setStatus(Request.zsid, "Link Email Address must be a valid email address.",form,true);
 		application.zcore.status.setFieldError(Request.zsid, "site_email_link_from");
 	}
@@ -527,7 +527,8 @@
 		}*/
 	}else{
 		db.sql="select * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-		WHERE site_id =#db.param(form.sid)#";
+		WHERE site_id =#db.param(form.sid)# and 
+		site_deleted=#db.param(0)# ";
 		qCheck=db.execute("qCheck"); 
 		/*
 		if(request.zos.istestserver EQ false){
@@ -640,7 +641,8 @@
 	
 		form.site_id = form.sid;
 		db.sql="select * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-		WHERE site_id = #db.param(form.site_id)#";
+		WHERE site_id = #db.param(form.site_id)# and 
+		site_deleted=#db.param(0)#";
 		qsite=db.execute("qsite"); 
 		if(form.site_live EQ 1 and qsite.site_live EQ 0){
 			application.zcore.functions.zdownloadlink(form.site_domain&"/z/misc/site-map/xmloutput");
@@ -704,8 +706,17 @@
 		// must run after the globals are updated
 		application.zcore.app.appUpdateCache(form.site_id);
 	}
-	
+
 	var rs=application.zcore.functions.zGenerateNginxMap();
+	var result=application.zcore.functions.zSecureCommand("publishNginxSiteConfig"&chr(9)&form.site_id, 30);
+	if(result EQ false){
+		application.zcore.status.setStatus(request.zsid, "Invalid Nginx configuration - The previous Nginx configuration was restored.", form, true);
+		if(form.method EQ "update"){
+			application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?sid=#form.sid#&zsid=#Request.zsid#");
+		}else{
+			application.zcore.functions.zRedirect("/z/server-manager/admin/site/add?sid=#form.sid#&zsid=#Request.zsid#");
+		}
+	}
 	application.zcore.status.setStatus(request.zsid, rs.message, form, not rs.success);
 	
 	// go back to site overview page
@@ -958,7 +969,8 @@
 	form.sid=application.zcore.functions.zso(form, 'sid', false, '');
 	currentMethod=form.method;
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(form.sid)#";
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted=#db.param(0)#  ";
 	qWebSite=db.execute("qWebSite");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id <> #db.param(form.sid)# and 
@@ -1005,10 +1017,21 @@
 		<h2><cfif currentMethod EQ "edit">Edit<cfelse>Add</cfif> Site</h2>
 		<form action="/z/server-manager/admin/site/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?sid=#form.sid#" method="post">
 		<input type="hidden" name="newdomain" value="#htmleditformat(application.zcore.functions.zso(form, 'newdomain'))#" />
+
+		<cfscript>
+		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
+		tabCom.setMenuName("member-site-edit");
+		cancelURL="/z/server-manager/admin/site-select/index?zid=#form.zid#&action=select&sid=#form.sid#";
+		tabCom.setCancelURL(cancelURL);
+		tabCom.enableSaveButtons();
+		</cfscript>
+		#tabCom.beginTabMenu()# 
+		#tabCom.beginFieldSet("Basic")#
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Parent Site:</td>
-			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_parent_id", "table-error","table-white")#>
+			<td style="vertical-align:top; width:140px;">Parent Site:</td>
+			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_parent_id", "table-error","")#>
 			
 		<cfscript>
 		selectStruct = StructNew();
@@ -1028,13 +1051,13 @@
 		}
 		</cfscript>
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">SSL Manager Domain:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_ssl_manager_domain", "table-error","table-white")#><input name="site_ssl_manager_domain" type="text" size="70" maxlength="255" value="<cfif form.site_ssl_manager_domain EQ "" and request.zos.defaultSSLManagerDomain NEQ "">#managerShortName##request.zos.defaultSSLManagerDomain#<cfelse>#form.site_ssl_manager_domain#</cfif>"></td>
+			<td style="vertical-align:top; width:140px;">SSL Manager Domain:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_ssl_manager_domain", "table-error","")#><input name="site_ssl_manager_domain" type="text" size="70" maxlength="255" value="<cfif form.site_ssl_manager_domain EQ "" and request.zos.defaultSSLManagerDomain NEQ "">#managerShortName##request.zos.defaultSSLManagerDomain#<cfelse>#form.site_ssl_manager_domain#</cfif>"></td>
 		</tr>
         
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">IP Address:</td>
-			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_ip_address", "table-error","table-white")#>
+			<td style="vertical-align:top; width:140px;">IP Address:</td>
+			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_ip_address", "table-error","")#>
 				<cfscript>
 				ipStruct=application.zcore.functions.getSystemIpStruct();
 
@@ -1048,290 +1071,90 @@
 				</cfscript>
 			</td>
 		</tr>
-        <cfif request.zos.istestserver EQ false>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">System Username:</td>
-			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_username", "table-error","table-white")#><input name="site_username" type="text" size="70" maxlength="32" value="#htmleditformat(form.site_username)#" /> 
-			<input type="checkbox" name="useExistingUsername" value="1" <cfif application.zcore.functions.zso(form, 'useExistingUsername') EQ 1>checked="checked"</cfif> /> Use existing username?<br />
-            </td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">System Password:</td>
-			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_password", "table-error","table-white")#><input name="site_password" type="text" size="70" value="<cfif currentMethod EQ "add" and form.site_password EQ "">#htmleditformat(application.zcore.functions.zGenerateStrongPassword())#<cfelse>#htmleditformat(form.site_password)#</cfif>" /><br />
-            <cfif currentMethod EQ "add">This password was randomly generated right now.<br /></cfif>
-            Must be 20+ characters. The password is stored as plain text since system admin should be secure via SSH tunneling instead.</td>
-		</tr>
-        </cfif>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Short Domain:</td>
-			<td class="table-white"><input name="site_short_domain" type="text" size="70" maxlength="255" value="#htmleditformat(form.site_short_domain)#"><br />
+			<td style="vertical-align:top; width:140px;">Short Domain:</td>
+			<td><input name="site_short_domain" type="text" size="70" maxlength="255" value="#htmleditformat(form.site_short_domain)#"><br />
             You must exclude. www., http:// and the test domain.  I.e. domain.com or subdomain.domain.com. This field is used for the root directory name for this domain.</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Site Name:</td>
-			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_sitename", "table-error","table-white")#><input name="site_sitename" type="text" size="70" maxlength="255" value="#form.site_sitename#"></td>
+			<td style="vertical-align:top; width:140px;">Site Name:</td>
+			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_sitename", "table-error","")#><input name="site_sitename" type="text" size="70" maxlength="255" value="#form.site_sitename#"></td>
 		</tr>
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Domain:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_domain", "table-error","table-white")#><input name="site_domain" type="text" size="70" maxlength="255" value="#form.site_domain#"></td>
+			<td style="vertical-align:top; width:140px;">Domain:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_domain", "table-error","")#><input name="site_domain" type="text" size="70" maxlength="255" value="#form.site_domain#"></td>
 		</tr>
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Secure Domain:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_securedomain", "table-error","table-white")#><input name="site_securedomain" type="text" size="70" maxlength="255" value="#form.site_securedomain#"></td>
+			<td style="vertical-align:top; width:140px;">Secure Domain:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_securedomain", "table-error","")#><input name="site_securedomain" type="text" size="70" maxlength="255" value="#form.site_securedomain#"></td>
 		</tr>
 		
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_require_ssl_for_user", "table-error","table-white")#><input name="site_require_ssl_for_user" type="checkbox" value="1" <cfif form.site_require_ssl_for_user EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require SSL for user logins? (Only works if Secure Domain field is not empty)</td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_require_ssl_for_user", "table-error","")#><input name="site_require_ssl_for_user" type="checkbox" value="1" <cfif form.site_require_ssl_for_user EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require SSL for user logins? (Only works if Secure Domain field is not empty)</td>
 		</tr>
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Domain Aliases:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_domainaliases", "table-error","table-white")#><input name="site_domainaliases" type="text" size="70" maxlength="255" value="#form.site_domainaliases#"> (Enter a comma separated list of all allowed domain aliases. Example: test.client1.com,newsite.client2.com)</td>
+			<td style="vertical-align:top; width:140px;">Domain Aliases:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_domainaliases", "table-error","")#><input name="site_domainaliases" type="text" size="70" maxlength="255" value="#form.site_domainaliases#"> (Enter a comma separated list of all allowed domain aliases. Example: test.client1.com,newsite.client2.com)</td>
 		</tr> 
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Developer Email:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_developer_email", "table-error","table-white")#><input name="site_developer_email" type="text" size="70" maxlength="50" value="#form.site_developer_email#"> (Used when working with a third party developer.  Certain support emails will be sent to them rather then your company.)</td>
+			<td style="vertical-align:top; width:140px;">Developer Email:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_developer_email", "table-error","")#><input name="site_developer_email" type="text" size="70" maxlength="50" value="#form.site_developer_email#"> (Used when working with a third party developer.  Certain support emails will be sent to them rather then your company.)</td>
 		</tr>
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Site Admin Email:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_admin_email", "table-error","table-white")#><input name="site_admin_email" type="text" size="70" maxlength="50" value="#form.site_admin_email#"> (Make sure you have SPF/DKIM permission to use this email address domain on this server.  AOL/YAHOO and others will be blocked.)</td>
+			<td style="vertical-align:top; width:140px;">Site Admin Email:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_admin_email", "table-error","")#><input name="site_admin_email" type="text" size="70" maxlength="50" value="#form.site_admin_email#"> (Make sure you have SPF/DKIM permission to use this email address domain on this server.  AOL/YAHOO and others will be blocked.)</td>
 		</tr>
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Bulk Email Signature:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_signature", "table-error","table-white")#><textarea name="site_email_signature" type="text" cols="70" rows="6">#form.site_email_signature#</textarea><br />Note: Don't use html here.</td>
+			<td style="vertical-align:top; width:140px;">Bulk Email Signature:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_signature", "table-error","")#><textarea name="site_email_signature" type="text" cols="70" rows="6">#form.site_email_signature#</textarea><br />Note: Don't use html here.</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Site Root:</td>
-			<td class="table-white"><input name="site_siteroot" type="text" size="70" maxlength="255" value="#form.site_siteroot#"> (i.e. /mysiteroot)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Home Link Text:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_homelinktext", "table-error","table-white")#><input name="site_homelinktext" type="text" size="70" maxlength="100" value="#form.site_homelinktext#"></td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Post Login URL:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_member_post_login_url", "table-error","table-white")#><input name="site_member_post_login_url" type="text" size="70" maxlength="100" value="#htmleditformat(form.site_member_post_login_url)#"> Note: Public users that manually login will be redirected to this url automatically.</td>
+			<td style="vertical-align:top; width:140px;">Home Link Text:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_homelinktext", "table-error","")#><input name="site_homelinktext" type="text" size="70" maxlength="100" value="#form.site_homelinktext#"></td>
 		</tr>
         
 		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Google Maps API Key:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_google_maps_api_key", "table-error","table-white")#><input name="site_google_maps_api_key" type="text" size="70" maxlength="100" value="#form.site_google_maps_api_key#"></td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Datasource:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_datasource", "table-error","table-white")#><input name="site_datasource" type="text" size="70" maxlength="50" value="#form.site_datasource#"></td>
+			<td style="vertical-align:top; width:140px;">Email Campaign From:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_campaign_from", "table-error","")#><input name="site_email_campaign_from" type="text" size="70" maxlength="50" value="#form.site_email_campaign_from#"> (Default email address for email campaigns and opt-in confirmations)</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Email Enabled</td>
-			<td class="table-white"><input name="site_email_active" type="checkbox" value="1" <cfif form.site_email_active EQ 1>checked="checked"</cfif> style="background:none; border:none;"> (Check the box to enable a custom POP/SMTP server for all emails.)</td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Email POP Server:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_popserver", "table-error","table-white")#><input name="site_email_popserver" type="text" size="70" maxlength="50" value="#form.site_email_popserver#"></td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Email SMTP Server:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_smtpserver", "table-error","table-white")#><input name="site_email_smtpserver" type="text" size="70" maxlength="50" value="#form.site_email_smtpserver#"></td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Email Username:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_username", "table-error","table-white")#><input name="site_email_username" type="text" size="70" maxlength="50" value="#form.site_email_username#"></td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Email Password:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_password", "table-error","table-white")#><input name="site_email_password" type="text" size="70" maxlength="50" value="#form.site_email_password#"></td>
-		</tr>
-        
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Email Connection:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_ssl", "table-error","table-white")#><input name="site_email_ssl" type="radio" value="1"  <cfif form.site_email_ssl EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Use SSL <input name="site_email_ssl" type="radio" value="2"  <cfif form.site_email_ssl EQ 2>checked="checked"</cfif> style="background:none; border:none;"> Use TLS  <input name="site_email_ssl" type="radio" value="0"  <cfif form.site_email_ssl EQ 0 or form.site_email_ssl EQ "">checked="checked"</cfif> style="background:none; border:none;"> Not Secure |  SMTP Port: <input name="site_email_port" type="text" size="6" maxlength="5" value="<cfif form.site_email_port EQ "">25<cfelse>#form.site_email_port#</cfif>"> | SMTP Authentication? <input name="site_email_smtp_authentication" type="checkbox" value="1"  <cfif form.site_email_smtp_authentication EQ 1>checked="checked"</cfif> style="background:none; border:none;"> </td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Email Campaign From:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_campaign_from", "table-error","table-white")#><input name="site_email_campaign_from" type="text" size="70" maxlength="50" value="#form.site_email_campaign_from#"> (Default email address for email campaigns and opt-in confirmations)</td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Link Email Address:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_link_from", "table-error","table-white")#><input name="site_email_link_from" type="text" size="70" maxlength="50" value="#form.site_email_link_from#"></td>
-		</tr>        
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Content URL ID:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_content_url_id", "table-error","table-white")#><input name="site_content_url_id" type="text" size="70" maxlength="50" value="#form.site_content_url_id#"></td>
-		</tr>   
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_disable_openid", "table-error","table-white")#><input name="site_disable_openid" type="checkbox" value="1" <cfif form.site_disable_openid EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Disable OpenID Login?</td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_disable_global_login_message", "table-error","table-white")#><input name="site_disable_global_login_message" type="checkbox" value="1" <cfif form.site_disable_global_login_message EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Disable Global Login Message?</td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_login_iframe_enabled", "table-error","table-white")#><input name="site_login_iframe_enabled" type="checkbox" value="1" <cfif form.site_login_iframe_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Iframe Login?</td>
-		</tr>
-
-        
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_plain_text_password", "table-error","table-white")#><input name="site_plain_text_password" type="checkbox" value="1" <cfif form.site_plain_text_password EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable plain text user password storage?</td>
-		</tr>
-        
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_active" type="checkbox" value="1" <cfif form.site_active EQ 1 or form.site_active EQ "">checked="checked"</cfif> style="background:none; border:none;"> Active?</td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_active" type="checkbox" value="1" <cfif form.site_active EQ 1 or form.site_active EQ "">checked="checked"</cfif> style="background:none; border:none;"> Active?</td>
 		</tr>
 		
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_send_confirm_opt_in" type="checkbox" value="1" <cfif form.site_send_confirm_opt_in EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Confirm Opt-in?</td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_send_confirm_opt_in" type="checkbox" value="1" <cfif form.site_send_confirm_opt_in EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Confirm Opt-in?</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_disable_cfml" type="checkbox" value="1" <cfif form.site_disable_cfml EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Disable CFML?</td>
-		</tr>
-		
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_allow_activation" type="checkbox" value="1" <cfif form.site_allow_activation EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Allow Activation?</td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_live" type="checkbox" value="1" <cfif form.site_live EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Is this site live? WARNING: Do not check unless it is ready because XML Sitemap will start pinging when it is live.</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_debug_enabled" type="checkbox" value="1" <cfif form.site_debug_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Debugging?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_widget_builder_enabled" type="checkbox" value="1" <cfif form.site_widget_builder_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Widget Builder?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_demo_mode" type="checkbox" value="1" <cfif form.site_enable_demo_mode EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Demo Mode?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_unit_testing_domain" type="checkbox" value="1" <cfif form.site_unit_testing_domain EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Unit Testing?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_live" type="checkbox" value="1" <cfif form.site_live EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Is this site live? WARNING: Do not check unless it is ready because XML Sitemap will start pinging when it is live.</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_publish_enabled" type="checkbox" value="1" <cfif form.site_publish_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Publishing?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_track_users" type="checkbox" value="1" <cfif form.site_track_users EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Track users?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_require_captcha" type="checkbox" value="1" <cfif form.site_require_captcha EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require Captcha By Default on Public Forms?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_require_secure_login" type="checkbox" value="1" <cfif form.site_require_secure_login EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require secure login for Site Manager? (Permanent cookie login behavior)</td>
-		</tr>
-        
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_jquery_ui" type="checkbox" value="1" <cfif form.site_enable_jquery_ui EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Jquery UI?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_instant_load" type="checkbox" value="1" <cfif form.site_enable_instant_load EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Instant Load?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_mincat" id="site_enable_mincat" type="checkbox" value="1" <cfif form.site_enable_mincat EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Minify &amp; Concat of CSS/JS files? (Not working - needs rewrite)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_spritemap" type="checkbox" onclick="if(this.checked){document.getElementById('site_enable_mincat').checked=true;}" value="1" <cfif form.site_enable_spritemap EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Spritemap?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_require_login" type="checkbox" value="1" <cfif form.site_require_login EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require login?<br /><br />
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_require_login" type="checkbox" value="1" <cfif form.site_require_login EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require login?<br /><br />
 			Bypass IP List: <input type="text" name="site_require_login_bypass_ip_list" value="#htmleditformat(form.site_require_login_bypass_ip_list)#" /> (Useful for mobile testing.  This setting is inherited by child sites.)</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_multidomain_enabled" type="checkbox" value="1" <cfif (currentMethod EQ "add" and form.site_multidomain_enabled EQ "") or form.site_multidomain_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Multiple Domain Static File Loading? (disable with SSL web site)</td>
+			<td style="vertical-align:top; width:140px;">MVC Paths:</td>
+			<td><input name="site_mvcpaths" type="text" size="100" value="#htmleditformat(form.site_mvcpaths)#" /><br /> (Comma separate root relative paths i.e. mvc,admin.mvc)</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_enable_ssi_publish" type="checkbox" value="1" <cfif form.site_enable_ssi_publish EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Server Side Include Publishing?</td>
-		</tr>
-        
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_manage_links_enabled" type="checkbox" value="1" <cfif form.site_manage_links_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Link Manager?</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Link Dir Rewrite ID:</td>
-			<td class="table-white"><input name="site_manage_links_url_id" type="text" value="#form.site_manage_links_url_id#"></td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Link Page URL:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_manage_links_url", "table-error","table-white")#><input name="site_manage_links_url" type="text" size="70" maxlength="255" value="#form.site_manage_links_url#"></td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Link Page Script Path:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_manage_links_scriptpath", "table-error","table-white")#><input name="site_manage_links_scriptpath" type="text" size="70" maxlength="255" value="#form.site_manage_links_scriptpath#"> (Root relative script path to prevent spider abuse)</td>
-		</tr>
-        <tr>
-        <td class="table-list" style="vertical-align:top; width:140px;">App Url Id List:</td>
-        <td #application.zcore.status.getErrorStyle(Request.zsid, "site_reserved_url_app_ids", "table-error","table-white")#><input type="text" name="site_reserved_url_app_ids" value="#form.site_reserved_url_app_ids#"> (Comma separated list of all MANUALLY reserved Application IDs)</td>
-        </tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Editor CSS URL:</td>
-			<td class="table-white"><input name="site_editor_stylesheet" size="100" type="text" value="#form.site_editor_stylesheet#"></td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">TypeKit.com JS URL:</td>
-			<td class="table-white"><input name="site_typekit_url" type="text" size="100" value="#htmleditformat(form.site_typekit_url)#"> (The "src" attribute of the javascript code)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Fonts.com CSS URL:</td>
-			<td class="table-white"><input name="site_fonts_com_url" type="text" size="100" value="#htmleditformat(form.site_fonts_com_url)#"> (The "href" attribute of the css link code)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Editor Fonts:</td>
-			<td class="table-white"><input name="site_editor_fonts" type="text" size="100" value="#htmleditformat(form.site_editor_fonts)#"> (Syntax: "Arial=arial,helvetica,sans-serif;"+)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Font Lists:</td>
-			<td class="table-white"><input name="site_fontlist" type="text" size="100" value="#htmleditformat(form.site_fontlist)#"><br /> (List all custom web fonts with a pipe, "|", separating them. You can also set failback fonts by adding comma separated alternate fonts. Example: Futura, sans-serif|Sabon, times new roman)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">MVC Paths:</td>
-			<td class="table-white"><input name="site_mvcpaths" type="text" size="100" value="#htmleditformat(form.site_mvcpaths)#" /><br /> (Comma separate root relative paths i.e. mvc,admin.mvc)</td>
-		</tr>
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Disqus Shortname:</td>
-			<td class="table-white"><input name="site_disqus_shortname" type="text" value="#htmleditformat(form.site_disqus_shortname)#" /> (This replaces built-in comments with disqus.com and adds comments to more features of the web site.)</td>
-		</tr>
-		<tr >
-			<td class="table-list" style="vertical-align:top; width:140px;">Exclude File/Dir<br />From Deployment:</td>
-			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_deploy_excluded_paths", "table-error","table-white")#><textarea name="site_deploy_excluded_paths" type="text" cols="70" rows="10" >#htmleditformat(form.site_deploy_excluded_paths)#</textarea><p>Enter one excluded path/file per line. The path should be relative to this site's sites folder.  For example "#request.zos.sitesPath#site1_com/large-files" can be excluded with "large-files" without quotes, which would exclude this directory and anything inside it. </p>
-			<p>You can use a wildcard "*" like ".ht*" which would exclude ".htaccess", ".htpasswd" and other files.</p>
-			<p>If you exclude a directory like this "large-files/*", it will not exclude "large-files" from being created on the remote server, you should just type "large-files" instead. </p>
-			<p>Be more explicit if you want to avoid accidentally matching multiple paths with the same name.  For example, if you type "images", it will exclude any "images" directory or file in the entire project.</p></td>
-		</tr> 
-		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Site Option Group URL ID: </td>
-			<td class="table-white">
+			<td style="vertical-align:top; width:140px;">Site Option Group URL ID: </td>
+			<td>
 				<cfscript>
 				writeoutput(application.zcore.app.selectAppUrlId("site_option_group_url_id", form.site_option_group_url_id, 14));
 				</cfscript>
 			</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Max Image Width:</td>
-			<td class="table-white"><input name="site_max_image_width" type="text" value="<cfif form.site_max_image_width EQ "" or form.site_max_image_width EQ 0>695<cfelse>#form.site_max_image_width#</cfif>"></td>
+			<td style="vertical-align:top; width:140px;">Max Image Width:</td>
+			<td><input name="site_max_image_width" type="text" value="<cfif form.site_max_image_width EQ "" or form.site_max_image_width EQ 0>695<cfelse>#form.site_max_image_width#</cfif>"></td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Shared Default Theme:</td>
-			<td class="table-white">
+			<td style="vertical-align:top; width:140px;">Shared Default Theme:</td>
+			<td>
 			<cfscript>
 			themeCom=createobject("zcorerootmapping.mvc.z.admin.controller.theme");
 			themeStruct=themeCom.getThemeStruct();
@@ -1345,17 +1168,19 @@
 			</cfscript> (Overrides the default template to use a shared theme as the default template.)</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="site_lock_theme" type="checkbox" value="1" <cfif form.site_lock_theme EQ 1 or form.site_lock_theme EQ "">checked="checked"</cfif> style="background:none; border:none;"> Lock Theme? (This will prevent site manager users from changing the design of a custom built web site.)</td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_lock_theme" type="checkbox" value="1" <cfif form.site_lock_theme EQ 1 or form.site_lock_theme EQ "">checked="checked"</cfif> style="background:none; border:none;"> Lock Theme? (This will prevent site manager users from changing the design of a custom built web site.)</td>
 		</tr>
         <cfscript>
 		noGroupsOrApps=false;
 		if(currentMethod EQ "edit"){
 			db.sql="select count(user_group_id) c from #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-			WHERE site_id = #db.param(form.sid)#";
+			WHERE site_id = #db.param(form.sid)# and 
+			user_group_deleted = #db.param(0)#";
 			qc=db.execute("qc"); 
 			db.sql="select count(app_x_site_id) c from #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
-			WHERE site_id = #db.param(form.sid)#";
+			WHERE site_id = #db.param(form.sid)# and 
+			app_x_site_deleted = #db.param(0)#";
 			qc2=db.execute("qc2"); 
 			if((qc.recordcount EQ 0 or qc.c EQ 0) and (qc.recordcount EQ 0 or qc.c EQ 0)){
 				noGroupsOrApps=true;
@@ -1365,12 +1190,12 @@
 		
         <cfif currentMethod EQ "add" or noGroupsOrApps>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td class="table-white"><input name="createUserBlogContent" type="checkbox" value="1" <cfif structkeyexists(form, 'createUserBlogContent')>checked="checked"</cfif> style="background:none; border:none;"> Install Default Apps? | Note: It is best to have an empty directory prior to installation.</td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="createUserBlogContent" type="checkbox" value="1" <cfif structkeyexists(form, 'createUserBlogContent')>checked="checked"</cfif> style="background:none; border:none;"> Install Default Apps? | Note: It is best to have an empty directory prior to installation.</td>
 		</tr>
 		<tr>
-			<td class="table-list" style="vertical-align:top; width:140px;">Theme:</td>
-			<td class="table-white"><cfscript>
+			<td style="vertical-align:top; width:140px;">Theme:</td>
+			<td><cfscript>
 			qthemedirectory=application.zcore.functions.zreaddirectory(request.zos.installPath&"themes/");
 			arrThemes=arraynew(1);
 			for(i=1;i LTE qthemedirectory.recordcount;i++){
@@ -1404,12 +1229,222 @@
 			</td>
 		</tr> 
         </cfif>
+		</table>
+		#tabCom.endFieldSet()#
+		#tabCom.beginFieldSet("Advanced")#
+		<table style="width:100%; border-spacing:0px;" class="table-list">
+        <cfif request.zos.istestserver EQ false>
+		<tr>
+			<td style="vertical-align:top; width:140px;">System Username:</td>
+			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_username", "table-error","")#><input name="site_username" type="text" size="70" maxlength="32" value="#htmleditformat(form.site_username)#" /> 
+			<input type="checkbox" name="useExistingUsername" value="1" <cfif application.zcore.functions.zso(form, 'useExistingUsername') EQ 1>checked="checked"</cfif> /> Use existing username?<br />
+            </td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">System Password:</td>
+			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_password", "table-error","")#><input name="site_password" type="text" size="70" value="<cfif currentMethod EQ "add" and form.site_password EQ "">#htmleditformat(application.zcore.functions.zGenerateStrongPassword())#<cfelse>#htmleditformat(form.site_password)#</cfif>" /><br />
+            <cfif currentMethod EQ "add">This password was randomly generated right now.<br /></cfif>
+            Must be 20+ characters. The password is stored as plain text since system admin should be secure via SSH tunneling instead.</td>
+		</tr>
+        </cfif>
+		<!--- This field doesn't work anymore <tr>
+			<td style="vertical-align:top; width:140px;">Site Root:</td>
+			<td><input name="site_siteroot" type="text" size="70" maxlength="255" value="#form.site_siteroot#"> (i.e. /mysiteroot)</td>
+		</tr> --->
+		<tr>
+			<td style="vertical-align:top; width:140px;">Post Login URL:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_member_post_login_url", "table-error","")#><input name="site_member_post_login_url" type="text" size="70" maxlength="100" value="#htmleditformat(form.site_member_post_login_url)#"> Note: Public users that manually login will be redirected to this url automatically.</td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Google Maps API Key:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_google_maps_api_key", "table-error","")#><input name="site_google_maps_api_key" type="text" size="70" maxlength="100" value="#form.site_google_maps_api_key#"></td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Datasource:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_datasource", "table-error","")#><input name="site_datasource" type="text" size="70" maxlength="50" value="#form.site_datasource#"></td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Email Enabled</td>
+			<td><input name="site_email_active" type="checkbox" value="1" <cfif form.site_email_active EQ 1>checked="checked"</cfif> style="background:none; border:none;"> (Check the box to enable a custom POP/SMTP server for all emails.)</td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Email POP Server:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_popserver", "table-error","")#><input name="site_email_popserver" type="text" size="70" maxlength="50" value="#form.site_email_popserver#"></td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Email SMTP Server:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_smtpserver", "table-error","")#><input name="site_email_smtpserver" type="text" size="70" maxlength="50" value="#form.site_email_smtpserver#"></td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Email Username:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_username", "table-error","")#><input name="site_email_username" type="text" size="70" maxlength="50" value="#form.site_email_username#"></td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Email Password:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_password", "table-error","")#><input name="site_email_password" type="text" size="70" maxlength="50" value="#form.site_email_password#"></td>
+		</tr>
+        
+		<tr >
+			<td style="vertical-align:top; width:140px;">Email Connection:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_ssl", "table-error","")#><input name="site_email_ssl" type="radio" value="1"  <cfif form.site_email_ssl EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Use SSL <input name="site_email_ssl" type="radio" value="2"  <cfif form.site_email_ssl EQ 2>checked="checked"</cfif> style="background:none; border:none;"> Use TLS  <input name="site_email_ssl" type="radio" value="0"  <cfif form.site_email_ssl EQ 0 or form.site_email_ssl EQ "">checked="checked"</cfif> style="background:none; border:none;"> Not Secure |  SMTP Port: <input name="site_email_port" type="text" size="6" maxlength="5" value="<cfif form.site_email_port EQ "">25<cfelse>#form.site_email_port#</cfif>"> | SMTP Authentication? <input name="site_email_smtp_authentication" type="checkbox" value="1"  <cfif form.site_email_smtp_authentication EQ 1>checked="checked"</cfif> style="background:none; border:none;"> </td>
+		</tr>
+		<!--- <tr >
+			<td style="vertical-align:top; width:140px;">Link Email Address:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_link_from", "table-error","")#><input name="site_email_link_from" type="text" size="70" maxlength="50" value="#form.site_email_link_from#"></td>
+		</tr>     --->    
+		<tr >
+			<td style="vertical-align:top; width:140px;">Content URL ID:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_content_url_id", "table-error","")#><input name="site_content_url_id" type="text" size="70" maxlength="50" value="#form.site_content_url_id#"></td>
+		</tr>   
+		<tr >
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_disable_openid", "table-error","")#><input name="site_disable_openid" type="checkbox" value="1" <cfif form.site_disable_openid EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Disable OpenID Login?</td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_disable_global_login_message", "table-error","")#><input name="site_disable_global_login_message" type="checkbox" value="1" <cfif form.site_disable_global_login_message EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Disable Global Login Message?</td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_login_iframe_enabled", "table-error","")#><input name="site_login_iframe_enabled" type="checkbox" value="1" <cfif form.site_login_iframe_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Iframe Login?</td>
+		</tr>
+
+        
+		<tr >
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_plain_text_password", "table-error","")#><input name="site_plain_text_password" type="checkbox" value="1" <cfif form.site_plain_text_password EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable plain text user password storage?</td>
+		</tr>
         
 		<tr>
-			<td class="table-list" style="width:140px;">&nbsp;</td>
-			<td class="table-white"><input type="submit" name="submit" value="<cfif currentMethod EQ "edit">Update<cfelse>Add</cfif> Site"> <input type="button" name="cancel" value="Cancel" onClick="window.location.href = '/z/server-manager/admin/site-select/index?action=select&zid=#form.zid#';"></td>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_disable_cfml" type="checkbox" value="1" <cfif form.site_disable_cfml EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Disable CFML?</td>
 		</tr>
-		</table>	
+		
+		<!--- has no purpose <tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_allow_activation" type="checkbox" value="1" <cfif form.site_allow_activation EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Allow Activation? </td>
+		</tr> --->
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_debug_enabled" type="checkbox" value="1" <cfif form.site_debug_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Debugging?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_widget_builder_enabled" type="checkbox" value="1" <cfif form.site_widget_builder_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Widget Builder?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_demo_mode" type="checkbox" value="1" <cfif form.site_enable_demo_mode EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Demo Mode?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_unit_testing_domain" type="checkbox" value="1" <cfif form.site_unit_testing_domain EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Unit Testing?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_publish_enabled" type="checkbox" value="1" <cfif form.site_publish_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Publishing?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_track_users" type="checkbox" value="1" <cfif form.site_track_users EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Track users?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_require_captcha" type="checkbox" value="1" <cfif form.site_require_captcha EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require Captcha By Default on Public Forms?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_require_secure_login" type="checkbox" value="1" <cfif form.site_require_secure_login EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require secure login for Site Manager? (Permanent cookie login behavior)</td>
+		</tr>
+        
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_jquery_ui" type="checkbox" value="1" <cfif form.site_enable_jquery_ui EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Jquery UI?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_instant_load" type="checkbox" value="1" <cfif form.site_enable_instant_load EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Instant Load?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_mincat" id="site_enable_mincat" type="checkbox" value="1" <cfif form.site_enable_mincat EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Minify &amp; Concat of CSS/JS files? (Not working - needs rewrite)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_spritemap" type="checkbox" onclick="if(this.checked){document.getElementById('site_enable_mincat').checked=true;}" value="1" <cfif form.site_enable_spritemap EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Spritemap?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_multidomain_enabled" type="checkbox" value="1" <cfif (currentMethod EQ "add" and form.site_multidomain_enabled EQ "") or form.site_multidomain_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Multiple Domain Static File Loading? (disable with SSL web site)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_ssi_publish" type="checkbox" value="1" <cfif form.site_enable_ssi_publish EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Server Side Include Publishing?</td>
+		</tr>
+        
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_manage_links_enabled" type="checkbox" value="1" <cfif form.site_manage_links_enabled EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Link Manager?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Link Dir Rewrite ID:</td>
+			<td><input name="site_manage_links_url_id" type="text" value="#form.site_manage_links_url_id#"></td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Link Page URL:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_manage_links_url", "table-error","")#><input name="site_manage_links_url" type="text" size="70" maxlength="255" value="#form.site_manage_links_url#"></td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Link Page Script Path:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_manage_links_scriptpath", "table-error","")#><input name="site_manage_links_scriptpath" type="text" size="70" maxlength="255" value="#form.site_manage_links_scriptpath#"> (Root relative script path to prevent spider abuse)</td>
+		</tr>
+        <tr>
+        <td style="vertical-align:top; width:140px;">App Url Id List:</td>
+        <td #application.zcore.status.getErrorStyle(Request.zsid, "site_reserved_url_app_ids", "table-error","")#><input type="text" name="site_reserved_url_app_ids" value="#form.site_reserved_url_app_ids#"> (Comma separated list of all MANUALLY reserved Application IDs)</td>
+        </tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Editor CSS URL:</td>
+			<td><input name="site_editor_stylesheet" size="100" type="text" value="#form.site_editor_stylesheet#"></td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">TypeKit.com JS URL:</td>
+			<td><input name="site_typekit_url" type="text" size="100" value="#htmleditformat(form.site_typekit_url)#"> (The "src" attribute of the javascript code)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Fonts.com CSS URL:</td>
+			<td><input name="site_fonts_com_url" type="text" size="100" value="#htmleditformat(form.site_fonts_com_url)#"> (The "href" attribute of the css link code)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Editor Fonts:</td>
+			<td><input name="site_editor_fonts" type="text" size="100" value="#htmleditformat(form.site_editor_fonts)#"> (Syntax: "Arial=arial,helvetica,sans-serif;"+)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Font Lists:</td>
+			<td><input name="site_fontlist" type="text" size="100" value="#htmleditformat(form.site_fontlist)#"><br /> (List all custom web fonts with a pipe, "|", separating them. You can also set failback fonts by adding comma separated alternate fonts. Example: Futura, sans-serif|Sabon, times new roman)</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Disqus Shortname:</td>
+			<td><input name="site_disqus_shortname" type="text" value="#htmleditformat(form.site_disqus_shortname)#" /> (This replaces built-in comments with disqus.com and adds comments to more features of the web site.)</td>
+		</tr>
+		<tr >
+			<td style="vertical-align:top; width:140px;">Exclude File/Dir<br />From Deployment:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_deploy_excluded_paths", "table-error","")#><textarea name="site_deploy_excluded_paths" type="text" cols="70" rows="10" >#htmleditformat(form.site_deploy_excluded_paths)#</textarea><p>Enter one excluded path/file per line. The path should be relative to this site's sites folder.  For example "#request.zos.sitesPath#site1_com/large-files" can be excluded with "large-files" without quotes, which would exclude this directory and anything inside it. </p>
+			<p>You can use a wildcard "*" like ".ht*" which would exclude ".htaccess", ".htpasswd" and other files.</p>
+			<p>If you exclude a directory like this "large-files/*", it will not exclude "large-files" from being created on the remote server, you should just type "large-files" instead. </p>
+			<p>Be more explicit if you want to avoid accidentally matching multiple paths with the same name.  For example, if you type "images", it will exclude any "images" directory or file in the entire project.</p></td>
+		</tr> 
+		<tr >
+			<td style="vertical-align:top; width:140px;">Nginx Config:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_nginx_config", "table-error","")#><textarea name="site_nginx_config" type="text" cols="70" rows="6">#htmleditformat(form.site_nginx_config)#</textarea><br />
+			Note: by default nginx has an automatic mass virtual host configuration configured for all features.  Use this only to override for this specific site.</td>
+		</tr> 
+		<tr >
+			<td style="vertical-align:top; width:140px;">Disable Nginx<br />Default Includes:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_nginx_disable_jetendo")#</td>
+		</tr>
+        </table>
+		#tabCom.endFieldSet()#
+		#tabCom.endTabMenu()#
 		</form>
 </cffunction>
 </cfoutput>

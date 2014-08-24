@@ -19,7 +19,12 @@ importSite#chr(9)#siteDomain#chr(9)#importDirName#chr(9)#tarFileName#chr(9)#tarU
 installThemeToSite#chr(9)#themeName#chr(9)#absoluteSiteHomedir
 mysqlDumpTable#chr(9)#schema#chr(9)#table
 mysqlRestoreTable#chr(9)#schema#chr(9)#table
+publishNginxSiteConfig#chr(9)#site_id
 renameSite#chr(9)#oldSiteShortDomain#chr(9)#newSiteShortDomain
+sslDeleteCertificate#chr(9)#ssl_hash
+sslGenerateKeyAndCSR#chr(9)#serializedJson
+sslInstallCertificate#chr(9)#serializedJson
+sslSavePublicKeyCertificates#chr(9)#serializedJson
 tarZipFilePath#chr(9)#tarAbsoluteFilePath#chr(9)#changeToAbsoluteDirectory#chr(9)#absolutePathToTar
 tarZipSitePath#chr(9)#siteDomain#chr(9)#curDate
 tarZipSiteUploadPath#chr(9)#siteDomain#chr(9)#curDate
@@ -81,8 +86,303 @@ function processContents($contents){
 		return reloadBind($a);
 	}else if($contents =="notifyBindZone"){
 		return notifyBindZone($a);
+	}else if($contents =="publishNginxSiteConfig"){
+		return publishNginxSiteConfig($a);
+	}else if($contents =="sslInstallCertificate"){
+		return sslInstallCertificate($a);
+	}else if($contents =="sslGenerateKeyAndCSR"){
+		return sslGenerateKeyAndCSR($a);
+	}else if($contents =="sslSavePublicKeyCertificates"){
+		return sslSavePublicKeyCertificates($a);
+	}else if($contents =="sslDeleteCertificate"){
+		return sslDeleteCertificate($a);
 	}
 	return "";
+}
+function sslDeleteCertificate($a){
+	$rs=new stdClass();
+	$rs->success=true;
+	if(count($a) != 1){
+		$rs->success=false;
+		$rs->errorMessage="1 argument is required: ssl_hash.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$ssl_hash=$a[0];
+	if(strpos($ssl_hash, "/") !== FALSE || strpos($ssl_hash, "\\") !== FALSE){
+		$rs->success=false;
+		$rs->errorMessage="ssl_hash can't contain slashes.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$nginxSSLPath=get_cfg_var("jetendo_nginx_ssl_path");
+	if($nginxSSLPath == ""){
+		$rs->success=false;
+		$rs->errorMessage="jetendo_nginx_ssl_path is not defined.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$currentPath=$nginxSSLPath.$ssl_hash."/";
+	if(is_dir($currentPath)){
+		$cmd="/bin/rm -rf ".escapeshellarg($currentPath);
+		`$cmd`;
+	}
+	return json_encode($rs);
+}
+
+function sslInstallCertificate($a){
+	$rs=new stdClass();
+	$rs->success=true;
+	if(count($a) != 1){
+		$rs->success=false;
+		$rs->errorMessage="1 argument is required: serializedJson.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$js=json_decode($a[0]);
+	if(strpos($js->ssl_hash, "/") !== FALSE || strpos($js->ssl_hash, "\\") !== FALSE){
+		$rs->success=false;
+		$rs->errorMessage="ssl_hash can't contain slashes.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$nginxSSLPath=get_cfg_var("jetendo_nginx_ssl_path");
+	if($nginxSSLPath == ""){
+		$rs->success=false;
+		$rs->errorMessage="jetendo_nginx_ssl_path is not defined.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$currentPath=$nginxSSLPath.$js->ssl_hash."/";
+	if(!is_dir($currentPath)){
+		mkdir($currentPath, 0400, true);
+	}
+	$currentPath.=$js->site_id;
+
+	file_put_contents($currentPath.".key", $js->ssl_private_key);
+	//file_put_contents($currentPath.".csr", $js->ssl_csr);
+	/*
+	$cmd="/usr/bin/openssl req -noout -text -in ".escapeshellarg($currentPath.".csr");
+	$r3=`$cmd`;
+	if($r3 == ""){
+		$rs->success=false;
+		$rs->errorMessage="CSR key is not valid. Unable to parse expiration date.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}*/
+	file_put_contents($currentPath.".crt", $js->ssl_public_key);
+	$cmd="/usr/bin/openssl x509 -in ".escapeshellarg($currentPath.".crt")." -noout -enddate";
+	$r2=trim(str_replace("notAfter=", "",`$cmd`));
+	if($r2 == ""){
+		$rs->success=false;
+		$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+
+	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($currentPath.".crt");
+	$crtResult=str_replace("\t", "", `$cmd`);
+	/*if(file_exists($currentPath.".csr")){
+		$cmd="/usr/bin/openssl req -noout -subject -in ".escapeshellarg($currentPath.".csr");
+		$csrResult=str_replace("\t", "", `$cmd`);
+
+		$cnPos=strpos($csrResult, "/CN=");
+		$cnPosEnd=strpos($csrResult, "/", $cnPos+1);
+		if($cnPos !== FALSE && $cnPosEnd !== FALSE){
+			$cnPos2=strpos($crtResult, "/CN=");
+			$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
+			if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
+				$cn1=substr($csrResult, $cnPos+4, $cnPosEnd-($cnPos+4));
+				$cn2=substr($crtResult, $cnPos2+4, $cnPosEnd2-($cnPos2+4));
+				if($cn1 != $cn2){
+					$rs->success=false;
+					$rs->errorMessage="The public certificate's common name: ".$cn2." doesn't match CSR's common name: ".$cn1;
+					echo($rs->errorMessage."\n");
+					return json_encode($rs);
+				}
+			}else{
+				$rs->success=false;
+				$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
+				echo($rs->errorMessage."\n");
+			}
+		}else{
+			$rs->success=false;
+			$rs->errorMessage="Unable to parse the common name from the CSR certificate. It may be invalid.";
+			echo($rs->errorMessage."\n");
+		}
+	}else{*/
+		$cnPos2=strpos($crtResult, "/CN=");
+		$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
+		if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
+		}else{
+			$rs->success=false;
+			$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
+			echo($rs->errorMessage."\n");
+		}
+		$csrResult=$crtResult;
+	//}
+	file_put_contents($currentPath.".crt", $js->ssl_public_key."\n".$js->ssl_intermediate_certificate."\n".$js->ssl_ca_certificate);
+	$arrCSR=explode("/", $csrResult);
+	$arrCSR2=array();
+	for($i=0;$i<count($arrCSR);$i++){
+		$arr1=explode("=", $arrCSR[$i]);
+		$arrCSR2[$arr1[0]]=$arr1[1];
+	}
+	$rs->success=true;
+	$rs->csrData=$arrCSR2;
+	$rs->ssl_expiration_datetime=date_parse($r2);
+	return json_encode($rs);
+}
+
+function sslGenerateKeyAndCSR($a){
+	$rs=new stdClass();
+	$rs->success=true;
+	if(count($a) != 1){
+		$rs->success=false;
+		$rs->errorMessage="1 argument is required: serializedJson.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$js=json_decode($a[0]);
+	if(strpos($js->ssl_hash, "/") !== FALSE || strpos($js->ssl_hash, "\\") !== FALSE){
+		$rs->success=false;
+		$rs->errorMessage="ssl_hash can't contain slashes.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+
+	$nginxSSLPath=get_cfg_var("jetendo_nginx_ssl_path");
+	if($nginxSSLPath == ""){
+		$rs->success=false;
+		$rs->errorMessage="jetendo_nginx_ssl_path is not defined.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$currentPath=$nginxSSLPath.$js->ssl_hash."/";
+	if(!is_dir($currentPath)){
+		mkdir($currentPath, 0400, true);
+	}
+	$currentPath.=$js->site_id;
+	if($js->ssl_selfsign == "1"){
+		$cmd="/usr/bin/openssl req -x509 -nodes -days 3650 -newkey ".escapeshellarg("rsa:".$js->ssl_key_size)." -keyout ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".crt")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name");
+		$r2=`$cmd`;
+		if(!file_exists($currentPath.".key")){
+			$rs->success=false;
+			$rs->errorMessage="Failed to generate private key: ".$r;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+		if(!file_exists($currentPath.".crt")){
+			$rs->success=false;
+			$rs->errorMessage="Failed to generate public key: ".$r;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+		$rs->ssl_public_key=file_get_contents($currentPath.".crt");
+		$cmd="/usr/bin/openssl x509 -in ".escapeshellarg($currentPath.".crt")." -noout -enddate";
+		$r2=trim(str_replace("notAfter=", "",`$cmd`));
+		if($r2 == ""){
+			$rs->success=false;
+			$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+		$rs->ssl_expiration_datetime=date_parse($r2);
+	}else{
+		$cmd="/usr/bin/openssl genrsa -out ".escapeshellarg($currentPath.".key")." ".escapeshellarg($js->ssl_key_size);
+		$r=`$cmd`;
+		if(!file_exists($currentPath.".key")){
+			$rs->success=false;
+			$rs->errorMessage="Failed to generate private key: ".$r;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+		$cmd="/usr/bin/openssl req -new -key ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".csr")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name");
+		$r2=`$cmd`;
+		if(!file_exists($currentPath.".csr")){
+			$rs->success=false;
+			$rs->errorMessage="Failed to generate CSR file: ".$r2;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+	}
+	return json_encode($rs);
+}
+
+function sslSavePublicKeyCertificates($a){
+	$rs=new stdClass();
+	$rs->success=true;
+
+	if(count($a) != 1){
+		$rs->success=true;
+		$rs->errorMessage="1 argument is required: serializedJson.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$js=json_decode($a[0]);
+	if(strpos($js->ssl_hash, "/") !== FALSE || strpos($js->ssl_hash, "\\") !== FALSE){
+		$rs->success=false;
+		$rs->errorMessage="ssl_hash can't contain slashes.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$nginxSSLPath=get_cfg_var("jetendo_nginx_ssl_path");
+	if($nginxSSLPath == ""){
+		$rs->success=false;
+		$rs->errorMessage="jetendo_nginx_ssl_path is not defined.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	$currentPath=$nginxSSLPath.$js->ssl_hash."/";
+	if(!is_dir($currentPath)){
+		mkdir($currentPath, 0400, true);
+	}
+	$currentPath.=$js->site_id;
+
+	file_put_contents($currentPath.".crt", $js->ssl_public_key);
+	$cmd="/usr/bin/openssl x509 -in ".escapeshellarg($currentPath.".crt")." -noout -enddate";
+	$r2=trim(str_replace("notAfter=", "",`$cmd`));
+	if($r2 == ""){
+		$rs->success=false;
+		$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+
+
+	$cmd="/usr/bin/openssl req -noout -subject -in ".escapeshellarg($currentPath.".csr");
+	$csrResult=str_replace("\t", "", `$cmd`);
+	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($currentPath.".crt");
+	$crtResult=str_replace("\t", "", `$cmd`);
+	file_put_contents($currentPath.".crt", $js->ssl_public_key."\n".$js->ssl_intermediate_certificate."\n".$js->ssl_ca_certificate);
+
+	$cnPos=strpos($csrResult, "/CN=");
+	$cnPosEnd=strpos($csrResult, "/", $cnPos+1);
+	if($cnPos !== FALSE && $cnPosEnd !== FALSE){
+		$cnPos2=strpos($crtResult, "/CN=");
+		$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
+		if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
+			$cn1=substr($csrResult, $cnPos+4, $cnPosEnd-($cnPos+4));
+			$cn2=substr($crtResult, $cnPos2+4, $cnPosEnd2-($cnPos2+4));
+			if($cn1 != $cn2){
+				$rs->success=false;
+				$rs->errorMessage="The public certificate's common name: ".$cn2." doesn't match CSR's common name: ".$cn1;
+				echo($rs->errorMessage."\n");
+				return json_encode($rs);
+			}
+		}else{
+			$rs->success=false;
+			$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
+			echo($rs->errorMessage."\n");
+		}
+	}else{
+		$rs->success=false;
+		$rs->errorMessage="Unable to parse the common name from the CSR certificate. It may be invalid.";
+		echo($rs->errorMessage."\n");
+	}
+	$rs->success=true;
+	$rs->ssl_expiration_datetime=date_parse($r2);
+	return json_encode($rs);
 }
 
 function reloadBindZone($a){
@@ -433,6 +733,167 @@ function getScryptEncrypt($a){
 	$r=`$cmd`;
 	return $r;
 }
+function publishNginxSiteConfig($a){
+
+	if(count($a) != 1){
+		echo "1 argument is required: site_id.\n";
+		return "0";
+	}
+
+	$nginxSitesPath=get_cfg_var("jetendo_nginx_sites_config_path");
+	$nginxSSLPath=get_cfg_var("jetendo_nginx_ssl_path");
+	if($nginxSitesPath == ""){
+		echo "jetendo_nginx_sites_config_path is not defined.";
+		return "0";
+	}
+	if(!is_dir($nginxSitesPath)){
+		mkdir($nginxSitesPath, 0640, true);
+	}
+	$site_id=$a[0];
+	$fail=false;
+	$cmysql2=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
+	if($cmysql2->error != ""){ 
+		$fail=true;
+		echo "db connect error:".$cmysql2->error."\n";	
+		return "0";
+	}
+	$r=$cmysql2->query("select * from site where 
+	site_active='1' and 
+	site_short_domain <> '' and 
+	site_deleted='0' and 
+	site_id = '".$cmysql2->real_escape_string($site_id)."' ");
+	if($cmysql2->error != ""){ 
+		$fail=true;
+		echo "db error:".$cmysql2->error;	
+		return "0";
+	}
+	if($r->num_rows==0){
+		echo "site_id doesn't exist.";	
+		return "0";
+	}
+	$r2=$cmysql2->query("select * from `ssl` where 
+	ssl_active='1' and 
+	ssl_deleted='0' and 
+	site_id = '".$cmysql2->real_escape_string($site_id)."' 
+	ORDER BY ssl_created_datetime ASC 
+	LIMIT 0,1");
+	if($cmysql2->error != ""){ 
+		$fail=true;
+		echo "db error:".$cmysql2->error;	
+		return "0";
+	}
+	$hasSSL=false;
+	if($r2->num_rows){
+		$hasSSL=true;
+		$sslRow=$r2->fetch_array(MYSQLI_ASSOC);
+	}
+	$arrConfig=array();
+	$row=$r->fetch_array(MYSQLI_ASSOC);
+	
+	$outPath=$nginxSitesPath.$site_id.".conf";
+	if($row["site_nginx_disable_jetendo"]=="0" && !$hasSSL && trim($row["site_nginx_config"]) == ""){
+		if(file_exists($outPath)){
+			unlink($outPath);
+			`/usr/sbin/service nginx reload 2>&1`;
+			$result=`/usr/sbin/service nginx status 2>&1`;
+			if(strpos($result, "nginx found running") !== FALSE){ 
+				// success
+				return "1";
+			}else{
+				echo "Removed previous site conf file, but failed to reload nginx: ".$result."\n";
+				return "0";
+			}
+		}
+	}
+	$arrSite=explode(",", $row["site_domainaliases"]);
+	if($hasSSL){
+		$arrSSLSite=array();
+		$host=str_replace("www.", "", $sslRow["ssl_common_name"]);
+		array_push($arrSSLSite, $host);
+		array_push($arrSite, $host);
+		if($sslRow["ssl_wildcard"] == "1"){
+			array_push($arrSSLSite, "*.".$host);
+			array_push($arrSite, "*.".$host);
+		}else{
+			array_push($arrSSLSite, "www.".$host);
+			array_push($arrSite, "www.".$host);
+		}
+
+		array_push($arrConfig, "server { 
+			listen ".$row["site_ip_address"].":80;\n". 
+			"server_name  ".implode(" ", $arrSite).";\n".
+			"rewrite ^/(.*)$ https://$host/$1 permanent;\n".
+		"}\n".
+		"server {".
+			"listen ".$row["site_ip_address"].":443 ssl spdy;\n".
+			"server_name ".implode(" ", $arrSSLSite).";\n".
+			$row["site_nginx_config"]."\n".
+			"ssl_certificate ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".crt;\n".
+			"ssl_certificate_key ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".key;\n");
+			if($row["site_nginx_disable_jetendo"] == "0"){
+				array_push($arrConfig, "include jetendo-ssl-vhost.conf;\n". 
+				"include jetendo-vhost.conf;\n");
+			}
+		array_push($arrConfig, "}\n");
+	}else{
+		$host=str_replace("www.", "", $row["site_short_domain"]);
+		array_push($arrSite, $host);
+		array_push($arrSite, "www.".$host);
+		array_push($arrConfig, "server {\n".
+		"listen ".$row["site_ip_address"].":80; \n".
+		"server_name  ".implode(" ", $arrSite).";\n".
+		$row["site_nginx_config"]."\n");
+			if($row["site_nginx_disable_jetendo"] == "0"){
+				array_push($arrConfig, "include jetendo-vhost.conf;\n");
+			}
+		array_push($arrConfig, "}\n");
+	}
+	$out=str_replace("\r", "", implode("\n", $arrConfig));
+	$backupMade=false;
+	if(file_exists($outPath)){
+		$backupMade=true;
+		$backupContents=file_get_contents($outPath);
+	}
+	file_put_contents($outPath, $out);
+
+	$result=`/usr/sbin/service nginx configtest 2>&1`;
+	$nginxOK=true;
+	if(strpos($result, "successful") !== FALSE){
+		`/usr/sbin/service nginx reload 2>&1`;
+		$result=`/usr/sbin/service nginx status 2>&1`;
+		//echo "result:".$result.":endresult\n";
+		if(strpos($result, "nginx found running") !== FALSE){ 
+			// success
+		}else{
+			echo "nginx failed to reload..\n";
+			$nginxOK=false;
+			if($backupMade){
+				file_put_contents($outPath, $backupContents);
+				echo "restored ".$outPath." from backup";
+			}else{
+				unlink($outPath);
+			}
+			$result=`/usr/sbin/service nginx reload 2>&1`;
+			echo "Reloaded nginx: ".$result."\n";
+		}
+	}else{
+		$nginxOK=false;
+		echo "Invalid syntax for ".$outPath." result: ".$result."\n";
+		if($backupMade){
+			echo "restored ".$outPath." backup.";
+			file_put_contents($outPath, $backupContents);
+		}else{
+			unlink($outPath);
+		}
+	}
+	if($nginxOK){
+		return "1";
+	}else{
+		return "0";
+	}
+
+}
+
 function getScryptCheck($a){
 	set_time_limit(100);
 	if(count($a) != 2){

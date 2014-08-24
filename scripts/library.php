@@ -834,6 +834,7 @@ function zCheckJetendoIniConfig($arrLog){
 		"jetendo_scripts_path", 
 		"jetendo_backup_path", 
 		"jetendo_nginx_ssl_path", 
+		"jetendo_nginx_sites_config_path",
 		"jetendo_www_user");
 	$correct=true;
 	for($i=0;$i<count($arrVar);$i++){

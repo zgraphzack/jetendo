@@ -198,7 +198,7 @@
 	</cfscript> --->
 	<div class="siteSelectDiv">
 			<cfloop query="qSites">
-			<div class="siteSelect1" onMouseOver="$('.site-links', this).css('visibility', 'visible'); " onMouseOut=" $('.site-links', this).css('visibility', 'hidden');">
+			<div class="siteSelect1">
 				<div class="siteSelect4">
 				<div class="siteSelect2">
 					<a href="##" onclick="window.location.href='#Request.zScriptName#&action=select&sid=#qSites.site_id#';return false;" style="text-decoration:none;" title="Manage Site">#qSites.site_sitename#</a>
@@ -209,6 +209,16 @@
 			</div>
 			</cfloop>
 		</div>
+		<script type="text/javascript">
+		zArrDeferredFunctions.push(function(){
+			$(".siteSelect1").bind("mouseover", function(){
+				$('.site-links', this).css('visibility', 'visible');
+			});
+			$(".siteSelect1").bind("mouseover", function(){
+				$('.site-links', this).css('visibility', 'hidden');
+			});
+		});
+		</script>
 		<cfscript>
 	writeoutput(searchNav);
 	application.zcore.template.appendTag("stylesheets", '<style type="text/css">

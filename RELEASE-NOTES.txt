@@ -1,0 +1,5 @@
+
+Some releases require additional manual steps in order to support the new features.
+
+jetendo.ini new variable added that must be configured:
+	jetendo_nginx_sites_config_path="/var/jetendo-server/nginx/sites/jetendo/";
