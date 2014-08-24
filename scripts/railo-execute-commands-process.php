@@ -160,16 +160,15 @@ function sslInstallCertificate($a){
 	$currentPath.=$js->site_id;
 
 	file_put_contents($currentPath.".key", $js->ssl_private_key);
-	//file_put_contents($currentPath.".csr", $js->ssl_csr);
-	/*
-	$cmd="/usr/bin/openssl req -noout -text -in ".escapeshellarg($currentPath.".csr");
-	$r3=`$cmd`;
-	if($r3 == ""){
+	$cmd="/usr/bin/openssl rsa -in ".escapeshellarg($currentPath.".key")." -text -noout | /bin/grep 'Private-Key:' ";
+	$ssl_key_size=trim(str_replace(" bit)", "", str_replace("Private-Key: (", "",`$cmd`)));
+	if($ssl_key_size != "" && $ssl_key_size <2048){
 		$rs->success=false;
-		$rs->errorMessage="CSR key is not valid. Unable to parse expiration date.";
+		$rs->errorMessage="The Key Size must be 2048 or higher. It was ".$ssl_key_size;
 		echo($rs->errorMessage."\n");
+		sslDeleteCertificate(array($js->ssl_hash));
 		return json_encode($rs);
-	}*/
+	}
 	file_put_contents($currentPath.".crt", $js->ssl_public_key);
 	$cmd="/usr/bin/openssl x509 -in ".escapeshellarg($currentPath.".crt")." -noout -enddate";
 	$r2=trim(str_replace("notAfter=", "",`$cmd`));
@@ -177,58 +176,31 @@ function sslInstallCertificate($a){
 		$rs->success=false;
 		$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
 		echo($rs->errorMessage."\n");
+		sslDeleteCertificate(array($js->ssl_hash));
 		return json_encode($rs);
 	}
 
 	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($currentPath.".crt");
-	$crtResult=str_replace("\t", "", `$cmd`);
-	/*if(file_exists($currentPath.".csr")){
-		$cmd="/usr/bin/openssl req -noout -subject -in ".escapeshellarg($currentPath.".csr");
-		$csrResult=str_replace("\t", "", `$cmd`);
-
-		$cnPos=strpos($csrResult, "/CN=");
-		$cnPosEnd=strpos($csrResult, "/", $cnPos+1);
-		if($cnPos !== FALSE && $cnPosEnd !== FALSE){
-			$cnPos2=strpos($crtResult, "/CN=");
-			$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
-			if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
-				$cn1=substr($csrResult, $cnPos+4, $cnPosEnd-($cnPos+4));
-				$cn2=substr($crtResult, $cnPos2+4, $cnPosEnd2-($cnPos2+4));
-				if($cn1 != $cn2){
-					$rs->success=false;
-					$rs->errorMessage="The public certificate's common name: ".$cn2." doesn't match CSR's common name: ".$cn1;
-					echo($rs->errorMessage."\n");
-					return json_encode($rs);
-				}
-			}else{
-				$rs->success=false;
-				$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
-				echo($rs->errorMessage."\n");
-			}
-		}else{
-			$rs->success=false;
-			$rs->errorMessage="Unable to parse the common name from the CSR certificate. It may be invalid.";
-			echo($rs->errorMessage."\n");
-		}
-	}else{*/
-		$cnPos2=strpos($crtResult, "/CN=");
-		$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
-		if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
-		}else{
-			$rs->success=false;
-			$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
-			echo($rs->errorMessage."\n");
-		}
-		$csrResult=$crtResult;
-	//}
+	$crtResult=str_replace("\t", "", `$cmd`)."/";
+	$cnPos2=strpos($crtResult, "/CN=");
+	$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
+	if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
+	}else{
+		$rs->success=false;
+		$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.".$cnPos2."|".$cnPosEnd2;
+		echo($rs->errorMessage."\n");
+		sslDeleteCertificate(array($js->ssl_hash));
+		return json_encode($rs);
+	}
 	file_put_contents($currentPath.".crt", $js->ssl_public_key."\n".$js->ssl_intermediate_certificate."\n".$js->ssl_ca_certificate);
-	$arrCSR=explode("/", $csrResult);
+	$arrCSR=explode("/", $crtResult);
 	$arrCSR2=array();
 	for($i=0;$i<count($arrCSR);$i++){
 		$arr1=explode("=", $arrCSR[$i]);
 		$arrCSR2[$arr1[0]]=$arr1[1];
 	}
 	$rs->success=true;
+	$rs->ssl_key_size=$ssl_key_size;
 	$rs->csrData=$arrCSR2;
 	$rs->ssl_expiration_datetime=date_parse($r2);
 	return json_encode($rs);
@@ -262,20 +234,28 @@ function sslGenerateKeyAndCSR($a){
 	if(!is_dir($currentPath)){
 		mkdir($currentPath, 0400, true);
 	}
+	if($js->ssl_key_size != "" && $js->ssl_key_size <2048){
+		$rs->success=false;
+		$rs->errorMessage="The Key Size must be 2048 or higher. It was ".$js->ssl_key_size;
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
 	$currentPath.=$js->site_id;
 	if($js->ssl_selfsign == "1"){
-		$cmd="/usr/bin/openssl req -x509 -nodes -days 3650 -newkey ".escapeshellarg("rsa:".$js->ssl_key_size)." -keyout ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".crt")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name");
+		$cmd="/usr/bin/openssl req -x509 -nodes -days ".escapeshellarg($js->ssl_selfsign_days)." -newkey ".escapeshellarg("rsa:".$js->ssl_key_size)." -keyout ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".crt")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name/E=$js->ssl_email");
 		$r2=`$cmd`;
 		if(!file_exists($currentPath.".key")){
 			$rs->success=false;
 			$rs->errorMessage="Failed to generate private key: ".$r;
 			echo($rs->errorMessage."\n");
+			sslDeleteCertificate(array($js->ssl_hash));
 			return json_encode($rs);
 		}
 		if(!file_exists($currentPath.".crt")){
 			$rs->success=false;
 			$rs->errorMessage="Failed to generate public key: ".$r;
 			echo($rs->errorMessage."\n");
+			sslDeleteCertificate(array($js->ssl_hash));
 			return json_encode($rs);
 		}
 		$rs->ssl_public_key=file_get_contents($currentPath.".crt");
@@ -285,6 +265,7 @@ function sslGenerateKeyAndCSR($a){
 			$rs->success=false;
 			$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
 			echo($rs->errorMessage."\n");
+			sslDeleteCertificate(array($js->ssl_hash));
 			return json_encode($rs);
 		}
 		$rs->ssl_expiration_datetime=date_parse($r2);
@@ -295,16 +276,23 @@ function sslGenerateKeyAndCSR($a){
 			$rs->success=false;
 			$rs->errorMessage="Failed to generate private key: ".$r;
 			echo($rs->errorMessage."\n");
+			sslDeleteCertificate(array($js->ssl_hash));
 			return json_encode($rs);
 		}
-		$cmd="/usr/bin/openssl req -new -key ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".csr")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name");
+		$cmd="/usr/bin/openssl req -new -key ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".csr")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name/E=$js->ssl_email");
 		$r2=`$cmd`;
 		if(!file_exists($currentPath.".csr")){
 			$rs->success=false;
 			$rs->errorMessage="Failed to generate CSR file: ".$r2;
 			echo($rs->errorMessage."\n");
+			sslDeleteCertificate(array($js->ssl_hash));
 			return json_encode($rs);
 		}
+	}
+	if(file_exists($currentPath.".csr")){
+		$rs->ssl_csr=file_get_contents($currentPath.".csr");
+	}else{
+		$rs->ssl_csr="";
 	}
 	return json_encode($rs);
 }
@@ -346,14 +334,15 @@ function sslSavePublicKeyCertificates($a){
 		$rs->success=false;
 		$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
 		echo($rs->errorMessage."\n");
+		sslDeleteCertificate(array($js->ssl_hash));
 		return json_encode($rs);
 	}
 
 
 	$cmd="/usr/bin/openssl req -noout -subject -in ".escapeshellarg($currentPath.".csr");
-	$csrResult=str_replace("\t", "", `$cmd`);
+	$csrResult=str_replace("\t", "", `$cmd`)."/";
 	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($currentPath.".crt");
-	$crtResult=str_replace("\t", "", `$cmd`);
+	$crtResult=str_replace("\t", "", `$cmd`)."/";
 	file_put_contents($currentPath.".crt", $js->ssl_public_key."\n".$js->ssl_intermediate_certificate."\n".$js->ssl_ca_certificate);
 
 	$cnPos=strpos($csrResult, "/CN=");
@@ -368,17 +357,22 @@ function sslSavePublicKeyCertificates($a){
 				$rs->success=false;
 				$rs->errorMessage="The public certificate's common name: ".$cn2." doesn't match CSR's common name: ".$cn1;
 				echo($rs->errorMessage."\n");
+				sslDeleteCertificate(array($js->ssl_hash));
 				return json_encode($rs);
 			}
 		}else{
 			$rs->success=false;
 			$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
+			sslDeleteCertificate(array($js->ssl_hash));
 			echo($rs->errorMessage."\n");
+			return json_encode($rs);
 		}
 	}else{
 		$rs->success=false;
 		$rs->errorMessage="Unable to parse the common name from the CSR certificate. It may be invalid.";
 		echo($rs->errorMessage."\n");
+		sslDeleteCertificate(array($js->ssl_hash));
+		return json_encode($rs);
 	}
 	$rs->success=true;
 	$rs->ssl_expiration_datetime=date_parse($r2);
@@ -735,27 +729,39 @@ function getScryptEncrypt($a){
 }
 function publishNginxSiteConfig($a){
 
+	$rs=new stdClass();
+	$rs->success=true;
 	if(count($a) != 1){
-		echo "1 argument is required: site_id.\n";
-		return "0";
+		$rs->success=false;
+		$rs->errorMessage="1 argument is required: site_id.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
 
 	$nginxSitesPath=get_cfg_var("jetendo_nginx_sites_config_path");
 	$nginxSSLPath=get_cfg_var("jetendo_nginx_ssl_path");
 	if($nginxSitesPath == ""){
-		echo "jetendo_nginx_sites_config_path is not defined.";
-		return "0";
+		$rs->success=false;
+		$rs->errorMessage="jetendo_nginx_sites_config_path is not defined.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
+	}
+	if($nginxSSLPath == ""){
+		$rs->success=false;
+		$rs->errorMessage="jetendo_nginx_ssl_path is not defined.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
 	if(!is_dir($nginxSitesPath)){
 		mkdir($nginxSitesPath, 0640, true);
 	}
 	$site_id=$a[0];
-	$fail=false;
 	$cmysql2=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
 	if($cmysql2->error != ""){ 
-		$fail=true;
-		echo "db connect error:".$cmysql2->error."\n";	
-		return "0";
+		$rs->success=false;
+		$rs->errorMessage="db connect error:".$cmysql2->error;
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
 	$r=$cmysql2->query("select * from site where 
 	site_active='1' and 
@@ -763,24 +769,28 @@ function publishNginxSiteConfig($a){
 	site_deleted='0' and 
 	site_id = '".$cmysql2->real_escape_string($site_id)."' ");
 	if($cmysql2->error != ""){ 
-		$fail=true;
-		echo "db error:".$cmysql2->error;	
-		return "0";
+		$rs->success=false;
+		$rs->errorMessage="db error:".$cmysql2->error;
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
 	if($r->num_rows==0){
-		echo "site_id doesn't exist.";	
-		return "0";
+		$rs->success=false;
+		$rs->errorMessage="site_id doesn't exist.";
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
 	$r2=$cmysql2->query("select * from `ssl` where 
 	ssl_active='1' and 
 	ssl_deleted='0' and 
 	site_id = '".$cmysql2->real_escape_string($site_id)."' 
-	ORDER BY ssl_created_datetime ASC 
+	ORDER BY ssl_created_datetime DESC 
 	LIMIT 0,1");
 	if($cmysql2->error != ""){ 
-		$fail=true;
-		echo "db error:".$cmysql2->error;	
-		return "0";
+		$rs->success=false;
+		$rs->errorMessage="DB error: ".$cmysql2->error;
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
 	$hasSSL=false;
 	if($r2->num_rows){
@@ -798,10 +808,12 @@ function publishNginxSiteConfig($a){
 			$result=`/usr/sbin/service nginx status 2>&1`;
 			if(strpos($result, "nginx found running") !== FALSE){ 
 				// success
-				return "1";
+				return json_encode($rs);
 			}else{
-				echo "Removed previous site conf file, but failed to reload nginx: ".$result."\n";
-				return "0";
+				$rs->success=false;
+				$rs->errorMessage="Failed to reload Nginx: ".$result;
+				echo($rs->errorMessage."\n");
+				return json_encode($rs);
 			}
 		}
 	}
@@ -857,7 +869,6 @@ function publishNginxSiteConfig($a){
 	file_put_contents($outPath, $out);
 
 	$result=`/usr/sbin/service nginx configtest 2>&1`;
-	$nginxOK=true;
 	if(strpos($result, "successful") !== FALSE){
 		`/usr/sbin/service nginx reload 2>&1`;
 		$result=`/usr/sbin/service nginx status 2>&1`;
@@ -865,7 +876,7 @@ function publishNginxSiteConfig($a){
 		if(strpos($result, "nginx found running") !== FALSE){ 
 			// success
 		}else{
-			echo "nginx failed to reload..\n";
+			echo "Nginx failed to reload..\n";
 			$nginxOK=false;
 			if($backupMade){
 				file_put_contents($outPath, $backupContents);
@@ -875,23 +886,25 @@ function publishNginxSiteConfig($a){
 			}
 			$result=`/usr/sbin/service nginx reload 2>&1`;
 			echo "Reloaded nginx: ".$result."\n";
+			$rs->success=false;
+			$rs->errorMessage="Nginx failed to reload with Error: ".$result;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
 		}
 	}else{
-		$nginxOK=false;
-		echo "Invalid syntax for ".$outPath." result: ".$result."\n";
+		$nginxOK=false;	
 		if($backupMade){
 			echo "restored ".$outPath." backup.";
 			file_put_contents($outPath, $backupContents);
 		}else{
 			unlink($outPath);
 		}
+		$rs->success=false;
+		$rs->errorMessage="Error: ".$result;
+		echo($rs->errorMessage."\n");
+		return json_encode($rs);
 	}
-	if($nginxOK){
-		return "1";
-	}else{
-		return "0";
-	}
-
+	return json_encode($rs);
 }
 
 function getScryptCheck($a){

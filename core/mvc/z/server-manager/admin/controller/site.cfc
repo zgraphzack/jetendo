@@ -709,8 +709,18 @@
 
 	var rs=application.zcore.functions.zGenerateNginxMap();
 	var result=application.zcore.functions.zSecureCommand("publishNginxSiteConfig"&chr(9)&form.site_id, 30);
-	if(result EQ false){
-		application.zcore.status.setStatus(request.zsid, "Invalid Nginx configuration - The previous Nginx configuration was restored.", form, true);
+	fail=false;
+	if(result EQ ""){
+		application.zcore.status.setStatus(request.zsid, "Unknown failure when publishing Nginx configuration", form, true);
+		fail=true;
+	}else{
+		js=deserializeJson(result);
+		if(not js.success){
+			fail=true;
+			application.zcore.status.setStatus(request.zsid, "Nginx site config publish failed: "&js.errorMessage, form, true);
+		}
+	}
+	if(fail){
 		if(form.method EQ "update"){
 			application.zcore.functions.zRedirect("/z/server-manager/admin/site/edit?sid=#form.sid#&zsid=#Request.zsid#");
 		}else{

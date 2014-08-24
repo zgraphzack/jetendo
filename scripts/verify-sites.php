@@ -303,15 +303,6 @@ $arrError=array();
 $preview=false;
 
 
-echo "Running apt-get update to check for new packages: ";
-$arrPackage=getAvailableUpgradePackages();
-if($arrPackage['available']){
-	echo "New packages available.\n".$arrPackage['results'];
-	// temporarily commented to avoid emails
-	//array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
-}else{
-	echo "No new packages are available. Response: ".$arrPackage['results']."\n";
-}
 
 set_time_limit(2000);
 $host=`hostname`;
@@ -322,6 +313,19 @@ if(!zCheckJetendoIniConfig($arrError)){
 }else{
 	echo "valid\n";
 }
+
+checkForSSLExpiration($arrError);
+
+echo "Running apt-get update to check for new packages: ";
+$arrPackage=getAvailableUpgradePackages();
+if($arrPackage['available']){
+	echo "New packages available.\n".$arrPackage['results'];
+	// temporarily commented to avoid emails
+	//array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
+}else{
+	echo "No new packages are available. Response: ".$arrPackage['results']."\n";
+}
+
 $wwwUser=get_cfg_var("jetendo_www_user");
 
 $testDomain=get_cfg_var("jetendo_test_domain"); 
@@ -389,42 +393,6 @@ for($i=0;$i<count($arrPasswd);$i++){
 	}else if(substr($arrTemp[5], 0, strlen($sitesPath)-1) != $sitesPath){
 		$userUnusedStruct[$arrTemp[0]]=true;
 	}
-}
-echo "Checking ssl certificates: ";
-$sslError=false;
-$mp=get_cfg_var("jetendo_nginx_ssl_path");
-$handle2 = opendir($mp);
-if($handle2 !== FALSE) {
-    while (false !== ($entry = readdir($handle2))) {
-		$curPath=$mp.$entry;
-		if($entry =="." || $entry ==".." || is_dir($curPath)){
-			continue;
-		}
-		if(substr($curPath, strlen($curPath)-4, 4) == ".crt"){
-			$out=trim(`/usr/bin/openssl x509 -in $curPath -noout -enddate`);
-			if($out === FALSE || $out == ""){
-				array_push($arrError, "Attention required:openssl certificate expiration check failed for ".$curPath.".");	
-				$sslError=true;
-			}else{
-				if(strpos($out, "notAfter=") === FALSE){
-					array_push($arrError, "Unexpected output with OpenSSL expiration date check ".$curPath.". Output: ".$out.".");
-					$sslError=true;
-				}else{
-					$out=str_replace("notAfter=", "", $out);
-					if(time()-(60*60*24*7) > strtotime($out)){
-						array_push($arrError, "OpenSSL Certificate for ".$curPath." expires on ".$out.".");	
-						$sslError=true;
-					}
-				}
-			}
-		}
-	}
-	closedir($handle2);
-}
-if($sslError){
-	echo "invalid\n";
-}else{
-	echo "valid\n";
 }
 
 $fail=false;

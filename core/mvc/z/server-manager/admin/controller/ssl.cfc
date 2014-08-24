@@ -1,25 +1,7 @@
 <cfcomponent>
 <cfoutput>
 <!--- 
-integrate with namecheap api: https://www.namecheap.com/support/api/methods/ssl/renew.aspx
-easier ssl renewal
-
-It is possible to automate all steps of SSL certificates except for clicking the email link to approve the certificate.
-
-generate key and csr, place order, retrieve certificate, install certificate in web server.
-
-with every customer on SSL, it would be important to do this.
-
-https://www.namecheap.com/support/api/methods/ssl.aspx
-
-I'm building the visual Jetendo SSL management features right now.   It will be impossible to view / read the private key from the application, which will make it more secure.   Later it would automate installation to multiple servers.
-
-If Zgraph made an effort to ensure we have a forwarding email address at every customer's domain, it would simplify the approval step.    For example,  webmaster@client.com forwarding to ssl@zgraph.com.
-
-I will automate the steps of detecting upcoming expirations, SSL installation errors (non matching certificate due to duplicate IP / wrong server configuration), and create email alerts for different things.
-
-
-
+TODO: integrate with namecheap api: https://www.namecheap.com/support/api/methods/ssl/renew.aspx
 	
 
  --->
@@ -58,6 +40,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
+
 		result=application.zcore.functions.zSecureCommand("sslDeleteCertificate"&chr(9)&qCheck.ssl_hash, 50);
 		if(result == ""){
 			application.zcore.status.setStatus(request.zsid, "Failed to delete SSL Certificate files.", form, true);
@@ -74,10 +57,19 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 		application.zcore.functions.zDeleteRecord("ssl", "ssl_id,site_id,ssl_deleted", request.zos.zcoreDatasource);
 		application.zcore.status.setStatus(Request.zsid, 'SSL Certificate deleted');
 		result=application.zcore.functions.zSecureCommand("publishNginxSiteConfig"&chr(9)&form.site_id, 30);
-		if(result EQ false){
-			application.zcore.status.setStatus(request.zsid, "Invalid Nginx configuration after publishing SSL Certificate - The previous Nginx configuration was restored.", form, true);
-			application.zcore.functions.zRedirect('/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid=#request.zsid#');
+		if(result EQ ""){
+			application.zcore.status.setStatus(request.zsid, "Unknown failure when publishing Nginx configuration", form, true);
+		}else{
+			js=deserializeJson(result);
+			if(not js.success){
+				application.zcore.status.setStatus(request.zsid, "Nginx site config publish failed: "&js.errorMessage, form, true);
+			}
 		}
+		subject="SSL Certificate for #qCheck.ssl_common_name# was deleted";
+		body='<p>SSL Certificate for #qCheck.ssl_common_name# was deleted.</p>
+		<p>Display name: #qCheck.ssl_display_name#</p>
+		<p>Expiration date: #dateformat(qCheck.ssl_expiration_datetime, "m/d/yyyy")# #timeformat(qCheck.ssl_expiration_datetime, "h:mm tt")#</p>';
+		sendEmail(subject, body);
 
 		application.zcore.functions.zRedirect('/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid=#request.zsid#');
 		</cfscript>
@@ -91,6 +83,38 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 			<a href="/z/server-manager/admin/ssl/index?sid=#form.sid#">No</a> 
 		</div>
 	</cfif>
+</cffunction>
+
+<!--- sendEmail("", ""); --->
+<cffunction name="sendEmail" localmode="modern" access="private">
+	<cfargument name="subject" type="string" required="yes">
+	<cfargument name="body" type="string" required="yes">
+	<cfscript>
+	
+	ts={};
+	ts.subject=arguments.subject;
+	savecontent variable="output"{
+		echo('#application.zcore.functions.zHTMLDoctype()#
+		<head>
+		<meta charset="utf-8" />
+		<title>SSL</title>
+		</head>
+		
+		<body>
+		<h2>SSL Certificate Email Alert</h2>
+		');
+		echo(arguments.body);
+		echo('</body>
+		</html>');
+	}
+	ts.html=output;
+	ts.to=request.zos.developerEmailTo;
+	ts.from=request.zos.developerEmailFrom;
+	rCom=application.zcore.email.send(ts);
+	if(rCom.isOK() EQ false){
+		throw("Failed to send SSL Certificate email");
+	}
+	</cfscript>
 </cffunction>
 
 <cffunction name="insertExisting" localmode="modern" access="remote" roles="serveradministrator">
@@ -127,10 +151,11 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	form.ssl_updated_datetime=request.zos.mysqlnow;
 	if(form.method EQ "insert" or form.method EQ "insertExisting"){
 		form.ssl_created_datetime=request.zos.mysqlnow;
-		form.ssl_hash=hash(application.zcore.functions.zGenerateStrongPassword(80,200), "sha-256");
+		form.ssl_hash=hash(request.zos.mysqlnow&application.zcore.functions.zGenerateStrongPassword(80,200), "sha-256");
 	}else{
 		db.sql="SELECT * FROM #db.table("ssl", request.zos.zcoreDatasource)# 
 		WHERE site_id = #db.param(form.sid)# and 
+		ssl_id=#db.param(form.ssl_id)# and 
 		ssl_deleted = #db.param(0)# ";
 		qSSL=db.execute("qSSL");
 		if(qSSL.recordcount EQ 0){
@@ -139,6 +164,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 		}
 		for(row in qSSL){
 			form.ssl_hash=row.ssl_hash;
+			form.ssl_common_name=row.ssl_common_name;
 			if(row.ssl_public_key NEQ ""){
 				application.zcore.status.setStatus(request.zsid, "SSL Certificate already activated. You must create a new SSL Certificate to replace this one.", form, true);
 				application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid="&request.zsid);
@@ -150,8 +176,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 		myform={};
 		myform.ssl_display_name.required=true;
 		myform.ssl_private_key.required=true;
-		myform.ssl_public_key.required=true;
-		myform.ssl_ca_certificate.required=true;
+		myform.ssl_public_key.required=true; 
 		errors = application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
 		if(errors){
 			application.zcore.status.setStatus(request.zsid, "Failed to Install SSL Certificate.", form, true);
@@ -180,14 +205,16 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 			if(structkeyexists(resultStruct, 'ssl_expiration_datetime')){
 				d=resultStruct.ssl_expiration_datetime;
 				form.ssl_expiration_datetime=createdatetime(d.year, d.month, d.day, d.hour, d.minute, d.second);
+				form.ssl_expiration_datetime=dateformat(form.ssl_expiration_datetime, "yyyy-mm-dd")&" "&timeformat(form.ssl_expiration_datetime, "HH:mm:ss");
 			}
+			form.ssl_key_size=application.zcore.functions.zso(resultStruct,'ssl_key_size');
 			form.ssl_country=application.zcore.functions.zso(resultStruct.csrData, 'c');
 			form.ssl_state=application.zcore.functions.zso(resultStruct.csrData, 'st');
 			form.ssl_city=application.zcore.functions.zso(resultStruct.csrData, 'l');
 			form.ssl_organization=application.zcore.functions.zso(resultStruct.csrData, 'o');
 			form.ssl_organization_unit=application.zcore.functions.zso(resultStruct.csrData, 'ou');
 			form.ssl_common_name=application.zcore.functions.zso(resultStruct.csrData, 'cn');
-			form.ssl_email=application.zcore.functions.zso(resultStruct.csrData, 'emailAddress');
+			form.ssl_email=application.zcore.functions.zso(resultStruct.csrData, 'e'); 
 		}
 
 	}else if(form.method EQ "insert"){
@@ -214,6 +241,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 		form.ssl_key_size=rereplace(form.ssl_key_size, "[^0-9]", "", "all");
 		js={
 			ssl_selfsign:form.ssl_selfsign,
+			ssl_selfsign_days:form.ssl_selfsign_days,
 			ssl_country:form.ssl_country,
 			ssl_state:form.ssl_state,
 			ssl_city:form.ssl_city,
@@ -237,6 +265,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 				application.zcore.status.setStatus(request.zsid, 'Failed to generate private key and CSR: '&js.errorMessage,form,true);
 				application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/add?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid=#request.zsid#");
 			}
+			form.ssl_csr=js.ssl_csr;
 			if(form.ssl_selfsign EQ "1"){
 				form.ssl_public_key=js.ssl_public_key;
 				form.ssl_active="1";
@@ -251,10 +280,9 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 		myform={};
 		myform.ssl_display_name.required=true;
 		myform.ssl_public_key.required=true;
-		myform.ssl_ca_certificate.required=true;
 		errors = application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
 		if(errors){
-			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/add?sid=#form.sid#&zsid="&request.zsid);
+			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid="&request.zsid);
 		}
 		js={
 			ssl_public_key: form.ssl_public_key,
@@ -269,7 +297,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 		resultStruct=deserializeJson(result);
 		if(not resultStruct.success){
 			application.zcore.status.setStatus(request.zsid, "Install SSL Certificate Failed: "&resultStruct.errorMessage, form, true);
-			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/add?sid=#form.sid#&zsid="&request.zsid);
+			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid="&request.zsid);
 		}
 		if(structkeyexists(resultStruct, 'ssl_expiration_datetime')){
 			d=resultStruct.ssl_expiration_datetime;
@@ -290,9 +318,11 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	ts.forceWhereFields="site_id";
 	ts.struct=form;
 	
-
+	fail=false;
 	if(form.method EQ "insert" or form.method EQ "insertExisting"){
-		if(not application.zcore.functions.zInsert(ts)){
+		form.ssl_id=application.zcore.functions.zInsert(ts);
+		if(not form.ssl_id){
+			fail=true;
 			application.zcore.status.setStatus(request.zsid, 'Failed to save SSL Certificate due to duplicate certificate.',form,true);
 			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/add?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid=#request.zsid#");
 		}
@@ -300,15 +330,75 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	}else if(application.zcore.functions.zUpdate(ts)){
 		application.zcore.status.setStatus(request.zsid, 'SSL Certificate Updated.');
 	}else{
-		application.zcore.status.setStatus(request.zsid, 'Failed to updated SSL Certificate.',form,true);
+		fail=true;
+		application.zcore.status.setStatus(request.zsid, 'Failed to update SSL Certificate.',form,true);
 		application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid=#request.zsid#");
 	}
 	result=application.zcore.functions.zSecureCommand("publishNginxSiteConfig"&chr(9)&form.site_id, 30);
-	if(result EQ false){
-		application.zcore.status.setStatus(request.zsid, "Invalid Nginx configuration after publishing SSL Certificate - The previous Nginx configuration was restored.", form, true);
-		
+	if(result EQ ""){
+		fail=true;
+		application.zcore.status.setStatus(request.zsid, "Unknown failure when publishing Nginx configuration", form, true);
+	}else{
+		js=deserializeJson(result);
+		if(not js.success){
+			fail=true;
+			application.zcore.status.setStatus(request.zsid, "Nginx site config publish failed: "&js.errorMessage, form, true);
+		}
 	}
-	application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid=#request.zsid#");
+	if(not fail){
+		body='<p>A new certificate has been created with common name: #form.ssl_common_name#.</p>';
+		if(form.method EQ "insert"){
+			if(form.ssl_selfsign EQ "1"){
+				application.zcore.status.setStatus(request.zsid, 'SSL Certificate has been activated.');
+				subject="New Self-Signed SSL Certificate installed for "&form.ssl_common_name;
+
+				body&='<p>A Self-signed SSL Certificate with common name, "#form.ssl_common_name#", was installed as the default active SSL certificate for this site: #application.zcore.functions.zvar('domain', form.site_id)#.</p>
+				<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View Certificate</a></p>
+				<p><a href="#application.zcore.functions.zvar('domain', form.sid)#">View Site</a></p>';
+			}else{
+				subject="New SSL CSR Generated for "&form.ssl_common_name;
+				body&='<a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/edit?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">Activate</a></p>';
+			}
+		}else if(form.method EQ "insertExisting" or form.method EQ "update"){
+			application.zcore.status.setStatus(request.zsid, 'SSL Certificate has been activated.');
+			subject="New SSL Certificate installed for "&form.ssl_common_name;
+
+			body&='<p>An SSL Certificate with common name, "#form.ssl_common_name#", was installed as the default active certificate for this site: #application.zcore.functions.zvar('domain', form.site_id)#.</p>
+			<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View Certificate</a></p>
+			<p><a href="#application.zcore.functions.zvar('domain', form.sid)#">View Site</a></p>';
+		}
+		if(form.method EQ "update"){
+			body&='<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View</a>';
+		}
+	}else{
+		if(form.method EQ "insert"){
+			if(form.ssl_selfsign EQ "1"){
+				subject="Failed to install self-signed SSL Certificate for "&form.ssl_common_name;
+				body='<p>Failed to install self-signed SSL Certificate with common name: #form.ssl_common_name#.</p>';
+			}else{
+				subject="Failed to create SSL CSR for "&form.ssl_common_name;
+				body='<p>Failed to create a CSR with common name: #form.ssl_common_name#.</p>';
+			}
+		}else if(form.method EQ "insertExisting"){
+			subject="Failed to install an SSL Certificate";
+			body='<p>Failed to install an SSL Certificate.</p>
+			<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/index?sid=#form.sid#">Manage SSL Certificates</a>';
+		}else{
+			subject="SSL Certificate for #form.ssl_common_name# failed to activate";
+			body='<p>SSL Certificate for #form.ssl_common_name# failed to activate.</p>
+			<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&amp;sid=#form.sid#">View SSL Certificates</a>';
+		}
+	}
+	sendEmail(subject, body);
+	if(form.method EQ "insert"){
+		if(form.ssl_selfsign EQ "1"){
+			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid=#request.zsid#");
+		}else{
+			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid=#request.zsid#");
+		}
+	}else{
+		application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid=#request.zsid#");
+	}
 	</cfscript>
 </cffunction>
 
@@ -323,6 +413,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	//application.zcore.functions.zSetPageHelpId("8.1.1.9");
 	db.sql="SELECT * FROM #db.table("ssl", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(form.sid)# and 
+	ssl_id=#db.param(form.ssl_id)# and 
 	ssl_deleted = #db.param(0)# ";
 	qSSL=db.execute("qSSL");
 	if(form.method EQ "edit" and qSSL.recordcount EQ 0){
@@ -331,6 +422,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	}
 	application.zcore.functions.zQueryToStruct(qSSL, form);
 	</cfscript>
+	<p><a href="/z/server-manager/admin/ssl/index?sid=#form.sid#">Manage SSL Certificates</a> /</p>
 	<h2>View SSL Certificate</h2>
 	<table style="width:100%; border-spacing:0px;" class="table-list"> 
 		<tr>
@@ -457,7 +549,7 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 	}
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript>	
-	<p><a href="/z/server-manager/admin/ssl/index?amp;sid=#form.sid#">Manage SSL Certificates</a> /</p>
+	<p><a href="/z/server-manager/admin/ssl/index?sid=#form.sid#">Manage SSL Certificates</a> /</p>
 	<h2><cfif backupMethod EQ "add">
 		Add
 	<cfelseif backupMethod EQ "addExisting">
@@ -519,13 +611,34 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 				<td class="table-white">#application.zcore.functions.zInput_Boolean("ssl_selfsign")#<br />
 				Note: Self signed certificates will display a security warning until the user adds an exception for the certificate temporarily or permanently. It is not recommended to use this option except for testing purposes.</td>
 			</tr>
+			<tr>
+				<td class="table-list" style="vertical-align:top; width:120px;">Self-sign Days:</td>
+				<td class="table-white"><cfscript>
+				ts={};
+				ts.name="ssl_selfsign_days";
+				ts.hideSelect=true;
+				ts.listLabels = "365,730,3650";
+				ts.listValues = "365,730,3650";
+				ts.listLabelsDelimiter = ","; 
+				ts.listValuesDelimiter = ",";
+				application.zcore.functions.zInputSelectBox(ts);
+				</cfscript> (The number of days the certificate will be valid for.)</td>
+			</tr>
+
+			
 		<cfelse>
 			<cfif backupMethod EQ "addExisting">
 				<tr>
 					<td class="table-list" style="vertical-align:top; width:120px;">Private Key:</td>
-					<td class="table-white"><textarea name="ssl_private_key" cols="100" rows="10">#htmleditformat(application.zcore.functions.zso(form, 'ssl_private_key'))#</textarea></td>
+					<td class="table-white"><textarea name="ssl_private_key" cols="100" rows="5">#htmleditformat(application.zcore.functions.zso(form, 'ssl_private_key'))#</textarea></td>
 				</tr>
 			<cfelse>
+				<tr>
+					<td class="table-list" style="vertical-align:top; width:120px;">CSR:</td>
+					<td class="table-white">
+						<p>Copy the CSR below and purchase or sign the certificate, then come back to activate this certificate.</p>
+						<textarea name="csr" cols="100" rows="5" disabled="disabled">#htmleditformat(form.ssl_csr)#</textarea></td>
+				</tr>
 				<tr>
 					<td class="table-list" style="vertical-align:top; width:120px;">Common Name:</td>
 					<td class="table-white">#htmleditformat(form.ssl_common_name)#</td>
@@ -572,6 +685,9 @@ I will automate the steps of detecting upcoming expirations, SSL installation er
 				<td class="table-white"><textarea name="ssl_ca_certificate" cols="100" rows="5">#htmleditformat(form.ssl_ca_certificate)#</textarea></td>
 			</tr>
 			<cfif backupMethod EQ "edit">
+				<cfscript>
+				form.ssl_active=1;
+				</cfscript>
 				<tr>
 					<td class="table-list" style="vertical-align:top; width:120px;">Active:</td>
 					<td class="table-white">#application.zcore.functions.zInput_Boolean("ssl_active")#<br />

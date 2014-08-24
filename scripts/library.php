@@ -13,6 +13,91 @@ function zEmailErrorAndExit($subject, $message){
 	echo "Execution aborted.";
 	exit;
 }
+// zEmail("", "")
+function zEmail($subject, $message){
+	$host=`hostname`;
+	$to      = get_cfg_var('jetendo_developer_email_to');
+	$subject = $subject.' on '.$host;
+	$headers = 'From: ' .get_cfg_var('jetendo_developer_email_from'). "\r\n" .
+		'Reply-To: '.get_cfg_var('jetendo_developer_email_from') . "\r\n" .
+		'X-Mailer: PHP/' . phpversion();
+
+	mail($to, $subject, $message, $headers);
+}
+function zCheckSSLCertificateExpiration($curPath){
+	$rs=new stdClass();
+	$rs->success=true;
+	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($curPath);
+	$crtResult=str_replace("\t", "", `$cmd`)."/";
+	$cnPos2=strpos($crtResult, "/CN=");
+	$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
+	$commonName="Unknown common name";
+	$futureTime=time()-(60*60*24*15); // 15 day notice on SSL Expiration
+	if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
+		$commonName=substr($crtResult, $cnPos2+4, $cnPosEnd2-($cnPos2+4));
+	}
+	$cmd="/usr/bin/openssl x509 -in ".escapeshellarg($curPath)." -noout -enddate";
+	$out=trim(`$cmd`);
+	if($out === FALSE || $out == ""){
+		$rs->success=false;
+		$rs->errorMessage="Attention required:openssl certificate expiration check failed for ".$commonName." Path: ".$curPath.".";	
+		return $rs;
+	}else{
+		if(strpos($out, "notAfter=") === FALSE){
+			$rs->success=false;
+			$rs->errorMessage="Unexpected output with OpenSSL certificate expiration date check ".$commonName." Path: ".$curPath." Output:".$out.".";
+			return $rs;
+		}else{
+			$out=str_replace("notAfter=", "", $out);
+			echo "SSL Expiration date compare: ".$commonName." | ".$out."\n".$futureTime." > ".strtotime($out)."\n\n";
+			if($futureTime > strtotime($out)){
+				$rs->success=false;
+				$rs->errorMessage="SSL Certificate for ".$commonName."expires on ".$out." Path: ".$curPath;	
+				return $rs;
+			}
+		}
+	}
+	return $rs;
+}
+function checkForSSLExpiration($arrError){
+	echo "Checking Nginx SSL Certificates: ";
+	$mp=get_cfg_var("jetendo_nginx_ssl_path");
+	$handle2 = opendir($mp);
+	if($handle2 !== FALSE) {
+	    while (false !== ($entry = readdir($handle2))) {
+			$curPath=$mp.$entry;
+			if($entry =="." || $entry ==".." || is_dir($curPath)){
+				$mp2=$mp.$entry."/";
+				$handle3 = opendir($mp2);
+				if($handle3 !== FALSE) {
+				    while (false !== ($entry2 = readdir($handle3))) {
+						$curPath2=$mp2.$entry2;
+						if($entry2 =="." || $entry2 ==".." || is_dir($curPath2)){
+							continue;
+						}
+						if(substr($curPath2, strlen($curPath2)-4, 4) == ".crt"){
+							$result=zCheckSSLCertificateExpiration($curPath2);
+							if(!$result->success){
+								array_push($arrError, $result->errorMessage);
+							}
+						}
+
+					}
+				}
+
+				continue;
+			}
+			if(substr($curPath, strlen($curPath)-4, 4) == ".crt"){
+				$result=zCheckSSLCertificateExpiration($curPath);
+				if(!$result->success){
+					array_push($arrError, $result->errorMessage);
+				}
+
+			}
+		}
+		closedir($handle2);
+	}
+}
 function zRemoveEmptyValuesFromArray($arr){
 	$arrNew=array();
 	for($n=0;$n<count($arr);$n++){

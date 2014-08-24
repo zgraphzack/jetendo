@@ -156,28 +156,8 @@
 	}
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy5'});
 	
-	//thread action="run" name="codeDeploySiteThread" timeout="500000"{
-		for(n in application.siteStruct){
-			if(not structkeyexists(application.sitestruct[n], 'globals')){
-				continue;
-			}
-			request.zRootDomain=replace(replace(application.sitestruct[n].globals.shortDomain,'www.',''),"."&request.zos.testDomain,"");
-			request.zRootPath="/"&replace(request.zRootDomain, ".","_","all")&"/"; 
-			request.zRootSecureCfcPath="jetendo-sites.writable."&replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
-			request.zRootCfcPath=replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
 
-			customExists=fileexists(application.sitestruct[n].globals.homedir&"zCoreCustomFunctions.cfc");
-			if(customExists){
-				application.siteStruct[n].siteRewriteRuleCom=createobject("component", request.zRootCFCPath&"zCoreCustomFunctions");
-			}else{
-				structdelete(application.siteStruct[n], 'siteRewriteRuleCom');
-			}
-			application.zcore.functions.zUpdateCustomSiteFunctions(application.siteStruct[n]);
-		}
-	//}
-	/*thread action="run" name="zUpdateGlobalMVCData" timeout="500000"{
-	}*/
-		request.zos.functions.zUpdateGlobalMVCData(application.zcore, true);
+	request.zos.functions.zUpdateGlobalMVCData(application.zcore, true);
 	
 	backupStruct={
 		zRootPath:request.zRootPath,
@@ -192,49 +172,43 @@
 		siteCodeDeployThread2:[],
 		siteCodeDeployThread3:[]
 	};
-	/*for(n in application.siteStruct){
-		threadId=n MOD 4;
-		arrayAppend(threadStruct["siteCodeDeployThread"&threadId], n);
-	} 
-	for(g in threadStruct){
-		thread action="run" name="#g#" arrSite="#threadStruct[g]#" g="#g#" timeout="500000"{
-		arrSite=threadStruct[g];
-			for(g2=1;g2 LTE arraylen(arrSite);g2++){
-				n=arrSite[g2];*/
+
 	for(n in application.siteStruct){
-				application.sitestruct[n].comCache={};
-				application.sitestruct[n].fileExistsCache={};
-				if(not structkeyexists(application.sitestruct[n], 'globals')){
-					continue;
+		application.sitestruct[n].comCache={};
+		application.sitestruct[n].fileExistsCache={};
+		if(not structkeyexists(application.sitestruct[n], 'globals')){
+			continue;
+		}
+		request.zRootDomain=replace(replace(application.sitestruct[n].globals.shortDomain,'www.',''),"."&request.zos.testDomain,"");
+		request.zRootPath="/"&replace(request.zRootDomain, ".","_","all")&"/"; 
+		request.zRootSecureCfcPath="jetendo-sites.writable."&replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
+		request.zRootCfcPath=replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
+
+		application.zcore.functions.zUpdateSiteMVCData(application.sitestruct[n]);
+			if(structkeyexists(application.sitestruct[n], 'app')){
+			for(i in application.sitestruct[n].app.appCache){
+				currentCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+				if(i NEQ 11 and i NEQ 13){ // rental and listing apps are not thread-safe yet due to cfinclude (listing detail includes) and var scoping
+					currentCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+					application.sitestruct[n].app.appCache[i].cfcCached=currentCom;
 				}
-				/*request.zRootDomain=replace(replace(application.sitestruct[n].globals.shortDomain,'www.',''),"."&request.zos.testDomain,"");
-				request.zRootPath="/"&replace(request.zRootDomain, ".","_","all")&"/"; 
-				request.zRootSecureCfcPath="jetendo-sites.writable."&replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
-				request.zRootCfcPath=replace(replace(request.zRootDomain,".","_","all"),"/",".","ALL")&".";
-			*/
-				application.zcore.functions.zUpdateSiteMVCData(application.sitestruct[n]);
-					if(structkeyexists(application.sitestruct[n], 'app')){
-					for(i in application.sitestruct[n].app.appCache){
-						currentCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
-						if(i NEQ 11 and i NEQ 13){ // rental and listing apps are not thread-safe yet due to cfinclude (listing detail includes) and var scoping
-							currentCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
-							application.sitestruct[n].app.appCache[i].cfcCached=currentCom;
-						}
-						currentCom.site_id=request.zos.globals.id;
-						if(structkeyexists(currentCom, 'onSiteCodeDeploy')){
-							currentCom.onSiteCodeDeploy(application.sitestruct[n].app.appCache[i]);
-						}
-					}	
+				currentCom.site_id=request.zos.globals.id;
+				if(structkeyexists(currentCom, 'onSiteCodeDeploy')){
+					currentCom.onSiteCodeDeploy(application.sitestruct[n].app.appCache[i]);
 				}
-				application.siteStruct[n].dbComponents=application.zcore.functions.getSiteDBObjects(application.sitestruct[n].globals);
+			}	
+		}
+		application.siteStruct[n].dbComponents=application.zcore.functions.getSiteDBObjects(application.sitestruct[n].globals);
+		customExists=fileexists(application.sitestruct[n].globals.homedir&"zCoreCustomFunctions.cfc");
+		if(customExists){
+			application.siteStruct[n].siteRewriteRuleCom=createobject("component", request.zRootCFCPath&"zCoreCustomFunctions");
+		}else{
+			structdelete(application.siteStruct[n], 'siteRewriteRuleCom');
+		}
+		application.zcore.functions.zUpdateCustomSiteFunctions(application.siteStruct[n]);
 				
-			}
-	//	}
-		/*arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy6-'&g});
 	}
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy6-3'});
-	thread action="join" name="#structkeylist(threadStruct, ",")#,zUpdateGlobalMVCData,codeDeploySiteThread" timeout="50000";
-*/
+
 	structappend(request, backupStruct, true);
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy6'});
 

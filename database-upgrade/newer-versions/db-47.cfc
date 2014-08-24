@@ -15,31 +15,32 @@
   ADD COLUMN `site_nginx_disable_jetendo` CHAR(1) DEFAULT '0'   NOT NULL AFTER `site_nginx_config`")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#ssl`(
-  `ssl_id` INT(11) NOT NULL,
-  `ssl_updated_datetime` DATETIME NOT NULL,
-  `ssl_deleted` INT(11) NOT NULL,
-  `ssl_active` CHAR(1) NOT NULL DEFAULT '0',
-  `ssl_display_name` VARCHAR(255) NOT NULL,
-  `ssl_hash` VARCHAR(64) NOT NULL,
-  `ssl_country` CHAR(2) NOT NULL,
-  `ssl_state` VARCHAR(50) NOT NULL,
-  `ssl_city` VARCHAR(100) NOT NULL,
-  `ssl_organization` VARCHAR(255) NOT NULL,
-  `ssl_organization_unit` VARCHAR(100) NOT NULL,
-  `ssl_common_name` VARCHAR(100) NOT NULL,
-  `ssl_created_datetime` DATETIME NOT NULL,
-  `ssl_key_size` INT(11) NOT NULL DEFAULT 0,
-  `site_id` INT(11) NOT NULL DEFAULT 0,
-  `ssl_wildcard` CHAR(1) DEFAULT '0'   NOT NULL,
-  `ssl_expiration_datetime` DATETIME NOT NULL,
-  `ssl_public_key` TEXT NOT NULL,
-  `ssl_intermediate_certificate` TEXT NOT NULL,
-  `ssl_ca_certificate` TEXT NOT NULL,
-  `ssl_email` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`site_id`, `ssl_id`),
-  UNIQUE INDEX `NewIndex1` (`ssl_common_name`, `ssl_hash`, `ssl_deleted`, `ssl_active`)
-) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin")){
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#ssl` (
+  `ssl_id` int(11) NOT NULL,
+  `ssl_updated_datetime` datetime NOT NULL,
+  `ssl_deleted` int(11) NOT NULL,
+  `ssl_active` char(1) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  `ssl_display_name` varchar(255) COLLATE utf8_bin NOT NULL,
+  `ssl_hash` varchar(64) COLLATE utf8_bin NOT NULL,
+  `ssl_country` char(2) COLLATE utf8_bin NOT NULL,
+  `ssl_state` varchar(50) COLLATE utf8_bin NOT NULL,
+  `ssl_city` varchar(100) COLLATE utf8_bin NOT NULL,
+  `ssl_organization` varchar(255) COLLATE utf8_bin NOT NULL,
+  `ssl_organization_unit` varchar(100) COLLATE utf8_bin NOT NULL,
+  `ssl_common_name` varchar(100) COLLATE utf8_bin NOT NULL,
+  `ssl_created_datetime` datetime NOT NULL,
+  `ssl_key_size` int(11) NOT NULL DEFAULT '0',
+  `site_id` int(11) NOT NULL DEFAULT '0',
+  `ssl_wildcard` char(1) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  `ssl_expiration_datetime` datetime NOT NULL,
+  `ssl_public_key` text COLLATE utf8_bin NOT NULL,
+  `ssl_intermediate_certificate` text COLLATE utf8_bin NOT NULL,
+  `ssl_ca_certificate` text COLLATE utf8_bin NOT NULL,
+  `ssl_email` varchar(100) COLLATE utf8_bin NOT NULL,
+  `ssl_csr` text COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`site_id`,`ssl_id`),
+  UNIQUE KEY `NewIndex1` (`ssl_active`,`ssl_hash`,`ssl_common_name`,`site_id`,`ssl_deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin")){
 		return false;
 	} 
 	return true;
