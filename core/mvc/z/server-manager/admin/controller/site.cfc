@@ -322,6 +322,11 @@
 	if(not structkeyexists(form, 'site_lock_theme')){
 		form.site_lock_theme=0;
 	}
+
+
+	if(not application.zcore.user.checkAllCompanyAccess()){
+		form.company_id = request.zsession.user.company_id;
+	}
 	form.site_domain=request.zos.originalFormScope.site_domain;
 	form.site_securedomain=request.zos.originalFormScope.site_securedomain;
 
@@ -1038,7 +1043,31 @@
 		</cfscript>
 		#tabCom.beginTabMenu()# 
 		#tabCom.beginFieldSet("Basic")#
+
 		<table style="width:100%; border-spacing:0px;" class="table-list">
+		<cfif application.zcore.user.checkAllCompanyAccess()>
+			<tr>
+				<td style="vertical-align:top; width:140px;">Company:</td>
+				<td  #application.zcore.status.getErrorStyle(Request.zsid, "company_id", "table-error","")#>
+				
+				<cfscript>
+				db.sql="SELECT *
+				FROM #db.table("company", request.zos.zcoreDatasource)# company
+				WHERE company_deleted = #db.param(0)# ";
+				if(request.zsession.user.company_id NEQ 0){
+					db.sql&=" and company_id = #db.param(request.zsession.user.company_id)#";
+				}
+				db.sql&=" ORDER BY company_name ASC";
+				qcompany=db.execute("qcompany");
+				selectStruct = StructNew();
+				selectStruct.name = "company_id";
+				selectStruct.query = qCompany;
+				selectStruct.queryLabelField = "company_name";
+				selectStruct.queryValueField = "company_id";
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
+			</tr>
+		</cfif>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Parent Site:</td>
 			<td  #application.zcore.status.getErrorStyle(Request.zsid, "site_parent_id", "table-error","")#>

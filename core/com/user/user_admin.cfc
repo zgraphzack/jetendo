@@ -290,6 +290,12 @@
 		str.member_password=str.user_password;
 		str.member_email=str.user_username; 
 
+		if(not application.zcore.user.checkAllCompanyAccess()){
+			if(isdefined('request.zsession.user.company_id')){
+				str.company_id=request.zsession.user.company_id;
+			}
+		}
+
 		applyUserUpdateSecurityFilter(str);
 	
 		inputStruct2.table = "user";
@@ -616,6 +622,11 @@ To view more info about this new user, click the following link:
 			}else{
 				str.user_password_version =0;
 				str.member_password=str.user_password;
+			}
+		}
+		if(not application.zcore.user.checkAllCompanyAccess()){
+			if(isdefined('request.zsession.user.company_id')){
+				str.company_id=application.zcore.functions.request.zsession.user.company_id;
 			}
 		}
 		applyUserUpdateSecurityFilter(str);

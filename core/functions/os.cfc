@@ -2926,6 +2926,7 @@ User's IP: #request.zos.cgi.remote_addr#
 		application.zcore.status.setStatus(request.zsid, "You don't have access to the server manager.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
+
 	</cfscript>
 	<cfif structkeyexists(form,'sid') EQ false>
     	<cfset form.sid=application.zcore.status.getField(arguments.zid, 'site_id')>
@@ -2944,7 +2945,16 @@ User's IP: #request.zos.cgi.remote_addr#
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id = #db.param(form.sid)# and 
 	site_deleted = #db.param(0)#
-	</cfsavecontent><cfscript>qSite=db.execute("qSite");</cfscript>
+	</cfsavecontent><cfscript>qSite=db.execute("qSite");
+
+
+	if(not application.zcore.user.checkAllCompanyAccess() and form.sid NEQ "" and form.sid NEQ "0"){
+		if(request.zsession.user.company_id NEQ qSite.company_id){
+			application.zcore.status.setStatus(request.zsid, "You don't have access to the server manager for this site_id: #form.sid#.", form, true);
+			application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+		}
+	}
+	</cfscript>
 	<cfsavecontent variable="zsaHeader">
 	<script type="text/javascript">/* <![CDATA[ */
     function zOSGoToSite(id){

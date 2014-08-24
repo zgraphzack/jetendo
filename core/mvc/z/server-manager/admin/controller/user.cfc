@@ -39,14 +39,15 @@
 		#repostStruct.formString#
 		<table style="border-spacing:0px; width:100%;" class="table-list">
 			<tr>
-				<td><a href="/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#">User Groups</a> | 
-				<a href="/z/server-manager/admin/user/editSitePermissions?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#">Site Permissions</a> | 
-				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#">Add User</a> | 
-				<a href="/z/server-manager/admin/user/addUserGroup?zid=#form.zid#&sid=#form.sid#&amp;returnId=#form.returnId#">Add User Group</a> |
+				<td><a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#">User Groups</a> | 
+				<a href="/z/server-manager/admin/user/editSitePermissions?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#">Site Permissions</a> | 
+				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#">Add User</a> | 
+				<a href="/z/server-manager/admin/user/addUserGroup?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#">Add User Group</a> |
+				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&amp;sid=#request.zos.globals.serverId#&amp;returnId=#form.returnId#&amp;user_server_administrator=1">Add Server Administrator</a> | 
 					<cfif isDefined('request.zsession.zsaUsersOnly')>
-						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#&zsaUsersOnly=0">Hide Server Manager Users.</a>
+						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=0">Hide Server Manager Users.</a>
 					<cfelse>
-						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#&amp;zsaUsersOnly=1">Show Server Manager Users.</a>
+						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=1">Show Server Manager Users.</a>
 					</cfif>
 				</td>
 			</tr>
@@ -226,6 +227,12 @@
 	inputStruct.user_last_name = application.zcore.functions.zso(form, 'user_last_name');
 	inputStruct.user_email = application.zcore.functions.zso(form, 'user_email');
 	inputStruct.user_group_id = application.zcore.functions.zso(form, 'user_group_id',true);
+
+
+	if(not application.zcore.user.checkAllCompanyAccess()){
+		form.company_id = request.zsession.user.company_id;
+	}
+	inputStruct.company_id=application.zcore.functions.zso(form, 'company_id', true);
 	if(inputStruct.user_password EQ ""){
 		structdelete(inputStruct, 'user_password');
 	}else{
@@ -469,7 +476,10 @@
 	WHERE user_id = #db.param(form.user_id)# and 
 	site_id =#db.param(form.sid)# ";
 	qUser=db.execute("qUser");
-	application.zcore.functions.zQueryToStruct(qUser, form);
+	tempStruct={};
+	application.zcore.functions.zQueryToStruct(qUser, tempStruct);
+	structappend(form, tempStruct, false);
+
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	db.sql=" SELECT user_group.user_group_id, user_group.user_group_name, user_group.user_group_friendly_name 
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
@@ -477,6 +487,15 @@
 	user_group_deleted = #db.param(0)# 
 	ORDER BY user_group_friendly_name ASC ";
 	qGroup=db.execute("qGroup");
+	if(form.user_server_administrator EQ 1){
+		form.user_site_administrator=1;
+		form.user_access_site_children=1;
+		for(row in qGroup){
+			if(row.user_group_name EQ "administrator"){
+				form.user_group_id=row.user_group_id;
+			}
+		}
+	}
 	</cfscript>
 	<h2><cfif currentMethod EQ "editUser">
 						Edit
@@ -487,6 +506,28 @@
 	<form name="userForm" id="userForm" action="/z/server-manager/admin/user/<cfif currentMethod EQ "editUser">updateUser<cfelse>insertUser</cfif>?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#" method="post" >
 		<input type="hidden" name="user_id" value="#form.user_id#">
 		<table style="border-spacing:0px; width:100%;"  class="table-shadow"> 
+			<cfif application.zcore.user.checkAllCompanyAccess()>
+	
+				<tr>
+					<td style="vertical-align:top; width:140px;">Company:</td>
+					<td  #application.zcore.status.getErrorStyle(Request.zsid, "company_id", "table-error","")#>
+					
+					<cfscript>
+					db.sql="SELECT *
+					FROM #db.table("company", request.zos.zcoreDatasource)# company
+					WHERE company_deleted = #db.param(0)# 
+					ORDER BY company_name ASC";
+					qcompany=db.execute("qcompany");
+					selectStruct = StructNew();
+					selectStruct.name = "company_id";
+					selectStruct.query = qCompany;
+					selectStruct.queryLabelField = "company_name";
+					selectStruct.queryValueField = "company_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript>
+					<br />Note: A user associated with a company can only edit data for sites that are associated with their company regardless of the other permissions set.</td>
+				</tr>
+			</cfif>
 			<cfscript>
 			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 			WHERE site_id = #db.param(form.sid)#";

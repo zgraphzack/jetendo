@@ -764,7 +764,6 @@ function publishNginxSiteConfig($a){
 		return json_encode($rs);
 	}
 	$r=$cmysql2->query("select * from site where 
-	site_active='1' and 
 	site_short_domain <> '' and 
 	site_deleted='0' and 
 	site_id = '".$cmysql2->real_escape_string($site_id)."' ");
@@ -801,7 +800,7 @@ function publishNginxSiteConfig($a){
 	$row=$r->fetch_array(MYSQLI_ASSOC);
 	
 	$outPath=$nginxSitesPath.$site_id.".conf";
-	if($row["site_nginx_disable_jetendo"]=="0" && !$hasSSL && trim($row["site_nginx_config"]) == ""){
+	if($row["site_active"] == "0" || $row["site_nginx_disable_jetendo"]=="0" && !$hasSSL && trim($row["site_nginx_config"]) == ""){
 		if(file_exists($outPath)){
 			unlink($outPath);
 			`/usr/sbin/service nginx reload 2>&1`;
@@ -816,6 +815,8 @@ function publishNginxSiteConfig($a){
 				return json_encode($rs);
 			}
 		}
+		// don't need to publish a site configuration
+		return json_encode($rs);
 	}
 	$arrSite=explode(",", $row["site_domainaliases"]);
 	if($hasSSL){

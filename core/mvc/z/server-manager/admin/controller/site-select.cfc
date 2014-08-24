@@ -37,6 +37,12 @@
 	form.zid=application.zcore.functions.zso(form, 'zid');
 	form.action=application.zcore.functions.zso(form, 'action',false,'list');
 	application.zcore.functions.zStatusHandler(request.zsid);
+
+	if(not application.zcore.user.checkAllCompanyAccess()){
+		form.company_id=request.zsession.user.company_id;
+	}else{
+		form.company_id=0;
+	}
 	</cfscript>
 	<cfif form.action EQ "select">
 		<br />
@@ -54,11 +60,19 @@
 			apps = siteSearch("app",false);
 			skins = siteSearch("skin",false);
 			logs = siteSearch("log",false);*/
-			db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
+			db.sql="SELECT * FROM 
+			#db.table("site", request.zos.zcoreDatasource)# site 
+			LEFT JOIN #db.table("company", request.zos.zcoreDatasource)# company ON 
+			company_deleted=#db.param(0)# and 
+			company.company_id = site.company_id 
 			WHERE site_id <> #db.param(-1)# and 
 			site_deleted = #db.param(0)# and 
 			(site_sitename LIKE #db.param('%#ss#%')# or 
-			site_domain LIKE #db.param('%#ss#%')#)"; 
+			site_domain LIKE #db.param('%#ss#%')#) ";
+			if(form.company_id NEQ "0"){
+				db.sql&=" and site.company_id = #db.param(form.company_id)# ";
+			}
+			db.sql&=" ORDER BY company_name ASC, site_short_domain ASC"; 
 			qSites = db.execute("qSites"); 
 			perpage=qsites.recordcount;
 			qCount=structnew();
@@ -79,9 +93,6 @@
 				}
 			}
 			</cfscript>
-			<!--- <cfloop query="qSites">
-		#site_sitename#<br />
-		</cfloop> --->
 		</cfif>
 		
 		<cfif structkeyexists(form, 'showInactiveSites')>
@@ -91,7 +102,11 @@
 		<form action="#request.cgi_script_name#?action=list" method="get">
 			<table style="border-spacing:0px; width:100%;" class="table-list">
 				<tr class="table-shadow">
-					<td colspan="13" class="tiny"><h2 style="display:inline;">Sites | </h2><a href="/z/server-manager/admin/site/newDomain">Add Site</a> <!--- | <a href="#request.cgi_script_name#?action=manageBudget">Manage Budgets</a>  --->
+					<td colspan="13" class="tiny"><h2 style="display:inline;">Sites | </h2><a href="/z/server-manager/admin/site/newDomain">Add Site</a> 
+					<cfif application.zcore.user.checkAllCompanyAccess()>
+						| <a href="/z/server-manager/admin/company/index">Companies</a>
+					</cfif>
+					<!--- | <a href="#request.cgi_script_name#?action=manageBudget">Manage Budgets</a>  --->
 						<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites', true, 0) EQ 1>
 							| <a href="/z/server-manager/admin/site-select/index?showInactiveSites=0">Hide Inactive</a>
 							<cfelse>
@@ -112,46 +127,52 @@
 	</cfscript>
 					<cfloop from="1" to="26" index="i">
 					<cfif selectedChar EQ mid(alphabet, i,1)>
-						<td style="text-align:center; width:3%; cursor:pointer;" onMouseOver="this.className = 'table-site-select';" onMouseOut="this.className = 'table-error';" class="table-error" onClick="window.location.href = '#Request.zScriptName#&selectedChar=';">#mid(alphabet, i,1)#</td>
+						<td style="text-align:center; width:3%; cursor:pointer;" onMouseOver="this.className = 'table-site-select';" onMouseOut="this.className = 'table-error';" class="table-error" onClick="window.location.href = '#Request.zScriptName#&amp;selectedChar=';">#mid(alphabet, i,1)#</td>
 						<cfelse>
-						<td style="text-align:center; width:3%; cursor:pointer;" onMouseOver="this.className = 'table-site-select';" onMouseOut="this.className = 'table-list';" class="table-list" onClick="window.location.href = '#Request.zScriptName#&selectedChar=#mid(alphabet, i,1)#';">#mid(alphabet, i,1)#</td>
+						<td style="text-align:center; width:3%; cursor:pointer;" onMouseOver="this.className = 'table-site-select';" onMouseOut="this.className = 'table-list';" class="table-list" onClick="window.location.href = '#Request.zScriptName#&amp;selectedChar=#mid(alphabet, i,1)#';">#mid(alphabet, i,1)#</td>
 					</cfif>
 					</cfloop>
 				</tr>
 			</table>
 		</form>
 		<cfif structkeyexists(local, 'qSites') EQ false or qSites.recordcount EQ 0>
-			<cfsavecontent variable="db.sql"> SELECT count(site_id) as count 
+			<cfscript>
+			db.sql="SELECT count(site_id) as count 
 			FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
 			WHERE site_id <> #db.param(-1)# and 
-			site_deleted = #db.param(0)#
-			<cfif len(selectedChar) NEQ 0>
-				and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#
-			</cfif>
-			<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites', true, 0) NEQ 1>
-				and site_active=#db.param(1)#
-			</cfif>
-			</cfsavecontent>
-			<cfscript>
+			site_deleted = #db.param(0)#";
+			if(len(selectedChar) NEQ 0){
+				db.sql&=" and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#";
+			}
+			if(application.zcore.functions.zso(request.zsession, 'showInactiveSites', true, 0) NEQ 1){
+				db.sql&=" and site_active=#db.param(1)#";
+			}
+			if(form.company_id NEQ "0"){
+				db.sql&=" and site.company_id = #db.param(form.company_id)# ";
+			}
 			qCount=db.execute("qCount");
 			perpage = 200;
-        	</cfscript>
-			<cfsavecontent variable="db.sql"> 
-			SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-			WHERE site_id <> #db.param(-1)# and 
-			site_deleted = #db.param(0)# 
-			<cfif len(selectedChar) NEQ 0>
-				and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#
-			</cfif>
-			<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites') NEQ 1>
-				and site_active=#db.param(1)#
-			</cfif>
-			ORDER BY site_sitename ASC 
-			LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)# </cfsavecontent>
-			<cfscript>
+        	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
+			LEFT JOIN #db.table("company", request.zos.zcoreDatasource)# company ON 
+			company_deleted=#db.param(0)# and 
+			company.company_id = site.company_id 
+			WHERE site.site_id <> #db.param(-1)# and 
+			site_deleted = #db.param(0)# ";
+			if(len(selectedChar) NEQ 0){
+				db.sql&=" and left(site_sitename,#db.param(1)#) = #db.param(selectedChar)#";
+			}
+			if(application.zcore.functions.zso(request.zsession, 'showInactiveSites') NEQ 1){
+				db.sql&=" and site_active=#db.param(1)#";
+			}
+			if(form.company_id NEQ "0"){
+				db.sql&=" and site.company_id = #db.param(form.company_id)# ";
+			}
+			db.sql&=" ORDER BY company_name ASC, site_sitename ASC 
+			LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)# ";
+
 			qSites=db.execute("qSites");
 			</cfscript>
-			<cfelse>
+		<cfelse>
 			<cfset qCount.count = qSites.recordcount>
 		</cfif>
 		<cfscript>
@@ -196,17 +217,32 @@
 	myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
 	myColumnOutput.init(inputStruct);
 	</cfscript> --->
+	<cfif application.zcore.functions.zso(request.zsession, 'showInactiveSites', true, 0) EQ 1>
+		<br /><span style="color:##900;font-weight:bold;">Red</span> site links are inactive, <span style="color:##369;font-weight:bold;">Blue</span> are active<br />
+	</cfif>
+	
 	<div class="siteSelectDiv">
+		<cfscript>
+		lastCompany="-1";
+		</cfscript>
 			<cfloop query="qSites">
-			<div class="siteSelect1">
-				<div class="siteSelect4">
-				<div class="siteSelect2">
-					<a href="##" onclick="window.location.href='#Request.zScriptName#&action=select&sid=#qSites.site_id#';return false;" style="text-decoration:none;" title="Manage Site">#qSites.site_sitename#</a>
+				<cfscript>
+				if(lastCompany NEQ qSites.company_name){
+					echo('</div>
+						<div class="siteSelectCompany" style="clear:both; width:100%; float:left; font-size:200%; line-height:150%;">'&qSites.company_name&'</div>
+						<div class="siteSelectDiv">');
+					lastCompany=qSites.company_name;
+				}
+				</cfscript>
+				<div class="siteSelect1">
+					<div class="siteSelect4">
+					<div class="siteSelect2">
+						<a href="##" onclick="window.location.href='#Request.zScriptName#&amp;action=select&amp;sid=#qSites.site_id#';return false;" style="text-decoration:none; <cfif qSites.site_active EQ 0>color:##900;</cfif>" title="Manage Site">#qSites.site_sitename#</a>
+					</div>
+					<div class="site-links siteSelect3"> | <a href="#qSites.site_domain#" target="_blank" style="">View</a> | 
+					<a href="##" onclick="window.location.href='#Request.zScriptName#&amp;action=select&amp;sid=#qSites.site_id#';return false;">Manage</a></div>
+					</div>
 				</div>
-				<div class="site-links siteSelect3"> | <a href="#qSites.site_domain#" target="_blank" style="">View</a> | 
-				<a href="##" onclick="window.location.href='#Request.zScriptName#&action=select&sid=#qSites.site_id#';return false;">Manage</a></div>
-				</div>
-			</div>
 			</cfloop>
 		</div>
 		<script type="text/javascript">

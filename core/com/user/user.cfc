@@ -809,6 +809,7 @@ userCom.checkLogin(inputStruct);
 	request.zsession[userSiteId].enableWidgetBuilder=qUser.user_enable_widget_builder;
 	request.zsession[userSiteId].intranet_administrator = qUser.user_intranet_administrator;
 	request.zsession[userSiteId].access_site_children = qUser.user_access_site_children;
+	request.zsession[userSiteId].company_id = qUser.company_id;
 	arrLimitManagerFeatures=listToArray(qUser.user_limit_manager_features, ",");
 	featureStruct={};
 	for(i=1;i LTE arraylen(arrLimitManagerFeatures);i++){
@@ -1514,6 +1515,17 @@ formString = userCom.loginForm(inputStruct);
 	}
 	return false;
     </cfscript>
+</cffunction>
+
+<cffunction name="checkAllCompanyAccess" localmode="modern" access="public">
+	<cfscript>
+	if(structkeyexists(request.zsession, 'user')  and structkeyexists(request.zsession.user, 'company_id')){
+		if(request.zsession.user.company_id EQ 0){
+			return true;
+		}
+	}
+	return false;
+	</cfscript>
 </cffunction>
 
 <cffunction name="getUserById" localmode="modern" access="public">

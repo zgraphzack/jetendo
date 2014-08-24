@@ -58,10 +58,10 @@
 	}else if(variables.qcheckemail.recordcount NEQ 0 and form.e NEQ ''){
 		if(variables.qcheckemail.user_server_administrator EQ 1){
 			if(structkeyexists(form,"x_ajax_id")){
-				writeoutput('{success:false,errorMessage:"The email address, #form.e#, can''t be updated through this interface."}');
+				writeoutput('{success:false,errorMessage:"The email address, #form.e#, can''t be updated through this interface because you are a server administrator."}');
 				application.zcore.functions.zabort();		
 			}else{
-				application.zcore.status.setStatus(request.zsid, "The email address, #form.e#, can't be updated through this interface.",true);
+				application.zcore.status.setStatus(request.zsid, "The email address, #form.e#, can't be updated through this interface because you are a server administrator.",true);
 				application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 			}
 		}
