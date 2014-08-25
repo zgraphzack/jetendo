@@ -242,6 +242,7 @@ test=true;
 
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 <cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 db=request.zos.queryObject;
 request.zScriptName=request.cgi_script_name&'?ztv=1';

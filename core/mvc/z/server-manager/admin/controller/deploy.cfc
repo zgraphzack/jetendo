@@ -29,6 +29,7 @@
 
 <cffunction name="deploySite" localmode="modern" access="remote" roles="serveradministrator"> 
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	if(form.method EQ "deploySite"){
 		setting requesttimeout="150";
@@ -92,6 +93,7 @@
 
 <cffunction name="deployAllSites" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	application.zcore.functions.zSetPageHelpId("8.4.4"); 
 	</cfscript>
@@ -175,6 +177,7 @@
 <cffunction name="saveSite" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject; 
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	index=0;
 	while(true){
@@ -203,6 +206,7 @@
 <cffunction name="saveAllSites" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject; 
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	index=0;
 	while(true){
@@ -231,6 +235,7 @@
 <cffunction name="editAllSites" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zStatusHandler(request.zsid);
 	if(form.sid EQ ""){
@@ -384,6 +389,7 @@
 <cffunction name="editSite" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	form.sid=application.zcore.functions.zso(form, 'sid');
 	application.zcore.functions.zStatusHandler(request.zsid);
@@ -500,6 +506,7 @@
 <cffunction name="processDeployCore" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	startTime=gettickcount();
 	db.sql="select * from #db.table("deploy_server", request.zos.zcoredatasource)# 
@@ -583,6 +590,7 @@
 <cffunction name="deployCore" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var local=structnew();
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8.4.5"); 
 	if(request.zos.isTestServer EQ false){
@@ -637,6 +645,7 @@
 	}else{
 		application.zcore.functions.zSetPageHelpId("8.1.1.3");
 	}
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	if(not request.zos.isTestServer){
 		writeoutput('Deploy can''t be run on a production server since it is designed to deploy from the test server to the production server. 

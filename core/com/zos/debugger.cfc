@@ -62,7 +62,7 @@
 
 <cffunction name="outputDebugBarTag" localmode="modern" output="yes" returntype="string">
 	<cfscript>
-	if(request.zos.isDeveloper or request.zos.isTestServer){
+	if((request.zos.isDeveloper or request.zos.isTestServer) and application.zcore.user.checkAllCompanyAccess()){
 		echo('##zDebugBar##');
 	}
 	</cfscript>

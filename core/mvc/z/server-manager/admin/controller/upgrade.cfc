@@ -86,6 +86,7 @@
 
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	var r=0;
 	var md5Struct=0;
@@ -215,6 +216,7 @@
 
 <cffunction name="cancel" localmode="modern" output="yes" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	</cfscript>
 	<h2>Upgrade cancelled</h2>

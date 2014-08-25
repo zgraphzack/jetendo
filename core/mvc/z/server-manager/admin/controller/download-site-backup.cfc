@@ -14,6 +14,25 @@
 
 <cffunction name="download" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted=#db.param(0)#";
+	qSite=db.execute("qSite");
+	if(qSite.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid,"Invalid Site Selection");
+		application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	}
+	if(not application.zcore.user.checkAllCompanyAccess()){ 
+		if(qSite.company_id NEQ request.zsession.user.company_id){
+			application.zcore.status.setStatus(request.zsid, "Access denied to download a backup of this site.", form, true);
+			application.zcore.functions.zRedirect("/z/server-manager/admin/download-site-backup/index?sid=#form.sid#&zsid=#request.zsid#");
+		}
+		if(form.backupType EQ 3){
+			application.zcore.status.setStatus(request.zsid, "Access denied to download the global backup.", form, true);
+			application.zcore.functions.zRedirect("/z/server-manager/admin/download-site-backup/index?sid=#form.sid#&zsid=#request.zsid#");
+		}
+	}
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	var siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
 	siteBackupCom.index();
@@ -28,11 +47,18 @@
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.5");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(form.sid)#";
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted=#db.param(0)#";
 	qSite=db.execute("qSite");
 	if(qSite.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Invalid Site Selection");
 		application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	}
+	if(not application.zcore.user.checkAllCompanyAccess()){ 
+		if(qSite.company_id NEQ request.zsession.user.company_id){
+			application.zcore.status.setStatus(request.zsid, "Access denied to this site.", form, true);
+			application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+		}
 	}
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript>
@@ -77,7 +103,9 @@
 					local.totalSize="backup doesn't exist yet.";
 				}
 				</cfscript>
-				<input type="radio" name="backupType" value="3" /> Global Database (#local.totalSize# | Contains all non-site specific data)<br />
+				<cfif application.zcore.user.checkAllCompanyAccess()>
+					<input type="radio" name="backupType" value="3" /> Global Database (#local.totalSize# | Contains all non-site specific data)<br />
+				</cfif>
 				</td>
 			</tr>
 			<tr>

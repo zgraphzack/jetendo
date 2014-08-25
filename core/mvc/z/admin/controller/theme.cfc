@@ -59,6 +59,7 @@
 
 <cffunction name="disablePreview" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	structdelete(request.zsession, 'zCurrentTheme');
 	application.zcore.status.setStatus(request.zsid, "Preview theme mode disabled.");
@@ -68,6 +69,7 @@
 
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	init();
 	application.zcore.functions.zSetPageHelpId("2.10");

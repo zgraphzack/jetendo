@@ -594,7 +594,7 @@
 							<span class="highlight">Disabled</span>, You must login as another user to change administrative settings for your own account
 							<cfelse>
 							<input name="user_server_administrator" id="user_server_administrator" type="checkbox" onClick="checkUser(2);" value="1" <cfif form.user_server_administrator EQ 1>checked="checked"</cfif>>
-							(Full access to all sites on server)
+							(Full access to all sites on server.)<br />
 
 							<div style="padding:10px; width:90%;float:left; clear:both;<cfif form.user_server_administrator NEQ 1>display:none;</cfif>" id="serverAdminDiv">
 								Optionally, limit access to the following sites and disable access to server manager: <br />
@@ -632,7 +632,7 @@
 				<tr>
 					<td style="vertical-align:top; width:140px;">Intranet Administrator:</td>
 					<td><input name="user_intranet_administrator" id="user_intranet_administrator" type="checkbox" value="1" <cfif form.user_intranet_administrator EQ 1>checked="checked"</cfif>>
-						(Required for developers to see errors) </td>
+						(Required to see errors directly in browser)</td>
 				</tr>
 			</cfif>
 			<script type="text/javascript">

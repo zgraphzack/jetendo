@@ -176,8 +176,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 					from #db.table("site", request.zos.zcoreDatasource)# site
 					WHERE site_active=#db.param(1)# "&db.trustedSQL(siteIdSQL)&" and 
 					site_id <> #db.param(request.zos.globals.id)# and 
-					site_deleted = #db.param(0)#
-					order by shortDomain asc";
+					site_deleted = #db.param(0)# ";
+					if(not application.zcore.user.checkAllCompanyAccess()){
+						db.sql&=" and company_id = #db.param(request.zsession.user.company_id)#";
+					}
+					db.sql&=" order by shortDomain asc";
 					qSite=db.execute("qSite");
 					if(qSite.recordcount NEQ 0){
 						selectStruct = StructNew();

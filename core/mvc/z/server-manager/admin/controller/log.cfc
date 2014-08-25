@@ -13,6 +13,7 @@
 	var quser=0;
 	var selectStruct=0; 
 	var qUpdate=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	form.action=application.zcore.functions.zso(form, 'action',false,"list");
 	</cfscript>

@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="publishZone" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	publishZoneFile(form.dns_group_id, form.dns_zone_id, true);
 
@@ -12,6 +13,7 @@
 
 <cffunction name="publishZones" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	if(structkeyexists(form, 'confirm')){
 		setting requesttimeout="200";
@@ -45,6 +47,7 @@
 <cffunction name="notifyZone" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="select * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# 
 	WHERE dns_zone_id= #db.param(form.dns_zone_id)# and 
@@ -481,6 +484,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("dns_zone", request.zos.zcoreDatasource)# dns_zone
 	WHERE dns_zone_id= #db.param(application.zcore.functions.zso(form,'dns_zone_id'))# and 
@@ -531,6 +535,7 @@
 	<cfscript>
 	var ts={};
 	var result=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	ts.dns_zone_name.required = true;
@@ -634,6 +639,7 @@
 	var qRoute=0;
 	var currentMethod=form.method;
 	var htmlEditor=0;	
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	if(application.zcore.functions.zso(form,'dns_zone_id') EQ ''){
 		form.dns_zone_id = -1;
@@ -760,6 +766,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zStatusHandler(request.zsid);
 
@@ -816,6 +823,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false){

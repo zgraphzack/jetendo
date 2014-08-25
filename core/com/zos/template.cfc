@@ -741,7 +741,7 @@ for(local.row in local.qSite){
 	if(structkeyexists(request, 'zValueOffset') and request.zValueOffset NEQ 0){
 		application.zcore.template.appendTag('meta','<script type="text/javascript">/* <![CDATA[ */zArrDeferredFunctions.push(function(){zInitZValues(#request.zValueOffset#);});/* ]]> */</script>');
 	} 
-	if(Request.zOS.isdeveloper and structkeyexists(form, 'zab') EQ false){
+	if(Request.zOS.isdeveloper and application.zcore.user.checkAllCompanyAccess() and structkeyexists(form, 'zab') EQ false){
 		application.zcore.debugger.init();
 	}
 	
@@ -766,7 +766,7 @@ for(local.row in local.qSite){
 	}
 	request.zos.endtime=gettickcount('nano');
 	if(request.zos.templateData.primary and Request.zOS.isDeveloper){
-		if(structkeyexists(Request,'zPageDebugDisabled') EQ false and structkeyexists(form, 'zab') EQ false){
+		if(structkeyexists(Request,'zPageDebugDisabled') EQ false and application.zcore.user.checkAllCompanyAccess() and structkeyexists(form, 'zab') EQ false){
 			request.zos.debuggerFinalString=finalString;
 			request.zos.debugbarStruct=application.zcore.debugger.getForm();
 			request.zos.debugbaroutput=application.zcore.debugger.getOutput();

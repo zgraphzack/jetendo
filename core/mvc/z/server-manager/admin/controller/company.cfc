@@ -34,6 +34,7 @@
 <cffunction name="delete" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	init();
 	qCheck=variables.qCompany;
@@ -71,6 +72,7 @@
 <cffunction name="update" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	init();
 	form.company_updated_datetime=request.zos.mysqlnow;
@@ -118,6 +120,7 @@
 <cffunction name="edit" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	backupMethod=form.method;
 	//application.zcore.functions.zSetPageHelpId("8.1.1.9");
@@ -169,6 +172,7 @@
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	checkSecurity();
 	//application.zcore.functions.zSetPageHelpId("8.1.1.9.1");

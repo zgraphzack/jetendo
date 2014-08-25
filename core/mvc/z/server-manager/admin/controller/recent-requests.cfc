@@ -15,6 +15,7 @@
 	var data=0;
 	var pos2=0;
 	var i=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	application.zcore.functions.zSetPageHelpId("8.3.1");
 	</cfscript>

@@ -230,6 +230,7 @@ TODO: integrate with namecheap api: https://www.namecheap.com/support/api/method
 		myform.ssl_key_size.required=true;
 		errors = application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
 		if(errors){
+			application.zcore.status.setStatus(request.zsid, false,form,true);
 			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/add?sid=#form.sid#&zsid="&request.zsid);
 		}
 		form.ssl_country=rereplace(form.ssl_country, "[^\w\s]", "", "all");
@@ -282,6 +283,7 @@ TODO: integrate with namecheap api: https://www.namecheap.com/support/api/method
 		myform.ssl_public_key.required=true;
 		errors = application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
 		if(errors){
+			application.zcore.status.setStatus(request.zsid, false,form,true);
 			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid="&request.zsid);
 		}
 		js={
@@ -520,7 +522,9 @@ TODO: integrate with namecheap api: https://www.namecheap.com/support/api/method
 		application.zcore.status.setStatus(request.zsid, "SSL Certificate already activated. You must create a new SSL Certificate to replace this one.", form, true);
 		application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid="&request.zsid);
 	}
-	application.zcore.functions.zQueryToStruct(qSSL, form);
+	tempStruct={};
+	application.zcore.functions.zQueryToStruct(qSSL, tempStruct);
+	structappend(form, tempStruct, false);
 
 
 	form.ssl_active=application.zcore.functions.zso(form, 'ssl_active',true,1);
@@ -713,7 +717,10 @@ TODO: integrate with namecheap api: https://www.namecheap.com/support/api/method
 	db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
-	db.sql="select site_ip_address, site_short_domain, group_concat(site_domain SEPARATOR #db.param(",")#) domainlist 
+	db.sql="select site.*, replace(site_short_domain, #db.param('www.')#, #db.param('')#) as siteShortDomain,
+	group_concat(ssl_common_name ORDER BY ssl_common_name) commonNameList,
+	group_concat(ssl_expiration_datetime ORDER BY ssl_common_name) sslExpirationList, 
+	group_concat(site_domain SEPARATOR #db.param(",")#) domainlist 
 	from #db.table("site", request.zos.zcoreDatasource)# site
 	LEFT JOIN 
 	#db.table("ssl", request.zos.zcoreDatasource)# `ssl` ON 
@@ -723,30 +730,42 @@ TODO: integrate with namecheap api: https://www.namecheap.com/support/api/method
 	WHERE 
 	site.site_id <> #db.param(-1)# and 
 	site_deleted = #db.param(0)# and 
-	site_active = #db.param(1)# 
-	GROUP BY site_ip_address 
-	ORDER BY site_ip_address ASC";
-	qIp=db.execute("qIp");
+	site_active = #db.param(1)# ";
+	if(not structkeyexists(form, 'showAll')){
+		db.sql&=" GROUP BY site_ip_address ";
+	}else{
+		db.sql&=" GROUP BY site.site_id ";
+	}
+	db.sql&=" ORDER BY site_ip_address ASC, siteShortDomain ASC";
+	qIp=db.execute("qIp"); 
 	</cfscript>
 	<p><a href="/z/server-manager/admin/ssl/index?sid=#form.sid#">Manage SSL Certificates</a> /</p>
 	<h2>IP Address Usage Report</h2>
+	<p><a href="/z/server-manager/admin/ssl/ipUsageReport?showAll=1&amp;sid=#form.sid#">Show All Domains</a></p>
 	<table class="table-list">
 		<tr>
 			<th>IP</th>
-			<th>Active SSL Certificate</th>
+			<th>Active SSL Certificate(s)</th>
 			<th>Expiration Date</th>
 			<th>Domain(s)</th>
 		</tr>
 		<cfloop query="qIp">
 			<tr>
-				<td>#qIp.site_ip_address#</td>
-				<td>#qIp.ssl_common_name#</td>
-				<td>#dateformat(qIp.ssl_expiration_datetime, "m/d/yyyy")# #timeformat(qIp.ssl_expiration_datetime, "h:mm tt")#</td>
-				<td><cfscript>
+				<td style="vertical-align:top;">#qIp.site_ip_address#</td>
+				<td style="vertical-align:top;"> 
+						#replace(qIp.commonNameList, ",", "<br /> ", "all")#</td>
+				<td style="vertical-align:top;">
+					<cfscript>
+					arrS=listToArray(qIp.sslExpirationList, ",");
+					for(i=1;i LTE arraylen(arrS);i++){
+						echo(dateformat(arrS[i], "m/d/yyyy")&" "&timeformat(arrS[i], "h:mm tt")&"<br /> ");
+					}
+					</cfscript></td>
+				<td style="vertical-align:top;"><cfscript>
 				if(qIp.domainlist CONTAINS ","){
 					echo(listLen(qIp.domainlist, ",")&" domains");
 				}else{
-					echo(qIp.site_short_domain);
+					echo('<a href="'&qIp.site_domain&'" target="_blank">'&qIp.siteShortDomain&'</a>');
 				}
 				</cfscript></td>
 			</tr>
@@ -768,12 +787,26 @@ TODO: integrate with namecheap api: https://www.namecheap.com/support/api/method
 	WHERE ssl_deleted = #db.param(0)# and 
 	site_id = #db.param(form.sid)#";
 	qSSL=db.execute("qSSL");
+
+	ipAddress=application.zcore.functions.zvar('ipAddress', form.sid);
+	db.sql="SELECT count(site_id) count FROM #db.table("site", request.zos.zcoreDatasource)#   
+	WHERE site_deleted = #db.param(0)# and 
+	site_id <> #db.param(form.sid)# and 
+	site_ip_address = #db.param(ipAddress)#
+	LIMIT #db.param(0)#, #db.param(1)# ";
+	qIp=db.execute("qIp");
 	</cfscript> 
 	<h2 style="display:inline;">Manage SSL Certificates</h2> | 
 	<a href="/z/server-manager/admin/ssl/ipUsageReport?sid=#form.sid#">IP Address Usage Report</a> 
 	| <a href="/z/server-manager/admin/ssl/add?sid=#form.sid#">New SSL Certificate</a> | 
 	<a href="/z/server-manager/admin/ssl/addExisting?sid=#form.sid#">Add Existing Certificate</a>
 	<br /><br />
+	<cfscript>
+	
+	if(qIp.recordcount and qIp.count){
+		echo('<h2><strong style="color:##900;">WARNING:</strong> #qIp.count# other sites are sharing this site''s ip address: #ipAddress#</h2><p>Unless you intend to use <a href="http://en.wikipedia.org/wiki/Server_Name_Indication" target="_blank">Server Name Indication (SNI)</a>, you must assign a unique IP address to this site in the <a href="/z/server-manager/admin/site/edit?sid=#form.sid#">globals</a> and update the DNS.  Some users may be unable to see the site while the DNS change propagates across the Internet. To fix this, you can manually configure the web server to temporarily listen on both IP addresses for the same domain before installing an SSL certificate, and then remove the extra configuration after DNS propagation is complete.</p>');
+	}
+	</cfscript>
 	<cfif qSSL.recordcount EQ 0>
 		<p>No SSL Certificate installed for this site.</p>
 

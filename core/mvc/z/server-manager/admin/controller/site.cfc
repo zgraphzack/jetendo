@@ -9,7 +9,8 @@
 	var qSite=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(form.sid)#";
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted=#db.param(0)#";
 	qSite=db.execute("qSite");
 	if(qSite.recordcount EQ 0){	
 		application.zcore.status.setStatus(Request.zsid, "Site no longer exists.",false,true);
@@ -18,13 +19,28 @@
 	</cfscript>
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
+		form.site_id=form.sid;
 		db.sql="UPDATE #db.table("site", request.zos.zcoreDatasource)# site 
 			SET site_active =#db.param(0)#,
 			site_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			WHERE site_id = #db.param(form.sid)# ";
+			WHERE site_id = #db.param(form.sid)# and 
+			site_deleted=#db.param(0)# ";
 		qU=db.execute("qU");
 		application.zcore.functions.zOS_cacheSitePaths();
 		var rs=application.zcore.functions.zGenerateNginxMap();
+
+		var result=application.zcore.functions.zSecureCommand("publishNginxSiteConfig"&chr(9)&form.site_id, 30);
+		fail=false;
+		if(result EQ ""){
+			application.zcore.status.setStatus(request.zsid, "Unknown failure when publishing Nginx configuration", form, true);
+			fail=true;
+		}else{
+			js=deserializeJson(result);
+			if(not js.success){
+				fail=true;
+				application.zcore.status.setStatus(request.zsid, "Nginx site config publish failed: "&js.errorMessage, form, true);
+			}
+		}
 		application.zcore.status.setStatus(request.zsid, "Site deactivated. "&rs.message, form, rs.success);
 		// go back to site overview page
 		application.zcore.functions.zRedirect('/z/server-manager/admin/site-select/index?action=list&zsid='&request.zsid);
@@ -129,6 +145,7 @@
 	var c=0;
 	var curDomain=0;
 	application.zcore.functions.zSetPageHelpId("8.1.1.4.1");
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	</cfscript>
 	<h2>Dreamweaver STE Generation</h2>
@@ -203,7 +220,8 @@
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(form.sid)#
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted=#db.param(0)# 
 	</cfsavecontent><cfscript>qSite=db.execute("qSite");</cfscript>
 	<cfif structkeyexists(form, 'temppassword1')>
     	 <cfheader name="Content-disposition" value="attachment;filename=#qsite.site_sitename#.ste"><cfcontent type="text/xml" reset="yes" /><cfscript>
@@ -266,7 +284,9 @@
 		</td></tr>
 		</table>
 		<hr />
-		<h2><a href="/z/server-manager/admin/site/downloadAllSTE?sid=#form.sid#">Generate All Dreamweaver STE Files</a></h2>
+		<cfif application.zcore.user.checkAllCompanyAccess()>
+			<h2><a href="/z/server-manager/admin/site/downloadAllSTE?sid=#form.sid#">Generate All Dreamweaver STE Files</a></h2>
+		</cfif>
 		<script type="text/javascript">
 		/* <![CDATA[ */
 		function setInstallPath(){

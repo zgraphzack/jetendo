@@ -37,6 +37,7 @@
 	
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	</cfscript>

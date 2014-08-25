@@ -2970,10 +2970,13 @@ User's IP: #request.zos.cgi.remote_addr#
 	<td style="padding:10px;"><a href="/z/server-manager/admin/server-home/index">Dashboard</a>
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
 	 | <a href="/z/server-manager/admin/site-select/index?sid=">Sites</a> 
-	 | <a href="/z/server-manager/admin/dns-group/index">DNS</a> 
-	| <a href="/z/_com/zos/app?method=appList&amp;zid=#arguments.zid#&amp;sid=#form.sid#">Apps</a>
-     | <a href="/z/server-manager/admin/log?sid=">Logs</a> 
-     | <a href="/z/server-manager/admin/deploy/index">Deploy</a>
+	 <cfif application.zcore.user.checkAllCompanyAccess()>
+	
+		| <a href="/z/server-manager/admin/dns-group/index">DNS</a> 
+		| <a href="/z/_com/zos/app?method=appList&amp;zid=#arguments.zid#&amp;sid=#form.sid#">Apps</a>
+		| <a href="/z/server-manager/admin/log?sid=">Logs</a> 
+		| <a href="/z/server-manager/admin/deploy/index">Deploy</a>
+	</cfif>
      
 	 </cfif>
 	 </td>
@@ -2999,7 +3002,9 @@ User's IP: #request.zos.cgi.remote_addr#
 	<td colspan="2" class="tiny-bold">
 	<a href="/z/server-manager/admin/site/edit?zid=#arguments.zid#&amp;sid=#form.sid#">Globals</a>
 	| <a href="/z/server-manager/admin/domain-redirect/index?zid=#arguments.zid#&amp;sid=#form.sid#">Domain Redirects</a>
-	| <a href="/z/server-manager/admin/deploy/index?zid=#arguments.zid#&amp;sid=#form.sid#">Deploy</a>
+	<cfif application.zcore.user.checkAllCompanyAccess()>
+		| <a href="/z/server-manager/admin/deploy/index?zid=#arguments.zid#&amp;sid=#form.sid#">Deploy</a>
+	</cfif>
 	| <a href="/z/server-manager/admin/white-label/index?zid=#arguments.zid#&amp;sid=#form.sid#">White-Label</a>
 	
 	| <a href="/z/server-manager/admin/site/downloadste?zid=#arguments.zid#&amp;sid=#form.sid#">Dreamweaver STE</a>

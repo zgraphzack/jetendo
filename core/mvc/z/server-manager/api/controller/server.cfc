@@ -1,6 +1,7 @@
 <cfcomponent>
 <cffunction name="executeCacheReset" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	// this function is here as a placeholder for a "executeCacheReset" function that is exactly executed in onRequestStart.
 	</cfscript>
@@ -8,6 +9,7 @@
 
 <cffunction name="getConfig" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	var ts={
 		installPath: request.zos.installPath,

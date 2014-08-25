@@ -2,6 +2,7 @@
 <cffunction name="downloadFile" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+	application.zcore.user.requireAllCompanyAccess();
 	if(not structkeyexists(form, 'path')){
 		throw("form.path is required and must be an absolute path that the application server has read access to.");
 	}
@@ -18,6 +19,7 @@
 
 <cffunction name="downloadNewerSessions" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	if(not structkeyexists(form, 'newerThenDate')){
 		throw("form.newerThenDate is required.");

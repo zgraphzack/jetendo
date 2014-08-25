@@ -600,6 +600,7 @@
 	<cfscript>
 	versionCom=createobject("component", "zcorerootmapping.version");
     ts2=versionCom.getVersion();
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	// dump json file or create sql
 	application.zcore.functions.zcreatedirectory(request.zos.sharedPath&"database");
@@ -665,6 +666,7 @@
 <!--- /z/server-manager/admin/db-upgrade/installDatabaseVersion --->
 <cffunction name="installDatabaseVersion" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
@@ -707,6 +709,7 @@
 
 <cffunction name="processInstallDatabaseVersion" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	form.version=application.zcore.functions.zso(form, 'version', true, 0);
 	form.datasource=application.zcore.functions.zso(form, 'datasource');
@@ -866,6 +869,7 @@
     ts2=versionCom.getVersion();
     application.zcore.databaseVersion=ts2.databaseVersion;
     if(structkeyexists(application.zcore, 'adminSecurityFilter')){
+		application.zcore.user.requireAllCompanyAccess();
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	}
 	tempFile=request.zos.installPath&"share/database/jetendo-schema-#application.zcore.databaseVersion#.json";

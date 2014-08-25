@@ -269,7 +269,7 @@ userCom.checkLogin(inputStruct);
 		db.sql="SELECT * FROM #db.table("login_log", request.zos.zcoreDatasource)# login_log 
 		WHERE login_log_ip=#db.param(request.zos.cgi.remote_addr)# and 
 		login_log_deleted = #db.param(0)# and 
-		login_log_user_agent=#db.param(left(cgi.HTTP_USER_AGENT,150))# and 
+		login_log_user_agent=#db.param(left(request.zos.cgi.HTTP_USER_AGENT,150))# and 
 		login_log_datetime > #db.param(oldDate)# and 
 		login_log_username=#db.param(form.zUsername)# and 
 		login_log_status NOT IN (#db.param('1')#,#db.param('3')#) and 
@@ -308,7 +308,7 @@ userCom.checkLogin(inputStruct);
 				login_log_updated_datetime=#db.param(request.zos.mysqlnow)# 
 				WHERE login_log_ip=#db.param(request.zos.cgi.remote_addr)# and 
 				login_log_deleted = #db.param(0)# and 
-				login_log_user_agent=#db.param(left(cgi.HTTP_USER_AGENT,150))# and 
+				login_log_user_agent=#db.param(left(request.zos.cgi.HTTP_USER_AGENT,150))# and 
 				login_log_datetime > #db.param(oldDate)# and 
 				site_id <> #db.param(-1)# ";
 				qCheck=db.execute("qCheck");
@@ -385,6 +385,28 @@ userCom.checkLogin(inputStruct);
 		}
 		if(not failedLogin){
 			if(qUserCheck.recordcount NEQ 0){
+				if(qUserCheck.user_server_administrator EQ "1"){  
+					if(qUserCheck.company_id NEQ "0"){  
+						companyId=application.zcore.functions.zvar("companyId", ss.site_id);
+						parentSiteId=application.zcore.functions.zvar("parentId", ss.site_id);
+						if(parentSiteId NEQ 0){
+							parentCompanyId=application.zcore.functions.zvar("companyId", parentSiteId);
+						}else{
+							parentCompanyId=-1;
+						}
+						if(qUserCheck.company_id EQ companyId){
+							// ok
+						}else if(qUserCheck.company_id EQ parentCompanyId){
+							// ok
+						}else{
+							failedLogin=true;
+						}
+					}
+				}
+			}
+		}
+		if(not failedLogin){
+			if(qUserCheck.recordcount NEQ 0){
 				if(arguments.inputStruct.secureLogin){
 					if(arguments.inputStruct.disableSecurePassword EQ false){
 						passwordVerificationResult=application.zcore.user.verifySecurePassword(form.zPassword, qUserCheck.user_salt, qUserCheck.user_password, qUserCheck.user_password_version);
@@ -443,7 +465,6 @@ userCom.checkLogin(inputStruct);
 		} 
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin after password hashing'}); 
 		if(not failedLogin){
-
 			if(structkeyexists(form, 'zdebug')){
 				arrayAppend(rs.arrDebugLog, "Login successful, updating session and database.");
 			}
@@ -714,7 +735,11 @@ userCom.checkLogin(inputStruct);
 	request.zos.userSession.groupAccess=structnew();
 	
 	if(isdefined('request.zsession.user.id') and isdefined('request.zsession.user.site_id')){
-		structdelete(application.siteStruct[request.zos.globals.id].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id);
+		for(i in application.siteStruct){
+			if(structkeyexists(application.siteStruct[i], 'administratorTemplateMenuCache')){
+				structdelete(application.siteStruct[i].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id);
+			}
+		}
 	}
 	if(arguments.skipLog EQ false){
 		this.setLoginLog(3);
@@ -1525,6 +1550,15 @@ formString = userCom.loginForm(inputStruct);
 		}
 	}
 	return false;
+	</cfscript>
+</cffunction>
+
+<cffunction name="requireAllCompanyAccess" localmode="modern" access="public">
+	<cfscript>
+	if(not application.zcore.user.checkAllCompanyAccess()){
+		application.zcore.status.setStatus(request.zsid, "Access denied.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	}
 	</cfscript>
 </cffunction>
 

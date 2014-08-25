@@ -126,6 +126,9 @@
 			return;	
 		}
 		request.zos.migrationMode=false;
+		if(not structkeyexists(request.zsession, 'user') or not structkeyexists(request.zsession.user, 'company_id') or request.zsession.user.company_id NEQ 0){
+			request.zos.zreset="";
+		}
 		if(request.zos.isDeveloper or request.zos.istestserver){
 			if(isDefined('request.zsession.verifyQueries') EQ false and request.zos.istestserver){
 				request.zsession.verifyQueries=true;
@@ -806,16 +809,23 @@
 			if(left(request.cgi_script_name, 24) EQ '/z/server-manager/tasks/' and (request.zos.isServer or request.zos.cgi.remote_addr EQ "127.0.0.1")){
 				runningTask=true;
 			}
-			if(not runningTask and not application.zcore.user.checkServerAccess()){
-				ts = StructNew();
-				ts.secureLogin=true;
-				ts.noRedirect=true;
-				ts.noLoginForm=true;
-				ts.usernameLabel = "E-Mail Address";
-				ts.loginMessage = "Please login";
-				ts.template = "zcorerootmapping.templates.blank";
-				ts.user_group_name = "serveradministrator";
-				rs=application.zcore.user.checkLogin(ts);
+			if(not runningTask){
+				if(not application.zcore.user.checkServerAccess()){
+					ts = StructNew();
+					ts.secureLogin=true;
+					ts.noRedirect=true;
+					ts.noLoginForm=true;
+					ts.usernameLabel = "E-Mail Address";
+					ts.loginMessage = "Please login";
+					ts.template = "zcorerootmapping.templates.blank";
+					ts.user_group_name = "serveradministrator";
+					rs=application.zcore.user.checkLogin(ts);
+				}else{
+					if((left(request.cgi_script_name, 17) EQ '/z/listing/tasks/' or left(request.cgi_script_name, 24) EQ '/z/server-manager/tasks/') and structkeyexists(request.zsession, 'user') and not application.zcore.user.checkAllCompanyAccess()){
+						application.zcore.status.setStatus(request.zsid, "Access denied.", form, true);
+						application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+					}
+				}
 			}
 			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart4 after checkLogin'});
 			application.zcore.template.setTag("stylesheet","/z/stylesheets/manager.css",false);

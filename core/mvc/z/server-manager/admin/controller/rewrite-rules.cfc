@@ -71,6 +71,14 @@
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript>
 	<h2>Edit Rules for #qsite.site_domain#</h2>
+	<p>There is very limited support for Apache mod_rewrite syntax below to help when migrating a web site from Apache to Nginx. URLs should not include the beginning slash.  Our system handles rewrite rules using string parsing in CFML instead of using the web server.  It may not work for certain static file types.  In that situation, you need to customize the nginx configuration on the <a href="/z/server-manager/admin/site/edit?sid=#form.sid#">globals</a> advanced tab and use valid Nginx syntax features instead.</p>
+	<h3>301 Redirect Example</h3>
+	<p>RewriteRule ^path/to/file.html$ / [R=301,L]</p>
+	<h3>Serve content from a different URL</h3>
+	<p>RewriteRule ^blank.html$ path/blank.html [L,QSA]</p>
+
+	<h3>Rewrite rule with multiple variables</h3>
+	<p>RewriteRule ^(.*)/(.*).html$ $1/$2.html$3 [L,QSA]</p>
 	<form name="editForm" action="/z/server-manager/admin/rewrite-rules/update?zid=#form.zid#&amp;sid=#form.sid#" method="post" style="margin:0px;">
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>

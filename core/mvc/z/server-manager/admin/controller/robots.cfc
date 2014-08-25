@@ -27,6 +27,7 @@
 	var i=0;
 	var arrRules=0;
 	var tempFile=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("robots_global", request.zos.zcoreDatasource)# robots_global WHERE 
@@ -221,6 +222,7 @@
 	var db=request.zos.queryObject;
 	var qGroup=0;
 	var qin=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.9.1.1");
@@ -287,7 +289,10 @@ Rules:</td>
 	application.zcore.functions.zQueryToStruct(qGroup, form);
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript>	
-	<p><a href="/z/server-manager/admin/robots/index?zid=#form.zid#&amp;sid=#form.sid#">Manage Robots.txt</a> /</p>
+	<cfif application.zcore.user.checkAllCompanyAccess()>
+	
+		<p><a href="/z/server-manager/admin/robots/index?zid=#form.zid#&amp;sid=#form.sid#">Manage Robots.txt</a> /</p>
+	</cfif>
 	<h2>Edit Robots.txt for #qsite.site_domain#</h2>
 	<form name="editForm" action="/z/server-manager/admin/robots/update?zid=#form.zid#&amp;sid=#form.sid#&amp;robots_id=#form.robots_id#" method="post" style="margin:0px;">
 		<table style="width:100%; border-spacing:0px;" class="table-list"> 
@@ -318,6 +323,7 @@ Rules:</td>
 	var db=request.zos.queryObject;
 	var selectStruct=0;
 	var qSites=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.9.1");
@@ -325,7 +331,10 @@ Rules:</td>
 	</cfscript> 
 	<table style="width:100%; border-spacing:0px;" class="table-white">
 	<tr>
-	<td><span class="large">Manage Robots.txt</span> | <a href="/z/server-manager/admin/robots/editGlobal">Edit Server Manager Global Robots.txt</a>
+	<td><span class="large">Manage Robots.txt</span>
+	<cfif application.zcore.user.checkAllCompanyAccess()>
+		 | <a href="/z/server-manager/admin/robots/editGlobal">Edit Server Manager Global Robots.txt</a>
+	</cfif>
 	</td>
 	</tr>
 	<cfscript>

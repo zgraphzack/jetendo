@@ -11,6 +11,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var q=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	db.sql="SELECT * FROM #db.table("deploy_server", request.zos.zcoreDatasource)# deploy_server
@@ -61,6 +62,7 @@
 	<cfscript>
 	var ts={};
 	var result=0; 
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init(); 
 	ts.deploy_server_host.required = true;
@@ -89,7 +91,7 @@
 		application.zcore.status.setStatus(request.zsid, "You can't add the current instance, ""#currentServer#"", as a deploy server.  You can only add remote servers.", form, true);
 		result=true;
 	}
-	// need to implement a password verification system for api calls that DOESN'T store login in the session scope.
+	// TODO: need to implement a password verification system for api calls that DOESN'T store login in the session scope.
 	/*
 		how to handle API for plug-ins?  Just put them in the usual place but in an api sub-directory.  All the cfcs under a directory name "api" are tagged as API for login/security system to modify it's data types / error handling.
 		
@@ -227,6 +229,7 @@
 	var db=request.zos.queryObject; 
 	var currentMethod=form.method;
 	var htmlEditor=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.4.2");
@@ -295,6 +298,7 @@
 	var ts=0;
 	var i=0;
 	var rs=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.4.1"); 

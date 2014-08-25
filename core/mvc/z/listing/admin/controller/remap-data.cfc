@@ -43,6 +43,7 @@
 	<cfscript>
 	var selectStruct=0;
 	var db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	application.zcore.functions.zStatusHandler(request.zsid, true);
@@ -112,6 +113,7 @@
 	var selectStruct=0;
 	var i=0;
 	var row=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	// on submit
@@ -205,6 +207,7 @@
 	var db=request.zos.queryObject;
 	var i=0;
 	var row=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
 	variables.init();
 	form.rowIndex=application.zcore.functions.zso(form, 'rowIndex');

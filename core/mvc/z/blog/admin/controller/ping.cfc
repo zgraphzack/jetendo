@@ -7,6 +7,13 @@
 	if(not request.zos.isServer and not request.zos.isDeveloper){
 		application.zcore.functions.z404("Only server and developer ip addresses can access this url.");	
 	}
+	if(request.zos.isDeveloper and not application.zcore.user.checkAllCompanyAccess()){
+		application.zcore.status.setStatus(request.zsid, "Access denied.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	}
+	if(request.zos.isTestServer){
+		echo('This is the test server, so no actual remote pings are made.<br />');
+	}
 	var db=request.zos.queryObject;
 	setting requesttimeout="5000";
 	db.sql="SELECT blog.*, blog_config_url_article_id 

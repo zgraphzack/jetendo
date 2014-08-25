@@ -93,6 +93,10 @@ todo: open source projects
 	if(not request.zos.isDeveloper and not request.zos.isServer){
 		application.zcore.functions.z404("This feature requires developer or server access permissions.");
 	}
+	if(request.zos.isDeveloper and not application.zcore.user.checkAllCompanyAccess()){
+		application.zcore.status.setStatus(request.zsid, "Access denied.", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/server-home/index?zsid=#request.zsid#");
+	}
 	permanentStruct={
 		"zsystem.css":true,
 		"listing-search-form.js":true,
