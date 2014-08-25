@@ -1,5 +1,20 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="zRequireFullCalendar" localmode="modern" access="public">
+	<cfscript>
+	application.zcore.functions.zRequireJqueryUI();
+	application.zcore.skin.includeCSS("/z/javascript/fullcalendar/fullcalendar.css");
+	savecontent variable="meta"{
+		echo('<link href="/z/javascript/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />');
+	}
+	application.zcore.template.appendTag("stylesheets", meta);
+
+	application.zcore.skin.includeCSS("/z/javascript/fullcalendar/fullcalendar.print.css");
+	application.zcore.skin.includeJS("/z/javascript/fullcalendar/lib/moment.min.js", "", 2);
+	application.zcore.skin.includeJS("/z/javascript/fullcalendar/fullcalendar.min.js", "", 3); 
+	</cfscript>
+</cffunction>
+
 <cffunction name="zRemoveHostName" access="public" localmode="modern">
 	<cfargument name="str" type="string" required="yes">
 	<cfscript>

@@ -2,7 +2,7 @@
 <cfoutput>
 <!--- 
 TODO: integrate with namecheap api: https://www.namecheap.com/support/api/methods/ssl/renew.aspx
-	
+TODO: consider preventing installation of certificates due to duplicate IP addresses so someone can't accidentally break an existing site because of conflicting IP and the order of nginx includes.
 
  --->
 <cffunction name="init" localmode="modern" access="private" roles="serveradministrator">

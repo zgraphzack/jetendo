@@ -2257,8 +2257,18 @@ Define this function in another CFC to override the default email format
 		<table style="border-spacing:0px;">');
 		for(i=1;i LTE arraylen(arguments.arrKey);i++){
 			if(arguments.arrKey[i] NEQ "site_option_group_id" and arguments.arrKey[i] NEQ "site_x_option_group_set_id"){
-				writeoutput('<tr><td style="padding:5px;">'&htmleditformat(arguments.arrKey[i])&'</td><td style="padding:5px;">'&htmleditformat(ts[arguments.arrKey[i]])&'</td></tr>');
+				writeoutput('<tr><td style="padding:5px; border-bottom:1px solid ##CCC;">'&htmleditformat(arguments.arrKey[i])&':</td><td style="padding:5px; border-bottom:1px solid ##CCC;">'&htmleditformat(ts[arguments.arrKey[i]])&'</td></tr>');
 			}
+		}
+		approved=application.zcore.functions.zso(form, 'site_x_option_group_set_approved');
+		if(approved EQ 0){
+			echo('<tr><td style="padding:5px; border-bottom:1px solid ##CCC;">Approved?</td><td style="padding:5px; border-bottom:1px solid ##CCC;">Pending</td></tr>');
+		}else if(approved EQ 2){
+			echo('<tr><td style="padding:5px; border-bottom:1px solid ##CCC;">Approved?</td><td style="padding:5px; border-bottom:1px solid ##CCC;">Deactivated By User</td></tr>');
+		}else if(approved EQ 4){
+			echo('<tr><td style="padding:5px; border-bottom:1px solid ##CCC;">Approved?</td><td style="padding:5px; border-bottom:1px solid ##CCC;">Rejected</td></tr>');
+		}else if(approved EQ 1){
+			echo('<tr><td style="padding:5px; border-bottom:1px solid ##CCC;">Approved?</td><td style="padding:5px; border-bottom:1px solid ##CCC;">Approved</td></tr>');
 		}
 		writeoutput('</table>
 		<br /><p><a href="#htmleditformat(local.editLink)#">Edit in Site Manager</a></p>

@@ -261,7 +261,7 @@
 	});
 	');
 	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString&arguments.row.site_option_id#_date" id="#arguments.prefixString&arguments.row.site_option_id#_date" value="#curDate#" size="9" />
-	 Time: <input type="text" name="#arguments.prefixString&arguments.row.site_option_id#_time" id="#arguments.prefixString&arguments.row.site_option_id#_time" value="#htmleditformat(curTime)#" size="10" /> (Leave time blank to not display a time)'};
+	 Time: <input type="text" name="#arguments.prefixString&arguments.row.site_option_id#_time" id="#arguments.prefixString&arguments.row.site_option_id#_time" value="#htmleditformat(curTime)#" size="10" /><br />(Time is optional)'};
 	</cfscript>
 </cffunction>
 
