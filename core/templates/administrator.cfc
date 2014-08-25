@@ -197,22 +197,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 					</div>
 				</div>
 			</div>
-	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="table-list" style="margin-bottom:10px; ">
-	<!--- <tr>
-	<td style="font-size:18px;line-height:normal;padding:10px;background-color:##336699; color:##DFDFDF; width:654px;">
-		<cfif request.zos.inServerManager>
-		<a href="/z/admin/admin-home/index" style="text-decoration:none; color:##FFFFFF;">Return to Site Manager</a>
-		<cfelse>
-		<a href="/" target="_blank" style="text-decoration:none; color:##FFFFFF;">#request.zos.globals.sitename#</a>
-		 | Site Manager
-		 </cfif>
-		</td>
-	<td style="text-align:right;background-color:##336699; color:##DFDFDF;width:400px; padding-right:5px;">
-	</td>
-	    <td class="zapp-shell-logout" style="padding:0px;width:70px;"><a href="/z/admin/admin-home/index?zlogout=1">Log Off</a></td>
-	    </tr> --->
 		<cfif not request.zos.inServerManager>
-	    <tr><td colspan="3" class="zapp-admin-nav-text2" style="padding:0px;border-top:1px solid ##CCCCCC;">
+	    <div class="zapp-admin-nav-text2" style="width:100%; float:left; padding:0px;border-top:1px solid ##CCCCCC;">
 	
 		<cfscript>
 		sharedMenuStruct=structnew();
@@ -250,10 +236,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 		}
 		application.zcore.app.outputAdminMenu(sharedMenuStruct, tmp);
 	  </cfscript>
-	</td>
-	</tr>
+	</div>
 	</cfif>
-	</table>
 	</cfsavecontent>
 	    #templateMenuOutput#
 		<cfif not request.zos.inServerManager>

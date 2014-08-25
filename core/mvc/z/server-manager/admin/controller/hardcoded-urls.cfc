@@ -111,6 +111,7 @@
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript> 
 	<h2>Edit Hardcoded URLs for #qsite.site_domain#</h2>
+	<p>This feature allows you to add URLs to the site map that are otherwise not able to be included in the site map automatically.</p>
 	<p>Type a title and url, and click add for each link.  Then click Save to save all the links.</p>
 	<form name="editForm" action="/z/server-manager/admin/hardcoded-urls/update?sid=#form.sid#" method="post" style="margin:0px;">
 		<table style="width:100%; border-spacing:0px;" class="table-white">
@@ -225,6 +226,7 @@
 	var db=request.zos.queryObject; 
 	var qSites=0;
 	var selectStruct=0;
+	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	variables.init();
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 

@@ -1009,8 +1009,11 @@
 	qWebSite=db.execute("qWebSite");
 	db.sql="SELECT * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id <> #db.param(form.sid)# and 
-	site_deleted = #db.param(0)#
-	ORDER BY site_sitename ASC";
+	site_deleted = #db.param(0)#";
+	if(not application.zcore.user.checkAllCompanyAccess()){
+		db.sql&=" and company_id = #db.param(request.zsession.user.company_id)#";
+	}
+	db.sql&=" ORDER BY site_sitename ASC";
 	qSites=db.execute("qSites");
 	if(qWebSite.recordcount EQ 0 and currentMethod EQ "edit"){
 		application.zcore.functions.zRedirect("/z/server-manager/admin/site-select/index?sid=");	
@@ -1274,8 +1277,11 @@
 			db.sql="select * from #db.table("site", request.zos.zcoreDatasource)# 
 			WHERE site_active = #db.param(1)# and 
 			site_id <> #db.param(-1)# and 
-			site_deleted = #db.param(0)#
-			ORDER BY site_short_domain ASC";
+			site_deleted = #db.param(0)#";
+			if(not application.zcore.user.checkAllCompanyAccess()){
+				db.sql&=" and company_id = #db.param(request.zsession.user.company_id)#";
+			}
+			db.sql&=" ORDER BY site_short_domain ASC";
 			local.qActiveSites=db.execute("qActiveSites");
 			selectStruct = StructNew();
 			selectStruct.name = "clone_site_id";

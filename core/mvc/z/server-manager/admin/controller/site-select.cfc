@@ -82,11 +82,11 @@
 				application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#Request.zsid#");
 			}else if(qSites.recordcount EQ 1){
 				form.sid = qSites.site_id;
-				if(users){
+				if(ss CONTAINS "users"){
 					application.zcore.functions.zRedirect('/z/server-manager/admin/user/index?sid=#form.sid#');
-				}else if(globals){
+				}else if(ss CONTAINS "globals"){
 					application.zcore.functions.zRedirect('/z/server-manager/admin/site/edit?sid=#form.sid#');
-				}else if(apps){
+				}else if(ss CONTAINS "apps"){
 					application.zcore.functions.zRedirect('/z/_com/zos/app?method=instanceSiteList&sid=#form.sid#');
 				}else{
 					application.zcore.functions.zRedirect('/z/server-manager/admin/site-select/index?action=select&sid=#form.sid#');
