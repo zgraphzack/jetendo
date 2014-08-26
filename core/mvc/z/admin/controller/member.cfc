@@ -42,7 +42,7 @@
 	variables.queueSortStruct.sortFieldName = "member_sort";
 	variables.queueSortStruct.primaryKeyName = "user_id";
 	variables.queueSortStruct.where="user.site_id = '#request.zos.globals.id#'  and 
-	member_public_profile='1' ";
+	member_public_profile='1' and user_deleted='0' ";
 
 	variables.queueSortStruct.ajaxTableId='sortRowTable';
 	variables.queueSortStruct.ajaxURL='/z/admin/member/index';

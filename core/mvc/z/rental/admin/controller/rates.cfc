@@ -46,7 +46,8 @@
 	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
 
 	variables.queueSortStruct.where =" rental_active='1' and 
-	rental.site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' ";
+	rental.site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' and 
+	rental_deleted='0' ";
 	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	variables.queueSortCom.returnJson();

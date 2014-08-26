@@ -3219,11 +3219,11 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 	<table id="zInqTheFormNames#local.tick#">
         <tr>
             <td>First Name</td>
-            <td><input name="form_first_name" type="text" style="width:96%;" maxlength="50" value="" /><span class="highlight"> * Required</span></td>
+            <td><input name="form_first_name" type="text" maxlength="50" value="" /><span class="highlight"> * Required</span></td>
         </tr>
         <tr>
             <td>Last Name</td>
-            <td><input name="form_last_name" type="text" style="width:96%;" maxlength="50" value="" /></td>
+            <td><input name="form_last_name" type="text" maxlength="50" value="" /></td>
         </tr>
         <tr>
             <td>Comments</td>
@@ -3232,7 +3232,12 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
     </table>
     <script type="text/javascript">
     var tFN32=document.getElementById("zInqTheF"+"ormNames#local.tick#");tFN34="ne";tFN32.style.display="no"+tFN34;
+    tFN32.parentNode.removeChild(tFN32);
     </script>
+    <noscript>
+    	<h1>Warning: JavaScript is disabled on your browser.</h1>
+    	<h2>Please enable JavaScript and reload this page or call us instead.</h1>
+    </noscript>
 </cffunction>
     
 

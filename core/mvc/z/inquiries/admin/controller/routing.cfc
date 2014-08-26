@@ -21,7 +21,7 @@ enable round robin for users - need a new option to disable for staff.
 	variables.queueSortStruct.tableName = "inquiries_routing";
 	variables.queueSortStruct.sortFieldName = "inquiries_routing_sort";
 	variables.queueSortStruct.primaryKeyName = "inquiries_routing_id";
-	variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#'  ";
+	variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(request.zos.globals.id)#' and inquiries_routing_deleted='0' ";
 	variables.queueSortStruct.datasource=request.zos.zcoreDatasource;
 	variables.queueSortStruct.disableRedirect=true;
 	variables.queueSortStruct.ajaxTableId='sortRowTable';

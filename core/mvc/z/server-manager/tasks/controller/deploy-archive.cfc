@@ -126,8 +126,7 @@
 			<input type="radio" name="clearcache" value="app,skin" />
 			App &amp; Skin
 			<input type="radio" name="clearcache" value="app,listing" />
-			App &amp; Listing
-			| Running "All" will crash production server:  	
+			App &amp; Listing 
 			<input type="radio" name="clearcache" value="all" />
 			All
 			<input type="radio" name="clearcache" value="all,skin" />

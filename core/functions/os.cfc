@@ -1751,7 +1751,7 @@ application.zcore.functions.zLogError(ts);
 		 contentConfig.contentEmailFormat=false;
 	 }
 	 if(arguments.name EQ 'Visitor Tracking Code' and (structkeyexists(request.zos.userSession.groupAccess, "member") or request.zos.istestserver)){
-		 return '';
+		 return '<script type="text/javascript">var zVisitorTrackingDisabled=true; </script>';
 	 }
 	 if(isDefined('request.zos.tempObj.zVarSOIndex') EQ false){
 		request.zos.tempObj.zVarSOIndex=0;

@@ -47,6 +47,10 @@
 	}else{
 		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	}
+
+	if(structkeyexists(form, 'zQueueSortAjax')){
+		return;
+	}
 	</cfscript>
 	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "autoDeleteGroup" and form.method NEQ "publicAjaxInsertGroup" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
 		<table style="border-spacing:0px; width:100%; " class="table-list">
@@ -509,7 +513,8 @@
 			queueSortStruct.primaryKeyName = "site_option_id";
 			queueSortStruct.datasource=request.zos.zcoreDatasource;
 			queueSortStruct.where ="  site_option_group_id = '#application.zcore.functions.zescape(qS2.site_option_group_id)#' and 
-			site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' ";
+			site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' and 
+			site_option_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
 			queueComStruct = CreateObject("component", "zcorerootmapping.com.display.queueSort");
@@ -670,7 +675,8 @@
 			queueSortStruct.primaryKeyName = "site_option_id";
 			queueSortStruct.datasource=request.zos.zcoreDatasource;
 			queueSortStruct.where ="  site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
-			site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' ";
+			site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' and 
+			site_option_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
 			queueComStruct = CreateObject("component", "zcorerootmapping.com.display.queueSort");
@@ -1050,7 +1056,8 @@
 	form.site_option_group_parent_id=application.zcore.functions.zso(form, 'site_option_group_parent_id', true);
     db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
+	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_deleted=#db.param(0)# ";
 	qGroup=db.execute("qGroup");
 	queueComStruct=structnew();
 	if(form.site_option_group_id NEQ 0){
@@ -1076,7 +1083,8 @@
 		//queueSortStruct.sortVarName="siteGroup"&qGroup.site_option_group_id;
 		queueSortStruct.datasource=request.zos.zcoreDatasource;
 		queueSortStruct.where ="  site_option_group_id = '#application.zcore.functions.zescape(qGroup.site_option_group_id)#' and 
-		site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' ";
+		site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' and 
+		site_option_deleted='0' ";
 
 		
 		queueSortStruct.ajaxTableId='sortRowTable';
@@ -2402,7 +2410,8 @@ Define this function in another CFC to override the default email format
 		queueSortStruct.where =" site_x_option_group_set.site_option_app_id = '#application.zcore.functions.zescape(form.site_option_app_id)#' and  
 		site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
 		site_x_option_group_set_parent_id='#application.zcore.functions.zescape(form.site_x_option_group_set_parent_id)#' and 
-		site_id = '#request.zos.globals.id#'  ";
+		site_id = '#request.zos.globals.id#' and 
+		site_x_option_group_set_deleted='0' ";
 		
 		queueSortStruct.disableRedirect=true;
 		queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
@@ -3381,7 +3390,8 @@ Define this function in another CFC to override the default email format
 			
 			queueSortStruct.where =" site_x_option_group_set.site_option_app_id = '#application.zcore.functions.zescape(form.site_option_app_id)#' and  
 			site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
-			site_id = '#request.zos.globals.id#'  ";
+			site_id = '#request.zos.globals.id#' and 
+			site_x_option_group_set_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
 			queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");

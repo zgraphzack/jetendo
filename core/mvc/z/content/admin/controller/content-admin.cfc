@@ -99,7 +99,7 @@
 		if(qCheck.content_file NEQ ''){
 			application.zcore.functions.zDeleteFile(request.zos.globals.homedir&'images/files/'&qCheck.content_file);
 		}
-		variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#qcheck.content_parent_id#' ";
+		variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#qcheck.content_parent_id#' and content_deleted='0' ";
 		variables.queueSortCom.init(variables.queueSortStruct);
 		variables.queueSortCom.sortAll();
 		res=application.zcore.app.getAppCFC("content").updateRewriteRules();
@@ -337,7 +337,7 @@
 			application.zcore.status.setStatus(request.zsid, 'Page with this name already exists.  Please type a unique name',form,true);
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/add?zsid=#request.zsid#');
 		}
-		variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#application.zcore.functions.zescape(form.content_parent_id)#' ";
+		variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#application.zcore.functions.zescape(form.content_parent_id)#' and content_deleted='0' ";
 		variables.queueSortCom.init(variables.queueSortStruct);
 		variables.queueSortCom.sortAll();
 	}else{
@@ -346,7 +346,7 @@
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/edit?zsid=#request.zsid#&content_id=#form.content_id#');
 		}
 		if(qcheck.content_parent_id NEQ form.content_parent_id){
-			variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#qcheck.content_parent_id#' ";
+			variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#qcheck.content_parent_id#' and content_deleted='0'";
 			variables.queueSortCom.init(variables.queueSortStruct);
 			variables.queueSortCom.sortAll();
 		}

@@ -397,7 +397,9 @@
 	queueSortStruct.sortFieldName = "whitelabel_button_sort";
 	queueSortStruct.primaryKeyName = "whitelabel_button_id";
 	queueSortStruct.where="site_id = '#application.zcore.functions.zescape(form.sid)#' and 
-	whitelabel_id = '#application.zcore.functions.zescape(form.whitelabel_id)#' and whitelabel_button_public=0 ";
+	whitelabel_id = '#application.zcore.functions.zescape(form.whitelabel_id)#' and 
+	whitelabel_button_public=0 and 
+	whitelabel_button_deleted='0' ";
 	queueSortStruct.ajaxURL="/z/server-manager/admin/white-label/manageButtons?whitelabel_id=#form.whitelabel_id#&sid=#form.sid#";
 	queueSortStruct.ajaxTableId="sortRowTable0";
 	queueSortStruct.sortVarNameAjax="zQueueSortAjax0";

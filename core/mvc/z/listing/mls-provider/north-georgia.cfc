@@ -14,6 +14,11 @@
 		</cfscript>
     </cffunction>
     
+<cffunction name="getPropertyTableName" localmode="modern">
+	<cfscript>
+	return "ngm";
+	</cfscript>
+</cffunction>
     
     
     <cffunction name="setColumns" localmode="modern">

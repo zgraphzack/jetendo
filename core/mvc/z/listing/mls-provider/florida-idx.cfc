@@ -142,6 +142,12 @@
 		</cfscript></cfloop>
     </cffunction>
     
+<cffunction name="getPropertyTableName" localmode="modern">
+	<cfscript>
+	return "far";
+	</cfscript>
+</cffunction>
+
     <cffunction name="initImport" localmode="modern" output="no" returntype="any">
     	<cfargument name="resource" type="string" required="yes">
         <cfargument name="sharedStruct" type="struct" required="yes">

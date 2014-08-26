@@ -224,7 +224,7 @@ enable round robin for offices - need a new option to disable for staff.
 	queueSortStruct.datasource="#request.zos.zcoreDatasource#";
 	queueSortStruct.sortFieldName = "office_sort";
 	queueSortStruct.primaryKeyName = "office_id";
-	queueSortStruct.where="site_id = '#request.zos.globals.id#' ";
+	queueSortStruct.where="site_id = '#request.zos.globals.id#' and office_deleted='0' ";
 	queueSortStruct.ajaxURL="/z/admin/office/index";
 	queueSortStruct.ajaxTableId="sortRowTable";
 	variables.queueSortCom.init(queueSortStruct);

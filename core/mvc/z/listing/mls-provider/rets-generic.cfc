@@ -825,6 +825,12 @@ variables.typeStruct["text"]="text";
 	</cfscript>
 </cffunction>
 
+<cffunction name="getPropertyTableName" localmode="modern">
+	<cfscript>
+	return "rets#this.mls_id#_property";
+	</cfscript>
+</cffunction>
+
 <cffunction name="initImport" localmode="modern" output="no" returntype="any">
 	<cfargument name="resource" type="string" required="yes">
 	<cfargument name="sharedStruct" type="struct" required="yes">

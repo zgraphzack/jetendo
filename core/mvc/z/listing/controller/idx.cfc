@@ -383,7 +383,7 @@
 			this.datastruct[qT.listing_id].update=false;
 		}
 		</cfscript>
-    </cfloop>
+    </cfloop> 
     <cfloop query="qT2">
     	<cfscript>
 		this.datastruct[qT2.listing_id].hasListing=true;
@@ -401,7 +401,22 @@
 <cffunction name="import" localmode="modern" access="public" returntype="any">
 	<cfscript>
 	var db=request.zos.queryObject;
+	if(not structkeyexists(request, 'debugtime')){
+		request.debugtime=0;
+		request.debugstime=gettickcount();
+	}
+	/*
+	echo(((gettickcount()-request.debugstime)/1000)&" seconds for importing #structcount(this.datastruct)# listings<br />");
+		request.debugstime=gettickcount();
+	request.debugtime++;
+	for(i in this.datastruct){
+		echo(i&" | update:"&this.datastruct[i].update&"<br>");
+	}
 
+	if(request.debugtime EQ 10){
+		echo('stop');
+		abort;
+	}*/
 	for(i in this.datastruct){
 		arrayClear(request.zos.arrQueryLog);
 		if(this.datastruct[i].update EQ false){
@@ -679,6 +694,9 @@
 		foundCount=0;
 		arrFound=arraynew(1);
 		arrFound2=arraynew(1);
+		mlsProviderCom=createobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#qmls2.mls_com[n]#");
+		mlsproviderCom.setMLS(mlsID); 
+		tableName=mlsproviderCom.getPropertyTableName();
 		</cfscript>
         <cfdirectory action="list" directory="#request.zos.sharedPath#mls-data/#qmls2.mls_id[n]#/" filter="*-imported" name="qd">
 		<cfloop query="qd">
@@ -709,81 +727,99 @@
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
 			listing_id LIKE '#mlsID#-%' ";
 			db2.execute("qInsert");
-
-			offset=1;
+			db.sql="SELECT count(listing_delete_id) count 
+			FROM #db.table("listing_delete", request.zos.zcoreDatasource)# 
+			where listing_delete_deleted=#db.param('0')# and 
+			listing_id LIKE #db.param('#mlsID#-%')# ";
+			qCount=db.execute("qCount");
+			echo("MLS ID: #mlsID# | #qCount.count# records will be deleted.<br />");
 			deleteCount=0;
 			while(true){
-				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
+				db.sql="select listing_id FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
-				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)#  and 
 				listing_delete_deleted = #db.param(0)#  and 
-				listing_id LIKE #db.param('#mlsID#-%')# ";
+				listing_id LIKE #db.param('#mlsID#-%')# 
+				LIMIT #db.param(0)#, #db.param(5)# ";
 				qIdList=db.execute("qIdList");
-				offset+=5;
-				if(qIdList.idlist EQ ""){
+				if(qIdList.recordcount EQ 0){
 					break;
 				}
-				deleteCount+=listlen(qIdList.idlist, ",");
+				arrId=[];
+				for(row in qIdList){
+					arrayAppend(arrId, "'"&row.listing_id&"'");
+				}
+				idlist=arraytolist(arrId, ",");
+				deleteCount+=qIdList.recordcount;
 
-				db2.sql="delete from #db2.table(application.zcore.listingStruct.mlsStruct[mlsId].sharedStruct.lookupStruct.table, request.zos.zcoreDatasource)#
-				where `#this.optionstruct.mlsProviderCom.getListingIdField()#` IN ('#qIdList.idlist#') ";
+				db2.sql="delete from #db2.table(tableName, request.zos.zcoreDatasource)#
+				where `#mlsProviderCom.getListingIdField()#` IN (#idlist#) ";
 				db2.execute("qDelete");
 
 				db2.sql="DELETE FROM #db2.table("listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
+				WHERE listing_id IN (#idlist#) and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_data_deleted = #db2.param(0)# ";
+				WHERE listing_id IN (#idlist#) and listing_data_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="DELETE FROM #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and listing_deleted = #db2.param(0)# ";
+				WHERE listing_id IN (#idlist#) and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
 				listing_track_inactive=#db2.param(1)#, 
 				listing_track_updated_datetime=#db2.param(request.zos.mysqlnow)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and 
+				WHERE listing_id IN (#idlist#) and 
 				listing_track_deleted = #db2.param(0)#";
 				db2.execute("qDelete");
+				db2.sql="DELETE FROM 
+				#db2.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
+				listing_id IN (#idlist#) and 
+				listing_delete_deleted = #db2.param(0)# ";
+				db2.execute("qDelete");
 			}
-			db.sql="delete FROM 
-			#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
-			listing_id LIKE #db.param('#mlsID#-%')# and 
-			listing_delete_deleted=#db.param(0)# ";
-			db.execute("qDelete");
 
 			oneMonthAgo=dateformat(oneMonthAgo,'yyyy-mm-dd')&' '&timeformat(oneMonthAgo,'HH:mm:ss'); 
 			db2.sql="INSERT INTO #db2.table("listing_delete", request.zos.zcoreDatasource)# (listing_id, listing_delete_updated_datetime) 
 			SELECT listing_id, #db2.param(request.zos.mysqlnow)# FROM #db2.table("listing_track", request.zos.zcoreDatasource)# 
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
 			listing_track_deleted = #db2.param(0)#  and 
-	   		listing_track_inactive <> #db2.param(-1)# and 
+	   		listing_track_inactive = #db2.param(1)# and 
 			listing_id LIKE '#mlsID#-%'";
 			db2.execute("qInsert");
+			db.sql="SELECT count(listing_delete_id) count 
+			FROM #db.table("listing_delete", request.zos.zcoreDatasource)# 
+			where listing_delete_deleted=#db.param('0')# and 
+			listing_id LIKE #db.param('#mlsID#-%')# ";
+			qCount=db.execute("qCount");
+			echo("MLS ID: #mlsID# | #qCount.count# records will be deleted from listing_track because they are more then went inactive more then one month ago.<br />");
 			offset=1;
 			deleteCount2=0;
 			while(true){
-				db.sql="select group_concat(listing_id SEPARATOR #db.param("','")#) idlist FROM 
+				db.sql="select listing_id FROM 
 				#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
 				listing_delete_deleted = #db.param(0)# and 
-				listing_delete_id BETWEEN #db.param(offset)# and #db.param(offset+5)# and 
-				listing_id LIKE #db.param('#mlsID#-%')# ";
+				listing_id LIKE #db.param('#mlsID#-%')# 
+				LIMIT #db.param(0)#, #db.param(5)#";
 				qIdList=db.execute("qIdList");
-				offset+=5;
-				if(qIdList.idlist EQ ""){
+				if(qIdList.recordcount EQ 0){
 					break;
 				}
-				deleteCount2+=listlen(qIdList.idlist, ",");
+				arrId=[];
+				for(row in qIdList){
+					arrayAppend(arrId, "'"&row.listing_id&"'");
+				}
+				idlist=arraytolist(arrId, ",");
+				deleteCount2+=qIdList.recordcount;
 				db2.sql="DELETE FROM #db2.table("listing_track", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN ('#qIdList.idlist#') and 
+				WHERE listing_id IN (#idlist#) and 
 				listing_track_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
+				db2.sql="DELETE FROM 
+				#db2.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
+				listing_id IN (#idlist#) and 
+				listing_delete_deleted = #db2.param(0)# ";
+				db2.execute("qDelete");
 			}
-			db.sql="delete FROM 
-			#db.table("listing_delete", request.zos.zcoreDatasource)# WHERE 
-			listing_id LIKE #db.param('#mlsID#-%')# and 
-			listing_delete_deleted=#db.param(0)# ";
-			db.execute("qDelete");
 
 			db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
 			set mls_cleaned_date=#db.param(dateformat(now(),'yyyy-mm-dd'))#, 
@@ -791,7 +827,7 @@
 			WHERE mls_id =#db.param(mlsID)# and 
 			mls_deleted = #db.param(0)# ";
 			db.execute("q"); 
-			writeoutput('<br />#deleteCount# listings made inactive | #deleteCount2# permanently removed.');
+			writeoutput('<br />MLS ID: #mlsID# | #deleteCount# listings made inactive | #deleteCount2# permanently removed.<br />');
 			</cfscript>
 		<cfelse>
 			<cfscript>

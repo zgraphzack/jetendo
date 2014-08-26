@@ -1,5 +1,114 @@
 <cfcomponent>
 <cfoutput>
+<!--- 
+ts={
+	preClickLabel:"PreClick",// any html string | optional
+	postClickValue:"PostClick", // any html string | optional
+	eventCategory:"Category", // any string value
+	eventAction:"Action", // any string value
+	eventLabel:"Label",  // any string value | optional
+	eventValue:"0", // must be an integer | optional
+	style:"", // css for <a>
+	attributeStruct: {} // optional - each key will become an attribute on the a tag
+};
+application.zcore.functions.zClickTrackDisplayValue(ts); --->
+<cffunction name="zClickTrackDisplayValue" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ts={
+		preClickLabel:"",
+		postClickValue:"",
+		eventCategory:"button", 
+		eventAction:"click", 
+		eventLabel:"",
+		eventValue:0,
+		style:""
+	};
+	structappend(arguments.ss, ts, false); 
+	attrib="";
+	if(structkeyexists(arguments.ss, 'attributeStruct')){
+		for(i in arguments.ss.attributeStruct){
+			attrib&=' #i#="#arguments.ss.attributeStruct[i]#"';
+		}
+	}
+	echo('<div class="zClickTrackDisplayDiv"><a href="##" #attrib# style="#arguments.ss.style#" class="zClickTrackDisplayValue" data-zclickpostvalue="#htmleditformat(arguments.ss.postClickValue)#" data-zclickeventcategory="#htmleditformat(arguments.ss.eventCategory)#" data-zclickeventaction="#htmleditformat(arguments.ss.eventAction)#" data-zclickeventlabel="#htmleditformat(arguments.ss.eventLabel)#" data-zclickeventvalue="#htmleditformat(arguments.ss.eventValue)#">#arguments.ss.preClickLabel#</a></div>');
+	</cfscript>
+	
+</cffunction>
+
+<!--- 
+ts={
+	eventCategory:"Category", // any string value
+	eventAction:"Action", // any string value
+	eventLabel:"Label",  // any string value | optional
+	eventValue:"0" // must be an integer | optional
+};
+application.zcore.functions.zPageViewTrack(ts); --->
+<cffunction name="zPageViewTrack" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ts={
+		eventCategory:"button", 
+		eventAction:"click", 
+		eventLabel:"",
+		eventValue:0
+	};
+	structappend(arguments.ss, ts, false); 
+	application.zcore.skin.addDeferredScript('zTrackEvent("#jsStringFormat(arguments.ss.eventCategory)#", "#jsStringFormat(arguments.ss.eventAction)#", "#jsStringFormat(arguments.ss.eventLabel)#", "#jsStringFormat(arguments.ss.eventValue)#", "", false);');
+	</cfscript>
+	
+</cffunction>
+
+<!--- 
+ts={
+	preClickLabel:"PreClick",// any html string | optional
+	url:"/url.html", 
+	target:"_blank", // _top, _self or _blank | optional
+	eventCategory:"Category", // any string value
+	eventAction:"Action", // any string value
+	eventLabel:"Label",  // any string value | optional
+	eventValue:"0", // must be an integer | optional
+	style:"", // css for <a>
+	attributeStruct: {} // optional - each key will become an attribute on the a tag
+};
+application.zcore.functions.zClickTrackDisplayURL(ts);
+ --->
+<cffunction name="zClickTrackDisplayURL" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ts={
+		preClickLabel:"",
+		target:"",
+		eventCategory:"button", 
+		eventAction:"click", 
+		eventValue:0,
+		eventLabel:"",
+		style:"",
+		noFollow:false
+	};
+	structappend(arguments.ss, ts, false);
+	if(not structkeyexists(arguments.ss, "url")){
+		throw("arguments.ss.url is required");
+	} 
+	target="";
+	if(arguments.ss.target NEQ ""){
+		target=' target="'&arguments.ss.target&'"';
+	}
+	link=' href="#arguments.ss.url#"';
+	if(arguments.ss.noFollow){
+		link=' rel="nofollow" href="##" ';
+	}
+	attrib="";
+	if(structkeyexists(arguments.ss, 'attributeStruct')){
+		for(i in arguments.ss.attributeStruct){
+			attrib&=' #i#="#arguments.ss.attributeStruct[i]#"';
+		}
+	}
+	echo('<span class="zClickTrackDisplayDiv"><a #link# #target# #attrib# style="#arguments.ss.style#" class="zClickTrackDisplayURL" data-zclickpostvalue="#htmleditformat(arguments.ss.url)#" data-zclickeventcategory="#htmleditformat(arguments.ss.eventCategory)#" data-zclickeventaction="#htmleditformat(arguments.ss.eventAction)#" data-zclickeventlabel="#htmleditformat(arguments.ss.eventLabel)#" data-zclickeventvalue="#htmleditformat(arguments.ss.eventValue)#">#arguments.ss.preClickLabel#</a></span>');
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="zRequireFullCalendar" localmode="modern" access="public">
 	<cfscript>
 	application.zcore.functions.zRequireJqueryUI();

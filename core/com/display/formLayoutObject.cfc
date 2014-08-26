@@ -2216,15 +2216,15 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 	<table id="zInqTheFormNames#local.tick#">
         <tr>
             <td>First Name</td>
-            <td><input name="form_first_name" type="text" style="width:96%;" maxlength="50" value="" /><span class="highlight"> * Required</span></td>
+            <td><input name="form_first_name" type="text"  autocomplete="off" maxlength="50" value="" /><span class="highlight"> * Required</span></td>
         </tr>
         <tr>
             <td>Last Name</td>
-            <td><input name="form_last_name" type="text" style="width:96%;" maxlength="50" value="" /></td>
+            <td><input name="form_last_name" type="text"  autocomplete="off" maxlength="50" value="" /></td>
         </tr>
         <tr>
             <td>Comments</td>
-            <td><textarea name="form_comments" cols="50" rows="5"></textarea></td>
+            <td><textarea name="form_comments" cols="50" autocomplete="off" rows="5"></textarea></td>
         </tr>
     </table>
     <script type="text/javascript">
