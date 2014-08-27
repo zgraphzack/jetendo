@@ -20,7 +20,7 @@
 			variables.queueSortStruct.sortFieldName = "menu_button_sort";
 			variables.queueSortStruct.primaryKeyName = "menu_button_id";
 			variables.queueSortStruct.where="site_id = '#application.zcore.functions.zescape(form.site_id)#' and 
-			menu_id='"&application.zcore.functions.zescape(form.menu_id)&"' and menu_deleted='0' ";
+			menu_id='"&application.zcore.functions.zescape(form.menu_id)&"' and menu_button_deleted='0' ";
 		}
 		// optional
 		variables.queueSortStruct.disableRedirect=true;
