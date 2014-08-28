@@ -3236,7 +3236,7 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
     </script>
     <noscript>
     	<h1>Warning: JavaScript is disabled on your browser.</h1>
-    	<h2>Please enable JavaScript and reload this page or call us instead.</h1>
+    	<h2>Please enable JavaScript and reload this page or call us instead.</h2>
     </noscript>
 </cffunction>
     

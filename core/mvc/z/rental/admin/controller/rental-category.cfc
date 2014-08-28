@@ -111,7 +111,9 @@
 			request.zsession.enableRentalCategorySortingMode=true;
 		}
 	}
-	qProp=variables.qProp;
+	if(structkeyexists(request.zsession, 'enableRentalCategorySortingMode')){
+		qProp=variables.qProp;
+	}
 
 	</cfscript>
 	<cfif form.rental_category_parent_id NEQ 0>

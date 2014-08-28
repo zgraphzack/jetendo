@@ -757,7 +757,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		db.sql&="ORDER BY s1.site_x_option_group_set_sort asc";
 	}
 	if(structkeyexists(ts, 'limit')){
+		if(ts.limit LT 1){
+			application.zcore.functions.z404("Limit can't be less then one.");
+		}
 		if(structkeyexists(ts, 'offset')){
+			if(ts.offset LT 0){
+				application.zcore.functions.z404("Offset can't be less then zero.");
+			}
 			db.sql&=" LIMIT #db.param(ts.offset)#, #db.param(ts.limit)#";
 		}else{
 			db.sql&=" LIMIT 0, #db.param(ts.limit)#";
