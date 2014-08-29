@@ -3372,11 +3372,11 @@ function zShowModal(content, obj){
 	d.style.overflow="hidden";
 	//if(zIsTouchscreen()) return;
 	zGetClientWindowSize();
-	if(typeof obj.disableResize !== "undefined"){
+	if(typeof obj.disableResize !== "undefined" && obj.disableResize){
 		zModalDisableResize=obj.disableResize;	
 	}
 	var disableClose=false;
-	if(typeof obj.disableClose !== "undefined"){
+	if(typeof obj.disableClose !== "undefined" && obj.disableClose){
 		disableClose=obj.disableClose;	
 	}
 	var windowSize=zWindowSize;
