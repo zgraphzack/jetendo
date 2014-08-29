@@ -1151,6 +1151,17 @@
 	application.zcore.template.setTag("pagetitle",theTitle);
 	</cfscript>
 	<form name="myForm" id="myForm" action="/z/admin/site-option-group/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#" method="post">
+
+		<cfscript>
+		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.setTabs(["Basic","Public Form", "Landing Page", "Email & Mapping"]);//,"Plug-ins"]);
+		tabCom.setMenuName("member-site-option-group-edit");
+		cancelURL="/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#"; 
+		tabCom.setCancelURL(cancelURL);
+		tabCom.enableSaveButtons();
+		</cfscript>
+		#tabCom.beginTabMenu()# 
+		#tabCom.beginFieldSet("Basic")#
 		<table  style="border-spacing:0px;" class="table-list">
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
 			site_id = #db.param(request.zos.globals.id)# and 
@@ -1196,8 +1207,7 @@
 			if(form.site_id EQ 0){
 				form.siteoptiongroupglobal='1';
 			}
-			</cfscript>
-			<!--- <cfif application.zcore.functions.zso(form, 'site_option_group_parent_id', true) EQ 0> --->
+			</cfscript> 
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Associate With Apps","member.site-option-group.edit site_option_group_appidlist")#</th>
 					<td><cfscript>
@@ -1228,15 +1238,6 @@
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Only Show App Admin?","member.site-option-group.edit site_option_group_admin_app_only")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_admin_app_only")#</td>
 				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">Enable Unique URL</th>
-					<td>
-				<cfif request.zos.globals.optionGroupURLID NEQ 0>
-					#application.zcore.functions.zInput_Boolean("site_option_group_enable_unique_url")#
-				<cfelse>
-					Option group URL ID must be set in server manager to use this feature.
-				</cfif></td>
-				</tr>
 				
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Menu Name","member.site-option-group.edit site_option_group_menu_name")#</th>
@@ -1251,17 +1252,15 @@
 						<td>#application.zcore.functions.zInput_Boolean("siteoptiongroupglobal")#</td>
 					</tr>
 				</cfif>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Public Form Title","member.site-option-group.edit site_option_group_public_form_title")#</th>
-					<td><input name="site_option_group_public_form_title" id="site_option_group_public_form_title" size="50" type="text" value="#htmleditformat(form.site_option_group_public_form_title)#" maxlength="100" />
-							</td></tr>
-				
-			<!--- </cfif> --->
 				<cfscript>
 				if(form.site_option_group_admin_paging_limit EQ ""){
 					form.site_option_group_admin_paging_limit=0;
 				}
 				</cfscript>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Child Limit","member.site-option-group.edit site_option_group_limit")#</th>
+					<td><input type="text" name="site_option_group_limit" id="site_option_group_limit" value="#htmleditformat(form.site_option_group_limit)#" /></td>
+				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Admin Paging Limit</th>
 					<td><input name="site_option_group_admin_paging_limit" id="site_option_group_admin_paging_limit" type="text" value="#htmleditformat(form.site_option_group_admin_paging_limit)#"  /> (Number of records to display in admin until showing page navigation)</td>
@@ -1283,16 +1282,30 @@
 					<td><input type="text" name="site_option_group_parent_field" id="site_option_group_parent_field" value="#htmleditformat(form.site_option_group_parent_field)#" /> (Optional, enables indented heirarchy on list view)</td>
 				</tr>
 				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Embedding?","member.site-option-group.edit site_option_group_embed")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_embed")#</td>
-				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Embed HTML Code:","member.site-option-group.edit site_option_group_code")#</th>
-					<td><textarea name="site_option_group_code" id="site_option_group_code" cols="100" rows="10">#htmleditformat(form.site_option_group_code)#</textarea></td>
-				</tr>
-				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Enable Sorting</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Image Library?","member.site-option-group.edit site_option_group_enable_image_library")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_image_library")#</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Admin?","member.site-option-group.edit site_option_group_disable_admin")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_admin")#</td>
+				</tr>
+				
+				<cfscript>
+				if(form.site_option_group_enable_cache EQ ""){
+					form.site_option_group_enable_cache=1;
+				}
+				</cfscript>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Memory Caching","member.site-option-group.edit site_option_group_enable_cache")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_cache")# (Warning: "Yes" will result in very slow manager performance if this group has many records.)</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable URL Caching","member.site-option-group.edit site_option_group_enable_partial_page_caching")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_partial_page_caching")# (Incomplete - will store rendered page in memory)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Help Description:","member.site-option-group.edit site_option_group_help_description")#</th>
@@ -1306,9 +1319,79 @@
 						htmlEditor.create();
 						</cfscript></td>
 				</tr>
+		</table>
+		#tabCom.endFieldSet()#
+		#tabCom.beginFieldSet("Public Form")#
+		<table  style="border-spacing:0px;" class="table-list">
 				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Child Limit","member.site-option-group.edit site_option_group_limit")#</th>
-					<td><input type="text" name="site_option_group_limit" id="site_option_group_limit" value="#htmleditformat(form.site_option_group_limit)#" /></td>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Public Form Title","member.site-option-group.edit site_option_group_public_form_title")#</th>
+					<td><input name="site_option_group_public_form_title" id="site_option_group_public_form_title" size="50" type="text" value="#htmleditformat(form.site_option_group_public_form_title)#" maxlength="100" />
+							</td></tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Public Form?","member.site-option-group.edit site_option_group_allow_public")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_allow_public")#</td>
+				</tr>
+				<tr>
+					<th>Require Captcha<br />For Public Data Entry:</th>
+					<td>
+					#application.zcore.functions.zInput_Boolean("site_option_group_enable_public_captcha")#
+					</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Data Entry<br />For User Groups","member.site-option-group.edit site_option_group_user_group_id_list")#</th>
+					<td>
+					<cfscript>
+					db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
+					WHERE site_id = #db.param(request.zos.globals.id)# and 
+					user_group_deleted = #db.param(0)# 
+					ORDER BY user_group_name asc"; 
+					var qGroup2=db.execute("qGroup2"); 
+					ts = StructNew();
+					ts.name = "site_option_group_user_group_id_list";
+					ts.friendlyName="";
+					// options for query data
+					ts.query = qGroup2;
+					ts.queryLabelField = "user_group_name";
+					ts.queryValueField = "user_group_id";
+					writeoutput(application.zcore.functions.zInput_Checkbox(ts));
+					</cfscript></td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Require Approval#chr(10)#of Public Data?","member.site-option-group.edit site_option_group_enable_approval")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_approval")#</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Public Form URL","member.site-option-group.edit site_option_group_public_form_url")#</th>
+					<td>
+							<input name="site_option_group_public_form_url" id="site_option_group_public_form_url" size="50" type="text" value="#htmleditformat(form.site_option_group_public_form_url)#" maxlength="100" />
+					</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Public Thank You URL","member.site-option-group.edit site_option_group_public_thankyou_url")#</th>
+					<td>
+							<input name="site_option_group_public_thankyou_url" id="site_option_group_public_thankyou_url" size="50" type="text" value="#htmleditformat(form.site_option_group_public_thankyou_url)#" maxlength="100" />
+					</td>
+				</tr>
+		</table>
+		#tabCom.endFieldSet()#
+		#tabCom.beginFieldSet("Landing Page")#
+		<table  style="border-spacing:0px;" class="table-list">
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">Enable Unique URL</th>
+					<td>
+				<cfif request.zos.globals.optionGroupURLID NEQ 0>
+					#application.zcore.functions.zInput_Boolean("site_option_group_enable_unique_url")#
+				<cfelse>
+					Option group URL ID must be set in server manager to use this feature.
+				</cfif></td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Embedding?","member.site-option-group.edit site_option_group_embed")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_embed")#</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Embed HTML Code:","member.site-option-group.edit site_option_group_code")#</th>
+					<td><textarea name="site_option_group_code" id="site_option_group_code" cols="100" rows="10">#htmleditformat(form.site_option_group_code)#</textarea></td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("View CFC Path","member.site-option-group.edit site_option_group_view_cfc_path")#</th>
@@ -1344,62 +1427,10 @@
 					<th>#application.zcore.functions.zOutputHelpToolTip("Search Result CFC Method","member.site-option-group.edit site_option_group_search_result_cfc_method")#</th>
 					<td><input type="text" name="site_option_group_search_result_cfc_method" id="site_option_group_search_result_cfc_method" value="#htmleditformat(form.site_option_group_search_result_cfc_method)#" /> (A function name in the CFC with access="public")</td>
 				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Image Library?","member.site-option-group.edit site_option_group_enable_image_library")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_image_library")#</td>
-				</tr>
-				
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Public Form?","member.site-option-group.edit site_option_group_allow_public")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_allow_public")#</td>
-				</tr>
-				<tr>
-					<th>Require Captcha<br />For Public Data Entry:</th>
-					<td>
-					#application.zcore.functions.zInput_Boolean("site_option_group_enable_public_captcha")#
-					</td>
-				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Data Entry<br />For User Groups","member.site-option-group.edit site_option_group_user_group_id_list")#</th>
-					<td>
-					<cfscript>
-					db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-					WHERE site_id = #db.param(request.zos.globals.id)# and 
-					user_group_deleted = #db.param(0)# 
-					ORDER BY user_group_name asc"; 
-					var qGroup2=db.execute("qGroup2"); 
-					ts = StructNew();
-					ts.name = "site_option_group_user_group_id_list";
-					ts.friendlyName="";
-					// options for query data
-					ts.query = qGroup2;
-					ts.queryLabelField = "user_group_name";
-					ts.queryValueField = "user_group_id";
-					writeoutput(application.zcore.functions.zInput_Checkbox(ts));
-					</cfscript></td>
-				</tr>
-				
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Require Approval#chr(10)#of Public Data?","member.site-option-group.edit site_option_group_enable_approval")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_approval")#</td>
-				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Public Form URL","member.site-option-group.edit site_option_group_public_form_url")#</th>
-					<td>
-							<input name="site_option_group_public_form_url" id="site_option_group_public_form_url" size="50" type="text" value="#htmleditformat(form.site_option_group_public_form_url)#" maxlength="100" />
-					</td>
-				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Public Thank You URL","member.site-option-group.edit site_option_group_public_thankyou_url")#</th>
-					<td>
-							<input name="site_option_group_public_thankyou_url" id="site_option_group_public_thankyou_url" size="50" type="text" value="#htmleditformat(form.site_option_group_public_thankyou_url)#" maxlength="100" />
-					</td>
-				</tr>
-				
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Admin?","member.site-option-group.edit site_option_group_disable_admin")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_admin")#</td>
-				</tr>
+		</table>
+		#tabCom.endFieldSet()#
+		#tabCom.beginFieldSet("Email & Mapping")#
+		<table  style="border-spacing:0px;" class="table-list">
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Map Fields Type","member.site-option-group.edit site_option_group_map_fields_type")#</th>
 					<td><cfscript>
@@ -1482,29 +1513,11 @@
 					<th>#application.zcore.functions.zOutputHelpToolTip("Email CFC Method","member.site-option-group.edit site_option_group_email_cfc_method")#</th>
 					<td><input type="text" name="site_option_group_email_cfc_method" id="site_option_group_email_cfc_method" value="#htmleditformat(form.site_option_group_email_cfc_method)#" /> (A function name in the CFC with access="remote")</td>
 				</tr>
-				
-				<cfscript>
-				if(form.site_option_group_enable_cache EQ ""){
-					form.site_option_group_enable_cache=1;
-				}
-				</cfscript>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Memory Caching","member.site-option-group.edit site_option_group_enable_cache")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_cache")# (Warning: "Yes" will result in very slow manager performance if this group has many records.)</td>
-				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable URL Caching","member.site-option-group.edit site_option_group_enable_partial_page_caching")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_partial_page_caching")# (Incomplete - will store rendered page in memory)</td>
-				</tr>
-		
-		
-		
-			<tr>
-				<th style="vertical-align:top; white-space:nowrap;">&nbsp;</th>
-				<td><button type="submit" class="table-shadow" value="submitForm">Save</button>
-					<button type="button" class="table-shadow" name="cancel" value="Cancel" onclick="document.location = '/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#';">Cancel</button></td>
-			</tr>
 		</table>
+		#tabCom.endFieldSet()# 
+		#tabCom.endTabMenu()#
+				 
+				
 		<cfif variables.allowGlobal EQ false>
 			<input type="hidden" name="siteoptiongroupglobal" value="0" />
 		</cfif>
