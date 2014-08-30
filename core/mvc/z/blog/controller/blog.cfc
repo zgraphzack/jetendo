@@ -158,7 +158,8 @@ this.app_id=10;
 		blog_status <> #db.param(2)# and 
 		blog_deleted = #db.param(0)#
 		GROUP BY date_format(blog_datetime, #db.param('%Y-%m')#)
-		</cfsavecontent><cfscript>qArchive=db.execute("qArchive");</cfscript>
+		</cfsavecontent><cfscript>qArchive=db.execute("qArchive");
+		</cfscript>
 		<cfloop query="qArchive"><cfscript>
 		t2=StructNew();
 		t2.groupName="Blog Archives";

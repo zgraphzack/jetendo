@@ -97,6 +97,7 @@ function checkForSSLExpiration($arrError){
 		}
 		closedir($handle2);
 	}
+	echo "Done\n";
 }
 function zRemoveEmptyValuesFromArray($arr){
 	$arrNew=array();
@@ -942,6 +943,7 @@ function zCheckDirectoryPermissions($dir, $user, $group, $fileChmodWithNoZeroPre
 	if(substr($dir, strlen($dir)-1, 1) != "/"){
 		$dir.="/";
 	}
+	echo "Checking ".$dir."\n";
 	if(!is_dir($dir)){
 		array_push($arrLog, "Self-healing notice: missing directory was created: ".$dir);
 		if(!$preview){
