@@ -538,15 +538,10 @@
 		<cfscript>
 		qinquiriesActive=db.execute("qinquiriesActive"); 
 		</cfscript>
-		<h2 style="display:inline; ">Search Leads | </h2>
-		<a href="/z/inquiries/admin/search-engine-keyword-report/index">Search Engine Keyword Inquiry Search <strong style="color:##FF0000;">(NEW)</strong></a><br />
-		<br />
-		<table style="border-spacing:0px; width:100%;" class="table-list">
-			<form action="/z/inquiries/admin/manage-inquiries/index?search=true" method="post">
-				<input type="hidden" name="searchOn" value="true" />
-				<tr>
-					<th colspan="<cfif variables.isReservationSystem>5<cfelse>4</cfif>">Search all leads by date received or name.</th>
-				</tr>
+		<h2>Search Leads</h2>
+		<form action="/z/inquiries/admin/manage-inquiries/index?search=true" method="post">
+			<input type="hidden" name="searchOn" value="true" /> 
+			<table style="border-spacing:0px; width:100%;" class="table-list">
 				<tr>
 					<td>Name:
 						<input type="text" name="inquiries_name" value="#application.zcore.functions.zso(form, 'inquiries_name')#" /></td>
@@ -560,8 +555,8 @@
 					</cfif>
 					<td><button type="submit" name="submitForm">Search</button></td>
 				</tr>
-			</form>
-		</table>
+			</table>
+		</form>
 		<hr />
 		<cfif structkeyexists(form, 'searchOn')>
 			<h2 style="display:inline; ">Search Results | </h2>

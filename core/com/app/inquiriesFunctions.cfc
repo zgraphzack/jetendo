@@ -16,7 +16,8 @@
 		Export <a href="/z/inquiries/admin/export" target="_blank">CSV</a> |
 		<a href="/z/inquiries/admin/export?format=html" target="_blank">HTML</a>
 	</cfif>
-	| <a href="/z/inquiries/admin/lead-source-report/index">Source Report</a>
+	| <a href="/z/inquiries/admin/lead-source-report/index">Source Report</a> | 
+		<a href="/z/inquiries/admin/search-engine-keyword-report/index">Keyword Report</a>
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
 		|		
 		<a href="/z/inquiries/admin/routing/index">Routing</a> | 

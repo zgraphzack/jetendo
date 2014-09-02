@@ -364,10 +364,14 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 		}else if(form.method EQ "insertExisting" or form.method EQ "update"){
 			application.zcore.status.setStatus(request.zsid, 'SSL Certificate has been activated.');
 			subject="New SSL Certificate installed for "&form.ssl_common_name;
+			domain=application.zcore.functions.zvar('securedomain', form.sid);
+			if(domain EQ ""){
+				domain=application.zcore.functions.zvar('domain', form.sid);
+			}
 
 			body&='<p>An SSL Certificate with common name, "#form.ssl_common_name#", was installed as the default active certificate for this site: #application.zcore.functions.zvar('domain', form.site_id)#.</p>
 			<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View Certificate</a></p>
-			<p><a href="#application.zcore.functions.zvar('domain', form.sid)#">View Site</a></p>';
+			<p><a href="#domain#">View Site</a></p>';
 		}
 		if(form.method EQ "update"){
 			body&='<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View</a>';
@@ -590,7 +594,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 				<td class="table-white"><input type="text" name="ssl_organization" value="#htmleditformat(form.ssl_organization)#" /></td>
 			</tr>
 			<tr>
-				<td class="table-list" style="vertical-align:top; width:120px;">Orgnization Unit:</td>
+				<td class="table-list" style="vertical-align:top; width:120px;">Organization Unit:</td>
 				<td class="table-white"><input type="text" name="ssl_organization_unit" value="#htmleditformat(form.ssl_organization_unit)#" /></td>
 			</tr>
 			<tr>
@@ -626,7 +630,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 				ts.listLabelsDelimiter = ","; 
 				ts.listValuesDelimiter = ",";
 				application.zcore.functions.zInputSelectBox(ts);
-				</cfscript> (The number of days the certificate will be valid for.)</td>
+				</cfscript> (The number of days the certificate will be valid for if self-signed.)</td>
 			</tr>
 
 			
@@ -681,11 +685,11 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 				<td class="table-white"><textarea name="ssl_public_key" cols="100" rows="5">#htmleditformat(form.ssl_public_key)#</textarea></td>
 			</tr>
 			<tr>
-				<td class="table-list" style="vertical-align:top; width:120px;">Intermediate Certificate:</td>
-				<td class="table-white"><textarea name="ssl_intermediate_certificate" cols="100" rows="5">#htmleditformat(form.ssl_intermediate_certificate)#</textarea></td>
+				<td class="table-list" style="vertical-align:top; width:120px;">Intermediate Certificate(s):</td>
+				<td class="table-white">Note: If there is more then one intermediate certificate, add them here with a line break between them<br /><textarea name="ssl_intermediate_certificate" cols="100" rows="5">#htmleditformat(form.ssl_intermediate_certificate)#</textarea></td>
 			</tr>
 			<tr>
-				<td class="table-list" style="vertical-align:top; width:120px;">CA Certificate:</td>
+				<td class="table-list" style="vertical-align:top; width:120px;">CA/Root Certificate:</td>
 				<td class="table-white"><textarea name="ssl_ca_certificate" cols="100" rows="5">#htmleditformat(form.ssl_ca_certificate)#</textarea></td>
 			</tr>
 			<cfif backupMethod EQ "edit">
@@ -801,6 +805,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 	| <a href="/z/server-manager/admin/ssl/add?sid=#form.sid#">New SSL Certificate</a> | 
 	<a href="/z/server-manager/admin/ssl/addExisting?sid=#form.sid#">Add Existing Certificate</a>
 	<br /><br />
+	Note: After activating an SSL Certificate for a site that was previously not using SSL, you must update the <a href="/z/server-manager/admin/domain-redirect/index?sid=#form.sid#">domain redirects</a> and the <a href="/z/server-manager/admin/site/edit?sid=#form.sid#">global domain &amp; securedomain fields</a> to use SSL / HTTPS.<br /><br />
 	<cfscript>
 	
 	if(qIp.recordcount and qIp.count){

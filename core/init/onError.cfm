@@ -372,9 +372,9 @@ for(i in form){
 	}
 }
 </cfscript>
-<form action="#request.zos.currentHostName##request.zos.originalURL#?#arrayToList(arrURL, '&')#" target="_blank" method="post">
+<form action="" id="errorSubmitForm" target="_blank" method="post">
 #arrayToList(arrForm, chr(10))#
-<input type="submit" name="submit1" value="Submit" />
+<input type="button" onclick="var v=document.getElementById('errorSubmitForm'); v.action='#request.zos.currentHostName##request.zos.originalURL#?#arrayToList(arrURL, '&')#'; v.submit(); " name="submit1" value="Submit" />
 </form>
 </td></tr></table>
 <cfif isDefined('arguments.cferror.rootcause.sql')>

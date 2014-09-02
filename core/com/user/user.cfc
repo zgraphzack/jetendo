@@ -1310,11 +1310,15 @@ formString = userCom.loginForm(inputStruct);
 	request.zos.displayTokenScriptsRan=true;
 	
 	if(request.zos.globals.parentId NEQ 0){
-		application.zcore.skin.includeJS(application.zcore.functions.zvar('domain', request.zos.globals.parentId)&'/z/user/login/parentToken?ztv='&randrange(100000,900000));
+		if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.parentId) CONTAINS "https://"){
+			application.zcore.skin.includeJS(application.zcore.functions.zvar('domain', request.zos.globals.parentId)&'/z/user/login/parentToken?ztv='&randrange(100000,900000));
+		}
 		//application.zcore.template.appendTag("scripts",'<script type="text/javascript" src="'&application.zcore.functions.zvar('domain', request.zos.globals.parentId)&'/z/user/login/parentToken?ztv='&randrange(100000,900000)&'"></script>');
 	}
 	if(request.zos.isdeveloperIpMatch){
-		application.zcore.skin.includeJS(request.zos.globals.serverDomain&'/z/user/login/serverToken?ztv='&randrange(100000,900000));
+		if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.serverId) CONTAINS "https://"){
+			application.zcore.skin.includeJS(request.zos.globals.serverDomain&'/z/user/login/serverToken?ztv='&randrange(100000,900000));
+		}
 		//application.zcore.template.appendTag("scripts",'<script type="text/javascript" src="'&request.zos.globals.serverDomain&'/z/user/login/serverToken?ztv='&randrange(100000,900000)&'"></script>');
 	}
 	</cfscript>

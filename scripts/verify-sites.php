@@ -316,15 +316,6 @@ if(!zCheckJetendoIniConfig($arrError)){
 
 checkForSSLExpiration($arrError);
 
-echo "Running apt-get update to check for new packages: ";
-$arrPackage=getAvailableUpgradePackages();
-if($arrPackage['available']){
-	echo "New packages available.\n".$arrPackage['results'];
-	// temporarily commented to avoid emails
-	//array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
-}else{
-	echo "No new packages are available. Response: ".$arrPackage['results']."\n";
-}
 
 $wwwUser=get_cfg_var("jetendo_www_user");
 
@@ -360,6 +351,15 @@ if(!$result){
 
 $sitesPath=get_cfg_var("jetendo_sites_path");
 
+echo "Running apt-get update to check for new packages: ";
+$arrPackage=getAvailableUpgradePackages();
+if($arrPackage['available']){
+	echo "New packages available.\n".$arrPackage['results'];
+	// temporarily commented to avoid emails
+	//array_push($arrError, "Packages are available to be installed with apt-get.\nPackages\n".$arrPackage['results']);
+}else{
+	echo "No new packages are available. Response: ".$arrPackage['results']."\n";
+}
 
 $forcePermissions=false; 
 $userUnusedStruct=array();
