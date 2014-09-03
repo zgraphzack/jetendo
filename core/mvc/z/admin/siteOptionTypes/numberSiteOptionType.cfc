@@ -124,7 +124,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfscript>
-	return { label: true, hidden: false, value:'<input type="text" onkeyup="if(this.value != '' && isNaN(this.value)){ this.value=''''; alert(''You must enter a number with no punctuation.''); }" name="#arguments.prefixString##arguments.row.site_option_id#" id="#arguments.prefixString##arguments.row.site_option_id#" style="width:90%;" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row.site_option_id#'))#" />'};  
+	return { label: true, hidden: false, value:'<input type="text" onkeyup="if(this.value != '''' && isNaN(this.value)){ this.value=''''; alert(''You must enter a number with no punctuation.''); }" name="#arguments.prefixString##arguments.row.site_option_id#" id="#arguments.prefixString##arguments.row.site_option_id#" style="width:90%;" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row.site_option_id#'))#" />'};  
 	</cfscript>
 </cffunction>
 
