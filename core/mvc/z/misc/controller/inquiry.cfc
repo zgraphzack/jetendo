@@ -150,7 +150,12 @@
 			local.rentalFrontCom.lodgixInquiryTemplate();
 		}
 	}
-	application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#");
+	redirectURL=application.zcore.functions.zso(form, 'redirect_url');
+	if(redirectURL NEQ ""){
+		application.zcore.functions.zRedirect(redirectURL);
+	}else{
+		application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#");
+	}
 	</cfscript>
 
 </cffunction>
@@ -253,12 +258,20 @@
             
             </cfif>
         </cfif>
+        <cfscript>
+		inquiryHeaderMessage=application.zcore.functions.zso(form, 'inquiryHeaderMessage');
+		if(inquiryHeaderMessage NEQ ""){
+			echo('<p>'&inquiryHeaderMessage&'</p>');
+		}
+		</cfscript>
         <p>* denotes required field.</p>
             <cfscript>
             form.set9=application.zcore.functions.zGetHumanFieldIndex();
             </cfscript>
             <form id="myForm" action="/z/misc/inquiry/submit" onsubmit="zSet9('zset9_#form.set9#');" method="post" style="margin:0px; padding:0px;">
             <input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
+            <input type="hidden" name="redirect_url" value="#htmleditformat(application.zcore.functions.zso(form, 'redirect_url'))#" />
+            <input type="hidden" name="inquiryHeaderMessage" value="#htmleditformat(application.zcore.functions.zso(form, 'inquiryHeaderMessage'))#" />
             #application.zcore.functions.zFakeFormFields()#
             <input type="hidden" name="inquiries_referer" value="#HTMLEditFormat(request.zos.cgi.http_referer)#" />
             <table class="zinquiry-form-table">

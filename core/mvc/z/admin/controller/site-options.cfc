@@ -2729,7 +2729,7 @@ Define this function in another CFC to override the default email format
 	}
 	writeoutput(arraytolist(local.arrSearch, ""));
 	if(qS.recordcount){
-		writeoutput('<table id="sortRowTable" style="border-spacing:0px; width:100%; " class="table-list" >
+		writeoutput('<table id="sortRowTable" class="table-list" >
 		<thead>
 		<tr>');
 		for(i=1;i LTE arraylen(arrVal);i++){
