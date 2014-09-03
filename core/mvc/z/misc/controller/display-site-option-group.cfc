@@ -10,6 +10,10 @@
 	<cfscript>
 	local.soCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 	rs=local.soCom.publicAjaxInsertGroup();
+    if(not rs.success){
+    	arrError=application.zcore.status.getErrors(rs.zsid);
+    	rs.errorMessage=arrayToList(arrError, "\n");
+    }
 	application.zcore.functions.zReturnJson(rs);
 	</cfscript>
 </cffunction>

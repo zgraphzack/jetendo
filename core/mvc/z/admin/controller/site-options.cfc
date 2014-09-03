@@ -1412,6 +1412,8 @@
 	var startTime=0;
 	if(debug) startTime=gettickcount();
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
+	form.site_x_option_group_set_parent_id=application.zcore.functions.zso(form, 'site_x_option_group_set_parent_id');
+	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	if(not structkeyexists(request.zos.siteOptionInsertGroupCache, form.site_option_group_id)){
 		request.zos.siteOptionInsertGroupCache[form.site_option_group_id]={};
 	}
@@ -1432,7 +1434,7 @@
 	if(local.qCheck.site_option_group_enable_approval EQ 0){
 		form.site_x_option_group_set_approved=1;
 	}
-	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup"){
+	if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup") and not structkeyexists(request.zos, 'disableSpamCheck')){
 		 
 		if(local.qCheck.site_option_group_enable_public_captcha EQ 1){
 			if(not application.zcore.functions.zVerifyRecaptcha()){
