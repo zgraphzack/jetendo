@@ -1499,7 +1499,7 @@
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Delete On Map?","member.site-option-group.edit site_option_group_delete_on_map")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_delete_on_map")#</td>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_delete_on_map")# (Set this to no when a file upload field is used on the form.)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Lead Routing?","member.site-option-group.edit site_option_group_lead_routing_enabled")#</th>

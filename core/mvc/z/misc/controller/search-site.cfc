@@ -192,7 +192,7 @@ search sql generator has to be able to search on child group data for paging to 
 	db.sql="select *, match(search_fulltext) against(#db.param(form.searchtext)#) relevance
 	from #db.table("search", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	match(search_fulltext) against(#db.param(form.searchtext)#) and 
+	(match(search_fulltext) against(#db.param(form.searchtext)#) or search_fulltext like #db.param('%'&form.searchtext&'%')#) and 
 	search_deleted = #db.param(0)#
 	ORDER BY relevance DESC 
 	LIMIT #db.param((form.zIndex-1)*10)#, #db.param(11)#";
