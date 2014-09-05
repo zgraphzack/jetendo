@@ -400,7 +400,7 @@
 
 <cffunction name="getEndBodyHTML" localmode="modern" access="public">
 	<cfscript>
-	return '<div id="zModalOverlayDiv"><div id="zModalOverlayDiv2"></div></div><div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:##FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; " onclick="zOverEditClick();"><a id="zOverEditATag" href="##" onclick="zOverEditClick(); " class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>';
+	return '<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:##FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; " onclick="zOverEditClick();"><a id="zOverEditATag" href="##" onclick="zOverEditClick(); " class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>'; // <div id="zModalOverlayDiv"><div id="zModalOverlayDiv2"></div></div>
 	</cfscript>
 </cffunction>
 

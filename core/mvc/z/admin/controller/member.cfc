@@ -588,13 +588,15 @@
 				<td><input type="text" name="member_website" value="#form.member_website#" size="30" />
 					(URLs Must begin with http:// or https://)</td>
 			</tr>
-			<tr>
-				<th>#application.zcore.functions.zOutputHelpToolTip("Show Profile","member.member.edit member_public_profile")#</th>
-				<td><input type="radio" name="member_public_profile" value="1" style="border:none; background:none;" <cfif form.member_public_profile EQ '1'>checked="checked"</cfif> />
-					Yes (Make visible to public) |
-					<input type="radio" name="member_public_profile" value="0" style="border:none; background:none;" <cfif form.member_public_profile EQ 0 or form.member_public_profile EQ ''>checked="checked"</cfif> />
-					No </td>
-			</tr>
+			<cfif application.zcore.app.getAppData("content").optionStruct.content_config_url_listing_user_id NEQ 0 and application.zcore.app.getAppData("content").optionStruct.content_config_url_listing_user_id NEQ "">
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Show Profile","member.member.edit member_public_profile")#</th>
+					<td><input type="radio" name="member_public_profile" value="1" style="border:none; background:none;" <cfif form.member_public_profile EQ '1'>checked="checked"</cfif> />
+						Yes (Make visible to public) |
+						<input type="radio" name="member_public_profile" value="0" style="border:none; background:none;" <cfif form.member_public_profile EQ 0 or form.member_public_profile EQ ''>checked="checked"</cfif> />
+						No </td>
+				</tr>
+			</cfif>
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Hide Public Email?","member.member.edit user_hide_public_email")#</th>
 				<td><input type="radio" name="user_hide_public_email" value="1" style="border:none; background:none;" <cfif form.user_hide_public_email EQ '1'>checked="checked"</cfif> />

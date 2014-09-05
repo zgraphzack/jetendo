@@ -325,8 +325,8 @@ _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/z/a/images/help
 #zHelpToolTipInnerDiv{padding:10px; border:2px solid #999; border-radius:5px;   background-color:#FFF; padding-bottom:0px;}
 
 iframe{ overflow:auto; border:none;}
-#zModalOverlayDiv{display:none;}
-#zModalOverlayDiv2{display:none;}
+.zModalOverlayDiv{display:none;}
+.zModalOverlayDiv2{display:none;}
 .zFormMessageBox{ width:90%; background-color:#FFFFFF; color:#000000; display:none; margin-bottom:10px; clear:both; }
 .zFormMessageBox .successBox { border:1px solid #009900; padding:10px; width:90%; }
 .zFormMessageBox td{ border:1px solid #990000; }
@@ -411,7 +411,7 @@ background-color:#FFFFFF;
 .zcontent-sublink-thumbnail{ width:200px; float:left; margin-right:25px; margin-bottom:25px; text-align:center;}
 .zcontent-sublink-thumbnail-text{ font-size:110%; line-height:150%}
 
-#zModalOverlayDiv {
+.zModalOverlayDiv {
      position: absolute;
      left: 0px;
      top: 0px;
@@ -422,7 +422,7 @@ background-color:#FFFFFF;
 	 background-image:url(/z/a/images/bg-checker.png);
 }
 
- #zModalOverlayDiv2 {
+.zModalOverlayDiv2 {
      position: absolute;
      left: 0px;
      top: 0px;
@@ -437,9 +437,9 @@ background-color:#FFFFFF;
      text-align:left;
 
 }
-#zModalOverlayDiv2 h2, #zModalOverlayDiv2 h3, #zModalOverlayDiv2 h1{ color:#000; }
-#zModalOverlayDiv2 a:link, #zModalOverlayDiv2 a:visited{ color:#369; text-decoration:underline; }
-#zModalOverlayDiv2 a:hover { color:#F00; }
+.zModalOverlayDiv2 h2, .zModalOverlayDiv2 h3, .zModalOverlayDiv2 h1{ color:#000; }
+.zModalOverlayDiv2 a:link, .zModalOverlayDiv2 a:visited{ color:#369; text-decoration:underline; }
+.zModalOverlayDiv2 a:hover { color:#F00; }
 
 .zMenuWrapper span{display:block; }
 .zMenuClear {clear: both;height: 0px;line-height: 0.0px; font-size:0px;}

@@ -1019,19 +1019,19 @@ this.app_id=10;
 		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.blog_config_url_category_id],t9);
 		*/
 
-
-		t9=structnew();
-		t9.type=1;
-		t9.scriptName="/z/blog/blog/displayBlogSection";
-		t9.ifStruct=structnew();
-		t9.ifStruct.ext="html";
-		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/blog/blog/displayBlogSection";
-		t9.mapStruct=structnew();
-		t9.mapStruct.urlTitle="zURLName";
-		t9.mapStruct.dataId="site_x_option_group_set_id";
-		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.blog_config_url_section_id],t9);
-
+		if(qConfig.blog_config_url_section_id NEQ 0){
+			t9=structnew();
+			t9.type=1;
+			t9.scriptName="/z/blog/blog/displayBlogSection";
+			t9.ifStruct=structnew();
+			t9.ifStruct.ext="html";
+			t9.urlStruct=structnew();
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/blog/blog/displayBlogSection";
+			t9.mapStruct=structnew();
+			t9.mapStruct.urlTitle="zURLName";
+			t9.mapStruct.dataId="site_x_option_group_set_id";
+			arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.blog_config_url_section_id],t9);
+		}
 
 		
 		// ## blog category rss 

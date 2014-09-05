@@ -442,18 +442,19 @@ this.app_id=12;
 		}
 	}
 
-	t9=structnew();
-	t9.type=1;
-	t9.scriptName="/z/content/content/displayContentSection";
-	t9.ifStruct=structnew();
-	t9.ifStruct.ext="html";
-	t9.urlStruct=structnew();
-	t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/displayContentSection";
-	t9.mapStruct=structnew();
-	t9.mapStruct.urlTitle="zURLName";
-	t9.mapStruct.dataId="site_x_option_group_set_id";
-	arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_section_id],t9);
-
+	if(qConfig.content_config_url_section_id NEQ 0){
+		t9=structnew();
+		t9.type=1;
+		t9.scriptName="/z/content/content/displayContentSection";
+		t9.ifStruct=structnew();
+		t9.ifStruct.ext="html";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/displayContentSection";
+		t9.mapStruct=structnew();
+		t9.mapStruct.urlTitle="zURLName";
+		t9.mapStruct.dataId="site_x_option_group_set_id";
+		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_section_id],t9);
+	}
 	loop query="qContent"{
 		t9=structnew();
 		t9.scriptName="/z/content/content/viewPage";
@@ -1935,7 +1936,10 @@ configCom.includeContentByName(ts);
 	r1=request.zos.tempObj.contentInstance.configCom.getSidebar(ts);
 	writedump(r1);*/
 
-	tempPageNav='<a href="/">#application.zcore.functions.zvar("homelinktext")#</a> / <a href="#struct.__url#">#struct.__title#</a> /';
+	tempPageNav='<a href="/">#application.zcore.functions.zvar("homelinktext")#</a> / ';
+	if(structkeyexists(struct, '__url')){
+		tempPageNav&=' <a href="#struct.__url#">#struct.__title#</a> /';
+	}
 	application.zcore.template.setTag("pagenav",tempPageNav);
 	affix=application.zcore.functions.zso(application.zcore.app.getAppData("content").optionStruct, 'content_config_section_title_affix');
 	if(affix NEQ ""){
