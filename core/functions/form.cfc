@@ -428,7 +428,7 @@ USAGE
 			<input type="checkbox" name="#arguments.field#_delete" value="1" style="background:none; border:none;height:15px; " /> Check to delete image and then submit form.<br />
 		</cfif>
 	</cfif>	
-	<input type="file" name="#arguments.field#" />	
+	<input type="file" name="#arguments.field#" style="width:95%;" />	
 	</cfsavecontent>
 	<cfscript>
 	return tempText;
@@ -1462,9 +1462,13 @@ zInput_file(ts); --->
 	if(arguments.ss.className NEQ ""){
 		out&=' class="#arguments.ss.className#"';
 	}
+	
+	out&=' style=" width:95%; ';
 	if(arguments.ss.style NEQ ""){
-		out&=' style="#arguments.ss.style#"';
+		out&=' #arguments.ss.style# ';
 	}
+	out&'"';
+	
 	if(value NEQ "" and arguments.ss.allowDelete){
 		writeoutput('<input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> Check to delete and then submit form<br />');
 	}
