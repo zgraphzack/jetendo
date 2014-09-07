@@ -334,11 +334,12 @@ function sslSavePublicKeyCertificates($a){
 		$rs->success=false;
 		$rs->errorMessage="Public key is not valid. Unable to parse expiration date.";
 		echo($rs->errorMessage."\n");
-		sslDeleteCertificate(array($js->ssl_hash));
+		//sslDeleteCertificate(array($js->ssl_hash));
 		return json_encode($rs);
 	}
-
-
+	if(!file_exists($currentPath.".csr")){
+		file_put_contents($currentPath.".csr", $js->ssl_csr);
+	}
 	$cmd="/usr/bin/openssl req -noout -subject -in ".escapeshellarg($currentPath.".csr");
 	$csrResult=str_replace("\t", "", `$cmd`)."/";
 	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($currentPath.".crt");
@@ -351,19 +352,19 @@ function sslSavePublicKeyCertificates($a){
 		$cnPos2=strpos($crtResult, "/CN=");
 		$cnPosEnd2=strpos($crtResult, "/", $cnPos2+1);
 		if($cnPos2 !== FALSE && $cnPosEnd2 !== FALSE){
-			$cn1=substr($csrResult, $cnPos+4, $cnPosEnd-($cnPos+4));
-			$cn2=substr($crtResult, $cnPos2+4, $cnPosEnd2-($cnPos2+4));
+			$cn1=trim(substr($csrResult, $cnPos+4, $cnPosEnd-($cnPos+4)));
+			$cn2=trim(substr($crtResult, $cnPos2+4, $cnPosEnd2-($cnPos2+4)));
 			if($cn1 != $cn2){
 				$rs->success=false;
 				$rs->errorMessage="The public certificate's common name: ".$cn2." doesn't match CSR's common name: ".$cn1;
 				echo($rs->errorMessage."\n");
-				sslDeleteCertificate(array($js->ssl_hash));
+				//sslDeleteCertificate(array($js->ssl_hash));
 				return json_encode($rs);
 			}
 		}else{
 			$rs->success=false;
 			$rs->errorMessage="Unable to parse the common name from the public certificate. It may be invalid.";
-			sslDeleteCertificate(array($js->ssl_hash));
+			//sslDeleteCertificate(array($js->ssl_hash));
 			echo($rs->errorMessage."\n");
 			return json_encode($rs);
 		}
@@ -371,7 +372,7 @@ function sslSavePublicKeyCertificates($a){
 		$rs->success=false;
 		$rs->errorMessage="Unable to parse the common name from the CSR certificate. It may be invalid.";
 		echo($rs->errorMessage."\n");
-		sslDeleteCertificate(array($js->ssl_hash));
+		//sslDeleteCertificate(array($js->ssl_hash));
 		return json_encode($rs);
 	}
 	$rs->success=true;

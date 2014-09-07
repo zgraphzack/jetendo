@@ -163,6 +163,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid="&request.zsid);
 		}
 		for(row in qSSL){
+			form.ssl_csr=row.ssl_csr;
 			form.ssl_hash=row.ssl_hash;
 			form.ssl_common_name=row.ssl_common_name;
 			if(row.ssl_public_key NEQ ""){
@@ -287,6 +288,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 			application.zcore.functions.zRedirect("/z/server-manager/admin/ssl/edit?ssl_id=#form.ssl_id#&sid=#form.sid#&zsid="&request.zsid);
 		}
 		js={
+			ssl_csr: form.ssl_csr,
 			ssl_public_key: form.ssl_public_key,
 			ssl_intermediate_certificate: form.ssl_intermediate_certificate,
 			ssl_ca_certificate: form.ssl_ca_certificate,

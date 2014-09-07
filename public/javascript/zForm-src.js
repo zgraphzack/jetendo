@@ -2243,6 +2243,39 @@ var zDrag_dropTargets = [];
 
 
 
+var zBoxHitTest=function(object1, object2){
+	var p=zGetAbsPosition(object1);
+	var p2=zGetAbsPosition(object2);
+
+	//console.log(p.x+":"+p.y+":"+p.width+":"+p.height+" | "+p2.x+":"+p2.y+":"+p2.width+":"+p2.height);
+	if(p2.x <= p.x+p.width){
+		if(p2.x+p2.width >= p.x){
+			if(p2.y <= p.y+p.height){
+				if(p2.y+p2.height >= p.y){
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+var zMouseHitTest=function(object, marginInPixels){
+	var p=zGetAbsPosition(object);
+	if(typeof marginInPixels == "undefined"){
+		marginInPixels=0;
+	}
+	//console.log(p.x+":"+p.y+":"+p.width+":"+p.height+":"+zMousePosition.x+":"+zMousePosition.y);
+	if(p.x-marginInPixels <= zMousePosition.x){
+		if(p.x+p.width+marginInPixels >= zMousePosition.x){
+			if(p.y-marginInPixels <= zMousePosition.y){
+				if(p.y+p.height+marginInPixels >= zMousePosition.y){
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
 
 
 
