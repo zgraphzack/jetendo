@@ -74,10 +74,11 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 		application.zcore.functions.zRedirect('/z/server-manager/admin/ssl/index?sid=#form.sid#&zsid=#request.zsid#');
 		</cfscript>
 	<cfelse>
-		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this SSL Certificate?<br />
+		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this SSL Certificate including the private key?<br />
 			<br />
 			Display name: #qCheck.ssl_display_name#<br />
-			Common name: #qCheck.ssl_common_name#
+			Common name: #qCheck.ssl_common_name#<br />
+			WARNING: If you delete the private key for a certificate that is already issued, please be aware, you may have to purchase that certificate again depending on the vendor.<br />
 			<br />
 			<a href="/z/server-manager/admin/ssl/delete?confirm=1&amp;ssl_id=#form.ssl_id#&amp;sid=#form.sid#">Yes</a>&nbsp;&nbsp;&nbsp;
 			<a href="/z/server-manager/admin/ssl/index?sid=#form.sid#">No</a> 
