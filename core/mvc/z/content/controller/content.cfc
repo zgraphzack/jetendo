@@ -1500,8 +1500,9 @@ configCom.includeContentByName(ts);
 		}
 		db.sql&=" and content_for_sale <> #db.param(2)# and 
 		content_hide_link =#db.param(0)# and 
-		content_deleted=#db.param(0)#	";
-		db.sql&=" LIMIT #db.param(offset)#, #db.param(limit)#";
+		content_deleted=#db.param(0)# and 
+		content_config_deleted =#db.param(0)#	
+		LIMIT #db.param(offset)#, #db.param(limit)#";
 		qC=db.execute("qC");
 		offset+=limit;
 		if(qC.recordcount EQ 0){
