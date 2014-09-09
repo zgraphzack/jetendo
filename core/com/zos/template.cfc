@@ -765,8 +765,8 @@ for(local.row in local.qSite){
 		finalString=replace(finalString, '</head>',application.sitestruct[request.zos.globals.id].globalHTMLHeadSource&'</head>');
 	}
 	request.zos.endtime=gettickcount('nano');
-	if(request.zos.templateData.primary and Request.zOS.isDeveloper){
-		if(structkeyexists(Request,'zPageDebugDisabled') EQ false and application.zcore.user.checkAllCompanyAccess() and structkeyexists(form, 'zab') EQ false){
+	if(request.zos.templateData.primary and (Request.zOS.isDeveloper or request.zos.istestserver)){
+		if(structkeyexists(Request,'zPageDebugDisabled') EQ false and (application.zcore.user.checkAllCompanyAccess() or request.zos.istestserver) and structkeyexists(form, 'zab') EQ false){
 			request.zos.debuggerFinalString=finalString;
 			request.zos.debugbarStruct=application.zcore.debugger.getForm();
 			request.zos.debugbaroutput=application.zcore.debugger.getOutput();
