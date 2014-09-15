@@ -1626,6 +1626,7 @@
 			content_deleted=#db.param(0)#";
 			qIdCheck=db.execute("qIdCheck");
 		}
+
 		if(arrData[i].url EQ "" or qIdCheck.recordcount EQ 0){
 			if(arrData[i].parentid NEQ 0 and arrData[i].parentid NEQ ""){
 				db.sql="SELECT content_id FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -1776,6 +1777,8 @@
 	<h3>File Import</h3>
 	<p><a href="/z/a/images/page-import-template.csv" rel="external" onclick="window.open(this.href); return false;">Download Page Import Template CSV</a></p>
 	<p>CSV columns should be: title, menutitle, url, parenturl, parentid, text</p>
+	<p>If the parentid field is not in the CSV, then the parenturl field will be used to determine the parentid.  If the parent page can't be found, then the page will be imported without being associated to another page. The parentid should match the id column of an existing page on <a href="/z/content/admin/content-admin/index">manage pages</a>. To ensure the parent page lookup works, make sure the child pages are below their parent in the CSV.</p>
+	<p>Parent URL must start with a forward slash (root relative URL, i.e. /my-page.html)</p>
 	<form action="/z/content/admin/content-admin/processimport" enctype="multipart/form-data" method="post">
 		<input type="file" name="filepath" value="" /> <input type="submit" name="submit1" value="Import CSV" onclick="this.style.display='none';document.getElementById('pleaseWait').style.display='block';" />
 			<div id="pleaseWait" style="display:none;">Please wait...</div>

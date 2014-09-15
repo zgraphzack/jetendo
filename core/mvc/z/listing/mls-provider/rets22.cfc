@@ -173,7 +173,7 @@ this.remapFieldStruct=t5;
 	}
 	// need to clean this data - remove not in subdivision, 0 , etc.
 	
-	local.listing_subdivision=this.getRetsValue("property", ts["rets22_list_8"], "LIST_77",ts['Subdivision/Condo Nm']);
+	local.listing_subdivision=this.getRetsValue("property", ts["rets22_list_8"], "LIST_77",ts['Subdivision/Condo Name']);
 	if(local.listing_subdivision NEQ ""){
 		if(findnocase(","&local.listing_subdivision&",", ",,false,none,not on the list,not in subdivision,n/a,other,zzz,na,0,.,N,0000,00,/,") NEQ 0){
 			local.listing_subdivision="";

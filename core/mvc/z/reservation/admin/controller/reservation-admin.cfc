@@ -291,6 +291,7 @@
 	<cfscript>
 	var db=request.zos.queryObject; 
 	variables.init();
+	form.event_id=application.zcore.functions.zso(form, 'event_id');
 	//application.zcore.functions.zSetPageHelpId("7.4");   
 	</cfscript> 
 	
@@ -688,6 +689,9 @@
 			</tr> 
 			<cfscript>
 			customStruct=deserializeJson(form.reservation_custom_json);
+			if(not isstruct(customStruct)){
+				customStruct={};
+			}
 			</cfscript>
 			<cfif structcount(customStruct)>
 				<cfscript>
@@ -708,6 +712,7 @@
 					index++;
 				}
 				</cfscript>
+			<cfelse>
 			</cfif>
 		</table>
 		<input type="hidden" name="reservation_custom_count" value="#structcount(customStruct)#" />

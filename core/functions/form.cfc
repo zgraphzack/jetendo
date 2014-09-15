@@ -28,6 +28,11 @@ This is a global key. It will work across all domains. --->
     <cfreturn false>
 </cffunction>
 
+<cffunction name="zGearButton" localmode="modern" access="public">
+	<cfargument name="buttonHTML" type="string" required="yes">
+	<a href="##" class="zGearButton" data-button-json="#htmleditformat(arguments.buttonHTML)#"><i class="fa fa-cog"></i></a>
+</cffunction>
+
 <cffunction name="zSetupMultipleSelect" localmode="modern" output="no" returntype="string">
     <cfargument name="id" type="string" required="yes">
     <cfargument name="value" type="string" required="yes">
@@ -1467,7 +1472,7 @@ zInput_file(ts); --->
 	if(arguments.ss.style NEQ ""){
 		out&=' #arguments.ss.style# ';
 	}
-	out&'"';
+	out&='"';
 	
 	if(value NEQ "" and arguments.ss.allowDelete){
 		writeoutput('<input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> Check to delete and then submit form<br />');

@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="init" access="public" returntype="string" localmode="modern">
 	<cfscript>
+	application.zcore.skin.includeCSS("/z/font-awesome/css/font-awesome.min.css");
 	application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
 	</cfscript>
 </cffunction>
@@ -65,6 +66,12 @@
 		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[request.zsession.user.site_id&"_"&request.zsession.user.id]#
 	<cfelse>
 		<cfsavecontent variable="templateMenuOutput">
+			
+			<div class="adminBrowserCompatibilityWarning">
+				<h2><i class="fa fa-exclamation-triangle"></i> Compatibility Warning: Some features may not work on your browser.</h2>
+				<p>You must upgrade to a newer browser.  <a href="http://www.google.com/chrome" target="_blank">Chrome</a> or 
+				<a href="http://www.google.com/chrome" target="_blank">Firefox</a> are recommended.</p>
+			</div>
 			<cfscript>
 			ws=application.zcore.app.getWhitelabelStruct();
 			</cfscript>

@@ -1072,6 +1072,31 @@
 		theTitle="Manage Site Options";
 		application.zcore.template.setTag("title",theTitle);
 		application.zcore.template.setTag("pagetitle",theTitle);
+
+		queueSortStruct = StructNew();
+		queueSortStruct.tableName = "site_option";
+		queueSortStruct.sortFieldName = "site_option_sort";
+		queueSortStruct.primaryKeyName = "site_option_id";
+		//queueSortStruct.sortVarName="siteGroup"&qGroup.site_option_group_id;
+		queueSortStruct.datasource=request.zos.zcoreDatasource;
+		queueSortStruct.where ="  site_option_group_id = '#application.zcore.functions.zescape(0)#' and 
+		site_option.site_id ='#application.zcore.functions.zescape(request.zos.globals.id)#' and 
+		site_option_deleted='0' ";
+
+		
+		queueSortStruct.ajaxTableId='sortRowTable';
+		queueSortStruct.ajaxURL='/z/admin/site-options/manageOptions?site_option_group_parent_id=0&site_option_group_id=0';
+
+		queueSortStruct.disableRedirect=true;
+		queueComStruct["obj0"] = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+		queueComStruct["obj0"].init(queueSortStruct);
+		if(structkeyexists(form, 'zQueueSort')){
+			application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
+		}
+		if(structkeyexists(form, 'zQueueSortAjax')){
+			queueComStruct["obj0"].returnJson();
+		}
 	}
 	lastGroup="";
 	loop query="qGroup"{
@@ -1161,7 +1186,9 @@
 			<cfif variables.allowGlobal>
 				<th>Global</th>
 			</cfif>
-			<th>Sort</th>
+			<cfif lastGroup NEQ "">
+				<th>Sort</th>
+			</cfif>
 			<th>Admin</th>
 		</tr>
 		</thead>
@@ -1190,13 +1217,13 @@
 					}
 					writeoutput('</td>');
 				}
-				echo('<td>');
-				if(qS.site_id NEQ 0 or variables.allowGlobal){
-					if(lastGroup NEQ ""){
-						echo('#queueComStruct["obj"&qS.site_option_group_id].getAjaxHandleButton()#');
+				if(lastGroup NEQ ""){
+					if(qS.site_id NEQ 0 or variables.allowGlobal){
+						echo('<td>');
+							echo('#queueComStruct["obj"&qS.site_option_group_id].getAjaxHandleButton()#');
+						echo('</td>');
 					}
 				}
-				echo('</td>');
 				writeoutput('<td>');
 				if(qS.site_id NEQ 0 or variables.allowGlobal){
 					/*if(lastGroup NEQ ""){

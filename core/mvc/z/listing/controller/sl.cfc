@@ -398,5 +398,156 @@ application.zcore.functions.zHeader("Content-type","text/javascript");
 	</cfscript>
 </cfif>
 </cffunction>
+
+
+<!--- 
+TODO: associate saved listings with a user_id if use is logged in.
+
+
+check login status with cookie - so that it doesn't have to query server.  
+	zArrDeferredFunctions.push(function(){
+		zWatchCookie("ZLOGGEDIN", function(v){ console.log("logged in: "+zIsLoggedIn()); });
+	});
+	on each ajax request to CFML, return the login expiration date/time in a response header (cookie). 
+
+		poll zLoginExpiresDate - when time has passed, zDeleteCookie("zLoginExpiresDate");
+		
+view cart needs to fire code that loads the json via ajax.
+when page loads again, view cart will not continue to be expanded, so don't need the json again.
+ --->
+<cffunction name="testCart" access="remote" localmode="modern">
+	<cfscript>
+	application.zcore.template.setPlainTemplate();
+	</cfscript>
+	<style type="text/css">
+	.zcart{ width:98%; padding:1%;float:left; background-color:##EEE; clear:both;}
+	.zcart-add-saved, .zcart-add-saved:link, .zcart-add-saved:visited{ background-color:##000 !important;  color:##FFF !important; }
+	.zcart-add-saved:hover{ background-color:##666 !important;  color:##FFF !important;}
+	.zcart-navigation{  width:99%; padding:0.5%; float:left; border-radius:5px; background-color:##CCC; }
+	a.zcart-navigation-button:link, a.zcart-navigation-button:visited, .zcart-navigation-button{display:block; background-color:##FFF; color:##666; border-radius:5px; padding:7px;  padding-top:3px; line-height:18px; padding-bottom:3px; font-size:14px; margin-right:5px; margin-bottom:5px; float:left; text-decoration:none;}
+	a.zcart-navigation-button:hover{ text-decoration:underline;}
+	.zcart-item{ width:120px; border-radius:5px; border:1px solid ##CCC; background-color:##FFF; color:##000; padding:5px; float:left; margin-right:10px; margin-bottom:10px;}
+	.zcart-item a:link, .zcart-item a:visited{ color:##369; text-decoration:none; }
+	.zcart-item-imagediv{ width:120px; height:80px; margin-bottom:5px; float:left; }
+	.zcart-item-image{ max-width:120px; max-height:80px; float:left; }
+	.zcart-item-label{ font-size:14px; line-height:18px; padding-bottom:3px;float:left; width:100%;}
+	.zcart-item-description{ font-size:12px; height:40px; overflow:hidden; line-height:16px; padding-bottom:3px;float:left; width:100%;}
+	.zcart-item-delete{ margin:0 auto; clear:both; width:60px;}
+	.zcart-item-quantity{width: 100%;float: left;text-align: center;}
+	.zcart-item-quantity-input{ width:30px; }
+	.zcart-item-delete-link, .zcart-item-delete-link:link, .zcart-item-delete-link:visited{ cursor:pointer;text-align:center; font-size:12px; color:##000; display:block; padding:3px; border-radius:3px; float:left; width:100%;}
+	.zcart-item-delete-link:hover{ background-color:##000 !important; color:##FFF !important; }
+	.zcart-navigation-button:link, .zcart-navigation-button:visited, .zcart-navigation-button{display:block; background-color:##FFF; color:##666; border-radius:5px; padding:7px;  padding-top:3px; line-height:18px; padding-bottom:3px; font-size:14px; margin-right:5px; margin-bottom:5px; float:left; text-decoration:none;}
+	.demo-navlinks{width:99%; float:left; background-color:##EEE; padding:0.5%; padding-top:10px; padding-bottom:10px;}
+	</style>
+	<div style="padding:10px;">
+		<h2>Saved Listing Javascript Cart Demo</h2>
+		<div class="zcart-navigation">
+			<a href="##" class="zcart-navigation-button zcart-view cart1" data-zcart-hideHTML="Hide Saved Listings" data-zcart-viewHTML="View Saved Listings">View Saved Listings</a> 
+			<a href="##" class="zcart-navigation-button zcart-refresh cart1">Refresh</a>
+			<div class="zcart-navigation-button zcart-count-container cart1"><span class="zcart-count cart1">0</span> Saved Listings</div> 
+			<a href="##" class="zcart-navigation-button zcart-checkout cart1">Inquire About Listings</a>
+			<a href="##" class="zcart-navigation-button zcart-clear cart1">Remove All</a>
+		</div>
+		<div class="zcart cart1" style="display:none;">
+		
+		</div>
+		<div class="zcart-templates" style="display:none;">
+			<div id="{itemId}" class="zcart-item">
+				<div class="zcart-item-imagediv"><a href="##" data-url="{viewURL}"><img src="/z/a/images/s.gif" data-image="{image}" class="zcart-item-image" /></a></div>
+				<div class="zcart-item-label"><a href="##" data-url="{viewURL}">{label}</a></div>
+				<div class="zcart-item-description">{description}</div>
+				<div class="zcart-item-quantity">Quantity: <input type="text" name="zcart_item_quantity_text" class="zcart-item-quantity-input" data-zcart-id="{id}" value="{quantity}" /></div>
+				<div class="zcart-item-delete"><a href="##" id="{deleteId}" data-zcart-id="{id}" class="zcart-item-delete-link">Remove</a></div>
+			</div>
+		</div>
+		<div class="demo-navlinks">
+			<a href="##" class="zcart-navigation-button zcart-add cart1" data-zcart-json="{ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' }">Add Item 1</a>
+			<a href="##" class="zcart-navigation-button zcart-add cart1"data-zcart-json="{ id:'2', label:'cart1 Item 2', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 2', removeHTML:'Remove Item 2', viewURL: '##view2'  }">Add Item 2</a>
+			<a href="##" class="zcart-navigation-button zcart-add cart1"data-zcart-json="{ id:'3', label:'cart1 Item 3', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 3', removeHTML:'Remove Item 3', viewURL: '##view3'  }">Add Item 3</a>
+		</div> 
+	</div>
+	<cfscript>
+	application.zcore.skin.includeJS("/z/javascript/jquery/jquery.animate-colors.js");
+	application.zcore.skin.includeJS("/z/javascript/jquery/jquery.easing.1.3.js");
+	application.zcore.skin.includeJS("/z/javascript/zCart.js");
+	</cfscript>
+	<!--- 
+	read cookie on server-side
+	retrieve the cartData by id
+	prefix the id with app_id so I can have more then one cart on a site
+	create a function that builds the html for cartData from a simpler json object - reduces output size
+	then zArrDeferredFunctions.push(function(){
+		var listingCart=new zListingCart();
+
+	});
+	 --->
+	<script type="text/javascript">
+
+	function zListingGetCartObj(){
+		var obj={ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+	}
+	var cart1Data=[];
+	cart1Data[1]={ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+	cart1Data[2]={ id:'2', label:'cart1 Item 2', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 2', removeHTML:'Remove Item 2', viewURL: '##view2'  };
+	cart1Data[3]={ id:'3', label:'cart1 Item 3', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 3', removeHTML:'Remove Item 3', viewURL: '##view3'  };
+	
+	zArrDeferredFunctions.push(function(){
+		(function($, window, document, undefined){
+			"use strict";
+			var count=0;
+			var listingCart=function(options){
+				var self=this;
+				var createCartData=function(){
+					for(var i in options.arrListingCartData){
+						var data=options.arrListingCartData[i];
+						var obj={ id:data'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+				};
+				self.listingCheckout=function(obj){
+					console.log("checkout");
+					console.log(obj);
+					var count=obj.getCount();
+					var items=obj.getItems();
+					var arrId=[];
+					if(count ===0){
+						alert("You must select a listing before you send an inquiry.");
+						return;
+					}
+					for(var i in items){
+						arrId.push(items[i].id);
+					}
+					alert("Soon this will go to a page passing the item ids: "+arrId.join(", "));
+				};
+				self.changeCallback=function(obj){
+					console.log("changeCallback");
+					console.log(obj);
+					var currentCount=obj.getCount();
+					console.log("counts:"+count+":"+currentCount);
+					if(count < currentCount){
+						console.log("Listing added");
+					}else if(count > currentCount){
+						console.log("Listing removed");
+					}
+					count=currentCount;
+					
+				}
+			};
+			//window.listingCart=listingCart;
+			var listingCartInstance=new listingCart({});
+			
+			var initObject={
+				arrData:cart1Data,
+				debug:false,
+				name:"cart1",
+				checkoutCallback:listingCartInstance.listingCheckout,
+				changeCallback:listingCartInstance.changeCallback,
+				emptyCartMessage:"You have no saved listings yet."
+			};
+			var a=new zCart(initObject);
+
+		})(jQuery, window, document, "undefined"); 
+	});
+	</script>
+</cffunction>
 </cfoutput>
 </cfcomponent>

@@ -506,6 +506,72 @@ function zTrackEvent(eventCategory,eventAction, eventLabel, eventValue, gotoToUR
 }
 zArrLoadFunctions.push({functionName:zSetupClickTrackDisplay});
 
+function zUpgradeBrowserMessage(){
+	if(zMSIEBrowser!==-1 && zMSIEVersion<=7){
+		$(".adminBrowserCompatibilityWarning").show();
+	}
+}
+zArrLoadFunctions.push({functionName:zUpgradeBrowserMessage});
+
+function zSetGearMenuPosition(obj){
+
+	var p=zGetAbsPosition(obj);
+	var p2=zGetAbsPosition($("#zGearWindowPreDiv1")[0]);
+	p.y+=Math.round(p.height/2);
+	p.x+=Math.round(p.width/2);
+	if(p.x+p2.width+10 > zWindowSize.width){
+		p.x=zWindowSize.width-p2.width-10;
+	}
+	if(p.y+p2.height+10 > zWindowSize.height){
+		p.y=zWindowSize.height-p2.height-10;
+	}
+	if(p.x<10){
+		p.x=10;
+	}
+	if(p.y<10){
+		p.y=10;
+	}
+	$("#zGearWindowPreDiv1").css({
+		"left":p.x,
+		"top":p.y
+	});
+}
+function zSetupGearMenu(obj){
+	if(zMSIEBrowser!==-1 && zMSIEVersion<=7){
+		$(".zGearButton").html('<img src="/z/a/images/gear.png" alt="Settings" />');
+	}
+	$(".zGearButton").bind("click", function(){
+		var json=this.getAttribute("data-button-json");
+		var currentGearObj=this;
+		if(!$("#zGearWindowPreDiv1").length){
+			$("body").append('<div id="zGearWindowPreDiv1" class="zGearPopupMenu"><div class="zGearPopupInnerMenu"></div></div>');
+			$("body").bind("click", function(){
+				if($("#zGearWindowPreDiv1").css("visibility") == "visible"){
+					$("#zGearWindowPreDiv1").slideToggle(100, function(){ $(this).css("visibility", "hidden");});
+				}
+			});
+			zArrResizeFunctions.push(function(){
+				zSetGearMenuPosition(currentGearObj);
+			});
+		}
+		$("#zGearWindowPreDiv1").css("visibility", "hidden").show();
+		$("#zGearWindowPreDiv1 .zGearPopupInnerMenu").html(json);
+		zSetGearMenuPosition(currentGearObj);
+		var p2=zGetAbsPosition($("#zGearWindowPreDiv1")[0]);
+		$("#zGearWindowPreDiv1 .zGearPopupMenuButton").css({
+			"width":(p2.width-20)+"px"
+		}).last().css("margin-bottom", "0px");
+		$("#zGearWindowPreDiv1").css({
+			"display": "none",
+			"visibility":"visible"
+		}).slideToggle(100);
+		return false;
+	});
+}
+zArrDeferredFunctions.push(function(){
+	zSetupGearMenu();
+});
+
 var zLoadAndCropImagesIndex=0;
 function zLoadAndCropImages(){
 	var debug=false;
