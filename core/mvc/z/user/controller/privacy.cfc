@@ -13,7 +13,7 @@
 	}
 	</cfscript>
 	<cfsavecontent variable="zpagenav">
-	<a href="/">Home</a> / <a href="/z/system/legal/index">Legal Notices</a> /
+	<a href="/">Home</a> / <a href="/z/misc/system/legal">Legal Notices</a> /
 	</cfsavecontent>
 	<cfscript>
 	application.zcore.template.setTag("title","Privacy Policy Statement");
