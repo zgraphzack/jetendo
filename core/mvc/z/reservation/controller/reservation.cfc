@@ -161,8 +161,12 @@ Another idea is to let the user modify / cancel their own reservation as a featu
 			s=dateformat(ss.reservation_type_start_datetime, "m/d/yyyy");
 			e=dateformat(ss.reservation_type_end_datetime, "m/d/yyyy");
 			echo(timeformat(ss.reservation_type_start_datetime, "h:mm tt")&" to "&timeformat(ss.reservation_type_end_datetime, "h:mm tt")&" on "&s);
-			if(s NEQ e){
-				echo(" through "&e);
+			if(ss.reservation_type_forever EQ 1){
+				echo(" until forever");
+			}else{
+				if(s NEQ e){
+					echo(" through "&e);
+				}
 			}
 		}else{
 			s=dateformat(ss.reservation_type_start_datetime, "m/d/yyyy");
@@ -667,7 +671,15 @@ if(not rs.success){
 		reservation_period:"",
 		event_id:"",
 		site_x_option_group_set_id:"",
-		reservation_key:""
+		reservation_key:"",
+		reservation_destination_title:"",
+		reservation_destination_url:"",
+		reservation_destination_address:"",
+		reservation_destination_address2:"",
+		reservation_destination_city:"",
+		reservation_destination_state:"",
+		reservation_destination_zip:"",
+		reservation_destination_country:""
 	};
 	ssDefault={
 		reservation_type_name:"",
@@ -699,7 +711,7 @@ if(not rs.success){
 	ss.struct.reservation_search=application.zcore.functions.zCleanSearchText(ss.struct.reservation_search, true);
 	ss.struct.reservation_created_datetime=request.zos.mysqlnow;
 	
-	ss.struct.reservation_period=typeStruct.reservation_type_period;
+	ss.struct.reservation_period=typeStruct.reservation_type_period; 
 	myForm.reservation_phone.required=true;
 	myForm.reservation_email.required=true;
 	myForm.reservation_email.email=true;
@@ -761,6 +773,7 @@ if(not rs.success){
 <cffunction name="getReservationEmailHTML" localmode="modern" access="public">
 	<cfargument name="reserveStruct" type="struct" required="yes">
 	<cfscript>
+	db=request.zos.queryObject;
 	row=arguments.reserveStruct;
 	</cfscript>
 	<cfsavecontent variable="out">
@@ -773,6 +786,12 @@ if(not rs.success){
 			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Period:</th>
 			<td>#row.reservation_period#</td>
 		</tr>
+		<cfif row.reservationTypeValue NEQ "">
+			<tr>
+				<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zFirstLetterCaps(row.reservation_type_name)#:</th>
+				<td>#row.reservationTypeValue#</td>
+			</tr>
+		</cfif>
 		<tr>
 			<th style="width:1%; text-align:left;width:1%;white-space:nowrap; vertical-align:top;">Reservation:</th>
 			<td>#getReservationDateRange(row)#</td>
@@ -828,50 +847,87 @@ if(not rs.success){
 		<cfif row.reservation_destination_url NEQ "">
 		<tr>
 			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination URL: </th>
-			<td>#row.reservation_destination_url#</td>
+			<td><a href="#row.reservation_destination_url#" target="_blank">#row.reservation_destination_url#</a></td>
 		</tr>
 		</cfif>
 		<cfif row.reservation_destination_address NEQ "">
 		<tr>
 			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Address: </th>
-			<td>#row.reservation_destination_address#</td>
+			<td>#row.reservation_destination_address#<br />
+			<cfif row.reservation_destination_address2 NEQ "">
+				#row.reservation_destination_address2#<br />
+			</cfif>
+			#row.reservation_destination_city#, #row.reservation_destination_state# #row.reservation_destination_zip# #row.reservation_destination_country#
+		</td>
 		</tr>
 		</cfif>
-		<cfif row.reservation_destination_address2 NEQ "">
-		<tr>
-			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Address 2: </th>
-			<td>#row.reservation_destination_address2#</td>
-		</tr>
+		<cfif row.reservation_destination_address NEQ "">
+			<tr>
+				<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">&nbsp;</th>
+				<td><a href="https://maps.google.com/maps?q=#urlencodedformat(row.mapSearchAddress)#" target="_blank">Get Directions On Google Maps</a> </td>
+			</tr>
 		</cfif>
-		<cfif row.reservation_destination_city NEQ "">
-		<tr>
-			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination City: </th>
-			<td>#row.reservation_destination_city#</td>
-		</tr>
-		</cfif>
-		<cfif row.reservation_destination_state NEQ "">
-		<tr>
-			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Address: </th>
-			<td>#row.reservation_destination_state#</td>
-		</tr>
-		</cfif>
-		<cfif row.reservation_destination_zip NEQ "">
-		<tr>
-			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Zip: </th>
-			<td>#row.reservation_destination_zip#</td>
-		</tr>
-		</cfif>
-		<cfif row.reservation_destination_country NEQ "">
-		<tr>
-			<th style="width:1%; text-align:left;white-space:nowrap; vertical-align:top;">Destination Country: </th>
-			<td>#row.reservation_destination_country#</td>
-		</tr>
-		</cfif>
+	
 	</table>
-
-	<p><a href="#request.zos.globals.domain#/z/reservation/reservation/cancel?id=#row.reservation_id#&amp;key=#row.reservation_key#">Cancel Reservation</a></p>
+	<cfif row.reservation_status NEQ 2>
+	
+		<p><a href="#request.zos.globals.domain#/z/reservation/reservation/cancel?id=#row.reservation_id#&amp;key=#row.reservation_key#">Cancel Reservation</a></p>
+	</cfif>
 	</cfsavecontent>
 	<cfreturn trim(out)>
+</cffunction>
+
+<cffunction name="getReservationEmailText" localmode="modern" access="public">
+	<cfargument name="reserveStruct" type="struct" required="yes">
+	<cfscript>
+	row=arguments.reserveStruct;
+	savecontent variable="out"{
+		echo('Status: #getStatusName(row.reservation_status)#'&chr(10));
+		echo('Period:#row.reservation_period#'&chr(10));
+		if(row.reservationTypeValue NEQ ""){ 
+			echo('#application.zcore.functions.zFirstLetterCaps(row.reservation_type_name)#: #row.reservationTypeValue#'&chr(10));
+		}
+		echo('Reservation Date: #getReservationDateRange(row)#'&chr(10));
+		echo('First Name: #row.reservation_first_name#'&chr(10));
+		echo('Last Name: #row.reservation_last_name#'&chr(10));
+		echo('Email: #row.reservation_email#'&chr(10));
+		echo('Phone: #row.reservation_phone#'&chr(10));
+		if(row.reservation_company NEQ ""){
+			echo('Company: #row.reservation_company#'&chr(10));
+		}
+		if(row.reservation_comments NEQ ""){
+			echo('Comments: #row.reservation_comments#'&chr(10));
+		}
+		customStruct=deserializeJson(row.reservation_custom_json);
+		if(structcount(customStruct)){
+			for(fieldName in customStruct){
+				value=customStruct[fieldName];
+				echo(application.zcore.functions.zFirstLetterCaps(fieldName)&': '&value&chr(10)); 
+			}
+		}
+		if(row.reservation_destination_title NEQ ""){
+			echo('Destination Title: #row.reservation_destination_title#'&chr(10));
+		}
+		if(row.reservation_destination_url NEQ ""){
+			echo('Destination URL: #row.reservation_destination_url#'&chr(10));
+		}
+		if(row.reservation_destination_address NEQ ""){
+			echo('Destination Address: #row.reservation_destination_address##chr(10)#');
+			if(row.reservation_destination_address2 NEQ ""){
+				echo('#row.reservation_destination_address2##chr(10)#');
+			}
+			echo('#row.reservation_destination_city#, #row.reservation_destination_state# #row.reservation_destination_zip# #row.reservation_destination_country#'&chr(10)&chr(10));
+			echo('Get Directions on Google Maps'&chr(10)&'https://maps.google.com/maps?q=#urlencodedformat(row.mapSearchAddress)#'&chr(10));
+		}
+		if(row.reservation_status NEQ 2){
+			echo('#chr(10)#');
+			echo('Cancel Reservation:#chr(10)#');
+			echo('#request.zos.globals.domain#/z/reservation/reservation/cancel?id=#row.reservation_id#&key=#row.reservation_key#');
+		}
+	}
+	return trim(out);
+	</cfscript>
+	
 </cffunction>
 
 <cffunction name="cancel" localmode="modern" access="remote">
@@ -944,40 +1000,6 @@ if(not rs.success){
 	<p>You may close this window or continue browsing our web site.</p>
 </cffunction>
 
-<cffunction name="getReservationEmailText" localmode="modern" access="public">
-	<cfargument name="reserveStruct" type="struct" required="yes">
-	<cfscript>
-	row=arguments.reserveStruct;
-	</cfscript>
-<cfsavecontent variable="out">
-Status: #getStatusName(row.reservation_status)#Period:#row.reservation_period#
-Reservation Date: #getReservationDateRange(row)#
-First Name: #row.reservation_first_name#
-Last Name: #row.reservation_last_name#
-Email: #row.reservation_email#
-Phone: #row.reservation_phone#
-<cfif row.reservation_company NEQ "">Company: #row.reservation_company#</cfif>
-<cfif row.reservation_comments NEQ "">Comments: #row.reservation_comments#</cfif>
-<cfscript>customStruct=deserializeJson(row.reservation_custom_json);</cfscript>
-<cfif structcount(customStruct)><cfscript>index=1;
-for(fieldName in customStruct){
-	value=customStruct[fieldName];
-	echo(application.zcore.functions.zFirstLetterCaps(fieldName)&': '&value&chr(10)); 
-}</cfscript></cfif>
-<cfif row.reservation_destination_title NEQ "">Destination Title: #row.reservation_destination_title#</cfif>
-<cfif row.reservation_destination_url NEQ "">Destination URL: #row.reservation_destination_url#</cfif>
-<cfif row.reservation_destination_address NEQ "">Destination Address: #row.reservation_destination_address#</cfif>
-<cfif row.reservation_destination_address2 NEQ "">Destination Address 2: #row.reservation_destination_address2#</cfif>
-<cfif row.reservation_destination_city NEQ "">Destination City: #row.reservation_destination_city#</cfif>
-<cfif row.reservation_destination_state NEQ "">Destination Address: #row.reservation_destination_state#</cfif>
-<cfif row.reservation_destination_zip NEQ "">Destination Zip: #row.reservation_destination_zip#</cfif>
-<cfif row.reservation_destination_country NEQ "">Destination Country: #row.reservation_destination_country#</cfif>
-#chr(10)#
-Cancel Reservation:#chr(10)#
-#request.zos.globals.domain#/z/reservation/reservation/cancel?id=#row.reservation_id#&key=#row.reservation_key#
-</cfsavecontent>
-<cfreturn trim(out)>
-</cffunction>
 
 
 <cffunction name="getEmailAddressesFromList" localmode="modern" access="public" returntype="array">
@@ -1017,14 +1039,16 @@ Cancel Reservation:#chr(10)#
 
 	os=application.zcore.app.getAppData("reservation").optionStruct;
 
-	db.sql="select * from #db.table("reservation", request.zos.zcoreDatasource)# reservation 
+	db.sql="select * from #db.table("reservation", request.zos.zcoreDatasource)# reservation, 
+	#db.table("reservation_type", request.zos.zcoreDatasource)# reservation_type
 	WHERE  
+	reservation_type.site_id = reservation.site_id and 
+	reservation.reservation_type_id = reservation_type.reservation_type_id and  
+	reservation_type.reservation_type_deleted=#db.param(0)# and 
 	reservation.site_id = #db.param(request.zos.globals.id)# and 
-	reservation.reservation_id = #db.param(arguments.reservation_id)# and 
-	reservation.reservation_status = #db.param(1)# and 
+	reservation.reservation_id = #db.param(arguments.reservation_id)# and  
 	reservation.reservation_deleted=#db.param(0)# ";
-	qReservation=db.execute("qReservation");
-
+	qReservation=db.execute("qReservation"); 
 	for(row in qReservation){
 		arrOut=[];
 		arrPlainOut=[];
@@ -1035,16 +1059,16 @@ Cancel Reservation:#chr(10)#
 			}
 			arrEmail=getEmailAddressesFromList(os.reservation_config_confirmation_email_list, row.reservation_email);
 			ts.subject=os.reservation_config_email_creation_subject;
-			arrayAppend(arrOut, '<p>'&os.reservation_config_email_creation_header&'</p>');
-			arrayAppend(arrPlainOut, os.reservation_config_email_creation_header);
+			arrayAppend(arrOut, os.reservation_config_email_creation_header);
+			arrayAppend(arrPlainOut, application.zcore.functions.zStripHTMLTags(os.reservation_config_email_creation_header));
 		}else if(arguments.type EQ "updated"){
 			if(os.reservation_config_change_email_list EQ ""){
 				return;
 			}
 			arrEmail=getEmailAddressesFromList(os.reservation_config_change_email_list, row.reservation_email);
 			ts.subject=os.reservation_config_email_change_subject;
-			arrayAppend(arrOut, '<p>'&os.reservation_config_email_change_header&'</p>');
-			arrayAppend(arrPlainOut, os.reservation_config_email_change_header);
+			arrayAppend(arrOut, os.reservation_config_email_change_header);
+			arrayAppend(arrPlainOut, application.zcore.functions.zStripHTMLTags(os.reservation_config_email_change_header));
 		}else if(arguments.type EQ "cancelled"){
 			if(os.reservation_config_change_email_list EQ ""){
 				return;
@@ -1052,18 +1076,53 @@ Cancel Reservation:#chr(10)#
 			arrEmail=getEmailAddressesFromList(os.reservation_config_change_email_list, row.reservation_email);
 			row.reservation_status = '2';
 			ts.subject=os.reservation_config_email_cancelled_subject;
-			arrayAppend(arrOut, '<p>'&os.reservation_config_email_cancelled_header&'</p>');
-			arrayAppend(arrPlainOut, os.reservation_config_email_cancelled_header);
+			arrayAppend(arrOut, os.reservation_config_email_cancelled_header);
+			arrayAppend(arrPlainOut, application.zcore.functions.zStripHTMLTags(os.reservation_config_email_cancelled_header));
 		}else if(arguments.type EQ "reminder"){
-			if(os.reservation_config_change_email_list EQ "" or os.reservation_reminder_email_sent_x_days EQ ""){
+			if(os.reservation_config_change_email_list EQ ""){
 				return;
 			}
 			arrEmail=[row.reservation_email];
 			ts.subject=os.reservation_config_email_reminder_subject;
-			arrayAppend(arrOut, '<p>'&os.reservation_config_email_reminder_header&'</p>');
-			arrayAppend(arrPlainOut, os.reservation_config_email_reminder_header);
+			arrayAppend(arrOut, os.reservation_config_email_reminder_header);
+			arrayAppend(arrPlainOut, application.zcore.functions.zStripHTMLTags(os.reservation_config_email_reminder_header));
 		}else{
 			throw("Type, ""#arguments.type#"", must be new, updated or cancelled");
+		}
+
+		row.reservationTypeValue="";
+		if(application.zcore.app.siteHasApp("event") and row.event_id NEQ 0){
+			db.sql="select event_id, event_summary from 
+			#db.table("event", request.zos.zcoreDatasource)# event
+			WHERE
+			event.site_id = #db.param(request.zos.globals.id)# and 
+			event.event_deleted=#db.param(0)# and 
+			event.event_id = #db.param(row.event_id)# 
+			ORDER BY event_summary ASC ";
+			qEvent=db.execute("qEvent");
+			for(row2 in qEvent){
+				row.reservationTypeValue=row2.event_summary;
+			}
+		}
+		if(row.site_x_option_group_set_id NEQ 0){
+			db.sql="select site_x_option_group_set_title, site_x_option_group_set.site_x_option_group_set_id from  
+			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set 
+			WHERE site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and   
+			site_x_option_group_set_deleted=#db.param(0)# and  
+			site_x_option_group_set.site_x_option_group_set_id=#db.param(row.site_x_option_group_set_id)# ";
+			qSet=db.execute("qSet"); 
+			for(row2 in qSet){
+				row.reservationTypeValue=row2.site_x_option_group_set_title;
+			}
+		}
+		row.mapSearchAddress="";
+		if(row.reservation_destination_address NEQ ""){
+			arrAddress=[row.reservation_destination_address];
+			if(row.reservation_destination_address2 NEQ ""){
+				arrayAppend(arrAddress, row.reservation_destination_address2);
+			}
+			arrayAppend(arrAddress, row.reservation_destination_city&", "&row.reservation_destination_state&" "&row.reservation_destination_zip&" "&row.reservation_destination_country);
+			row.mapSearchAddress=arrayToList(arrAddress, ", ");
 		}
 		arrayAppend(arrOut, getReservationEmailHTML(row));
 		arrayAppend(arrPlainOut, getReservationEmailText(row));

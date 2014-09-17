@@ -112,6 +112,14 @@
 	<cfscript>	
 	defaultStartDate=parsedatetime(dateformat(now(), "yyyy-mm-dd"));
 	defaultEndDate=dateadd("m", 1, now());
+	form.clearSearch=application.zcore.functions.zso(form, 'clearSearch', false, 0);
+	if(form.clearSearch EQ 1){
+		defaultStartDate="";
+		defaultEndDate="";
+		form.startDate="";
+		form.endDate="";
+		form.keyword="";
+	}
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	form.startDate=application.zcore.functions.zso(form, 'startDate', false, defaultStartDate);
 	form.endDate=application.zcore.functions.zso(form, 'endDate', false, defaultEndDate);
@@ -121,15 +129,26 @@
 	if(not isdate(form.endDate)){
 		form.endDate=defaultEndDate;
 	}
-	form.startDate=application.zcore.functions.zGetDateTimeSelect("startDate", "yyyy-mm-dd", "HH:mm:ss");
-	form.endDate=application.zcore.functions.zGetDateTimeSelect("endDate", "yyyy-mm-dd", "HH:mm:ss");
+	if(form.startDate NEQ ""){
+		form.startDate=application.zcore.functions.zGetDateTimeSelect("startDate", "yyyy-mm-dd", "HH:mm:ss");
+	}
+	if(form.endDate NEQ ""){
+		form.endDate=application.zcore.functions.zGetDateTimeSelect("endDate", "yyyy-mm-dd", "HH:mm:ss");
+	}
 	form.keyword=application.zcore.functions.zso(form, 'keyword');
 	db.sql=" SELECT count(reservation_type_id) count FROM 
 	#request.zos.queryObject.table("reservation_type", request.zos.zcoreDatasource)# reservation_type   
 	WHERE reservation_type.site_id = #db.param(request.zOS.globals.id)# and 
-	reservation_type.reservation_type_deleted = #db.param(0)# and 
-	reservation_type_end_datetime >= #db.param(form.startDate)# and
-	reservation_type_start_datetime <= #db.param(form.endDate)# ";
+	reservation_type.reservation_type_deleted = #db.param(0)#  ";
+	qCountAll=db.execute("qCountAll");
+	db.sql=" SELECT count(reservation_type_id) count FROM 
+	#request.zos.queryObject.table("reservation_type", request.zos.zcoreDatasource)# reservation_type   
+	WHERE reservation_type.site_id = #db.param(request.zOS.globals.id)# and 
+	reservation_type.reservation_type_deleted = #db.param(0)#  ";
+	if(form.clearSearch EQ 0){
+		db.sql&=" and reservation_type_end_datetime >= #db.param(form.startDate)# and
+		reservation_type_start_datetime <= #db.param(form.endDate)# ";
+	}
 	if(form.keyword NEQ ""){
 		db.sql&=" and reservation_type_name like #db.param('%#form.keyword#')# ";
 	}
@@ -137,15 +156,19 @@
 	db.sql=" SELECT * FROM 
 	#request.zos.queryObject.table("reservation_type", request.zos.zcoreDatasource)# reservation_type   
 	WHERE reservation_type.site_id = #db.param(request.zOS.globals.id)# and 
-	reservation_type.reservation_type_deleted = #db.param(0)# and 
-	reservation_type_end_datetime >= #db.param(form.startDate)# and
-	reservation_type_start_datetime <= #db.param(form.endDate)#  ";
+	reservation_type.reservation_type_deleted = #db.param(0)# ";
+
+	if(form.clearSearch EQ 0){
+		db.sql&=" and reservation_type_end_datetime >= #db.param(form.startDate)# and
+		reservation_type_start_datetime <= #db.param(form.endDate)# ";
+	}
 	if(form.keyword NEQ ""){
 		db.sql&=" and reservation_type_name like #db.param('%#form.keyword#%')# ";
 	}
 	db.sql&=" order by reservation_type.reservation_type_start_datetime ASC
 	LIMIT #db.param((form.zIndex-1)*30)#, #db.param(30)#";
 	qProp=db.execute("qProp");
+	echo('<p>Showing #qCount.count# of #qCountAll.count# reservation types. To show all records, click <a href="/z/reservation/admin/reservation-type/index?clearSearch=1">Show All</a></p>');
 	</cfscript>
 	<form action="/z/reservation/admin/reservation-type/index" method="get">
 		<table class="table-list" style="border-spacing:0px; width:100%;">
@@ -289,7 +312,8 @@
 	if(form.method EQ "update"){
 		db.sql=" SELECT * FROM #request.zos.queryObject.table("reservation_type", request.zos.zcoreDatasource)# reservation_type 
 		WHERE reservation_type_id = #db.param(form.reservation_type_id)# and 
-		site_id = #db.param(request.zOS.globals.id)# ";
+		site_id = #db.param(request.zOS.globals.id)#  and 
+		reservation_type_deleted = #db.param(0)# ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid, "Reservation Type is missing");
@@ -298,6 +322,9 @@
 	}
 	form.reservation_type_start_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_type_start_datetime", "yyyy-mm-dd", "HH:mm:ss");
 	form.reservation_type_end_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_type_end_datetime", "yyyy-mm-dd", "HH:mm:ss");
+	if(trim(form.reservation_type_end_datetime) EQ ""){
+		form.reservation_type_end_datetime=form.reservation_type_start_datetime;
+	}
 	myForm.reservation_type_period.required=true;
 	myForm.reservation_type_name.required=true;
 	myForm.reservation_type_start_datetime.required=true;
@@ -357,7 +384,8 @@
 	form.reservation_type_id=application.zcore.functions.zso(form, 'reservation_type_id',true);
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("reservation_type", request.zos.zcoreDatasource)# reservation_type 
 	WHERE reservation_type_id = #db.param(form.reservation_type_id)# and 
-	site_id = #db.param(request.zOS.globals.id)# ";
+	site_id = #db.param(request.zOS.globals.id)# and 
+	reservation_type_deleted = #db.param(0)# ";
 	qData=db.execute("qData");
 	application.zcore.functions.zQueryToStruct(qData,form,'reservation_type_id,site_id'); 
 	application.zcore.functions.zStatusHandler(request.zsid, true,true);

@@ -18,6 +18,8 @@
 		
 		// force defaults
 		options.arrData=zso(options, 'arrData', false, []);
+		options.viewCartCallback=zso(options, 'viewCartCallback', false, function(jsonCartData){});
+		options.viewCartURL=zso(options, 'viewCartURL', false, '');
 		options.debug=zso(options, 'debug', false, false);
 		options.name=zso(options, 'name', false, '');
 		options.label=zso(options, 'label', false, 'cart');
@@ -96,8 +98,29 @@
 			self.updateCount(); 
 			cartLoaded=true;
 		};
-		self.view=function(){
+		self.viewCallback=function(jsonCartData){
+			options.viewCartCallback(jsonCartData);
 			$cartDiv.slideToggle("fast");
+		}
+		self.view=function(){
+
+			if(options.viewCartURL != ""){
+				console.log("loading options.viewCartURL:"+options.viewCartURL);
+				// maybe show a loading screen here
+				var tempObj={};
+				tempObj.id="zCartView";
+				tempObj.url=options.viewCartURL;
+				tempObj.callback=self.viewCallback;
+				tempObj.errorCallback=function(d){
+					alert("There was a problem loading the cart. Please try again later.");
+				};
+				tempObj.cache=false; 
+				tempObj.ignoreOldRequests=true;
+				zAjax(tempObj);
+
+			}else{
+				$cartDiv.slideToggle("fast");
+			}
 		};
 		self.renderCount=function(){ 
 			if(typeof options.countRenderCallback === "function"){

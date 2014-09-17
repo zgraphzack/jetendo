@@ -401,7 +401,7 @@ this.rateInfoTemplate();
 <a id="zrental-photos"></a>
 <div class="zrental-box">
 <h2 class="zrental-subtitle">Photos</h2>
-<div class="zrental-box-inner">
+<div id="zRentalThumbnailLightGallery" class="zrental-box-inner">
 
 <cfscript>
 
@@ -413,18 +413,34 @@ for(i=1;i LTE arraylen(arrPhoto);i=i+1){
 	writeoutput('<img src="/images/rental/#arrPhoto[i].name#" width="200" style="float:left; padding:10px; padding-left:0px; padding-bottom:0px; cursor:pointer" onclick="var winId=window.open(''#link#'',''null'',''height=360,width=475,status=yes,toolbar=no,menubar=no,location=no'');if (window.focus) {winId.focus()}">');
 }
 */
+ts=structnew(); 
+ts.output=false;
+ts.image_library_id=rental_image_library_id;
+ts.size="960x960";
+ts.crop=0;
+ts.offset=0;
+arrImages2=application.zcore.imageLibraryCom.displayImages(ts);
 
-for(i=2;i LTE arraylen(arrImages);i=i+1){
+application.zcore.skin.includeJS("/z/javascript/jquery/lightbox/jquery.lightbox-0.5.min.js");
+application.zcore.skin.includeCSS("/z/javascript/jquery/lightbox/css/jquery.lightbox-0.5.css");
+
+for(i=1;i LTE arraylen(arrImages);i=i+1){
 	// temporarily disabled the popup images.
 	link=application.zcore.app.getAppCFC("rental").getPhotoLink(rental_id, arrImages[i].caption&" | "&rental_name, rental_url, arrImages[i].id);
-	writeoutput('<img src="#arrImages[i].link#" alt="#htmleditformat(arrImages[i].caption)#" width="#arrThumbSize[1]#" height="#arrThumbSize[2]#" style="float:left; padding:10px; padding-left:0px; padding-bottom:0px; ');
-	if((i-1) MOD 3 EQ 0){
+	writeoutput('<a href="#arrImages2[i].link#" class="zNoContentTransition"><img src="#arrImages[i].link#" alt="#htmleditformat(arrImages[i].caption)#" width="#arrThumbSize[1]#" height="#arrThumbSize[2]#" style="float:left; padding:10px; padding-left:0px; padding-bottom:0px; ');
+	if((i) MOD 3 EQ 0){
 		writeoutput(' padding-right:0px;');	
 	}
-	writeoutput(' cursor:pointer" onclick="var winId=window.open(''#link#'',''null'',''height=360,width=475,status=yes,toolbar=no,menubar=no,location=no'');if (window.focus) {winId.focus()}" />');
+	echo('" /></a>');
+	//writeoutput(' cursor:pointer" onclick="var winId=window.open(''#link#'',''null'',''height=360,width=475,status=yes,toolbar=no,menubar=no,location=no'');if (window.focus) {winId.focus()}" />');
 }
 
 </cfscript>
+<script type="text/javascript">
+/* <![CDATA[ */ zArrDeferredFunctions.push(function(){
+$('##zRentalThumbnailLightGallery a').lightBox();
+}); /* ]]> */
+</script>
 <br style="clear:both;" />
 </div>
 </div>  

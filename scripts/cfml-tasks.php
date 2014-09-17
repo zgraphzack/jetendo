@@ -72,6 +72,14 @@ function getTasks(){
 	$t->url=$adminDomain."/z/server-manager/tasks/resend-autoresponders/index";
 	array_push($arrTask, $t);
 
+
+	$t=new stdClass();
+	$t->logName="reservation-email-alert.html";
+	$t->interval=7200;
+	$t->startTimeOffsetSeconds=720;
+	$t->url=$adminDomain."/z/reservation/tasks/reservation-email-alert/findReservationNeedingReminder";
+	array_push($arrTask, $t);
+
 	$t=new stdClass();
 	$t->logName="clear-old-skin-cache.html";
 	$t->interval="daily";

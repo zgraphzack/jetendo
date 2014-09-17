@@ -225,6 +225,8 @@
 	for(row in qType){
 		request.typeStruct[row.reservation_type_id]=row;
 	}
+
+
 	</cfscript>
 	<form action="#request.zos.originalURL#" method="get">
 		<table class="table-list" style="border-spacing:0px; width:100%;">
@@ -453,15 +455,16 @@
 		application.zcore.functions.zRedirect("/z/reservation/admin/reservation-admin/index?reservation_id="&form.reservation_id&"&zsid="&request.zsid); 
         </cfscript>
 	<cfelse>
-		<h2> Are you sure you want to delete this Reservation?<br />
+		<h2> Are you sure you want to delete this Reservation?</h2>
+		<p>WARNING: Delete is not the same as cancelling the reservation because the data will be permanently removed and the user will not be emailed.  If you meant to cancel the reservation, go back and edit the reservation and then change the "Status" field to "Cancelled" and save the change.<br />
 			<br />
 			Reservation: 
 			<cfscript>
 			for(row in qCheck){
 				echo(application.zcore.app.getAppCFC("reservation").getReservationDateRange(row));
 			}
-			</cfscript> for #qcheck.reservation_first_name# #qcheck.reservation_last_name# (#qcheck.reservation_email#)<br />
-			<br />
+			</cfscript> for #qcheck.reservation_first_name# #qcheck.reservation_last_name# (#qcheck.reservation_email#)</p>
+			<h2>
 			<a href="/z/reservation/admin/reservation-admin/delete?confirm=1&amp;reservation_id=#form.reservation_id#">Yes</a>&nbsp;&nbsp;&nbsp;
 			<a href="/z/reservation/admin/reservation-admin/index">No</a> </h2>
 	</cfif>
@@ -583,6 +586,43 @@
 	qData=db.execute("qData");
 	application.zcore.functions.zQueryToStruct(qData,form,'reservation_id,site_id'); 
 	application.zcore.functions.zStatusHandler(request.zsid, true,true);
+
+
+
+	if(application.zcore.app.siteHasApp("event")){
+		db.sql="select reservation.event_id, event_summary from 
+		(#db.table("reservation", request.zos.zcoreDatasource)# reservation, 
+		#db.table("event", request.zos.zcoreDatasource)# event)
+		WHERE reservation.site_id = #db.param(request.zos.globals.id)# and 
+		event.site_id = reservation.site_id and 
+		event.event_deleted=#db.param(0)# and 
+		reservation.event_id = event.event_id and 
+		reservation_deleted=#db.param(0)# ";
+		if(form.reservation_type_id NEQ ""){
+			db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+		}
+		db.sql&=" GROUP BY reservation.event_id
+		ORDER BY event_summary ASC ";
+		qEvent=db.execute("qEvent"); 
+	}
+	db.sql="select site_x_option_group_set_title, site_x_option_group_set.site_x_option_group_set_id, site_option_group_name from 
+	(#db.table("reservation", request.zos.zcoreDatasource)# reservation, 
+	#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set, 
+	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group)
+	WHERE reservation.site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group.site_id = reservation.site_id and 
+	site_option_group.site_option_group_deleted=#db.param(0)# and 
+	site_option_group.site_option_group_id = site_x_option_group_set.site_option_group_id and 
+	reservation_deleted=#db.param(0)# and 
+	reservation.site_id = site_x_option_group_set.site_id and 
+	site_x_option_group_set_deleted=#db.param(0)# and 
+	reservation.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id ";
+	if(form.reservation_type_id NEQ ""){
+		db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
+	}
+	db.sql&=" GROUP BY reservation.site_x_option_group_set_id
+	ORDER BY site_x_option_group_set_title ASC ";
+	qSet=db.execute("qSet"); 
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "edit">
@@ -654,6 +694,36 @@
 					selectStruct.listValues = "hourly";//"event,hourly,nightly,weekly,monthly";
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
+			</tr>
+
+
+			<cfif application.zcore.app.siteHasApp("event")>
+				
+				<tr>
+					<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.reservation.edit event_id")#</th>
+					<td><br /><cfscript>
+						selectStruct = StructNew();
+						selectStruct.name = "event_id";
+						selectStruct.size=1;
+						selectStruct.query=qEvent;
+						selectStruct.queryLabelField="event_summary";
+						selectStruct.queryValueField="event_id";
+						application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
+				</tr>
+			</cfif>
+			<tr>
+				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Custom Record","member.reservation.edit site_x_option_group_set_id")#</th>
+				<td><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "site_x_option_group_set_id";
+					selectStruct.size=1;
+					selectStruct.query=qSet;
+					selectStruct.queryLabelField="##site_x_option_group_set_title## (##site_option_group_name##)";
+					selectStruct.queryParseLabelVars=true;
+					selectStruct.queryValueField="site_x_option_group_set_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
 			</tr>
 			<tr>
 				<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Start Date","member.reservation.edit reservation_start_datetime")#</th>

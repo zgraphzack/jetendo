@@ -400,6 +400,38 @@ application.zcore.functions.zHeader("Content-type","text/javascript");
 </cffunction>
 
 
+<cffunction name="ajaxGetCartData" access="remote" localmode="modern">
+	<cfscript>
+	rs={};
+	rs.arrCartData=[];
+
+
+	/*propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	// get select properties based on mls_id and listing_id
+	ts.arrMLSPid=structkeyarray(request.zsession.listing.savedListingStruct);
+	//ts.debug=true;
+	ts.perpage=200;
+	ts.showInactive=true;
+	returnStruct = propertyDataCom.getProperties(ts);
+	propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	ts = StructNew();
+	ts.baseCity = 'db';
+	ts.datastruct = returnStruct;
+	ts.searchScript=false;
+	ts.compact=true;
+	propDisplayCom.init(ts);
+	//zdump(ts.datastruct);
+
+	// inputStruct should contain all search parameters. (on daytona beach page, this would only be city_name and state_abbr)
+	propertyHTML = propDisplayCom.displayTop();	
+	*/
+	rs.form=form;
+	/*
+	rs.arrCartData
+		var obj={ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };*/
+	application.zcore.functions.zReturnJson(rs);
+	</cfscript>
+</cffunction>
 <!--- 
 TODO: associate saved listings with a user_id if use is logged in.
 
@@ -443,13 +475,13 @@ when page loads again, view cart will not continue to be expanded, so don't need
 	<div style="padding:10px;">
 		<h2>Saved Listing Javascript Cart Demo</h2>
 		<div class="zcart-navigation">
-			<a href="##" class="zcart-navigation-button zcart-view cart1" data-zcart-hideHTML="Hide Saved Listings" data-zcart-viewHTML="View Saved Listings">View Saved Listings</a> 
-			<a href="##" class="zcart-navigation-button zcart-refresh cart1">Refresh</a>
-			<div class="zcart-navigation-button zcart-count-container cart1"><span class="zcart-count cart1">0</span> Saved Listings</div> 
-			<a href="##" class="zcart-navigation-button zcart-checkout cart1">Inquire About Listings</a>
-			<a href="##" class="zcart-navigation-button zcart-clear cart1">Remove All</a>
+			<a href="##" class="zcart-navigation-button zcart-view listingcart1" data-zcart-hideHTML="Hide Saved Listings" data-zcart-viewHTML="View Saved Listings">View Saved Listings</a> 
+			<a href="##" class="zcart-navigation-button zcart-refresh listingcart1">Refresh</a>
+			<div class="zcart-navigation-button zcart-count-container listingcart1"><span class="zcart-count listingcart1">0</span> Saved Listings</div> 
+			<a href="##" class="zcart-navigation-button zcart-checkout listingcart1">Inquire About Listings</a>
+			<a href="##" class="zcart-navigation-button zcart-clear listingcart1">Remove All</a>
 		</div>
-		<div class="zcart cart1" style="display:none;">
+		<div class="zcart listingcart1" style="display:none;">
 		
 		</div>
 		<div class="zcart-templates" style="display:none;">
@@ -462,9 +494,9 @@ when page loads again, view cart will not continue to be expanded, so don't need
 			</div>
 		</div>
 		<div class="demo-navlinks">
-			<a href="##" class="zcart-navigation-button zcart-add cart1" data-zcart-json="{ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' }">Add Item 1</a>
-			<a href="##" class="zcart-navigation-button zcart-add cart1"data-zcart-json="{ id:'2', label:'cart1 Item 2', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 2', removeHTML:'Remove Item 2', viewURL: '##view2'  }">Add Item 2</a>
-			<a href="##" class="zcart-navigation-button zcart-add cart1"data-zcart-json="{ id:'3', label:'cart1 Item 3', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 3', removeHTML:'Remove Item 3', viewURL: '##view3'  }">Add Item 3</a>
+			<a href="##" class="zcart-navigation-button zcart-add listingcart1" data-zcart-json="{ id:'1', label:'listingcart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' }">Add Item 1</a>
+			<a href="##" class="zcart-navigation-button zcart-add listingcart1"data-zcart-json="{ id:'2', label:'listingcart1 Item 2', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 2', removeHTML:'Remove Item 2', viewURL: '##view2'  }">Add Item 2</a>
+			<a href="##" class="zcart-navigation-button zcart-add listingcart1"data-zcart-json="{ id:'3', label:'listingcart1 Item 3', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 3', removeHTML:'Remove Item 3', viewURL: '##view3'  }">Add Item 3</a>
 		</div> 
 	</div>
 	<cfscript>
@@ -485,13 +517,14 @@ when page loads again, view cart will not continue to be expanded, so don't need
 	<script type="text/javascript">
 
 	function zListingGetCartObj(){
-		var obj={ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+		var obj={ id:'1', label:'listingcart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
 	}
-	var cart1Data=[];
-	cart1Data[1]={ id:'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
-	cart1Data[2]={ id:'2', label:'cart1 Item 2', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 2', removeHTML:'Remove Item 2', viewURL: '##view2'  };
-	cart1Data[3]={ id:'3', label:'cart1 Item 3', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 3', removeHTML:'Remove Item 3', viewURL: '##view3'  };
+	var listingcart1Data=[];
 	
+	listingcart1Data[1]={ id:'1', label:'listingcart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+	listingcart1Data[2]={ id:'2', label:'listingcart1 Item 2', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 2', removeHTML:'Remove Item 2', viewURL: '##view2'  };
+	listingcart1Data[3]={ id:'3', label:'listingcart1 Item 3', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 3', removeHTML:'Remove Item 3', viewURL: '##view3'  };
+	/**/
 	zArrDeferredFunctions.push(function(){
 		(function($, window, document, undefined){
 			"use strict";
@@ -501,7 +534,8 @@ when page loads again, view cart will not continue to be expanded, so don't need
 				var createCartData=function(){
 					for(var i in options.arrListingCartData){
 						var data=options.arrListingCartData[i];
-						var obj={ id:data'1', label:'cart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+						var obj={ id:'1', label:'listingcart1 Item 1', image: '/z/a/images/s2.gif', description: 'description', addHTML: 'Add Item 1', removeHTML:'Remove Item 1', viewURL: '##view1' };
+					}
 				};
 				self.listingCheckout=function(obj){
 					console.log("checkout");
@@ -531,16 +565,25 @@ when page loads again, view cart will not continue to be expanded, so don't need
 					count=currentCount;
 					
 				}
+				self.viewCartCallback=function(d){
+					var rs=eval("("+d+")");
+					console.log(rs);
+					var cartData=[];
+
+					return cartData;
+				}
 			};
 			//window.listingCart=listingCart;
 			var listingCartInstance=new listingCart({});
 			
 			var initObject={
-				arrData:cart1Data,
+				arrData:listingcart1Data,
 				debug:false,
-				name:"cart1",
+				name:"listingcart1",
 				checkoutCallback:listingCartInstance.listingCheckout,
 				changeCallback:listingCartInstance.changeCallback,
+				viewCartURL:"/z/listing/sl/ajaxGetCartData",
+				viewCartCallback:listingCartInstance.viewCartCallback,
 				emptyCartMessage:"You have no saved listings yet."
 			};
 			var a=new zCart(initObject);
