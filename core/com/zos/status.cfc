@@ -260,6 +260,22 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		return arrTemp;
 		</cfscript> 
 	</cffunction>
+
+	<!--- getErrorFields(id); --->
+	<cffunction name="getErrorFields" localmode="modern" access="public" returntype="any" output="true">
+		<cfargument name="id" type="string" required="yes">
+		<cfscript>
+		var i = "";
+		var arrTemp = ArrayNew(1); 
+		if(not structkeyexists(variables, 'initRun') or not structkeyexists(request.zsession, variables.sessionKey)) variables.initSession();
+		if(structkeyexists(request.zsession[variables.sessionKey],arguments.id)){
+			for(i in request.zsession[variables.sessionKey][arguments.id].errorFieldStruct){
+				ArrayAppend(arrTemp, i);
+			}		
+		}
+		return arrTemp;
+		</cfscript> 
+	</cffunction>
 	
 	<!--- getErrorStyle(id, fieldName, errorClass, regularClass); --->
 	<cffunction name="getErrorStyle" localmode="modern" access="public" returntype="any" output="false">

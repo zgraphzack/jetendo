@@ -12,7 +12,8 @@
 	rs=local.soCom.publicAjaxInsertGroup();
     if(not rs.success){
     	arrError=application.zcore.status.getErrors(rs.zsid);
-    	rs.errorMessage=arrayToList(arrError, "\n");
+    	rs.errorMessage=arrayToList(arrError, chr(10));
+    	rs.arrErrorField=application.zcore.status.getErrorFields(rs.zsid);
     }
 	application.zcore.functions.zReturnJson(rs);
 	</cfscript>

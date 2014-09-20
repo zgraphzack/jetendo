@@ -189,8 +189,17 @@
 	<ul>
 	<li>Memory Cache Enabled: struct=application.zcore.functions.zGetSiteOptionGroupSetById(site_x_option_group_set_id);</li>
 	<li>Memory Cache Disabled: showUnapproved=false; struct=request.zos.functions.zGetSiteOptionGroupSetByID(site_x_option_group_set_id, request.zos.globals.id, ["Group", "SubGroup"], showUnapproved); </li>
-	</ul>
-	<h2>Alternative Group Search Method</h2>
+	</ul>');
+	if(groupStruct.site_option_group_allow_public NEQ 0){
+		if(groupStruct.site_option_group_public_form_url NEQ ""){
+			link=groupStruct.site_option_group_public_form_url;
+		}else{
+			link='/z/misc/display-site-option-group/add?site_option_group_id=#groupStruct.site_option_group_id#';
+		}
+		link=application.zcore.functions.zURLAppend(link, 'modalpopforced=1');
+		echo('<h2>Iframe Embed Code</h2><pre>'&htmlcodeformat('<iframe src="'&link&'" frameborder="0"  style=" margin:0px; border:none; overflow:auto;" seamless="seamless" width="100%" height="500" />')&'</pre>');
+	}
+	echo('<h2>Alternative Group Search Method</h2>
 	<p>application.zcore.siteOptionCom.searchSiteOptionGroup(); can also be used to filter records with SQL-LIKE object input.</p>
 	<p>By default, all records are looped & compared in memory with a single thread, so be aware that it may take a lot of CPU time with a larger database.</p>
 	<p>When working with hundreds or thousands of records, you can achieve better performance & reduced memory usage with the database based search method that is built in to searchSiteOptionGroup.  It translates the structured input array into an efficient SQL query that returns only the records you select.  To switch to using database queries for searchSiteOptionGroup, you only need to disable "Enable Memory Caching" on the edit group form.  Keep in mind the sub-groups have their own "Enable Memory Caching" setting which you may want to enable or disable.</p>
@@ -1372,6 +1381,10 @@
 							<input name="site_option_group_public_thankyou_url" id="site_option_group_public_thankyou_url" size="50" type="text" value="#htmleditformat(form.site_option_group_public_thankyou_url)#" maxlength="100" />
 					</td>
 				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Ajax?","member.site-option-group.edit site_option_group_ajax_enabled")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_ajax_enabled")# (Yes will make public form insertions use ajax instead, but not for updating existing records.)</td>
+				</tr>
 		</table>
 		#tabCom.endFieldSet()#
 		#tabCom.beginFieldSet("Landing Page")#
@@ -1385,10 +1398,12 @@
 					Option group URL ID must be set in server manager to use this feature.
 				</cfif></td>
 				</tr>
+				<!--- 
+				This field doesn't do anything yet!
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Embedding?","member.site-option-group.edit site_option_group_embed")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_embed")#</td>
-				</tr>
+				</tr> --->
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Embed HTML Code:","member.site-option-group.edit site_option_group_code")#</th>
 					<td><textarea name="site_option_group_code" id="site_option_group_code" cols="100" rows="10">#htmleditformat(form.site_option_group_code)#</textarea></td>

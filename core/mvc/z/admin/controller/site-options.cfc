@@ -1556,6 +1556,7 @@
 		nv=currentCFC.getFormValue(row, 'newvalue', form);
 		if(row.site_option_required EQ 1){
 			if(nv EQ ""){
+				application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
 				application.zcore.status.setStatus(request.zsid, row.site_option_display_name&" is a required field.", false, true);
 				local.errors=true;
 				continue;
@@ -1565,6 +1566,7 @@
 		optionStructCache[row.site_option_id]=optionStruct; 
 		var rs=currentCFC.validateFormField(row, optionStruct, 'newvalue', form);
 		if(not rs.success){
+			application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
 			application.zcore.status.setStatus(request.zsid, rs.message, form, true);
 			local.errors=true;
 			continue;
@@ -1617,6 +1619,7 @@
 		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
 		var rs=currentCFC.onBeforeUpdate(row, optionStruct, 'newvalue', form);
 		if(not rs.success){
+			application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
 			local.newAction="addGroup";
 			if(methodBackup EQ "updateGroup"){
 				local.newAction="editGroup";
@@ -3107,7 +3110,30 @@ Define this function in another CFC to override the default email format
 		 | <a href="/z/admin/site-option-group/help?site_option_group_id=#form.site_option_group_id#" target="_blank">View help in new window.</a>
 	</cfif>
 	</p>
-	<form  name="myForm" action="<cfif local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup">#arguments.struct.action#<cfelse>/z/admin/site-options/<cfif local.methodBackup EQ "addGroup">insertGroup<cfelse>updateGroup</cfif>?site_option_app_id=#form.site_option_app_id#</cfif>" method="post" enctype="multipart/form-data" <cfif local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup">onsubmit="zSet9('zset9_#form.set9#');"</cfif>>
+	<cfscript>
+	echo('<form id="siteOptionGroupForm#local.qCheck.site_option_group_id#" action="');
+	if(local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup"){
+		echo(arguments.struct.action);
+	}else{
+		echo('/z/admin/site-options/');
+		if(local.methodBackup EQ "addGroup"){
+			echo('insertGroup');
+		}else{
+			echo('updateGroup');
+		}
+		echo('?site_option_app_id=#form.site_option_app_id#');
+	}
+	echo('" method="post" enctype="multipart/form-data" ');
+	if(local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup"){
+		echo('onsubmit="zSet9(''zset9_#form.set9#''); ');
+		if(local.methodBackup EQ "publicAddGroup" and local.qCheck.site_option_group_ajax_enabled EQ 1){
+			echo('zSiteOptionGroupPostForm(''siteOptionGroupForm#local.qCheck.site_option_group_id#''); return false;');
+		}
+		echo('"');
+	}
+	echo('>');
+	</cfscript>
+	
 		<cfif local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup">
 			<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
 			#application.zcore.functions.zFakeFormFields()#
@@ -3265,7 +3291,8 @@ Define this function in another CFC to override the default email format
 				<td>
 				#arraytolist(local.arrEnd, '')#
 				<cfif local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup">
-					<button type="submit" name="submitForm">Submit</button>
+					<button type="submit" name="submitForm" class="zSiteOptionGroupSubmitButton">Submit</button>
+					<div class="zSiteOptionGroupWaitDiv" style="display:none; float:left; padding:5px; margin-right:5px;">Please Wait...</div>
 					<cfif structkeyexists(arguments.struct, 'cancelURL')>
 						<button type="button" name="cancel1" onclick="window.location.href='#htmleditformat(arguments.struct.cancelURL)#';">Cancel</button>
 					</cfif>

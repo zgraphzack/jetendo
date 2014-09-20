@@ -447,7 +447,11 @@ this.remapFieldStruct=t5;
 	rs.listing_view=","&local.listing_view&",";
 	if(ts.rets22_list_8 EQ "E" or ts.rets22_list_8 EQ "C" or ts.rets22_list_8 EQ "D" or ts.rets22_list_8 EQ "B") {
 		rs.listing_lot_square_feet=ts["Lot SqFt"];
-		rs.listing_square_feet=ts["SqFt - Living"];
+		if(not structkeyexists(ts, "SqFt - Living")){
+			rs.listing_square_feet=ts["SqFt - Building Ttl"];
+		}else{
+			rs.listing_square_feet=ts["SqFt - Living"];
+		}
 	}else{
 		rs.listing_lot_square_feet=ts["rets22_list_48"];
 		rs.listing_square_feet=ts["rets22_list_49"]; 

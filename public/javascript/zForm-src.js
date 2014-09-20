@@ -256,6 +256,58 @@ function zCreateMapMarker(markerObj){
 	return marker;
 }
 
+var zSiteOptionGroupLastFormID="";
+function zSiteOptionGroupErrorCallback(){
+	alert("There was a problem with the submission. Please try again later.");
+	$(".zSiteOptionGroupSubmitButton", $("#"+zSiteOptionGroupLastFormID)).show();
+	$(".zSiteOptionGroupWaitDiv", $("#"+zSiteOptionGroupLastFormID)).hide();
+}
+function zSiteOptionGroupCallback(d){
+	var rs=eval("("+d+")");
+	$(".zSiteOptionGroupSubmitButton", $("#"+zSiteOptionGroupLastFormID)).show();
+	$(".zSiteOptionGroupWaitDiv", $("#"+zSiteOptionGroupLastFormID)).hide();
+	if(zSiteOptionGroupLastFormID != ""){
+		$("#"+zSiteOptionGroupLastFormID+" input, #"+zSiteOptionGroupLastFormID+" textarea, #"+zSiteOptionGroupLastFormID+" select").bind("change", function(){
+			if(zGetFormFieldDataById(this.id) != ""){
+				$(this).closest("tr").removeClass("zFieldError");
+			}
+		}).bind("keyup", function(){
+			if(zGetFormFieldDataById(this.id) != ""){
+				$(this).closest("tr").removeClass("zFieldError");
+			}
+		}).bind("paste", function(){
+			if(zGetFormFieldDataById(this.id) != ""){
+				$(this).closest("tr").removeClass("zFieldError");
+			}
+		});
+		zJumpToId(zSiteOptionGroupLastFormID, -50);
+	}
+	if(rs.success){
+		alert("Your submission was received.");
+	}else{
+		for(var i=0;i<rs.arrErrorField.length;i++){
+			$("#"+rs.arrErrorField[i]).closest("tr").addClass("zFieldError");
+		}
+		alert("Please correct the following errors and submit the form again\n"+rs.errorMessage);
+	}
+}
+function zSiteOptionGroupPostForm(formId){
+	zSiteOptionGroupLastFormID=formId;
+	$(".zSiteOptionGroupSubmitButton", $("#"+zSiteOptionGroupLastFormID)).hide();
+	$(".zSiteOptionGroupWaitDiv", $("#"+zSiteOptionGroupLastFormID)).show();
+	var postObj=zGetFormDataByFormId(formId);
+	var obj={
+		id:"ajaxSiteOptionGroup",
+		method:"post",
+		postObj:postObj,
+		ignoreOldRequests:false,
+		callback:zSiteOptionGroupCallback,
+		errorCallback:zSiteOptionGroupErrorCallback,
+		url:'/z/misc/display-site-option-group/ajaxInsert'
+	}; 
+	zAjax(obj);
+}
+
 function zGetFormDataByFormId(formId){
 	var obj={};
 	$("input, textarea, select", $("#"+formId)).each(function(){
@@ -273,6 +325,23 @@ function zGetFormDataByFormId(formId){
 	});
 	return obj;
 } 
+function zGetFormFieldDataById(id){
+	var field=$("#"+id);
+	if(field.length){
+		var f=field[0];
+		if(f.type === 'checkbox' || f.type === 'radio'){
+			return $("input[name="+f.name+"]:checked").map(function() {return f.value;}).get().join(','); 
+		}else if(field[0].type.substr(0, 6) === 'select'){
+			return $("select[name="+f.name+"]").map(function() {return f.value;}).get().join(','); 
+		}else if(f.type === 'textarea'){
+			return $("textarea[name="+f.name+"]").map(function() {return f.value;}).get().join(','); 
+		}else{
+			return $("input[name="+f.name+"]").map(function() {return f.value;}).get().join(','); 
+		}
+	}else{
+		return "";
+	}
+}
 	
 function zAddMapMarkerByLatLng(mapObj, markerObj, latitude, longitude){
 	markerObj.position=new google.maps.LatLng( latitude, longitude);
@@ -440,6 +509,9 @@ function zClickTrackDisplayURL(){
 	var eventAction=this.getAttribute("data-zclickeventaction");
 	var eventValue=this.getAttribute("data-zclickeventvalue");
 	var newWindow=false;
+	if(this.target == "_blank"){
+		newWindow=true;
+	}
 	zTrackEvent(eventCategory, eventAction, eventLabel, eventValue, postValue, newWindow);
 	if(this.target == "_blank"){
 		return true;
@@ -4710,16 +4782,16 @@ function zSetEqualWidthMenuButtons(containerDivId, marginSize){
 		var newWidth=curWidth+(padding*2); 
 		if($.browser.msie && $.browser.version <= 7 && floatEnabled){
 			$(currentMenu.arrItem[i]).css({
-				"width": newWidth,
-				"min-width":curWidth
+				"width": Math.floor(newWidth),
+				"min-width":Math.floor(curWidth)
 				/*,
 				"padding-left": "5px",
 				"padding-right": "5px"*/
 			});
 		}else{
 			$(currentMenu.arrItem[i]).css({
-				"width": newWidth,
-				"min-width":curWidth
+				"width": Math.floor(newWidth),
+				"min-width":Math.floor(curWidth)
 				/*,
 				"padding-left": "0px",
 				"padding-right": "0px"*/

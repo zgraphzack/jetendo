@@ -351,6 +351,13 @@ br{line-height:normal;}
 .tr_error td,.tr_error th{background-color:#990000; color:#FFFFFF; border-bottom:1px solid #FFFFFF; }
 input, select, button, textarea { padding:2px; line-height:normal; }
 
+.zFieldError input, .zFieldError select, .zFieldError textarea{
+	border:1px solid #900;
+  -moz-box-shadow:    0px 0px 4px 2px #F00;
+  -webkit-box-shadow: 0px 0px 4px 2px #F00;
+  box-shadow:         0px 0px 4px 2px #F00;
+}
+
 .searchMenu *{
 font-family:Arial, Helvetica, sans-serif;
 font-size:10px;
