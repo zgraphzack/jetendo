@@ -503,6 +503,7 @@
 	form.reservation_end_datetime=application.zcore.functions.zGetDateTimeSelect("reservation_end_datetime", "yyyy-mm-dd", "HH:mm:ss");
 	myForm.reservation_period.required=true;
 	myForm.reservation_phone.required=true;
+	myForm.reservation_type_id.required=true;
 	myForm.reservation_email.required=true;
 	myForm.reservation_email.email=true;
 	myForm.reservation_last_name.required=true;
@@ -582,12 +583,18 @@
 	form.reservation_id=application.zcore.functions.zso(form, 'reservation_id',true);
 	db.sql=" SELECT * FROM #request.zos.queryObject.table("reservation", request.zos.zcoreDatasource)# reservation 
 	WHERE reservation_id = #db.param(form.reservation_id)# and 
-	site_id = #db.param(request.zOS.globals.id)# ";
+	site_id = #db.param(request.zOS.globals.id)# and 
+	reservation_deleted=#db.param(0)# ";
 	qData=db.execute("qData");
 	application.zcore.functions.zQueryToStruct(qData,form,'reservation_id,site_id'); 
 	application.zcore.functions.zStatusHandler(request.zsid, true,true);
 
 
+	db.sql=" SELECT * FROM #request.zos.queryObject.table("reservation_type", request.zos.zcoreDatasource)# reservation_type
+	WHERE site_id = #db.param(request.zOS.globals.id)# and 
+	reservation_type_deleted=#db.param(0)#
+	ORDER BY reservation_type_name ASC ";
+	qType=db.execute("qType");
 
 	if(application.zcore.app.siteHasApp("event")){
 		db.sql="select reservation.event_id, event_summary from 
@@ -666,6 +673,18 @@
 
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>
+				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Type","member.reservation.edit reservation_type_id")#</th>
+				<td><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "reservation_type_id";
+					selectStruct.size=1;
+					selectStruct.query=qType;
+					selectStruct.queryLabelField="reservation_type_name";
+					selectStruct.queryValueField="reservation_type_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></td>
+			</tr>
+			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Status","member.reservation.edit reservation_status")#</th>
 				<td><cfscript>
 					
@@ -701,7 +720,7 @@
 				
 				<tr>
 					<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.reservation.edit event_id")#</th>
-					<td><br /><cfscript>
+					<td><cfscript>
 						selectStruct = StructNew();
 						selectStruct.name = "event_id";
 						selectStruct.size=1;
