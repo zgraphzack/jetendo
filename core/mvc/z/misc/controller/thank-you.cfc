@@ -27,11 +27,18 @@
 		<cfscript>
 		application.zcore.template.setTemplate("zcorerootmapping.templates.plain",true,true);
 		</cfscript>
-		<p>Closing window in 3 seconds.</p>
-		<script type="text/javascript">/* <![CDATA[ */ 
-		setTimeout(function(){ zCloseThisWindow(); },3000);
-		/* ]]> */
-		</script>
+		<cfif not structkeyexists(request.zsession,'disableclosewindowmessage')>
+	
+			<p>Closing window in 3 seconds.</p>
+			<script type="text/javascript">/* <![CDATA[ */ 
+			setTimeout(function(){ zCloseThisWindow(); },3000);
+			/* ]]> */
+			</script>
+		<cfelse>
+			<cfscript>
+			structdelete(request.zsession, 'disableclosewindowmessage');
+			</cfscript>
+		</cfif>
 	</cfif>
 	#application.zcore.functions.zVarSO("Lead Conversion Tracking Code")#
 </cffunction>
