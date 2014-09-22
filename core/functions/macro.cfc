@@ -313,17 +313,19 @@ writeoutput(application.zcore.functions.zLoadAndCropImage({id:"",width:140,heigh
 
 <!--- application.zcore.functions.zFullScreenMobileApp(); --->
 <cffunction name="zFullScreenMobileApp" localmode="modern" output="no" returntype="any">
+	<cfargument name="responsive" type="boolean" required="false" default="#false#">
+	<cfargument name="scalable" type="boolean" required="false" default="#true#">
 	<cfscript>
 	var theMeta="";
 	userAgent=lcase(request.zos.cgi.HTTP_USER_AGENT);
-    if(userAgent CONTAINS "iphone" or userAgent CONTAINS "ipod" or  (userAgent CONTAINS "android" and userAgent CONTAINS "mobile")){
+    if(arguments.responsive or userAgent CONTAINS "iphone" or userAgent CONTAINS "ipod" or  (userAgent CONTAINS "android" and userAgent CONTAINS "mobile")){
 		
 	}else{
 		return;	
 	}
     </cfscript>
     <cfsavecontent variable="theMeta">
-    <meta name="viewport" content="width=device-width; minimum-scale=1.0; maximum-scale=1.0; initial-scale=1.0; user-scalable=no; " /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /><style type="text/css">/* <![CDATA[ */ a, area {-webkit-touch-callout: none;}*{ -webkit-text-size-adjust: none; }/* ]]> */</style>
+    <meta name="viewport" content="width=device-width; minimum-scale=1.0; initial-scale=1.0; user-scalable=<cfif arguments.scalable>yes<cfelse>no</cfif>; " /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /><style type="text/css">/* <![CDATA[ */ a, area {-webkit-touch-callout: none;}*{ -webkit-text-size-adjust: none; }/* ]]> */</style>
     </cfsavecontent>
     <cfscript>
     application.zcore.template.appendTag("meta",theMETA);
