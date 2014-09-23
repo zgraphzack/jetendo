@@ -440,6 +440,11 @@
 			<cfif application.zcore.functions.zso(form, 'inquiries_name') NEQ "">
 				and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#
 			</cfif>
+			<cfif application.zcore.functions.zso(form, 'inquiries_type_id') NEQ "">
+				and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
+				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))#
+			</cfif>
+
 		</cfif>
 		<cfif request.zsession.leadviewspam EQ "0">
 			and inquiries.inquiries_spam =#db.param(0)#
@@ -468,7 +473,7 @@
 		</cfif>
 		</cfsavecontent>
 		<cfscript>
-		qinquiries=db.execute("qinquiries");
+		qinquiries=db.execute("qinquiries"); 
 		</cfscript>
 		<cfsavecontent variable="db.sql"> SELECT count(
 		<cfif request.zsession.leademailgrouping EQ '1'>
@@ -518,6 +523,11 @@
 			<cfif application.zcore.functions.zso(form, 'inquiries_name') NEQ "">
 				and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#
 			</cfif>
+			<cfif application.zcore.functions.zso(form, 'inquiries_type_id') NEQ "">
+				and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
+				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))#
+			</cfif>
+
 		</cfif>
 		<cfif request.zsession.leadviewspam EQ "0">
 			and inquiries.inquiries_spam =#db.param(0)#
@@ -536,7 +546,7 @@
 		</cfif>
 		</cfsavecontent>
 		<cfscript>
-		qinquiriesActive=db.execute("qinquiriesActive"); 
+		qinquiriesActive=db.execute("qinquiriesActive");  
 		</cfscript>
 		<h2>Search Leads</h2>
 		<form action="/z/inquiries/admin/manage-inquiries/index?search=true" method="post">
@@ -545,6 +555,29 @@
 				<tr>
 					<td>Name:
 						<input type="text" name="inquiries_name" value="#application.zcore.functions.zso(form, 'inquiries_name')#" /></td>
+					<td>Type: 
+					<cfscript>
+					db.sql="SELECT *, 
+					#db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("inquiries_type.site_id"))# as 
+					inquiries_type_id_siteIDType from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
+					WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
+					inquiries_type_deleted = #db.param(0)# ";
+					if(not application.zcore.app.siteHasApp("listing")){
+						db.sql&=" and inquiries_type_realestate = #db.param(0)# ";
+					}
+					if(not application.zcore.app.siteHasApp("rental")){
+						db.sql&=" and inquiries_type_rentals = #db.param(0)# ";
+					}
+					db.sql&="ORDER BY inquiries_type_sort ASC, inquiries_type_name ASC ";
+					qTypes=db.execute("qTypes");
+					selectStruct = StructNew();
+					selectStruct.name = "inquiries_type_id";
+					selectStruct.query = qTypes;
+					selectStruct.queryLabelField = "inquiries_type_name";
+					selectStruct.queryParseValueVars=true;
+					selectStruct.queryValueField = "##inquiries_type_id##|##inquiries_type_id_siteIDType##";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
 					<td>Start:#application.zcore.functions.zDateSelect("inquiries_start_date", "inquiries_start_date", year(inquiryFirstDate), year(now()))#</td>
 					<td>End:#application.zcore.functions.zDateSelect("inquiries_end_date", "inquiries_end_date", year(inquiryFirstDate), year(now()))#</td>
 					<cfif variables.isReservationSystem>
@@ -578,7 +611,7 @@
 				if(et.checked){
 					format="csv";	
 				}
-				window.open("/z/inquiries/admin/export?searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&format="+format+"&exporttype="+exporttype);
+				window.open("/z/inquiries/admin/export?inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&format="+format+"&exporttype="+exporttype);
 			}
 			/* ]]> */
 			</script>

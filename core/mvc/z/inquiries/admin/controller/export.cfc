@@ -93,6 +93,10 @@
 				writeoutput(' and (inquiries_datetime >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
 				inquiries_datetime <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
 			}
+			if(application.zcore.functions.zso(form, 'inquiries_type_id') NEQ ""){
+				echo(' and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
+				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))# ');
+			}
 			if(application.zcore.functions.zso(form,'exporttype') EQ 1){
 				writeoutput(' GROUP BY inquiries_email');
 			}else if(application.zcore.functions.zso(form,'exporttype') EQ 2){
@@ -134,6 +138,10 @@
 					writeoutput(' and (inquiries_start_date >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
 					inquiries_end_date <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
 				}
+			}
+			if(application.zcore.functions.zso(form, 'inquiries_type_id') NEQ ""){
+				echo(' and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
+				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))# ');
 			}
 			if(application.zcore.functions.zso(form,'inquiries_name') NEQ ""){
 				writeoutput(' and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#');
