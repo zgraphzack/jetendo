@@ -414,7 +414,7 @@ userCom.checkLogin(inputStruct);
 						if(structkeyexists(form, 'zdebug')){
 							arrayAppend(rs.arrDebugLog, "Password verification result: #passwordVerificationResult#");
 						}
-						if(not passwordVerificationResult){
+						if(passwordVerificationResult EQ "" or not passwordVerificationResult){
 							failedLogin=true; // password didn't match
 							if(structkeyexists(request, 'hashThreadDeathOccurred')){
 								if(structkeyexists(form, 'zdebug')){
