@@ -193,7 +193,7 @@
 		// required
 		searchStruct = StructNew();
 		searchStruct.count = qCount.count;
-		searchStruct.index = form.zLogIndex;
+		searchStruct.index = form.zIndex;
 		// optional
 		searchStruct.url = "/z/reservation/admin/reservation-type/index";
 		searchStruct.buttons = 5;
