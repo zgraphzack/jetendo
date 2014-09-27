@@ -1001,7 +1001,7 @@ zGetLatLong(ts);
 	<cfif arguments.searchStr.search_city_id NEQ ''>
 		<cfsavecontent variable="db.sql">
 		SELECT cast(group_concat(city_name SEPARATOR #db.param(", ")#) AS CHAR) idlist 
-		FROM #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
+		FROM #db.table("city_memory", request.zos.zcoreDatasource)# city 
 		WHERE city_id IN (#db.trustedSQL(arguments.searchStr.search_city_id)#) and 
 		city_deleted = #db.param(0)#
 		</cfsavecontent><cfscript>qCity=db.execute("qCity");

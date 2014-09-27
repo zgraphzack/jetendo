@@ -529,7 +529,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acc
 						 city_mls_id=#db.param(i)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						 city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable);
-						 db.sql="INSERT INTO #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)#  
+						 db.sql="INSERT INTO #db.table("city_memory", request.zos.zcoreDatasource)#  
 						 SET city_id=#db.param(city_id)#, 
 						 city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,

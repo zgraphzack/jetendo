@@ -679,7 +679,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						city_latitude=#db.param(qZ.zipcode_latitude)#,
 					 	city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						rs=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
-						 db.sql="INSERT INTO #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)#  
+						 db.sql="INSERT INTO #db.table("city_memory", request.zos.zcoreDatasource)#  
 						 SET city_id=#db.param(rs.result)#, 
 						 city_name=#db.param(application.zcore.functions.zfirstlettercaps(fd[i]))#, 
 						 state_abbr=#db.param(tempState)#,

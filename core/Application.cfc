@@ -77,7 +77,6 @@ this.scopeCascading = "standard";
 	ts.zmailserverusername="username";
 	ts.zmailserverpassword="password";
 	ts.httpCompressionType="deflate;q=0.5";
-	ts.ramtableprefix=ts.zos.ramtableprefix;
 	ts.inMemberArea=false;
 
 	

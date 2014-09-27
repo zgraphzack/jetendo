@@ -89,8 +89,8 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 <cfif form.listing_sub_type_id NEQ "" and form.listing_type_id NEQ "" and form.city_id NEQ "">
      <cfsavecontent variable="db.sql">
      SELECT city_name, city.city_id, COUNT(listing.listing_id) c 
-	 FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
-	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  
+	 FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
+	 #db.table("city_memory", request.zos.zcoreDatasource)# city  
 	 WHERE  
 	 listing_deleted = #db.param(0)# and 
 	 city_deleted = #db.param(0)# and 
@@ -112,7 +112,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	 </cfscript>
      <cfsavecontent variable="db.sql">
 	SELECT listing_lookup_value,listing_type_id, COUNT(listing.listing_id) c 
-	FROM (#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
+	FROM (#db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	WHERE  listing_track.listing_id = listing.listing_id  and   
@@ -140,7 +140,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	 </cfscript>
      <cfsavecontent variable="db.sql">
 	SELECT listing_lookup_value,listing_sub_type_id, COUNT(distinct listing.listing_id) c 
-	FROM (#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing,  
+	FROM (#db.table("listing_memory", request.zos.zcoreDatasource)# listing,  
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	WHERE  listing_track.listing_id = listing.listing_id  and 
@@ -187,8 +187,8 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 <cfelseif form.listing_type_id NEQ "" and form.city_id NEQ "">
      <cfsavecontent variable="db.sql">
      SELECT city_name, city.city_id, COUNT(listing.listing_id) c 
-	 FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing,
-	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  WHERE  
+	 FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing,
+	 #db.table("city_memory", request.zos.zcoreDatasource)# city  WHERE  
 	 listing_deleted = #db.param(0)# and 
 	 city_deleted = #db.param(0)# and 
    #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))#
@@ -209,7 +209,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	 </cfscript>
      <cfsavecontent variable="db.sql">
 	SELECT listing_lookup_value,listing_type_id, COUNT(listing.listing_id) c 
-	FROM (#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
+	FROM (#db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	WHERE  listing_track.listing_id = listing.listing_id  and   
@@ -238,7 +238,7 @@ qD2=db.execute("qD2");
      
      <cfsavecontent variable="db.sql">
 	SELECT listing_lookup_value,listing_sub_type_id, COUNT(distinct listing.listing_id) c 
-	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing,  
+	FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing,  
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track  
 	WHERE  listing_track.listing_id = listing.listing_id  and 
@@ -283,8 +283,8 @@ qD=db.execute("qD");
 <cfelseif form.city_id NEQ "">
      <cfsavecontent variable="db.sql">
 	 SELECT city_name, city.city_id, COUNT(listing.listing_id) c FROM 
-	 #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
-	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  WHERE  
+	 #db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
+	 #db.table("city_memory", request.zos.zcoreDatasource)# city  WHERE  
 	 city_deleted = #db.param(0)# and 
 	 listing_deleted = #db.param(0)# and 
 	#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -309,7 +309,7 @@ qD=db.execute("qD");
 	 </cfscript>
      <cfsavecontent variable="db.sql">
 	SELECT listing_lookup_value,listing_type_id, COUNT(listing.listing_id) c 
-	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
+	FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
 	#db.table("listing_lookup", request.zos.zcoreDatasource)# listing_lookup , 
 	#db.table("listing_track", request.zos.zcoreDatasource)# listing_track  
 	WHERE  listing_track.listing_id = listing.listing_id  and   
@@ -376,8 +376,8 @@ Example of getting cities with listings within 10 mile radius
      <cfif distanceRadius LT 100>
      <cfsavecontent variable="db.sql">
 	SELECT CAST(GROUP_CONCAT(city.city_id SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	FROM #db.table("#request.zos.ramtableprefix#city_distance", request.zos.zcoreDatasource)# city_distance, 
-	#db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city  
+	FROM #db.table("city_distance_memory", request.zos.zcoreDatasource)# city_distance, 
+	#db.table("city_memory", request.zos.zcoreDatasource)# city  
 	WHERE city_parent_id=#db.param(primaryCityId)# and 
 	city_distance <=#db.param(distanceRadius)# and 
 	city.city_id = city_distance.city_id  and 
@@ -390,8 +390,8 @@ qCity2=db.execute("qCity2");
 </cfscript>
            <cfsavecontent variable="db.sql">
      SELECT city_name, city.city_id, COUNT(listing.listing_id) c FROM (
-	 #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
-	 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
+	 #db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
+	 #db.table("city_memory", request.zos.zcoreDatasource)# city, 
 	 #db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  
 	 WHERE  
 	 listing_deleted = #db.param(0)# and 
@@ -419,8 +419,8 @@ listing.listing_liststatus=#db.param('1,4,7,16')#
      <cfelse>
          <cfsavecontent variable="db.sql">
          SELECT city_name, city.city_id, COUNT(listing.listing_id) c 
-		 FROM (#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
-		 #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
+		 FROM (#db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
+		 #db.table("city_memory", request.zos.zcoreDatasource)# city, 
 		 #db.table("listing_track", request.zos.zcoreDatasource)# listing_track)  WHERE  
 		 listing_deleted = #db.param(0)# and 
 		 city_deleted = #db.param(0)# and 

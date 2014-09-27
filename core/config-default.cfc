@@ -214,9 +214,6 @@
 	};
 	
     
-    // prepend a string that identifies mysql memory engine tables
-    ts.zos.ramtableprefix="zram##";
-    
     // prepend a string to the beginning of all system table names - currently not implemented.
     ts.zos.zcoreDBPrefix="";
     

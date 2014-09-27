@@ -236,13 +236,13 @@ propertyDataCom.searchCriteria.search_city_id="";
 ts.name="search_city_id";
 ts.searchStruct=structnew();
 ts.searchStruct.zselect=" city.city_name label, city.city_id value, count(city.city_id) count ";
-ts.searchStruct.zleftjoin=" LEFT JOIN `#request.zos.zcoreDatasource#`.#db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city ON city.city_id = listing.listing_city LEFT JOIN `#request.zos.zcoreDatasource#`.`#request.zos.ramtableprefix#city_distance` city_distance ON city.city_id = city_distance.city_id";
+ts.searchStruct.zleftjoin=" LEFT JOIN `#request.zos.zcoreDatasource#`.#db.table("city_memory", request.zos.zcoreDatasource)# city ON city.city_id = listing.listing_city LEFT JOIN `#request.zos.zcoreDatasource#`.`city_distance_memory` city_distance ON city.city_id = city_distance.city_id";
 ts.searchStruct.zgroupby=" group by city.city_id ";//having(count > 300) ";
 ts.searchstruct.zwhere=" and city_parent_id = #db.param(primaryCityId)# and 
 city_distance <='30'";
 if(selectedCityCount NEQ 0){
 	ts.searchstruct.zwhere&=" and city.city_id NOT IN (#cityIdList#)";
-	ts.searchstruct.zunion="LIMIT 0,#max(0,max(selectedCityCount,10)-selectedCityCount)# UNION ALL SELECT c2.city_name label,c2.city_id city_id, 100000000 count FROM `#request.zos.ramtableprefix#city` c2 WHERE c2.city_id IN (#cityIdList#)";
+	ts.searchstruct.zunion="LIMIT 0,#max(0,max(selectedCityCount,10)-selectedCityCount)# UNION ALL SELECT c2.city_name label,c2.city_id city_id, 100000000 count FROM `city_memory` c2 WHERE c2.city_id IN (#cityIdList#)";
 }else{
 	ts.searchstruct.perpage=10;
 }
@@ -302,7 +302,7 @@ ts.searchStruct.removeValues=search_city_id;
 ts.searchStruct.contentTableEnabled=false;
 //ts.searchStruct.lookupName="city";
 ts.searchStruct.zselect=" city_name label, listing_city value, COUNT(listing.listing_id) COUNT ";
-ts.searchStruct.zleftjoin= dead " INNER JOIN #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city ON city.city_id = listing.listing_city ";
+ts.searchStruct.zleftjoin= dead " INNER JOIN #db.table("city_memory", request.zos.zcoreDatasource)# city ON city.city_id = listing.listing_city ";
 ts.searchStruct.zgroupby=" group by listing_city ";
 ts.searchStruct.zwhere=" and listing_city not in ('','0') ";
 ts.searchStruct.zorderby=" order by label";

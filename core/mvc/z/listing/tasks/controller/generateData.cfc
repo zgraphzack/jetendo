@@ -63,8 +63,8 @@
 		qM=db.execute("qM"); 
 	}
 	db.sql="select listing_mls_id, city.city_name, city.city_id, count(city.city_id) count 
-	from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
-	#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("city_memory", request.zos.zcoreDatasource)# city, 
+	#db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	where city.city_id = listing.listing_city  and 
 	city_deleted = #db.param(0)# and 
 	listing_deleted = #db.param(0)# 

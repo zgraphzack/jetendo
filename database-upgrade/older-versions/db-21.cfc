@@ -14,17 +14,17 @@
 	ts=siteBackupCom.getExcludedTableStruct();
 
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.ramtableprefix#city`  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `city_memory`  
 		ADD COLUMN `city_updated_datetime` DATETIME NOT NULL, 
 		ADD COLUMN `city_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.ramtableprefix#city_distance`  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `city_distance_memory`  
 		ADD COLUMN `city_distance_updated_datetime` DATETIME NOT NULL, 
 		ADD COLUMN `city_distance_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.ramtableprefix#listing` 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `listing_memory` 
 		ADD COLUMN `listing_deleted` CHAR(1) DEFAULT '0'   NOT NULL")){
 		return false;
 	}

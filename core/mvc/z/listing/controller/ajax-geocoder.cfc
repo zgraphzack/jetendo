@@ -58,7 +58,7 @@
 				WHERE listing_id=#db.param(form.listing_id)# and 
 				listing_latitude=#db.param('0')# ";
 				db.execute("q"); 
-				db.sql="UPDATE #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+				db.sql="UPDATE #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 				SET listing_latitude=#db.param(arrF[3])#,
 				listing_longitude=#db.param(arrF[4])# 
 				WHERE listing_id=#db.param(form.listing_id)# and 
@@ -123,7 +123,7 @@
 
 	if(structkeyexists(form, 'debugajaxgeocoder')){
 		db.sql="SELECT count(listing.listing_id) count FROM 
-		#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
+		#db.table("listing_memory", request.zos.zcoreDatasource)# listing
 		LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates  ON
 		listing.listing_id = listing_coordinates.listing_id and 
 		listing_coordinates_deleted = #db.param(0)#
@@ -142,7 +142,7 @@
 		echo("<h2>Count of records remaining: #qCount.count#</h2>");
 	}
 	db.sql="SELECT listing.listing_id, listing_address, listing_city, listing_state, listing_zip, listing_latitude, listing_longitude FROM 
-	#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
+	#db.table("listing_memory", request.zos.zcoreDatasource)# listing
 	LEFT JOIN #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates ON
 	listing.listing_id = listing_coordinates.listing_id and 
 	listing_coordinates_deleted = #db.param(0)#

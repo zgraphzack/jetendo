@@ -113,7 +113,7 @@
 			if(dateformat(qP2.mdate,'yyyy-mm-dd')&' '&timeformat(qP2.mdate,'HH:00:00') NEQ nd222){
 				db.sql="select content.content_id, listing.listing_price from 
 				#db.table("content", request.zos.zcoreDatasource)# content, 
-				#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+				#db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 				where content.site_id <> #db.param(-1)# and 
 				listing.listing_id = content.content_mls_number and 
 				content.content_mls_number<>#db.param('')# and 
@@ -500,7 +500,7 @@
 			ts5={
 				debug:true,
 				datasource:request.zos.zcoreDatasource,
-				table:request.zos.ramtableprefix&"listing",
+				table:"listing_memory",
 				struct:rs
 			};
 			ts5.struct.listing_deleted='0';
@@ -614,7 +614,7 @@
 	application.zcore.idxImportStatus="cleanInactive executed";
 
 	db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
-	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
 	listing_track.listing_id= listing.listing_id   and 
 	listing_track_deleted = #db.param(0)# 
@@ -631,7 +631,7 @@
 		WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
 		listing_data_deleted = #db.param(0)# ";	
 		db.execute("q"); 
-		 db.sql="DELETE FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
+		 db.sql="DELETE FROM #db.table("listing_memory", request.zos.zcoreDatasource)#  
 		 WHERE listing_id IN (#db.trustedSQL("'#qDeadListings.idlist#'")#) and 
 		 listing_deleted = #db.param(0)# ";	
 		 db.execute("q");
@@ -761,7 +761,7 @@
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN (#idlist#) and listing_data_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
-				db2.sql="DELETE FROM #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)#  
+				db2.sql="DELETE FROM #db2.table("listing_memory", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN (#idlist#) and listing_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 

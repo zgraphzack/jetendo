@@ -699,7 +699,7 @@ still need to add all the meta data fields and photo display
 			
 		<cfsavecontent variable="db.sql">
 		SELECT cast(group_concat(distinct listing_city SEPARATOR #db.param("','")#) AS CHAR) idlist 
-		from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+		from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 		WHERE 
 		#db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
 	listing_deleted = #db.param(0)# and 
@@ -720,7 +720,7 @@ still need to add all the meta data fields and photo display
 		<!--- put the primary cities at top and repeat further down too --->
 		<cfsavecontent variable="db.sql">
 		select city.city_name label, city.city_id value 
-		from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
+		from #db.table("city_memory", request.zos.zcoreDatasource)# city 
 		WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) and 
 		city_deleted = #db.param(0)#
 		ORDER BY label 

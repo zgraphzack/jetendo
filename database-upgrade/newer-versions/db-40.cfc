@@ -23,10 +23,10 @@
 	} 
 
 	query name="qCheck" datasource="#this.datasource#"{
-		echo("show tables in `#this.datasource#` LIKE '#request.zos.ramtableprefix#listing' ");
+		echo("show tables in `#this.datasource#` LIKE 'listing_memory' ");
 	};
 	if(qCheck.recordcount NEQ 0){
-		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.ramTablePrefix#listing`   
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `listing_memory`   
 	 	 CHANGE `listing_unique_id` `listing_unique_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT")){
 			return false;
 		} 

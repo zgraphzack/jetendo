@@ -65,6 +65,12 @@
 	ts.mysqlDataTypeStruct["set"]="cf_sql_varchar";
 
 
+	ts.memoryTableStruct={
+		"city_distance_memory":true,
+		"city_memory":true,
+		"listing_memory":true
+	};
+	
 	ts.tableConventionExceptionStruct={
 		"manual_listing":{
 			"primaryKey":"manual_listing_unique_id"
@@ -76,17 +82,17 @@
 			"deleted":"city_distance_deleted",
 			"updatedDatetime": "city_distance_updated_datetime",
 		},
-		"#request.zos.ramTablePrefix#city": {
+		"city_memory": {
 			"primaryKey": "city_id",
 			"deleted":"city_deleted",
 			"updatedDatetime": "city_updated_datetime",
 		},
-		"#request.zos.ramTablePrefix#city_distance": {
+		"city_distance_memory": {
 			"primaryKey": "city_distance_id",
 			"deleted":"city_distance_deleted",
 			"updatedDatetime": "city_distance_updated_datetime",
 		},
-		"#request.zos.ramTablePrefix#listing": {
+		"listing_memory": {
 			"primaryKey": "listing_unique_id",
 			"deleted":"listing_deleted",
 			"updatedDatetime": "listing_updated_datetime",

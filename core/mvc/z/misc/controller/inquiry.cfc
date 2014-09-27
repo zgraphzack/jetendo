@@ -406,7 +406,7 @@
             </cfscript>
             <cfsavecontent variable="db.sql">
             SELECT cast(group_concat(distinct listing_city SEPARATOR #db.param("','")#) AS CHAR) idlist 
-			from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing where
+			from #db.table("listing_memory", request.zos.zcoreDatasource)# listing where
             listing_deleted = #db.param(0)# and 
             #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
             listing_city not in (#db.trustedSQL("'','0'")#) 

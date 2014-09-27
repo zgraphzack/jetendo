@@ -69,14 +69,14 @@ determine which points are outside the map (& delete them)
 	run 
 	
 SELECT zipcode.*, 
-						ROUND((ACOS((SIN(#qZip.zipcode_latitude#/57.2958) * SIN(zipcode_latitude/57.2958)) + (COS(#qZip.zipcode_latitude#/57.2958) * COS(zipcode_latitude/57.2958) * COS(zipcode_longitude/57.2958 - #qZip.zipcode_longitude#/57.2958)))) * 3963, 0) AS distance, `#request.zos.ramtableprefix#city`.city_id 
+						ROUND((ACOS((SIN(#qZip.zipcode_latitude#/57.2958) * SIN(zipcode_latitude/57.2958)) + (COS(#qZip.zipcode_latitude#/57.2958) * COS(zipcode_latitude/57.2958) * COS(zipcode_longitude/57.2958 - #qZip.zipcode_longitude#/57.2958)))) * 3963, 0) AS distance, `city_memory`.city_id 
 						FROM `#request.zos.zcoreDatasource#`.zipcode, city 
 						WHERE 
-						`#request.zos.ramtableprefix#city`.city_name = zipcode.city_name and 
-						`#request.zos.ramtableprefix#city`.state_abbr = zipcode.state_abbr and 
-						`#request.zos.ramtableprefix#city`.country_code = zipcode.country_code  and 
-						`#request.zos.ramtableprefix#city`.country_code = 'US' and 
-						`#request.zos.ramtableprefix#city`.city_id <> #db.param(city_parent_id)# and 
+						`city_memory`.city_name = zipcode.city_name and 
+						`city_memory`.state_abbr = zipcode.state_abbr and 
+						`city_memory`.country_code = zipcode.country_code  and 
+						`city_memory`.country_code = 'US' and 
+						`city_memory`.city_id <> #db.param(city_parent_id)# and 
 						
 						(zipcode_latitude >= #qZip.zipcode_latitude - latDistance#)
 						AND (zipcode_latitude <= #qZip.zipcode_latitude + latDistance#)
@@ -859,7 +859,7 @@ sOut=structnew();
 <cfif form.searchFormEnabledDropDownMenus or 1 EQ 1>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_city SEPARATOR #db.trustedSQL("','")#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -883,7 +883,7 @@ sOut=structnew();
     <!--- put the primary cities at top and repeat further down too --->
     <cfsavecontent variable="db.sql">
     select city.city_name label, city.city_id value 
-	from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
+	from #db.table("city_memory", request.zos.zcoreDatasource)# city 
 	WHERE city_id IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_primary_city_list)#'")#) and 
 	city_deleted=#db.param(0)# 
 	ORDER BY label 
@@ -903,7 +903,7 @@ sOut=structnew();
 <cfelse>
     <cfsavecontent variable="db.sql">
     select city_x_mls.city_name label, city_x_mls.city_id value 
-	from `#request.zos.ramtableprefix#city_distance` city_distance,city_x_mls 
+	from `city_distance_memory` city_distance,city_x_mls 
 	WHERE city_x_mls.city_id = city_distance.city_id and 
 	city_x_mls_deleted = #db.param(0)# and 
 	city_distance_deleted = #db.param(0)# and 
@@ -920,7 +920,7 @@ sOut=structnew();
     </cfsavecontent><cfscript>qCity=db.execute("qCity");</cfscript>
     <cfsavecontent variable="db.sql">
     select city.city_name label, city.city_id value 
-	from #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
+	from #db.table("city_memory", request.zos.zcoreDatasource)# city 
 	WHERE city.city_id IN (#db.trustedSQL(cityIdList)#)  and 
 	city_deleted=#db.param(0)# and 
 	city_id NOT IN (#db.trustedSQL("'#(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list)#'")#)
@@ -1184,7 +1184,7 @@ sfSortStruct["search_rate"]=theCriteriaHTML;
 
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_type_id SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1303,7 +1303,7 @@ sfSortStruct["search_listing_type_id"]=theCriteriaHTML;
 
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_region SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1413,7 +1413,7 @@ sfSortStruct["search_region"]=theCriteriaHTML;
 
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_parking SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1523,7 +1523,7 @@ sfSortStruct["search_parking"]=theCriteriaHTML;
 
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_condition SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1632,7 +1632,7 @@ sfSortStruct["search_condition"]=theCriteriaHTML;
 
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_tenure SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1739,7 +1739,7 @@ sfSortStruct["search_tenure"]=theCriteriaHTML;
  
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_sub_type_id SEPARATOR #db.param(',')#) AS CHAR) idlist from 
-	#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	#db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1844,7 +1844,7 @@ sfSortStruct["search_listing_sub_type_id"]=theCriteriaHTML;
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_bedrooms') EQ false>
 
     <cfsavecontent variable="db.sql">
-    SELECT listing_beds from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    SELECT listing_beds from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -1923,7 +1923,7 @@ sfSortStruct["search_bedrooms"]=theCriteriaHTML;
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_bathrooms') EQ false>
 
     <cfsavecontent variable="db.sql">
-    SELECT listing_baths from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    SELECT listing_baths from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2004,7 +2004,7 @@ sfSortStruct["search_bathrooms"]=theCriteriaHTML;
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_sqfoot') EQ false>
     <cfsavecontent variable="db.sql">
-    SELECT listing_square_feet from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    SELECT listing_square_feet from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2176,7 +2176,7 @@ sfSortStruct["search_year_built"]=theCriteriaHTML;
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_acreage') EQ false>
     <cfsavecontent variable="db.sql">
-    SELECT listing_acreage from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    SELECT listing_acreage from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2262,7 +2262,7 @@ sfSortStruct["search_acreage"]=theCriteriaHTML;
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_county') EQ false>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_county SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2369,7 +2369,7 @@ sfSortStruct["search_county"]=theCriteriaHTML;
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_view') EQ false>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_view SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2474,7 +2474,7 @@ sfSortStruct["search_view"]=theCriteriaHTML;
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_status') EQ false>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_status SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2619,7 +2619,7 @@ application.zcore.functions.zinput_hidden(ts);
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_liststatus') EQ false>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_liststatus SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2756,7 +2756,7 @@ sfSortStruct["search_liststatus"]=theCriteriaHTML;
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_style') EQ false>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_style SEPARATOR #db.param(',')#) AS CHAR) idlist 
-	from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing  
+	from #db.table("listing_memory", request.zos.zcoreDatasource)# listing  
 WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -2857,7 +2857,7 @@ sfSortStruct["search_style"]=theCriteriaHTML;
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_frontage') EQ false>
     <cfsavecontent variable="db.sql">
-    SELECT cast(group_concat(distinct listing_frontage SEPARATOR #db.param(',')#) AS CHAR) idlist from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    SELECT cast(group_concat(distinct listing_frontage SEPARATOR #db.param(',')#) AS CHAR) idlist from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 WHERE 
     listing_deleted = #db.param(0)# and 
     #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
@@ -3052,7 +3052,7 @@ application.zcore.functions.zInput_Text(ts);
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_condoname') EQ false>
 
     <cfsavecontent variable="db.sql">
-    SELECT <!--- cast(group_concat(distinct listing_frontage SEPARATOR #db.param(',')#) AS CHAR) idlist ---> count(listing_id) count from #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    SELECT <!--- cast(group_concat(distinct listing_frontage SEPARATOR #db.param(',')#) AS CHAR) idlist ---> count(listing_id) count from #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE #db.trustedSQL(application.zcore.listingCom.getMLSIDWhereSQL("listing"))# and 
     listing_deleted = #db.param(0)# and 
     listing_condoname not in (#db.param('')#) 

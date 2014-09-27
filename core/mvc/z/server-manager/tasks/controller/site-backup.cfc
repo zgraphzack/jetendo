@@ -89,9 +89,9 @@ TODO: figure out why site backup doesn't get compressed.
 		"rets4_office": true,
 		"rets4_property": true,
 		"rets7_property": true,
-		"#request.zos.ramtableprefix#city": true,
-		"#request.zos.ramtableprefix#city_distance": true,
-		"#request.zos.ramtableprefix#listing": true,
+		"city_memory": true,
+		"city_distance_memory": true,
+		"listing_memory": true,
 	};
 	return ts;
 	</cfscript>
@@ -349,29 +349,30 @@ TODO: figure out why site backup doesn't get compressed.
 			if(structkeyexists(request.zos.backupStructureOnlyTables, i2&"."&n)){
 				continue;	
 			}
+			if(structkeyexists(application.zcore.memoryTableStruct, n)){
+				continue;
+			}
 			local.tempColumnList="`"&arrayToList(curDSStruct.fieldArrayStruct[i2&"."&n], "`, `")&"`";
-			if(left(n, len(request.zos.ramtableprefix)) NEQ request.zos.ramtableprefix){
-				if(local.curSiteId NEQ 0){
-					db.sql="select #local.tempColumnList# from `"&i2&"`.`"&n&"`"&limitSQL&" 
-					into outfile '#local.sitePathMySQLStruct[local.curSiteId]#database/"&i2&"/"&n&".tsv' #outfileOptions#;";
-					db.execute("qd");
-					
-					local.sql="truncate table `"&i2&"`.`"&n&"`;";
-					arrayappend(local.siteRestoreStruct[local.curSiteId], local.sql);
-					local.sql="load data local infile '/ZIMPORTPATH/database/"&i2&"/"&n&".tsv' 
-					into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
-					arrayappend(local.siteRestoreStruct[local.curSiteId], local.sql);
-				}else if(local.backupGlobal EQ 1){
-					db.sql="select #local.tempColumnList# from `"&i2&"`.`"&n&"`"&limitSQL&" 
-					into outfile '#request.zos.mysqlBackupDirectory#database-global-backup/"&i2&"/"&n&".tsv' #outfileOptions#;";
-					db.execute("qd");
-					
-					local.sql="truncate table `"&i2&"`.`"&n&"`;";
-					arrayappend(d3, local.sql);
-					local.sql="load data local infile '/ZIMPORTPATH/database-global-backup/"&i2&"/"&n&".tsv' 
-					into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
-					arrayappend(d3, local.sql);
-				}
+			if(local.curSiteId NEQ 0){
+				db.sql="select #local.tempColumnList# from `"&i2&"`.`"&n&"`"&limitSQL&" 
+				into outfile '#local.sitePathMySQLStruct[local.curSiteId]#database/"&i2&"/"&n&".tsv' #outfileOptions#;";
+				db.execute("qd");
+				
+				local.sql="truncate table `"&i2&"`.`"&n&"`;";
+				arrayappend(local.siteRestoreStruct[local.curSiteId], local.sql);
+				local.sql="load data local infile '/ZIMPORTPATH/database/"&i2&"/"&n&".tsv' 
+				into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
+				arrayappend(local.siteRestoreStruct[local.curSiteId], local.sql);
+			}else if(local.backupGlobal EQ 1){
+				db.sql="select #local.tempColumnList# from `"&i2&"`.`"&n&"`"&limitSQL&" 
+				into outfile '#request.zos.mysqlBackupDirectory#database-global-backup/"&i2&"/"&n&".tsv' #outfileOptions#;";
+				db.execute("qd");
+				
+				local.sql="truncate table `"&i2&"`.`"&n&"`;";
+				arrayappend(d3, local.sql);
+				local.sql="load data local infile '/ZIMPORTPATH/database-global-backup/"&i2&"/"&n&".tsv' 
+				into table `"&i2&"`.`"&n&"` #outfileOptions# (#local.tempColumnList#);";
+				arrayappend(d3, local.sql);
 			}
 		}
 	}

@@ -182,7 +182,7 @@
 			idList="'#request.zos.globals.id#'";
 			//local.sql=" concat(manual_listing.manual_listing_id, '#numberFormat(request.zos.globals.id, application.zcore.listingStruct.zeroPadString)#') = listing.listing_id "; 
 		}
-		return "#arguments.joinType# JOIN #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ON manual_listing.manual_listing_id = listing.listing_id and manual_listing.site_id IN (#idList#) ";
+		return "#arguments.joinType# JOIN #db.table("manual_listing", request.zos.zcoreDatasource)# manual_listing ON manual_listing.manual_listing_id = listing.listing_id and manual_listing.site_id IN (#idList#) and manual_listing_deleted=0 ";
 		</cfscript>
     </cffunction>
     <cffunction name="getPropertyListingIdSQL" localmode="modern" output="yes" returntype="any">

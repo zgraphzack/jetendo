@@ -397,7 +397,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			</cfscript>
             <cfsavecontent variable="db.sql">
             select #db.trustedSQL("cast(concat(""'"",group_concat(city_id SEPARATOR ""','""),""'"") AS CHAR) idlist ")#
-			FROM  #db.table("#request.zos.ramtableprefix#city_distance", request.zos.zcoreDatasource)# city_distance 
+			FROM  #db.table("city_distance_memory", request.zos.zcoreDatasource)# city_distance 
 			WHERE city_parent_id = #db.param(c)# and 
 			city_distance < #db.param(arguments.ss.distance)# and 
 			city_distance_deleted = #db.param(0)# and 
@@ -488,9 +488,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         <cfelse> <!--- <cfelseif this.searchCriteria.search_surrounding_cities EQ 0><!--- ---> --->
         listing.listing_city IN (#this.searchCriteria.search_city_id#) and 
         <!--- <cfelse>
-        `#request.zos.ramtableprefix#city_distance`.city_parent_id = '#parentCity#' and 
+        `city_distance_memory`.city_parent_id = '#parentCity#' and 
         city_distance < '#application.zcore.functions.zEscape(arguments.ss.distance)#' and 
-        listing.listing_city = `#request.zos.ramtableprefix#city_distance`.city_id 
+        listing.listing_city = `city_distance_memory`.city_id 
         and --->
         </cfif>
     </cfif> 
@@ -728,9 +728,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         <cfelse> <!--- <cfelseif this.searchCriteria.search_surrounding_cities EQ 0><!--- ---> --->
         and listing.listing_city IN (#this.searchCriteria.search_city_id#)  
         <!--- <cfelse>
-        `#request.zos.ramtableprefix#city_distance`.city_parent_id = '#parentCity#' and 
+        `city_distance_memory`.city_parent_id = '#parentCity#' and 
         city_distance < '#application.zcore.functions.zEscape(arguments.ss.distance)#' and 
-        listing.listing_city = `#request.zos.ramtableprefix#city_distance`.city_id 
+        listing.listing_city = `city_distance_memory`.city_id 
         and --->
         </cfif>
     </cfif>
@@ -774,9 +774,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         <cfelse> <!--- <cfelseif this.searchCriteria.search_surrounding_cities EQ 0><!--- ---> --->
         and listing.listing_city IN (#this.searchCriteria.search_city_id#)  
         <!--- <cfelse>
-        `#request.zos.ramtableprefix#city_distance`.city_parent_id = '#parentCity#' and 
+        `city_distance_memory`.city_parent_id = '#parentCity#' and 
         city_distance < '#application.zcore.functions.zEscape(arguments.ss.distance)#' and 
-        listing.listing_city = `#request.zos.ramtableprefix#city_distance`.city_id 
+        listing.listing_city = `city_distance_memory`.city_id 
         and --->
         </cfif>
     </cfif>
@@ -850,7 +850,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfif 1 EQ 0 and arguments.ss.useMLSCopy>
     #db2.table("listing_saved", request.zos.zcoreDatasource)# listing_saved 
     <cfelse> 
-    #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
+    #db2.table("listing_memory", request.zos.zcoreDatasource)# listing
 	</cfif>
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
     <cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> , #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track </cfif>
@@ -885,7 +885,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfif 1 EQ 0 and structkeyexists(arguments.ss,'useMLScopy') and arguments.ss.useMLSCopy EQ true>
     #db2.table("listing_saved", request.zos.zcoreDatasource)# listing_saved
     <cfelse>
-    #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+    #db2.table("listing_memory", request.zos.zcoreDatasource)# listing 
     </cfif>
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
    	<cfif listingTrackTable or (arguments.ss.onlyCount EQ false and this.enableListingTrack)> , #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track </cfif> 
@@ -1019,7 +1019,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfif 1 EQ 0 and arguments.ss.useMLSCopy EQ true>
     #db2.table("listing_saved", request.zos.zcoreDatasource)# listing_saved
     <cfelse>
-    #db2.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing
+    #db2.table("listing_memory", request.zos.zcoreDatasource)# listing
     </cfif>
     
              <cfif this.searchCriteria.search_list_date NEQ "" or this.searchCriteria.search_max_list_date NEQ "">
@@ -1535,7 +1535,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				}
 				idlist22=arraytolist(mlsstruct[i654],"','");
 				tsql232="select * #db.trustedSQL(rs2.select)# #db.trustedSQL(rs3.select)# from (
-				#db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing, 
+				#db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
 				#db.table("listing_data", request.zos.zcoreDatasource)# listing_data) 				
 				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL("INNER"))#  
 				#db.trustedSQL(local.rs3.leftJoin)#

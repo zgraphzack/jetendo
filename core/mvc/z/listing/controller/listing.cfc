@@ -449,7 +449,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 	</cfscript>
 	 <cfsavecontent variable="db.sql">
 	SELECT listing_condoname as condoName, count(listing_id) count 
-	FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+	FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	WHERE listing_condoname<> #db.param('')# and 
 	listing_deleted = #db.param(0)# and
 	listing_condoname<>#db.param('Other')# and 
@@ -1290,16 +1290,18 @@ Primary Cities:</th>
 		arrTables=['city','city_distance','listing'];//,'listing_feature','listing_property_type'];//'content',
 	}else{
 		arrTables2=['city','city_distance','listing'];
+		arrTables4=['city_memory','city_distance_memory','listing_memory'];
 		arrTables3=['city_id','city_id','listing_id'];
 		arrTables=arraynew(1);
 		arrQ2=arraynew(1);
-		db.sql="SHOW TABLES IN `#request.zos.zcoreDatasource#` LIKE #db.param(request.zos.ramtableprefix&"%")# ";
+		db.sql="SHOW TABLES IN `#request.zos.zcoreDatasource#` WHERE `Tables_in_#request.zos.zcoreDatasource#` IN 
+		(#db.param('city_memory')#, #db.param('city_distance_memory')#, #db.param('listing_memory')#)";
 		qCheckRamTables=db.execute("qCheckRamTables");
 		if(qCheckRamTables.recordcount NEQ 3){
 			arrTables=['city','city_distance','listing'];
 		}else{
 			for(i=1;i<=arraylen(arrTables2);i++){
-			arrayappend(arrQ2,"SELECT #arrTables3[i]# id FROM #db.table("#request.zos.ramtableprefix##arrTables2[i]#", request.zos.zcoreDatasource)#  
+			arrayappend(arrQ2,"SELECT #arrTables3[i]# id FROM #db.table("#arrTables4[i]#", request.zos.zcoreDatasource)#  
 				LIMIT #db.param(0)#,#db.param(1)#");
 			}
 			db.sql=arraytolist(arrQ2,' UNION ALL ')&' UNION ALL SELECT #db.param(0)# id LIMIT #db.param(4)#';
@@ -1478,7 +1480,7 @@ local.primaryCityId=ts.mls_primary_city_id;
 
 	if(local.primaryCityId NEQ 0){
 		db.sql="SELECT city_latitude avgLat, city_longitude avgLong 
-		FROM #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city 
+		FROM #db.table("city_memory", request.zos.zcoreDatasource)# city 
 		WHERE city_id = #db.param(local.primaryCityId)# and 
 		city_deleted = #db.param(0)#";
 		local.qCenterMap=db.execute("qCenterMap"); 
@@ -1487,7 +1489,7 @@ local.primaryCityId=ts.mls_primary_city_id;
 			ts.avgLong=local.qCenterMap.avgLong;
 		}else{
 			db.sql="SELECT AVG(listing_latitude) avgLat, AVG(listing_longitude) avgLong 
-			FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing 
+			FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 			WHERE listing_city = #db.param(local.primaryCityId)# AND 
 			listing_latitude<> #db.param('')# and 
 			listing_deleted = #db.param(0)# and 
@@ -1593,7 +1595,7 @@ local.primaryCityId=ts.mls_primary_city_id;
 		arrTables2=['city','city_distance','listing'];
 		arrTables=arraynew(1);
 		for(i=1;i<=arraylen(arrTables2);i++){
-			db.sql="SELECT * FROM #db.table("#request.zos.ramtableprefix##arrTables2[i]#", request.zos.zcoreDatasource)# c 
+			db.sql="SELECT * FROM #db.table("#arrTables2[i]#_memory", request.zos.zcoreDatasource)# c 
 			WHERE #arrTables2[i]#_deleted = #db.param(0)#
 			LIMIT #db.param(0)#,#db.param(1)#";
 			qC=db.execute("qC"); 
@@ -1812,7 +1814,7 @@ ts.searchStruct=structnew();
 ts.searchStruct.contentTableEnabled=false;
 //ts.searchStruct.lookupName="city";
 ts.searchStruct.zselect=" city_name label, listing_city value, COUNT(listing.listing_id) COUNT ";
-ts.searchStruct.zleftjoin=" INNER JOIN #request.zos.zcoreDatasource#.`#request.zos.ramtableprefix#city` city ON city.city_id = listing.listing_city ";
+ts.searchStruct.zleftjoin=" INNER JOIN #request.zos.zcoreDatasource#.`city_memory` city ON city.city_id = listing.listing_city ";
 ts.searchStruct.zgroupby=" group by listing_city ";
 ts.searchStruct.zwhere=" and listing_city not in ('','0') ";
 ts.searchStruct.zorderby=" ORDER BY label";
@@ -2555,7 +2557,7 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 <cfset tempSQL=this.getMLSIDWhereSQL("listing")>
 	<cfif structkeyexists(application.sitestruct[request.zos.globals.id],'zListingMapCheck') EQ false>
     <cfsavecontent variable="db.sql">
-    SELECT listing_id FROM #db.table("#request.zos.ramtableprefix#listing", request.zos.zcoreDatasource)# listing  
+    SELECT listing_id FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing  
 		WHERE #db.trustedSQL(tempSQL)# and 
 		listing_latitude<> #db.param('')# and 
 		listing_deleted = #db.param(0)# 
@@ -2782,7 +2784,7 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	db.sql="truncate #db.table("city_distance_safe_update", request.zos.zcoreDatasource)# ";
 	db.execute("q"); 
 	db.sql="UPDATE 
-	#db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city, 
+	#db.table("city_memory", request.zos.zcoreDatasource)# city, 
 	 #db.table("zipcode", request.zos.zcoreDatasource)#  
 	 SET city_latitude=zipcode_latitude, 
 	 city_longitude=zipcode_longitude,
@@ -2810,8 +2812,8 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	SELECT city.city_id, city2.city_id,  
 	#db.trustedSQL("ROUND((ACOS((SIN(city.city_latitude/57.2958) * SIN(city2.city_latitude/57.2958)) + (COS(city.city_latitude/57.2958) * COS(city2.city_latitude/57.2958) * COS(city2.city_longitude/57.2958 - city.city_longitude/57.2958)))) * 3963, 0) AS distance")#, 
 	city.city_updated_datetime, city.city_deleted
-	FROM #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city
-	LEFT JOIN #db.table("#request.zos.ramtableprefix#city", request.zos.zcoreDatasource)# city2 ON  #db.trustedSQL("ROUND((ACOS((SIN(city.city_latitude/57.2958) * SIN(city2.city_latitude/57.2958)) + (COS(city.city_latitude/57.2958) * COS(city2.city_latitude/57.2958) * COS(city2.city_longitude/57.2958 - city.city_longitude/57.2958)))) * 3963, 0) <= 100
+	FROM #db.table("city_memory", request.zos.zcoreDatasource)# city
+	LEFT JOIN #db.table("city_memory", request.zos.zcoreDatasource)# city2 ON  #db.trustedSQL("ROUND((ACOS((SIN(city.city_latitude/57.2958) * SIN(city2.city_latitude/57.2958)) + (COS(city.city_latitude/57.2958) * COS(city2.city_latitude/57.2958) * COS(city2.city_longitude/57.2958 - city.city_longitude/57.2958)))) * 3963, 0) <= 100
 	AND city2.city_latitude<>0 AND city2.city_longitude<>0
 	WHERE city.city_latitude<>0 AND city.city_longitude<>0 and 
 	city.city_deleted = 0")# ";
@@ -2855,7 +2857,6 @@ ts=StructNew();
 ts.table="listing_status";
 // optional
 ts.allowFulltext=false;
-ts.tablePrefix="";
 // run function
 zCreateMemoryTable(ts);
 --->
@@ -2897,24 +2898,24 @@ zCreateMemoryTable(ts);
 	local.c.autoReset=false;
 	local.c.datasource=request.zos.zcoreDatasource;
 	db=application.zcore.db.newQuery(local.c);
-	ts.tablePrefix=request.zos.ramtableprefix;
+	memoryTable=arguments.ss.table&"_memory";
 	ts.force=false;
 	ts.allowFulltext=false;
 	structappend(arguments.ss,ts,false);
 	</cfscript>
 	<cflock name="zCreateMemoryTable" type="exclusive" timeout="1000">
 		<cfsavecontent variable="db.sql">
-		SHOW TABLES like #db.param('#(arguments.ss.tablePrefix)####(arguments.ss.table)#')#
+		SHOW TABLES like #db.param('###(memoryTable)#')#
 		</cfsavecontent><cfscript>qC2=db.execute("qC2");
 		</cfscript>
 		<cfif structkeyexists(form, 'zrebuildramtable') or (qC2.recordcount EQ 0)>
 			<cfif arguments.ss.force EQ false>
 			    <cfsavecontent variable="db.sql">
-			    SHOW TABLES like #db.param('#(arguments.ss.tablePrefix)##(arguments.ss.table)#')#
+			    SHOW TABLES like #db.param('#memoryTable#')#
 			    </cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 			    <cfif qmls.recordcount NEQ 0>
 					<cfsavecontent variable="db.sql">
-					SELECT count(*) c FROM #db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#
+					SELECT count(*) c FROM #db.table(memoryTable, request.zos.zcoreDatasource)#
 					</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 					<cfif qMLS.c NEQ 0>
 					    <cfreturn 2>
@@ -3018,11 +3019,11 @@ zCreateMemoryTable(ts);
 			</cfscript>
 			<!--- Make the new table in ram and then rename so the operation is locked and instantaneous --->
 			<cfsavecontent variable="db.sql">
-			drop table if exists #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# 
+			drop table if exists #db.table("##"&memoryTable, request.zos.zcoreDatasource)# 
 			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript><!---  --->
 
 			<cfsavecontent variable="db.sql">
-			create table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
+			create table #db.table("##"&memoryTable, request.zos.zcoreDatasource)#  
 			(
 				#db.trustedSQL(arrayToList(arrCreate, ", "))#
 				<cfif trim(keyString) NEQ ''>, #db.trustedSQL(keyString)# </cfif>
@@ -3051,12 +3052,12 @@ zCreateMemoryTable(ts);
 			str=arraytolist(arrAlter,',');
 			</cfscript>
 			<cfsavecontent variable="db.sql">
-			alter table #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
+			alter table #db.table("##"&memoryTable, request.zos.zcoreDatasource)#  
 			#db.trustedSQL(str)#
 			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>  
 			 --->
 			<cfsavecontent variable="db.sql">
-			INSERT INTO #db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  
+			INSERT INTO #db.table("##"&memoryTable, request.zos.zcoreDatasource)#  
 			SELECT * FROM #db.table(arguments.ss.table, request.zos.zcoreDatasource)# 
 			<cfif request.zos.istestserver and arguments.ss.table EQ "listing"> 
 				WHERE CEILING(RAND()*#db.param(10)#) >= #db.param(7)# 
@@ -3071,7 +3072,7 @@ zCreateMemoryTable(ts);
 			</cfscript>  
 			<cfsavecontent variable="db2.sql">
 			show table status from `#request.zos.zcoreDatasource#` 
-			WHERE name = '#arguments.ss.tablePrefix&arguments.ss.table#'
+			WHERE name = '#memoryTable#'
 			</cfsavecontent><cfscript>
 			qMLS=db2.execute("qMLS");</cfscript>
 
@@ -3079,23 +3080,23 @@ zCreateMemoryTable(ts);
 			<cfif qMLS.recordcount NEQ 0>
 				<cfsavecontent variable="db.sql">
 				rename table 
-				#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to  <!--- #zram##table --->
-				#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# , <!--- 2 ##zram##table --->
-				#db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#  to  <!--- zram#table --->
-				#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# ,  <!--- 2 #zram##table --->
-				#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to <!--- ##zram##table --->
-				#db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)#  <!--- 2 zram#table --->
+				#db.table("##"&memoryTable, request.zos.zcoreDatasource)#  to  <!--- #zram##table --->
+				#db.table("####"&memoryTable, request.zos.zcoreDatasource)# , <!--- 2 ##zram##table --->
+				#db.table(memoryTable, request.zos.zcoreDatasource)#  to  <!--- zram#table --->
+				#db.table("##"&memoryTable, request.zos.zcoreDatasource)# ,  <!--- 2 #zram##table --->
+				#db.table("####"&memoryTable, request.zos.zcoreDatasource)#  to <!--- ##zram##table --->
+				#db.table(memoryTable, request.zos.zcoreDatasource)#  <!--- 2 zram#table --->
 				</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 			<cfelse>
 				<cfsavecontent variable="db.sql">
 				rename table 
-				#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)#  to #db.table(arguments.ss.tablePrefix&arguments.ss.table, request.zos.zcoreDatasource)# 
+				#db.table("##"&memoryTable, request.zos.zcoreDatasource)#  to #db.table(memoryTable, request.zos.zcoreDatasource)# 
 				</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 			</cfif>
 			<cfsavecontent variable="db.sql">
 			drop table if exists 
-			#db.table("##"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# , 
-			#db.table("####"&arguments.ss.tablePrefix&"##"&arguments.ss.table, request.zos.zcoreDatasource)# 
+			#db.table("##"&memoryTable, request.zos.zcoreDatasource)# , 
+			#db.table("####"&memoryTable, request.zos.zcoreDatasource)# 
 			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 		</cfif>
 	</cflock>
