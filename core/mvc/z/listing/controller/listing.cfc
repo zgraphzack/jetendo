@@ -3080,12 +3080,12 @@ zCreateMemoryTable(ts);
 			<cfif qMLS.recordcount NEQ 0>
 				<cfsavecontent variable="db.sql">
 				rename table 
-				#db.table("##"&memoryTable, request.zos.zcoreDatasource)#  to  <!--- #zram##table --->
-				#db.table("####"&memoryTable, request.zos.zcoreDatasource)# , <!--- 2 ##zram##table --->
-				#db.table(memoryTable, request.zos.zcoreDatasource)#  to  <!--- zram#table --->
-				#db.table("##"&memoryTable, request.zos.zcoreDatasource)# ,  <!--- 2 #zram##table --->
-				#db.table("####"&memoryTable, request.zos.zcoreDatasource)#  to <!--- ##zram##table --->
-				#db.table(memoryTable, request.zos.zcoreDatasource)#  <!--- 2 zram#table --->
+				#db.table("##"&memoryTable, request.zos.zcoreDatasource)#  to
+				#db.table("####"&memoryTable, request.zos.zcoreDatasource)# ,
+				#db.table(memoryTable, request.zos.zcoreDatasource)#  to 
+				#db.table("##"&memoryTable, request.zos.zcoreDatasource)# , 
+				#db.table("####"&memoryTable, request.zos.zcoreDatasource)#  to 
+				#db.table(memoryTable, request.zos.zcoreDatasource)# 
 				</cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 			<cfelse>
 				<cfsavecontent variable="db.sql">

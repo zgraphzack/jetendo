@@ -244,7 +244,7 @@ while ($db_row = $db_result->fetch_object()) {
 	while ($row2 = $result->fetch_array(MYSQLI_ASSOC)) {
 
 		$table=$row2['Tables_in_'.$db];
-		if(substr($table, 0, 5) == "zram#"){
+		if($table=="listing_memory" || $table=="city_memory" || $table=="city_distance_memory"){
 			continue;
 		}
 		$tableFilePath=$mysqlDataDir.str_replace("-", "@002d", str_replace(".", "@002e", str_replace("#", "@0023", $db."/".$table)));

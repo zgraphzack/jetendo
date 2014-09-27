@@ -16,12 +16,16 @@
 		return false;
 	} */
 	/*
+ALTER TABLE `blog`   
+  ADD COLUMN `section_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `blog_show_all_sections`, 
+  ADD  INDEX `NewIndex2` (`section_id`, `blog_deleted`);
+
 CREATE TABLE `layout_config`(  
   `layout_config_id` INT(11) UNSIGNED NOT NULL,
   `site_id` INT(11) UNSIGNED NOT NULL,
   `layout_config_section_url_id` INT(11) UNSIGNED NOT NULL,
   `layout_config_landing_page_url_id` INT(11) UNSIGNED NOT NULL,
-  `layout_config_updated_datetime` DATETIME NOT NULL,
+  `layout_config_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
   `layout_config_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`site_id`, `layout_config_id`, `layout_config_deleted`)
 ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
@@ -30,172 +34,218 @@ CREATE TABLE `layout_config`(
 CREATE TABLE `section`(  
   `section_id` INT(11) UNSIGNED NOT NULL,
   `site_id` INT(11) UNSIGNED NOT NULL,
-  `section_uuid` VARCHAR(35) NOT NULL,
+  `section_uuid` CHAR(35) NOT NULL DEFAULT '',
   `section_parent_id` INT(11) UNSIGNED NOT NULL,
   `section_name` VARCHAR(255) NOT NULL,
   `section_unique_url` VARCHAR(255) NOT NULL,
   `section_child_layout_page_id` INT UNSIGNED NOT NULL,
-  `section_updated_datetime` DATETIME NOT NULL,
+  `section_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
   `section_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`site_id`, `section_id`, `section_deleted`),
   UNIQUE INDEX `NewIndex1` (`site_id`, `section_parent_id`, `section_name`, `section_deleted`)
 ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE `section_content_type`(  
+  `section_content_type_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `section_content_type_name` VARCHAR(100) NOT NULL,
+  `section_content_type_cfc_path` VARCHAR(255) NOT NULL,
+  `section_content_type_cfc_method` VARCHAR(100) NOT NULL,
+  `section_content_type_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `section_content_type_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`section_content_type_id`),
+  UNIQUE INDEX `NewIndex1` (`section_content_type_name`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
 
-	section_content_type
-		section_content_type_id
-		section_content_type_name
-		section_content_type_cfc_path
-		section_content_type_cfc_method
+CREATE TABLE `layout_preset`( 
+	`layout_preset_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_preset_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_preset_name`
+	`layout_preset_active` CHAR(1) NOT NULL DEFAULT 0,
+	`layout_preset_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`layout_preset_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_preset_id`, `layout_preset_deleted`),
+  UNIQUE KEY `NewIndex1` (`site_id`, `layout_preset_name`, `layout_preset_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-		this cfc might need to follow the "section" interface functions instead of having a method field.
+CREATE TABLE `layout_page`( 
+	layout_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	layout_page_uuid` CHAR(35) NOT NULL DEFAULT '',
+	layout_page_name - unique index for this + site_id
+	layout_preset_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	layout_preset_name` VARCHAR(255) NOT NULL,
+	layout_preset_modified` CHAR(1) NOT NULL DEFAULT 0,
+	site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	layout_page_active` CHAR(1) NOT NULL DEFAULT 0,
+	layout_page_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	layout_page_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_page_id`, `layout_page_deleted`),
+  UNIQUE INDEX `NewIndex1` (`site_id`, `layout_page_name`, `layout_page_name`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-		the cfc is meant to be an adapter to fit the blog/page/rental/event/listing/etc to a single section manager interface.
+CREATE TABLE `landing_page`( 
+	`landing_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`landing_page_parent_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_meta_title
+	`layout_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`user_group_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_unique_url` VARCHAR(255) NOT NULL DEFAULT '',
+	`landing_page_metakey` TEXT NOT NULL,
+	`landing_page_metadesc` TEXT NOT NULL,
+	`landing_page_sort` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`section_content_type_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`section_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`landing_page_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `landing_page_id`, `landing_page_deleted`),
+  UNIQUE INDEX `NewIndex1` (`site_id`, `landing_page_unique_url`, `landing_page_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	layout_preset
-		layout_preset_id
-		layout_preset_uuid
-		layout_page_id
-		site_id = 0 is global
-		layout_preset_name
-		layout_preset_active 0 / 1
+CREATE TABLE `landing_page_x_widget`( 
+	`landing_page_x_widget_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_x_widget_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`landing_page_x_widget_sort` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`section_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_x_option_group_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`landing_page_x_widget_json_data LONGTEXT,
+	`landing_page_x_widget_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`landing_page_x_widget_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `landing_page_x_widget_id`, `landing_page_x_widget_deleted`),
+  KEY `NewIndex1` (`site_id`, `widget_id`, `landing_page_id`, `landing_page_x_widget_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	layout_page
-		layout_page_id
-		layout_page_uuid
-		layout_page_name - unique index for this + site_id
-		layout_preset_id
-		layout_preset_name
-		layout_preset_modified 0 / 1 - if any row, widget, widget, page setting is modified, then the preset is "unlinked" from the current layout_page_id.
-		site_id
-		layout_page_active 0 / 1
+CREATE TABLE `layout_row`( 
+	`layout_row_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_row_active` CHAR(1) NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_updated_datetime` DATETIME UNSIGNED NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`layout_row_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_row_id`, `layout_row_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	landing_page
-		landing_page_id
-		landing_page_uuid
-		landing_page_parent_id
-		landing_page_meta_title
-		layout_page_id
-		user_group_id
-		landing_page_unique_url
-		landing_page_metakey
-		landing_page_metadesc
-		landing_page_sort
-		section_content_type_id
-		section_id
-		site_id
+CREATE TABLE `layout_column`( 
+	`layout_row_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_page_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_updated_datetime` DATETIME NOT NULL '0000-00-00 00:00:00',
+	`layout_column_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_column_id`, `layout_column_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	landing_page_x_widget - This table is a single "instance" of a widget and stores a reference to the widget options or the full json if this widget uses a custom CFC.
-		landing_page_x_widget_id
-		landing_page_x_widget_uuid
-		landing_page_x_widget_sort
-		site_id
-		widget_id
-		section_id
-		landing_page_id
-		site_x_option_group_id
-		landing_page_x_widget_json_data LONGTEXT
+CREATE TABLE `layout_column_x_widget`( 
+	`layout_column_x_widget_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_column_x_widget_sort` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_repeat_limit` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_updated_datetime DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`layout_column_x_widget_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_column_x_widget_id`, `layout_column_x_widget_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	some widgets allow themselves to be repeated, so the landing page editor will allow Editing the first one, and then adding another afterwards if desired.
+CREATE TABLE `layout_row_x_breakpoint`( 
+	`layout_row_x_breakpoint_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_x_breakpoint_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_row_x_breakpoint_value` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_x_breakpoint_visible` CHAR(1) NOT NULL DEFAULT 0,
+	`layout_row_x_breakpoint_sort` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_x_breakpoint_gutter_size` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_x_breakpoint_margin` varchar(30) NOT NULL DEFAULT '',
+	`layout_row_x_breakpoint_padding` varchar(30) NOT NULL DEFAULT '',
+	`layout_row_x_breakpoint_border` varchar(30) NOT NULL DEFAULT '',
+	`layout_row_x_breakpoint_border_radius` varchar(30) NOT NULL DEFAULT '',
+	`layout_row_x_breakpoint_background` TEXT NOT NULL,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_row_x_breakpoint_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`layout_row_x_breakpoint_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_row_x_breakpoint_id`, `layout_row_x_breakpoint_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	layout_row
-		layout_page_id
-		layout_row_uuid
-		layout_row_active 0 / 1
-		site_id
+CREATE TABLE `layout_column_x_breakpoint`( 
+	`layout_column_x_breakpoint_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_column_x_breakpoint_value` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_visible` CHAR(1) NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_sort` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_margin` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_breakpoint_padding` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_breakpoint_border` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_breakpoint_border_radius` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_breakpoint_width` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_height` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_background TEXT NOT NULL,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_breakpoint_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`layout_column_x_breakpoint_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_column_x_breakpoint_id`, `layout_column_x_breakpoint_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
-	layout_column
-		layout_row_id
-		layout_column_uuid
-		layout_page_id
-		site_id
-
-	layout_column_x_widget - a single instance of a widget attached to a layout.
-		layout_column_x_widget_id
-		layout_column_x_widget_uuid
-		layout_column_x_widget_sort
-		layout_column_x_widget_repeat_limit = 0, 1, X or 10000 for unlimited
-		layout_column_id
-		widget_id
-		site_id
-
-	layout_row_x_breakpoint
-		layout_row_x_breakpoint_id
-		layout_row_x_breakpoint_uuid
-		layout_row_x_breakpoint_value (320, 640, 960, etc)
-		layout_row_id
-		layout_row_x_breakpoint_visible 0 / 1 - display css toggle for the current breakpoint
-		layout_row_x_breakpoint_sort
-		layout_row_x_breakpoint_gutter_size int 0 to X - ensure equal separation in between all columns in row with no margin on the left or right most column
-		layout_row_x_breakpoint_margin varchar(30) 0px 0px 0px 0px format
-		layout_row_x_breakpoint_padding varchar(30) 0px 0px 0px 0px format
-		layout_row_x_breakpoint_border varchar(30) 0px 0px 0px 0px format
-		layout_row_x_breakpoint_border_radius varchar(30) 0px 0px 0px 0px format
-		layout_row_x_breakpoint_background (css background configuration - allow multiple layers of backgrounds)
-		site_id
-
-	layout_column_x_breakpoint
-		layout_column_x_breakpoint_id
-		layout_column_x_breakpoint_uuid
-		layout_column_x_breakpoint_value (320, 640, 960, etc)
-		layout_column_id
-		layout_column_x_breakpoint_visible 0 / 1 - display css toggle for the current breakpoint
-		layout_column_x_breakpoint_sort (overrides layout_column_sort)
-		layout_column_x_breakpoint_margin varchar(30) 0px 0px 0px 0px format
-		layout_column_x_breakpoint_padding varchar(30) 0px 0px 0px 0px format
-		layout_column_x_breakpoint_border varchar(30) 0px 0px 0px 0px format
-		layout_column_x_breakpoint_border_radius varchar(30) 0px 0px 0px 0px format
-		layout_column_x_breakpoint_width = int 0 to X - 0 is auto
-		layout_column_x_breakpoint_height = int 0 to X - 0 is auto
-		layout_column_x_breakpoint_background (css background configuration - allow multiple layers of backgrounds)
-		site_id
-
-	layout_column_x_widget_x_breakpoint
-		layout_column_x_widget_x_breakpoint_id
-		layout_column_x_widget_x_breakpoint_uuid
-		layout_column_x_widget_x_breakpoint_value (320, 640, 960, etc)
-		layout_column_id
-		widget_id
-		layout_column_x_widget_x_breakpoint_visible 0 / 1 - display css toggle for the current breakpoint
-		layout_column_x_widget_x_breakpoint_sort (overrides layout_column_sort)
-		// the spacing options are inherited from the "widget" record
-		layout_column_x_widget_x_breakpoint_margin varchar(30) 0px 0px 0px 0px format
-		layout_column_x_widget_x_breakpoint_padding varchar(30) 0px 0px 0px 0px format
-		layout_column_x_widget_x_breakpoint_border varchar(30) 0px 0px 0px 0px format
-		layout_column_x_widget_x_breakpoint_border_radius varchar(30) 0px 0px 0px 0px format
-		layout_column_x_widget_x_breakpoint_column_gutter_size int 0 to X - ensure equal separation in between repeated widget, but not on sides instead of using individual margin/padding
-		layout_column_x_widget_x_breakpoint_background
-		site_id
+CREATE TABLE `layout_column_x_widget_x_breakpoint`( 
+	`layout_column_x_widget_x_breakpoint_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_x_breakpoint_uuid` CHAR(35) NOT NULL DEFAULT '',
+	`layout_column_x_widget_x_breakpoint_value int(11) unsigned not null default 0,
+	`layout_column_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_x_breakpoint_visible` char(1) NOT NULL DEFAULT 0,
+	`layout_column_x_widget_x_breakpoint_sort` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_x_breakpoint_margin` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_widget_x_breakpoint_padding` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_widget_x_breakpoint_border` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_widget_x_breakpoint_border_radius` varchar(30) NOT NULL DEFAULT '',
+	`layout_column_x_widget_x_breakpoint_column_gutter_size` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_x_breakpoint_background TEXT NOT NULL,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`layout_column_x_widget_x_breakpoint_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`layout_column_x_widget_x_breakpoint_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `layout_column_x_widget_x_breakpoint_id`, `layout_column_x_widget_x_breakpoint_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
 
-	widget (for search / filtering)
-		widget_id
-		widget_name (can't be edited after first insert)
-		widget_display_name
-		widget_concurrent_server_loading_enabled (0 / 1 - determines if parallel loading is possible)
-		widget_has_preview 0 / 1 - if widget doesn't implement preview function, then it will look more generic in the layout editor
-		widget_options_type (0 is Site Option system, 1 is Custom CFC)
-		site_x_option_group_set_id
-		widget_options_cfc_path
-		widget_site_singleton 0 / 1 - some widgets must be globally unique, others can be inserted many times with different settings.
-		widget_page_singleton 0 / 1 - some widgets will only work when embedded once on a single page.
-		widget_repeat_limit int 1 to X
-		widget_column_count int 1 to X // this force repetition in preview mode, and adjusts the width calculation
-		widget_margin varchar(30) 0px 0px 0px 0px format
-		widget_padding varchar(30) 0px 0px 0px 0px format
-		widget_border varchar(30) 0px 0px 0px 0px format
-		widget_border_radius varchar(30) 0px 0px 0px 0px format
-		widget_column_gutter_size int 0 to X - ensure equal separation in between repeated widget, but not on sides instead of using individual margin/padding
-		widget_width = int 0 to X - 0 is auto
-		widget_height = int 0 to X - 0 is auto
-		widget_minimum_height = 0 or X
-		widget_maximum_width = 0 or X
-		widget_login_required
-		widget_custom_json - only used for the custom widget type, which gives the user a freeform multi-layer mock up editor.
-		user_group_id int (a login for the selected user group is required for widget)
-		site_id - 0 is global
-		(site_id + widget_name unique index)
+CREATE TABLE `widget`
+	`widget_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_name` VARCHAR(100) NOT NULL DEFAULT '',
+	`widget_display_name` VARCHAR(100) NOT NULL DEFAULT '',
+	`widget_concurrent_server_loading_enabled` CHAR(1) NOT NULL DEFAULT 0,
+	`widget_has_preview` CHAR(1) NOT NULL DEFAULT 0,
+	`widget_options_type` CHAR(1) NOT NULL DEFAULT 0,
+	`site_x_option_group_set_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_options_cfc_path VARCHAR(255) NOT NULL DEFAULT '',
+	`widget_site_singleton` CHAR(1) NOT NULL DEFAULT 0,
+	`widget_page_singleton` CHAR(1) NOT NULL DEFAULT 0,
+	`widget_repeat_limit` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_column_count` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_margin` varchar(30) NOT NULL DEFAULT '',
+	`widget_padding` varchar(30) NOT NULL DEFAULT '',
+	`widget_border` varchar(30) NOT NULL DEFAULT '',
+	`widget_border_radius` varchar(30) NOT NULL DEFAULT '',
+	`widget_column_gutter_size` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_width` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_height` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_minimum_height` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_maximum_width` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_login_required` CHAR(1) NOT NULL DEFAULT 0,
+	`widget_custom_json` TEXT NOT NULL,
+	`user_group_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+	`widget_updated_datetime` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`widget_deleted` INT(11) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (`site_id`, `widget_id`, `widget_deleted`),
+  UNIQUE INDEX `NewIndex1` (`site_id`, `widget_name`, `widget_deleted`)
+) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin;
 
 
 

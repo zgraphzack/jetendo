@@ -14,9 +14,9 @@ MAX(listing_baths) hasBaths,
 MAX(listing_square_feet) hasSqfeet, 
 MAX(listing_acreage) hasAcreage, 
 MAX(listing_condoname) hasCondos 
- FROM `zram#listing` FORCE INDEX (NewIndex2) 
+ FROM `listing_memory` FORCE INDEX (NewIndex2) 
 WHERE 
-`zram#listing`.listing_mls_id IN ('4','7','12','9','13','8') ;
+`listing_memory`.listing_mls_id IN ('4','7','12','9','13','8') ;
 
 
 DUPLICATE ADDRESSES

@@ -81,7 +81,7 @@
 DELETE FROM `#request.zos.zcoreDatasource#`.listing_track WHERE listing_id LIKE '17-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.listing WHERE listing_id LIKE '17-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.listing_data WHERE listing_id LIKE '17-%';
-DELETE FROM `#request.zos.zcoreDatasource#`.`zram#listing` WHERE listing_id LIKE '17-%';
+DELETE FROM `#request.zos.zcoreDatasource#`.`listing_memory` WHERE listing_id LIKE '17-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acct LIKE '17-%';
 		
 		*/

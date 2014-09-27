@@ -157,7 +157,7 @@ this.remapFieldStruct=variables.t5;
 DELETE FROM `#request.zos.zcoreDatasource#`.listing_track WHERE listing_id LIKE '7-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.listing WHERE listing_id LIKE '7-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.listing_data WHERE listing_id LIKE '7-%';
-DELETE FROM `#request.zos.zcoreDatasource#`.`zram#listing` WHERE listing_id LIKE '7-%';
+DELETE FROM `#request.zos.zcoreDatasource#`.`listing_memory` WHERE listing_id LIKE '7-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE '7-%';
 		
 		

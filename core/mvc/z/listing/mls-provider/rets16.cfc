@@ -92,7 +92,7 @@
 DELETE FROM `#request.zos.zcoreDatasource#`.listing_track WHERE listing_id LIKE '16-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.listing WHERE listing_id LIKE '16-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.listing_data WHERE listing_id LIKE '16-%';
-DELETE FROM `#request.zos.zcoreDatasource#`.`zram#listing` WHERE listing_id LIKE '16-%';
+DELETE FROM `#request.zos.zcoreDatasource#`.`listing_memory` WHERE listing_id LIKE '16-%';
 DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIKE '16-%';
 		
 		
