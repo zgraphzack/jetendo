@@ -393,7 +393,7 @@
 		ts.domainRedirectStruct[row.domain_redirect_old_domain]=row;
 	}
 	query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
-		writeoutput("SELECT site_id, site_short_domain FROM `#request.zos.zcoreDatasourcePrefix#site` 
+		writeoutput("SELECT site_id, site_short_domain FROM `site` 
 		WHERE site_active='1' ");
 	}
 	if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'siteglobals')){
@@ -466,7 +466,6 @@
 	ts.dbInitConfigStruct={
 		insertIdSQL:"select @zLastInsertId id2, last_insert_id() id",
 		datasource:request.zos.globals.serverdatasource,
-		tablePrefix:request.zos.zcoreDatasourcePrefix,
 		parseSQLFunctionStruct:{
 			checkSiteId:application.zcore.functions.zVerifySiteIdsInDBCFCQuery
 			, checkDeletedField:application.zcore.functions.zVerifyDeletedInDBCFCQuery

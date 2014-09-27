@@ -1812,7 +1812,7 @@ ts.searchStruct=structnew();
 ts.searchStruct.contentTableEnabled=false;
 //ts.searchStruct.lookupName="city";
 ts.searchStruct.zselect=" city_name label, listing_city value, COUNT(listing.listing_id) COUNT ";
-ts.searchStruct.zleftjoin=" INNER JOIN #request.zos.zcoreDatasource#.`#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#city` city ON city.city_id = listing.listing_city ";
+ts.searchStruct.zleftjoin=" INNER JOIN #request.zos.zcoreDatasource#.`#request.zos.ramtableprefix#city` city ON city.city_id = listing.listing_city ";
 ts.searchStruct.zgroupby=" group by listing_city ";
 ts.searchStruct.zwhere=" and listing_city not in ('','0') ";
 ts.searchStruct.zorderby=" ORDER BY label";
@@ -2904,13 +2904,13 @@ zCreateMemoryTable(ts);
 	</cfscript>
 	<cflock name="zCreateMemoryTable" type="exclusive" timeout="1000">
 		<cfsavecontent variable="db.sql">
-		SHOW TABLES like #db.param('#request.zos.zcoreDatasourcePrefix##(arguments.ss.tablePrefix)####(arguments.ss.table)#')#
+		SHOW TABLES like #db.param('#(arguments.ss.tablePrefix)####(arguments.ss.table)#')#
 		</cfsavecontent><cfscript>qC2=db.execute("qC2");
 		</cfscript>
 		<cfif structkeyexists(form, 'zrebuildramtable') or (qC2.recordcount EQ 0)>
 			<cfif arguments.ss.force EQ false>
 			    <cfsavecontent variable="db.sql">
-			    SHOW TABLES like #db.param('#request.zos.zcoreDatasourcePrefix##(arguments.ss.tablePrefix)##(arguments.ss.table)#')#
+			    SHOW TABLES like #db.param('#(arguments.ss.tablePrefix)##(arguments.ss.table)#')#
 			    </cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 			    <cfif qmls.recordcount NEQ 0>
 					<cfsavecontent variable="db.sql">

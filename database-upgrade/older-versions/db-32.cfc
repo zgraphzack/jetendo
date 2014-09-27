@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#dns_zone`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `dns_zone`   
  	 CHANGE `dns_zone_email` `dns_zone_email` VARCHAR(100) NOT NULL")){
 		return false;
 	}

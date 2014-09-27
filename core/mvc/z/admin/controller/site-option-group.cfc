@@ -382,7 +382,7 @@
 		// manually remove sensitive ones
 		// structdelete
 		// force some default values for new table
-		local.tempColumns=duplicate(application.zcore.tableColumns["#request.zos.zcoreDatasource#.#request.zos.zcoreDatasourcePrefix#inquiries"]);
+		local.tempColumns=duplicate(application.zcore.tableColumns["#request.zos.zcoreDatasource#.finquiries"]);
 		//writedump(local.tempColumns);
 		local.arrTemp=structkeyarray(local.tempColumns);
 		arraySort(local.arrTemp, "text", "asc");
@@ -641,7 +641,7 @@
 	arrayappend(local.arrSQL, "PRIMARY KEY (`_set_id`)");
   	// KEY `NewIndex1` (`site_id`),
 	
-	local.tableName="_#request.zos.zcoreDatasourcePrefix##qGroup.site_option_group_name#_#qGroup.site_id#";
+	local.tableName="_#qGroup.site_option_group_name#_#qGroup.site_id#";
 	dbNoVerify.sql="SHOW TABLES IN `#request.zos.zcoreTempDatasource#` LIKE '#local.tableName#_safe'";
 	local.qCheck=dbNoVerify.execute("qCheck");
 	if(local.qCheck.recordcount NEQ 0){

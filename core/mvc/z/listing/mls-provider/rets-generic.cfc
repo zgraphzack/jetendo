@@ -676,7 +676,7 @@ variables.typeStruct["text"]="text";
 		if(request.zos.isdeveloper and structkeyexists(form, 'debug')) writeoutput('path: '&newPath&' exists:'&fileexists(newPath)&'<br />');
 		if(fileexists(newPath) or i EQ "property"){
 			if(i EQ "property"){
-				dbMLSData.sql="SHOW TABLE STATUS  WHERE NAME = '#request.zos.zcoreDatasourcePrefix#rets#this.mls_id#_property'";
+				dbMLSData.sql="SHOW TABLE STATUS  WHERE NAME = 'rets#this.mls_id#_property'";
 				qM=dbMLSData.execute("qM"); 
 				if(qM.recordcount NEQ 0){
 					continue;	
@@ -717,7 +717,7 @@ variables.typeStruct["text"]="text";
 				}else{
 					local.sysidIndex="";
 				}
-				dbMLSData.sql="create table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#`(
+				dbMLSData.sql="create table `rets#this.mls_id#_#ilow#`(
 					"&arraytolist(arrC,"")&", 
 					PRIMARY KEY (`rets#this.mls_id#_#ilow#_id`), 
 					UNIQUE KEY `NewIndex2` (`rets#this.mls_id#_#variables.resourceStruct[g].id#`) #local.sysidIndex#
@@ -731,11 +731,11 @@ variables.typeStruct["text"]="text";
 					t44="";
 				}
 				try{
-					dbMLSData.sql="drop table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` ";
+					dbMLSData.sql="drop table `rets#this.mls_id#_#ilow#_safe` ";
 					dbMLSData.execute("q"); 
 				}catch(Any local.e){
 				}
-				dbMLSData.sql="create table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe`("&arraytolist(arrC,"")&", 
+				dbMLSData.sql="create table `rets#this.mls_id#_#ilow#_safe`("&arraytolist(arrC,"")&", 
 				PRIMARY KEY (`rets#this.mls_id#_#ilow#_id`), 
 				UNIQUE KEY `NewIndex2` (`rets#this.mls_id#_#variables.resourceStruct[g].id#`)  #t44#  )
 				Engine=INNODB comment=''  ";
@@ -762,7 +762,7 @@ variables.typeStruct["text"]="text";
 					loadnewpath2=newpath2;	
 				}
 				dbMLSData.sql="LOAD DATA LOCAL INFILE '#loadnewPath#' 
-				REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` 
+				REPLACE INTO TABLE `rets#this.mls_id#_#ilow#_safe` 
 				FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
 				dbMLSData.execute("q"); 
 				for(local.i9=2;local.i9 LTE 10;local.i9++){
@@ -774,7 +774,7 @@ variables.typeStruct["text"]="text";
 							local.tempPath2=local.tempPath;
 						}
 						dbMLSData.sql="LOAD DATA LOCAL INFILE '#local.tempPath2#' 
-						REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` 
+						REPLACE INTO TABLE `rets#this.mls_id#_#ilow#_safe` 
 						FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
 						dbMLSData.execute("q"); 
 					}else{
@@ -783,25 +783,25 @@ variables.typeStruct["text"]="text";
 					
 				}
 				if(fileexists(newpath2)){ // a hack added for ntreis which had way too many media records
-					dbMLSData.sql="LOAD DATA LOCAL INFILE '#loadnewpath2#' REPLACE INTO TABLE `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
+					dbMLSData.sql="LOAD DATA LOCAL INFILE '#loadnewpath2#' REPLACE INTO TABLE `rets#this.mls_id#_#ilow#_safe` FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' IGNORE 1 LINES (#columns#)";
 					dbMLSData.execute("q"); 
 					application.zcore.functions.zRenameFile(newPath2,newPath2&"-imported");
 				}
 
-				dbMLSData.sql="SHOW TABLES IN #request.zos.zcoreDatasource# LIKE '#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#'";
+				dbMLSData.sql="SHOW TABLES IN #request.zos.zcoreDatasource# LIKE 'rets#this.mls_id#_#ilow#'";
 				qC=dbMLSData.execute("qC"); 
 				if(qC.recordcount NEQ 0){
 					dbMLSData.sql="rename table 
-					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` to `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safetemp`, 
-					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#` to `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe`, 
-					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safetemp` to 
-					`#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#`";
+					`rets#this.mls_id#_#ilow#_safe` to `rets#this.mls_id#_#ilow#_safetemp`, 
+					`rets#this.mls_id#_#ilow#` to `rets#this.mls_id#_#ilow#_safe`, 
+					`rets#this.mls_id#_#ilow#_safetemp` to 
+					`rets#this.mls_id#_#ilow#`";
 					dbMLSData.execute("q"); 
-					dbMLSData.sql="drop table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` ";
+					dbMLSData.sql="drop table `rets#this.mls_id#_#ilow#_safe` ";
 					dbMLSData.execute("q"); 
 				}else{
 					
-					dbMLSData.sql="rename table `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#_safe` to `#request.zos.zcoredatasourceprefix#rets#this.mls_id#_#ilow#`";
+					dbMLSData.sql="rename table `rets#this.mls_id#_#ilow#_safe` to `rets#this.mls_id#_#ilow#`";
 					dbMLSData.execute("q"); 
 				}
 				if(fileexists(newPath&"-imported")){

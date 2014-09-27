@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#app`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `app`   
   	ADD COLUMN `app_anything` VARCHAR(10) NOT NULL AFTER `app_deleted`")){
 		return false;
 	} 

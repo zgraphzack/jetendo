@@ -12,11 +12,11 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site_option_group`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site_option_group`   
   		ADD COLUMN `site_option_group_enable_section` CHAR(1) DEFAULT '0'   NOT NULL AFTER `site_option_group_disable_site_map`")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#inquiries`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `inquiries`   
 	  DROP COLUMN `inquiries_kaylor_comment`, 
 	  DROP COLUMN `inquiries_glacier_type`, 
 	  DROP COLUMN `inquiries_glacier_type_sub`, 

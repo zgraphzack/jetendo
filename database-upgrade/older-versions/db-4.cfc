@@ -12,7 +12,7 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"DROP TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#test2`")){
+		"DROP TABLE `#this.datasource#`.`test2`")){
 		return false;
 	}
 	return true;

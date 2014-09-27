@@ -2021,7 +2021,8 @@
 	for(g=1;g LTE 255;g++){
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(cpi)# and 
-		site_id = #db.param(request.zos.globals.id)# ";
+		site_id = #db.param(request.zos.globals.id)# and 
+		content_deleted=#db.param(0)# ";
 		qpar=db.execute("qpar");
 		if(qpar.recordcount EQ 0){
 			break;

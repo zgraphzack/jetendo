@@ -12,10 +12,10 @@
 	<cfscript>
 	db=request.zos.queryObject;
 	query name="qCheck" datasource="#this.datasource#"{
-		echo("show tables in `#this.datasource#` LIKE '#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#listing' ");
+		echo("show tables in `#this.datasource#` LIKE '#request.zos.ramtableprefix#listing' ");
 	};
 	if(qCheck.recordcount NEQ 0){
-		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#listing`   
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.ramtableprefix#listing`   
 		  ADD COLUMN `listing_unique_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 		  DROP PRIMARY KEY,
 		  ADD PRIMARY KEY (`listing_unique_id`),
@@ -24,10 +24,10 @@
 		} 
 	}
 	query name="qCheck" datasource="#this.datasource#"{
-		echo("show tables in `#this.datasource#` LIKE '#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#city_distance' ");
+		echo("show tables in `#this.datasource#` LIKE '#request.zos.ramtableprefix#city_distance' ");
 	};
 	if(qCheck.recordcount NEQ 0){
-		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix##request.zos.ramtableprefix#city_distance`   
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.ramtableprefix#city_distance`   
 		  ADD COLUMN `city_distance_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 		  DROP PRIMARY KEY,
 		  ADD PRIMARY KEY (`city_distance_id`),
@@ -35,7 +35,7 @@
 			return false;
 		}
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#listing`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `listing`   
 	  ADD COLUMN `listing_unique_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`listing_unique_id`),
@@ -43,7 +43,7 @@
 	  ")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#listing_data`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `listing_data`   
 	  ADD COLUMN `listing_data_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`listing_data_id`),
@@ -51,65 +51,65 @@
 		return false;
 	} 
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#city_distance`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `city_distance`   
 	  ADD COLUMN `city_distance_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`city_distance_id`),
 	  ADD  UNIQUE INDEX `newindex1` (`city_parent_id`, `city_id`)")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#city_distance_safe_update`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `city_distance_safe_update`   
 	  ADD COLUMN `city_distance_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`city_distance_id`),
 	  ADD  UNIQUE INDEX `newindex1` (`city_parent_id`, `city_id`)")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#city_x_mls`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `city_x_mls`   
 	  ADD COLUMN `city_x_mls_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`city_x_mls_id`),
 	  ADD UNIQUE INDEX (`city_id`, `listing_mls_id`)")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#far_feature`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `far_feature`   
 	  ADD COLUMN `far_feature_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST,   
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`far_feature_id`),
 	  ADD  UNIQUE INDEX `NewIndex1` (`far_feature_code`)")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#mls_image_hash`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `mls_image_hash`   
 	  ADD COLUMN `mls_image_hash_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  ADD PRIMARY KEY (`mls_image_hash_id`)")){
 		return false;
 	} 
 
 	query name="qCheck" datasource="#this.datasource#"{
-		echo("show tables in `#this.datasource#` LIKE '#request.zos.zcoreDatasourcePrefix#far' ");
+		echo("show tables in `#this.datasource#` LIKE 'far' ");
 	};
 	if(qCheck.recordcount NEQ 0){
-		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#far`   
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `far`   
 		  ADD COLUMN `far_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 		  ADD PRIMARY KEY (`far_id`)")){
 			return false;
 		} 
 	}
 	query name="qCheck" datasource="#this.datasource#"{
-		echo("show tables in `#this.datasource#` LIKE '#request.zos.zcoreDatasourcePrefix#ngm' ");
+		echo("show tables in `#this.datasource#` LIKE 'ngm' ");
 	};
 	if(qCheck.recordcount NEQ 0){
-		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#ngm`   
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `ngm`   
 		  ADD COLUMN `ngm_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 		  ADD PRIMARY KEY (`ngm_id`)")){
 			return false;
 		} 
 	}
 	query name="qCheck" datasource="#this.datasource#"{
-		echo("show tables in `#this.datasource#` LIKE '#request.zos.zcoreDatasourcePrefix#rets14_activeagent' ");
+		echo("show tables in `#this.datasource#` LIKE 'rets14_activeagent' ");
 	};
 	if(qCheck.recordcount NEQ 0){
-		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#rets14_activeagent`   
+		if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `rets14_activeagent`   
 		  ADD COLUMN `rets14_activeagent_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 		  ADD PRIMARY KEY (`rets14_activeagent_id`)")){
 			return false;
@@ -117,31 +117,31 @@
 	}
 	
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#state`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `state`   
 	  ADD COLUMN `state_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`state_id`),
 	  ADD  UNIQUE INDEX `NewIndex1` (`state_code`)")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#country`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `country`   
 	  ADD COLUMN `country_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, 
 	  DROP PRIMARY KEY,
 	  ADD PRIMARY KEY (`country_id`),
 	  ADD  UNIQUE INDEX `NewIndex1` (`country_code`)")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#company`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `company`   
 	  ADD COLUMN `company_deleted` CHAR(1) NOT NULL AFTER `company_name`,
 	  ADD COLUMN `company_updated_datetime` DATETIME NOT NULL AFTER `company_deleted`")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#sync`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `sync`   
 	  ADD COLUMN `sync_deleted` CHAR(1) NOT NULL AFTER `sync_type`,
 	  ADD COLUMN `sync_updated_datetime` DATETIME NOT NULL AFTER `sync_deleted`")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#version`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `version`   
 	  ADD COLUMN `version_deleted` CHAR(1) NOT NULL AFTER `version_table`,
 	  ADD COLUMN `version_updated_datetime` DATETIME NOT NULL AFTER `version_deleted`")){
 		return false;

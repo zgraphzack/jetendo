@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#rets_download_log`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `rets_download_log`(  
 	  `rets_download_log_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 	  `rets_download_log_text` TEXT NOT NULL,
 	  `rets_download_log_error_text` TEXT NOT NULL,
@@ -22,7 +22,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#ecommerce_config` (
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `ecommerce_config` (
 	  `ecommerce_config_id` int(11) NOT NULL,
 	  `ecommerce_config_paypal_merchant_id` varchar(100) NOT NULL DEFAULT '',
 	  `ecommerce_config_sandbox_enabled` char(1) NOT NULL DEFAULT '0',
@@ -37,31 +37,31 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO  `#request.zos.zcoreDatasourcePrefix#app` SET 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO  `app` SET 
 	app_id='15', 
 	app_name = 'Ecommerce', 
 	app_built_in = '0', 
 	app_updated_datetime = '2014-08-10 00:00:00'")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#ecommerce_config`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `ecommerce_config`   
   ADD  UNIQUE INDEX `NewIndex1` (`site_id`, `ecommerce_config_deleted`)")){
 		return false;
 	} 
-if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#content_config`   
+if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `content_config`   
   ADD  UNIQUE INDEX `NewIndex1` (`site_id`, `content_config_deleted`)")){
 		return false;
 	} 
-if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#rental_config`   
+if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `rental_config`   
   ADD  UNIQUE INDEX `NewIndex1` (`site_id`, `rental_config_deleted`)")){
 		return false;
 	} 
-if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#mls_option`   
+if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `mls_option`   
   ADD  UNIQUE INDEX `NewIndex2` (`site_id`, `mls_option_deleted`)")){
 		return false;
 	} 
   
-if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#blog_config`   
+if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `blog_config`   
   ADD  UNIQUE INDEX `NewIndex3` (`site_id`, `blog_config_deleted`)")){
 		return false;
 	} 

@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#whitelabel`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `whitelabel`(  
   `whitelabel_id` INT(11) NOT NULL,
   `site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
   `user_id` INT(11) NOT NULL DEFAULT 0,
@@ -38,7 +38,7 @@
 ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#whitelabel_button` (
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `whitelabel_button` (
   `whitelabel_button_id` int(11) NOT NULL,
   `whitelabel_button_label` varchar(100) COLLATE utf8_bin NOT NULL,
   `whitelabel_button_url` varchar(255) COLLATE utf8_bin NOT NULL,

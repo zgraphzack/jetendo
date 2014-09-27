@@ -12,7 +12,7 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"ALTER TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#site`
+		"ALTER TABLE `#this.datasource#`.`site`
   		CHANGE `site_fontlist` `site_fontlist` TEXT CHARSET utf8 COLLATE utf8_general_ci NOT NULL,
   		CHANGE `site_editor_fonts` `site_editor_fonts` TEXT CHARSET utf8 COLLATE utf8_general_ci NOT NULL")){
 		return false;

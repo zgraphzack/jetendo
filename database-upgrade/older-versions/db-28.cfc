@@ -10,19 +10,19 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site`   
 	  ADD COLUMN `company_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `site_deleted`, 
 	  ADD  INDEX `newindex1` (`company_id`)")){
 		return false;
 	}
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#user`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `user`   
 	  ADD COLUMN `company_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `user_deleted`, 
 	  ADD  INDEX `newindex1` (`company_id`)")){
 		return false;
 	}
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#company`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `company`(  
 	  `company_id` INT(11) NOT NULL AUTO_INCREMENT,
 	  `company_name` VARCHAR(255) NOT NULL,
 	  PRIMARY KEY (`company_id`),
@@ -31,7 +31,7 @@
 		return false;
 	}
 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#audit`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `audit`(  
 	  `audit_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 	  `audit_description` VARCHAR(500) NOT NULL,
 	  `user_id` INT(11) UNSIGNED NOT NULL,

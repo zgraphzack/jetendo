@@ -1579,7 +1579,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
             <cfscript>
 			c=countSQL;
 			c=rereplace(c,"\n\s*(\S)",chr(10)&"\1","ALL");
-			writeoutput(application.zcore.functions.zparagraphformat(trim(replace(c, ':ztablesql:', request.zos.zcoreDatasourcePrefix, 'all'))));
+			writeoutput(application.zcore.functions.zparagraphformat(trim(replace(c, ':ztablesql:', "", 'all'))));
 			</cfscript><hr />
         </cfif>
 		<cfif arguments.ss.onlyCount EQ false>
@@ -1587,7 +1587,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
             <cfscript>
 			c=propSQL;
 			c=rereplace(c,"\n\s*(\S)",chr(10)&"\1","ALL");
-			writeoutput(application.zcore.functions.zparagraphformat(trim(replace(c, ':ztablesql:', request.zos.zcoreDatasourcePrefix, 'all'))));
+			writeoutput(application.zcore.functions.zparagraphformat(trim(replace(c, ':ztablesql:', "", 'all'))));
 			</cfscript>
         </cfif><br />;Time: #((getTickCount()-start48)/1000)&" seconds"#
         </span>

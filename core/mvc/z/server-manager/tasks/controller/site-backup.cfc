@@ -93,13 +93,6 @@ TODO: figure out why site backup doesn't get compressed.
 		"#request.zos.ramtableprefix#city_distance": true,
 		"#request.zos.ramtableprefix#listing": true,
 	};
-	if(request.zos.zcoreDatasourcePrefix NEQ ""){
-		ts2={};
-		for(i in ts){
-			ts2[request.zos.zcoreDatasourcePrefix&i]=true;
-		}
-		return ts2;
-	}
 	return ts;
 	</cfscript>
 </cffunction>

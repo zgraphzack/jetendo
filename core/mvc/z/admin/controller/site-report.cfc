@@ -858,7 +858,7 @@ more?
 	
 	<cfif form.action EQ "deleteLinkVerifyCache">
 		<cfsavecontent variable="db.sql">
-		truncate table `#request.zos.zcoreDatasourcePrefix#link_verify_link`
+		truncate table `link_verify_link`
 		</cfsavecontent><cfscript>qR=db.execute("qR");
 		application.zcore.status.setStatus(request.zsid, "Link verify cache deleted");
 		application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#request.zsid#");

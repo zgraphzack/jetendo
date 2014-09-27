@@ -12,7 +12,7 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site_option_group`   
+		"ALTER TABLE `site_option_group`   
 		ADD COLUMN `site_option_group_disable_site_map` CHAR(1) DEFAULT '0'   
 		NOT NULL AFTER `site_option_group_admin_app_only` ")){
 		return false;

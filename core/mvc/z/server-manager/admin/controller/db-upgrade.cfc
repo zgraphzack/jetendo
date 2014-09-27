@@ -380,7 +380,7 @@
 	}
 	if(arguments.hasSiteId){
 		query name="qDelete" datasource="#arguments.datasource#"{
-			echo(preserveSingleQuotes("delete from `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#` 
+			echo(preserveSingleQuotes("delete from `#arguments.datasource#`.`#arguments.table#` 
 			where site_id = 0"));
 		}
 		query name="qDisableTrigger" datasource="#arguments.datasource#"{
@@ -388,13 +388,13 @@
 		}
 	}else{
 		query name="qTruncate" datasource="#arguments.datasource#"{
-			echo("truncate table `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#`");
+			echo("truncate table `#arguments.datasource#`.`#arguments.table#`");
 		}
 	}
 
 	query name="qLoadData" datasource="#arguments.datasource#"{
 		echo(preserveSingleQuotes("LOAD DATA LOCAL INFILE '#escape(arguments.filePath)#' 
-		REPLACE INTO TABLE `#arguments.datasource#`.`#request.zos.zcoredatasourceprefix##arguments.table#` 
+		REPLACE INTO TABLE `#arguments.datasource#`.`#arguments.table#` 
 		FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
 	 	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''
 		IGNORE 1 LINES (#arguments.columnList#)"));
@@ -432,7 +432,7 @@
 	INTO OUTFILE '#escape(arguments.filePath)#' 
 	FIELDS TERMINATED BY ',' ENCLOSED BY '""' 
  	ESCAPED BY '\\' LINES TERMINATED BY '\n' STARTING BY ''  
- 	FROM `#arguments.datasource#`.`#request.zos.zcoreDatasourcePrefix##arguments.table#` ";
+ 	FROM `#arguments.datasource#`.`#arguments.table#` ";
 	if(structkeyexists(application.zcore.tablesWithSiteIdStruct, arguments.datasource&"."&arguments.table)){
 		db.sql&=" WHERE site_id = '0' ";
 	}

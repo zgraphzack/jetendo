@@ -12,7 +12,7 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"ALTER TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#site`   
+		"ALTER TABLE `#this.datasource#`.`site`   
 		  ADD COLUMN `site_require_ssl_for_user` CHAR(1) DEFAULT '0' NOT NULL AFTER `site_verified_datetime`")){
 		return false;
 	}

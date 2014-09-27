@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#event_category`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `event_category`(  
   `event_category_id` INT(11) UNSIGNED NOT NULL,
   `event_category_name` VARCHAR(255) NOT NULL,
   `event_category_description` LONGTEXT NOT NULL,
@@ -23,7 +23,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#event_x_category`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `event_x_category`(  
   `event_x_category_id` INT(11) UNSIGNED NOT NULL,
   `site_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
   `event_category_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
@@ -35,7 +35,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#event_config`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `event_config`(  
 	  `event_config_id` INT(11) UNSIGNED NOT NULL,
 	  `event_config_schedule_ical_import` CHAR(1) NOT NULL DEFAULT '0',
 	  `event_config_ical_url_list` TEXT NOT NULL,
@@ -49,7 +49,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation_allowed_hours`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `reservation_allowed_hours`(  
 	  `reservation_allowed_hours_id` INT(11) UNSIGNED NOT NULL,
 	  `reservation_allowed_hours_day_of_week` VARCHAR(10) NOT NULL,
 	  `reservation_allowed_hours_start_time` TIME NOT NULL,
@@ -63,7 +63,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation_excluded_hours`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `reservation_excluded_hours`(  
 	  `reservation_excluded_hours_id` INT(11) UNSIGNED NOT NULL,
 	  `reservation_excluded_hours_date` DATE NOT NULL,
 	  `reservation_excluded_hours_start_time` TIME NOT NULL,
@@ -77,7 +77,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation_payment_type`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `reservation_payment_type`(  
 	  `reservation_payment_type_id` INT(11) NOT NULL,
 	  `reservation_type_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
 	  `reservation_payment_type_amount` DECIMAL(11,2) NOT NULL,
@@ -91,7 +91,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation_type`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `reservation_type`(  
 	  `reservation_type_id` INT UNSIGNED NOT NULL,
 	  `reservation_type_name` VARCHAR(255) NOT NULL,
 	  `reservation_type_period` VARCHAR(10) NOT NULL,
@@ -121,7 +121,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation_config`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `reservation_config`(  
 	  `reservation_config_id` INT(11) UNSIGNED NOT NULL,
 	  `reservation_config_confirmation_email_list` VARCHAR(100) NOT NULL,
 	  `reservation_config_change_email_list` VARCHAR(100) NOT NULL,
@@ -147,7 +147,7 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#reservation`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `reservation`(  
   `reservation_id` INT(11) UNSIGNED NOT NULL,
   `reservation_period` VARCHAR(10) NOT NULL,
   `event_id` INT(11) UNSIGNED NOT NULL DEFAULT 0,
@@ -183,7 +183,7 @@
 ) ENGINE=INNODB CHARSET=utf8 COLLATE=utf8_bin")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#event`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `event`   
   ADD COLUMN `event_reservation_enabled` CHAR(1) DEFAULT '0'   NOT NULL AFTER `event_deleted`,
   ADD COLUMN `event_status` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `event_reservation_enabled`,
   ADD COLUMN `site_option_app_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `event_status`, 
@@ -192,23 +192,23 @@
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site_option`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site_option`   
 	ADD COLUMN `site_option_reservation_type_id_list` VARCHAR(255) NOT NULL AFTER `site_option_deleted`")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site_option_group`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site_option_group`   
 	ADD COLUMN `site_option_group_reservation_type_id_list` VARCHAR(255) NOT NULL AFTER `site_option_group_deleted`")){
 		return false;
 	} 
 	
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO `#request.zos.zcoreDatasourcePrefix#app` SET 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO `app` SET 
 app_id='16',
 app_name='Reservation',
 app_built_in='0',
 app_updated_datetime='2014-08-13 00:00:00'")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO `#request.zos.zcoreDatasourcePrefix#app` SET 
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "INSERT INTO `app` SET 
 app_id='17',
 app_name='Event',
 app_built_in='0',

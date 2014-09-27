@@ -213,7 +213,6 @@
 		"performance_schema":true
 	};
 	
-    ts.zos.zcoreDatasourcePrefix="";
     
     // prepend a string that identifies mysql memory engine tables
     ts.zos.ramtableprefix="zram##";

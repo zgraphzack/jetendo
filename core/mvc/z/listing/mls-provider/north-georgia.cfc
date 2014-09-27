@@ -55,7 +55,7 @@
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
 			query name="qCreate" datasource="#request.zos.zcoreDatasource#"{
-				echo("CREATE TABLE `#request.zos.zcoreDatasourcePrefix#ngm` (
+				echo("CREATE TABLE `ngm` (
 				  `ngm_id` int(11) unsigned NOT NULL AUTO_INCREMENT, 
 				  `ngm_listnum` varchar(10) NOT NULL DEFAULT '',
 				  `ngm_listprice` int(11) unsigned NOT NULL DEFAULT '0',

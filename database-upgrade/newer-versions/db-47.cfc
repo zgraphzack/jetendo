@@ -10,12 +10,12 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site`   
   ADD COLUMN `site_nginx_config` TEXT NOT NULL AFTER `company_id`,
   ADD COLUMN `site_nginx_disable_jetendo` CHAR(1) DEFAULT '0'   NOT NULL AFTER `site_nginx_config`")){
 		return false;
 	} 
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#ssl` (
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `ssl` (
   `ssl_id` int(11) NOT NULL,
   `ssl_updated_datetime` datetime NOT NULL,
   `ssl_deleted` int(11) NOT NULL,

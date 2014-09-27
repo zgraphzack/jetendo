@@ -321,10 +321,10 @@ application.zcore.functions.zQueueQuery(ts);
 	<cfargument name="database" type="string" required="yes">
 	<cfargument name="table" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.zcore.tableColumns, arguments.database&"."&request.zos.zcoreDatasourcePrefix&arguments.table) EQ false){
-		application.zcore.template.fail("database table, """&arguments.database&"."&request.zos.zcoreDatasourcePrefix&arguments.table&""", doesn't exist.");	
+	if(structkeyexists(application.zcore.tableColumns, arguments.database&"."&arguments.table) EQ false){
+		application.zcore.template.fail("database table, """&arguments.database&"."&arguments.table&""", doesn't exist.");	
 	}
-	return duplicate(application.zcore.tableColumns[arguments.database&"."&request.zos.zcoreDatasourcePrefix&arguments.table]);
+	return duplicate(application.zcore.tableColumns[arguments.database&"."&arguments.table]);
 	</cfscript>
 </cffunction>
 
@@ -384,15 +384,15 @@ application.zcore.functions.zQueueQuery(ts);
 	}
 	/*if(structkeyexists(application.zcore.sharedTables, arguments.name)){
 		if(arguments.datasource NEQ ""){
-			return "`"&arguments.datasource&"`.`"&request.zos.zcoreDatasourcePrefix&dbname&"` #aliasSQL#";
+			return "`"&arguments.datasource&"`.`"&dbname&"` #aliasSQL#";
 		}else{
-			return "`"&application.zcore.serverGlobals.datasource&"`.`"&request.zos.zcoreDatasourcePrefix&dbname&"` #aliasSQL#";
+			return "`"&application.zcore.serverGlobals.datasource&"`.`"&dbname&"` #aliasSQL#";
 		}
 	}else{*/
 		if(arguments.datasource NEQ ""){
-			return "`"&arguments.datasource&"`.`"&zt&request.zos.zcoreDatasourcePrefix&replace(replace(arguments.name,"\","\\","ALL"),"'","\'","ALL")&"` #aliasSQL#";
+			return "`"&arguments.datasource&"`.`"&zt&replace(replace(arguments.name,"\","\\","ALL"),"'","\'","ALL")&"` #aliasSQL#";
 		}else{
-			return "`"&request.zos.globals.datasource&"`.`"&zt&request.zos.zcoreDatasourcePrefix&replace(replace(arguments.name,"\","\\","ALL"),"'","\'","ALL")&"` #aliasSQL#";
+			return "`"&request.zos.globals.datasource&"`.`"&zt&replace(replace(arguments.name,"\","\\","ALL"),"'","\'","ALL")&"` #aliasSQL#";
 		}
 	//}
 	</cfscript>
@@ -551,7 +551,7 @@ if(table_id EQ false){
 	</cfscript>
 	<cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
 		<cfquery name="fields" datasource="#ss.datasource#">
-		SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
+		SHOW FIELDS FROM `#ss.table#`
 		</cfquery>
 	<cfif ss.enableTableFieldCache>
 			<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>
@@ -717,7 +717,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	</cfscript>
 	<cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
 		<cfquery name="fields" datasource="#ss.datasource#">
-		SHOW FIELDS FROM `#request.zos.zcoreDatasourcePrefix##ss.table#`
+		SHOW FIELDS FROM `#ss.table#`
 		</cfquery>
 		<cfif ss.enableTableFieldCache>
 				<cfset request.zos.tableFieldsCache[ss.datasource&" "&ss.table]=fields>

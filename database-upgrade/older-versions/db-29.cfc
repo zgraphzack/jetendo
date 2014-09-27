@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#audit`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `audit`   
 	  ADD COLUMN `audit_ip` VARCHAR(45) NOT NULL AFTER `audit_security_action_write`,
 	  ADD COLUMN `audit_user_agent` VARCHAR(255) NOT NULL AFTER `audit_ip`;
 	")){

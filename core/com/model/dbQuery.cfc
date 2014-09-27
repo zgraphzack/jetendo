@@ -63,9 +63,9 @@
 		}
 		if(len(arguments.datasource)){
 			variables.config.datasource=arguments.datasource;
-			return variables.config.identifierQuoteCharacter&arguments.datasource&variables.config.identifierQuoteCharacter&"."&variables.config.identifierQuoteCharacter&zt&variables.config.tablePrefix&arguments.name&variables.config.identifierQuoteCharacter;
+			return variables.config.identifierQuoteCharacter&arguments.datasource&variables.config.identifierQuoteCharacter&"."&variables.config.identifierQuoteCharacter&zt&arguments.name&variables.config.identifierQuoteCharacter;
 		}else{
-			return variables.config.identifierQuoteCharacter&zt&variables.config.tablePrefix&arguments.name&variables.config.identifierQuoteCharacter;
+			return variables.config.identifierQuoteCharacter&zt&arguments.name&variables.config.identifierQuoteCharacter;
 		}
 		</cfscript>
 	</cffunction>

@@ -13,15 +13,15 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#blog_config`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `blog_config`   
 	ADD COLUMN `blog_config_always_show_section_articles` CHAR(1) DEFAULT '1'   NOT NULL AFTER `blog_config_deleted`")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#blog`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `blog`   
 	ADD COLUMN `blog_show_all_sections` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_deleted`")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#blog_version`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `blog_version`   
 	ADD COLUMN `blog_updated_datetime` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_image_library_id`, 
 	ADD COLUMN `blog_deleted` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_updated_datetime`,
 	ADD COLUMN `blog_show_all_sections` CHAR(1) DEFAULT '0'   NOT NULL AFTER `blog_deleted`")){

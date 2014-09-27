@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#version`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `version`(  
 	  `version_id` INT(11) UNSIGNED NOT NULL,
 	  `site_id` INT(11) UNSIGNED NOT NULL,
 	  `version_datetime` DATETIME NOT NULL,
@@ -26,7 +26,7 @@
 	) ENGINE=InnoDB, CHARSET=utf8, COLLATE=utf8_general_ci")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#sync`(  
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `sync`(  
 	  `sync_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	  `sync_start_datetime` DATETIME NOT NULL,
 	  `server_id` INT(11) NOT NULL,

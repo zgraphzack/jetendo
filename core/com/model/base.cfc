@@ -51,11 +51,6 @@ TODO:
         	<cfscript>
 			ts=structnew();
 			ts.table=qT["Tables_in_"&request.zos.globals.datasource][qT.currentrow];
-			if(left(ts.table, len(request.zos.zcoreDatasourcePrefix)) NEQ request.zos.zcoreDatasourcePrefix){
-				ts.exactTable=true;
-			}else{
-				ts.table=removechars(ts.table, 1, len(request.zos.zcoreDatasourcePrefix));
-			}
 			ts.enableCaching=false;
 			ts.datasource=request.zos.globals.datasource;
 			ts.cacheStruct=arguments.ss;
@@ -70,11 +65,6 @@ TODO:
                 <cfscript>
                 ts=structnew();
                 ts.table=qT["Tables_in_"&request.zos.globals.serverdatasource][qT.currentrow];
-				if(left(ts.table, len(request.zos.globals.serverdatabasePrefix)) NEQ request.zos.globals.serverdatabasePrefix){
-					ts.exactTable=true;
-				}else{
-					ts.table=removechars(ts.table, 1, len(request.zos.globals.serverdatabasePrefix));
-				}
 				ts.enableCaching=false;
                 ts.datasource=request.zos.globals.serverdatasource;
 				ts.cacheStruct=arguments.ss;
@@ -113,7 +103,6 @@ TODO:
 		if(structcount(arguments.ss) EQ 0){
 			local.ts=structnew();
 			local.ts.table=this._table;
-			//local.ts.exactTable=true;
 			local.ts.datasource=application.zcore.functions.zTableDatasource(this._table);
 			this._ds=this._getModelData(local.ts);
 		}else{
@@ -145,7 +134,6 @@ TODO:
 		var ts=structnew();
 		var db=request.zos.queryObject;
 		t9.table="";
-		t9.exactTable=false;
 		t9.datasource="";
 		t9.enableCaching=true;
 		t9.cacheStruct=application.sitestruct[request.zos.globals.id];
@@ -178,13 +166,8 @@ TODO:
 			ts.primaryKey="";
 			ts.hasSiteId=false;
 			ts.tableAlias=arguments.ss.table;
-			if(arguments.ss.exactTable){
-				ts.table="`"&arguments.ss.datasource&"`.`"&arguments.ss.table&"` as `"&arguments.ss.table&"`";
-				ts.tableNoAlias="`"&arguments.ss.datasource&"`.`"&arguments.ss.table&"`";
-			}else{
-				ts.table=db.table(arguments.ss.table, arguments.ss.datasource)&" as `"&arguments.ss.table&"`";
-				ts.tableNoAlias=db.table(arguments.ss.table, arguments.ss.datasource);
-			}
+			ts.table=db.table(arguments.ss.table, arguments.ss.datasource)&" as `"&arguments.ss.table&"`";
+			ts.tableNoAlias=db.table(arguments.ss.table, arguments.ss.datasource);
 			ts.componentName=ts.datasource&"."&trim(replace(ts.tableAlias,"`","","all"));
 			ts.componentPath="_cache.model."&ts.componentName;
 			ts.arrFieldOrder=arraynew(1);

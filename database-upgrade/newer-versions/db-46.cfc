@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#mls_option`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `mls_option`   
   DROP COLUMN `mls_option_detail_template`,
   ADD COLUMN `mls_option_detail_cfc` VARCHAR(255) NOT NULL AFTER `mls_option_deleted`,
   ADD COLUMN `mls_option_detail_method` VARCHAR(255) NOT NULL AFTER `mls_option_detail_cfc`")){

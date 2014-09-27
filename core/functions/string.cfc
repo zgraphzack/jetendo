@@ -10,6 +10,23 @@
 	<cfreturn output>
 </cffunction>
 
+<cffunction name="zEscapeURL" access="public" localmode="modern"> 
+	<cfargument name="link" type="string" required="yes">
+	<cfscript>
+	a=listlen(arguments.link, "/");
+	file=listgetat(arguments.link, a, "/");
+	a2=listToArray(file, "?");
+	if(arraylen(a2) GT 1){
+		arrayDeleteAt(a2, 1);
+		a3="?"&arrayTolist(a2, "?");
+	}else{
+		a3="";
+	}
+	path=listdeleteat(arguments.link, a, "/");
+	return path&"/"&urlencodedformat(a2[1])&a3;
+	</cfscript>
+</cffunction>
+
 <cffunction name="zBuildURL" access="public" localmode="modern">
 	<cfargument name="link" type="string" required="yes">
 	<cfargument name="struct" type="struct" required="yes">

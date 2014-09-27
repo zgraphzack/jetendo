@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#site_option_group`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site_option_group`   
 	ADD COLUMN `site_option_group_ajax_enabled` CHAR(1) DEFAULT '0'   NOT NULL AFTER `site_option_group_reservation_type_id_list`")){
 		return false;
 	} 

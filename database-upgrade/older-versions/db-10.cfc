@@ -11,11 +11,11 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"DROP TABLE `#request.zos.zcoreDatasourcePrefix#listing_latlong` ")){
+		"DROP TABLE `listing_latlong` ")){
 		return false;
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"DROP TABLE `#request.zos.zcoreDatasourcePrefix#listing_latlong_original` ")){
+		"DROP TABLE `listing_latlong_original` ")){
 		return false;
 	}
 	return true;

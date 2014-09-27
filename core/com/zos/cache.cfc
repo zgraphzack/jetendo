@@ -158,7 +158,7 @@ this allows you to delete cache on both sides. --->
 		<cfargument name="table_id" type="string" required="true">
         not tested<cfscript>application.zcore.functions.zabort();
 		var local=structnew();
-		local.key=arguments.database&"."&request.zos.zcoreDatasourcePrefix&arguments.table&"."&arguments.table_id;
+		local.key=arguments.database&"."&arguments.table&"."&arguments.table_id;
 		// I should use named lock with local.key in the name here
 		if(structkeyexists(application.zcore.cacheData.databaseURLCache, local.key)){
 			for(local.i in application.zcore.cacheData.databaseURLCache[local.key]){
@@ -267,7 +267,7 @@ this allows you to delete cache on both sides. --->
 		<cfargument name="table" type="string" required="true">
 		<cfargument name="table_id" type="string" required="true">
         <cfscript>
-		var key=arguments.database&"."&request.zos.zcoreDatasourcePrefix&arguments.table&"."&arguments.table_id;
+		var key=arguments.database&"."&arguments.table&"."&arguments.table_id;
 		if(request.zos.cacheData.enabled EQ false) return;
 		application.zcore.cacheData.databaseURLCache[key][request.zos.cacheData.url]=true;
 		application.zcore.cacheData.urlDatabaseCache[request.zos.cacheData.url][key]=true;

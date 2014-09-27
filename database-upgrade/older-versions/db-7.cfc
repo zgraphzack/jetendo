@@ -13,11 +13,11 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"DROP TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#tooltip`")){
+		"DROP TABLE `#this.datasource#`.`tooltip`")){
 		return false;
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"DROP TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#tooltip_section`")){
+		"DROP TABLE `#this.datasource#`.`tooltip_section`")){
 		return false;
 	}
 	return true;

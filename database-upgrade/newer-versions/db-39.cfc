@@ -20,7 +20,7 @@
 		}else{
 			deletedField="#row.table_name#_deleted";
 		}
-		sql="ALTER TABLE `#request.zos.zcoreDatasourcePrefix##row.table_name#`
+		sql="ALTER TABLE `#row.table_name#`
 		CHANGE `#deletedField#` `#deletedField#` INT(11) UNSIGNED DEFAULT 0  NOT NULL";
 		echo(sql&";<br><br>");
 		query name="qAlter" datasource="#this.datasource#"{
@@ -50,14 +50,14 @@
 	}
 
 	for(table in keyStruct){
-		arrAlter=["ALTER TABLE `#request.zos.zcoreDatasourcePrefix##table#` "];
+		arrAlter=["ALTER TABLE `#table#` "];
 		if(structkeyexists(application.zcore.tableConventionExceptionStruct, table) and structkeyexists(application.zcore.tableConventionExceptionStruct[table], 'deleted')){
 			deletedField=application.zcore.tableConventionExceptionStruct[table].deleted;
 		}else{
 			deletedField="#table#_deleted";
 		}
 		query name="qDeleteCheck" datasource="#this.datasource#"{
-			echo("SHOW FIELDS IN `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix##table#` LIKE '#deletedField#' ");
+			echo("SHOW FIELDS IN `#this.datasource#`.`#table#` LIKE '#deletedField#' ");
 		};
 		if(qDeleteCheck.recordcount EQ 0){
 			echo('skipping table: #table#<br /><br />');

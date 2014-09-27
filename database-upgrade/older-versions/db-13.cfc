@@ -11,7 +11,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#blog`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `blog`   
   		ADD COLUMN `office_id` INT(11) UNSIGNED DEFAULT 0  NOT NULL AFTER `blog_sticky` ")){
 		return false;
 	}

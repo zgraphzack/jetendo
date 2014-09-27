@@ -12,23 +12,23 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"ALTER TABLE `#request.zos.zcoreDatasourcePrefix#mls_option`   
+		"ALTER TABLE `mls_option`   
 		ADD COLUMN `mls_option_listing_title_format` VARCHAR(255) NOT NULL AFTER `mls_option_search_template_forced` ")){
 		return false;
 	}
 
-	qS=arguments.dbUpgradeCom.executeQuery(this.datasource, "select * from `#request.zos.zcoreDatasourcePrefix#mls_option` ");
+	qS=arguments.dbUpgradeCom.executeQuery(this.datasource, "select * from `mls_option` ");
 	arrK=listToArray("city,remarks,address,subdivision,bedrooms,bathrooms,type,subtype,style,view,frontage,pool,condo");
 	for(row in qS){
 		arrK=application.zcore.functions.zRandomizeArray(arrK);
 		mls_option_listing_title_format=arrayToList(arrK, ",");
-		arguments.dbUpgradeCom.executeQuery(this.datasource, "update `#request.zos.zcoreDatasourcePrefix#mls_option` SET
+		arguments.dbUpgradeCom.executeQuery(this.datasource, "update `mls_option` SET
 		mls_option_listing_title_format='#application.zcore.functions.zescape(mls_option_listing_title_format)#' WHERE 
 		site_id = '#application.zcore.functions.zescape(row.site_id)#' and 
 		mls_option_id = '#application.zcore.functions.zescape(row.mls_option_id)#' ");
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"DROP TABLE IF EXISTS `#request.zos.zcoreDatasourcePrefix#listing_x_site` ")){
+		"DROP TABLE IF EXISTS `listing_x_site` ")){
 		return false;
 	}
 	return true;

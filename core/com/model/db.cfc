@@ -19,11 +19,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			identifierQuoteCharacter:'`', // Modify the character that should surround database, table or field names.
 			dbtype:'datasource', // query, hsql or datasource are valid values.
 			datasource:false, // Optional change the datasource.  This option is required if the query doesn't use dbQuery.table().
-			enableTablePrefixing:true, // This allows a table that is usually named "user", to be prefixed so that it is automatically verified/modified to be "prefix_user" when using this component 
 			autoReset:true, // Set to false to allow the current db object to retain it's configuration after running db.execute().  Only the parameters will be cleared.
 			lazy:false, // Railo's lazy="true" option returns a simple Java resultset instead of the ColdFusion compatible query result.  This reduces memory usage when some of the columns are unused.
 			cacheForSeconds:0, // optionally set to a number of seconds to enable query caching
-			tablePrefix:"", // Set a table prefix string to be prepend to all table names.
 			sql:"", // specify the full sql statement
 			verifyQueriesEnabled:false, // Enabling sql verification takes more cpu time, so it should only run when testing in development.
 			parseSQLFunctionStruct:{}, // Each struct key value should be a function that accepts and returns parsedSQLStruct. Prototype: struct customFunction(required struct parsedSQLStruct, required string defaultDatabaseName);
@@ -87,7 +85,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		var hashCode=0;
 		var currentParamStruct=arguments.configStruct.arrParam;
 		var paramCount=arraylen(currentParamStruct);
-		arrayappend(arrOption, "dbtype="&arguments.configStruct.dbtype&chr(10)&"datasource="&arguments.configStruct.datasource&chr(10)&"lazy="&arguments.configStruct.lazy&chr(10)&"cacheForSeconds="&arguments.configStruct.cacheForSeconds&chr(10)&"tablePrefix="&arguments.configStruct.tablePrefix&chr(10)&"sql="&arguments.sql&chr(10));
+		arrayappend(arrOption, "dbtype="&arguments.configStruct.dbtype&chr(10)&"datasource="&arguments.configStruct.datasource&chr(10)&"lazy="&arguments.configStruct.lazy&chr(10)&"cacheForSeconds="&arguments.configStruct.cacheForSeconds&chr(10)&"sql="&arguments.sql&chr(10));
 		for(paramIndex=1;paramIndex LTE paramCount;paramIndex++){
 			for(paramKey in currentParamStruct[paramIndex]){
 				arrayAppend(arrOption, paramKey&"="&currentParamStruct[paramIndex][paramKey]&chr(10));
@@ -460,13 +458,11 @@ Copyright (c) 2013 Far Beyond Code LLC.
 				tableStruct.table=trim(tableStruct.table);
 				tableStruct.tableAlias=trim(tableStruct.table);
 			}
-			if(arguments.configStruct.enableTablePrefixing){
-				if(findnocase(variables.tableSQLString,tableStruct.table) EQ 0){
-					arrayappend(parseStruct.arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&tableStruct.table);
-				}else{
-					tableStruct.table=replacenocase(tableStruct.table,variables.tableSQLString,"");
-					tableStruct.tableAlias=replacenocase(tableStruct.tableAlias,variables.tableSQLString,"");
-				}
+			if(findnocase(variables.tableSQLString,tableStruct.table) EQ 0){
+				arrayappend(parseStruct.arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&tableStruct.table);
+			}else{
+				tableStruct.table=replacenocase(tableStruct.table,variables.tableSQLString,"");
+				tableStruct.tableAlias=replacenocase(tableStruct.tableAlias,variables.tableSQLString,"");
 			}
 			tableStruct.onstatement="";
 			if(tableStruct.table DOES NOT CONTAIN "."){
@@ -547,13 +543,11 @@ Copyright (c) 2013 Far Beyond Code LLC.
 					parseStruct.whereStatement&=" and "&mid(tableStruct.tableAlias, local.onPos2+4, (len(tableStruct.tableAlias)-local.onPos2)+5);
 					tableStruct.tableAlias=left(tableStruct.tableAlias, local.onPos2-1);
 				}
-				if(arguments.configStruct.enableTablePrefixing){
-					if(findnocase(variables.tableSQLString,tableStruct.table) EQ 0){
-						arrayappend(parseStruct.arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&tableStruct.table);
-					}else{
-						tableStruct.table=replacenocase(tableStruct.table,variables.tableSQLString, "");//arguments.configStruct.identifierQuoteCharacter);
-						tableStruct.tableAlias=replacenocase(tableStruct.tableAlias,variables.tableSQLString, "");//arguments.configStruct.identifierQuoteCharacter);
-					}
+				if(findnocase(variables.tableSQLString,tableStruct.table) EQ 0){
+					arrayappend(parseStruct.arrError, "All tables in queries must be generated with dbQuery.table(table, datasource); function. This table wasn't: "&tableStruct.table);
+				}else{
+					tableStruct.table=replacenocase(tableStruct.table,variables.tableSQLString, "");//arguments.configStruct.identifierQuoteCharacter);
+					tableStruct.tableAlias=replacenocase(tableStruct.tableAlias,variables.tableSQLString, "");//arguments.configStruct.identifierQuoteCharacter);
 				}
 				arrayappend(parseStruct.arrTable, tableStruct);
 			}

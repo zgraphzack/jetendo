@@ -12,7 +12,7 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.Datasource, 
-		"CREATE TABLE `#request.zos.zcoreDatasourcePrefix#listing_coordinates` (
+		"CREATE TABLE `listing_coordinates` (
 		`listing_coordinates_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		`listing_coordinates_latitude` varchar(21) NOT NULL,
 		`listing_coordinates_longitude` varchar(21) NOT NULL,

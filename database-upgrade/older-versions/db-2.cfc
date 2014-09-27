@@ -13,16 +13,16 @@
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"CREATE TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#test`
+		"CREATE TABLE `#this.datasource#`.`test`
 		( `test_id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT, `test_name` VARCHAR(10) NOT NULL, PRIMARY KEY (`test_id`) ) ")){
 		return false;
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"RENAME TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#test` TO `#this.datasource#`.`test2` ")){
+		"RENAME TABLE `#this.datasource#`.`test` TO `#this.datasource#`.`test2` ")){
 		return false;
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, 
-		"ALTER TABLE `#this.datasource#`.`#request.zos.zcoreDatasourcePrefix#test2` ADD UNIQUE INDEX `NewIndex1` (`test_name`) ")){
+		"ALTER TABLE `#this.datasource#`.`test2` ADD UNIQUE INDEX `NewIndex1` (`test_name`) ")){
 		return false;
 	}
 	return true;

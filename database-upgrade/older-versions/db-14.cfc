@@ -11,7 +11,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `#request.zos.zcoreDatasourcePrefix#listing_delete` (
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "CREATE TABLE `listing_delete` (
 	`listing_delete_id` int(11) NOT NULL AUTO_INCREMENT,
 	`listing_id` int(11) unsigned NOT NULL,
 	PRIMARY KEY (`listing_delete_id`)

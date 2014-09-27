@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#dns_ip`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `dns_ip`   
 	  ADD COLUMN `dns_ip_v6` CHAR(1) DEFAULT '0'   NOT NULL AFTER `dns_ip_deleted`")){
 		return false;
 	}

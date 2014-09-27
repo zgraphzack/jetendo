@@ -170,7 +170,7 @@
 		debug: true
 	};
 	query name="qSite" datasource="#request.zos.zcoreDatasource#"{
-		echo("SELECT site_id FROM `#request.zos.zcoreDatasourcePrefix#site` WHERE site_domain = '"&t9.site_domain&"' ");
+		echo("SELECT site_id FROM `site` WHERE site_domain = '"&t9.site_domain&"' ");
 	}
 	if(qSite.recordcount EQ 0){
 		form.site_id=application.zcore.functions.zInsert(ts);

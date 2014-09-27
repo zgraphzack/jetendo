@@ -112,11 +112,6 @@
 	 description:'Query, hsql or datasource are valid values.'
  });
  arrayappend(local.arrRow, {
-	 name:'enableTablePrefixing',
-	 default:'true',
-	 description:'This allows a table that is usually named <code>&quot;user&quot;</code>, to be prefixed so that it is automatically verified/modified to be <code>&quot;prefix_user&quot;</code> when using this component'
- });
- arrayappend(local.arrRow, {
 	 name:'identifierQuoteCharacter',
 	 default:'`',
 	 description:'Modify the character that should surround database, table or field names.'
@@ -135,11 +130,6 @@
 	 name:'sql',
 	 default:'&quot;&quot;',
 	 description:'Set to a valid SQL statement.'
- });
- arrayappend(local.arrRow, {
-	 name:'tablePrefix',
-	 default:'&quot;&quot;',
-	 description:'Set a table prefix string to be prepend to all table names.'
  });
  arrayappend(local.arrRow, {
 	 name:'verifyQueriesEnabled',

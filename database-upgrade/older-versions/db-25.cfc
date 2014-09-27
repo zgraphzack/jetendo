@@ -12,11 +12,11 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#content_config`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `content_config`   
 	ADD COLUMN `content_config_section_title_affix` VARCHAR(50) DEFAULT ''   NOT NULL")){
 		return false;
 	}
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#blog_config`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `blog_config`   
 	ADD COLUMN `blog_config_section_title_affix` VARCHAR(50) DEFAULT ''   NOT NULL")){
 		return false;
 	}

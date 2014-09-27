@@ -10,7 +10,7 @@
 <cffunction name="executeUpgrade" localmode="modern" access="public" returntype="boolean">
 	<cfargument name="dbUpgradeCom" type="component" required="yes">
 	<cfscript>
-	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `#request.zos.zcoreDatasourcePrefix#user`   
+	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `user`   
 	  ADD COLUMN `user_hide_public_email` CHAR(1) DEFAULT '0'   NOT NULL AFTER `company_id`;
 	")){
 		return false;
