@@ -372,7 +372,7 @@ zGetLatLong(ts);
 	}
 	</cfscript>
 	<cfsavecontent variable="moreLink">
-		<a id="zbeginlistings"></a>
+		<br style="clear:both;" /><a id="zbeginlistings"></a>
 		<h2>#application.zcore.functions.zvarso('See more properties for sale below')#</h2><br />
 		<cfif arguments.ss.disableInstantSearch EQ false and application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_enable_instant_search EQ 1>
 			<cfscript>

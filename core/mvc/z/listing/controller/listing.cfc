@@ -1294,6 +1294,22 @@ Primary Cities:</th>
 		arrTables3=['city_id','city_id','listing_id'];
 		arrTables=arraynew(1);
 		arrQ2=arraynew(1);
+
+		db.sql="SHOW TABLES IN `#request.zos.zcoreDatasource#` WHERE `Tables_in_#request.zos.zcoreDatasource#` IN 
+		(#db.param('zram##city')#, #db.param('zram##city_distance')#, #db.param('zram##listing')#)";
+		qOldCheck=db.execute("qOldCheck");
+		if(qOldCheck.recordcount EQ 3){
+			
+			db.sql="RENAME TABLE 
+			#db.table("zram##city", request.zos.zcoreDatasource)#  TO 
+			#db.table("city_memory", request.zos.zcoreDatasource)# , 
+			#db.table("zram##city", request.zos.zcoreDatasource)#  TO 
+			#db.table("city_distance_memory", request.zos.zcoreDatasource)# , 
+			#db.table("zram##listing", request.zos.zcoreDatasource)#  TO 
+			#db.table("listing_memory", request.zos.zcoreDatasource)# ";
+			db.execute("qRename");
+		}
+
 		db.sql="SHOW TABLES IN `#request.zos.zcoreDatasource#` WHERE `Tables_in_#request.zos.zcoreDatasource#` IN 
 		(#db.param('city_memory')#, #db.param('city_distance_memory')#, #db.param('listing_memory')#)";
 		qCheckRamTables=db.execute("qCheckRamTables");
@@ -2903,6 +2919,7 @@ zCreateMemoryTable(ts);
 	ts.allowFulltext=false;
 	structappend(arguments.ss,ts,false);
 	</cfscript>
+
 	<cflock name="zCreateMemoryTable" type="exclusive" timeout="1000">
 		<cfsavecontent variable="db.sql">
 		SHOW TABLES like #db.param('###(memoryTable)#')#
