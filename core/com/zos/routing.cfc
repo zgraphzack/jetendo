@@ -349,39 +349,46 @@
 			application.zcore.functions.z404("Component method doesn't exist. Method = ""#arguments.method#""");
 		}
 		if(isServerCFC){
-			if(request.zos.isTestServer or structkeyexists(application.zcore.cfcMetaDataCache,comPath&":"&arguments.method) EQ false){
-				tempcommeta=GetMetaData(request.zos.routingCurrentComponentObject[arguments.method]);
-				application.zcore.cfcMetaDataCache[comPath&":"&arguments.method]=tempcommeta;
-			}else{
-				tempcommeta=application.zcore.cfcMetaDataCache[comPath&":"&arguments.method];
-			}
-			if(tempcommeta.access NEQ 'remote'){
-				application.zcore.functions.z404("The component method must have access=""remote"" to be called directly via the URL. Please change access to remote for Method, ""#arguments.method#"", in #arguments.scriptName# if you need this function to be access remotely.");
-			}
-			if(isTestCFC EQ false){
-				for(i=1;i LTE arraylen(tempcommeta.parameters);i++){
-					if(tempcommeta.parameters[i].type NEQ "string" and tempcommeta.parameters[i].required EQ "yes"){
-						application.zcore.functions.z404("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
-					}
-				}
-			}
+			cacheStruct=application.zcore.cfcMetaDataCache;
 		}else{
-			if(request.zos.isTestServer or structkeyexists(application.sitestruct[request.zos.globals.id].cfcMetaDataCache,comPath&":"&arguments.method) EQ false){
-				tempcommeta=GetMetaData(request.zos.routingCurrentComponentObject[arguments.method]);
-				application.sitestruct[request.zos.globals.id].cfcMetaDataCache[comPath&":"&arguments.method]=tempcommeta;
-			}else{
-				tempcommeta=application.sitestruct[request.zos.globals.id].cfcMetaDataCache[comPath&":"&arguments.method];
+			cacheStruct=application.sitestruct[request.zos.globals.id].cfcMetaDataCache;
+		}
+		if(request.zos.isTestServer or structkeyexists(cacheStruct, comPath) EQ false){
+			commeta=GetMetaData(request.zos.routingCurrentComponentObject);
+			cacheStruct[comPath]=commeta;
+		}else{
+			commeta=cacheStruct[comPath];
+		}
+		if(request.zos.isTestServer or structkeyexists(cacheStruct,comPath&":"&arguments.method) EQ false){
+			tempcommeta=GetMetaData(request.zos.routingCurrentComponentObject[arguments.method]);
+			cacheStruct[comPath&":"&arguments.method]=tempcommeta;
+		}else{
+			tempcommeta=cacheStruct[comPath&":"&arguments.method];
+		}
+		if(tempcommeta.access NEQ 'remote'){
+			application.zcore.functions.z404("The component method must have access=""remote"" to be called directly via the URL. Please change access to remote for Method, ""#arguments.method#"", in #arguments.scriptName# if you need this function to be access remotely.");
+		}
+		if(isTestCFC EQ false){
+			for(i=1;i LTE arraylen(tempcommeta.parameters);i++){
+				if(tempcommeta.parameters[i].type NEQ "string" and tempcommeta.parameters[i].required EQ "yes"){
+					application.zcore.functions.z404("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
+				}
 			}
-			if(tempcommeta.access NEQ 'remote'){
-				application.zcore.functions.z404("The component method must have access=""remote"" to be called directly via the URL. Please change access to remote for Method, ""#arguments.method#"", in #arguments.scriptName# if you need this function to be access remotely.");
-			}
-			if(isTestCFC EQ false){
-				for(i=1;i LTE arraylen(tempcommeta.parameters);i++){
-					if(tempcommeta.parameters[i].type NEQ "string" and tempcommeta.parameters[i].required EQ "yes"){
-						application.zcore.functions.z404("All parameters of a Component method that have access=""remote"" must have the data type=""string"" or required=""no"" to prevent errors with unexpected data (robots &amp; pci scans, etc). Please change the argument, ""#tempcommeta.parameters[i].name#"", in method, ""#arguments.method#"" in #arguments.scriptName#.");
+		}
+
+		if(structkeyexists(request.zos.routingCurrentComponentObject, '__injectDependencies')){
+			ds={
+				context:application.zcore.componentObjectCache.context
+			};
+			if(structkeyexists(comMeta, 'properties')){
+				for(i=1;i LTE arraylen(comMeta.properties);i++){
+					property=comMeta.properties[i];
+					if(right(property.name, 5) EQ "Model" and find(".model.", property.type) NEQ false){
+						ds[property.name]=application.zcore.modelDataCache.modelComponentCache[property.type];
 					}
 				}
 			}
+			request.zos.routingCurrentComponentObject.__injectDependencies(ds);
 		}
 		for(i=1;i LTE arraylen(request.zos.routingArrArguments);i++){
 			if(i LTE arraylen(tempcommeta.parameters)){

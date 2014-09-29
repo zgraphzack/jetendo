@@ -2075,7 +2075,8 @@
 			<cfscript>
 			db.sql="select content_id from #db.table("content", request.zos.zcoreDatasource)# 
 			WHERE content_unique_name = #db.param("/")# and 
-			site_id = #db.param(request.zos.globals.id)# ";
+			site_id = #db.param(request.zos.globals.id)# and 
+			content_deleted=#db.param(0)#";
 			qHome=db.execute("qHome");
 			if(qHome.recordcount EQ 1){
 				echo('<a href="/z/content/admin/content-admin/edit?content_id=#qHome.content_id#&return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit Home Page</a>');

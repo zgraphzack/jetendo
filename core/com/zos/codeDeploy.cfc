@@ -102,6 +102,7 @@
 	application.zcore.siteOptionTypeStruct=siteOptionTypeStruct;
 	
 	componentObjectCache=structnew();
+	componentObjectCache.context=CreateObject("component","zcorerootmapping.com.zos.context");
 	componentObjectCache.cache=CreateObject("component","zcorerootmapping.com.zos.cache");
 	componentObjectCache.session=CreateObject("component","zcorerootmapping.com.zos.session");
 	componentObjectCache.tracking=CreateObject("component","zcorerootmapping.com.app.tracking");

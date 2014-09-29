@@ -1,10 +1,11 @@
-<cfcomponent>
+<cfcomponent extends="zcorerootmapping.com.zos.controller">
+	<cfproperty name="menuModel" type="zcorerootmapping.mvc.z.admin.model.menuModel">
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	form.site_id=request.zos.globals.id;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Menus");	
-	
+
 	if(structkeyexists(form, 'menu_button_id') or structkeyexists(form, 'menu_id')){
 		variables.queueSortStruct = StructNew();
 		// required
@@ -78,11 +79,7 @@
 	<h2>Copy Menu</h2>
 	<cfif application.zcore.functions.zso(form, 'newname') EQ "">
 		<cfscript>
-        db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu 
-		WHERE menu_id = #db.param(form.menu_id)# and 
-		menu_deleted = #db.param(0)# and 
-		site_id =#db.param(request.zos.globals.id)#";
-		qS=db.execute("qS");
+		qS=variables.menuModel.getById(form.menu_id);
 		</cfscript>
 		Selected Menu: #qs.menu_name#<br />
 		<br />
@@ -134,60 +131,27 @@
 	        form.newsiteid=request.zos.globals.id;
 		}
         
-		db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
-		menu_id = #db.param(form.menu_id)# and 
-		menu_deleted = #db.param(0)# and 
-		site_id =#db.param(request.zos.globals.id)#";
-		qS=db.execute("qS");
-		db.sql="select * from #db.table("menu_button", request.zos.zcoreDatasource)# menu_button WHERE 
-		menu_id = #db.param(form.menu_id)# and 
-		menu_button_deleted = #db.param(0)# and 
-		site_id =#db.param(request.zos.globals.id)#";
-		qT=db.execute("qT");
+		qS=variables.menuModel.getById(form.menu_id);
+		for(row in qS){
+			menuStruct=row;
+		}
+		qT=variables.menuModel.getMenuButtons(form.menu_id);
 		if(application.zcore.functions.zso(form, 'renameexisting', true, 0) EQ 1){
-			db.sql="select * from #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
-			menu_name = #db.param(form.newname)# and 
-			menu_deleted = #db.param(0)# and 
-			site_id = #db.param(newsiteid)#";
-			qS2=db.execute("qS2");
+			qS2=variables.menuModel.getMenuByNameAndSiteId(form.newName, newSiteId);
 			if(qS2.recordcount NEQ 0){
 				newcodename22=qS2.menu_name&" (renamed on "&dateformat(now(),"m/d/yy")&" at "&timeformat(now(),"HH:mm:ss")&")";
-				db.sql="update #db.table("menu", request.zos.zcoreDatasource)# menu 
-				set menu_locked = #db.param('0')#, 
-				menu_name =#db.param(newcodename22)#, 
-				menu_codename=#db.param(newcodename22)#,
-				menu_updated_datetime=#db.param(request.zos.mysqlnow)#  
-				WHERE menu_id = #db.param(qs2.menu_id)#  and 
-				menu_deleted = #db.param(0)# and
-				site_id =#db.param(qs2.site_id)#";
-				qC=db.execute("qC");
+
+				variables.menuModel.copyUpdateMenuName(qs2.menu_id, newcodename22, qs2.site_id);
 			}
 		}
 		
 		arrS=listtoarray(lcase(qS.columnlist));
 		arrT=listtoarray(lcase(qT.columnlist));
 		
-		sql="INSERT	INTO #db.table("menu", request.zos.zcoreDatasource)#  SET ";
-		arrF=arraynew(1);
-		for(i=1;i LTE arraylen(arrS);i++){
-			if(arrS[i] EQ "menu_id"){ 
-			}else if(arrS[i] EQ "menu_name"){
-				arrayappend(arrF, arrS[i]&"="&db.param(form.newname));
-			}else if(arrS[i] EQ "menu_codename"){
-				arrayappend(arrF, arrS[i]&"="&db.param(form.newname));
-			}else if(arrS[i] EQ "site_id"){
-				arrayappend(arrF, arrS[i]&"="&db.param(form.newsiteid));
-			}else if(arrS[i] EQ "menu_updated_datetime"){
-				arrayappend(arrF, arrS[i]&"="&db.param(request.zos.mysqlnow));
-			}else{
-				arrayappend(arrF, arrS[i]&"="&db.param(qS[arrS[i]][1]));
-			}
-		}
 		
-		sql&=arraytolist(arrF,", ");
-		db.sql=sql; 
+		
 		try{
-			local.rs=db.insert("q", request.zOS.insertIDColumnForSiteIDTable);
+			local.rs=variables.menuModel.insertMenuWithArray(arrS, form.newname, form.newsiteid, menuStruct);
 			if(local.rs.success){
 				newmenuid=local.rs.result;
 			}       
@@ -200,64 +164,20 @@
 		}
 		
 		buttonidstruct=structnew();
-		for(n=1;n LTE qT.recordcount;n++){
-			sql="INSERT	INTO #db.table("menu_button", request.zos.zcoreDatasource)#  SET ";
-			arrF=arraynew(1);
-			for(i=1;i LTE arraylen(arrT);i++){
-				if(arrT[i] EQ "menu_button_id"){
-				}else if(arrT[i] EQ "menu_id"){
-					arrayappend(arrF, arrT[i]&"="&db.param(newmenuid));
-				}else if(arrT[i] EQ "menu_button_type_tid"){
-					arrayappend(arrF, arrT[i]&"="&db.param(0));
-				}else if(arrT[i] EQ "menu_button_type_id"){
-					arrayappend(arrF, arrT[i]&"="&db.param(0));
-				
-				}else if(arrT[i] EQ "site_id"){
-					arrayappend(arrF, arrT[i]&"="&db.param(form.newsiteid));
-				}else if(arrT[i] EQ "menu_button_updated_datetime"){
-					arrayappend(arrF, arrT[i]&"="&db.param(request.zos.mysqlnow));
-				}else{
-					if(application.zcore.functions.zso(form, 'removelinks', true, 0) EQ 1 and arrT[i] EQ "menu_button_link"){
-						arrayappend(arrF, arrT[i]&"=#db.param('##')#");
-					}else{
-						arrayappend(arrF, arrT[i]&"="&db.param(qT[arrT[i]][n]));
-					}
-				}
-			}
-			sql&=arraytolist(arrF,", ");
-			db.sql=sql;
-			local.rs=db.insert("q", request.zOS.insertIDColumnForSiteIDTable);
+		for(menuButton in qT){
+			local.rs=variables.menuModel.insertMenuButtonWithArray(arrT, newmenuid, form.newsiteid, menuButton);
 			if(local.rs.success){
 				newmenubuttonid=local.rs.result;
 			}else{
 				throw("menu_button failed to insert");
 			}
 			if(application.zcore.functions.zso(form, 'removelinks', true, 0) NEQ 1){
-				db.sql="select * from #db.table("menu_button_link", request.zos.zcoreDatasource)# menu_button_link WHERE 
-				menu_button_id = #db.param(qT.menu_button_id[n])# and 
-				site_id=#db.param(request.zos.globals.id)# and 
-				menu_button_link_deleted = #db.param(0)# ";
-				qI=db.execute("qI");
+				qI=variables.menuModel.getMenuButtonLinksByButtonId(menuButton.menu_button_id);
+				
 				arrI=listtoarray(lcase(qI.columnlist));
-				for(n2=1;n2 LTE qI.recordcount;n2++){
-					db.sql="INSERT	INTO #db.table("menu_button_link", request.zos.zcoreDatasource)#  SET ";
-					arrF=arraynew(1);
-					for(i=1;i LTE arraylen(arrI);i++){
-						if(arrI[i] EQ "menu_button_link_id"){
-						}else if(arrI[i] EQ "menu_id"){
-							arrayappend(arrF, arrI[i]&"="&db.param(newmenuid));
-						}else if(arrI[i] EQ "menu_button_id"){
-							arrayappend(arrF, arrI[i]&"="&db.param(newmenubuttonid));
-						}else if(arrI[i] EQ "site_id"){
-							arrayappend(arrF, arrI[i]&"="&db.param(form.newsiteid));
-						}else if(arrI[i] EQ "menu_button_link_updated_datetime"){
-							arrayappend(arrF, arrI[i]&"="&db.param(request.zos.mysqlnow));
-						}else{
-							arrayappend(arrF, arrI[i]&"="&db.param(qI[arrI[i]][n2]));
-						}
-					}
-					db.sql&=arraytolist(arrF,", ");
-					db.execute("qC");
+				for(menuButtonLink in qI){
+					variables.menuModel.insertMenuButtonLinkWithArray(arrI, newmenuid, newMenuButtonId, form.newsiteid, menuButtonLink);
+					
 				}
 			}
 		}
@@ -1733,8 +1653,6 @@
 
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	var db=request.zos.queryObject;
-	var qSite=0;
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("2.3");
 	</cfscript>
@@ -1743,10 +1661,7 @@
 	<br />
 	<cfscript>
 	application.zcore.functions.zStatusHandler(request.zsid,true);
-	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
-	WHERE  site_id = #db.param(request.zos.globals.id)# and 
-	menu_deleted = #db.param(0)# ";
-	qSite=db.execute("qSite");
+	qSite=variables.menuModel.getAllMenus();
 	</cfscript>
 	<cfif qSite.recordcount NEQ 0>
 		<table style="border-spacing:0px; width:100%;" class="table-list">
@@ -1777,16 +1692,9 @@
 
 <cffunction name="view" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	var db=request.zos.queryObject;
-	var ts=0;
-	var qView=0;
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("2.3.7");
-	db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu WHERE 
-	menu.menu_id = #db.param(form.menu_id)# AND 
-	menu.site_id = #db.param(request.zos.globals.id)# and 
-	menu_deleted = #db.param(0)# ";
-	qView=db.execute("qView");
+	qView=variables.menuModel.getById(form.menu_id);
 	</cfscript>
 	<a href="/z/admin/menu/index">Manage Menus</a> /<br />
 	<br />

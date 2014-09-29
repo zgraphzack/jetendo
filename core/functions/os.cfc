@@ -703,7 +703,8 @@ if(not rs.success){
 						
 						ts.controllerComponentCache[local.comPath]=local.tempCom;
 						
-						local.tempcommeta=GetMetaData(local.tempCom);
+						tempcommeta=GetMetaData(local.tempCom);
+						ts.cfcMetaDataCache[local.comPath]=tempcommeta;
 						if(structkeyexists(local.tempcommeta, 'functions')){
 							for(local.i3=1;local.i3 LTE arraylen(local.tempcommeta.functions);local.i3++){
 								if(structkeyexists(local.tempcommeta.functions[local.i3],"access") and local.tempcommeta.functions[local.i3].access EQ "remote"){
@@ -2726,7 +2727,7 @@ User's IP: #request.zos.cgi.remote_addr#
 				ts.hookAppCom[qD.name].registerHooks(arguments.ss.componentObjectCache.hook);
 				continue;
 			}
-			if(qD.type EQ "file"){
+			if(qD.type EQ "file"){ 
 				curPath2=removechars(replace(replace(replace(arguments.ss.serverglobals.serverhomedir&removechars(qD.directory,1,1),"\","/","all"),curPath,""), arguments.ss.serverglobals.serverhomedir&"mvc/",""),1,0);
 				arrPath2=listtoarray(curPath2,"/",false);
 				fileType=listgetat(curPath2,1,"/");
@@ -2751,6 +2752,7 @@ User's IP: #request.zos.cgi.remote_addr#
 						}*/
 						tempcommeta=GetMetaData(tempCom);
 						ts.controllerComponentCache[comPath]=tempCom;
+						ts.cfcMetaDataCache[comPath]=tempcommeta;
 						if(structkeyexists(tempcommeta,'functions')){
 							for(i3=1;i3 LTE arraylen(tempcommeta.functions);i3++){
 								if(structkeyexists(tempcommeta.functions[i3],"access") and tempcommeta.functions[i3].access EQ "remote"){
@@ -2771,17 +2773,19 @@ User's IP: #request.zos.cgi.remote_addr#
 						}
 						ts.registeredControllerStruct[curMvcName]=replace(curPath, arguments.ss.serverglobals.serverhomedir, "/zcorerootmapping/");
 					}
-					/*
+					
 				}else if(lastFolderName EQ "model"){
 					if(curExt EQ "cfc"){
-						comPath="mvc"&"."&curPath3&"."&curName;
+						comPath=replace(mid(curPath22,2,len(curPath22)-5),"/",".","all");
+						ts.modelDataCache.modelComponentCache[comPath]=createobject("component", comPath);
+						/*comPath="mvc"&"."&curPath3&"."&curName;
 						if(structkeyexists(form,  'zregeneratemodelcache') EQ false and structkeyexists(applization, 'zcore') and structkeyexists(application.zcore,'modelDataCache') and structkeyexists(application.zcore.modelDataCache.modelComponentCache, comPath)){
 							ts.modelDataCache.modelComponentCache[comPath]=application.zcore.modelDataCache.modelComponentCache[comPath];
 						}else{
 							arrayappend(arrNewComPath, comPath);
 							ts.modelDataCache.modelComponentCache[comPath]=createobject("component", comPath);
-						}
-					}
+						}*/
+					}/*
 				}else if(lastFolderName EQ "view"){
 					if(curExt EQ "html"){
 						//writeoutput('application.zcore.skin.loadView("'&curPath3&"."&curName&'", "'&arrMvcPaths[i]&'");<br />');
@@ -2792,6 +2796,15 @@ User's IP: #request.zos.cgi.remote_addr#
 				//writeoutput(directory&"\"&name&"<br />");
 			}
 		}
+		/*
+		also need a component that wraps the global functions, global scopes and injects that to every controller by default.   maybe controllers should have a base component for this to be less code.
+			getModelDependencies
+			setRequestObject(requestObject);
+
+			variables.ro.function
+		*/
+		//writedump(structkeyarray(ts.modelDataCache.modelComponentCache));
+		//abort;
 		structappend(arguments.ss, ts, true);
 	}else{
 		ts.hookAppCom=application.zcore.hookAppCom;
