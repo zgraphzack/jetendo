@@ -30,7 +30,7 @@
 			userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
 			user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
 			db.sql="SELECT user_id, user_first_name, user_last_name, site_id 
-			FROM #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user 
+			FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))#  
 			 and (user_server_administrator=#db.param(0)# ) and 
@@ -96,14 +96,14 @@
 		<tr>
 			<td style="font-family:Verdana, Arial, Geneva, sans-serif; font-size:11px;">
 			<cfscript>
-			db.sql="SELECT * FROM (#request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
-			#request.zos.queryObject.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status) 
-			LEFT JOIN #request.zos.queryObject.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
+			db.sql="SELECT * FROM (#db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
+			#db.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status) 
+			LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 			inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
 			inquiries_type.site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
 			inquiries_type.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.inquiries_type_id_siteIDType"))# and 
 			inquiries_type_deleted = #db.param(0)#
-			LEFT JOIN #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user ON 
+			LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
 			user.user_id = inquiries.user_id and 
 			user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))# and 
 			user_deleted = #db.param(0)#
@@ -269,7 +269,7 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 		</cfif>
 		<cfif t.inquiries_email NEQ "">
 			<cfscript>
-			db.sql="SELECT * FROM#request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
+			db.sql="SELECT * FROM #db.table("track_user", request.zos.zcoreDatasource)# track_user 
 			WHERE track_user.site_id =#db.param(request.zOS.globals.id)# AND 
 			((track_user_email =#db.param(t.inquiries_email)# and 
 			track_user_datetime BETWEEN #db.param(dateformat(t.inquiries_datetime, 'yyyy-mm-dd')&' 00:00:00')# and #db.param(dateformat(t.inquiries_datetime, 'yyyy-mm-dd')&' 23:59:59')#) or 
@@ -294,7 +294,7 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 						<cfelse>
 						<cfscript>
 						db.sql="SELECT count(track_page_id) count 
-						FROM #request.zos.queryObject.table("track_page", request.zos.zcoreDatasource)# track_page 
+						FROM #db.table("track_page", request.zos.zcoreDatasource)# track_page 
 						WHERE site_id =#db.param(request.zOS.globals.id)# and 
 						track_user_id =#db.param(track_user_id)# and 
 						track_page_deleted = #db.param(0)#
@@ -344,7 +344,7 @@ Keyword:#qTrack.track_user_keywords#							<br />
 					Length of Visit:#minutes#<br />
 					Clicks:#qTrack.track_user_hits#<br />
 					<cfscript>
-					db.sql="SELECT * FROM #request.zos.queryObject.table("track_page", request.zos.zcoreDatasource)# track_page 
+					db.sql="SELECT * FROM #db.table("track_page", request.zos.zcoreDatasource)# track_page 
 					WHERE site_id =#db.param(request.zOS.globals.id)# AND 
 					track_user_id =#db.param(qTrack.track_user_id)# and 
 					track_page_datetime <=#db.param(dateformat(qTrack.track_user_recent_datetime, 'yyyy-mm-dd')&' '&timeformat(qTrack.track_user_recent_datetime,'HH:mm:ss'))# and 
@@ -413,7 +413,7 @@ Assigned to
 		<td style="#tdstyle#"><cfif t.inquiries_reservation EQ 1>Yes<cfelse>No</cfif></td>
 	</tr>
 	<cfsavecontent variable="db.sql">
-	SELECT * FROM #request.zos.queryObject.table("property", request.zos.zcoreDatasource)# property 
+	SELECT * FROM #db.table("property", request.zos.zcoreDatasource)# property 
 	WHERE property_id = #db.param(t.property_id)# and 
 	property_deleted = #db.param(0)# 
 	</cfsavecontent><cfscript>qprop=db.execute("qprop");</cfscript>
@@ -456,7 +456,7 @@ Buy Real Estate
 		<cfif trim(t.inquiries_email) NEQ ''>
 			<cfif isDefined('request.zsession.user.id')>
 				<cfscript>
-				db.sql="SELECT * FROM #request.zos.queryObject.table("user", request.zos.zcoreDatasource)# user 
+				db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_id =#db.param(request.zsession.user.id)# and 
 				user_deleted = #db.param(0)# and 
 				site_id =#db.param(request.zsession.user.site_id)#";
@@ -1039,7 +1039,7 @@ Owns a home
 	</cfif>
 	<cfif application.zcore.app.siteHasApp("listing")>
 		<cfscript>
-		db.sql="SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
+		db.sql="SELECT * FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 		WHERE saved_search_email<>#db.param('')# and 
 		mls_saved_search_deleted = #db.param(0)# and 
 		saved_search_email =#db.param(t.inquiries_email)# and 
@@ -1084,7 +1084,7 @@ these page(s)
 				:</h2>
 			<cfscript>
 			contentIdList="'"&replace(replace(application.zcore.functions.zso(t,'content_id'),"'","","ALL"),",","','","ALL")&"'";
-			db.sql="SELECT * FROM #request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content 
+			db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 			WHERE content.site_id =#db.param(request.zOS.globals.id)# and 
 			content_id IN (#db.trustedSQL(contentIdList)#)  and 
 			content_for_sale <>#db.param(2)# and 

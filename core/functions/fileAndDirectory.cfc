@@ -511,8 +511,13 @@ notes: optionally delete an existing image that has a field in the specified dat
 		}
 		db.sql="SHOW FIELDS FROM #db.table(arguments.tableName, arguments.datasource)# LIKE #db.param('site_id')#";
 		local.qC=db.execute("qC");
+    	db.sql="SHOW FIELDS FROM #db.table(arguments.tableName, arguments.datasource)# LIKE #db.param(arguments.tableName&'_deleted')#";
+		local.qC2=db.execute("qC");
 		db.sql="SELECT #arguments.fieldNameOverride# FROM #db.table(arguments.tableName, arguments.datasource)# #arguments.tableName# 
-		WHERE #arguments.primary_key_id# = #db.param(form[arguments.primary_key_id])#";
+		WHERE #arguments.primary_key_id# = #db.param(form[arguments.primary_key_id])# ";
+		if(local.qC2.recordcount){
+			db.sql&=" and #arguments.tableName#_deleted = #db.param(0)# ";
+		}
 		if(local.qC.recordcount NEQ 0){
 			db.sql&=" and site_id = #db.param(request.zos.globals.id)# ";
 		}

@@ -342,12 +342,6 @@ function zGetFormFieldDataById(id){
 		return "";
 	}
 }
-	
-function zAddMapMarkerByLatLng(mapObj, markerObj, latitude, longitude){
-	markerObj.position=new google.maps.LatLng( latitude, longitude);
-	var marker=zCreateMapMarker(markerObj);
-	marker.setMap(mapObj);
-}
 /*
 marker.setPosition( new google.maps.LatLng( 0, 0 ) );
 map.panTo( new google.maps.LatLng( 0, 0 ) );

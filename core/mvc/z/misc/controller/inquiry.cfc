@@ -187,7 +187,6 @@
 		this.submit();
 		return;	
 	}
-	
 	if(structkeyexists(request.zos, 'zHideInquiryForm')){
 		return;	
 	}

@@ -90,7 +90,7 @@
 				application.zcore.abusiveIPStruct[curminute]=local.abusiveIPStruct;
 			}
 			if(request.zos.istestserver EQ false and local.trackingAbuseCount GTE 500 and structkeyexists(application.zcore.abusiveBlockedIpStruct, request.zos.cgi.remote_addr) EQ false){
-				db.sql="INSERT INTO #request.zos.queryObject.table("ip_block", request.zos.zcoreDatasource)#  
+				db.sql="INSERT INTO #db.table("ip_block", request.zos.zcoreDatasource)#  
 				SET `ip_block_datetime`=#db.param(request.zos.mysqlnow)#, 
 				ip_block_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 				`ip_block_user_agent`=#db.param(request.zos.cgi.http_user_agent)#, 
@@ -113,7 +113,7 @@ USER WAS PERMANENTLY BLOCKED.');
 				application.zcore.functions.zabort();
 			}
 		}*/
-		if(cgi.HTTP_USER_AGENT EQ "" or replacelist(tempUserAgent, application.zcore.spiderList, application.zcore.spiderListReplace) NEQ tempUserAgent){
+		if(request.zos.cgi.HTTP_USER_AGENT EQ "" or replacelist(tempUserAgent, application.zcore.spiderList, application.zcore.spiderListReplace) NEQ tempUserAgent){
 			/*if(cgi.HTTP_USER_AGENT CONTAINS "baiduspider"){
 				header statuscode="404" statustext="Page not found";
 				application.zcore.functions.zabort();
@@ -121,10 +121,10 @@ USER WAS PERMANENTLY BLOCKED.');
 			request.zos.trackingspider=true;
 			//this.checkForSpamTrap();
 			if(request.zos.trackingspider and structkeyexists(application.zcore.spiderTrapScripts, request.cgi_script_name)){
-				if(structkeyexists(application.zcore.robotThatHitSpamTrap, request.zos.cgi.remote_addr&"_"&cgi.http_user_agent) EQ false){
-					application.zcore.robotThatHitSpamTrap[request.zos.cgi.remote_addr&"_"&cgi.http_user_agent]=1;
+				if(structkeyexists(application.zcore.robotThatHitSpamTrap, request.zos.cgi.remote_addr&"_"&request.zos.cgi.http_user_agent) EQ false){
+					application.zcore.robotThatHitSpamTrap[request.zos.cgi.remote_addr&"_"&request.zos.cgi.http_user_agent]=1;
 				}else{
-					application.zcore.robotThatHitSpamTrap[request.zos.cgi.remote_addr&"_"&cgi.http_user_agent]++;
+					application.zcore.robotThatHitSpamTrap[request.zos.cgi.remote_addr&"_"&request.zos.cgi.http_user_agent]++;
 				}
 			}
 			
@@ -146,11 +146,11 @@ USER WAS PERMANENTLY BLOCKED.');
 			return;	
 		}	
 		// check session
-		if(isDefined('request.zsession') EQ false){
+		if(not structkeyexists(request, 'zsession') EQ false){
 			request.zsession=StructNew();
 		}
 		
-		if(isDefined('request.zsession') EQ false or structkeyexists(request.zsession,'tracking') EQ false){
+		if(not structkeyexists(request, 'zsession') EQ false or structkeyexists(request.zsession,'tracking') EQ false){
 			t4=structnew();
 			t4.inquiries_id=0;
 			t4.track_user_id=0;
@@ -162,7 +162,7 @@ USER WAS PERMANENTLY BLOCKED.');
 				t4.user_id=0;
 			}
 			if(t4.track_user_email NEQ ""){
-				db.sql="select * from #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
+				db.sql="select * from #db.table("track_user", request.zos.zcoreDatasource)# track_user 
 				where track_user_email = #db.param(t4.track_user_email)# and 
 				site_id=#db.param(request.zos.globals.id)#";	
 				local.qUser=db.execute("qUser");
@@ -176,18 +176,15 @@ USER WAS PERMANENTLY BLOCKED.');
 			t4.track_user_datetime=request.zos.now;
 			t4.track_user_recent_datetime=t4.track_user_datetime;
 			t4.track_user_session_length=0;
-			t4.track_user_agent=cgi.HTTP_USER_AGENT;
+			t4.track_user_agent=request.zos.cgi.HTTP_USER_AGENT;
 			t4.track_user_spider=0;
 			t4.track_user_ip=request.zos.cgi.remote_addr;
 			t4.track_user_referer=request.zos.cgi.http_referer;
 			t4.track_user_hits=1;
 			t4.track_user_conversions=0;
 			t4.track_user_ppc=0;
-			if(cgi.QUERY_STRING CONTAINS "gclid="){
+			if(request.zos.cgi.QUERY_STRING CONTAINS "gclid="){
 				t4.track_user_ppc=1;		
-			}
-			if(structkeyexists(form, 'zsource')){
-				t4.track_user_source=form.zsource;
 			}
 			if(request.zos.cgi.http_referer NEQ "" and findNoCase(request.zos.globals.domain, request.zos.cgi.http_referer) EQ 0 and findnocase(request.zos.currentHostName, request.zos.cgi.http_referer) EQ 0){
 				t4.track_user_keywords=getSearchTerms(request.zos.cgi.http_referer);
@@ -203,9 +200,12 @@ USER WAS PERMANENTLY BLOCKED.');
 			request.zsession.tracking.track_user_recent_datetime=request.zos.mysqlnow;
 			request.zsession.tracking.track_user_session_length=DateDiff("s", request.zsession.tracking.track_user_datetime, now());
 		}
+		if(structkeyexists(form, 'zsource') and form.zsource NEQ ""){
+			request.zsession.tracking.track_user_source=form.zsource;
+		}
 		local.ps=structnew();
 		// get the actual script name, not the URL rewrite engine
-		if(CGI.SERVER_PORT EQ '443'){
+		if(request.zos.CGI.SERVER_PORT EQ '443'){
 			local.ps.track_page_script='https://'&request.zos.cgi.HTTP_HOST&request.zos.originalURL;
 		}else{
 			local.ps.track_page_script='http://'&request.zos.cgi.HTTP_HOST&request.zos.originalURL;
@@ -263,7 +263,7 @@ USER WAS PERMANENTLY BLOCKED.');
 		</cfscript>
 		<!--- set parent id if it exists --->
 		<cfsavecontent variable="db.sql">
-		SELECT * FROM #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
+		SELECT * FROM #db.table("track_user", request.zos.zcoreDatasource)# track_user 
 		WHERE track_user_email = #db.param(arguments.track_user_email)# and 
 		track_user_deleted = #db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)#
@@ -276,7 +276,7 @@ USER WAS PERMANENTLY BLOCKED.');
 	</cffunction>
 	
 <!--- trackCom.setConversion(track_convert_name); --->
-<cffunction name="setConversion" localmode="modern" output="false">
+<cffunction name="setConversion" localmode="modern" output="yes">
 	<cfargument name="track_convert_name" type="string" required="yes">
 	<cfargument name="inquiries_id" type="string" required="no" default="">
 	<cfscript>
@@ -292,7 +292,7 @@ USER WAS PERMANENTLY BLOCKED.');
 	var db=request.zos.queryObject;
 	var ts=structnew();
 	if(structkeyexists(request.zos,'trackingDisabled')) return;
-	if(isDefined('request.zsession.tracking') EQ false){
+	if(not structkeyexists(request.zsession, 'tracking')){
 		return false;
 	}
 	local.tempSource="";
@@ -308,9 +308,9 @@ USER WAS PERMANENTLY BLOCKED.');
 	if(isdefined('request.zsession.tracking.track_user_id') and not isnull(request.zsession.tracking.track_user_id)){
 		hasSession=true;
 		track_user_id=request.zsession.tracking.track_user_id;
-		db.sql="UPDATE #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)#  SET ";
+		db.sql="UPDATE #db.table("track_user", request.zos.zcoreDatasource)#  SET ";
 	}else{
-		db.sql="INSERT INTO #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)#  SET ";
+		db.sql="INSERT INTO #db.table("track_user", request.zos.zcoreDatasource)#  SET ";
 	}
     db.sql&=" inquiries_id=#db.param(request.zsession.tracking.inquiries_id)#, 
     track_user_email=#db.param(request.zsession.tracking.track_user_email)#, 
@@ -347,7 +347,7 @@ track_user_source=#db.param(local.tempSource)#,
 		}
 	}
 	for(i=1;i LTE arraylen(request.zsession.trackingArrPages);i++){
-		db.sql="INSERT INTO #request.zos.queryObject.table("track_page", request.zos.zcoreDatasource)#  SET 
+		db.sql="INSERT INTO #db.table("track_page", request.zos.zcoreDatasource)#  SET 
 		track_page_script=#db.param(request.zsession.trackingArrPages[i].track_page_script)#,
 		track_page_qs=#db.param(request.zsession.trackingArrPages[i].track_page_qs)#,
 		track_page_datetime=#db.param(dateformat(request.zsession.trackingArrPages[i].track_page_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.trackingArrPages[i].track_page_datetime, 'HH:mm:ss'))#,
@@ -366,7 +366,7 @@ track_user_source=#db.param(local.tempSource)#,
 	if(isnull(track_page_id)){
 		track_page_id=0;
 	}
-	db.sql="SELECT * FROM #request.zos.queryObject.table("track_convert", request.zos.zcoreDatasource)# track_convert 
+	db.sql="SELECT * FROM #db.table("track_convert", request.zos.zcoreDatasource)# track_convert 
 	WHERE track_convert_name = #db.param(arguments.track_convert_name)# and 
 	track_convert_deleted = #db.param(0)# ";
 	qConvert=db.execute("qConvert");
@@ -378,7 +378,7 @@ track_user_source=#db.param(local.tempSource)#,
 	}else{
 		track_convert_id=qconvert.track_convert_id;
 	}
-	db.sql="INSERT INTO #request.zos.queryObject.table("track_user_x_convert", request.zos.zcoreDatasource)#  SET 
+	db.sql="INSERT INTO #db.table("track_user_x_convert", request.zos.zcoreDatasource)#  SET 
 	track_user_id = #db.param(track_user_id)#,
 	track_page_id = #db.param(track_page_id)#,
 	track_convert_id = #db.param(track_convert_id)#,
@@ -386,7 +386,7 @@ track_user_source=#db.param(local.tempSource)#,
 	track_user_x_convert_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("qUser");
-	db.sql="UPDATE #request.zos.queryObject.table("track_user", request.zos.zcoreDatasource)# track_user 
+	db.sql="UPDATE #db.table("track_user", request.zos.zcoreDatasource)# track_user 
 	SET track_user_conversions=track_user_conversions+#db.param(1)#,
 	track_user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE track_user_id = #db.param(track_user_id)# and 
@@ -447,7 +447,7 @@ track_user_source=#db.param(local.tempSource)#,
 	var q=0;
 	if(structkeyexists(request.zos,'trackingDisabled')) return;
 	if(isDefined('request.zsession.zemail_campaign_id') and isDefined('request.zsession.user.id')){
-		db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
+		db.sql="INSERT INTO #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click 
 		SET zemail_campaign_click_type=#db.param('5')#, 
 		zemail_campaign_click_html=#db.param('1')#, 
 		zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
@@ -459,7 +459,7 @@ track_user_source=#db.param(local.tempSource)#,
 		site_id=#db.param(request.zos.globals.id)#";
 		db.execute("q");
 	}else if(isDefined('cookie.__#request.zos.zcoremapping#ecid') and isDefined('cookie.__#request.zos.zcoremapping#euid')){
-		db.sql="INSERT INTO #request.zos.queryObject.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click SET 
+		db.sql="INSERT INTO #db.table("zemail_campaign_click", request.zos.zcoreDatasource)# zemail_campaign_click SET 
 		zemail_campaign_click_type=#db.param('5')#, 
 		zemail_campaign_click_html=#db.param('1')#, 
 		zemail_campaign_click_offset=#db.param(arguments.conversionId)#, 
