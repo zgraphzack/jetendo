@@ -491,9 +491,30 @@
 	local.c.autoReset=false;
 	request.zos.noVerifyQueryObject=ts.db.newQuery(local.c);
 
-	request.zos.queryObject.sql="SHOW VARIABLES LIKE #request.zos.queryObject.param('version')#";
+	db=request.zos.queryObject;
+	db.sql="SHOW VARIABLES LIKE #db.param('version')#";
 	
-	local.qV=request.zos.queryObject.execute("qV");
+	local.qV=db.execute("qV");
+
+	db.sql="SELECT * FROM #db.table("state", request.zos.zcoreDatasource)# 
+	order by state_state asc";
+	qState=db.execute("qState");
+	ts.stateStruct={};
+	ts.arrState=[];
+	for(row in qState){
+		ts.stateStruct[row.state_code]=row.state_state;
+		arrayAppend(ts.arrState, row);
+	}
+	db.sql="SELECT * FROM #db.table("country", request.zos.zcoreDatasource)# 
+	ORDER BY country_name ASC";
+	qCountry=db.execute("qCountry");
+	ts.countryStruct={};
+	ts.arrCountry=[];
+	for(row in qCountry){
+		ts.countryStruct[row.country_code]=row.country_name;
+		arrayAppend(ts.arrCountry, row);
+	}
+
 	ts.enableFullTextIndex=false;
 	if(local.qV.recordcount NEQ 0){
 		local.arrV=listtoarray(local.qV.value, ".", false);

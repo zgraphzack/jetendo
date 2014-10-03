@@ -53,14 +53,16 @@
 	variables.init();
 	application.zcore.functions.zSetPageHelpId("8.1.1.8");
 	db.sql="SELECT * FROM #request.zos.queryObject.table("site", request.zos.zcoreDatasource)# site 
-	WHERE site_id = #db.param(form.sid)#";
+	WHERE site_id = #db.param(form.sid)# and 
+	site_deleted=#db.param(0)#";
 	qSite=db.execute("qSite");
 	if(qSite.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Invalid Site Selection");
 		application.zcore.functions.zRedirect("/z/server-manager/admin/rewrite-rules/index?zid=#form.zid#&sid=#form.sid#&zsid=#request.zsid#");
 	}
 	db.sql="SELECT * FROM #request.zos.queryObject.table("rewrite_rule", request.zos.zcoreDatasource)# rewrite_rule 
-	WHERE site_id = #db.param(form.sid)#";
+	WHERE site_id = #db.param(form.sid)# and 
+		rewrite_rule_deleted=#db.param(0)# ";
 	qGroup=db.execute("qGroup");
 	if(qgroup.recordcount EQ 0){
 		db.sql="INSERT IGNORE INTO #request.zos.queryObject.table("rewrite_rule", request.zos.zcoreDatasource)# 

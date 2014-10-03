@@ -189,7 +189,7 @@ dataImportCom.init(ts);
 	var arrFields=0;
 	var line=0;
 	var field=0;
-	var fieldStart=1;
+	var fStart=1;
 	var arrList = ArrayNew(1);
 	var currentGroupId=0;
 	var f=this.cursor;
@@ -205,39 +205,39 @@ dataImportCom.init(ts);
 	this.currentLine=line;
 	inQuote=false;
 	arrFields=ArrayNew(1);
-	fieldStart=1;
+	fStart=1;
 	for(i=1;i LTE len(line);i=i+1){
 		letter = mid(line,i,1);
 		if(inQuote){
-			if(letter EQ this.config.textQualifier and (fieldStart EQ i or (mid(line,i+1,1) NEQ this.config.escapedBy))){// and mid(line,i+1,1) NEQ this.config.escapedBy))){
+			if(letter EQ this.config.textQualifier and (fStart EQ i or (mid(line,i-1,1) NEQ this.config.escapedBy))){// and mid(line,i+1,1) NEQ this.config.escapedBy))){
 				if(mid(line,i+1,1) EQ this.config.seperator or i+1 GTE len(line)){
 					inQuote=false;
-					field = mid(line,fieldStart,(i-fieldStart));
+					field = mid(line,fStart,(i-fStart));
 					// unescape double quotes
 					if(this.config.escapedBy NEQ ''){
 						field = replace(field,this.config.escapedBy&this.config.textQualifier,this.config.textQualifier,"ALL");
 					}
 					ArrayAppend(arrFields,field);
-					fieldStart=i+1;
+					fStart=i+1;
 				}
 			}
 		}else{
-			if(letter EQ this.config.textQualifier and fieldStart EQ i){
+			if(letter EQ this.config.textQualifier and fStart EQ i){
 				inQuote=true;
-				fieldStart=i+1;
+				fStart=i+1;
 			}else if(letter EQ this.config.seperator){
 				if(i EQ 1 or mid(line,i-1,1) EQ this.config.seperator){
 					ArrayAppend(arrFields,'');
-				}else if(fieldStart NEQ i){
-					field = mid(line,fieldStart,(i-fieldStart));
+				}else if(fStart NEQ i){
+					field = mid(line,fStart,(i-fStart));
 					ArrayAppend(arrFields,field);
 				}
 				if(i+1 EQ len(line)){
 					ArrayAppend(arrFields,'');
 				}
-				fieldStart=i+1;
-			}else if(i EQ len(line) and fieldStart NEQ i){
-				field = mid(line,fieldStart,(i-fieldStart)+1);
+				fStart=i+1;
+			}else if(i EQ len(line) and fStart NEQ i){
+				field = mid(line,fStart,(i-fStart)+1);
 				ArrayAppend(arrFields,field);
 			}
 		}

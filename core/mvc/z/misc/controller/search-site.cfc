@@ -219,7 +219,7 @@ search sql generator has to be able to search on child group data for paging to 
 			<div class="z-search-link">	
 				<!--- <div class="z-search-link-image"></div> --->
 				<div class="z-search-link-heading"><a href="#htmleditformat(qSearch.search_url)#">#htmleditformat(qSearch.search_title)#</a></div>
-				<cfif qSearch.search_summary NEQ ""><div class="z-search-link-summary">#htmleditformat(qSearch.search_summary)#</div></cfif>
+				<cfif qSearch.search_summary NEQ ""><div class="z-search-link-summary">#(qSearch.search_summary)#</div></cfif>
 				<cfif qSearch.search_content_datetime NEQ "" and qSearch.search_content_datetime NEQ "0000-00-00 00:00:00"><div style="z-search-link-date">Updated #dateformat(qSearch.search_content_datetime, "m/d/yy")#</div></cfif>
 			</div>
 		</cfloop>
