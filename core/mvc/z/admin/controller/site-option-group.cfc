@@ -382,7 +382,7 @@
 		// manually remove sensitive ones
 		// structdelete
 		// force some default values for new table
-		local.tempColumns=duplicate(application.zcore.tableColumns["#request.zos.zcoreDatasource#.finquiries"]);
+		local.tempColumns=duplicate(application.zcore.tableColumns["#request.zos.zcoreDatasource#.inquiries"]);
 		//writedump(local.tempColumns);
 		local.arrTemp=structkeyarray(local.tempColumns);
 		arraySort(local.arrTemp, "text", "asc");

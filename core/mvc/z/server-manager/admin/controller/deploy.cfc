@@ -364,12 +364,12 @@
 			application.zcore.functions.zInputSelectBox(ts);
 			writeoutput('</td><td>');
 			writeoutput('<input type="radio" name="site_x_deploy_server_source_only#index#" ');
-			if(row.site_x_deploy_server_source_only EQ 1 or row.site_x_deploy_server_source_only EQ ''){
+			if(row.site_x_deploy_server_source_only EQ 1){
 				echo('checked="checked"');
 			}
 			echo('value="1" /> Source Only 
 			<input type="radio" name="site_x_deploy_server_source_only#index#" ');
-			if(row.site_x_deploy_server_source_only EQ 0){
+			if(row.site_x_deploy_server_source_only EQ 0 or row.site_x_deploy_server_source_only EQ ''){
 				echo('checked="checked"');
 			}
 			echo(' value="0" /> Source &amp; Files ');
@@ -478,12 +478,12 @@
 				application.zcore.functions.zInputSelectBox(ts);
 				writeoutput('</td><td>');
 				writeoutput('<input type="radio" name="site_x_deploy_server_source_only#index#" ');
-				if(row.site_x_deploy_server_source_only EQ 1 or row.site_x_deploy_server_source_only EQ ''){
+				if(row.site_x_deploy_server_source_only EQ 1){
 					echo('checked="checked"');
 				}
 				echo('value="1" /> Source Only 
 				<input type="radio" name="site_x_deploy_server_source_only#index#" ');
-				if(row.site_x_deploy_server_source_only EQ 0){
+				if(row.site_x_deploy_server_source_only EQ 0 or row.site_x_deploy_server_source_only EQ ''){
 					echo('checked="checked"');
 				}
 				echo(' value="0" /> Source &amp; Files ');

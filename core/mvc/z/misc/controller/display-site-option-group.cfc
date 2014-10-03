@@ -75,7 +75,7 @@
 		local.groupCom=createobject("component", local.cfcpath);
 		local.groupCom[qSet.site_option_group_view_cfc_method](qSet);
 	}else{
-		throw("site_option_group_view_cfc_path and site_option_group_view_cfc_method must be set when editing the site option group to allow rendering of the group.", "custom");
+		application.zcore.functions.z404("site_option_group_view_cfc_path and site_option_group_view_cfc_method must be set when editing the site option group to allow rendering of the group.");
 	}
 	
 	</cfscript>
