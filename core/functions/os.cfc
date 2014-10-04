@@ -935,10 +935,10 @@ if(not rs.success){
 <!--- application.zcore.functions.zModalCancel(); --->
 <cffunction name="zModalCancel" localmode="modern" output="no" returntype="any">
 	<cfscript>
-    if(structkeyexists(request.zos,'ModalWindowCancelled') EQ false){
-		request.zos.ModalWindowCancelled=true;
-		application.zcore.template.prependTag("content",'<script type="text/javascript">/* <![CDATA[ */ zModalCancelFirst=true; /* ]]> */</script>');
-		application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */ zModalCancelFirst=true; /* ]]> */</script>');
+    if(structkeyexists(request.zos,'modalWindowCancelled') EQ false){
+		request.zos.modalWindowCancelled=true;
+		application.zcore.template.prependTag("content",'<script type="text/javascript">/* <![CDATA[ */ var zModalCancelFirst=true; /* ]]> */</script>');
+		application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */ var zModalCancelFirst=true; /* ]]> */</script>');
 	}
 	</cfscript>
 </cffunction>
@@ -1405,18 +1405,21 @@ application.zcore.functions.zLogError(ts);
 			arrayappend(request.zos.arrJSIncludes, ts);
 			ts={
 				type:"zIncludeZOSFORMS",
-				url:"/z/javascript/zForm-new-src.js",
-				package:arguments.package,
-				forcePosition:""
-			};
-			arrayappend(request.zos.arrJSIncludes, ts);
-			ts={
-				type:"zIncludeZOSFORMS",
 				url:"/z/javascript/zForm-src.js",
 				package:arguments.package,
 				forcePosition:""
 			};
 			arrayappend(request.zos.arrJSIncludes, ts);
+			c=arraylen(application.zcore.arrJsFiles);
+			for(i=1;i LTE c;i++){
+				ts={
+					type:"zIncludeZOSFORMS",
+					url:application.zcore.arrJsFiles[i],
+					package:arguments.package,
+					forcePosition:""
+				};
+				arrayappend(request.zos.arrJSIncludes, ts);
+			}
 		}
 		ts={
 			type:"zIncludeZOSFORMS",
@@ -1761,7 +1764,7 @@ application.zcore.functions.zLogError(ts);
 	 request.zos.tempObj.zVarSOIndex++;
 	if(arguments.disableEditing EQ false and structkeyexists(application.zcore,'user') and structkeyexists(request.zos.userSession, 'groupAccess') and (structkeyexists(request.zos.userSession.groupAccess, "administrator")) and contentConfig.contentEmailFormat EQ false){
 		request.zos.tempObj.zVarSOIndex++;
-		start='<div style="display:inline;" id="zcidspan#request.zos.tempObj.zVarSOIndex#" onmouseover="zOverEditDiv(this,''/z/admin/site-options/index?return=1&amp;jumpto=soid_#application.zcore.functions.zURLEncode(arguments.name,"_")#'');">';
+		start='<div style="display:inline;" id="zcidspan#request.zos.tempObj.zVarSOIndex#" class="zOverEdit" data-editurl="/z/admin/site-options/index?return=1&amp;jumpto=soid_#application.zcore.functions.zURLEncode(arguments.name,"_")#">';
 		end='</div>';
 	}
 	if(arguments.site_option_app_id EQ 0){

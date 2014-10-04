@@ -746,7 +746,7 @@
 								<td style="vertical-align:top; "><script type="text/javascript">
 								/* <![CDATA[ */ 
 								function lookupAgentIdCallback(r){
-									eval('var myObj='+r+';');
+									var myObj=eval('('+r+')');
 									if(myObj.success){
 										if(typeof(zmlsagentidarray[myObj.mlsproviderid])!="undefined"){
 											var c=document.getElementById(zmlsagentidarray[myObj.mlsproviderid]);

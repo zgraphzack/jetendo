@@ -400,7 +400,7 @@
 
 <cffunction name="getEndBodyHTML" localmode="modern" access="public">
 	<cfscript>
-	return '<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:##FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; " onclick="zOverEditClick();"><a id="zOverEditATag" href="##" onclick="zOverEditClick(); " class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>'; // <div id="zModalOverlayDiv"><div id="zModalOverlayDiv2"></div></div>
+	return '<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:##FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; "><a id="zOverEditATag" href="##" class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>'; 
 	</cfscript>
 </cffunction>
 
@@ -875,6 +875,10 @@ for(local.row in local.qSite){
 			local.scriptOutput=arraytolist(local.arrBeginFunction, "")&arrayToList(local.arrEndFunction,"");
 			
 			append2='<script type="text/javascript">/* <![CDATA[ */ 
+var zArrMapFunctions=new Array();
+var zArrScrollFunctions=new Array();
+var zFunctionLoadStarted=false;
+var zArrResizeFunctions=new Array();
 var zMSIEVersion=-1; var zMSIEBrowser=window.navigator.userAgent.indexOf("MSIE"); if(zMSIEBrowser != -1){	zMSIEVersion= (window.navigator.userAgent.substring (zMSIEBrowser+5, window.navigator.userAgent.indexOf (".", zMSIEBrowser ))); }
 zModernizrLoaded=function(){};var zModernizr99=true;(
 			function(w,d,undefined){

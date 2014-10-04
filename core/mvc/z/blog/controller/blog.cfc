@@ -1860,8 +1860,8 @@ this.app_id=10;
 	
 	viewdata.article.story="";
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		viewdata.article.story&=('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1'');">');
+		viewdata.article.story&=('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
 	}
 	if(isDefined('request.zos.supressBlogArticleDetails')){
@@ -2686,8 +2686,8 @@ this.app_id=10;
 	application.zcore.template.setTag("meta",tempMeta);
     
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1'');">');
+		writeoutput('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
 	}
 	</cfscript>
@@ -2971,8 +2971,8 @@ this.app_id=10;
 	application.zcore.template.setTag("meta",tempMeta);
     
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1'');">');
+		writeoutput('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
 	}
 	</cfscript>
@@ -4013,8 +4013,8 @@ this.app_id=10;
 	application.zcore.template.setTag("meta",tempMeta);
 		
 	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) ){
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1'');">');
+		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</div>');
 	}
 	</cfscript>
@@ -4376,7 +4376,7 @@ this.app_id=10;
 	var ts2=0;
 	var pos=0;
 	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
-		writeoutput('<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#'');">');
+		writeoutput('<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#">');
 	}
 	
 	thumbnailStruct=variables.getThumbnailSizeStruct();

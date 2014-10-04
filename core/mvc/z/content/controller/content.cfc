@@ -2634,8 +2634,8 @@ configCom.includeContentByName(ts);
 	<cfargument name="content_id" type="numeric" required="yes">
 	<cfscript>
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1'');">');
+		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</div>');
 	}
 	</cfscript>
@@ -2907,7 +2907,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="qContent" type="any" required="yes">
 	<cfargument name="returnPropertyDisplayStruct" type="struct" required="yes">
 	<cfscript>
-
+	returnPropertyDisplayStruct=arguments.returnPropertyDisplayStruct;
 	if(application.zcore.app.siteHasApp("listing") and arguments.qContent.content_search_mls EQ 1 and application.zcore.functions.zso(form, 'hidemls',true) EQ 0){
 		/*if((returnPropertyDisplayStruct.mlsSearchSearchQuery.search_Rate_low NEQ 0 AND returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_high neq 0)){
 			startPrice=returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_low;

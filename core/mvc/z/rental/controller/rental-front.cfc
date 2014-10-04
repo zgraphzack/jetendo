@@ -238,8 +238,8 @@ application.zcore.template.setTag('pagenav',temppagenav);
 
 
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
-		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1'');">');
+		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</div>');
 	}   
 </cfscript> 
@@ -793,8 +793,8 @@ this.includeRentalById(ts);
 <cfscript>
 
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
-		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1'');">');
+		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</div>');
 	}   
 </cfscript>
@@ -1689,7 +1689,7 @@ var ts=0;
 		var db=request.zos.queryObject;
 application.zcore.app.getAppCFC("rental").onRentalPage();
 if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
-	writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rates/editRental?rental_id=#arguments.query.rental_id#&amp;return=1'');">');
+	writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rates/editRental?rental_id=#arguments.query.rental_id#&amp;return=1">');
 }   
 </cfscript>
         <table class="zrental-tbspace" style="width:100%;">  <tr <cfif arguments.query.currentrow MOD 2 EQ 0>class="zrental-alternaterowcolor"<cfelse>class="zrental-rowcolor"</cfif>>
@@ -1972,8 +1972,8 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
     <cfsavecontent variable="therentalHTMLSection">
 	<cfscript>
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
-		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1'');">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1'');">');
+		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1">');
+		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</div>');
 	}   
 </cfscript>
@@ -2183,42 +2183,9 @@ Pet Friendly:  Yes  No
 	</cfsavecontent><cfscript>qpar=db.execute("qpar");</cfscript>	 
     <h2>Browse Our Rental Categories</h2>
     <ul>
-			<cfloop query="qpar">
-           <!---  <cfscript>
-			
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
-		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1'');">');
-	}   
-	
-	
-			ts=structnew();
-			ts.image_library_id=rental_category_image_library_id;
-			ts.output=false;
-			ts.query=qpar;
-			ts.row=currentrow;
-			ts.size=application.zcore.app.getAppCFC("rental").getImageSize("rental-category-thumbnail");
-			arrThumbSize=listtoarray(ts.size,"x");
-			ts.crop=1;
-			ts.count =1; // how many images to get
-			//zdump(ts);
-			arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-			</cfscript> --->
-<!--- <div style="float:left; width:#arrThumbSize[1]#px; height:#arrThumbSize[2]+45#px; padding:5px; border:1px solid ##CCC; text-align:center; <cfif currentrow MOD 2 EQ 1>margin-right:20px;</cfif> margin-bottom:20px;">
-        <h2 style="padding:0px; margin:0px; "><a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(rental_category_id,rental_category_name,rental_category_url)#"> 
-        <cfscript>
-			for(i=1;i LTE arraylen(arrImages);i++){
-				writeoutput('<div style="margin-bottom:5px;"><img src="'&arrImages[i].link&'"></div>');
-			}
-			</cfscript>
-					#rental_category_name#</a></h2>  
-                    </div> --->
+	<cfloop query="qpar">
         <li><h3><a href="#request.zos.currentHostName##application.zcore.app.getAppCFC("rental").getCategoryLink(qpar.rental_category_id, qpar.rental_category_name, qpar.rental_category_url)#"> 
 			#qpar.rental_category_name#</a></h3></li>  
-  <!---  <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
-		writeoutput('</div>');
-	}
-	</cfscript> --->
     </cfloop>
     </ul>
     <h2>Rental Search</h2>

@@ -1692,7 +1692,9 @@ if(rCom.isOK() EQ false){
 		configCom.getCSSJSIncludes(arguments.ss);
 	} 
 	arrayappend(arguments.ss.js, "/z/javascript/zForm-src.js");
-	arrayappend(arguments.ss.js, "/z/javascript/zForm-new-src.js");
+	for(i=1;i LTE arraylen(application.zcore.arrJsFiles);i++){
+		arrayappend(arguments.ss.js, application.zcore.arrJsFiles[i]);
+	}
 	arrayappend(arguments.ss.css, "/z/stylesheets/zOS.css");
 	if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, request.zos.globals.privatehomedir&"zcache/zsystem.css")){
 		application.sitestruct[request.zos.globals.id].fileExistsCache[request.zos.globals.privatehomedir&"zcache/zsystem.css"]=fileexists(request.zos.globals.privatehomedir&"zcache/zsystem.css");

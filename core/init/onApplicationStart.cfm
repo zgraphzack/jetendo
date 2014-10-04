@@ -98,7 +98,15 @@
 			"updatedDatetime": "listing_updated_datetime",
 		}
 	};
- 
+
+
+	arrJsFiles=directoryList("#request.zos.installPath#public/javascript/jetendo/", true, 'path');
+	ts.arrJsFiles=[];
+	for(i=1;i LTE arraylen(arrJsFiles);i++){
+	 	arrayAppend(ts.arrJsFiles, replace(arrJsFiles[i], request.zos.installPath&"public/", "/z/"));
+	}
+
+
 	ts.siteOptionTypeStruct={
 		"0": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textSiteOptionType"),
 		"1": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textareaSiteOptionType"),

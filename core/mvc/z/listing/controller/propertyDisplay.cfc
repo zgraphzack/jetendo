@@ -1688,7 +1688,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 		 }
 		 request.zos.propertyIncludeIndex++;
 		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and contentConfig.contentEmailFormat EQ false){
-			writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" onmouseover="zOverEditDiv(this,''/z/content/admin/content-admin/edit?content_id=#arguments.idx.content_id#&amp;return=1'');">');
+			writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.idx.content_id#&amp;return=1">');
 		}
 		if(arguments.idx.content_url_only NEQ ""){
 			propertyLink=application.zcore.functions.zForceAbsoluteURL(request.zos.currentHostName, arguments.idx.content_url_only);

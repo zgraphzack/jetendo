@@ -3,22 +3,28 @@ function compileAllPackages(){
 	$rootPath=get_cfg_var('jetendo_root_path');
 	$jsPath=$rootPath."public/javascript/";
 	
+	$arrJetendo=glob($jsPath."jetendo/*");
+	for($i=0;$i<count($arrJetendo);$i++){
+		$arrJetendo[$i]=str_replace($jsPath, "", $arrJetendo[$i]);
+	}
 	// everything
-	$a=array('jquery/balupton-history/scripts/uncompressed/json2.js', 'zAjaxCycle.js', 'zCart.js', 'zForm-new-src.js', 'zForm-src.js', 'zListing-src.js');
+	$a=array('jquery/balupton-history/scripts/uncompressed/json2.js', 'zAjaxCycle.js', 'zCart.js', 'zForm-src.js');
+	$a=array_merge($a, $arrJetendo);
 	for($i=0;$i<count($a);$i++){
 		$a[$i]=$jsPath.$a[$i];
 	}
-	$isCompiled=compileJS($a, "jetendo.js");
+	$isCompiled=compileJS($a, "jetendo-no-listing.js");
 	if(!$isCompiled){
 		return false;
 	}
 	
 	// no listing
-	$a=array('jquery/balupton-history/scripts/uncompressed/json2.js', 'zAjaxCycle.js', 'zCart.js', 'zForm-new-src.js', 'zForm-src.js');
-	for($i=0;$i<count($a);$i++){
-		$a[$i]=$jsPath.$a[$i];
+	$arrListing=array('zListing-src.js');
+	for($i=0;$i<count($arrListing);$i++){
+		$arrListing[$i]=$jsPath.$arrListing[$i];
 	}
-	$isCompiled=compileJS($a, "jetendo-no-listing.js");
+	$a=array_merge($a, $arrListing);
+	$isCompiled=compileJS($a, "jetendo.js");
 	if(!$isCompiled){
 		return false;
 	}

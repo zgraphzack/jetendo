@@ -181,7 +181,7 @@ function onGMAPLoad(force) {
 	if(arrC.length === 0 || typeof arrC[0].value === "undefined" || arrC[0].value ===""){
 		return;
 	}
-	eval('var myObj='+arrC[0].value+';');
+	var myObj=eval('('+arrC[0].value+')');
 	mapProps=myObj;
 	if(typeof google.maps.OverlayView === "undefined") return;
 	if(zIsTouchscreen() && window.location.href.indexOf("/listing/search-form") !== -1){
@@ -504,7 +504,7 @@ function zAjaxReturnNearAddress(r,skipParse){
 		document.write(r);	
 		return;
 	}
-	eval('var myObj='+r+';');
+	var myObj=eval('('+r+')');
 	if(!myObj.success){
 		alert(myObj.errorMessage);
 		return;
@@ -993,7 +993,7 @@ function zMapLoadListingV3(obj){
 	zAjax(tempObj);	
 }
 function zMapShowListingV3(r){
-	eval('var myObj='+r+';');
+	var myObj=eval('('+r+')');
 	zMapCurrentListingLinkV3=myObj.link;
 	zMapOverlayDivObjV3.innerHTML=myObj.html;
 }
@@ -1822,7 +1822,7 @@ function zMlsCallCityLookup(obj,obj2,type){
 		var d3=strValue.substr(2,1);
 		var m2=false;
 		try{
-		eval("var m2=m."+d1+"."+d2+"."+d3+";");
+			var m2=eval("(m."+d1+"."+d2+"."+d3+")");
 		}catch(e){
 			zInputHideDiv();
 			return;	
@@ -2014,6 +2014,10 @@ function zExpMenuToggleCheckBox(k,n,r,m,v){
 		o.onchange();
 	}
 }
+function zExpMenuSetPos(obj,left,top){
+	obj.style.left=left+"px";
+	obj.style.top=top+"px";
+}
 function zExpMenuToggleMenu(n){
 	if(n!==null){
 		var m1=document.getElementById(n+"_expmenu1");
@@ -2029,7 +2033,7 @@ function zExpMenuToggleMenu(n){
 			m4.className="zExpMenuOptionOver";
 			m2.style.display="block";
 			var arrPos=zFindPosition(m1);
-			setPos(m2,(arrPos[0]+arrPos[2]),arrPos[1]);
+			zExpMenuSetPos(m2,(arrPos[0]+arrPos[2]),arrPos[1]);
 		}
 	}
 	for(var i=0;i<zExpArrMenuBox.length;i++){
@@ -2088,7 +2092,7 @@ function loadMLSResults(r){
 		document.write(r);
 		return;
 	}
-	eval('var myObj='+r+';');
+	var myObj=eval('('+r+')');
 	var m=myObj;
 	arrD=new Array();
 	setMLSCount(m.COUNT);
@@ -2121,7 +2125,7 @@ function displayMLSCount(r,skipParse,newForm){
 		document.write(r);	
 		return;
 	}
-	eval('var myObj='+r+';');
+	var myObj=eval('('+r+')');
 	if(myObj.success){
 		if(typeof myObj.disableSetCount === "undefined"){
 			if(typeof newForm !=="undefined" && newForm){
