@@ -31,7 +31,7 @@
 			// optional
 			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#' AND 
 			slideshow_tab_id = '#application.zcore.functions.zescape(form.slideshow_tab_id)#' and 
-			slideshow_image.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and slideshow_image='0' ";
+			slideshow_image.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and slideshow_image_deleted='0' ";
 		} else if(structkeyexists(form, 'slideshow_tab_id')) {
 			variables.queueSortStruct.tableName = "slideshow_tab";
 			variables.queueSortStruct.sortFieldName = "slideshow_tab_sort";
