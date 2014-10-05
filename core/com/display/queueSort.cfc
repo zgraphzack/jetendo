@@ -16,7 +16,7 @@ queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort
 queueSortCom.init(inputStruct);
 </cfscript>	
   --->
- <cffunction name="init" localmode="modern" returntype="any" output="false">
+ <cffunction name="init" localmode="modern" returntype="any" output="yes">
 	<cfargument name="inputStruct" type="struct" required="yes">
 	<cfscript>
 	this.datasource = Request.zos.globals.datasource;
@@ -101,6 +101,8 @@ queueSortCom.init(inputStruct);
 	<cfscript>
 	db=request.zos.queryObject;
 	arrId=arguments.arrId;
+	db.sql="show fields from #db.table(this.tableName, this.datasource)# like #db.param(this.tableName&"_deleted")#";
+	qCheck=db.execute("qCheck");
 	transaction action="begin"{
 		try{
 			for(i=1;i LTE arraylen(arrId);i++){
@@ -109,6 +111,9 @@ queueSortCom.init(inputStruct);
 				SET `#this.sortFieldName#` = #db.param(i)#, 
 				`#this.tablename#_updated_datetime` = #db.param(request.zos.mysqlnow)# 
 				WHERE  `#this.primaryKeyName#` = #db.param(id)#";
+				if(qCheck.recordcount NEQ 0){
+					db.sql&=" and `#this.tableName#_deleted`=#db.param(0)#";
+				}
 				if(len(this.where) NEQ 0){
 					db.sql&=" and #db.trustedSQL(this.where)#";
 				}

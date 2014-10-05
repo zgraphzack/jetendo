@@ -38,8 +38,8 @@
 			variables.queueSortStruct.primaryKeyName = "slideshow_tab_id";
 			// optional
 			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#'  and 
-			slideshow_tab.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' ";
-	
+			slideshow_tab.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and 
+			slideshow_tab_deleted='0' ";
 		} else { 
 			variables.queueSortStruct.ajaxURL='/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#';
 			variables.queueSortStruct.tableName = "slideshow_image";
@@ -58,7 +58,8 @@
 			// optional
 			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#' AND 
 			slideshow_tab_id = '#application.zcore.functions.zescape(form.slideshow_tab_id)#' and 
-			slideshow_image.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and slideshow_image_id='0' ";
+			slideshow_image.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and 
+			slideshow_image_deleted='0' ";
 		}else if(form.method EQ "manageTabs"){
 			variables.queueSortStruct.ajaxURL='/z/admin/slideshow/manageTabs?slideshow_id=#form.slideshow_id#';
 			variables.queueSortStruct.tableName = "slideshow_tab";
@@ -66,7 +67,8 @@
 			variables.queueSortStruct.primaryKeyName = "slideshow_tab_id";
 			// optional
 			variables.queueSortStruct.where="slideshow_id = '#application.zcore.functions.zescape(form.slideshow_id)#'  and 
-			slideshow_tab.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and slideshow_tab_deleted='0' ";
+			slideshow_tab.site_id='"&application.zcore.functions.zescape(request.zos.globals.id)&"' and 
+			lideshow_tab_deleted='0' ";
 		}
 		variables.queueSortStruct.ajaxTableId='sortRowTable';
 		variables.queueSortStruct.datasource=request.zos.zcoreDatasource;

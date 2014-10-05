@@ -1379,7 +1379,7 @@ application.zcore.functions.zLogError(ts);
 	var ts=structnew();
 	var rs=structnew();
 	if(request.zos.globals.enableMinCat EQ 1 and request.zos.inMemberArea EQ false and structkeyexists(request.zos.tempObj,'disableMinCat') EQ false){
-		return;
+		//return;
 	}
 	application.zcore.functions.zRequireJquery(arguments.package);
 	

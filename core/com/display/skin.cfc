@@ -42,9 +42,10 @@ todo: open source projects
 	
 <cffunction name="checkCompiledJS" output="no" returntype="any" localmode="modern">
 	<cfscript>
-	if(request.zos.globals.enableInstantLoad EQ 1){
-		return false; // history.js doesn't work with closure compiled code.
-	}
+	/*if(request.zos.globals.enableInstantLoad EQ 1){
+		return false; // This isn't true anymore: history.js doesn't work with closure compiled code.
+	}*/
+	//request.forceNewJS=true;
 	if(not request.zos.isTestServer or structkeyexists(request, 'forceNewJS')){
 		if(application.zcore.app.siteHasApp("listing")){
 			application.zcore.skin.includeJS("/z/javascript-compiled/jetendo.js");
