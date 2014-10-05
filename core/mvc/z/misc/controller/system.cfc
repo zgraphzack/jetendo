@@ -210,7 +210,7 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 	
 <cffunction name="getSplitTemplate" localmode="modern" access="remote" hint="Currently used for ssi template generation.">
 	<cfscript>
-	application.zcore.template.appendTag("meta", '<script type="text/javascript">zContentTransitionDisabled=true;</script>');
+	application.zcore.functions.zDisableContentTransition();
 	request.zPageDebugDisabled=true;
 	writeoutput('~SSISPLIT~');
 	</cfscript>

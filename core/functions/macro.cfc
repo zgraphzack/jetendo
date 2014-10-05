@@ -1205,5 +1205,14 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	return rootdomain;
 	</cfscript>
 </cffunction> 
+
+<cffunction name="zDisableContentTransition" localmode="modern">
+	<cfscript>
+	if(not structkeyexists(request.zos.tempObj, 'zDisableContentTransitionCalled')){
+		request.zos.tempObj.zDisableContentTransitionCalled=true;
+		application.zcore.template.appendTag("meta", '<script type="text/javascript">zContentTransitionDisabled=true;</script>');
+	}
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

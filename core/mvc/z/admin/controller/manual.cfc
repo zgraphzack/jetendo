@@ -22,7 +22,7 @@
 		}
 		request.zos.inMemberArea=true;
 		application.zcore.skin.disableMinCat();
-		application.zcore.template.appendtag("meta",'<script type="text/javascript">zContentTransitionDisabled=true;</script>');
+		application.zcore.functions.zDisableContentTransition();
 	}
 	//application.zcore.skin.includeCSS("/stylesheets/fontkit/stylesheet.css");
 	application.zcore.skin.includeCSS("/z/javascript/prettify/src/sons-of-oblivion.css");

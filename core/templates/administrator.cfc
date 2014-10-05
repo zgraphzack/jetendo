@@ -4,6 +4,8 @@
 	<cfscript>
 	application.zcore.skin.includeCSS("/z/font-awesome/css/font-awesome.min.css");
 	application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+	application.zcore.skin.includeCSS("/z/fonts/stylesheet.css");
+	application.zcore.functions.zDisableContentTransition();
 	</cfscript>
 </cffunction>
 
@@ -38,9 +40,6 @@
 	var secondNavHTML=tagStruct.secondnav ?: "";
 	</cfscript> 
 	#tagStruct.meta ?: ""#
-	<script type="text/javascript">
-	var zContentTransitionDisabled=true;
-	</script>
 	<!--[if lte IE 7]>
 	<style>.zMenuBarDiv ul a {height: 1%;}</style>
 	<![endif]-->
@@ -271,20 +270,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 	  </div>
 	<script type="text/javascript">
 	/* <![CDATA[ */ 
-	  WebFontConfig = {
-	    google: { families: [ 'Open+Sans:400italic,700italic,400,700:latin' ] }
-	  };
-	  (function() {
-	    var wf = document.createElement('script');
-	    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-	      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-	    wf.type = 'text/javascript';
-	    wf.async = 'true';
-	    var s = document.getElementsByTagName('script')[0];
-	    s.parentNode.insertBefore(wf, s);
-	  })(); 
 	  var zDisableBackButton=false; 
-	  
 	function backButtonOverrideBody()
 	{
 		if(zDisableBackButton==false) return;
@@ -298,7 +284,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 	 /* ]]> */
 	 </script>
 	#tagStruct.scripts ?: ""#
-	<!--- #(gettickcount()-s)/1000# seconds --->
 	</body>
 	</html>
 	</cfsavecontent>

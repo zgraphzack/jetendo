@@ -9,15 +9,6 @@
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
 	form.content_parent_id=application.zcore.functions.zso(form, 'content_parent_id',true);
-	if(application.zcore.user.checkSiteAccess()){
-		writeoutput('<a href="/z/content/admin/content-admin/index">Manage Pages</a> | 
-		<a href="/z/content/admin/permissions/index">Manage Permissions</a>  | 
-		<a href="/z/content/admin/content-admin/import">Import</a>');
-		if(application.zcore.user.checkServerAccess()){
-			writeoutput(' | <a href="/z/content/admin/content-admin/index?forceContentInit=1&amp;rt29=#gettickcount()#">Initialize Content</a>');
-		}
-		writeoutput('<br /><br />');
-	}
 	variables.queueSortStruct = StructNew();
 	// required
 	variables.queueSortStruct.tableName = "content";
@@ -42,6 +33,15 @@
 	if(structkeyexists(form, 'zQueueSortAjax')){
 		application.zcore.functions.zMenuClearCache({content=true});
 		variables.queueSortCom.returnJson();
+	}
+	if(application.zcore.user.checkSiteAccess()){
+		writeoutput('<a href="/z/content/admin/content-admin/index">Manage Pages</a> | 
+		<a href="/z/content/admin/permissions/index">Manage Permissions</a>  | 
+		<a href="/z/content/admin/content-admin/import">Import</a>');
+		if(application.zcore.user.checkServerAccess()){
+			writeoutput(' | <a href="/z/content/admin/content-admin/index?forceContentInit=1&amp;rt29=#gettickcount()#">Initialize Content</a>');
+		}
+		writeoutput('<br /><br />');
 	}
 	application.zcore.template.appendTag("meta",'<style type="text/css">
 	/* <![CDATA[ */ .monodrop {

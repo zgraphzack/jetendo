@@ -437,7 +437,7 @@
 				application.zcore.template.setTemplate("zcorerootmapping.templates.administrator",true,true);
 				request.zos.inMemberArea=true;
 				application.zcore.skin.disableMinCat();
-				application.zcore.template.appendtag("meta",'<script type="text/javascript">zContentTransitionDisabled=true;</script>');
+				application.zcore.functions.zDisableContentTransition();
 			}
 		}
 		</cfscript>

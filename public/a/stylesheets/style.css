@@ -185,9 +185,10 @@ button{
 	width:35%; float:left; text-align:right;
 }
 .zapp-admin-nav-text, .zapp-admin-nav-text2 {
-	 color:#000000; font-size:12px; line-height:14px;background-image:url(/z/a/images/nav-gradient.jpg);
-	font-weight:bold; border-bottom:1px solid #999999;
+	 color:#000000; font-size:14px; line-height:14px;background-image:url(/z/a/images/nav-gradient.jpg);
+	font-weight:600; border-bottom:1px solid #999999;
 }
+.zapp-admin-nav-text #zMenuDivDefault a.trigger, .zapp-admin-nav-text2 #zMenuDivDefault a.trigger{padding:6px; padding-left:8px; padding-right:8px; font-weight:600;}
 .zapp-admin-nav-text a {
 	float:left;
 	display:block; 
