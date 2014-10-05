@@ -877,6 +877,7 @@ for(local.row in local.qSite){
 			append2='<script type="text/javascript">/* <![CDATA[ */ 
 var zArrMapFunctions=new Array();
 var zArrScrollFunctions=new Array();
+var zImageOnError=function(){};
 var zFunctionLoadStarted=false;
 var zArrResizeFunctions=new Array();
 var zMSIEVersion=-1; var zMSIEBrowser=window.navigator.userAgent.indexOf("MSIE"); if(zMSIEBrowser != -1){	zMSIEVersion= (window.navigator.userAgent.substring (zMSIEBrowser+5, window.navigator.userAgent.indexOf (".", zMSIEBrowser ))); }
