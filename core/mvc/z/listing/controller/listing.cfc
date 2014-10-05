@@ -2617,7 +2617,10 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	if(structkeyexists(request.zos,'listingApp') and application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_disable_search EQ 0){
 		arrayappend(arguments.ss.js, "/zcache/listing-search-form.js");
 	}
-	arrayappend(arguments.ss.js, "/z/javascript/zListing-src.js");
+	c=arraylen(application.zcore.arrListingJsFiles);
+	for(i=1;i LTE c;i++){
+		arrayappend(arguments.ss.js, application.zcore.arrListingJsFiles[i]);
+	} 
 
 	arrayappend(arguments.ss.css, "/z/a/listing/stylesheets/global.css");
 	arrayappend(arguments.ss.css, "/z/a/listing/stylesheets/listing_template.css");
@@ -2632,7 +2635,6 @@ var qMapCheck=0;
 var showModalForm=0;
 var funcType=0;
 var metaContent="";
-var metaContent2=""
 application.zcore.functions.zrequirejquery();
 if(structkeyexists(request.zsession, 'zlistingpageviewcount')){
 	request.zsession.zlistingpageviewcount++;
@@ -2651,13 +2653,15 @@ if(request.zos.globals.enableMinCat EQ 0 or structkeyexists(request.zos.tempObj,
 	if(application.zcore.skin.checkCompiledJS()){
 		allowJs=false;
 	}
-	metaContent2="";
 	if(allowJs){
-		metaContent2&=application.zcore.skin.includeJS("/z/javascript/zListing-src.js");
+		c=arraylen(application.zcore.arrListingJsFiles);
+		for(i=1;i LTE c;i++){
+			application.zcore.skin.includeJS(application.zcore.arrListingJsFiles[i]);
+		} 
 	}
 	if(request.cgi_script_name NEQ "/z/listing/search-js/index"){
 		if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_disable_search EQ 0){
-			metaContent2&=application.zcore.skin.includeJS("/zcache/listing-search-form.js");
+			application.zcore.skin.includeJS("/zcache/listing-search-form.js");
 		}
 		if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_detail_layout',false,0) EQ 1){
 			application.zcore.functions.zRequireJQuery();
@@ -2675,8 +2679,7 @@ if(request.zos.globals.enableMinCat EQ 0 or structkeyexists(request.zos.tempObj,
 		metaContent&=application.zcore.skin.includeCSS("/z/a/listing/stylesheets/listing_template.css");
 	}
 }
-application.zcore.template.prependTag("meta", metaContent);
-application.zcore.template.appendTag("meta", metaContent2);
+application.zcore.template.prependTag("meta", metaContent); 
 if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.cgi_script_name,4) NEQ ".xml" and request.zos.inMemberArea EQ false and structkeyexists(form, 'zFPE') EQ false){
 	if (request.zos.originalURL NEQ "/z/listing/sl/view" and request.cgi_script_name NEQ "/z/listing/sl/index" and request.cgi_script_name NEQ "/z/listing/inquiry/index" and structkeyexists(request,'znotemplate') EQ false) {
 		if(isDefined('request.zsession.tempVars.zListingSearchId')){

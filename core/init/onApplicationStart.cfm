@@ -106,6 +106,12 @@
 	 	arrayAppend(ts.arrJsFiles, replace(arrJsFiles[i], request.zos.installPath&"public/", "/z/"));
 	}
 
+	arrListingJsFiles=directoryList("#request.zos.installPath#public/javascript/jetendo-listing/", true, 'path');
+	ts.arrListingJsFiles=[];
+	for(i=1;i LTE arraylen(arrListingJsFiles);i++){
+	 	arrayAppend(ts.arrListingJsFiles, replace(arrListingJsFiles[i], request.zos.installPath&"public/", "/z/"));
+	}
+
 
 	ts.siteOptionTypeStruct={
 		"0": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textSiteOptionType"),

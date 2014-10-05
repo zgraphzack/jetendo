@@ -1691,7 +1691,6 @@ if(rCom.isOK() EQ false){
 		configCom.site_id=request.zos.globals.id;
 		configCom.getCSSJSIncludes(arguments.ss);
 	} 
-	arrayappend(arguments.ss.js, "/z/javascript/zForm-src.js");
 	for(i=1;i LTE arraylen(application.zcore.arrJsFiles);i++){
 		arrayappend(arguments.ss.js, application.zcore.arrJsFiles[i]);
 	}

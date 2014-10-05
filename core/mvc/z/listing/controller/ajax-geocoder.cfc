@@ -84,7 +84,10 @@
 	if(request.zos.isdeveloper EQ false and request.zos.istestserver EQ false){
 		structdelete(form,'debugajaxgeocoder');
 	}
-	application.zcore.skin.includeJS("/z/javascript/zListing-src.js");
+	c=arraylen(application.zcore.arrListingJsFiles);
+	for(i=1;i LTE c;i++){
+		application.zcore.skin.includeJS(application.zcore.arrListingJsFiles[i]);
+	} 
 	if(request.zos.isDeveloper or request.zos.isServer){
 		db.sql="SELECT * FROM #db.table("listing_coordinates", request.zos.zcoreDatasource)# listing_coordinates 
 		WHERE listing_coordinates_status NOT IN (#db.param('OK')#,#db.param('ZERO_RESULTS')#) and 

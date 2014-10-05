@@ -341,7 +341,7 @@
 				arrMonthlyCalendarDay:[],
 				annuallyWhich:"",
 				annuallyDay:"",
-				annuallyMonth:"",
+				annuallyMonth:""
 			};
 			for(var i in defaultRuleObj){
 				if(typeof ruleObj[i] == "undefined"){
@@ -673,9 +673,9 @@
 						break;
 					}
 				}
-				if(typeof arrExclude[currentTime] != "undefined"){
+				/*if(typeof arrExclude[currentTime] != "undefined"){
 				//	disableEvent=true;
-				}
+				}*/
 				if(ruleObj.recurType == "Daily"){
 					if(ruleObj.everyWeekday){
 						if(day != 0 && day != 6){
@@ -1028,8 +1028,7 @@
 				dtstart: null,
 				freq: 0,
 				interval: 1,
-				until: null,
-				//wkst: 0,
+				until: null
 			};
 			if(ruleObj.recurType=="Annually"){
 				options.freq=RRule.YEARLY;

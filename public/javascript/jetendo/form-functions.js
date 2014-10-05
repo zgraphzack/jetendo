@@ -93,7 +93,7 @@ var zInputBoxLinkValues=[];
 	function setUploadField(){
 		var hasFlash = false;
 		return;
-		try {
+		/*try {
 			var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
 			if(fo) hasFlash = true;
 		}catch(e){
@@ -106,7 +106,7 @@ var zInputBoxLinkValues=[];
 		}else{
 			document.getElementById("htmlFileUpload").style.display="none";
 			document.getElementById("flashFileUpload").style.display="block";
-		}
+		}*/
 	}
 
 

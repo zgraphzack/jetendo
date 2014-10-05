@@ -502,7 +502,7 @@ when page loads again, view cart will not continue to be expanded, so don't need
 	<cfscript>
 	application.zcore.skin.includeJS("/z/javascript/jquery/jquery.animate-colors.js");
 	application.zcore.skin.includeJS("/z/javascript/jquery/jquery.easing.1.3.js");
-	application.zcore.skin.includeJS("/z/javascript/zCart.js");
+	application.zcore.skin.includeJS("/z/javascript/jetendo/zCart.js");
 	</cfscript>
 	<!--- 
 	read cookie on server-side

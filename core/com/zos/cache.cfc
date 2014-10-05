@@ -5,7 +5,7 @@
 below are OLD NOTES::::
 write a PHP script that loops through zcorerootpath/javascript/
 	minify each file and give it a version file name.
-	cache the version into the filename in zcorerootpath/javascriptcache/ - use the lastmodifieddate + filesize? like zForm-src.file_id.20121020.123901.2123123.js
+	cache the version into the filename in zcorerootpath/javascriptcache/ - use the lastmodifieddate + filesize? like fileName.file_id.20121020.123901.2123123.js
 	update coldfusion server scope
 	cleanup versions that are older then 2 days periodically.
 have php that checks video queue, maybe check for filesystem changes too? or just a new one.

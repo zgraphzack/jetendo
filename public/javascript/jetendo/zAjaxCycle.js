@@ -1,5 +1,6 @@
 // used on curriproperties.net and windermerehomes.net new design
 (function($, window, document){
+	"use strict";
 	var arrListingTab=[];
 	var itemCount=0;
 	var curOffset=0;

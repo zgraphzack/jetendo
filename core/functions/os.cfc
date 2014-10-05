@@ -1403,13 +1403,6 @@ application.zcore.functions.zLogError(ts);
 				forcePosition:""
 			}
 			arrayappend(request.zos.arrJSIncludes, ts);
-			ts={
-				type:"zIncludeZOSFORMS",
-				url:"/z/javascript/zForm-src.js",
-				package:arguments.package,
-				forcePosition:""
-			};
-			arrayappend(request.zos.arrJSIncludes, ts);
 			c=arraylen(application.zcore.arrJsFiles);
 			for(i=1;i LTE c;i++){
 				ts={

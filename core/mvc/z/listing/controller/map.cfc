@@ -18,7 +18,6 @@
 	var googleMapsApiV3=0;
 	var rts=0;
 	var backupCoordinatesList=0;
-	var backupSearchWithinMap=0;
 	var primaryCityId=0;
 	var zBingAddress=0;
 	var arrNew=0;
@@ -49,9 +48,7 @@
 	rts.maxLat=0;
 	rts.minLong=0;
 	rts.maxLong=0;
-	if(isDefined('backupSearchWithinMap') EQ false){
-		backupSearchWithinMap=application.zcore.functions.zso(form, 'search_within_map',true);
-	}
+	backupSearchWithinMap=application.zcore.functions.zso(form, 'search_within_map',true);
 	if(application.zcore.functions.zso(form, 'search_within_map') NEQ 1 and request.cgi_script_name NEQ "/z/listing/property/detail/index" and request.cgi_script_name NEQ '/z/listing/property/detail-new/index'){
 		ts = StructNew();
 		ts.offset =0;

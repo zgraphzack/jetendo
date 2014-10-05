@@ -91,13 +91,13 @@
 			}
 		}else{
 			throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
-			alert("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+			//alert("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
 		}
 	}
 	zArrLoadFunctions.push({functionName:zSetupClickTrackDisplay});
 	window.zSetupClickTrackDisplay=zSetupClickTrackDisplay;
 	window.zTrackEvent=zTrackEvent;
 	window.zClickTrackDisplayURL=zClickTrackDisplayURL;
-	window.zClickTrackDisplayValuezClickTrackDisplayValue;
+	window.zClickTrackDisplayValue=zClickTrackDisplayValue;
 	window.zSetupClickTrackDisplay=zSetupClickTrackDisplay;
 })(jQuery, window, document, "undefined"); 

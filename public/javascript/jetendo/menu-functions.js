@@ -21,7 +21,7 @@ if(typeof window.zMenuDisablePopups === "undefined"){
 		}
 	}
 	function zFixMenuOnTablets(){
-		a=zGetElementsByClassName("trigger");
+		var a=zGetElementsByClassName("trigger");
 		for(var i=0;i<a.length;i++){
 			a[i].onclick=function(){ 
 				if(this.parentNode.childNodes.length>=3){
@@ -42,9 +42,9 @@ if(typeof window.zMenuDisablePopups === "undefined"){
 				}
 			};
 		}
-		 lg=document.getElementsByTagName("UL");
-		 if(lg){
-			for(k=0;k<lg.length;k++){
+		var lg=document.getElementsByTagName("UL");
+		if(lg){
+			for(var k=0;k<lg.length;k++){
 				if(lg[k].id.indexOf("_mb_menu")!==-1){
 					lg[k].onclick=function(){
 						for(var i2=0;i2<zOpenMenuCache.length;i2++){

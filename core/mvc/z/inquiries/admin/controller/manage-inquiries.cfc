@@ -725,7 +725,8 @@
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_id = #db.param(request.zsession.user.id)# and 
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user"))# and 
-			user_server_administrator=#db.param('0')# </cfsavecontent>
+			user_server_administrator=#db.param('0')# and 
+			user_deleted = #db.param(0)# </cfsavecontent>
 			<cfscript>
 			qMember=db.execute("qMember");
 			</cfscript>

@@ -14,7 +14,7 @@
 	application.zcore.functions.zRequireJqueryUI();
 	application.zcore.skin.includeJs("/z/javascript/rrule/lib/rrule.js", '', 1);
 	application.zcore.skin.includeJs("/z/javascript/rrule/lib/nlp.js", '', 2);
-	application.zcore.skin.includeJs("/z/javascript/zRecurringEvent.js");
+	application.zcore.skin.includeJs("/z/javascript/jetendo/zRecurringEvent.js");
 
 	form.event_start_datetime=application.zcore.functions.zso(form, 'event_start_datetime', false, now());
 	form.event_end_datetime=application.zcore.functions.zso(form, 'event_end_datetime', false, now());
