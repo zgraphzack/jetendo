@@ -1054,7 +1054,11 @@ VideoJS.player.newBehavior("mouseOverVideoReporter", function(element){
       // Prevent flicker by making sure mouse hasn't left the video
       var parent = event.relatedTarget;
       while (parent && parent !== this.box) {
-        parent = parent.parentNode;
+        try{
+          parent = parent.parentNode;
+        }catch(e){
+          parent=false;
+        }
       }
       if (parent !== this.box) {
         this.hideControlBars();

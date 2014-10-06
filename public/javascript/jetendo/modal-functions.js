@@ -169,6 +169,10 @@
 		zModalPosIntervalId=setInterval(zFixModalPos,500);
 	}
 	function zCloseModal(){
+		var el = document.getElementById("zModalOverlayDivContainer"+zModalIndex);
+		if(!el){
+			return;
+		}
 		clearInterval(zModalPosIntervalId);
 		for(var i=0;i <zArrModalCloseFunctions.length;i++){
 			zArrModalCloseFunctions[i]();
@@ -177,7 +181,6 @@
 		zModalPosIntervalId=false;
 		var d=document.body || document.documentElement;
 		d.style.overflow="auto";
-		var el = document.getElementById("zModalOverlayDivContainer"+zModalIndex);
 		el.parentNode.removeChild(el);
 	    if(zModalIndex==1){
 			for(var i=0;i<zModalObjectHidden.length;i++){

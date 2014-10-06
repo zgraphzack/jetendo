@@ -555,7 +555,7 @@ if(not application.zcore.app.getAppCFC("reservation").checkAvailability(ts)){
 	arrJ=[];
 	for(row in qCalendar){
 		ts={
-			title:"Occupied",
+			title:"Unavailable",
 			start:dateformat(row.reservation_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.reservation_start_datetime, "HH:mm:ss")
 		}
 		if(datecompare(dateadd("h", typeStruct.reservation_type_minimum_hours_before_reservation,now()), row.reservation_start_datetime) LTE 0){

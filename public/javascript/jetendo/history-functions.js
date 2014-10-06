@@ -379,11 +379,19 @@ if(typeof zLocalDomains === "undefined"){
 			}
 			if(a[i].target !== ""){
 				if(a[i].target==="_parent"){
-					if(typeof parent.zContentTransition === "undefined"){
+					try{
+						if(typeof parent.zContentTransition === "undefined"){
+							targetCheck=true;
+						}
+					}catch(e){
 						targetCheck=true;
 					}
 				}else if(a[i].target==="_top"){
-					if(typeof top.zContentTransition === "undefined"){
+					try{
+						if(typeof top.zContentTransition === "undefined"){
+							targetCheck=true;
+						}
+					}catch(e){
 						targetCheck=true;
 					}
 				}else{
