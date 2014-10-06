@@ -852,8 +852,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		if(structkeyexists(application, 'zcore') and structkeyexists(application.zcore, 'tablesWithSiteIdStruct') and structkeyexists(application.zcore.tablesWithSiteIdStruct, ps.arrTable[local.i2].table)){
 			// search for reference to tableAlias.site_id in onstatement OR wherestatement
 			if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
-				local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
-				if(local.c43 DOES NOT CONTAIN "site_id"){
+				if(ps.columnList DOES NOT CONTAIN " site_id"){
 					arrayappend(ps.arrError, "site_id must be in the COLUMN LIST.");
 				}
 			}
@@ -866,12 +865,11 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 							arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".site_id must be in the WHERE STATEMENT.2");
 						}
 					}
+				}else if((ps.replacePos or ps.insertPos) and ps.valuesPos EQ 0 and ps.intoPos and ps.setStatement DOES NOT CONTAIN " site_id"){
+					arrayappend(ps.arrError, "site_id must be in the SET STATEMENT.3");
 				}
 			}else{
 				if(ps.setPos){
-					if(ps.setStatement DOES NOT CONTAIN "site_id"){
-						arrayappend(ps.arrError, "site_id must be in the SET STATEMENT.3");
-					}
 					if(ps.wherePos and ps.whereStatement NEQ ""){
 						if(arraylen(ps.arrTable) EQ 1){
 							if(ps.whereStatement DOES NOT CONTAIN "site_id"){
@@ -936,8 +934,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		}
 		// check insert/replace statements
 		if(ps.valuesPos and (ps.insertPos or ps.replacePos)){
-			local.c43=mid(c, ps.intoPos+6, ps.valuesPos-(ps.intoPos+6));
-			if(local.c43 DOES NOT CONTAIN deletedField){
+			if(ps.columnList DOES NOT CONTAIN " "&deletedField){
 				arrayappend(ps.arrError, "#deletedField# must be in the COLUMN LIST.");
 			}
 		}
@@ -951,12 +948,11 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 						arrayappend(ps.arrError, ps.arrTable[local.i2].tableAlias&".#deletedField# must be in the WHERE STATEMENT.2");
 					}
 				}
+			}else if((ps.replacePos or ps.insertPos) and ps.valuesPos EQ 0 and ps.intoPos and ps.setStatement DOES NOT CONTAIN " "&deletedField){
+				arrayappend(ps.arrError, "#deletedField# must be in the SET STATEMENT.3");
 			}
 		}else{
 			if(ps.setPos){
-				if(ps.setStatement DOES NOT CONTAIN deletedField){
-					arrayappend(ps.arrError, "#deletedField# must be in the SET STATEMENT.3");
-				}
 				if(ps.wherePos and ps.whereStatement NEQ ""){
 					if(arraylen(ps.arrTable) EQ 1){
 						if(ps.whereStatement DOES NOT CONTAIN deletedField){

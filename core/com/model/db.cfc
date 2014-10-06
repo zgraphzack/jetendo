@@ -370,10 +370,10 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		parseStruct.arrTable=arraynew(1);
 		tempSQL=replace(replace(replace(replace(replace(tempSQL,chr(10)," ","all"),chr(9)," ","all"),chr(13)," ","all"),")"," ) ","all"),"("," ( ","all");
 		tempSQL=" "&rereplace(replace(replace(replace(lcase(tempSQL),"\\"," ","all"),"\'"," ","all"),'\"'," ","all"), "/\*.*?\*/"," ", "all")&" ";
-		tempSQL=replace(replace(replace(tempSQL, ".`", ".","all"), "`.", ".","all"), "`", " ", "all");
+		tempSQL=replace(replace(replace(replace(replace(tempSQL, ",", ", ", "all"), "=", " = ","all"), ".`", ".","all"), "`.", ".","all"), "`", " ", "all");
 		tempSQL=rereplace(tempSQL,"'[^']*?'","''","all");
 		tempSQL=rereplace(tempSQL,'"[^"]*?"',"''","all");
-		
+		parseStruct.columnList="";
 		parseStruct.wherePos=findnocase(" where ",tempSQL);
 		parseStruct.setPos=findnocase(" set ",tempSQL);
 		parseStruct.valuesPos=refindnocase("\)\s*values",tempSQL);
@@ -381,6 +381,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		parseStruct.selectPos=findnocase(" select ",tempSQL);
 		parseStruct.insertPos=findnocase(" insert ",tempSQL);
 		parseStruct.replacePos=findnocase(" replace ",tempSQL);
+		parseStruct.updatePos=findnocase(" update ",tempSQL);
 		parseStruct.intoPos=findnocase(" into ",tempSQL);
 		parseStruct.limitPos=findnocase(" limit ",tempSQL, parseStruct.fromPos);
 		parseStruct.groupByPos=findnocase(" group by ",tempSQL, parseStruct.fromPos);
@@ -421,13 +422,13 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		parseStruct.setStatement="";
 		if(parseStruct.setPos){
 			if(parseStruct.wherePos){
-				parseStruct.setStatement=mid(tempSQL, parseStruct.setPos+5, parseStruct.wherePos-(parseStruct.setPos+5));
+				parseStruct.setStatement=" "&mid(tempSQL, parseStruct.setPos+5, parseStruct.wherePos-(parseStruct.setPos+5))&" ";
 			}else{
-				parseStruct.setStatement=mid(tempSQL, parseStruct.setPos+5, len(tempSQL)-(parseStruct.setPos+5));
+				parseStruct.setStatement=" "&mid(tempSQL, parseStruct.setPos+5, len(tempSQL)-(parseStruct.setPos+5))&" ";
 			}
 		}
 		if(parseStruct.wherePos){
-			parseStruct.whereStatement=mid(tempSQL, parseStruct.wherePos+6, parseStruct.lastWHEREPos-(parseStruct.wherePos+6));
+			parseStruct.whereStatement=" "&mid(tempSQL, parseStruct.wherePos+6, parseStruct.lastWHEREPos-(parseStruct.wherePos+6))&" ";
 		}else{
 			parseStruct.whereStatement="";
 		}
@@ -509,6 +510,39 @@ Copyright (c) 2013 Far Beyond Code LLC.
 				}
 			}
 		} 
+		fromType="from";
+		if(parseStruct.fromPos EQ 0){
+			if(parseStruct.setPos NEQ 0 and parseStruct.valuesPos EQ 0){
+				// detected replace or update sql like this:  UPDATE/REPLACE table, table1 SET ... WHERE ... 
+				if(parseStruct.replacePos and parseStruct.intoPos){
+					parseStruct.fromPos=parseStruct.intoPos;
+					fromType="replace";
+				}else if(parseStruct.insertPos and parseStruct.intoPos){
+					parseStruct.fromPos=parseStruct.intoPos;
+					fromType="insert";
+				}else if(parseStruct.updatePos){
+					parseStruct.fromPos=parseStruct.updatePos+2;
+					fromType="update";
+				}
+				parseStruct.endOfFromPos=parseStruct.setPos-1;
+			}else if(parseStruct.valuesPos){
+				if(parseStruct.replacePos and parseStruct.intoPos){
+					parseStruct.fromPos=parseStruct.intoPos;
+					fromType="replace";
+
+					parseStruct.endOfFromPos=find("(", tempSQL, parseStruct.intoPos);
+					endColumnList=find(")", tempSQL, parseStruct.intoPos)-1;
+					parseStruct.columnList=" "&mid(tempSQL, parseStruct.endOfFromPos+1, endColumnList-(parseStruct.endOfFromPos+1))&" ";
+				}else if(parseStruct.insertPos and parseStruct.intoPos){
+					parseStruct.fromPos=parseStruct.intoPos;
+					fromType="insert";
+
+					parseStruct.endOfFromPos=find("(", tempSQL, parseStruct.intoPos);
+					endColumnList=find(")", tempSQL, parseStruct.intoPos)-1;
+					parseStruct.columnList=" "&mid(tempSQL, parseStruct.endOfFromPos+1, endColumnList-(parseStruct.endOfFromPos+1))&" ";
+				}
+			}
+		}
 		if(parseStruct.fromPos){
 			local.c2=mid(tempSQL, parseStruct.fromPos+5, parseStruct.endOfFromPos-(parseStruct.fromPos+5));
 			local.c2=replacenocase(replacenocase(replacenocase(replacenocase(replace(replace(local.c2,")"," ","all"),"("," ","all"), " STRAIGHT_JOIN ", " , ","all"), " CROSS JOIN ", " , ","all"), " INNER JOIN ", " , ","all"), " JOIN ", " , ","all");
@@ -519,7 +553,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 					continue;
 				}
 				tableStruct=structnew();
-				tableStruct.type="from";
+				tableStruct.type=fromType;
 		
 				if(local.arrT2[i] CONTAINS " as "){
 					local.stringPosition=findnocase(" as ", local.arrT2[i]);
@@ -579,6 +613,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		}
 		parseStruct.defaultDatabaseName=arguments.defaultDatabaseName;
 		parseStruct.sql=replace(arguments.sqlString, variables.tableSQLString,"","all");
+
 		for(local.functionIndex in arguments.configStruct.parseSQLFunctionStruct){
 			local.parseFunction=arguments.configStruct.parseSQLFunctionStruct[local.functionIndex];
 			parseStruct=local.parseFunction(parseStruct);
