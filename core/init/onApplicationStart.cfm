@@ -590,16 +590,6 @@
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4'});
 	
 	ts.controllerComponentCache=structnew();
-	/*ts.modelDataCache=structnew();
-	ts.modelDataCache.modelComponentCache=structnew();
-	ts.modelDataCache.selectComponentCache=structnew();
-	ts.modelDataCache.selectComponent=createobject("component","zcorerootmapping.com.model.select");
-	ts.modelDataCache.tableCache=structnew();
-	
-	if(structkeyexists(form,  'zregeneratemodelcache')){
-		local.tempCom=createobject("component","zcorerootmapping.com.model.base");
-		local.tempCom._generateModels(ts);
-	}*/
 	ts.registeredControllerStruct=structnew();
 	ts.registeredControllerPathStruct=structnew();
 	ts.hookAppCom=structnew();

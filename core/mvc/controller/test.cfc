@@ -1,4 +1,4 @@
-<cfcomponent output="no" extends="zcorerootmapping.mvc.controller.base" zcore-cache="yes">
+<cfcomponent output="no">
 	<cfoutput>
 	<cffunction name="index" localmode="modern" access="remote" output="yes" returntype="any">
     	<cfargument name="id" type="string" required="no" default="0">

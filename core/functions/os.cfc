@@ -639,16 +639,8 @@ if(not rs.success){
 	ts.cfcMetaDataCache=structnew();
 	 
 	ts.controllerComponentCache=structnew();
-	/*ts.modelDataCache=structnew();
+	ts.modelDataCache=structnew();
 	ts.modelDataCache.modelComponentCache=structnew();
-	ts.modelDataCache.selectComponentCache=structnew();
-	ts.modelDataCache.selectComponent=createobject("component","zcorerootmapping.com.model.select");
-	ts.modelDataCache.tableCache=structnew();
-	
-	if(structkeyexists(form,  'zregeneratemodelcache')){
-		local.tempCom=createobject("component","zcorerootmapping.com.model.base");
-		local.tempCom._generateModels(ts);
-	}*/
 	ts.registeredControllerStruct=structnew();
 	ts.registeredControllerPathStruct=structnew();
 	local.arrNewComPath=arraynew(1);
@@ -676,9 +668,9 @@ if(not rs.success){
 		}
 		</cfscript>
 		<cfdirectory action="list" recurse="yes" directory="#local.curPath#" name="local.qD" filter="*.cfc|*.html">
-			<!--- <cfif qd.recordcount>
-	<cfdump var="#qD#"><cfabort>
-</cfif> --->
+		<!--- <cfif qd.recordcount>
+			<cfdump var="#qD#"><cfabort>
+		</cfif> --->
 		<cfloop query="local.qD">
 			<cfscript>
 			if(local.qD.type EQ "file"){
@@ -726,7 +718,7 @@ if(not rs.success){
 						}
 						ts.registeredControllerStruct[local.curMvcName]="/"&replace(arrMvcPaths[local.i],'.','/','all')&"/"&local.curPath2&"/"&local.qD.name;
 					}
-				}else if(local.lastFolderName EQ "model"){
+				/*}else if(local.lastFolderName EQ "model"){
 					if(local.curExt EQ "cfc"){
 						local.comPath=arrMvcPaths[local.i]&"."&local.curPath3&"."&local.curName;
 						if(structkeyexists(form,  'zregeneratemodelcache') EQ false and structkeyexists(application, 'zcore') and structkeyexists(application.sitestruct[request.zos.globals.id],'modelDataCache') and structkeyexists(application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache, local.comPath)){
@@ -742,143 +734,13 @@ if(not rs.success){
 					if(local.curExt EQ "html"){
 						//writeoutput('application.zcore.skin.loadView("'&local.curPath3&"."&local.curName&'", "'&arrMvcPaths[local.i]&'");<br />');
 						// application.zcore.skin.loadView("/"&curPath2&"/"&curName, arrMvcPaths[local.i]);
-					}
+					}*/
 				}
-				//writeoutput("curdir:"&local.curPath2&"|"&local.fileType&"<br />");
-				//writeoutput(directory&"\"&name&"<br />");
 			}
 			</cfscript>
 		</cfloop>
 
 	</cfloop>
-	<!--- <cfscript>
-	local.curPath=replace(request.zos.globals.privatehomedir&'_cache/model/',"\","/","all");
-	if(directoryexists(local.curPath) EQ false){
-		application.zcore.functions.zcreatedirectory(local.curPath);
-	}
-	//writeoutput(local.curPath&'<br />');
-	
-	</cfscript>
-	<cfdirectory action="list" recurse="yes" directory="#local.curPath#" name="local.qD" filter="*.cfc">
-	<cfloop query="local.qD">
-		<cfscript>
-		local.curPath2=replace(replace(local.qd.directory,"\","/","all"),local.curPath,"");
-		local.fileType=listgetat(local.curPath2,1,"/");
-		local.curName=listgetat(local.qd.name,1,".");
-		if(local.fileType EQ "select"){
-			// file is in /_cache/model/select/
-		//	ts.modelDataCache.selectComponentCache[local.curName]=createobject("component",request.zRootSecureCFCPath&"_cache.model.select."&local.curName);
-		
-		/*}else if(local.fileType EQ "server cache path"){ 
-			local.comPath="zcorecachemapping.model."&local.curName;
-			if(structkeyexists(form,  'zregeneratemodelcache') EQ false and structkeyexists(application, 'zcore') and structkeyexists(application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache, local.comPath)){
-				ts.modelDataCache.modelComponentCache[local.comPath]=application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache[local.comPath];
-				//writeoutput('#local.curName#: use existing<br />');
-			}else{
-				//ts.modelDataCache.modelComponentCache[local.comPath]=createobject("component", local.comPath);
-				arrayappend(local.arrNewComPath, local.comPath);
-				//writeoutput('#local.curName#: use new<br />');
-			}
-			*/
-		}else{
-			local.comPath=request.zRootSecureCFCPath&"_cache.model."&local.curName;
-			if(structkeyexists(form,  'zregeneratemodelcache') EQ false and structkeyexists(application, 'zcore') and structkeyexists(application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache, local.comPath)){
-				ts.modelDataCache.modelComponentCache[local.comPath]=application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache[local.comPath];
-				//writeoutput('#local.curName#: use existing<br />');
-			}else{
-				//ts.modelDataCache.modelComponentCache[local.comPath]=createobject("component", local.comPath);
-				arrayappend(local.arrNewComPath, local.comPath);
-				//writeoutput('#local.curName#: use new<br />');
-			}
-		}
-		//writeoutput(name&'|'&local.fileType&'|'&local.curName&'<br />');
-		</cfscript>
-	</cfloop>
-	<cfif arraylen(local.arrNewComPath) NEQ 0>
-		<cfscript>
-		local.threadOutputStruct=structnew();
-		//writeoutput("building:"&arraylen(local.arrNewComPath));
-		local.arrThread=arraynew(1);
-		local.arrError=arraynew(1);
-		local.iprocessed=1;
-		/*
-		m3=arraynew(1);
-		for(i=1;i LTE arraylen(local.arrNewComPath);i++){
-			arrayappend(m3, createobject("component",local.arrNewComPath[i]));
-		}*/
-		</cfscript>
-		<cfloop from="1" to="#arraylen(local.arrNewComPath)#" index="local.i"><!---1 EQ 0 and arraylen(local.arrNewComPath) --->
-			<cfscript>
-			local.threadIndex=arraylen(local.arrThread)+1;
-			arrayAppend(local.arrThread, "thread"&local.threadIndex);
-			</cfscript>
-			<cfthread name="thread#local.threadIndex#" arrCom="#local.arrNewComPath#" timeout="10" index="#local.i#" action="run">
-				<cfscript>
-				thread.myIndex=index;
-				thread.errorMessage="";
-				</cfscript>
-				<cftry>
-					<cfscript>
-					thread.curCom=arrCom[index];
-					thread.myObject=createobject("component",arrCom[index]);
-					</cfscript>
-					<cfcatch type="any">
-						<cfscript>
-						thread.errorMessage=cfcatch.message;
-						thread.myObject=structnew();
-						</cfscript>
-					</cfcatch>
-				</cftry>
-			</cfthread>
-			<cfif local.threadIndex EQ 7>
-				<cfthread action="join" name="#arraytolist(local.arrThread,",")#" timeout="15000" />
-				<cfscript>
-				for(local.i2=local.iprocessed;local.i2 LTE arraylen(local.arrThread);local.i2++){
-					local.ct=evaluate(local.arrThread[local.i2]);
-					if(local.ct.status EQ "TERMINATED"){
-						arrayAppend(local.arrError, "Failed to compile: "&local.arrNewComPath[local.ct.myIndex]&" | CFTHREAD ERROR: "&local.ct.error.message);
-					}else{
-						if(structkeyexists(local.ct,'myObject') EQ false){
-							writeoutput('failed to compile component: '&local.ct.curCom&' with error message: '&local.ct.errorMessage&'<br />');
-						}else{
-							local.threadOutputStruct[local.ct.myIndex]=local.ct.myObject;
-						}
-					}
-					local.iprocessed++;
-				}
-				</cfscript>
-			</cfif>
-		</cfloop>
-		<cfthread action="join" name="#arraytolist(local.arrThread,",")#" timeout="15000" />
-		
-		<cfscript>
-		for(local.i2=local.iprocessed;local.i2 LTE arraylen(local.arrThread);local.i2++){
-			local.ct=evaluate(local.arrThread[local.i2]);
-			if(local.ct.status EQ "terminated"){
-				arrayAppend(local.arrError, "Failed to compile: "&local.arrNewComPath[local.ct.myIndex]&" | CFTHREAD ERROR: "&local.ct.error.message);
-			}else{
-				if(structkeyexists(local.ct,'myObject') EQ false){
-					writeoutput('failed to compile component: '&local.ct.curCom&' with error message: '&local.ct.errorMessage&'<br />');
-				}else{
-					local.threadOutputStruct[local.ct.myIndex]=local.ct.myObject;
-				}
-			}
-			local.iprocessed++;
-		}
-		local.arrThread=arraynew(1);
-		
-		for(local.i in local.threadOutputStruct){
-			if(isSimpleValue(local.threadOutputStruct[local.i]) EQ false){
-				ts.modelDataCache.modelComponentCache[local.arrNewComPath[local.i]]=local.threadOutputStruct[local.i];
-			}else{
-					
-			}
-		}
-		</cfscript>
-		<cfif arraylen(local.arrError) NEQ 0>
-			<cfthrow type="exception" message="#arraytolist(local.arrError,'<br />')#">
-		</cfif>
-	</cfif>		 --->
 	<cfscript> 
 	structappend(arguments.ss, ts, true);
 	structdelete(form, 'zregeneratemodelcache');
@@ -2603,6 +2465,8 @@ User's IP: #request.zos.cgi.remote_addr#
 	<cfscript>
 	ts={};
 	ts.controllerComponentCache={};
+	ts.modelDataCache=structnew();
+	ts.modelDataCache.modelComponentCache=structnew();
 	
 	ts.cfcMetaDataCache=structnew();
 	ts.modelDataCache={
@@ -2707,13 +2571,10 @@ User's IP: #request.zos.cgi.remote_addr#
 	if(mvcFilesChanged or (not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'controllerComponentCache') or structcount(application.zcore.hookAppCom) EQ 0)){
 		for(i2=1;i2 LTE arraylen(arrFile);i2++){
 			qD=arrFile[i2];
-			if(left(qD.directory, 12) EQ '/mvc/z/test/'){// and request.zos.cgi.http_host NEQ request.zos.zcoreTestHost){ 
+			if(left(qD.directory, 12) EQ '/mvc/z/test/'){
 				continue;
 			}
 			
-			/*if(not request.zos.isTestServer and left(qD.directory, 12) EQ '/mvc/z/test/'){
-				continue;
-			}*/
 			i=i2;
 			curPath=arguments.ss.serverglobals.serverhomedir&removechars(qD.directory,1,1)&"/"&qD.name;
 			curPath2="/zcorerootmapping"&qD.directory&"/"&qD.name;
@@ -2739,13 +2600,7 @@ User's IP: #request.zos.cgi.remote_addr#
 				if(lastFolderName EQ "controller"){
 					if(curExt EQ "cfc"){
 						comPath=replace(mid(curPath22,2,len(curPath22)-5),"/",".","all");
-						//try{
-							tempCom=createobject("component", comPath);
-						/*}catch(Any excpt){
-							writeoutput(comPath);
-							writedump(excpt);
-							application.zcore.functions.zabort();
-						}*/
+						tempCom=createobject("component", comPath);
 						tempcommeta=GetMetaData(tempCom);
 						ts.controllerComponentCache[comPath]=tempCom;
 						ts.cfcMetaDataCache[comPath]=tempcommeta;
@@ -2774,13 +2629,6 @@ User's IP: #request.zos.cgi.remote_addr#
 					if(curExt EQ "cfc"){
 						comPath=replace(mid(curPath22,2,len(curPath22)-5),"/",".","all");
 						ts.modelDataCache.modelComponentCache[comPath]=createobject("component", comPath);
-						/*comPath="mvc"&"."&curPath3&"."&curName;
-						if(structkeyexists(form,  'zregeneratemodelcache') EQ false and structkeyexists(applization, 'zcore') and structkeyexists(application.zcore,'modelDataCache') and structkeyexists(application.zcore.modelDataCache.modelComponentCache, comPath)){
-							ts.modelDataCache.modelComponentCache[comPath]=application.zcore.modelDataCache.modelComponentCache[comPath];
-						}else{
-							arrayappend(arrNewComPath, comPath);
-							ts.modelDataCache.modelComponentCache[comPath]=createobject("component", comPath);
-						}*/
 					}/*
 				}else if(lastFolderName EQ "view"){
 					if(curExt EQ "html"){
@@ -2788,24 +2636,12 @@ User's IP: #request.zos.cgi.remote_addr#
 						// application.zcore.skin.loadView("/"&curPath2&"/"&curName, arrMvcPaths[i]);
 					}*/
 				}
-				//writeoutput("curdir:"&curPath2&"|"&fileType&"<br />");
-				//writeoutput(directory&"\"&name&"<br />");
 			}
 		}
-		/*
-		also need a component that wraps the global functions, global scopes and injects that to every controller by default.   maybe controllers should have a base component for this to be less code.
-			getModelDependencies
-			setRequestObject(requestObject);
-
-			variables.ro.function
-		*/
-		//writedump(structkeyarray(ts.modelDataCache.modelComponentCache));
-		//abort;
 		structappend(arguments.ss, ts, true);
 	}else{
 		ts.hookAppCom=application.zcore.hookAppCom;
 		ts.cfcMetaDataCache=application.zcore.functions.zso(application.zcore, 'cfcMetaDataCache', false, {});
-		//ts.modelDataCache=application.zcore.modelDataCache;
 		ts.controllerComponentCache=application.zcore.controllerComponentCache;
 		ts.registeredControllerPathStruct=application.zcore.registeredControllerPathStruct;
 		ts.registeredControllerStruct=application.zcore.registeredControllerStruct;

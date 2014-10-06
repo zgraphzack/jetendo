@@ -5,14 +5,6 @@
     	<cfscript>
 		var local=structnew();
 		local.path=arguments.mvcPath&".model."&arguments.modelName;
-		/*
-		for(local.i in application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache){
-			writeoutput(local.i&'<br />');
-		}
-		application.zcore.functions.zdump(local.path);
-		application.zcore.functions.zabort();
-		*/
-		
 		if(structkeyexists(application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache, local.path)){
 			local.rs=duplicate(application.sitestruct[request.zos.globals.id].modelDataCache.modelComponentCache[local.path]);
 		}else{
@@ -33,23 +25,6 @@
 				}
 			}
 		}
-		/*
-		for(local.i in local.rs){
-			if(isstruct(local.rs[local.i])){
-				writeoutput(local.i&'<br />');
-				local.t=local.rs[local.i];
-				local.rs[local.i]=structnew();
-				structappend(local.rs[local.i], duplicate(local.t),true);
-			}
-		}
-		*/
-		/*
-		application.zcore.functions.zdump(local.rs);
-		application.zcore.functions.zdump(local.rs.getVariables());
-		application.zcore.functions.zabort();
-		*/
-		
-		// return a new copy of the model object
 		return local.rs;
 		</cfscript>
     </cffunction>

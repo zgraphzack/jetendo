@@ -141,7 +141,8 @@ this.customStruct = StructNew();
 	login_log_user_agent=#db.param(cgi.HTTP_USER_AGENT)#,
 	site_id=#db.param(request.zos.globals.id)#,
 	login_log_status=#db.param(arguments.status)#,
-	login_log_updated_datetime=#db.param(request.zos.mysqlnow)# ";
+	login_log_updated_datetime=#db.param(request.zos.mysqlnow)#,
+	login_log_deleted=#db.param(0)# ";
 	if(structkeyexists(form, 'zusername')){
 		db.sql&=" , login_log_username = #db.param(form.zusername)#";
 	}
