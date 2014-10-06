@@ -147,8 +147,10 @@
 	</html>
 	</cfsavecontent>
 	<cfscript>
-        writeoutput(tempText);
-        if(isDefined('request.cellSMSEmail')){
+    writeoutput(tempText);
+    /*
+	// splits email into multiple sms messages - not used anywhere.
+    if(structkeyexists(request, 'cellSMSEmail')){
 		tempText = replace(tempText, '  ', ' ','ALL');
 		tempText=replace(temptext,"<th ",'<th style="text-align:left; vertical-align:top;" ',"ALL");
 		tempText=replace(temptext,"<th>",'<th style="text-align:left;">',"ALL");
@@ -189,7 +191,7 @@
 				writeoutput(arrSMS[g]);
 			}
 		}
-	}
+	}*/
 	</cfscript>
 	<!--- T-Mobile: phonenumber@tmomail.net 
         Virgin Mobile: phonenumber@vmobl.com 
@@ -383,8 +385,12 @@ Assigned to
 					</cfif>
 					<cfelse>
 					<cfif t.user_id NEQ 0>
-#replace(t.inquiries_status_name, 'Assigned', 'Assigned to #t.user_first_name# #t.user_last_name#')#
+						<cfif t.user_first_name NEQ "">
+							#replace(t.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#t.user_username#">#t.user_first_name# #t.user_last_name#</a>')#
 						<cfelse>
+							#replace(t.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#t.user_username#">#t.user_username#</a>')#
+						</cfif> 
+					<cfelse>
 						#t.inquiries_status_name#
 					</cfif>
 				</cfif></td>

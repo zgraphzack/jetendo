@@ -115,7 +115,8 @@
 		inquiries_updated_datetime = #db.param(form.inquiries_feedback_datetime)#, 
 		inquiries_status_id = #db.param(form.inquiries_status_id)# 
 		WHERE inquiries_id = #db.param(form.inquiries_id)# and 
-		site_id = #db.param(request.zos.globals.id)# ";
+		site_id = #db.param(request.zos.globals.id)# and 
+		inquiries_deleted=#db.param(0)# ";
 		r=db.execute("r");
 	}
 	if(form.user_id NEQ qCheck.user_id and qCheck.user_id NEQ 0){
@@ -197,7 +198,8 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		inquiries_updated_datetime = #db.param(form.inquiries_feedback_datetime)#, 
 		inquiries_status_id = #db.param(form.inquiries_status_id)# 
 		WHERE inquiries_id = #db.param(form.inquiries_id)# and 
-		site_id = #db.param(request.zos.globals.id)# ";
+		site_id = #db.param(request.zos.globals.id)# and 
+		inquiries_deleted=#db.param(0)#";
 		q=db.execute("q");
 	}
 	mail to="#form.lead_email_to#" from="#form.lead_email_from#" bcc="#form.lead_email_bcc#" subject="#form.lead_email_subject#"{
@@ -277,6 +279,13 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		ORDER BY inquiries_id DESC </cfsavecontent>
 		<cfscript>
 		qOther=db.execute("qOther");
+
+		db.sql="SELECT * from #db.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status ";
+		qstatus=db.execute("qstatus");
+		statusName=structnew();
+		loop query="qstatus"{
+			statusName[qstatus.inquiries_status_id]=qstatus.inquiries_status_name;
+		}
 		</cfscript>
 		<cfif qOther.recordcount GTE 2>
 			<h2>Other inquiries from this email address</h2>
@@ -289,13 +298,19 @@ Please login in and view your lead by clicking the following link: #request.zos.
 				<cfloop query="qOther">
 					<cfscript>
 					savecontent variable="local.assignedHTML"{
+						currentStatusName = statusName[qOther.inquiries_status_id];
 						if(qOther.user_id NEQ 0){
 							db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user
 							WHERE user_id = #db.param(qOther.user_id)# and 
-							site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL(qOther.user_id_siteIDType))#";
+							site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL(qOther.user_id_siteIDType))# and 
+							user_deleted=#db.param(0)# ";
 							local.qUserTemp=db.execute("qUserTemp");
 							if(local.qUserTemp.recordcount NEQ 0){
-								writeoutput(local.qUserTemp.user_first_name&" "&local.qUserTemp.user_last_name&" "&local.qUserTemp.user_username);
+								if(local.qUserTemp.user_first_name NEQ ""){
+									echo(replace(currentStatusName, 'Assigned', 'Assigned to <a href="mailto:#local.qUserTemp.user_username#">#local.qUserTemp.user_first_name# #local.qUserTemp.user_last_name#</a>'));
+								}else{
+									echo(replace(currentStatusName, 'Assigned', 'Assigned to <a href="mailto:#local.qUserTemp.user_username#">#local.qUserTemp.user_username#</a>'));
+								}
 							}
 						}else{
 							writeoutput('#qOther.inquiries_assign_name# #qOther.inquiries_assign_email# ');

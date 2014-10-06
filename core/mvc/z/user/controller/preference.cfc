@@ -80,7 +80,7 @@
 			site_id=#db.param(variables.qcheckemail.site_id)#";
 			addKey=db.execute("addKey");
 		}
-		if(structkeyexists(request.zos.userSession.groupAccess, "user")){
+		if(structkeyexists(request.zsession, "user") and structkeyexists(request.zos.userSession.groupAccess, "user")){
 			if(form.e NEQ request.zsession.user.email){
 				application.zcore.user.logOut();
 			}else{
@@ -96,7 +96,7 @@
 				inputStruct.disableSecurePassword=true;
 				inputStruct.site_id = request.zos.globals.id;
 				application.zcore.user.checkLogin(inputStruct); 
-				if(structkeyexists(request.zos.userSession.groupAccess, "user")){
+				if(structkeyexists(request.zsession, "user") and structkeyexists(request.zos.userSession.groupAccess, "user")){
 				    variables.secureLogin=true;
 				}else{
 					structdelete(form, 'user_username');
@@ -110,7 +110,7 @@
 			}
 		}
 	}
-	if(isDefined('request.zsession.secureLogin') and request.zsession.secureLogin EQ false){
+	if(structkeyexists(request.zsession, 'secureLogin') and request.zsession.secureLogin EQ false){
 		variables.secureLogin=false;
 	}
 	if(variables.qcheckemail.recordcount NEQ 0){

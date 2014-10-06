@@ -23,7 +23,8 @@
 	SET inquiries_status_id= #db.param(form.inquiries_status_id)#,
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 	WHERE inquiries_id= #db.param(form.inquiries_id)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_deleted=#db.param(0)#";
 	qIn=db.execute("qIn");
 	application.zcore.status.setStatus(request.zsid,'Status Updated');
 	application.zcore.functions.zRedirect('/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&zsid=#request.zsid#');
@@ -264,6 +265,7 @@
 	var qMember=0;
 	var arrId=0;
 	variables.init();
+
 	application.zcore.functions.zSetPageHelpId("4.1");
 	if(structkeyexists(form, 'leadcontactfilter')){
 		request.zsession.leadcontactfilter=form.leadcontactfilter;		
@@ -751,7 +753,11 @@
 							</cfif>
 						<cfelse>
 							<cfif qinquiries.user_id NEQ 0>
-								#replace(local.inquiries_status_name, 'Assigned', 'Assigned to #qinquiries.user_first_name# #qinquiries.user_last_name#')#
+								<cfif qinquiries.user_first_name NEQ "">
+									#replace(local.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#qinquiries.user_username#">#qinquiries.user_first_name# #qinquiries.user_last_name#</a>')#
+								<cfelse>
+									#replace(local.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#qinquiries.user_username#">#qinquiries.user_username#</a>')#
+								</cfif>
 							<cfelse>
 								#local.inquiries_status_name#
 							</cfif>

@@ -99,6 +99,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	if(rs.user_id EQ 0){
 		 db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 		SET inquiries_assign_email=#db.param(rs.assignemail)#,
+		inquiries_status_id=#db.param(2)#,
 		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_id=#db.param(arguments.ss.inquiries_id)# and 
 		inquiries_deleted = #db.param(0)# and 
@@ -107,6 +108,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	}else{
 		db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 		SET user_id=#db.param(rs.user_id)#, 
+		inquiries_status_id=#db.param(2)#,
 		user_id_siteIDType=#db.param(rs.user_id_siteIDType)#,
 		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE inquiries_id=#db.param(arguments.ss.inquiries_id)# and 
@@ -123,7 +125,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	}
 	form.inquiries_id=inquiries_id;
 	if(not structkeyexists(request.zos, 'debugleadrouting')){
-		mail to="#rs.assignEmail#" cc="#rs.cc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
+		mail spoolenable="no" to="#rs.assignEmail#" cc="#rs.cc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
 			iemailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		    iemailCom.getEmailTemplate();
 		}
@@ -1135,6 +1137,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 					set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 					inquiries_reminders_sent=#db.param(0)# 
 					WHERE inquiries_id = #db.param(inquiries_id)# and 
+					site_id=#db.param(request.zos.globals.id)# and 
 					inquiries_deleted = #db.param(0)#";
 					db.execute("q");
 					
@@ -1160,6 +1163,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 					 set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, 
 					 inquiries_reminders_sent=#db.param(totalReminders)# 
 					WHERE inquiries_id = #db.param(inquiries_id)# and 
+					site_id = #db.param(request.zos.globals.id)# and 
 					inquiries_deleted = #db.param(0)#";
 					db.execute("q");
 				}

@@ -214,7 +214,9 @@
          user_id = #db.param("")#, 
          inquiries_admin_comments = #db.param(form.inquiries_admin_comments)#, 
          <cfif qFeedback.count NEQ 0>inquiries_status_id = #db.param(3)#<cfelse>inquiries_status_id = #db.param(2)#</cfif> 
-         WHERE inquiries_id = #db.param(form.inquiries_id)# 
+         WHERE inquiries_id = #db.param(form.inquiries_id)# and 
+         site_id = #db.param(request.zos.globals.id)# and 
+         inquiries_deleted=#db.param(0)#
         </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");</cfscript>
         <cfset form.groupEmail=false>
         <cfscript>
@@ -266,7 +268,8 @@
          inquiries_admin_comments = #db.param(form.inquiries_admin_comments)#, 
          <cfif qFeedback.count NEQ 0>inquiries_status_id = #db.param(3)#<cfelse>inquiries_status_id = #db.param(2)#</cfif> 
          WHERE inquiries_id = #db.param(form.inquiries_id)#  and
-         site_id = #db.param(request.zos.globals.id)# 
+         site_id = #db.param(request.zos.globals.id)# and 
+         inquiries_deleted=#db.param(0)#
         </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");</cfscript> 
         <cfset form.groupEmail=false>
         <cfscript>
