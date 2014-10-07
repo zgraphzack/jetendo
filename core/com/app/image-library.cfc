@@ -1500,6 +1500,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 				field.value="#form.image_library_id#";
 			}
 		}
+		zUpdateImageLibraryCount();
 	});
 	 /* ]]> */
 	</script>

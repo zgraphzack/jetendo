@@ -7,6 +7,17 @@ if (typeof window.console === "undefined") {
 function zKeyExists(obj, key){
 	return (key in obj);
 }
+function zGetURLParameter(sParam){
+	var sPageURL = window.location.search.substring(1);
+	var sURLVariables = sPageURL.split('&');
+	for (var i = 0; i < sURLVariables.length; i++){
+		var sParameterName = sURLVariables[i].split('=');
+		if (sParameterName[0] == sParam){
+			return sParameterName[1];
+		}
+	}
+	return "";
+}
 
 function zHtmlEditFormat(s, preserveCR) {
     preserveCR = preserveCR ? '&#13;' : '\n';

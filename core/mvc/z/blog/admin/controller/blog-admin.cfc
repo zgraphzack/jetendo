@@ -630,6 +630,7 @@ if(arraylen(arrUser) EQ 1){
 			db.sql="INSERT INTO #db.table("blog_x_category", request.zos.zcoreDatasource)#  
 			SET blog_id = #db.param(form.blog_id)#, 
 			blog_x_category_updated_datetime = #db.param(request.zos.mysqlnow)#, 
+			blog_x_category_deleted=#db.param(0)#, 
 			blog_category_id = #db.param(arrCat[i])#, 
 			site_id=#db.param(request.zos.globals.id)# ";
 			db.execute("q"); 
@@ -661,6 +662,7 @@ if(arraylen(arrUser) EQ 1){
 			db.sql="INSERT INTO #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
 			SET blog_id = #db.param(form.blog_id)#, 
 			blog_x_tag_updated_datetime = #db.param(request.zos.mysqlnow)#, 
+			blog_x_tag_deleted=#db.param(0)#,
 			blog_tag_id=#db.param(form.blog_tag_id)#, 
 			site_id=#db.param(request.zos.globals.id)#";
 			db.execute("q"); 

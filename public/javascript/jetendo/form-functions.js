@@ -31,6 +31,10 @@ var zInputBoxLinkValues=[];
 
 (function($, window, document, undefined){
 	"use strict";
+	function zUpdateImageLibraryCount(){
+		var d=document.getElementById("sortable");
+		$("#imageLibraryDivCount", window.parent.document).html($("li", d).length+" images in library");
+	}
 	function ajaxSaveSorting(){
 		var arrId=$( "#sortable" ).sortable("toArray");
 		for(var i=0;i<arrId.length;i++){
@@ -38,29 +42,24 @@ var zInputBoxLinkValues=[];
 		}
 		var link="/z/_com/app/image-library?method=saveSortingPositions&image_library_id="+currentImageLibraryId+"&image_id_list="+arrId.join(",");
 		$.get(link, "",     function(data) { 
-			if(debugImageLibrary) document.getElementById("forimagedata").value+="\n\nAJAX RESULT:\n"+data+"\n"; 
-				var d=document.getElementById("sortable");
-				$("#imageLibraryDivCount", window.parent.document).html($("li", d).length+" images in library");
-			},     "html");  
+			if(debugImageLibrary){
+				document.getElementById("forimagedata").value+="\n\nAJAX RESULT:\n"+data+"\n"; 
+			}
+			zUpdateImageLibraryCount();
+		}, "html");  
 
 		if(debugImageLibrary) document.getElementById("forimagedata").value+="ajaxSaveSorting(): array of image_id:\n"+arrId+"\nLINK:"+link;
-	}
-	function zGetURLParameter(sParam){
-		var sPageURL = window.location.search.substring(1);
-		var sURLVariables = sPageURL.split('&');
-		for (var i = 0; i < sURLVariables.length; i++){
-			var sParameterName = sURLVariables[i].split('=');
-			if (sParameterName[0] == sParam){
-				return sParameterName[1];
-			}
-		}
-		return "";
 	}
 	function ajaxSaveImage(id){
 		if(debugImageLibrary) document.getElementById("forimagedata").value+="ajaxSaveImage(): image_id:"+id+"\n";
 		var link="/z/_com/app/image-library?method=saveImageId&action=update&image_library_id="+currentImageLibraryId+"&image_id="+id+"&image_caption="+escape(document.getElementById('caption'+id).value);
 		if(debugImageLibrary) document.getElementById("forimagedata").value+="\n\n"+link+"\n\n";
-		$.get(link, "",     function(data) { if(debugImageLibrary) document.getElementById("forimagedata").value+="\n\nAJAX SAVE IMAGE RESULT:\n"+data+"\n"; },     "html");  
+		$.get(link, "",     function(data) { 
+			if(debugImageLibrary){
+				document.getElementById("forimagedata").value+="\n\nAJAX SAVE IMAGE RESULT:\n"+data+"\n"; 
+			}
+			zUpdateImageLibraryCount();
+		},     "html");  
 	}
 
 	function toggleImageCaptionUpdate(id,state,skipUpdate){
@@ -87,7 +86,12 @@ var zInputBoxLinkValues=[];
 		d.removeChild(olddiv);
 		var link="/z/_com/app/image-library?method=remoteDeleteImageId&image_id="+id;
 		if(debugImageLibrary) document.getElementById("forimagedata").value+="\nDelete Image ID:"+id+"\n\n"+link+"\n\n";
-		$.get(link, "",     function(data) { if(debugImageLibrary) document.getElementById("forimagedata").value+="\n\nAJAX DELETE IMAGE RESULT:\n"+data+"\n"; },     "html"); 
+		$.get(link, "",     function(data) { 
+			if(debugImageLibrary){
+				document.getElementById("forimagedata").value+="\n\nAJAX DELETE IMAGE RESULT:\n"+data+"\n"; 
+			}
+			zUpdateImageLibraryCount();
+		},     "html"); 
 		ajaxSaveSorting();
 	}
 	function setUploadField(){
@@ -1349,8 +1353,8 @@ var zInputBoxLinkValues=[];
 		var el = document.getElementById("zOS_mode_table_tag");
 		el.style.display='block';
 	}
+	window.zUpdateImageLibraryCount=zUpdateImageLibraryCount;
 	window.ajaxSaveSorting=ajaxSaveSorting;
-	window.zGetURLParameter=zGetURLParameter;
 	window.ajaxSaveImage=ajaxSaveImage;
 	window.toggleImageCaptionUpdate=toggleImageCaptionUpdate;
 	window.confirmDeleteImageId=confirmDeleteImageId;
