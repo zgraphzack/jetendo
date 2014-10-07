@@ -384,7 +384,19 @@
 				for(i=1;i LTE arraylen(comMeta.properties);i++){
 					property=comMeta.properties[i];
 					if(right(property.name, 5) EQ "Model" and find(".model.", property.type) NEQ false){
-						ds[property.name]=application.zcore.modelDataCache.modelComponentCache[property.type];
+						if(left(property.type, 5) EQ "root."){
+							if(not request.zos.istestserver and structkeyexists(application.siteStruct[request.zos.globals.id].modelDataCache.modelComponentCache, property.type)){
+								ds[property.name]=application.siteStruct[request.zos.globals.id].modelDataCache.modelComponentCache[property.type];
+							}else{
+								ds[property.name]=createobject("component", replace(property.type, "root.", request.zRootCFCPath));
+							}
+						}else{
+							if(not request.zos.istestserver and structkeyexists(application.zcore.modelDataCache.modelComponentCache, property.type)){
+								ds[property.name]=application.zcore.modelDataCache.modelComponentCache[property.type];
+							}else{
+								ds[property.name]=createobject("component", property.type);
+							}
+						}
 					}
 				}
 			}

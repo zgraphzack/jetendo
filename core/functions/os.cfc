@@ -718,6 +718,13 @@ if(not rs.success){
 						}
 						ts.registeredControllerStruct[local.curMvcName]="/"&replace(arrMvcPaths[local.i],'.','/','all')&"/"&local.curPath2&"/"&local.qD.name;
 					}
+				}else if(lastFolderName EQ "model"){
+					
+					if(curExt EQ "cfc"){
+						comPath=arrMvcPaths[local.i]&"."&local.curPath3&"."&local.curName;
+						ts.modelDataCache.modelComponentCache[replace(comPath, arrMvcPaths[local.i], "root")]=createobject("component", comPath);
+					}
+					// old method
 				/*}else if(local.lastFolderName EQ "model"){
 					if(local.curExt EQ "cfc"){
 						local.comPath=arrMvcPaths[local.i]&"."&local.curPath3&"."&local.curName;
