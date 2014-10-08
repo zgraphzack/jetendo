@@ -201,7 +201,6 @@ var zModernizrLoadedRan=false;
 		}
 		
 		zLoadAllLoadFunctions();
-		zWindowOnResize();
 		if(zPositionObjSubtractId!==false){
 			var d1=document.getElementById(zPositionObjSubtractId);
 			zPositionObjSubtractPos=zFindPosition(d1);
@@ -220,6 +219,9 @@ var zModernizrLoadedRan=false;
 		zMLSonloadBackup(ev);
 		zWindowOnLoad(ev);
 
+	});
+	zArrDeferredFunctions.push(function(){
+		zWindowOnResize();
 	});
 	window.zModernizrLoaded=zModernizrLoaded;
 	window.zLoadMapFunctions=zLoadMapFunctions;

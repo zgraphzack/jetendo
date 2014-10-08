@@ -325,7 +325,7 @@ writeoutput(application.zcore.functions.zLoadAndCropImage({id:"",width:140,heigh
 	}
     </cfscript>
     <cfsavecontent variable="theMeta">
-    <meta name="viewport" content="width=device-width; minimum-scale=1.0; initial-scale=1.0; user-scalable=<cfif arguments.scalable>yes<cfelse>no</cfif>; " /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /><style type="text/css">/* <![CDATA[ */ a, area {-webkit-touch-callout: none;}*{ -webkit-text-size-adjust: none; }/* ]]> */</style>
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=<cfif arguments.scalable>yes<cfelse>no</cfif>" /><meta name="apple-mobile-web-app-capable" content="yes" /><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /><style type="text/css">/* <![CDATA[ */ a, area {-webkit-touch-callout: none;}*{ -webkit-text-size-adjust: none; }/* ]]> */</style>
     </cfsavecontent>
     <cfscript>
     application.zcore.template.appendTag("meta",theMETA);

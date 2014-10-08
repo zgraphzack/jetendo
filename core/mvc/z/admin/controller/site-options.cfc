@@ -1688,6 +1688,7 @@
 			site_x_option_group_disable_time:form.site_x_option_group_disable_time,
 			site_x_option_group_date_value:nvDate,
 			site_option_id: row.site_option_id,
+			site_x_option_group_deleted:0,
 			site_option_group_id: row.site_option_group_id,
 			site_x_option_group_updated_datetime: nowDate 
 		}
@@ -1765,7 +1766,8 @@
 		site_x_option_group_set_image_library_id=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_image_library_id'))#, 
 		site_x_option_group_set_updated_datetime=#db.param(request.zos.mysqlNow)# , 
 		site_x_option_group_set_title=#db.param(form.siteOptionTitle)# , 
-		site_x_option_group_set_summary=#db.param(form.siteOptionSummary)#";
+		site_x_option_group_set_summary=#db.param(form.siteOptionSummary)#,
+		site_x_option_group_set_deleted=#db.param(0)#";
 		local.rs=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 		if(local.rs.success){
 			form.site_x_option_group_set_id=local.rs.result;
