@@ -146,7 +146,7 @@ USER WAS PERMANENTLY BLOCKED.');
 			return;	
 		}	
 		// check session
-		if(not structkeyexists(request, 'zsession') EQ false){
+		if(not structkeyexists(request, 'zsession')){
 			request.zsession=StructNew();
 		}
 		

@@ -445,7 +445,8 @@ If the link does not work, please copy and paste the entire link in your browser
 		set mail_user_deleted = #db.param(1)#,
 		mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#
 		where mail_user_id=#db.param(qU.mail_user_id)# and 
-		site_id=#db.param(request.zos.globals.id)#";
+		site_id=#db.param(request.zos.globals.id)# and 
+		mail_user_deleted=#db.param(0)# ";
 		db.execute("q"); 
 	}
 	

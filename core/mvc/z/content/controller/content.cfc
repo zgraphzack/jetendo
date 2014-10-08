@@ -896,7 +896,7 @@ this.app_id=12;
 	
 	if(structkeyexists(form, 'zlogout') EQ false){
 		if(isDefined('request.zsession.user.id') and isDefined('request.zsession.user.site_id')){
-			if(isDefined('request.zsession.zUserInquiryInfoLoaded') EQ false){
+			if(structkeyexists(request.zsession, 'zUserInquiryInfoLoaded') EQ false){
 				tmpUsrId=request.zsession.user.id;
 				db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 				WHERE user_id = #db.param(request.zsession.user.id)# and 

@@ -338,8 +338,9 @@
 			db.sql="update #db.table("mail_user", request.zos.zcoreDatasource)#  
 			set mail_user_deleted = #db.param(1)#,
 			mail_user_updated_datetime=#db.param(request.zos.mysqlnow)#
-			WHERE mail_user_id=#db.param(local.qU.mail_user_id)# 
-			site_id=#db.param(local.qU.site_id)#";
+			WHERE mail_user_id=#db.param(local.qU.mail_user_id)# and 
+			site_id=#db.param(local.qU.site_id)# and 
+			mail_user_deleted=#db.param(0)#";
 			db.execute("q"); 
 		}
 		</cfscript>

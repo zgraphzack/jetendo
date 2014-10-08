@@ -47,15 +47,18 @@
 	}else{
 		errorMessage="Unknown Error";	
 	}
+	rs={
+		success:success,
+		errorMessage:errorMessage,
+		developer: local.isDeveloper
+		// uncomment to debug this
+		//,userStruct:application.zcore.functions.zso(request.zsession, 'user')
+	};
 	if(request.zos.isdeveloper and structkeyexists(form, 'zdebug')){
-		local.debugSQL=',"arrDebugLog": #serializeJson(rs.arrDebugLog)#, "debugsql":'''&jsstringformat(arraytolist(request.zos.arrQueryLog, "; "))&'''';
-	}else{
-		local.debugSQL="";
+		rs.arrDebugLog=rs.arrDebugLog;
+		rs.debugsql=arraytolist(request.zos.arrQueryLog, "; ");
 	}
-	jsonText='{"success":#success#,"errorMessage":"#jsstringformat(errorMessage)#", "developer": #local.isDeveloper##local.debugSQL#}';
-	header name="x_ajax_id" value="#application.zcore.functions.zso(form, 'x_ajax_id')#";
-	writeoutput(jsonText);
-	application.zcore.functions.zabort();
+	application.zcore.functions.zReturnJson(rs);
 	</cfscript>
 </cffunction>
 
