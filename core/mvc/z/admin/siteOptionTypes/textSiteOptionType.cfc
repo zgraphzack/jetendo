@@ -24,6 +24,12 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return true;
+	</cfscript>
+</cffunction>
+
 <cffunction name="isSearchable" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
 	return true;

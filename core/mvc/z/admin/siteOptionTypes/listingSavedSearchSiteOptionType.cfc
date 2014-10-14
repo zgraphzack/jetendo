@@ -30,6 +30,12 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return false;
+	</cfscript>
+</cffunction>
+
 <cffunction name="onDelete" localmode="modern" access="public" output="no">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">

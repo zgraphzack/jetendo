@@ -23,6 +23,12 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return true;
+	</cfscript>
+</cffunction>
+
 <!--- 
 <cfscript>
 ts = StructNew();

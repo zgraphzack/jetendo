@@ -23,6 +23,12 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return true;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFormField" localmode="modern" access="public"> 
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">

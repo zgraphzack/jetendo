@@ -907,7 +907,7 @@
 				<th>Required:</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_required")#</td>
 			</tr>
-			<cfif form.site_option_group_id NEQ '' and form.site_option_group_id NEQ 0>
+			<!--- <cfif form.site_option_group_id NEQ '' and form.site_option_group_id NEQ 0> --->
 				<cfif qOptionGroup.site_option_group_enable_unique_url EQ 1>
 					<tr>
 						<th>Use for URL Title:</th>
@@ -964,7 +964,7 @@
 					application.zcore.functions.zInput_Text(ts);
 					</cfscript></td>
 				</tr>
-			</cfif>
+			<!--- </cfif> --->
 			<tr>
 				<th style="vertical-align:top; white-space:nowrap;">Allow Public?</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
@@ -2872,6 +2872,7 @@ Define this function in another CFC to override the default email format
 							writeoutput(' <a href="'&application.zcore.functions.zURLAppend(tempLink, "zpreview=1")&'" target="_blank">Preview</a> | ');
 						}
 					}
+					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
 					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Edit</a> | ');
 					if(row.site_option_group_enable_section EQ 1){
 						echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> | ');
@@ -3150,6 +3151,7 @@ Define this function in another CFC to override the default email format
 			var optionStruct={};
 			var dataStruct={};
 			var labelStruct={};
+			posted=false;
 			for(row in qS){
 				currentRowIndex++;
 				if(form.jumpto EQ "soid_#application.zcore.functions.zurlencode(row.site_option_name,"_")#"){
@@ -3157,6 +3159,7 @@ Define this function in another CFC to override the default email format
 				}
 				if(not structkeyexists(form, "newvalue"&row.site_option_id)){
 					if(structkeyexists(form, row.site_option_name)){
+						posted=true;
 						form["newvalue"&row.site_option_id]=form[row.site_option_name];
 					}else{
 						if(row.site_x_option_group_value NEQ ""){
@@ -3175,6 +3178,9 @@ Define this function in another CFC to override the default email format
 				optionStruct[row.site_option_id]=deserializeJson(row.site_option_type_json);
 				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
 				dataStruct=currentCFC.onBeforeListView(row, optionStruct[row.site_option_id], form);
+				if(local.methodBackup EQ "addGroup" and not posted and not currentCFC.isCopyable()){
+					form["newvalue"&row.site_option_id]='';
+				}
 				value=currentCFC.getListValue(dataStruct, optionStruct[row.site_option_id], form["newvalue"&row.site_option_id]);
 				if(value EQ ""){
 					value=row.site_option_default_value;
@@ -3207,7 +3213,11 @@ Define this function in another CFC to override the default email format
 						</div></th>
 						<td style="vertical-align:top;white-space: nowrap;"><input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
 					}else{
-						writeoutput('<td style="vertical-align:top; padding-top:5px;" colspan="2">');
+						if(row.site_option_type_id EQ 11){
+							writeoutput('<td style="vertical-align:top; padding-top:15px; padding-bottom:0px;" colspan="2">');
+						}else{
+							writeoutput('<td style="vertical-align:top; padding-top:5px;" colspan="2">');
+						}
 						if(rs.label){
 							writeoutput('<input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
 						}
@@ -3220,6 +3230,15 @@ Define this function in another CFC to override the default email format
 				if(rs.label){
 					writeoutput('</td>');	
 					writeoutput('</tr>');
+				}
+			}
+
+
+			if(local.methodBackup EQ 'addGroup'){ 
+				if(not posted){
+					form.site_x_option_group_set_override_url='';
+					qSet={ recordcount: 0};
+					form.site_x_option_group_set_image_library_id='';
 				}
 			}
 			</cfscript>

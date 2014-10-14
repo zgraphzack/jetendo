@@ -37,6 +37,12 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return true;
+	</cfscript>
+</cffunction>
+
 <cffunction name="isSearchable" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
 	return false;
@@ -120,8 +126,9 @@
 			var city=document.getElementById("newvalue#arguments.optionStruct.cityfield#");
 			var state=document.getElementById("newvalue#arguments.optionStruct.statefield#");
 			var zip=document.getElementById("newvalue#arguments.optionStruct.zipfield#");
+			var country=document.getElementById("newvalue#application.zcore.functions.zso(arguments.optionStruct, 'countryfield')#");
 			
-			var arrField=[address, city, state, zip];
+			var arrField=[address, city, state, zip, country];
 			var arrAddress=[];
 			for(var i=0;i<arrField.length;i++){
 				var d=arrField[i];
@@ -239,7 +246,8 @@
 		addressfield:application.zcore.functions.zso(arguments.dataStruct, 'addressfield'),
 		cityfield:application.zcore.functions.zso(arguments.dataStruct, 'cityfield'),
 		statefield:application.zcore.functions.zso(arguments.dataStruct, 'statefield'),
-		zipfield:application.zcore.functions.zso(arguments.dataStruct, 'zipfield')
+		zipfield:application.zcore.functions.zso(arguments.dataStruct, 'zipfield'),
+		countryfield:application.zcore.functions.zso(arguments.dataStruct, 'countryfield')
 	};
 	arguments.dataStruct.site_option_type_json=serializeJson(ts);
 	return { success:true};
@@ -312,6 +320,17 @@
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript></td>
 		</tr>
+		<tr><td>
+		Country: </td><td>
+		<cfscript>
+		selectStruct = StructNew();
+		selectStruct.name = "countryfield";
+		selectStruct.query = qGroup;
+		selectStruct.queryLabelField = "site_option_name";
+		selectStruct.queryValueField = "site_option_id";
+		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'countryfield');
+		application.zcore.functions.zInputSelectBox(selectStruct);
+		</cfscript> </td></tr>
 		</table>
 	</div>
 	</cfsavecontent>
