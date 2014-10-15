@@ -1675,13 +1675,19 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option_group_enable_unique_url = #db.param(1)# and 
 		site_x_option_group_set.site_x_option_group_set_active = #db.param(1)# and 
 		site_x_option_group_set.site_x_option_group_set_approved = #db.param(1)# and 
+		site_option_group_parent_id = #db.param('0')# and 
+		site_option_group_public_searchable = #db.param(1)# and 
+		site.site_active=#db.param(1)# and 
+		site.site_id <> #db.param(-1)# ";
+		if(structkeyexists(form, 'sid')){
+			db.sql&=" and site.site_id = #db.param(form.sid)# ";
+		}
+		db.sql&=" LIMIT #db.param(offset)#, #db.param(limit)#";
+		/*
 		site_option_group_search_index_cfc_path <> #db.param('')# and 
 		site_option_group_search_index_cfc_method <> #db.param('')# and 
-		site_option_group_parent_id = #db.param('0')# and 
 		site_option_group_disable_site_map = #db.param(0)# and 
-		site.site_active=#db.param(1)# and 
-		site.site_id <> #db.param(-1)# 
-		LIMIT #db.param(offset)#, #db.param(limit)#";
+		*/
 		qGroup=db.execute("qGroup");
 		offset+=limit;
 		if(qGroup.recordcount EQ 0){
@@ -1695,7 +1701,11 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
 	site_id <> #db.param(-1)# and 
 	app_id = #db.param(14)# and 
-	search_deleted = #db.param(0)# and 
+	search_deleted = #db.param(0)#";
+	if(structkeyexists(form, 'sid')){
+		db.sql&=" and site_id = #db.param(form.sid)# ";
+	}
+	db.sql&="  and 
 	search_updated_datetime < #db.param(request.zos.mysqlnow)# ";
 	db.execute("qDelete");
 	</cfscript>
@@ -2011,10 +2021,12 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}else{
 		arrFullText=[];
 		tempStruct=application.sitestruct[request.zos.globals.id].globals.soGroupData;
-		for(i in tempStruct.siteOptionGroupFieldLookup[dataStruct.__groupId]){
-			c=tempStruct.siteOptionLookup[i];
-			if(c.site_option_enable_search_index EQ 1){
-				arrayAppend(arrFullText, dataStruct[c.name]);
+		if(structkeyexists(tempStruct.siteOptionGroupFieldLookup, dataStruct.__groupId)){
+			for(i in tempStruct.siteOptionGroupFieldLookup[dataStruct.__groupId]){
+				c=tempStruct.siteOptionLookup[i];
+				if(c.site_option_enable_search_index EQ 1){
+					arrayAppend(arrFullText, dataStruct[c.name]);
+				}
 			}
 		}
 		ds.search_fulltext=arrayToList(arrFullText, " ");

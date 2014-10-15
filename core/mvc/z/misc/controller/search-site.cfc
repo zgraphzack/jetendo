@@ -75,10 +75,15 @@ search sql generator has to be able to search on child group data for paging to 
 	writedump(a);
 	abort;*/
 	db=request.zos.queryObject;
-	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
-	WHERE site_option_group_public_searchable = #db.param(1)# and 
-	site_id = #db.param(request.zos.globals.id)# and 
-	site_option_group_deleted = #db.param(0)#
+	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# , #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
+	site_option.site_id = site_option_group.site_id and 
+	site_option.site_option_group_id = site_option_group.site_option_group_id and 
+	site_option_public_searchable = #db.param(1)# and 
+	site_option_deleted = #db.param(0)# and
+	site_option_group_public_searchable = #db.param(1)# and 
+	site_option_group.site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_deleted = #db.param(0)# 
+	GROUP BY site_option_group.site_option_group_id
 	ORDER BY site_option_group_display_name ASC";
 	qGroup=db.execute("qGroup");
 	

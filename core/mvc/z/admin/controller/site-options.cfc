@@ -55,16 +55,16 @@
 	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "autoDeleteGroup" and form.method NEQ "publicAjaxInsertGroup" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
 		<table style="border-spacing:0px; width:100%; " class="table-list">
 			<tr>
-				<cfif form.method NEQ "list">
-					<th><a href="/z/admin/site-options/index?site_option_app_id=#form.site_option_app_id#">Site Options</a></th>
-				</cfif>
-				<th style="text-align:right;"><strong>Change Structure:</strong> For Advanced Users Only! 
+				<th style="text-align:right;"><strong>Developer Tools:</strong> 
 				<cfif application.zcore.functions.zso(form, 'site_option_group_id') NEQ "">
 					Current Group:
 					<a href="/z/admin/site-option-group/edit?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#">Edit</a> | 
 					<a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#">Edit Options</a> | 
+					Manage: 
+				</cfif> 
+				<cfif application.zcore.user.checkServerAccess()>
+					<a href="/z/admin/site-options/searchReindex">Search Reindex</a> | 
 				</cfif>
-				Manage: 
 				<a href="/z/admin/sync/index">Sync</a> | 
 				<a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#">Options</a> | 
 				<a href="/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#">Groups</a> | 
@@ -76,7 +76,20 @@
 	</cfif>
 </cffunction>
 
-
+<cffunction name="searchReindex" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
+	
+	searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
+	form.sid=request.zos.globals.id;
+	searchIndexCom.searchReindex();
+	</cfscript>
+	<h2>Search reindexed for this site only.</h2>
+	<p><a href="/z/server-manager/tasks/search-index/index">Click here to reindex search on all sites</a></p>
+</cffunction>
+	
 
 <cffunction name="import" localmode="modern" access="remote" roles="member">
 	<cfscript>

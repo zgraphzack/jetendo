@@ -1099,46 +1099,53 @@ If the link does not work, please copy and paste the entire link in your browser
 			</div>
 			<cfreturn>
 		</cfif>
-		<h2>Sign in with OpenID</h2>
-		<p>Click the button to register with an existing account.</p>
-		<div style="width:100%; float:left;">
-			<div style="float:left; padding-right:20px;width:285px;">
-				<cfscript>
-				local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
-				local.openIdCom.disableDeveloperLoginLinks();
-				local.openIdCom.enableRegistrationLoginLinks();
-				writeoutput(local.openIdCom.displayProviderLinks(request.zos.currentHostName&"/z/user/preference/register?disableOpenIDLoginRedirect=1"));
-				if(structkeyexists(form, 'zRegisterAccount')){
-					if(request.zos.globals.disableOpenID EQ 1){
-						application.zcore.functions.z404("OpenID login is disabled in server manager for this site.");
-					}
+
+		<cfif request.zos.globals.disableOpenID EQ 0 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 0)>
+	
+			<h2>Sign in with OpenID</h2>
+			<p>Click the button to register with an existing account.</p>
+			<div style="width:100%; float:left;">
+				<div style="float:left; padding-right:20px;width:285px;">
+					<cfscript>
 					local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
-					writeoutput(local.openIdCom.verifyOpenIdLogin());
-					if(application.zcore.user.checkGroupAccess("user")){
-						if(local.openIdCom.userExisted()){
-							application.zcore.functions.zredirect('/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');
-						}else{
-							application.zcore.functions.zredirect('/z/user/preference/newMemberWelcome?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');
+					local.openIdCom.disableDeveloperLoginLinks();
+					local.openIdCom.enableRegistrationLoginLinks();
+					writeoutput(local.openIdCom.displayProviderLinks(request.zos.currentHostName&"/z/user/preference/register?disableOpenIDLoginRedirect=1"));
+					if(structkeyexists(form, 'zRegisterAccount')){
+						if(request.zos.globals.disableOpenID EQ 1){
+							application.zcore.functions.z404("OpenID login is disabled in server manager for this site.");
+						}
+						local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+						writeoutput(local.openIdCom.verifyOpenIdLogin());
+						if(application.zcore.user.checkGroupAccess("user")){
+							if(local.openIdCom.userExisted()){
+								application.zcore.functions.zredirect('/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');
+							}else{
+								application.zcore.functions.zredirect('/z/user/preference/newMemberWelcome?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');
+							}
 						}
 					}
-				}
-				</cfscript>
+					</cfscript>
+				</div>
+				<div style="float:left;width:285px;">
+					<h3>About OpenID</h3>
+					<ul>
+						<li>Faster and can be more secure</li>
+						<li>Consolidate your accounts</li>
+						<li>You won't need a password here</li>
+						<li>Free open standard</li>
+						<li>Used by over 50,000 web sites</li>
+						<li><a href="http://openid.net/get-an-openid/what-is-openid/" target="_blank">Learn More (new window)</a></li>
+					</ul>
+				</div>
 			</div>
-			<div style="float:left;width:285px;">
-				<h3>About OpenID</h3>
-				<ul>
-					<li>Faster and can be more secure</li>
-					<li>Consolidate your accounts</li>
-					<li>You won't need a password here</li>
-					<li>Free open standard</li>
-					<li>Used by over 50,000 web sites</li>
-					<li><a href="http://openid.net/get-an-openid/what-is-openid/" target="_blank">Learn More (new window)</a></li>
-				</ul>
-			</div>
-		</div>
+		</cfif>
 		<div style="width:100%;clear:both; float:left;border-top:1px dotted ##999; padding-top:10px;">
 			<div style="float:left; padding-right:20px;width:285px;">
-				<div style="width:100%; float:left;">If you don't have one of the above accounts:</div>
+				<cfif request.zos.globals.disableOpenID EQ 0 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 0)>
+					<div style="width:100%; float:left;">If you don't have one of the above accounts:</div>
+				</cfif>
+	
 				<h2 style="margin-top:0px; padding-top:0px;">Create a new account</h2>
 				<div class="zmember-openid-buttons" style="width:100%; float:left;">
 					<p><strong>Email</strong><br />
