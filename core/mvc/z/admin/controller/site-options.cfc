@@ -55,6 +55,7 @@
 	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "autoDeleteGroup" and form.method NEQ "publicAjaxInsertGroup" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
 		<table style="border-spacing:0px; width:100%; " class="table-list">
 			<tr>
+				<th><a href="/z/admin/site-options/index?site_option_app_id=#form.site_option_app_id#">Site Options</a></th>
 				<th style="text-align:right;"><strong>Developer Tools:</strong> 
 				<cfif application.zcore.functions.zso(form, 'site_option_group_id') NEQ "">
 					Current Group:

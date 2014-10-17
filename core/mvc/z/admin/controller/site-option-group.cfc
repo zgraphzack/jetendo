@@ -36,7 +36,10 @@
 	<table style="border-spacing:0px;width:100%;" class="table-list">
 		<tr>
 			<th><a href="/z/admin/site-options/index?site_option_app_id=#form.site_option_app_id#">Site Options</a></th>
-			<th style="text-align:right;">For Advanced Users Only! &gt;  Manage: 
+			<th style="text-align:right;"><strong>Developer Tools:</strong> 
+				<cfif application.zcore.user.checkServerAccess()>
+					<a href="/z/admin/site-options/searchReindex">Search Reindex</a> | 
+				</cfif>
 			<a href="/z/admin/sync/index">Sync</a> | 
 			<a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#">Options</a> | 
 			<a href="/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#">Groups</a> | 
