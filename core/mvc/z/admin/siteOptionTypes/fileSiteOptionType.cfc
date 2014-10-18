@@ -221,7 +221,6 @@
 	uploadPath=getUploadPath(arguments.optionStruct);
 	arguments.dataStruct.site_x_option_group_id=arguments.row.site_x_option_group_id;
 	nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	var tempDir=getTempDirectory();
 	filename="";
 	if(structkeyexists(arguments.row, 'site_x_option_group_id')){
 		form.site_x_option_group_id=arguments.row.site_x_option_group_id;

@@ -418,17 +418,42 @@ rs=zGetHashPath(dir, id);
 	request.zUploadFileErrorCause="";
 	application.zcore.functions.zCreateDirectory(arguments.destination);
 	if(structkeyexists(form, arguments.fieldName) and trim(form[arguments.fieldName]) NEQ ""){
-		if(arguments.overwrite){
-			arguments.overwrite = "overwrite";
+		tempDir=getTempDirectory();
+		if(left(form[arguments.fieldName], len(tempDir)) EQ tempDir){
+			if(arguments.overwrite){
+				arguments.overwrite = "overwrite";
+			}else{
+				arguments.overwrite = "makeunique";
+			}
+			try{
+				file action="upload" result="cffileresult" destination="#arguments.destination#" nameconflict="#arguments.overwrite#" filefield="#form[arguments.fieldName]#" charset="utf-8";
+				request.zos.lastCFFileResult=cffileresult;
+			}catch(Any e){
+				request.zUploadFileErrorCause="cffile upload exception: "&e.message;
+				return false;
+			}
 		}else{
-			arguments.overwrite = "makeunique";
-		}
-		try{
-			file action="upload" result="cffileresult" destination="#arguments.destination#" nameconflict="#arguments.overwrite#" filefield="#form[arguments.fieldName]#" charset="utf-8";
-			request.zos.lastCFFileResult=cffileresult;
-		}catch(Any e){
-			request.zUploadFileErrorCause="cffile upload exception: "&e.message;
-			return false;
+			try{
+				result=application.zcore.functions.zcopyfile(form[arguments.fieldName], arguments.destination, arguments.overwrite);
+				if(result EQ false){
+					if(structkeyexists(Request, 'zCopyFileError')){
+						throw(Request.zCopyFileError);
+					}else{
+						throw("Failed to copy file for unknown reason.");
+					}
+				}else{
+					fullFileName = GetFileFromPath(result);
+					if(not application.zcore.functions.zIsSafeFileExt(fullFileName)){
+						application.zcore.functions.zdeletefile("#arguments.destination##fullFileName#");
+						application.zcore.template.fail("Extremely dangerous file upload attempted with name: #fullFileName#<br /><br />It has been automatically deleted with a 500 error displayed to the user.");
+					}
+					return fullFileName;
+				}
+			}catch(Any e){
+				request.zUploadFileErrorCause="cffile upload exception: "&e.message;
+				return false;
+			}
+
 		}
 	}else{
 		request.zUploadFileErrorCause="Error: FieldName was not set.";
@@ -437,8 +462,44 @@ rs=zGetHashPath(dir, id);
 	if(not application.zcore.functions.zIsSafeFileExt(cffileresult.clientfile)){
 		application.zcore.functions.zdeletefile("#arguments.destination##cffileresult.serverfile#");
 		application.zcore.template.fail("Extremely dangerous file upload attempted with name: #cffileresult.serverfile#<br /><br />It has been automatically deleted with a 500 error displayed to the user.");
+		return false;
 	}
-	return cffileresult.serverfile;
+
+	fileName=application.zcore.functions.zURLEncode(application.zcore.functions.zGetFileName(cffileresult.serverfile), "-");
+	pathName=getdirectoryfrompath(arguments.destination);
+	fileExtension=application.zcore.functions.zGetFileExt(cffileresult.serverfile);
+	count=1;
+	if(compare(cffileresult.serverfile, fileName&"."&fileExtension) NEQ 0){
+		if(directoryexists(arguments.destination)){
+			pathName=arguments.destination;
+			if(right(pathName, 1) NEQ "/"){
+				pathName&="/";
+			}
+			arguments.destination = pathName&fileName&count&"."&fileExtension;
+		} 
+		exists=true;
+		while(exists){
+			if(fileexists(arguments.destination)){
+				count = count + 1;
+				arguments.destination = pathName&fileName&count&"."&fileExtension;
+			}else{
+				exists = false;
+			}
+			if(count GT 100){
+				Request.zCopyFileError = "Rename File failed: Possible infinite loop";
+				return cffileresult.serverfile;
+			}
+		}
+		conflict="error";
+		result=application.zcore.functions.zrenamefile(pathName&cffileresult.serverfile, arguments.destination);
+		if(result EQ false){
+			return cffileresult.serverfile;
+		}else{
+			return fileName&count&"."&fileExtension;
+		}
+	}else{
+		return cffileresult.serverfile;
+	}
 	</cfscript>
 </cffunction>
 
@@ -736,7 +797,7 @@ notes: optionally delete an existing image that has a field in the specified dat
         return false;
     }
     // remove file extension
-    fileName = application.zcore.functions.zGetFileName(fileName);
+    fileName = application.zcore.functions.zURLEncode(application.zcore.functions.zGetFileName(fileName), "-");
     // fail when fileName is an empty string
     if(len(fileName) EQ 0){
         return false;
@@ -752,8 +813,6 @@ notes: optionally delete an existing image that has a field in the specified dat
     
     backupWidth=local.imageSize.width;
     backupHeight=local.imageSize.height;
-    // prevent special characters in file names
-    fileName = REReplace(fileName, "[^[:alnum:]]","_","ALL");
     // loop size array
     if(arguments.autoCropList NEQ ""){
         arrCrop=listtoarray(arguments.autoCropList);	
@@ -764,7 +823,7 @@ notes: optionally delete an existing image that has a field in the specified dat
         }
     }
     if(arguments.newFileName NEQ ""){
-        fileName=application.zcore.functions.zGetFileName(arguments.newFileName);
+        fileName=application.zcore.functions.zURLEncode(application.zcore.functions.zGetFileName(arguments.newFileName), "-");
     }
     request.arrLastImageWidth=arraynew(1);
     request.arrLastImageHeight=arraynew(1);
@@ -973,15 +1032,13 @@ notes: optionally delete an existing image that has a field in the specified dat
 	<cfargument name="destination" required="true" type="string">
 	<cfargument name="resizeList" required="false" type="string">
     <cfscript>
-	var arrFiles=0;
+	var arrFiles=[];
 	var filePath=""; 
 	var tpath=replace(gettempdirectory(),"\","/","ALL");
 	var curPath="";
 	var doUpload=false;
 	var firstField=listGetAt(arguments.fieldName, 1);
-	</cfscript>
-	<cfif structkeyexists(form, firstField) and fileexists(form[firstField])>
-		<cfscript>
+	if(structkeyexists(form, firstField) and fileexists(form[firstField])){
 		if(structkeyexists(form, firstField)){
 			curPath=replace(form[firstField],"\","/","ALL");
 			if(tpath EQ left(curPath, len(tpath))){
@@ -996,17 +1053,11 @@ notes: optionally delete an existing image that has a field in the specified dat
 		if(filePath EQ false){ 
 			return false;
 		} 
-			arrFiles = application.zcore.functions.zResizeImage(filePath,arguments.destination,arguments.resizeList,false);
-			application.zcore.functions.zDeleteFile(filePath);
-		try{
-		}catch(Any excpt){
-			return ArrayNew(1);
-		}
-		return arrFiles;
-		</cfscript>
-	<cfelse>
-		<cfreturn ArrayNew(1)>
-	</cfif>
+		arrFiles = application.zcore.functions.zResizeImage(filePath,arguments.destination,arguments.resizeList,false);
+		application.zcore.functions.zDeleteFile(filePath);
+	}
+	return arrFiles;
+	</cfscript>
 </cffunction>
 
 <cffunction name="zReadFile" localmode="modern" output="false" returntype="any">
@@ -1071,25 +1122,21 @@ notes: optionally delete an existing image that has a field in the specified dat
 	var count = 1;
 	var cfcatch=0;
 	var fullFileName = GetFileFromPath(arguments.filePath);
-	var fileName = application.zcore.functions.zGetFileName(fullFileName);
+	var fileName=application.zcore.functions.zURLEncode(application.zcore.functions.zGetFileName(fullFileName), "-");
 	var fileExtension = application.zcore.functions.zGetFileExt(fullFileName);
 	var conflict="overwrite";
 	var pathName = GetDirectoryFromPath(arguments.filePath);
 	if(arguments.newPath EQ ""){
 		arguments.newPath = pathName&fileName&count&"."&fileExtension;
 	}
-	</cfscript>
-	<cftry>
-		<cfset fileName = #application.zcore.functions.zFileStringFormat(arguments.filePath)#>
-		<cfcatch type="any">
-			<cfscript>
-			Request.zCopyFileError = "Copy File failed.  zFileStringFormat return an empty string";
-			</cfscript>
-			<cfreturn false>
-		</cfcatch>
-	</cftry>
-	<cfscript>
 	if(arguments.overwrite EQ false){
+		if(directoryexists(arguments.newPath)){
+			pathName=arguments.newPath;
+			if(right(pathName, 1) NEQ "/"){
+				pathName&="/";
+			}
+			arguments.newPath = pathName&fileName&count&"."&fileExtension;
+		}
 		while(exists){
 			if(fileexists(arguments.newPath)){
 				count = count + 1;
@@ -1104,17 +1151,15 @@ notes: optionally delete an existing image that has a field in the specified dat
 		}
 		conflict="error";
 	}
+	try{
+		file action="copy" source="#arguments.filePath#" nameconflict="#conflict#" destination="#arguments.newPath#";
+	}catch(Any e){
+		Request.zCopyFileError = "File Path = "&arguments.filePath&"<br />New Path = "&arguments.newPath&"<br /><br />Coldfusion couldn't copy file to destination, check permissions";
+		return false;
+	}
+	return arguments.newPath;
 	</cfscript>
-	<cftry>
-		<cffile action="copy" source="#arguments.filePath#" nameconflict="#conflict#" destination="#arguments.newPath#">
-		<cfcatch type="any">
-			<cfscript>
-			Request.zCopyFileError = "File Path = "&arguments.filePath&"<br />New Path = "&arguments.newPath&"<br /><br />Coldfusion couldn't copy file to destination, check permissions";
-			</cfscript>
-			<cfreturn false>
-		</cfcatch>
-	</cftry>
-	<cfreturn arguments.newPath>
+	
 </cffunction>
 
 

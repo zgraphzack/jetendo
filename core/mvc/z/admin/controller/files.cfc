@@ -343,6 +343,7 @@
 		overwrite=false;
 	}
 	fileName=application.zcore.functions.zuploadfile('image_file', application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/');
+	form.image_file=application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName;
 	ext=lcase(application.zcore.functions.zGetFileExt(fileName));
 	if(ext NEQ "png" and ext NEQ "jpg" and ext NEQ "jpeg" and ext NEQ "gif" and ext NEQ "zip"){
 		application.zcore.functions.zDeleteFile(application.zcore.functions.zvar('serverprivatehomedir')&'_cache/temp_files/'&fileName);
@@ -385,7 +386,7 @@
 			form.imagePath=tPath&qDir.name;
 			fileext=application.zcore.functions.zgetfileext(qDir.name);
 			ext=fileext;
-			filename=application.zcore.functions.zgetfilename(qDir.name);
+			filename=application.zcore.functions.zURLEncode(application.zcore.functions.zgetfilename(qDir.name), "-");
 			if(left(qDir.name,2) EQ "._" or qDir.name EQ ".DS_Store" or qDir.type NEQ "file"){
 				echo('skipping 1: '&qDir.name&'<br />');
 				continue;
@@ -422,7 +423,7 @@
 				if(fileexists(variables.currentDir&form.image_file) EQ false){
 					arrayappend(arrE,'Failed to resize image: '&qDir.name&'<br />');
 				}else{
-					n2=qDir.name;
+					n2=application.zcore.functions.zURLEncode(qDir.name, "-");
 					fExt=".jpg";
 					if(right(n2,4) EQ ".png"){
 						fExt=".png";
@@ -482,7 +483,6 @@
 				}	
 			}
 		}else{
-	
 			arrList = application.zcore.functions.zUploadResizedImage("image_file", variables.currentDir, photoresize);	
 			if(isArray(arrList) and ArrayLen(arrList) NEQ 0){
 				form.image_file=arrList[1];
@@ -502,14 +502,14 @@
 			if(right(request.zos.lastCFFileResult.clientfile, 4) EQ ".png"){
 				fExt=".png";
 			}
-			n2=application.zcore.functions.zgetfilename(request.zos.lastCFFileResult.clientfile)&fExt;
-			if(form.method NEQ 'update' and overwrite and n2 NEQ image_file){
+			n2=application.zcore.functions.zURLEncode(application.zcore.functions.zgetfilename(request.zos.lastCFFileResult.clientfile),"-")&fExt;
+			if(form.method NEQ 'update' and overwrite and compare(n2, form.image_file) NEQ 0){
 				application.zcore.functions.zDeleteFile(variables.currentDir&n2);
-				application.zcore.functions.zRenameFile(variables.currentDir&image_file,variables.currentDir&n2);
-				image_file=n2;
+				application.zcore.functions.zRenameFile(variables.currentDir&form.image_file,variables.currentDir&n2);
+				form.image_file=n2;
 			}
-			if(application.zcore.functions.zgetfileext(image_file) NEQ 'jpg' and fExt NEQ ".png"){
-				application.zcore.functions.zRenameFile(variables.currentDir&image_file,variables.currentDir&application.zcore.functions.zgetfilename(image_file)&'.jpg');
+			if(application.zcore.functions.zgetfileext(form.image_file) NEQ 'jpg' and fExt NEQ ".png"){
+				application.zcore.functions.zRenameFile(variables.currentDir&form.image_file,variables.currentDir&application.zcore.functions.zURLEncode(application.zcore.functions.zgetfilename(form.image_file), "-")&'.jpg');
 			}
 			if(fileexists(deletePath)){
 				application.zcore.functions.zdeletefile(deletePath);
@@ -518,7 +518,7 @@
 		if(form.method EQ 'update'){
 			oldFilePath=variables.currentDir&getfilefrompath(form.f); 
 			application.zcore.functions.zDeleteFile(oldFilePath); // kill the old file
-			application.zcore.functions.zRenameFile(variables.currentDir&image_file, oldFilePath); // make the new resized image the same name as the old file that was deleted.
+			application.zcore.functions.zRenameFile(variables.currentDir&form.image_file, oldFilePath); // make the new resized image the same name as the old file that was deleted.
 			application.zcore.status.setStatus(request.zsid,"Image Replaced Successfully");
 		}else{
 			application.zcore.status.setStatus(request.zsid,"Image Uploaded Successfully");
@@ -678,7 +678,14 @@ application.zcore.functions.zStatusHandler(request.zsid,true);
     </cfif>  
     <cfif currentMethod NEQ 'add' and currentMethod NEQ 'galleryAdd'><br />
     <h2>URL to embed/view image using browser default settings:</h2><br />
-    <textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#application.zcore.functions.zvar('domain')##variables.siteRootDir##urlencodedformat(form.f)#</textarea><br />
+    <cfscript>
+    path=getdirectoryfrompath(form.f);
+    fileName=getfilefrompath(form.f);
+	fileExtension=application.zcore.functions.zGetFileExt(fileName);
+	fileName=urlencodedformat(application.zcore.functions.zGetFileName(fileName));
+
+	</cfscript>
+    <textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#application.zcore.functions.zvar('domain')##variables.siteRootDir##path&fileName&"."&fileExtension#</textarea><br />
     <br />
     
     <h2>URL to force download of image file:</h2>
@@ -824,8 +831,16 @@ if(pos NEQ 0){
     form.f=p&fn;
 }
 </cfscript>
+
+    <cfscript>
+    path=getdirectoryfrompath(form.f);
+    fileName=getfilefrompath(form.f);
+	fileExtension=application.zcore.functions.zGetFileExt(fileName);
+	fileName=urlencodedformat(application.zcore.functions.zGetFileName(fileName));
+
+	</cfscript>
 <h2>URL to embed/view file using browser default settings:</h2>
-<textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.currentHostName##variables.siteRootDir&form.f#</textarea><br />
+<textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.currentHostName##variables.siteRootDir&path&fileName&"."&fileExtension#</textarea><br />
 <br />
 <h2>URL to force download of file:</h2>
 <textarea style="width:100%; height:40px; font-size:14px;" onclick="this.select();">#request.zos.currentHostName#/z/misc/download/index?fp=#urlencodedformat(variables.siteRootDir&form.f)#</textarea><br />
@@ -1151,7 +1166,7 @@ if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true)
 			<td style="vertical-align:top;">
 			<cfif qDir.type EQ 'file'>
 					<a href="/z/misc/download/index?fp=#URLEncodedFormat(replace(variables.currentDir, request.zos.globals.privatehomedir, "/")&qDir.name)#" style="color:##000000;">Download</a> | 
-					<a href="/z/admin/files/<cfif right(qDir.name,4) EQ ".jpg" OR right(qDir.name,4) EQ '.gif'>edit<cfelse>editFile</cfif>?d=#URLEncodedFormat(form.d)#&amp;f=#URLEncodedFormat(form.d&'/'&qDir.name)#" style="color:##000000;">View<cfif right(qDir.name,4) EQ ".jpg" OR right(qDir.name,4) EQ '.gif' or right(qDir.name,3) EQ ".js" or right(qDir.name,4) EQ ".css" or right(qDir.name,4) EQ ".htm">/Edit</cfif></a> 
+					<a href="/z/admin/files/<cfif right(qDir.name,4) EQ ".png" OR right(qDir.name,4) EQ ".jpg" OR right(qDir.name,4) EQ '.gif'>edit<cfelse>editFile</cfif>?d=#URLEncodedFormat(form.d)#&amp;f=#URLEncodedFormat(form.d&'/'&qDir.name)#" style="color:##000000;">View<cfif right(qDir.name,4) EQ ".png" OR right(qDir.name,4) EQ ".jpg" OR right(qDir.name,4) EQ '.gif' or right(qDir.name,3) EQ ".js" or right(qDir.name,4) EQ ".css" or right(qDir.name,4) EQ ".htm">/Edit</cfif></a> 
 			</cfif>
 			<cfif isDefined('request.zos.fileImage.deleteDisabled') EQ false or request.zos.fileImage.deleteDisabled EQ false>
 				<cfif qDir.type EQ 'dir'>
