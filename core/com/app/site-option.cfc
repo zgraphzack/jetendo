@@ -71,8 +71,8 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	for(i=1;i LTE length;i++){
 		c=arguments.arrSearch[i]; 
 		if(isArray(c)){
-			returnStruct=this.processSearchArraySQL(c, arguments.fieldStruct, arguments.tableCount, arguments.site_option_group_id);
-			arrayAppend(arrSQL, returnStruct.sql); 
+			sql=this.processSearchArraySQL(c, arguments.fieldStruct, arguments.tableCount, arguments.site_option_group_id);
+			arrayAppend(arrSQL, sql); 
 		}else if(isStruct(c)){
 			if(structkeyexists(c, 'subGroup')){
 				throw("subGroup, ""#c.subGroup#"", has caching disabled. subGroup search is not supported yet when caching is disabled (i.e. site_option_group_enable_cache = 0).");
@@ -140,51 +140,126 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	match=true;
 	arrSQL=[];
 	field=arguments.field;
-	
-	if(arguments.multipleValues){
-		throw("arguments.multipleValues EQ true isn't supported by processSearchGroupSQL.  Only non-sql in-memory searches can have multiple values.");
-	}
+	multipleError="arguments.multipleValues EQ true isn't supported by processSearchGroupSQL.  Only non-sql in-memory searches can have multiple values.";
 	if(type EQ "="){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" = '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" = '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ "<>"){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" <> '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" <> '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" <> '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ "between"){
+		if(arguments.multipleValues){
+			throw(multipleError);
+		}
 		if(arrayLen(arrValue) NEQ 2){
 			throw("You must supply exactly 2 item array for ""arrValue"" for a ""between"" search.");
 		}
 		arrayAppend(arrSQL, field&" BETWEEN '"&application.zcore.functions.zescape(arrValue[1])&"' and '"&application.zcore.functions.zescape(arrValue[2])&"' ");
 	}else if(type EQ "not between"){
+		if(arguments.multipleValues){
+			throw(multipleError);
+		}
 		if(arrayLen(arrValue) NEQ 2){
 			throw("You must supply exactly 2 item array for ""arrValue"" for a ""between"" search.");
 		}
 		arrayAppend(arrSQL, field&" NOT BETWEEN '"&application.zcore.functions.zescape(arrValue[1])&"' and '"&application.zcore.functions.zescape(arrValue[2])&"' ");
 	}else if(type EQ ">"){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" > '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" > '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" > '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ ">="){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" >= '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" >= '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" >= '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ "<"){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" < '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " < "&arrayToList(arrSQL2, " or ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" < '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ "<="){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" <= '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" <= '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" <= '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ "like"){
 		for(g=1;g LTE length;g++){ 
-			arrayAppend(arrSQL, field&" LIKE '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" LIKE '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" LIKE '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else if(type EQ "not like"){
 		for(g=1;g LTE length;g++){
-			arrayAppend(arrSQL, field&" NOT LIKE '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			if(arguments.multipleValues){
+				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
+				arrSQL2=[];
+				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
+				}
+				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
+			}else{
+				arrayAppend(arrSQL, field&" NOT LIKE '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+			}
 		}
 	}else{
 		throw("Invalid field type, ""#type#"".  Valid types are =, <>, <, <=, >, >=, between, not between, like, not like");
@@ -537,24 +612,26 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 	arguments.limit=application.zcore.functions.zso(arguments, 'limit', true, 10); 
 	var t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
 	currentOffset=0;
+	if(arguments.orderBy NEQ ""){
+		if(arguments.orderByDataType EQ ""){
+			arguments.orderByDataType="text";
+		}
+		if(arguments.orderByDataType NEQ "text" and arguments.orderByDataType NEQ "numeric"){
+			throw("Invalid value for arguments.orderByDataType, ""#arguments.orderByDataType#"".");
+		}
+		if(arguments.orderByDirection EQ ""){
+			arguments.orderByDirection="asc";
+		}
+		if(arguments.orderByDirection NEQ "asc" and arguments.orderByDirection NEQ "desc"){
+			throw("Invalid value for arguments.orderByDirection, ""#arguments.orderByDirection#"".");
+		}
+	}
 	if(structkeyexists(t9, "siteOptionGroupIdLookup") and structkeyexists(t9.siteOptionGroupIdLookup, arguments.parentGroupId&chr(9)&arguments.groupName)){
 		siteOptionGroupId=t9.siteOptionGroupIdLookup[arguments.parentGroupId&chr(9)&arguments.groupName];
 		var groupStruct=t9.siteOptionGroupLookup[siteOptionGroupId];
 		if(groupStruct.site_option_group_enable_cache EQ 1){
 			arrGroup=application.zcore.functions.zSiteOptionGroupStruct(arguments.groupName);
 			if(arguments.orderBy NEQ ""){
-				if(arguments.orderByDataType EQ ""){
-					arguments.orderByDataType="text";
-				}
-				if(arguments.orderByDataType NEQ "text" and arguments.orderByDataType NEQ "numeric"){
-					throw("Invalid value for arguments.orderByDataType, ""#arguments.orderByDataType#"".");
-				}
-				if(arguments.orderByDirection EQ ""){
-					arguments.orderByDirection="asc";
-				}
-				if(arguments.orderByDirection NEQ "asc" and arguments.orderByDirection NEQ "desc"){
-					throw("Invalid value for arguments.orderByDirection, ""#arguments.orderByDirection#"".");
-				}
 				tempStruct={};
 				for(i=1;i LTE arrayLen(arrGroup);i++){
 					tempStruct[i]=arrGroup[i];
@@ -608,47 +685,92 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			//abort;
 		}else{
 			fieldStruct={};
-			// TODO: add support for query based order by statement.
 
 			sql=variables.processSearchArraySQL(arguments.arrSearch, fieldStruct, 1, groupStruct.site_option_group_id);
 			/*if(sql EQ ""){
 				return rs;
 			}*/
 			//writedump(sql);
-			//writedump(fieldStruct);
+
 			groupId=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray([arguments.groupName]);
-			
+
+
 			arrTable=["site_x_option_group_set s1"];
 			arrWhere=["s1.site_id = '#request.zos.globals.id#' and 
 			s1.site_x_option_group_set_deleted = 0  and 
 			s1.site_option_group_id = '#groupId#' and "&sql];
 			arrSelect=[];
+
+			orderTableLookup={};
+			fieldIndex=1;
 			for(i in fieldStruct){
 				tableName="sGroup"&fieldStruct[i];
+				orderTableLookup[i]=fieldIndex;
 				//arrayAppend(arrSelect, "sVal"&i);
 				arrayAppend(arrTable, "site_x_option_group "&tableName);
 				arrayAppend(arrWhere, "#tableName#.site_id = s1.site_id and 
 				#tableName#.site_x_option_group_set_id = s1.site_x_option_group_set_id and 
 				#tableName#.site_option_id = '#application.zcore.functions.zescape(i)#' and 
+				#tableName#.site_option_group_id = s1.site_option_group_id AND 
 				#tableName#.site_x_option_group_deleted = 0");
+				fieldIndex++;
+			}
+			if(arguments.orderBy NEQ ""){
+				// need to lookup the field site_option_id using the site_option_name and groupId
+				siteOptionIdLookup=request.zos.globals.soGroupData.siteOptionIdLookup;
+				if(structkeyexists(siteOptionIdLookup, groupId&chr(9)&arguments.orderBy)){
+					site_option_id=siteOptionIdLookup[groupId&chr(9)&arguments.orderBy];
+					site_option_type_id=request.zos.globals.soGroupData.siteOptionLookup[site_option_id].type;
+					currentCFC=application.zcore.siteOptionTypeStruct[site_option_type_id];
+
+					arrayAppend(arrTable, "site_x_option_group s2");
+					arrayAppend(arrWhere, "s2.site_id = s1.site_id and 
+					s2.site_x_option_group_set_id = s1.site_x_option_group_set_id and 
+					s2.site_option_id = '#application.zcore.functions.zescape(site_option_id)#' and 
+					s2.site_option_group_id = s1.site_option_group_id AND 
+					s2.site_x_option_group_deleted = 0");
+					fieldIndex++;
+
+
+					orderByStatement=" ORDER BY "&currentCFC.getSortSQL(2, arguments.orderByDirection);
+				}else{
+					throw("arguments.orderBy, ""#arguments.orderBy#"" is not a valid field in the site_option_group_id=#groupId# | ""#groupStruct.site_option_group_name#""");
+				}
+			}else if(structkeyexists(request.zos, 'siteOptionSearchDateRangeSortEnabled')){
+				orderByStatement=" ORDER BY s1.site_x_option_group_set_start_date ASC ";
+			}else{
+				orderByStatement=" ORDER BY s1.site_x_option_group_set_id ASC ";
 			}
 			db=request.zos.noVerifyQueryObject;
+			if(arguments.getCount){
+				db.sql="select count(distinct s1.site_x_option_group_set_id) count
+				from #arrayToList(arrTable, ", ")# 
+				WHERE #arrayToList(arrWhere, " and ")# ";
+				if(not arguments.showUnapproved){
+					db.sql&=" and site_x_option_group_set_approved=#db.param('1')# ";
+				}
+				qCount=db.execute("qSelect");  
+				rs.count=qCount.count;
+				//writedump(qCount);abort;
+				if(qCount.recordcount EQ 0 or qCount.count EQ 0){
+					return rs;
+				} 
+			}
 			db.sql="select s1.site_x_option_group_set_id 
 			from #arrayToList(arrTable, ", ")# 
-			WHERE #arrayToList(arrWhere, " and ")# 
-			and site_x_option_group_set_approved=#db.param('1')# 
-			GROUP BY s1.site_x_option_group_set_id ";
-			if(structkeyexists(request.zos, 'siteOptionSearchDateRangeSortEnabled')){
-				db.sql&=" ORDER BY s1.site_x_option_group_set_start_date ASC ";
-			}else{
-				db.sql&=" ORDER BY s1.site_x_option_group_set_id ASC ";
+			WHERE #arrayToList(arrWhere, " and ")# ";
+			if(not arguments.showUnapproved){
+				db.sql&=" and site_x_option_group_set_approved=#db.param('1')# ";
 			}
-			db.sql&=" LIMIT #db.param(arguments.offset)#, #db.param(arguments.limit+1)#";
+			db.sql&=" GROUP BY s1.site_x_option_group_set_id 
+			#orderByStatement#
+			LIMIT #db.param(arguments.offset)#, #db.param(arguments.limit+1)#";
 			qIdList=db.execute("qSelect");  
-			//application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);		writedump(qIdList);abort;
+			//writedump(qIdList);abort;
+
 			if(qIdList.recordcount EQ 0){
 				return rs;
-			}
+			} 
 			arrId=[];
 			currentRow=1;
 			for(row in qIdList){
@@ -679,6 +801,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 				db.sql&="ORDER BY field(s1.site_x_option_group_set_id, #db.trustedSQL(idlist)#)  asc"; 
 			}
 			qS=db.execute("qS"); 
+			//writedump(qS);abort;
 			if(qS.recordcount EQ 0){
 				return rs;
 			}
