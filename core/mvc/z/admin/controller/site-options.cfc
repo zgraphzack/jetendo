@@ -1869,8 +1869,23 @@
 		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id); 
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds4<br>'); startTime=gettickcount();
-	if(local.qCheck.site_option_group_enable_unique_url EQ 1 and local.qCheck.site_option_group_parent_id EQ 0 and local.qCheck.site_option_group_public_searchable EQ 1){
-		application.zcore.siteOptionCom.searchReindexSet(form.site_x_option_group_set_id, request.zos.globals.id, [local.qCheck.site_option_group_display_name]);
+	if(local.qCheck.site_option_group_enable_unique_url EQ 1 and local.qCheck.site_option_group_public_searchable EQ 1){//  and local.qCheck.site_option_group_parent_id EQ 0
+		if(local.qCheck.site_option_group_parent_id NEQ 0){
+			parentStruct=application.zcore.functions.zGetSiteOptionGroupById(local.qCheck.site_option_group_parent_id);
+			arrGroupName=[];
+			while(true){
+				arrayAppend(arrGroupName, parentStruct.site_option_group_name);
+				if(parentStruct.site_option_group_parent_id NEQ 0){
+					parentStruct=application.zcore.functions.zGetSiteOptionGroupById(parentStruct.site_option_group_parent_id);
+				}else{
+					break;
+				}
+			}
+			arrayAppend(arrGroupName, local.qCheck.site_option_group_display_name);
+			application.zcore.siteOptionCom.searchReindexSet(form.site_x_option_group_set_id, request.zos.globals.id, arrGroupName);
+		}else{
+			application.zcore.siteOptionCom.searchReindexSet(form.site_x_option_group_set_id, request.zos.globals.id, [local.qCheck.site_option_group_display_name]);
+		}
 	}
 	
 	local.mapRecord=false;

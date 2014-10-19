@@ -1798,10 +1798,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option_group_enable_unique_url = #db.param(1)# and 
 		site_x_option_group_set.site_x_option_group_set_active = #db.param(1)# and 
 		site_x_option_group_set.site_x_option_group_set_approved = #db.param(1)# and 
-		site_option_group_parent_id = #db.param('0')# and 
 		site_option_group_public_searchable = #db.param(1)# and 
 		site.site_active=#db.param(1)# and 
 		site.site_id <> #db.param(-1)# ";
+		// site_option_group_parent_id = #db.param('0')# and 
 		if(structkeyexists(form, 'sid')){
 			db.sql&=" and site.site_id = #db.param(form.sid)# ";
 		}
