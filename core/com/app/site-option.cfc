@@ -1467,11 +1467,23 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	ORDER BY site_x_option_group_set_sort";
 	var qSort=db.execute("qSort");
 	var arrTemp=[];
+	sortStruct={};
+	i=1;
 	for(var row2 in qSort){
 		arrayAppend(arrTemp, row2.site_x_option_group_set_id);
+		sortStruct[row2.site_x_option_group_set_id]=i;
+		i++;
 	}
 	var tempStruct=application.zcore.siteGlobals[arguments.site_id];
 	tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_parent_id&"_childGroup"][arguments.site_option_group_id]=arrTemp;
+
+	arrData=tempStruct.soGroupData.siteOptionGroupSetArrays[arguments.site_option_app_id&chr(9)&arguments.site_option_group_id&chr(9)&arguments.site_x_option_group_set_parent_id];
+	arrDataNew=[];
+	for(i=1;i LTE arraylen(arrData);i++){
+		sortIndex=sortStruct[arrData[i].__setId];
+		arrDataNew[sortIndex]=arrData[i];
+	}
+	tempStruct.soGroupData.siteOptionGroupSetArrays[arguments.site_option_app_id&chr(9)&arguments.site_option_group_id&chr(9)&arguments.site_x_option_group_set_parent_id]=arrDataNew;
 	</cfscript>
 </cffunction>
 	
@@ -1782,8 +1794,22 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var offset=0;
 	var limit=30;
 	setting requesttimeout="5000";
+	db.sql="select site_option_group_id, site_option_group_parent_id, site_option_group_name, site_id FROM
+	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
+	ORDER BY site_option_group_parent_id";
+	qGroup=db.execute("qGroup");
+	groupStruct={};
+	for(row in qGroup){
+		if(not structkeyexists(groupStruct, row.site_id)){
+			groupStruct[row.site_id]={};
+		}
+		groupStruct[row.site_id][row.site_option_group_id]={
+			parentId:row.site_option_group_parent_id,
+			name:row.site_option_group_name
+		};
+	}
 	while(true){
-		db.sql="select site_x_option_group_set_id, site.site_id, site_option_group.site_option_group_name FROM
+		db.sql="select site_x_option_group_set_id, site_option_group.site_option_group_parent_id, site.site_id, site_option_group.site_option_group_name FROM
 		#db.table("site", request.zos.zcoreDatasource)# site, 
 		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set,
 		#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group
@@ -1802,7 +1828,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site.site_active=#db.param(1)# and 
 		site.site_id <> #db.param(-1)# ";
 		// site_option_group_parent_id = #db.param('0')# and 
-		if(structkeyexists(form, 'sid')){
+		if(structkeyexists(form, 'sid') and form.sid NEQ ""){
 			db.sql&=" and site.site_id = #db.param(form.sid)# ";
 		}
 		db.sql&=" LIMIT #db.param(offset)#, #db.param(limit)#";
@@ -1811,13 +1837,26 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option_group_search_index_cfc_method <> #db.param('')# and 
 		site_option_group_disable_site_map = #db.param(0)# and 
 		*/
-		qGroup=db.execute("qGroup");
+		qGroup=db.execute("qGroup"); 
 		offset+=limit;
 		if(qGroup.recordcount EQ 0){
 			break;
 		}else{
 			for(row in qGroup){
-				variables.indexSiteOptionGroupRow(row.site_x_option_group_set_id, row.site_id, [row.site_option_group_name]);
+				arrGroup=[];
+				parentId=row.site_option_group_parent_id;
+				while(true){
+					if(parentId EQ 0){
+						break;
+					}
+					tempStruct=groupStruct[row.site_id][parentId];
+					parentId=tempStruct.parentId;
+					arrayAppend(arrGroup, tempStruct.name);
+				}
+				arrayAppend(arrGroup, row.site_option_group_name);
+				if(arraylen(arrGroup) GT 1){
+					variables.indexSiteOptionGroupRow(row.site_x_option_group_set_id, row.site_id, arrGroup); 
+				}
 			}
 		}
 	}

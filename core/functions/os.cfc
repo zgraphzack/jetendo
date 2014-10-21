@@ -2665,12 +2665,13 @@ User's IP: #request.zos.cgi.remote_addr#
 	application.zcore.functions.zOS_cacheSitePaths();
 	db.sql="SELECT site_id from #db.table("site", request.zos.zcoreDatasource)# site 
 	WHERE site_id <> #db.param(-1)# and 
+	site_active = #db.param(1)# and 
 	site_deleted = #db.param(0)#";
 	qSite=db.execute("qSite");
 	for(local.row in qSite){
-	        application.zcore.functions.zOS_cacheSiteAndUserGroups(local.row.site_id);
+	    application.zcore.functions.zOS_cacheSiteAndUserGroups(local.row.site_id);
 	}
-        </cfscript>
+    </cfscript>
 </cffunction>
 
 <!--- re-create the server wide caching of site paths. --->

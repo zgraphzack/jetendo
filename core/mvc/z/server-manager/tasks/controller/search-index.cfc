@@ -8,6 +8,10 @@
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
 	}
 	request.ignoreSlowScript=true;
+
+	local.searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
+	local.searchIndexCom.searchReindex();
+
 	blogCom=createobject("component", "zcorerootmapping.mvc.z.blog.controller.blog");
 	blogCom.searchReindexBlogArticles(false, true);
 	blogCom.searchReindexBlogCategories(false, true);
@@ -21,8 +25,6 @@
 	contentCom.searchReindexContent(false, true);
 	
 	
-	local.searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
-	local.searchIndexCom.searchReindex();
 	
 	echo('Done.');
 	abort;

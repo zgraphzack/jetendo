@@ -322,11 +322,6 @@
 	if(structkeyexists(application.zcore.searchFormCache, request.zos.globals.id) EQ false){
 		application.zcore.searchFormCache[request.zos.globals.id]=structnew();
 	}
-	if(request.zos.zreset EQ "cache"){
-		setting requesttimeout="3000";
-		application.zcore.functions.zOS_rebuildCache();
-		application.zcore.functions.zredirect("/");
-	}
 
 	if(structkeyexists(application.zcore, 'importMLSRunning')){
 		request.zos.importMLSRunning=true;
@@ -562,6 +557,11 @@
 
 <cffunction name="onRequestStart2" localmode="modern" output="yes">
 	<cfscript>
+	if(request.zos.zreset EQ "cache"){
+		setting requesttimeout="3000";
+		application.zcore.functions.zOS_rebuildCache();
+		application.zcore.functions.zredirect("/");
+	}
 	
 	request.zos.emailData={
 		sitePath:'/e/attachments/',
