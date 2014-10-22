@@ -31,7 +31,7 @@
 	}
 	db.sql = "UPDATE "& request.zos.queryObject.table(arguments.tableName, arguments.datasource) &" SET 
 	`#deletedField#` = `#primaryField#`, 
-	`#updatedDatetimeField#`=#db.param(request.zos.mysqlnow)# ";
+	`#updatedDatetimeField#`=#db.param(dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss"))# ";
 	arrWhere = ArrayNew(1);
 	for(i in arguments.deleteWhereStruct){
 		v=arguments.deleteWhereStruct[i];
@@ -543,10 +543,10 @@ if(table_id EQ false){
 	if(request.zos.istestserver and structkeyexists(arguments.inputStruct, 'struct') EQ false){
 		throw("Error: FUNCTION: zInsert: inputStruct.struct must be set.", "exception");
 	}
-	if(structkeyexists(ss,'struct') and not structkeyexists(ss.struct, ss.table&"_updated_datetime")){
-		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+	if(structkeyexists(ss,'struct')){
+		ss.struct[ss.table&"_updated_datetime"]=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	}else{
-		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+		local[ss.table&"_updated_datetime"]=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	}
 
 	</cfscript>
@@ -721,9 +721,9 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		throw("Error: FUNCTION: zInsert: inputStruct.struct must be set.", "exception");
 	}
 	if(structkeyexists(ss,'struct')){
-		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+		ss.struct[ss.table&"_updated_datetime"]=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	}else{
-		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
+		local[ss.table&"_updated_datetime"]=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	}
 	</cfscript>
 	<cfif ss.enableTableFieldCache or structkeyexists(request.zos.tableFieldsCache, ss.datasource&" "&ss.table) EQ false>
