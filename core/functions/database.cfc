@@ -543,7 +543,7 @@ if(table_id EQ false){
 	if(request.zos.istestserver and structkeyexists(arguments.inputStruct, 'struct') EQ false){
 		throw("Error: FUNCTION: zInsert: inputStruct.struct must be set.", "exception");
 	}
-	if(structkeyexists(ss,'struct')){
+	if(structkeyexists(ss,'struct') and not structkeyexists(ss.struct, ss.table&"_updated_datetime")){
 		ss.struct[ss.table&"_updated_datetime"]=request.zos.mysqlnow;
 	}else{
 		local[ss.table&"_updated_datetime"]=request.zos.mysqlnow;

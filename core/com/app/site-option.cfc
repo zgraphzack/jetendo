@@ -1794,6 +1794,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var offset=0;
 	var limit=30;
 	setting requesttimeout="5000";
+	startDatetime=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	db.sql="select site_option_group_id, site_option_group_parent_id, site_option_group_name, site_id FROM
 	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	ORDER BY site_option_group_parent_id";
@@ -1862,11 +1863,11 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	site_id <> #db.param(-1)# and 
 	app_id = #db.param(14)# and 
 	search_deleted = #db.param(0)#";
-	if(structkeyexists(form, 'sid')){
+	if(structkeyexists(form, 'sid') and form.sid NEQ ""){
 		db.sql&=" and site_id = #db.param(form.sid)# ";
 	}
 	db.sql&="  and 
-	search_updated_datetime < #db.param(request.zos.mysqlnow)# ";
+	search_updated_datetime < #db.param(startDatetime)# ";
 	db.execute("qDelete");
 	</cfscript>
 </cffunction>
@@ -2167,8 +2168,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}
 	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	ds=searchCom.getSearchIndexStruct();
-	ds.app_id=14;
-	ds.search_content_datetime=request.zos.mysqlnow;
+	ds.app_id=14; 
 	ds.search_table_id=local.dataStruct.__setId;
 	ds.site_id=arguments.site_id;
 	ds.search_content_datetime=local.dataStruct.__dateModified;
