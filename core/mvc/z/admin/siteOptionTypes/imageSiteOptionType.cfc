@@ -210,7 +210,7 @@
 			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', photoresize);
 		}
 		if(isarray(arrList) EQ false){
-			return {success:false, message: '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please upload a jpeg, png or gif file.' };
+			return {success:false, message: '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please upload a jpeg, png or gif file.<br />'&request.zImageErrorCause };
 			
 			nv=oldnv;
 		}else if(ArrayLen(arrList) NEQ 0){

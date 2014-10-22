@@ -133,7 +133,7 @@ function verifySite($row){
 	if($debug) echo (microtime_float()-$time_start)." seconds for directory structure\n"; $time_start=microtime_float();
 	$domain=str_replace("https://", "", str_replace("http://", "", $row["site_domain"]));
 	$curDomain=str_replace("www.", "", $domain);
-	if($checkDNS){
+	if($checkDNS && $row["site_disable_dns_monitor"] == "0"){
 		if($row["site_ip_address"] == ""){
 			$siteHasError=true;
 			array_push($arrError, "Attention required: IP address not set for ".$row["site_short_domain"]." in the server manager.  Please set it now for DNS monitoring to function correctly.");	

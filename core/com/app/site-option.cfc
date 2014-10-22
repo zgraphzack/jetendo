@@ -1854,9 +1854,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 					arrayAppend(arrGroup, tempStruct.name);
 				}
 				arrayAppend(arrGroup, row.site_option_group_name);
-				if(arraylen(arrGroup) GT 1){
-					variables.indexSiteOptionGroupRow(row.site_x_option_group_set_id, row.site_id, arrGroup); 
-				}
+				indexSiteOptionGroupRow(row.site_x_option_group_set_id, row.site_id, arrGroup); 
 			}
 		}
 	}
@@ -1880,7 +1878,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfscript>
 	var db=request.zos.queryObject;
 	var row=0;
-	variables.indexSiteOptionGroupRow(arguments.setId, arguments.site_id, arguments.arrGroupName);
+	indexSiteOptionGroupRow(arguments.setId, arguments.site_id, arguments.arrGroupName);
 	</cfscript>
 </cffunction>
 
@@ -2153,7 +2151,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	dataStruct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.setId, arguments.site_id, arguments.arrGroupName);
 	var t9=application.zcore.siteGlobals[arguments.site_id].soGroupData;
 	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved NEQ 1){
-		this.deleteSiteOptionGroupSetIndex(arguments.setId, arguments.site_id);
+		deleteSiteOptionGroupSetIndex(arguments.setId, arguments.site_id);
 		return;
 	}
 	groupStruct=t9.siteOptionGroupLookup[dataStruct.__groupId]; 

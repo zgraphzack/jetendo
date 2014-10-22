@@ -657,7 +657,8 @@
 				<cfscript>
 				adminSecurityFilterCom=createobject("component", "zcorerootmapping.com.app.adminSecurityFilter");
 				adminSecurityFilterCom.getFormField("user_limit_manager_features");
-				</cfscript></td>
+				</cfscript>
+				</td>
 				</tr>
 			</cfif>
 			<cfif currentMethod EQ "edit" and request.zos.globals.disableOpenID EQ 0>

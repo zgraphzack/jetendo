@@ -131,7 +131,7 @@
 	selectStruct.listValues=arrayToList(arrValue, ",");
 	application.zcore.functions.zInputSelectBox(selectStruct);
 
-	</cfscript><br />By default, a user has access to all features for the group they are assigned to. Seleting one or more options here will limit them to the selected options only.  All other existing and future features will be hidden.
+	</cfscript><br />By default, a user has access to all features for the group they are assigned to. Selecting one or more options here will limit them to the selected options only.  All other existing and future features will be hidden. To allow user to access custom site option groups, you must select "site options" and each one of the custom forms. The user will have access to all site option groups, but their manager menu will only show the ones you have selected.
 </cffunction>
 
 <cffunction name="validateFeatureAccessList" localmode="modern" returntype="string">

@@ -672,7 +672,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 				return false;
 			} 
 			filePath=arguments.destination&filePath;
-			local.ext=application.zcore.functions.zGetFileExt(filePath);
+			local.ext=application.zcore.functions.zGetFileExt(filePath); 
 			if(local.ext NEQ "jpeg" and local.ext NEQ "jpg" and local.ext NEQ "png" and local.ext NEQ "gif"){
 				application.zcore.functions.zDeleteFile(filePath);
 				return false;

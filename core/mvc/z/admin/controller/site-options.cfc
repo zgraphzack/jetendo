@@ -1634,6 +1634,8 @@
 		var rs=currentCFC.onBeforeUpdate(row, optionStruct, 'newvalue', form);
 		if(not rs.success){
 			application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
+			application.zcore.status.setStatus(request.zsid, rs.message, form, true);
+
 			local.newAction="addGroup";
 			if(methodBackup EQ "updateGroup"){
 				local.newAction="editGroup";
