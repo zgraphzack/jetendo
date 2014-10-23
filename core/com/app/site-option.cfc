@@ -2180,7 +2180,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		local.tempCom[groupStruct.site_option_group_search_index_cfc_method](dataStruct, ds);
 	}else{
 		arrFullText=[];
-		tempStruct=application.sitestruct[request.zos.globals.id].globals.soGroupData;
+		tempStruct=application.sitestruct[arguments.site_id].globals.soGroupData;
 		if(structkeyexists(tempStruct.siteOptionGroupFieldLookup, dataStruct.__groupId)){
 			for(i in tempStruct.siteOptionGroupFieldLookup[dataStruct.__groupId]){
 				c=tempStruct.siteOptionLookup[i];

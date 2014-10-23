@@ -90,7 +90,13 @@
 				_gaq.push(['_trackEvent', eventCategory, eventAction]);
 			}
 		}else{
-			throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+			if(zIsLoggedIn()){
+				if(!newWindow){
+					window.location.href = gotoToURLAfterEvent;
+				}
+			}else{
+				throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+			}
 			//alert("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
 		}
 	}
