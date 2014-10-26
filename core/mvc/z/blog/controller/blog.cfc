@@ -1812,6 +1812,7 @@ this.app_id=10;
 		UPDATE #db.table("blog", request.zos.zcoreDatasource)#  
 		SET blog_views=blog_views+#db.param(1)# 
 		where blog_id = #db.param(form.blog_id)# and 
+		site_id = #db.param(request.zos.globals.id)# and 
 		blog_deleted = #db.param(0)#
 		</cfsavecontent><cfscript>qupdate=db.execute("qupdate");</cfscript>
 		</cfif>
@@ -2026,21 +2027,21 @@ this.app_id=10;
 			<table style="width:100%;"> 
 			<tr>
 			<td style="white-space: nowrap;">Your Name: <span style="color:##FF0000; font-weight:bold"> *</span></td>
-			<td style="width:90%;"><input type="text" name="blog_comment_author" value="<cfif isDefined('request.zsession.blog_comment_author')>#htmleditformat(request.zsession.blog_comment_author)#<cfelse>#htmleditformat(qarticle.blog_comment_author)#</cfif>"  style="width:96%;" /></td>
+			<td style="width:90%;"><input type="text" name="blog_comment_author" value="<cfif isDefined('request.zsession.blog_comment_author')>#htmleditformat(request.zsession.blog_comment_author)#<cfelse>#htmleditformat(application.zcore.functions.zso(form,'blog_comment_author'))#</cfif>"  style="width:96%;" /></td>
 			</tr>
 			<tr>
 			<td style="white-space: nowrap;">Your Email: <span style="color:##FF0000; font-weight:bold"> *</span></td>
-			<td style="width:90%;"><input type="text" name="blog_comment_author_email" value="<cfif isDefined('request.zsession.blog_comment_author_email')>#htmleditformat(request.zsession.blog_comment_author_email)#<cfelse>#htmleditformat(qarticle.blog_comment_author_email)#</cfif>" style="width:96%;" maxlength="50" /></td>
+			<td style="width:90%;"><input type="text" name="blog_comment_author_email" value="<cfif isDefined('request.zsession.blog_comment_author_email')>#htmleditformat(request.zsession.blog_comment_author_email)#<cfelse>#htmleditformat(application.zcore.functions.zso(form,'blog_comment_author_email'))#</cfif>" style="width:96%;" maxlength="50" /></td>
 			</tr>
 			<tr>
 			<td style="white-space: nowrap;">Subject: </td>
-			<td style="width:90%;"><input type="text" name="blog_comment_title" value="#htmleditformat(qarticle.blog_comment_title)#" style="width:96%;" maxlength="100" /></td>
+			<td style="width:90%;"><input type="text" name="blog_comment_title" value="#htmleditformat(application.zcore.functions.zso(form,'blog_comment_title'))#" style="width:96%;" maxlength="100" /></td>
 			</tr>
 			<tr>
 			<td style="white-space: nowrap;vertical-align:top; ">Comments: <span style="color:##FF0000; font-weight:bold"> *</span></td>
 			<td style="width:90%;">
 			<textarea name="blog_comment_text"  style="width:97%; height:200px;" onkeydown="textCounter(document.myForm99.blog_comment_text,document.myForm99.remLen2,1000)" 
-			onkeyup="textCounter(document.myForm99.blog_comment_text,document.myForm99.remLen2,1000)">#htmleditformat(qarticle.blog_comment_text)#</textarea><br />
+			onkeyup="textCounter(document.myForm99.blog_comment_text,document.myForm99.remLen2,1000)">#htmleditformat(application.zcore.functions.zso(form,'blog_comment_text'))#</textarea><br />
 			<input readonly="readonly" type="text" name="remLen2" size="3" maxlength="3" value="1000" /> characters left
 			</td>
 			</tr>

@@ -1333,6 +1333,7 @@ ts.struct=form;
 	var qEdit=0;
 	var db=request.zos.queryObject;
 	application.zcore.functions.zSetPageHelpId("3.7");
+	backupMethod=form.method;
 	this.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
 	application.zcore.siteOptionCom.requireSectionEnabledSetId();
@@ -1348,7 +1349,7 @@ ts.struct=form;
 		blog_tag_deleted = #db.param(0)# and
 		site_id=#db.param(request.zos.globals.id)#
 		</cfsavecontent><cfscript>qEdit=db.execute("qEdit");</cfscript>
-		<cfif form.method EQ 'tagForm'>
+		<cfif backupMethod EQ 'tagEdit'>
 			<h2>Edit Tag: "#qEdit.blog_tag_name#"</h2>
 		<cfelse>
 			<h2>Add Tag</h2>
@@ -1362,7 +1363,7 @@ ts.struct=form;
 		ts=StructNew();
 		ts.name="zMLSSearchForm";
 		ts.ajax=false;
-		if(form.method EQ 'tagAdd'){
+		if(backupMethod EQ 'tagAdd'){
 			newAction="tagInsert";
 		}else{
 			newAction="tagUpdate";

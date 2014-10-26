@@ -34,15 +34,6 @@
 		application.zcore.functions.zMenuClearCache({content=true});
 		variables.queueSortCom.returnJson();
 	}
-	if(application.zcore.user.checkSiteAccess()){
-		writeoutput('<a href="/z/content/admin/content-admin/index">Manage Pages</a> | 
-		<a href="/z/content/admin/permissions/index">Manage Permissions</a>  | 
-		<a href="/z/content/admin/content-admin/import">Import</a>');
-		if(application.zcore.user.checkServerAccess()){
-			writeoutput(' | <a href="/z/content/admin/content-admin/index?forceContentInit=1&amp;rt29=#gettickcount()#">Initialize Content</a>');
-		}
-		writeoutput('<br /><br />');
-	}
 	application.zcore.template.appendTag("meta",'<style type="text/css">
 	/* <![CDATA[ */ .monodrop {
 	font-family:"Lucida Console",Courier,Monospace;
@@ -521,7 +512,7 @@
 	application.zcore.siteOptionCom.setIdHiddenField();
 
 	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
-	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
+	tabCom.setTabs(["Basic","Navigation/Layout", "Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-content-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession, 'content_return'&form.content_id); 
 	if(cancelURL EQ ""){
@@ -1145,113 +1136,10 @@
 	</tr>
 	</table>
 	#tabCom.endFieldSet()#
-	#tabCom.beginFieldSet("Advanced")# 
+	#tabCom.beginFieldSet("Navigation/Layout")# 
 	<table style="width:100%; border-spacing:0px;" class="table-list">
-	<tr> 
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("META Title","member.content.edit content_metatitle")#</th>
-		<td style="vertical-align:top; ">
-			<input type="text" name="content_metatitle" value="#HTMLEditFormat(form.content_metatitle)#" maxlength="150" size="100" /><br /> (Meta title is optional and overrides the &lt;TITLE&gt; HTML element to be different from the visible page title.)
-		</td>
-	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("Subheading","member.content.edit content_name2")#</th>
-		<td style="vertical-align:top; ">
-			<input type="text" name="content_name2" value="#HTMLEditFormat(form.content_name2)#" maxlength="150" size="100" />
-		</td>
-	</tr>
-	<tr>
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("Menu Title","member.content.edit content_menu_title")#</th>
-		<td style="vertical-align:top; ">
-			<input type="text" name="content_menu_title" value="#HTMLEditFormat(form.content_menu_title)#" maxlength="50" size="50" /> (Overrides title in some menus)
-		</td>
-	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("External Link","member.content.edit content_url_only")#:</th>
-		<td style="vertical-align:top; ">
-			<input type="text" name="content_url_only" value="#HTMLEditFormat(form.content_url_only)#" size="100" /> <br />
-			Note: External Link is a way to link to another page without duplicating content.  All other fields will not be displayed if you use this field.
-		</td>
-	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("Hide Full Size Image?","member.content.edit content_photo_hide_image")#</th>
-		<td style="vertical-align:top; ">
-			<input type="radio" name="content_photo_hide_image" value="1" <cfif application.zcore.functions.zso(form, 'content_photo_hide_image') EQ 1 or application.zcore.functions.zso(form, 'content_photo_hide_image') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
-			<input type="radio" name="content_photo_hide_image" value="0" <cfif application.zcore.functions.zso(form, 'content_photo_hide_image') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
-		</td>
-	</tr>
-        <tr>
-        <th>Thumbnail Image Size:</th>
-        <td>
-	Leave as zero to inherit default size<br />
-		Width: <input type="text" name="content_thumbnail_width" value="#htmleditformat(form.content_thumbnail_width)#" /> 
-		Height: <input type="text" name="content_thumbnail_height" value="#htmleditformat(form.content_thumbnail_height)#" /> 
-		Crop: 
-		<cfscript>
-		ts = StructNew();
-		ts.name = "content_thumbnail_crop";
-		ts.radio=true;
-		ts.separator=" ";
-		ts.listValuesDelimiter="|";
-		ts.listLabelsDelimiter="|";
-		ts.listLabels="Yes|No";
-		ts.listValues="1|0";
-		application.zcore.functions.zInput_Checkbox(ts);
-		</cfscript> (Default is 250x250, uncropped).</td>
-        </tr>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.content.edit content_slideshow_id")#</th>
-		<td style="vertical-align:top; ">
-			<cfscript>
-			db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-			WHERE site_id = #db.param(request.zos.globals.id)# and 
-			slideshow_deleted = #db.param(0)#
-			ORDER BY slideshow_name ASC";
-			qslide=db.execute("qslide");
-			selectStruct = StructNew();
-			selectStruct.name = "content_slideshow_id";
-			selectStruct.selectedValues=form.content_slideshow_id;
-			selectStruct.query = qslide;
-			selectStruct.selectLabel="-- Select --";
-			selectStruct.queryLabelField = "slideshow_name";
-			selectStruct.queryValueField = "slideshow_id";
-			application.zcore.functions.zInputSelectBox(selectStruct);
-			</cfscript> | 
-			<a href="##" onclick="if(document.getElementById('content_slideshow_id').selectedIndex != 0){ window.open('/z/admin/slideshow/edit?slideshow_id='+document.getElementById('content_slideshow_id').options[document.getElementById('content_slideshow_id').selectedIndex].value); } return false; " rel="external">Edit selected slideshow</a> | 
-			<a href="/z/admin/slideshow/add" rel="external" onclick="window.open(this.href); return false;">Create a slideshow</a>
-		</td>
-	</tr>
-	<tr> 
-	<th style="vertical-align:top; ">
-		#application.zcore.functions.zOutputHelpToolTip("Included Page IDs","member.content.edit content_include_listings")#</th>
-	<td style="vertical-align:top; ">
-		<input type="text" name="content_include_listings" value="#HTMLEditFormat(form.content_include_listings)#" size="15" /> Comma separated list of other listings
-	</td>
-	</tr>
+
 	<cfif featuredListingParentId EQ 0 or (qParent.recordcount EQ 0 or qParent.content_featured_listing_parent_page NEQ 1)>
-		<cfif application.zcore.app.siteHasApp("listing")>
-			<tr>
-			<th style="vertical-align:top; ">
-				#application.zcore.functions.zOutputHelpToolTip("Sub-Page Sort Method","member.content.edit content_child_sorting")#
-			</th>
-			<td style="vertical-align:top; ">
-				Pages or listings that are associated with this page will automatically sort according to the selected method.<br />
-				<input type="radio" name="content_child_sorting" value="0" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 0>checked="checked"</cfif> /> Manually Sorted <input type="radio" name="content_child_sorting" value="1" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 1>checked="checked"</cfif> />  Price Descending <input type="radio" name="content_child_sorting" value="2" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 2>checked="checked"</cfif> /> Price Ascending <input type="radio" name="content_child_sorting" value="3" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 3>checked="checked"</cfif> />  Alphabetic</td>
-			</tr>
-		<cfelse>
-			<tr>
-			<th style="vertical-align:top; ">
-				#application.zcore.functions.zOutputHelpToolTip("Sub-Page Sort Method","member.content.edit content_child_sorting")#
-			</th>
-			<td style="vertical-align:top; ">
-				Pages or listings that are associated with this page will automatically sort according to the selected method.<br />
-				<input type="radio" name="content_child_sorting" value="0" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 0>checked="checked"</cfif> /> Manually Sorted <input type="radio" name="content_child_sorting" value="3" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 3>checked="checked"</cfif> />  Alphabetic</td>
-			</tr>
-		</cfif>
 		<cfscript>
 		db.sql="SELECT *, if(content_user_group_access=#db.param('')# or content_parent_id =#db.param(0)#,#db.param(0)#,#db.param(1)#) groupAccessSet  
 		FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -1369,8 +1257,88 @@
 			</cfscript> <br />(Note: If you select the "Find/replace" options, please insert %child_links% in the body text field 
 		WHERE you want the links to appear.)</td>
 		</tr>
+		<cfif application.zcore.app.siteHasApp("listing")>
+			<tr>
+			<th style="vertical-align:top; ">
+				#application.zcore.functions.zOutputHelpToolTip("Sub-Page Sort Method","member.content.edit content_child_sorting")#
+			</th>
+			<td style="vertical-align:top; ">
+				Pages or listings that are associated with this page will automatically sort according to the selected method.<br />
+				<input type="radio" name="content_child_sorting" value="0" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 0>checked="checked"</cfif> /> Manually Sorted <input type="radio" name="content_child_sorting" value="1" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 1>checked="checked"</cfif> />  Price Descending <input type="radio" name="content_child_sorting" value="2" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 2>checked="checked"</cfif> /> Price Ascending <input type="radio" name="content_child_sorting" value="3" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 3>checked="checked"</cfif> />  Alphabetic</td>
+			</tr>
+		<cfelse>
+			<tr>
+			<th style="vertical-align:top; ">
+				#application.zcore.functions.zOutputHelpToolTip("Sub-Page Sort Method","member.content.edit content_child_sorting")#
+			</th>
+			<td style="vertical-align:top; ">
+				Pages or listings that are associated with this page will automatically sort according to the selected method.<br />
+				<input type="radio" name="content_child_sorting" value="0" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 0>checked="checked"</cfif> /> Manually Sorted <input type="radio" name="content_child_sorting" value="3" style="border:none; background:none;" <cfif application.zcore.functions.zso(form, 'content_child_sorting',true) EQ 3>checked="checked"</cfif> />  Alphabetic</td>
+			</tr>
+		</cfif>
 	<cfelse>
 		<input type="hidden" name="content_parent_id" value="#local.cpi10#" />
+	</cfif>
+	<tr> 
+	<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Hide Link?","member.content.edit content_hide_link")#</th>
+	<td style="vertical-align:top; ">
+		<input type="radio" name="content_hide_link" value="1" <cfif application.zcore.functions.zso(form, 'content_hide_link') EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes, remove from all site navigation <input type="radio" name="content_hide_link" value="0" <cfif application.zcore.functions.zso(form, 'content_hide_link',true) EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No <br />
+	</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Show on site map?","member.content.edit content_show_site_map")#</th>
+		<td style="vertical-align:top; ">
+			<input type="radio" name="content_show_site_map" value="1" <cfif application.zcore.functions.zso(form, 'content_show_site_map') EQ 1 or application.zcore.functions.zso(form, 'content_show_site_map') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
+			<input type="radio" name="content_show_site_map" value="0" <cfif application.zcore.functions.zso(form, 'content_show_site_map') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
+		</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("Hide Full Size Image?","member.content.edit content_photo_hide_image")#</th>
+		<td style="vertical-align:top; ">
+			<input type="radio" name="content_photo_hide_image" value="1" <cfif application.zcore.functions.zso(form, 'content_photo_hide_image') EQ 1 or application.zcore.functions.zso(form, 'content_photo_hide_image') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
+			<input type="radio" name="content_photo_hide_image" value="0" <cfif application.zcore.functions.zso(form, 'content_photo_hide_image') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
+		</td>
+	</tr>
+        <tr>
+        <th>Thumbnail Image Size:</th>
+        <td>
+	Leave as zero to inherit default size<br />
+		Width: <input type="text" name="content_thumbnail_width" value="#htmleditformat(form.content_thumbnail_width)#" /> 
+		Height: <input type="text" name="content_thumbnail_height" value="#htmleditformat(form.content_thumbnail_height)#" /> 
+		Crop: 
+		<cfscript>
+		ts = StructNew();
+		ts.name = "content_thumbnail_crop";
+		ts.radio=true;
+		ts.separator=" ";
+		ts.listValuesDelimiter="|";
+		ts.listLabelsDelimiter="|";
+		ts.listLabels="Yes|No";
+		ts.listValues="1|0";
+		application.zcore.functions.zInput_Checkbox(ts);
+		</cfscript> (Default is 250x250, uncropped).</td>
+        </tr>
+	<cfif application.zcore.app.getAppData("content").optionStruct.content_config_contact_links EQ 1>
+		<tr> 
+			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Enable Contact Links?","member.content.edit content_disable_contact_links")#</th>
+			<td style="vertical-align:top; ">
+				<input type="radio" name="content_disable_contact_links" value="1" <cfif application.zcore.functions.zso(form, 'content_disable_contact_links') EQ 1 or application.zcore.functions.zso(form, 'content_disable_contact_links') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
+				<input type="radio" name="content_disable_contact_links" value="0" <cfif application.zcore.functions.zso(form, 'content_disable_contact_links') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No (Note, if your text says "Email" "Call" or "Contact us", they will be made into clickable links if you select "Yes".)
+		</td>
+		</tr>
+	</cfif>
+
+	<cfif application.zcore.user.checkServerAccess() and structkeyexists(request.zos,'listing')>
+		<tr> 
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("Featured listing page?","member.content.edit content_featured_listing_parent_page")#</th>
+		<td style="vertical-align:top; ">
+			<input type="radio" name="content_featured_listing_parent_page" value="1" <cfif application.zcore.functions.zso(form, 'content_featured_listing_parent_page') EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
+			<input type="radio" name="content_featured_listing_parent_page" value="0" <cfif application.zcore.functions.zso(form, 'content_featured_listing_parent_page',true) EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No <br />
+			Note: If you select Yes, no other page on the site can be used to create new listings.  This will add an "Add Listing" link to the Real Estate manager menu to simplify adding listings.
+		</td>
+		</tr>
 	</cfif>
 	<tr>
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Template","member.content.edit content_template")#</th>
@@ -1391,13 +1359,100 @@
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript> (Leave blank to inherit default template)
 		</td>
+	</tr> 
+	</table>
+	#tabCom.endFieldSet()#
+	#tabCom.beginFieldSet("Advanced")# 
+	<table style="width:100%; border-spacing:0px;" class="table-list">
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.content.edit content_unique_name")#</th>
+		<td style="vertical-align:top; ">WARNING: DO NOT EDIT THIS FIELD!<br />
+			<input type="text" name="content_unique_name" value="#form.content_unique_name#" size="100" /></td>
 	</tr>
-	<cfif request.zos.globals.domain EQ 'http://www.hemihaines.com' or request.zos.globals.domain EQ 'http://www.hemihaines.com.'&request.zos.testDomain>
-		<tr><th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Engine Name","member.content.edit content_engine_name")#</th>
-		<td><input type="text" name="content_engine_name" value="#HTMLEditFormat(form.content_engine_name)#" size="10" /></td>
-		</tr>
-	</cfif>
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("URL Rewriting","member.content.edit content_system_url")#</th>
+		<td style="vertical-align:top; ">
+			<input type="radio" name="content_system_url" value="0" <cfif application.zcore.functions.zso(form, 'content_system_url') EQ 0 or application.zcore.functions.zso(form, 'content_system_url') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> On 
+			<input type="radio" name="content_system_url" value="1" <cfif application.zcore.functions.zso(form, 'content_system_url') EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Off (Turn off to allow system urls to continue functioning).
+		</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("META Title","member.content.edit content_metatitle")#</th>
+		<td style="vertical-align:top; ">
+			<input type="text" name="content_metatitle" value="#HTMLEditFormat(form.content_metatitle)#" maxlength="150" size="100" /><br /> (Meta title is optional and overrides the &lt;TITLE&gt; HTML element to be different from the visible page title.)
+		</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.content.edit content_metakey")#</th>
+		<td style="vertical-align:top; "> 
+			<textarea name="content_metakey" rows="5" cols="60">#form.content_metakey#</textarea>
+		</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Meta Description","member.content.edit content_metadesc")#</th>
+		<td style="vertical-align:top; "> 
+			<textarea name="content_metadesc" cols="60" rows="5">#form.content_metadesc#</textarea>
+		</td>
+	</tr>		
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Meta Code","member.content.edit content_metacode")#</th>
+		<td style="vertical-align:top; "> 
+			<textarea name="content_metacode" cols="60" rows="5">#form.content_metacode#</textarea>
+		</td>
+	</tr>	
 
+	<tr> 
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("Subheading","member.content.edit content_name2")#</th>
+		<td style="vertical-align:top; ">
+			<input type="text" name="content_name2" value="#HTMLEditFormat(form.content_name2)#" maxlength="150" size="100" />
+		</td>
+	</tr>
+	<tr>
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("Menu Title","member.content.edit content_menu_title")#</th>
+		<td style="vertical-align:top; ">
+			<input type="text" name="content_menu_title" value="#HTMLEditFormat(form.content_menu_title)#" maxlength="50" size="50" /> (Overrides title in some menus)
+		</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("External Link","member.content.edit content_url_only")#:</th>
+		<td style="vertical-align:top; ">
+			<input type="text" name="content_url_only" value="#HTMLEditFormat(form.content_url_only)#" size="100" /> <br />
+			Note: External Link is a way to link to another page without duplicating content.  All other fields will not be displayed if you use this field.
+		</td>
+	</tr>
+	<tr> 
+		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.content.edit content_slideshow_id")#</th>
+		<td style="vertical-align:top; ">
+			<cfscript>
+			db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			slideshow_deleted = #db.param(0)#
+			ORDER BY slideshow_name ASC";
+			qslide=db.execute("qslide");
+			selectStruct = StructNew();
+			selectStruct.name = "content_slideshow_id";
+			selectStruct.selectedValues=form.content_slideshow_id;
+			selectStruct.query = qslide;
+			selectStruct.selectLabel="-- Select --";
+			selectStruct.queryLabelField = "slideshow_name";
+			selectStruct.queryValueField = "slideshow_id";
+			application.zcore.functions.zInputSelectBox(selectStruct);
+			</cfscript> | 
+			<a href="##" onclick="if(document.getElementById('content_slideshow_id').selectedIndex != 0){ window.open('/z/admin/slideshow/edit?slideshow_id='+document.getElementById('content_slideshow_id').options[document.getElementById('content_slideshow_id').selectedIndex].value); } return false; " rel="external">Edit selected slideshow</a> | 
+			<a href="/z/admin/slideshow/add" rel="external" onclick="window.open(this.href); return false;">Create a slideshow</a>
+		</td>
+	</tr>
+	<tr> 
+	<th style="vertical-align:top; ">
+		#application.zcore.functions.zOutputHelpToolTip("Included Page IDs","member.content.edit content_include_listings")#</th>
+	<td style="vertical-align:top; ">
+		<input type="text" name="content_include_listings" value="#HTMLEditFormat(form.content_include_listings)#" size="15" /> Comma separated list of other listings
+	</td>
+	</tr>
 	<tr>
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Hide Modal Windows?","member.content.edit content_hide_modal")#</th>
 		<td style="vertical-align:top; ">
@@ -1428,58 +1483,6 @@
 			</td>
 		</tr>
 	</cfif>
-	<cfif application.zcore.app.getAppData("content").optionStruct.content_config_contact_links EQ 1>
-		<tr> 
-			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Enable Contact Links?","member.content.edit content_disable_contact_links")#</th>
-			<td style="vertical-align:top; ">
-				<input type="radio" name="content_disable_contact_links" value="1" <cfif application.zcore.functions.zso(form, 'content_disable_contact_links') EQ 1 or application.zcore.functions.zso(form, 'content_disable_contact_links') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
-				<input type="radio" name="content_disable_contact_links" value="0" <cfif application.zcore.functions.zso(form, 'content_disable_contact_links') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No (Note, if your text says "Email" "Call" or "Contact us", they will be made into clickable links if you select "Yes".)
-		</td>
-		</tr>
-	</cfif>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.content.edit content_metakey")#</th>
-		<td style="vertical-align:top; "> 
-			<textarea name="content_metakey" rows="5" cols="60">#form.content_metakey#</textarea>
-		</td>
-	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Meta Description","member.content.edit content_metadesc")#</th>
-		<td style="vertical-align:top; "> 
-			<textarea name="content_metadesc" cols="60" rows="5">#form.content_metadesc#</textarea>
-		</td>
-	</tr>		
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Meta Code","member.content.edit content_metacode")#</th>
-		<td style="vertical-align:top; "> 
-			<textarea name="content_metacode" cols="60" rows="5">#form.content_metacode#</textarea>
-		</td>
-	</tr>	
-
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.content.edit content_unique_name")#</th>
-		<td style="vertical-align:top; ">WARNING: DO NOT EDIT THIS FIELD!<br />
-			<input type="text" name="content_unique_name" value="#form.content_unique_name#" size="100" /></td>
-	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("URL Rewriting","member.content.edit content_system_url")#</th>
-		<td style="vertical-align:top; ">
-			<input type="radio" name="content_system_url" value="0" <cfif application.zcore.functions.zso(form, 'content_system_url') EQ 0 or application.zcore.functions.zso(form, 'content_system_url') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> On 
-			<input type="radio" name="content_system_url" value="1" <cfif application.zcore.functions.zso(form, 'content_system_url') EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Off (Turn off to allow system urls to continue functioning).
-		</td>
-	</tr>
-
-	<cfif application.zcore.user.checkServerAccess() and structkeyexists(request.zos,'listing')>
-		<tr> 
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("Featured listing page?","member.content.edit content_featured_listing_parent_page")#</th>
-		<td style="vertical-align:top; ">
-			<input type="radio" name="content_featured_listing_parent_page" value="1" <cfif application.zcore.functions.zso(form, 'content_featured_listing_parent_page') EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
-			<input type="radio" name="content_featured_listing_parent_page" value="0" <cfif application.zcore.functions.zso(form, 'content_featured_listing_parent_page',true) EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No <br />
-			Note: If you select Yes, no other page on the site can be used to create new listings.  This will add an "Add Listing" link to the Real Estate manager menu to simplify adding listings.
-		</td>
-		</tr>
-	</cfif>
 	<tr> 
 	<th style="vertical-align:top; ">
 		#application.zcore.functions.zOutputHelpToolTip("Insert<br />Advanced Code","member.content.edit content_html_text")#</th>
@@ -1490,12 +1493,6 @@
 	</td>
 	</tr>
 	
-	<tr> 
-	<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Hide Link?","member.content.edit content_hide_link")#</th>
-	<td style="vertical-align:top; ">
-		<input type="radio" name="content_hide_link" value="1" <cfif application.zcore.functions.zso(form, 'content_hide_link') EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes, remove from all site navigation <input type="radio" name="content_hide_link" value="0" <cfif application.zcore.functions.zso(form, 'content_hide_link',true) EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No <br />
-	</td>
-	</tr>
 	<cfif application.zcore.user.checkSiteAccess()>
 		<tr> 
 			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Lock content?","member.content.edit content_locked")#</th>
@@ -1510,13 +1507,6 @@
 			</td>
 		</tr>
 	</cfif>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Show on site map?","member.content.edit content_show_site_map")#</th>
-		<td style="vertical-align:top; ">
-			<input type="radio" name="content_show_site_map" value="1" <cfif application.zcore.functions.zso(form, 'content_show_site_map') EQ 1 or application.zcore.functions.zso(form, 'content_show_site_map') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
-			<input type="radio" name="content_show_site_map" value="0" <cfif application.zcore.functions.zso(form, 'content_show_site_map') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
-		</td>
-	</tr>
 	<tr>
 		<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Custom Fields","member.content.edit content_site_option_app_id")#</th>
 		<td>
@@ -1853,7 +1843,36 @@
 	}else if(isDefined('request.zsession.showinactive') EQ false){
 		request.zsession.showinactive=1;
 	}
+
+
+
+	linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
+
+	if(structkeyexists(linkStruct, "Content Manager")){
+		childStruct=linkStruct["Content Manager"].children;
+		echo('<h2>Content Manager</h2> <div style="float:left; margin-bottom:10px;width:100%;">');
+		arrKey=structkeyarray(childStruct);
+		arraySort(arrKey, "text", "asc");
+		for(i=1;i LTE arraylen(arrKey);i++){
+			i2=arrKey[i];
+			if(i NEQ 1){
+				echo(' | ');
+			}
+			echo('<a href="#childStruct[i2].link#">'&i2&'</a>');//style="display:block; padding:1%; background-color:##F2F2F2; text-decoration:none; margin-right:5px; margin-bottom:5px; color:##000; border:1px solid ##CCC; float:left; border-radius:4px;"
+		}
+		echo('</div>');
+	}
+
 	writeoutput('<h2>Manage Pages</h2>');
+	if(application.zcore.user.checkGroupAccess("administrator")){
+		writeoutput('<a href="/z/content/admin/content-admin/index">Manage Pages</a> | 
+		<a href="/z/content/admin/permissions/index">Manage Permissions</a>  | 
+		<a href="/z/content/admin/content-admin/import">Import</a>');
+		if(application.zcore.user.checkServerAccess()){
+			writeoutput(' | <a href="/z/content/admin/content-admin/index?forceContentInit=1&amp;rt29=#gettickcount()#">Initialize Content</a>');
+		}
+		writeoutput('<br /><br />');
+	}
 	if(form.content_parent_id NEQ 0){
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(form.content_parent_id)# and 
