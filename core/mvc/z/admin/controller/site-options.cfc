@@ -2903,7 +2903,9 @@ Define this function in another CFC to override the default email format
 							writeoutput(' <a href="'&application.zcore.functions.zURLAppend(tempLink, "zpreview=1")&'" target="_blank">Preview</a> | ');
 						}
 					}
-					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
+					if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
+						writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
+					}
 					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Edit</a> | ');
 					if(row.site_option_group_enable_section EQ 1){
 						echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> | ');

@@ -157,13 +157,16 @@
 		if(arguments.navStruct.index EQ 0){
 			writeoutput("<td style=""text-align:left; width:95px; "">&nbsp;</td>");
 		}
-		/*writeoutput("before:"&before&"<br>");
+		/*if(Request.zos.isdeveloper){
+
+		writeoutput("before:"&before&"<br>");
 		writeoutput("beforeadjust:"&beforeadjust&"<br>");
 		writeoutput("indexHalfButton:"&indexHalfButton&"<br>");
 		writeoutput("maxButton:"&maxButton&"<br>");
 		writeoutput("last:"&last&"<br>");
-		writeoutput("arguments.navStruct.index:"&arguments.navStruct.index&"<br>");*/
-		if((before GT 0 or arguments.navStruct.index NEQ 0) and arguments.navStruct.count GT arguments.navStruct.perpage){
+		writeoutput("arguments.navStruct.index:"&arguments.navStruct.index&"<br>");
+		}*/
+		if((before GT 0 and arguments.navStruct.index NEQ 0) and arguments.navStruct.count GT arguments.navStruct.perpage){
 			if(arguments.navStruct.ses){
 				if(arguments.navStruct.parentIndexPosition NEQ false){
 					tempURL = application.zcore.functions.zSesUpdate(arguments.navStruct.url, arguments.navStruct.parentIndexPosition, "1")&"1/";

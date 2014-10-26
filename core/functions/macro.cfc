@@ -1107,6 +1107,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	<cfscript>
 	var local=structnew();
 	var qU="";
+	arguments.url=replace(replace(arguments.url, chr(10), '', 'all'), chr(13), '', 'all');
 	</cfscript>
     <cfif structkeyexists(request.zos,'znoredirect')>
     <cfthrow type="z301Redirect" message="Redirecting to #arguments.url#">
@@ -1138,6 +1139,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	<cfscript>
 	var local=structnew();
 	var qU="";
+	arguments.url=replace(replace(arguments.url, chr(10), '', 'all'), chr(13), '', 'all');
 	</cfscript>
     <cfif structkeyexists(request.zos,'znoredirect')>
     <cfthrow type="zRedirect" message="Redirecting to #arguments.url#">
