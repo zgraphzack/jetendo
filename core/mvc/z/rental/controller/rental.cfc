@@ -23,6 +23,7 @@
 	<cfargument name="indexeverything" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
@@ -66,7 +67,7 @@
 				}else{
 					ds.search_url="/"&application.zcore.functions.zURLEncode(row.rental_name,"-")&"-"&row.rental_config_rental_url_id&"-"&row.rental_id&".html";
 				}
-				ds.search_table_id='rental-'&row.rental_id;
+				ds.search_table_id='rental-page-'&row.rental_id;
 				ds.app_id=this.app_id;
 				ds.search_content_datetime=request.zos.mysqlnow;
 				ds.site_id=row.site_id;
@@ -81,8 +82,8 @@
 		db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
 		site_id <> #db.param(-1)# and 
 		app_id = #db.param(this.app_id)# and 
-		search_table_id LIKE #db.param("rental-%")# and 
-		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
+		search_table_id LIKE #db.param("rental-page-%")# and 
+		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
 	}
 	</cfscript>
@@ -111,6 +112,7 @@
 	db=request.zos.queryObject;
 	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	offset=0;
 	limit=30;
 	while(true){
@@ -164,7 +166,7 @@
 		site_id <> #db.param(-1)# and 
 		app_id = #db.param(this.app_id)# and 
 		search_table_id LIKE #db.param("rental-category-%")# and 
-		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
+		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
 	}
 	</cfscript>

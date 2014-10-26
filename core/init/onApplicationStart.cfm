@@ -279,6 +279,8 @@
 	ts.forceUserUpdateSession={};
 	
 	ts.appComPathStruct=structnew();
+	// 9 is a placeholder for documentation search.  It is not a full featured plugin yet.
+	//ts.appComPathStruct[9]={name:"help", cfcPath:"zcorerootmapping.mvc.z.admin.controller.help", cache:true};
 	ts.appComPathStruct[10]={name:"blog", cfcPath:"zcorerootmapping.mvc.z.blog.controller.blog", cache:true};
 	ts.appComPathStruct[11]={name:"listing", cfcPath:"zcorerootmapping.mvc.z.listing.controller.listing", cache:false};
 	ts.appComPathStruct[12]={name:"content", cfcPath:"zcorerootmapping.mvc.z.content.controller.content", cache:true};

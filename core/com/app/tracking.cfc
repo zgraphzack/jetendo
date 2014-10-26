@@ -164,7 +164,8 @@ USER WAS PERMANENTLY BLOCKED.');
 			if(t4.track_user_email NEQ ""){
 				db.sql="select * from #db.table("track_user", request.zos.zcoreDatasource)# track_user 
 				where track_user_email = #db.param(t4.track_user_email)# and 
-				site_id=#db.param(request.zos.globals.id)#";	
+				site_id=#db.param(request.zos.globals.id)# and 
+				track_user_deleted=#db.param(0)#";	
 				local.qUser=db.execute("qUser");
 				if(local.qUser.recordcount NEQ 0){
 					t4.track_user_parent_id=qUser.track_user_id;

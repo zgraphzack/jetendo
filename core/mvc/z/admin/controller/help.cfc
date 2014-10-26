@@ -19,9 +19,82 @@
 			<li><a href="/z/admin/manual/view/0/index.html">Full Documentation</a></li>
 			<li><a href="/z/admin/help/incontext">In-context Help Features</a></li>
 		</ul>
+		#searchForm()#
 	</div>
 </cffunction>
 
+<cffunction name="searchForm" access="private" localmode="modern">
+
+	<h1>Documentation Search</h1>
+	<form action="/z/admin/help/search" method="get">
+	<p><input type="text" name="searchtext" value="#application.zcore.functions.zso(form, 'searchtext')#" style="width:70%;" /> <input type="submit" name="submit112" value="Search" /></p>
+	</form>
+</cffunction>
+	
+
+<cffunction name="search" access="remote" localmode="modern" roles="member">
+	<cfscript>
+	form.zindex=application.zcore.functions.zso(form, 'zindex', true, 1);
+	form.searchtext=application.zcore.functions.zso(form, 'searchtext');
+	db=request.zos.queryObject;
+	perpage=10;
+	//echo(application.zcore.app.siteHasApp("blog"));
+	//writedump(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct);
+
+	db.sql="select * from #db.table("search", request.zos.zcoreDatasource)# WHERE 
+	app_id=#db.param(9)# and 
+	search_fulltext LIKE #db.param('%'&form.searchtext&'%')# and 
+	site_id IN (#db.param(0)#, #db.param(request.zos.globals.id)#) and 
+	search_deleted=#db.param(0)#";
+	if(structkeyexists(request.zsession, 'zManualStruct')){
+		idlist="'global-documentation-"&structkeylist(request.zsession.zManualStruct.idstruct, "','global-documentation-")&"'"; 
+		db.sql&=" and search_table_id IN (#db.trustedSQL(idlist)#) ";
+	}
+	db.sql&=" LIMIT #db.param((form.zindex-1)*perpage)#, #db.param(perpage)#";
+	qSearch=db.execute("qSearch");
+
+	db.sql="select count(search_id) count from #db.table("search", request.zos.zcoreDatasource)# WHERE 
+	app_id=#db.param(9)# and 
+	search_fulltext LIKE #db.param('%'&form.searchtext&'%')# and 
+	site_id IN (#db.param(0)#, #db.param(request.zos.globals.id)#) and 
+	search_deleted=#db.param(0)#";
+	if(structkeyexists(request.zsession, 'zManualStruct')){
+		idlist="'global-documentation-"&structkeylist(request.zsession.zManualStruct.idstruct, "','global-documentation-")&"'"; 
+		db.sql&=" and search_table_id IN (#db.trustedSQL(idlist)#) ";
+	}
+	qCount=db.execute("qCount");
+ 
+	searchStruct = StructNew();  
+	searchStruct.indexName = 'zIndex'; 
+	searchStruct.url = "/z/admin/help/search?searchtext=#urlencodedformat(form.searchtext)#";  
+	searchStruct.buttons = 7; 
+	searchStruct.index=form.zindex;
+	searchStruct.count=qCount.count; 
+	searchStruct.perpage = perpage;	
+	searchNav = application.zcore.functions.zSearchResultsNav(searchStruct);
+
+	searchForm();
+
+	echo('<h2>Search Results</h2>');
+	if(qSearch.recordcount EQ 0){
+		echo('No matches found.');
+	}else{
+		if(qCount.count GT perpage){
+			echo(searchNav);
+		}
+		for(row in qSearch){
+			echo('<div style="width:96%; border-bottom:1px solid ##CCC; padding:2%; float:left;">
+				<div style="width:100%; float:left; padding-bottom:10px; font-size:18px; line-height:21px;"><a href="#row.search_url#">#row.search_title#</a></div>
+				<div style="font-size:14px; line-height:18px;">#row.search_summary#</div>
+			</div>');
+		}
+		if(qCount.count GT perpage){
+			echo(searchNav);
+		}
+	}
+	</cfscript>
+</cffunction>
+	
 <cffunction name="quickStart" access="remote" localmode="modern" roles="member">
 	<cfscript>
 	init();

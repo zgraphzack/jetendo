@@ -1418,6 +1418,7 @@ this.app_id=10;
 	<cfargument name="indexEverything" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
@@ -1479,7 +1480,7 @@ this.app_id=10;
 		app_id = #db.param(this.app_id)# and 
 		search_deleted = #db.param(0)# and
 		search_table_id LIKE #db.param("blog-article-%")# and 
-		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
+		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
 	}
 	</cfscript>
@@ -1491,6 +1492,7 @@ this.app_id=10;
 	<cfargument name="indexeverything" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
@@ -1546,7 +1548,7 @@ this.app_id=10;
 		app_id = #db.param(this.app_id)# and 
 		search_deleted = #db.param(0)# and
 		search_table_id LIKE #db.param("blog-tag-%")# and 
-		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
+		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
 	}
 	</cfscript>
@@ -1558,6 +1560,7 @@ this.app_id=10;
 	<cfargument name="indexeverything" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
@@ -1613,7 +1616,7 @@ this.app_id=10;
 		search_deleted = #db.param(0)# and
 		app_id = #db.param(this.app_id)# and 
 		search_table_id LIKE #db.param("blog-category-%")# and 
-		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
+		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
 	}
 	</cfscript>

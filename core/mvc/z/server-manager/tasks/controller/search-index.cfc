@@ -9,6 +9,10 @@
 	}
 	request.ignoreSlowScript=true;
 
+	manualCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.manual");
+	manualCom.reindexDocumentation();
+ 
+
 	local.searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
 	local.searchIndexCom.searchReindex();
 

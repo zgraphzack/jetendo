@@ -98,6 +98,63 @@ zdoc css style documentation
          
     <!--- make this personalized to each user based on request.zsession.user.limitManagerFeatureStruct --->
 	<cfscript>
+	arrS=getManualArray(showAll);
+
+	/*
+	db=request.zos.queryObject;
+	db.sql="SELECT site_option_group.* 
+	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group  
+	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_parent_id = #db.param('0')# and 
+	site_option_group_deleted = #db.param(0)# and 
+	site_option_group_type =#db.param('1')# and 
+	site_option_group.site_option_group_disable_admin=#db.param(0)# 
+	ORDER BY site_option_group.site_option_group_display_name ASC ";
+	qGroup=db.execute("qGroup"); 
+	if(qGroup.recordcount NEQ 0){
+		ms["Custom"]={ parent:'', label: "Custom"};
+		// loop the groups
+		// get the code from manageoptions"
+		// site_option_group_disable_admin=0
+		for(row in qGroup){
+			ms["Custom: "&row.site_option_group_display_name]={ parent:'Custom', label:chr(9)&row.site_option_group_display_name&chr(10)};
+		}
+	}*/
+	arrParent=arraynew(1);
+	for(i=1;i LTE arraylen(arrS);i++){
+		ns=arrS[i];
+		spaceCount=refind("[0-9]", trim(ns.id));
+		if(spaceCount-1){ 
+			ns.parentId=arrParent[spaceCount-1];
+		}else{
+			ns.parentId="";
+		}
+		if(not structkeyexists(ns, 'target')){
+			ns.target="_self";
+		}
+		ns.id=replace(ns.id, "_", "", "all");
+		ts.idStruct[ns.id]=ns;
+		arrParent[spaceCount]=ns.id;
+		if(not structkeyexists(ts.parentIdStruct, ns.parentId)){
+			ts.parentIdStruct[ns.parentId]=[];
+		}
+		arrayappend(ts.parentIdStruct[ns.parentId], ns.id);
+	}
+	if(application.zcore.user.checkGroupAccess("user")){
+		request.zsession.zManualStruct=ts;
+	}else{
+		application.zcore.manualStruct=ts;
+	}
+	request.zos.siteManagerManual=ts;
+	
+	</cfscript>
+</cffunction>
+
+<cffunction name="getManualArray" access="public" localmode="modern">
+	<cfargument name="showAll" type="boolean" required="yes">
+	<cfscript>
+	showAll=arguments.showAll;
+
 	arrS=[];
 	arrayAppend(arrS, { id:"0", url:"/index.html", title:"Documentation"});
 	arrayAppend(arrS, { id:"_1", url:"/site-manager-dashboard.html", title:"Site Manager Dashboard"});
@@ -404,53 +461,7 @@ zdoc css style documentation
 		arrayAppend(arrS, { id:"___9.3.1", url:"/wordpress-integration.html", title:"Wordpress Integration with SSI and Proxy"});
 		arrayAppend(arrS, { id:"__9.4", url:"/security.html", title:"Security"});
 	}
-	/*
-	db=request.zos.queryObject;
-	db.sql="SELECT site_option_group.* 
-	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group  
-	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
-	site_option_group_parent_id = #db.param('0')# and 
-	site_option_group_deleted = #db.param(0)# and 
-	site_option_group_type =#db.param('1')# and 
-	site_option_group.site_option_group_disable_admin=#db.param(0)# 
-	ORDER BY site_option_group.site_option_group_display_name ASC ";
-	qGroup=db.execute("qGroup"); 
-	if(qGroup.recordcount NEQ 0){
-		ms["Custom"]={ parent:'', label: "Custom"};
-		// loop the groups
-		// get the code from manageoptions"
-		// site_option_group_disable_admin=0
-		for(row in qGroup){
-			ms["Custom: "&row.site_option_group_display_name]={ parent:'Custom', label:chr(9)&row.site_option_group_display_name&chr(10)};
-		}
-	}*/
-	arrParent=arraynew(1);
-	for(i=1;i LTE arraylen(arrS);i++){
-		ns=arrS[i];
-		spaceCount=refind("[0-9]", trim(ns.id));
-		if(spaceCount-1){ 
-			ns.parentId=arrParent[spaceCount-1];
-		}else{
-			ns.parentId="";
-		}
-		if(not structkeyexists(ns, 'target')){
-			ns.target="_self";
-		}
-		ns.id=replace(ns.id, "_", "", "all");
-		ts.idStruct[ns.id]=ns;
-		arrParent[spaceCount]=ns.id;
-		if(not structkeyexists(ts.parentIdStruct, ns.parentId)){
-			ts.parentIdStruct[ns.parentId]=[];
-		}
-		arrayappend(ts.parentIdStruct[ns.parentId], ns.id);
-	}
-	if(application.zcore.user.checkGroupAccess("user")){
-		request.zsession.zManualStruct=ts;
-	}else{
-		application.zcore.manualStruct=ts;
-	}
-	request.zos.siteManagerManual=ts;
-	
+	return arrS;
 	</cfscript>
 </cffunction>
 
@@ -501,6 +512,69 @@ zdoc css style documentation
 	</cfscript>
 </cffunction>
 	
+<cffunction name="reindexDocumentation" access="public" localmode="modern">
+	<cfscript>
+	db=request.zos.queryObject;
+	app_id=9;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
+	arrS=getManualArray(true);
+
+	//tableId=1;
+	for(i=1;i LTE arrayLen(arrS);i++){
+		s=arrS[i];
+		searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
+		ds=searchCom.getSearchIndexStruct(); 
+		html=getDocPageHTML(s.id);
+		ds.app_id=app_id; 
+		id=replace(s.id, '_', '', 'all');
+		ds.search_table_id="global-documentation-"&id;
+		ds.site_id=0;
+		ds.search_content_datetime=startDate;
+		ds.search_url='/z/admin/manual/view/'&id&s.url;
+		ds.search_title=s.title;
+		ds.search_summary=s.title&" "&html;
+		ds.search_fulltext=s.title&" "&html;
+		searchCom.saveSearchIndex(ds); 
+		//tableId++;
+	}
+	db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# where 
+	search_updated_datetime < #db.param(startDate)# and 
+	app_id =#db.param(app_id)# and 
+	site_id = #db.param(0)# and 
+	search_deleted=#db.param(0)#";
+	qDelete=db.execute("qDelete"); 
+	</cfscript>
+	
+</cffunction>
+
+
+<cffunction name="getDocPageHTML" access="public" localmode="modern">
+    <cfargument name="id" type="string" required="yes">
+	<cfscript>
+
+	html="";
+	id=replace(arguments.id, '_', '', 'all');
+	p=find(".", id);
+	if(p EQ 0){
+		dir=id;
+	}else{
+		dir=left(id, p-1);
+	}
+	tempIdFS=replace(id,".","-","all");
+	dirFS=replace(dir,".","-","all");
+	request.examplePath=request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/examples/";  
+	if(fileexists(request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc")){ 
+		temppath="zcorerootmapping.manual-files."&dirFS&"."&tempIdFS&"."&tempIdFS;
+		savecontent variable="html"{
+			tempCom=createobject("component", tempPath);
+			request.manual=this;
+			tempCom.index();
+		}
+	} 
+	return html;
+	</cfscript>
+</cffunction>
+	
 <cffunction name="findDoc" access="private" localmode="modern">
     <cfargument name="id" type="string" required="yes">
 	<cfargument name="docLink" type="string" required="yes"><cfscript>
@@ -512,12 +586,13 @@ zdoc css style documentation
 	}
 	rs={ docStruct:request.zos.siteManagerManual.idStruct[arguments.id] };
 	p=find(".", arguments.id);
+	id=replace(arguments.id, '_', '', 'all');
 	if(p EQ 0){
-		dir=arguments.id;
+		dir=id;
 	}else{
-		dir=left(arguments.id, p-1);
+		dir=left(id, p-1);
 	}
-	tempIdFS=replace(arguments.id,".","-","all");
+	tempIdFS=replace(id,".","-","all");
 	dirFS=replace(dir,".","-","all");
 	request.examplePath=request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/examples/";
 	//echo(request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc");

@@ -175,7 +175,9 @@ $(document).ready(function(){
 </body>
 </html>
 <cfscript>
-request.zos.functions.zabort();
+if(request.zos.originalURL DOES NOT CONTAIN "/z/server-manager/"){
+  request.zos.functions.zabort();
+}
 </cfscript>
 </cffunction>
 </cfoutput>

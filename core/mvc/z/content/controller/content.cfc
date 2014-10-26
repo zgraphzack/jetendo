@@ -1481,6 +1481,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="indexEverything" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
@@ -1544,7 +1545,7 @@ configCom.includeContentByName(ts);
 		site_id <> #db.param(-1)# and 
 		app_id = #db.param(this.app_id)# and 
 		search_deleted = #db.param(0)# and
-		search_updated_datetime < #db.param(request.zos.mysqlnow)#";
+		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
 	}
 	</cfscript>
