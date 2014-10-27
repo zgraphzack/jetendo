@@ -618,8 +618,10 @@ var zGalleryReloadTimeoutId=0;
 					originalWidth:myObj.panel_width,
 					originalThumbWidth:myObj.frame_width
 				};
-				$(a[i]).show().galleryView(myObj);
 			}
+		}
+		for(var i=0;i<a.length;i++){
+			$(a[i]).show().galleryView(myObj);
 		}
 	}
 	function reloadDetailGalleryTimeout(){
@@ -631,7 +633,7 @@ var zGalleryReloadTimeoutId=0;
 		var a2=zGetElementsByClassName(c);
 		for(var i=0;i<a2.length;i++){
 			var id=a2[i].getAttribute("data-galleryview-id");
-			if(zArrGalleryViewSlideshowTemplate[id] != "undefined"){
+			if(typeof zArrGalleryViewSlideshowTemplate[id] != "undefined"){
 				var b=zArrGalleryViewSlideshowTemplate[id];
 				a2[i].innerHTML=b.html;
 				var d2=document.getElementById(id+"_data").value;
