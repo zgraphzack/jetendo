@@ -136,8 +136,8 @@
 	form.sid=application.zcore.functions.zGetSiteIdFromSiteIdType(form.siteIdType);
 	db.sql="SELECT * from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
 	WHERE inquiries_type_id = #db.param(application.zcore.functions.zso(form, 'inquiries_type_id'))# and 
-	site_id=#db.param(form.sid)# GROUP BY inquiries_type_id and 
-	inquiries_type_deleted = #db.param(0)#
+	inquiries_type_deleted = #db.param(0)# and 
+	site_id=#db.param(form.sid)# GROUP BY inquiries_type_id
 	ORDER BY inquiries_type_name ASC";
 	qTypes=db.execute("qTypes");
 	db.sql="SELECT inquiries_id from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
