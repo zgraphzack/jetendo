@@ -194,7 +194,7 @@
 	application.zcore.template.setTag("title","Account Created");
 	application.zcore.template.setTag("pagetitle","Account Created");
 	</cfscript>
-	<p>Please confirm your new account by clicking the link in the email we send you.</p>
+	<!--- <p>Please confirm your new account by clicking the link in the email we send you.</p> --->
 	<cfif form.modalpopforced EQ 1>
 		<p>Closing window in 3 seconds.</p>
 		<script type="text/javascript">
@@ -202,6 +202,8 @@
 		setTimeout(function(){ zCloseThisWindow(true); },3000);
 		/* ]]> */
 		</script>
+	<cfelse>
+		<p>You have been logged in to your new account.</p>
 	</cfif>
 </cffunction>
 

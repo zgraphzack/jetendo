@@ -44,8 +44,8 @@ var zModernizrLoadedRan=false;
 		zScrollPosition.top=ScrollTop;
 		var ScrollLeft = document.body.scrollLeft;
 		if (ScrollLeft === 0){
-			if (window.pageYOffset){
-				ScrollLeft = window.pageYOffset;
+			if (window.pageXOffset){
+				ScrollLeft = window.pageXOffset;
 			}else{
 				ScrollLeft = (document.body.parentElement) ? document.body.parentElement.scrollLeft : 0;
 			}
@@ -74,6 +74,7 @@ var zModernizrLoadedRan=false;
 	function zWindowOnScroll(){
 		zHumanMovement=true;
 		var r111=true;
+		zSetScrollPosition();
 		if(typeof updateCountPosition !== "undefined"){
 			r111=updateCountPosition();
 		}
