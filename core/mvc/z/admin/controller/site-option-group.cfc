@@ -81,9 +81,9 @@
 		echo(chr(10)&indent&"<h2>Group: "&groupStruct.site_option_group_display_name&'</h2>'&chr(10));
 		if(groupStruct.site_option_group_parent_id NEQ 0){
 			parentGroupStruct=t9.siteOptionGroupLookup[groupStruct.site_option_group_parent_id];
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.functions.zSiteOptionGroupStruct("#groupStruct.site_option_group_display_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
+			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.functions.zSiteOptionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
 		}else{
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.functions.zSiteOptionGroupStruct("#groupStruct.site_option_group_display_name#");</cfscript>'&chr(10));
+			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.functions.zSiteOptionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
 		}
 		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
 			for(n in t9.siteOptionGroupFieldLookup[groupStruct.site_option_group_id]){
