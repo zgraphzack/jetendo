@@ -34,9 +34,9 @@
 	if(request.zos.isTestServer){
 		ms["Manage Design & Layout"]={ parent:'Content Manager', label:chr(9)&"Manage Design & Layout"};
 	}
-	if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
+	/*if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
 		ms["Themes"]={ parent:'Content Manager', label:chr(9)&"Themes"};
-	}
+	}*/
 	ms["Video Library"]={ parent:'Content Manager', label:chr(9)&"Video Library"};
 	if(qGroup.recordcount NEQ 0){
 		ms["Custom"]={ parent:'', label: "Custom"};

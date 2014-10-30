@@ -549,7 +549,6 @@ if(not rs.success){
 	request.zos.queryObject=ts.dbComponents.cacheEnabledDB.newQuery();
 	request.zos.noVerifyQueryObject=ts.dbComponents.cacheEnabledNoVerifyDB.newQuery();
 	
-	ts.adminFeatureMapStruct=application.zcore.adminSecurityFilter.getFeatureMap();
 	
 	ts.comCache=structnew();
 	ts.contentPageIDCache=structnew();
@@ -622,6 +621,8 @@ if(not rs.success){
 	
 	local.appCom =application.zcore.app;
 	local.appCom.onSiteStart(ts);
+	ts.adminFeatureMapStruct=application.zcore.adminSecurityFilter.getFeatureMap();
+	
 	local.skin=application.zcore.skin;
 	local.skin.onSiteStart(ts);
 	

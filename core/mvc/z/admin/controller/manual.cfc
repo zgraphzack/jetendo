@@ -264,9 +264,9 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Image Library")){
 		arrayAppend(arrS, { id:"__2.9", url:"/image-library.html", title:"Image Library"});
 	}
-	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Themes")){
+	/*if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Themes")){
 		arrayAppend(arrS, { id:"__2.10", url:"/themes.html", title:"Themes"});
-	}
+	}*/
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Blog Articles")){
 		arrayAppend(arrS, { id:"_3", url:"/blog.html", title:"Blog"});
 	}
@@ -345,10 +345,10 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Users")){
 		arrayAppend(arrS, { id:"__5.3", url:"/import-users.html", title:"Import Users"});
 	}
-	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Offices")){
 		arrayAppend(arrS, { id:"__5.4", url:"/manage-offices.html", title:"Manage Offices"});
 	}
-	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Offices")){
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Offices")){
 		arrayAppend(arrS, { id:"__5.5", url:"/add-edit-office.html", title:"Add/Edit Office"});
 	}
 	if(showAll or application.zcore.app.siteHasApp("listing")){
