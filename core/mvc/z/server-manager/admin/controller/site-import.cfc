@@ -34,7 +34,7 @@
 				</td>
 			</tr> --->
 			<tr>
-				<td class="table-list" style="vertical-align:top; width:140px;">Select Parent Site: </td>
+				<td class="table-list" style="vertical-align:top; width:140px;">Select IP Address: </td>
 				<td class="table-white">
 				<cfscript>
 				ipStruct=application.zcore.functions.getSystemIpStruct();
@@ -121,6 +121,7 @@
 <cffunction name="writeLogEntry" localmode="modern" access="private" roles="serveradministrator">
 	<cfargument name="message" type="string" required="yes">
 	<cfscript>
+	application.zcore.functions.zcreatedirectory(request.zos.backupDirectory&"import/");
 	f=fileopen(request.zos.backupDirectory&"import/site-import.txt", "append", "utf-8");
 	filewriteline(f, arguments.message);
 	fileclose(f);

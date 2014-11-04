@@ -1206,6 +1206,10 @@ function untarZipSiteImportPath($a){
 	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' --exclude=sites --exclude=sites-writable -C '.escapeshellarg($untarPath);
 	echo $cmd."\n";
 	`$cmd`;
+	
+	$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($untarPath);
+	echo $cmd."\n";
+	`$cmd`;
 
 	return "1";
 }
@@ -1280,8 +1284,16 @@ function importSite($a){
 	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain).' --transform="s,^sites-writable,," sites-writable';
 	echo $cmd."\n";
 	`$cmd`;
+	
+	$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg(get_cfg_var("jetendo_sites_writable_path").$siteDomain);
+	echo $cmd."\n";
+	`$cmd`;
 
 	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg(get_cfg_var("jetendo_sites_path").$siteDomain).' --transform="s,^sites,," sites';
+	echo $cmd."\n";
+	`$cmd`;
+
+	$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg(get_cfg_var("jetendo_sites_path").$siteDomain);
 	echo $cmd."\n";
 	`$cmd`;
 
