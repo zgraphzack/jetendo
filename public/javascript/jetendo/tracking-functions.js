@@ -47,58 +47,69 @@
 					}
 				}, 100);
 			}
-			return;
+			return; 
 		}
-		if(typeof window['GoogleAnalyticsObject'] != "undefined"){
-			if(gotoToURLAfterEvent != ""){
-				if(eventLabel != ""){
-					window['GoogleAnalyticsObject']('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
+			if(typeof window['GoogleAnalyticsObject'] != "undefined"){
+				var b=eval(window['GoogleAnalyticsObject']);
+				if(gotoToURLAfterEvent != ""){
+					if(eventLabel != ""){
+						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
+					}else{
+						b('send', 'event', eventCategory, eventAction, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
+					}
 				}else{
-					window['GoogleAnalyticsObject']('send', 'event', eventCategory, eventAction, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
+					if(eventLabel != ""){
+						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue);
+					}else{
+						b('send', 'event', eventCategory, eventAction);
+					}
+				}
+			}else if(typeof pageTracker != "undefined" && typeof pageTracker._trackPageview != "undefined"){
+				if(eventLabel != ""){
+					pageTracker._trackEvent(eventCategory, eventAction, eventLabel, eventValue);
+				}else{
+					pageTracker._trackEvent(eventCategory, eventAction);
+				}
+				if(gotoToURLAfterEvent != ""){
+					setTimeout(function(){ 
+						if(!newWindow){
+							window.location.href = gotoToURLAfterEvent;
+						}
+					}, 500);
+				}
+			}else if(typeof _gaq != "undefined" && typeof _gaq.push != "undefined"){
+				if(gotoToURLAfterEvent != ""){
+					_gaq.push(['_set','hitCallback',function(){
+						if(!newWindow){
+							window.location.href = gotoToURLAfterEvent;
+						}
+					}]);
+				}
+				if(eventLabel != ""){
+					_gaq.push(['_trackEvent', eventCategory, eventAction, eventLabel, eventValue]);
+				}else{
+					_gaq.push(['_trackEvent', eventCategory, eventAction]);
 				}
 			}else{
-				if(eventLabel != ""){
-					window['GoogleAnalyticsObject']('send', 'event', eventCategory, eventAction, eventLabel, eventValue);
-				}else{
-					window['GoogleAnalyticsObject']('send', 'event', eventCategory, eventAction);
-				}
-			}
-		}else if(typeof pageTracker != "undefined" && typeof pageTracker._trackPageview != "undefined"){
-			if(eventLabel != ""){
-				pageTracker._trackEvent(eventCategory, eventAction, eventLabel, eventValue);
-			}else{
-				pageTracker._trackEvent(eventCategory, eventAction);
-			}
-			if(gotoToURLAfterEvent != ""){
-				setTimeout(function(){ 
+				if(zIsLoggedIn()){
 					if(!newWindow){
 						window.location.href = gotoToURLAfterEvent;
 					}
-				}, 500);
+				}else{
+					throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+				}
+				//alert("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
 			}
-		}else if(typeof _gaq != "undefined" && typeof _gaq.push != "undefined"){
-			if(gotoToURLAfterEvent != ""){
-				_gaq.push(['_set','hitCallback',function(){
-					if(!newWindow){
-						window.location.href = gotoToURLAfterEvent;
-					}
-				}]);
-			}
-			if(eventLabel != ""){
-				_gaq.push(['_trackEvent', eventCategory, eventAction, eventLabel, eventValue]);
-			}else{
-				_gaq.push(['_trackEvent', eventCategory, eventAction]);
-			}
-		}else{
+		/*try{
+		}catch(e){
 			if(zIsLoggedIn()){
 				if(!newWindow){
 					window.location.href = gotoToURLAfterEvent;
 				}
 			}else{
-				throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+				//throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
 			}
-			//alert("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
-		}
+		}*/
 	}
 	zArrLoadFunctions.push({functionName:zSetupClickTrackDisplay});
 	window.zSetupClickTrackDisplay=zSetupClickTrackDisplay;
