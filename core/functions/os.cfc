@@ -2281,7 +2281,8 @@ User's IP: #request.zos.cgi.remote_addr#
 		}
 	}
 	db.sql="SELECT s3.site_x_option_group_set_id, s3.site_option_id groupSetOptionId, 
-	s3.site_x_option_group_value groupSetValue 
+	s3.site_x_option_group_value groupSetValue , 
+	s3.site_x_option_group_original groupSetOriginal 
 	FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3 
 	WHERE s3.site_id = #db.param(arguments.site_id)#  and 
 	s3.site_x_option_group_deleted = #db.param(0)# and 
@@ -2308,6 +2309,13 @@ User's IP: #request.zos.cgi.remote_addr#
 				local.tempValue=row.groupSetValue;
 			}
 			tempStruct.soGroupData.siteOptionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
+			if(typeId EQ 3){
+				if(row.groupSetOriginal NEQ ""){
+					tempStruct.soGroupData.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
+				}else{
+					tempStruct.soGroupData.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=local.tempValue;
+				}
+			}
 		}
 	}
 	 db.sql="SELECT * FROM 
@@ -2363,6 +2371,9 @@ User's IP: #request.zos.cgi.remote_addr#
 			
 				for(local.i2 in local.fieldStruct){
 					local.cf=t9.siteOptionLookup[local.i2];
+					if(structkeyexists(t9.siteOptionGroupSetId, "__original "&ts.__setId&"_f"&local.i2)){
+						ts["__original "&local.cf.name]=t9.siteOptionGroupSetId["__original "&ts.__setId&"_f"&local.i2];
+					}
 					if(structkeyexists(t9.siteOptionGroupSetId, ts.__setId&"_f"&local.i2)){
 						ts[local.cf.name]=t9.siteOptionGroupSetId[ts.__setId&"_f"&local.i2];
 					}else if(structkeyexists(local.defaultStruct, local.cf.name)){
@@ -2419,8 +2430,20 @@ User's IP: #request.zos.cgi.remote_addr#
 				tempStruct.site_option_app[row.site_option_app_id]=structnew();
 			}
 			tempStruct.site_option_app[row.site_option_app_id][row.site_option_name]=local.c1;
+			if(row.site_x_option_original NEQ ""){
+				tempStruct.site_option_app[row.site_option_app_id]["__original "&row.site_option_name]="/zupload/site-options/"&row.site_x_option_original;
+			}else{
+				tempStruct.site_option_app[row.site_option_app_id]["__original "&row.site_option_name]=local.c1;
+			}
 		}else{
 			tempStruct.site_options[row.site_option_name]=local.c1;
+			if(row.site_option_type_id EQ 3){
+				if(row.site_x_option_original NEQ ""){
+					tempStruct.site_options["__original "&row.site_option_name]="/zupload/site-options/"&row.site_x_option_original;
+				}else{
+					tempStruct.site_options["__original "&row.site_option_name]=local.c1;
+				}
+			}
 		}
 	}
 	/*

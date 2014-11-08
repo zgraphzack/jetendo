@@ -492,12 +492,16 @@ rs=zGetHashPath(dir, id);
 		}
 		conflict="error";
 		result=application.zcore.functions.zrenamefile(pathName&cffileresult.serverfile, arguments.destination);
+
 		if(result EQ false){
+			request.zos.lastUploadFileName=cffileresult.serverfile;
 			return cffileresult.serverfile;
 		}else{
+			request.zos.lastUploadFileName=fileName&count&"."&fileExtension;
 			return fileName&count&"."&fileExtension;
 		}
 	}else{
+		request.zos.lastUploadFileName=cffileresult.serverfile;
 		return cffileresult.serverfile;
 	}
 	</cfscript>
@@ -619,7 +623,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	</cfscript>
 </cffunction>
 
-<!--- zUploadResizedImagesToDb(fieldName, destination, resizeList, [tableName], [primary_key_id], [delete], [datasource], [autocroplist], [site_id]); 
+<!--- zUploadResizedImagesToDb(fieldName, destination, resizeList, [tableName], [primary_key_id], [delete], [datasource], [autocroplist], [site_id], [deleteOriginal]); 
 notes: optionally delete an existing image that has a field in the specified database ---> 
 <cffunction name="zUploadResizedImagesToDb" localmode="modern" returntype="any" output="true">
 	<cfargument name="fieldName" required="yes" type="string">
@@ -631,6 +635,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	<cfargument name="datasource" required="no" type="string" default="#request.zos.globals.datasource#">
 	<cfargument name="autocropList" required="no" type="string" default="">
 	<cfargument name="site_id" required="no" type="string" default="#request.zos.globals.id#">
+	<cfargument name="deleteOriginal" required="no" type="boolean" default="#true#">
 	<cfscript>
 	var local=structnew();
 	var arrFiles = ArrayNew(1);
@@ -670,7 +675,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 			if(filePath EQ false){ 
 				request.zImageErrorCause="Error: FieldName was not set.";
 				return false;
-			} 
+			}
 			filePath=arguments.destination&filePath;
 			local.ext=application.zcore.functions.zGetFileExt(filePath); 
 			if(local.ext NEQ "jpeg" and local.ext NEQ "jpg" and local.ext NEQ "png" and local.ext NEQ "gif"){
@@ -679,9 +684,13 @@ notes: optionally delete an existing image that has a field in the specified dat
 			}
 			try{
 				arrFiles = application.zcore.functions.zResizeImage(filePath,arguments.destination,arguments.resizeList,arguments.autocropList);
-				application.zcore.functions.zDeleteFile(filePath);
+				if(arguments.deleteOriginal){
+					application.zcore.functions.zDeleteFile(filePath);
+				}
 			}catch(Any local.excpt){ 
-				application.zcore.functions.zDeleteFile(filePath);
+				if(arguments.deleteOriginal){
+					application.zcore.functions.zDeleteFile(filePath);
+				}
 				request.zImageErrorCause="galleryCom.resizeImage exception: #local.excpt.message#";
 				return false;
 			}
@@ -707,9 +716,13 @@ notes: optionally delete an existing image that has a field in the specified dat
 			}
 			try{
 				arrFiles = application.zcore.functions.zResizeImage(filePath,arguments.destination,arguments.resizeList,arguments.autocropList);
-				application.zcore.functions.zDeleteFile(filePath);
+				if(arguments.deleteOriginal){
+					application.zcore.functions.zDeleteFile(filePath);
+				}
 			}catch(Any local.excpt){ 
-				application.zcore.functions.zDeleteFile(filePath);
+				if(arguments.deleteOriginal){
+					application.zcore.functions.zDeleteFile(filePath);
+				}
 				request.zImageErrorCause="galleryCom.resizeImage exception: #local.excpt.message#";
 				return false;
 			}

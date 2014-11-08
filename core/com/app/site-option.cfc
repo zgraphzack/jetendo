@@ -1500,7 +1500,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		 debug=true;
 	 }*/
 	var tempStruct=application.zcore.siteGlobals[arguments.site_id];
-	db.sql="SELECT s1.*, s3.site_option_id groupSetOptionId, s4.site_option_type_id typeId, s3.site_x_option_group_value groupSetValue 
+	db.sql="SELECT s1.*, s3.site_option_id groupSetOptionId, s4.site_option_type_id typeId, s3.site_x_option_group_value groupSetValue, s3.site_x_option_group_original groupSetOriginal  
 	FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1  
 	LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3  ON 
 	s1.site_option_group_id = s3.site_option_group_id AND 
@@ -1601,6 +1601,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			tempValue=row.groupSetValue;
 		}
 		tempStruct.soGroupData.siteOptionGroupSetId[id&"_f"&row.groupSetOptionId]=tempValue;
+		if(row.typeId EQ 3){
+			if(row.groupSetOriginal NEQ ""){
+				tempStruct.soGroupData.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
+			}else{
+				tempStruct.soGroupData.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=tempValue;
+			}
+		}
 		/*if(len(row.childGroupId)){
 			var nk=id&"_s"&row.site_x_option_group_set_sort&"_g"&row.childGroupId&"_s"&row.childSetSort;
 			if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, nk) EQ false){
@@ -1655,6 +1662,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		var defaultStruct=t9.siteOptionGroupDefaults[row.site_option_group_id];
 		for(var i2 in fieldStruct){
 			var cf=t9.siteOptionLookup[i2];
+			if(structkeyexists(t9.siteOptionGroupSetId, "__original "&ts.__setId&"_f"&i2)){
+				ts["__original "&cf.name]=t9.siteOptionGroupSetId["__original "&ts.__setId&"_f"&i2];
+			}
 			if(structkeyexists(t9.siteOptionGroupSetId, ts.__setId&"_f"&i2)){
 				ts[cf.name]=t9.siteOptionGroupSetId[ts.__setId&"_f"&i2];
 			}else if(structkeyexists(defaultStruct, cf.name)){

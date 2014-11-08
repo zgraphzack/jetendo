@@ -1334,6 +1334,9 @@
 		site_x_option_deleted=#db.param(0)#, 
 		site_option_id=#db.param(row.site_option_id)#, 
 		site_x_option_updated_datetime=#db.param(nowDate)# ";
+		if(structkeyexists(rs, 'originalFile')){
+			db.sql&=", site_x_option_original=#db.param(rs.originalFile)#";
+		}
 		qD2=db.execute("qD2");
 
 
@@ -1707,6 +1710,9 @@
 			site_x_option_group_deleted:0,
 			site_option_group_id: row.site_option_group_id,
 			site_x_option_group_updated_datetime: nowDate 
+		}
+		if(structkeyexists(rs, 'originalFile')){
+			tempData.site_x_option_group_original=rs.originalFile;
 		}
 		arrayAppend(arrTempData, tempData); 
 	}

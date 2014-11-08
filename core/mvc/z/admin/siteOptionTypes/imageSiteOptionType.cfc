@@ -126,10 +126,12 @@
 	if(structkeyexists(arguments.row, 'site_x_option_group_value')){
 		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_value)){
 			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);
+			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_original);	
 		}
 	}else{
 		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_value)){
 			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_value);
+			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_original);	
 		}
 	}
 	</cfscript>
@@ -188,6 +190,7 @@
 	var photoresize=0;
 	form[arguments.prefixString&arguments.row.site_option_id]=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
 	nv=form[arguments.prefixString&arguments.row.site_option_id];
+	originalFile="";
 	if(nv NEQ ""){
 		var tempDir=getTempDirectory();
 		if((len(nv) LTE len(tempDir) or left(nv, len(tempDir)) NEQ tempDir or not fileexists(nv))){
@@ -200,30 +203,34 @@
 		if(structkeyexists(arguments.row, 'site_x_option_group_id')){
 			arguments.dataStruct.site_x_option_group_id=arguments.row.site_x_option_group_id;
 			arguments.dataStruct.site_x_option_group_value=nv; 
+			arguments.dataStruct.site_x_option_group_original=arguments.row.site_x_option_group_original; 
 		}else{
 			arguments.dataStruct.site_x_option_id=arguments.row.site_x_option_id;
 			arguments.dataStruct.site_x_option_value=nv; 
+			arguments.dataStruct.site_x_option_original=arguments.row.site_x_option_original; 
 		}
+		destination=application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/';
 		if(application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ '1'){
-			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', photoresize,'','','',request.zos.globals.datasource,'1');
+			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, destination, photoresize,'','','',request.zos.globals.datasource,'1', request.zos.globals.id, false);
+			//originalPath=form[arguments.prefixString&arguments.row.site_option_id];
+
 		}else{
-			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/', photoresize);
+			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, destination, photoresize,'','','',request.zos.globals.datasource,'', request.zos.globals.id, false);
 		}
 		if(isarray(arrList) EQ false){
 			return {success:false, message: '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please upload a jpeg, png or gif file.<br />'&request.zImageErrorCause };
 			
 			nv=oldnv;
 		}else if(ArrayLen(arrList) NEQ 0){
-			if(nvd EQ 1){
+			originalFile=request.zos.lastUploadFileName;
+			if(structkeyexists(arguments.row, 'site_x_option_group_id')){
 				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);	
-				oldnv='';
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_original);	
 			}else{
-				if(structkeyexists(arguments.row, 'site_x_option_group_id')){
-					oldnv=arguments.row.site_x_option_group_value;
-				}else{
-					oldnv=arguments.row.site_x_option_value;
-				}
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_value);	
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_original);	
 			}
+			oldnv='';
 			if(structkeyexists(arguments.row, 'site_x_option_group_id')){
 				nv=arguments.dataStruct.site_x_option_group_value;
 			}else{
@@ -270,21 +277,29 @@
 	}else{
 		if(structkeyexists(arguments.row, 'site_x_option_group_id')){
 			nv=arguments.row.site_x_option_group_value;	
+			originalFile=arguments.row.site_x_option_group_original;
 		}else{
 			nv=arguments.row.site_x_option_value;
+			originalFile=arguments.row.site_x_option_original;
 		}
 		structdelete(form, arguments.prefixString&arguments.row.site_option_id);
 		nvd=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_delete');
 		if(nvd EQ 1){
 			if(structkeyexists(arguments.row, 'site_x_option_group_id')){
 				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_group_original);
 			}else{
 				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_value);
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/'&arguments.row.site_x_option_original);
 			}
 			nv='';	
 		}
 	}
-	return { success: true, value: nv, dateValue: "" };
+	rs={ success: true, value: nv, dateValue: "" };
+	if(originalFile NEQ ""){
+		rs.originalFile=originalFile;
+	}
+	return rs;
 	</cfscript>
 </cffunction>
 
