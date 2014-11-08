@@ -15,7 +15,7 @@
 		return false;
 	}
 	if(!arguments.dbUpgradeCom.executeQuery(this.datasource, "ALTER TABLE `site_x_option_group`   
-  ADD COLUMN `site_x_option_original` VARCHAR(255) NOT NULL AFTER `site_x_option_group_deleted`")){
+  ADD COLUMN `site_x_option_group_original` VARCHAR(255) NOT NULL AFTER `site_x_option_group_deleted`")){
 		return false;
 	}
 
