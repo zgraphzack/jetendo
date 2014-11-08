@@ -1231,15 +1231,15 @@ application.zcore.imageLibraryCom.displayImages(ts);
     
 		<cfif structkeyexists(request,'zGalleryThumbnailLightboxIndex') EQ false>
 			<cfset request.zGalleryThumbnailLightboxIndex=1>
-			#application.zcore.skin.includeJS("/z/javascript/jquery/lightbox/jquery.lightbox-0.5.min.js")#
 			<cfscript>
-			
-			application.zcore.template.prependTag("meta",application.zcore.skin.includeCSS("/z/javascript/jquery/lightbox/css/jquery.lightbox-0.5.css"));
+			application.zcore.skin.includeJS("/z/javascript/Magnific-Popup/jquery.magnific-popup.min.js");
+			application.zcore.skin.includeCSS("/z/javascript/Magnific-Popup/magnific-popup.css");
 			</cfscript>
 			<style type="text/css">
 			/* <![CDATA[ */ 
-			##zThumbnailLightgallery {  }
-			##jquery-lightbox{  z-index:20001;  }
+			.mfp-gallery{z-index:20001;}
+			.mfp-bg{z-index:20000;}
+			
 			##zThumbnailLightgallery ul { list-style: none; margin:0px !important; padding:0px !important; }
 			##zThumbnailLightgallery ul li { background-image:none !important; list-style:none !important; display: inline; margin:0px; padding:0px;}
 			##zThumbnailLightgallery ul img {
@@ -1253,12 +1253,87 @@ application.zcore.imageLibraryCom.displayImages(ts);
 			border: 1px solid ##DFDFDF;  
 			color: ##fff;
 			}
-			##zThumbnailLightgallery ul a:hover { color: ##fff; } /* ]]> */
-			</style>
+			##zThumbnailLightgallery ul a:hover { color: ##fff; }
+
+			.mfp-with-zoom .mfp-container,
+			.mfp-with-zoom.mfp-bg {
+			  opacity: 0;
+			  -webkit-backface-visibility: hidden;
+			  /* ideally, transition speed should match zoom duration */
+			  -webkit-transition: all 0.3s ease-out; 
+			  -moz-transition: all 0.3s ease-out; 
+			  -o-transition: all 0.3s ease-out; 
+			  transition: all 0.3s ease-out;
+			}
+
+			.mfp-with-zoom.mfp-ready .mfp-container {
+			    opacity: 1;
+			}
+			.mfp-with-zoom.mfp-ready.mfp-bg {
+			    opacity: 0.8;
+			}
+
+			.mfp-with-zoom.mfp-removing .mfp-container, 
+			.mfp-with-zoom.mfp-removing.mfp-bg {
+			  opacity: 0;
+			}
+
+			 /* ]]> */
+			</style><!------>
 			</cfif>
 			<script type="text/javascript">
 			/* <![CDATA[ */ zArrDeferredFunctions.push(function(){
-			$('##zThumbnailLightgallery a').lightBox();
+
+				/*$('##zThumbnailLightgallery').magnificPopup({
+					type: 'image',
+					closeOnContentClick: true,
+					image: {
+						verticalFit: false
+					}
+				});*/
+				$('##zThumbnailLightgallery').magnificPopup({
+					delegate: 'a',
+					type: 'image',
+					tLoading: 'Loading image ##%curr%...',
+					mainClass: 'mfp-no-margins mfp-with-zoom mfp-fade zThumbnailLightboxPopupDiv',
+					closeBtnInside: false,
+					fixedContentPos: true,
+					/*retina:{
+						ratio:2,
+						replaceSrc: function(item, ratio) {
+							return item.el.attr("data-2x-image");
+					      //return item.src.replace(/\.\w+$/, function(m) { return '@2x' + m; });
+					    } // function that changes image source
+					    
+					},*/
+					gallery: {
+						enabled: true,
+						navigateByImgClick: true,
+						preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+					},
+					image: {
+						//verticalFit:false,
+						tError: '<a href="%url%">The image ##%curr%</a> could not be loaded.',
+						titleSrc: function(item) {
+							return item.el.attr('title');
+						}
+					},
+					zoom: {
+						enabled: true, // By default it's false, so don't forget to enable it
+
+						duration: 300, // duration of the effect, in milliseconds
+						easing: 'ease-in-out', // CSS transition easing function 
+
+						// The "opener" function should return the element from which popup will be zoomed in
+						// and to which popup will be scaled down
+						// By defailt it looks for an image tag:
+						opener: function(openerElement) {
+							// openerElement is the element on which popup was initialized, in this case its <a> tag
+							// you don't need to add "opener" option if this code matches your needs, it's defailt one.
+							return openerElement.is('img') ? openerElement : openerElement.find('img');
+						}
+					}
+				});
 			}); /* ]]> */
 			</script>
 			</cfsavecontent>
@@ -1269,14 +1344,20 @@ application.zcore.imageLibraryCom.displayImages(ts);
 			thumbnailWidth=round((arrT[1]-(3*15))/3);
 			thumbnailHeight=round(thumbnailWidth*.6);
 			application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, thumbnailWidth&"x"&thumbnailHeight, 1);
-			newSize=arrT[1]&"x"&round(arrT[1]*.6);
+			/*newSize="500x300";//arrT[1]&"x"&round(arrT[1]*.6);
 			newHeight=round(arrT[1]*.6);
+			application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, newSize, arguments.ss.crop);*/
+			newSize="1900x1080";//arrT[1]&"x"&round(arrT[1]*.6); 
 			application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, newSize, arguments.ss.crop);
 			</cfscript>
 	
 			<div id="zThumbnailLightgallery">
 			    <ul>
-				<cfloop query="qImages"><li><a class="zNoContentTransition" href="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">title="#htmleditformat(qImages.image_caption)#"<cfelse>title="Image ###qImages.currentrow#"</cfif>><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, 1, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> /></a></li></cfloop>
+				<cfloop query="qImages"><li><a class="zNoContentTransition"
+				 href="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#"
+				 
+				  <cfif qImages.image_caption NEQ "">title="#htmleditformat(qImages.image_caption)#"<cfelse>title="Image ###qImages.currentrow#"</cfif>><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, 1, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> /></a></li></cfloop>
+				  <!---  data-2x-image="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize2, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#"  --->
 			    </ul>
 			</div>
 

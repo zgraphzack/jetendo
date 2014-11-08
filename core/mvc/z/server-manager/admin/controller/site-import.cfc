@@ -296,7 +296,8 @@
 		// verify domain doesn't exist in site table or on filesystem
 		db.sql="select * from #db.table("site", request.zos.zcoreDatasource)#
 		where site_short_domain = #db.param(globals.site_short_domain)# and 
-		site_deleted = #db.param(0)#";
+		site_deleted = #db.param(0)# and 
+		site_id <> #db.param(-1)#";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount NEQ 0){
 			application.zcore.status.setStatus(request.zsid, "Domain already exists in site table.  You must delete the existing domain and files before importing.", form, true);
@@ -308,7 +309,8 @@
 				// linux user must be unique
 				db.sql="select * from #db.table("site", request.zos.zcoreDatasource)#
 				where site_username = #db.param(globals.site_username)# and 
-				site_deleted = #db.param(0)#";
+				site_deleted = #db.param(0)# and 
+				site_id <> #db.param(-1)#";
 				qCheck=db.execute("qCheck");
 				if(qCheck.recordcount NEQ 0){
 					application.zcore.status.setStatus(request.zsid, "Linux user, #globals.site_username#, already exists for domain, #qCheck.site_short_domain#.  You must specify a different linux user before importing again.", form, true);
@@ -517,8 +519,8 @@
 	if(debug){
 		writeoutput('done');
 	}else{
-		application.zcore.status.setStatus(request.zsid, "Site import complete");
-		application.zcore.functions.zRedirect("/z/server-manager/admin/site-import/index?zsid=#request.zsid#");
+		application.zcore.status.setStatus(request.zsid, 'Site import complete.');
+		application.zcore.functions.zRedirect("/z/server-manager/admin/site-select/index?action=select&sid=#globals.site_id#&zsid=#request.zsid#");
 	}
 	 </cfscript>
 </cffunction>

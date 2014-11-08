@@ -1657,57 +1657,57 @@ configCom.includeContentByName(ts);
 				if(qCp3i2.recordcount NEQ 0){
 					echo('<br />#qCp3i2.content_property_type_name#');
 				}
-				echo('</td><td style="white-space:nowrap;">');
-				if(row.content_property_bathrooms NEQ 0 or row.content_property_half_baths NEQ 0){
-					echo('#row.content_property_bathrooms# Bath ');
-					if(row.content_property_half_baths NEQ 0){
-						echo('<br />#row.content_property_half_baths# half&nbsp;baths');
-					}
-				}
-				echo('</td><td style="white-space:nowrap;">');
-				if(row.content_property_sqfoot NEQ "" and row.content_property_sqfoot NEQ 0){
-					echo('#row.content_property_sqfoot# SQFT<br />');
-				}
-				arr1=arraynew(1);
-				if(row.content_address NEQ ""){ 
-					arrayappend(arr1,row.content_address);
-				}
-				if(cityName NEQ ""){ 
-					arrayappend(arr1,cityName);
-				}
-				if(row.content_property_state NEQ ""){ 
-					arrayappend(arr1,row.content_property_state);
-				}
-				if(arraylen(arr1) NEQ 0){
-					writeoutput(arraytolist(arr1, ", "));
-				}
-				if(row.content_property_zip NEQ ""){ 
-					writeoutput(" "&row.content_property_zip);
-				}
-				if(row.content_property_country NEQ "" and row.content_property_country NEQ "US"){ 
-					writeoutput(" "&row.content_property_country);
-				}
-				echo('</td></tr></table>');
-
-				if(row.content_price NEQ 0 and row.content_for_sale EQ 1){
-					echo('<span style="font-size:14px; font-weight:bold;">Priced at #dollarformat(row.content_price)#</span>');
-				}
-				if(row.content_for_sale EQ '3'){
-					echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is SOLD</span><br /><br />');
-				}else if(row.content_for_sale EQ '4'){
-					echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is UNDER CONTRACT</span><br /><br />');
-				}
-				if(row.content_datetime NEQ ''){
-					echo('<strong class="news-date">');
-					if(isdate(row.content_datetime)){
-						echo(DateFormat(row.content_datetime,'m/d/yyyy'));
-					}
-					if(row.content_datetime NEQ '' and Timeformat(row.content_datetime,'HH:mm:ss') NEQ '00:00:00'){
-						echo(" at "&TimeFormat(row.content_datetime,'h:mm tt'));
-					}
-				}
-				echo('</strong> <br />');
 			}
+			echo('</td><td style="white-space:nowrap;">');
+			if(row.content_property_bathrooms NEQ 0 or row.content_property_half_baths NEQ 0){
+				echo('#row.content_property_bathrooms# Bath ');
+				if(row.content_property_half_baths NEQ 0){
+					echo('<br />#row.content_property_half_baths# half&nbsp;baths');
+				}
+			}
+			echo('</td><td style="white-space:nowrap;">');
+			if(row.content_property_sqfoot NEQ "" and row.content_property_sqfoot NEQ 0){
+				echo('#row.content_property_sqfoot# SQFT<br />');
+			}
+			arr1=arraynew(1);
+			if(row.content_address NEQ ""){ 
+				arrayappend(arr1,row.content_address);
+			}
+			if(cityName NEQ ""){ 
+				arrayappend(arr1,cityName);
+			}
+			if(row.content_property_state NEQ ""){ 
+				arrayappend(arr1,row.content_property_state);
+			}
+			if(arraylen(arr1) NEQ 0){
+				writeoutput(arraytolist(arr1, ", "));
+			}
+			if(row.content_property_zip NEQ ""){ 
+				writeoutput(" "&row.content_property_zip);
+			}
+			if(row.content_property_country NEQ "" and row.content_property_country NEQ "US"){ 
+				writeoutput(" "&row.content_property_country);
+			}
+			echo('</td></tr></table>');
+
+			if(row.content_price NEQ 0 and row.content_for_sale EQ 1){
+				echo('<span style="font-size:14px; font-weight:bold;">Priced at #dollarformat(row.content_price)#</span>');
+			}
+			if(row.content_for_sale EQ '3'){
+				echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is SOLD</span><br /><br />');
+			}else if(row.content_for_sale EQ '4'){
+				echo('<span style="color:##FF0000; font-size:14px; font-weight:bold;">This listing is UNDER CONTRACT</span><br /><br />');
+			}
+			if(row.content_datetime NEQ ''){
+				echo('<strong class="news-date">');
+				if(isdate(row.content_datetime)){
+					echo(DateFormat(row.content_datetime,'m/d/yyyy'));
+				}
+				if(row.content_datetime NEQ '' and Timeformat(row.content_datetime,'HH:mm:ss') NEQ '00:00:00'){
+					echo(" at "&TimeFormat(row.content_datetime,'h:mm tt'));
+				}
+			}
+			echo('</strong> <br />'); 
 		}
 		if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
 			if(row.content_summary EQ ""){
@@ -1749,6 +1749,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="argContentId" type="string" required="yes">
 	<cfargument name="query" type="any" required="no" default="#false#">
 	<cfargument name="arrOutputStruct" type="array" required="no" default="#[]#">
+	<cfargument name="limit" type="numeric" required="no" default="#0#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
@@ -1782,11 +1783,15 @@ configCom.includeContentByName(ts);
 		tempQueryName=arguments.query;
 	}
 	index=0;
+
 	for(row in tempQueryName){
 		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 			echo('<p>Outputting child page: #row.content_id#</p>');
 		}
 		index++;
+		if(arguments.limit NEQ 0 and index GT arguments.limit){
+			break;
+		}
 		ts=structnew();
 		ts.image_library_id=row.content_image_library_id;
 		ts.output=false;
@@ -1825,11 +1830,12 @@ configCom.includeContentByName(ts);
 			
 			propertyLink=htmleditformat(propertyLink);
 			cityName="";
-			if(application.zcore.app.siteHasApp("listing")){
+			// listing layout is ugly and slow
+			/*if(application.zcore.app.siteHasApp("listing")){
 				propertyIncludeStruct=application.zcore.app.getAppCFC("listing").getListingPropertyInclude(row, contentConfig, contentPhoto99, propertyLink, isListing);
 				cityname=propertyIncludeStruct.cityName;
 				isListing=propertyIncludeStruct.isListing;
-			}
+			}*/
 			if(isListing EQ false){
 				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 					echo("<p>Child page layout: regular: #row.content_id#</p>");
@@ -2007,7 +2013,15 @@ configCom.includeContentByName(ts);
 	menuLinkStruct=getSectionDisplayMenuLinks(ts1, contentConfig, curParentSorting, qContentChild, 0, arrOutputStruct);
 	
 
-
+	uniqueChildStruct3838=structnew();
+	for(i=1;i LTE arraylen(arrOutputStruct);i++){
+		c=arrOutputStruct[i];
+		if(c.id EQ "" or structkeyexists(uniqueChildStruct3838, c.id) EQ false){
+			uniqueChildStruct3838[c.id]=true;
+			writeoutput(c.output);
+		}
+	}
+	/*
 	outputStruct={};
 	for(i=1;i LTE arraylen(arrOutputStruct);i++){
 		outputStruct[i]=arrOutputStruct[i];
@@ -2052,7 +2066,7 @@ configCom.includeContentByName(ts);
 		uniqueChildStruct3838[c.id]=true;
 			writeoutput(c.output);
 		}
-	}
+	}*/
 	</cfscript>
 
 	
@@ -2212,7 +2226,7 @@ configCom.includeContentByName(ts);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 		}
-		if(arguments.qContent.content_include_listings NEQ ''){
+		/*if(arguments.qContent.content_include_listings NEQ ''){
 			echo('<br style="clear:both;" />');
 			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 				echo('<p>Outputting content_include_listings: #arguments.qContent.content_include_listings#</p>');
@@ -2222,7 +2236,7 @@ configCom.includeContentByName(ts);
 			for(i=1;i LTE arraylen(arrListings);i++){
 				application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i], false, arguments.arrOutputStruct);
 			}
-		}
+		}*/
 	}
 	return { propertyCount: arguments.propertyCount };
 	</cfscript>
@@ -2480,9 +2494,14 @@ configCom.includeContentByName(ts);
 				application.zcore.template.appendTag("meta", ts994824713.content_metacode);
 			}
 
+			form.offset=application.zcore.functions.zso(form, 'offset', true, 0);
+			form.count=application.zcore.functions.zso(form, 'count', true, 20);
 
 			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 4'});
-			childContentStruct=displayChildContent(ts994824713, contentConfig, ct1948);
+			childContentStruct=displayChildContent(ts994824713, contentConfig, ct1948, form.offset, form.count);
+			if(form.offset LT 0 or (form.offset NEQ 0 and childContentStruct.qContentChild.recordcount EQ 0)){
+				application.zcore.functions.z301Redirect(request.zos.originalURL);
+			}
 			ct1948=childContentStruct.bodyText;
 			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 5'});
 			if(arraylen(contentConfig.arrContentReplaceKeywords)){
@@ -2561,13 +2580,40 @@ configCom.includeContentByName(ts);
 		 writeoutput(application.zcore.functions.zDisplayExternalComments(application.zcore.app.getAppData("content").optionstruct.app_x_site_id&"-"&ts994824713.content_id, ts994824713.content_name, request.zos.globals.domain&currentContentURL));
 	}
 	arrOutputStruct=[];
-	menuLinkStruct=getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild, pcount, arrOutputStruct);
+	menuLinkStruct=getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild, pcount, arrOutputStruct, form.count);
 	pcount=menuLinkStruct.propertyCount;
 	if(pcount NEQ 0){
 		echo('<br style="clear:both;" />');
 	}
 
 	displaySummaryAndMap(qContent, returnPropertyDisplayStruct);
+
+
+	uniqueChildStruct3838=structnew();
+	for(i=1;i LTE arraylen(arrOutputStruct);i++){
+		c=arrOutputStruct[i];
+		if(c.id EQ "" or structkeyexists(uniqueChildStruct3838, c.id) EQ false){
+			uniqueChildStruct3838[c.id]=true;
+			writeoutput(c.output);
+		}
+	}
+
+	if(ts994824713.content_subpage_link_layout NEQ 13 and ts994824713.content_subpage_link_layout NEQ 7){
+		echo('<div style="clear:both; width:100%; margin-top:20px; float:left;">');
+		if(form.offset-form.count GTE 0){
+			if(form.offset-form.count EQ 0){
+				link=request.zos.originalURL;
+			}else{
+				link="#request.zos.originalURL#?offset=#form.offset-form.count#";
+			}
+			echo('<a href="#link#" style="padding:5px; display:block; float:left; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Previous</a>');
+		}
+		if(childContentStruct.hasMoreRecords){
+			echo('<a href="#request.zos.originalURL#?offset=#form.offset+form.count#" style="padding:5px; display:block; float:right; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Next</a>');
+		}
+		echo('</div>');
+	}
+	/*
 	outputStruct={};
 	for(i=1;i LTE arraylen(arrOutputStruct);i++){
 		outputStruct[i]=arrOutputStruct[i];
@@ -2612,7 +2658,7 @@ configCom.includeContentByName(ts);
 		uniqueChildStruct3838[c.id]=true;
 			writeoutput(c.output);
 		}
-	}
+	}*/
 	if(application.zcore.app.siteHasApp("listing") and contentSearchMLS EQ 1){
 		writeoutput(returnPropertyDisplayStruct.output);
 	}
@@ -2620,7 +2666,9 @@ configCom.includeContentByName(ts);
 	if(ts994824713.content_text_position EQ 1){
 		beginEditLink(contentConfig, ts994824713.content_id);
 		writeoutput(ct1948);
-		if(trim(ct1948) NEQ ""){writeoutput('<br style="clear:both;" />');}
+		if(trim(ct1948) NEQ ""){
+			writeoutput('<br style="clear:both;" />');
+		}
 		endEditLink(contentConfig);
 		this.resetContentIncludeConfig();
 	}
@@ -2716,6 +2764,8 @@ configCom.includeContentByName(ts);
 	<cfargument name="qContent" type="any" required="yes">
 	<cfargument name="contentConfig" type="struct" required="yes">
 	<cfargument name="bodyText" type="string" required="yes">
+	<cfargument name="offset" type="numeric" required="no" default="#0#">
+	<cfargument name="count" type="numeric" required="no" default="#10#">
 	<cfscript>
 	db=request.zos.queryObject;
 	subpageLinkLayoutBackup=arguments.qContent.content_subpage_link_layout;
@@ -2732,8 +2782,17 @@ configCom.includeContentByName(ts);
 		db.sql&=" #db.trustedSQL(rs.select)# FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		#db.trustedSQL(rs.leftJoin)# 
 		WHERE content.site_id = #db.param(request.zos.globals.id)# and 
-		content_id <> #db.param(arguments.qContent.content_id)#  and 
-		content.content_parent_id =#db.param(arguments.qContent.content_id)# ";
+		content_id <> #db.param(arguments.qContent.content_id)#  and ";
+		if(arguments.qContent.content_include_listings NEQ ""){
+			arrId=listToArray(arguments.qContent.content_include_listings, ",");
+			for(i=1;i LTE arraylen(arrId);i++){
+				arrId[i]="'"&application.zcore.functions.zescape(arrId[i])&"'";
+			}
+			db.sql&=" (content.content_id IN (#db.trustedSQL(arrayToList(arrId, ","))#) or content.content_parent_id =#db.param(arguments.qContent.content_id)# ) ";
+		}else{
+			db.sql&=" content.content_parent_id =#db.param(arguments.qContent.content_id)# ";
+		}
+		
 		if(structkeyexists(form,'preview') EQ false and request.zos.zcontentshowinactive EQ false){
 			db.sql&=" and content_for_sale <> #db.param(2)#";
 		}
@@ -2752,6 +2811,9 @@ configCom.includeContentByName(ts);
 			db.sql&=" content_price asc ";
 		}else{
 			db.sql&=" content_sort ASC, content_datetime DESC, content_created_datetime DESC ";
+		}
+		if(arguments.count NEQ 0){
+			db.sql&=" LIMIT #db.param(arguments.offset)#, #db.param(arguments.count+1)#";
 		}
 		qContentChild=db.execute("qContentChild");
 		if((subpageLinkLayoutBackup EQ "11" or subpageLinkLayoutBackup EQ "12") and arguments.bodyText CONTAINS '%child_links%'){
@@ -2805,7 +2867,12 @@ configCom.includeContentByName(ts);
 	}else{
 		qContentChild={ recordcount:0};
 	}
-	return { bodyText: arguments.bodyText, qContentChild: qContentChild };
+	if(qContentChild.recordcount GT arguments.count){
+		hasMoreRecords=true;
+	}else{
+		hasMoreRecords=false;
+	}
+	return { bodyText: arguments.bodyText, qContentChild: qContentChild, hasMoreRecords:hasMoreRecords  };
 	</cfscript>
 </cffunction>
 
@@ -3009,6 +3076,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="qContentChild" type="any" required="yes">
 	<cfargument name="propertyCount" type="numeric" required="yes">
 	<cfargument name="arrOutputStruct" type="array" required="yes">
+	<cfargument name="limit" type="numeric" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	subpageLinkLayoutBackup=arguments.qContent.content_subpage_link_layout;
@@ -3087,6 +3155,9 @@ configCom.includeContentByName(ts);
 		if(arguments.qContentChild.recordcount){
 			for(row in arguments.qContentChild){
 				index++;
+				if(index GT arguments.limit){
+					break;
+				}
 				ts3=structnew();
 				ts3.image_library_id=row.content_image_library_id;
 				ts3.output=false;
@@ -3150,11 +3221,11 @@ configCom.includeContentByName(ts);
 				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 					echo('<p>Outputting children for page: #arguments.qContent.content_id#</p>');
 				}
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct);
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 		}
-		if(arguments.qContent.content_include_listings NEQ ''){
+		/*if(arguments.qContent.content_include_listings NEQ ''){
 			echo('<br style="clear:both;" />');
 			if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 				echo('<p>Outputting content_include_listings: #arguments.qContent.content_include_listings#</p>');
@@ -3164,7 +3235,7 @@ configCom.includeContentByName(ts);
 			for(i=1;i LTE arraylen(arrListings);i++){
 				application.zcore.app.getAppCFC("content").getPropertyInclude(arrListings[i], false, arguments.arrOutputStruct);
 			}
-		}
+		}*/
 	}
 	return { propertyCount: arguments.propertyCount };
 	</cfscript>
