@@ -1157,7 +1157,11 @@ displayGroupCom.add();')&'</pre>');
 	site_option_group_deleted = #db.param(0)# and
 	site_id =#db.param(request.zos.globals.id)# ";
 	qRate=db.execute("qRate");
-	application.zcore.functions.zQueryToStruct(qRate,form,'site_option_group_id,site_option_group_parent_id'); 
+	if(structkeyexists(form, 'site_option_group_parent_id')){
+		application.zcore.functions.zQueryToStruct(qRate,form,'site_option_group_id,site_option_group_parent_id'); 
+	}else{
+		application.zcore.functions.zQueryToStruct(qRate,form,'site_option_group_id'); 
+	}
 	application.zcore.functions.zStatusHandler(request.zsid, true);
 	
 	if(currentMethod EQ "edit"){
