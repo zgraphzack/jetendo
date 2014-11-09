@@ -3207,6 +3207,8 @@ Define this function in another CFC to override the default email format
 							form["newvalue"&row.site_option_id]=row.site_option_default_value;
 						}
 					}
+				}else{
+					posted=true;
 				}
 				form[row.site_option_name]=form["newvalue"&row.site_option_id];
 				if(row.site_x_option_group_id EQ ""){
@@ -3272,7 +3274,6 @@ Define this function in another CFC to override the default email format
 				}
 			}
 
-
 			if(local.methodBackup EQ 'addGroup'){ 
 				if(not posted){
 					form.site_x_option_group_set_override_url='';
@@ -3326,6 +3327,8 @@ Define this function in another CFC to override the default email format
 					ts.name="site_x_option_group_set_image_library_id";
 					if(qSet.recordcount NEQ 0){
 						ts.value=qSet.site_x_option_group_set_image_library_id;
+					}else if(structkeyexists(form, 'site_x_option_group_set_image_library_id')){
+						ts.value=form.site_x_option_group_set_image_library_id;
 					}else{
 						ts.value=0;
 					}
