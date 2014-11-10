@@ -1709,7 +1709,8 @@
 			site_option_id: row.site_option_id,
 			site_x_option_group_deleted:0,
 			site_option_group_id: row.site_option_group_id,
-			site_x_option_group_updated_datetime: nowDate 
+			site_x_option_group_updated_datetime: nowDate,
+			site_x_option_group_original:''
 		}
 		if(structkeyexists(rs, 'originalFile')){
 			tempData.site_x_option_group_original=rs.originalFile;
