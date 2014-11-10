@@ -106,7 +106,10 @@ this.scopeCascading = "standard";
 <cfscript>
 local.tempCGI=duplicate(CGI);
 requestData=getHTTPRequestData();
-if(structkeyexists(requestData.headers,'remote_addr')){
+
+if(structkeyexists(requestData.headers,'x-forwarded-for')){
+	local.tempCGI.remote_addr=requestData.headers["x-forwarded-for"];
+}else if(structkeyexists(requestData.headers,'remote_addr')){
 	local.tempCGI.remote_addr=requestData.headers.remote_addr;
 }
 if(structkeyexists(requestData.headers,'http_host')){
@@ -130,12 +133,11 @@ request.zos.cgi=local.tempCGI;
 				request.zos.isDeveloper=true;
 				request.zos.isDeveloperIpMatch=true;
 			}else{
-				request.zos.isDeveloperIpMatch=true;
 				if(structkeyexists(cookie, 'zdeveloper') and cookie.zdeveloper EQ 1){
 					request.zos.isDeveloper=true;
 				}else{
 					request.zos.isDeveloper=false;  
-				} 
+				}
 			}
 			request.zos.isServer=false;
         }else{

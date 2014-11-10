@@ -964,12 +964,14 @@ userCom.checkLogin(inputStruct);
 	local.isDeveloper=0;
 	if(request.zos.userSession.site_id EQ request.zos.globals.serverID and application.zcore.user.checkServerAccess()){
 		local.isDeveloper="1";
+		local.ts9=structnew();
+		local.ts9.name="zdeveloper";
+		local.ts9.value=local.isDeveloper;
+		local.ts9.expires="never";
+		application.zcore.functions.zcookie(local.ts9);
+	}else{
+		structdelete(cookie, 'zdeveloper');
 	}
-	local.ts9=structnew();
-	local.ts9.name="zdeveloper";
-	local.ts9.value=local.isDeveloper;
-	local.ts9.expires="never";
-	application.zcore.functions.zcookie(local.ts9);
 	
 	</cfscript>
 </cffunction>
@@ -1319,14 +1321,14 @@ formString = userCom.loginForm(inputStruct);
 	request.zos.displayTokenScriptsRan=true;
 	
 	if(request.zos.globals.parentId NEQ 0){
-		if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.parentId) CONTAINS "https://"){
+		//if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.parentId) CONTAINS "https://"){
 			application.zcore.skin.includeJS(application.zcore.functions.zvar('domain', request.zos.globals.parentId)&'/z/user/login/parentToken?ztv='&randrange(100000,900000));
-		}
+		//}
 	}
 	if(request.zos.isdeveloperIpMatch){
-		if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.serverId) CONTAINS "https://"){
+		//if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.serverId) CONTAINS "https://"){
 			application.zcore.skin.includeJS(request.zos.globals.serverDomain&'/z/user/login/serverToken?ztv='&randrange(100000,900000));
-		}
+		//}
 	}
 	</cfscript>
 </cffunction>

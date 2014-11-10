@@ -179,7 +179,9 @@
 					request.zsession.ssl_session_id=request.zos.requestData.headers.ssl_session_id;
 					</cfscript>
 				</cfif> | 
-               	#structcount(application.customSessionStruct)# Active Sessions
+               	<cfif structkeyexists(application, 'customSessionStruct')>
+					#structcount(application.customSessionStruct)# Active Sessions
+				</cfif>
               </div>
             <div class="zOS_mode_td">
               <cfif isDefined('request.zsession.tracking.track_user_hits')>Hits: #request.zsession.tracking.track_user_hits#</cfif>
