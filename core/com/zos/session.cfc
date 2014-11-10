@@ -142,7 +142,11 @@ ssl session - lost on browser close - lost on server reboot
 
 <cffunction name="isSessionEnabled" access="public" localmode="modern">
 	<cfscript>
-	if((structkeyexists(cookie, request.zos.serverSessionVariable) and cookie[request.zos.serverSessionVariable] NEQ "") or request.zos.cgi.request_method EQ "post"){
+	if(structkeyexists(cookie, 'ztoken')){
+		return true;
+	}else if(structkeyexists(cookie, request.zos.serverSessionVariable) and cookie[request.zos.serverSessionVariable] NEQ ""){
+		return true;
+	}else if(request.zos.cgi.request_method EQ "post"){
 		return true;
 	}else{
 		return false;

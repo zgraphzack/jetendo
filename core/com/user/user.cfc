@@ -1388,7 +1388,7 @@ formString = userCom.loginForm(inputStruct);
 			writeoutput('Verifying cookie.ztoken: #cookie.ztoken#<br />'); 
 		}
 	}
-	if(isDefined('request.zsession.ztoken') and isDefined('request.zsession.user')){
+	if(structkeyexists(request.zsession, 'ztoken') and structkeyexists(request.zsession, 'user')){
 		if(compare(request.zsession.ztoken, cookie.ztoken) NEQ 0){
 			if(local.debug){ 
 				writeoutput('current login doesn''t match the cookie, override it<br />'); 
@@ -1411,6 +1411,8 @@ formString = userCom.loginForm(inputStruct);
 		}
 	}
 	if(local.debug){ 
+		//writedump(application.zcore.session.isSessionEnabled());
+		//writedump(request.zsession);
 		writeoutput('user not logged in, check if cookie.ztoken is still valid<br />'); 
 	}
 	local.arrToken=listtoarray(cookie.ztoken,"|");

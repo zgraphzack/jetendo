@@ -243,6 +243,14 @@ var zHumanMovement=false;
 		if(!zOverEditContentLoaded){
 			zOverEditContentLoaded=true;
 			$('body').append('<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:#FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; "><a id="zOverEditATag" href="##" class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>');
+			
+			$("#zOverEditATag").bind("click", function(){
+				if(zIsAdminLoggedIn()){
+					zLoadOverEditButton();
+					zOverEditClick();
+					return false;
+				}
+			});
 		}
 	}
 	$(".zOverEdit").bind("mouseover", function(){
@@ -252,13 +260,6 @@ var zHumanMovement=false;
 			if(u != ""){
 				zOverEditDiv(this, u);
 			}
-		}
-	});
-	$("#zOverEditATag").bind("click", function(){
-		if(zIsAdminLoggedIn()){
-			zLoadOverEditButton();
-			zOverEditClick();
-			return false;
 		}
 	});
 
