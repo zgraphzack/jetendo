@@ -248,7 +248,7 @@ this allows you to delete cache on both sides. --->
 	<cffunction name="disableCache" localmode="modern" output="no" access="public" returntype="any">
         <cfscript>
 		//application.zcore.functions.zcookie({name:'znocache',value:'1',expires='now'});
-		application.zcore.functions.zheader("zdisableproxycache","1");
+		//this was live previously: application.zcore.functions.zheader("zdisableproxycache","1");
 		request.zos.cacheData.preventEnablingCache=true;
 		request.zos.cacheData.enabled=false;
 		</cfscript> 

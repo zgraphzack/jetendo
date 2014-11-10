@@ -153,20 +153,21 @@
 		if(last EQ arguments.navStruct.index + after){
 			beforeadjust = (arguments.navStruct.buttons-1 - halfButtons - after) + 1;
 		}
-		before =  min(indexHalfButton,arguments.navStruct.index - 1) + beforeadjust;
+		before =  min(indexHalfButton,arguments.navStruct.index -1) + beforeadjust;
 		if(arguments.navStruct.index EQ 0){
 			writeoutput("<td style=""text-align:left; width:95px; "">&nbsp;</td>");
 		}
 		/*if(Request.zos.isdeveloper){
-
+		writeoutput("index:"&arguments.navStruct.index&"<br>");
 		writeoutput("before:"&before&"<br>");
 		writeoutput("beforeadjust:"&beforeadjust&"<br>");
+		writeoutput("after:"&after&"<br>");
 		writeoutput("indexHalfButton:"&indexHalfButton&"<br>");
 		writeoutput("maxButton:"&maxButton&"<br>");
 		writeoutput("last:"&last&"<br>");
 		writeoutput("arguments.navStruct.index:"&arguments.navStruct.index&"<br>");
 		}*/
-		if((before GT 0 and arguments.navStruct.index NEQ 0) and arguments.navStruct.count GT arguments.navStruct.perpage){
+		if((before GT 0 or arguments.navStruct.index NEQ 0) and arguments.navStruct.count GT arguments.navStruct.perpage){
 			if(arguments.navStruct.ses){
 				if(arguments.navStruct.parentIndexPosition NEQ false){
 					tempURL = application.zcore.functions.zSesUpdate(arguments.navStruct.url, arguments.navStruct.parentIndexPosition, "1")&"1/";

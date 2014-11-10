@@ -1,6 +1,19 @@
+var zLoggedIn=false;
 
 (function($, window, document, undefined){
 	"use strict";
+	function zIsAdminLoggedIn(){
+		if(!zIsLoggedIn()){
+			return false;
+		}
+		var d=zGetCookie("ZISADMIN");
+		if(d === "1"){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	function zIsLoggedIn(){
 		var loggedIn=zGetCookie("ZLOGGEDIN");
 		var d=zGetCookie("ZSESSIONEXPIREDATE");
@@ -39,7 +52,7 @@
 			// supplement ip developer security with cookie to identify a single computer from the IP.
 			if(typeof json.developer !== "undefined"){
 				// cookie expires one year in future
-				zSetCookie({key:"zdeveloper",value:json.developer,futureSeconds:31536000,enableSubdomains:true}); 
+				zSetCookie({key:"ZDEVELOPER",value:json.developer,futureSeconds:31536000,enableSubdomains:false}); 
 			}
 			if(json.success){
 				zLogin.zShowLoginError("Logging in...");
@@ -120,12 +133,12 @@
 			}
 			zLogin.autoLoginCallback();
 		},
-		autoLoginPrompt:function(callback){
+		/*autoLoginPrompt:function(callback){
 			zSetCookie({key:"zautologin",value:"",futureSeconds:60,enableSubdomains:false}); 
 			// Avoid calling the model window again during this login session
 			if(zLogin.autoLoginValue===-1 && zGetCookie("zautologin") === ""){
 				zLogin.autoLoginCallback=callback;
-				var modalContent1='<div class="zmember-autologin-heading">Do you want to<br />login automatically<br />in the future?<\/div><div><a class="zmember-autologin-button" style="border:1px solid #000;" href="#" onclick="zLogin.setAutoLogin(true);zCloseModal();return false;">Yes<\/a>   <a class="zmember-autologin-button" href="#" onclick="zLogin.enterPressed=false;zLogin.setAutoLogin(false);zCloseModal();return false;">No<\/a><\/div>';
+				var modalContent1='<div class="zmember-autologin-heading">Do you want to<br />login automatically<br />in the future?<\/div><div><a class="zmember-autologin-button" style="border:2px solid #000;" href="#" onclick="zLogin.setAutoLogin(true);zCloseModal();return false;">Yes<\/a>   <a class="zmember-autologin-button" href="#"  style="border:2px solid #999;" onclick="zLogin.enterPressed=false;zLogin.setAutoLogin(false);zCloseModal();return false;">No<\/a><\/div>';
 				zShowModal(modalContent1,{'disableClose':true,'width':Math.min(350, zWindowSize.width-50),'height':Math.min(250, zWindowSize.height-50),"maxWidth":350, "maxHeight":250});
 				$(window).keypress(function(event){
 					if(event.keyCode === 13){
@@ -140,19 +153,29 @@
 					}
 				});
 				$(window).bind("keyup", function(event){
-					zLogin.lastKeyPressed=0;
-					if(zLogin.enterPressedTwice && event.keyCode === 13){
-						zLogin.setAutoLogin(true);
-						zCloseModal();
+						zLogin.lastKeyPressed=0;
+						if(zLogin.enterPressedTwice && event.keyCode === 13){
+							zLogin.startKeyPressCheck=false;
+							zLogin.setAutoLogin(true);
+							zCloseModal();
+						}
 					}
 				});
 				$("#zModalOverlayDiv").focus();
 			}else{
 				callback();
 			}
-		},
+		},*/
+		startKeyPressCheck:false,
 		autoLoginConfirm:function(){
-			zLogin.autoLoginPrompt(zLogin.zAjaxSubmitLogin);
+			zLogin.autoLoginCallback=zLogin.zAjaxSubmitLogin;
+			if(document.getElementById("zRememberLogin").checked){
+				zLogin.setAutoLogin(true);
+			}else{
+				zLogin.setAutoLogin(false);
+			}
+			
+			//zLogin.autoLoginPrompt(zLogin.zAjaxSubmitLogin);
 			return false;
 		},
 		zAjaxSubmitLogin:function(){
@@ -236,13 +259,13 @@
 					tempToken:zLoginServerToken.token
 				};
 				if(typeof zLoginServerToken.developer !== "undefined"){
-					zSetCookie({key:"zdeveloper",value:zLoginServerToken.developer,futureSeconds:31536000,enableSubdomains:true}); 
+					zSetCookie({key:"ZDEVELOPER",value:zLoginServerToken.developer,futureSeconds:31536000,enableSubdomains:false}); 
 				};
 				zAjax(tempObj);	
 				return false;
 			}else if(typeof zLoginParentToken !== "undefined" && zLoginParentToken.loggedIn){
 				if(typeof zLoginParentToken.developer !== "undefined"){
-					zSetCookie({key:"zdeveloper",value:zLoginParentToken.developer,futureSeconds:31536000,enableSubdomains:true}); 
+					zSetCookie({key:"ZDEVELOPER",value:zLoginParentToken.developer,futureSeconds:31536000,enableSubdomains:false}); 
 				};
 				tempObj.postObj={
 					tempToken:zLoginParentToken.token
@@ -286,9 +309,9 @@
 		},
 		init:function(){
 			var d1=document.getElementById("z_tmpusername2");
-			var d2=zGetCookie("zparentlogincheck");
-			if((d2 === "" || typeof d1 !== "undefined") && window.location.href.toLowerCase().indexOf("zlogout=") === -1){
-				zSetCookie({key:"zparentlogincheck",value:"1",futureSeconds:0,enableSubdomains:false}); 
+			//var d2=zGetCookie("zparentlogincheck"); d2 === "" || 
+			if((typeof d1 !== "undefined") && window.location.href.toLowerCase().indexOf("zlogout=") === -1){
+				//zSetCookie({key:"zparentlogincheck",value:"1",futureSeconds:0,enableSubdomains:false}); 
 				zLogin.confirmToken();
 			}
 		}
@@ -297,4 +320,5 @@
 	zArrDeferredFunctions.push(zLogin.init);
 	window.zLogin=zLogin;
 	window.zIsLoggedIn=zIsLoggedIn;
+	window.zIsAdminLoggedIn=zIsAdminLoggedIn;
 })(jQuery, window, document, "undefined"); 

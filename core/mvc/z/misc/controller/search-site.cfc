@@ -37,6 +37,7 @@ search sql generator has to be able to search on child group data for paging to 
 <cffunction name="search" access="remote" localmode="modern">
 	
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	db=request.zos.queryObject;
 	request.disableSidebar=true;
 	if(structkeyexists(form, 'searchtext')){
@@ -173,6 +174,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="ajaxGetPublicSearchResults" output="yes" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	rs=this.getPublicSearchResults();
 	application.zcore.functions.zReturnJson(rs); 
 	application.zcore.functions.zabort();
@@ -181,6 +183,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="regularSearch" output="yes" access="public" returntype="struct" localmode="modern">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	rs2={ hasMoreRecords:false};
 	form.searchtext=application.zcore.functions.zso(form, 'searchtext');
 	if(trim(form.searchtext) EQ ""){
@@ -241,6 +244,7 @@ search sql generator has to be able to search on child group data for paging to 
 <cffunction name="embedSearchForm" localmode="modern" access="remote">
 	<cfargument name="groupId" type="string" required="no" default="0">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	form.autosearch=true;
 	if(request.zos.originalURL EQ "/z/misc/search-site/search"){
 		return;
@@ -262,6 +266,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="getPublicSearchResults" output="no" localmode="modern" access="public">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	db=request.zos.queryObject;
 	form.siteOptionGroupId=application.zcore.functions.zso(form, 'siteOptionGroupId');
 	variables.setupSearchCache();
@@ -386,6 +391,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="ajaxGetPublicSearchCriteria" output="yes" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	rs=this.getPublicSearchCriteria();
 	application.zcore.functions.zReturnJson(rs); 
 	application.zcore.functions.zabort();
@@ -394,6 +400,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="setupSearchCache" output="no" localmode="modern" access="public">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	form.groupId=application.zcore.functions.zso(form, 'groupId', true);
 	form.clearCache=application.zcore.functions.zso(form, 'clearCache', false, false);
 	request.zsession.searchLastGroupId=form.groupId;
@@ -418,6 +425,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="getPublicSearchCriteria" output="yes" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	db=request.zos.queryObject;
 	form.disableSidebar=application.zcore.functions.zso(form, 'disableSidebar', false, '1');
 	form.embeddedSearchForm=application.zcore.functions.zso(form, 'embeddedSearchForm', false, false);
@@ -579,6 +587,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="index" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	application.zcore.functions.z301Redirect("/z/misc/search-site/search?searchtext="&application.zcore.functions.zso(form, 'searchtext'));
 	var temppageNav=0;
 	
@@ -663,6 +672,7 @@ search sql generator has to be able to search on child group data for paging to 
 
 <cffunction name="searchForm" localmode="modern" access="private">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	form.searchtext=application.zcore.functions.zso(form, 'searchtext');
 	if(not isSimpleValue(form.searchtext)){
 		form.searchtext="";
@@ -680,6 +690,7 @@ search sql generator has to be able to search on child group data for paging to 
     
 <cffunction name="results" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	var propCodes=0;
 	var perpage=0;
 	var curQuery=0;

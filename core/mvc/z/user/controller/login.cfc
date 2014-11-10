@@ -10,6 +10,7 @@
 	var jsonText=0;
 	//local.debugSQL="";
 	request.znotemplate=1;
+    application.zcore.functions.zNoCache();
 	if(structkeyexists(form,'z_tmpusername2') EQ false or structkeyexists(form,'z_tmppassword2') EQ false){
 		writeoutput("Invalid Request");
 		application.zcore.functions.zabort();
@@ -106,7 +107,11 @@
 	<cfif form.styleslabels NEQ false><h2 class="#form.styleslabels#"></cfif>#form.passwordLabel#<cfif form.styleslabels NEQ false></h2></cfif>
     <input type="password" name="z_tmppassword2" onkeyup="document.getElementById('statusDiv').innerHTML='Please Login';" id="z_tmppassword2" value="" size="20" <cfif form.stylesinputs NEQ false>class="#form.stylesinputs#"</cfif>  />
     </div>
+	<div class="zmember-openid-buttons" style="width:100%;padding-top:5px; padding-bottom:10px;">
+		<input type="checkbox" name="zRememberLogin" id="zRememberLogin" style="cursor:pointer; display:inline-block; margin:0px; margin-right:5px; width:20px; height:20px; padding:4px; border:none; background:none;" value="1" /> <label for="zRememberLogin" style="cursor:pointer;padding-top:2px;display:block;">Remember Login?</label>
+	</div>
 	<div class="zmember-openid-buttons" style="width:100%;"><input type="hidden" name="zIsMemberArea" id="zIsMemberArea" value="#form.zIsMemberArea#" />
+
 	  <button name="submitForm" id="submitForm" onclick="zLogin.autoLoginConfirm();zLogin.disableLoginButtons();return false;" type="submit">Login</button>
       <button name="submitForm2" id="submitForm2" onclick="zLogin.disableLoginButtons();zLogin.zAjaxResetPassword();" type="button">Reset Password</button>
       </div>
@@ -157,6 +162,7 @@
         
     <cffunction name="parentToken" localmode="modern" access="remote" returntype="any">
         <cfscript>
+        application.zcore.functions.zNoCache();
 	application.zcore.functions.zheader("content-type", "application/javascript");
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
 	if(structkeyexists(cookie, 'ztoken') and application.zcore.user.checkGroupAccess("user")){
@@ -175,6 +181,7 @@
     
     <cffunction name="serverToken" localmode="modern" access="remote" returntype="any">
         <cfscript>
+        application.zcore.functions.zNoCache();
 	application.zcore.functions.zheader("content-type", "application/javascript");
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
 	if(structkeyexists(cookie, 'ztoken') and application.zcore.user.checkGroupAccess("user")){
@@ -195,6 +202,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var inputStruct=0;
+    application.zcore.functions.zNoCache();
 	application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, 'x_ajax_id'));
 	
 	if(structkeyexists(form, 'tempToken')){

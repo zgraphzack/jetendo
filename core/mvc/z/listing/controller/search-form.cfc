@@ -192,6 +192,9 @@ var arrMaxLong=0;
 var latSize=0;
 var arrAvgLong=0;
 var arrCountAtAddress=0;
+
+application.zcore.functions.zNoCache();
+
 var propDisplayCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 application.zcore.functions.zDisbleEndFormCheck();
 if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){

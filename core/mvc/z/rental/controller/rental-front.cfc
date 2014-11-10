@@ -237,11 +237,11 @@ application.zcore.template.setTag('pagetitle',rental_name);
 application.zcore.template.setTag('pagenav',temppagenav);
 
 
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</div>');
-	}   
+		application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rates/editRental?rental_id=#rental_id#&amp;return=1">');
+		application.zcore.template.appendTag('pagetitle','</span>');
+	//}   
 </cfscript> 
 <div class="zrental-header">Rental Property</div>
 <div class="zrental-menu"><a href="##zrental-amenities">Amenities</a> <cfif rental_text NEQ ""><a href="##zrental-description">Description</a></cfif> <a href="##zrental-rates">Rates</a> <a href="##zrental-photos">Photos</a> 
@@ -445,9 +445,9 @@ $('##zRentalThumbnailLightGallery a').lightBox();
 </div>
 </div>  
    <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
-	}
+	//}
 	</cfscript>
 	</cffunction>
     
@@ -792,11 +792,11 @@ this.includeRentalById(ts);
 </cfif>
 <cfscript>
 
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</div>');
-	}   
+		application.zcore.template.prependTag('pagetitle','<span style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/availability/select?rental_id=#rental_id#&amp;return=1">');
+		application.zcore.template.appendTag('pagetitle','</span>');
+	//}   
 </cfscript>
 
 <!--- <cfif isDefined('calendarcolumns') EQ false>
@@ -1027,9 +1027,9 @@ ORDER BY availability_type_name ASC
     </tr>
 	</table> 
    <cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
-	}
+	//}
 	</cfscript>
     </cffunction>
         
@@ -1971,11 +1971,11 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 	</cfif>   
     <cfsavecontent variable="therentalHTMLSection">
 	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</div>');
-	}   
+		application.zcore.template.prependTag('pagetitle','<span style="display:inline;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/rental/admin/rental-category/edit?rental_category_id=#rental_category_id#&amp;return=1">');
+		application.zcore.template.appendTag('pagetitle','</span>');
+	//}   
 </cfscript>
 <cfsavecontent variable="tempRentalHTML">
             <cfscript>
@@ -2034,9 +2034,9 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 		writeoutput('<img src="#arrImages[i].link#" alt="#htmleditformat(arrImages[i].caption)#" /><br /><br />');
 	}
    
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){ 
 		writeoutput('</div>');
-	}
+	//}
 	</cfscript>
    </cfsavecontent>
     <cfscript>

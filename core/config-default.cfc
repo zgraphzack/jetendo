@@ -37,6 +37,7 @@
 
 	ts.zos.mlsImagesDomain=""; // optionally change the domain that MLS images are served from. i.e. http://mls-images.mycompany.com, or leave blank.
 	if(ts.zos.istestserver){
+		ts.zos.testProxyCache=false; // you must also enable nginx proxy cache in site globals
 		ts.zos.serverStruct={
 			"1":{
 				apiURL:"https://server1.your-company.com/z/api/",
@@ -72,6 +73,7 @@
 		ts.zOS.railoAdminReadEnabled=true;
 
 	}else{ 
+		ts.zos.testProxyCache=false;
 		ts.zos.serverStruct={
 			"1":{
 				apiURL:"https://server1.your-company.com/z/api/",

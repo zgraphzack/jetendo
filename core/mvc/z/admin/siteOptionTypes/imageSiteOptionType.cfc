@@ -126,12 +126,16 @@
 	if(structkeyexists(arguments.row, 'site_x_option_group_value')){
 		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_value)){
 			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_value);
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_original);	
+			if(arguments.row.site_x_option_group_original NEQ ""){
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_group_original);	
+			}
 		}
 	}else{
 		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_value)){
 			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_value);
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_original);	
+			if(arguments.row.site_x_option_original NEQ ""){
+				application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&'zupload/site-options/'&arguments.row.site_x_option_original);	
+			}
 		}
 	}
 	</cfscript>

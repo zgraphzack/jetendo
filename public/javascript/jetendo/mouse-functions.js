@@ -4,6 +4,7 @@ var zDragTableOnMouseMove=function(){};
 var zMapMarkerRollOutV3=function(){};
 var zHumanMovement=false;
 
+
 (function($, window, document, undefined){
 	"use strict";
 	var zDrag_arrParam=new Array();
@@ -237,15 +238,28 @@ var zHumanMovement=false;
 			zOverEditGoToURL(zCurOverEditLink);
 		}
 	}
+	var zOverEditContentLoaded=false;
+	function zLoadOverEditButton(){
+		if(!zOverEditContentLoaded){
+			zOverEditContentLoaded=true;
+			$('body').append('<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:#FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; "><a id="zOverEditATag" href="##" class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>');
+		}
+	}
 	$(".zOverEdit").bind("mouseover", function(){
-		var u=$(this).attr("data-editurl");
-		if(u != ""){
-			zOverEditDiv(this, u);
+		if(zIsAdminLoggedIn()){
+			zLoadOverEditButton();
+			var u=$(this).attr("data-editurl");
+			if(u != ""){
+				zOverEditDiv(this, u);
+			}
 		}
 	});
 	$("#zOverEditATag").bind("click", function(){
-		zOverEditClick();
-		return false;
+		if(zIsAdminLoggedIn()){
+			zLoadOverEditButton();
+			zOverEditClick();
+			return false;
+		}
 	});
 
 	window.zMouseHitTest=zMouseHitTest;

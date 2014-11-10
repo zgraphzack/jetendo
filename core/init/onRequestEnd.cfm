@@ -77,7 +77,7 @@
 				echo(request.zos.debugbarStruct.returnString2&request.zos.debugbarOutput);
 			}
 		}
-		echo(application.zcore.template.getEndBodyHTML());
+		//echo(application.zcore.template.getEndBodyHTML());
 	}
 	local.finalString=application.zcore.template.addEndBodyHTML(local.finalString, local.output2);
 	

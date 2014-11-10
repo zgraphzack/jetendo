@@ -2546,6 +2546,10 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	var i=0;
 	var qMapCheck=0;
 	var tempSQL=0;
+
+	// proxy cache disabled on all real estate sites to avoid bugs.
+	application.zcore.functions.zNoCache();
+
 	if(request.zos.mlsImagesDomain NEQ ""){
 		request.zos.retsPhotoPath=request.zos.mlsImagesDomain&'/zretsphotos/';
 	}else{

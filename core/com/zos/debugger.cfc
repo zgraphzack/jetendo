@@ -6,6 +6,9 @@
 			if(Request.zOS.debuggerEnabled EQ false){
 				return "";
 			}
+			if(not request.zos.istestserver){
+				application.zcore.functions.zNoCache();
+			}
 			if(isDefined('request.zsession.modes') EQ false){
 				request.zsession.modes = StructNew();
 			}

@@ -135,6 +135,7 @@
 	ORDER BY site_domain ";
 	var qSite=db.execute("qSite");
 	var arrTemp=[];
+	arrTemp3=[];
 	for(var row in qSite){
 		var arrTemp2=listToArray(row.site_domainaliases,",");
 		var primaryPath=replace(application.zcore.functions.zGetDomainInstallPath(row.site_short_domain), request.zos.installPath&"sites/", "");
@@ -148,12 +149,14 @@
 			arrayAppend(arrTemp, trim(row.site_ssl_manager_domain)&' "'&primaryPath&'";'&chr(10));
 		}
 		arrayAppend(arrTemp, chr(10));
+
+		arrayAppend(arrTemp3, "proxy_cache_path /opt/nginx/cache/#primaryPath# levels=1:2 keys_zone=#primaryPath#:1m max_size=500m inactive=5m;"&chr(10));
 	} 
 	var output='map $http_host $zmaindomain {
 	hostnames;
 	default "No Host Matched";
 	'&arrayToList(arrTemp, '')&'
-	}';
+	}'&chr(10)&arrayToList(arrTemp3, '');
 	// let's make a backup only once.
 	if(not fileexists(request.zos.sharedPath&'hostmap.conf.backup')){
 		application.zcore.functions.zrenamefile(request.zos.sharedPath&'hostmap.conf', request.zos.sharedPath&'hostmap.conf.backup');
@@ -1599,6 +1602,18 @@ application.zcore.functions.zLogError(ts);
 	</cfscript>
 </cffunction> 
 
+<cffunction name="zNoCache" localmode="modern" output="false">
+	<cfscript>
+	if(not structkeyexists(request.zos, 'zNoCacheRan')){
+		request.zos.zNoCacheRan=true;
+		var ts=structnew();
+		ts.name="zNoCache";
+		ts.value="1";
+		ts.expires=CreateTimeSpan(0,0,request.zos.sessionExpirationInMinutes,0);
+		application.zcore.functions.zCookie(ts); 
+	}
+	</cfscript>
+</cffunction>
 
 <cffunction name="zVarSO" localmode="modern" output="false" returntype="string">
 	<cfargument name="name" type="string" required="yes">
@@ -1625,7 +1640,8 @@ application.zcore.functions.zLogError(ts);
 		
 	 }
 	 request.zos.tempObj.zVarSOIndex++;
-	if(arguments.disableEditing EQ false and structkeyexists(application.zcore,'user') and structkeyexists(request.zos.userSession, 'groupAccess') and (structkeyexists(request.zos.userSession.groupAccess, "administrator")) and contentConfig.contentEmailFormat EQ false){
+	if(arguments.disableEditing EQ false and contentConfig.contentEmailFormat EQ false){
+		// and structkeyexists(application.zcore,'user') and structkeyexists(request.zos.userSession, 'groupAccess') and (structkeyexists(request.zos.userSession.groupAccess, "administrator"))
 		request.zos.tempObj.zVarSOIndex++;
 		start='<div style="display:inline;" id="zcidspan#request.zos.tempObj.zVarSOIndex#" class="zOverEdit" data-editurl="/z/admin/site-options/index?return=1&amp;jumpto=soid_#application.zcore.functions.zURLEncode(arguments.name,"_")#">';
 		end='</div>';

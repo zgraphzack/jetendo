@@ -910,7 +910,6 @@ displayGroupCom.add();')&'</pre>');
 	for(row in local.qGroups){
 		this.deleteGroupRecursively(row.site_option_group_id);	
 	}
-	// TODO: must recursively delete site_option_group, site_option and the associated files here, and image library records and files.
 	
 	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 	WHERE  site_x_option_group_set.site_option_group_id=#db.param(arguments.site_option_group_id)# and  
@@ -944,6 +943,9 @@ displayGroupCom.add();')&'</pre>');
 		}else{
 			if(fileexists(path&row.site_x_option_group_value)){
 				application.zcore.functions.zdeletefile(path&row.site_x_option_group_value);
+			}
+			if(row.site_x_option_group_original NEQ "" and fileexists(path&row.site_x_option_group_original)){
+				application.zcore.functions.zdeletefile(path&row.site_x_option_group_original);
 			}
 		}
 	}

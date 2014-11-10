@@ -1,6 +1,7 @@
 <cfcomponent>
     <cffunction name="index" localmode="modern" access="remote" output="yes" returntype="any">
         <cfoutput><cfscript>var local=structnew();
+        application.zcore.functions.zNoCache();
         request.znotemplate=1;
         local.jsonText="";
         form.debug=application.zcore.functions.zso(form, 'debug',false,false);

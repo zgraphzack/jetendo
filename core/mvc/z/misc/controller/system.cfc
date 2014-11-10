@@ -4,7 +4,7 @@
 	var i=0;
 	if(structkeyexists(application, 'sessionstruct')){
 		// clear application scope sessions:
-		request.zos.oldestPossibleSessionDate=now()-request.zsessiontimeout;
+		request.zos.oldestPossibleSessionDate=now()-CreateTimeSpan(0,0,request.zos.sessionExpirationInMinutes,0);
 		request.zos.oldestPossibleSessionDate=createodbcdatetime(dateformat(request.zos.oldestPossibleSessionDate,"yyyy-mm-dd")&" "&timeformat(request.zos.oldestPossibleSessionDate, "HH:mm:ss"));
 		for(i in application.sessionstruct){
 			if(structkeyexists(application.sessionstruct[i], 'lastvisit') and datecompare(application.sessionstruct[i].lastvisit, request.zos.oldestPossibleSessionDate) LTE 0){

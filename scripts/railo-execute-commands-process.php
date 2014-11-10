@@ -801,6 +801,14 @@ function publishNginxSiteConfig($a){
 	$row=$r->fetch_array(MYSQLI_ASSOC);
 	
 	$outPath=$nginxSitesPath.$site_id.".conf";
+
+	if($row["site_enable_nginx_proxy_cache"] == "1"){
+		$domainDir=str_replace(get_cfg_var("jetendo_sites_path"), "", zGetDomainInstallPath($row["site_short_domain"]));
+		$domainDir=substr($domainDir, 0, strlen($domainDir)-1);
+		$row["site_nginx_config"]="location ~ \.(cfm|cfc)$ { proxy_cache ".$domainDir."; proxy_pass http://\$railoUpstream; }"."\n".$row["site_nginx_config"];
+		
+	}
+
 	if($row["site_active"] == "0" || $row["site_nginx_disable_jetendo"]=="0" && !$hasSSL && trim($row["site_nginx_config"]) == ""){
 		if(file_exists($outPath)){
 			unlink($outPath);
@@ -850,7 +858,7 @@ function publishNginxSiteConfig($a){
 			}
 		array_push($arrConfig, "}\n");
 	}else{
-		$host=str_replace("www.", "", $row["site_short_domain"]);
+		$host=str_replace("www.", "", str_replace("https://", "", str_replace("http://", "", $row["site_domain"])));
 		array_push($arrSite, $host);
 		array_push($arrSite, "www.".$host);
 		array_push($arrConfig, "server {\n".

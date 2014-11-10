@@ -524,6 +524,7 @@ if(not application.zcore.app.getAppCFC("reservation").checkAvailability(ts)){
 
 <cffunction name="getPublicCalendarJsonForDateRange" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	form.start=application.zcore.functions.zso(form, 'start');
 	form.end=application.zcore.functions.zso(form, 'end');
 	form.reservation_type_name=application.zcore.functions.zso(form, 'reservation_type_name');
@@ -932,6 +933,7 @@ if(not rs.success){
 
 <cffunction name="cancel" localmode="modern" access="remote">
 	<cfscript>
+	application.zcore.functions.zNoCache();
 	db=request.zos.queryObject;
 	form.reservation_id=application.zcore.functions.zso(form, 'id');
 	form.reservation_key=application.zcore.functions.zso(form, 'key');

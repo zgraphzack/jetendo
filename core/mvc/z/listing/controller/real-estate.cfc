@@ -27,6 +27,9 @@
 	var distanceRadius=0;
 	var propDisplayCom=0;
 	var db=request.zos.queryObject;
+
+	application.zcore.functions.zNoCache();
+	
 	if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1){
 		application.zcore.functions.z404("Detail indexing is disabled, so this feature is intentionally set to 404.");	
 	}

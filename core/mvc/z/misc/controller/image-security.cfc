@@ -1,7 +1,9 @@
 <cfcomponent>
 <cfoutput>
     <cffunction name="index" localmode="modern" access="remote">
-        <cfscript>application.zcore.tracking.backOneHit();</cfscript>
+        <cfscript>
+        application.zcore.functions.zNoCache();
+        application.zcore.tracking.backOneHit();</cfscript>
         <cfif structkeyexists(form, 'vid') EQ false>
             Missing Identifier<cfscript>
         application.zcore.functions.zabort();

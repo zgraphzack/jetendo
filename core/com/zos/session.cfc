@@ -140,8 +140,22 @@ ssl session - lost on browser close - lost on server reboot
 	</cfscript>
 </cffunction>
 
+<cffunction name="isSessionEnabled" access="public" localmode="modern">
+	<cfscript>
+	if((structkeyexists(cookie, request.zos.serverSessionVariable) and cookie[request.zos.serverSessionVariable] NEQ "") or request.zos.cgi.request_method EQ "post"){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="get" access="public" localmode="modern">
 	<cfscript>
+	if(not isSessionEnabled()){
+		return {};
+	}
+	// allow session cookie output
 	if(not structkeyexists(request, request.zos.serverSessionVariable)){
 		getSessionId();
 	}
@@ -202,11 +216,15 @@ ssl session - lost on browser close - lost on server reboot
 <cffunction name="put" access="public" localmode="modern">
 	<cfargument name="struct" type="any" required="yes">
 	<cfscript>
+	if(not isSessionEnabled()){
+		return;
+	}
 	if(not structkeyexists(request.zos, 'sessionID')){
 		getSessionId();
 	}
-	if(structkeyexists(request.zos, 'trackingspider') and request.zos.trackingspider){
+	if((structkeyexists(request.zos, 'trackingspider') and request.zos.trackingspider) or structcount(arguments.struct) EQ 0){
 		structdelete(application.customSessionStruct, request[request.zos.serverSessionVariable]);
+		structdelete(cookie, request.zos.serverSessionVariable);
 		return;
 	}
 	if(request.zos.isTestServer){

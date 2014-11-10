@@ -1863,11 +1863,11 @@ this.app_id=10;
 	// or define the available fields right here.
 	
 	viewdata.article.story="";
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		viewdata.article.story&=('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
+		viewdata.article.story&=('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
 		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
-	}
+	//}
 	if(isDefined('request.zos.supressBlogArticleDetails')){
 		tempText=qArticle.blog_story;
 		viewdata.article.story&=(replace(tempText,"##zbeginlistings","#tempCurrentBlogUrl###zbeginlistings","ALL"));
@@ -1876,7 +1876,7 @@ this.app_id=10;
 		viewdata.article.story&=qArticle.blog_story;
 	}
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		viewdata.article.story&=('</span>');
+		viewdata.article.story&=('</div>');
 	}
 	// might need to support this in the skin language instead
 	//viewdata.article.secureEmailURL=application.zcore.functions.zEncodeEmail(qArticle.user_username);
@@ -2689,17 +2689,17 @@ this.app_id=10;
 	application.zcore.template.setTag("menu",tempMenu);
 	application.zcore.template.setTag("meta",tempMeta);
     
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
+		writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
-	}
+	//}
 	</cfscript>
 	#qcategory.blog_category_description# <br style="clear:both;" />
 	
 	<cfscript>
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('</span>');
+		writeoutput('</div>');
 	}
 	</cfscript>
 	<cfif application.zcore.app.getAppData("blog").optionStruct.blog_config_show_detail EQ 1> 
@@ -2974,18 +2974,18 @@ this.app_id=10;
 	application.zcore.template.setTag("menu",tempMenu);
 	application.zcore.template.setTag("meta",tempMeta);
     
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
+		writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
-	}
+	//}
 	</cfscript>
 	#qcategory.blog_category_description# <br style="clear:both;" />
 	
 	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('</span>');
-	}
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
+		writeoutput('</div>');
+	//}
 	</cfscript>
 	<cfif application.zcore.app.getAppData("blog").optionStruct.blog_config_show_detail EQ 1> 
 		<cfsavecontent variable="db.sql">
@@ -4016,17 +4016,17 @@ this.app_id=10;
 	application.zcore.template.setTag("menu",tempMenu);
 	application.zcore.template.setTag("meta",tempMeta);
 		
-	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) ){
+	//if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) ){
 		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</div>');
-	}
+		application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
+		application.zcore.template.appendTag('pagetitle','</span>');
+	//}
 	</cfscript>
 	#qtagdata.blog_tag_description# 
 	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
+	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
 		writeoutput('</div>');
-	}
+	//}
 	</cfscript><br style="clear:both;" />
 	
 	<cfif qtagdata.recordcount NEQ 0>
@@ -4379,9 +4379,9 @@ this.app_id=10;
 	var n2=0;
 	var ts2=0;
 	var pos=0;
-	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
+	//if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
 		writeoutput('<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#">');
-	}
+	//}
 	
 	thumbnailStruct=variables.getThumbnailSizeStruct();
 	ts2=structnew();
@@ -4454,9 +4454,9 @@ this.app_id=10;
 	</div>
 	<br style="clear:both;" /><br />
 	<cfscript>
-	if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
+	//if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
 		writeoutput('</div>');
-	}
+	//}
 	</cfscript>
 </cffunction>
 

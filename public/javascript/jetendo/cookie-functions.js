@@ -53,7 +53,7 @@
 	}
 
 	function zDeleteCookie(key){
-		zSetCookie({key:key, value:"", futureSeconds:-1, enableSubdomains:true});
+		zSetCookie({key:key, value:"", futureSeconds:-1, enableSubdomains:false});
 	}
 	/* zSetCookie({key:"cookie",value:"value",futureSeconds:3600,enableSubdomains:false}); */
 	function zSetCookie(obj){

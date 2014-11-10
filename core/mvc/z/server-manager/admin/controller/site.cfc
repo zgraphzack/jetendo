@@ -361,6 +361,9 @@
 			form.site_theme_sync_site_id=0;
 		}
 	}
+	if(structkeyexists(form, 'site_enable_nginx_proxy_cache') EQ false){
+		form.site_enable_nginx_proxy_cache=0;
+	}
 	if(structkeyexists(form, 'site_disable_dns_monitor') EQ false){
 		form.site_disable_dns_monitor=0;
 	}
@@ -1364,6 +1367,11 @@
 			<td style="vertical-align:top; width:140px;">Content URL ID:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_content_url_id", "table-error","")#><input name="site_content_url_id" type="text" size="70" maxlength="50" value="#form.site_content_url_id#"></td>
 		</tr>   
+
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_nginx_proxy_cache" type="checkbox" value="1" <cfif form.site_enable_nginx_proxy_cache EQ 1 or form.site_enable_nginx_proxy_cache EQ "">checked="checked"</cfif> style="background:none; border:none;"> Enable Nginx Proxy Cache?</td>
+		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
 			<td><input name="site_disable_dns_monitor" type="checkbox" value="1" <cfif form.site_disable_dns_monitor EQ 1 or form.site_disable_dns_monitor EQ "">checked="checked"</cfif> style="background:none; border:none;"> Disable DNS Monitor?</td>

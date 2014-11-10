@@ -2326,6 +2326,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 				if(fileexists(path&qS.site_x_option_value[i])){
 					application.zcore.functions.zdeletefile(path&qS.site_x_option_value[i]);
 				}
+				if(qS.site_x_option_original[i] NEQ "" and fileexists(path&qS.site_x_option_value[i])){
+					application.zcore.functions.zdeletefile(path&qS.site_x_option_original[i]);
+				}
 			}
 		}
 		db.sql="SELECT * FROM #request.zos.queryObject.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group, 
@@ -2349,6 +2352,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			}else{
 				if(fileexists(path&qS.site_x_option_group_value[i])){
 					application.zcore.functions.zdeletefile(path&qS.site_x_option_group_value[i]);
+				}
+				if(qS.site_x_option_group_original[i] NEQ "" and fileexists(path&qS.site_x_option_group_original[i])){
+					application.zcore.functions.zdeletefile(path&qS.site_x_option_group_original[i]);
 				}
 			}
 		}

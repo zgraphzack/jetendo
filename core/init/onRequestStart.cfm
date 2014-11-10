@@ -67,12 +67,15 @@
   <cfargument name="TargetPage" type="string" required="true" /><cfscript>   
 
 	s=gettickcount('nano'); 
-	 
-	ts=structnew();
-	ts.name="zSessionExpireDate";
-	ts.value=getHttpTimeString(now()+this.sessiontimeout);
-	ts.expires=this.sessiontimeout;
-	application.zcore.functions.zCookie(ts); 
+
+	if(request.zos.isServer){
+		application.zcore.functions.zNoCache();
+	}else if(request.zos.isDeveloper or request.zos.isTestServer){
+		// TODO add a way of testing nginx proxy cache here
+		if(not structkeyexists(request.zos, 'testProxyCache') or not request.zos.testProxyCache){
+			application.zcore.functions.zNoCache();
+		}
+	}
 	 
 	savecontent variable="local.output"{
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart begin'});
@@ -104,23 +107,13 @@
 		Request.zOSEndFile=ArrayNew(1);
 		request.zos.whiteSpaceEnabled=false;
 		 
-		application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
+		 // this wasn't necessary
+		//application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
 		request.zsession=application.zcore.session.get();  
 		/*
 	application.zcore.session.clear();
 	writedump(request.zsession);
 	abort;*/
-		ts=structnew();
-		ts.name="zLoggedIn";
-		if(isDefined('request.zsession.user')){
-			request.zos.userSession=duplicate(request.zsession.user);
-			ts.value="1";
-		}else{
-			request.zos.userSession={groupAccess:{}};
-			ts.value="0";
-		}
-		ts.expires=this.sessiontimeout;
-		application.zcore.functions.zCookie(ts); 
 	 
 		if(structkeyexists(form,request.zos.urlRoutingParameter) EQ false){	
 			return;	
@@ -311,6 +304,10 @@
 </cffunction>
 
 <cffunction name="onRequestStart1" localmode="modern" output="yes"><cfscript>
+
+	if(not structkeyexists(request.zos.globals, 'enableNginxProxyCache') or request.zos.globals.enableNginxProxyCache EQ 0){
+		application.zcore.functions.zNoCache();
+	}
 	if((request.zos.zreset EQ "session" or request.zos.zreset EQ "all")){
 		application.zcore.user.logOut(false, true);
 		application.zcore.session.clear();
@@ -428,15 +425,40 @@
 			application.zcore.user.updateSession({site_id:request.zos.globals.id});
 		}
 	}
+	if(structkeyexists(request.zsession, 'user')){
+		ts=structnew();
+		ts.name="zLoggedIn";
+		request.zos.userSession=duplicate(request.zsession.user);
+		ts.value="1";
+		ts.expires=this.sessiontimeout;
+		application.zcore.functions.zCookie(ts); 
+
+		ts=structnew();
+		ts.name="zSessionExpireDate";
+		ts.value=getHttpTimeString(now()+this.sessiontimeout);
+		ts.expires=this.sessiontimeout;
+		application.zcore.functions.zCookie(ts); 
+
+		if(structkeyexists(request.zsession, 'user') and structkeyexists(request.zsession.user.groupAccess, "administrator")){
+			ts=structnew();
+			ts.name="zIsAdmin";
+			ts.value="1";
+			ts.expires=this.sessiontimeout;
+			application.zcore.functions.zCookie(ts); 
+		}
+		application.zcore.functions.zNoCache();
+	}else{
+		request.zos.userSession={groupAccess:{}};
+	}
 
 	if(form[request.zos.urlRoutingParameter] EQ "/z/user/login/confirmToken"){
 		loginCom=createobject("component", "zcorerootmapping.mvc.z.user.controller.login");
 		loginCom.confirmToken();
 	}
-	// temporarily showing all the time because I don't know how to ensure it runs once.
-	if(structkeyexists(cookie,'zparentlogincheck') EQ false and application.zcore.user.checkGroupAccess("user") EQ false){
+	// structkeyexists(cookie,'zparentlogincheck') EQ false and 
+	/*if(application.zcore.user.checkGroupAccess("user") EQ false){
 		application.zcore.user.displayTokenScripts();
-	} 
+	} */
 	
 	if(request.zos.isDeveloper and structkeyexists(request.zos,'userSession') and structkeyexists(request.zos.userSession.groupAccess, "member")){
 		application.zcore.skin.disableMinCat();
@@ -805,6 +827,7 @@
 	// silenced output
 	savecontent variable="local.output"{
 		if(request.zos.inServerManager){
+			application.zcore.functions.zNoCache();
 			runningTask=false;
 			if(left(request.cgi_script_name, 24) EQ '/z/server-manager/tasks/' and (request.zos.isServer or request.zos.cgi.remote_addr EQ "127.0.0.1")){
 				runningTask=true;

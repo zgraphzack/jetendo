@@ -234,6 +234,8 @@ userCom.checkLogin(inputStruct);
 		secureLogin=true,
 		site_id = request.zos.globals.id
 	}
+	application.zcore.functions.zNoCache();
+	
 	rs.arrDebugLog=[];
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin start'});
 	local.failedLogin=false;
@@ -754,11 +756,13 @@ userCom.checkLogin(inputStruct);
 	structdelete(request.zsession,"inquiries_phone1");
 	structdelete(request.zsession,"zUserInquiryInfoLoaded");
 	
-	ts=structnew();
-	ts.name="zLoggedIn";
-	ts.value="0";
-	ts.expires="now";
-	application.zcore.functions.zCookie(ts); 
+	
+	structdelete(cookie, "zLoggedIn");
+	structdelete(cookie, "zIsAdmin");
+	structdelete(cookie, "zSessionExpireDate");
+	structdelete(cookie, "zparentlogincheck");
+	structdelete(cookie, "zautologin");
+	structdelete(cookie, "zNoCache");
 	</cfscript>
 	<cfcookie name="z_user_id" value="" expires="now">
 	<cfcookie name="z_user_siteIdType" value="" expires="now">
@@ -772,6 +776,10 @@ userCom.checkLogin(inputStruct);
 	<cfcookie name="inquiries_first_name" value="" expires="now">
 	<cfcookie name="inquiries_last_name" value="" expires="now">
 	<cfcookie name="inquiries_phone1" value="" expires="now">
+
+	<cfscript>
+	application.zcore.session.clear();
+	</cfscript>
 </cffunction>
 
 <cffunction name="updateSession" localmode="modern" access="public" returntype="any" output="no" hint="This function should happen every page view once the user is logged in.">
@@ -1314,13 +1322,11 @@ formString = userCom.loginForm(inputStruct);
 		if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.parentId) CONTAINS "https://"){
 			application.zcore.skin.includeJS(application.zcore.functions.zvar('domain', request.zos.globals.parentId)&'/z/user/login/parentToken?ztv='&randrange(100000,900000));
 		}
-		//application.zcore.template.appendTag("scripts",'<script type="text/javascript" src="'&application.zcore.functions.zvar('domain', request.zos.globals.parentId)&'/z/user/login/parentToken?ztv='&randrange(100000,900000)&'"></script>');
 	}
 	if(request.zos.isdeveloperIpMatch){
 		if(request.zos.cgi.SERVER_PORT NEQ 443 or application.zcore.functions.zvar('securedomain', request.zos.globals.serverId) CONTAINS "https://"){
 			application.zcore.skin.includeJS(request.zos.globals.serverDomain&'/z/user/login/serverToken?ztv='&randrange(100000,900000));
 		}
-		//application.zcore.template.appendTag("scripts",'<script type="text/javascript" src="'&request.zos.globals.serverDomain&'/z/user/login/serverToken?ztv='&randrange(100000,900000)&'"></script>');
 	}
 	</cfscript>
 </cffunction>

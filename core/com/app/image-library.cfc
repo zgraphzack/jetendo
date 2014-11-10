@@ -241,7 +241,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	}
 	arrSize=listtoarray(arguments.size,"x");
 	if(arraylen(arrSize) NEQ 2){
-		if(request.zos.cgi.QUERY_STRING CONTAINS "&amp;size="){
+		if(request.zos.cgi.QUERY_STRING CONTAINS "&amp;size=" or arguments.size EQ ""){
 			// invalid spider request not html compatible.
 			if(zdebug){
 				writeoutput('404 invalid request1: /z/a/listing/images/image-not-available.jpg');

@@ -278,6 +278,9 @@
 	var qC=0;
 	var listingTrackTable=false;
 	var db2=request.zos.noVerifyQueryObject;
+
+	application.zcore.functions.zNoCache();
+
 	ts.requireValidCoordinates=false;
 	ts.removeValues="";
 	ts.zReturnLookupQuery=false;

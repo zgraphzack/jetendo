@@ -5,7 +5,6 @@
 	<script src="/z/javascript/jetendo-init.js" type="text/javascript"></script>
 	<script type="text/javascript">/* <![CDATA[ */
 	#arguments.dynamicContent#
-	var zLoggedIn=<cfif application.zcore.user.checkGroupAccess("user")>true<cfelse>false</cfif>;
 	/* ]]> */</script>
 	</cfsavecontent>
 	<cfreturn output>
@@ -317,12 +316,12 @@
 	return arguments.finalString;
 	</cfscript>
 </cffunction>
-
+<!--- 
 <cffunction name="getEndBodyHTML" localmode="modern" access="public">
 	<cfscript>
 	return '<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:##FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; "><a id="zOverEditATag" href="##" class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>'; 
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="abort" localmode="modern" output="true" returntype="any"><cfargument name="overrideContent" type="string" required="yes"><cfscript>
 	var i=0;
@@ -335,7 +334,7 @@
 			request.zos.templateData.tagContent[i].required = false;
 		}
 		finalString=this.build();
-		endBodyHTML=this.getEndBodyHTML();
+		endBodyHTML="";//this.getEndBodyHTML();
 		echo(this.addEndBodyHTML(finalString, endBodyHTML));
 		
 	}
