@@ -416,6 +416,9 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	length=arrayLen(arrValue);
 	type=arguments.struct.type;
 	field=arguments.struct.field;
+	if(structkeyexists(arguments.struct, 'delimiter')){
+		arguments.delimiter=arguments.struct.delimiter;
+	}
 	row=arguments.row;
 	match=true;
 	
@@ -723,6 +726,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 					site_option_type_id=request.zos.globals.soGroupData.siteOptionLookup[site_option_id].type;
 					currentCFC=application.zcore.siteOptionTypeStruct[site_option_type_id];
 
+					arrayAppend(arrSelect, "s2.site_x_option_group_value sVal2");
 					arrayAppend(arrTable, "site_x_option_group s2");
 					arrayAppend(arrWhere, "s2.site_id = s1.site_id and 
 					s2.site_x_option_group_set_id = s1.site_x_option_group_set_id and 
@@ -756,7 +760,11 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 					return rs;
 				} 
 			}
-			db.sql="select s1.site_x_option_group_set_id 
+			db.sql="select s1.site_x_option_group_set_id ";
+			if(arraylen(arrSelect)){
+				db.sql&=", "&arrayToList(arrSelect, ", ");
+			}
+			db.sql&="
 			from #arrayToList(arrTable, ", ")# 
 			WHERE #arrayToList(arrWhere, " and ")# ";
 			if(not arguments.showUnapproved){
@@ -765,7 +773,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			db.sql&=" GROUP BY s1.site_x_option_group_set_id 
 			#orderByStatement#
 			LIMIT #db.param(arguments.offset)#, #db.param(arguments.limit+1)#";
-			qIdList=db.execute("qSelect");  
+			qIdList=db.execute("qSelect"); 
 			//writedump(qIdList);abort;
 
 			if(qIdList.recordcount EQ 0){
@@ -784,7 +792,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			}
 			idlist="'"&arraytolist(arrId, "','")&"'";
 			
-			 db.sql="SELECT * FROM 
+			 db.sql="SELECT *  FROM 
 			 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
 			 #db.table("site_x_option_group", request.zos.zcoreDatasource)# s2
 			WHERE  s1.site_id = #db.param(request.zos.globals.id)# and 
