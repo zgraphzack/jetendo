@@ -602,7 +602,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 						}
 					}
 					application.zcore.functions.zRenameFile(form.image_file, filePath);
-					filePath=getfilefrompath(form.image_file);	
+					filePath=getfilefrompath(filePath);	
 				}
 				if(filePath EQ false){ 
 					application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - saveImageId() failed to upload the image.");
@@ -1618,7 +1618,10 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<form id="form1" action="#request.cgi_script_name#?method=imageform&amp;image_library_id=#form.image_library_id#" enctype="multipart/form-data" method="post">
 		<div id="htmlFileUpload" style="padding-right:10px;">
 		<input type="file" name="imagefiles" id="imagefiles" <cfif server.railo.version EQ request.zos.customRailoVersion> multiple="multiple" </cfif> /><br /><br />
-		<input type="submit" name="submit222" value="Upload" />
+		<div id="submitDiv1">
+		<input type="submit" name="submit222" value="Upload" onclick="$('##submitDiv1').hide();$('##waitDiv1').show();" />
+		</div>
+		<div id="waitDiv1" style="display:none;">Please Wait...</div>
 		</div>
 	
 	</form></td><td style="vertical-align:top;"><p>This tool lets you upload multiple images (.jpg, .gif or .png) at once.<br />

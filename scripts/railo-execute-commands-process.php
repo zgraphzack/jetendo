@@ -1063,6 +1063,21 @@ function getImageMagickConvertApplyMask($a){
 	$r=`$cmd`;
 	echo $cmd."\n".$r."\n";
 	if(file_exists($absImageOutputPath)){
+		if(!zIsTestServer()){
+
+			$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($absImageInputPath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chmod 660 '.escapeshellarg($absImageInputPath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($absImageOutputPath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chmod 660 '.escapeshellarg($absImageOutputPath);
+			echo $cmd."\n";
+			`$cmd`;
+		}
 		return "1";
 	}
 	echo "Failed to apply image to image\n";
@@ -1160,6 +1175,22 @@ function getImageMagickConvertResize($a){
 	$r=`$cmd`;
 	echo $cmd."\n".$r."\n";
 	if(file_exists($destinationFilePath)){
+
+		if(!zIsTestServer()){
+
+			$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($sourceFilePath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chmod 660 '.escapeshellarg($sourceFilePath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($destinationFilePath);
+			echo $cmd."\n";
+			`$cmd`;
+			$cmd='/bin/chmod 660 '.escapeshellarg($destinationFilePath);
+			echo $cmd."\n";
+			`$cmd`;
+		}
 		return "1";
 	}
 	return "0";

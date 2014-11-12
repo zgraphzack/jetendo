@@ -537,7 +537,7 @@ if(not application.zcore.app.getAppCFC("reservation").checkAvailability(ts)){
 	}else if(form.reservation_type_id NEQ ""){
 		typeStruct=getReservationTypeById(form.reservation_type_id);
 	}else{
-		throw("A valid active reservation type must be specified using form.reservation_type_name or form.reservation_type_id.");
+		application.zcore.functions.z404("A valid active reservation type must be specified using form.reservation_type_name or form.reservation_type_id.");
 	}
 	
 	db.sql="select * from 
@@ -696,7 +696,7 @@ if(not rs.success){
 		}else if(ss.reservation_type_id NEQ ""){
 			typeStruct=getReservationTypeById(ss.reservation_type_id);
 		}else{
-			throw("A valid active reservation type must be specified using arguments.struct.reservation_type_name or arguments.struct.reservation_type_id.");
+			application.zcore.functions.z404("A valid active reservation type must be specified using arguments.struct.reservation_type_name or arguments.struct.reservation_type_id.");
 		}
 	}catch(Any e){
 		application.zcore.status.setStatus(request.zsid, "Reservation type is missing", ss.struct, true);
