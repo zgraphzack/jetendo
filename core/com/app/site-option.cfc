@@ -94,11 +94,16 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 					multipleValues=false;
 					delimiter='';
 				}
+				if(structkeyexists(c, 'concatAppendPrepend')){
+					concatAppendPrepend=c.concatAppendPrepend;
+				}else{
+					concatAppendPrepend='';
+				}
 				tableName="sGroup"&arguments.fieldStruct[siteOptionId];
 				field='sVal'&siteOptionId;
 				currentCFC=application.zcore.siteOptionTypeStruct[tempStruct.siteOptionLookup[siteOptionId].site_option_type_id];
 				fieldName=currentCFC.getSearchFieldName('s1', tableName, tempStruct.siteOptionLookup[siteOptionId].optionStruct);
-				arrayAppend(arrSQL, this.processSearchGroupSQL(c, fieldName, multipleValues, delimiter));// "`"&tableName&"`.`"&field&"`"));
+				arrayAppend(arrSQL, this.processSearchGroupSQL(c, fieldName, multipleValues, delimiter, concatAppendPrepend));// "`"&tableName&"`.`"&field&"`"));
 				if(i NEQ length and not isSimpleValue(arguments.arrSearch[i+1])){
 					arrayAppend(arrSQL, ' and ');
 				}
@@ -133,6 +138,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	<cfargument name="field" type="string" required="yes">
 	<cfargument name="multipleValues" type="boolean" required="yes">
 	<cfargument name="delimiter" type="string" required="yes">
+	<cfargument name="concatAppendPrepend" type="string" required="yes">
 	<cfscript>
 	arrValue=arguments.struct.arrValue;
 	length=arrayLen(arrValue);
@@ -140,6 +146,10 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 	match=true;
 	arrSQL=[];
 	field=arguments.field;
+	if(arguments.concatAppendPrepend NEQ ""){
+		arguments.concatAppendPrepend=application.zcore.functions.zescape(arguments.concatAppendPrepend);
+		field="concat('#arguments.concatAppendPrepend#', #field#, '#arguments.concatAppendPrepend#')";
+	}
 	multipleError="arguments.multipleValues EQ true isn't supported by processSearchGroupSQL.  Only non-sql in-memory searches can have multiple values.";
 	if(type EQ "="){
 		for(g=1;g LTE length;g++){
