@@ -30,7 +30,7 @@ $mysqlMidnightDate=date("Y-m-d")." 00:00:00";
 
 $perloop=50;
 $destinationPath=get_cfg_var("jetendo_share_path")."mls-images/";
-$result=$cmysql->query("SELECT * FROM mls WHERE 
+$result2=$cmysql->query("SELECT * FROM mls WHERE 
 mls_status = '1' and 
 mls_deleted='0' and 
 mls_provider LIKE 'rets%' 
@@ -45,9 +45,10 @@ $count1=0;
 $downloadCount=0;
 $errorCount=0;
 $arrError=array();
-while($mlsRow=$result->fetch_array(MYSQLI_ASSOC)){
+while($mlsRow=$result2->fetch_array(MYSQLI_ASSOC)){
 	$offset=0;
 	$type=getRetsImageType($mlsRow["mls_id"]);
+	echo "mls_id:".$mlsRow["mls_id"]."\n";
 	if(!isset($arrRetsConfig[$mlsRow["mls_id"]]) || $arrRetsConfig[$mlsRow["mls_id"]]['username'] == ""){
 		echo "Skipping mls_id=".$mlsRow["mls_id"]." because there is no login information specified.\n";
 		continue;

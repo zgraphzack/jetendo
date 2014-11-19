@@ -222,7 +222,8 @@ function getSysIdByListingId($listingId){
 			return $id;
 		}
 	}else{
-		return $listingId;
+		$a=explode("-", $listingId);
+		return $a[1];
 	}
 }
 
@@ -318,13 +319,15 @@ function zDownloadRetsImages($listingId, $sysId, $photoIndex){
 	$i=0;
 	$p=dirname(__FILE__)."/";
 
+	$a=explode("-", $listingId);
+	$pid=$a[1];
 	$destinationPath=get_cfg_var("jetendo_share_path")."mls-images/";
 	foreach ($photos as $arrPhoto) {
 		if(!$arrPhoto['Success']){
 			continue;
 		}
 		$i++;
-		$fname=$listingId."-".($arrPhoto['Object-ID']).".jpeg";
+		$fname=$pid."-".($arrPhoto['Object-ID']).".jpeg";
 		$md5name=md5($fname);
 		$fpath=$destinationPath.$mls_id."/".substr($md5name,0,2)."/".substr($md5name,2,1)."/";
 		if(!is_dir($fpath)){

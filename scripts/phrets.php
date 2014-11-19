@@ -399,6 +399,7 @@ class phRETS {
 
 			// add information about this photo to the returned array
 			$return_photos[] = $this_photo;
+
 		}
 
 		// return everything
