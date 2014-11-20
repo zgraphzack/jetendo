@@ -2991,5 +2991,14 @@ writeoutput(rs.output);
     application.zcore.functions.zInputSelectBox(local.selectStruct);
     </cfscript>
 </cffunction>
+
+<cffunction name="zRequireRespondJs" localmode="modern" access="public">
+	<cfscript>
+	application.zcore.template.appendTag("meta", '<!--[if lt IE 9]>
+		<script src="/z/javascript/html5shiv.min.js"></script>
+		<script src="/z/javascript/respond.min.js"></script>
+	<![endif]-->');
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

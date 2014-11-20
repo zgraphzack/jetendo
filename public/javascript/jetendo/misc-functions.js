@@ -428,13 +428,14 @@ function zLoadAddThisJs(){
 		d1=document.getElementById("zaddthisbox"+i);
 		if(d1){
 			found=true;
-			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><iframe allowtransparency="true" frameborder="0" scrolling="no" src="//platform.twitter.com/widgets/tweet_button.1347008535.html#_=1347061585575&amp;count=horizontal&amp;counturl='+escape(window.location.href)+'&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer='+escape(window.location.href)+'&amp;url='+escape(window.location.href)+'" class="twitter-share-button twitter-count-horizontal" style="width: 110px; height: 20px; " title="Twitter Tweet Button" data-twttr-rendered="true"></iframe></div>';
-			
+			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><a class="twitter-share-button" href="https://twitter.com/share">Tweet</a></div>';
+
 			d1.id="zaddthisbox"+i+"_loaded";
 			a1.push(d1);
 		}
 	}
 	if(found){
+		zLoadFile("//platform.twitter.com/widgets.js","js");
 		zLoadFile("//platform.linkedin.com/in.js","js");
 	    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
 	    po.src = 'https://apis.google.com/js/platform.js';

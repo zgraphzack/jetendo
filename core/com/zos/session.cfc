@@ -140,9 +140,25 @@ ssl session - lost on browser close - lost on server reboot
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="forceEnable" access="public" localmode="modern">
+	<cfscript>
+	request.zos.forceEnableSession=true;
+	backupSession={};
+	if(structkeyexists(request, 'zsession')){
+		backupSession=request.zsession;
+	}
+	request.zsession=application.zcore.session.get();
+	structappend(request.zsession, backupSession, true);
+	</cfscript>
+</cffunction>
+		
+
 <cffunction name="isSessionEnabled" access="public" localmode="modern">
 	<cfscript>
-	if(structkeyexists(cookie, 'ztoken')){
+	if(structkeyexists(request.zos, 'forceEnableSession')){
+		return true;
+	}else if(structkeyexists(cookie, 'ztoken')){
 		return true;
 	}else if(structkeyexists(cookie, request.zos.serverSessionVariable) and cookie[request.zos.serverSessionVariable] NEQ ""){
 		return true;
@@ -155,6 +171,7 @@ ssl session - lost on browser close - lost on server reboot
 </cffunction>
 
 <cffunction name="get" access="public" localmode="modern">
+	<cfargument name="forceEnable" type="boolean" required="false">
 	<cfscript>
 	if(not isSessionEnabled()){
 		return {};

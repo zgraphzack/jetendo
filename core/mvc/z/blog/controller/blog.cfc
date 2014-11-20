@@ -2258,6 +2258,11 @@ this.app_id=10;
 				ts.author=qList.user_first_name&" "&qList.user_last_name;
 				ts.authorEmail=qList.user_username;
 				ts.datetime=qList.blog_datetime;
+				if(qList.blog_end_datetime NEQ "0000-00-00 00:00:00" and qList.blog_end_datetime NEQ ""){
+					ts.endDatetime=qList.blog_end_datetime;
+				}else{
+					ts.endDatetime=qList.blog_datetime;
+				}
 				
 				
 				ts2=structnew();
