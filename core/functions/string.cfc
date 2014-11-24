@@ -617,7 +617,7 @@ application.zcore.functions.zLimitStringLength("long text", 5);
 	if(not arguments.enableEllipsis){
 		affix="";
 	}
-	if(spacePosition EQ 0){
+	if(arguments.length-spacePosition LTE 0){
 		return newText&affix;
 	}
 	return left(newText, arguments.length-spacePosition)&affix;

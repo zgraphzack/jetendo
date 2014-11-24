@@ -3121,6 +3121,13 @@ zCreateMemoryTable(ts);
 			<cfif request.zos.istestserver and arguments.ss.table EQ "listing"> 
 				WHERE CEILING(RAND()*#db.param(10)#) >= #db.param(7)# 
 			</cfif>
+			<cfif arguments.ss.table EQ "listing">
+				ORDER BY listing_id ASC
+			<cfelseif arguments.ss.table EQ "city">
+				ORDER BY city_id ASC
+			<cfelseif arguments.ss.table EQ "city_distance">
+				ORDER BY city_distance_id ASC
+			</cfif>
 			</cfsavecontent><cfscript>qMLS=db.execute("qMLS");
 			local.c=application.zcore.db.getConfig();
 			local.c.datasource=request.zos.zcoreDatasource;
