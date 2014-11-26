@@ -624,7 +624,7 @@ if(not rs.success){
 	
 	local.appCom =application.zcore.app;
 	local.appCom.onSiteStart(ts);
-	ts.adminFeatureMapStruct=application.zcore.adminSecurityFilter.getFeatureMap();
+	ts.adminFeatureMapStruct=application.zcore.adminSecurityFilter.getFeatureMap(ts);
 	
 	local.skin=application.zcore.skin;
 	local.skin.onSiteStart(ts);

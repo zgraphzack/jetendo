@@ -1053,6 +1053,18 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="structHasApp" localmode="modern"  returntype="boolean" output="no">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfargument name="app_name" type="string" required="yes">
+	<cfscript>
+	if(structkeyexists(application.zcore.appComName, arguments.app_name) and structkeyexists(arguments.ss.app.appCache, application.zcore.appComName[arguments.app_name])){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="siteHasApp" localmode="modern"  returntype="boolean" output="no">
 	<cfargument name="app_name" type="string" required="yes">
 	<cfscript>

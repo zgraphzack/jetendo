@@ -1,7 +1,9 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="getFeatureMap" localmode="modern" returntype="struct">
+	<cfargument name="ss" type="struct" required="true">
 	<cfscript>
+	ss=arguments.ss;
 	db=request.zos.queryObject;
 	db.sql="SELECT site_option_group.* 
 	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group  
@@ -14,14 +16,14 @@
 	qGroup=db.execute("qGroup"); 
 
 	ms=structnew("linked");
-	if(application.zcore.app.siteHasApp("blog")){
+	if(application.zcore.app.structHasApp(ss, "blog")){
 		ms["Blog"]={ parent:'', label:"Blog" };
 		ms["Blog Articles"]={ parent:'Blog', label:chr(9)&"Blog Articles"};
 		ms["Blog Categories"]={ parent:'Blog', label:chr(9)&"Blog Categories"};
 		ms["Blog Tags"]={ parent:'Blog', label:chr(9)&"Blog Tags"};
 	}
 	ms["Content Manager"]={ parent:'', label:"Content Manager"};
-	if(application.zcore.app.siteHasApp("content")){
+	if(application.zcore.app.structHasApp(ss, "content")){
 		ms["Pages"]={ parent:'Content Manager', label:chr(9)&"Pages"};
 		ms["Content Permissions"]={ parent:'Content Manager', label:chr(9)&"Content Permissions"};
 	}	
@@ -57,7 +59,7 @@
 	ms["Mailing List Export"]={ parent:'Leads', label:chr(9)&"Mailing List Export"};
 	ms["Lead Routing"]={ parent:'Leads', label:chr(9)&"Lead Routing"};
 
-	if(application.zcore.app.siteHasApp("listing")){
+	if(application.zcore.app.structHasApp(ss, "listing")){
 		ms["Listings"]={ parent:'', label:"Listings"};
 		ms["Manage Listings"]={ parent:'Listings', label:chr(9)&"Manage Listings"};
 		ms["Listing Research Tool"]={ parent:'Listings', label:chr(9)&"Listing Research Tool"};
@@ -66,7 +68,7 @@
 		ms["Widgets For Other Sites"]={ parent:'Listings', label:chr(9)&"Widgets For Other Sites"};
 	}
 
-	if(application.zcore.app.siteHasApp("rental")){
+	if(application.zcore.app.structHasApp(ss, "rental")){
 		ms["Rentals"]={ parent:'', label:"Rentals"};
 		ms["Manage Rentals"]={ parent:'Rentals', label:chr(9)&"Manage Rentals"};
 		ms["Rental Amenities"]={ parent:'Rentals', label:chr(9)&"Rental Amenities"};
@@ -74,7 +76,7 @@
 		ms["Rental Calendars"]={ parent:'Rentals', label:	chr(9)&"Rental Calendars"};
 		ms["Rental Reservations"]={parent:'Rentals', label: chr(9)&"Rental Reservations"};
 	}
-	if(application.zcore.app.siteHasApp("ecommerce")){
+	if(application.zcore.app.structHasApp(ss, "ecommerce")){
 		ms["Ecommerce"]={ parent:'', label:"Ecommerce"};
 		ms["Manage Orders"]={ parent:'Ecommerce', label:chr(9)&"Manage Orders"};
 		ms["Manage Subscriptions"]={ parent:'Ecommerce', label:chr(9)&"Manage Subscriptions"};
@@ -83,12 +85,12 @@
 		ms["Manage Product Categories"]={ parent:'Ecommerce', label:chr(9)&"Manage Product Categories"};
 		ms["Manage Customers"]={parent:'Ecommerce', label: chr(9)&"Manage Customers"};
 	}
-	if(application.zcore.app.siteHasApp("reservation")){
+	if(application.zcore.app.structHasApp(ss, "reservation")){
 		ms["reservations"]={ parent:'', label:"Reservations"};
 		ms["Manage Reservations"]={ parent:'reservations', label:chr(9)&"Manage Reservations"};
 		ms["Reservation Types"]={ parent:'reservation', label:chr(9)&"Reservation Types"};
 	}
-	if(application.zcore.app.siteHasApp("event")){
+	if(application.zcore.app.structHasApp(ss, "event")){
 		ms["events"]={ parent:'', label:"Events"};
 		ms["Manage Events"]={ parent:'events', label:chr(9)&"Manage Events"};
 	}
@@ -105,7 +107,7 @@
 <cffunction name="getFormField" localmode="modern">
 	<cfargument name="fieldName" type="string" required="yes">
 	<cfscript>
-	ms=getFeatureMap();
+	ms=getFeatureMap(application.siteStruct[request.zos.globals.id]);
 	arrValue=[];
 	arrLabel=[];
 	for(i in ms){
@@ -233,7 +235,7 @@
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
 	userSiteId='user';
-	if(arguments.site_id NEQ request.zos.globals.id){
+	if(arguments.site_id NEQ arguments.site_id){
 		userSiteId='user'&arguments.site_id;
 	} 
 	if(arguments.requiresWriteAccess){
@@ -247,11 +249,11 @@
 		}else{
 			arrFeature=listToArray(arguments.featureName, ",");
 			for(i=1;i LTE arraylen(arrFeature);i++){
-				if(not structkeyexists(application.siteStruct[request.zos.globals.id].adminFeatureMapStruct, arrFeature[i])){
+				if(not structkeyexists(application.siteStruct[arguments.site_id].adminFeatureMapStruct, arrFeature[i])){
 					throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
 				}
 				if(not structkeyexists(request.zsession[userSiteId].limitManagerFeatureStruct, arrFeature[i])){
-					currentFeature=application.siteStruct[request.zos.globals.id].adminFeatureMapStruct[arrFeature[i]];
+					currentFeature=application.siteStruct[arguments.site_id].adminFeatureMapStruct[arrFeature[i]];
 					return false;
 				}
 			}

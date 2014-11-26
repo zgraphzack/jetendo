@@ -3,6 +3,7 @@
 <cffunction name="init" localmode="modern" access="public" roles="member">
 	<cfscript>
 	form.site_id=request.zos.globals.id;
+
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages");
 	if(structcount(application.zcore.app.getAppData("content")) EQ 0){
 		application.zcore.status.setStatus(request.zsid,"Access denied");
@@ -1818,6 +1819,29 @@
 	var i=0;
 	var searchTextOriginal=0;
 	var contentphoto99=0;
+	linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
+
+	if(structkeyexists(linkStruct, "Content Manager")){
+		childStruct=linkStruct["Content Manager"].children;
+		echo('<h2>Content Manager</h2> <div style="float:left; margin-bottom:10px;width:100%;">');
+		arrKey=structkeyarray(childStruct);
+		arraySort(arrKey, "text", "asc");
+		count=0;
+		for(i=1;i LTE arraylen(arrKey);i++){
+			i2=arrKey[i];
+			if(application.zcore.adminSecurityFilter.checkFeatureAccess(childStruct[i2].featureName)){
+				if(count NEQ 0){
+					echo(' | ');
+				}
+				count++;
+				echo('<a href="#childStruct[i2].link#">'&i2&'</a>');
+			}
+		}
+		echo('</div>');
+	}
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+		return;
+	}
 	application.zcore.functions.zSetPageHelpId("2.1"); 
 	this.init();
 	application.zcore.siteOptionCom.requireSectionEnabledSetId();
@@ -1846,22 +1870,6 @@
 
 
 
-	linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
-
-	if(structkeyexists(linkStruct, "Content Manager")){
-		childStruct=linkStruct["Content Manager"].children;
-		echo('<h2>Content Manager</h2> <div style="float:left; margin-bottom:10px;width:100%;">');
-		arrKey=structkeyarray(childStruct);
-		arraySort(arrKey, "text", "asc");
-		for(i=1;i LTE arraylen(arrKey);i++){
-			i2=arrKey[i];
-			if(i NEQ 1){
-				echo(' | ');
-			}
-			echo('<a href="#childStruct[i2].link#">'&i2&'</a>');//style="display:block; padding:1%; background-color:##F2F2F2; text-decoration:none; margin-right:5px; margin-bottom:5px; color:##000; border:1px solid ##CCC; float:left; border-radius:4px;"
-		}
-		echo('</div>');
-	}
 
 	writeoutput('<h2>Manage Pages</h2>');
 	if(application.zcore.user.checkGroupAccess("administrator")){
