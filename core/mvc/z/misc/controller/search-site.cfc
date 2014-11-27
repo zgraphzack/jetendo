@@ -383,7 +383,7 @@ search sql generator has to be able to search on child group data for paging to 
 							ts.layoutType="";
 							ts.image_library_id=c.__image_library_id;
 							ts.forceSize=true;
-							ts.crop=1;
+							ts.crop=0;
 							ts.offset=0;
 							ts.limit=1; // zero will return all images
 							var arrImage=request.zos.imageLibraryCom.displayImages(ts);

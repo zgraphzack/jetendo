@@ -2365,6 +2365,13 @@ tabCom.enableSaveButtons();
 			</td>
 		</tr>
 		<tr>
+			<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Event Category","member.blog.formcat blog_category_enable_events")#</th>
+			<td>
+			#application.zcore.functions.zInput_Boolean("blog_category_enable_events")#
+			</td>
+		</tr>
+
+		<tr>
 			<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.blog.formcat blog_category_metakey")#</th>
 			<td>
 				<textarea name="blog_category_metakey" style="width:100%; height:60px; ">#form.blog_category_metakey#</textarea>

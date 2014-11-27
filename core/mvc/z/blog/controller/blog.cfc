@@ -2605,8 +2605,7 @@ this.app_id=10;
 	left join #db.table("blog", request.zos.zcoreDatasource)# blog on 
 	blog_x_category.blog_id = blog.blog_id and 
 	blog_deleted = #db.param(0)# and 
-	(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
-	blog_event =#db.param(1)#) and 
+	(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or blog_event =#db.param(1)#) and 
 	blog_status <> #db.param(2)#  and 
 	blog_category.site_id = blog.site_id
 	#db.trustedsql(rs2.leftJoin)#
@@ -2622,6 +2621,9 @@ this.app_id=10;
 	where blog_category.blog_category_id = #db.param(form.blog_category_id)# and 
 	blog_category.site_id=#db.param(request.zos.globals.id)# and 
 	blog_category_deleted = #db.param(0)# ";
+	if(qCategory.blog_category_enable_events EQ 1){
+		db.sql&=" and (blog_event=#db.param(1)# and blog_datetime>=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# )";
+	}
 
 	if(form.site_x_option_group_set_id NEQ 0){
         db.sql&="and (blog.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
@@ -2630,9 +2632,13 @@ this.app_id=10;
 	}else if(structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_always_show_section_articles') and application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0){
 		db.sql&="and blog.site_x_option_group_set_id = #db.param(0)# ";
 	}
-	db.sql&=" group by blog.blog_id
-	order by blog_sticky desc, blog_datetime desc
-	LIMIT #db.param(start)#, #db.param(searchStruct.perpage)#";
+	db.sql&=" group by blog.blog_id ";
+	if(qCategory.blog_category_enable_events EQ 1){
+		db.sql&=" order by blog_sticky desc, blog_datetime asc";
+	}else{
+		db.sql&=" order by blog_sticky desc, blog_datetime desc";
+	}
+	db.sql&=" LIMIT #db.param(start)#, #db.param(searchStruct.perpage)#";
 	qArticles=db.execute("qArticles"); 
 	if(form.method EQ "categoryTemplate"){
 		if(structkeyexists(form, 'zUrlName')){

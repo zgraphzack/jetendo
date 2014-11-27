@@ -2519,23 +2519,23 @@ if(isDefined('qrental')){
 </cfscript>
 <cfmail to="#application.zcore.app.getAppData("rental").optionstruct.rental_config_lodgix_email_to#" from="#inquiries_email#" charset="utf-8" subject="#application.zcore.app.getAppData("rental").optionstruct.rental_config_lodgix_email_subject#">Property ID: <cfif application.zcore.functions.zso(form, 'lodgix_property_id') EQ "">#application.zcore.app.getAppData("rental").optionstruct.rental_config_lodgix_property_id#<cfset defaultLodgixUsed=true><cfelse>#lodgix_property_id#</cfif><!--- {Property ID:21:value} --->
 Name: #inquiries_first_name# #inquiries_last_name#
-Email: <cfif isDefined('inquiries_email')>#inquiries_email#</cfif>
-Phone: <cfif isDefined('inquiries_phone1')>#inquiries_phone1#</cfif>
+Email: <cfif structkeyexists(form, 'inquiries_email')>#inquiries_email#</cfif>
+Phone: <cfif structkeyexists(form, 'inquiries_phone1')>#inquiries_phone1#</cfif>
 
 Date Format: mm/dd/yyyy
-Start Date: <cfif isDefined('inquiries_start_date')>#dateformat(inquiries_start_date,'mm/dd/yyyy')#</cfif>
-End Date: <cfif isDefined('inquiries_end_date')>#dateformat(inquiries_end_date,'mm/dd/yyyy')#</cfif>
-Number of Adults: <cfif isDefined('inquiries_adults')>#inquiries_adults#</cfif>
-Number of Children: <cfif isDefined('inquiries_children')>#inquiries_children#</cfif>
+Start Date: <cfif structkeyexists(form, 'inquiries_start_date')>#dateformat(inquiries_start_date,'mm/dd/yyyy')#</cfif>
+End Date: <cfif structkeyexists(form, 'inquiries_end_date')>#dateformat(inquiries_end_date,'mm/dd/yyyy')#</cfif>
+Number of Adults: <cfif structkeyexists(form, 'inquiries_adults')>#inquiries_adults#</cfif>
+Number of Children: <cfif structkeyexists(form, 'inquiries_children')>#inquiries_children#</cfif>
 
-Address1: <cfif isDefined('inquiries_address')>#inquiries_address#</cfif>
+Address1: <cfif structkeyexists(form, 'inquiries_address')>#inquiries_address#</cfif>
 Address2: 
-City: <cfif isDefined('inquiries_city')>#inquiries_city#</cfif>
-State: <cfif isDefined('inquiries_state')>#inquiries_state#</cfif>
-Zip: <cfif isDefined('inquiries_zip')>#inquiries_zip#</cfif>
-Country: 
+City: <cfif structkeyexists(form, 'inquiries_city')>#inquiries_city#</cfif>
+State: <cfif structkeyexists(form, 'inquiries_state')>#inquiries_state#</cfif>
+Zip: <cfif structkeyexists(form, 'inquiries_zip')>#inquiries_zip#</cfif>
+Country: <cfif structkeyexists(form, 'inquiries_country')>#inquiries_country#</cfif>
 
-Comments: <cfif defaultLodgixUsed>No rental was selected. A default property ID was set in order to integrate with Lodgix.com inquiry system. | </cfif><cfif isDefined('inquiries_comments')>#replace(replace(inquiries_comments,chr(10), " ","all"),chr(13)," ","all")# <cfif isDefined('inquiries_company')>#inquiries_company#</cfif></cfif>
+Comments: <cfif defaultLodgixUsed>No rental was selected. A default property ID was set in order to integrate with Lodgix.com inquiry system. | </cfif><cfif structkeyexists(form, 'inquiries_comments')>#replace(replace(inquiries_comments,chr(10), " ","all"),chr(13)," ","all")# <cfif structkeyexists(form, 'inquiries_company')>#inquiries_company#</cfif></cfif>
 </cfmail>
     </cffunction>
     

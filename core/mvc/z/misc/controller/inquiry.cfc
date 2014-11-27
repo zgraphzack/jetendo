@@ -78,6 +78,7 @@
 	form.Address_Line_1=application.zcore.functions.zso(form, 'inquiries_address');
 	form.City=application.zcore.functions.zso(form, 'inquiries_city');
 	form.State=application.zcore.functions.zso(form, 'inquiries_state');
+	form.Country=application.zcore.functions.zso(form, 'inquiries_country');
 	form.Postal_Code=application.zcore.functions.zso(form, 'inquiries_zip');
 	
 	form.content_id=application.zcore.functions.zso(form, 'selected_content_id');
@@ -304,6 +305,8 @@
           <tr id="zInquiryFormTRAddress"><th>Address:</th><td><input type="text" class="textinput" name="inquiries_address" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_address')#" /></td></tr>
           <tr id="zInquiryFormTRCity"><th>City:</th><td><input type="text" class="textinput" name="inquiries_city" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_city')#" /></td></tr>
           <tr id="zInquiryFormTRState"><th>State:</th><td><input type="text" class="textinput" name="inquiries_state" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_state')#" /></td></tr>
+          <tr id="zInquiryFormTRCountry"><th>Country:</th><td><input type="text" class="textinput" name="inquiries_country" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_country')#" /></td></tr>
+
           <tr id="zInquiryFormTRZip"><th>Zip:</th><td><input type="text" class="textinput" name="inquiries_zip" style="width:96%;" maxlength="100" value="#application.zcore.functions.zso(form, 'inquiries_zip')#" /></td></tr>
           
           <cfif application.zcore.app.siteHasApp("listing") and application.zcore.app.getAppData("content").optionstruct.content_config_inquiry_qualify EQ 1>
