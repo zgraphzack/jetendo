@@ -131,7 +131,15 @@ var zLoggedIn=false;
 				zLogin.autoLoginValue="0";
 				zSetCookie({key:"zautologin",value:"0",futureSeconds:60,enableSubdomains:false}); 
 			}
-			zLogin.autoLoginCallback();
+			//zLogin.autoLoginCallback();
+		},
+		checkAutoLogin:function(){
+
+			if(document.getElementById("zRememberLogin").checked){
+				zLogin.setAutoLogin(true);
+			}else{
+				zLogin.setAutoLogin(false);
+			}
 		},
 		/*autoLoginPrompt:function(callback){
 			zSetCookie({key:"zautologin",value:"",futureSeconds:60,enableSubdomains:false}); 
@@ -174,7 +182,7 @@ var zLoggedIn=false;
 			}else{
 				zLogin.setAutoLogin(false);
 			}
-			
+			zLogin.zAjaxSubmitLogin();
 			//zLogin.autoLoginPrompt(zLogin.zAjaxSubmitLogin);
 			return false;
 		},
@@ -202,11 +210,15 @@ var zLoggedIn=false;
 			return false;
 		},
 		openidAutoConfirm:function(dev){
-			zLogin.autoLoginPrompt(zLogin.zOpenidLogin);
+			zLogin.checkAutoLogin();
+			zLogin.zOpenidLogin2();
+			//zLogin.autoLoginPrompt(zLogin.zOpenidLogin);
 		},
 		openidAutoConfirm2:function(theLink){
 			zLogin.devLoginURL=theLink;
-			zLogin.autoLoginPrompt(zLogin.zOpenidLogin2);
+			zLogin.checkAutoLogin();
+			zLogin.zOpenidLogin2();
+			//zLogin.autoLoginPrompt(zLogin.zOpenidLogin);
 		},
 		zOpenidLogin2:function(){
 			window.location.href=zLogin.devLoginURL;
