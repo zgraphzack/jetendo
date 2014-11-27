@@ -223,12 +223,39 @@ search sql generator has to be able to search on child group data for paging to 
 	</cfscript> --->
 	<div class="z-search-results">
 		<!--- <div class="z-search-results-heading">Search Results</div> --->
+		<cfscript>
+		hasImage=false;
+		loop query="qSearch"{
+			if(qSearch.search_image NEQ ""){
+				hasImage=true;
+			}
+		}
+		</cfscript>
 		<cfloop query="qSearch">
 			<div class="z-search-link">	
 				<!--- <div class="z-search-link-image"></div> --->
-				<div class="z-search-link-heading"><a href="#htmleditformat(qSearch.search_url)#">#htmleditformat(qSearch.search_title)#</a></div>
-				<cfif qSearch.search_summary NEQ ""><div class="z-search-link-summary">#(qSearch.search_summary)#</div></cfif>
-				<cfif qSearch.search_content_datetime NEQ "" and qSearch.search_content_datetime NEQ "0000-00-00 00:00:00"><div style="z-search-link-date">Updated #dateformat(qSearch.search_content_datetime, "m/d/yy")#</div></cfif>
+				<cfscript>
+				if(hasImage){
+					echo('<div class="z-search-link-image">');
+					if(qSearch.search_image NEQ ""){
+						echo('<img src="#qSearch.search_image#" alt="#htmleditformat(qSearch.search_title)#" />');
+					}else{
+						echo('&nbsp;');
+					}
+					echo('</div>');
+					echo('<div class="z-search-link-text">');
+				}
+				echo('<div class="z-search-link-heading"><a href="#htmleditformat(qSearch.search_url)#">#htmleditformat(qSearch.search_title)#</a></div>');
+				if(qSearch.search_summary NEQ ""){
+					echo('<div class="z-search-link-summary">#(qSearch.search_summary)#</div>');
+				}
+				if(qSearch.search_content_datetime NEQ "" and qSearch.search_content_datetime NEQ "0000-00-00 00:00:00"){
+					echo('<div style="z-search-link-date">Updated #dateformat(qSearch.search_content_datetime, "m/d/yy")#</div>');
+				}
+				if(hasImage){
+					echo('</div>');
+				}
+				</cfscript>
 			</div>
 		</cfloop>
 		<!--- <cfif qCount.count GT 10 or form.zIndex NEQ 1><div class="z-search-nav">#searchNav#</div></cfif> --->
@@ -345,17 +372,57 @@ search sql generator has to be able to search on child group data for paging to 
 						searchCom[searchMethod](c);
 					}
 				}else{
+					imageStruct={};
+					hasImage=false;
+					for(i=1;i LTE arrayLen(rs2.arrResult);i++){
+						c=rs2.arrResult[i];
+						if(structkeyexists(c, '__image_library_id') and c.__image_library_id NEQ 0){
+							ts={};
+							ts.output=false;
+							ts.size="150x120";
+							ts.layoutType="";
+							ts.image_library_id=c.__image_library_id;
+							ts.forceSize=true;
+							ts.crop=1;
+							ts.offset=0;
+							ts.limit=1; // zero will return all images
+							var arrImage=request.zos.imageLibraryCom.displayImages(ts);
+						}else{
+							arrImage=[];
+						}
+						if(arraylen(arrImage)){
+							hasImage=true;
+							imageStruct[c.__setId]='<img src="#arrImage[1].link#" alt="#htmleditformat(arrImage[1].caption)#" />';
+						}else{
+							imageStruct[c.__setId]="";
+						}
+					}
 					 echo('<div class="z-search-results">');
 					 for(i=1;i LTE arrayLen(rs2.arrResult);i++){
-						 c=rs2.arrResult[i];
-						//<div class="z-search-link-image"></div>
-						echo('<div class="z-search-link"><div class="z-search-link-heading"><a href="#htmleditformat(c.__url)#">#htmleditformat(c.__title)#</a></div>');
-						if(c.__summary NEQ ""){
-							echo('<div class="z-search-link-summary">#htmleditformat(c.__summary)#</div>');
-						}
-						if(c.__dateModified NEQ "" and c.__dateModified NEQ "0000-00-00 00:00:00"){
-							echo('<div style="z-search-link-date">Updated #dateformat(c.__dateModified, "m/d/yy")#</div>');
-						}
+						c=rs2.arrResult[i];
+						echo('<div class="z-search-link">');
+							if(hasImage){
+								image=imageStruct[c.__setId];
+								echo('<div class="z-search-link-image">');
+								if(arrayLen(arrImage)){
+									echo('<img src="#arrImage[i2].link#" alt="#htmleditformat(arrImage[i2].caption)#" />');
+								}else{
+									echo('&nbsp;');
+								}
+								echo('</div>');
+								echo('<div class="z-search-link-text">');
+							}
+							echo('<div class="z-search-link-heading"><a href="#htmleditformat(c.__url)#">#htmleditformat(c.__title)#</a></div>');
+							if(c.__summary NEQ ""){
+								echo('<div class="z-search-link-summary">#htmleditformat(c.__summary)#</div>');
+							}
+							if(c.__dateModified NEQ "" and c.__dateModified NEQ "0000-00-00 00:00:00"){
+								echo('<div style="z-search-link-date">Updated #dateformat(c.__dateModified, "m/d/yy")#</div>');
+							}
+							if(hasImage){
+								echo('</div>');
+							}
+							//<div class="z-search-link-image"></div>
 						echo('</div>');
 					 }
 					 echo('</div>');

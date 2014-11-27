@@ -2203,6 +2203,23 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	ds.search_url=dataStruct.__url;
 	ds.search_title=dataStruct.__title;
 	ds.search_summary=dataStruct.__summary;
+
+
+	if(structkeyexists(dataStruct, '__image_library_id') and dataStruct.__image_library_id NEQ 0){
+		ts={};
+		ts.output=false;
+		ts.size="150x120";
+		ts.layoutType="";
+		ts.image_library_id=dataStruct.__image_library_id;
+		ts.forceSize=true;
+		ts.crop=1;
+		ts.offset=0;
+		ts.limit=1; // zero will return all images
+		var arrImage=request.zos.imageLibraryCom.displayImages(ts);
+		if(arraylen(arrImage)){
+			ds.search_image=arrImage[1].link;
+		}
+	}
 	if(customSearchIndexEnabled){
 		local.tempCom=createobject("component", local.cfcpath); 
 		local.tempCom[groupStruct.site_option_group_search_index_cfc_method](dataStruct, ds);

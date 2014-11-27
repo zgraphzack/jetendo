@@ -577,10 +577,16 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .z-search-results{width:100%; float:left; }
 .z-search-results-heading{width:100%; font-size:170%; line-height:150%;float:left; }
 .z-search-link{ width:100%; float:left; padding-bottom:10px; border-bottom:1px solid #999; margin-bottom:10px;}
-.z-search-link-heading{width:100%; float:left; font-size:140%; line-height:150%;}
+.z-search-link-image{ min-width:150px; width:150px; display:table-cell; padding-bottom:10px; padding-right:20px;margin-bottom:10px;}
+.z-search-link-text{ width:10000px; display:table-cell; float:none; min-height:1px;vertical-align:top;}
+.z-search-link-heading{width:100%;  float:left; font-size:140%; line-height:150%;}
 .z-search-link-summary{width:100%; float:left; }
 .z-search-link-date{width:100%;  font-style:italic; float:left; }
 .z-search-nav{width:100%; float:left; }
+@media (max-width: 580px){
+.z-search-link-image{ width:100%; display:block;float:left; padding-bottom:10px; padding-right:0px;margin-bottom:10px;}
+.z-search-link-text{ width:100%; display:block; float:left; clear:both; min-height:1px;vertical-align:top;}
+}
  
  
 .zMenuEqualDiv{position:relative; z-index:1000;}
