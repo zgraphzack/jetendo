@@ -401,14 +401,15 @@ displayGroupCom.add();')&'</pre>');
 	}else{
 		application.zcore.functions.z404("qGroup.site_option_group_map_fields_type: "&qGroup.site_option_group_map_fields_type&" is invalid");
 	}
-		
+
 	local.index=1;
 	if(mappingEnabled){
 		writeoutput('<p>Map as many fields as you wish. You can map an option to the same field multiple times to automatically combine those values.</p>
-		<form action="/z/admin/site-option-group/saveMapFields?site_option_group_id=#form.site_option_group_id#" method="post">
+			<p>To save time, try clicking <a href="##" class="zSiteOptionGroupAutoMap">auto-map</a> first.</p>
+		<form id="siteOptionGroupMapForm" action="/z/admin/site-option-group/saveMapFields?site_option_group_id=#form.site_option_group_id#" method="post">
 		<table class="table-list"><tr><th>Option Field</th><th>Map To Field</th></tr>');
 		for(row in qOption){
-			writeoutput('<tr><td><input type="hidden" name="siteOption#local.index#" value="#row.site_option_id#" />'&htmleditformat(row.site_option_display_name)&'</td><td>');
+			writeoutput('<tr><td><input type="hidden" name="siteOption#local.index#" value="#row.site_option_id#" /><div id="fieldLabel#local.index#" class="fieldLabelDiv" data-id="#local.index#">'&htmleditformat(row.site_option_display_name)&'</div></td><td>');
 			if(structkeyexists(local.mapStruct, row.site_option_id)){
 				form["mapField"&local.index]=local.mapStruct[row.site_option_id];
 			}

@@ -112,8 +112,59 @@ var zInputBoxLinkValues=[];
 			document.getElementById("flashFileUpload").style.display="block";
 		}*/
 	}
+	function zSiteOptionGroupAutoMap(){
+		var matchCount=0;
+		$("#siteOptionGroupMapForm .fieldLabelDiv").each(function(){
+			var id=$(this).attr("data-id");
+			var text=this.innerHTML.toLowerCase();
+			text=text.replace(/ /, "_");
 
-
+			var matched=false;
+			var s=document.getElementById("mapField"+id);
+			if(s.selectedIndex != 0){
+				return;
+			}
+			var custom=0;
+			for(var i=0;i<s.options.length;i++){
+				if(s.options[i].value == 'inquiries_custom_json'){
+					custom=i;
+					break;
+				}
+			}
+			for(var i=0;i<s.options.length;i++){
+				var v=s.options[i].value.replace(/inquiries_/, '');
+				if(v==text){
+					//console.log('Matched: '+v);
+					s.selectedIndex=i;
+					matched=true;
+						matchCount++;
+					break;
+				}
+			}
+			if(!matched){
+				for(var i=0;i<s.options.length;i++){
+					var v=s.options[i].value.replace(/inquiries_/, '');
+					if(v.indexOf(text) != -1){
+						//console.log('Partial match: '+v);
+						s.selectedIndex=i;
+						matched=true;
+						matchCount++;
+						break;
+					}
+				}
+			}
+			if(!matched){
+				//console.log('no match found for '+text, 'should be custom_json now.');
+				s.selectedIndex=custom;
+			}
+		});
+		return matchCount;
+	}
+	 
+	$(".zSiteOptionGroupAutoMap").bind("click", function(){
+		var matchCount=zSiteOptionGroupAutoMap();
+		alert(matchCount+" fields were automatically mapped.");
+	}); 
 
 	function zSiteOptionGroupErrorCallback(){
 		alert("There was a problem with the submission. Please try again later.");

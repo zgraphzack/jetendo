@@ -158,7 +158,7 @@
                 <cfelse>
                 &nbsp; <a href="##" onclick="zOS_mode_submit('forceHealthFailure2','true');return false;">Off 2</a>
                 </cfif> 
-              | <a title="Write access will be disabled for all users including inquiry forms.">Read-only Mode</a>: 
+              | <a title="Write access will be disabled for all users on all sites, but lead forms will continue to function.">Read-only Mode</a>: 
                 <cfif structkeyexists(application, 'zReadOnlyModeEnabled') and application.zReadOnlyModeEnabled>
                  <a href="##" onclick="zOS_mode_submit('enableReadOnlyMode','false');return false;" title="Click to turn off read-only mode">On</a>
                 <cfelse>

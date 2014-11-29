@@ -1,5 +1,5 @@
 <?php
-// use: "C:\Program Files (x86)\PHP\php.exe" "D:\ServerData\Sites\backup_dbs.php"
+// usage: php /var/jetendo-server/jetendo/scripts/mysql-backup/backup_dbs.php skipDatabases=db1,db2 skipTables=table1,table2
 ######################################################################
 ## MySQL Backup Script v2.1 - May 3, 2007
 ######################################################################
@@ -219,6 +219,22 @@ if(file_exists($jsonPath)){
 	$arrJsonData=array();
 }
 
+parse_str(implode('&', array_slice($argv, 1)), $_GET);
+$arrSkip2=array();
+if(isset($_GET['skipDatabases'])){
+	$a=explode(",", $_GET['skipDatabases']);
+	for($i=0;$i<count($a);$i++){
+		$arrSkip2[$a[$i]]=true;
+	}
+}
+$arrSkip=array();
+if(isset($_GET['skipTables'])){
+	$a=explode(",", $_GET['skipTables']);
+	for($i=0;$i<count($a);$i++){
+		$arrSkip[$a[$i]]=true;
+	}
+}
+
 $db_result	= $db_conn->query('show databases');
 $db_auth	= " --host=\"$MYSQL_HOST\" --user=\"$MYSQL_USER\" --password=\"$MYSQL_PASSWD\"";
 while ($db_row = $db_result->fetch_object()) {
@@ -227,6 +243,9 @@ while ($db_row = $db_result->fetch_object()) {
 
 	if( in_array( $db, $excludes ) ) {
 		// excluded DB, go to next one
+		continue;
+	}
+	if(isset($arrSkip2[$db])){
 		continue;
 	}
 
@@ -244,6 +263,10 @@ while ($db_row = $db_result->fetch_object()) {
 	while ($row2 = $result->fetch_array(MYSQLI_ASSOC)) {
 
 		$table=$row2['Tables_in_'.$db];
+		if(isset($arrSkip[$table])){
+			continue;
+		}
+
 		if($table=="listing_memory" || $table=="city_memory" || $table=="city_distance_memory"){
 			continue;
 		}
