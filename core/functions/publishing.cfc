@@ -17,42 +17,25 @@
 	}
 	</cfscript>
 </cffunction>
+
 <!--- FUNCTION: zPublishURL(source, destinationFile, includeOnly, forceTemplate);
 source can be an absolute url (including remote URLs) or a root relative coldfusion template (must use template system)
  --->
 <cffunction name="zPublishURL" localmode="modern" output="false" returntype="any">
 	<cfargument name="source" required="yes" type="string">
 	<cfargument name="destinationFile" required="yes" type="string">
-	<cfargument name="includeOnly" required="no" type="boolean" default="#false#">
-	<cfargument name="forceTemplate" required="no" type="boolean" default="#false#">
 	<cfscript>
 	var content = "";
 	var result = "";
     var tempUnique='###getTickCount()#';
 	var cfhttpresult=0;
+
+	result=application.zcore.functions.zHTTPToFile(arguments.source, arguments.destinationFile);
+	if(result EQ false){
+		return "Publishing failed -> <a href=""#arguments.source#"" target=""_blank"">#arguments.source#</a>";
+	}
+	return true;
 	</cfscript>
-	<!--- include templates instead of cfhttp --->
-	<cfif arguments.includeOnly>
-		<cfscript>
-		content = trim(application.zcore.functions.zTemplateString(arguments.source, arguments.forceTemplate));		
-		</cfscript>
-	<cfelse>
-		<CFHTTP METHOD="GET" URL="#arguments.source#" result="cfhttpresult" resolveurl="no" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" charset="utf-8">
-		<cfhttpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#">
-		<cfhttpparam type="Header" name="TE" value="#request.httpCompressionType#">
-		</CFHTTP>
-		<cfif trim(cfhttpresult.FileContent) NEQ "CFMXConnectionFailure" and trim(cfhttpresult.FileContent) NEQ "Connection Failure">
-			<cfset content = trim(cfhttpresult.FileContent)>
-		<cfelse>
-			<cfreturn "Publishing failed -> <a href=""#arguments.source#"" target=""_blank"">#arguments.source#</a>">
-		</cfif>
-	</cfif>
-	<cftry>
-        <cffile action="write" nameconflict="overwrite" charset="utf-8" file="#arguments.destinationFile##tempUnique#" output="#content#">
-        <cffile action="rename" nameconflict="overwrite" source="#arguments.destinationFile##tempUnique#" destination="#arguments.destinationFile#">
-		<cfcatch type="any"><cfreturn false></cfcatch>
-	</cftry>
-	<cfreturn true>
 </cffunction>
 
 
@@ -60,13 +43,14 @@ source can be an absolute url (including remote URLs) or a root relative coldfus
 
 <!--- 
 // new function that can write binary files, checks status code correctly and always returns a boolean value for success or failure.
-result=zHTTPtoFile(source, destinationFile);
+result=zHTTPtoFile(source, destinationFile, timeout, throwOnError, useSecureCommand);
  --->
-<cffunction name="zHTTPtoFile" localmode="modern" output="false" returntype="boolean">
+<cffunction name="zHTTPtoFile" localmode="modern" output="yes" returntype="boolean">
 	<cfargument name="source" required="yes" type="string">
 	<cfargument name="destinationFile" required="yes" type="string">
 	<cfargument name="timeout" type="string" required="no" default="#30#">
 	<cfargument name="throwOnError" type="boolean" required="no" default="#false#">
+	<cfargument name="useSecureCommand" type="boolean" required="no" default="#false#">
 	<cfscript>
 	var content = "";
     var tempUnique='###getTickCount()#';
@@ -81,6 +65,27 @@ result=zHTTPtoFile(source, destinationFile);
 	if(fileexists(tempFilePath)){
 		application.zcore.functions.zdeletefile(tempFilePath);
 	}
+	find2 = findNoCase("https://", arguments.source);
+	if(find2 NEQ 0){
+		// railo doesn't support SNI for SSL connections, so we force PHP Curl download on all SSL connections to avoid in case the domain uses SNI.
+		arguments.useSecureCommand=true;
+	}
+
+		if(arguments.useSecureCommand){
+			result=application.zcore.functions.zSecureCommand("httpDownloadToFile"&chr(9)&arguments.source&chr(9)&(arguments.timeout-2)&chr(9)&tempFilePath, arguments.timeout);
+			if(result EQ 0){
+				if(fileexists(tempFilePath)){
+					application.zcore.functions.zdeletefile(tempFilePath);
+				}
+				return false;
+			}else{
+				if(fileexists(arguments.destinationFile)){
+					application.zcore.functions.zdeletefile(arguments.destinationFile);
+				}
+				file action="rename" nameconflict="overwrite" source="#tempFilePath#" destination="#arguments.destinationFile#";
+				return true;
+			}
+		}
 	try{
 		HTTP METHOD="GET" URL="#arguments.source#" path="#path#" file="#tempName&tempUnique#" result="cfhttpresult" redirect="yes" timeout="#arguments.timeout#" resolveurl="no" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" getasbinary="auto" throwonerror="yes"{
 			httpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#";
@@ -179,47 +184,17 @@ result=zHTTPtoFile(source, destinationFile);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!--- FUNCTION: zPublishFile(sourceUrl, destinationFile) --->
 <cffunction name="zPublishFile" localmode="modern" output="false" returntype="any">
 	<cfargument name="sourceUrl" required="true" type="string">
 	<cfargument name="destinationFile" required="true" type="string">
 	<cfscript>
-	var content=0;
-	var result=0;
-	var cfhttpresult=0;
+	result=application.zcore.functions.zHTTPToFile(arguments.sourceURL, arguments.destinationFile);
+	if(result EQ false){
+		return "Publishing failed -> <a href=""#arguments.sourceUrl#"" target=""_blank"">#arguments.sourceUrl#</a>";
+	}
+	return true;
 	</cfscript>
-	<CFHTTP METHOD="GET" URL="#arguments.sourceUrl#" result="cfhttpresult" resolveurl="no" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Jetendo CMS" charset="utf-8">
-	<cfhttpparam type="Header" name="Accept-Encoding" value="deflate;q=0">
-	<cfhttpparam type="Header" name="TE" value="deflate;q=0"></CFHTTP>
-	<cfif cfhttpresult.FileContent NEQ "Connection Failure">
-		<cfset content = trim(cfhttpresult.FileContent)>
-		<cfset result = application.zcore.functions.zWriteFile(arguments.destinationFile, content)>
-		<cfif result EQ false>
-			<cfreturn "Failed to write file: #arguments.destinationFile#<br />">
-		<cfelse>
-			<cfreturn result>		
-		</cfif>
-	<cfelse>
-		<cfreturn "Publishing failed -> <a href=""#arguments.sourceUrl#"" target=""_blank"">#arguments.sourceUrl#</a>">
-	</cfif>
 </cffunction>
 
 </cfoutput>

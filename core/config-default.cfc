@@ -46,6 +46,7 @@
 				databaseIncrementOffset:1
 			}
 		};
+		ts.zos.arrAdditionalLocalIp=["127.0.0.2","127.0.0.3"];
 		ts.zos.defaultSSLManagerDomain="";
 		ts.zos.defaultPasswordVersion=2; // Valid values are 0 - no hash,1 - hash with many iterations or 2 scrypt java.
 		ts.zos.passwordExpirationTimeSpan=createtimespan(180, 0, 0, 0); // 180 days is the default
@@ -73,6 +74,7 @@
 		ts.zOS.railoAdminReadEnabled=true;
 
 	}else{ 
+		ts.zos.arrAdditionalLocalIp=[];
 		ts.zos.testProxyCache=false;
 		ts.zos.serverStruct={
 			"1":{

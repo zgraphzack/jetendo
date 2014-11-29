@@ -26,7 +26,7 @@
 	qC=db.execute("qC");
 	a1=arraynew(1);
 	loop query="qc"{
-		r1=application.zcore.functions.zdownloadlink(qc.site_domain&'/z/misc/site-map/xmloutput');
+		r1=application.zcore.functions.zdownloadlink(qc.site_domain&'/z/misc/site-map/xmloutput', 30, true);
 		if(r1.success EQ false){
 			arrayappend(a1, qc.site_domain&'/z/misc/site-map/xmloutput');
 		}

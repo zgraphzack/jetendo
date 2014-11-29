@@ -4,7 +4,7 @@
 	<cfargument name="absoluteURL" type="string" required="yes">
 	<cfscript>
 	h=lcase(hash(arguments.absoluteURL));
-	return "/opt/nginx/cache/"&right(h, 1)&"/"&mid(h, len(h)-2, 2)&"/"&h;
+	return "/var/jetendo-server/nginx/cache/"&right(h, 1)&"/"&mid(h, len(h)-2, 2)&"/"&h;
 	</cfscript>
 </cffunction>
 

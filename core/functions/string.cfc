@@ -954,6 +954,7 @@ USUAGE
 <cffunction name="zDownloadLink" localmode="modern" returntype="any" output="false">
 	<cfargument name="link" type="string" required="yes">
 	<cfargument name="timeout" type="string" required="no" default="#30#">
+	<cfargument name="useSecureCommand" type="boolean" required="no" default="#false#">
 	<cfscript>
 	var find1 = "";
 	var find2 = "";
@@ -962,8 +963,27 @@ USUAGE
 	var rs={success:false};
 	find1 = findNoCase("http://", arguments.link);
 	find2 = findNoCase("https://", arguments.link);
+	if(find2 NEQ 0){
+		// railo doesn't support SNI for SSL connections, so we force PHP Curl download on all SSL connections to avoid in case the domain uses SNI.
+		arguments.useSecureCommand=true;
+	}
 	if(find1 EQ 0 and find2 EQ 0){
 		arguments.link = "http://"&arguments.link;
+	}
+	if(arguments.useSecureCommand){
+		result=application.zcore.functions.zSecureCommand("httpDownload"&chr(9)&arguments.link&chr(9)&arguments.timeout-2, arguments.timeout);
+		if(result EQ 0){
+			return rs;
+		}else{
+			rs={
+				success:true,
+				cfhttp:{
+					filecontent:result,
+					statusCode:"200 OK"
+				}
+			}
+			return rs;
+		}
 	}
 	</cfscript>
     <cftry>

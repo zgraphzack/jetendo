@@ -30,7 +30,7 @@
 	defaultIp="";
 	for(i=1;i LTE arraylen(arrD);i++){
 		arrD[i]=trim(arrD[i]);
-		if((arrD[i] CONTAINS "eth0:" or arrD[i] CONTAINS "p4p1:") and defaultIpSet EQ false){
+		if((arrD[i] DOES NOT CONTAIN "LOOPBACK" and arrD[i] DOES NOT CONTAIN "lo:") and defaultIpSet EQ false){
 			firstIp=true;
 		}
 		if(left(arrD[i], 4) EQ "inet"){
@@ -150,7 +150,7 @@
 		}
 		arrayAppend(arrTemp, chr(10));
 
-		arrayAppend(arrTemp3, "proxy_cache_path /opt/nginx/cache/#primaryPath# levels=1:2 keys_zone=#primaryPath#:1m max_size=500m inactive=5m;"&chr(10));
+		arrayAppend(arrTemp3, "proxy_cache_path /var/jetendo-server/nginx/cache/#primaryPath# levels=1:2 keys_zone=#primaryPath#:1m max_size=500m inactive=5m;"&chr(10));
 	} 
 	var output='map $http_host $zmaindomain {
 	hostnames;

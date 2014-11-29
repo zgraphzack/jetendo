@@ -6,6 +6,7 @@ function microtimeFloat()
     list($usec, $sec) = explode(" ", microtime());
     return ((float)$usec + (float)$sec);
 }
+
 $debug=true;
 $timeout=60; // seconds
 $timeStart=microtimeFloat();

@@ -82,16 +82,14 @@
 			</cfscript>
 			<cfif (p NEQ "" and fileexists(p) EQ false)>
 				<cfset request.httpCompressionType="deflate;q=0.5">
-				<CFHTTP METHOD="GET" URL="#ph#" resolveurl="yes" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 ZSA/2.0" charset="utf-8">
-					<cfhttpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#">
-					<cfhttpparam type="Header" name="TE" value="#request.httpCompressionType#">
-				</CFHTTP>
 				<cfscript>
+				rs1=application.zcore.functions.zdownloadlink(ph);
+
 				tempUnique='###getTickCount()#';
 				</cfscript>
-				<cfif (left(CFHTTP.statusCode,3) EQ '200' or left(CFHTTP.statusCode,3) EQ '404') and trim(CFHTTP.FileContent) NEQ "CFMXConnectionFailure" and trim(CFHTTP.FileContent) NEQ "Connection Failure">
+				<cfif rs1.success>
 					<cflock name="zcore|404file|#qsite.site_id#" timeout="60" type="exclusive">
-						<cffile addnewline="no" action="write" nameconflict="overwrite" charset="utf-8" file="#p##tempUnique#" output="#trim(cfhttp.FileContent)#">
+						<cffile addnewline="no" action="write" nameconflict="overwrite" charset="utf-8" file="#p##tempUnique#" output="#trim(rs1.cfhttp.FileContent)#">
 						<cffile action="rename" nameconflict="overwrite" source="#p##tempUnique#" destination="#p#">
 						<cffile action="append" charset="utf-8" file="#p#" output=" ">
 					</cflock>

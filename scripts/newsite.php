@@ -263,11 +263,10 @@ for($i4=0;$i4 < 62;$i4++){
 		@unlink($sharePath."hostmap-execute-complete.txt.temp");
 		@unlink($sharePath."hostmap-execute-complete.txt");
 		$result=`/usr/sbin/service nginx configtest 2>&1`;
-		//echo "result:".$result.":endresult\n"; 
+		echo "result:".$result.":endresult\n"; 
 		if(strpos($result, "successful") !== FALSE){
 			`/usr/sbin/service nginx reload 2>&1`;
 			$result=`/usr/sbin/service nginx status 2>&1`;
-			//echo "result:".$result.":endresult\n";
 			if(strpos($result, "nginx found running") !== FALSE){ 
 				@unlink($sharePath.'hostmap.conf.backup');
 				$message="The hostmap.conf file was published, and nginx was reloaded successfully.";
@@ -276,18 +275,18 @@ for($i4=0;$i4 < 62;$i4++){
 					@unlink($sharePath.'hostmap.conf');
 					rename($sharePath.'hostmap.conf.backup', $sharePath.'hostmap.conf');
 					`/usr/sbin/service nginx reload 2>&1`;
-					$message="The hostmap.conf file was published, but nginx failed to reload.  The previous hostmap has been restored.";
+					$message="The hostmap.conf file was published, but nginx failed to reload.  The previous hostmap has been restored. Error: ".$result;
 				}else{
-					$message="The hostmap.conf file was published, but nginx failed to reload.  The configuration must be manually repaired. Run service nginx configtest to see what is wrong."; 
+					$message="The hostmap.conf file was published, but nginx failed to reload.  The configuration must be manually repaired. Run service nginx configtest to see what is wrong. Error: ".$result; 
 				}
 			}
 		}else{
 			if(file_exists($sharePath.'hostmap.conf.backup')){
 				@unlink($sharePath.'hostmap.conf');
 				rename($sharePath.'hostmap.conf.backup', $sharePath.'hostmap.conf');
-				$message= "The hostmap.conf file was published, but nginx configtest failed.  The previous hostmap has been restored.";
+				$message= "The hostmap.conf file was published, but nginx configtest failed.  The previous hostmap has been restored. Error: ".$result;
 			}else{
-				$message="The hostmap.conf file was published, but nginx failed to reload.  The configuration must be manually repaired. Run service nginx configtest to see what is wrong."; 
+				$message="The hostmap.conf file was published, but nginx failed to reload.  The configuration must be manually repaired. Run service nginx configtest to see what is wrong. Error: ".$result; 
 			}
 		} 
 		@unlink($sharePath."hostmap-execute-reload.txt"); 

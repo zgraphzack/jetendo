@@ -632,7 +632,8 @@
 		filePath=request.zos.sharedPath&"__zdeploy-core-changes.txt";
 		if(fileexists(filePath)){
 			curDate=application.zcore.functions.zGetFileAttrib(filePath).datelastmodified;
-			echo('<h2>Itemized Changes (updated #dateformat(curDate, "m/d/yyyy")&" at "&timeformat(curDate, "h:mm:ss tt")#</h2>
+			echo('<h2>Itemized Changes (updated #dateformat(curDate, "m/d/yyyy")&" at "&timeformat(curDate, "h:mm:ss tt")#)</h2>
+				<p>Note: If you see host key authentication error the first time using this on a new server, you may need to run the command once as root via ssh to accept the server''s key.</p>
 			<textarea name="changes" cols="100" row="20" style="width:95% !important; height:200px;">'&application.zcore.functions.zreadfile(filePath)&'</textarea>');
 		}
 		</cfscript>
@@ -682,7 +683,8 @@
 		filePath=application.zcore.functions.zGetDomainWritableInstallPath(application.zcore.functions.zvar('shortDomain', form.sid))&"__zdeploy-changes.txt";
 		if(fileexists(filePath)){
 			curDate=application.zcore.functions.zGetFileAttrib(filePath).datelastmodified;
-			echo('<h2>Itemized Changes (updated #dateformat(curDate, "m/d/yyyy")&" at "&timeformat(curDate, "h:mm:ss tt")#</h2>
+			echo('<h2>Itemized Changes (updated #dateformat(curDate, "m/d/yyyy")&" at "&timeformat(curDate, "h:mm:ss tt")#)</h2>
+				<p>Note: If you see host key authentication error the first time using this on a new server, you may need to run the command once as root via ssh to accept the server''s key.</p>
 			<textarea name="changes" cols="100" row="20" style="width:95% !important; height:200px;">'&application.zcore.functions.zreadfile(filePath)&'</textarea>');
 		}
 		</cfscript>

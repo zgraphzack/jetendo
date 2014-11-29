@@ -15,6 +15,8 @@ getScryptEncrypt#chr(9)#password
 getSystemIpList
 getNewerCoreMVCFiles
 gzipFilePath#chr(9)#absoluteFilePath
+httpDownload#chr(9)#link#chr(9)#timeout
+httpDownloadToFile#chr(9)#link##chr(9)#timeout#chr(9)#absoluteFilePath
 importSite#chr(9)#siteDomain#chr(9)#importDirName#chr(9)#tarFileName#chr(9)#tarUploadFileName
 installThemeToSite#chr(9)#themeName#chr(9)#absoluteSiteHomedir
 mysqlDumpTable#chr(9)#schema#chr(9)#table
@@ -44,6 +46,10 @@ function processContents($contents){
 		return getFileMD5Sum($a);
 	}else if($contents =="getDiskUsage"){
 		return getDiskUsage($a);
+	}else if($contents =="httpDownload"){
+		return httpDownload($a);
+	}else if($contents =="httpDownloadToFile"){
+		return httpDownloadToFile($a);
 	}else if($contents =="tarZipFilePath"){
 		return tarZipFilePath($a);
 	}else if($contents =="tarZipSitePath"){
@@ -809,7 +815,7 @@ function publishNginxSiteConfig($a){
 		
 	}
 
-	if($row["site_active"] == "0" || $row["site_nginx_disable_jetendo"]=="0" && !$hasSSL && trim($row["site_nginx_config"]) == ""){
+	if(($row["site_active"] == "0" || $row["site_nginx_disable_jetendo"]=="0") && !$hasSSL && trim($row["site_nginx_config"]) == ""){
 		if(file_exists($outPath)){
 			unlink($outPath);
 			`/usr/sbin/service nginx reload 2>&1`;
@@ -853,8 +859,8 @@ function publishNginxSiteConfig($a){
 			"ssl_certificate ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".crt;\n".
 			"ssl_certificate_key ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".key;\n");
 			if($row["site_nginx_disable_jetendo"] == "0"){
-				array_push($arrConfig, "include jetendo-ssl-vhost.conf;\n". 
-				"include jetendo-vhost.conf;\n");
+				array_push($arrConfig, "include /var/jetendo-server/system/nginx-conf/jetendo-ssl-vhost.conf;\n". 
+				"include /var/jetendo-server/system/nginx-conf/jetendo-vhost.conf;\n");
 			}
 		array_push($arrConfig, "}\n");
 	}else{
@@ -866,7 +872,7 @@ function publishNginxSiteConfig($a){
 		"server_name  ".implode(" ", $arrSite).";\n".
 		$row["site_nginx_config"]."\n");
 			if($row["site_nginx_disable_jetendo"] == "0"){
-				array_push($arrConfig, "include jetendo-vhost.conf;\n");
+				array_push($arrConfig, "include /var/jetendo-server/system/nginx-conf/jetendo-vhost.conf;\n");
 			}
 		array_push($arrConfig, "}\n");
 	}
@@ -1483,6 +1489,64 @@ function getDiskUsage($a){
 	}
 	return "";
 }
+function httpDownload($a){
+	if(count($a) != 2){
+		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
+		return "0";
+	}
+	$link=$a[0];
+	$timeout=$a[1];
+	set_time_limit($timeout+1);
+	$ch = curl_init();
+ 
+	curl_setopt($ch, CURLOPT_URL, $link);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); 
+	$result=curl_exec($ch);
+	curl_close($ch);
+	if($result===FALSE){
+		return "0";
+	}else{
+		return $result;
+	}
+}
+function httpDownloadToFile($a){
+	if(count($a) != 3){
+		echo "incorrect number of arguments: ".implode(", ", $a)."\n";
+		return "0";
+	}
+	$link=$a[0];
+	$timeout=$a[1];
+	$filePath=getAbsolutePath($a[2]);
+	set_time_limit($timeout+1);
+	$wp=get_cfg_var("jetendo_sites_writable_path");
+
+	if(substr($filePath, 0, strlen($wp)) != $wp){
+		echo "Path must be within sites-writable: ".get_cfg_var("jetendo_sites_writable_path")."\n";
+		return "0";
+	}
+	$fp = fopen($filePath, 'w');
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $link);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_FILE, $fp); 
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); 
+	$result=curl_exec($ch);
+	curl_close($ch);
+	fclose($fp);
+	if($result===FALSE){
+		return "0";
+	}else{
+		chown($filePath, get_cfg_var("jetendo_www_user"));
+		chgrp($filePath, get_cfg_var("jetendo_www_user"));
+		chmod($filePath, 0660);
+		return "1";
+	}
+}
+
 function getFileMD5Sum($a){
 	$path=implode("", $a);
 	if(file_exists($path)){

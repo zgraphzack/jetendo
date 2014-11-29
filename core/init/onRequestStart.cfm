@@ -121,6 +121,11 @@
 		request.zos.migrationMode=false;
 		if(not structkeyexists(request.zsession, 'user') or not structkeyexists(request.zsession.user, 'company_id') or request.zsession.user.company_id NEQ 0){
 			request.zos.zreset="";
+		}else{
+			if(request.zos.isServer){
+				request.zos.isServer=false;
+				request.zos.isDeveloper=true;
+			}
 		}
 		if(request.zos.isDeveloper or request.zos.istestserver){
 			if(isDefined('request.zsession.verifyQueries') EQ false and request.zos.istestserver){
