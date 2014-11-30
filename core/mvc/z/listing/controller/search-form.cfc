@@ -360,7 +360,11 @@ listing_longitude<>'0'";
 		structdelete(ts,'contentTableEnabled');
 	}
 	</cfscript><cfif structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ true))><cfscript>
-	jsonText='{"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,"success":true}';
+	fs='';
+	if(returnStruct2.count EQ 0){
+		fs&='"errorMessage":"#jsstringformat(returnStruct2.errorMessage)#", ';
+	}
+	jsonText='{#fs#"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,"success":true}';
 	</cfscript><cfelse><cfscript>
 	ts.zReturnSimpleQuery=true;
 	ts.disableCount=true;
@@ -525,6 +529,9 @@ IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_longitude S
 		fs='"allMinLat":#returnstruct2.query.minlat#,"allMaxLat":#returnstruct2.query.maxlat#,"allMinLong":#returnstruct2.query.minlong#,"allMaxLong":#returnstruct2.query.maxlong#,';
 	}else{
 		fs="";	
+	}
+	if(returnStruct2.count EQ 0){
+		fs&='"errorMessage":"#jsstringformat(returnStruct2.errorMessage)#",';
 	}
 	jsonText='{#fs#"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,success:true,"avgPrice":["#arraytolist(arrPrice,'","')#"],"listing_id":["#arraytolist(arrId,'","')#"],"listing_latitude":[#arraytolist(arrLat,',')#],"listing_longitude":[#arraytolist(arrLong,',')#],"arrCount":[#arraytolist(arrCount,',')#],"minLat":[#arraytolist(arrMinLat,',')#],"minLong":[#arraytolist(arrMinLong,',')#],"arrCountAtAddress":[#arraytolist(arrCountAtAddress,',')#],"arrColor":[#arraytolist(arrColor)#]';
 	
