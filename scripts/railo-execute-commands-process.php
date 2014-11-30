@@ -955,6 +955,9 @@ function gzipFilePath($a){
 			$found=true;
 		}
 		if($found){
+			if(file_exists($path.".gz")){
+				unlink($path.".gz");
+			}
 			$cmd="/bin/gzip -S .gz -f -9 ".escapeshellarg($path);
 			`$cmd`;
 			if(file_exists($path.".gz")){

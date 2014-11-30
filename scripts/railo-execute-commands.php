@@ -1,5 +1,5 @@
 <?php
-//require("library.php");
+require("library.php");
 set_time_limit(70);
 function microtimeFloat()
 {
@@ -7,7 +7,7 @@ function microtimeFloat()
     return ((float)$usec + (float)$sec);
 }
 
-$debug=true;
+$debug=false; // never go live with this true, since it prevents multi-process execution.
 $timeout=60; // seconds
 $timeStart=microtimeFloat();
 $completePath=get_cfg_var("jetendo_root_path")."execute/complete/";
@@ -18,7 +18,7 @@ $startPath=get_cfg_var("jetendo_root_path")."execute/start/";
 $runningThreads=0;
 
 $script='/usr/bin/php "'.get_cfg_var("jetendo_scripts_path").'railo-execute-commands-process.php" ';
-if($debug){
+if($debug && !zIsTestServer()){
 	$background=' ';
 }else{
 	$background=" > /dev/null 2>/dev/null &";

@@ -1,11 +1,20 @@
 <?php
 require("library.php");
+$secureScript='/var/jetendo-server/custom-secure-scripts/custom-scheduled-tasks.php';
+
+if(file_exists($secureScript)){
+	require($secureScript);
+}
+
 function getTasks(){
-	$arrTask=array();
 	if(zIsTestServer()){
 		$adminDomain=get_cfg_var("jetendo_test_admin_domain");
 	}else{
 		$adminDomain=get_cfg_var("jetendo_admin_domain");
+	}
+	$arrTask=array();
+	if(function_exists('getCustomTasks')){
+		$arrTask=getCustomTasks($arrTask);
 	}
 
 	$t=new stdClass();
