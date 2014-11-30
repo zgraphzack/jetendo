@@ -1,5 +1,28 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="zGetRunningQueries" localmode="modern" access="public">
+	<cfscript>
+	arrRunningSQL=[];
+	try{
+		query name="qProcessList" datasource="#request.zos.zcoreDatasource#"{
+			echo("SHOW PROCESSLIST");
+		}
+		for(row in qProcessList){
+			if(row.info NEQ ""){
+				if(row.info CONTAINS "SHOW PROCESSLIST"){
+					continue;
+				}else if(row.info CONTAINS "password"){
+					row.info="SQL STATEMENT MAY CONTAIN PASSWORD AND HAS BEEN REMOVED FOR SECURITY.";
+				}
+				arrayAppend(arrRunningSQL, {time:row.time, user:row.user, host:host, db:row.db, sql: replace(replace(row.info, chr(13), "", "all"), chr(10), " ", "all") });
+			}
+		}
+	}catch(Any e){
+
+	}
+	return arrRunningSQL;
+	</cfscript>
+</cffunction>
 
 <!--- application.zcore.functions.zMarkDeleted("table", { table_id: form.table_id }, request.zos.zcoreDatasource); --->
 <cffunction name="zMarkDeleted" localmode="modern" returntype="any" output="true">

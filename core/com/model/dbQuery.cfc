@@ -84,12 +84,13 @@
     <cffunction name="execute" localmode="modern" access="public" returntype="any" output="no" hint="Use for any query.">
     	<cfargument name="name" type="variablename" required="yes" hint="A variable name for the query result.  Helps to identify query when debugging.">
     	<cfargument name="datasource" type="string" required="no" default="" hint="Optionally change the datasource.  Useful for show, set, etc queries that have no table clause to retain the same mysql connection request.zsession.">
+    	<cfargument name="timeout" type="numeric" required="no" default="#0#">
         <cfscript>
 		variables.config.sql=this.sql;
 		if(arguments.datasource NEQ ""){
 			variables.config.datasource=arguments.datasource;
 		}
-		var executeResult=variables.db.execute(arguments.name, variables.config);
+		var executeResult=variables.db.execute(arguments.name, variables.config, arguments.timeout);
 		variables.lastSQL=this.sql;
 		variables.lastQueryName=arguments.name;
 		this.reset();

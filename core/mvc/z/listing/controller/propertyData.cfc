@@ -1482,15 +1482,42 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfelse>
 	
     <cfscript>
+    errorMessage="";
+    cancelNextSearch=false;
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc before qPropertyCount'});
 	if(arguments.ss.disableCount EQ false){
-    	if(arguments.ss.enableThreading){
-	        db2.sql=countSQL;
-	        qPropertyCount=db2.execute("qPropertyCount");
-        }else{
-	        db2.sql=countSQL;
-	        qPropertyCount=db2.execute("qPropertyCount");
-        }
+	    try{
+	    	if(arguments.ss.enableThreading){
+		        db2.sql=countSQL;
+			    qPropertyCount=db2.execute("qPropertyCount", request.zos.zcoreDatasource, 5);
+	        }else{
+		        db2.sql=countSQL;
+		        qPropertyCount=db2.execute("qPropertyCount", request.zos.zcoreDatasource, 5);
+	        }
+		}catch(Any e){
+
+			if(e.type EQ "database" and e.detail CONTAINS "Statement cancelled"){
+				savecontent variable="out"{
+					echo('Listing search is not available right now. Running queries:');
+					arrS=application.zcore.functions.zGetRunningQueries();
+					writedump(arrS);
+				}
+				ts={
+					type:"Custom",
+					errorHTML:out,
+					scriptName:'/zcorerootmapping.mvc.z.listing.controller.propertyData.cfc',
+					url:request.zos.originalURL,
+					exceptionMessage:'Listing search count is not available right now due to other system activity.',
+					// optional
+					lineNumber:''
+				}
+				application.zcore.functions.zLogError(ts);
+				qPropertyCount={recordcount:0};
+				qProperty={recordcount:0};
+				cancelNextSearch=true;
+				errorMessage='Listing search count is not available right now due to other system activity.';
+			}
+		}
     }
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc after qPropertyCount'});
     if(arguments.ss.debug){
@@ -1498,7 +1525,33 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     }
     if(arguments.ss.onlyCount EQ false){
     	db2.sql=propSQL;
-    	qProperty=db2.execute("qProperty");
+    	if(not cancelNextSearch){
+		    try{
+	    		qProperty=db2.execute("qProperty", request.zos.zcoreDatasource, 5);
+			}catch(Any e){
+
+				if(e.type EQ "database" and e.detail CONTAINS "Statement cancelled"){
+					savecontent variable="out"{
+						echo('Listing search is not available right now. Running queries:');
+						arrS=application.zcore.functions.zGetRunningQueries();
+						writedump(arrS);
+					}
+					ts={
+						type:"Custom",
+						errorHTML:out,
+						scriptName:'/zcorerootmapping.mvc.z.listing.controller.propertyData.cfc',
+						url:request.zos.originalURL,
+						exceptionMessage:'Listing search detail is not available right now due to other system activity.',
+						// optional
+						lineNumber:''
+					}
+					application.zcore.functions.zLogError(ts);
+					qPropertyCount={recordcount:0};
+					qProperty={recordcount:0};
+				errorMessage='Listing search detail is not available right now due to other system activity.';
+				}
+			}
+		}
         if(qProperty.recordcount NEQ 0){
 			mlsStruct=structnew();
 			arrQuery=arraynew(1);
@@ -1538,7 +1591,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				}
 				idlist22=arraytolist(mlsstruct[i654],"','");
 				tsql232="select * #db.trustedSQL(rs2.select)# #db.trustedSQL(rs3.select)# from (
-				#db.table("listing_memory", request.zos.zcoreDatasource)# listing, 
+				#db.table("listing", request.zos.zcoreDatasource)# listing, 
 				#db.table("listing_data", request.zos.zcoreDatasource)# listing_data) 				
 				#db.trustedSQL(request.zos.listingMlsComObjects[i654].getJoinSQL("INNER"))#  
 				#db.trustedSQL(local.rs3.leftJoin)#
@@ -1610,6 +1663,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	ts.orderStruct=structnew();
 	ts.query=structnew();
 	ts.query.recordcount=0;
+	ts.errorMessage=errorMessage;
 	ts.count=0;
     if(isquery(qzselect)){
         ts.query=qzselect;

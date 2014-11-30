@@ -109,11 +109,12 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	<cfargument name="configStruct" type="struct" required="yes">
 	<cfargument name="name" type="variablename" required="yes" hint="A variable name for the query result.  Helps to identify query when debugging.">
 	<cfargument name="sql" type="string" required="yes">
+    <cfargument name="timeout" type="numeric" required="no" default="#0#">
 	<cfscript>
 	var running=true;
 	var queryStruct={
 		lazy=arguments.configStruct.lazy,
-		datasource=arguments.configStruct.datasource	
+		datasource=arguments.configStruct.datasource
 	};
 	var cfquery=0;
 	var cfcatch=0;
@@ -125,6 +126,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	var paramIndex=1;
 	var paramDump=0;
 	var startTime=gettickcount('nano');
+	if(arguments.timeout NEQ 0){
+		queryStruct.timeout=arguments.timeout;
+	}
 	if(arguments.configStruct.dbtype NEQ "" and arguments.configStruct.dbtype NEQ "datasource"){
 		queryStruct.dbtype=arguments.configStruct.dbtype;	
 		structdelete(queryStruct, 'datasource');
@@ -273,6 +277,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	<cffunction name="execute" localmode="modern" access="package" returntype="struct" output="yes">
 		<cfargument name="name" type="variablename" required="yes" hint="A variable name for the query result.  Helps to identify query when debugging.">
 		<cfargument name="configStruct" type="struct" required="yes">
+    	<cfargument name="timeout" type="numeric" required="no" default="#0#">
 		<cfscript>
 		var cfcatch=0;
 		var errorStruct=0;
@@ -295,7 +300,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			}
 		}
 		try{
-			local.result=variables.runQuery(arguments.configStruct, arguments.name, local.processedSQL);
+			local.result=variables.runQuery(arguments.configStruct, arguments.name, local.processedSQL, arguments.timeout);
 		}catch(database errorStruct){
 			arguments.configStruct.dbQuery.reset();
 			rethrow;
