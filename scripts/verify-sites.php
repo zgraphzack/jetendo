@@ -142,7 +142,7 @@ function verifySite($row){
 			$output1=trim(`$cmd`);
 			$dnsLookupFailed=false;
 			if($output1 == ""){
-				sleep(1); // retry after 1 second because dns server FREQUENTLY failed to return a reply.
+				sleep(3); // retry after 3 seconds because dns server FREQUENTLY failed to return a reply.
 				$cmd="/usr/bin/dig a +short $dnsServer $curDomain";
 				$output1=trim(`$cmd`);
 				if($output1 == ""){
@@ -176,7 +176,7 @@ function verifySite($row){
 				$output2=trim(`$cmd`);
 				$dnsLookupFailed=false;
 				if($output2 == ""){
-					sleep(1); // retry after 1 second because dns server FREQUENTLY failed to return a reply.
+					sleep(3); // retry after 3 seconds because dns server FREQUENTLY failed to return a reply.
 					$cmd="/usr/bin/dig a +short $dnsServer $domain";
 					$output2=trim(`$cmd`);
 					if($output2 == ""){

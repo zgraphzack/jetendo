@@ -550,17 +550,21 @@
 					if(this.datastruct[i].hasListing){
 						ts2.forceWhereFields="listing_id,listing_deleted";
 						application.zcore.functions.zUpdate(ts2);
-						ts5.forceWhereFields="listing_id,listing_deleted";
-						application.zcore.functions.zUpdate(ts5);
 						ts3.forceWhereFields="listing_id,listing_data_deleted";
 						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
 					}else{
 						application.zcore.functions.zInsert(ts2); 
 						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade 
+					}
+					transaction action="commit";
+					if(this.datastruct[i].hasListing){
+						ts5.forceWhereFields="listing_id,listing_deleted";
+						application.zcore.functions.zUpdate(ts5);
+					}else{
 						structdelete(ts5.struct, 'listing_unique_id');
 						application.zcore.functions.zInsert(ts5);
 					}
-					transaction action="commit";
+
 				}catch(Any e){
 					transaction action="rollback";
 					rethrow;
@@ -725,7 +729,8 @@
 			where listing_track_deleted=#db2.param('0')# and 
 	   		listing_track.listing_track_inactive=#db2.param('0')# and 
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
-			listing_id LIKE '#mlsID#-%' ";
+			listing_id LIKE '#mlsID#-%' 
+			ORDER BY listing_track_id ASC";
 			db2.execute("qInsert");
 			db.sql="SELECT count(listing_delete_id) count 
 			FROM #db.table("listing_delete", request.zos.zcoreDatasource)# 
@@ -784,7 +789,8 @@
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
 			listing_track_deleted = #db2.param(0)#  and 
 	   		listing_track_inactive = #db2.param(1)# and 
-			listing_id LIKE '#mlsID#-%'";
+			listing_id LIKE '#mlsID#-%' 
+			ORDER BY listing_track_id ASC";
 			db2.execute("qInsert");
 			db.sql="SELECT count(listing_delete_id) count 
 			FROM #db.table("listing_delete", request.zos.zcoreDatasource)# 
