@@ -278,7 +278,7 @@
 	var qC=0;
 	var listingTrackTable=false;
 	var db2=request.zos.noVerifyQueryObject;
-
+   	errorMessage="";
 	application.zcore.functions.zNoCache();
 
 	ts.requireValidCoordinates=false;
@@ -1482,7 +1482,6 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfelse>
 	
     <cfscript>
-    errorMessage="";
     cancelNextSearch=false;
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc before qPropertyCount'});
 	if(arguments.ss.disableCount EQ false){
@@ -1629,9 +1628,10 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     	<cfif arguments.ss.enableThreading>
         <!--- <cfthread action="join" name="zThread#variables.tempThreadHash#" /> --->
         </cfif>
-        </cfif>
+    </cfif>
     <cfif arguments.ss.debug>
-    <cfif arguments.ss.disableCount EQ false><strong>;qPropertyCountSQL;</strong>
+	    <cfif arguments.ss.disableCount EQ false>
+	    	<strong>;qPropertyCountSQL;</strong>
             <cfscript>
 			c=countSQL;
 			c=rereplace(c,"\n\s*(\S)",chr(10)&"\1","ALL");
@@ -1648,7 +1648,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         </cfif><br />;Time: #((getTickCount()-start48)/1000)&" seconds"#
         </span>
     </cfif>
-    
+
     </cfif>
     <cfscript>
     ts=StructNew();
