@@ -68,14 +68,6 @@
 
 	s=gettickcount('nano'); 
 
-	if(request.zos.isServer){
-		application.zcore.functions.zNoCache();
-	}else if(request.zos.isDeveloper or request.zos.isTestServer){
-		// TODO add a way of testing nginx proxy cache here
-		if(not structkeyexists(request.zos, 'testProxyCache') or not request.zos.testProxyCache){
-			application.zcore.functions.zNoCache();
-		}
-	}
 	 
 	savecontent variable="local.output"{
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart begin'});
@@ -125,6 +117,14 @@
 			if(request.zos.isServer){
 				request.zos.isServer=false;
 				request.zos.isDeveloper=true;
+			}
+		}
+		if(request.zos.isServer){
+			application.zcore.functions.zNoCache();
+		}else if(request.zos.isDeveloper or request.zos.isTestServer){
+			// TODO add a way of testing nginx proxy cache here
+			if(not structkeyexists(request.zos, 'testProxyCache') or not request.zos.testProxyCache){
+				application.zcore.functions.zNoCache();
 			}
 		}
 		if(request.zos.isDeveloper or request.zos.istestserver){

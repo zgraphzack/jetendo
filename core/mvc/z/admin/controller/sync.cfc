@@ -194,6 +194,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		ts.arrSiteOptionGroup[i].site_id=request.zos.globals.id;
 		struct.siteOptionGroupStruct[ts.arrSiteOptionGroup[i].site_option_group_id]=ts.arrSiteOptionGroup[i];
 	}
+	//writedump(struct.siteOptionGroupStruct);
 	// force these to exist for options outside of a group to be synced.
 	struct.siteOptionGroupStruct["0"]={};
 	struct.siteOptionNameStruct["0"]={};
@@ -370,9 +371,9 @@ This allows avoiding remaps more easily.  Less code when importing.
 		arrayPrepend(arrParent, currentName); 
 		if(currentParentId EQ 0){
 			break;
-		}else{
+		}else{ 
 			currentName=arguments.struct.siteOptionGroupStruct[currentParentId].site_option_group_name;
-			currentParentId=arguments.struct.siteOptionGroupStruct[currentParentId].site_option_group_parent_id;
+			currentParentId=arguments.struct.siteOptionGroupStruct[currentParentId].site_option_group_parent_id; 
 		}
 		i++;
 		if( i GT 100){

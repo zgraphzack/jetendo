@@ -435,6 +435,8 @@ StructDelete(request, 'cfdumpinited');
  </cfif>
  <cfif isDefined('request.zos.isDeveloper')>
  	<cfset developerFlagged=request.zos.isDeveloper>
+ <cfelse>
+ 	<cfset request.zos.isDeveloper=false>
  </cfif>
  
  
@@ -548,7 +550,7 @@ if(isDefined('request.zos.cgi')){
 newId=0;
 </cfscript>
 
-<cfif structkeyexists(request.zos,'adminIpStruct') EQ false or (isDefined('request.zForceErrorEmail') EQ false and structkeyexists(request.zos.adminIpStruct, request.zos.cgi.remote_addr) and request.zos.adminIpStruct[request.zos.cgi.remote_addr] EQ false and (isDefined('Request.zOS.globals.debugEnabled') EQ false or Request.zOS.globals.debugEnabled) and developerFlagged)>
+<cfif isDefined('request.zForceErrorEmail') EQ false and request.zos.isdeveloper and (isDefined('Request.zOS.globals.debugEnabled') EQ false or Request.zOS.globals.debugEnabled) and developerFlagged>
 	#application.zcore.functions.zHTMLDoctype()#
 	<head><title>Development Error</title>
 		<link href="/z/a/stylesheets/style.css" rel="stylesheet" type="text/css">
@@ -604,7 +606,7 @@ newId=0;
     </cfif>
     
 	<!--- true EQ server ip | false EQ user ip --->
-	<cfif not structkeyexists(request, 'zForceErrorEmail') and structkeyexists(request.zos,'adminIpStruct') and (structkeyexists(request.zos.adminIpStruct, request.zos.cgi.remote_addr) and request.zos.adminIpStruct[request.zos.cgi.remote_addr])>
+	<cfif not structkeyexists(request, 'zForceErrorEmail') and request.zos.isserver>
 		<cfmail to="#Request.zOS.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="Connection Failure: #request.zOS.CGI.http_host# : CRITICAL PRIORITY" type="html">
 		#application.zcore.functions.zHTMLDoctype()#
 		<head><title>Connection Failure</title>

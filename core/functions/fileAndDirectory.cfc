@@ -447,6 +447,7 @@ rs=zGetHashPath(dir, id);
 						application.zcore.functions.zdeletefile("#arguments.destination##fullFileName#");
 						application.zcore.template.fail("Extremely dangerous file upload attempted with name: #fullFileName#<br /><br />It has been automatically deleted with a 500 error displayed to the user.");
 					}
+					request.zos.lastUploadFileName=getfilefrompath(result);
 					return fullFileName;
 				}
 			}catch(Any e){
