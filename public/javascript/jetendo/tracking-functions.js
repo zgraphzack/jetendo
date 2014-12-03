@@ -4,10 +4,24 @@
 
 
 	function zSetupClickTrackDisplay(){
-		$(".zClickTrackDisplayValue").bind("click", zClickTrackDisplayValue);
-		$(".zClickTrackDisplayURL").bind("click", zClickTrackDisplayURL);
+		$(".zClickTrackDisplayValue").each(function(){
+			if(this.getAttribute('data-zclickbindset')!=null){
+				return;
+			}
+			$(this).attr('data-zclickbindset', '1');
+			$(this).bind("click", zClickTrackDisplayValue);
+			console.log('test2');
+		});
+		$(".zClickTrackDisplayURL").each(function(){
+			if(this.getAttribute('data-zclickbindset')!=null){
+				return;
+			}
+			$(this).attr('data-zclickbindset', '1');
+			$(this).bind("click", zClickTrackDisplayURL);
+		});
 	}		
 	function zClickTrackDisplayValue(){
+		console.log('neat');
 		var postValue=this.getAttribute("data-zclickpostvalue");
 		var eventCategory=this.getAttribute("data-zclickeventcategory");
 		var eventLabel=this.getAttribute("data-zclickeventlabel");

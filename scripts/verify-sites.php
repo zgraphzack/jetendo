@@ -375,10 +375,17 @@ if($handle !== FALSE) {
     }
 	closedir($handle);
 }
+$dnsServer=""; // use local dns
 if($isTestServer){
-	$dnsServer=""; // use local dns
+	$d=get_cfg_var("jetendo_test_dns_server");
+	if($d !=""){
+		$dnsServer="@".$d; 
+	}
 }else{
-	$dnsServer="@66.96.80.43"; // dns1.hivelocity.com
+	$d=get_cfg_var("jetendo_dns_server");
+	if($d !=""){
+		$dnsServer="@".$d; 
+	}
 }
 $cmd="/bin/cat /etc/passwd";
 $result=trim(`$cmd`);

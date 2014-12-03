@@ -11,6 +11,10 @@
 	var field=0;
 	var db=request.zos.queryObject;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Listing Search Filter");
+	if(not structkeyexists(form, 'filterFields')){
+		echo('Invalid request.');
+		abort;
+	}
 	
 	arrFields=listtoarray(form.filterFields);
 	for(i=1;i LTE arraylen(arrFields);i++){
