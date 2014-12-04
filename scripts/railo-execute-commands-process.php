@@ -808,14 +808,8 @@ function publishNginxSiteConfig($a){
 	
 	$outPath=$nginxSitesPath.$site_id.".conf";
 
-	if($row["site_enable_nginx_proxy_cache"] == "1"){
-		$domainDir=str_replace(get_cfg_var("jetendo_sites_path"), "", zGetDomainInstallPath($row["site_short_domain"]));
-		$domainDir=substr($domainDir, 0, strlen($domainDir)-1);
-		$row["site_nginx_config"]="location ~ \.(cfm|cfc)$ { proxy_cache ".$domainDir."; proxy_pass http://\$railoUpstream; }"."\n".$row["site_nginx_config"];
-		
-	}
 
-	if(($row["site_active"] == "0" || $row["site_nginx_disable_jetendo"]=="0") && !$hasSSL && trim($row["site_nginx_config"]) == ""){
+	if($row["site_active"] == "0"){//( || $row["site_nginx_disable_jetendo"]=="1") && !$hasSSL && trim($row["site_nginx_config"]) == ""){
 		if(file_exists($outPath)){
 			unlink($outPath);
 			`/usr/sbin/service nginx reload 2>&1`;
@@ -832,6 +826,12 @@ function publishNginxSiteConfig($a){
 		}
 		// don't need to publish a site configuration
 		return json_encode($rs);
+	}
+	if($row["site_active"] == "1" && $row["site_enable_nginx_proxy_cache"] == "1"){
+		$domainDir=str_replace(get_cfg_var("jetendo_sites_path"), "", zGetDomainInstallPath($row["site_short_domain"]));
+		$domainDir=substr($domainDir, 0, strlen($domainDir)-1);
+		$row["site_nginx_config"]="location ~ \.(cfm|cfc)$ { proxy_cache ".$domainDir."; proxy_pass http://\$railoUpstream; }"."\n".$row["site_nginx_config"];
+		
 	}
 	$arrSite=explode(",", $row["site_domainaliases"]);
 	if($hasSSL){
@@ -859,8 +859,8 @@ function publishNginxSiteConfig($a){
 			"ssl_certificate ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".crt;\n".
 			"ssl_certificate_key ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".key;\n");
 			if($row["site_nginx_disable_jetendo"] == "0"){
-				array_push($arrConfig, "include /var/jetendo-server/system/nginx-conf/jetendo-ssl-vhost.conf;\n". 
-				"include /var/jetendo-server/system/nginx-conf/jetendo-vhost.conf;\n");
+				array_push($arrConfig, "include ".get_cfg_var("jetendo_server_path")."system/nginx-conf/jetendo-ssl-vhost.conf;\n". 
+				"include ".get_cfg_var("jetendo_server_path")."system/nginx-conf/jetendo-vhost.conf;\n");
 			}
 		array_push($arrConfig, "}\n");
 	}else{
@@ -872,7 +872,7 @@ function publishNginxSiteConfig($a){
 		"server_name  ".implode(" ", $arrSite).";\n".
 		$row["site_nginx_config"]."\n");
 			if($row["site_nginx_disable_jetendo"] == "0"){
-				array_push($arrConfig, "include /var/jetendo-server/system/nginx-conf/jetendo-vhost.conf;\n");
+				array_push($arrConfig, "include ".get_cfg_var("jetendo_server_path")."system/nginx-conf/jetendo-vhost.conf;\n");
 			}
 		array_push($arrConfig, "}\n");
 	}
@@ -950,7 +950,7 @@ function gzipFilePath($a){
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
 		}
-		$p=get_cfg_var("jetendo_backup_path");
+		$p=zGetBackupPath();
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
 		}
@@ -1032,7 +1032,7 @@ function getImageMagickConvertApplyMask($a){
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
-	$p=get_cfg_var("jetendo_backup_path");
+	$p=zGetBackupPath();
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
@@ -1046,7 +1046,7 @@ function getImageMagickConvertApplyMask($a){
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
-	$p=get_cfg_var("jetendo_backup_path");
+	$p=zGetBackupPath();
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
@@ -1060,7 +1060,7 @@ function getImageMagickConvertApplyMask($a){
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
-	$p=get_cfg_var("jetendo_backup_path");
+	$p=zGetBackupPath();
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
@@ -1154,7 +1154,7 @@ function getImageMagickConvertResize($a){
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
-	$p=get_cfg_var("jetendo_backup_path");
+	$p=zGetBackupPath();
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
@@ -1168,7 +1168,7 @@ function getImageMagickConvertResize($a){
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
-	$p=get_cfg_var("jetendo_backup_path");
+	$p=zGetBackupPath();
 	if(substr($path, 0, strlen($p)) == $p){
 		$found=true;
 	}
@@ -1215,7 +1215,7 @@ function getImageMagickIdentify($a){
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
 		}
-		$p=get_cfg_var("jetendo_backup_path");
+		$p=zGetBackupPath();
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
 		}
@@ -1241,16 +1241,16 @@ function untarZipSiteImportPath($a){
 		echo "Import directory name must be a date as a number: ".$importDirName."\n";
 		return "0";
 	}
-	if(!is_dir(get_cfg_var("jetendo_backup_path")."backup/import/".$importDirName)){
-		echo "Import directory doesn't exist: ".get_cfg_var("jetendo_backup_path")."backup/import/".$importDirName."\n";
+	if(!is_dir(zGetBackupPath()."backup/import/".$importDirName)){
+		echo "Import directory doesn't exist: ".zGetBackupPath()."backup/import/".$importDirName."\n";
 		return "0";
 	}
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/import/".$importDirName."/upload/".$tarFileName;
+	$tarPath=zGetBackupPath()."backup/import/".$importDirName."/upload/".$tarFileName;
 	if(!file_exists($tarPath)){
 		echo "Tar file name doesn't exist: ".$tarPath."\n";
 		return "0";
 	}
-	$untarPath=get_cfg_var("jetendo_backup_path")."backup/import/".$importDirName."/temp/";
+	$untarPath=zGetBackupPath()."backup/import/".$importDirName."/temp/";
 	$cmd='/bin/tar -xvzf '.escapeshellarg($tarPath).' --exclude=sites --exclude=sites-writable -C '.escapeshellarg($untarPath);
 	echo $cmd."\n";
 	`$cmd`;
@@ -1273,7 +1273,7 @@ function tarZipSiteUploadPath($a){
 		echo "Site path doesn't exist: ".get_cfg_var("jetendo_sites_writable_path").$siteDomain."\n";
 		return "0";
 	}
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/site-archives/".$siteDomain."-zupload-".$a[1].".tar.gz";
+	$tarPath=zGetBackupPath()."backup/site-archives/".$siteDomain."-zupload-".$a[1].".tar.gz";
 	if(file_exists($tarPath)){
 		@unlink($tarPath);
 	}
@@ -1311,8 +1311,8 @@ function importSite($a){
 		echo "Site domain must be defined.\n";
 		return "0";
 	}
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/import/".$importDirName."/upload/".$tarFileName;
-	$tarUploadPath=get_cfg_var("jetendo_backup_path")."backup/import/".$importDirName."/upload/".$tarUploadFileName;
+	$tarPath=zGetBackupPath()."backup/import/".$importDirName."/upload/".$tarFileName;
+	$tarUploadPath=zGetBackupPath()."backup/import/".$importDirName."/upload/".$tarUploadFileName;
 	if($tarPath == "" || !file_exists($tarPath)){
 		echo "Tar path doesn't exist: ".$tarPath."\n";
 		return "0";
@@ -1364,8 +1364,8 @@ function tarZipSitePath($a){
 		echo "Site path doesn't exist: ".get_cfg_var("jetendo_sites_path").$siteDomain."\n";
 		return "0";
 	}
-	$backupPath=get_cfg_var("jetendo_backup_path")."backup/";
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/site-archives/".$siteDomain."-".$a[1].".tar.gz";
+	$backupPath=zGetBackupPath()."backup/";
+	$tarPath=zGetBackupPath()."backup/site-archives/".$siteDomain."-".$a[1].".tar.gz";
 
 	if(file_exists($tarPath)){
 		@unlink($tarPath);
@@ -1395,8 +1395,8 @@ function tarZipSitePath($a){
 }
 
 function tarZipGlobalDatabase($a){
-	$backupPath=get_cfg_var("jetendo_backup_path")."backup/";
-	$tarPath=get_cfg_var("jetendo_backup_path")."backup/global-database.tar.gz";
+	$backupPath=zGetBackupPath()."backup/";
+	$tarPath=zGetBackupPath()."backup/global-database.tar.gz";
 	@unlink($tarPath);
 	$cmd='/bin/tar -cvzf '.escapeshellarg($tarPath).' -C '.escapeshellarg($backupPath).'  restore-global-database.sql database-global-backup/ database-schema/';
 	echo $cmd."\n";
@@ -1440,7 +1440,7 @@ function tarZipFilePath($a){
 		return "0";
 	}
 	$p=get_cfg_var("jetendo_root_path");
-	$p2=get_cfg_var("jetendo_backup_path");
+	$p2=zGetBackupPath();
 	$found=false;
 	if(substr($tarDirectory, 0, strlen($p)) == $p || substr($tarDirectory, 0, strlen($p2)) == $p2){
 		if(substr($pathToTar, 0, strlen($p)) == $p || substr($pathToTar, 0, strlen($p2)) == $p2){
@@ -1481,7 +1481,7 @@ function getDiskUsage($a){
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
 		}
-		$p=get_cfg_var("jetendo_backup_path");
+		$p=zGetBackupPath();
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
 		}

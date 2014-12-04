@@ -1437,7 +1437,7 @@
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td><input name="site_track_users" type="checkbox" value="1" <cfif form.site_track_users EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Track users?</td>
+			<td><input name="site_track_users" type="checkbox" value="1" <cfif form.site_track_users EQ 1 or form.site_track_users EQ "">checked="checked"</cfif> style="background:none; border:none;"> Track users? (Verifies visitor tracking code)</td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>

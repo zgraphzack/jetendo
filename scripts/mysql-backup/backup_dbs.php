@@ -38,8 +38,11 @@ $USE_NICE = 'nice -n 19';
 $FLUSH = false;
 $OPTIMIZE = false;
 
+
 // Load configuration file
 $current_path = dirname(__FILE__); 
+require(dirname(dirname(__FILE__))."/library.php");
+
 if( file_exists( $current_path.'/backup_dbs_config.php' ) ) {
 	require( $current_path.'/backup_dbs_config.php' );
 } else {

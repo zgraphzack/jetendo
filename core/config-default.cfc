@@ -59,6 +59,7 @@
 		ts.zos.sambaInstallPath="C:/serverData/jetendo/";
 		ts.zos.scriptsPath="/var/jetendo-server/jetendo/scripts/";
 		ts.zos.sharedPath="/var/jetendo-server/jetendo/share/";
+        ts.zos.serverPath="/var/jetendo-server/";
 		ts.zos.sharedPathForDatabase="/var/jetendo-server/jetendo/share/";
 		ts.zos.backupDirectory="/var/jetendo-server/backup/";
 		ts.zos.mysqlBackupDirectory="/var/jetendo-server/backup/";
@@ -103,6 +104,7 @@
 		ts.zos.sambaInstallPath="/var/jetendo-server/jetendo/";
 		ts.zos.scriptsPath="/var/jetendo-server/jetendo/scripts/";
 		ts.zos.sharedPath="/var/jetendo-server/jetendo/share/";
+        ts.zos.serverPath="/var/jetendo-server/";
 		ts.zos.sharedPathForDatabase="/var/jetendo-server/jetendo/share/";
 		ts.zos.installPath="/var/jetendo-server/jetendo/";
 		ts.zos.sitesPath="/var/jetendo-server/jetendo/sites/";

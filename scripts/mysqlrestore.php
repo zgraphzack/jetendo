@@ -6,7 +6,8 @@ usage: php /var/jetendo-server/jetendo/scripts/mysqlrestore.php skipDatabases=db
 $debug=false;
 
 set_time_limit(20000);
-$mp=get_cfg_var("jetendo_backup_path").'mysql/backup';
+require("library.php");
+$mp=zGetBackupPath().'mysql/backup';
 $host=get_cfg_var("jetendo_mysql_default_host");
 $user=get_cfg_var("jetendo_mysql_default_user");
 $pw=get_cfg_var("jetendo_mysql_default_password");

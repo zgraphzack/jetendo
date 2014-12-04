@@ -10,6 +10,10 @@ TODO: figure out why site backup doesn't get compressed.
 	<cfargument name="tempPathName" type="string" required="yes">
 	<cfscript>
 	var fp=request.zos.backupDirectory&"site-archives/"&arguments.domainPath&"-"&arguments.tempPathName&'.tar.gz';
+	if(not fileexists(fp)){
+		echo('File doesn''t exist.  Check permissions: #fp#');
+		abort;
+	}
 	header name="Content-Disposition" value="attachment; filename=#getfilefrompath(fp)#" charset="utf-8";
 	content type="application/binary" deletefile="no" file="#fp#";
 	application.zcore.functions.zabort();
@@ -22,6 +26,10 @@ TODO: figure out why site backup doesn't get compressed.
 	<cfargument name="tempPathName" type="string" required="yes">
 	<cfscript>
 	var fp=request.zos.backupDirectory&"site-archives/"&arguments.domainPath&"-zupload-"&arguments.tempPathName&'.tar.gz';
+	if(not fileexists(fp)){
+		echo('File doesn''t exist.  Check permissions: #fp#');
+		abort;
+	}
 	header name="Content-Disposition" value="attachment; filename=#getfilefrompath(fp)#" charset="utf-8";
 	content type="application/binary" deletefile="no" file="#fp#";
 	application.zcore.functions.zabort();
@@ -32,6 +40,10 @@ TODO: figure out why site backup doesn't get compressed.
 <cffunction name="downloadGlobal" localmode="modern" access="private">
 	<cfscript>
 	var fp=request.zos.backupDirectory&"global-database.tar.gz";
+	if(not fileexists(fp)){
+		echo('File doesn''t exist.  Check permissions: #fp#');
+		abort;
+	}
 	header name="Content-Disposition" value="attachment; filename=#getfilefrompath(fp)#" charset="utf-8";
 	content type="application/binary" deletefile="no" file="#fp#";
 	application.zcore.functions.zabort();
@@ -216,7 +228,6 @@ TODO: figure out why site backup doesn't get compressed.
 		local.backupGlobal=1;
 	}
 	form.sid=application.zcore.functions.zso(form, 'sid', true, 0);
-	
 	if(form.createNew EQ 0 and form.backupType EQ 3){
 		if(fileexists(request.zos.backupDirectory&"global-database.tar")){
 			variables.downloadGlobal();
@@ -268,6 +279,10 @@ TODO: figure out why site backup doesn't get compressed.
 			echo('Creating: '&local.tempPath&'database/'&'<br />');
 		}
 		application.zcore.functions.zcreatedirectory(local.tempPath);
+		if(not directoryexists(local.tempPath)){
+			echo("Failed to create directory: "&local.tempPath&"<br>");
+			abort;
+		}
 		application.zcore.functions.zcreatedirectory(local.tempPath&"database/");
 		local.siteRestoreStruct[local.row.site_id]=[];
 		application.zcore.functions.zwritefile(local.tempPath&"globals.json", serializeJSON(local.row));
@@ -435,7 +450,6 @@ TODO: figure out why site backup doesn't get compressed.
 	}
 	
 	
-	
 	db.sql="select site.*, group_concat(app_x_site.app_id SEPARATOR #db.param(',')#) appidlist 
 	from `#request.zos.zcoreDatasource#`.`site` 
 	left join #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site ON 
@@ -481,7 +495,7 @@ TODO: figure out why site backup doesn't get compressed.
 			application.zcore.functions.zdeletefile(request.zos.backupDirectory&'site-archives#variables.tempPathName#/'&curDomain&'-#variables.tempPathName#-global.tar.gz');
 			application.zcore.functions.zSecureCommand("tarZipSiteUploadPath"&chr(9)&curDomain, 3600);
 		}*/
-		application.zcore.functions.zSecureCommand("tarZipSitePath"&chr(9)&curDomain&chr(9)&curDate, 3600);
+		r1=application.zcore.functions.zSecureCommand("tarZipSitePath"&chr(9)&curDomain&chr(9)&curDate, 3600);
 		application.zcore.functions.zDeleteDirectory(request.zos.backupDirectory&'site-archives#variables.tempPathName#/#curDomain#/');
 		if(request.zos.istestserver){
 			break; // uncomment for faster debugging of backup script.
@@ -503,7 +517,6 @@ TODO: figure out why site backup doesn't get compressed.
 		directoryRename("#request.zos.backupDirectory#site-archives#variables.tempPathName#/", "#request.zos.backupDirectory#site-archives/");
 		application.zcore.functions.zDeleteDirectory("#request.zos.backupDirectory#site-archives-old/");
 	}
-	
 	if(form.backupType EQ 1){
 		downloadSite(form.sid, curDomain, curDate);
 	}else if(form.backupType EQ 3){

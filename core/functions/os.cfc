@@ -127,7 +127,7 @@
 <cffunction name="zGenerateNginxMap" localmode="modern" access="public" output="no">
 	<cfscript>
 	var db=request.zos.queryObject;
-	db.sql="select site_domain, site_short_domain, site_domainaliases, site_ssl_manager_domain from #db.table("site", request.zos.zcoreDatasource)# 
+	db.sql="select site_domain, site_enable_nginx_proxy_cache, site_short_domain, site_domainaliases, site_ssl_manager_domain from #db.table("site", request.zos.zcoreDatasource)# 
 	where site_active=#db.param(1)# and 
 	site_deleted = #db.param(0)# and 
 	site_id <> #db.param(-1)# 
@@ -149,8 +149,9 @@
 			arrayAppend(arrTemp, trim(row.site_ssl_manager_domain)&' "'&primaryPath&'";'&chr(10));
 		}
 		arrayAppend(arrTemp, chr(10));
-
-		arrayAppend(arrTemp3, "proxy_cache_path /var/jetendo-server/nginx/cache/#primaryPath# levels=1:2 keys_zone=#primaryPath#:1m max_size=500m inactive=5m;"&chr(10));
+		if(row["site_enable_nginx_proxy_cache"] == "1"){
+			arrayAppend(arrTemp3, "proxy_cache_path /var/jetendo-server/nginx/cache/#primaryPath# levels=1:2 keys_zone=#primaryPath#:1m max_size=500m inactive=5m;"&chr(10));
+		}
 	} 
 	var output='map $http_host $zmaindomain {
 	hostnames;

@@ -7,9 +7,9 @@ $MYSQL_PATH = '/usr/bin';
 // Mysql connection settings (must have root access to get all DBs)
 $MYSQL_HOST = '127.0.0.1';
 // Backup destination (will be created if not already existing)
-$BACKUP_DEST = get_cfg_var("jetendo_backup_path").'mysql/backup';
+$BACKUP_DEST = zGetBackupPath().'mysql/backup';
 
-$BACKUP_TEMP = get_cfg_var("jetendo_backup_path").'mysql/backup/';
+$BACKUP_TEMP = zGetBackupPath().'mysql/backup/';
 
 $MYSQL_USER = 'mysql_backup_user'; 
 

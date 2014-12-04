@@ -72,7 +72,7 @@ function getAvailableUpgradePackages(){
 	return $arrPackage;
 }
 function verifySite($row){
-	global $cmysql2, $forcePermissions, $userStruct, $preview, $verifyHomePage, $userUnusedStruct, $isTestServer, $pathStruct, $checkDNS, $dnsServer, $wwwUser, $sitesPath, $ftpEnabled;
+	global $cmysql2, $forcePermissions, $userStruct, $preview, $verifyHomePage, $userUnusedStruct, $isTestServer, $pathStruct, $checkDNS, $dnsServer, $dnsServer2, $wwwUser, $sitesPath, $ftpEnabled;
 	$siteHomedir=zGetDomainInstallPath($row["site_short_domain"]);
 	$siteHomedirWritable=zGetDomainWritableInstallPath($row["site_short_domain"]);
 	$siteHasError=false;
@@ -143,7 +143,7 @@ function verifySite($row){
 			$dnsLookupFailed=false;
 			if($output1 == ""){
 				sleep(3); // retry after 3 seconds because dns server FREQUENTLY failed to return a reply.
-				$cmd="/usr/bin/dig a +short $dnsServer $curDomain";
+				$cmd="/usr/bin/dig a +short $dnsServer2 $curDomain";
 				$output1=trim(`$cmd`);
 				if($output1 == ""){
 					$siteHasError=true;
@@ -172,7 +172,7 @@ function verifySite($row){
 			$output2="";
 			if(strpos($domain, "www.") !== FALSE){
 
-				$cmd="/usr/bin/dig a +short $dnsServer $domain";
+				$cmd="/usr/bin/dig a +short $dnsServer2 $domain";
 				$output2=trim(`$cmd`);
 				$dnsLookupFailed=false;
 				if($output2 == ""){
@@ -285,7 +285,7 @@ function checkFilesystem(){
 
 	// search for 777 directories/files and other world-writable files later and report them...
 
-	$dir=get_cfg_var("jetendo_backup_path");
+	$dir=zGetBackupPath();
 	$result=zCheckDirectoryPermissions($dir, $wwwUser, $wwwUser, "660", "770", false, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."jetendo/", $wwwUser, $wwwUser, "660", "770", false, $preview, $arrError, $isTestServer);
 
@@ -376,15 +376,24 @@ if($handle !== FALSE) {
 	closedir($handle);
 }
 $dnsServer=""; // use local dns
+$dnsServer2=""; // use local dns
 if($isTestServer){
 	$d=get_cfg_var("jetendo_test_dns_server");
 	if($d !=""){
 		$dnsServer="@".$d; 
 	}
+	$d=get_cfg_var("jetendo_test_dns_server2");
+	if($d !=""){
+		$dnsServer2="@".$d; 
+	}
 }else{
 	$d=get_cfg_var("jetendo_dns_server");
 	if($d !=""){
 		$dnsServer="@".$d; 
+	}
+	$d=get_cfg_var("jetendo_dns_server2");
+	if($d !=""){
+		$dnsServer2="@".$d; 
 	}
 }
 $cmd="/bin/cat /etc/passwd";
@@ -409,7 +418,7 @@ if($cmysql2->error != ""){
 	array_push($arrError, "db connect error:".$cmysql2->error);	
 }
 if(!$fail){
-	$r=$cmysql2->query("select * from site where site_active='1' ORDER BY site_verified_datetime ASC, site_short_domain asc");
+	$r=$cmysql2->query("select * from site where site_active='1' and site_deleted='0' ORDER BY site_verified_datetime ASC, site_short_domain asc");
 	if($cmysql2->error != ""){ 
 		$fail=true;
 		array_push($arrError, "db error:".$cmysql2->error);	
@@ -431,25 +440,27 @@ if(!$fail){
 				if($row["site_ip_address"] == ""){
 					continue;
 				}
-				$r2=$cmysql2->query("select * from site_option, site_x_option where 
-					site_option.site_option_id = site_x_option.site_option_id and 
-					site_option.site_option_name = 'Visitor Tracking Code' and 
-					site_x_option.site_id = '".$row["site_id"]."' and 
-					site_x_option_deleted='0' and 
-					site_option.site_option_deleted='0' and 
-					site_option.site_id = '0' ");
-				if($cmysql2->error != ""){ 
-					$fail=true;
-					array_push($arrError, "db error:".$cmysql2->error);	
-				}
-				$hasTracking=false;
-				while($row2=$r2->fetch_array(MYSQLI_ASSOC)){
-					if(trim($row2['site_x_option_value']) != ""){
-						$hasTracking=true;
+				if($row['site_live'] == '1' && $row['site_track_users'] == '1'){
+					$r2=$cmysql2->query("select * from site_option, site_x_option where 
+						site_option.site_option_id = site_x_option.site_option_id and 
+						site_option.site_option_name = 'Visitor Tracking Code' and 
+						site_x_option.site_id = '".$row["site_id"]."' and 
+						site_x_option_deleted='0' and 
+						site_option.site_option_deleted='0' and 
+						site_option.site_id = '0' ");
+					if($cmysql2->error != ""){ 
+						$fail=true;
+						array_push($arrError, "db error:".$cmysql2->error);	
 					}
-				}
-				if(!$hasTracking){
-					array_push($arrError, $row["site_short_domain"]." doesn't have tracking code installed.");
+					$hasTracking=false;
+					while($row2=$r2->fetch_array(MYSQLI_ASSOC)){
+						if(trim($row2['site_x_option_value']) != ""){
+							$hasTracking=true;
+						}
+					}
+					if(!$hasTracking){
+						array_push($arrError, $row["site_short_domain"]." doesn't have tracking code installed.");
+					}
 				}
 				$domain=str_replace(".".get_cfg_var("jetendo_test_domain"), "", $row["site_short_domain"]);
 				$shortDomain=$domain;

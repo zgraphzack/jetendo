@@ -13,6 +13,14 @@ function zEmailErrorAndExit($subject, $message){
 	echo "Execution aborted.";
 	exit;
 }
+function zGetBackupPath(){
+	if(zIsTestServer()){
+		return get_cfg_var("jetendo_test_backup_path");
+	}else{
+		return get_cfg_var("jetendo_backup_path");
+	}
+}
+
 // zEmail("", "")
 function zEmail($subject, $message){
 	$host=`hostname`;

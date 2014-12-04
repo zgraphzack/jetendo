@@ -262,7 +262,33 @@ for($i4=0;$i4 < 62;$i4++){
 	if(file_exists($sharePath."hostmap-execute-reload.txt")){
 		@unlink($sharePath."hostmap-execute-complete.txt.temp");
 		@unlink($sharePath."hostmap-execute-complete.txt");
+
+		$cmysql2=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
+		if($cmysql2->error != ""){ 
+			$rs->success=false;
+			$rs->errorMessage="db connect error:".$cmysql2->error;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+		$r=$cmysql2->query("select site_id from site where 
+		site_active = '0' and 
+		site_deleted='0' ");
+		if($cmysql2->error != ""){ 
+			$rs->success=false;
+			$rs->errorMessage="db error:".$cmysql2->error;
+			echo($rs->errorMessage."\n");
+			return json_encode($rs);
+		}
+		$nginxSitesPath=get_cfg_var("jetendo_nginx_sites_config_path");
+		while($row=$r->fetch_array(MYSQLI_ASSOC)){
+			$outPath=$nginxSitesPath.$row["site_id"].".conf";
+			if(file_exists($outPath)){
+				unlink($outPath);
+			}
+		}
+
 		$result=`/usr/sbin/service nginx configtest 2>&1`;
+
 		echo "result:".$result.":endresult\n"; 
 		if(strpos($result, "successful") !== FALSE){
 			`/usr/sbin/service nginx reload 2>&1`;
