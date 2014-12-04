@@ -125,6 +125,7 @@
 </cffunction>
 
 <cffunction name="zGenerateNginxMap" localmode="modern" access="public" output="no">
+	<cfargument name="reloadNginx" type="boolean" required="no" default="#true#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	db.sql="select site_domain, site_enable_nginx_proxy_cache, site_short_domain, site_domainaliases, site_ssl_manager_domain from #db.table("site", request.zos.zcoreDatasource)# 
@@ -193,6 +194,9 @@
 	default "";
 	'&arrayToList(arrTemp, '')&'
 	}';
+	if(not arguments.reloadNginx){
+		return {success:true, message: "nginx hostmap published" };
+	}
 	application.zcore.functions.zwritefile(request.zos.sharedPath&'hostmap-redirect.conf', output);
 
 	application.zcore.functions.zdeletefile(request.zos.sharedPath&'hostmap-execute-complete.txt');

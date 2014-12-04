@@ -27,8 +27,8 @@
 			site_deleted=#db.param(0)# ";
 		qU=db.execute("qU");
 		application.zcore.functions.zOS_cacheSitePaths();
-		var rs=application.zcore.functions.zGenerateNginxMap();
 
+		var rs=application.zcore.functions.zGenerateNginxMap(false);
 		var result=application.zcore.functions.zSecureCommand("publishNginxSiteConfig"&chr(9)&form.site_id, 30);
 		fail=false;
 		if(result EQ ""){
@@ -1381,7 +1381,7 @@
 
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
-			<td><input name="site_enable_nginx_proxy_cache" type="checkbox" value="1" <cfif form.site_enable_nginx_proxy_cache EQ 1 or form.site_enable_nginx_proxy_cache EQ "">checked="checked"</cfif> style="background:none; border:none;"> Enable Nginx Proxy Cache?</td>
+			<td><input name="site_enable_nginx_proxy_cache" type="checkbox" value="1" <cfif form.site_enable_nginx_proxy_cache EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Enable Nginx Proxy Cache?</td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
