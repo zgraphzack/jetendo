@@ -31,7 +31,7 @@
 		optionString = application.zcore.functions.zStructToString("inputStruct", tempStruct)&chr(10);
 		optionString = optionString&"<cfscript>"&chr(10);
 		// append component init function call.
-		optionString = optionString&this.name&' = CreateObject("component","zcorerootmapping.com.display.loopOutput");'&chr(10);
+		optionString = optionString&this.name&' = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.loopOutput");'&chr(10);
 		optionString = optionString&this.name&'.init(inputStruct);'&chr(10);
 		optionString = optionString&"</cfscript>"&chr(10);
 		// convert tempStruct into a string

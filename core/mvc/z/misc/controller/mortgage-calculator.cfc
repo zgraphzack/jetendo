@@ -28,7 +28,7 @@
 </cffunction>
 
 <!--- 
-mortgageCom=createobject("zcorerootmapping.mvc.z.misc.controller.mortgage-calculator");
+mortgageCom=application.zcore.functions.zcreateobject("zcorerootmapping.mvc.z.misc.controller.mortgage-calculator");
 mortgageCom.sidebarPaymentCalculator();
  --->
 <cffunction name="sidebarPaymentCalculator" access="remote" localmode="modern">

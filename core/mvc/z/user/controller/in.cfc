@@ -39,7 +39,7 @@
 	var ts=0;
 	var rs=0;
 	if(structkeyexists(form, 'e') and structkeyexists(form, 'k')){
-		userAdminCom=createobject("component","zcorerootmapping.com.user.user_admin");
+		userAdminCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_admin");
 		ts=StructNew();
 		ts.email=form.e;
 		ts.key=form.k;

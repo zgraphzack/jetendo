@@ -566,7 +566,7 @@ zdoc css style documentation
 	if(fileexists(request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc")){ 
 		temppath="zcorerootmapping.manual-files."&dirFS&"."&tempIdFS&"."&tempIdFS;
 		savecontent variable="html"{
-			tempCom=createobject("component", tempPath);
+			tempCom=application.zcore.functions.zcreateobject("component", tempPath);
 			request.manual=this;
 			tempCom.index();
 		}
@@ -599,7 +599,7 @@ zdoc css style documentation
 	if(fileexists(request.zos.installPath&"core/manual-files/"&dirFS&"/"&tempIdFS&"/"&tempIdFS&".cfc")){
 		temppath="zcorerootmapping.manual-files."&dirFS&"."&tempIdFS&"."&tempIdFS;
 		savecontent variable="rs.html"{
-			tempCom=createobject("component", tempPath);
+			tempCom=application.zcore.functions.zcreateobject("component", tempPath);
 			request.manual=this;
 			tempCom.index();
 		}

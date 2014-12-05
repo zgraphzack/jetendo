@@ -1086,9 +1086,9 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 				}
 				if(right(variables.qslideshow.slideshow_custom_include,4) EQ ".cfc"){
 					if(left(variables.qslideshow.slideshow_custom_include,17) NEQ "zcorerootmapping."){
-						local.tempCom=createobject(request.zRootCFCPath&variables.qslideshow.slideshow_custom_include);
+						local.tempCom=application.zcore.functions.zcreateobject(request.zRootCFCPath&variables.qslideshow.slideshow_custom_include);
 					}else{
-						local.tempCom=createobject(variables.qslideshow.slideshow_custom_include);
+						local.tempCom=application.zcore.functions.zcreateobject(variables.qslideshow.slideshow_custom_include);
 					}
 					for(i=1;i LTE arraylen(arrImages);i++){
 						local.tempCom.render(); // must pass a struct to the function which represents current row

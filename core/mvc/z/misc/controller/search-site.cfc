@@ -337,7 +337,7 @@ search sql generator has to be able to search on child group data for paging to 
 				}else{
 					cfcPath=groupStruct.site_option_group_search_result_cfc_path;
 				}
-				searchCom=createobject("component", cfcPath);
+				searchCom=application.zcore.functions.zcreateobject("component", cfcPath);
 			}
 			arrSearch=[];
 			for(i in form){
@@ -1254,8 +1254,8 @@ search sql generator has to be able to search on child group data for paging to 
 		</cfscript>
 		<cfif application.zcore.app.siteHasApp("listing")>
 			<cfscript>	
-			propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-			propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+			propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+			propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 			
 			
 			if(checkMLSNumber or find(" ",trim(searchTextOriginal)) EQ 0){

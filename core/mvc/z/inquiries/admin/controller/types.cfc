@@ -3,7 +3,7 @@
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Types");
-	var hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+	var hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	</cfscript>
 </cffunction>

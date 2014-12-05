@@ -912,7 +912,7 @@ Type folder name:
 <cfscript>
 	variables.init();
 form.fp=variables.siteRootDir&form.f;
-d=createobject("component", "zcorerootmapping.mvc.z.misc.controller.download");
+d=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.misc.controller.download");
 d.index();
 </cfscript>
 </cffunction>
@@ -1103,7 +1103,7 @@ if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true)
 			inputStruct.colspan = 4;
 			inputStruct.rowspan = arraylen(arrDir);
 			inputStruct.vertical = true;
-			myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+			myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
 			myColumnOutput.init(inputStruct);
 			</cfscript>
 			<cfloop from="1" to="#arraylen(arrDir)#" index="i">
@@ -1118,7 +1118,7 @@ if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true)
 		inputStruct.colspan = 4;
 		inputStruct.rowspan = ArrayLen(arrImages);
 		inputStruct.vertical = true;
-		myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+		myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
 		</cfscript>
 		<cfif ArrayLen(arrImages) NEQ 0>
 			<strong>Images:</strong><br />

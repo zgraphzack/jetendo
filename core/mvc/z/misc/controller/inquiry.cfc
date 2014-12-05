@@ -147,7 +147,7 @@
 	form.mail_user_id=application.zcore.user.automaticAddUser(application.zcore.functions.zUserMapFormFields(structnew()));
 	if(form.inquiries_spam EQ 0){
 		if(application.zcore.app.siteHasApp("rental") and application.zcore.app.getAppData("rental").optionstruct.rental_config_lodgix_email_to NEQ ""){
-			local.rentalFrontCom=createobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
+			local.rentalFrontCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
 			local.rentalFrontCom.lodgixInquiryTemplate();
 		}
 	}

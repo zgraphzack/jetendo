@@ -1300,7 +1300,7 @@ if(not rs.success){
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qconfig=0;
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	db.sql="DELETE FROM #db.table("reservation_config", request.zos.zcoreDatasource)#  
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	reservation_config_deleted = #db.param(0)#	";
@@ -1357,7 +1357,7 @@ if(not rs.success){
 <cffunction name="configSave" localmode="modern" output="no" access="remote" returntype="any" hint="saves the application data submitted by the change() form.">
 	<cfscript>
 	var ts=StructNew();
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var result='';
 	if(this.loadDefaultConfig(true) EQ false){
 		rCom.setError("Please correct the above validation errors and submit again.",1);
@@ -1409,7 +1409,7 @@ if(not rs.success){
 	var rs=structnew();
 	var qConfig='';
 	var theText='';
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	savecontent variable="theText"{
 		db.sql="SELECT * FROM #db.table("reservation_config", request.zos.zcoreDatasource)# reservation_config 
 		WHERE site_id = #db.param(form.sid)# and 
@@ -1477,7 +1477,7 @@ if(not rs.success){
 		<tr>
 		<th>Reminder Email Header:</th>
 		<td>');
-        htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+        htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
         htmlEditor.instanceName	= "reservation_config_email_reminder_header";
         htmlEditor.value			= form.reservation_config_email_reminder_header;
         htmlEditor.width			= "100%";
@@ -1497,7 +1497,7 @@ if(not rs.success){
 		<tr>
 		<th>New Reservation Email Header:</th>
 		<td>');
-        htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+        htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
         htmlEditor.instanceName	= "reservation_config_email_creation_header";
         htmlEditor.value			= form.reservation_config_email_creation_header;
         htmlEditor.width			= "100%";
@@ -1517,7 +1517,7 @@ if(not rs.success){
 		<tr>
 		<th>Change Email Header:</th>
 		<td>');
-        htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+        htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
         htmlEditor.instanceName	= "reservation_config_email_change_header";
         htmlEditor.value			= form.reservation_config_email_change_header;
         htmlEditor.width			= "100%";
@@ -1537,7 +1537,7 @@ if(not rs.success){
 		<tr>
 		<th>Cancelled Email Header:</th>
 		<td>');
-        htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+        htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
         htmlEditor.instanceName	= "reservation_config_email_cancelled_header";
         htmlEditor.value			= form.reservation_config_email_cancelled_header;
         htmlEditor.width			= "100%";

@@ -559,7 +559,7 @@ form.action=application.zcore.functions.zso(form, 'action',false,'list');
 request.zScriptName=request.cgi_script_name&"?ztv=1";
 //zreset="site";
 start=gettickcount();
-request.zos.skin = createObject("component", "zcorerootmapping.com.display.skin");
+request.zos.skin = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.skin");
 </cfscript>
 <h1><a href="#request.zscriptname#">Manage Design &amp; Layout</a></h1>
 <p>Tools: <a href="#request.zscriptname#&action=testHTMLParser">Test HTML Parser</a> | <a href="#request.zscriptname#&action=incontexteditor">Incontext HTML Editor</a> | <a href="#request.zscriptname#&action=dumpFileStruct">Dump Skin Cache</a> | <a href="#request.zscriptname#&zreset=app">Clear Skin Cache</a></p>
@@ -993,7 +993,7 @@ zRequireJqueryUI();
     <cfsilent>
 			<cfscript>
             
-            htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+            htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
             htmlEditor.instanceName	= "content_text";
             htmlEditor.value			= '';
             htmlEditor.width			= "#request.zos.globals.maximagewidth#px";//"100%";
@@ -1238,7 +1238,7 @@ blog.authorlink="Test link";
 			r=application.zcore.functions.zreadfile("ram://tempCompiledSkin.cfc");
 			writeoutput('<h3>Compiled</h3>'&'<textarea name="c49" style="width:700px; height:300px; ">'&htmleditformat(r)&'</textarea><br /><br /><hr /><h3>Rendered</h3>');
 			
-			c=createobject("component", "inmemory.tempCompiledSkin");
+			c=application.zcore.functions.zcreateobject("component", "inmemory.tempCompiledSkin", true);
 			c.render();
 		}
 		

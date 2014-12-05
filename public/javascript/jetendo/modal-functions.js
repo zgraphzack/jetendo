@@ -62,8 +62,10 @@
 			var top=Math.round(Math.max(0, windowSize.height-newHeight)/2);
 			el2.style.left=left+'px';
 			el2.style.top=top+'px';
-			el2.style.width=newWidth+"px";
-			el2.style.height=newHeight+"px";
+			if(!zArrModal[zModalIndex].disableResize){
+				el2.style.width=newWidth+"px";
+				el2.style.height=newHeight+"px";
+			}
 		}
 	}
 	function zShowModal(content, obj){
@@ -71,16 +73,13 @@
 		zModalIndex++;
 		zArrModal[zModalIndex]={
 
+			"padding":20,
 			"disableResize":false,
 			"modalMaxWidth":10000,
 			"modalMaxHeight":10000,
 			"modalWidth":10000,
 			"modalHeight":10000
 		};
-		var h='<div id="zModalOverlayDivContainer'+zModalIndex+'" class="zModalOverlayDiv"><div id="zModalOverlayDivInner'+zModalIndex+'" class="zModalOverlayDiv2"></div></div>';
-		$(d).append(h);
-		d.style.overflow="hidden";
-		zGetClientWindowSize();
 		if(typeof obj.disableResize !== "undefined" && obj.disableResize){
 			zArrModal[zModalIndex].disableResize=obj.disableResize;	
 		}
@@ -88,6 +87,16 @@
 		if(typeof obj.disableClose !== "undefined" && obj.disableClose){
 			disableClose=obj.disableClose;	
 		}
+		if(typeof obj.padding !== "undefined"){
+			zArrModal[zModalIndex].padding=obj.padding;	
+		}
+		var h='<div id="zModalOverlayDivContainer'+zModalIndex+'" class="zModalOverlayDiv"><div id="zModalOverlayDivInner'+zModalIndex+'" class="zModalOverlayDiv2"></div></div>';
+		$(d).append(h);
+		if(!zArrModal[zModalIndex].disableResize){
+			d.style.overflow="hidden";
+		}
+		zGetClientWindowSize();
+		$(".zModalOverlayDiv2").css("padding", zArrModal[zModalIndex].padding+"px");
 		var windowSize=zWindowSize;
 		zArrModal[zModalIndex].modalWidth=obj.width;
 		zArrModal[zModalIndex].modalHeight=obj.height;

@@ -24,7 +24,7 @@
 	variables.queueSortStruct.ajaxTableId='sortRowTable';
 	variables.queueSortStruct.ajaxURL='/z/content/admin/content-admin/#form.method#?content_parent_id=#form.content_parent_id#';
 	
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	
 	if(structkeyexists(form, 'zQueueSort')){
@@ -512,7 +512,7 @@
 	
 	application.zcore.siteOptionCom.setIdHiddenField();
 
-	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Navigation/Layout", "Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-content-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession, 'content_return'&form.content_id); 
@@ -538,7 +538,7 @@
 				#application.zcore.functions.zOutputHelpToolTip("Summary Text","member.content.edit content_summary")#</th>
 			<td style="vertical-align:top; ">
 				<cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "content_summary";
 				htmlEditor.value			= form.content_summary;
 				htmlEditor.width			= "#request.zos.globals.maximagewidth#px";//"100%";
@@ -552,7 +552,7 @@
 				#application.zcore.functions.zOutputHelpToolTip("Body Text","member.content.edit content_text")#</th>
 			<td style="vertical-align:top; "> 
 				<cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "content_text";
 				htmlEditor.value			= form.content_text;
 				htmlEditor.width			= "#request.zos.globals.maximagewidth#px";//"100%";
@@ -1065,7 +1065,7 @@
 	</td>
 	</tr>
 	<cfscript>
-	userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	usergid = userGroupCom.getGroupId('agent',request.zos.globals.id);
 	db.sql="SELECT *, user.site_id userSiteId FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE  user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))# 
@@ -1565,7 +1565,7 @@
 	t38["url"]=true;
 	t38["parentid"]=true;
 	t38["text"]=true;
-	dataImportCom = CreateObject("component", "zcorerootmapping.com.app.dataImport");
+	dataImportCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.dataImport");
 	dataImportCom.parseCSV(fileContents);
 	dataImportCom.getFirstRowAsColumns();
 	for(n=1;n LTE arraylen(dataImportCom.arrColumns);n++){
@@ -1858,7 +1858,7 @@
 	}
 	searchTextReg=rereplace(searchText,"[^A-Za-z0-9[[:white:]]]*",".","ALL");
 	searchTextOReg=rereplace(searchTextOriginal,"[^A-Za-z0-9 ]*",".","ALL");
-	qSortCom = CreateObject("component", "zcorerootmapping.com.display.querySort");
+	qSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.querySort");
 	form.zPageId = qSortCom.init("zPageId");
 	form.zLogIndex = application.zcore.status.getField(form.zPageId, "zLogIndex", 1, true);
 	Request.zScriptName2 = "/z/content/admin/content-admin/index?searchtext=#urlencodedformat(application.zcore.functions.zso(form, 'searchtext'))#&searchexactonly=#searchexactonly#&content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#";

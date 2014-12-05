@@ -38,7 +38,7 @@
 		form.zIndex = 1;
 	}
 	Request.zScriptName = "/z/inquiries/admin/search-engine-keyword-report/index?searchOn=#urlencodedformat(form.searchOn)#&negativekeywordsearch=#urlencodedformat(form.negativekeywordsearch)#&keywordsearch=#urlencodedformat(form.keywordsearch)#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&search=#urlencodedformat(form.search)#";
-	hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+	hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	</cfscript>
 	<h2 style="display:inline;">Search Engine Keyword Inquiry Search | </h2>

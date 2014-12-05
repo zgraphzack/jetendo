@@ -30,7 +30,7 @@ this.app_id=10;
 
 <cffunction name="initAdmin" localmode="modern" output="no" access="public" returntype="any">
 <cfscript>
-	variables.rCom=createObject("component","zcorerootmapping.com.zos.return");
+	variables.rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	</cfscript>
 </cffunction>
 <cffunction name="onSiteStart" localmode="modern" output="no" access="public"  returntype="struct" hint="Runs on application start and should return arguments.sharedStruct">
@@ -1117,7 +1117,7 @@ this.app_id=10;
 	var db=request.zos.queryObject;
 	var qconfig=0;
 	
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	db.sql="DELETE FROM #db.table("blog_config", request.zos.zcoreDatasource)#  
 	WHERE site_id=#db.param(request.zos.globals.id)# and 
 	blog_config_deleted = #db.param(0)#";
@@ -1419,7 +1419,7 @@ this.app_id=10;
 	<cfscript>
 	db=request.zos.queryObject;
 	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
-	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
 	limit=30;
@@ -1493,7 +1493,7 @@ this.app_id=10;
 	<cfscript>
 	db=request.zos.queryObject;
 	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
-	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
 	limit=30;
@@ -1561,7 +1561,7 @@ this.app_id=10;
 	<cfscript>
 	db=request.zos.queryObject;
 	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
-	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
 	limit=30;
@@ -2139,7 +2139,8 @@ this.app_id=10;
 	<cfargument name="displayStruct" type="struct" required="yes">
 	<cfargument name="displayCount" type="numeric" required="yes">
 	<cfargument name="futureEventsOnly" type="boolean" required="no" default="#false#" hint="Returns only future events including the current day.">
-	<cfargument name="blog_category_id" type="numeric" required="no" default="#0#">
+	<cfargument name="blog_category_id" type="string" required="no" default="">
+	<cfargument name="exclude_blog_category_id" type="string" required="no" default="">
 	<cfscript>
 	var loadBlogArticleInclude='';
 	var content='';
@@ -2180,9 +2181,7 @@ this.app_id=10;
 		ts.image_library_id_field="blog.blog_image_library_id";
 		ts.count =  1; // how many images to get
 		rs=application.zcore.imageLibraryCom.getImageSQL(ts);
-		</cfscript>
-		<cfsavecontent variable="db.sql">
-		select *, count(blog_comment.blog_comment_id) as commentCount 
+		db.sql="select *, count(blog_comment.blog_comment_id) as commentCount 
 		#db.trustedsql(rs.select)#  
 		from #db.table("blog", request.zos.zcoreDatasource)# blog 
 		#db.trustedsql(rs.leftJoin)#
@@ -2204,35 +2203,45 @@ this.app_id=10;
 		user_deleted = #db.param(0)# and
 		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
 		where blog.site_id=#db.param(request.zos.globals.id)# and 
-		blog_deleted = #db.param(0)# and 
-		<cfif form.site_x_option_group_set_id NEQ 0>
-	        (blog.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
+		blog_deleted = #db.param(0)# and ";
+		if(form.site_x_option_group_set_id NEQ 0){
+	        db.sql&=" (blog.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
 	        	or blog.blog_show_all_sections=#db.param(1)# 
 				
-	        ) and 
-	    <cfelseif structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_always_show_section_articles') and application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0>
-			blog.site_x_option_group_set_id = #db.param(0)#  and 
-        </cfif>
-        
-		(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
-		blog_event =#db.param(1)#) and 
-		<cfif arguments.blog_category_id NEQ 0>
-			blog_x_category.blog_category_id = #db.param(arguments.blog_category_id)# and 
-		</cfif>
-		<cfif arguments.futureEventsOnly> 
-			 blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
-			blog_event =#db.param(1)# and 
-		</cfif>
-
-		blog_status <> #db.param(2)#  
-		group by blog.blog_id
-		<cfif arguments.futureEventsOnly>
-		order by blog_datetime asc
-		<cfelse>
-		order by blog_sticky desc, blog_datetime desc
-		</cfif>
-		LIMIT #db.param(0)#,#db.param(arguments.displayCount)#
-		</cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
+	        ) and ";
+	    }else if(structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_always_show_section_articles') and application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0){
+			db.sql&=" blog.site_x_option_group_set_id = #db.param(0)#  and ";
+		}
+		db.sql&=" (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+		blog_event =#db.param(1)#) and ";
+		if(arguments.blog_category_id NEQ "" and arguments.blog_category_id NEQ "0"){
+			arrId=listToArray(arguments.blog_category_id, ",");
+			for(i=1;i LTE arraylen(arrId);i++){
+				arrId[i]="'"&application.zcore.functions.zescape(arrId[i])&"'";
+			}
+			db.sql&=" blog_x_category.blog_category_id IN (#db.trustedSQL(arrayToList(arrId, ","))#)  and ";
+		}
+		if(arguments.exclude_blog_category_id NEQ "" and arguments.exclude_blog_category_id NEQ "0"){
+			arrId=listToArray(arguments.exclude_blog_category_id, ",");
+			for(i=1;i LTE arraylen(arrId);i++){
+				arrId[i]="'"&application.zcore.functions.zescape(arrId[i])&"'";
+			}
+			db.sql&=" blog_x_category.blog_category_id NOT IN (#db.trustedSQL(arrayToList(arrId, ","))#) and ";
+		}
+		if(arguments.futureEventsOnly){
+			db.sql&="  blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
+			blog_event =#db.param(1)# and ";
+		}
+		db.sql&=" blog_status <> #db.param(2)#  
+		group by blog.blog_id ";
+		if(arguments.futureEventsOnly){
+			db.sql&=" order by blog_datetime asc";
+		}else{
+			db.sql&=" order by blog_sticky desc, blog_datetime desc";
+		}
+		db.sql&=" LIMIT #db.param(0)#,#db.param(arguments.displayCount)#";
+		qList=db.execute("qList");
+		</cfscript>
 		<cfloop query="qList">
 			<cfscript>
 			ts=StructNew();
@@ -2755,7 +2764,7 @@ this.app_id=10;
 		inputStruct.vertical = true;
 		inputStruct.minWidth=150;
 		inputStruct.divoutput=true;
-		myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+		myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
 		myColumnOutput.init(inputStruct);
 		</cfscript>
 		<cfloop query="qMenu">
@@ -3040,7 +3049,7 @@ this.app_id=10;
 		inputStruct.vertical = true;
 		inputStruct.minWidth=150;
 		inputStruct.divoutput=true;
-		myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+		myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
 		myColumnOutput.init(inputStruct);
 		</cfscript>
 		<cfloop query="qMenu">

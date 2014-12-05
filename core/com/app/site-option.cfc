@@ -647,12 +647,16 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			if(arguments.orderBy NEQ ""){
 				tempStruct={};
 				for(i=1;i LTE arrayLen(arrGroup);i++){
-					tempStruct[i]=arrGroup[i];
+					tempStruct[i]={
+						sortKey: arrGroup[i][arguments.orderBy],
+						data:arrGroup[i]
+					};
 				}
-				arrTempKey=structsort(tempStruct, arguments.orderByDataType, arguments.orderByDirection, arguments.orderBy);
+
+				arrTempKey=structsort(tempStruct, arguments.orderByDataType, arguments.orderByDirection, "sortKey");
 				arrGroup2=[];
 				for(i=1;i LTE arrayLen(arrTempKey);i++){
-					arrayAppend(arrGroup2, tempStruct[arrTempKey[i]]);
+					arrayAppend(arrGroup2, tempStruct[arrTempKey[i]].data);
 				}
 				arrGroup=arrGroup2;
 			}
@@ -2221,7 +2225,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}
 	}
 	if(customSearchIndexEnabled){
-		local.tempCom=createobject("component", local.cfcpath); 
+		local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath); 
 		local.tempCom[groupStruct.site_option_group_search_index_cfc_method](dataStruct, ds);
 	}else{
 		arrFullText=[];
@@ -2424,7 +2428,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var local=structnew();
 	var c=0;
 	application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
-	c=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	c=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 	c.index();
 	</cfscript>
 </cffunction>

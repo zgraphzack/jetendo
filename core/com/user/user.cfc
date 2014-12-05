@@ -26,7 +26,7 @@ this.customStruct = StructNew();
 	var qmember=0;
 	var db=request.zos.queryObject;
 	var local=structnew();
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	var user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
 	var user_group_id2 = userGroupCom.getGroupId('broker',request.zos.globals.id);
 	var user_group_id3 = userGroupCom.getGroupId('administrator',request.zos.globals.id);
@@ -1246,7 +1246,7 @@ formString = userCom.loginForm(inputStruct);
 			</cfif>
 			</form>
 			<cfscript>
-			local.loginCom=createobject("component", "zcorerootmapping.mvc.z.user.controller.login");
+			local.loginCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.user.controller.login");
 			</cfscript>
 			<cfif request.zos.globals.loginIframeEnabled EQ 1>
 				<iframe src="/z/user/login/index?zIsMemberArea=<cfif request.zos.inMemberArea>1<cfelse>0</cfif>" height="375" width="100%" style="margin:0px; border:none; overflow:auto;" seamless="seamless"></iframe>

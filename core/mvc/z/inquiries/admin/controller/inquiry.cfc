@@ -130,7 +130,7 @@
 	application.zcore.functions.zQueryToStruct(qInquiries, form);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	
-	hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+	hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	</cfscript>
 	<span class="form-view">
@@ -259,7 +259,7 @@
 				<!--- <tr>
 					<th>Assign to:</th>
 					<td><cfscript>
-						userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+						userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 						db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 						WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
 						user_deleted = #db.param(0)# and

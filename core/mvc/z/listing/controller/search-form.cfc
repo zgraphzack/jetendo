@@ -112,7 +112,7 @@ var mapCom=0;
 var theHTML=0;
 var rs=0;
 var arrKey=0;
-var propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 var q2=0;
 var featureHTML=0;
 var ms=0;
@@ -195,7 +195,7 @@ var arrCountAtAddress=0;
 
 application.zcore.functions.zNoCache();
 
-var propDisplayCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+var propDisplayCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 application.zcore.functions.zDisbleEndFormCheck();
 if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){
 	form.searchId=request.zsession.tempVars.zListingSearchId;
@@ -725,7 +725,7 @@ for(i in form){
 if(not structkeyexists(form, 'search_liststatus') or form.search_liststatus EQ ""){
 	form.search_liststatus="1";
 }
-searchCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.search");
+searchCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.search");
 searchCom.queryStringSearchToStruct(form);
 
 
@@ -3874,7 +3874,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 			cityName=cityName,
 			hideMapControls=hideMapControls	*/
 		}
-		mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
 		</cfscript><br />
             </cfif>
@@ -3954,7 +3954,7 @@ if(application.zcore.functions.zso(form,'searchgotolistings') EQ 1){
 		ms={
 			propertyDataCom=propertyDataCom
 		}
-		mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
 		</cfscript><br />
             </cfif>

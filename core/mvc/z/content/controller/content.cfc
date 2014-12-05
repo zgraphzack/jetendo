@@ -478,7 +478,7 @@ this.app_id=12;
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qconfig=0;
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	db.sql="DELETE FROM #db.table("content_config", request.zos.zcoreDatasource)#  
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	content_config_deleted = #db.param(0)#	";
@@ -519,7 +519,7 @@ this.app_id=12;
 <cffunction name="configSave" localmode="modern" output="no" access="remote" returntype="any" hint="saves the application data submitted by the change() form.">
 	<cfscript>
 	var ts=StructNew();
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var result='';
 	if(this.loadDefaultConfig(true) EQ false){
 		rCom.setError("Please correct the above validation errors and submit again.",1);
@@ -572,7 +572,7 @@ this.app_id=12;
 	var rs=structnew();
 	var qConfig='';
 	var theText='';
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	savecontent variable="theText"{
 		db.sql="SELECT * FROM #db.table("content_config", request.zos.zcoreDatasource)# content_config 
 		WHERE site_id = #db.param(form.sid)# and 
@@ -1482,7 +1482,7 @@ configCom.includeContentByName(ts);
 	<cfscript>
 	db=request.zos.queryObject;
 	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
-	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
 	limit=30;

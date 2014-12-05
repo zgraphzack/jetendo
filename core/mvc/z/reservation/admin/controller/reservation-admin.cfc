@@ -661,7 +661,7 @@
 		 <p>Note: availability is not checked when you add / update reservations.  Make sure you don't double book.</p>
 	<form name="myForm" id="myForm" action="/z/reservation/admin/reservation-admin/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?reservation_id=#form.reservation_id#" method="post">
 		<cfscript>
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-reservation-admin-edit");
 		cancelURL="/z/reservation/admin/reservation-admin/index";

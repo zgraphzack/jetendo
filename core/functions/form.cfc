@@ -1798,7 +1798,7 @@ zInput_file(ts); --->
         inputStruct.colspan = arguments.ss.colspan;
         inputStruct.rowspan = count;
         inputStruct.vertical = true;
-        myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+        myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
         myColumnOutput.init(inputStruct);
         for(i=1;i LTE arraylen(arrBox);i++){
             writeoutput(myColumnOutput.check(i)&arrBox[i]&"<br />"&myColumnOutput.ifLastRow(i));

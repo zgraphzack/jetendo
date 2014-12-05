@@ -453,7 +453,7 @@ listing.listing_liststatus=#db.param('1,4,7,16')#
 <h2>Related Real Estate Listings</h2>
 	<cfscript>
 	propertyHTML="";
-	propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	ts = StructNew();
 	if(form.listing_sub_type_id EQ ""){
 		perpageDefault=10;
@@ -493,7 +493,7 @@ listing.listing_liststatus=#db.param('1,4,7,16')#
 	structdelete(variables,'ts');
 	
 	if((form.listing_sub_type_id EQ "" and returnStruct.query.recordcount NEQ 0) or (returnStruct.count -(perpageDefault*(form.zIndex-1)) GT 0)){	
-		propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+		propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 		
 		ts = StructNew();
 		ts.descriptionLink=true;

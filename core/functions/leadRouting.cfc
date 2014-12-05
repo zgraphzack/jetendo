@@ -126,7 +126,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	form.inquiries_id=inquiries_id;
 	if(not structkeyexists(request.zos, 'debugleadrouting')){
 		mail spoolenable="no" to="#rs.assignEmail#" cc="#rs.cc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
-			iemailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+			iemailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		    iemailCom.getEmailTemplate();
 		}
 	}else{
@@ -382,7 +382,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	var arrCCType=0;
 	var routingCCStruct=structnew();
 	var qAssignUser=0;
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	var c=0;
 	rs.inquiries_id = arguments.ss.inquiries_id;
 	rs.inquiriesEmail=qI.inquiries_email;
@@ -426,7 +426,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		ts.site_id = request.zos.globals.id;
 		ts.autoLogin=true;
 		ts.createPassword=true;
-		userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 		ts.user_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
 		if(structkeyexists(request,'userOptOut')){
 			ts.user_pref_list=0;
@@ -434,7 +434,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		//ts.user_pref_html=1;
 		// not all forms require an email address
 		if(structkeyexists(ts,'user_username')){
-			userAdminCom = CreateObject("component","zcorerootmapping.com.user.user_admin");
+			userAdminCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_admin");
 			user_id = userAdminCom.add(ts);
 		}
 		*/
@@ -593,7 +593,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	var routingCCStruct=structnew();
 	var qAssignUser=0;
 	var db=request.zos.queryObject;
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	var c=0;
 	rs.leademail=arguments.ss.leademail;
 	rs.user_id=0;
@@ -637,7 +637,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		ts.site_id = request.zos.globals.id;
 		ts.autoLogin=true;
 		ts.createPassword=true;
-		userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 		ts.user_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
 		if(structkeyexists(request,'userOptOut')){
 			ts.user_pref_list=0;
@@ -645,7 +645,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		//ts.user_pref_html=1;
 		// not all forms require an email address
 		if(structkeyexists(ts,'user_username')){
-			userAdminCom = CreateObject("component","zcorerootmapping.com.user.user_admin");
+			userAdminCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_admin");
 			user_id = userAdminCom.add(ts);
 		}
 		*/
@@ -950,7 +950,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 	var db=request.zos.queryObject;
 	var curDate=0;
 	var hoursSinceUpdate=0;
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	// figure out a way to only query leads that need to have reminder logic or cc for inactivity
 	 db.sql="select count(inquiries_routing_id) c 
 	 from #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing 

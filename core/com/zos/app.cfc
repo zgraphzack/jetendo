@@ -60,7 +60,7 @@
 	if(structkeyexists(application.sitestruct[request.zos.globals.id].app, 'appCache')){
 		for(i in application.sitestruct[request.zos.globals.id].app.appCache){
 			if(structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache, i)){
-				configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+				configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 				configCom.site_id=request.zos.globals.id;
 				arguments.sharedStruct=configCom.getAdminLinks(arguments.sharedStruct);
 			}
@@ -482,7 +482,7 @@
 	form.sid=qa.site_id;
 	form.site_id=qa.site_id;
 	form.app_x_site_id=form.app_x_site_id;
-	configCom=createobject("component",application.zcore.appComPathStruct[qa.app_id].cfcPath);
+	configCom=application.zcore.functions.zcreateobject("component",application.zcore.appComPathStruct[qa.app_id].cfcPath, true);
 	configCom.initAdmin();
 	rCom=configCom.configDelete();
 	if(rCom.isOK()){
@@ -870,7 +870,7 @@
 		application.zcore.status.setStatus(request.zsid,"Invalid application id.",false,true);
 		application.zcore.functions.zRedirect(request.cgi_script_name&"?method=appList&zsid=#request.zsid#");
 	}
-	configCom=createobject("component",application.zcore.appComPathStruct[qa.app_id].cfcPath);
+	configCom=application.zcore.functions.zcreateobject("component",application.zcore.appComPathStruct[qa.app_id].cfcPath, true);
 	configCom.initAdmin();
 	request.zos.tempcommeta=GetMetaData(configCom[form.configMethod]);
 	if(request.zos.tempcommeta.access NEQ 'remote'){
@@ -1369,7 +1369,7 @@
 	for(n in siteStruct){
 		form.app_id=n;
 		form.sid=arguments.site_id;
-		configCom=createobject("component", application.zcore.appComPathStruct[n].cfcPath);
+		configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[n].cfcPath, true);
 		ts=StructNew();
 		siteStruct[n].optionStruct=configCom.getCacheStruct(arguments.site_id);
 	}
@@ -1460,7 +1460,7 @@ if(rCom.isOK() EQ false){
 	var i=0;
 	var list=0;
 	var arrIgnoreIds=0;
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return", true);
 	if(structkeyexists(arguments.ss,'arrId') EQ false){
 		rCom.setError("arguments.ss.arrId is required.",1);
 		return rCom;
@@ -1648,7 +1648,7 @@ if(rCom.isOK() EQ false){
 	}
 	arguments.ss.app={appCache:ts};
 	for(i in arguments.ss.app.appCache){
-		configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+		configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 		configCom.site_id=request.zos.globals.id;
 		configCom.onSiteStart(arguments.ss.app.appCache[i].sharedStruct);
 		if(application.zcore.appComPathStruct[i].cache){
@@ -1699,7 +1699,7 @@ if(rCom.isOK() EQ false){
 	}*/
 	
 	for(i in application.sitestruct[request.zos.globals.id].app.appCache){
-		configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+		configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 		configCom.site_id=request.zos.globals.id;
 		configCom.getCSSJSIncludes(arguments.ss);
 	} 
@@ -1731,7 +1731,7 @@ if(rCom.isOK() EQ false){
 	arguments.arrURL=local.siteOptionCom.getSiteMap(arguments.arrURL);
 	
 	for(i in application.sitestruct[request.zos.globals.id].app.appCache){
-		configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+		configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 		configCom.site_id=request.zos.globals.id;
 		arguments.arrURL=configCom.getSiteMap(arguments.arrUrl);
 	}
@@ -1763,7 +1763,7 @@ if(rCom.isOK() EQ false){
 		if(structkeyexists(application.zcore,'runMemoryDatabaseStart')){
 			structdelete(application.zcore, 'runMemoryDatabaseStart');
 			for(i in application.zcore.appComPathStruct){
-				currentCom=createobject("component", application.zcore.appComPathStruct[i].cfcPath);
+				currentCom=createobject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 				if(structkeyexists(currentCom, 'onMemoryDatabaseStart')){
 					currentCom.onMemoryDatabaseStart();
 				}
@@ -1774,10 +1774,10 @@ if(rCom.isOK() EQ false){
 		}
 		for(i in application.sitestruct[request.zos.globals.id].app.appCache){
 			if(i EQ 11 or i EQ 13){ // rental and listing apps are not thread-safe yet due to cfinclude and var scoping
-				request.zos.tempRequestCom[i]=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+				request.zos.tempRequestCom[i]=createObject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 			}else{
 				if(structkeyexists(application.sitestruct[request.zos.globals.id].app.appCache[i], 'cfcCached') EQ false){
-					request.zos.tempRequestCom[i]=createObject("component", application.zcore.appComPathStruct[i].cfcPath);
+					request.zos.tempRequestCom[i]=createObject("component", application.zcore.appComPathStruct[i].cfcPath, true);
 				}else{
 					request.zos.tempRequestCom[i]=application.sitestruct[request.zos.globals.id].app.appCache[i].cfcCached;
 				}

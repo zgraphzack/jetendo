@@ -23,7 +23,7 @@ if(application.zcore.functions.zso(os, 'mls_option_detail_layout') EQ 2 and not 
 		return;
 	}
 }else if(application.zcore.functions.zso(os, 'mls_option_detail_layout') EQ 1){
-	detailCom=createobject("component", "detail-new");
+	detailCom=application.zcore.functions.zcreateobject("component", "detail-new");
 	detailCom.index();
 	return;
 }
@@ -62,8 +62,8 @@ if(structkeyexists(form, 'mls_id') EQ false or structkeyexists(form, 'listing_id
 	application.zcore.functions.z301Redirect('/');
 }
 
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-propertyDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 ts = StructNew();
 
 ps=StructNew();
@@ -295,7 +295,7 @@ This listing was first listed on this web site on #dateformat(variables.listing_
 			cityName=cityName,
 			hideMapControls=hideMapControls	
 		}
-		mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
 		</cfscript><br style="clear:both;" />
  

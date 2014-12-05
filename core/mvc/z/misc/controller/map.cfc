@@ -25,7 +25,7 @@
 	mapAjaxSearch
 		validate input
 		run search query
-		var mapCom=createobject("component", "map");
+		var mapCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.misc.controller.map");
 		for(row in qS){
 			var ts={};
 			ts.uniqueId=row.unique_id;

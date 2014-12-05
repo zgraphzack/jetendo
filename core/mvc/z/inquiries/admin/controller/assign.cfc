@@ -13,7 +13,7 @@
 	var qAgents=0;
 	var selectStruct=0;
 	var db=request.zos.queryObject;
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
     application.zcore.functions.zSetPageHelpId("4.1.2");
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Leads");
 	form.inquiries_id=application.zcore.functions.zso(form, 'inquiries_id');
@@ -226,7 +226,7 @@
         
         <cfmail  to="#toEmail#" from="#request.fromemail#" replyto="#qGetInquiry.inquiries_email#" subject="A new lead assigned to you" type="html">
             <cfscript>
-	iemailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+	iemailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
             iemailCom.getEmailTemplate();
             </cfscript>
         </cfmail>
@@ -277,7 +277,7 @@
         </cfscript>
         <cfmail  to="#toEmail#" from="#request.fromemail#" replyto="#qGetInquiry.inquiries_email#" subject="A new lead assigned to you" type="html">
             <cfscript>
-			iemailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+			iemailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
             iemailCom.getEmailTemplate();
             </cfscript>
         </cfmail>

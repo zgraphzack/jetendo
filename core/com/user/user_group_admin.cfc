@@ -3,7 +3,7 @@
 	this.comName='zcorerootmapping.com.user.user_group_admin.cfc';
 	</cfscript>
 	<!--- To use a component, you create it as an object and call its methods like so...
-	userGroupCom = CreateObject("component", "zcorerootmapping.com.user.user_group");
+	userGroupCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group");
 	userGroupCom.getPermissions(user_group_id, site_id);
 	 --->
 	 

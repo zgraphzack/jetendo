@@ -422,7 +422,7 @@ if(rCom.isOK() EQ false){
 	var res="";
 	var newhtml="";
 	var ms=structNew();
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	rs.addressList=structnew();
 	rs.addressList.from=false;
 	rs.addressList.to=false;
@@ -963,7 +963,7 @@ rCom=emailCom.saveEmailTemplate(ts);
 	var result='';
 	var ts=StructNew();
 	var ts2=StructNew();
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var rs=structnew();
 	ts.zemail_template_id=0;
 	// html, text or script is required
@@ -1120,7 +1120,7 @@ if(rCom.isOK() EQ false){
 	var qE=0;
 	var ts=StructNew();
 	var ts2=StructNew();
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var rCom2=0;
 	var rs=StructNew();
 	var i=0;

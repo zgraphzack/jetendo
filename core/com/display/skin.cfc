@@ -377,7 +377,7 @@ todo: open source projects
 							local.savePath=request.zRootSecureCFCPath&"_cache.scripts.skins.#ts.struct.file_id#-#ts.struct.file_version_number#";
 						}
 						if(left(ts.struct.file_path,15) EQ "/z/skin/"){
-							ts.struct.skinCom=createobject("component",local.savePath);	
+							ts.struct.skinCom=application.zcore.functions.zcreateobject("component",local.savePath);	
 						}
 					}
 				}
@@ -496,7 +496,7 @@ todo: open source projects
 							local.savePath=request.zRootSecureCFCPath&"_cache.scripts.skins.#ts.struct.file_id#-#ts.struct.file_version_number#";
 						}
 						if(left(ts.struct.file_path,15) EQ "/z/skin/"){
-							ts.struct.skinCom=createobject("component",local.savePath);	
+							ts.struct.skinCom=application.zcore.functions.zcreateobject("component",local.savePath);	
 						}
 					}
 				}
@@ -798,7 +798,7 @@ todo: open source projects
 		if(local.debug){
 			startTime=gettickcount();
 		}
-		cssSpriteMap=createobject("component", "cssSpriteMap");
+		cssSpriteMap=application.zcore.functions.zcreateobject("component", "cssSpriteMap");
 		cssSpriteMap.init({
 			charset:"utf-8", // the charset used to read and write CSS files
 			spritePad:1, // the number of pixels between each image in the sprite image. At least 1 pixel is recommended for best browser rendering compatibility.
@@ -1002,7 +1002,7 @@ todo: open source projects
 					//local.r=application.zcore.functions.zreadfile(local.savePath);//"ram://tempCompiledSkin.cfc");
 					//writeoutput(htmleditformat(local.r));
 					//writeoutput('<h3>Compiled</h3>'&'<textarea name="c49" style="width:700px; height:300px; ">'&htmleditformat(local.r)&'</textarea><br /><br /><hr /><h3>Rendered</h3>');
-					arguments.ss.skinCom=createobject("component", local.savePath);//"inmemory.tempCompiledSkin");
+					arguments.ss.skinCom=application.zcore.functions.zcreateobject("component", local.savePath);//"inmemory.tempCompiledSkin");
 					//local.c.render();
 				}
 			}

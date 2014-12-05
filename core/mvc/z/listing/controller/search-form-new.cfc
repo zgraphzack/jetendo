@@ -3,8 +3,8 @@
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private">
 	<cfscript>
-	variables.propertyDataCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-	variables.propertyDisplayCom=CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	variables.propertyDataCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	variables.propertyDisplayCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	application.zcore.functions.zDisbleEndFormCheck();
 	if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){
 		form.searchId=request.zsession.tempVars.zListingSearchId;
@@ -515,7 +515,7 @@ listing_longitude<>'0'";
 					mapQuery=mapQuery,
 					propertyDataCom=variables.propertyDataCom
 				}
-				mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+				mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 				mapCom.index(ms);
 				writeoutput('<br />');
 			}
@@ -613,7 +613,7 @@ listing_longitude<>'0'";
 					ms={
 						propertyDataCom=variables.propertyDataCom
 					}
-					mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+					mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 					mapCom.index(ms);
 					writeoutput('<br />');
 				}
@@ -791,7 +791,7 @@ listing_longitude<>'0'";
 		}
 	}
 	
-	searchCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.search");
+	searchCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.search");
 	searchCom.queryStringSearchToStruct(form);
 	
 	
@@ -822,7 +822,7 @@ listing_longitude<>'0'";
 	}
 	savecontent variable="searchFormHTML"{
 		
-		local.searchCom=createobject("zcorerootmapping.mvc.z.listing.controller.search2");
+		local.searchCom=application.zcore.functions.zcreateobject("zcorerootmapping.mvc.z.listing.controller.search2");
 		local.rs=local.searchCom.getSearchCriteriaStruct();
 		local.formFieldStruct=local.searchCom.renderSearchFields(local.rs, local.rs.formFieldTypeStruct);
 		sfSortStruct=local.formFieldStruct;

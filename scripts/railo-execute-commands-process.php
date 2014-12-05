@@ -248,7 +248,7 @@ function sslGenerateKeyAndCSR($a){
 	}
 	$currentPath.=$js->site_id;
 	if($js->ssl_selfsign == "1"){
-		$cmd="/usr/bin/openssl req -x509 -nodes -days ".escapeshellarg($js->ssl_selfsign_days)." -newkey ".escapeshellarg("rsa:".$js->ssl_key_size)." -keyout ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".crt")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name/E=$js->ssl_email");
+		$cmd="/usr/bin/openssl req -x509 -sha256 -nodes -days ".escapeshellarg($js->ssl_selfsign_days)." -newkey ".escapeshellarg("rsa:".$js->ssl_key_size)." -keyout ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".crt")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name/E=$js->ssl_email");
 		$r2=`$cmd`;
 		if(!file_exists($currentPath.".key")){
 			$rs->success=false;
@@ -285,7 +285,7 @@ function sslGenerateKeyAndCSR($a){
 			sslDeleteCertificate(array($js->ssl_hash));
 			return json_encode($rs);
 		}
-		$cmd="/usr/bin/openssl req -new -key ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".csr")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name/E=$js->ssl_email");
+		$cmd="/usr/bin/openssl req  -sha256 -new -key ".escapeshellarg($currentPath.".key")." -out ".escapeshellarg($currentPath.".csr")." -subj ".escapeshellarg("/C=$js->ssl_country/ST=$js->ssl_state/L=$js->ssl_city/O=$js->ssl_organization/OU=$js->ssl_organization_unit/CN=$js->ssl_common_name/E=$js->ssl_email");
 		$r2=`$cmd`;
 		if(!file_exists($currentPath.".csr")){
 			$rs->success=false;
@@ -346,7 +346,7 @@ function sslSavePublicKeyCertificates($a){
 	if(!file_exists($currentPath.".csr")){
 		file_put_contents($currentPath.".csr", $js->ssl_csr);
 	}
-	$cmd="/usr/bin/openssl req -noout -subject -in ".escapeshellarg($currentPath.".csr");
+	$cmd="/usr/bin/openssl req  -sha256 -noout -subject -in ".escapeshellarg($currentPath.".csr");
 	$csrResult=str_replace("\t", "", `$cmd`)."/";
 	$cmd="/usr/bin/openssl x509 -noout -subject -in ".escapeshellarg($currentPath.".crt");
 	$crtResult=str_replace("\t", "", `$cmd`)."/";
@@ -850,12 +850,13 @@ function publishNginxSiteConfig($a){
 		array_push($arrConfig, "server { 
 			listen ".$row["site_ip_address"].":80;\n". 
 			"server_name  ".implode(" ", $arrSite).";\n".
+			$row["site_nginx_config"]."\n".
 			"rewrite ^/(.*)$ https://$host/$1 permanent;\n".
 		"}\n".
 		"server {".
 			"listen ".$row["site_ip_address"].":443 ssl spdy;\n".
 			"server_name ".implode(" ", $arrSSLSite).";\n".
-			$row["site_nginx_config"]."\n".
+			$row["site_nginx_ssl_config"]."\n".
 			"ssl_certificate ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".crt;\n".
 			"ssl_certificate_key ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".key;\n");
 			if($row["site_nginx_disable_jetendo"] == "0"){

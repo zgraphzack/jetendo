@@ -19,7 +19,7 @@ done
 <cfscript> 
 db=request.zos.queryObject;
 form.action=application.zcore.functions.zso(form, 'action',false,'list');
-emailCom=createObject("component","zcorerootmapping.com.app.email");
+emailCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.app.email");
 if(application.zcore.user.checkServerAccess() EQ false){
 	form.sid=request.zos.globals.id;
 }

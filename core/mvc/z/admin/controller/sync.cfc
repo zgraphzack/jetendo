@@ -694,7 +694,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 <cffunction name="exportData" access="remote" localmode="modern" roles="serveradministrator">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
-	variables.userGroupCom=createobject("component", "zcorerootmapping.com.user.user_group_admin");
+	variables.userGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group_admin");
 	header name="Content-Type" value="text/plain" charset="utf-8";
 	if(structkeyexists(form, 'download')){
 		header name="Content-Disposition" value="attachment; filename=json.txt" charset="utf-8";
@@ -859,7 +859,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		if(form.debugEnabled){
 			echo("delete site_option_group where site_option_group_id=#groupId#<br>");
 		}else{
-			siteOptionGroupCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
+			siteOptionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
 			siteOptionGroupCom.deleteGroupRecursively(groupId);
 		}
 	}
@@ -1116,7 +1116,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 		sourceJsonString=statusStruct.varStruct.sourceJsonString;
 	}
-	variables.userGroupCom=createobject("component", "zcorerootmapping.com.user.user_group_admin");
+	variables.userGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group_admin");
 	sourceDataStruct=deserializeJSON(sourceJsonString);
 	sourceStruct=getSiteOptionMappedData(sourceDataStruct);
 	
@@ -1142,7 +1142,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 
 <cffunction name="init" access="private" localmode="modern">
 	<cfscript>
-	siteOptionGroupCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
+	siteOptionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
 	siteOptionGroupCom.displaySiteOptionAdminNav();
 	</cfscript>
 </cffunction>

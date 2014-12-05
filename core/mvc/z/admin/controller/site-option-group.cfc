@@ -205,7 +205,7 @@
 application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
 // Note: if this group is a child group, you must update the array below to have the parent groups as well.
 form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["#groupstruct.site_option_group_name#"]);
-displayGroupCom=createobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
+displayGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
 displayGroupCom.add();')&'</pre>');
 	}
 	echo('<h2>Alternative Group Search Method</h2>
@@ -1178,7 +1178,7 @@ displayGroupCom.add();')&'</pre>');
 	<form name="myForm" id="myForm" action="/z/admin/site-option-group/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#" method="post">
 
 		<cfscript>
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic","Public Form", "Landing Page", "Email & Mapping"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-site-option-group-edit");
 		cancelURL="/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#"; 
@@ -1294,7 +1294,7 @@ displayGroupCom.add();')&'</pre>');
 					<th>#application.zcore.functions.zOutputHelpToolTip("Form Description:","member.site-option-group.edit site_option_group_form_description")#</th>
 					<td>
 						<cfscript>
-						htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 						htmlEditor.instanceName	= "site_option_group_form_description";
 						htmlEditor.value			= application.zcore.functions.zso(form, 'site_option_group_form_description');
 						htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
@@ -1336,7 +1336,7 @@ displayGroupCom.add();')&'</pre>');
 					<th>#application.zcore.functions.zOutputHelpToolTip("Help Description:","member.site-option-group.edit site_option_group_help_description")#</th>
 					<td>
 						<cfscript>
-						htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 						htmlEditor.instanceName	= "site_option_group_help_description";
 						htmlEditor.value			= application.zcore.functions.zso(form, 'site_option_group_help_description');
 						htmlEditor.width			= "#request.zos.globals.maximagewidth#px";

@@ -29,7 +29,7 @@
         }
         structappend(form,request.zos.listing.functions.savedSearchQueryToStruct(local.qSearch, 1));
         //form.search_sort="newfirst";
-        local.searchCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.search");
+        local.searchCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.search");
         local.searchCom.searchForm();
         </cfscript>
     </cffunction>
@@ -265,7 +265,7 @@ application.zcore.template.setTag("pagetitle","Edit Saved Search");
 		
 	city_name = 'Daytona Beach'; // forced
 	
-	propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	ts = StructNew();
 	// required
 	/*if(application.zcore.status.getField(form.searchid, "city_id") NEQ ''){
@@ -305,7 +305,7 @@ application.zcore.template.setTag("pagetitle","Edit Saved Search");
 	searchStruct.highlightStyle = "property-nav-highlight";	
 	*/
 	
-	propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	
 	ts = StructNew();
 	ts.baseCity = 'temp';//city_name;
@@ -332,7 +332,7 @@ application.zcore.template.setTag("pagetitle","Edit Saved Search");
 		<cfset action='form'>
 		<cfset onSavedSearchForm=true>
         <cfscript>
-		searchFormCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+		searchFormCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
 		searchFormCom.index();
 		</cfscript>
 		<br /><br />
@@ -374,7 +374,7 @@ application.zcore.template.setTag("pagetitle","Edit Saved Search");
     	searchStr=request.zos.listing.functions.savedSearchQueryToStruct(qSearch, qSearch.currentrow);
         //searchStr.search_sort="newfirst";
         application.zcore.status.setStatus(form.searchid, false,searchStr,false);
-        propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+        propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
         propertyDataCom.setSearchCriteria(searchStr);
         form.zIndex=1; 
         

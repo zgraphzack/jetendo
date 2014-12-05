@@ -3,7 +3,7 @@
 	
 <!--- 
 <cfscript>
-htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 htmlEditor.instanceName= "content_summary";
 htmlEditor.value= content_summary;
 htmlEditor.basePath= '/';

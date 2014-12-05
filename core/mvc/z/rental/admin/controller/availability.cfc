@@ -142,7 +142,7 @@
 	</cfif>
 	<h2 style="display:inline;">Availability | </h2>
 	<cfscript>
-	rateCom=createobject("component", "zcorerootmapping.mvc.z.rental.admin.controller.rates");
+	rateCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.rental.admin.controller.rates");
 	rateCom.displayNavigation();
 	</cfscript>
 	<br />
@@ -227,7 +227,7 @@
 				<cfscript>
 				ts=structnew();
 				ts.rental_id_list=form.rental_id;
-				rentalFrontCom=createobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
+				rentalFrontCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
 				rentalFrontCom.includeRentalById(ts);
 				</cfscript></td>
 		</tr>

@@ -38,7 +38,7 @@
 			application.zcore.user.logOut();
 		}
 	}
-	userGroupAdminCom=createobject("component","zcorerootmapping.com.user.user_group_admin");
+	userGroupAdminCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	ugid=userGroupAdminCom.getGroupId("user");
 	db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	where user_username = #db.param(form.e)# and 
@@ -470,7 +470,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			form.user_salt="";	
 		}
 	
-		userGroupCom=createobject("component", "zcorerootmapping.com.user.user_group_admin");
+		userGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group_admin");
 		form.user_group_id=userGroupCom.getGroupId("user");
 		form.user_username=form.user_email;
 		form.user_sent_datetime=form.user_updated_datetime;
@@ -663,7 +663,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	db.execute("qInsert");
 	if(variables.qcheckemail.recordcount NEQ 0){
 		form.user_updated_datetime = request.zos.mysqlnow;
-		userGroupCom=createobject("component","zcorerootmapping.com.user.user_group_admin");
+		userGroupCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 		form.user_group_id=userGroupCom.getGroupId("user");
 		form.user_key=hash(form.user_salt, "sha");
 		form.user_password=application.zcore.functions.zGenerateStrongPassword(10,20);
@@ -730,7 +730,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	<div style="width:100%; float:left; padding-bottom:10px;">
 		<div style="width:185px; float:left;">
 			<cfscript>
-		      loginCom=createobject("component","login");
+		      loginCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.user.controller.login");
 		      writeoutput(loginCom.displayLoginForm());
 		      </cfscript>
 		</div>
@@ -807,7 +807,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		if(request.zos.globals.disableOpenID EQ 1 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 1)){
 			openIdEnabled=false;
 		}
-		openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+		openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
 		</cfscript>
 		<cfif openIdEnabled>
 			<cfsavecontent variable="local.openIdOutput">
@@ -1109,7 +1109,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			<div style="width:100%; float:left;">
 				<div style="float:left; padding-right:20px;width:285px;">
 					<cfscript>
-					local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+					local.openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
 					local.openIdCom.disableDeveloperLoginLinks();
 					local.openIdCom.enableRegistrationLoginLinks();
 					writeoutput(local.openIdCom.displayProviderLinks(request.zos.currentHostName&"/z/user/preference/register?disableOpenIDLoginRedirect=1"));
@@ -1117,7 +1117,7 @@ If the link does not work, please copy and paste the entire link in your browser
 						if(request.zos.globals.disableOpenID EQ 1){
 							application.zcore.functions.z404("OpenID login is disabled in server manager for this site.");
 						}
-						local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+						local.openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
 						writeoutput(local.openIdCom.verifyOpenIdLogin());
 						if(application.zcore.user.checkGroupAccess("user")){
 							if(local.openIdCom.userExisted()){

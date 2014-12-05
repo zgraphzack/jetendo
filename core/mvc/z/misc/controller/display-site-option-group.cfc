@@ -1,14 +1,14 @@
 <cfcomponent>
 <cffunction name="insert" localmode="modern" access="remote">
 	<cfscript>
-	local.soCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	local.soCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 	local.soCom.publicInsertGroup();
 	</cfscript>
 </cffunction>
 
 <cffunction name="ajaxInsert" localmode="modern" access="remote">
 	<cfscript>
-	local.soCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	local.soCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 	rs=local.soCom.publicAjaxInsertGroup();
     if(not rs.success){
     	arrError=application.zcore.status.getErrors(rs.zsid);
@@ -21,7 +21,7 @@
 
 <cffunction name="add" localmode="modern" access="remote">
 	<cfscript>
-	local.soCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	local.soCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 	local.soCom.publicAddGroup();
 	</cfscript>
 </cffunction>
@@ -72,7 +72,7 @@
 		}else{
 			local.cfcpath=qSet.site_option_group_view_cfc_path;
 		}
-		local.groupCom=createobject("component", local.cfcpath);
+		local.groupCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
 		local.groupCom[qSet.site_option_group_view_cfc_method](qSet);
 	}else{
 		application.zcore.functions.z404("site_option_group_view_cfc_path and site_option_group_view_cfc_method must be set when editing the site option group to allow rendering of the group.");

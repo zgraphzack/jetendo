@@ -7,7 +7,7 @@
     application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Leads");
 	form.zPageId=application.zcore.functions.zso(form, 'zPageId');
 	if(request.cgi_script_name CONTAINS "/z/inquiries/admin/manage-inquiries/"){
-		hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+		hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		hCom.displayHeader();
 	}
 	variables.isReservationSystem=false;
@@ -223,7 +223,7 @@
 		request.zsid = application.zcore.status.setStatus(Request.zsid, "This inquiry doesn't exist.", false,true);
 		application.zcore.functions.zRedirect("/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&zsid="&request.zsid);
 	}
-	userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	try{
 		homeownerid=userGroupCom.getGroupId('homeowner',request.zos.globals.id);
 	}catch(Any excpt){
@@ -242,7 +242,7 @@
 		<br />
 		<br />
 		<cfscript>
-		viewIncludeCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+		viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		viewIncludeCom.getViewInclude(qinquiry);
         </cfscript>
 	</cfloop>
@@ -282,7 +282,7 @@
 	}else if(not structkeyexists(request.zsession, 'leadviewspam')){
 		request.zsession.leadviewspam=0;	
 	}
-	qSortCom = CreateObject("component","zcorerootmapping.com.display.querySort");
+	qSortCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.querySort");
 	form.zPageId = qSortCom.init("zPageId");
 	if(structkeyexists(form, 'zIndex')){
 		 application.zcore.status.setField(form.zPageId, "zIndex", form.zIndex);

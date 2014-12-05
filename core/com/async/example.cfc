@@ -10,7 +10,7 @@
 		debug: false,
 		enableJava: false
 	}
-	var asyncInstance=createobject("component", "async").init(asyncInitStruct);
+	var asyncInstance=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.async.async").init(asyncInitStruct);
 	
 	// create many workUnits to be executed together as a group
 	var arrWorkUnit=[];

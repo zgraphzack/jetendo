@@ -57,7 +57,7 @@
 	</cfscript>
 	<h2 style="display:inline;">All Calendars | </h2>
 	<cfscript>
-	rateCom=createobject("component", "zcorerootmapping.mvc.z.rental.admin.controller.rates");
+	rateCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.rental.admin.controller.rates");
 	rateCom.displayNavigation();
 	</cfscript>
 		<form name="calSearch" id="calSearch" action="/z/rental/admin/combined-availability/index" method="get">

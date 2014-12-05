@@ -82,7 +82,7 @@
 			this.optionstruct.csvquote=row.mls_csvquote;
 			this.optionstruct.first_line_columns=row.mls_first_line_columns;
 			this.optionstruct.row=row;
-			this.optionstruct.mlsProviderCom=createobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#row.mls_com#");
+			this.optionstruct.mlsProviderCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#row.mls_com#");
 			this.optionstruct.mlsproviderCom.setMLS(this.optionstruct.mls_id); 
 			if(row.mls_current_file_path NEQ "" and fileexists(request.zos.sharedPath&row.mls_current_file_path)){
 				this.optionstruct.filePath=replace(trim(row.mls_current_file_path),"\","/","ALL");
@@ -207,7 +207,7 @@
 		writeoutput(request.zos.sharedPath&this.optionstruct.filePath&'<br />');
 		
 		
-		variables.csvParser=createObject("component", "zcorerootmapping.com.app.csvParser");
+		variables.csvParser=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.csvParser");
 		variables.csvParser.pathToOstermillerCSVParserJar=application.zcore.railowebinfpath&"lib/ostermillerutils.jar";
 		variables.csvParser.enableJava=request.zos.isJavaEnabled;
 		variables.csvParser.arrColumn=this.optionstruct.arrColumns;
@@ -698,7 +698,7 @@
 		foundCount=0;
 		arrFound=arraynew(1);
 		arrFound2=arraynew(1);
-		mlsProviderCom=createobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#qmls2.mls_com[n]#");
+		mlsProviderCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#qmls2.mls_com[n]#");
 		mlsproviderCom.setMLS(mlsID); 
 		tableName=mlsproviderCom.getPropertyTableName();
 		</cfscript>

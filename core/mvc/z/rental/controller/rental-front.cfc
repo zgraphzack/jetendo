@@ -350,7 +350,7 @@ qXAmenity=db.execute("qXAmenity");
 	inputStruct.colspan = 3;
 	inputStruct.rowspan = arraylen(arramen);
 	inputStruct.vertical = true;
-	myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+	myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
 	myColumnOutput.init(inputStruct);
 	
 for(i=1;i LTE arraylen(ArrAmen);i++){

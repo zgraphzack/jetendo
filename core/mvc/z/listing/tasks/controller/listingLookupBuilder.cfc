@@ -4,7 +4,7 @@
 <cfsetting requesttimeout="5000">
 	<cfscript>
 	
-	cc=createobject("component","zcorerootmapping.mvc.z.listing.controller.listing");
+	cc=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.listing");
 	cc.updateDistanceCache();
 	writeoutput('City Distance table updated');
 	application.zcore.functions.zabort();
@@ -93,7 +93,7 @@
 		}
 	}
 	if(cityCreated){
-		cc=createobject("component", "zcorerootmapping.mvc.z.listing.controller.listing");
+		cc=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.listing");
 		cc.updateDistanceCache();
 	}
 	writeoutput('Done');

@@ -1252,7 +1252,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	<cfargument name="rs" type="struct" required="no" default="#structnew()#" hint="Send in an existing struct to add this database to it.">
 	<cfscript>
 	var rs=structnew();
-	siteBackupCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
+	siteBackupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.site-backup");
 	ts=siteBackupCom.getExcludedTableStruct();
 	if(structcount(arguments.rs) EQ 0){
 		arguments.rs.allTableStruct=structnew();

@@ -197,14 +197,14 @@ application.zcore.functions.zHeader("Content-type","text/javascript");
 		application.zcore.template.setTemplate("zcorerootmapping.templates.blank");
 		application.zcore.template.prependtag("stylesheets",'<style type="text/css">body{background:none !important;} body, table{ background-color:##FFF !important; color:##000 !important;} a:link, a:visited{ color:##369 !important; } </style><meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />');
 	}
-	propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	// get select properties based on mls_id and listing_id
 	ts.arrMLSPid=structkeyarray(request.zsession.listing.savedListingStruct);
 	//ts.debug=true;
 	ts.perpage=200;
 	ts.showInactive=true;
 	returnStruct = propertyDataCom.getProperties(ts);
-	propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	ts = StructNew();
 	ts.baseCity = 'db';
 	ts.datastruct = returnStruct;
@@ -322,7 +322,7 @@ application.zcore.functions.zHeader("Content-type","text/javascript");
 	form.listing_id=structkeylist(request.zsession.listing.savedListingStruct);
 	form.content_id=structkeylist(request.zsession.listing.savedContentStruct);
 	
-		tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.inquiry");
+		tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.inquiry");
 		tempCom.index();
 		</cfscript>
 </cfif>
@@ -406,14 +406,14 @@ application.zcore.functions.zHeader("Content-type","text/javascript");
 	rs.arrCartData=[];
 
 
-	/*propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	/*propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	// get select properties based on mls_id and listing_id
 	ts.arrMLSPid=structkeyarray(request.zsession.listing.savedListingStruct);
 	//ts.debug=true;
 	ts.perpage=200;
 	ts.showInactive=true;
 	returnStruct = propertyDataCom.getProperties(ts);
-	propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	ts = StructNew();
 	ts.baseCity = 'db';
 	ts.datastruct = returnStruct;

@@ -8,7 +8,7 @@
 	if(not structkeyexists(request.zos, 'zPageHelpIdSet')){
 		request.zos.zPageHelpIdSet=true;
 
-		manualCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.manual");
+		manualCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.manual");
 		manualCom.init();
 		cs=manualCom.getDocLink(arguments.helpid);
 		if(cs.success){
@@ -321,7 +321,7 @@ if(not rs.success){
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject;
-	var siteOptionsCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options"); 
+	var siteOptionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options"); 
 	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option,
 	 #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	 WHERE 
@@ -478,7 +478,7 @@ if(not rs.success){
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	if(arguments.ss.site_id EQ request.zos.globals.serverId){
-		local.com=createobject("component", "zcorerootmapping.zCoreCustomFunctions");
+		local.com=application.zcore.functions.zcreateobject("component", "zcorerootmapping.zCoreCustomFunctions", true);
 		//structappend(ts.zcorecustomfunctions, local.com, true);
 		arguments.ss.zcorecustomfunctions=local.com;
 		if(structkeyexists(arguments.ss.zcorecustomfunctions, 'onSiteRequestStart')){
@@ -489,7 +489,7 @@ if(not rs.success){
 			
 		}
 	}else if(fileexists(arguments.ss.globals.homedir&'zCoreCustomFunctions.cfc')){
-		local.com=createobject("component", request.zRootCfcPath&"zCoreCustomFunctions");
+		local.com=application.zcore.functions.zcreateobject("component", request.zRootCfcPath&"zCoreCustomFunctions", true);
 		//structappend(arguments.ss.zcorecustomfunctions, local.com, true);
 		arguments.ss.zcorecustomfunctions=local.com;
 		if(structkeyexists(arguments.ss.zcorecustomfunctions, 'onSiteRequestStart')){
@@ -700,7 +700,7 @@ if(not rs.success){
 				if(local.lastFolderName EQ "controller"){
 					if(local.curExt EQ "cfc"){
 						local.comPath=arrMvcPaths[local.i]&"."&local.curPath3&"."&local.curName;
-						local.tempCom=createobject("component", local.comPath);
+						local.tempCom=application.zcore.functions.zcreateobject("component", local.comPath, true);
 						
 						ts.controllerComponentCache[local.comPath]=local.tempCom;
 						
@@ -731,7 +731,7 @@ if(not rs.success){
 					
 					if(curExt EQ "cfc"){
 						comPath=arrMvcPaths[local.i]&"."&local.curPath3&"."&local.curName;
-						ts.modelDataCache.modelComponentCache[replace(comPath, arrMvcPaths[local.i], "root")]=createobject("component", comPath);
+						ts.modelDataCache.modelComponentCache[replace(comPath, arrMvcPaths[local.i], "root")]=application.zcore.functions.zcreateobject("component", comPath, true);
 					}
 					// old method
 				/*}else if(local.lastFolderName EQ "model"){
@@ -742,7 +742,7 @@ if(not rs.success){
 							//writeoutput('#local.curName#: use existing<br />');
 						}else{
 							arrayappend(local.arrNewComPath, local.comPath);
-							//ts.modelDataCache.modelComponentCache[local.comPath]=createobject("component", local.comPath);
+							//ts.modelDataCache.modelComponentCache[local.comPath]=application.zcore.functions.zcreateobject("component", local.comPath, true);
 							//writeoutput('#local.curName#: use new<br />');
 						}
 					}
@@ -762,47 +762,6 @@ if(not rs.success){
 	structdelete(form, 'zregeneratemodelcache');
 	
 	</cfscript>
-</cffunction>
-<cffunction name="zCreateObject" localmode="modern" output="no" returntype="any">
-    <cfargument name="c" type="string" required="yes">
-    <cfargument name="cpath" type="string" required="yes">
-    <cfargument name="forceNew" type="boolean" required="no" default="#false#">
-    <cfscript>
-    var c=0;
-	var i=0;
-	var t9=0;
-	var t7=0;
-	var e=0;
-	var e2=0;
-    if(structkeyexists(application.zcore,'allcomponentcache') EQ false){
-        application.zcore.allcomponentcache=structnew();
-    }
-	t7=application.zcore.allcomponentcache;
-    if(structkeyexists(t7,arguments.cpath) EQ false or arguments.forceNew){
-		try{
-			t9=createobject("component",arguments.cpath);
-		}catch(Any e){
-			savecontent variable="local.e2"{
-				writedump(e, true, 'simple');	
-			}
-			if(not fileexists(expandpath(replace(arguments.cpath, ".","/","all")&".cfc"))){
-				application.zcore.functions.z404("zCreateObject() c:"&arguments.c&"<br />cpath:"&arguments.cpath&"<br />forceNew:"&arguments.forceNew&"<br />request.zos.cgi.SCRIPT_NAME:"&request.zos.cgi.SCRIPT_NAME&"<br />catch error:"&local.e2);
-			}else{
-				rethrow;
-			}
-		}
-        application.zcore.allcomponentcache[arguments.cpath]=t9;
-    }
-	t7=application.zcore.allcomponentcache[arguments.cpath];
-    c=duplicate(t7);
-    for(i in c){
-        if(isstruct(c[i])){
-            c[i]=structnew();
-            structappend(c[i],duplicate(t7[i]),true);
-        }
-    }
-    return c;
-    </cfscript>
 </cffunction>
 
 
@@ -1197,6 +1156,7 @@ application.zcore.functions.zLogError(ts);
 	log_script_name=#db.param(arguments.ss.scriptName)#,
 	log_line_number=#db.param(arguments.ss.lineNumber)#, 
 	log_exception_message=#db.param(arguments.ss.exceptionMessage)#, 
+	log_deleted=#db.param(0)#, 
 	log_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 	rs=db.insert("qInsert");
 	
@@ -2603,7 +2563,7 @@ User's IP: #request.zos.cgi.remote_addr#
 		if(arrayLen(arrLocalFile)){
 			arrFile=arrLocalFile;
 		}else if(1 or request.zos.isExecuteEnabled){
-			mvcCacheCom=createobject("component","zcorecachemapping.mvc-cache");
+			mvcCacheCom=application.zcore.functions.zcreateobject("component","zcorecachemapping.mvc-cache", true);
 			arrFile=mvcCacheCom.get();
 		}else{
 			throw("request.zos.isExecuteEnabled must be set to true in a sourceless deployment.");
@@ -2632,7 +2592,7 @@ User's IP: #request.zos.cgi.remote_addr#
 			curPath2="/zcorerootmapping"&qD.directory&"/"&qD.name;
 			curPath22="/zcorerootmapping"&qD.directory&"/"&qD.name;
 			if(qD.name EQ "hook.cfc"){
-				ts.hookAppCom[qD.name]=createObject("component","zcorerootmapping."&replace(replace(qD.directory, arguments.ss.serverglobals.serverhomedir, ""),"/",".","all")&"."&left(qD.name, len(qD.name)-4));
+				ts.hookAppCom[qD.name]=application.zcore.functions.zcreateobject("component","zcorerootmapping."&replace(replace(qD.directory, arguments.ss.serverglobals.serverhomedir, ""),"/",".","all")&"."&left(qD.name, len(qD.name)-4), true);
 				ts.hookAppCom[qD.name].registerHooks(arguments.ss.componentObjectCache.hook);
 				continue;
 			}
@@ -2652,7 +2612,7 @@ User's IP: #request.zos.cgi.remote_addr#
 				if(lastFolderName EQ "controller"){
 					if(curExt EQ "cfc"){
 						comPath=replace(mid(curPath22,2,len(curPath22)-5),"/",".","all");
-						tempCom=createobject("component", comPath);
+						tempCom=application.zcore.functions.zcreateobject("component", comPath, true);
 						tempcommeta=GetMetaData(tempCom);
 						ts.controllerComponentCache[comPath]=tempCom;
 						ts.cfcMetaDataCache[comPath]=tempcommeta;
@@ -2680,7 +2640,7 @@ User's IP: #request.zos.cgi.remote_addr#
 				}else if(lastFolderName EQ "model"){
 					if(curExt EQ "cfc"){
 						comPath=replace(mid(curPath22,2,len(curPath22)-5),"/",".","all");
-						ts.modelDataCache.modelComponentCache[comPath]=createobject("component", comPath);
+						ts.modelDataCache.modelComponentCache[comPath]=application.zcore.functions.zcreateobject("component", comPath, true);
 					}/*
 				}else if(lastFolderName EQ "view"){
 					if(curExt EQ "html"){
@@ -2908,7 +2868,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	| <a href="/z/server-manager/admin/site/downloadste?zid=#arguments.zid#&amp;sid=#form.sid#">Dreamweaver STE</a>
 	<cfif qSite.site_theme_sync_site_id NEQ 0> | <a href="/z/server-manager/admin/site/manualSync?zid=#arguments.zid#&amp;sid=#form.sid#">Sync Source Code</a></cfif>
 	| <a href="/z/server-manager/admin/download-site-backup/index?zid=#arguments.zid#&amp;sid=#form.sid#">Backup</a>
-	| <a href="/z/server-manager/admin/user/index?zid=#arguments.zid#&sid=#form.sid#">Users</a> 
+	| <a href="/z/server-manager/admin/user/index?zid=#arguments.zid#&amp;sid=#form.sid#">Users</a> 
 	| <a href="/z/_com/zos/app?method=instanceSiteList&amp;zid=#arguments.zid#&amp;sid=#form.sid#">Applications</a>
 	| <a href="/z/server-manager/admin/rewrite-rules/edit?zid=#arguments.zid#&amp;sid=#form.sid#">Rewrite Rules</a>
 	| <a href="/z/server-manager/admin/robots/edit?zid=#arguments.zid#&amp;sid=#form.sid#">Robots.txt</a>
@@ -2962,7 +2922,7 @@ writeoutput(rs.output);
 <cffunction name="zMenuInclude" localmode="modern" returntype="any" output="yes">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	menuCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 	menuCom.init(arguments.ss);
 	arrLink=menuCom.getMenuLinkArray(); 
 	rs={

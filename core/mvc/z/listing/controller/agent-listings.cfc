@@ -20,7 +20,7 @@ var i=0;
 var propDisplayCom=0;
 		var db=request.zos.queryObject;
 		returnStruct={count:0};
-userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 
 application.zcore.app.getAppCFC("content").initExcludeContentId();
 
@@ -98,8 +98,8 @@ if(application.zcore.app.siteHasApp("content")){
 
 <cfif application.zcore.app.siteHasApp("listing") and qm.member_mlsagentid NEQ "" and qm.member_mlsagentid NEQ ",,">
 <cfscript>
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 
 
 ts = StructNew();

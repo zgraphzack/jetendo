@@ -4,7 +4,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Users");	
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	form.zIndex=application.zcore.functions.zso(form,'zIndex',true,1);
 	form.searchtext=trim(application.zcore.functions.zso(form,'searchtext'));
 	if(not structkeyexists(request.zos.userSession.groupAccess, "administrator") and not structkeyexists(request.zos.userSession.groupAccess, "manager")){
@@ -47,7 +47,7 @@
 	variables.queueSortStruct.ajaxTableId='sortRowTable';
 	variables.queueSortStruct.ajaxURL='/z/admin/member/index';
 	
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	variables.queueSortCom.returnJson(); 
 	
@@ -66,7 +66,7 @@
 	x_ajax_id=application.zcore.functions.zso(form, 'x_ajax_id');
 	form.zmlsnum=trim(application.zcore.functions.zso(form, 'zmlsnum'));
 	header name="x_ajax_id" value="#x_ajax_id#";
-	propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	ts = StructNew();
 	ts.offset = 0;
 	ts.perpage = 1;
@@ -334,7 +334,7 @@
 	}
 	form.user_group_id=ts.user_group_id;
 	ts.sendConfirmOptIn=false;
-	userAdminCom = CreateObject("component","zcorerootmapping.com.user.user_admin");
+	userAdminCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_admin");
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") and structkeyexists(request.zos.userSession.groupAccess, "client")){
 		if(structkeyexists(form,'member_client_access') EQ false){
 			form.member_client_access="''";
@@ -516,7 +516,7 @@
 	<br />
 	<form action="/z/admin/member/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?user_id=#form.user_id#&amp;zIndex=#form.zIndex#&amp;searchtext=#URLEncodedFormat(form.searchtext)#" method="post" enctype="multipart/form-data">
 		<cfscript>
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-member-edit");
 		if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
@@ -611,7 +611,7 @@
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Description","member.member.edit member_description")#</th>
 				<td><cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "member_description";
 				htmlEditor.value			= form.member_description;
 				htmlEditor.width			= "100%";
@@ -655,7 +655,7 @@
 					<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Limit Manager Features","member.member.edit user_limit_manager_features")#</th>
 					<td style="vertical-align:top; "> 
 				<cfscript>
-				adminSecurityFilterCom=createobject("component", "zcorerootmapping.com.app.adminSecurityFilter");
+				adminSecurityFilterCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.adminSecurityFilter");
 				adminSecurityFilterCom.getFormField("user_limit_manager_features");
 				</cfscript>
 				</td>
@@ -665,7 +665,7 @@
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Sign In With","member.member.edit user_openid_provider")#</th>
 					<td><cfscript>
-					openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+					openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
 					writeoutput(openIdCom.displayOpenIdProviderForUser(qMember.user_id, qMember.site_id));
 					</cfscript></td>
 				</tr>
@@ -1223,7 +1223,7 @@
 	fileContents=application.zcore.functions.zreadfile(request.zos.globals.privatehomedir&"/zupload/user/"&f1);
 	d1=application.zcore.functions.zdeletefile(request.zos.globals.privatehomedir&"/zupload/user/"&f1);
 	 
-	dataImportCom = CreateObject("component", "zcorerootmapping.com.app.dataImport");
+	dataImportCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.dataImport");
 	dataImportCom.parseCSV(fileContents);
 	dataImportCom.getFirstRowAsColumns(); 
 	requiredCheckStruct=duplicate(requiredStruct); 
@@ -1265,11 +1265,11 @@
 			if(left(form.cfcPath, 5) EQ "root."){
 				form.cfcPath=request.zrootcfcpath&removechars(form.cfcPath, 1, 5);
 			}
-			filterInstance=createobject("component", form.cfcPath);	
+			filterInstance=application.zcore.functions.zcreateobject("component", form.cfcPath, true);	
 			filterEnabled=true;
 		}
 	}
-	userAdminCom=createobject("component", "zcorerootmapping.com.user.user_admin");
+	userAdminCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_admin");
 	request.zDisableNewMemberEmail=true;
 	for(g=1;g  LTE curCount;g++){
 		ts=dataImportCom.getRow();	

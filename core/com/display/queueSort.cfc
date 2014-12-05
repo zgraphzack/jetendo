@@ -12,7 +12,7 @@ inputStruct.datasource = "";
 inputStruct.where = ""; // add additional 
 WHERE statement
 inputStruct.disableRedirect=false;
-queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 queueSortCom.init(inputStruct);
 </cfscript>	
   --->

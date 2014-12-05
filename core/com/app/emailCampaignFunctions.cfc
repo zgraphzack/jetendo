@@ -19,7 +19,7 @@
 	var rs=0;
 	var start=getTickCount();
 	var i=0;
-	var rCom=createobject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	if(structkeyexists(form, 'sendEmailCount') EQ false){
 		sendEmailCount=20; // hardcoded number of emails to send per request.
 	}
@@ -269,7 +269,7 @@ if(rs.isOK()){
 	var qEmailTemplate=0;
 	var nowDate=request.zos.mysqlnow;
 	var update=false;
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var rs=structnew();
 	var t2=0;
 	ts.update=false;
@@ -413,7 +413,7 @@ if(rCom.isOK()){
 	var result="";
 	var ts=StructNew();
 	var rs=StructNew();
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	ts.site_id=request.zos.globals.id;
 	ts.zemail_campaign_id=0;
 	ts.arrEmailListIds=arrayNew(1);
@@ -464,7 +464,7 @@ if(rs.isOK()){
 	var db=request.zos.queryObject;
 	var ts=StructNew();
 	var rs=StructNew();
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	ts.site_id=request.zos.globals.id;
 	ts.zemail_campaign_id=0;
 	ts.arrEmailListIds=arrayNew(1);
@@ -520,7 +520,7 @@ if(rs.isOK()){
 	var qE=0;
 	var db=request.zos.queryObject;
 	var fields="*";
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	ts.site_id=request.zos.globals.id;
 	ts.arrEmailListIds=arrayNew(1);
 	ts.arrEmailListNames=arrayNew(1);

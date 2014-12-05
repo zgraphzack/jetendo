@@ -7,7 +7,7 @@
 
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Slideshows");	
 
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	form.site_id=request.zos.globals.id;
 	if(application.zcore.functions.zso(form, 'slideshow_id') NEQ ""){
 		db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
@@ -1557,7 +1557,7 @@
 	ts.method="post";
 	ts.successMessage=false;
 	application.zcore.functions.zForm(ts);
-	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-slideshow-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession,'slideshow_return'&form.slideshow_id);
@@ -1581,7 +1581,7 @@
 			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.slideshow.edit slideshow_text")#</th>
 			<td style="vertical-align:top; "><cfscript>
             
-            htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+            htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
             htmlEditor.instanceName	= "slideshow_text";
             htmlEditor.value			= form.slideshow_text;
             htmlEditor.width			= "100%";
@@ -1961,7 +1961,7 @@
 	variables.init(); 
 	application.zcore.functions.zSetPageHelpId("2.4");
 	application.zcore.functions.zStatusHandler(request.zsid,true);
-	qSortCom = CreateObject("component","zcorerootmapping.com.display.querySort");
+	qSortCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.querySort");
 	zSSId = qSortCom.init("zSSId");
 	if(structkeyexists(form, 'zSSIndex')){
 		application.zcore.status.setField(zSSId, "zSSIndex", zSSIndex);

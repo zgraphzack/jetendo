@@ -156,7 +156,7 @@ enable round robin for offices - need a new option to disable for staff.
 				<th style="width:1%;">Description</th>
 				<td><cfscript>
     
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "office_description";
 				htmlEditor.value			= form.office_description;
 					htmlEditor.basePath		= '/';
@@ -219,7 +219,7 @@ enable round robin for offices - need a new option to disable for staff.
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Offices");	
 	var queueSortStruct = StructNew();
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	queueSortStruct.tableName = "office";
 	queueSortStruct.datasource="#request.zos.zcoreDatasource#";
 	queueSortStruct.sortFieldName = "office_sort";

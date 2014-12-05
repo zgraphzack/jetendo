@@ -26,13 +26,13 @@
 	variables.queueSortStruct.ajaxURL='/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&action=#form.method#';
 	variables.queueSortStruct.where ="  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' and product_category_deleted='0' ";
 	
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	variables.queueSortCom.returnJson();
 	</cfscript>
 	<h2 style="display:inline;">Manage Product Categories | </h2>
 	<cfscript>
-	rateCom=createobject("component", "zcorerootmapping.mvc.z.Product.admin.controller.rates");
+	rateCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.Product.admin.controller.rates");
 	rateCom.displayNavigation();
 	
 	application.zcore.functions.zstatushandler(request.zsid);
@@ -380,7 +380,7 @@
 		Product Category</h2>
 	<form name="myForm" id="myForm" action="/z/ecommerce/admin/product-category/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?product_category_id=#form.product_category_id#" method="post">
 		<cfscript>
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-Product-category-edit");
 		cancelURL="/z/ecommerce/admin/product-category/index";
@@ -423,7 +423,7 @@
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Full Text","member.product.category.edit product_category_text")#</th>
 				<td style="vertical-align:top; "><cfscript>
             
-            htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+            htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
             htmlEditor.instanceName	= "product_category_text";
             htmlEditor.value			= form.product_category_text;
             htmlEditor.basePath		= '/';

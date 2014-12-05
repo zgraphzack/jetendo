@@ -83,7 +83,7 @@
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
 	}
 	
-	searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
+	searchIndexCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.site-option");
 	form.sid=request.zos.globals.id;
 	searchIndexCom.searchReindex();
 	</cfscript>
@@ -228,7 +228,7 @@
 	fileContents=application.zcore.functions.zreadfile(request.zos.globals.privatehomedir&"/zupload/user/"&f1);
 	d1=application.zcore.functions.zdeletefile(request.zos.globals.privatehomedir&"/zupload/user/"&f1);
 	 
-	dataImportCom = CreateObject("component", "zcorerootmapping.com.app.dataImport");
+	dataImportCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.dataImport");
 	dataImportCom.parseCSV(fileContents);
 	dataImportCom.getFirstRowAsColumns(); 
 	local.requiredCheckStruct=duplicate(local.requiredStruct); 
@@ -280,7 +280,7 @@
 			if(left(form.cfcPath, 5) EQ "root."){
 				form.cfcPath=request.zrootcfcpath&removechars(form.cfcPath, 1, 5);
 			}
-			filterInstance=createobject("component", form.cfcPath);	
+			filterInstance=application.zcore.functions.zcreateobject("component", form.cfcPath);	
 			filterEnabled=true;
 		}
 	}
@@ -531,7 +531,7 @@
 			site_option_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
-			queueComStruct = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+			queueComStruct = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 			queueComStruct.init(queueSortStruct);
 			queueComStruct.sortAll();
 		}
@@ -693,7 +693,7 @@
 			site_option_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
-			queueComStruct = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+			queueComStruct = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 			queueComStruct.init(queueSortStruct);
 			queueComStruct.sortAll();
 		}
@@ -869,7 +869,7 @@
 			<tr>
 				<th>Tooltip Help Box:</th>
 				<td><cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "site_option_tooltip";
 				htmlEditor.value			= form.site_option_tooltip;
 				htmlEditor.width			= "100%";
@@ -1102,7 +1102,7 @@
 		queueSortStruct.ajaxURL='/z/admin/site-options/manageOptions?site_option_group_parent_id=0&site_option_group_id=0';
 
 		queueSortStruct.disableRedirect=true;
-		queueComStruct["obj0"] = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+		queueComStruct["obj0"] = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 		queueComStruct["obj0"].init(queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
 			application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
@@ -1130,7 +1130,7 @@
 		queueSortStruct.ajaxURL='/z/admin/site-options/manageOptions?site_option_group_parent_id=#form.site_option_group_parent_id#&site_option_group_id=#form.site_option_group_id#';
 
 		queueSortStruct.disableRedirect=true;
-		queueComStruct["obj"&qGroup.site_option_group_id] = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+		queueComStruct["obj"&qGroup.site_option_group_id] = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 		queueComStruct["obj"&qGroup.site_option_group_id].init(queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
 			application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
@@ -1928,13 +1928,13 @@
 		} 
 		if(local.qCheck.site_option_group_map_fields_type EQ 1){
 			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){
-				local.tempCom=createobject("component", local.cfcpath);
+				local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
 				local.sendEmail=true;
 				local.emailStruct=local.tempCom[local.qCheck.site_option_group_email_cfc_method](local.newDataStruct, local.arrDataStructKeys);
 			}
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 0 or local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){
-				local.tempCom=createobject("component", local.cfcpath);
+				local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
 				local.emailStruct=local.tempCom[local.qCheck.site_option_group_email_cfc_method](local.newDataStruct, local.arrDataStructKeys);
 			}else{
 				local.emailStruct=variables.generateGroupEmailTemplate(local.newDataStruct, local.arrDataStructKeys);
@@ -2486,7 +2486,7 @@ Define this function in another CFC to override the default email format
 		site_x_option_group_set_deleted='0' ";
 		
 		queueSortStruct.disableRedirect=true;
-		queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+		queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 		r1=queueSortCom.init(queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
 			// update cache
@@ -3498,7 +3498,7 @@ Define this function in another CFC to override the default email format
 			application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.site_x_option_group_set_image_library_id);
 		}
 		
-		local.siteOptionCom=createobject("component", "zcorerootmapping.com.app.site-option");
+		local.siteOptionCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.site-option");
 		local.siteOptionCom.deleteSiteOptionGroupSetIndex(form.site_x_option_group_set_id, request.zos.globals.id);
 		
 		if(qCheck.site_option_group_enable_sorting EQ 1){
@@ -3514,7 +3514,7 @@ Define this function in another CFC to override the default email format
 			site_x_option_group_set_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
-			queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+			queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 			r1=queueSortCom.init(queueSortStruct);
 			queueSortCom.sortAll();
 		}

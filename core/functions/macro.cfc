@@ -521,7 +521,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
     var rCom=0;
     var qCheck=0;
 	var db=request.zos.queryObject;
-	var emailCom=CreateObject("component", "zcorerootmapping.com.app.email");
+	var emailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.email");
 	var previousDate=dateadd("d",-2,now());
 	var previousDateFormatted=dateformat(previousDate,'yyyy-mm-dd')&' '&timeformat(previousDate,'HH:mm:ss');
 	</cfscript>
@@ -643,7 +643,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	var theSQL=0;
 	var previousDate=dateadd("d",-2,now());
 	var previousDateFormatted=dateformat(previousDate,'yyyy-mm-dd')&' '&timeformat(previousDate,'HH:mm:ss');
-	var emailCom=CreateObject("component", "zcorerootmapping.com.app.email");
+	var emailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.email");
 	var db=request.zos.queryObject;
 	</cfscript>
     <cfsavecontent variable="db.sql">

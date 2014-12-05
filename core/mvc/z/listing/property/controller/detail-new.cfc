@@ -114,8 +114,8 @@ if(structkeyexists(form, 'mls_id') EQ false or structkeyexists(form, 'listing_id
 	application.zcore.functions.z301Redirect('/');
 }
 
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-propertyDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 ts = StructNew();
 
 // get select properties based on mls_id and listing_id
@@ -460,7 +460,7 @@ tempAgent=form.listing_agent;
 	<cfscript>
 	
 	agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[form.mls_id].agentIdStruct[tempAgent];
-		userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 		userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
 	</cfscript>	
     
@@ -552,7 +552,7 @@ zArrMapText.push("#jsstringformat(mapHTML)#");
 			cityName=form.cityName,
 			hideMapControls=hideMapControls	
 		}
-		tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+		tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		tempCom.index(ms);
 		</cfscript><br style="clear:both;" />
 

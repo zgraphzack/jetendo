@@ -406,7 +406,7 @@
 		Reservation Type</h2> 
 	<form name="myForm" id="myForm" action="/z/reservation/admin/reservation-type/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?reservation_type_id=#form.reservation_type_id#" method="post">
 		<cfscript>
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-reservation_type-admin-edit");
 		cancelURL="/z/reservation/admin/reservation-type/index";

@@ -544,7 +544,7 @@ for(local.row in local.qSite){
 	t7=application.zcore.templateCFCCache;
     if(structkeyexists(t7,arguments.cpath) EQ false or arguments.forceNew){
 		try{
-			t9=createobject("component",arguments.cpath);
+			t9=application.zcore.functions.zcreateobject("component",arguments.cpath, true);
 		}catch(Any e){
 			savecontent variable="local.e2"{
 				writedump(e);	

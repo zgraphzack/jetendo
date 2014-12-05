@@ -183,7 +183,7 @@
 	var searchStruct=0;
 	var qinquiriesLast=0;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Rental Reservations");
-	var userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+	var userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 	db.sql=" select min(inquiries_datetime) as inquiries_start_date 
 	from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_reservation<> #db.param(0)# and 

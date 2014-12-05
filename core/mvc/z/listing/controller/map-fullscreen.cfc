@@ -11,7 +11,7 @@ application.zcore.functions.zFullScreenMobileApp();
 */
 
 propertyHTML="";
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 ts = StructNew();
 form.zindex=1;
 ts.offset = 0;
@@ -32,7 +32,7 @@ ts.searchcriteria={
 	zforcemapresults=""
 }
 structappend(ts.searchcriteria, application.zcore.status.getStruct(form.searchid).varStruct,true);
-searchCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.search");
+searchCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.search");
 searchCom.queryStringSearchToStruct(ts.searchcriteria);
 
 request.zos.listing.functions.zMLSSetSearchStruct(ts.searchcriteria, ts.searchcriteria);
@@ -83,7 +83,7 @@ randcount=randrange(5,10);
 			propertyDataCom=propertyDataCom,
 			mapStageStruct=mapStageStruct
 		}
-		mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
 		</cfscript>
 <cfsavecontent variable="theScript">

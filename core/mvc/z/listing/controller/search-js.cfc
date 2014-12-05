@@ -10,7 +10,7 @@ application.zcore.template.setTag("title","New MLS Search Interface");
 
 application.zcore.template.setTemplate("zcorerootmapping.templates.plain",true,true);
 
-propertyDataCom = createObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 ts=structnew();
 ts.onlyCount=true;
 ts.offset = 0;
@@ -94,7 +94,7 @@ North West
 </div>
 <cfsavecontent variable="searchPanelHTML">
         <cfscript>
-		tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search");
+		tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search");
 		tempCom.searchForm();
 		</cfscript>
 </cfsavecontent>
@@ -109,7 +109,7 @@ North West
 </div>
 
 <cfscript>
-searchCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search");
+searchCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search");
 searchCom.s();
 </cfscript>
 </cffunction>

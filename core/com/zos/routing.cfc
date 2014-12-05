@@ -335,7 +335,7 @@
 		}
 		if(local.notFound){
 			//try{
-			request.zos.routingCurrentComponentObject=createobject("component",comPath);
+			request.zos.routingCurrentComponentObject=application.zcore.functions.zcreateobject("component",comPath, true);
 			/*}catch(Any local.excpt){
 				writeoutput(comPath);
 				writedump(local.excpt);
@@ -388,13 +388,13 @@
 							if(not request.zos.istestserver and structkeyexists(application.siteStruct[request.zos.globals.id].modelDataCache.modelComponentCache, property.type)){
 								ds[property.name]=application.siteStruct[request.zos.globals.id].modelDataCache.modelComponentCache[property.type];
 							}else{
-								ds[property.name]=createobject("component", replace(property.type, "root.", request.zRootCFCPath));
+								ds[property.name]=application.zcore.functions.zcreateobject("component", replace(property.type, "root.", request.zRootCFCPath), true);
 							}
 						}else{
 							if(not request.zos.istestserver and structkeyexists(application.zcore.modelDataCache.modelComponentCache, property.type)){
 								ds[property.name]=application.zcore.modelDataCache.modelComponentCache[property.type];
 							}else{
-								ds[property.name]=createobject("component", property.type);
+								ds[property.name]=application.zcore.functions.zcreateobject("component", property.type, true);
 							}
 						}
 					}
@@ -1036,7 +1036,7 @@
 	}
 	if(structkeyexists(request.zos,'iscfc') and structkeyexists(form,'method') and right(Request.zOS.forceScriptName,4) EQ '.cfc'){
 		//application.zcore.template.prependErrorContent("There was an error while creating the component: #Request.zOS.forceScriptName#.");
-		request.zos.tempcom=createobject("component",replace(replace(mid(Request.zOS.forceScriptName,2,len(Request.zOS.forceScriptName)-5),"\",".","ALL"),"/",".","ALL"));
+		request.zos.tempcom=application.zcore.functions.zcreateobject("component",replace(replace(mid(Request.zOS.forceScriptName,2,len(Request.zOS.forceScriptName)-5),"\",".","ALL"),"/",".","ALL"), true);
 		//application.zcore.template.replaceErrorContent("");
 		if(structkeyexists(request.zos.tempcom,form.method) EQ false){
 			application.zcore.template.fail("Method, #db.param(form.method)#, doesn't exist in #Request.zOS.forceScriptName#.");
@@ -1252,11 +1252,11 @@
 	app.app_id=app_x_site.app_id ";
 	local.qApps=db.execute("qApps");
 	for(row in local.qApps){
-		local.configCom=createobject("component",application.zcore.appComPathStruct[row.app_id].cfcPath);
+		local.configCom=application.zcore.functions.zcreateobject("component",application.zcore.appComPathStruct[row.app_id].cfcPath, true);
 		local.configCom.setURLRewriteStruct(row.site_id,local.ts2);
 	}
 	if(fileexists(request.zos.globals.homedir&"zCoreCustomFunctions.cfc")){
-		local.ts2.siteRewriteRuleCom=createobject("component",request.zRootCFCPath&"zCoreCustomFunctions");
+		local.ts2.siteRewriteRuleCom=application.zcore.functions.zcreateobject("component",request.zRootCFCPath&"zCoreCustomFunctions", true);
 	}
 	ts.urlRewriteStruct=local.ts2;
 	</cfscript>

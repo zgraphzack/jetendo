@@ -24,7 +24,7 @@
 	inputStruct.colspan = 3;
 	inputStruct.rowspan = 10;
 	inputStruct.vertical = true;
-	myColumnOutput = CreateObject("component", "zcorerootmapping.com.display.loopOutput");
+	myColumnOutput = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.loopOutput");
 	myColumnOutput.init(inputStruct);
 	</cfscript>
 	 --->

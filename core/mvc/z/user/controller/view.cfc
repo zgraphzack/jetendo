@@ -61,7 +61,7 @@
 	if(structkeyexists(form, 'forcetext') eq false){
 		ts.forceHTML=true;
 	}
-	emailCom=CreateObject("component","zcorerootmapping.com.app.email");
+	emailCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.app.email");
 	rCom=emailCom.sendEmailTemplate(ts); 
 	
 	if(rCom.isOK() EQ false){

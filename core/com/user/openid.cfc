@@ -455,12 +455,12 @@ WHERE site_id <>'16'
 							inputStruct.user_email = inputStruct.user_username;
 							inputStruct.member_email = inputStruct.user_username;
 							
-							local.userGroupCom=createobject("component", "zcorerootmapping.com.user.user_group_admin");
+							local.userGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group_admin");
 							inputStruct.user_group_id=local.userGroupCom.getGroupId("user");
 							inputStruct.user_pref_list=1; // set to 0 to opt out of mailing list
 							inputStruct.autologin=true;
 							inputStruct.createPassword=true;
-							local.userAdminCom=createobject("component", "zcorerootmapping.com.user.user_admin");
+							local.userAdminCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_admin");
 							
 							user_id = local.userAdminCom.add(inputStruct);
 							if(user_id EQ false){

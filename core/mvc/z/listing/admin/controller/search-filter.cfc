@@ -139,7 +139,7 @@ application.zcore.functions.zForm(ts);
         
         
 <cfscript>
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 ts = StructNew();
 ts.offset = 0;
 ts.perpage = 1;
@@ -153,7 +153,7 @@ for(i in ts.searchCriteria){
 	}
 }
 returnStruct = propertyDataCom.getProperties(ts);
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 form.zdisablesearchfilter=1;
 structdelete(ts, 'searchCriteria');
 //ts.debug=true;
@@ -165,7 +165,7 @@ returnStruct2 = propertyDataCom.getProperties(ts);
 <cfset form.action="form">
 <cfset request.contentEditor=true>
 <cfscript>request.zos.listing.functions.zMLSSetSearchStruct(form, form);
-local.tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
 local.tempCom.index();
 </cfscript>
         <br />

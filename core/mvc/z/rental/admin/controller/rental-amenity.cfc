@@ -22,13 +22,13 @@
 	variables.queueSortStruct.ajaxURL='/z/rental/admin/rental-amenity/index';
 	variables.queueSortStruct.datasource = request.zos.zcoreDatasource;
 	variables.queueSortStruct.where ="  site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' and rental_amenity_deleted='0'  ";
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	variables.queueSortCom.returnJson();
 	</cfscript>
 	<h2 style="display:inline;">Manage Rental Amenities | </h2>
 	<cfscript>
-	rateCom=createobject("component", "zcorerootmapping.mvc.z.rental.admin.controller.rates");
+	rateCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.rental.admin.controller.rates");
 	rateCom.displayNavigation();
 	application.zcore.functions.zstatushandler(request.zsid);
 	</cfscript>

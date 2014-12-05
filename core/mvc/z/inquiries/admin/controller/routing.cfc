@@ -26,7 +26,7 @@ enable round robin for users - need a new option to disable for staff.
 	variables.queueSortStruct.disableRedirect=true;
 	variables.queueSortStruct.ajaxTableId='sortRowTable';
 	variables.queueSortStruct.ajaxURL='/z/inquiries/admin/routing/index';
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	if(structkeyexists(form, 'zQueueSort')){
 		application.sitestruct[request.zos.globals.id].leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();	
@@ -36,7 +36,7 @@ enable round robin for users - need a new option to disable for staff.
 		application.sitestruct[request.zos.globals.id].leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();	
 		variables.queueSortCom.returnJson();
 	}
-	hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+	hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	</cfscript>
 </cffunction>
@@ -210,7 +210,7 @@ enable round robin for users - need a new option to disable for staff.
 					<th style="width:1%;">Autoresponder<br /> HTML</th>
 					<td>
 					<cfscript>
-					htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 					htmlEditor.instanceName	= "inquiries_routing_autoresponder_html";
 					htmlEditor.value			= form.inquiries_routing_autoresponder_html;
 					htmlEditor.basePath		= '/';
@@ -225,7 +225,7 @@ enable round robin for users - need a new option to disable for staff.
 					</td>
 				</tr> --->
 			<cfscript>
-			userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+			userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 			db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("site_id"))# siteIdType
 			FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and

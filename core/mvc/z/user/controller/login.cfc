@@ -139,13 +139,13 @@
         <div class="zmember-openid" style="float:left; width:100%; max-width:375px;<cfif request.zos.globals.disableOpenID EQ 1 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 1)>display:none;</cfif>">
         <h2><span style="display:block;float:left;">Sign in with OpenID </span> <span style="color:##F00;font-size:12px; margin-top:-5px; margin-left:3px; display:block; float:left;">New</span></h2><br style="clear:both;" />
         <cfscript>
-        local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+        local.openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
         writeoutput(local.openIdCom.displayProviderLinks(arguments.returnToURL));
         if(structkeyexists(form, 'providerId')){
             if(request.zos.globals.disableOpenID EQ 1){
                 application.zcore.functions.z404("OpenID login is disabled in server manager for this site.");
             }
-            local.openIdCom=createobject("component", "zcorerootmapping.com.user.openid");
+            local.openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
             writeoutput(local.openIdCom.verifyOpenIdLogin());
 			if(application.zcore.user.checkGroupAccess("user")){
 				application.zcore.functions.zredirect('/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');

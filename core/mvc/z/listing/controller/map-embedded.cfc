@@ -42,7 +42,7 @@ if(qC.recordcount EQ 0 or form.content_show_map NEQ 1){
 }
 
 propertyHTML="";
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 ts = StructNew();
 form.zindex=1;
 ts.offset = 0;
@@ -98,7 +98,7 @@ if(isDefined('request.zForceHideContentProperties') EQ false){
     returnStruct = propertyDataCom.getProperties(ts);
     structdelete(variables,'ts'); 
     if(returnStruct.count NEQ 0){	
-        propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+        propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
         
     }
 }
@@ -120,7 +120,7 @@ randcount=randrange(5,10);
 			propertyDataCom=propertyDataCom,
 			mapStageStruct=mapStageStruct
 		}
-		mapCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.map");
+		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
 		</cfscript><br /><strong><a href="##" onclick="zlsOpenResultsMap('contentSearchHiddenForm'); return false;">View Fullscreen Map</a></strong>
 <cfsavecontent variable="theScript">

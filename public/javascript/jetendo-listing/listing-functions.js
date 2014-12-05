@@ -112,7 +112,7 @@ zArrLoadFunctions.push({functionName:zMLSShowFlashMessage});
 
 function zModalSaveSearch(searchId){
 	var modalContent1='<iframe src="/z/listing/property/save-search/index?searchId='+searchId+'" width="100%" height="95%"  style="margin:0px;overflow:auto; border:none;" seamless="seamless"></iframe>';
-	zShowModal(modalContent1,{'width':520,'height':410,'disableResize':true});
+	zShowModal(modalContent1,{'width':520,'height':410});
 }
 /*
 function zToggleSortFormBox(){
@@ -134,7 +134,7 @@ function zToggleSortFormBox(){
 
 function zShowInquiryPop(){
 	var modalContent1='<iframe src="/z/listing/inquiry-pop/index" width="100%" height="95%" style="margin:0px;overflow:auto; border:none;" seamless="seamless"></iframe>';
-	zShowModal(modalContent1,{'width':520,'height':438,'disableResize':true});
+	zShowModal(modalContent1,{'width':520,'height':438});
 }
 
 

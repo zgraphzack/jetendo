@@ -255,7 +255,7 @@ zSlideShow(ts);
 	form.slideshow_id=local.qss.slideshow_id;
 	local.useNewFormat=true;
 	local.slideshowConfig={ arrTab:[] };
-	slideshowCom=createobject("component", "zcorerootmapping.com.display.slideshow");
+	slideshowCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.slideshow");
 	savecontent variable="theBigSlideshowOutput"{
 		if(local.useNewFormat or local.qss.slideshow_format EQ 1){
 			backupaction=application.zcore.functions.zso(form, 'action');

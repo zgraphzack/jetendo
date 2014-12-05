@@ -59,7 +59,7 @@
 		backupCoordinatesList=application.zcore.functions.zso(form, 'search_map_coordinates_list');
 		structdelete(form,"search_within_map");
 		structdelete(form,"search_map_coordinates_list");
-		propertyDataCom=createobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+		propertyDataCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 		propertyDataCom.setSearchCriteria(form);
 		ts.onlyCount=true;
 		//ts.debug=true;

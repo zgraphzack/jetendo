@@ -18,7 +18,7 @@
 	try{
 		while(myloops GT 0){
 			myloops--;
-			idxCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.idx");
+			idxCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.idx");
 			r=idxCom.init();
 			if(r EQ false){
 				idxCom.process();

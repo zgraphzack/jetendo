@@ -1378,7 +1378,7 @@ ts.struct=form;
 		}
 		application.zcore.functions.zForm(ts);
 		
-tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-tag-edit");
 cancelURL=application.zcore.functions.zso(request.zsession, 'blogtag_return'&form.blog_tag_id);
@@ -1401,7 +1401,7 @@ tabCom.enableSaveButtons();
 				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Description","member.blog.editTag blog_tag_description")#</th>
 				<td>
 					<cfscript>
-					htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 					htmlEditor.instanceName	= "blog_tag_description";
 					htmlEditor.value			= form.blog_tag_description;
 					htmlEditor.width			= "100%";
@@ -1536,7 +1536,7 @@ tabCom.enableSaveButtons();
 	}
 	application.zcore.functions.zForm(ts);
 		
-	tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-blog-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession, 'blog_return'&form.blog_id);
@@ -1559,7 +1559,7 @@ tabCom.enableSaveButtons();
 				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
 				<td>
 		<cfscript>
-		userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 		local.useruser_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
 		db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user_group_id <> #db.param(local.useruser_group_id)# and 
@@ -1599,7 +1599,7 @@ tabCom.enableSaveButtons();
 				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Body Text","member.blog.edit blog_story")# (Required)</th>
 				<td>
 					<cfscript>
-					htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 					htmlEditor.instanceName	= "blog_story";
 					htmlEditor.value			= form.blog_story;
 					htmlEditor.width			= "100%";
@@ -2286,7 +2286,7 @@ local.blogIdBackup=form.blog_id;
 	}
 	application.zcore.functions.zForm(ts);
 	
-tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-category-edit");
 cancelURL=application.zcore.functions.zso(request.zsession, 'blogcategory_return'&form.blog_category_id);
@@ -2311,7 +2311,7 @@ tabCom.enableSaveButtons();
 			
 				<cfscript>
 					
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "blog_category_description";
 				htmlEditor.value			= form.blog_category_description;
 				htmlEditor.width			= "100%";

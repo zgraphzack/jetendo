@@ -44,7 +44,7 @@
     <p>Our team is here to serve you.</p>
   </cfif>
   <cfscript> 
-userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
 user_group_id2 = userGroupCom.getGroupId('broker',request.zos.globals.id);
 user_group_id3 = userGroupCom.getGroupId('administrator',request.zos.globals.id);
@@ -84,8 +84,8 @@ qMember=db.execute("qMember");
 </cfscript>
   <cfif application.zcore.app.siteHasApp("listing")>
     <cfscript>
-propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 
 </cfscript>
   </cfif>

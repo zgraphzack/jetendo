@@ -11,7 +11,7 @@
 	
 <cffunction name="ipn" localmode="modern" access="remote">
 	<cfscript>
-	paypalIpnCom=createobject("component", "zcorerootmapping.com.ecommerce.paypal");
+	paypalIpnCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.ecommerce.paypal");
 	paypalIpnCom.processIPN(form);
 	</cfscript>
 </cffunction>

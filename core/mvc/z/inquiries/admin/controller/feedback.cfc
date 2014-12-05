@@ -10,7 +10,7 @@
 		application.zcore.functions.zRedirect('/z/inquiries/admin/manage-inquiries/index');
 	}
 	if(request.cgi_script_name CONTAINS "/z/inquiries/admin/feedback/"){
-		hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+		hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		hCom.displayHeader();
 	}
 	</cfscript>
@@ -264,7 +264,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		<td style="vertical-align:top; width:70%;padding-left:0px;">
 	</cfif>
 	<cfscript>
-	var hCom=createobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.manage-inquiries");
+	var hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.manage-inquiries");
 	hCom.view();
 	</cfscript>
 	<cfif form.inquiries_email NEQ "">

@@ -122,7 +122,7 @@
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfsavecontent variable="local.output">
 		<cfscript>
-		var htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+		var htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 		htmlEditor.instanceName	= arguments.prefixString&arguments.row.site_option_id;
 		htmlEditor.value			= application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
 		htmlEditor.width			= application.zcore.functions.zso(arguments.optionStruct, 'editorwidth',false,"100%");

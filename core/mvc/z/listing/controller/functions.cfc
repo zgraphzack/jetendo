@@ -76,7 +76,7 @@
 		</cfsavecontent><cfscript>qList=db.execute("qList");
 		application.zcore.functions.zquerytostruct(qList, form);
 		request.zos.listing.functions.zMLSSetSearchStruct(form, form);
-local.tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
 local.tempCom.index();
 </cfscript>
         <cfset form.action=ssaction>
@@ -110,7 +110,7 @@ local.tempCom.index();
         <table id="rssMlsSearchFormTR">
 <cfscript>request.zos.listing.functions.zMLSSetSearchStruct(form, form);
 
-local.tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
 local.tempCom.index();
 </cfscript>
         <cfset form.action=ssaction>
@@ -376,7 +376,7 @@ zGetLatLong(ts);
 		<h2>#application.zcore.functions.zvarso('See more properties for sale below')#</h2><br />
 		<cfif arguments.ss.disableInstantSearch EQ false and application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_enable_instant_search EQ 1>
 			<cfscript>
-			local.searchCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search");
+			local.searchCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search");
 			local.newUrl=local.searchCom.formVarsToURL(t8942);
 			</cfscript>
 			<input type="hidden" name="zListingSearchJsURLHidden" id="zListingSearchJsURLHidden" value="/z/listing/search-js/index?#htmleditformat(local.newUrl)#" />
@@ -385,7 +385,7 @@ zGetLatLong(ts);
 			<cfscript>
 			perpage=t8942.search_result_limit;
 			propertyHTML="";
-			propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+			propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 			ts18972 = StructNew();
 			form.zindex=1;
 			ts18972.offset = arguments.ss.offset;
@@ -422,7 +422,7 @@ zGetLatLong(ts);
 			}
 			structdelete(variables,'ts');
 			if(returnStruct.count or arguments.ss.returnArray){	
-				propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+				propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 				
 				ts18972 = StructNew();
 				ts18972.dataStruct = returnStruct;
@@ -1275,7 +1275,7 @@ zGetLatLong(ts);
 	<cfscript>
 	var  propertyHTML="";
 	var  searchId=application.zcore.status.getNewId();
-	var propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	var ts18972 = StructNew();
 	form.zindex=1;
 	ts18972.offset = 0;
@@ -1311,7 +1311,7 @@ zGetLatLong(ts);
 	ts18972.arrExcludeMLSPID=[arguments.idx.listing_id];
 	var returnStruct = propertyDataCom.getProperties(ts18972); 
 	if(returnStruct.count NEQ 0){	
-		var propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+		var propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 		
 		ts18972 = StructNew();
 		returnStruct.perpage=3;

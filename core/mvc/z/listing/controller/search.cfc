@@ -1209,7 +1209,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 		}
 	} 
 	offset=application.zcore.functions.zso(form, 'of',true,10);
-	propertyDataCom = createObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	ts = StructNew();
 	ts.offset = offset;
 	ts.forceSimpleLimit=true;
@@ -1241,7 +1241,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 	propertyDataCom.setSearchCriteria(form);
 	</cfscript><cfsavecontent variable="theQuerySQL"><cfscript>
 	returnStruct= propertyDataCom.getProperties(ts);</cfscript></cfsavecontent><cfscript>
-	propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	ts = StructNew();
 	ts.baseCity = 'db';
 	ts.datastruct = returnStruct;
@@ -1517,7 +1517,7 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 			application.zcore.functions.zRedirect(request.cgi_script_name&"?searchid=#form.searchid#");
 		}
 		
-		variables.propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+		variables.propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 		variables.zIndex=application.zcore.functions.zso(form, 'zIndex',false,1);
 		if(isNumeric(variables.zIndex) EQ false){
 			application.zcore.functions.zRedirect(request.cgi_script_name&"?searchid=#form.searchid#");

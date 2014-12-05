@@ -33,7 +33,7 @@
 			variables.queueSortStruct.ajaxURL='/z/admin/menu/manageMenu?menu_id=#form.menu_id#';
 		} 
 		
-		variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+		variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 		
 		if(structkeyexists(variables.queueSortStruct,'tableName')){
 			variables.queueSortCom.init(variables.queueSortStruct);
@@ -191,7 +191,7 @@
 		if(directoryexists(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/menu/#form.menu_id#')){
 			application.zcore.functions.zCopyDirectory(application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/menu/#form.menu_id#', application.zcore.functions.zvar('privatehomedir',form.newsiteid)&'zupload/menu/#newmenuid#');
 		}
-		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 		menuFunctionsCom.publishMenu(newmenuid, form.newsiteid);
 		application.zcore.status.setStatus(request.zsid, "Menu copied");
 		application.zcore.functions.zRedirect("/z/admin/menu/index?zsid=#request.zsid#");
@@ -262,7 +262,7 @@
 			application.zcore.functions.zRedirect('/z/admin/menu/editItemLink?zsid=#request.zsid#&menu_button_id=#form.menu_button_id#');
 		}
 	}
-	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 	menuFunctionsCom.publishMenu(form.menu_id);
 	application.zcore.functions.zMenuClearCache({all=true});
 
@@ -437,7 +437,7 @@
 	}
 	variables.queueSortCom.sortAll();
 	
-	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 	menuFunctionsCom.publishMenu(form.menu_id);
 	application.zcore.functions.zMenuClearCache({all=true});
 	
@@ -614,7 +614,7 @@
 		application.zcore.functions.zRedirect('/z/admin/menu/edit?zsid=#request.zsid#&menu_id=#form.menu_id#');
 	}
 	
-	menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+	menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 	menuFunctionsCom.publishMenu(form.menu_id);
 	application.zcore.functions.zMenuClearCache({all=true});
 	if(form.method EQ 'insert'){
@@ -655,7 +655,7 @@
 		qMenuItemLinkDel=db.execute("qMenuItemLinkDel");
 		application.zcore.status.setStatus(request.zsid, 'Button deleted.');
 		variables.queueSortCom.sortAll();
-		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 		menuFunctionsCom.publishMenu(form.menu_id);
 		application.zcore.functions.zMenuClearCache({all=true});
 		application.zcore.functions.zRedirect('/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&menu_button_id=#form.menu_button_id#&zsid=#request.zsid#');
@@ -717,7 +717,7 @@
 			application.zcore.functions.zDeleteFile(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/' & qCheck.menu_button_over_url);
 		}
 		variables.queueSortCom.sortAll();
-		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 		menuFunctionsCom.publishMenu(form.menu_id);
 		application.zcore.functions.zMenuClearCache({all=true});
 		application.zcore.status.setStatus(request.zsid, 'Menu button deleted.');
@@ -786,7 +786,7 @@
 		if (DirectoryExists(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/')) {
 			application.zcore.functions.zdeletedirectory(request.zos.globals.privatehomedir&'zupload/menu/#form.menu_id#/');
 		}
-		menuFunctionsCom=createobject("component", "zcorerootmapping.com.app.menuFunctions");
+		menuFunctionsCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 		menuFunctionsCom.publishMenu(form.menu_id);
 		application.zcore.functions.zMenuClearCache({all=true});
 		application.zcore.status.setStatus(request.zsid, 'Menu deleted.');

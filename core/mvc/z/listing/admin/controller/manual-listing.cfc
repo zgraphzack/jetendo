@@ -439,7 +439,7 @@ still need to add all the meta data fields and photo display
 	application.zcore.listingStruct.mlsComObjects[0].baseInitImport(application.zcore.listingStruct.mlsStruct[0].sharedStruct);
 	local.rs=application.zcore.listingStruct.mlsComObjects[0].parseRawData(form);
 	structappend(form, local.rs, true);
-	local.idxCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.idx");
+	local.idxCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.idx");
 	form.mls_id=0;
 	
 	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'manual_listing_image_library_id'));
@@ -553,7 +553,7 @@ still need to add all the meta data fields and photo display
 		application.zcore.functions.zForm(ts);
 		
 		
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-manual_listing-edit");
 		cancelURL=application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_unique_id);
@@ -574,7 +574,7 @@ still need to add all the meta data fields and photo display
 			<th style="vertical-align:top; "> #application.zcore.functions.zOutputHelpToolTip("Remarks","member.listing.manual_listing.edit manual_listing_remarks")#</th>
 			<td style="vertical-align:top; "><cfscript>
 				
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "manual_listing_remarks";
 				htmlEditor.value			= form.manual_listing_remarks;
 					htmlEditor.basePath		= '/';

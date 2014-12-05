@@ -24,7 +24,7 @@
 	<cfscript>
 	db=request.zos.queryObject;
 	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
-	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	offset=0;
 	limit=30;
@@ -110,7 +110,7 @@
 	<cfargument name="indexeverything" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
-	searchCom=createobject("component", "zcorerootmapping.com.app.searchFunctions");
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
 	
 	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	offset=0;
@@ -667,7 +667,7 @@
 		var qConfig=0;
 		var db=request.zos.queryObject;
 		var local=structnew();
-		var rCom=createObject("component","zcorerootmapping.com.zos.return");
+		var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 		</cfscript>
     	<!--- delete all rental and rental_group and images? --->
         <cfsavecontent variable="db.sql">
@@ -719,7 +719,7 @@
     	<cfscript>
 		var ts=StructNew();
 		var result=0;
-		var rCom=createObject("component","zcorerootmapping.com.zos.return");
+		var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 		if(this.loadDefaultConfig(true) EQ false){
 			rCom.setError("Please correct the above validation errors and submit again.",1);
 			return rCom;
@@ -775,7 +775,7 @@
 		var local=structnew();
 		var ts=0;
 		var rs=structnew();
-		var rCom=createObject("component","zcorerootmapping.com.zos.return");
+		var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 		rs.output="";
 		</cfscript>
         <cfsavecontent variable="theText">

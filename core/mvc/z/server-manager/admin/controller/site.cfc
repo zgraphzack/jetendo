@@ -1528,6 +1528,11 @@
 			<td style="vertical-align:top; width:140px;">Nginx Config:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_nginx_config", "table-error","")#><textarea name="site_nginx_config" type="text" cols="70" rows="6">#htmleditformat(form.site_nginx_config)#</textarea><br />
 			Note: by default nginx has an automatic mass virtual host configuration configured for all features.  Use this only to override for this specific site.</td>
+		</tr>  
+		<tr >
+			<td style="vertical-align:top; width:140px;">Nginx SSL Config:</td>
+			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_nginx_ssl_config", "table-error","")#><textarea name="site_nginx_ssl_config" type="text" cols="70" rows="6">#htmleditformat(form.site_nginx_ssl_config)#</textarea><br />
+			Note: by default nginx has an automatic mass virtual host configuration configured for all features.  Use this only to override for this specific site.</td>
 		</tr> 
 		<tr >
 			<td style="vertical-align:top; width:140px;">Disable Nginx<br />Default Includes:</td>

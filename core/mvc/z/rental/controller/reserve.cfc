@@ -482,7 +482,7 @@ Login and view inquiry:
           </cfif>
           <cfset request.usestyleonly=true>
 			<cfscript>
-			iEmailCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+			iEmailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 			iEmailCom.getEmailTemplate();
 			</cfscript>
           <cfset StructDelete(request,'usestyleonly')>
@@ -566,7 +566,7 @@ Login and view inquiry:
         <br />
       </cfif>
         <cfscript>
-		viewIncludeCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+		viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		viewIncludeCom.getViewInclude(qinquiry);
 		</cfscript>
       <br />

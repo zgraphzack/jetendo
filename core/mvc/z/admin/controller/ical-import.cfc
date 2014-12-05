@@ -90,9 +90,9 @@ on front-end
 	if(left(form.cfcImportPath, 5) EQ "root."){
 		form.cfcImportPath=request.zrootcfcpath&removechars(form.cfcImportPath, 1, 5);
 	}
-	cfcImportObject=createobject("component", form.cfcImportPath);
+	cfcImportObject=application.zcore.functions.zcreateobject("component", form.cfcImportPath, true);
 	
-	ical = createObject("component","zcorerootmapping.com.ical.ical").init(data);
+	ical = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.ical.ical").init(data);
 	ical.importEvents(cfcImportObject, form.cfcImportMethod); 
 	
 	if(form.cfcImportCompeteMethod NEQ ""){

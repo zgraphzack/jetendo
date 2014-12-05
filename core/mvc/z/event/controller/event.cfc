@@ -223,7 +223,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qconfig=0;
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	db.sql="DELETE FROM #db.table("event_config", request.zos.zcoreDatasource)#  
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	event_config_deleted = #db.param(0)#	";
@@ -268,7 +268,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 <cffunction name="configSave" localmode="modern" output="no" access="remote" returntype="any" hint="saves the application data submitted by the change() form.">
 	<cfscript>
 	var ts=StructNew();
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var result='';
 	if(this.loadDefaultConfig(true) EQ false){
 		rCom.setError("Please correct the above validation errors and submit again.",1);
@@ -320,7 +320,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	var rs=structnew();
 	var qConfig='';
 	var theText='';
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	savecontent variable="theText"{
 		db.sql="SELECT * FROM #db.table("event_config", request.zos.zcoreDatasource)# event_config 
 		WHERE site_id = #db.param(form.sid)# and 

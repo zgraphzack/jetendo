@@ -216,7 +216,7 @@
 	HTML Separator<br />
 	<div id="typeOptions11" style="display:none;padding-left:30px;"> HTML:
 		<cfscript>
-		var htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+		var htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 		htmlEditor.instanceName	= "htmlcontent";
 		htmlEditor.value			= application.zcore.functions.zso(arguments.optionStruct, 'htmlcontent');
 		htmlEditor.width			= "#request.zos.globals.maximagewidth#px";

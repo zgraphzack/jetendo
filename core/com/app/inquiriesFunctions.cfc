@@ -27,7 +27,7 @@
 	| <a href="/z/inquiries/admin/manage-inquiries/index">Leads</a>
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
 		<cfscript>
-			userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+			userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 			user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
 			db.sql="SELECT user_id, user_first_name, user_last_name, site_id 
 			FROM #db.table("user", request.zos.zcoreDatasource)# user 
@@ -138,7 +138,7 @@
 			</cfif>
 			<cfscript>
 			request.usestyleonly=true
-		        viewIncludeCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+		        viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 			viewIncludeCom.getViewInclude(qinquiry);
 			</cfscript></td>
 		</tr>
@@ -1039,7 +1039,7 @@ Owns a home
 		ts=structnew();
 		ts.rental_id_list=t.rental_id;
 		ts.email=true;
-		var rentalFrontCom=createobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
+		var rentalFrontCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.rental.controller.rental-front");
 		rentalFrontCom.includeRentalById(ts);
 		</cfscript>
 	</cfif>
@@ -1076,8 +1076,8 @@ application.zcore.functions.zquerytostruct(qsearch,searchStr,'',i);
 	ts4.contentEmailFormat=true;
 	ts4.showmlsnumber=true;
 	application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts4);
-		propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
-		propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+		propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+		propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	</cfscript>
 		<cfif application.zcore.functions.zso(t,'content_id') NEQ 0 and application.zcore.functions.zso(t,'content_id') NEQ "">
 			<br />

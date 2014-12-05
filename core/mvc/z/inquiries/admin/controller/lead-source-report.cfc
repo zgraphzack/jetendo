@@ -12,7 +12,7 @@
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Reports");
 
 	var db=request.zos.queryObject;
-	var hCom=createobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+	var hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 	hCom.displayHeader();
 	form.end_date = application.zcore.functions.zGetDateSelect("end_date");
 	form.start_date = application.zcore.functions.zGetDateSelect("start_date");

@@ -523,7 +523,7 @@
         application.zcore.functions.zForm(ts);
         
 		
-        tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+        tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
         tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
         tabCom.setMenuName("member-manual_listing-edit");
         cancelURL=application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_id);
@@ -544,7 +544,7 @@
 			<th style="vertical-align:top; "> #application.zcore.functions.zOutputHelpToolTip("Remarks","member.listing.manual_listing.edit manual_listing_remarks")#</th>
 			<td style="vertical-align:top; "><cfscript>
                 
-                htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+                htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
                 htmlEditor.instanceName	= "manual_listing_remarks";
                 htmlEditor.value			= form.manual_listing_remarks;
                     htmlEditor.basePath		= '/';

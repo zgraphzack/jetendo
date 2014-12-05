@@ -130,7 +130,7 @@
 	</cffunction>
     
 	<!--- To use a component, you create it as an object and call its methods like so...
-	userCom = CreateObject("component", "zcorerootmapping.com.user.user_admin");
+	userCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_admin");
 	userCom.add(inputStruct); 
 	 --->
 
@@ -412,7 +412,7 @@ To view more info about this new user, click the following link:
 			if(ts.from NEQ ""){
 				ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(str.site_id);
 				ts.user_id=str.user_id;
-				emailCom=CreateObject("component","zcorerootmapping.com.app.email");
+				emailCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.app.email");
 				emailCom.sendEmailTemplate(ts); // should i continue ignoring failures?
 			}
 		}
@@ -476,7 +476,7 @@ To view more info about this new user, click the following link:
             }
 			ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(arguments.ss.site_id);
             ts.user_id=arguments.ss.user_id;
-            emailCom=CreateObject("component","zcorerootmapping.com.app.email");
+            emailCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.app.email");
             emailCom.sendEmailTemplate(ts); // should i continue ignoring failures?
             </cfscript>
         </cfif>
@@ -664,7 +664,7 @@ To view more info about this new user, click the following link:
 			}
 			ts.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(str.site_id);
 			ts.user_id=str.user_id;
-			emailCom=CreateObject("component","zcorerootmapping.com.app.email");
+			emailCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.app.email");
 			emailCom.sendEmailTemplate(ts); // should i continue ignoring failures?
 		}
 		return true;

@@ -43,7 +43,6 @@ variables.data = "";
 	<cfargument name="endDate" type="date" required="yes">
 	<cfargument name="rule" type="string" required="yes">
 	<cfscript>
-	var ical = createObject("component","ical");
 	emptydate='0000-00-00 00:00:00';
 	endDate=arguments.endDate;//dateadd("y",1,now());
 	startDate=arguments.startDate;//createdatetime(2008,3,1,0,0,0);
@@ -71,7 +70,7 @@ variables.data = "";
 		 //ts2.event_recur_until_datetime=emptydate;
 		 d2=dateadd("y",2,now());
 	 }else{
-		 d2=ical.icalParseDateTime(ts.until);
+		 d2=icalParseDateTime(ts.until);
 		 //ts2.event_recur_until_datetime=dateformat(d2,'yyyy-mm-dd')&' '&timeformat(d2,'HH:mm:ss');
 	 }
 	 g=1;

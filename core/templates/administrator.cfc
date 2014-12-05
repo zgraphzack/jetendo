@@ -18,13 +18,12 @@
 	<cfsavecontent variable="output">
 	<cfscript>
 	if(fileexists(request.zos.globals.homedir&'templates/administrator.cfc')){
-		adminCom=createobject("component", request.zRootCFCPath&"templates.administrator");
+		adminCom=application.zcore.functions.zcreateobject("component", request.zRootCFCPath&"templates.administrator");
 		adminCom.init();
 		echo(adminCom.render(tagStruct));
+	}else if(fileexists(request.zos.globals.homedir&'templates/administrator.cfm')){
+		include template="#request.zrootpath#templates/administrator.cfm";
 	}
-	</cfscript>
-	<cfif fileexists(request.zos.globals.homedir&'templates/administrator.cfm')><cfinclude template="#request.zrootpath#templates/administrator.cfm"></cfif>
-	<cfscript>
 	request.znotemplate=1;
 	if(application.zcore.functions.zIsTestServer() EQ false){
 		application.zcore.functions.zheader("X-UA-Compatible", "IE=edge,chrome=1");

@@ -97,7 +97,7 @@
 		for(t9 in qM2){ 
 			searchStr=request.zos.listing.functions.savedSearchQueryToStruct(qM2, local.rowIndex);
 			searchStr.search_sort="newfirst"; 
-			propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+			propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 			propertyDataCom.setSearchCriteria(searchStr); 
 			ts = StructNew();
 			ts.searchCriteria=searchStr;

@@ -48,7 +48,7 @@
 	variables.queueSortStruct.where =" rental_active='1' and 
 	rental.site_id = '#application.zcore.functions.zescape(request.zOS.globals.id)#' and 
 	rental_deleted='0' ";
-	variables.queueSortCom = CreateObject("component", "zcorerootmapping.com.display.queueSort");
+	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	variables.queueSortCom.init(variables.queueSortStruct);
 	variables.queueSortCom.returnJson();
 	application.zcore.functions.zRequireJquery();
@@ -1032,7 +1032,7 @@
 		#form.rental_name# Rental</h2>
 	<form name="myForm" id="myForm" action="/z/rental/admin/rates/<cfif currentMethod EQ "editRental">updateRental<cfelse>insertRental</cfif>?rental_id=#form.rental_id#" method="post" style="margin:0px; padding:0px;">
 		<cfscript>
-		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-rentals-edit");
 		cancelURL="/z/rental/admin/rates/index";
@@ -1080,7 +1080,7 @@
 			<tr>
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Summary Text","member.rental.editRental rental_description")#</th>
 				<td style="vertical-align:top; "><cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "rental_description";
 				htmlEditor.value			= form.rental_description;
 				htmlEditor.basePath		= '/';
@@ -1092,7 +1092,7 @@
 			<tr>
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Full Text","member.rental.editRental rental_text")#</th>
 				<td style="vertical-align:top; "><cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "rental_text";
 				htmlEditor.value			= form.rental_text;
 				htmlEditor.basePath		= '/';
@@ -1213,7 +1213,7 @@
 			<tr>
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Amenity Description","member.rental.editRental rental_amenities_text")#</th>
 				<td style="vertical-align:top; "><cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "rental_amenities_text";
 				htmlEditor.value			= form.rental_amenities_text;
 				htmlEditor.basePath		= '/';
@@ -1478,7 +1478,7 @@
 			<tr>
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Rate Description","member.rental.editRental rental_rate_text")#</th>
 				<td style="vertical-align:top; "><cfscript>
-				htmlEditor = createObject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 				htmlEditor.instanceName	= "rental_rate_text";
 				htmlEditor.value			= form.rental_rate_text;
 				htmlEditor.basePath		= '/';

@@ -279,7 +279,7 @@ this.app_id=11;
 		</td></tr></table></td>');
 		if(contentConfig.contentEmailFormat EQ false and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id], "agentIdStruct") and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].agentIdStruct, newagentid)){
 			agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[mls_id].agentIdStruct[newagentid];
-			userGroupCom = CreateObject("component", "zcorerootmapping.com.user.user_group_admin");
+			userGroupCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group_admin");
 			userusergroupid = userGroupCom.getGroupId('user', request.zos.globals.id);
 			echo('<td class="zls2-agentPanel">
 			LISTING AGENT<br />');
@@ -709,7 +709,7 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 <cffunction name="configDelete" localmode="modern" output="no" access="public" returntype="any" hint="delete the record from config table.">
 <cfscript>
 	var local=structnew();
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	</cfscript>
 <cfreturn rCom>
 </cffunction>
@@ -732,7 +732,7 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 <cfscript>
 	var db=request.zos.queryObject;
 	var newLimit=0;
-	var rCom=CreateObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var primaryMLS=0;
 	var primarySet=0;
 	var qC=0;
@@ -856,7 +856,7 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 	var db=request.zos.queryObject;
    var qexcity=0;
    var rs=structnew();
-	var rCom=createObject("component","zcorerootmapping.com.zos.return");
+	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	rs.output="";
 	this.site_id=application.zcore.functions.zso(form, 'sid',true);
 	this.app_x_site_id=application.zcore.functions.zso(form, 'app_x_site_id',true);
@@ -1377,7 +1377,7 @@ Primary Cities:</th>
 
 <cffunction name="updateSearchFilter" localmode="modern" output="no" returntype="any">
 <cfscript>
-	var propCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.propertyData");
+	var propCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.propertyData");
 	var ts=propCom.getSearchFilter(application.zcore.app.getAppData("listing").sharedStruct);
 	application.zcore.functions.zdownloadlink(request.zos.currentHostName&"/z/listing/tasks/generateData/index");
 	</cfscript>
@@ -1467,7 +1467,7 @@ Primary Cities:</th>
 		ts.mlsStruct[qMLS.mls_id].agentIdStruct=structnew();
 		ts.mlsStruct[qMLS.mls_id].userAgentIdStruct=structnew();
 		ts.mlsStruct[qMLS.mls_id].memberAgentIdStruct=structnew();
-		userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 		userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
 		db.sql="select *, user.site_id userSiteId from #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user.site_id = #db.param(request.zos.globals.id)#  and 
@@ -1567,7 +1567,7 @@ local.primaryCityId=ts.mls_primary_city_id;
 
 	ts.agentSQL=arraytolist(arrAgentSQL," or ");
 	ts.officeSQL=arraytolist(arrOfficeSQL," or ");
-	propCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.propertyData");
+	propCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.propertyData");
 	ts.filterStruct=propCom.getSearchFilter(ts);
 	
 	arrM=structkeyarray(ts.mlsstruct);
@@ -1855,7 +1855,7 @@ local.primaryCityId=ts.mls_primary_city_id;
 	var debugSearchDir=false;
 	var t9=0;
 	var qr=0;
-	var propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+	var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 	
 
 ts = StructNew();
@@ -2149,7 +2149,7 @@ var db=request.zos.queryObject;
 var mAgStruct=0;
 var mTemp=0;
 var qm=0;
-var userGroupCom= CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+var userGroupCom= application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 var userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
 db.sql="select *, user.site_id userSiteId from #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user.user_id = #db.param(arguments.user_id)# and 
@@ -2417,7 +2417,7 @@ if(structkeyexists(request.zos.listing.listingLookupStruct[arguments.type].value
 <script type="text/javascript" src="#htmleditformat(tempSearchURL)#"></script>
 <cfelse>
 <cfscript>
-	tempCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+	tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
 	tempCom.index();
 	</cfscript></cfif><cfscript>if(actionBackup NEQ ""){form.action=actionBackup; }</cfscript>
 </cffunction>

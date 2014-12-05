@@ -1483,7 +1483,7 @@ this.isPropertyDisplayCom=true;
 structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[arguments.idx.mls_id].agentIdStruct, tempAgent)>
 							<cfscript>
 							agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[arguments.idx.mls_id].agentIdStruct[tempAgent];
-							userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+							userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 							userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
 							</cfscript>
 							<td class="zls2-agentPanel"> LISTING AGENT<br />
@@ -2011,7 +2011,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 								<cfif newagentid NEQ 0>
 									<cfscript>
 									agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[idx.mls_id].agentIdStruct[newagentid];
-									userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+									userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 									userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
 									</cfscript>
 									<td class="zls2-agentPanel"> LISTING AGENT<br />
@@ -2248,7 +2248,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 											<cfif newagentid NEQ 0>
 												<cfscript>
 												agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[idx.mls_id].agentIdStruct[newagentid];
-												userGroupCom = CreateObject("component","zcorerootmapping.com.user.user_group_admin");
+												userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 												userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
 												</cfscript>
 												<td class="zls2-agentPanel"> LISTING AGENT<br />

@@ -457,7 +457,7 @@
 	}
 
 	if(form[request.zos.urlRoutingParameter] EQ "/z/user/login/confirmToken"){
-		loginCom=createobject("component", "zcorerootmapping.mvc.z.user.controller.login");
+		loginCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.user.controller.login");
 		loginCom.confirmToken();
 	}
 	// structkeyexists(cookie,'zparentlogincheck') EQ false and 

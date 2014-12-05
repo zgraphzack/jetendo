@@ -2,7 +2,7 @@
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" output="yes">
 	<cfscript>
-	var slideshowCom=createobject("component", "zcorerootmapping.com.display.slideshow");
+	var slideshowCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.slideshow");
 	slideshowCom.getData();
 	</cfscript>
 </cffunction>

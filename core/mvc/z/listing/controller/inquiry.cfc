@@ -37,7 +37,7 @@
 		application.zcore.functions.zStatusHandler(request.zsid,true,true);
 		form.method=variables.actionBackup;
 		if(form.method NEQ 'sent' and form[request.zos.urlRoutingParameter] NEQ '/z/listing/property/detail/index'){
-			propertyDataCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
+			propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 			ts = StructNew();
 			if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
 				form.inquiries_spam=1;
@@ -60,7 +60,7 @@
 			if(returnStruct.count EQ 0){
 				application.zcore.functions.zRedirect(request.zos.globals.siteroot&'/');
 			}
-			propDisplayCom = CreateObject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+			propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 			
 			ts = StructNew();
 			ts.baseCity = 'db';
