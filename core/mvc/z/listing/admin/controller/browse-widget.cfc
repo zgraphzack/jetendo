@@ -524,6 +524,7 @@
         
 		
         tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
         tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
         tabCom.setMenuName("member-manual_listing-edit");
         cancelURL=application.zcore.functions.zso(request.zsession, 'manual_listing_return'&form.manual_listing_id);

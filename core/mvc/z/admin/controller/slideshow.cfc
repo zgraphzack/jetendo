@@ -1558,6 +1558,7 @@
 	ts.successMessage=false;
 	application.zcore.functions.zForm(ts);
 	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-slideshow-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession,'slideshow_return'&form.slideshow_id);

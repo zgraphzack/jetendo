@@ -1033,6 +1033,7 @@
 	<form name="myForm" id="myForm" action="/z/rental/admin/rates/<cfif currentMethod EQ "editRental">updateRental<cfelse>insertRental</cfif>?rental_id=#form.rental_id#" method="post" style="margin:0px; padding:0px;">
 		<cfscript>
 		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-rentals-edit");
 		cancelURL="/z/rental/admin/rates/index";

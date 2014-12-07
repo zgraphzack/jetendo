@@ -1379,6 +1379,7 @@ ts.struct=form;
 		application.zcore.functions.zForm(ts);
 		
 tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-tag-edit");
 cancelURL=application.zcore.functions.zso(request.zsession, 'blogtag_return'&form.blog_tag_id);
@@ -1537,6 +1538,7 @@ tabCom.enableSaveButtons();
 	application.zcore.functions.zForm(ts);
 		
 	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 	tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-blog-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession, 'blog_return'&form.blog_id);
@@ -2287,6 +2289,7 @@ local.blogIdBackup=form.blog_id;
 	application.zcore.functions.zForm(ts);
 	
 tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 tabCom.setMenuName("member-blog-category-edit");
 cancelURL=application.zcore.functions.zso(request.zsession, 'blogcategory_return'&form.blog_category_id);

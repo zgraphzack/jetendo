@@ -513,6 +513,7 @@
 	application.zcore.siteOptionCom.setIdHiddenField();
 
 	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 	tabCom.setTabs(["Basic","Navigation/Layout", "Advanced"]);//,"Plug-ins"]);
 	tabCom.setMenuName("member-content-edit");
 	cancelURL=application.zcore.functions.zso(request.zsession, 'content_return'&form.content_id); 

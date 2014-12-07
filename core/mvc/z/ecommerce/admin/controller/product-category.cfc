@@ -381,6 +381,7 @@
 	<form name="myForm" id="myForm" action="/z/ecommerce/admin/product-category/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?product_category_id=#form.product_category_id#" method="post">
 		<cfscript>
 		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-Product-category-edit");
 		cancelURL="/z/ecommerce/admin/product-category/index";

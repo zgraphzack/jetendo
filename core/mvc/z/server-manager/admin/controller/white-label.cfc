@@ -305,6 +305,7 @@
 	<form name="myForm" id="myForm" action="/z/server-manager/admin/white-label/#newMethod#?whitelabel_button_id=#form.whitelabel_button_id#&amp;whitelabel_id=#form.whitelabel_id#&amp;sid=#form.sid#" method="post" enctype="multipart/form-data">
 		<cfscript>
 		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 		tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-whitelabel-button-edit");
 		cancelURL="/z/server-manager/admin/white-label/manageButtons?whitelabel_id=#form.whitelabel_id#&sid=#form.sid#";
@@ -526,6 +527,7 @@
 	<form name="myForm" id="myForm" action="/z/server-manager/admin/white-label/save?whitelabel_id=#form.whitelabel_id#&amp;sid=#form.sid#&amp;uid=#form.uid#" method="post" enctype="multipart/form-data">
 		<cfscript>
 		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 		tabCom.setTabs(["Basic"]);//,"Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-whitelabel-edit");
 		cancelURL="/z/server-manager/admin/white-label/index?sid=#form.sid#";

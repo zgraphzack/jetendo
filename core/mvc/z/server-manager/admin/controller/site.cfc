@@ -1064,6 +1064,7 @@
 
 		<cfscript>
 		tabCom=createobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 		tabCom.setTabs(["Basic","Advanced"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-site-edit");
 		cancelURL="/z/server-manager/admin/site-select/index?zid=#form.zid#&action=select&sid=#form.sid#";

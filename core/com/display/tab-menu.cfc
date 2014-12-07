@@ -1,23 +1,26 @@
 <cfcomponent>
 <cfoutput>
-<cfscript>
-variables.fieldSetOpen=false;
-variables.tabStruct=structnew();
-if(structkeyexists(request.zos, 'displayManagerTabsIndex') EQ false){
-	request.zos.displayManagerTabsIndex=1;
-	application.zcore.functions.zRequireJqueryUI();
-	application.zcore.functions.zRequireJqueryCookie();
-}else{
-	request.zos.displayManagerTabsIndex++;
-}
-variables.tabMenuIndex=request.zos.displayManagerTabsIndex;
-variables.tabMenuOpen=false;
-variables.verticalMenu=false;
-variables.saveButtons=false;
-variables.cancelURL="";
+<cffunction name="init" localmode="modern" output="no">
+	<cfscript>
+	variables.fieldSetOpen=false;
+	variables.tabStruct=structnew();
+	if(structkeyexists(request.zos, 'displayManagerTabsIndex') EQ false){
+		request.zos.displayManagerTabsIndex=1;
+		application.zcore.functions.zRequireJqueryUI();
+		application.zcore.functions.zRequireJqueryCookie();
+	}else{
+		request.zos.displayManagerTabsIndex++;
+	}
+	variables.tabMenuIndex=request.zos.displayManagerTabsIndex;
+	variables.tabMenuOpen=false;
+	variables.verticalMenu=false;
+	variables.saveButtons=false;
+	variables.cancelURL="";
 
-variables.hasWriteAccess=true;
-</cfscript>
+	variables.hasWriteAccess=true;
+	</cfscript>
+</cffunction>
+
 <cffunction name="setTabs" localmode="modern" output="no">
 		<cfargument name="arrTab" type="array" required="yes">
 		<cfscript>
@@ -72,7 +75,7 @@ variables.hasWriteAccess=true;
 
 						$(this).show();
 					});
-					}else{
+				}else{
 					$(".zmember-tabs fieldset").each(function(){
 						if(!$(this).hasClass("zmember-tabs-buttons-bottom")){
 							$(this).hide();
@@ -85,7 +88,7 @@ variables.hasWriteAccess=true;
 				expires: 3000,
 				name: "zmember-tabs#variables.tabMenuIndex#-#variables.menuName#"
 			}
-		})<cfif variables.verticalMenu>.addClass( "zmember-tabs-vertical ui-helper-clearfix" );</cfif>;
+		})<cfif variables.verticalMenu>.addClass( "zmember-tabs-vertical ui-helper-clearfix" )</cfif>;
 	});
 	/* ]]> */
 	</script>

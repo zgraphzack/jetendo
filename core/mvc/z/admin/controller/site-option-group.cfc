@@ -1179,6 +1179,7 @@ displayGroupCom.add();')&'</pre>');
 
 		<cfscript>
 		tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
+		tabCom.init();
 		tabCom.setTabs(["Basic","Public Form", "Landing Page", "Email & Mapping"]);//,"Plug-ins"]);
 		tabCom.setMenuName("member-site-option-group-edit");
 		cancelURL="/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#"; 
