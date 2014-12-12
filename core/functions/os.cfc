@@ -1050,6 +1050,32 @@ if(not rs.success){
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="zRequireDataTables" localmode="modern" access="public">
+    <cfargument name="package" type="string" required="no" default="">
+	<cfscript>
+	if(request.zos.globals.enableMinCat EQ 1 and request.zos.inMemberArea EQ false and structkeyexists(request.zos.tempObj,'disableMinCat') EQ false){
+		return;
+	}
+    application.zcore.functions.zForceIncludePackage("zRequireDataTables", arguments.package);
+    if(structkeyexists(request.zos,'JavascriptRequiredDataTables') EQ false){
+		ts={};
+		ts.type="zRequireDataTables";
+		ts.url="/z/javascript/DataTables/media/js/jquery.dataTables.js";
+		ts.package=arguments.package;
+		ts.forcePosition="";
+		arrayappend(request.zos.arrJSIncludes, ts);
+		ts=structnew();
+		ts.type="zRequireDataTables";
+		ts.url="/z/javascript/DataTables/media/css/jquery.dataTables.css";
+		ts.package=arguments.package;
+		ts.forcePosition="";
+		arrayappend(request.zos.arrCSSIncludes, ts);
+	    request.zos.JavascriptRequiredDataTables=true;
+	}
+	</cfscript>
+</cffunction>
+
 <!--- application.zcore.functions.zRequireJqueryUI(); --->
 <cffunction name="zRequireJqueryUI" localmode="modern" output="no" returntype="any">
     <cfargument name="package" type="string" required="no" default="">
@@ -1060,44 +1086,40 @@ if(not rs.success){
 		return;
 	}
     application.zcore.functions.zForceIncludePackage("zRequireJqueryUI", arguments.package);
-    </cfscript>
-    <cfif structkeyexists(request.zos,'JavascriptRequiredJqueryUI') EQ false>
-	<cfsavecontent variable="theMeta"><cfscript>
-	application.zcore.functions.zRequireJquery();
-    </cfscript><cfif request.zos.istestserver><cfscript>
-		ts={};
-		ts.type="zRequireJqueryUI";
-		ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.js";
-		ts.package=arguments.package;
-		ts.forcePosition="";
-		arrayappend(request.zos.arrJSIncludes, ts);
-		ts=structnew();
-		ts.type="zRequireJqueryUI";
-		ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.css";
-		ts.package=arguments.package;
-		ts.forcePosition="";
-		arrayappend(request.zos.arrCSSIncludes, ts);
-		</cfscript>
-	<cfelse>
-	<cfscript>
-		ts.type="zRequireJqueryUI";
-		ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.js";
-		//ts.url="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js";
-		ts.package=arguments.package;
-		ts.forcePosition="";
-		arrayappend(request.zos.arrJSIncludes, ts);
-		ts=structnew();
-		ts.type="zRequireJqueryUI";
-		ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.css";
-		//ts.url="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/base/jquery-ui.css";
-		ts.package=arguments.package;
-		ts.forcePosition="";
-		arrayappend(request.zos.arrCSSIncludes, ts);
-        </cfscript></cfif>
-</cfsavecontent>
-    <cfscript>//application.zcore.template.prependTag("meta",theMeta);
-    request.zos.JavascriptRequiredJqueryUI=true;</cfscript>
-    </cfif>
+    if(structkeyexists(request.zos,'JavascriptRequiredJqueryUI') EQ false){
+		application.zcore.functions.zRequireJquery();
+	    if(request.zos.istestserver){
+			ts={};
+			ts.type="zRequireJqueryUI";
+			ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.js";
+			ts.package=arguments.package;
+			ts.forcePosition="";
+			arrayappend(request.zos.arrJSIncludes, ts);
+			ts=structnew();
+			ts.type="zRequireJqueryUI";
+			ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.css";
+			ts.package=arguments.package;
+			ts.forcePosition="";
+			arrayappend(request.zos.arrCSSIncludes, ts);
+			
+		}else{
+			ts.type="zRequireJqueryUI";
+			ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.js";
+			//ts.url="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js";
+			ts.package=arguments.package;
+			ts.forcePosition="";
+			arrayappend(request.zos.arrJSIncludes, ts);
+			ts=structnew();
+			ts.type="zRequireJqueryUI";
+			ts.url="/z/javascript/jquery/jquery-ui/jquery-ui-1.10.3.min.css";
+			//ts.url="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/themes/base/jquery-ui.css";
+			ts.package=arguments.package;
+			ts.forcePosition="";
+			arrayappend(request.zos.arrCSSIncludes, ts);
+	    }
+	    request.zos.JavascriptRequiredJqueryUI=true;
+	}
+	</cfscript>
 </cffunction>
 
 

@@ -1,5 +1,95 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="zSetupLightBox" access="public" localmode="modern">
+	<cfargument name="id" type="string" required="yes">
+	<cfscript>
+	</cfscript>
+	<cfsavecontent variable="topMeta">
+		<style type="text/css">
+		/* <![CDATA[ */ 
+		###arguments.id# .mfp-gallery{z-index:20001;}
+		###arguments.id# .mfp-bg{z-index:20000;}
+		###arguments.id# .mfp-with-zoom .mfp-container,
+		###arguments.id# .mfp-with-zoom.mfp-bg {
+		  opacity: 0;
+		  -webkit-backface-visibility: hidden;
+		  /* ideally, transition speed should match zoom duration */
+		  -webkit-transition: all 0.3s ease-out; 
+		  -moz-transition: all 0.3s ease-out; 
+		  -o-transition: all 0.3s ease-out; 
+		  transition: all 0.3s ease-out;
+		}
+
+		###arguments.id# .mfp-with-zoom.mfp-ready .mfp-container {
+		    opacity: 1;
+		}
+		###arguments.id# .mfp-with-zoom.mfp-ready.mfp-bg {
+		    opacity: 0.8;
+		}
+
+		###arguments.id# .mfp-with-zoom.mfp-removing .mfp-container, 
+		###arguments.id# .mfp-with-zoom.mfp-removing.mfp-bg {
+		  opacity: 0;
+		}
+
+		 /* ]]> */
+		</style>
+		<script type="text/javascript">
+		/* <![CDATA[ */ 
+		zArrDeferredFunctions.push(function(){
+
+			$('###arguments.id#').magnificPopup({
+				delegate: 'a',
+				type: 'image',
+				tLoading: 'Loading image ##%curr%...',
+				mainClass: 'mfp-no-margins mfp-with-zoom mfp-fade zThumbnailLightboxPopupDiv',
+				closeBtnInside: false,
+				fixedContentPos: true,
+				/*retina:{
+					ratio:2,
+					replaceSrc: function(item, ratio) {
+						return item.el.attr("data-2x-image");
+				      //return item.src.replace(/\.\w+$/, function(m) { return '@2x' + m; });
+				    } // function that changes image source
+				    
+				},*/
+				gallery: {
+					enabled: true,
+					navigateByImgClick: true,
+					preload: [0,1] // Will preload 0 - before current, and 1 after the current image
+				},
+				image: {
+					//verticalFit:false,
+					tError: '<a href="%url%">The image ##%curr%</a> could not be loaded.',
+					titleSrc: function(item) {
+						return item.el.attr('title');
+					}
+				},
+				zoom: {
+					enabled: true, // By default it's false, so don't forget to enable it
+
+					duration: 300, // duration of the effect, in milliseconds
+					easing: 'ease-in-out', // CSS transition easing function 
+
+					// The "opener" function should return the element from which popup will be zoomed in
+					// and to which popup will be scaled down
+					// By defailt it looks for an image tag:
+					opener: function(openerElement) {
+						// openerElement is the element on which popup was initialized, in this case its <a> tag
+						// you don't need to add "opener" option if this code matches your needs, it's defailt one.
+						return openerElement.is('img') ? openerElement : openerElement.find('img');
+					}
+				}
+			});
+		}); /* ]]> */
+		</script>
+	</cfsavecontent>
+	<cfscript>
+	application.zcore.skin.includeJS("/z/javascript/Magnific-Popup/jquery.magnific-popup.min.js");
+	application.zcore.skin.includeCSS("/z/javascript/Magnific-Popup/magnific-popup.css");
+	application.zcore.template.appendTag("meta",topMeta);
+	</cfscript>
+</cffunction>
 <cffunction name="zGetImageCSSCode" localmode="modern" access="public">
 	<cfargument name="absolutePath" type="string" required="yes">
 	<cfargument name="relativePath" type="string" required="yes">

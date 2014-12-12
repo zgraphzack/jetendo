@@ -163,7 +163,7 @@
 				if(zModalKeepOpen) return;
 				zCloseModal();
 			};
-			el2.innerHTML='<div style="width:80px; text-align:right; font-weight:bold; float:right;"><a href="javascript:void(0);" onclick="zCloseModal();">X Close</a></div><br style="clear:both;" /> '+content+'<div>';  
+			el2.innerHTML='<div style="width:80px; text-align:right; right:20px; top:5px; position:fixed;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>'+content;  
 		}
 		el.style.top=zArrModal[zModalIndex].scrollPosition[1]+"px";
 		el.style.left=zArrModal[zModalIndex].scrollPosition[0]+"px";

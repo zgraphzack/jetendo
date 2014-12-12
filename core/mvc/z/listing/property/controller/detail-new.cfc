@@ -403,8 +403,8 @@ link9&='&searchId='&application.zcore.functions.zso(form, 'searchId');
         writeoutput('<li class="zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(form.listing_track_datetime,'m/d/yy')#, NOW #numberformat(form.listing_price)#</li>');
     }
     </cfscript>
-<cfif form.listingFrontage NEQ ""><li>#form.listingFrontage#</li></cfif>
-<cfif form.listingView NEQ ""><li>#form.listingView#</li></cfif>
+<cfif form.listingFrontage NEQ ""><li>Frontage: #form.listingFrontage#</li></cfif>
+<cfif form.listingView NEQ ""><li>View: #form.listingView#</li></cfif>
 <cfif form.listing_pool EQ 1><li>Has a pool</li></cfif>
 <cfif form.listing_subdivision neq ''><li>Subdivision:&nbsp;#htmleditformat(form.listing_subdivision)#</li></cfif>
 <cfif form.listing_lot_square_feet neq '0' and form.listing_lot_square_feet neq ''><li>Lot SQFT: #form.listing_lot_square_feet# sqft (#htmleditformat(round(form.listing_lot_square_feet/10.7639))#m&##178;)</li></cfif>

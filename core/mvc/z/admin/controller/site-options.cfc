@@ -761,12 +761,12 @@
     application.zcore.functions.zstatusHandler(request.zsid,true);
 	if(form.site_option_group_id NEQ "" and form.site_option_group_id NEQ 0){
 		variables.allowGlobal=false;
+	}
 		db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 		WHERE site_option_group_id = #db.param(form.site_option_group_id)#  and 
 		site_option_group_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qOptionGroup=db.execute("qOptionGroup");
-	}
 	if(currentMethod EQ 'add'){
 		theTitle="Add Site Option";
 	}else{

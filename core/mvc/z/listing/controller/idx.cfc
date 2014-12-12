@@ -298,7 +298,8 @@
 	if(this.optionstruct.filePath EQ ""){
 		db.sql&=" , mls_update_date = #db.param(request.zos.mysqlnow)# ";
 	}
-	db.sql&=" where mls_id = #db.param(this.optionstruct.mls_id)#";
+	db.sql&=" where mls_id = #db.param(this.optionstruct.mls_id)# and 
+	mls_deleted=#db.param(0)#";
 	db.execute("q"); 
 	
 	if(gettickcount()-startTime LT this.optionstruct.timeLimitInSeconds*1000){

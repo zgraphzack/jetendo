@@ -1449,10 +1449,10 @@ this.isPropertyDisplayCom=true;
 														#arguments.idx.listingstatus#
 													</cfif>
 													<cfif arguments.idx.listingFrontage NEQ "">
-														, #arguments.idx.listingFrontage#
+														, Frontage: #arguments.idx.listingFrontage#
 													</cfif>
 													<cfif arguments.idx.listingView NEQ "">
-														, #arguments.idx.listingView#
+														, View: #arguments.idx.listingView#
 													</cfif>
 													<cfif arguments.idx.listing_pool EQ 1>
 														Has a pool
@@ -1964,10 +1964,10 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 															</cfif>
 															Top Features: #arguments.idx.listingstatus#
 															<cfif arguments.idx.listingFrontage NEQ "">
-																, #arguments.idx.listingFrontage#
+																, Frontage: #arguments.idx.listingFrontage#
 															</cfif>
 															<cfif arguments.idx.listingView NEQ "">
-																, #arguments.idx.listingView#
+																, View: #arguments.idx.listingView#
 															</cfif>
 															<cfif arguments.idx.listing_pool EQ 1>
 																Has a pool
@@ -2203,10 +2203,10 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 															</cfif>
 															Top Features: #arguments.idx.listingstatus#
 															<cfif arguments.idx.listingFrontage NEQ "">
-																, #arguments.idx.listingFrontage#
+																, Frontange: #arguments.idx.listingFrontage#
 															</cfif>
 															<cfif arguments.idx.listingView NEQ "">
-																, #arguments.idx.listingView#
+																, View: #arguments.idx.listingView#
 															</cfif>
 															<cfif arguments.idx.listing_pool EQ 1>
 																Has a pool

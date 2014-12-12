@@ -1,17 +1,24 @@
 <cfcomponent displayName="iCal" hint="A iCal processor." output="false">
 <cfoutput>
-<cfscript>
-variables.data = "";
- this.dayStruct={
-	"SU"="Sunday",
-	"MO"="Monday",
-	"TU"="Tuesday",
-	"WE"="Wednesday",
-	"TH"="Thursday",
-	"FR"="Friday",
-	"SA"="Saturday"
- };
- </cfscript>
+
+<cffunction name="init" localmode="modern" returnType="ical" access="public" output="false"
+			hint="Init function for the CFC. Loads in the initial string data.">
+	<cfargument name="data" type="string" required="true">
+	<cfscript>
+	variables.data = "";
+	 this.dayStruct={
+		"SU"="Sunday",
+		"MO"="Monday",
+		"TU"="Tuesday",
+		"WE"="Wednesday",
+		"TH"="Thursday",
+		"FR"="Friday",
+		"SA"="Saturday"
+	 };
+	variables.data = arguments.data;
+	return this;
+	</cfscript>
+</cffunction>
 
 <cffunction name="parseDay" localmode="modern" access="public" returntype="any">
 <cfargument name="d" type="string" required="yes">
@@ -217,14 +224,6 @@ variables.data = "";
 	We will use two kinds of functions - those that restrict the date to allowed values and those that expand allowed values --->
 </cffunction>
 
-<cffunction name="init" localmode="modern" returnType="ical" access="public" output="false"
-			hint="Init function for the CFC. Loads in the initial string data.">
-	<cfargument name="data" type="string" required="true">
-	<cfscript>
-	variables.data = arguments.data;
-	return this;
-	</cfscript>
-</cffunction>
 
 <cffunction name="importEvents" localmode="modern"  access="public" output="yes" hint="Gets the events from an iCal string.">
 	<cfargument name="cfcObject" type="component" required="yes">
