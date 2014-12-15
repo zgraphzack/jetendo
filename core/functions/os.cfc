@@ -1052,25 +1052,17 @@ if(not rs.success){
 
 
 <cffunction name="zRequireDataTables" localmode="modern" access="public">
-    <cfargument name="package" type="string" required="no" default="">
+    <!--- <cfargument name="package" type="string" required="no" default=""> --->
 	<cfscript>
-	if(request.zos.globals.enableMinCat EQ 1 and request.zos.inMemberArea EQ false and structkeyexists(request.zos.tempObj,'disableMinCat') EQ false){
+	/*if(request.zos.globals.enableMinCat EQ 1 and request.zos.inMemberArea EQ false and structkeyexists(request.zos.tempObj,'disableMinCat') EQ false){
 		return;
 	}
-    application.zcore.functions.zForceIncludePackage("zRequireDataTables", arguments.package);
+    application.zcore.functions.zForceIncludePackage("zRequireDataTables", arguments.package);*/
     if(structkeyexists(request.zos,'JavascriptRequiredDataTables') EQ false){
-		ts={};
-		ts.type="zRequireDataTables";
-		ts.url="/z/javascript/DataTables/media/js/jquery.dataTables.js";
-		ts.package=arguments.package;
-		ts.forcePosition="";
-		arrayappend(request.zos.arrJSIncludes, ts);
-		ts=structnew();
-		ts.type="zRequireDataTables";
-		ts.url="/z/javascript/DataTables/media/css/jquery.dataTables.css";
-		ts.package=arguments.package;
-		ts.forcePosition="";
-		arrayappend(request.zos.arrCSSIncludes, ts);
+    	application.zcore.skin.includeJS("/z/javascript/DataTables/media/js/jquery.dataTables.js", "", 1); 
+    	application.zcore.skin.includeJS("/z/javascript/DataTables/extensions/Responsive/js/dataTables.responsive.min.js", "", 2); 
+    	application.zcore.skin.includeCSS("/z/javascript/DataTables/media/css/jquery.dataTables.css", "", 1); 
+    	application.zcore.skin.includeCSS("/z/javascript/DataTables/extensions/Responsive/css/dataTables.responsive.css", "", 2); 
 	    request.zos.JavascriptRequiredDataTables=true;
 	}
 	</cfscript>

@@ -397,11 +397,11 @@ link9&='&searchId='&application.zcore.functions.zso(form, 'searchId');
          <div class="zls-detail-box">
 
 <ul><cfscript>
-    if(priceChange GT 0){
+   /* if(priceChange GT 0){
         writeoutput('<li class="zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(form.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(form.listing_price)#</li>'); 	
     }else if(priceChange LT 0){
         writeoutput('<li class="zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(form.listing_track_datetime,'m/d/yy')#, NOW #numberformat(form.listing_price)#</li>');
-    }
+    }*/
     </cfscript>
 <cfif form.listingFrontage NEQ ""><li>Frontage: #form.listingFrontage#</li></cfif>
 <cfif form.listingView NEQ ""><li>View: #form.listingView#</li></cfif>

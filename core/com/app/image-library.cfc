@@ -697,6 +697,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
 	form.disableImageProcessOutput=application.zcore.functions.zso(form, 'disableImageProcessOutput', false, false);
 	form.image_caption="";
+	form.image_file=application.zcore.functions.zso(form, 'image_file');
 	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
 		if(form.disableImageProcessOutput){
@@ -708,7 +709,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 			application.zcore.functions.z404("No access to image_library_id");	
 		}
 	}
-	if(structkeyexists(form, 'image_file') EQ false or fileexists(listGetAt(form.image_file, 1)) EQ false or structkeyexists(form, 'image_library_id') EQ false){
+	if(not fileexists(listGetAt(form.image_file, 1))){
 		if(form.disableImageProcessOutput){
 			return {
 				success:false,

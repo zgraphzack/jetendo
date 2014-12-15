@@ -993,6 +993,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 		</tr>
 	</cfloop>
 	</table>
+	#searchNAV#
 	</cfif>
 	
 </cffunction>
@@ -1255,6 +1256,7 @@ ts.struct=form;
 			<a href="/z/blog/admin/blog-admin/tagDelete?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;blog_tag_id=#qT.blog_tag_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a></td>
 		</tr>
 	</cfloop>
+	#searchNAV#
 	</table>
 </cffunction>
 

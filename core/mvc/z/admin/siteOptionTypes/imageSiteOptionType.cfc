@@ -214,6 +214,7 @@
 			arguments.dataStruct.site_x_option_original=arguments.row.site_x_option_original; 
 		}
 		destination=application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&'zupload/site-options/';
+		//echo(form[arguments.prefixString&arguments.row.site_option_id]);	abort;
 		if(application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ '1'){
 			arrList = application.zcore.functions.zUploadResizedImagesToDb(arguments.prefixString&arguments.row.site_option_id, destination, photoresize,'','','',request.zos.globals.datasource,'1', request.zos.globals.id, false);
 			//originalPath=form[arguments.prefixString&arguments.row.site_option_id];

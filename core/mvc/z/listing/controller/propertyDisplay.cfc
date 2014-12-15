@@ -1077,9 +1077,9 @@ this.isPropertyDisplayCom=true;
 	}
 	propertyLink=htmleditformat(propertyLink);
 	priceChange=0;
-	if(structkeyexists(arguments.idx,'listing_track_datetime') and arguments.idx.listing_track_datetime NEQ ""){
+	/*if(structkeyexists(arguments.idx,'listing_track_datetime') and arguments.idx.listing_track_datetime NEQ ""){
 		priceChange=application.zcore.functions.zso(arguments.idx, 'listing_track_price',true)-application.zcore.functions.zso(arguments.idx, 'listing_track_price_change',true);
-	}
+	}*/
 	application.zcore.listingCom.outputEnlargementDiv();
 	</cfscript>
 	<cfsavecontent variable="thePaths">
@@ -1197,13 +1197,14 @@ this.isPropertyDisplayCom=true;
 			($#numberformat(arguments.idx.pricepersqft)#/sqft)
 		</cfif></td>
 	<td style="vertical-align:top;"><cfscript>
-    if(priceChange GT 0){
+    /*if(priceChange GT 0){
         writeoutput('-$#numberformat(pricechange)#'); 	
     }else if(priceChange LT 0){
         writeoutput('+$#numberformat(abs(pricechange))#');
     }else{
 		writeoutput('&nbsp;');	
-	}
+	}*/
+		writeoutput('&nbsp;');	
     </cfscript></td>
 	<td style="vertical-align:top; white-space:nowrap;">#dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#<br />
 		<cfif arguments.idx.listingstatus EQ "for rent">
@@ -1285,7 +1286,7 @@ this.isPropertyDisplayCom=true;
 	}
 	priceChange=0;
 	if(arguments.idx.listing_track_datetime NEQ ""){
-		priceChange=application.zcore.functions.zso(arguments.idx, 'listing_track_price',true)-application.zcore.functions.zso(arguments.idx, 'listing_track_price_change',true);
+		//priceChange=application.zcore.functions.zso(arguments.idx, 'listing_track_price',true)-application.zcore.functions.zso(arguments.idx, 'listing_track_price_change',true);
 	}
 	if(arguments.idx.listing_pool NEQ 1 and arguments.idx.listingFrontage EQ "" and arguments.idx.listing_subdivision EQ ""){
 		rowSpan1--;
@@ -1421,11 +1422,11 @@ this.isPropertyDisplayCom=true;
 								<tr>
 									<td colspan="2"><div class="zls2-11">
 											<cfscript>
-										    if(priceChange GT 0){
+										    /*if(priceChange GT 0){
 											writeoutput('<span class="zls2-12 zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
 										    }else if(priceChange LT 0){
 											writeoutput('<span class="zls2-12 zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
-										    }
+										    }*/
 											if(request.cgi_script_name EQ "/z/listing/property/detail/index"){
 												writeoutput(htmleditformat(fullTextBackup));
 											}else{
@@ -1781,7 +1782,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 		</cfif>
 		<cfset priceChange=0>
 		<cfif arguments.idx.listing_track_datetime NEQ "">
-			<cfset priceChange=application.zcore.functions.zso(arguments.idx, 'listing_track_price',true)-application.zcore.functions.zso(arguments.idx, 'listing_track_price_change',true)>
+			<!--- <cfset priceChange=application.zcore.functions.zso(arguments.idx, 'listing_track_price',true)-application.zcore.functions.zso(arguments.idx, 'listing_track_price_change',true)> --->
 		</cfif>
 		<cfif arguments.idx.listing_pool NEQ 1 and arguments.idx.listingFrontage EQ "" and arguments.idx.listing_subdivision EQ "">
 			<cfset rowSpan1-->
@@ -1934,13 +1935,13 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 										<tr>
 											<td colspan="2"><div class="zls2-11">
 													<cfscript>
-													if(arguments.idx.content_mls_price EQ 1){
+													/*if(arguments.idx.content_mls_price EQ 1){
 														if(priceChange GT 0){
 															writeoutput('<span class="zls2-12 zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
 														}else if(priceChange LT 0){
 															writeoutput('<span class="zls2-12 zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
 														}
-													}
+													}*/
 												    </cfscript>
 													<cfif isDefined('this.isPropertyDisplayCom') EQ false or this.optionstruct.contentDetailView EQ false>
 														<h2><a href="#propertyLink#">#htmleditformat(arguments.idx.content_name)#</a></h2>
@@ -2170,11 +2171,11 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 										<tr>
 											<td><div class="zls2-11">
 													<cfscript>
-													    if(priceChange GT 0){
+													   /* if(priceChange GT 0){
 														writeoutput('<span class="zls2-12 zPriceChangeMessage">Price reduced $#numberformat(pricechange)# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | '); 	
 													    }else if(priceChange LT 0){
 														writeoutput('<span class="zls2-12 zPriceChangeMessage">Price increased $#numberformat(abs(pricechange))# since #dateformat(arguments.idx.listing_track_datetime,'m/d/yy')#, NOW $#numberformat(arguments.idx.listing_price)#</span> | ');
-													    }
+													    }*/
 													    </cfscript>
 													<cfif isDefined('this.isPropertyDisplayCom') EQ false or this.optionstruct.contentDetailView EQ false>
 														<h2><a href="#propertyLink#">#htmleditformat(arguments.idx.content_name)#</a></h2>
