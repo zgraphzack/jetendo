@@ -1377,7 +1377,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}
 	arguments.importStruct.site_option_id=ts.site_option_id;
 	for(i in arguments.dataStruct){
-		arguments.importStruct['newvalue'&ts[i]]=arguments.dataStruct[i];
+		if(structkeyexists(ts, i)){
+			arguments.importStruct['newvalue'&ts[i]]=arguments.dataStruct[i];
+		}
 	}
 	</cfscript>
 </cffunction>
