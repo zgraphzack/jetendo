@@ -1912,7 +1912,7 @@
 		}
 	}
 	local.setIdBackup=form.site_x_option_group_set_id; 
-	local.sendEmail=false;
+	local.disableSendEmail=true;
 	local.setIdBackup2=form.site_x_option_group_set_id;
 	local.groupIdBackup2=local.qCheck.site_option_group_id;
 	if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup") and local.qCheck.site_option_group_lead_routing_enabled EQ 1 and not structkeyexists(form, 'disableGroupEmail')){
@@ -1929,7 +1929,7 @@
 		if(local.qCheck.site_option_group_map_fields_type EQ 1){
 			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){
 				local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
-				local.sendEmail=true;
+				local.disableSendEmail=false;
 				local.emailStruct=local.tempCom[local.qCheck.site_option_group_email_cfc_method](local.newDataStruct, local.arrDataStructKeys);
 			}
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 0 or local.qCheck.site_option_group_map_fields_type EQ 2){
@@ -1939,7 +1939,7 @@
 			}else{
 				local.emailStruct=variables.generateGroupEmailTemplate(local.newDataStruct, local.arrDataStructKeys);
 			}
-			local.sendEmail=true;
+			local.disableSendEmail=false;
 		}
 	}
 	if(local.mapRecord){
@@ -1950,7 +1950,7 @@
 			if(structkeyexists(request.zos, 'debugleadrouting')){
 				echo('mapDataToInquiries<br />');
 			}
-			mapDataToInquiries(local.newDataMappedStruct, form, local.sendEmail); 
+			mapDataToInquiries(local.newDataMappedStruct, form, local.disableSendEmail); 
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_map_group_id NEQ 0){
 				local.groupIdBackup2=local.qCheck.site_option_group_map_group_id;
@@ -1959,7 +1959,7 @@
 				if(structkeyexists(request.zos, 'debugleadrouting')){
 					echo('mapDataToGroup<br />');
 				}
-				mapDataToGroup(local.newDataStruct, form, local.sendEmail); 
+				mapDataToGroup(local.newDataStruct, form, local.disableSendEmail); 
 			}
 		}
 		local.setIdBackup2=form.site_x_option_group_set_id; 
@@ -1972,7 +1972,7 @@
 			local.tempResult=variables.autoDeleteGroup(); 
 		}
 	}
-	if(local.sendEmail and not structkeyexists(form, 'disableGroupEmail')){
+	if(not local.disableSendEmail and not structkeyexists(form, 'disableGroupEmail')){
 		if(structkeyexists(request.zos, 'debugleadrouting')){
 			echo('site-options|sendEmail<br />');
 		}

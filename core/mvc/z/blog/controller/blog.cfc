@@ -2284,7 +2284,9 @@ this.app_id=10;
 				ts2.count = 1;  
 				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts2);
 				ts.image=request.zos.currentHostName&"/z/a/images/s.gif";
+				ts.hasImage=false;
 				if(arraylen(arrImages) NEQ 0){
+					ts.hasImage=true;
 					ts.image=request.zos.currentHostName&arrImages[1].link;
 				} 
 				arrayappend(arguments.displayStruct.arrBlog,ts);

@@ -663,8 +663,10 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 <cffunction name="addImageToLibrary" localmode="modern" access="public" returntype="any" output="yes">
 	<cfargument name="image_file" type="string" required="yes">
 	<cfargument name="image_library_id" type="string" required="yes">
+	<cfargument name="image_caption" type="string" required="no" default="">
 	<cfscript>
 	form.image_file=arguments.image_file;
+	form.image_caption=arguments.image_caption;
 	form.image_library_id=arguments.image_library_id;
 	form.disableImageProcessOutput=true;
 	return this.imageprocessform();
@@ -696,7 +698,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	var arrOut=arraynew(1);
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
 	form.disableImageProcessOutput=application.zcore.functions.zso(form, 'disableImageProcessOutput', false, false);
-	form.image_caption="";
+	form.image_caption=application.zcore.functions.zso(form, 'image_caption');
 	form.image_file=application.zcore.functions.zso(form, 'image_file');
 	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
