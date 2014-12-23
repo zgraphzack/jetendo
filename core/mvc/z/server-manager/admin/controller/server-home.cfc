@@ -239,6 +239,7 @@
 				</cfscript>
 			  <button type="button" name="button3243a" onclick="gotoReimport();">Run</button>
 			</p>
+			<p><a href="/z/listing/idx/reimport?mls_id=all&amp;disableHashClear=1">Re-process all listing files, but retain hash</a></p>
 			<p><a href="/z/listing/tasks/update-metadata/index" target="_blank">Update Metadata</a></p>
 			<p><a href="/z/listing/admin/remap-data/index">Remap Real Estate Saved Search Data</a></p>
 			<p><a href="/z/listing/tasks/sendListingAlerts/index" target="_blank">Send Email Alerts</a></p>
