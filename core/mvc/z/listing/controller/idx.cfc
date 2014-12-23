@@ -9,41 +9,57 @@
 	</cfscript>
     <cffunction name="reimport" localmode="modern" access="remote" returntype="any" output="yes">
     	<cfscript>
-	var qDir=0;
-	var p=0;
-	var qT=0;
+
+		if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+			application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+		}
 		var db=request.zos.queryObject;
-		var local=structnew();
 		if(request.zos.istestserver){
 			p="#request.zos.sharedPath#mls-data/";	
 		}else{
 			p="#request.zos.sharedPath#mls-data/";
 		}
+		form.mls_id=application.zcore.functions.zso(form, 'mls_id', false, 'all');
+		if(form.mls_id EQ "all"){
+			db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# where 
+			mls_status = #db.param(1)# and 
+			mls_deleted=#db.param(0)#";
+			qMLS=db.execute("qMls");
+			arrMLS=[];
+			for(row in qMLS){
+				arrayAppend(arrMLS, row.mls_id);
+			}
+		}else{
+			arrMLS=[form.mls_id];
+    		if(application.zcore.functions.zso(form, 'mls_id',true) NEQ 0){
+    			echo('form.mls_id must be a number');
+    		}
+		}
+		for(i=1;i LTE arraylen(arrMLS);i++){
+			a=arrMLS[i];
+	    	directory action="list" directory="#p&a#" name="qDir";
+	    	for(row in qDir){
+            	if(row.name contains "-imported"){
+	            	file action="rename" source="#p&a#/#row.name#" destination="#p&a#/#replacenocase(row.name,'-imported','','all')#";
+	            }
+				local.pos=findnocase("-corrupt", row.name);
+				if(local.pos){
+	            	file action="rename" source="#p&a#/#row.name#" destination="#p&a#/#left(row.name,local.pos-1)#";
+	            }
+	        }
+			echo(a&" files renamed<br />");
+	        if(not structkeyexists(form, 'disableHashClear')){
+	        	db.sql='UPDATE #db.table("listing_track", request.zos.zcoreDatasource)# 
+				set listing_track_hash = #db.param('')#
+				where listing_id like #db.param('#a#-%')# and 
+				listing_track_deleted = #db.param(0)#';
+				qT=db.execute("qT");
+				echo(a&" hashes cleared<br />");
+			}
+		}
+		echo('reimport task complete');
+		abort;
 		</cfscript>
-    	<cfif application.zcore.functions.zso(form, 'mls_id',true) NEQ 0>
-	    	<cfdirectory action="list" directory="#p&form.mls_id#" name="qDir">
-            <cfloop query="qDir">
-            	<cfif qdir.name contains "-imported">
-	            	<cffile action="rename" source="#p&form.mls_id#/#qdir.name#" destination="#p&form.mls_id#/#replacenocase(qdir.name,'-imported','','all')#">
-                
-                </cfif>
-				<cfscript>
-				local.pos=findnocase("-corrupt", qdir.name);
-				</cfscript>
-            	<cfif local.pos>
-	            	<cffile action="rename" source="#p&form.mls_id#/#qdir.name#" destination="#p&form.mls_id#/#left(qdir.name,local.pos-1)#">
-                
-                </cfif>
-            </cfloop>
-        	<cfsavecontent variable="db.sql">
-            UPDATE #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-			set listing_track_hash = #db.param('')#
-			where listing_id like #db.param('#form.mls_id#-%')# and 
-			listing_track_deleted = #db.param(0)#
-            </cfsavecontent><cfscript>qT=db.execute("qT");</cfscript>Done
-            <cfelse>Denied
-        </cfif>
-        <cfscript>application.zcore.functions.zabort();</cfscript>
     </cffunction>
     
     <cffunction name="init" localmode="modern" access="public" returntype="any">
@@ -406,6 +422,7 @@
 		request.debugtime=0;
 		request.debugstime=gettickcount();
 	}
+	nowDate1=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	/*
 	echo(((gettickcount()-request.debugstime)/1000)&" seconds for importing #structcount(this.datastruct)# listings<br />");
 		request.debugstime=gettickcount();
@@ -421,8 +438,8 @@
 	for(i in this.datastruct){
 		arrayClear(request.zos.arrQueryLog);
 		if(this.datastruct[i].update EQ false){
-			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)# listing_track 
-			set listing_track_processed_datetime = #db.param(this.nowDate)#, 
+			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)#  
+			set listing_track_processed_datetime = #db.param(nowDate1)#, 
 			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#  
 			WHERE listing_id = #db.param(i)# and 
 			listing_track_deleted = #db.param(0)#";
@@ -616,6 +633,7 @@
 	var db2=request.zos.noVerifyQueryObject;
 	oneDayAgo=dateformat(oneDayAgo,'yyyy-mm-dd')&' '&timeformat(oneDayAgo,'HH:mm:ss');
 	
+	//return;
 	application.zcore.idxImportStatus="cleanInactive executed";
 
 	db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
@@ -643,46 +661,7 @@
 	}else{
 		writeoutput('no dead listings<br />');	
 	}
-	
-	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
-	where mls_status=#db.param('1')# and 
-	(mls_update_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))# or 
-	mls_cleaned_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))#) and 
-	mls_error_sent=#db.param('0')# and 
-	mls_deleted = #db.param(0)#";
-	qTwoDaysAgo=db.execute("qTwoDaysAgo"); 
-	</cfscript>
-    <cfif qTwoDaysAgo.recordcount NEQ 0>
-        <cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="MLS database(s) failed to update." type="html">
-		#application.zcore.functions.zHTMLDoctype()#
-		<head>
-		<meta charset="utf-8" />
-		<title>MLS Error</title>
-		</head>
 
-		<body>
-		<span style="font-family:Verdana, Geneva, sans-serif; font-size:12px;">
-		<h2>The following mls providers have not been updated for more than 48 hours.</h2>
-		<table style="border-spacing:0px;">
-		<tr><td>ID</td><td>Name</td><td>Last Updated</td></tr>
-		<cfloop query="qTwoDaysAgo">
-			<tr><td>#qTwoDaysAgo.mls_id#</td><td>#qTwoDaysAgo.mls_name#</td><td>#dateformat(qTwoDaysAgo.mls_update_date,"m/d/yyyy")#</td></tr>
-			<cfscript>
-			 db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
-			 SET mls_error_sent=#db.param('1')#, 
-			 mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
-			 where mls_id = #db.param(qTwoDaysAgo.mls_id)# and 
-			 mls_deleted=#db.param(0)#";
-			 db.execute("q");
-			</cfscript>
-		</cfloop>
-		</table>
-		</span>
-		</body>
-		</html>
-		</cfmail>
-	</cfif>
-		<cfscript>
 	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
 	where mls_status=#db.param('1')# and 
 	mls_update_date >#db.param(todayDate)# and 
@@ -842,6 +821,45 @@
 			</cfscript>
 		</cfif>
 	</cfloop> 
+	<cfscript>
+	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
+	where mls_status=#db.param('1')# and 
+	(mls_update_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))# or 
+	mls_cleaned_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))#) and 
+	mls_error_sent=#db.param('0')# and 
+	mls_deleted = #db.param(0)#";
+	qTwoDaysAgo=db.execute("qTwoDaysAgo"); 
+	</cfscript>
+    <cfif qTwoDaysAgo.recordcount NEQ 0>
+        <cfmail to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="MLS database(s) failed to update." type="html">
+		#application.zcore.functions.zHTMLDoctype()#
+		<head>
+		<meta charset="utf-8" />
+		<title>MLS Error</title>
+		</head>
+
+		<body>
+		<span style="font-family:Verdana, Geneva, sans-serif; font-size:12px;">
+		<h2>The following mls providers have not been updated for more than 48 hours.</h2>
+		<table style="border-spacing:0px;">
+		<tr><td>ID</td><td>Name</td><td>Last Updated</td></tr>
+		<cfloop query="qTwoDaysAgo">
+			<tr><td>#qTwoDaysAgo.mls_id#</td><td>#qTwoDaysAgo.mls_name#</td><td>#dateformat(qTwoDaysAgo.mls_update_date,"m/d/yyyy")#</td></tr>
+			<cfscript>
+			 db.sql="update #db.table("mls", request.zos.zcoreDatasource)# mls 
+			 SET mls_error_sent=#db.param('1')#, 
+			 mls_updated_datetime=#db.param(request.zos.mysqlnow)#  
+			 where mls_id = #db.param(qTwoDaysAgo.mls_id)# and 
+			 mls_deleted=#db.param(0)#";
+			 db.execute("q");
+			</cfscript>
+		</cfloop>
+		</table>
+		</span>
+		</body>
+		</html>
+		</cfmail>
+	</cfif>
 </cffunction>
 
 </cfoutput>
