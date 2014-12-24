@@ -64,6 +64,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		rs.user_id=0;
 		rs.user_id_siteIDType=0;
 		rs.cc="";
+		rs.bcc="";
 		m='force assign to #rs.assignEmail#<br />';
 		arrayAppend(arrDebug, m);
 		if(structkeyexists(request.zos, 'debugleadrouting')){
@@ -93,8 +94,11 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 			}
 		}
 	}
-	if(not structkeyexists(rs, 'cc')){
+	if(not structkeyexists(rs, 'bcc')){
 		rs.cc="";
+	}
+	if(not structkeyexists(rs, 'bcc')){
+		rs.bcc="";
 	}
 	if(rs.user_id EQ 0){
 		 db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
@@ -125,7 +129,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	}
 	form.inquiries_id=inquiries_id;
 	if(not structkeyexists(request.zos, 'debugleadrouting')){
-		mail spoolenable="no" to="#rs.assignEmail#" cc="#rs.cc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
+		mail spoolenable="no" to="#rs.assignEmail#" cc="#rs.cc#" bcc="#rs.bcc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
 			iemailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		    iemailCom.getEmailTemplate();
 		}
@@ -202,6 +206,15 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				break;
 			}
 		}
+		if(arguments.ss.routeIndex EQ 0){
+			for(i=1;i LTE arraylen(application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData);i++){
+				c=application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData[i];
+				if(c.data.inquiries_type_id EQ "0" or c.data.inquiries_type_id EQ ""){
+					arguments.ss.routeIndex=i;
+					break;
+				}
+			}
+		}
 	}
 	return application.zcore.functions.zProcessLeadRoute(arguments.ss);
 	</cfscript>
@@ -253,6 +266,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	//rs.qInquiry=qI;
 	rs.leadEmail=qI.inquiries_email;
 	//application.zcore.functions.zdump(qi);
+
+	/*
+	// i removed the reassign to same person feature because it interferes with the bcc and other features maybe.
 	if(qI.inquiries_email NEQ ""){
 		// auto-assign to same member if they are still active and the last inquiry was within 6 months.
 		 db.sql="select user.user_username, user.site_id, user.user_id 
@@ -282,12 +298,14 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			}
 			return rs;
 		}
-	} 
+	} */
 	if(structkeyexists(application.sitestruct[request.zos.globals.id].leadRoutingStruct, 'arrData')){
 		for(i=1;i LTE arraylen(application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData);i++){
 			c=application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData[i];
 			//writeoutput('loop ##'&i&'|'&c.data.inquiries_type_id&'|'&qI.inquiries_type_id&'<br />');
-			if(c.data.inquiries_type_id NEQ "" and qI.inquiries_type_id NEQ c.data.inquiries_type_id){
+			if(qI.inquiries_type_id_siteIDType EQ c.data.inquiries_type_id_siteIDType and qI.inquiries_type_id EQ c.data.inquiries_type_id){
+				// ok
+			}else if(c.data.inquiries_type_id NEQ "" and c.data.inquiries_type_id NEQ "0"){
 				// didn't matched lead type, so skip this lead route.
 				continue;
 			}
@@ -574,7 +592,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	}
 	
 	if(c.data.inquiries_routing_cc0 NEQ ""){
-		rs.cc=c.data.inquiries_routing_cc0;	
+		rs.bcc=c.data.inquiries_routing_cc0;	
 	}
 	
 	return rs;
@@ -597,6 +615,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	var c=0;
 	rs.leademail=arguments.ss.leademail;
 	rs.user_id=0;
+	rs.bcc="";
 	rs.cc="";
 	rs.arrDebug=[];
 	rs.assignEmail="";
@@ -651,6 +670,11 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		*/
 	}
 	
+
+	if(c.data.inquiries_routing_cc0 NEQ ""){
+		rs.bcc=c.data.inquiries_routing_cc0;	
+	}
+
 	if(arguments.ss.assignUserId NEQ 0){
 		// force assignment and return with no logic
 		rs.assignEmail=arguments.ss.assignEmail;
@@ -840,9 +864,6 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		}
 	}
 	
-	if(c.data.inquiries_routing_cc0 NEQ ""){
-		rs.cc=c.data.inquiries_routing_cc0;	
-	}
 	
 	return rs;
 	</cfscript>
@@ -929,7 +950,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 	if(structkeyexists(routingCCStruct, 2)){
 		// On other status changes (i.e. edits/notes/replies)<br />
 		rs.subjectPrefix="Lead status change: ";
-		rs.cc=c.inquiries_routing_cc;
+		rs.bcc=c.inquiries_routing_cc;
 	}
 	</cfscript>
 </cffunction>
@@ -991,7 +1012,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 		if(c.inquiries_routing_cc_inactive_hours NEQ 0 and structkeyexists(routingCCStruct, 3) and hoursSinceUpdate GTE c.inquiries_routing_cc_inactive_hours){
 			// inactive for hours
 			rs.subjectPrefix="Inactive for #c.inquiries_routing_cc_inactive_hours# hours: ";
-			rs.cc=c.inquiries_routing_cc;
+			rs.bcc=c.inquiries_routing_cc;
 		}
 		
 		if(user_id NEQ 0){
@@ -1131,7 +1152,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 					}
 					if(inquiries_routing_cc2 NEQ ""){
 						// send copy due to reassignment
-						rs.cc=inquiries_routing_cc2;	
+						rs.bcc=inquiries_routing_cc2;	
 					}
 					 db.sql="update #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 					set inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#, 

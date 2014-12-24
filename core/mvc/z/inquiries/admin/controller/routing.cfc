@@ -369,11 +369,11 @@ enable round robin for users - need a new option to disable for staff.
 					<p>If enabled, this will override the other options. Leads that match an office will limit the assignment system to only use users in that office.<br /><input type="radio" style="border:none; background:none;"  name="inquiries_routing_office_auto_assign"  value="1" <cfif form.inquiries_routing_office_auto_assign EQ '1'>checked="checked"</cfif>> yes&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" style="border:none; background:none;"  name="inquiries_routing_office_auto_assign" value="0" <cfif form.inquiries_routing_office_auto_assign EQ '0' or form.inquiries_routing_office_auto_assign EQ ''>checked="checked"</cfif>> no</p></td>
 				</tr> --->
 			<tr>
-				<th style="width:1%;">Send Copy To&nbsp;</th>
-				<td><p>On initial receipt, send copy to E-Mail(s):
+				<th style="width:1%;">Send BCC To&nbsp;</th>
+				<td><p>On initial receipt, send blind copy to E-Mail(s):
 						<input type="text" name="inquiries_routing_cc0" size="50" value="#htmleditformat(form.inquiries_routing_cc0)#" />
 						<br />
-						On status changes (i.e. reassignment/edits/notes/replies), send copy to E-Mail(s):
+						On status changes (i.e. reassignment/edits/notes/replies), send blind copy to E-Mail(s):
 						<input type="text" name="inquiries_routing_cc2" size="50" value="#htmleditformat(form.inquiries_routing_cc2)#" />
 						<br />
 						<!--- <input type="checkbox" name="inquiries_routing_cc_type" value="3" <cfif find(",3,",","&form.inquiries_routing_cc_type&",") NEQ 0>checked="checked"</cfif> />When lead is inactive for <input type="text" name="inquiries_routing_cc_inactive_hours" value="#form.inquiries_routing_cc_inactive_hours#" /> hours, send copy to E-Mail(s): <input type="text" name="inquiries_routing_cc3" size="50" value="#htmleditformat(form.inquiries_routing_cc3)#" /><br />  ---></p></td>
