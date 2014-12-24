@@ -192,7 +192,12 @@ var zInputBoxLinkValues=[];
 			zJumpToId(zSiteOptionGroupLastFormID, -50);
 		}
 		if(rs.success){
-			alert("Your submission was received.");
+			var link=$("#"+zSiteOptionGroupLastFormID).attr("data-thank-you-url");
+			if(link != ""){
+				window.location.href=link;
+			}else{
+				alert("Your submission was received.");
+			}
 		}else{
 			for(var i=0;i<rs.arrErrorField.length;i++){
 				$("#"+rs.arrErrorField[i]).closest("tr").addClass("zFieldError");

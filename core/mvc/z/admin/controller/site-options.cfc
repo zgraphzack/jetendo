@@ -1950,7 +1950,7 @@
 			if(structkeyexists(request.zos, 'debugleadrouting')){
 				echo('mapDataToInquiries<br />');
 			}
-			mapDataToInquiries(local.newDataMappedStruct, form, local.disableSendEmail); 
+			form.inquiries_id=mapDataToInquiries(local.newDataMappedStruct, form, local.disableSendEmail); 
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_map_group_id NEQ 0){
 				local.groupIdBackup2=local.qCheck.site_option_group_map_group_id;
@@ -2028,8 +2028,11 @@
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds5<br>'); startTime=gettickcount();
 	if(debug) application.zcore.functions.zabort();
+
+	request.zsession.zLastSiteXOptionGroupSetId=local.setIdBackup;
+	request.zsession.zLastInquiriesID=application.zcore.functions.zso(form, 'inquiries_id');
 	if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
-		ts={success:true, zsid:request.zsid, site_x_option_group_set_id:local.setIdBackup};
+		ts={success:true, zsid:request.zsid, site_x_option_group_set_id:local.setIdBackup, inquiries_id: application.zcore.functions.zso(form, 'inquiries_id')};
 		return ts;
 	}else if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicUpdateGroup"){ 
 		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');
@@ -2215,6 +2218,7 @@ Define this function in another CFC to override the default email format
 	if(application.zcore.functions.zso(form, 'inquiries_email') NEQ "" and application.zcore.functions.zEmailValidate(form.inquiries_email)){
 		form.mail_user_id=application.zcore.user.automaticAddUser(form);
 	}
+	return form.inquiries_id;
 	</cfscript>
 </cffunction>
 
@@ -3167,6 +3171,9 @@ Define this function in another CFC to override the default email format
 		echo('?site_option_app_id=#form.site_option_app_id#');
 	}
 	echo('" method="post" enctype="multipart/form-data" ');
+	if(local.qCheck.site_option_group_public_thankyou_url NEQ ""){
+		echo(' data-thank-you-url="'&htmleditformat(local.qCheck.site_option_group_public_thankyou_url)&'" ');
+	}
 	if(local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup"){
 		echo('onsubmit="zSet9(''zset9_#form.set9#''); ');
 		if(local.methodBackup EQ "publicAddGroup" and local.qCheck.site_option_group_ajax_enabled EQ 1){

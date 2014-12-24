@@ -2241,59 +2241,138 @@ this.app_id=10;
 		}
 		db.sql&=" LIMIT #db.param(0)#,#db.param(arguments.displayCount)#";
 		qList=db.execute("qList");
+		
+
+		processArticleIncludeQuery(qList, arguments.displayStruct);
 		</cfscript>
-		<cfloop query="qList">
-			<cfscript>
-			ts=StructNew();
-			if(qList.blog_unique_name NEQ ""){
-				ts.link=qList.blog_unique_name;
-			}else{
-				ts.link=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qList.blog_id,"html",qList.blog_title,qList.blog_datetime);
-			}
-			if(structkeyexists(ts, 'link')){
-				ts.commentLink=ts.link&"##comment";
-				ts.commentCount=qList.commentCount;
-				shortSummary=rereplace(qList.blog_story,"<[^>]*>"," ","ALL");
-				shortSummary=application.zcore.functions.zLimitStringLength(shortSummary,350); 
-				ts.story=shortSummary;
-				ts.summary=qList.blog_summary;
-				ts.title=qList.blog_title;
-				ts.category=qList.blog_category_name;
-				if(qList.blog_category_unique_name NEQ ""){
-					ts.categoryLink=qList.blog_category_unique_name;
-				}else{
-					ts.categoryLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,qList.blog_category_id,"html",qList.blog_category_name);
-				}
-				ts.author=qList.user_first_name&" "&qList.user_last_name;
-				ts.authorEmail=qList.user_username;
-				ts.datetime=qList.blog_datetime;
-				if(qList.blog_end_datetime NEQ "0000-00-00 00:00:00" and qList.blog_end_datetime NEQ ""){
-					ts.endDatetime=qList.blog_end_datetime;
-				}else{
-					ts.endDatetime=qList.blog_datetime;
-				}
-				
-				
-				ts2=structnew();
-				ts2.image_library_id=qList.blog_image_library_id;
-				ts2.output=false;
-				ts2.query=qList;
-				ts2.row=qList.currentrow;
-				ts2.size=thumbnailStruct.width&"x"&thumbnailStruct.height;
-				ts2.crop=thumbnailStruct.crop;
-				ts2.count = 1;  
-				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts2);
-				ts.image=request.zos.currentHostName&"/z/a/images/s.gif";
-				ts.hasImage=false;
-				if(arraylen(arrImages) NEQ 0){
-					ts.hasImage=true;
-					ts.image=request.zos.currentHostName&arrImages[1].link;
-				} 
-				arrayappend(arguments.displayStruct.arrBlog,ts);
-			}
-			</cfscript>
-		</cfloop>
 	</cfif>
+</cffunction>
+
+
+
+<cffunction name="getArticleById" localmode="modern" access="public" output="yes" returntype="any">
+	<cfargument name="id" type="string" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	// you must have a group by in your query or it may miss rows
+	ts=structnew();
+	ts.image_library_id_field="blog.blog_image_library_id";
+	ts.count =  1; // how many images to get
+	rs=application.zcore.imageLibraryCom.getImageSQL(ts);
+	db.sql="select *, count(blog_comment.blog_comment_id) as commentCount 
+	#db.trustedsql(rs.select)#  
+	from #db.table("blog", request.zos.zcoreDatasource)# blog 
+	#db.trustedsql(rs.leftJoin)#
+	left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
+	blog_x_category.blog_id = blog.blog_id and 
+	blog_x_category.site_id = blog.site_id and 
+	blog_x_category_deleted = #db.param(0)#
+	left join #db.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
+	blog_x_category.blog_category_id = blog.blog_category_id and 
+	blog_category.site_id = blog.site_id and 
+	blog_category_deleted = #db.param(0)#
+	left join #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment on 
+	blog.blog_id = blog_comment.blog_id and 
+	blog_comment_approved=#db.param(1)#  and 
+	blog_comment.site_id = blog.site_id and 
+	blog_comment_deleted = #db.param(0)#
+	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
+	blog.user_id = user.user_id  and 
+	user_deleted = #db.param(0)# and
+	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
+	where blog.site_id=#db.param(request.zos.globals.id)# and 
+	blog_deleted = #db.param(0)# and ";
+	if(arguments.id CONTAINS "-"){
+		db.sql&=" blog.blog_guid = #db.param(arguments.id)# and ";
+	}else{
+		db.sql&=" blog.blog_id = #db.param(arguments.id)# and ";
+	}
+	db.sql&=" (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+	blog_event =#db.param(1)#) and 
+	blog_status <> #db.param(2)#  
+	group by blog.blog_id";
+	qList=db.execute("qList");
+	displayStruct={arrBlog:[]};
+	processArticleIncludeQuery(qList, displayStruct);
+	if(qList.recordcount NEQ 0){
+		return displayStruct.arrBlog[1];
+	}else{
+		return {};
+	} 
+	</cfscript>
+</cffunction>
+
+<cffunction name="processArticleIncludeQuery" localmode="modern" access="private" returntype="any">
+	<cfargument name="q" type="query" required="yes">
+	<cfargument name="displayStruct" type="struct" required="yes">
+	<cfscript>
+	qList=arguments.q;
+	thumbnailStruct=variables.getThumbnailSizeStruct();
+	if(structkeyexists(arguments.displayStruct, 'imageSize')){
+		arrSize=listToArray(arguments.displayStruct.imageSize, "x");
+		if(arrayLen(arrSize) NEQ 2){
+			throw("arguments.displayStruct.imageSize must be formatted like widthxheight, i.e. 150x100.");
+		}
+		thumbnailStruct.width=arrSize[1];
+		thumbnailStruct.height=arrSize[2];
+	}
+	if(structkeyexists(arguments.displayStruct, 'crop')){
+		thumbnailStruct.crop=arguments.displayStruct.crop;
+	}
+	</cfscript>
+	<cfloop query="qList">
+	
+		<cfscript>
+		ts=StructNew();
+		ts.id=qList.blog_id;
+		ts.guid=qList.blog_guid;
+		if(qList.blog_unique_name NEQ ""){
+			ts.link=qList.blog_unique_name;
+		}else{
+			ts.link=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qList.blog_id,"html",qList.blog_title,qList.blog_datetime);
+		}
+		ts.commentLink=ts.link&"##comment";
+		ts.commentCount=qList.commentCount;
+		shortSummary=rereplace(qList.blog_story,"<[^>]*>"," ","ALL");
+		shortSummary=application.zcore.functions.zLimitStringLength(shortSummary,350); 
+		ts.fullStory=qList.blog_story;
+		ts.story=shortSummary;
+		ts.summary=qList.blog_summary;
+		ts.title=qList.blog_title;
+		ts.category=qList.blog_category_name;
+		if(qList.blog_category_unique_name NEQ ""){
+			ts.categoryLink=qList.blog_category_unique_name;
+		}else{
+			ts.categoryLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,qList.blog_category_id,"html",qList.blog_category_name);
+		}
+		ts.author=qList.user_first_name&" "&qList.user_last_name;
+		ts.authorEmail=qList.user_username;
+		ts.datetime=qList.blog_datetime;
+		if(qList.blog_end_datetime NEQ "0000-00-00 00:00:00" and qList.blog_end_datetime NEQ ""){
+			ts.endDatetime=qList.blog_end_datetime;
+		}else{
+			ts.endDatetime=qList.blog_datetime;
+		}
+		
+		
+		ts2=structnew();
+		ts2.image_library_id=qList.blog_image_library_id;
+		ts2.output=false;
+		ts2.query=qList;
+		ts2.row=qList.currentrow;
+		ts2.size=thumbnailStruct.width&"x"&thumbnailStruct.height;
+		ts2.crop=thumbnailStruct.crop;
+		ts2.count = 1;  
+		arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts2);
+		ts.image=request.zos.currentHostName&"/z/a/images/s.gif";
+		ts.hasImage=false;
+		if(arraylen(arrImages) NEQ 0){
+			ts.hasImage=true;
+			ts.image=request.zos.currentHostName&arrImages[1].link;
+		} 
+		arrayappend(arguments.displayStruct.arrBlog,ts);
+		</cfscript>
+	</cfloop>
 </cffunction>
 
 <cffunction name="getBlogCategories" localmode="modern" access="public" returntype="array">

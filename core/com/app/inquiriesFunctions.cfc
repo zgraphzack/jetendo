@@ -70,6 +70,28 @@
 	<hr />
 </cffunction>
 
+<cffunction name="getInquiryDataById" localmode="modern" access="public">
+	<cfargument name="inquiries_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("inquiries", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	inquiries_id = #db.param(arguments.inquiries_id)# and 
+	inquiries_deleted=#db.param(0)# ";
+	qInquiry=db.execute("qInquiry");
+	struct={};
+	for(row in qInquiry){
+		struct=row;
+		s=deserializeJson(row.inquiries_custom_json);
+		for(i=1;i LTE arraylen(s.arrCustom);i++){
+			struct[s.arrCustom[i].label]=s.arrCustom[i].value;
+		}
+	}
+	return struct;
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="getEmailTemplate" localmode="modern" access="public">
 	<cfscript>
 	var tempText=0;
@@ -113,6 +135,7 @@
 			inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
 			inquiries_id = #db.param(form.inquiries_id)# ";
 			qinquiry=db.execute("qinquiry");
+
 			application.zcore.functions.zQueryToStruct(qinquiry, form);
 			</cfscript>
 			<cfif form.user_id NEQ 0>

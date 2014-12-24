@@ -513,7 +513,8 @@ rs=zGetHashPath(dir, id);
 <cffunction name="zWriteFile" localmode="modern" returntype="boolean" output="false">
 	<cfargument name="filePath" required="yes" type="string">
 	<cfargument name="srcString" required="yes" type="string">
-	<cfargument name="mode" required="no" type="string" default="644">
+	<cfargument name="mode" required="no" type="string" default="660">
+	<cfargument name="throwError" required="no" type="boolean" default="#false#">
     <cfscript>
     var cfcatch=0;
 	var tempUnique='###getTickCount()#';
@@ -526,7 +527,12 @@ rs=zGetHashPath(dir, id);
                     <cffile action="rename" nameconflict="overwrite" source="#arguments.filePath##tempUnique#" destination="#arguments.filePath#">
                 </cflock>
             </cfif>
-		 	<cfcatch type="any"><cfreturn false></cfcatch>
+		 	<cfcatch type="any">
+			 	<cfif arguments.throwError>
+					<cfrethrow>
+				</cfif>
+				<cfreturn false>
+			</cfcatch>
 		</cftry>
 	<cfelse>
 		<cfscript>

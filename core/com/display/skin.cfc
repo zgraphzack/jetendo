@@ -294,6 +294,11 @@ todo: open source projects
 	errorSent=false;
 	
 	for(ds in qDir){ 
+		if(right(ds.name, 3) EQ "css" and right(ds.name, 4) NEQ ".css"){
+			continue;
+		}else if(right(ds.name, 2) EQ "js" and right(ds.name, 3) NEQ ".js"){
+			continue;
+		}
 		if(ds.directory DOES NOT CONTAIN "/wp-admin" and ds.directory DOES NOT CONTAIN "/wp-includes" and ds.directory DOES NOT CONTAIN "/wp-content" and 
 			ds.directory DOES NOT CONTAIN "/published_files" and ds.directory DOES NOT CONTAIN "/tiny_mce"){
 			if(structkeyexists(arguments.ss,'newestApplicationDateLastModified') EQ false or datecompare(ds.dateLastModified, arguments.ss.newestApplicationDateLastModified) EQ 1){
@@ -410,6 +415,12 @@ todo: open source projects
 	application.zcore.functions.zCreateDirectory(request.zos.globals.serverPrivateHomedir&"zcache/global/");
 	directory name="qDir" directory="#request.zos.installPath#public/" action="list" recurse="yes" type="file" filter="*js|*css";//*html,
 	for(ds in qDir){
+
+		if(right(ds.name, 3) EQ "css" and right(ds.name, 4) NEQ ".css"){
+			continue;
+		}else if(right(ds.name, 2) EQ "js" and right(ds.name, 3) NEQ ".js"){
+			continue;
+		}
 		if(ds.directory DOES NOT CONTAIN "/tiny_mce"){
 			if(structkeyexists(arguments.ss,'newestServerDateLastModified') EQ false or datecompare(ds.dateLastModified, arguments.ss.newestServerDateLastModified) EQ 1){
 				arguments.ss.newestServerDateLastModified=ds.dateLastModified;
