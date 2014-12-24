@@ -470,6 +470,7 @@ enable round robin for users - need a new option to disable for staff.
 	</cfscript>
 	<h2>Lead Routing</h2>
 	<p>By default, leads go to the E-Mail Address(es) listed in the site option called: "<a href="/z/admin/site-options/index?return=1&amp;jumpto=soid_zofficeemail" title="Click to Edit">Office Email</a>".  To override this for specific lead types, click "Add Lead Route" or "Edit" the existing rules below.</p>
+	<p>Note: A "Catch-all" route will be used for all forms that don't have an their own route added.</p>
 	<p><a href="/z/inquiries/admin/routing/add">Add Lead Route</a></p>
 	<table id="sortRowTable" class="table-list">
 		<thead>
@@ -484,7 +485,11 @@ enable round robin for users - need a new option to disable for staff.
 		<cfloop query="qRoutes">
 			<tr #variables.queueSortCom.getRowHTML(qRoutes.inquiries_routing_id)# <cfif qRoutes.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
 				<td>#qRoutes.inquiries_routing_id#</td>
-				<td>#qRoutes.inquiries_type_name#</td>
+				<td><cfif qRoutes.inquiries_type_id EQ 0>
+					Catch-all
+				<cfelse>
+					#qRoutes.inquiries_type_name#
+				</cfif></td>
 				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
 				<td><!--- #variables.queueSortCom.getLinks(qRoutes.recordcount, qRoutes.currentrow, '/z/inquiries/admin/routing/index?inquiries_routing_id=#qRoutes.inquiries_routing_id#', "vertical-arrows")#  --->
 				<a href="/z/inquiries/admin/routing/edit?inquiries_routing_id=#qRoutes.inquiries_routing_id#">Edit</a> | 
