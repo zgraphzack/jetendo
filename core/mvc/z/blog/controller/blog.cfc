@@ -2250,6 +2250,55 @@ this.app_id=10;
 
 
 
+<cffunction name="getArticleByUniqueURL" localmode="modern" access="public" output="yes" returntype="any">
+	<cfargument name="link" type="string" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	// you must have a group by in your query or it may miss rows
+	ts=structnew();
+	ts.image_library_id_field="blog.blog_image_library_id";
+	ts.count =  1; // how many images to get
+	rs=application.zcore.imageLibraryCom.getImageSQL(ts);
+	db.sql="select *, count(blog_comment.blog_comment_id) as commentCount 
+	#db.trustedsql(rs.select)#  
+	from #db.table("blog", request.zos.zcoreDatasource)# blog 
+	#db.trustedsql(rs.leftJoin)#
+	left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
+	blog_x_category.blog_id = blog.blog_id and 
+	blog_x_category.site_id = blog.site_id and 
+	blog_x_category_deleted = #db.param(0)#
+	left join #db.table("blog_category", request.zos.zcoreDatasource)# blog_category on 
+	blog_x_category.blog_category_id = blog.blog_category_id and 
+	blog_category.site_id = blog.site_id and 
+	blog_category_deleted = #db.param(0)#
+	left join #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment on 
+	blog.blog_id = blog_comment.blog_id and 
+	blog_comment_approved=#db.param(1)#  and 
+	blog_comment.site_id = blog.site_id and 
+	blog_comment_deleted = #db.param(0)#
+	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
+	blog.user_id = user.user_id  and 
+	user_deleted = #db.param(0)# and
+	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
+	where blog.site_id=#db.param(request.zos.globals.id)# and 
+	blog_deleted = #db.param(0)# and 
+	blog.blog_unique_name = #db.param(arguments.link)# and
+	(blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+	blog_event =#db.param(1)#) and 
+	blog_status <> #db.param(2)#  
+	group by blog.blog_id";
+	qList=db.execute("qList");
+	displayStruct={arrBlog:[]};
+	processArticleIncludeQuery(qList, displayStruct);
+	if(qList.recordcount NEQ 0){
+		return displayStruct.arrBlog[1];
+	}else{
+		return {};
+	} 
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="getArticleById" localmode="modern" access="public" output="yes" returntype="any">
 	<cfargument name="id" type="string" required="yes">
 	<cfscript>
