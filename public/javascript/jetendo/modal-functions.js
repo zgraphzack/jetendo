@@ -66,6 +66,10 @@
 				el2.style.width=newWidth+"px";
 				el2.style.height=newHeight+"px";
 			}
+			$(".zCloseModalButton"+zModalIndex).css({
+				"left":((left+newWidth)-80)+"px",
+				"top":(top-25)+"px"
+			});
 		}
 	}
 	function zShowModal(content, obj){
@@ -90,7 +94,11 @@
 		if(typeof obj.padding !== "undefined"){
 			zArrModal[zModalIndex].padding=obj.padding;	
 		}
-		var h='<div id="zModalOverlayDivContainer'+zModalIndex+'" class="zModalOverlayDiv"><div id="zModalOverlayDivInner'+zModalIndex+'" class="zModalOverlayDiv2"></div></div>';
+		var b='';
+		if(!disableClose){
+			b='<div class="zCloseModalButton'+zModalIndex+'" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>';  
+		}
+		var h='<div id="zModalOverlayDivContainer'+zModalIndex+'" class="zModalOverlayDiv">'+b+'<div id="zModalOverlayDivInner'+zModalIndex+'" class="zModalOverlayDiv2"></div></div>';
 		$(d).append(h);
 		if(!zArrModal[zModalIndex].disableResize){
 			d.style.overflow="hidden";
@@ -155,15 +163,16 @@
 			setTimeout(function(){zModalKeepOpen=false;},100); 
 			return false;
 		};
-		if(disableClose){
 			el2.innerHTML=content;  	
+		if(disableClose){
 			el.onclick=function(){};
 		}else{
 			el.onclick=function(){
 				if(zModalKeepOpen) return;
 				zCloseModal();
 			};
-			el2.innerHTML='<div style="width:80px; text-align:right; right:20px; top:5px; position:fixed;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>'+content;  
+			//right:20px; top:5px; position:fixed; 
+			//el2.innerHTML='<div class="zCloseModalButton" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>'+content;  
 		}
 		el.style.top=zArrModal[zModalIndex].scrollPosition[1]+"px";
 		el.style.left=zArrModal[zModalIndex].scrollPosition[0]+"px";
@@ -175,6 +184,10 @@
 		el2.style.top=top+'px';
 		el2.style.width=(obj.width)+"px";
 		el2.style.height=(obj.height)+"px";
+		$(".zCloseModalButton"+zModalIndex).css({
+			"left":((left+obj.width)-80)+"px",
+			"top":(top-25)+"px"
+		});
 		zModalPosIntervalId=setInterval(zFixModalPos,500);
 	}
 	function zCloseModal(){

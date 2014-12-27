@@ -158,11 +158,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 					if(request.zos.isDeveloper and request.zsession.user.site_id EQ request.zos.globals.serverId and application.zcore.user.checkServerAccess()){
 						siteIdSQL=" and site_id <> -1";
 					}else{
-						if(request.zsession.user.site_id NEQ request.zos.globals.id and application.zcore.user.checkGroupAccess("administrator")){
-							if(request.zos.globals.parentID NEQ 0){
-								siteIdSQL=" and (site_id = '"&request.zos.globals.parentID&"' or site_parent_id ='"&request.zos.globals.parentID&"')";
+						if(application.zcore.user.checkGroupAccess("administrator")){
+							if(request.zsession.user.site_id NEQ request.zos.globals.id){
+								siteIdSQL=" and (site_id = '"&request.zsession.user.site_id&"' or site_parent_id ='"&request.zsession.user.site_id&"')";
+								/*if(request.zos.globals.parentID NEQ 0){
+									siteIdSQL=" and (site_id = '"&request.zos.globals.parentID&"' or site_parent_id ='"&request.zos.globals.parentID&"')";
+								}else{
+									siteIdSQL=" and (site_id = '"&request.zos.globals.id&"' or site_parent_id ='"&request.zos.globals.id&"')";
+								}*/
 							}else{
-								siteIdSQL=" and (site_id = '"&request.zos.globals.id&"' or site_parent_id ='"&request.zos.globals.id&"')";
+								siteIdSQL=" and (site_parent_id ='"&request.zsession.user.site_id&"')";
 							}
 						}else{
 							db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 

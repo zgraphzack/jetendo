@@ -68,6 +68,7 @@
 
 	s=gettickcount('nano'); 
 
+	application.zcore.functions.zheader("P3P", "CP='Not using P3P, find the privacy policy on our site instead.'");
 	 
 	savecontent variable="local.output"{
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart begin'});

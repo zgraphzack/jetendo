@@ -1912,7 +1912,7 @@
 		}
 	}
 	local.setIdBackup=form.site_x_option_group_set_id; 
-	local.disableSendEmail=true;
+	local.disableSendEmail=false;
 	local.setIdBackup2=form.site_x_option_group_set_id;
 	local.groupIdBackup2=local.qCheck.site_option_group_id;
 	if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup") and local.qCheck.site_option_group_lead_routing_enabled EQ 1 and not structkeyexists(form, 'disableGroupEmail')){
@@ -1929,7 +1929,7 @@
 		if(local.qCheck.site_option_group_map_fields_type EQ 1){
 			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){
 				local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
-				local.disableSendEmail=false;
+				local.disableSendEmail=true;
 				local.emailStruct=local.tempCom[local.qCheck.site_option_group_email_cfc_method](local.newDataStruct, local.arrDataStructKeys);
 			}
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 0 or local.qCheck.site_option_group_map_fields_type EQ 2){
@@ -1939,7 +1939,7 @@
 			}else{
 				local.emailStruct=variables.generateGroupEmailTemplate(local.newDataStruct, local.arrDataStructKeys);
 			}
-			local.disableSendEmail=false;
+			local.disableSendEmail=true;
 		}
 	}
 	if(local.mapRecord){
@@ -1972,7 +1972,7 @@
 			local.tempResult=variables.autoDeleteGroup(); 
 		}
 	}
-	if(not local.disableSendEmail and not structkeyexists(form, 'disableGroupEmail')){
+	if(local.disableSendEmail and application.zcore.functions.zso(form, 'disableGroupEmail', false, false) EQ false){
 		if(structkeyexists(request.zos, 'debugleadrouting')){
 			echo('site-options|sendEmail<br />');
 		}
@@ -2191,7 +2191,7 @@ Define this function in another CFC to override the default email format
 	form.inquiries_id=application.zcore.functions.zInsert(ts); 
 	
 	application.zcore.tracking.setConversion('inquiry',form.inquiries_id);
-	 if(form.inquiries_spam EQ 0 and not arguments.disableEmail and not structkeyexists(form, 'disableGroupEmail')){
+	 if(form.inquiries_spam EQ 0 and not arguments.disableEmail and application.zcore.functions.zso(form, 'disableGroupEmail', false, false) EQ false){
 		ts=structnew();
 		ts.inquiries_id=form.inquiries_id;
 		if(local.qGroup.site_option_group_public_form_title EQ ""){
