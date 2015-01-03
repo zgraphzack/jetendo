@@ -31,7 +31,7 @@
 			}
 		}else{
 			arrMLS=[form.mls_id];
-    		if(application.zcore.functions.zso(form, 'mls_id',true) NEQ 0){
+    		if(application.zcore.functions.zso(form, 'mls_id',true) EQ 0){
     			echo('form.mls_id must be a number');
     		}
 		}
