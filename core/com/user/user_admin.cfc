@@ -627,7 +627,7 @@ To view more info about this new user, click the following link:
 		}
 		if(not application.zcore.user.checkAllCompanyAccess()){
 			if(isdefined('request.zsession.user.company_id')){
-				str.company_id=application.zcore.functions.request.zsession.user.company_id;
+				str.company_id=request.zsession.user.company_id;
 			}
 		}
 		applyUserUpdateSecurityFilter(str);

@@ -352,7 +352,7 @@
 		}
 	}catch(Any excpt){
 		application.zcore.status.setStatus(request.zsid, arguments.row.site_option_name&" must be a valid date.", form, true);
-		return { success: false, value: "", dateValue: "" };
+		return { success: false, message: arguments.row.site_option_name&" must be a valid date.", value: "", dateValue: "" };
 	}
 	return { success: true, value: nv, dateValue: nvdate };
 	</cfscript>

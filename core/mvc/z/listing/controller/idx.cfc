@@ -396,6 +396,7 @@
 		this.datastruct[qT.listing_id].listing_track_datetime=dateformat(qT.listing_track_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_datetime,"HH:mm:ss");
 		this.datastruct[qT.listing_id].listing_track_updated_datetime=dateformat(qT.listing_track_updated_datetime,"yyyy-mm-dd")&" "&timeformat(qT.listing_track_updated_datetime,"HH:mm:ss");
 		this.datastruct[qT.listing_id].new=false;
+		this.datastruct[qT.listing_id].hasListing=false;
 		if(this.datastruct[qT.listing_id].hash EQ qT.listing_track_hash){
 			this.datastruct[qT.listing_id].update=false;
 		}
@@ -437,10 +438,11 @@
 	}*/
 	for(i in this.datastruct){
 		arrayClear(request.zos.arrQueryLog);
-		if(this.datastruct[i].update EQ false){
+		if(this.datastruct[i].update EQ false and this.datastruct[i].haslisting and this.datastruct[i].haslisting2){
 			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)#  
 			set listing_track_processed_datetime = #db.param(nowDate1)#, 
-			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#  
+			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#,   
+			listing_track_inactive=#db.param(0)# 
 			WHERE listing_id = #db.param(i)# and 
 			listing_track_deleted = #db.param(0)#";
 			db.execute("q"); 	
@@ -474,7 +476,7 @@
 				rs.listing_track_inactive='0';
 				rs.listing_track_datetime=this.datastruct[i].listing_track_datetime
 				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
-				rs.listing_track_processed_datetime=this.nowDate;
+				rs.listing_track_processed_datetime=nowDate1;
 			}else{
 				rs.listing_track_id=this.datastruct[i].listing_track_id;
 				rs.listing_id=i;
@@ -490,7 +492,7 @@
 				rs.listing_track_inactive='0';
 				rs.listing_track_datetime=this.datastruct[i].listing_track_datetime;
 				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
-				rs.listing_track_processed_datetime=this.nowDate;
+				rs.listing_track_processed_datetime=nowDate1;
 			}
 			rs.mls_id=this.optionStruct.mls_id;
 
@@ -636,6 +638,8 @@
 	//return;
 	application.zcore.idxImportStatus="cleanInactive executed";
 
+	/*
+	// this code deleted real listings for some reason
 	db.sql="SELECT group_concat(listing.listing_id SEPARATOR #db.param("','")#) idlist 
 	FROM #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 	LEFT JOIN #db.table("listing_track", request.zos.zcoreDatasource)# listing_track ON 
@@ -661,6 +665,7 @@
 	}else{
 		writeoutput('no dead listings<br />');	
 	}
+	*/
 
 	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
 	where mls_status=#db.param('1')# and 
@@ -709,7 +714,7 @@
 			where listing_track_deleted=#db2.param('0')# and 
 	   		listing_track.listing_track_inactive=#db2.param('0')# and 
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
-			listing_id LIKE '#mlsID#-%' 
+			listing_id LIKE #db2.param('#mlsID#-%')# 
 			ORDER BY listing_track_id ASC";
 			db2.execute("qInsert");
 			db.sql="SELECT count(listing_delete_id) count 
@@ -769,7 +774,7 @@
 			where listing_track_processed_datetime < #db2.param(oneMonthAgo)#  and 
 			listing_track_deleted = #db2.param(0)#  and 
 	   		listing_track_inactive = #db2.param(1)# and 
-			listing_id LIKE '#mlsID#-%' 
+			listing_id LIKE #db2.param('#mlsID#-%')# 
 			ORDER BY listing_track_id ASC";
 			db2.execute("qInsert");
 			db.sql="SELECT count(listing_delete_id) count 

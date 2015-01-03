@@ -77,6 +77,75 @@
 	</cfif>
 </cffunction>
 
+
+
+<cffunction name="regenerateImages" access="remote" localmode="modern">
+	<!--- TODO: finish this regenerateImages function so I can click a button to use original files to generate new size of all uploaded images in site options (per site_option_group_id or maybe even per site_option_id) --->
+	<cfscript>
+	
+	if(not request.zos.istestserver and not request.zos.isdeveloper and not request.zos.isserver){
+		application.zcore.functions.z404("only server, test server or developers can view this.");
+	}
+	throw("not implemented yet.  see todo comment");
+	</cfscript>
+	<!--- 
+	<cfscript>
+	arr1=application.zcore.functions.zSiteOptionGroupStruct("Model");</cfscript>
+	<cfloop from="1" to="#arrayLen(arr1)#" index="i1">
+		<cfscript>curStruct1=arr1[i1];
+		//writedump(curStruct1);abort;
+		if(curStruct1["Silver Bar"] NEQ ""){
+			f=application.zcore.functions.zGetFileName(curStruct1["Silver Bar"]);
+			e=application.zcore.functions.zGetFileExt(curStruct1["Silver Bar"]);
+			fe=removechars(f, len(f)-1, 1)&"."&e;
+			fe2=curStruct1["Silver Bar"];
+			echo(request.zos.globals.privatehomedir&fe&"<br>");
+			p=request.zos.globals.privatehomedir&fe;
+			if(fileexists(p)){
+				a=imageinfo(p);
+				if(a.width GT 900){
+					echo('model: '&curStruct1["Model Code"]&"<br>");
+					//echo('<img src="'&curStruct1["Silver Bar"]&'" style="border:3px solid ##999;" />');
+					//echo('<img src="'&fe&'" style="border:3px solid ##999;" />');
+					application.zcore.functions.zcopyfile(p, request.zos.globals.privatehomedir&curStruct1["Silver Bar"], true);
+				}else{
+					echo('model silver wrong size: '&curStruct1["Model Code"]&"<br>");
+				}
+			}else{
+				echo('model silver missing: '&curStruct1["Model Code"]&"<br>");
+			}
+		}else{
+			echo('model never had silver: '&curStruct1["Model Code"]&"<br>");
+		} 
+		if(curStruct1["Extreme Graphics Image"] NEQ ""){
+			f=application.zcore.functions.zGetFileName(curStruct1["Extreme Graphics Image"]);
+			e=application.zcore.functions.zGetFileExt(curStruct1["Extreme Graphics Image"]);
+			fe=removechars(f, len(f)-1, 1)&"."&e;
+			fe2=curStruct1["Extreme Graphics Image"];
+			echo(request.zos.globals.privatehomedir&fe&"<br>");
+			p=request.zos.globals.privatehomedir&fe;
+			if(fileexists(p)){
+				a=imageinfo(p);
+				if(a.width GT 900){
+					echo('model: '&curStruct1["Model Code"]&"<br>");
+					//echo('<img src="'&curStruct1["Extreme Graphics Image"]&'" style="border:3px solid ##999;" />');
+					//echo('<img src="'&fe&'" style="border:3px solid ##999;" />');
+					application.zcore.functions.zcopyfile(p, request.zos.globals.privatehomedir&curStruct1["Extreme Graphics Image"], true);
+				}else{
+					echo('model extreme wrong size: '&curStruct1["Model Code"]&"<br>");
+				}
+			}else{
+				echo('model extreme missing: '&curStruct1["Model Code"]&"<br>");
+			}
+		}else{
+			echo('model never had extreme: '&curStruct1["Model Code"]&"<br>");
+		} 
+	</cfscript><hr />
+	</cfloop> --->
+	<cfabort>
+</cffunction>
+
+
 <cffunction name="searchReindex" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){

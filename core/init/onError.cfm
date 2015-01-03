@@ -59,7 +59,7 @@
 			</table></table></table></table></table></table></table></table></table></table></div></div></div></div></div></div></div></div></div></div>
 			<!-- Begin Error -->
 			<hr style="clear:both;" />
-			<table  style="border-spacing:0px; width:100%; "><tr><td style="padding:10px; background-color:##FFF !important;"><h1>Error in Application.cfc event: #arguments.eventName#</h1>
+			<!--- <table  style="border-spacing:0px; width:100%; "><tr><td style="padding:10px; background-color:##FFF !important;"><h1>Error in Application.cfc event: #arguments.eventName#</h1> --->
 			<cfif structkeyexists(form, request.zos.urlRoutingParameter) EQ false>
 				#cferror.message#
 				<cfdump var="#cferror#" format="simple">

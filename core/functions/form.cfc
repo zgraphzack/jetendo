@@ -1,5 +1,23 @@
 <cfcomponent>
 <cfoutput>
+<!--- application.zcore.functions.filterCountryByStruct({"us":true}); --->
+<cffunction name="filterCountryByStruct" output="no" returntype="array" localmode="modern">
+	<cfargument name="countryStruct" type="struct" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("country", request.zos.zcoreDatasource)# 
+	ORDER BY country_name ASC";
+	qCountry=db.execute("qCountry");
+	arrC=[];
+	for(row in qCountry){
+		if(structkeyexists(arguments.countryStruct, row.country_code)){
+			arrayAppend(arrC, {code:row.country_code, name: row.country_name});
+		}
+	}
+	return arrC;
+	</cfscript>
+</cffunction>
+
 <!--- application.zcore.functions.zVerifyRecaptcha() --->
 <cffunction name="zVerifyRecaptcha" localmode="modern" output="no" returntype="boolean">
 	<cfscript>

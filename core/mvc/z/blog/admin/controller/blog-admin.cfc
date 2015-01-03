@@ -1510,7 +1510,7 @@ tabCom.enableSaveButtons();
 		</cfscript>
 	</cfif>
 	<cfscript>
-	application.zcore.functions.zQueryToStruct(qEdit, form, 'site_x_option_group_set_id');
+	application.zcore.functions.zQueryToStruct(qEdit, form, 'site_x_option_group_set_id,blog_event');
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form);
 	/*if(structkeyexists(local, 'blogEventChecked')){
 		form.blog_event=1;
@@ -1890,7 +1890,11 @@ tabCom.enableSaveButtons();
 			<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
 			</td></tr>
 			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Date","member.blog.edit blog_status")#</th>
-			<td><input type="radio" name="blog_status" id="blog_status1" value="2" <cfif form.blog_status EQ 2>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Draft <input type="radio" name="blog_status" id="blog_status2" value="0" <cfif not structkeyexists(local, 'blogEventChecked') and (currentMethod EQ "articleAdd" or form.blog_status EQ "" or form.blog_status EQ "0")>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Now <input type="radio" name="blog_status" id="blog_status3" value="1" onclick="document.getElementById('dateBox').style.display='block';" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0) or form.blog_status EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Manual Date<br /><br />
+			<td><input type="radio" name="blog_status" id="blog_status1" value="2" <cfif form.blog_status EQ 2>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Draft 
+
+			<input type="radio" name="blog_status" id="blog_status2" value="0" <cfif not structkeyexists(local, 'blogEventChecked') and (currentMethod EQ "articleAdd" or form.blog_status EQ "" or form.blog_status EQ "0")>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Now 
+
+			<input type="radio" name="blog_status" id="blog_status3" value="1" onclick="document.getElementById('dateBox').style.display='block';" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0) or form.blog_status EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Manual Date<br /><br />
 			If a blog article's date is set to the future, it will be invisible to the public unless you click "Yes" for the "Event" field above.<br /><br />
 			<div id="dateBox">
 			<cfscript>

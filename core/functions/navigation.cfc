@@ -167,7 +167,7 @@
 		writeoutput("last:"&last&"<br>");
 		writeoutput("arguments.navStruct.index:"&arguments.navStruct.index&"<br>");
 		}*/
-		if((before GT 0 or arguments.navStruct.index NEQ 0) and arguments.navStruct.count GT arguments.navStruct.perpage){
+		if(arguments.navStruct.index NEQ 0 and (before GT 0 or arguments.navStruct.index NEQ 0) and arguments.navStruct.count GT arguments.navStruct.perpage){
 			if(arguments.navStruct.ses){
 				if(arguments.navStruct.parentIndexPosition NEQ false){
 					tempURL = application.zcore.functions.zSesUpdate(arguments.navStruct.url, arguments.navStruct.parentIndexPosition, "1")&"1/";

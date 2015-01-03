@@ -42,9 +42,19 @@
 				if(application.zcore.functions.zso(form,'ipAddress') EQ ""){
 					form.ipAddress=ipStruct.defaultIp;
 				}
+				ipStruct2={};
+				if(structkeyexists(request.zos, 'arrAdditionalLocalIp')){
+					for(i=1;i LTE arraylen(request.zos.arrAdditionalLocalIp);i++){
+						ipStruct2[request.zos.arrAdditionalLocalIp[i]]=true;
+					}
+				}
+				for(i=1;i LTE arraylen(ipStruct.arrIp);i++){
+					ipStruct2[ipStruct.arrIp[i]]=true;
+				}
+				arrIp=structkeyarray(ipStruct2);
 				selectStruct = StructNew();
 				selectStruct.name = "ipAddress";
-				selectStruct.listvalues=arraytolist(ipStruct.arrIp,",");
+				selectStruct.listvalues=arraytolist(arrIp,",");
 				application.zcore.functions.zInputSelectBox(selectStruct);
 				</cfscript>
 				</td>

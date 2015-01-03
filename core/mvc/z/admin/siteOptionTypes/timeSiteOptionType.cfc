@@ -166,7 +166,7 @@
 		var nvdate='1999-01-01 '&timeformat(curTime, "HH:mm:ss"); 
 	}catch(Any excpt){
 		application.zcore.status.setStatus(request.zsid, arguments.row.site_option_name&" must be a valid time.", form, true);
-		return { success: false, value: "", dateValue: "" };
+		return { success: false, message:arguments.row.site_option_name&" must be a valid time.", value: "", dateValue: "" };
 	}
 	return { success:true, value: nv, dateValue: nvdate }; 
 	</cfscript>

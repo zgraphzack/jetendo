@@ -265,7 +265,7 @@ for($i101=0;$i101<70;$i101++){
 				}
 				$g1++;
 			}
-			$cmd="chown -R nginx. $newFilePath*";
+			$cmd="chown -R ".get_cfg_var("jetendo_www_user").". $newFilePath*";
 			$r=`$cmd`;
 			fwrite($fp, $cmd."\n"); 
 			fwrite($fp, $r."\n"); 
