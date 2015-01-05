@@ -33,6 +33,7 @@
 			arrMLS=[form.mls_id];
     		if(application.zcore.functions.zso(form, 'mls_id',true) EQ 0){
     			echo('form.mls_id must be a number');
+    			abort;
     		}
 		}
 		for(i=1;i LTE arraylen(arrMLS);i++){

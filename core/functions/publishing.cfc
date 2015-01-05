@@ -10,9 +10,11 @@
 	secureCommand="convertHTMLTOPDF"&chr(9)&request.zos.globals.shortDomain&chr(9)&tempFile&chr(9)&arguments.pdfFile;
 	output=application.zcore.functions.zSecureCommand(secureCommand, 30);
 	application.zcore.functions.zDeleteFile(tempFile);
-	if(trim(output) EQ 1 and fileexists(arguments.pdfFile)){
+	returnCode=left(trim(output), 1);
+	if(returnCode EQ 1 and fileexists(arguments.pdfFile)){
 		return true;
 	}else{
+		request.zos.htmlToPDFErrorMessage=listgetat(trim(output), 2, "|");
 		return false;
 	}
 	</cfscript>

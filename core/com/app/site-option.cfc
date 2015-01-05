@@ -647,6 +647,9 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			if(arguments.orderBy NEQ ""){
 				tempStruct={};
 				for(i=1;i LTE arrayLen(arrGroup);i++){
+					if(arguments.orderByDataType EQ "numeric" and not isnumeric(arrGroup[i][arguments.orderBy])){
+						continue;
+					}
 					tempStruct[i]={
 						sortKey: arrGroup[i][arguments.orderBy],
 						data:arrGroup[i]

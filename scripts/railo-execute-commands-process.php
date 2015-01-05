@@ -427,7 +427,7 @@ function convertHTMLTOPDF($a){
 	set_time_limit(30);
 	if(count($a) != 3){
 		echo "3 arguments are required: site_short_domain, absoluteFilePath and htmlWithoutBreaksOrTabs.\n";
-		return "0";
+		return "0|3 arguments are required: site_short_domain, absoluteFilePath and htmlWithoutBreaksOrTabs.";
 	}
 	$site_short_domain=$a[0];
 	$htmlFile=$a[1];
@@ -435,29 +435,29 @@ function convertHTMLTOPDF($a){
 	$sitePath=zGetDomainWritableInstallPath($site_short_domain);
 	if(!is_dir($sitePath)){
 		echo "sitePath doesn't exist: ".$sitePath."\n";
-		return "0";
+		return "0|sitePath doesn't exist: ".$sitePath;
 	}
 	if($htmlFile == ""){
 		echo "htmlFile is a required argument.\n";
-		return "0";
+		return "0|htmlFile is a required argument.";
 	}
 	if($pdfFile == ""){
 		echo "pdfFile is a required argument.\n";
-		return "0";
+		return "0|pdfFile is a required argument.";
 	}
 	$pdfFile=getAbsolutePath($pdfFile);
 	if(substr($pdfFile, 0, strlen($sitePath)) != $sitePath){
 		echo "pdfFile, ".$pdfFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
-		return "0";
+		return "0|pdfFile, ".$pdfFile.", must be in the sites-writable directory of the current domain, ".$sitePath;
 	}
 	$parentDir=dirname($pdfFile);
 	if(!is_dir($parentDir)){
 		echo "parent directory, ".$dirname($pdfFile).", doesn't exist.\n";
-		return "0";
+		return "0|parent directory, ".$dirname($pdfFile).", doesn't exist.";
 	}
 	if(substr($htmlFile, 0, 5) == "http:" || substr($htmlFile, 0, 6) == "https:"){
 		echo "htmlFile can't be a URL for security reasons";
-		return "0";
+		return "0|htmlFile can't be a URL for security reasons";
 		/*
 		Maybe allow urls with more validation later.
 			Must prevent other ports
@@ -474,7 +474,7 @@ function convertHTMLTOPDF($a){
 		$htmlFile=getAbsolutePath($htmlFile);
 		if(substr($htmlFile, 0, strlen($sitePath)) != $sitePath){
 			echo "htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
-			return "0";
+			return "0|htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".";
 		}
 		// if we ever allow use to edit the html, we should parse the html for links that don't match site_short_domain.
 		$cmd="/usr/local/bin/wkhtmltopdf --disable-javascript --disable-local-file-access ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
@@ -489,7 +489,7 @@ function convertHTMLTOPDF($a){
 		chmod($pdfFile, 0660);
 		return "1";
 	}else{
-		return "0";
+		return "0|PDF file didn't exist after running wkhtmltopdf";
 	}
 }
 
@@ -851,7 +851,7 @@ function publishNginxSiteConfig($a){
 			listen ".$row["site_ip_address"].":80;\n". 
 			"server_name  ".implode(" ", $arrSite).";\n".
 			$row["site_nginx_config"]."\n".
-			"rewrite ^/(.*)$ https://$host/$1 permanent;\n".
+			"rewrite ^/(.*)$ ".$row["site_domain"]."/$1 permanent;\n".
 		"}\n".
 		"server {".
 			"listen ".$row["site_ip_address"].":443 ssl spdy;\n".
