@@ -470,15 +470,21 @@ function convertHTMLTOPDF($a){
 		}
 		$cmd="/usr/local/bin/wkhtmltopdf ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
 		*/
-	}else{
-		$htmlFile=getAbsolutePath($htmlFile);
-		if(substr($htmlFile, 0, strlen($sitePath)) != $sitePath){
-			echo "htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
-			return "0|htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".";
-		}
-		// if we ever allow use to edit the html, we should parse the html for links that don't match site_short_domain.
-		$cmd="/usr/local/bin/wkhtmltopdf --disable-javascript --disable-local-file-access ".escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
 	}
+
+	$htmlFile=getAbsolutePath($htmlFile);
+	if(substr($htmlFile, 0, strlen($sitePath)) != $sitePath){
+		echo "htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".\n";
+		return "0|htmlFile, ".$htmlFile.", must be in the sites-writable directory of the current domain, ".$sitePath.".";
+	}
+	// Portrait or Landscape
+	// A4 or letter
+    $c=' --orientation Portrait --page-size letter --margin-top "0mm" --margin-bottom "0mm" --margin-left "0mm" --margin-right "0mm" ';
+    //$c=' --orientation Portrait --page-size letter ';
+
+	// if we ever allow use to edit the html, we should parse the html for links that don't match site_short_domain.
+	$cmd="/usr/local/bin/wkhtmltopdf --disable-javascript --disable-local-file-access ".$c.escapeshellarg($htmlFile)." ".escapeshellarg($pdfFile);
+
 	if(file_exists($pdfFile)){
 		unlink($pdfFile);
 	}

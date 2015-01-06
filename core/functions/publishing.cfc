@@ -8,7 +8,7 @@
 	tempFile=request.zos.globals.privatehomedir&"tempHTMLFile"&gettickcount()&".html";
 	application.zcore.functions.zwritefile(tempFile, trim(arguments.html));
 	secureCommand="convertHTMLTOPDF"&chr(9)&request.zos.globals.shortDomain&chr(9)&tempFile&chr(9)&arguments.pdfFile;
-	output=application.zcore.functions.zSecureCommand(secureCommand, 30);
+	output=application.zcore.functions.zSecureCommand(secureCommand, 15);
 	application.zcore.functions.zDeleteFile(tempFile);
 	returnCode=left(trim(output), 1);
 	if(returnCode EQ 1 and fileexists(arguments.pdfFile)){
