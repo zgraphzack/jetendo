@@ -16,6 +16,27 @@ variables.typeStruct["Long"]="int(11)";
 variables.typeStruct["text"]="text";
 </cfscript>
 	
+<cffunction name="getRETSFieldName" localmode="modern" access="public" returntype="any">
+	<cfargument name="resource" type="string" required="yes">
+	<cfargument name="class" type="string" required="yes">
+	<cfargument name="field" type="string" required="yes">
+	<cfscript>
+	
+	if(structkeyexists(application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct,arguments.resource)){
+		ms=application.zcore.listingStruct.mlsStruct[this.mls_id].sharedStruct.metaStruct[arguments.resource].table[arguments.class];
+		if(arraylen(this.arrTypeLoop) NEQ 0){
+			if(structkeyexists(ms.fieldNameLookup, arguments.field&"_"&arguments.class)){
+				return ms.fieldNameLookup[arguments.field&"_"&arguments.class];
+			}else{
+				return ms.fieldNameLookup[arguments.field];
+			}
+		}else{
+			return ms.fieldNameLookup[arguments.field];
+		}
+	}
+	</cfscript>
+</cffunction>
+	
 <cffunction name="getRETSValue" localmode="modern" access="public" returntype="any">
 	<cfargument name="resource" type="string" required="yes">
 	<cfargument name="class" type="string" required="yes">
@@ -297,6 +318,7 @@ variables.typeStruct["text"]="text";
 			metaStruct[mk].table[curTable.xmlattributes.class]=structnew();
 			metaStruct[mk].table[curTable.xmlattributes.class].tableFields=structnew();
 			metaStruct[mk].table[curTable.xmlattributes.class].fieldLookup=structnew();
+			metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup=structnew();
 			
 			if(structkeyexists(curTable,'field')){
 				for(n=1;n LTE arraylen(curTable.field);n++){
@@ -323,7 +345,12 @@ variables.typeStruct["text"]="text";
 							}
 							metaStruct[mk].fieldLookup[local.tempname2]=lk;
 							metaStruct[mk].table[curTable.xmlattributes.class].fieldLookup[local.tempname2]=lk;
+							metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[local.tempname2]=ts.longname;
+						}else{
+							metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[tempname]=ts.longname;
 						}
+					}else{
+						metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[tempname]=curTable.field[n].StandardName.xmltext;
 					}
 					metaStruct[mk].tableFields[tempName]=ts;
 					metaStruct[mk].table[curTable.xmlattributes.class].tableFields[tempName]=ts;

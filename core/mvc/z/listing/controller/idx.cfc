@@ -452,7 +452,7 @@
 				this.datastruct[i].listing_track_datetime=this.nowDate;
 			}
 			this.datastruct[i].listing_track_updated_datetime=this.nowDate;
-			rs2=this.optionstruct.mlsProviderCom.parseRawData(this.datastruct[i], this.optionstruct);
+			rs2=this.optionstruct.mlsProviderCom.parseRawData(this.datastruct[i]);//, this.optionstruct);
 			rs=rs2.listingData;
 			
 			if(this.datastruct[i].new){
@@ -496,7 +496,6 @@
 				rs.listing_track_processed_datetime=nowDate1;
 			}
 			rs.mls_id=this.optionStruct.mls_id;
-
 			ts2={
 				debug:true,
 				datasource:request.zos.zcoreDatasource,
@@ -535,7 +534,7 @@
 				for(i2 in rs2.columnIndex){
 					ts1.struct[i2]=rs2.arrData[rs2.columnIndex[i2]];
 				}
-			}
+			}  
 
 			transaction action="begin"{
 				try{
