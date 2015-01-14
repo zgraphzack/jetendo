@@ -2054,8 +2054,8 @@
 		if(local.qCheck.inquiries_type_id NEQ 0){
 			leadStruct=application.zcore.functions.zGetLeadRouteForInquiriesTypeId(ts.from, local.qCheck.inquiries_type_id, local.qCheck.inquiries_type_id_siteIDType);
 			//writedump(leadStruct);
-			if(structkeyexists(leadStruct, 'cc')){
-				ts.cc=leadStruct.cc;
+			if(structkeyexists(leadStruct, 'bcc')){
+				ts.bcc=leadStruct.bcc;
 			}
 			if(leadStruct.user_id NEQ "0"){
 				ts.user_id=leadStruct.user_id;
@@ -2092,7 +2092,7 @@
 		}
 	}
 	if(structkeyexists(request.zos, 'debugleadrouting')){
-		echo("Aborted before redirect.");
+		echo("Aborted before returning from site option group processing.");
 		abort;
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds5<br>'); startTime=gettickcount();

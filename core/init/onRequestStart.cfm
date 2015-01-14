@@ -177,7 +177,7 @@
 		request.zos.originalFormScope=duplicate(form);
 		for(local.i in form){
 			if(isSimpleValue(form[local.i])){
-				form[local.i]=replace(replace(form[local.i], local.tempdomain, '', 'all'), local.tempsecuredomain, '', 'all');
+				form[local.i]=replace(replace(form[local.i], local.tempdomain&"/", '/', 'all'), local.tempsecuredomain&"/", '/', 'all');
 			}
 		} 
 		if(structkeyexists(application, request.zos.installPath&":displaySetupScreen")){
@@ -504,6 +504,11 @@
 			application.zcore.functions.z301Redirect(redirectURL);
 		}
 	}  
+	/*
+	writedump(request.zos.globals.id);
+	writedump(request.zos.globals.domainaliases);
+	writedump(request.zos.cgi);
+	abort;*/
 	if(not request.zos.sslManagerEnabled){
 		if(not request.zos.istestserver and variables.site_id EQ request.zos.globals.serverid){
 			

@@ -65,7 +65,7 @@
 				}else{
 					echo('<li>');
 				}
-				echo('<a href="'&replace(g[n].url,request.zos.globals.domain, request.zos.currentHostName)&'">'&g[n].title&'</a></li>');
+				echo('<a href="'&replace(g[n].url,request.zos.globals.domain&"/", request.zos.currentHostName&"/")&'">'&g[n].title&'</a></li>');
 			}
 			echo('</ul>');
 		}

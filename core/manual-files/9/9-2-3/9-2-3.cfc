@@ -4,7 +4,7 @@
 <p>Purpose: Provides session memory storage for temporary messages and data that must be sent between requests.</p>
   <p>Version: 0.1.002</p>
   <p>Language(s) used: ColdFusion Markup Language (CFML)</p>
-   <p>Project Home Page: <a href="https://www.jetendo.com/manual/view/current/2.3/status-dot-cfc.html">https://www.jetendo.com/manual/view/current/2.3/status-dot-cfc.html</a></p>
+   <p>Project Home Page: <a href="https://www.jetendo.com/z/admin/manual/view/9.2.3/status-dot-cfc.html">https://www.jetendo.com/z/admin/manual/view/9.2.3/status-dot-cfc.html</a></p>
   
    <p>GitHub Home Page: <a href="https://github.com/jetendo/status-dot-cfc" target="_blank">https://github.com/jetendo/status-dot-cfc</a></p>
   <h2>Outline</h2>

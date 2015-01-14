@@ -127,7 +127,7 @@ application.zcore.functions.zClickTrackDisplayURL(ts);
 <cffunction name="zRemoveHostName" access="public" localmode="modern">
 	<cfargument name="str" type="string" required="yes">
 	<cfscript>
-	return replace(arguments.str, request.zos.currentHostName, '', 'all');
+	return replace(arguments.str, request.zos.currentHostName&"/", '/', 'all');
 	</cfscript>
 </cffunction>
 

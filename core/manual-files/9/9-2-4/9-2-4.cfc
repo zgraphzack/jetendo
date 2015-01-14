@@ -4,7 +4,7 @@
 <p>Purpose: A jQuery Slideshow with support for multiple layers of animation within each slide.</p>
   <p>Version: 0.1.000</p>
   <p>Language(s) used: Javascript</p>
-   <p>Project Home Page: <a href="https://www.jetendo.com/manual/view/current/2.4/jquery-parallax-slider.html">https://www.jetendo.com/manual/view/current/2.4/jquery-parallax-slider.html</a></p>
+   <p>Project Home Page: <a href="https://www.jetendo.com/z/admin/manual/view/9.2.4/jquery-parallax-slider.html">https://www.jetendo.com/z/admin/manual/view/9.2.4/jquery-parallax-slider.html</a></p>
   
    <p>GitHub Home Page: <a href="https://github.com/jetendo/jquery-parallax-slider" target="_blank">https://github.com/jetendo/jquery-parallax-slider</a></p>
   <h2>Outline</h2>

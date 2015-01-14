@@ -686,11 +686,12 @@
 			}
 			application.zcore.functions.zdeletefile(local.coreDumpFile);
 			application.zcore.functions.zdeletefile(local.coreDumpFile2);
+			/*
 			if(request.zos.isJavaEnabled){
 				local.coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-sessions.bin";
 				application.sessionStruct=objectload(local.coreDumpFile3);
 				application.zcore.functions.zdeletefile(local.coreDumpFile3);
-			}
+			}*/
 			application.zcore.runOnCodeDeploy=true; 
 			application.zcore.runMemoryDatabaseStart=true; 
 		}catch(Any local.e){

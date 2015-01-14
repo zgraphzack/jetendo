@@ -61,7 +61,7 @@ variables.typeStruct["text"]="text";
 				if(structkeyexists(local.ms.typeStruct[local.typeName].valueStruct, arguments.value)){
 					return local.ms.typeStruct[local.typeName].valueStruct[arguments.value];
 				}else{
-					return "";
+					return arguments.value;
 				}
 			}
 					/*
@@ -88,7 +88,7 @@ variables.typeStruct["text"]="text";
 				if(structkeyexists(local.ms.typeStruct[local.ms.fieldLookup[arguments.field]].valueStruct, arguments.value)){
 					return local.ms.typeStruct[local.ms.fieldLookup[arguments.field]].valueStruct[arguments.value];
 				}else{
-					return "";
+					return arguments.value;
 				}
 			}else if(structkeyexists(local.ms.tablefields, arguments.field) EQ false){
 				return false;
@@ -334,6 +334,10 @@ variables.typeStruct["text"]="text";
 							tempName=curTable.field[n].StandardName.xmltext;
 						}
 					}
+					tempFullName=curTable.field[n].LongName.xmltext;
+					if(tempFullName EQ ""){
+						tempFullName=curTable.field[n].StandardName.xmltext;
+					}
 					tempName=replace(tempName," ","","ALL");
 					lk=curTable.field[n].LookupName.xmltext;
 					if(curTable.field[n].LookupName.xmltext NEQ ""){
@@ -345,12 +349,12 @@ variables.typeStruct["text"]="text";
 							}
 							metaStruct[mk].fieldLookup[local.tempname2]=lk;
 							metaStruct[mk].table[curTable.xmlattributes.class].fieldLookup[local.tempname2]=lk;
-							metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[local.tempname2]=ts.longname;
+							metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[local.tempname2]=tempFullName;
 						}else{
-							metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[tempname]=ts.longname;
+							metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[tempname]=tempFullName;
 						}
 					}else{
-						metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[tempname]=curTable.field[n].StandardName.xmltext;
+						metaStruct[mk].table[curTable.xmlattributes.class].fieldNameLookup[tempname]=tempFullName;
 					}
 					metaStruct[mk].tableFields[tempName]=ts;
 					metaStruct[mk].table[curTable.xmlattributes.class].tableFields[tempName]=ts;

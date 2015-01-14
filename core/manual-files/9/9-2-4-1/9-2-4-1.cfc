@@ -75,7 +75,7 @@ $(document).ready(function(){
 <body>
 <div style="padding-left:2%; padding-top:10px; width:95%; min-width:900px; float:left;">
 <h1>jQuery Parallax Slider Plug-in Examples</h1>
-<p>Below are 3 instances of the <a href="https://www.jetendo.com/manual/view/current/2.4/jquery-parallax-slider.html" class="zNoContentTransition" title="Visit the project home page">jQuery Parallax Slider Plug-in</a> that demonstrate some of its features.</p>
+<p>Below are 3 instances of the <a href="https://www.jetendo.com/z/admin/manual/view/9.2.4/jquery-parallax-slider.html" class="zNoContentTransition" title="Visit the project home page">jQuery Parallax Slider Plug-in</a> that demonstrate some of its features.</p>
 <p>Please download the source files instead of hot-linking them.</p>
 <h2>This slider has a different slide transition effect set for each slide</h2>
 <div id="sliderContainer" class="zPSlideContainer" style="width:100%; height:300px;position:relative; float:left; overflow:hidden; background-color:##000;">

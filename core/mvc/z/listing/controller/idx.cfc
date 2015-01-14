@@ -359,7 +359,6 @@
 			return false;
 			
 	}
-	
 	this.dataStruct[ts.listing_id]=ts; 
 	return true;
 	</cfscript>

@@ -312,6 +312,73 @@ displayGroupCom.add();')&'</pre>');
 	</cfscript>
 </cffunction>
 
+<cffunction name="reindex" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	var qGroup=0;
+	var ts=0;
+	var db=request.zos.queryObject;
+	var row=0;
+	var qOption=0;
+	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id'); 
+	variables.init();
+	// get group
+	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
+	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	qGroup=db.execute("qGroup");
+	if(qGroup.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "Site option group no longer exists.", form, true);
+		application.zcore.functions.zRedirect("/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#&zsid=#request.zsid#");
+	}
+
+	echo('Not implemented');
+	abort;
+
+	doffset=0;
+	for(i=1;i LTE 10000;i++){
+
+		// get 20 groups at a time.
+		db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
+		WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+		site_option_group_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)# 
+		LIMIT #db.param(doffset)#, #db.param(20)#";
+		qGroups=db.execute("qGroups");
+
+		// get all site options with label and value for current row.
+
+			structclear(form);
+			throw("warning: this will delete unique url and image gallery id - because internalGroupUpdate is broken.");
+			application.zcore.siteOptionCom.setSiteOptionGroupImportStruct("model", 0, 0, 0, ts, form); 
+			// do import with 
+			if(structkeyexists(modelStruct, boatdetails.id)){
+				form.site_x_option_group_set_id=modelStruct[boatdetails.id];
+				rs=siteOptionCom.internalGroupUpdate(); 
+				if(not rs.success){
+					writedump(rs);
+					writedump(ts);
+					writedump(form);
+					application.zcore.functions.zStatusHandler(rs.zsid);
+					abort;
+				}
+				//writedump(rs);
+			}else{
+				echo('no insert allowed<br>');
+				continue;
+				rs=siteOptionCom.publicMapInsertGroup(); 
+				if(not rs.success){
+					writedump(rs);
+					writedump(ts);
+					writedump(form);
+					application.zcore.functions.zStatusHandler(rs.zsid);
+					abort;
+				}
+			}
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="mapFields" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var qGroup=0;
@@ -866,6 +933,7 @@ displayGroupCom.add();')&'</pre>');
 							<a href="/z/misc/display-site-option-group/add?site_option_group_id=#qProp.site_option_group_id#" target="_blank">Public Form</a> | 
 						</cfif>
 					</cfif>
+					<a href="/z/admin/site-option-group/reindex?site_option_group_id=#qProp.site_option_group_id#" title="Will update site option group table for all records.  Useful after a config change.">Reprocess</a> | 
 					<cfif qProp.hasChildren EQ 1>
 						<a href="/z/admin/site-option-group/index?site_option_group_parent_id=#qProp.site_option_group_id#">Sub-Groups</a> |
 					</cfif>

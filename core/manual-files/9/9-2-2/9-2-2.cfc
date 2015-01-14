@@ -4,7 +4,7 @@
 <p>Purpose: Generate sprite images and minified CSS from multiple existing CSS files.</p>
   <p>Version: 0.1.000</p>
   <p>Language(s) used: ColdFusion Markup Language (CFML)</p>
-   <p>Project Home Page: <a href="https://www.jetendo.com/manual/view/current/2.2/cssSpriteMap-dot-cfc.html">https://www.jetendo.com/manual/view/current/2.2/cssSpriteMap-dot-cfc.html</a></p>
+   <p>Project Home Page: <a href="https://www.jetendo.com/z/admin/manual/view/9.2.2/cssSpriteMap-dot-cfc.html">https://www.jetendo.com/z/admin/manual/view/9.2.2/cssSpriteMap-dot-cfc.html</a></p>
   
    <p>GitHub Home Page: <a href="https://github.com/jetendo/cssSpriteMap-dot-cfc" target="_blank">https://github.com/jetendo/cssSpriteMap-dot-cfc</a></p>
   <!--- <h2>Outline</h2>

@@ -4,7 +4,7 @@
 <p>Purpose: Enhances cfquery by analyzing SQL to enforce security &amp; framework conventions.</p>
   <p>Version: 0.1.001</p>
   <p>Language(s) used: ColdFusion Markup Language (CFML)</p>
-   <p>Project Home Page: <a href="https://www.jetendo.com/manual/view/current/2.1/db-dot-cfc.html">https://www.jetendo.com/manual/view/current/2.1/db-dot-cfc.html</a></p>
+   <p>Project Home Page: <a href="https://www.jetendo.com/z/admin/manual/view/9.2.1/db-dot-cfc.html">https://www.jetendo.com/z/admin/manual/view/9.2.1/db-dot-cfc.html</a></p>
   
    <p>GitHub Home Page: <a href="https://github.com/jetendo/db-dot-cfc" target="_blank">https://github.com/jetendo/db-dot-cfc</a></p>
   <h2>Outline</h2>

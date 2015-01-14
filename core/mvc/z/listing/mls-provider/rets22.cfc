@@ -128,53 +128,63 @@ this.remapFieldStruct=t5;
 		ts[a[i]]=b[i];
 		columnIndex[a[i]]=i;
 	}
+	local.listing_parking="";
+	tempStyle="";
+	tempStyle2="";
+	tempStyle3="";
 	for(i=1;i LTE arraylen(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns);i++){
 		column=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i];
 		shortColumn=removechars(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.arrColumns[i],1,7);
-		fieldName=this.getRETSFieldName("property", ts["rets22_list_8"], shortColumn);
+		fieldName=this.getRETSFieldName("property", ts["rets22_list_8"], shortColumn); 
+		if(fieldName EQ "Parking"){
+			local.listing_parking=this.listingLookupNewId("parking",ts[column]);
+		}else if(fieldName EQ "Style"){
+			tempStyle=ts[column];
+		}else if(fieldName EQ "Waterfront Type"){
+			tempStyle2=ts[column];
+		}else if(fieldName EQ "Waterfront Type"){
+			tempStyle2=ts[column];
+		}else if(fieldName EQ "Dwelling View'"){
+			tempStyle3=ts[column]; 
+		}
 		ts[fieldName]=this.getRetsValue("property", ts["rets22_list_8"], shortColumn, ts[column]);
 	} 
-	//ts["rets22_list_22"]=this.getRetsValue("property", ts["rets22_list_8"], "LIST_22", ts["rets22_list_22"]);
+
 
 	if(not structkeyexists(ts, "rets22_list_22") or ts["rets22_list_22"] EQ ""){
 		ts["rets22_list_22"]=replace(ts["original list price"],",","","ALL");
 	}else{
 		ts["rets22_list_22"]=replace(ts["rets22_list_22"],",","","ALL");
-	}   
+	} 
 	// need to clean this data - remove not in subdivision, 0 , etc.
 	
-	local.listing_subdivision=this.getRetsValue("property", ts["rets22_list_8"], "LIST_77",ts['Subdivision/Condo Name']);
+	local.listing_subdivision=ts['Subdivision/Condo Name'];
 	if(local.listing_subdivision NEQ ""){
 		if(findnocase(","&local.listing_subdivision&",", ",,false,none,not on the list,not in subdivision,n/a,other,zzz,na,0,.,N,0000,00,/,") NEQ 0){
 			local.listing_subdivision="";
 		}else{
 			local.listing_subdivision=application.zcore.functions.zFirstLetterCaps(local.listing_subdivision);
 		}
-	} 
-	ts['zip code']=this.getRetsValue("property", ts["rets22_list_8"], "LIST_43",ts['zip code']); 
+	}  
 	
 	this.price=ts["rets22_list_22"];
 	local.listing_price=ts["rets22_list_22"];
 	cityName="";
 	cid=0;
-	ts["State/Province"]="FL";
-	//writeoutput(ts['city']&"|"&ts["rets22_list_39"]&"<br>");
-	//writedump(structkeyarray(application.zcore.listingStruct.mlsStruct[22].sharedStruct.metaStruct["property"].typeStruct));
-	ts['city']=this.getRetsValue("property", ts["rets22_list_8"], "LIST_39", ts['city']);
-	if(structkeyexists(request.zos.listing.cityStruct, ts["city"]&"|"&ts["State/Province"])){
-		cid=request.zos.listing.cityStruct[ts["city"]&"|"&ts["State/Province"]];
+	ts["rets22_list_40"]="FL"; 
+	if(structkeyexists(request.zos.listing.cityStruct, ts["city"]&"|"&ts["rets22_list_40"])){
+		cid=request.zos.listing.cityStruct[ts["city"]&"|"&ts["rets22_list_40"]];
 	}
-	//writeoutput(cid&"|"&ts["city"]&"|"&ts["State/Province"]); 
+	//writeoutput(cid&"|"&ts["city"]&"|"&ts["rets22_list_40"]); 
 	if(cid EQ 0 and structkeyexists(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.cityRenameStruct, ts['zip code'])){
 		cityName=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.cityRenameStruct[ts['zip code']];
 		ts["city"]=listgetat(cityName,1,"|");
-		if(structkeyexists(request.zos.listing.cityStruct, cityName&"|"&ts["State/Province"])){
-			cid=request.zos.listing.cityStruct[cityName&"|"&ts["State/Province"]];
+		if(structkeyexists(request.zos.listing.cityStruct, cityName&"|"&ts["rets22_list_40"])){
+			cid=request.zos.listing.cityStruct[cityName&"|"&ts["rets22_list_40"]];
 		}
 	}
-	local.listing_county=this.listingLookupNewId("county",ts['county']);
+	local.listing_county=this.listingLookupNewId("county",ts['rets22_list_43']);
 	
-	local.listing_parking=this.listingLookupNewId("parking",ts['Parking']);
 
 	local.listing_sub_type_id=this.listingLookupNewId("listing_sub_type",ts['rets22_list_9']);
 	
@@ -185,14 +195,12 @@ this.remapFieldStruct=t5;
 		address="#ad# ";
 	}else{
 		address="";	
-	}
-	ts['street suffix']=this.getRetsValue("property", ts["rets22_list_8"], "LIST_37",ts['street suffix']);
-	ts['street dir']=this.getRetsValue("property", ts["rets22_list_8"], "LIST_33",ts['street dir']);
+	} 
 	address&=application.zcore.functions.zfirstlettercaps(ts['Street Dir']&" "&ts['street name']&" "&ts['street suffix']);
 	curLat=ts["rets22_list_46"];
 	curLong=ts["rets22_list_47"];
 	if(curLat EQ "" and trim(address) NEQ ""){
-		rs5=this.baseGetLatLong(address,ts['State/Province'],ts['zip code'], arguments.ss.listing_id);
+		rs5=this.baseGetLatLong(address,ts['rets22_list_40'],ts['zip code'], arguments.ss.listing_id);
 		curLat=rs5.latitude;
 		curLong=rs5.longitude;
 	}
@@ -203,11 +211,10 @@ this.remapFieldStruct=t5;
 		address&=" Unit: "&ts["Condo Unit ##"];
 	}
 	
-	
-	
+	 
 	
 	s2=structnew();
-	liststatus=this.getRetsValue("property", ts["rets22_list_8"], 'list_15', ts["status"]);
+	liststatus=ts["status"];
 	if(liststatus EQ "Active"){
 		s2[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.liststatusStr["active"]]=true;
 	}else if(liststatus EQ "Withdrawn"){
@@ -229,7 +236,7 @@ this.remapFieldStruct=t5;
 	
 	arrT3=[];
 	uns=structnew();
-	tmp=ts['style'];
+	tmp=tempStyle;
 	if(tmp NEQ ""){
 	   arrT=listtoarray(tmp);
 		for(i=1;i LTE arraylen(arrT);i++){
@@ -246,7 +253,7 @@ this.remapFieldStruct=t5;
 	arrT3=[];
 	
 	uns=structnew();
-	tmp=ts['Waterfront Type'];
+	tmp=tempStyle2;
 	if(tmp NEQ ""){
 	   arrT=listtoarray(tmp);
 		for(i=1;i LTE arraylen(arrT);i++){
@@ -261,7 +268,7 @@ this.remapFieldStruct=t5;
 	
 	arrT2=[]; 
 	uns=structnew();
-	tmp=ts['Dwelling View'];
+	tmp=tempStyle3;
 	if(tmp NEQ ""){
 	   arrT=listtoarray(tmp);
 		for(i=1;i LTE arraylen(arrT);i++){
@@ -385,17 +392,20 @@ this.remapFieldStruct=t5;
 	rs.listing_frontage_name="";
 	rs.listing_price=ts["rets22_list_22"];
 	rs.listing_status=","&local.listing_status&",";
-	rs.listing_state=ts["State/Province"];
+	rs.listing_state=ts["rets22_list_40"];
 	rs.listing_type_id=local.listing_type_id;
 	rs.listing_sub_type_id=","&local.listing_sub_type_id&",";
 	rs.listing_style=","&local.listing_style&",";
 	rs.listing_view=","&local.listing_view&",";
-	if(ts.rets22_list_8 EQ "E" or ts.rets22_list_8 EQ "C" or ts.rets22_list_8 EQ "D" or ts.rets22_list_8 EQ "A") {
-		rs.listing_lot_square_feet=ts["Lot SqFt"];
-		if(not structkeyexists(ts, "SqFt - Living")){
-			rs.listing_square_feet=ts["SqFt - Total"];
+	if(ts.rets22_list_8 EQ "G" or ts.rets22_list_8 EQ "F" or ts.rets22_list_8 EQ "C" or ts.rets22_list_8 EQ "D" or ts.rets22_list_8 EQ "A") {
+		if(not structkeyexists(ts, "rets22_list_52")){
+			if(not structkeyexists(ts, "rets22_list_49")){
+				rs.listing_lot_square_feet=ts["rets22_list_48"];
+			}else{
+				rs.listing_square_feet=ts["rets22_list_49"];
+			}
 		}else{
-			rs.listing_square_feet=ts["SqFt - Living"];
+			rs.listing_square_feet=ts["rets22_list_52"];
 		}
 	}else{
 		rs.listing_lot_square_feet=ts["rets22_list_48"];
@@ -404,13 +414,13 @@ this.remapFieldStruct=t5;
 		}
 	}
 	rs.listing_subdivision=local.listing_subdivision;
-	rs.listing_year_built=ts["year built"];
-	rs.listing_office=ts["Office ID"];
-	rs.listing_agent=ts["Agent ID"];
+	rs.listing_year_built=application.zcore.functions.zso(ts, "rets22_list_53");
+	rs.listing_office=ts["rets22_list_106"];
+	rs.listing_agent=ts["rets22_list_5"];
 	rs.listing_latitude=curLat;
 	rs.listing_longitude=curLong;
 	rs.listing_pool=local.listing_pool;
-	rs.listing_photocount=ts["Picture Count"];
+	rs.listing_photocount=ts["rets22_list_133"];
 	rs.listing_coded_features="";
 	rs.listing_updated_datetime=arguments.ss.listing_track_updated_datetime;
 	rs.listing_primary="0";
@@ -428,6 +438,9 @@ this.remapFieldStruct=t5;
 	rs.listing_data_detailcache1=local.listing_data_detailcache1;
 	rs.listing_data_detailcache2=local.listing_data_detailcache2;
 	rs.listing_data_detailcache3=local.listing_data_detailcache3; 
+
+
+	//writedump(rs);abort;
 	return {
 		listingData:rs,
 		columnIndex:columnIndex,

@@ -449,7 +449,7 @@ this.app_id=11;
 <cfscript>
 var local=structnew();
 // check for same domain or domainalias
-local.c=replace(arguments.photourl, request.zos.currentHostName, "");
+local.c=replace(arguments.photourl, request.zos.currentHostName&"/", "/");
 if(compare(arguments.photourl, local.c) NEQ 0){
 	if(left(local.c, 12) EQ "/zretsphotos"){
 		if(arguments.width EQ 10000 or arguments.height EQ 10000){ 

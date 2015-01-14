@@ -57,7 +57,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	rs.inquiries_id=arguments.ss.inquiries_id; 
 	if(not structkeyexists(arguments.ss, 'disableDebugAbort')){
 		arguments.ss.disableDebugAbort=false;
-	}
+	} 
 	if(structkeyexists(arguments.ss, 'forceAssign') and arguments.ss.forceAssign){
 		rs.assignEmail=arguments.ss.assignEmail;
 		rs.leadEmail=arguments.ss.leadEmail;
@@ -844,6 +844,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				echo(m);
 			}
 		}
+		
 	}else if(c.data.inquiries_routing_type_id EQ 3){
 		// assign to email address
 		rs.assignEmail=c.data.inquiries_routing_assign_to_email;
