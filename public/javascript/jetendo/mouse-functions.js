@@ -2,7 +2,6 @@ var zMousePosition={x:0,y:0};
 var zDrag_dragObject  = null;
 var zDragTableOnMouseMove=function(){};
 var zMapMarkerRollOutV3=function(){};
-var zHumanMovement=false;
 
 
 (function($, window, document, undefined){

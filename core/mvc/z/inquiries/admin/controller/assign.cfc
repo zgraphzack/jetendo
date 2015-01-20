@@ -174,8 +174,13 @@
         </cfscript>
     </cfif>
     <cfscript>
-	local.assignUserId=listGetAt(form.user_id, 1, "|");
-    local.assignSiteId=listGetAt(form.user_id, 2, "|");
+    if(form.user_id CONTAINS "|"){
+    	local.assignUserId=listGetAt(form.user_id, 1, "|");
+        local.assignSiteId=listGetAt(form.user_id, 2, "|");
+    }else{
+        local.assignUserId=0;
+        local.assignSiteId=0;
+    }
     local.assignSiteIdType=application.zcore.functions.zGetSiteIdType(local.assignSiteId);
     if(application.zcore.functions.zso(form, 'assign_email') NEQ ''){
         arrEmail=listToArray(form.assign_email, ",");

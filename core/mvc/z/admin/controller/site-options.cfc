@@ -1434,6 +1434,9 @@
 <cffunction name="internalGroupUpdate" localmode="modern" access="public">
 	<cfscript>
 	form.method="internalGroupUpdate";
+	if(application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0) EQ 0){
+		throw("Warning: form.site_x_option_group_set_id must be a valid id.");
+	}
 	return this.updateGroup();
 	</cfscript>
 </cffunction> 
@@ -1471,6 +1474,9 @@
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
 	form.method="publicUpdateGroup";
+	if(application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0) EQ 0){
+		throw("Warning: form.site_x_option_group_set_id must be a valid id.");
+	}
 	this.updateGroup(arguments.struct);
 	</cfscript>
 </cffunction>

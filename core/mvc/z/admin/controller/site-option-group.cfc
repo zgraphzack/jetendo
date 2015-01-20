@@ -319,11 +319,13 @@ displayGroupCom.add();')&'</pre>');
 	var db=request.zos.queryObject;
 	var row=0;
 	var qOption=0;
-	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id'); 
+	setting requesttimeout="10000";
+	currentGroupId=application.zcore.functions.zso(form, 'site_option_group_id'); 
+	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id');
 	variables.init();
 	// get group
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
-	WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
+	WHERE site_option_group_id = #db.param(currentGroupId)# and 
 	site_option_group_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qGroup=db.execute("qGroup");
@@ -331,51 +333,66 @@ displayGroupCom.add();')&'</pre>');
 		application.zcore.status.setStatus(request.zsid, "Site option group no longer exists.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#&zsid=#request.zsid#");
 	}
-
-	echo('Not implemented');
-	abort;
+	siteOptionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 
 	doffset=0;
-	for(i=1;i LTE 10000;i++){
+	for(i=1;i LTE 100000;i++){
 
-		// get 20 groups at a time.
-		db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
-		WHERE site_option_group_id = #db.param(form.site_option_group_id)# and 
-		site_option_group_deleted = #db.param(0)# and 
+		// process x groups at a time.
+		xlimit=20;
+
+		db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+		WHERE site_option_group_id = #db.param(currentGroupId)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# 
-		LIMIT #db.param(doffset)#, #db.param(20)#";
+		LIMIT #db.param(doffset)#, #db.param(xlimit)#";
 		qGroups=db.execute("qGroups");
+		if(qGroups.recordcount EQ 0){
+			break;
+		}
+		doffset+=xlimit;
 
-		// get all site options with label and value for current row.
+		for(row in qGroups){
+			db.sql="SELECT * FROM 
+			#db.table("site_x_option_group", request.zos.zcoreDatasource)#,
+			#db.table("site_option", request.zos.zcoreDatasource)# 
+			WHERE 
+			site_option.site_option_id = site_x_option_group.site_option_id and 
+			site_option.site_id = site_x_option_group.site_id and 
+			site_option_deleted = #db.param(0)# and 
+			site_x_option_group.site_option_group_id = #db.param(currentGroupId)# and 
+			site_x_option_group_set_id = #db.param(row.site_x_option_group_set_id)# and 
+			site_x_option_group_deleted = #db.param(0)# and 
+			site_x_option_group.site_id = #db.param(request.zos.globals.id)#  ";
+			qValues=db.execute("qValues");
 
 			structclear(form);
-			throw("warning: this will delete unique url and image gallery id - because internalGroupUpdate is broken.");
-			application.zcore.siteOptionCom.setSiteOptionGroupImportStruct("model", 0, 0, 0, ts, form); 
-			// do import with 
-			if(structkeyexists(modelStruct, boatdetails.id)){
-				form.site_x_option_group_set_id=modelStruct[boatdetails.id];
-				rs=siteOptionCom.internalGroupUpdate(); 
-				if(not rs.success){
-					writedump(rs);
-					writedump(ts);
-					writedump(form);
-					application.zcore.functions.zStatusHandler(rs.zsid);
-					abort;
-				}
-				//writedump(rs);
-			}else{
-				echo('no insert allowed<br>');
-				continue;
-				rs=siteOptionCom.publicMapInsertGroup(); 
-				if(not rs.success){
-					writedump(rs);
-					writedump(ts);
-					writedump(form);
-					application.zcore.functions.zStatusHandler(rs.zsid);
-					abort;
-				}
+
+
+			ts={};
+			for(value in qValues){
+				ts[value.site_option_name]=value.site_x_option_group_value;
+				//form['newvalue'&value.site_option_id]=form[value.site_x_option_group_value];
 			}
+			// get all site options with label and value for current row.
+
+			//throw("warning: this will delete unique url and image gallery id - because internalGroupUpdate is broken.");
+			application.zcore.siteOptionCom.setSiteOptionGroupImportStruct(qGroup.site_option_group_name, 0, 0, 0, ts, form); 
+			structappend(form, row, true);
+			// writedump(form);abort;
+ 
+			rs=siteOptionCom.internalGroupUpdate(); 
+			if(not rs.success){
+				writedump(rs);
+				writedump(ts);
+				writedump(form);
+				application.zcore.functions.zStatusHandler(rs.zsid);
+				abort;
+			} 
+		}
 	}
+	application.zcore.status.setStatus(request.zsid, "Group, ""#qGroup.site_option_group_name#"", was reprocessed successfully.");
+	application.zcore.functions.zRedirect("/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#&zsid=#request.zsid#");
 	</cfscript>
 </cffunction>
 

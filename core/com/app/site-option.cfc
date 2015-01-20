@@ -2080,6 +2080,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		GROUP BY s1.site_x_option_group_set_id, s2.site_x_option_group_set_id
 		ORDER BY label asc ";
 		local.qTemp2=db.execute("qTemp2");
+		//writedump(qtemp2);abort;
 		if(structkeyexists(ts, 'selectmenu_parentfield') and ts.selectmenu_parentfield NEQ ""){
 			local.ds=structnew();
 			local.ds2=structnew();
@@ -2115,7 +2116,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 				}
 			}
 			if(structkeyexists(local.ds2, "0")){
-				/*writedump(arguments.setoptionstruct);				writedump(local.ds2);				writedump(local.ds);				writedump(local.arrValue);				abort;*/
+//				writedump(arguments.setoptionstruct);				writedump(local.ds2);				writedump(local.ds);				writedump(local.arrValue);				abort;/**/
 				variables.rebuildParentStructData(local.ds2, local.arrLabel, local.arrValue, local.arrCurrent, 0);
 			}
 		}
@@ -2158,6 +2159,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfargument name="arrCurrent" type="array" required="yes">
 	<cfargument name="level" type="numeric" required="yes">
 	<cfscript>
+	if(arguments.level GT 50){ 
+		throw("Possible infinite recursion.  Throwing error to prevent stackoverflow.");
+	}
 	for(local.f=1;local.f LTE arraylen(arguments.arrCurrent);local.f++){
 		if(arguments.level NEQ 0){
 			local.pad=replace(ljustify(" ", arguments.level*3), " ", "_", "ALL");
@@ -2171,7 +2175,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			arrayappend(arguments.arrValue, arguments.arrCurrent[local.f].id);
 		}
 		//writeoutput( arguments.arrCurrent[local.f].id&" | "& arguments.arrCurrent[local.f].label);
-		if(structkeyexists(arguments.parentStruct, arguments.arrCurrent[local.f].id)){
+		if(structkeyexists(arguments.parentStruct, arguments.arrCurrent[local.f].id) and arguments.arrCurrent[local.f].id NEQ 0){ 
 			variables.rebuildParentStructData(arguments.parentStruct, arguments.arrLabel, arguments.arrValue, arguments.parentStruct[arguments.arrCurrent[local.f].id], arguments.level+1);
 		}
 	}

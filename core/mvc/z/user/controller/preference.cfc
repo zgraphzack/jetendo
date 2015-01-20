@@ -1055,8 +1055,18 @@ If the link does not work, please copy and paste the entire link in your browser
 	var local=structnew();
 	this.init();
 	
-	application.zcore.template.setTag("title","Create A Free Account");
-	application.zcore.template.setTag("pagetitle","Create A Free Account");
+
+	textMissing=false;
+	ts=structnew();
+	ts.content_unique_name='/z/user/preference/register';
+	ts.disableContentMeta=false;
+	ts.disableLinks=true; 
+	r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
+	if(r1 EQ false){
+
+		application.zcore.template.setTag("title","Create A Free Account");
+		application.zcore.template.setTag("pagetitle","Create A Free Account");
+	}
 	
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	
@@ -1186,6 +1196,8 @@ If the link does not work, please copy and paste the entire link in your browser
 	</form>
 	<div style="width:100%; float:left;"> Use of this web site requires acceptance of our <a href="/z/user/privacy/index" onclick="window.open(this.href); return false;" title="View our privacy policy in a new window.">Privacy Policy</a>.</div>
 	</form>
+	<hr />
+	<h2>Already have an account? <a href="/z/user/preference/index" target="_top">Log in</a></h2>
 </cffunction>
 </cfoutput>
 </cfcomponent>

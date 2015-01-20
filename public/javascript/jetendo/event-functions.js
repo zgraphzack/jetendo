@@ -5,6 +5,7 @@ var zScrollPosition={left:0,top:0};
 var zPositionObjSubtractId=false;
 var zPositionObjSubtractPos=new Array(0,0);
 var zModernizrLoadedRan=false;
+var zHumanMovement=false;
 
 (function($, window, document, undefined){
 	"use strict";
