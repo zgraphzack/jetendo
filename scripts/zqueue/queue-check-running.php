@@ -277,7 +277,8 @@ for($i101=0;$i101<70;$i101++){
 			$r=`$cmd`;
 			fwrite($fp, $cmd."\n"); 
 			fwrite($fp, $r."\n"); 
-			$sql="update queue set queue_width='".$queue_width."', queue_height='".$queue_height."', queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
+			//queue_width='".$queue_width."', queue_height='".$queue_height."', 
+			$sql="update queue set queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
 			mysql_query($sql);
 			fwrite($fp, "Video encoding completed\n");
 			fclose($fp);

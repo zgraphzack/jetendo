@@ -9,12 +9,27 @@
 	}
 	request.ignoreSlowScript=true;
 
+ 	db=request.zos.queryObject;
+	db.sql="SELECT site.site_domain FROM 
+	#db.table("site", request.zos.zcoreDatasource)#, 
+	#db.table("site_option_group", request.zos.zcoreDatasource)# 
+	WHERE 
+	site.site_id = site_option_group.site_id and 
+	site.site_deleted = #db.param(0)# and 
+	site_option_group.site_id <> #db.param(-1)# and 
+	site_option_group_deleted = #db.param(0)# 
+	GROUP BY site.site_domain";
+	qSite=db.execute("qSite");
+	for(row in qSite){
+		//echo(row.site_domain&"/z/admin/site-options/searchReindex");
+		application.zcore.functions.zdownloadlink(row.site_domain&"/z/admin/site-options/searchReindex");
+		//abort;
+	}
+	//abort;
+
 	manualCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.manual");
 	manualCom.reindexDocumentation();
  
-
-	local.searchIndexCom=createobject("component", "zcorerootmapping.com.app.site-option");
-	local.searchIndexCom.searchReindex();
 
 	blogCom=createobject("component", "zcorerootmapping.mvc.z.blog.controller.blog");
 	blogCom.searchReindexBlogArticles(false, true);

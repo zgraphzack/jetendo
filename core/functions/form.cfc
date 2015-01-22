@@ -2859,8 +2859,8 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 	countryMap["VA"]="Vatican City State";
 	countryMap["VE"]="Venezuela";
 	countryMap["VN"]="Vietnam";
-	countryMap["VG"]="Virgin Islands - British";
-	countryMap["VI"]="Virgin Islands - U.S.";
+	countryMap["VG"]="British Virgin Islands";
+	countryMap["VI"]="US Virgin Islands";
 	countryMap["WA"]="Wales";
 	countryMap["WF"]="Wallis And Futuna Islands";
 	countryMap["EH"]="Western Sahara";
@@ -2923,6 +2923,7 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 <option value="BV" <cfif arguments.country_code EQ "BV">selected="selected"</cfif>>Bouvet Island</option>
 <option value="BR" <cfif arguments.country_code EQ "BR">selected="selected"</cfif>>Brazil</option>
 <option value="IO" <cfif arguments.country_code EQ "IO">selected="selected"</cfif>>British Indian Ocean Territory</option>
+<option value="VG" <cfif arguments.country_code EQ "VG">selected="selected"</cfif>>British Virgin Islands</option>
 <option value="BN" <cfif arguments.country_code EQ "BN">selected="selected"</cfif>>Brunei Darussalam</option>
 <option value="BG" <cfif arguments.country_code EQ "BG">selected="selected"</cfif>>Bulgaria</option>
 <option value="BF" <cfif arguments.country_code EQ "BF">selected="selected"</cfif>>Burkina Faso</option>
@@ -3128,13 +3129,12 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 <option value="US" <cfif arguments.country_code EQ "US">selected="selected"</cfif>>United States</option>
 <option value="UY" <cfif arguments.country_code EQ "UY">selected="selected"</cfif>>Uruguay</option>
 <option value="UM" <cfif arguments.country_code EQ "UM">selected="selected"</cfif>>US Minor Outlying Islands</option>
+<option value="VI" <cfif arguments.country_code EQ "VI">selected="selected"</cfif>>US Virgin Islands</option>
 <option value="UZ" <cfif arguments.country_code EQ "UZ">selected="selected"</cfif>>Uzbekistan</option>
 <option value="VU" <cfif arguments.country_code EQ "VU">selected="selected"</cfif>>Vanuatu</option>
 <option value="VA" <cfif arguments.country_code EQ "VA">selected="selected"</cfif>>Vatican City State</option>
 <option value="VE" <cfif arguments.country_code EQ "VE">selected="selected"</cfif>>Venezuela</option>
 <option value="VN" <cfif arguments.country_code EQ "VN">selected="selected"</cfif>>Vietnam</option>
-<option value="VG" <cfif arguments.country_code EQ "VG">selected="selected"</cfif>>Virgin Islands - British</option>
-<option value="VI" <cfif arguments.country_code EQ "VI">selected="selected"</cfif>>Virgin Islands - U.S.</option>
 <option value="WA" <cfif arguments.country_code EQ "WA">selected="selected"</cfif>>Wales</option>
 <option value="WF" <cfif arguments.country_code EQ "WF">selected="selected"</cfif>>Wallis And Futuna Islands</option>
 <option value="EH" <cfif arguments.country_code EQ "EH">selected="selected"</cfif>>Western Sahara</option>

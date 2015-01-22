@@ -1833,7 +1833,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	setting requesttimeout="5000";
 	startDatetime=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "HH:mm:ss");
 	db.sql="select site_option_group_id, site_option_group_parent_id, site_option_group_name, site_id FROM
-	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
+	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
+	site_id <> #db.param(-1)# and 
+	site_option_group_deleted = #db.param(0)# 
 	ORDER BY site_option_group_parent_id";
 	qGroup=db.execute("qGroup");
 	groupStruct={};
@@ -2249,6 +2251,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}
 		ds.search_fulltext=arrayToList(arrFullText, " ");
 	}
+	//writedump(ds);abort;
 	searchCom.saveSearchIndex(ds);
 	</cfscript>
 </cffunction>

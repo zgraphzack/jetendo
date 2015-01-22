@@ -87,7 +87,7 @@ http://stackoverflow.com/questions/9860868/flowplayer-secure-streaming-with-apac
 	ts.struct.queue_original_file=replace(ts.struct.queue_original_file, request.zos.installPath, "");
 	ext=application.zcore.functions.zGetFileExt(ts.struct.queue_original_file);
 	if(form.video_width EQ 0 or form.video_height EQ 0 or isnumeric(form.video_width) EQ false or isnumeric(form.video_height) EQ false){
-		writeoutput('{"arrVideos":[{"success":false,"message":"You must enter a width and height and click Update Size before uploading the video."}]}');
+		writeoutput('{"arrVideos":[{"success":false,"message":"You must enter a width and height before uploading the video."}]}');
 		application.zcore.functions.zabort();
 	}
 	if("*.3g2;*.3gp;*.asf;*.asx;*.avi;*.flv;*.mov;*.mp4;*.mpg;*.swf;*.vob;*.wmv;*.divx;*.f4v;*.m2p;*.m4v;*.mkv;*.mpeg;*.ogv;*.webm;*.xvid;" CONTAINS "."&ext&";"){
