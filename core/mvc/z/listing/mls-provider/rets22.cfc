@@ -397,22 +397,45 @@ this.remapFieldStruct=t5;
 	rs.listing_sub_type_id=","&local.listing_sub_type_id&",";
 	rs.listing_style=","&local.listing_style&",";
 	rs.listing_view=","&local.listing_view&",";
-	if(ts.rets22_list_8 EQ "G" or ts.rets22_list_8 EQ "F" or ts.rets22_list_8 EQ "C" or ts.rets22_list_8 EQ "D" or ts.rets22_list_8 EQ "A") {
-		if(not structkeyexists(ts, "rets22_list_52")){
-			if(not structkeyexists(ts, "rets22_list_49")){
-				rs.listing_lot_square_feet=ts["rets22_list_48"];
-			}else{
-				rs.listing_square_feet=ts["rets22_list_49"];
-			}
-		}else{
-			rs.listing_square_feet=ts["rets22_list_52"];
+
+	// list_48 is living for A yes
+	// list_49 is total for a
+	// income B is list_48 total
+	// not needed unless 48/49 is empty: list_52 for D ,C, B and A is lot sqft
+	// list_49 is living for B income
+	// D list_48 - living
+	// D list_49 = total
+
+	// F list_48 - total
+
+	// G list_48 lease area (living)
+
+	// list_52 is total for A
+	if(ts.rets22_list_8 EQ "A" or ts.rets22_list_8 EQ "D" or ts.rets22_list_8 EQ "G" or ts.rets22_list_8 EQ "C"){
+		rs.listing_lot_square_feet="";
+		if(structkeyexists(ts, "rets22_list_48")){
+			rs.listing_square_feet=ts["rets22_list_48"];
+		}
+		rs.listing_lot_square_feet="";
+		if(structkeyexists(ts, "rets22_list_49")){
+			rs.listing_lot_square_feet=ts["rets22_list_49"]; 
+		}
+		if(rs.listing_lot_square_feet EQ "" and structkeyexists(ts, "rets22_list_52")){ 
+			rs.listing_lot_square_feet=ts["rets22_list_52"];
 		}
 	}else{
-		rs.listing_lot_square_feet=ts["rets22_list_48"];
+		rs.listing_lot_square_feet="";
 		if(structkeyexists(ts, "rets22_list_49")){
-			rs.listing_square_feet=ts["rets22_list_49"]; 
+			rs.listing_square_feet=ts["rets22_list_49"];
 		}
-	}
+		rs.listing_lot_square_feet="";
+		if(structkeyexists(ts, "rets22_list_48")){
+			rs.listing_lot_square_feet=ts["rets22_list_48"]; 
+		}
+		if(rs.listing_lot_square_feet EQ "" and structkeyexists(ts, "rets22_list_52")){ 
+			rs.listing_lot_square_feet=ts["rets22_list_52"];
+		}
+	} 
 	rs.listing_subdivision=local.listing_subdivision;
 	rs.listing_year_built=application.zcore.functions.zso(ts, "rets22_list_53");
 	rs.listing_office=ts["rets22_list_106"];

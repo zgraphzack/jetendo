@@ -312,7 +312,99 @@ displayGroupCom.add();')&'</pre>');
 	</cfscript>
 </cffunction>
 
-<cffunction name="reindex" localmode="modern" access="remote" roles="member">
+<cffunction name="export" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+
+	content type="text/plain";
+	setting requesttimeout="10000";
+	var db=request.zos.queryObject;
+	currentGroupId=application.zcore.functions.zso(form, 'site_option_group_id'); 
+	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
+	WHERE site_option_group_id = #db.param(currentGroupId)# and 
+	site_option_group_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	qGroup=db.execute("qGroup");
+	if(qGroup.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "Site option group no longer exists.", form, true);
+		application.zcore.functions.zRedirect("/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#&zsid=#request.zsid#");
+	}
+	header name="Content-Disposition" value="attachment; filename=#dateformat(now(), "yyyy-mm-dd-")&qGroup.site_option_group_name#.csv";
+	siteOptionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+
+	db.sql="SELECT * FROM  
+	#db.table("site_option", request.zos.zcoreDatasource)# WHERE 
+	site_option.site_option_group_id = #db.param(currentGroupId)# and  
+	site_option_deleted = #db.param(0)# and 
+	site_option.site_id = #db.param(request.zos.globals.id)#  
+	ORDER BY site_option_sort ASC";
+	qOption=db.execute("qOption");
+	arrOption=[];
+	arrRowDefault=[];
+	optionStruct={};
+	first=true;
+	for(row in qOption){
+		arrayAppend(arrRowDefault, "");
+		arrayAppend(arrOption, row.site_option_name);
+		v=replace(replace(replace(replace(replace(row.site_option_name, chr(10), ' ', 'all'), chr(13), '', 'all'), chr(9), ' ', 'all'), '\', '\\', 'all'), '"', '\"', "all");
+		if(not first){
+			echo(", ");
+		}
+		first=false;
+		echo('"'&v&'"');
+		optionStruct[row.site_option_id]=arraylen(arrOption);
+	}
+	echo(chr(13)&chr(10));
+
+	doffset=0;
+	for(i=1;i LTE 100000;i++){
+
+		// process x groups at a time.
+		xlimit=20;
+
+		db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+		WHERE site_option_group_id = #db.param(currentGroupId)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)# 
+		LIMIT #db.param(doffset)#, #db.param(xlimit)#";
+		qGroups=db.execute("qGroups");
+		if(qGroups.recordcount EQ 0){
+			break;
+		}
+		doffset+=xlimit;
+
+		for(row in qGroups){
+			db.sql="SELECT * FROM 
+			#db.table("site_x_option_group", request.zos.zcoreDatasource)# 
+			WHERE  
+			site_x_option_group.site_option_group_id = #db.param(currentGroupId)# and 
+			site_x_option_group_set_id = #db.param(row.site_x_option_group_set_id)# and 
+			site_x_option_group_deleted = #db.param(0)# and 
+			site_x_option_group.site_id = #db.param(request.zos.globals.id)#  ";
+			qValues=db.execute("qValues");
+ 
+
+			arrRow=duplicate(arrRowDefault);
+			for(value in qValues){
+				if(structkeyexists(optionStruct, value.site_option_id)){
+					offset=optionStruct[value.site_option_id];
+					arrRow[offset]=value.site_x_option_group_value;
+				}
+			}
+			for(i2=1;i2 LTE arraylen(arrRow);i2++){
+				if(i2 NEQ 1){
+					echo(', ');
+				}
+				v=rereplace(replace(replace(replace(replace(replace(arrRow[i2], chr(10), ' ', 'all'), chr(13), '', 'all'), chr(9), ' ', 'all'), '\', '\\', 'all'), '"', '\"', "all"), '<.*?>', '', 'all');
+				echo('"'&v&'"');
+			}
+			echo(chr(13)&chr(10));
+		}
+	}
+	abort;
+	</cfscript>
+</cffunction>
+
+<cffunction name="reindex" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	var qGroup=0;
 	var ts=0;
@@ -950,7 +1042,11 @@ displayGroupCom.add();')&'</pre>');
 							<a href="/z/misc/display-site-option-group/add?site_option_group_id=#qProp.site_option_group_id#" target="_blank">Public Form</a> | 
 						</cfif>
 					</cfif>
-					<a href="/z/admin/site-option-group/reindex?site_option_group_id=#qProp.site_option_group_id#" title="Will update site option group table for all records.  Useful after a config change.">Reprocess</a> | 
+					<cfif application.zcore.user.checkServerAccess()>
+						<a href="/z/admin/site-option-group/export?site_option_group_id=#qProp.site_option_group_id#" target="_blank">Export</a> | 
+						<a href="/z/admin/site-option-group/reindex?site_option_group_id=#qProp.site_option_group_id#" title="Will update site option group table for all records.  Useful after a config change.">Reprocess</a> | 
+					</cfif>
+	
 					<cfif qProp.hasChildren EQ 1>
 						<a href="/z/admin/site-option-group/index?site_option_group_parent_id=#qProp.site_option_group_id#">Sub-Groups</a> |
 					</cfif>

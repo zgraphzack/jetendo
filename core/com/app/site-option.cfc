@@ -61,7 +61,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 <cffunction name="processSearchArraySQL" access="private" output="no" returntype="string" localmode="modern">
 	<cfargument name="arrSearch" type="array" required="yes"> 
 	<cfargument name="fieldStruct" type="struct" required="yes">
-	<cfargument name="tableCount" type="numeric" required="yes">
+	<cfargument name="tableCount" type="numeric" required="yes"> 
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript> 
 	length=arraylen(arguments.arrSearch);
@@ -157,6 +157,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
 				arrSQL2=[];
 				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrValue2[n]=arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend;
 					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
 				}
 				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
@@ -170,6 +171,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
 				arrSQL2=[];
 				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrValue2[n]=arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend;
 					arrayAppend(arrSQL2, field&" <> '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
 				}
 				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
@@ -251,6 +253,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
 				arrSQL2=[];
 				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrValue2[n]='%'&arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend&'%';
 					arrayAppend(arrSQL2, field&" LIKE '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
 				}
 				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
@@ -264,6 +267,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
 				arrSQL2=[];
 				for(n=1;n LTE arraylen(arrValue2);n++){
+					arrValue2[n]='%'&arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend&'%';
 					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
 				}
 				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
@@ -710,7 +714,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			/*if(sql EQ ""){
 				return rs;
 			}*/
-			//writedump(sql);
+			//writedump(sql);abort;
 
 			groupId=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray([arguments.groupName]);
 

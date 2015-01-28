@@ -2743,6 +2743,7 @@ Define this function in another CFC to override the default email format
 					if(local.arrSearchSQL[local.curValIndex] NEQ ""){
 						searchFieldEnabledStruct[local.curValIndex]=true;
 					}
+					local.arrSearchSQL[local.curValIndex]=replace(local.arrSearchSQL[local.curValIndex], "?", "", "all");
 					local.searchStruct['newvalue'&row.site_option_id]=tempValue;
 				}
 				arrayAppend(local.arrSearch, currentCFC.getSearchFormField(row, optionStruct, 'newvalue', form, tempValue, '')); 

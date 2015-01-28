@@ -322,6 +322,10 @@
 					No
 					<input type="radio" name="inquiries_pool" style="border:none; background:none;" value="0" <cfif application.zcore.functions.zso(form, 'inquiries_pool',true) EQ 0>checked="checked"</cfif> /></td>
 			</tr>
+			<tr id="zcma-row18-2">
+				<td style="vertical-align:top; ">&nbsp;</td>
+				<td>Have a target price in mind?  Other special upgrades on your home like solar?  Describe them below.</td>
+			</tr>
 			<tr id="zcma-row18">
 				<td style="vertical-align:top; ">Comments:</td>
 				<td><textarea name="inquiries_comments" cols="50" rows="5">#form.inquiries_comments#</textarea></td>
