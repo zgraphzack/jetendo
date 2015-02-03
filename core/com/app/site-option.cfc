@@ -258,7 +258,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				}
 				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
 			}else{
-				arrayAppend(arrSQL, field&" LIKE '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+				arrayAppend(arrSQL, field&" LIKE '%"&application.zcore.functions.zescape(arrValue[g])&"%' ");
 			}
 		}
 	}else if(type EQ "not like"){
@@ -272,7 +272,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 				}
 				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
 			}else{
-				arrayAppend(arrSQL, field&" NOT LIKE '"&application.zcore.functions.zescape(arrValue[g])&"' ");
+				arrayAppend(arrSQL, field&" NOT LIKE '%"&application.zcore.functions.zescape(arrValue[g])&"%' ");
 			}
 		}
 	}else{
@@ -527,7 +527,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 		match=false;
 		for(g=1;g LTE length;g++){ 
 			for(n=1;n LTE rowLength;n++){
-				if(refindnocase(replace(arrValue[g], "%", ".*", "all"), arrRowValues[n]) NEQ 0){
+				if(refindnocase(replace('%'&arrValue[g]&'%', "%", ".*", "all"), arrRowValues[n]) NEQ 0){
 					match=true;
 					break;
 				}
@@ -537,7 +537,7 @@ FUTURE: enable custom fields AND validation options for form elements as a new t
 		match=false;
 		for(g=1;g LTE length;g++){
 			for(n=1;n LTE rowLength;n++){
-				if(refindnocase(replace(arrValue[g], "%", ".*", "all"), arrRowValues[n]) EQ 0){
+				if(refindnocase(replace('%'&arrValue[g]&'%', "%", ".*", "all"), arrRowValues[n]) EQ 0){
 					match=true;
 					break;
 				}

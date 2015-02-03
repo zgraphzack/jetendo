@@ -941,6 +941,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 			<th style="width:25px; " >ID</th>
 			<th  style="width:100px;">Photo</th>
 			<th >Title</th>
+			<th >Event?</th>
 			<th >Category</th>
 			<th style="width:145px;">Date &amp; Time</th>
 			<th style="width:200px;">Admin</th>
@@ -971,6 +972,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 			&nbsp;
 		</cfif></td>
 			<td>#qList.blog_title#</td>
+
+			<td><cfif qList.blog_event EQ 1>Yes<cfelse>No</cfif></td>
 			<td>#qList.blog_category_name#</td>
 			<td style="width:145px;">#dateformat(qList.blog_datetime, 'm/d/yyyy')# @ #timeformat(qList.blog_datetime, 'h:mm tt')#</td>
 			<td style="width:200px;">
@@ -1510,7 +1513,11 @@ tabCom.enableSaveButtons();
 		</cfscript>
 	</cfif>
 	<cfscript>
-	application.zcore.functions.zQueryToStruct(qEdit, form, 'site_x_option_group_set_id,blog_event');
+	isAnEvent=false;
+	if(structkeyexists(form, 'blog_event')){
+		isAnEvent=true;
+	}
+	application.zcore.functions.zQueryToStruct(qEdit, form, 'site_x_option_group_set_id'); 
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form);
 	/*if(structkeyexists(local, 'blogEventChecked')){
 		form.blog_event=1;
@@ -1886,8 +1893,8 @@ tabCom.enableSaveButtons();
 			</cfscript>
 			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.blog.edit blog_event")#</th>
 			<td>
-			<input type="radio" name="blog_event" id="blog_event1" value="1" style="background:none; border:none;" onclick="document.getElementById('eventDateBox').style.display='block';" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0)>checked="checked"</cfif>> Yes (Always show) 
-			<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
+			<input type="radio" name="blog_event" id="blog_event1" value="1" style="background:none; border:none;" onclick="document.getElementById('eventDateBox').style.display='block';" <cfif isAnEvent or form.blog_event EQ 1>checked="checked"</cfif>> Yes (Always show) 
+			<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif not isAnEvent and application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
 			</td></tr>
 			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Date","member.blog.edit blog_status")#</th>
 			<td><input type="radio" name="blog_status" id="blog_status1" value="2" <cfif form.blog_status EQ 2>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Draft 
