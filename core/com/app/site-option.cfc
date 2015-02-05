@@ -1363,6 +1363,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	form.site_x_option_group_set_parent_id=arguments.site_x_option_group_set_parent_id;
 	form.site_option_app_id=arguments.site_option_app_id;
 	form.site_option_group_id=application.zcore.functions.zSiteOptionGroupIdByName(arguments.site_option_group_name, arguments.site_option_group_parent_id);
+
 	if(structkeyexists(request.zos.siteOptionGroupImportTable, form.site_option_group_id)){
 		ts=request.zos.siteOptionGroupImportTable[form.site_option_group_id];
 	}else{

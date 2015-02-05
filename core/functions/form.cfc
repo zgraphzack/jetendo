@@ -2617,6 +2617,7 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 	<cfscript>
 	countryMap={};
 	countryMap["US"]="United States";
+	countryMap["RS"]="Serbia";
 	countryMap["AF"]="Afghanistan";
 	countryMap["AL"]="Albania";
 	countryMap["DZ"]="Algeria";
@@ -3083,6 +3084,7 @@ zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callback
 <option value="SA" <cfif arguments.country_code EQ "SA">selected="selected"</cfif>>Saudi Arabia</option>
 <option value="SW" <cfif arguments.country_code EQ "SW">selected="selected"</cfif>>Scotland</option>
 <option value="SN" <cfif arguments.country_code EQ "SN">selected="selected"</cfif>>Senegal</option>
+<option value="RS" <cfif arguments.country_code EQ "RS">selected="selected"</cfif>>Serbia</option>
 <option value="SC" <cfif arguments.country_code EQ "SC">selected="selected"</cfif>>Seychelles</option>
 <option value="SL" <cfif arguments.country_code EQ "SL">selected="selected"</cfif>>Sierra Leone</option>
 <option value="SG" <cfif arguments.country_code EQ "SG">selected="selected"</cfif>>Singapore</option>

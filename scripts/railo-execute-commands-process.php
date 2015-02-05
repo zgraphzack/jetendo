@@ -1187,7 +1187,11 @@ function getImageMagickConvertResize($a){
 	if($cropWidth != 0){
 		$cmd.=' -crop '.$cropWidth.'x'.$cropHeight.'+'.$cropXOffset.'+'.$cropYOffset;
 	}
-	$cmd.=' '.escapeshellarg($sourceFilePath).' '.escapeshellarg($destinationFilePath);
+	$pngColorFix="";
+	if(strtolower(substr($destinationFilePath, -4)) == '.png'){
+		$pngColorFix="PNG32:";
+	}
+	$cmd.=' '.escapeshellarg($sourceFilePath).' '.$pngColorFix.escapeshellarg($destinationFilePath);
 	$r=`$cmd`;
 	echo $cmd."\n".$r."\n";
 	if(file_exists($destinationFilePath)){
