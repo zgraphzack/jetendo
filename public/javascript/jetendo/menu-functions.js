@@ -185,7 +185,7 @@ var arrOriginalMenuButtonWidth=[];
 		if((zTabletStylesheetLoaded===false && zIsTouchscreen())){
 			zTabletStylesheetLoaded=true;
 			zLoadFile("/z/stylesheets/tablet.css","css");
-			zFixMenuOnTablets();
+			zFixMenuOnTablets(); 
 		}
 	}
 	function zHideMenuPopups(){
@@ -247,7 +247,14 @@ var arrOriginalMenuButtonWidth=[];
 					borderRight=1;
 				}
 				var curBorderAndPadding=parseInt(jItem.css("padding-left"))+parseInt(jItem.css("padding-right"))+parseInt(borderLeft)+parseInt(borderRight);
+				if(jItem.css("box-sizing") == "border-box"){
+					curBorderAndPadding=0;
+				}
 				//console.log("borpad:"+curBorderAndPadding+":"+borderLeft+":"+borderRight+":"+curWidth+":"+jItem.width()+":"+(jItem.css("padding-left"))+":"+(jItem.css("padding-right"))+":"+jItem.css("border-left-width")); 
+				$(jItem).css({
+					"padding-left":"0px",
+					"padding-right":"0px"
+				}); 
 				if(i===currentMenu.arrItem.length-1){
 					//curWidth-=0.5;
 					$(jItem).css({
@@ -291,8 +298,7 @@ var arrOriginalMenuButtonWidth=[];
 			}else{
 				$(currentMenu.arrLI).each(function(){ $(this).css("display", "inline-block"); });
 			} 
-		}
-		console.log("resizing");
+		} 
 		//console.log(containerDivId+":"+"marginSize:"+currentMenu.marginSize+" containerWidth:" +currentMenu.containerWidth+" totalWidth:"+totalWidth+" navWidth:"+currentMenu.navWidth+" deltaWidth:"+deltaWidth+" padding:"+padding);
 		var totalWidth2=0;
 		for(var i=0;i<currentMenu.arrItem.length;i++){ 

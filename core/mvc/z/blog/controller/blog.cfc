@@ -2724,7 +2724,8 @@ this.app_id=10;
 	db.sql="select * 
 	from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 	where blog_category.blog_category_id = #db.param(form.blog_category_id)# and 
-	blog_category.site_id=#db.param(request.zos.globals.id)#";
+	blog_category.site_id=#db.param(request.zos.globals.id)# and 
+	blog_category_deleted = #db.param(0)#";
 	qCategory=db.execute("qCategory"); 
 	if(qCategory.recordcount eq 0){
 		application.zcore.functions.z404("qCategory record was missing in categoryTemplate().");//301Redirect('/');

@@ -619,7 +619,8 @@
 		if(local.cpi10 NEQ "" and local.cpi10 NEQ "0"){
 			db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 			WHERE content_id=#db.param(local.cpi10)# and 
-			site_id = #db.param(request.zos.globals.id)#";
+			site_id = #db.param(request.zos.globals.id)# and 
+			content_deleted = #db.param(0)#";
 			qParent=db.execute("qParent");
 		}else{
 			qParent=structnew();
