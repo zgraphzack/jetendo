@@ -777,12 +777,13 @@
 						</tr>
 					</table></td>
 				</tr>
-			</cfif>
-			<cfif structkeyexists(form, 'member_signature')>
 				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Email<br />Signature<br />(NO HTML)","member.member.edit member_signature")#</th>
-					<td><textarea name="member_signature" cols="40" rows="8">#form.member_signature#</textarea></td>
-				</tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Auto-assign Listing Inquiries","member.member.edit user_autoassign_listing_inquiry")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("user_autoassign_listing_inquiry", form.user_autoassign_listing_inquiry)#
+						| If set to yes, this agent's listing inquiries will automatically be assigned to them in the future.  The MLS Agent ID above must be correct for this to work.
+					</td>
+				</tr> 
+
 			</cfif>
 			<tr>
 				<td colspan="2"><h2>Contact Preferences:</h2>

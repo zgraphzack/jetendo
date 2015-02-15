@@ -59,11 +59,51 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		arguments.ss.disableDebugAbort=false;
 	} 
 	if(structkeyexists(arguments.ss, 'forceAssign') and arguments.ss.forceAssign){
-		rs.assignEmail=arguments.ss.assignEmail;
-		rs.leadEmail=arguments.ss.leadEmail;
-		rs.user_id=0;
-		rs.user_id_siteIDType=0;
-		rs.cc="";
+		if(structkeyexists(arguments.ss, 'assignEmail')){
+			rs.assignEmail=arguments.ss.assignEmail;
+			rs.user_id=0;
+			rs.user_id_siteIDType=0;
+		}else{
+			rs.assignEmail="";
+			rs.user_id=arguments.ss.assignUserId;
+			rs.user_id_siteIDType=arguments.ss.assignUserIdSiteIdType;
+			 db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
+			WHERE ";
+			if(rs.user_id_siteIDType EQ 1){
+				db.sql&=" site_id = #db.param(request.zos.globals.id)# and ";
+			}else{
+				db.sql&=" site_id = #db.param(request.zos.globals.parentId)# and ";
+			}
+			db.sql&=" user_active= #db.param(1)# and 
+			user_deleted = #db.param(0)# and  
+			user_id =#db.param(rs.user_id)# ";
+			qAssignUser=db.execute("qAssignUser");
+			if(qAssignUser.recordcount EQ 0){
+				// assign to default email
+				rs.assignEmail=application.zcore.functions.zvarso('zofficeemail');
+				m='process assigned lead to zofficeemail: #rs.assignEmail#<br />';
+				arrayAppend(arrDebug, m);
+				if(structkeyexists(request.zos, 'debugleadrouting')){
+					echo(m);
+				}
+			}else{
+				// assign to default user instead
+				rs.assignEmail=qAssignUser.user_username; 
+				m='process assigned lead to zofficeemail user_id: #qAssignUser.user_id# site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />';
+				arrayAppend(arrDebug, m);
+				if(structkeyexists(request.zos, 'debugleadrouting')){
+					echo(m);
+				}
+			}
+		}
+		if(structkeyexists(arguments.ss, 'leadEmail')){
+			rs.leadEmail=arguments.ss.leadEmail;
+		}else if(structkeyexists(form, 'inquiries_email')){
+			rs.leadEmail=form.inquiries_email;	
+		}else{
+			rs.leadEmail="";
+		}
+		rs.cc=""; 
 		rs.bcc="";
 		m='force assign to #rs.assignEmail#<br />';
 		arrayAppend(arrDebug, m);

@@ -157,7 +157,7 @@
 		//application.zcore.status.setStatus(Request.zsid, "Invalid Request",form,true);
 		//application.zcore.functions.zRedirect("/z/listing/inquiry/index?modalpopforced=#form.modalpopforced#&zsid=#Request.zsid#&content_id=#form.content_id#&listing_id=#form.listing_id#");
 	}
-	
+	 
 	form.user_id=0;
 	//	Insert Into Inquiry Database
 	form.site_id = request.zOS.globals.id;
@@ -211,6 +211,32 @@
 		ts=structnew();
 		ts.inquiries_id=form.inquiries_id;
 		ts.subject="New Property Inquiry on #request.zos.globals.shortdomain#";
+
+		if(form.listing_id DOES NOT CONTAIN "," and form.listing_id CONTAINS "-"){ 
+			db.sql="select listing_agent from #db.table("listing_memory", request.zos.zcoreDatasource)# 
+			WHERE listing_id = #db.param(form.listing_id)# and 
+			listing_deleted = #db.param(0)# ";
+			qListing=db.execute("qListing");
+
+			db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# 
+			WHERE user_deleted = #db.param(0)# and 
+			member_mlsagentid LIKE #db.param(',#listgetat(form.listing_id, 1, "-")#-#qListing.listing_agent#,')# and 
+			user_active = #db.param(1)# and 
+			user_autoassign_listing_inquiry = #db.param(1)# and 
+			(site_id = #db.param(request.zos.globals.id)# or 
+			site_id = #db.param(request.zos.globals.parentId)#)";
+			qUser=db.execute("qUser"); 
+			if(qUser.recordcount){
+				ts.forceAssign=true;
+				ts.assignUserId=qUser.user_id;
+				if(qUser.site_id EQ request.zos.globals.id){
+					ts.assignUserIdSiteIdType=1;
+				}else{
+					ts.assignUserIdSiteIdType=2;
+				}
+				//ts.assignEmail=qUser.user_username;
+			}
+		} 
 		// send the lead
 		rs=application.zcore.functions.zAssignAndEmailLead(ts);
 		if(rs.success EQ false){

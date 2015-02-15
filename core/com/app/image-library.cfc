@@ -1041,6 +1041,11 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 	</cfscript>
 </cffunction>
 
+<cffunction name="enableGalleryCaptions" localmode="modern" output="no" returntype="any">
+	<cfscript>
+	request.zos.forceImageGalleryCaptions=true;
+	</cfscript>
+</cffunction>
 
 <!--- application.zcore.imageLibraryCom.getLayoutType(layout_type); --->
 <cffunction name="getLayoutType" localmode="modern" output="no" returntype="any">
@@ -1417,7 +1422,10 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	show_filmstrip_nav: true, 		//BOOLEAN - flag indicating whether to display navigation buttons
 	enable_slideshow: true,			//BOOLEAN - flag indicating whether to display slideshow play/pause button
 	autoplay: <cfif structkeyexists(arguments.ss, 'autoplay')>#arguments.ss.autoplay#<cfelse>true</cfif>,				//BOOLEAN - flag to start slideshow on gallery load
-	show_captions: false, 			//BOOLEAN - flag to show or hide frame captions	
+	<cfif (structkeyexists(arguments.ss, 'showCaptions') and arguments.ss.showCaptions) or structkeyexists(request.zos, 'forceImageGalleryCaptions')>
+     enable_overlays: true,
+    </cfif>
+	show_captions: <cfif structkeyexists(arguments.ss, 'showCaptions') and arguments.ss.showCaptions>true<cfelseif structkeyexists(request.zos, 'forceImageGalleryCaptions')>true<cfelse>false</cfif>, 			//BOOLEAN - flag to show or hide frame captions	
 	filmstrip_size: 3, 				//INT - number of frames to show in filmstrip-only gallery
 	filmstrip_style: 'scroll', 		//STRING - type of filmstrip to use (scroll = display one line of frames, scroll filmstrip if necessary, showall = display multiple rows of frames if necessary)
 	filmstrip_position: 'bottom', 	//STRING - position of filmstrip within gallery (bottom, top, left, right)
@@ -1435,7 +1443,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	frame_scale: 'crop', 			//STRING - cropping option for filmstrip images (same as above)
 	frame_gap: 5, 					//INT - spacing between frames within filmstrip (in pixels)
 	show_infobar: false,				//BOOLEAN - flag to show or hide infobar
-	infobar_opacity: 1				//FLOAT - transparency for info bar
+	infobar_opacity: 0.7				//FLOAT - transparency for info bar
 	}
 	</cfsavecontent>
 	<input type="hidden" name="zGalleryViewSlideshow#request.zGalleryViewSlideShowIndex#_data" id="zGalleryViewSlideshow#request.zGalleryViewSlideShowIndex#_data" value="#htmleditformat(theJS)#" />
@@ -1451,7 +1459,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<div class="zGalleryViewSlideshowContainer">
 		<ul id="zGalleryViewSlideshow#request.zGalleryViewSlideShowIndex#" class="zGalleryViewSlideshow">
 		<cfloop query="qImages">
-			<li><img  data-frame="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, '160x80', 1, true, qImages.image_caption, qImages.image_file)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#" title="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#" title=""</cfif> /></li>
+			<li><img  data-frame="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, '160x80', 1, true, qImages.image_caption, qImages.image_file)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#" title="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#" title=""</cfif> data-description="" /></li>
 		</cfloop>
 		</ul> 
 	</div>

@@ -470,6 +470,11 @@ enable round robin for users - need a new option to disable for staff.
 	</cfscript>
 	<h2>Lead Routing</h2>
 	<p>By default, leads go to the E-Mail Address(es) listed in the site option called: "<a href="/z/admin/site-options/index?return=1&amp;jumpto=soid_zofficeemail" title="Click to Edit">Office Email</a>".  To override this for specific lead types, click "Add Lead Route" or "Edit" the existing rules below.</p>
+	<cfscript>
+	if(application.zcore.app.siteHasApp("listing")){
+		echo('<p>The lead routing configuration is overriden for listing inquiries when a listing''s agent id matches the "MLS Agent ID" field for the agent in the "manage users" section of the manager.  However, if someone inquiries on multiple properties in the same submission, then the normal lead routing rules apply.</p>');
+	}
+	</cfscript>
 	<p>Note: A "Catch-all" route will be used for all forms that don't have an their own route added.</p>
 	<p><a href="/z/inquiries/admin/routing/add">Add Lead Route</a></p>
 	<table id="sortRowTable" class="table-list">
