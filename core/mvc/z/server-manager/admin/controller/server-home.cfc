@@ -184,6 +184,17 @@
 			<p><a href="/z/misc/system/index" target="_blank">Railo uptime and session clearing</a></p>
 			<p><a href="/z/server-manager/tasks/site-backup/index" target="_blank">Backup All Sites</a></p>
 			<p><a href="/z/server-manager/tasks/search-index/index" target="_blank">Re-index All Site Content</a></p>
+			<p><a href="/z/server-manager/tasks/call-tracking-metrics-import/index" target="_blank">CallTrackingMetrics Import</a> (
+				<cfscript>
+				metricsCom=createobject("component", "zcorerootmapping.mvc.z.server-manager.tasks.controller.call-tracking-metrics-import");
+				r=metricsCom.progress();
+				echo(r);
+				if(r NEQ "Not running"){
+					echo(' | <a href="/z/server-manager/tasks/call-tracking-metrics-import/cancel">Cancel</a>');	
+				}
+				</cfscript> 
+				
+				)</p>
 			<p><a href="/z/server-manager/tasks/verify-apps/index" target="_blank">Verify Apps</a></p>
 			<p><a href="/z/server-manager/tasks/send-mailing-list-alerts/index?forceDebug=1" target="_blank">Debug Mailing List Alerts (Won't Send Email)</a></p>
 			<cfif request.zos.istestserver>

@@ -90,7 +90,7 @@ This is a global key. It will work across all domains. --->
     if(request.zos.globals.enableDemoMode EQ 1){
     	writeoutput('<h2>Lead submission is disabled in demo mode.</h2><p>Please go back and continuing browsing the demo site.</p>');
     	application.zcore.functions.zabort();
-    }
+    } 
     if(structkeyexists(request.zsession,'formHashUniqueStruct') EQ false or structkeyexists(request.zsession.formHashUniqueStruct, arguments.hashValue) EQ false){
         return false;
     }else{
@@ -102,9 +102,10 @@ This is a global key. It will work across all domains. --->
 <cffunction name="zGetFormHashValue" localmode="modern" output="no" returntype="string">
     <cfscript>
     var hashValue=hash(randrange(13101231,1201230120)&request.zos.mysqlnow,'sha-256');
+    application.zcore.session.forceEnable();
     if(isDefined('request.zsession') EQ false or structkeyexists(request.zsession,'formHashUniqueStruct') EQ false){
         request.zsession.formHashUniqueStruct=structnew();
-    }
+    } 
     request.zsession.formHashUniqueStruct[hashValue]=true;
     return hashValue;
     </cfscript>

@@ -47,6 +47,13 @@ function getTasks(){
 	array_push($arrTask, $t);
 
 	$t=new stdClass();
+	$t->interval="daily";
+	$t->logName="call-tracking-metrics-import.html";
+	$t->startTimeOffsetSeconds=3000;
+	$t->url=$adminDomain."/z/server-manager/tasks/call-tracking-metrics-import/index";
+	array_push($arrTask, $t);
+
+	$t=new stdClass();
 	$t->logName="delete-inactive-image-library.html";
 	$t->interval=3600;
 	$t->startTimeOffsetSeconds=2420;

@@ -232,7 +232,12 @@
 	</cfscript>
 	<cfloop query="qinquiry">
 		<h2 style="display:inline;">Inquiry Information</h2>
-		| <a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
+		<cfif qinquiry.inquiries_readonly EQ 1>
+			| Read-only | Edit is disabled
+		<cfelse>
+			| <a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
+		</cfif>
+	
 		<cfif request.zsession.user.group_id NEQ homeownerid>
 			| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Assign Lead</a>
 		</cfif>
@@ -274,8 +279,8 @@
 	}
 	if(structkeyexists(form, 'grouping')){
 		request.zsession.leademailgrouping=form.grouping;
-	}else if(isDefined('request.zsession.leademailgrouping') EQ false){
-		request.zsession.leademailgrouping='1';
+	}else if(structkeyexists(request.zsession, 'leademailgrouping') EQ false){
+		request.zsession.leademailgrouping='0';
 	}
 	if(structkeyexists(form, 'viewspam')){
 		request.zsession.leadviewspam=form.viewspam;
@@ -779,16 +784,22 @@
 							</cfif>
 							&nbsp;</td>
 					</cfif>
-					<td><a href="/z/inquiries/admin/feedback/view?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">View</a> | <a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
-						<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "homeowner") or structkeyexists(request.zos.userSession.groupAccess, "manager")>
-							<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5>
-								| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">
-								<cfif qinquiries.user_id NEQ 0 or qinquiries.inquiries_assign_email NEQ "">
-									Re-
+					<td>
+							<a href="/z/inquiries/admin/feedback/view?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">View</a> | 
+						<cfif qinquiries.inquiries_readonly EQ 1>
+							Read-only | edit is disabled
+						<cfelse><a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
+						</cfif>
+							<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "homeowner") or structkeyexists(request.zos.userSession.groupAccess, "manager")>
+								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5>
+									| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">
+									<cfif qinquiries.user_id NEQ 0 or qinquiries.inquiries_assign_email NEQ "">
+										Re-
+									</cfif>
+									Assign</a>
 								</cfif>
-								Assign</a>
 							</cfif>
-						</cfif></td>
+						</td>
 				</tr>
 			</cfloop>
 		</table>

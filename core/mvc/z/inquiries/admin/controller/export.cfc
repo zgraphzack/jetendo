@@ -14,6 +14,7 @@
 	var arrI=0;
 	var arrP=0;
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Export");
+
 	if(application.zcore.user.checkGroupAccess("administrator") EQ false){
 		application.zcore.functions.z404();	
 	}
@@ -61,6 +62,22 @@
 	}
 	request.znotemplate=1;
 	setting enablecfoutputonly="yes";
+
+
+	db.sql="select * from #db.table("inquiries_type", request.zos.zcoreDatasource)# 
+	WHERE 
+	site_id IN (#db.param(0)#, #db.param(request.zos.globals.id)#) and 
+	inquiries_type_deleted=#db.param(0)#";
+	qType=db.execute("qType");
+	typeStruct={};
+	for(row in qType){
+		if(row.site_id EQ request.zos.globals.id){
+			sid=1;
+		}else{
+			sid=4;
+		}
+		typeStruct[row.inquiries_type_id&"|"&sid]=row.inquiries_type_name;
+	}
 	if(structkeyexists(form,'keywordexport')){
 		savecontent variable="theSql"{
 			writeoutput(' SELECT * 
@@ -179,10 +196,11 @@
 			<td>Phone2</td>
 			<td>Company</td>
 			<td>Date Received</td>
+			<td>Type</td>
 			<td colspan="40">Associated Links</td>
 		</tr>');
 	}else if(form.format EQ 'csv'){
-		writeoutput('"First Name","Last Name","Email","Phone1","Phone2","Company","Date Received","Associated Links"#chr(13)&chr(10)#');
+		writeoutput('"First Name","Last Name","Email","Phone1","Phone2","Company","Date Received","Type","Associated Links"#chr(13)&chr(10)#');
 	}
 	loop query="qI"{
 		arrLink=arraynew(1);
@@ -218,6 +236,11 @@
 				}
 			}
 		}
+		tid=qI.inquiries_type_id&"|"&qI.inquiries_type_id_siteIDType;
+		typeName="";
+		if(structkeyexists(typeStruct, tid)){
+			typeName=typeStruct[tid];
+		} 
 		if(form.format EQ 'html'){
 			if(qI.currentrow MOD 2 EQ 0){
 				writeoutput('<tr class="row2">');
@@ -231,12 +254,15 @@
 			<td>#qI.inquiries_phone2#&nbsp;</td>
 			<td>#qI.inquiries_company#&nbsp;</td>
 			<td>#DateFormat(qI.inquiries_datetime, "m/dd/yyyy")# #Timeformat(qI.inquiries_datetime, "h:mm tt")#&nbsp;</td>');
+
+			echo('<td>#typeName#</td>');
 			loop from="1" to="#arraylen(arrLink)#" index="i"{
 				writeoutput('<td>#arrLink[i]#&nbsp;</td>');
 			}
 			writeoutput('</tr>');
 		}else{
 			writeoutput('"#qI.inquiries_first_name#", "#qI.inquiries_last_name#", "#qI.inquiries_email#", "#qI.inquiries_phone1#", "#qI.inquiries_phone2#","#qI.inquiries_company#", "#DateFormat(qI.inquiries_datetime, "m/dd/yyyy")# #Timeformat(qI.inquiries_datetime, "h:mm tt")#"');
+			echo(', "#typeName#"');
 			loop from="1" to="#arraylen(arrLink)#" index="i"{
 				writeoutput(',"#arrLink[i]#"');
 			}
