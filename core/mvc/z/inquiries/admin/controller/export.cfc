@@ -2,17 +2,8 @@
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	var db=request.zos.queryObject;
-	var qI=0;
-	var arrLink=0;
-	var arrF2n28=0;
-	var i328=0;
-	var urlMLSId=0;
-	var urlMLSPid=0;
-	var theSQL=0; 
-	var i=0;
-	var arrI=0;
-	var arrP=0;
+	db=request.zos.queryObject; 
+	setting requesttimeout="10000";
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Export");
 
 	if(application.zcore.user.checkGroupAccess("administrator") EQ false){
@@ -26,6 +17,7 @@
 	header name="Content-Type" value="text/plain" charset="utf-8";
 	if(form.format EQ 'csv'){
 		header name="Content-Disposition" value="attachment; filename=inquiries.csv" charset="utf-8";
+		//setting enablecfoutputonly="yes";
 	}else if(form.format EQ 'html'){
 		header name="Content-Disposition" value="attachment; filename=inquiries.html" charset="utf-8";
 		writeoutput('#application.zcore.functions.zHTMLDoctype()#
@@ -61,7 +53,6 @@
 		<table style="border-spacing:0px;border:1px solid ##CCCCCC;">');
 	}
 	request.znotemplate=1;
-	setting enablecfoutputonly="yes";
 
 
 	db.sql="select * from #db.table("inquiries_type", request.zos.zcoreDatasource)# 
@@ -78,197 +69,296 @@
 		}
 		typeStruct[row.inquiries_type_id&"|"&sid]=row.inquiries_type_name;
 	}
-	if(structkeyexists(form,'keywordexport')){
-		savecontent variable="theSql"{
-			writeoutput(' SELECT * 
-			from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
-			#db.table("track_user", request.zos.zcoreDatasource)# track_user 
-			WHERE inquiries.inquiries_email = track_user.track_user_email AND 
-			inquiries_deleted = #db.param(0)# and 
-			track_user_deleted = #db.param(0)# and 
-			inquiries.site_id = track_user.site_id AND
-			track_user.site_id = #db.param(request.zos.globals.id)# AND 
-			track_user_keywords <> #db.param('')# and 
-			track_user_email <> #db.param('')# AND 
-			(track_user_keywords LIKE #db.param('%#form.keywordsearch#%')# or 
-			track_user_keywords LIKE #db.param('%#application.zcore.functions.zurlencode(form.keywordsearch,"%")#%')#) 
-			and inquiries.inquiries_status_id <> #db.param(0)# 
-			and inquiries.inquiries_spam = #db.param(0)# 
-			and inquiries_parent_id = #db.param(0)#');
-			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-				writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
-				user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
+	fieldStruct={};
+	customStruct={};
+	for(i2=1;i2 LTE 2;i2++){
+		doffset=0;
+		if(i2 EQ 2){ 
+			structdelete(fieldStruct, 'inquiries_datetime');
+			structdelete(fieldStruct, 'inquiries_custom_json');
+			structdelete(fieldStruct, 'inquiries_type_id');
+			structdelete(fieldStruct, 'inquiries_type_id_siteIdType');
+			structdelete(fieldStruct, 'inquiries_type_other');
+			structdelete(fieldStruct, 'inquiries_deleted');
+			structdelete(fieldStruct, 'inquiries_status_id');
+			structdelete(fieldStruct, 'inquiries_assign_email');
+			structdelete(fieldStruct, 'user_id');
+			structdelete(fieldStruct, 'inquiries_updated_datetime');
+			structdelete(fieldStruct, 'inquiries_readonly');
+			structdelete(fieldStruct, 'inquiries_external_id');
+			structdelete(fieldStruct, 'site_id');
+			arrF=structkeyarray(fieldStruct);
+			arrF2=structkeyarray(customStruct);
+			for(i3=1;i3 LTE arraylen(arrF2);i3++){
+				arrayappend(arrF, arrF2[i3]);
 			}
-			if(application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''){
-				writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-				user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#');
+			arraysort(arrF, "text", "asc");
+			sortStruct={};
+			for(i3=1;i3 LTE arraylen(arrF);i3++){
+				sortStruct[arrF[i3]]=i3;
 			}
-			if(form.inquiries_start_date EQ false){
-				writeoutput(' and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
-				inquiries_datetime <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)');
+			if(form.format EQ 'html'){
+				writeoutput('<tr class="header"><td>Type</td><td>Date Received</td>');
+				for(i3=1;i3 LTE arraylen(arrF);i3++){
+					f=replace(replace(arrF[i3], 'inquiries_', ''), '_', ' ', 'all');
+					echo('<td>'&f&'</td>');
+				}
+				echo('<td colspan="40">Associated Links</td></tr>'&chr(10));
+			}else if(form.format EQ 'csv'){
+				echo('"Type", "Date Received", ');
+				for(i3=1;i3 LTE arraylen(arrF);i3++){ 
+					f=replace(replace(arrF[i3], 'inquiries_', ''), '_', ' ', 'all');
+					echo('"'&replace(f, '"', '', 'all')&'", ');
+				}
+				echo(' "Associated Links"'&chr(13)&chr(10));
+			}
+		}
+		while(true){
+			if(structkeyexists(form,'keywordexport')){
+				savecontent variable="theSql"{
+					writeoutput(' SELECT * 
+					from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
+					#db.table("track_user", request.zos.zcoreDatasource)# track_user 
+					WHERE inquiries.inquiries_email = track_user.track_user_email AND 
+					inquiries_deleted = #db.param(0)# and 
+					track_user_deleted = #db.param(0)# and 
+					inquiries.site_id = track_user.site_id AND
+					track_user.site_id = #db.param(request.zos.globals.id)# AND 
+					track_user_keywords <> #db.param('')# and 
+					track_user_email <> #db.param('')# AND 
+					(track_user_keywords LIKE #db.param('%#form.keywordsearch#%')# or 
+					track_user_keywords LIKE #db.param('%#application.zcore.functions.zurlencode(form.keywordsearch,"%")#%')#) 
+					and inquiries.inquiries_status_id <> #db.param(0)# 
+					and inquiries.inquiries_spam = #db.param(0)# 
+					and inquiries_parent_id = #db.param(0)#');
+					if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
+						writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
+						user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
+					}
+					if(application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''){
+						writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+						user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#');
+					}
+					if(form.inquiries_start_date EQ false){
+						writeoutput(' and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
+						inquiries_datetime <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)');
+					}else{
+						writeoutput(' and (inquiries_datetime >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
+						inquiries_datetime <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
+					}
+					if(application.zcore.functions.zso(form, 'inquiries_type_id') NEQ ""){
+						echo(' and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
+						inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))# ');
+					}
+					if(application.zcore.functions.zso(form,'exporttype') EQ 1){
+						writeoutput(' GROUP BY inquiries_email');
+					}else if(application.zcore.functions.zso(form,'exporttype') EQ 2){
+						writeoutput(' GROUP BY inquiries_phone1, inquiries_phone2');
+					}
+					writeoutput(' ORDER BY inquiries_datetime DESC');
+				} 
 			}else{
-				writeoutput(' and (inquiries_datetime >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
-				inquiries_datetime <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
-			}
-			if(application.zcore.functions.zso(form, 'inquiries_type_id') NEQ ""){
-				echo(' and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
-				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))# ');
-			}
-			if(application.zcore.functions.zso(form,'exporttype') EQ 1){
-				writeoutput(' GROUP BY inquiries_email');
-			}else if(application.zcore.functions.zso(form,'exporttype') EQ 2){
-				writeoutput(' GROUP BY inquiries_phone1, inquiries_phone2');
-			}
-			writeoutput(' ORDER BY inquiries_datetime DESC');
-		}
-		db.sql=theSQL;
-		qI=db.execute("qI");
-	}else{
-		savecontent variable="theSql"{
-			writeoutput('SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries WHERE
-			inquiries.site_id = #db.param(request.zOS.globals.id)# and 
-			inquiries.inquiries_status_id <> #db.param(0)# and 
-			inquiries_deleted = #db.param(0)# and 
-			inquiries.inquiries_spam = #db.param(0)# and 
-			inquiries_parent_id = #db.param(0)#');
-			if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-				writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
-				user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
-			}
-			if(application.zcore.functions.zso(request.zsession,'agentuserid') NEQ ''){
-				writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-				user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)# ');
-			}
-			if(application.zcore.functions.zso(form,'searchType',true) EQ 0){
-				if(form.inquiries_start_date EQ false){
-					writeoutput(' and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
-					inquiries_datetime <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)');
-				}else{
-					writeoutput(' and (inquiries_datetime >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
-					inquiries_datetime <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
-				}
-			}else{
-				if(form.inquiries_start_date EQ false){
-					writeoutput(' and (inquiries_start_date >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
-					inquiries_end_date <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)');
-				}else{
-					writeoutput(' and (inquiries_start_date >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
-					inquiries_end_date <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
-				}
-			}
-			if(application.zcore.functions.zso(form, 'inquiries_type_id') NEQ ""){
-				echo(' and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
-				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))# ');
-			}
-			if(application.zcore.functions.zso(form,'inquiries_name') NEQ ""){
-				writeoutput(' and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#');
-			}
-			if(isDefined('request.zsession.leadcontactfilter')){
-				if(request.zsession.leadcontactfilter EQ 'new'){
-					writeoutput(' and inquiries.inquiries_status_id =#db.param('1')#');
-				}else if(request.zsession.leadcontactfilter EQ 'email'){
-					writeoutput(' and inquiries_phone1 =#db.param('')# 	and inquiries_phone_time=#db.param('')#');
-				}else if(request.zsession.leadcontactfilter EQ 'phone'){
-					writeoutput(' and inquiries_phone1 <>#db.param('')# 	and inquiries_phone_time=#db.param('')#');
-				}else if(request.zsession.leadcontactfilter EQ 'forced'){
-					writeoutput(' and inquiries_phone_time<>#db.param('')#');
+				savecontent variable="theSql"{
+					writeoutput('SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries WHERE
+					inquiries.site_id = #db.param(request.zOS.globals.id)# and 
+					inquiries.inquiries_status_id <> #db.param(0)# and 
+					inquiries_deleted = #db.param(0)# and 
+					inquiries.inquiries_spam = #db.param(0)# and 
+					inquiries_parent_id = #db.param(0)#');
+					if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
+						writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
+						user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
+					}
+					if(application.zcore.functions.zso(request.zsession,'agentuserid') NEQ ''){
+						writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
+						user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)# ');
+					}
+					if(application.zcore.functions.zso(form,'searchType',true) EQ 0){
+						if(form.inquiries_start_date EQ false){
+							writeoutput(' and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
+							inquiries_datetime <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)');
+						}else{
+							writeoutput(' and (inquiries_datetime >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
+							inquiries_datetime <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
+						}
+					}else{
+						if(form.inquiries_start_date EQ false){
+							writeoutput(' and (inquiries_start_date >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
+							inquiries_end_date <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)');
+						}else{
+							writeoutput(' and (inquiries_start_date >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
+							inquiries_end_date <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)');
+						}
+					}
+					if(application.zcore.functions.zso(form, 'inquiries_type_id') NEQ ""){
+						echo(' and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
+						inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))# ');
+					}
+					if(application.zcore.functions.zso(form,'inquiries_name') NEQ ""){
+						writeoutput(' and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#');
+					}
+					if(isDefined('request.zsession.leadcontactfilter')){
+						if(request.zsession.leadcontactfilter EQ 'new'){
+							writeoutput(' and inquiries.inquiries_status_id =#db.param('1')#');
+						}else if(request.zsession.leadcontactfilter EQ 'email'){
+							writeoutput(' and inquiries_phone1 =#db.param('')# 	and inquiries_phone_time=#db.param('')#');
+						}else if(request.zsession.leadcontactfilter EQ 'phone'){
+							writeoutput(' and inquiries_phone1 <>#db.param('')# 	and inquiries_phone_time=#db.param('')#');
+						}else if(request.zsession.leadcontactfilter EQ 'forced'){
+							writeoutput(' and inquiries_phone_time<>#db.param('')#');
+						}
+					}
+					if(isDefined('request.zsession.leademailgrouping') and request.zsession.leademailgrouping EQ '1'){
+						writeoutput(' and inquiries_primary = #db.param('1')#');
+					}
+					if(application.zcore.functions.zso(form, 'exporttype') EQ 1){
+						writeoutput(' GROUP BY inquiries_email');
+					}else if(application.zcore.functions.zso(form, 'exporttype') EQ 2){
+						writeoutput(' GROUP BY inquiries_phone1, inquiries_phone2');
+					}
+					writeoutput(' ORDER BY inquiries_datetime DESC ');
 				}
 			}
-			if(isDefined('request.zsession.leademailgrouping') and request.zsession.leademailgrouping EQ '1'){
-				writeoutput(' and inquiries_primary = #db.param('1')#');
-			}
-			if(application.zcore.functions.zso(form, 'exporttype') EQ 1){
-				writeoutput(' GROUP BY inquiries_email');
-			}else if(application.zcore.functions.zso(form, 'exporttype') EQ 2){
-				writeoutput(' GROUP BY inquiries_phone1, inquiries_phone2');
-			}
-			writeoutput(' ORDER BY inquiries_datetime DESC ');
-		}
-		db.sql=theSQL;
-		qI=db.execute("qI");
-	}
-	if(form.format EQ 'html'){
-		writeoutput('<tr class="header">
-			<td>First Name</td>
-			<td>Last Name</td>
-			<td>Email</td>
-			<td>Phone1</td>
-			<td>Phone2</td>
-			<td>Company</td>
-			<td>Date Received</td>
-			<td>Type</td>
-			<td colspan="40">Associated Links</td>
-		</tr>');
-	}else if(form.format EQ 'csv'){
-		writeoutput('"First Name","Last Name","Email","Phone1","Phone2","Company","Date Received","Type","Associated Links"#chr(13)&chr(10)#');
-	}
-	loop query="qI"{
-		arrLink=arraynew(1);
-		if(application.zcore.app.siteHasApp("content")){
-			if(qI.content_id NEQ 0 and qI.content_id NEQ ""){
-				arrF2n28=listtoarray(qI.content_id);
-				for(i328=1;i328 LTE arraylen(arrF2n28);i328++){
-					arrayappend(arrLink,request.zos.currentHostName&"/c-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#arrF2n28[i328]#.html");
-				}
-			}
-		}
-		if(application.zcore.app.siteHasApp("listing") and qI.property_id NEQ ''){
-			arrP=listtoarray(qI.property_id,',');
-			for(i=1;i LTE arraylen(arrP);i++){
-				arrI=listtoarray(arrP[i],'-');
-				if(arraylen(arrI) EQ 2){
-					urlMlsId=application.zcore.listingCom.getURLIdForMLS(arrI[1]);
-					urlMLSPId=arrI[2];
-					arrayappend(arrLink,request.zos.currentHostName&"/c-#urlMlsId#-#urlMLSPId#.html");
-				}
-			}
-		}
-		if(qI.inquiries_referer NEQ "" and qI.inquiries_referer DOES NOT CONTAIN request.zos.currentHostName&'/inquiry'){
-			arrayappend(arrLink,qI.inquiries_referer);	
-		}
-		if(qI.inquiries_referer2 NEQ "" and qI.inquiries_referer2 DOES NOT CONTAIN request.zos.currentHostName&'/inquiry'){
-			arrayappend(arrLink, qI.inquiries_referer2);	
-		}
-		if(form.format EQ 'html'){
-			for(i=1;i LTE arraylen(arrLink);i++){
-				if(arrLink[i] NEQ ""){	
-					arrLink[i]='<a href="#arrLink[i]#" target="_blank">Link #i#</a>';
-				}
-			}
-		}
-		tid=qI.inquiries_type_id&"|"&qI.inquiries_type_id_siteIDType;
-		typeName="";
-		if(structkeyexists(typeStruct, tid)){
-			typeName=typeStruct[tid];
-		} 
-		if(form.format EQ 'html'){
-			if(qI.currentrow MOD 2 EQ 0){
-				writeoutput('<tr class="row2">');
-			}else{
-				writeoutput('<tr>');
-			}
-			writeoutput('<td>#qI.inquiries_first_name#&nbsp;</td>
-			<td>#qI.inquiries_last_name#&nbsp;</td>
-			<td>#qI.inquiries_email#&nbsp;</td>
-			<td>#qI.inquiries_phone1#&nbsp;</td>
-			<td>#qI.inquiries_phone2#&nbsp;</td>
-			<td>#qI.inquiries_company#&nbsp;</td>
-			<td>#DateFormat(qI.inquiries_datetime, "m/dd/yyyy")# #Timeformat(qI.inquiries_datetime, "h:mm tt")#&nbsp;</td>');
 
-			echo('<td>#typeName#</td>');
-			loop from="1" to="#arraylen(arrLink)#" index="i"{
-				writeoutput('<td>#arrLink[i]#&nbsp;</td>');
+			db.sql=theSQL&" LIMIT #db.param(doffset)#, #db.param(100)# ";
+			qInquiries=db.execute("qInquiries");
+			if(qInquiries.recordcount EQ 0){
+				break;
 			}
-			writeoutput('</tr>');
-		}else{
-			writeoutput('"#qI.inquiries_first_name#", "#qI.inquiries_last_name#", "#qI.inquiries_email#", "#qI.inquiries_phone1#", "#qI.inquiries_phone2#","#qI.inquiries_company#", "#DateFormat(qI.inquiries_datetime, "m/dd/yyyy")# #Timeformat(qI.inquiries_datetime, "h:mm tt")#"');
-			echo(', "#typeName#"');
-			loop from="1" to="#arraylen(arrLink)#" index="i"{
-				writeoutput(',"#arrLink[i]#"');
+			doffset+=100;
+			if(i2 EQ 1){
+				for(row in qInquiries){
+					/*if(row.inquiries_custom_json EQ ""){
+						continue;
+					}*/
+
+					for(n in row){
+						if(row[n] NEQ "" and row[n] NEQ "0"){
+							fieldStruct[n]="";
+						}
+					}
+					if(row.inquiries_custom_json NEQ ""){
+						j=deserializeJson(row.inquiries_custom_json);
+						if(not isstruct(j)){
+							j={arrCustom:[]};
+						}
+						if(structkeyexists(j, 'arrCustom')){
+							for(n=1;n LTE arraylen(j.arrCustom);n++){
+								r=j.arrCustom[n];
+								if(r.value NEQ "" and r.value NEQ "0"){
+									customStruct[r.label]="";
+								}
+							}
+						}
+					}
+				}
+			}else{
+				currentRow=1;
+				for(row in qInquiries){
+					arrLink=arraynew(1);
+					if(application.zcore.app.siteHasApp("content")){
+						if(row.content_id NEQ 0 and row.content_id NEQ ""){
+							arrF2n28=listtoarray(row.content_id);
+							for(i328=1;i328 LTE arraylen(arrF2n28);i328++){
+								arrayappend(arrLink,request.zos.currentHostName&"/c-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#arrF2n28[i328]#.html");
+							}
+						}
+					}
+					if(application.zcore.app.siteHasApp("listing") and row.property_id NEQ ''){
+						arrP=listtoarray(row.property_id,',');
+						for(i=1;i LTE arraylen(arrP);i++){
+							arrI=listtoarray(arrP[i],'-');
+							if(arraylen(arrI) EQ 2){
+								urlMlsId=application.zcore.listingCom.getURLIdForMLS(arrI[1]);
+								urlMLSPId=arrI[2];
+								arrayappend(arrLink,request.zos.currentHostName&"/c-#urlMlsId#-#urlMLSPId#.html");
+							}
+						}
+					}
+					if(row.inquiries_referer NEQ "" and row.inquiries_referer DOES NOT CONTAIN request.zos.currentHostName&'/inquiry'){
+						arrayappend(arrLink,row.inquiries_referer);	
+					}
+					if(row.inquiries_referer2 NEQ "" and row.inquiries_referer2 DOES NOT CONTAIN request.zos.currentHostName&'/inquiry'){
+						arrayappend(arrLink, row.inquiries_referer2);	
+					}
+					if(form.format EQ 'html'){
+						for(i=1;i LTE arraylen(arrLink);i++){
+							if(arrLink[i] NEQ ""){	
+								arrLink[i]='<a href="#arrLink[i]#" target="_blank">Link #i#</a>';
+							}
+						}
+					}
+					tid=row.inquiries_type_id&"|"&row.inquiries_type_id_siteIDType;
+					typeName="";
+					if(structkeyexists(typeStruct, tid)){
+						typeName=typeStruct[tid];
+					} 
+					dateTime=dateformat(row.inquiries_datetime, "m/dd/yyyy")&" "&Timeformat(row.inquiries_datetime, "h:mm tt");
+					
+					if(row.inquiries_custom_json NEQ ""){
+						j=deserializeJson(row.inquiries_custom_json);
+						j2={};
+						for(i3=1;i3 LTE arraylen(j.arrCustom);i3++){
+							j2[j.arrCustom[i3].label]=j.arrCustom[i3].value;
+						}
+						j=j2;
+					}else{
+						j={};
+					}
+					if(form.format EQ 'html'){
+						if(currentrow MOD 2 EQ 0){
+							writeoutput('<tr class="row2">');
+						}else{
+							writeoutput('<tr>');
+						}
+						writeoutput('<td>#typeName#</td><td>#dateTime#</td>');
+						for(i3=1;i3 LTE arraylen(arrF);i3++){
+							if(structkeyexists(j, arrF[i3])){
+								v=j[arrF[i3]];
+							}else if(structkeyexists(row, arrF[i3])){
+								v=row[arrF[i3]];
+							}else{
+								v="";
+							} 
+							v=left(replace(replace(replace(rereplace(v, '<.*?>', '', 'all'), chr(13), "", "all"), chr(10), " ", "all"), '"', "", 'all'), 100);
+							if(structkeyexists(j, arrF[i3])){
+								echo('<td>'&v&'</td>');
+							}else if(structkeyexists(row, arrF[i3])){
+								echo('<td>'&v&'<td>');
+							}else{
+								echo('<td>&nbsp;</td>');
+							} 
+						}
+						loop from="1" to="#arraylen(arrLink)#" index="i"{
+							writeoutput('<td>#arrLink[i]#&nbsp;</td>');
+						}
+						echo('</tr>'&chr(10));
+					}else if(form.format EQ 'csv'){
+						echo('"'&replace(typeName, '"', "", 'all')&'", "'&dateTime&'", ');
+						for(i3=1;i3 LTE arraylen(arrF);i3++){
+							if(structkeyexists(j, arrF[i3])){
+								v=j[arrF[i3]];
+							}else if(structkeyexists(row, arrF[i3])){
+								v=row[arrF[i3]];
+							}else{
+								v="";
+							} 
+							v=left(replace(replace(replace(rereplace(v, '<.*?>', '', 'all'), chr(13), "", "all"), chr(10), " ", "all"), '"', "", 'all'), 100);
+							if(i3 NEQ 1){
+								echo(", ");
+							}
+							echo('"'&v&'"');
+						}
+						loop from="1" to="#arraylen(arrLink)#" index="i"{
+							writeoutput(',"#arrLink[i]#"');
+						}
+						echo(chr(13)&chr(10));
+					}
+					currentRow++;
+				}
 			}
-			writeoutput(chr(13)&chr(10));
 		}
-	}
+	}  
 	if(form.format EQ 'html'){
 		writeoutput('</table></body></html>');
 	}
