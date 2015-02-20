@@ -199,8 +199,7 @@
 			application.zcore.functions.zSetModalWindow();
         }
         </cfscript>
-
-<cfdump var="#request.zsession#">
+ 
 	<cfif request.cgi_SCRIPT_NAME EQ '/z/misc/inquiry/index'>
 		<cfsavecontent variable="temp.pageNav">
 		<a href="/">#request.zos.globals.homelinktext#</a> /
