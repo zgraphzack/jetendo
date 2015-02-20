@@ -292,8 +292,10 @@ USER WAS PERMANENTLY BLOCKED.');
 	var qUpdate='';
 	var db=request.zos.queryObject;
 	var ts=structnew();
-	if(structkeyexists(request.zos,'trackingDisabled')) return;
-	if(not structkeyexists(request.zsession, 'tracking')){
+	if(structkeyexists(request.zos,'trackingDisabled')){ 
+		return;
+	}
+	if(not structkeyexists(request.zsession, 'tracking')){ 
 		return false;
 	}
 	local.tempSource="";
@@ -306,7 +308,7 @@ USER WAS PERMANENTLY BLOCKED.');
 	local.c.datasource=request.zos.zcoreDatasource;
 	db=application.zcore.db.newQuery(local.c);
 	hasSession=false;
-	if(isdefined('request.zsession.tracking.track_user_id') and not isnull(request.zsession.tracking.track_user_id)){
+	if(isdefined('request.zsession.tracking.track_user_id') and not isnull(request.zsession.tracking.track_user_id) and request.zsession.tracking.track_user_id NEQ 0){
 		hasSession=true;
 		track_user_id=request.zsession.tracking.track_user_id;
 		db.sql="UPDATE #db.table("track_user", request.zos.zcoreDatasource)#  SET ";
@@ -330,23 +332,24 @@ USER WAS PERMANENTLY BLOCKED.');
     track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
     track_user_updated_datetime=#db.param(request.zos.mysqlnow)# ,
 track_user_source=#db.param(local.tempSource)#, 
-    zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)# ";
+    zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)#, 
+    site_id=#db.param(request.zos.globals.id)#
+     ";
 	if(hasSession){
-		db.sql&=" WHERE track_user_id = #db.param(request.zsession.tracking.track_user_id)# and 
-		track_user_deleted = #db.param(0)# and ";
-	}
-    db.sql&=" site_id=#db.param(request.zsession.tracking.site_id)# ";
-	if(hasSession){
-		db.execute("qUpdate");
+		db.sql&=" WHERE  track_user_id = #db.param(request.zsession.tracking.track_user_id)# and 
+		track_user_deleted = #db.param(0)# and 
+		site_id=#db.param(request.zos.globals.id)# "; 
+
+		db.execute("qUpdate"); 
 	}else{
 		local.rs=db.insert("qInsert", request.zOS.insertIDColumnForSiteIDTable);
 		if(local.rs.success){ 
 			track_user_id=local.rs.result;
-			request.zsession.tracking.track_user_id=local.rs.result;
+			request.zsession.tracking.track_user_id=local.rs.result; 
 		}else{
 			throw("track_user insert failed");	
-		}
-	}
+		} 
+	} 
 	for(i=1;i LTE arraylen(request.zsession.trackingArrPages);i++){
 		db.sql="INSERT INTO #db.table("track_page", request.zos.zcoreDatasource)#  SET 
 		track_page_script=#db.param(request.zsession.trackingArrPages[i].track_page_script)#,
