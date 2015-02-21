@@ -349,8 +349,12 @@
 		}else{
 			inquiryFirstDate=dateFormat(now(), "yyyy-mm-dd")&" 00:00:00";
 		}
-		form.inquiries_end_date = application.zcore.functions.zGetDateSelect("inquiries_end_date");
-		form.inquiries_start_date = application.zcore.functions.zGetDateSelect("inquiries_start_date");
+		if(not structkeyexists(form, 'inquiries_end_date') or not isdate(form.inquiries_end_date)){ 
+			form.inquiries_end_date = application.zcore.functions.zGetDateSelect("inquiries_end_date");
+		}
+		if(not structkeyexists(form, 'inquiries_start_date') or not isdate(form.inquiries_start_date)){ 
+			form.inquiries_start_date = application.zcore.functions.zGetDateSelect("inquiries_start_date");
+		}
 		
 		if(form.inquiries_start_date EQ false or form.inquiries_end_date EQ false){
 			form.inquiries_start_date = dateformat(dateadd("d", -30, now()), "yyyy-mm-dd");
@@ -420,7 +424,7 @@
 			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
 			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
-		<cfif structkeyexists(form, 'searchOn') EQ false>
+		<cfif structkeyexists(form, 'searchType') EQ false>
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
@@ -473,7 +477,7 @@
 		<cfelse>
 			ORDER BY maxdatetime DESC
 		</cfif>
-		<cfif structkeyexists(form, 'searchOn')>
+		<cfif structkeyexists(form, 'searchType')>
 			LIMIT #db.param(max(0,(form.zIndex-1))*10)#,#db.param(10)#
 			<cfelse>
 			LIMIT #db.param(max(0,(form.zIndex-1))*30)#,#db.param(30)#
@@ -503,7 +507,7 @@
 			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
 			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
-		<cfif structkeyexists(form, 'searchOn') EQ false>
+		<cfif structkeyexists(form, 'searchType') EQ false>
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
@@ -556,8 +560,7 @@
 		qinquiriesActive=db.execute("qinquiriesActive");  
 		</cfscript>
 		<h2>Search Leads</h2>
-		<form action="/z/inquiries/admin/manage-inquiries/index?search=true" method="post">
-			<input type="hidden" name="searchOn" value="true" /> 
+		<form action="/z/inquiries/admin/manage-inquiries/index" method="get"> 
 			<table style="border-spacing:0px; width:100%;" class="table-list">
 				<tr>
 					<td>Name:
@@ -586,7 +589,11 @@
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
 					<td>Start:#application.zcore.functions.zDateSelect("inquiries_start_date", "inquiries_start_date", year(inquiryFirstDate), year(now()))#</td>
-					<td>End:#application.zcore.functions.zDateSelect("inquiries_end_date", "inquiries_end_date", year(inquiryFirstDate), year(now()))#</td>
+					<td>End:#application.zcore.functions.zDateSelect("inquiries_end_date", "inquiries_end_date", year(inquiryFirstDate), year(now()))#
+
+					<cfif not variables.isReservationSystem>
+						<input type="hidden" name="searchtype" value="0" />
+					</cfif></td>
 					<cfif variables.isReservationSystem>
 						<td><input type="radio" name="searchtype" value="0" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 0>checked="checked"</cfif> style="background:none; border:none;" />
 							Received Date<br  />
@@ -598,7 +605,7 @@
 			</table>
 		</form>
 		<hr />
-		<cfif structkeyexists(form, 'searchOn')>
+		<cfif structkeyexists(form, 'searchType')>
 			<h2 style="display:inline; ">Search Results | </h2>
 			<a href="/z/inquiries/admin/manage-inquiries/index">Back to Active Leads</a><br />
 			<br />
@@ -696,10 +703,10 @@
 		searchStruct.count = qinquiriesActive.count;
 		searchStruct.index = form.zIndex;
 		searchStruct.showString = "Results ";
-		searchStruct.url = "/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&searchtext="&application.zcore.functions.zso(form, 'searchtext');
+		searchStruct.url = "/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&searchtext="&application.zcore.functions.zso(form, 'searchtext')&"&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#";
 		searchStruct.indexName = "zIndex";
 		searchStruct.buttons = 5;
-		if(structkeyexists(form, 'searchOn')){		
+		if(structkeyexists(form, 'searchType')){		
 			searchStruct.perpage = 10;
 		}else{
 			searchStruct.perpage = 30;

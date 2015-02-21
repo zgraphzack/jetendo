@@ -1302,6 +1302,7 @@
 				}
 				if(lastGroup NEQ ""){
 					if(qS.site_id NEQ 0 or variables.allowGlobal){
+						queueComStruct["obj"&qS.site_option_group_id].getRowStruct(qS.site_option_id);
 						echo('<td>');
 							echo('#queueComStruct["obj"&qS.site_option_group_id].getAjaxHandleButton()#');
 						echo('</td>');
@@ -2947,6 +2948,7 @@ Define this function in another CFC to override the default email format
 				if(qGroup.site_option_group_enable_sorting EQ 1){
 					echo('<td>');
 					if(row.site_id NEQ 0 or variables.allowGlobal){
+						queueSortCom.getRowStruct(row.site_x_option_group_set_id);
 						echo(queueSortCom.getAjaxHandleButton());
 					}
 					echo('</td>');

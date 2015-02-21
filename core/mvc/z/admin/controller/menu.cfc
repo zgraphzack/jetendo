@@ -857,7 +857,7 @@
 			</tr>
 			</thead>
 			<tbody>
-				<cfloop query="qMenuItemLinks">
+				<cfloop query="qMenuItemLinks"> 
 				<tr #variables.queueSortCom.getRowHTML(qMenuItemLinks.menu_button_link_id)# <cfif qMenuItemLinks.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<td style="vertical-align:top; width:30px; ">#qMenuItemLinks.menu_button_link_id#</td>
 					<td style="vertical-align:top; ">#qMenuItemLinks.menu_button_link_text#</td>
@@ -925,6 +925,10 @@
 			</thead>
 			<tbody>
 				<cfloop query="qMenuItems">
+					<cfscript>
+	
+					variables.queueSortCom.getRowStruct(qMenuItems.menu_button_id);
+					</cfscript>
 				<tr #variables.queueSortCom.getRowHTML(qMenuItems.menu_button_id)# <cfif qMenuItems.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<td style="vertical-align:top; width:30px; ">#qMenuItems.menu_button_id#</td>
 					<td style="vertical-align:top; ">#qMenuItems.menu_button_text#</td>

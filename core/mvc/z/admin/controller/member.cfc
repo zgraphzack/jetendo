@@ -1055,7 +1055,7 @@
 		</tr>
 		</thead>
 		<tbody>
-			<cfloop query="qMember">
+			<cfloop query="qMember"> 
 			<tr #variables.queueSortCom.getRowHTML(qMember.user_id)# <cfif qMember.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
 				<td>#qMember.user_id#</td>
 				<td><cfif qMember.member_photo NEQ ''>

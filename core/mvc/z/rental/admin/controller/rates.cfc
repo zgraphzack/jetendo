@@ -194,6 +194,8 @@
 			for(i=1;i LTE arraylen(arrImages);i++){
 				writeoutput('<img src="'&arrImages[i].link&'" />');
 			}
+
+			variables.queueSortCom.getRowStruct(qProp.rental_id);
 			</cfscript></td>
 			<td>#qProp.rental_name#</td>
 			<td>#qProp.rental_internal_address#</td>

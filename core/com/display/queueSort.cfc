@@ -80,19 +80,30 @@ queueSortCom.init(inputStruct);
 	}
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="getRowStruct" localmode="modern" access="public">
+	<cfargument name="primaryKeyId" type="string" required="yes">
+	<cfscript>
+	variables.rowIndex++;
+	variables.primaryKeyId=arguments.primaryKeyId;
+	return {id:"#this.ajaxTableId#_row#variables.rowIndex#", primaryKeyId:"#variables.primaryKeyId#"};
+	</cfscript>
+</cffunction>
 	
 <cffunction name="getRowHTML" localmode="modern" access="public">
 	<cfargument name="primaryKeyId" type="string" required="yes">
 	<cfscript>
 	variables.rowIndex++;
-	return ' id="#this.ajaxTableId#_row#variables.rowIndex#" data-ztable-sort-primary-key-id="#arguments.primaryKeyId#" ';
+	variables.primaryKeyId=arguments.primaryKeyId;
+	return ' id="#this.ajaxTableId#_row#variables.rowIndex#" data-ztable-sort-primary-key-id="#variables.primaryKeyId#" ';
 	</cfscript>
 </cffunction>
 
 
 <cffunction name="getAjaxHandleButton" localmode="modern" access="public">
 	<cfscript>
-	return '<span class="#this.ajaxTableId#_handle" title="Click and drag the arrow up or down to change the sort order." style="font-size:200%;cursor:move;">&##x21C5;</span>';
+	return '<span class="#this.ajaxTableId#_handle" data-ztable-sort-primary-key-id="#variables.primaryKeyId#" title="Click and drag the arrow up or down to change the sort order." style="font-size:200%;cursor:move;">&##x21C5;</span>';
 	</cfscript>
 </cffunction>
 

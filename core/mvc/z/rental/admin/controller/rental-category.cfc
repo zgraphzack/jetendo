@@ -270,6 +270,10 @@
 			</thead>
 			<tbody>
 			<cfloop query="qProp">
+				<cfscript>
+
+				variables.queueSortCom.getRowStruct(qProp.rental_category_id);
+				</cfscript>
 				<tr #variables.queueSortCom.getRowHTML(qProp.rental_category_id)# <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<td>#qProp.rental_category_name#</td>
 					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>

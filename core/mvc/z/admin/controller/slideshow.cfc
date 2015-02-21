@@ -1858,7 +1858,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			<cfloop query="qImages">
+			<cfloop query="qImages"> 
 				<tr #variables.queueSortCom.getRowHTML(qImages.slideshow_image_id)# <cfif qImages.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
 					<td style="width:100px;"><img src="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_thumbnail_url#" /></td>
 					<td>#qImages.slideshow_image_caption#</td>
@@ -1930,6 +1930,9 @@
 			</tr>
 		</cfif>
 		<cfloop query="qTabs">
+			<cfscript>
+			variables.queueSortCom.getRowStruct(qTabs.slideshow_tab_id);
+			</cfscript>
 			<tr #variables.queueSortCom.getRowHTML(qTabs.slideshow_tab_id)# <cfif qTabs.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
 				<td><cfif trim(qTabs.slideshow_tab_url) NEQ ''>
 						<img src="/zupload/slideshow/#qTabs.slideshow_id#/tabs/#qTabs.slideshow_tab_url#" width="100" />

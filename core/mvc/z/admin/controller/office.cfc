@@ -294,7 +294,7 @@ enable round robin for offices - need a new option to disable for staff.
 					arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
 					for(i=1;i LTE arraylen(arrImages);i++){
 						writeoutput('<img src="'&arrImages[i].link&'">');
-					}
+					} 
 					</cfscript></td>
 					<td>#qOffice.office_name#</td>
 					<td>#qOffice.office_address#<br />
