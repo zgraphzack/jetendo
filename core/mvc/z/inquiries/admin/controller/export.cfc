@@ -16,10 +16,10 @@
 	form.exporttype=application.zcore.functions.zso(form,'exporttype',false,'0');
 	header name="Content-Type" value="text/plain" charset="utf-8";
 	if(form.format EQ 'csv'){
-		header name="Content-Disposition" value="attachment; filename=inquiries.csv" charset="utf-8";
+		header name="Content-Disposition" value="attachment; filename=#dateformat(now(), 'yyyy-mm-dd')#-inquiries.csv" charset="utf-8";
 		//setting enablecfoutputonly="yes";
 	}else if(form.format EQ 'html'){
-		header name="Content-Disposition" value="attachment; filename=inquiries.html" charset="utf-8";
+		header name="Content-Disposition" value="attachment; filename=#dateformat(now(), 'yyyy-mm-dd')#-inquiries.html" charset="utf-8";
 		writeoutput('#application.zcore.functions.zHTMLDoctype()#
 		<head>
 		<meta charset="utf-8" />

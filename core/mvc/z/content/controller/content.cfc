@@ -862,6 +862,7 @@ this.app_id=12;
 			`content_hide_global` = #db.param(0)#,
 			`content_text_position` = #db.param(0)#,
 			`content_parentpage_link_layout` = #db.param(7)#, 
+			content_deleted=#db.param(0)#, 
 			site_id="&db.param(request.zos.globals.id)&" ";
 			db.execute("qInsert");
 		}

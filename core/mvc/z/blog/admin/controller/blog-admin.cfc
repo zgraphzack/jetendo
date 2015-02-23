@@ -78,11 +78,15 @@
 
 
 <cffunction name="sort" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	
+	sortSetup();
+	</cfscript>
 	<div class="manualSortMessage" style="display:none; padding:5px; width:100%; float:left;">Manual sorting is disabled when you are using column sorting.  Please refresh the page to use manual sorting again.</div>
 	<table id="sortRowTable" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>ID</th>
+                <!--- <th style="display:none;">ID</th> --->
                 <th>Name</th>
                 <th>Position</th>
                 <th>Office</th>
@@ -100,17 +104,62 @@
     application.zcore.functions.zRequireDataTables();
 	</cfscript>
     <script type="text/javascript">
+		var table=-1;
 	zArrDeferredFunctions.push(function() {
 		/*	$('##example').dataTable( {
 	  "filter": false,
 	  "destroy": true
 	} );*/
-		var table=$('##sortRowTable').dataTable( {
+
+		var dataTableConfig={};
+		var sortColumnIndex=-1;
+		var sortingOnSortColumn=true;
+		function enableManualSort(){
+			if(!sortingOnSortColumn){
+				return;
+			}
+			if($(".sortColumnHeader").length){
+				$(".sortRowTable_handle").show();
+				$(".manualSortMessage").hide();
+				//$(".sortColumnHeader").html("Sort");
+			}
+		}
+		function disableManualSort(){
+			if($(".sortColumnHeader").length){
+				for(i=0;i<dataTableConfig.columns.length;i++){
+					var title = $(table.column( sortColumnIndex-1 ).header()).html();
+					console.log("|"+title+"|");
+					table.column(sortColumnIndex-1).visible(false);
+				}
+				$(".sortRowTable_handle").hide();
+				$(".manualSortMessage").fadeIn('fast');
+				//$(".sortColumnHeader").html("Reload page to Sort");
+			}
+
+		}
+		function checkColumnSortStatus(){ 
+			var i=table.page.info();
+			var t=table.order();
+			if(i.recordsTotal == i.recordsDisplay){
+				if(t.length == 1 && t[0][0] == sortColumnIndex && t[0][1] == "asc"){
+					sortingOnSortColumn=true;
+					ensableManualSort();
+				}else{
+					sortingOnSortColumn=false;
+					disableManualSort();
+				}
+
+			}else{
+				disableManualSort();
+			}
+		}
+		var displayingAll=false;
+		var dataTableConfig={
 			"order": [
 				[ 0, "asc" ]
 			], 
 			"columns":[
-				{ "data": "__sortValue" },
+				//{ "data": "__sortValue" },
 				{ "data": "column1" },
 				{ "data": "column2" },
 				{ "data": "column3" },
@@ -118,13 +167,13 @@
 				{ "data": "Sort" },
 				{ "data": "Admin" }
             ],
-			"columnDefs": [
+			/*"columnDefs": [
 				{
 					"targets": [ 0 ],
 					"visible": false,
 					"searchable": false
 				}
-            ],/**/
+            ],*/
             paging: true,
             stateSave:false,
             deferRender:true,
@@ -133,18 +182,32 @@
 			"processing": true,
 			"serverSide": true,
 			"ajax": "/z/blog/admin/blog-admin/getSortData"
-		} );
+		};
+		for(var i=0;i<dataTableConfig.columns;i++){
+			if(dataTableConfig.columns[i].data == "Sort"){
+				sortColumnIndex=i;
+				break;
+			}
+		}
+		table=$('##sortRowTable').DataTable( dataTableConfig );
 		var firstOrder=true;
-		$('##sortRowTable').on( 'order.dt', function () { 
+		$('##sortRowTable').on( 'page.dt', function () { 
+			var i=table.page.info();
+			console.log(i);
+			checkColumnSortStatus();
+		});
+		$('##sortRowTable').on( 'order.dt', function (a, e) {  
 			if(firstOrder){ 
+				//zSetupAjaxTableSortAgain();
 				firstOrder=false;
 				return;
-			}
-			if($(".sortColumnHeader").length){
-				$(".sortRowTable_handle").hide();
-				$(".manualSortMessage").fadeIn('fast');
-				$(".sortColumnHeader").html("Reload page to Sort");
-			}
+			} 
+			/*
+		    .columns().nodes().flatten().to$().each(function(){
+		    	if(
+		    });
+			*/
+			checkColumnSortStatus();
 		});
 	});
     </script>
@@ -152,9 +215,8 @@
 
 </cffunction>
 
-
-<cffunction name="getSortFormObject" localmode="modern" access="remote" roles="member">
-	<cfscript> 
+<cffunction name="sortSetup" localmode="modern" access="remote" roles="member">
+	<cfscript>
 	variables.queueSortStruct = StructNew();
 	// required
 	variables.queueSortStruct.tableName = "contenttest";
@@ -175,7 +237,13 @@
 		application.zcore.functions.zMenuClearCache({content=true});
 		request.queueSortCom.returnJson();
 	}
+	
+	</cfscript>
+</cffunction>
 
+<cffunction name="getSortFormObject" localmode="modern" access="remote" roles="member">
+	<cfscript> 
+	sortSetup();
 	
 
 	sortStruct={};
@@ -254,7 +322,7 @@
 <cffunction name="getSortData" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	sortStruct=getSortFormObject();
-	writedump(sortStruct);
+	//writedump(sortStruct);
 
 	rs.draw=sortStruct.draw;
 	rs.recordsTotal=30;
