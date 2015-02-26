@@ -2,11 +2,11 @@
 	
 }
 .rss-summary-d {
-	float:left;  width:99%; border:1px solid #CCCCCC; border-top:0px; border-right:0px; 
+	float:left;  width:99%; border-bottom:1px solid #CCCCCC; border-top:0px; border-right:0px; 
 }
-.rss-summary-thumbnail{float:left; padding-right:20px; padding-bottom:20px; padding-left:10px;}
+.rss-summary-thumbnail{float:left; padding-right:20px; padding-bottom:20px; padding-left:0px;}
 .rss-summary-ds-2{
-	display:block;  float:left; border:1px solid #CCCCCC; border-top:0px; border-right:0px;  padding:10px; padding-right:0px; font-size:14px;}
+	display:block;  float:left; border-bottom:1px solid #CCCCCC; border-top:0px; border-right:0px;  padding:10px; padding-right:0px; font-size:14px;}
 .rss-summary-ds {
 	display:block;width:100%; float:left; padding:10px; padding-right:0px; font-size:14px;
 }

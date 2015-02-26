@@ -30,7 +30,8 @@
 		set domain_redirect_deleted = #db.param(1)#,
 		domain_redirect_updated_datetime=#db.param(request.zos.mysqlnow)#
 		WHERE domain_redirect_id= #db.param(application.zcore.functions.zso(form, 'domain_redirect_id'))# and 
-		site_id = #db.param(form.sid)# ";
+		site_id = #db.param(form.sid)# and 
+		domain_redirect_deleted=#db.param(0)# ";
 		q=db.execute("q"); 
 		application.zcore.functions.zUpdateDomainRedirectCache();
 		application.zcore.status.setStatus(Request.zsid, 'Domain redirect deleted');

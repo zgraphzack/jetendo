@@ -217,7 +217,8 @@
 
 	if(form.sid NEQ "" and form.importType EQ "update"){
 		db.sql="select * from #db.table("site", request.zos.zcoreDatasource)# WHERE 
-		site_id = #db.param(form.sid)# ";
+		site_id = #db.param(form.sid)# and 
+		site_deleted=#db.param(0)# ";
 		qSite=db.execute("qSite");
 		for(row in qSite){
 			globals.site_domain=row.site_domain;
@@ -290,7 +291,8 @@
 			ts.struct.site_id=form.sid;
 		}
 		db.sql="select * from #db.table("site", request.zos.zcoreDatasource)#
-		where site_id =#db.param(ts.struct.site_id)# ";
+		where site_id =#db.param(ts.struct.site_id)# and 
+		site_deleted=#db.param(0)#  ";
 		qCheck=db.execute("qCheck");
 		if(qCheck.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid, "Domain, #globals.site_short_domain#, doesn't exist in site table yet.  Please import with the ""Add Site"" option or select an existing site from the drop down menu.", form, true);
@@ -383,13 +385,17 @@
 					// loop the new struct when running the load data infile statements.  Will have to match the `db`.`table` first, then replace `#field#` with @dummy
 				}else{
 					columnList=structkeylist(dsStruct.fieldStruct[n], ", ");
-					db.sql="select #columnList# from #db.table(arrTable[2], arrTable[1])# ";
+					dbNoVerify.sql="select #columnList# from #dbNoVerify.table(arrTable[2], arrTable[1])# 
+					where #dbNoVerify.param(1)#=#dbNoVerify.param(1)# ";
 					if(structkeyexists(dsStruct.fieldStruct[n], "site_id")){
-						db.sql&=" where site_id = #db.param(-1)#";
+						dbNoVerify.sql&=" and site_id = #dbNoVerify.param(-1)#";
 					}
-					db.sql&=" LIMIT #db.param(0)#, #db.param(1)#";
+					if(structkeyexists(dsStruct.fieldStruct[n], arrTable[2]&"_deleted")){
+						dbNoVerify.sql&=" and `#arrTable[2]#_deleted` = #dbNoVerify.param(0)#";
+					}
+					dbNoVerify.sql&=" LIMIT #dbNoVerify.param(0)#, #dbNoVerify.param(1)#";
 					try{
-						db.execute("qCheck");
+						dbNoVerify.execute("qCheck");
 					}catch(Any e){
 						arrayAppend(arrError, "Database structure exception when verifying #n#: "&e.message);
 					}
@@ -468,7 +474,8 @@
 			database=replace(replace(row.directory,"\","/","all"), "#curImportPath#temp/database/", "");
 			curTable=left(row.name, len(row.name)-4);
 			db.sql="delete from #db.table(curTable, database)# 
-			where site_id = #db.param(globals.site_id)# ";
+			where site_id = #db.param(globals.site_id)#  and 
+			`#curTable#_deleted`=#db.param(0)# ";
 			if(debug) writeoutput("delete from `#database#`.`#curTable#` where site_id = #globals.site_id#;<br />");
 			writeLogEntry("delete from `#database#`.`#curTable#` where site_id = #globals.site_id#;");
 			result=db.execute("qDelete");
