@@ -255,7 +255,7 @@ var zLastAjaxVarName=""; */
 			arrError.push('queueSortCom.ajaxTableId is set to "'+tableId+'", but this table is missing the <tbody> tag around the body rows, which is required for table row sorting to function.');
 		}
 		$( '#'+tableId+' tbody tr' ).each(function(){
-			if(this.id == '' || $("."+tableId+"_handle")[0].getAttribute('data-ztable-sort-primary-key-id') == ''){
+			if(this.id == '' || ($("."+tableId+"_handle").length && $("."+tableId+"_handle")[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
 				validated=false;
 			}
 		}); 
@@ -266,8 +266,11 @@ var zLastAjaxVarName=""; */
 					var arrId=$("#"+tableId+" tbody").sortable("toArray");
 					var arrId2=[]; 
 					for(var i=0;i<arrId.length;i++){
-						var id=parseInt($("#"+arrId[i]+" ."+tableId+"_handle").attr("data-ztable-sort-primary-key-id"));
-						arrId2.push(id);
+						var v=$("#"+arrId[i]+" ."+tableId+"_handle").attr("data-ztable-sort-primary-key-id");
+						if(!isNaN(v)){
+							var id=parseInt(v);
+							arrId2.push(id);
+						}
 					}
 					var sortOrderList=arrId2.join("|");
 					//console.log("sorted list:"+sortOrderList);
