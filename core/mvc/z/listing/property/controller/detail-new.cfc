@@ -454,31 +454,22 @@ if(form.listing_sub_type_id NEQ "" and form.listing_sub_type_id NEQ 0){
      
 <cfscript>
 tempAgent=form.listing_agent;
+agentStruct=application.zcore.app.getAppCFC("listing").getAgentDataByAgentId(form.mls_id, form.listing_agent);
 </cfscript>
-<cfif structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[form.mls_id], "agentIdStruct") and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[form.mls_id].agentIdStruct, tempAgent)>
-         <div class="zls-detail-box">
-	<cfscript>
-	
-	agentStruct=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[form.mls_id].agentIdStruct[tempAgent];
-		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
-		userusergroupid = userGroupCom.getGroupId('user',request.zos.globals.id);
-	</cfscript>	
-    
-    <div class="zls-detail-subheading">LISTING AGENT</div><br />
-		<cfif fileexists(application.zcore.functions.zVar('privatehomedir',agentStruct.userSiteId)&removechars(request.zos.memberImagePath,1,1)&agentStruct.member_photo)>
-    <div style="width:105px; float:left;">
-			<img src="#application.zcore.functions.zvar('domain',agentStruct.userSiteId)##request.zos.memberImagePath##agentStruct.member_photo#" alt="Listing Agent" width="90"/><br />
-            </div>
+<cfif agentStruct.success> 
+    <div class="zls-detail-box"> 
+		<div class="zls-detail-subheading">LISTING AGENT</div><br />
+		<cfif agentStruct.tempData.photo NEQ "">
+		<div style="width:105px; float:left;">
+		<img src="#agentStruct.tempData.photo#" alt="Listing Agent" width="90"/><br />
+		</div>
 		</cfif>
-	<cfif agentStruct.member_first_name NEQ ''>#agentStruct.member_first_name#</cfif> <cfif agentStruct.member_last_name NEQ ''>#agentStruct.member_last_name#<br /></cfif>
-	<cfif agentStruct.member_phone NEQ ''><strong>#agentStruct.member_phone#</strong><br /></cfif>
-    <cfif application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id NEQ "0" and agentStruct.member_public_profile EQ 1>
-    <cfscript>
-	tempName=application.zcore.functions.zurlencode(lcase("#agentStruct.member_first_name# #agentStruct.member_last_name# "),'-');
-	</cfscript>
-    <a href="/#tempName#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#agentStruct.user_id#.html" target="_blank">Bio &amp; Listings</a>
-    </cfif>
-    </div>
+		<cfif agentStruct.data.member_first_name NEQ ''>#agentStruct.data.member_first_name#</cfif> <cfif agentStruct.data.member_last_name NEQ ''>#agentStruct.data.member_last_name#<br /></cfif>
+		<cfif agentStruct.data.member_phone NEQ ''><strong>#agentStruct.data.member_phone#</strong><br /></cfif>
+		<cfif agentStruct.tempData.profileURL NEQ "">
+			<a href="#agentStruct.tempData.profileURL#" target="_blank">Bio &amp; Listings</a>
+		</cfif>
+	</div>
 </cfif> 
          <div class="zls-detail-box">
 <div style="border:1px solid ##666; float:left; padding:3.2%; width:93%;">

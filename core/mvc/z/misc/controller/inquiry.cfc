@@ -564,7 +564,6 @@
         </th><td>
 		<cfsavecontent variable="content2">
 			<cfif structkeyexists(form, 'inquiries_comments')>#htmleditformat(form.inquiries_comments)#
-			<cfelseif isDefined('form.inquiries_comments')>#htmleditformat(form.inquiries_comments)#
 			<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'inquiries_comments'))#
 			</cfif>
 		</cfsavecontent>

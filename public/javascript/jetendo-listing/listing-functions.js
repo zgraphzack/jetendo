@@ -154,3 +154,45 @@ function zListingDisplayHelpBox(){
 	'<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>'+
 	'</div>');
 }*/
+
+function zDisplayConversionCode(){
+
+	var tempObj={};
+	tempObj.method="post";
+	tempObj.url='/z/misc/system/getConversionCode'; 
+	tempObj.cache=false;
+	tempObj.callback=function(r){
+		$("body").append('<div>'+r+'</div>');
+	};
+	tempObj.ignoreOldRequests=true;
+	zAjax(tempObj);
+}
+
+function ajaxSubmitListingInquiryCallback(r){
+	var obj=eval('('+r+')'); 
+	if(obj.success){
+		$(".listingInquiryErrorDiv").hide();
+		$(".listingInquirySuccessDiv").html(obj.message).fadeIn('fast');
+		zJumpToId("listingInquirySuccessDiv");
+
+		zTrackPageview('/z/misc/thank-you/index');
+		zDisplayConversionCode();
+	}else{
+		$(".listingInquirySuccessDiv").hide();
+		$(".listingInquiryErrorDiv").html(obj.errorMessage).fadeIn('fast');
+		zJumpToId("listingInquiryErrorDiv");
+	}
+}
+function zSubmitListingInquiry(){ 
+	var postObj=zGetFormDataByFormId("listingInquiryForm");
+	var tempObj={};
+	tempObj.method="post";
+	tempObj.url='/z/listing/inquiry/send';
+	tempObj.postObj=postObj;
+	tempObj.cache=false;
+	tempObj.callback=ajaxSubmitListingInquiryCallback;
+	tempObj.ignoreOldRequests=true;
+	zAjax(tempObj);
+
+	return false;
+}

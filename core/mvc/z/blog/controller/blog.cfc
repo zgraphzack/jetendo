@@ -1946,6 +1946,13 @@ this.app_id=10;
 	<cfif qArticle.user_googleplus_url NEQ ""><a href="#qArticle.user_googleplus_url#?rel=author" rel="author" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Google+"><img src="/z/images/icons/googleplusv2.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Google+" width="16" height="16" /></a></cfif> 
 	<cfif qArticle.user_twitter_url NEQ ""><a href="#qArticle.user_twitter_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Twitter"><img src="/z/images/icons/twitter.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Twitter" width="16" height="16" /></a></cfif>
 	<cfif qArticle.user_facebook_url NEQ ""><a href="#qArticle.user_facebook_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Facebook"><img src="/z/images/icons/facebook.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Facebook" width="16" height="16" /></a></cfif>
+
+	<cfif qArticle.user_instagram_url NEQ ''>
+		<a href="#qArticle.user_instagram_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Instagram"><img src="/z/images/icons/instagram.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Instagram" width="16" height="16" /></a>
+	</cfif>
+	<cfif qArticle.user_linkedin_url NEQ ''>
+		<a href="#qArticle.user_linkedin_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on LinkedIn"><img src="/z/images/icons/linkedin.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on LinkedIn" width="16" height="16" /></a>
+	</cfif>
 	<br />
 	<span style="font-weight:normal; font-style:italic;"><cfif qArticle.blog_event EQ 1> Event Date:  </cfif> #dateformat(qArticle.blog_datetime, 'ddd, mmm dd, yyyy')#
 	<cfif qArticle.blog_hide_time EQ 0> at #timeformat(qArticle.blog_datetime, 'h:mmtt')# </cfif>

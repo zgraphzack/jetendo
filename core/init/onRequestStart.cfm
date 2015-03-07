@@ -99,9 +99,10 @@
 		Request.zOSBeginFile=ArrayNew(1);
 		Request.zOSEndFile=ArrayNew(1);
 		request.zos.whiteSpaceEnabled=false;
-		 
-		 // this wasn't necessary
-		//application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
+		  
+		if(not structkeyexists(application.zcore, 'session')){
+			application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
+		}
 		request.zsession=application.zcore.session.get();  
 		/*
 	application.zcore.session.clear();

@@ -587,7 +587,9 @@ sfSortStruct["search_tenure"]="";
 sfSortStruct["search_parking"]="";
 sfSortStruct["search_near_address"]="";
 sfSortStruct["search_more_options"]="";
- 
+sfSortStruct["search_result_limit"]="";
+sfSortStruct["search_sort"]="";
+
  if(request.cgi_script_name NEQ '/z/listing/search-form/index'){
 	 form.zsearch_bid='';
 	 form.zsearch_cid='';
@@ -3393,25 +3395,30 @@ LIST DATE:<br />
 <div style="padding-bottom:5px;padding-top:5px;clear:both;width:100%; ">
 ## of Results:<br />
 
-
-<cfscript>
-addHeight+=55;
-ts = StructNew();
-ts.name="search_result_limit";
-ts.hideselect=true;
-ts.listValuesDelimiter="|";
-if(structkeyexists(form, 'search_result_layout') and form.search_result_layout EQ 2){
-	ts.listValues ="9|15|21|27|33|39|45|54";
-}else{
-	ts.listValues ="10|15|20|25|30|35|40|50";
-}
-ts.listLabels =ts.listValues;
-ts.listLabelsDelimiter="|";
-ts.output=true;
-ts.selectLabel="List Date";
-//ts.inlineStyle="width:#replace(form.searchFormSelectWidth,"px","")-20#px;";
-	application.zcore.functions.zInputSelectBox(ts);
-</cfscript>
+	<cfsavecontent variable="theCriteriaHTML4">
+	<cfscript>
+	addHeight+=55;
+	ts = StructNew();
+	ts.name="search_result_limit";
+	ts.hideselect=true;
+	ts.listValuesDelimiter="|";
+	if(structkeyexists(form, 'search_result_layout') and form.search_result_layout EQ 2){
+		ts.listValues ="9|15|21|27|33|39|45|54";
+	}else{
+		ts.listValues ="10|15|20|25|30|35|40|50";
+	}
+	ts.listLabels =ts.listValues;
+	ts.listLabelsDelimiter="|";
+	ts.output=true;
+	ts.selectLabel="List Date";
+	//ts.inlineStyle="width:#replace(form.searchFormSelectWidth,"px","")-20#px;";
+		application.zcore.functions.zInputSelectBox(ts);
+	</cfscript>
+	</cfsavecontent>
+	<cfscript>
+	sfSortStruct["search_result_limit"]=theCriteriaHTML4;
+	</cfscript>
+	#theCriteriaHTML4#
 </div>
 <!--- <br style="clear:both;" /><div style="height:10px; width:100%; "></div><br style="clear:both;" /> --->
 <div style="padding-bottom:5px;clear:both;width:100%; ">
@@ -3452,6 +3459,7 @@ ts.inlineStyle="width:100%;";//#min(140,replace(form.searchFormSelectWidth,"px",
 </div>
 <div style="padding-bottom:5px;clear:both;width:100%; ">
 SORT BY:<br />
+	<cfsavecontent variable="theCriteriaHTML4">
 <cfscript>
 addHeight+=55;
 ts = StructNew();
@@ -3471,6 +3479,11 @@ ts.selectLabel="Sort";
 ts.inlineStyle="width:100%;";//#min(140,replace(form.searchFormSelectWidth,"px","")-20)#px;";
 	application.zcore.functions.zInputSelectBox(ts);
 </cfscript>
+	</cfsavecontent>
+	<cfscript>
+	sfSortStruct["search_sort"]=theCriteriaHTML4;
+	</cfscript>
+	#theCriteriaHTML4#
 </div>
 
 

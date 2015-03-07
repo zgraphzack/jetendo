@@ -698,6 +698,24 @@ this.app_id=12;
 		</tr>
 		
 		<tr>
+		<th>Detail CFC Path:</th>
+		<td>');
+		form.content_config_detail_cfc_path=application.zcore.functions.zso(form, 'content_config_detail_cfc_path');
+		ts = StructNew();
+		ts.name = "content_config_detail_cfc_path"; 
+		application.zcore.functions.zInput_Text(ts);
+		echo(' (i.e. root.mvc.controller.member)</td>
+		</tr>
+		<tr>
+		<th>Detail CFC Method:</th>
+		<td>');
+		form.content_config_detail_cfc_method=application.zcore.functions.zso(form, 'content_config_detail_cfc_method');
+		ts = StructNew();
+		ts.name = "content_config_detail_cfc_method"; 
+		application.zcore.functions.zInput_Text(ts);
+		echo(' (i.e. view - function should have userStruct and listingStruct arguments with struct data type)</td>
+		</tr>
+		<tr> 
 		<th>Hide Inquiring About?:</th>
 		<td> ');
 		form.content_config_hide_inquiring_about=application.zcore.functions.zso(form,'content_config_hide_inquiring_about',true,0);

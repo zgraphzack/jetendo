@@ -12,6 +12,18 @@ div.-railo-dump tr:hover{ background-color:#e6faeb !important;}
 .zGearButton:link, .zGearButton:visited{
 	font-size:30px;line-height:36px; color:#000;
 }
+.table {
+display:table;
+}
+.tr {
+display:table-row;
+}
+.th {
+display:table-cell; padding:3px;
+}
+.td {
+display:table-cell; padding:3px;
+}
 .zGearButton:hover{ color:#666;}
 
 .zGearPopupInnerMenu{padding:2px; background-color:#333; float:left; border-radius:5px; }
@@ -460,6 +472,7 @@ background-color:#FFFFFF;
 .zModalOverlayDiv2 a:link, .zModalOverlayDiv2 a:visited{ color:#369; text-decoration:underline; }
 .zModalOverlayDiv2 a:hover { color:#F00; }
 
+.zMenuWrapper{clear:both;}
 .zMenuWrapper span{display:block; }
 .zMenuClear {clear: both;height: 0px;line-height: 0.0px; font-size:0px;}
 #zMenuDivDefault, #zMenuDivDefault ul {

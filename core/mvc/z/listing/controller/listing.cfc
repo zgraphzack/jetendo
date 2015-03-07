@@ -844,6 +844,33 @@ arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qc.mls_option_site_map
 </cffunction>
 
 
+<cffunction name="getAgentDataByAgentId" localmode="modern" output="no" returntype="struct" access="remote">
+	<cfargument name="mls_id" type="string" required="yes">
+	<cfargument name="agentId" type="string" required="yes">
+	<cfscript>
+	rs={};
+	rs.success=false;
+	if(structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[arguments.mls_id], "agentIdStruct") and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[arguments.mls_id].agentIdStruct, arguments.agentId)){
+		rs.data=application.zcore.app.getAppData("listing").sharedStruct.mlsStruct[arguments.mls_id].agentIdStruct[arguments.agentId];
+		rs.tempData={
+			photo:"",
+			profileURL:""
+		};
+		if(fileexists(application.zcore.functions.zVar('privatehomedir',rs.data.userSiteId)&removechars(request.zos.memberImagePath,1,1)&rs.data.member_photo)){
+
+			rs.tempData.photo=application.zcore.functions.zvar('domain',rs.data.userSiteId)&request.zos.memberImagePath&rs.data.member_photo;
+		}
+		if(application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id NEQ "0" and rs.data.member_public_profile EQ 1){
+			tempName=application.zcore.functions.zurlencode(lcase("#rs.data.member_first_name# #rs.data.member_last_name# "),'-');
+			rs.tempData.profileURL="/#tempName#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_listing_user_id#-#rs.data.user_id#.html";
+		}
+		rs.success=true;
+	}
+	return rs;
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="configForm" localmode="modern" output="no" access="remote" returntype="any" hint="displays a form to add/edit applications.">
 <cfscript>
 	var local=structnew();
@@ -992,8 +1019,14 @@ Page count: <input type="text" name="mls_option_inquiry_pop_count" size="3" valu
 <td>
 <input type="template" name="mls_option_detail_method" value="#form.mls_option_detail_method#" /> (i.e. index)
 </td></tr>  
-<tr><th>Search Custom Template:</th>
-<td>Template: <input type="text" name="mls_option_search_template" value="#htmleditformat(form.mls_option_search_template)#" /> Override listing search form url with custom url.
+<tr><th>Search URL:</th>
+<td><input type="text" name="mls_option_search_template" value="#htmleditformat(form.mls_option_search_template)#" /> Override listing search form url with custom url.
+</td></tr>
+<tr><th>Search CFC Path:</th>
+<td><input type="text" name="mls_option_search_cfc_path" value="#htmleditformat(form.mls_option_search_cfc_path)#" /> (i.e. root.mvc.controller.search) 
+</td></tr>
+<tr><th>Search CFC Method:</th>
+<td><input type="text" name="mls_option_search_cfc_method" value="#htmleditformat(form.mls_option_search_cfc_method)#" /> (i.e. index) 
 </td></tr>
 <tr><th>Force links to use<br /> custom search template:</th>
 <td>
@@ -2754,7 +2787,9 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 			hitCount=application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_count;
 		}
 		
-		if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 1){
+		if(application.zcore.functions.zso(form, 'modelpopforced', true, 0) EQ 1){
+			showModalForm=false;
+		}else if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_enabled EQ 1){
 			if(request.zsession.zlistingpageviewcount GTE hitCount){
 				if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 1){
 					if(structkeyexists(cookie, 'zPOPInquiryCompleted') EQ false and structkeyexists(request.zsession, 'zPopinquiryPopSent') EQ false){

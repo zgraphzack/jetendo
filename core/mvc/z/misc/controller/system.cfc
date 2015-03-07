@@ -275,5 +275,13 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 	</cfscript>
 
 </cffunction>
+
+<cffunction name="getConversionCode" localmode="modern" access="remote">
+	<cfscript>
+  	application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);
+	echo(application.zcore.functions.zvarso('Lead Conversion Tracking Code'));
+	abort;
+</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

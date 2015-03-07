@@ -149,8 +149,14 @@
 	form.inquiries_status_id = 1;
 	result = application.zcore.functions.zValidateStruct(form, myForm, Request.zsid,true);
 	if(result eq true){	
-		application.zcore.status.setStatus(Request.zsid, false,form,true);
-		application.zcore.functions.zRedirect("/z/listing/inquiry/index?modalpopforced=#form.modalpopforced#&zsid=#Request.zsid#&content_id=#form.content_id#&listing_id=#form.listing_id#");
+		if(structkeyexists(form, 'x_ajax_id')){
+	  		application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);
+			rs={success:false, errorMessage:"Please fully complete the form and try again." };
+			application.zcore.functions.zReturnJson(rs);
+		}else{
+			application.zcore.status.setStatus(Request.zsid, false,form,true);
+			application.zcore.functions.zRedirect("/z/listing/inquiry/index?modalpopforced=#form.modalpopforced#&zsid=#Request.zsid#&content_id=#form.content_id#&listing_id=#form.listing_id#");
+		}
 	}
 	if(Find("@", form.inquiries_first_name) NEQ 0){
 		form.inquiries_spam=1;
@@ -177,8 +183,14 @@
 	inputStruct.datasource=request.zos.zcoreDatasource;
 	form.inquiries_id = application.zcore.functions.zInsert(inputStruct); 
 	if(form.inquiries_id EQ false){
-		request.zsid = application.zcore.status.setStatus(Request.zsid, "Your inquiry has not been sent due to an error.", false,true);
-		application.zcore.functions.zRedirect("/z/listing/inquiry/index?modalpopforced=#form.modalpopforced#&content_id=#form.content_id#&listing_id=#form.listing_id#&zsid="&request.zsid);
+		if(structkeyexists(form, 'x_ajax_id')){
+	  		application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);
+			rs={success:false, errorMessage:"Please fully complete the form and try again." };
+			application.zcore.functions.zReturnJson(rs);
+		}else{
+			request.zsid = application.zcore.status.setStatus(Request.zsid, "Your inquiry has not been sent due to an error.", false,true);
+			application.zcore.functions.zRedirect("/z/listing/inquiry/index?modalpopforced=#form.modalpopforced#&content_id=#form.content_id#&listing_id=#form.listing_id#&zsid="&request.zsid);
+		}
 	}
 	arrList=listtoarray(form.listing_id);
 	db.sql="SELECT * FROM (#db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
@@ -261,7 +273,22 @@
 	form.searchId = application.zcore.status.getNewId();
 	application.zcore.status.setStatus(form.searchid,false,ts);
 	
-	application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#&zsid="&request.zsid); 
+
+	if(structkeyexists(form, 'x_ajax_id')){
+  		application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);
+		rs={success:true, message:"Your inquiry was received" };
+		application.zcore.functions.zReturnJson(rs);
+	}else{
+		application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#&zsid="&request.zsid); 
+  	}
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="displayPropertyInquiryForm" localmode="modern" access="remote">
+	<cfscript>
+	request.ajaxListingInquiryForm=1;
+	index();
 	</cfscript>
 </cffunction>
 
@@ -276,6 +303,9 @@
 	var qinquiries=0;
 	variables.init();
 	writeoutput('<a id="cjumpform"></a>');
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', true, 0);
+
+	echo('<div class="zListingInquiryFormHeader">');
 	if(form.modalpopforced NEQ 1){
 		if(application.zcore.app.siteHasApp("content")){
 			inquiryTextMissing=false;
@@ -312,16 +342,20 @@
 		}
 	}
 	writeoutput('<br style="clear:both;" />	#variables.propertyHTML#');
+	echo('</div>
+	<div id="listingInquiryErrorDiv" class="listingInquiryErrorDiv"></div>
+	<div id="listingInquirySuccessDiv" class="listingInquirySuccessDiv"></div>');
 	backupcontentid=application.zcore.functions.zso(form, 'content_id');
 	ts45=structnew();
 	ts45.disableChildContentSummary=true;
 	application.zcore.app.getAppCFC("content").setContentIncludeConfig(ts45);
 	application.zcore.app.getAppCFC("content").getPropertyInclude(0, variables.qC39821n);
-	writeoutput('<p>* denotes required field.</p>');
+	writeoutput('<p style="clear:both;">* denotes required field.</p>');
 	db.sql="SELECT *
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
 	WHERE inquiries_id = #db.param(-1)# and 
-	site_id = #db.param(request.zOS.globals.id)# ";
+	site_id = #db.param(request.zOS.globals.id)# and 
+	inquiries_deleted=#db.param(0)# ";
 	qInquiries=db.execute("qInquiries");
 	if(isdefined('error_message') EQ false){
 		application.zcore.functions.zQueryToStruct(qInquiries);
@@ -329,62 +363,78 @@
 		form.method=variables.actionBackup;
 	}
 	form.set9=application.zcore.functions.zGetHumanFieldIndex();
-	</cfscript>
-	<form name="myForm" id="myForm" action="/z/listing/inquiry/send" onsubmit="zSet9('zset9_#form.set9#');" method="post">
+	</cfscript> 
+	<form name="listingInquiryForm" id="listingInquiryForm" action="" onsubmit="zSet9('zset9_#form.set9#'); <cfif structkeyexists(request, 'ajaxListingInquiryForm')>return zSubmitListingInquiry();<cfelse>this.action='/z/listing/inquiry/send'; return true;</cfif>" method="post">
 		<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
 		#application.zcore.functions.zFakeFormFields()#
-		<table style="border-spacing:0px; width:98%;" class="zinquiry-form-table">
-			<tr>
-				<td style="width:90px;">First Name:<span class="highlight"> *</span></td>
-				<td><input name="inquiries_first_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" /></td>
-			</tr>
-			<tr>
-				<td style="width:90px;">Last Name:<span class="highlight"> *</span></td>
-				<td><input name="inquiries_last_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /></td>
-			</tr>
-			<tr>
-				<td>Email:
+		<div style="border-spacing:0px; width:98%;" class="zinquiry-form-table table">
+			<div class="tr">
+				<div class="th" style="width:90px;">First Name:<span class="highlight"> *</span></div>
+				<div class="td"><input name="inquiries_first_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" /></div>
+			
+			</div>
+			<div class="tr">
+				<div class="th" style="width:90px;">Last Name:<span class="highlight"> *</span></div>
+				<div class="td"><input name="inquiries_last_name" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /></div>
+			
+			</div>
+			<div class="tr">
+			
+				<div class="th">Email:
 					<cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_email_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_email_required EQ 1>
 						<span class="highlight"> *</span>
-					</cfif></td>
-				<td><input name="inquiries_email" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /></td>
-			</tr>
-			<tr>
-				<td>Phone:
+					</cfif></div>
+				<div class="td"><input name="inquiries_email" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /></div>
+			
+			</div>
+			<div class="tr">
+			
+				<div class="th">Phone:
 					<cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1>
 						<span class="highlight"> * </span>
-					</cfif></td>
-				<td><input name="inquiries_phone1" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /></td>
-			</tr>
-			<tr>
-				<td style="vertical-align:top; ">Comments:</td>
-				<td><textarea name="inquiries_comments" cols="50" style="width:100%" rows="5"><cfif structkeyexists(form, 'inquiries_comments')>#form.inquiries_comments#<cfelse>#form.inquiries_comments#</cfif>
-</textarea></td>
-			</tr>
-			<tr>
-				<td style="vertical-align:top; ">You are:</td>
-				<td><input type="radio" name="inquiries_buyer" value="1" style="background:none; border:0px; " checked="checked" />
+					</cfif></div>
+				<div class="td"><input name="inquiries_phone1" type="text" size="30" style="width:100%" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /></div>
+			
+			</div>
+			<div class="tr">
+			
+				<div class="th" style="vertical-align:top; ">Comments:</div>
+				<div class="td"><textarea name="inquiries_comments" cols="50" style="width:100%" rows="5"><cfif structkeyexists(form, 'inquiries_comments')>#form.inquiries_comments#<cfelse>#form.inquiries_comments#</cfif></textarea></div>
+			</div>
+			<div class="tr">
+			
+			
+				<div class="th" style="vertical-align:top; ">You are:</div>
+				<div class="td"><input type="radio" name="inquiries_buyer" value="1" style="background:none; border:0px; " checked="checked" />
 					Buying
 					<input type="radio" name="inquiries_buyer" value="0" style="background:none; border:0px; " />
-					Selling </td>
-			</tr>
-			<td>&nbsp;</td>
-				<td><button type="submit" name="submit">Send Inquiry</button>
+					Selling </div>
+			
+			</div>
+			<div class="tr">
+				<div class="th">&nbsp;</div>
+				<div class="td"><button type="submit" name="submit">Send Inquiry</button>
 					&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;">Privacy Policy</a>
-					<input type="hidden" name="listing_id" value="#form.listing_id#" />
+					<input type="hidden" name="listing_id" value="#htmleditformat(form.listing_id)#" />
 					<cfif application.zcore.app.siteHasApp("listing")>
-						<input type="hidden" name="content_id" value="#variables.contentIdList#" />
-					</cfif></td>
-			</tr><tr>
-				<td colspan="2">#application.zcore.functions.zvarso("Form Privacy Message")#</td>
-			</tr>
-		</table>
+						<input type="hidden" name="content_id" value="#htmleditformat(variables.contentIdList)#" />
+					</cfif></div>
+			
+			</div>
+			
+		</div>
+			<cfscript>
+			v=application.zcore.functions.zvarso("Form Privacy Message");
+			if(v NEQ ""){
+				echo('<div>#v#</div>');
+			}
+			</cfscript>
 		<cfif form.modalpopforced EQ 1>
 			<input type="hidden" name="modalpopforced" value="1" />
 			<input type="hidden" name="js3811" id="js3811" value="" />
 			<input type="hidden" name="js3812" id="js3812" value="#application.zcore.functions.zGetFormHashValue()#" />
 		</cfif>
-	</form>
-</cffunction>
+	</form> 
+</cffunction> 
 </cfoutput>
 </cfcomponent>

@@ -987,7 +987,7 @@ USUAGE
 	}
 	</cfscript>
     <cftry>
-		<cfhttp url="#arguments.link#" method="#method#" timeout="#arguments.timeout#" redirect="yes" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Feedburner Jetendo CMS">
+		<cfhttp url="#arguments.link#" method="#method#" timeout="#arguments.timeout#" redirect="yes" charset="utf-8" useragent="Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36 Jetendo CMS">
 		<!--- Jetendo CMS and Feedburner are added to user agent to allow web server to bypass security / ssl checks --->
 		<cfhttpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#">
 		<cfhttpparam type="Header" name="TE" value="#request.httpCompressionType#"></cfhttp>
@@ -995,7 +995,7 @@ USUAGE
 			<!--- try again without https to bypass SNI SSL support problem. --->
 			<cfif left(arguments.link, 5) EQ "https">
     				<cftry>
-					<cfhttp url="#replace(arguments.link, 'https', 'http')#" method="#method#" timeout="#arguments.timeout#" redirect="yes" charset="utf-8" useragent="Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3 GoogleToolbarFF 3.1.20080730 Feedburner Jetendo CMS ">
+					<cfhttp url="#replace(arguments.link, 'https', 'http')#" method="#method#" timeout="#arguments.timeout#" redirect="yes" charset="utf-8" useragent="Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36 Jetendo CMS ">
 					<!--- Jetendo CMS and Feedburner are added to user agent to allow web server to bypass security / ssl checks --->
 					<cfhttpparam type="Header" name="Accept-Encoding" value="#request.httpCompressionType#">
 					<cfhttpparam type="Header" name="TE" value="#request.httpCompressionType#"></cfhttp>

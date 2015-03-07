@@ -684,6 +684,14 @@
 				<td><input type="text" name="user_facebook_url" value="#form.user_facebook_url#" size="30" /></td>
 			</tr>
 			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("Instagram URL","member.member.edit user_instagram_url")#</th>
+				<td><input type="text" name="user_instagram_url" value="#form.user_instagram_url#" size="30" /></td>
+			</tr>
+			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("LinkedIn URL","member.member.edit user_linkedin_url")#</th>
+				<td><input type="text" name="user_linkedin_url" value="#form.user_linkedin_url#" size="30" /></td>
+			</tr>
+			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Alternate Email","member.member.edit user_alternate_email")#</th>
 				<td><input type="text" name="user_alternate_email" value="#htmleditformat(form.user_alternate_email)#" size="30" /></td>
 			</tr>
