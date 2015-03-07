@@ -178,7 +178,7 @@
 			<p><a href="/z/server-manager/tasks/publish-missing/index" target="_blank">Publish 404 pages</a></p>
 			<p><a href="/z/server-manager/tasks/verify-conventions/index" target="_blank">Verify Conventions</a></p>
 			<p><a href="/z/server-manager/tasks/update-sitemap/index" target="_blank">Update Sitemaps</a></p>
-			<p><a href="/z/blog/admin/ping/index" target="_blank">Blog Ping</a></p>
+			<!--- <p><a href="/z/blog/admin/ping/index" target="_blank">Blog Ping</a></p> --->
 			<p><a href="/z/_com/display/skin?method=deleteOldCache">Delete Old Skin File Versioning Cache</a></p>
 			<p><a href="/z/server-manager/tasks/memory-dump/index" target="_blank">Memory Dump</a></p>
 			<p><a href="/z/misc/system/index" target="_blank">Railo uptime and session clearing</a></p>

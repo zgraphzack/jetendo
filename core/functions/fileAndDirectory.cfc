@@ -747,8 +747,8 @@ notes: optionally delete an existing image that has a field in the specified dat
 	var output = 0;
 	secureCommand="getImageMagickIdentify"&chr(9)&arguments.source;
 	output=application.zcore.functions.zSecureCommand(secureCommand, 10);
-	if(output CONTAINS "x" and listlen(output,"x") EQ 2){
-		return { width:listgetat(output,1,"x"), height:listgetat(output,2,"x") };
+	if(output CONTAINS "x" and listlen(output,"x") GTE 2){
+		return { width:listgetat(output,1,"x"), height:listgetat(output,listlen(output, "x"),"x") };
 	}else{
 		application.zcore.template.fail("resizeImage: failed to get source image dimensions with zSecureCommand: "&secureCommand&" | Output: "&output,true);
 	}

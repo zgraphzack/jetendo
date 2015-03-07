@@ -67,13 +67,15 @@ function getTasks(){
 	$t->url=$adminDomain."/z/listing/tasks/importMLS/index";
 	array_push($arrTask, $t);
 
+	/*
+doesn't work anymore
 	$t=new stdClass();
 	$t->logName="blog-pings.html";
 	$t->interval=900;
 	$t->startTimeOffsetSeconds=0;
 	$t->url=$adminDomain."/z/blog/admin/ping/index";
 	array_push($arrTask, $t);
-
+*/
 	$t=new stdClass();
 	$t->logName="site-map-xml-publish.html";
 	$t->interval="daily";

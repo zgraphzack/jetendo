@@ -1841,7 +1841,7 @@ this.app_id=10;
 		</cfsavecontent>
 		<cfsavecontent variable="tempMeta">
 			<cfif qArticle.blog_metakey NEQ ""><meta name="Keywords" content="#htmleditformat(qArticle.blog_metakey)#" /></cfif>
-			<cfif qArticle.blog_metadesc NEQ ""><meta name="Description" content="#htmleditformat(qArticle.blog_metadesc)#" /></cfif>
+			<meta name="Description" content="<cfif qArticle.blog_metadesc NEQ "">#htmleditformat(qArticle.blog_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zLimitStringLength(application.zcore.functions.zStripHTMLTags(qArticle.blog_story), 100))#</cfif>" />
 		</cfsavecontent>
 		<cfif qArticle.blog_slideshow_id NEQ 0>
 		<cfscript>application.zcore.functions.zEmbedSlideShow(qarticle.blog_slideshow_id);</cfscript>
@@ -2853,7 +2853,7 @@ this.app_id=10;
 	</cfsavecontent>
 	<cfsavecontent variable="tempMeta">
 	<cfif qCategory.blog_category_metakey NEQ ""><meta name="keywords" content="#htmleditformat(qCategory.blog_category_metakey)#" /></cfif>
-	<cfif qCategory.blog_category_metadesc NEQ ""><meta name="description" content="#htmleditformat(qCategory.blog_category_metadesc)#" /></cfif>
+	<meta name="description" content="<cfif qCategory.blog_category_metadesc NEQ "">#htmleditformat(qCategory.blog_category_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zLimitStringLength(application.zcore.functions.zStripHTMLTags(qCategory.blog_category_description), 100))#</cfif>" />
 	</cfsavecontent>
 	<cfscript>
 	application.zcore.template.setTag("title","#qCategory.blog_category_name#");
@@ -3138,7 +3138,7 @@ this.app_id=10;
 	</cfsavecontent>
 	<cfsavecontent variable="tempMeta">
 	<cfif qCategory.blog_category_metakey NEQ ""><meta name="keywords" content="#htmleditformat(qCategory.blog_category_metakey)#" /></cfif>
-	<cfif qCategory.blog_category_metadesc NEQ ""><meta name="description" content="#htmleditformat(qCategory.blog_category_metadesc)#" /></cfif>
+	<meta name="description" content="<cfif qCategory.blog_category_metadesc NEQ "">#htmleditformat(qCategory.blog_category_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zLimitStringLength(application.zcore.functions.zStripHTMLTags(qCategory.blog_category_description), 100)#</cfif>" />
 	</cfsavecontent>
 	<cfscript>
 	application.zcore.template.setTag("title","#qCategory.blog_category_name#");
@@ -4175,7 +4175,7 @@ this.app_id=10;
 	</cfsavecontent>
 	<cfsavecontent variable="tempMeta">
 	<cfif qtagdata.blog_tag_metakey NEQ ""><meta name="keywords" content="#htmleditformat(qtagdata.blog_tag_metakey)#" /></cfif>
-	<cfif qtagdata.blog_tag_metadesc NEQ ""><meta name="description" content="#htmleditformat(qtagdata.blog_tag_metadesc)#" /></cfif>
+	<meta name="description" content="<cfif qtagdata.blog_tag_metadesc NEQ "">#htmleditformat(qtagdata.blog_tag_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zLimitStringLength(application.zcore.functions.zStripHTMLTags(qtagdata.blog_tag_description), 100))#</cfif>" />
 	</cfsavecontent>
 	<cfsavecontent variable="tempMenu">
 	<cfset content = '#content#'>
