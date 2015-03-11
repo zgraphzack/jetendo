@@ -2792,9 +2792,7 @@ tabCom.enableSaveButtons();
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.blog.edit blog_unique_name")#</th>
 		<td style="vertical-align:top; ">WARNING: DO NOT USE THIS FIELD!<br /><input type="text" name="blog_unique_name" value="#form.blog_unique_name#" size="100" />
 		</td>
-		</tr>
-		<cfif application.zcore.user.checkSiteAccess()>
-		</cfif>
+		</tr> 
 		
 		</table>
         #application.zcore.hook.trigger("blog.articleEditCustomFields", {query=qEdit})#

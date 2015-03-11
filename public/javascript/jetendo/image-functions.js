@@ -639,7 +639,12 @@ var zGalleryReloadTimeoutId=0;
 				var d2=document.getElementById(id+"_data").value;
 				var myObj=eval("("+d2+")");
 				var windowWidth=$(window).width()*.9;
-				var width=Math.min(windowWidth, b.originalWidth);
+				var parentWidth=$(a2[i]).parent().width();
+				if(!isNaN(parentWidth) && parentWidth != 0 && parentWidth<windowWidth){
+					var width=Math.min(parentWidth, b.originalWidth);
+				}else{
+					var width=Math.min(windowWidth, b.originalWidth);
+				}
 				var thumbWidth=Math.min(Math.abs(windowWidth/4), b.originalThumbWidth);
 				var ratio=width/myObj.panel_width;
 				var thumbRatio=thumbWidth/myObj.frame_width;

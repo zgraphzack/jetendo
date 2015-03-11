@@ -181,7 +181,7 @@
 	
 	uniqueChanged=false;
 	if(form.method EQ 'insert' and application.zcore.functions.zso(form, 'content_unique_name') NEQ ""){
-	uniqueChanged=true;
+		uniqueChanged=true;
 	}
 	if(form.method EQ 'update'){
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -193,7 +193,7 @@
 			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this content.',form,true);
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
 		}
-		if(application.zcore.user.checkSiteAccess() EQ false){
+		if(application.zcore.user.checkSiteAccess() EQ false and qCheck.content_locked EQ 1){
 			form.content_locked=qCheck.content_locked;
 		}else{
 			if(structkeyexists(form, 'content_unique_name') and qcheck.content_unique_name NEQ form.content_unique_name){
