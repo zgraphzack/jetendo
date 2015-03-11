@@ -472,12 +472,12 @@
 			fd=this.getRETSValues("property", this.arrTypeLoop[g], "propertytype");
 			fd["M"]="Multi-Family";
 			for(i in fd){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			} 
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"county");
 			for(i in fd){
-				arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 			
 			
@@ -495,44 +495,44 @@
 					tp=20;
 				}
 				fd2[i]=tp;
-				arrayappend(arrSQL,"('#this.mls_provider#','acreage','#tp#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','acreage','#tp#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 			 
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"buildingtype");
 			if(isstruct(fd)){
 				for(i in fd){
-					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#', '#this.arrTypeLoop[g]&'_buildingtype_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#', '#this.arrTypeLoop[g]&'_buildingtype_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"landtypecom");
 			if(isstruct(fd)){
 				for(i in fd){
-					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#', '#this.arrTypeLoop[g]&'_landtypecom_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#', '#this.arrTypeLoop[g]&'_landtypecom_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"landtype");
 			if(isstruct(fd)){
 				for(i in fd){
-					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#', '#this.arrTypeLoop[g]&'_landtype_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#', '#this.arrTypeLoop[g]&'_landtype_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g], "waterfront");  
 			for(i in fd){
-				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#', '#this.arrTypeLoop[g]&'_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#', '#this.arrTypeLoop[g]&'_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 			 
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"style");
 			if(isstruct(fd)){
 				for(i in fd){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#', '#this.arrTypeLoop[g]&'_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#', '#this.arrTypeLoop[g]&'_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"pool");
 			if(isstruct(fd)){ 
 				for(i in fd){
-					arrayappend(arrSQL,"('#this.mls_provider#','pool','#fd[i]#', '#this.arrTypeLoop[g]&'_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','pool','#fd[i]#', '#this.arrTypeLoop[g]&'_'&i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 		}

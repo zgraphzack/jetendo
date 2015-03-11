@@ -518,7 +518,7 @@ unlimited between 7pm and 5am hawaii time
 		fd["RES"]="Single Family";
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		
@@ -526,38 +526,38 @@ unlimited between 7pm and 5am hawaii time
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"PROPERTYFRONTAGE");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','frontage','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','frontage','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"VIEW");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','view','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','view','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"PROPERTYSUBTYPE");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"ArchitecturalStyle");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"LANDTENURE");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','tenure','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','tenure','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"PROPERTYCONDITION");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','condition','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','condition','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"MLSAreaMajor");
@@ -573,20 +573,20 @@ unlimited between 7pm and 5am hawaii time
 					if(structkeyexists(s, fd[i])){
 						fd[i]=s[fd[i]];
 					}
-					arrayappend(arrSQL,"('#this.mls_provider#','region','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','region','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			/* i shouldn't have used this here...
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"LISTSTATUS");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','liststatus','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','liststatus','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}*/
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"PARKINGFEATURES");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 		}

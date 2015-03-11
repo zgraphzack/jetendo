@@ -594,7 +594,7 @@
 		ts["R"]="Rental";        
 		
 		for(i in ts){
-			arrayappend(arrSQL,"('9','listing_type','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('9','listing_type','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		ts=structnew();
@@ -651,7 +651,7 @@
 		ts["Y81"]="Short term rental";
 		
 		for(i in ts){
-			arrayappend(arrSQL,"('9','style','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('9','style','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		ts=structnew();
@@ -687,7 +687,7 @@
 		ts["X38F"]="Gulf access";
 		
 		for(i in ts){
-			arrayappend(arrSQL,"('9','view','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('9','view','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		ts=structnew();
@@ -701,17 +701,17 @@
 		ts["X25"]="Hill country";
 		ts["X36F"]="Gulf frontage";
 		for(i in ts){
-			arrayappend(arrSQL,"('9','frontage','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('9','frontage','#ts[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		arrSubType=listtoarray("Single Family Home|Free Standing|Single Family Use|Single Family|Condo|Townhouse|Duplex|One Story|Office/Warehouse|Commercial|Villa|Mixed Use|1/2 Duplex|Residential Development|General Commercial|Retail|Manufactured|Farmland|Office|Timberland|Warehouse-storage|Five or More|Four Units|Mobile Home Use|PUD|Industrial|Ranchland|Crop Producing Farm|Car Wash|Apartment|Co-op|Manufactured/Mobile out of Park|Home with Rental Unit|High-rise|Business Opportunity|Two Story|One Story,Manufactured|Manufactured/Mobile in Park|Other|Plant Nursery|Triplex|Strip Center|Multi-Family|One Story,Single Family Home|Single Family Home,One Story|Three Story,Villa|Heavy Weight Sales Serv|Two Story,Condo|Acreage/Ranch/Grove|Two Story,Townhouse|Three Story|Manufacturing|Restaurants/Bars|Medical Offices|Group Housing/ACLF|Distribution|1/2 Duplex,Villa|Warehouse|Garage Apt|Business|Business Opp. w/RE||One Story,Villa|One Story,Villa,Single Family Home|Condo,Townhouse|Villa,One Story|Split Level,One Story|Efficiency,Garage Apt|Condo,Three Story|Showroom/Office|Condo,High-rise|One Story,Two Story|Vehicle Related|Automotive|One Story,Single Family Home,Villa|Condo,Two Story|Condo,One Story|Groves|Two Story,Single Family Home|Single Family Home,Villa|Split Level|Apartments|High-rise,Condo|One Story,Townhouse,Condo|One Story,Condo|Vehicle Repair|Subdivided Vacant Land|Motel/Hotel|Service/Fueling Station|Flex Space|Day Care|Personal Services|Villa,1/2 Duplex|Three Story,Apartment|Triplex Use|Duplex Use|Three Story,Townhouse|Planned Unit Development|Executive Suites|Neighborhood Center|Three Story,Condo,Mid-rise|Condo,Mid-rise|Mobile Home/RV Park|Business Opp. No/RE|Community Shopping Cntr|Modular|Condo,High-rise,Garage Apt,Mid-rise|Townhouse,Condo,Two Story|Single Family Home,One Story,Garage Apt|Mid-rise,Condo|Four Units Use|One Story,Apartment|Townhouse,One Story|One Story,Villa,1/2 Duplex|Special Purpose|Townhouse,Two Story|Condo,Townhouse,Two Story|Single Family Home,Two Story|Townhouse,Condo|Grocery|Working Ranch|Ranch|Food/Drink Sell/Service|Dude Ranch|Mobile|Home & Income Housing|Churches|Mini-warehouse|Manufactured,Mobile w/Land Double Out of Park|Vehicle sales|Mobile w/Land Double in ParkD|One Story,Townhouse|Tree Farm|Marine|Apartment,Efficiency|One Story,1/2 Duplex|Fish Farm|Self-storage|Bar/Club|Townhouse,Three Story|Mid-rise|Sod Farm|Net Leased|Mobile w/Land Single Out of Park|Efficiency|Recreation|Billboard Site|Restaurants/BarsA09Ret|Two Story,Townhouse,Condo|Apartment,Two Story|Villa,Three Story|Mobile w/Land Single in Park|Tri-Level|One Story,Two Story,Single Family Home|1/2 Duplex,Townhouse,Condo,Apartment|Two Story,1/2 Duplex|Single Family Home,Mobile w/Land Double Out of Par|One Story,Split Level|Outside Storage only|Two Story,Efficiency,Garage Apt|Villa,Condo,One Story|Two Story,1/2 Duplex,Condo|Mobile w/Land Double in|One Story,Condo,Mid-rise|Condo,Two Story,Single Family Home|Split Level,Single Family Home|One Story,Condo,Single Family Home|Two Story,Condo,Townhouse|Two Story,Apartment|Tri-Level,Single Family Home|Villa,One Story,1/2 Duplex|Two Story,Single Family Home,Apartment|Condo,Townhouse,One Story|Three Story,Condo|Mobile w/Land Single Ou|Mobile w/Land Double Out of Park|Two Story,Garage Apt,Single Family Home|Fashion / Specialty|Mobile w/Land Double in Park|Apartment,One Story,Single Family Home|Two Story,Villa,Condo|Theatre|One Story,1/2 Duplex,Villa|1/2 Duplex,Condo|Condo,Townhouse,Villa|Split Level,Three Story|Condo  Town Home|Vacant Land|Rental","|");
 		for(i=1;i LTE arraylen(arrSubType);i++){
-			arrayappend(arrSQL,"('9','listing_sub_type','#arrSubType[i]#','#arrSubType[i]#','#request.zos.mysqlnow#','#arrSubType[i]#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('9','listing_sub_type','#arrSubType[i]#','#arrSubType[i]#','#request.zos.mysqlnow#','#arrSubType[i]#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		arrCounty=listtoarray("Alachua,Baker,Bay,Bradford,Brevard,Broward,Calhoun,Charlotte,Citrus,Clay,Collier,Columbia,De Soto,Dixie,Duval,Escambia,Flagler,Franklin,Gadsden,Gilchrist,Glades,Gulf,Hamilton,Hardee,Hendry,Hernando,Highlands,Hillsborough,Holmes,Indian River,Jackson,Jefferson,Lafayette,Lake,Lee,Leon,Levy,Liberty,Madison,Manatee,Marion,Martin,Miami-Dade,Monroe,Nassau,Okaloosa,Okeechobee,Orange,Osceola,Palm Beach,Pasco,Pinellas,Polk,Putnam,Saint Johns,Saint Lucie,Santa Rosa,Sarasota,Seminole,Sumter,Suwannee,Taylor,Union,Volusia,Wakulla,Walton,Washington");
 		for(i=1;i LTE arraylen(arrCounty);i++){
-			arrayappend(arrSQL,"('9','county','#arrCounty[i]#','#arrCounty[i]#','#request.zos.mysqlnow#','#arrCounty[i]#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('9','county','#arrCounty[i]#','#arrCounty[i]#','#request.zos.mysqlnow#','#arrCounty[i]#','#request.zos.mysqlnow#', '0')");
 		}
 				
 		return {arrSQL:arrSQL, cityCreated:false, arrError:arrError};

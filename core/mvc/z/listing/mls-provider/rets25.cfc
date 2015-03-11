@@ -688,19 +688,19 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		// 19=county
 		fd=this.getRETSValues("property", "","countyorparish");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
 		fd=this.getRETSValues("property", "","parking");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 
 		// property style
 		fd=this.getRETSValues("property", "","propertystyle");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 
@@ -717,7 +717,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 				i2="";
 			}
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		
@@ -725,49 +725,49 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		fd=this.getRETSValues("property", "","propertyuse");
 		for(i in fd){
 			if(i EQ "MULTIFAMILY"){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		// 1=property type
 		fd=this.getRETSValues("property", "","propertytype");
 		//fd["M"]="Multi-Family";
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
 		fd=this.getRETSValues("property", "","waterfrontage");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		fd=this.getRETSValues("property", "","location");
 		for(i in fd){
 			if(fd[i] EQ "Golf Course Frontage"){
-				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
-		arrayappend(arrSQL,"('#this.mls_provider#','frontage','Waterfront','266','#request.zos.mysqlnow#','266','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','frontage','Waterfront','266','#request.zos.mysqlnow#','266','#request.zos.mysqlnow#', '0')");
 		
 		
 		// view
 		fd=this.getRETSValues("property", "","waterview");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","location");
 		for(i in fd){
 			if(fd[i] contains 'view'){
-				arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		// Water View Y/N
-		arrayappend(arrSQL,"('#this.mls_provider#','view','Waterview','243','#request.zos.mysqlnow#','243','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','view','Waterview','243','#request.zos.mysqlnow#','243','#request.zos.mysqlnow#', '0')");
 		
 		
 		fd=this.getRETSValues("property", "","architecturalstyle");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 

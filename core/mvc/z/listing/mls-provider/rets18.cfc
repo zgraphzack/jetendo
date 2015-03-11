@@ -415,12 +415,12 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 		fd=this.getRETSValues("property", "","proptype_res");
 		
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","propsubtype");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
@@ -440,17 +440,17 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 			dS[trim(arrD[i])]=application.zcore.functions.zfirstlettercaps(countyName);
 		}
 		for(i in dS){
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#dS[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#dS[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","lotdesc");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","style");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
@@ -495,6 +495,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 					SET city_name=#db.param(application.zcore.functions.zfirstlettercaps(cur))#, state_abbr=#db.param(tempState)#,
 					country_code=#db.param('US')#, 
 					city_mls_id=#db.param('0')#,
+					 city_deleted=#db.param(0)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 					city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 					 db.sql="INSERT INTO #db.table("city_memory", request.zos.zcoreDatasource)#  
@@ -503,6 +504,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 					 state_abbr=#db.param(tempState)#,
 					 country_code=#db.param('US')#, 
 					 city_mls_id=#db.param('0')#,
+					 city_deleted=#db.param(0)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 					 db.execute("q");
 					//writeoutput(city_id);

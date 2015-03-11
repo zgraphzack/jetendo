@@ -535,7 +535,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		fd=this.getRETSValues("property", "","61");
 		for(i in fd){
 				i2=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 			
 				
@@ -544,7 +544,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		for(i in fd){
 			i2=i;
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 				
@@ -552,55 +552,55 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		fd=this.getRETSValues("property", "","251");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","367");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","437");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","438");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","491");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","539");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","586");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","662");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","747");
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		
@@ -608,29 +608,29 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets19_property where rets19_157 LIK
 		fd=this.getRETSValues("property", "","296");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		// view
 		fd=this.getRETSValues("property", "","285");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		fd=this.getRETSValues("property", "","589");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		fd=this.getRETSValues("property", "","502");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		fd=this.getRETSValues("property", "","375");
 		for(i in fd){
 			tmp=i;
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		return {arrSQL:arrSQL, cityCreated:false, arrError:arrError};
 		</cfscript>

@@ -309,7 +309,7 @@
 		fd["B"]="Multi-Family";
 		fd["A"]="Residential";
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		 db.sql="select cast(group_concat(distinct rets14_area SEPARATOR #db.param(',')#) AS CHAR) datalist 
@@ -325,7 +325,7 @@
 			}
 		}
 		for(i in dS){
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#dS[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#dS[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		return {arrSQL:arrSQL, cityCreated:false, arrError:arrError};
 		</cfscript>

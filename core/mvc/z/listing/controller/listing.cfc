@@ -330,14 +330,19 @@ this.app_id=11;
 	arraysort(local.arrK, "text", "asc");
 	for(local.i99=1;local.i99 LTE arraylen(local.arrK);local.i99++){
 		local.i=local.idxTemp32[local.arrK[local.i99]];
-		local.cur99=arguments.idxMap[local.i];
-		structdelete(arguments.allFields, local.i);
+		local.cur99=arguments.idxMap[local.i]; 
+		for(i9 in arguments.allFields){
+			if(arguments.allFields[i9].field EQ local.i){
+				structdelete(arguments.allFields, i9);
+				break;
+			}
+		}
 		if(structkeyexists(arguments.idxExclude, local.i) EQ false){
 			if(structkeyexists(arguments.idx, local.i) and structkeyexists(arguments.idx, local.i) and arguments.idx[local.i] NEQ "" and arguments.idx[local.i] NEQ "0"){
 				arrayappend(local.arrR2, '<tr><th>'&application.zcore.functions.zfirstlettercaps(local.cur99)&'</th><td>'&htmleditformat(arguments.idx[local.i])&'</td></tr>'&chr(10));
 			}
 		}
-	}
+	} 
 	if(arraylen(local.arrR2) NEQ 0){
 		return '<tr><td colspan="2"><h3>'&arguments.label&'</h3></td></tr>'&arraytolist(local.arrR2,"");
 	}else{
@@ -2885,8 +2890,8 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	WHERE `city`.city_name = zipcode.city_name AND 
 	`city`.state_abbr = zipcode.state_abbr AND 
 	`city`.country_code = zipcode.country_code and 
-	city_deleted = #db.param(0)# and 
-	zipcode_deleted = #db.param(0)# ";
+	city.city_deleted = #db.param(0)# and 
+	zipcode.zipcode_deleted = #db.param(0)# ";
 	db.execute("q"); 
 	db.sql="UPDATE #db.table("city", request.zos.zcoreDatasource)# city, 
 	#db.table("zipcode", request.zos.zcoreDatasource)#  
@@ -2896,8 +2901,8 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 	WHERE `city`.city_name = zipcode.city_name AND 
 	`city`.state_abbr = zipcode.state_abbr AND 
 	`city`.country_code = zipcode.country_code and 
-	city_deleted = #db.param(0)# and 
-	zipcode_deleted = #db.param(0)# ";
+	city.city_deleted = #db.param(0)# and 
+	zipcode.zipcode_deleted = #db.param(0)# ";
     db.execute("q"); 
 	db.sql="INSERT INTO 
 	#db.table("city_distance_safe_update", request.zos.zcoreDatasource)# 

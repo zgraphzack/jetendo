@@ -809,17 +809,17 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
 		fd=this.getRETSValues("property", "","491");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		fd=this.getRETSValues("property", "","2805");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','parking','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		// property style
@@ -838,7 +838,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","519");
@@ -856,7 +856,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","934");
@@ -874,7 +874,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","1349");
@@ -892,7 +892,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","1764");
@@ -910,9 +910,9 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
-		arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','Single Family Home','276','#request.zos.mysqlnow#','Single Family Home','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','Single Family Home','276','#request.zos.mysqlnow#','Single Family Home','#request.zos.mysqlnow#', '0')");
 		
 		
 				
@@ -932,7 +932,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				i2="";
 			}
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","519");
@@ -947,7 +947,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				i2="";
 			}
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","934");
@@ -962,7 +962,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				i2="";
 			}
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","1349");
@@ -977,7 +977,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				i2="";
 			}
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		fd=this.getRETSValues("property", "","1764");
@@ -992,7 +992,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 				i2="";
 			}
 			if(i2 NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		
@@ -1001,7 +1001,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 		for(i in fd){
 			if(i EQ "MULTIFAMILY"){
 				i2=178;
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		// 1=property type
@@ -1017,7 +1017,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				i2=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
@@ -1040,13 +1040,13 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				tmp=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		// Water Frontage Y/N
-		arrayappend(arrSQL,"('#this.mls_provider#','frontage','Waterfront','266','#request.zos.mysqlnow#','266','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','frontage','Waterfront','266','#request.zos.mysqlnow#','266','#request.zos.mysqlnow#', '0')");
 		
 		// Location:Golf Course Frontage
-		arrayappend(arrSQL,"('#this.mls_provider#','frontage','Golf Course Frontage','270','#request.zos.mysqlnow#','270','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','frontage','Golf Course Frontage','270','#request.zos.mysqlnow#','270','#request.zos.mysqlnow#', '0')");
 		
 		
 		
@@ -1067,17 +1067,17 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				tmp=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
-		arrayappend(arrSQL,"('#this.mls_provider#','view','Gulf/Ocean','239','#request.zos.mysqlnow#','Gulf/Ocean','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','view','Gulf/Ocean','239','#request.zos.mysqlnow#','Gulf/Ocean','#request.zos.mysqlnow#', '0')");
 		// Location:Pool View
-		arrayappend(arrSQL,"('#this.mls_provider#','view','Pool View','241','#request.zos.mysqlnow#','241','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','view','Pool View','241','#request.zos.mysqlnow#','241','#request.zos.mysqlnow#', '0')");
 		
 		// Location:Park View
-		arrayappend(arrSQL,"('#this.mls_provider#','view','Park View','244','#request.zos.mysqlnow#','244','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','view','Park View','244','#request.zos.mysqlnow#','244','#request.zos.mysqlnow#', '0')");
 		
 		// Water View Y/N
-		arrayappend(arrSQL,"('#this.mls_provider#','view','Waterview','243','#request.zos.mysqlnow#','243','#request.zos.mysqlnow#')");
+		arrayappend(arrSQL,"('#this.mls_provider#','view','Waterview','243','#request.zos.mysqlnow#','243','#request.zos.mysqlnow#', '0')");
 		
 		
 		// 1716=architectural style
@@ -1097,7 +1097,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				tmp=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		fd=this.getRETSValues("property", "","886");
@@ -1115,7 +1115,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets7_property where rets7_175 LIKE 
 			}else{
 				tmp=i;
 			}
-			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#tmp#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 

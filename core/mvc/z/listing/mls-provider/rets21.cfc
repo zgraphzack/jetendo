@@ -586,52 +586,52 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 		fd["mobile"]="Mobile";
 		for(i in fd){
 			if(i NEQ ""){
-				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+				arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 			}
 		}
 		for(g=1;g LTE arraylen(this.arrTypeLoop);g++){
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"view");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','view','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','view','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"type");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','listing_sub_type','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"STYLE");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','style','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','style','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"landfeelease");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','tenure','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','tenure','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"county");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','county','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','county','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"area");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','region','#application.zcore.functions.zescape(trim(fd[i]))#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','region','#application.zcore.functions.zescape(trim(fd[i]))#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"PARKING");
 			for(i in fd){
 				if(i NEQ ""){
-					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#')");
+					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
 			
@@ -675,6 +675,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						state_abbr=#db.param(tempState)#,
 						country_code=#db.param('US')#, 
 						city_mls_id=#db.param(i)#, 
+					 city_deleted=#db.param(0)#,
 						city_longitude=#db.param(qZ.zipcode_longitude)#, 
 						city_latitude=#db.param(qZ.zipcode_latitude)#,
 					 	city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
@@ -685,6 +686,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
 						 city_mls_id=#db.param(i)#, 
+					 city_deleted=#db.param(0)#,
 						 city_longitude=#db.param(qZ.zipcode_longitude)#, 
 						 city_latitude=#db.param(qZ.zipcode_latitude)#,
 					 	city_updated_datetime=#db.param(request.zos.mysqlnow)#  ";
@@ -697,6 +699,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 						state_abbr=#db.param(tempState)#,
 						country_code=#db.param('US')#, 
 						city_mls_id=#db.param(i)#,
+					 city_deleted=#db.param(0)#,
 						 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 						//writeoutput('Missing: #fd[i]#, california<br />');

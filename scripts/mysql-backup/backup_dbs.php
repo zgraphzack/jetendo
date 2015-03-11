@@ -311,7 +311,7 @@ while ($db_row = $db_result->fetch_object()) {
 			writeLog( "Dumping DB: " . $db." Table: ".$table );
 			exec($cmd, $output, $res);
 			if( $res > 0 ) {
-				error( true, "Failed: ".implode( "\n", $output) );
+				error( true, "$db/$tableFileName | mysqldump Failed: ".implode( "\n", $output)." | result: ".$res );
 			} else {
 				writeLog( "Success\n" );
 			}

@@ -464,29 +464,29 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acc
 		var tempState=0;
 		fd=this.getRETSValues("property", "","category");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
 		fd=this.getRETSValues("property", "","county");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','county','#application.zcore.functions.zfirstlettercaps(fd[i])#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','county','#application.zcore.functions.zfirstlettercaps(fd[i])#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
 		fd=this.getRETSValues("property", "","ftr_waterfront");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','frontage','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		fd=this.getRETSValues("property", "","ftr_waterview");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','view','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
 		fd=this.getRETSValues("property", "","ftr_style");
 		for(i in fd){
-			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#')");
+			arrayappend(arrSQL,"('#this.mls_provider#','style','#fd[i]#','#i#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 		
 		
@@ -527,6 +527,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acc
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
 						 city_mls_id=#db.param(i)#,
+					 city_deleted=#db.param(0)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						 city_id=db.insert("q", request.zOS.insertIDColumnForSiteIDTable);
 						 db.sql="INSERT INTO #db.table("city_memory", request.zos.zcoreDatasource)#  
@@ -535,6 +536,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets17_property where rets17_mls_acc
 						 state_abbr=#db.param(tempState)#,
 						 country_code=#db.param('US')#, 
 						 city_mls_id=#db.param(i)#,
+					 city_deleted=#db.param(0)#,
 					 city_updated_datetime=#db.param(request.zos.mysqlnow)# ";
 						 db.execute("q");
 						//writeoutput(city_id);
