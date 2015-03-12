@@ -132,6 +132,12 @@ function processImageFile($path, $mlsId, $fileName){
 		while (($buffer = fgets($handle, 8096)) !== false) {
 			$lineNumber++;
 			if($first || $skipToLineNumber>$lineNumber){
+				if($first){
+					$a=explode("\t", $buffer);
+					if(count($a) != 2){  
+						break;
+					}
+				}
 				$first=false;
 				continue;
 			}

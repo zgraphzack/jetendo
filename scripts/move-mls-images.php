@@ -322,7 +322,19 @@ if ($handle = opendir($mp)) {
 			echo "process:".$mp2."\n";
 			if ($handle2 = opendir($mp2)) {
 				while (false !== ($entry2 = readdir($handle2))) {
-					if(substr($entry2, strlen($entry2)-5,5) == ".jpeg" || substr($entry2, strlen($entry2)-4,4) == ".jpg" || substr($entry2, strlen($entry2)-4,4) == ".pdf"){// !="." && $entry2 !=".."){
+					if(substr($entry2, strlen($entry2)-4,4) == ".txt"){
+						$cur=$mp.$entry."/".$entry2;
+						$cur2=$destinationPath.$entry."/".$entry2;
+						$fiveMinuteAgo=mktime(date("H"), date("i")-$minutesToDelayProcessing, date("s"), date("m"),date("d"),date("Y"));
+						$cmtime=@filemtime($cur); 
+						if($cmtime === FALSE || $cmtime < $fiveMinuteAgo){
+							if(file_exists($cur2)){
+								unlink($cur2);
+							}
+							rename($cur, $cur2);
+						}
+
+					}else if(substr($entry2, strlen($entry2)-5,5) == ".jpeg" || substr($entry2, strlen($entry2)-4,4) == ".jpg" || substr($entry2, strlen($entry2)-4,4) == ".pdf"){// !="." && $entry2 !=".."){
 						$pos=strpos($entry2, "-");
 						$cur=$mp.$entry."/".$entry2;
 						$idname=$entry."-".$entry2;
