@@ -822,7 +822,7 @@ listing_longitude<>'0'";
 	}
 	savecontent variable="searchFormHTML"{
 		
-		local.searchCom=application.zcore.functions.zcreateobject("zcorerootmapping.mvc.z.listing.controller.search2");
+		local.searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.search2");
 		local.rs=local.searchCom.getSearchCriteriaStruct();
 		local.formFieldStruct=local.searchCom.renderSearchFields(local.rs, local.rs.formFieldTypeStruct);
 		sfSortStruct=local.formFieldStruct;

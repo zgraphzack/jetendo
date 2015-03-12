@@ -1,6 +1,6 @@
 <?php
 require(get_cfg_var("jetendo_scripts_path")."library.php");
-set_time_limit (60 * 59); // 1 hour timeout | schedule task to run hourly.
+set_time_limit (3500); // 1 hour timeout | schedule task to run hourly.
 error_reporting(E_ALL);
 echo "\n";
 
@@ -229,6 +229,7 @@ function resetImageFiles(){
 	}
 	echo "Files reset";
 }
+// uncomment when debugging to rename files back to original state
 //resetImageFiles(); 
 processImageFiles();
 
