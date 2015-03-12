@@ -180,7 +180,7 @@ function processImageFiles(){
 				    while (false !== ($entry2 = readdir($handle2))) {
 						if($entry2 !="." && $entry2 !=".." && strpos($entry2, "-tracking") === FALSE && strpos($entry2, "-imported") === FALSE && is_file($path2.$entry2)){
 							if(strpos($entry2, "-processing") === FALSE){
-								if(file_exists($path2.$entry2."-processing"){
+								if(file_exists($path2.$entry2."-processing")){
 									// finish the current file before processing the new one.
 									continue;
 								}
