@@ -3,8 +3,8 @@
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.functions.zSetPageHelpId("6.6");
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Widgets for other web sites");
-	application.zcore.template.settag("title","Widgets for other web sites");
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Widgets for other sites");
+	application.zcore.template.settag("title","Widgets for other sites");
 	</cfscript>
 	<h1>Widgets for other web sites</h1>
 	<p>Sometimes you have a profile on another web site such as facebook, where adding a custom page is desirable to draw customers to your web site.  Feel free to insert one of the widget code snippets below in order to achieve dynamic features that integrate with your web site.</p>
