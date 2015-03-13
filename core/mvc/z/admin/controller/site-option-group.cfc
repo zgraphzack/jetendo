@@ -1596,6 +1596,10 @@ displayGroupCom.add();')&'</pre>');
 					Option group URL ID must be set in server manager to use this feature.
 				</cfif></td>
 				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Meta Tags?","member.site-option-group.edit site_option_group_enable_meta")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_meta")#</td>
+				</tr>
 				<!--- 
 				This field doesn't do anything yet!
 				<tr>

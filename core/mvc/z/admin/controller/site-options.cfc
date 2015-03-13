@@ -1866,6 +1866,9 @@
 		site_x_option_group_set_updated_datetime=#db.param(request.zos.mysqlNow)# , 
 		site_x_option_group_set_title=#db.param(form.siteOptionTitle)# , 
 		site_x_option_group_set_summary=#db.param(form.siteOptionSummary)#,
+		site_x_option_group_set_metatitle=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_metatitle'))#,
+		site_x_option_group_set_metakey=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_metakey'))#,
+		site_x_option_group_set_metadesc=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_metadesc'))#,
 		site_x_option_group_set_deleted=#db.param(0)#";
 		local.rs=db.insert("q", request.zOS.insertIDColumnForSiteIDTable); 
 		if(local.rs.success){
@@ -1925,7 +1928,10 @@
 		site_x_option_group_set_image_library_id=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_image_library_id'))#, 
 		site_x_option_group_set_updated_datetime=#db.param(request.zos.mysqlNow)# , 
 		site_x_option_group_set_title=#db.param(form.siteOptionTitle)# , 
-		site_x_option_group_set_summary=#db.param(form.siteOptionSummary)#
+		site_x_option_group_set_summary=#db.param(form.siteOptionSummary)#,
+		site_x_option_group_set_metatitle=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_metatitle'))#,
+		site_x_option_group_set_metakey=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_metakey'))#,
+		site_x_option_group_set_metadesc=#db.param(application.zcore.functions.zso(form, 'site_x_option_group_set_metadesc'))#
 		WHERE 
 		site_x_option_group_set_deleted = #db.param(0)# and
 		site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
@@ -3395,10 +3401,29 @@ Define this function in another CFC to override the default email format
 					</tr>
 					<cfset local.tempIndex++>
 				</cfif>
+
+				<cfif qS.site_option_group_enable_meta EQ "1">
+		 
+					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Meta Title:</div></th>
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metatitle" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_metatitle)#<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metatitle'))#</cfif>" /> 
+					</td>
+					</tr>
+					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Meta Keywords:</div></th>
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metakey" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_metakey)#<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metakey'))#</cfif>" /> 
+					</td>
+					</tr>
+					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Meta Description:</div></th>
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metadesc" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metadesc'))#</cfif>" /> 
+					</td>
+					</tr>
+				</cfif>
 				<cfif qS.site_option_group_enable_unique_url EQ 1>
 					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Override URL:</div></th>
-					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" name="site_x_option_group_set_override_url" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_override_url)#</cfif>" /> <br />It is not recommended to use this feature.  It is used to change the URL within the site.  Don't use this for external links.
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_override_url" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_override_url)#</cfif>" /> <br />It is not recommended to use this feature.  It is used to change the URL within the site.  Don't use this for external links.
 					</td>
 					</tr>
 					<cfset local.tempIndex++>

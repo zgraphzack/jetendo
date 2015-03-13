@@ -63,6 +63,11 @@
 	}else{
 		//writeoutput('query output'&qSite.site_id);
 	}
+
+	if(qSet.site_option_group_enable_meta EQ "1"){
+		application.zcore.template.setTag("title", qSet.site_x_option_group_set_metatitle);
+		application.zcore.template.prependTag('meta', '<meta name="keywords" content="#htmleditformat(qSet.site_x_option_group_set_metakey)#" /><meta name="description" content="#htmleditformat(qSet.site_x_option_group_set_metadesc)#" />');
+	}
 	if(structkeyexists(form, 'zURLName')){
 		local.encodedTitle=application.zcore.functions.zURLEncode(qSet.site_x_option_group_set_title, '-');
 		if(qSet.site_x_option_group_set_override_url NEQ ""){
