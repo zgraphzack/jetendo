@@ -40,7 +40,7 @@ var zGalleryReloadTimeoutId=0;
 		setTimeout(zLoadAndCropImages, 1);
 	}
 	zArrLoadFunctions.push({functionName:zLoadAndCropImagesDefer});
-	function zLoadAndCropImage(obj, imageURL, debug, width, height, crop, style){
+	function zLoadAndCropImage(obj, imageURL, debug, width, height, crop, style){ 
 		if(zMSIEBrowser!==-1 && zMSIEVersion<=9){
 			if(height===10000){
 				obj.innerHTML='<img src="'+imageURL+'" />';
@@ -49,7 +49,7 @@ var zGalleryReloadTimeoutId=0;
 			}
 			return;	
 		}
-
+		//debug=true;
 		var p=window.location.href.indexOf("/", 8);
 		var currentHostName="a";
 		if(p != -1){
@@ -65,6 +65,7 @@ var zGalleryReloadTimeoutId=0;
 			// use proxy when it is a remote domain to avoid crossdomain security error
 			imageURL="/zimageproxy/"+imageURL.replace("http://", "").replace("https://", "");
 		}
+		if(debug) console.log('Loading: '+imageURL);
 		var canvas = document.createElement('canvas');
 		zLoadAndCropImagesIndex++;
 		canvas.id="zCropImageID"+zLoadAndCropImagesIndex+"_canvas";
@@ -75,6 +76,7 @@ var zGalleryReloadTimeoutId=0;
 		var imageObj = new Image();
 		imageObj.startTime=new Date().getTime();
 		imageObj.onerror=function(){
+			if(debug) console.log('image load fail: '+this.src);
 			this.src='/z/a/listing/images/image-not-available.gif';	
 		};
 		imageObj.onload = function() {
@@ -83,7 +85,7 @@ var zGalleryReloadTimeoutId=0;
 			//if(debug) 
 			if(debug) console.log((time2/1000)+" seconds to load image");
 			var time=new Date().getTime();
-			if(this.width <= 10 || this.width >= 1000 || this.height <= 10 || this.height >= 1000){
+			if(this.width <= 10 || this.width >= 2000 || this.height <= 10 || this.height >= 2000){
 				if(debug) console.log("Failed to draw canvas because computed width x height was invalid: "+this.width+"x"+this.height);
 				return;
 			}

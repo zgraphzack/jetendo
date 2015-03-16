@@ -30,6 +30,9 @@ variables.allfields=structnew();
 		</cfscript>
 	</cfloop>
 	<cfscript>
+idxExclude["rets26_list_135"]="Cumulative Dom";
+idxExclude["rets26_list_7"]="Property Group Id";
+idxExclude["rets26_list_8"]="Property Type";
 idxExclude["rets26_property_id"]="Property_id";
 idxExclude["rets26_vowaddr"]="Vowaddressdisplay";
 idxExclude["rets26_vowavm"]="Vowautomatedvaluationdisplay";
@@ -438,7 +441,6 @@ idxTemp2["rets26_list_155"]="As Is Cond";
 idxTemp2["rets26_list_122"]="Base Lease";
 idxTemp2["rets26_list_121"]="Concession Amt";
 idxTemp2["rets26_gf20141227193549092607000000"]="Condo Fees Include";
-idxTemp2["rets26_list_135"]="Cumulative Dom";
 idxTemp2["rets26_gf20150113144629066331000000"]="Docs & Discl";
 idxTemp2["rets26_list_162"]="Document Count";
 idxTemp2["rets26_list_161"]="Document Timestamp";
@@ -472,8 +474,6 @@ idxTemp2["rets26_list_118"]="Lease $/sqft";
 idxTemp2["rets26_gf20141227195245871670000000"]="Lease Provisions";
 idxTemp2["rets26_list_22"]="List Price";
 idxTemp2["rets26_list_125"]="List Price/sqft";
-idxTemp2["rets26_list_7"]="Property Group Id";
-idxTemp2["rets26_list_8"]="Property Type";
 idxTemp2["rets26_list_117"]="Maint Fee";
 idxTemp2["rets26_gf20141227001925179813000000"]="Maint Fee Covers";
 idxTemp2["rets26_gf20150113203850400754000000"]="Maint Fee Covers";

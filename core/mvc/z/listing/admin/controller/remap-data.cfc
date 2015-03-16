@@ -25,10 +25,12 @@
 			application.zcore.functions.zRedirect("/z/listing/admin/remap-data/index?zsid=#request.zsid#");
 		}
 		db.sql="select mls_provider FROM #db.table("mls", request.zos.zcoreDatasource)# 
-		where mls_id = #db.param(form.mls_id1)# ";
+		where mls_id = #db.param(form.mls_id1)# and 
+		mls_deleted=#db.param(0)#";
 		variables.qM=db.execute("qM");
 		db.sql="select mls_provider FROM #db.table("mls", request.zos.zcoreDatasource)# 
-		where mls_id = #db.param(form.mls_id2)# ";
+		where mls_id = #db.param(form.mls_id2)# and 
+		mls_deleted=#db.param(0)# ";
 		variables.qM2=db.execute("qM");
 		if(variables.qM.recordcount EQ 0 or variables.qM2.recordcount EQ 0){
 			application.zcore.status.setStatus(request.zsid, "Invalid MLS Provider.", form, true);
@@ -38,6 +40,87 @@
 	variables.backURL="/z/listing/admin/remap-data/index?mls_id1=#form.mls_id1#&mls_id2=#form.mls_id2#&searchCriteria=#form.searchCriteria#&searchCriteria2=#form.searchCriteria2#";
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="remapOfficeAgent" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	db=request.zos.queryObject;
+	application.zcore.user.requireAllCompanyAccess();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
+	</cfscript>
+	
+
+	<h2>Office / Agent ID remap</h2>
+
+	<p>Edit the following queries and manually update the listing application options and the associated users for each site.</p>
+<textarea cols="100" rows="10" name="ccc2">
+<!--- office --->
+SELECT rets4_name, rets4_firmid oldOfficeId, rets26_office_0 newOfficeID, site.site_id, 
+CONCAT("update `app_x_mls` set app_x_mls_office_id = '", rets26_office_0, "' where app_x_mls_id = '", app_x_mls_id, "' and site_id = '", app_x_mls.site_id, "'; ") `query`
+ FROM (rets4_office, site )
+LEFT JOIN app_x_mls ON mls_id = '4' AND app_x_mls_office_id <>'' AND app_x_mls.app_x_mls_office_id = rets4_office.rets4_firmid AND site.site_id = app_x_mls.site_id
+LEFT JOIN rets26_office ON rets4_name = rets26_office_2 
+WHERE 
+app_x_mls.site_id IS NOT NULL AND 
+site.site_id = app_x_mls.site_id  AND 
+site_active='1'
+GROUP BY oldOfficeId
+LIMIT 0,1000;
+
+<!--- agent --->
+SELECT rets4_firstname, rets4_lastname, rets4_agentid oldAgentId, rets26_member_0 newAgentID, site.site_id, 
+CONCAT("update `app_x_mls` set app_x_mls_agent_id = '", rets26_member_0, "' where app_x_mls_id = '", app_x_mls_id, "' and site_id = '", app_x_mls.site_id, "'; ") `query`
+ FROM (rets4_agent, site )
+LEFT JOIN app_x_mls ON mls_id = '4' AND app_x_mls_agent_id <>'' AND app_x_mls.app_x_mls_agent_id = rets4_agent.rets4_agentid AND site.site_id = app_x_mls.site_id
+LEFT JOIN rets26_activeagent ON rets4_firstname = rets26_member_3 AND rets4_lastname = rets26_member_4 
+WHERE  
+app_x_mls.site_id IS NOT NULL AND 
+site.site_id = app_x_mls.site_id  AND 
+site_active='1'
+GROUP BY oldAgentId
+LIMIT 0,1000;
+
+<!--- users alternate --->
+SELECT 
+rets26_member_0, rets4_agentid,
+CONCAT('update `user` set member_mlsagentid=\',26-', REPLACE(REPLACE(rets26_member_0, ',4-', ''), ',', ''), ',\' where user_id = \'', user_id, '\' and site_id = \'', site_id, '\'; ') QUERY 
+FROM `user` 
+LEFT JOIN rets4_agent ON rets4_agentid = REPLACE(REPLACE(member_mlsagentid, ',4-', ''), ',', '') 
+LEFT JOIN rets26_activeagent ON rets4_agentid = rets26_member_17
+WHERE member_mlsagentid LIKE '%4-%';
+
+<!--- users --->
+SELECT user_first_name, user_last_name, member_mlsagentid oldAgentId, rets4_agentid oldAgentId2, rets26_member_0 newAgentID, site.site_id, 
+CONCAT("update `user` set member_mlsagentid = ',26-", rets26_member_0, ",' where user_id = '", user.user_id, "' and site_id = '", user.site_id, "'; ") `query`
+FROM (site, `user`)
+LEFT JOIN app_x_mls ON mls_id = '4' AND site.site_id = app_x_mls.site_id 
+LEFT JOIN rets4_agent ON rets4_agentid = REPLACE(REPLACE(member_mlsagentid, ',4-', ''), ',', '') 
+LEFT JOIN rets26_activeagent ON rets4_firstname = rets26_member_3 AND rets4_lastname = rets26_member_4 
+WHERE  
+user.site_id = site.site_id AND 
+user.member_mlsagentid<> '' AND 
+app_x_mls.site_id IS NOT NULL AND 
+site.site_id = app_x_mls.site_id  AND 
+site_active='1'
+GROUP BY oldAgentId
+LIMIT 0,1000;
+
+
+SELECT CONCAT("update app_x_mls set app_x_mls_agent_id='",rets26_member_0,"' where mls_id='26' and app_x_mls_agent_id='", app_x_mls_agent_id, "';") `query` FROM app_x_mls
+LEFT JOIN rets26_activeagent ON rets26_member_17= app_x_mls_agent_id
+ WHERE mls_id = '26' AND LENGTH(app_x_mls_agent_id) < 10 AND app_x_mls_agent_id<> ''; 
+ 
+select CONCAT("update app_x_mls set app_x_mls_office_id='",rets26_office_0,"' where mls_id='26' and app_x_mls_office_id='", app_x_mls_office_id, "';") `query` from app_x_mls
+LEFT JOIN rets26_office ON rets26_office_15 = app_x_mls_office_id
+ where mls_id = '26' and length(app_x_mls_office_id) < 10 and app_x_mls_office_id<> '';
+
+
+;careful not to run this query until ready to go live;
+update `app_x_mls` set mls_id = '26' where mls_id='4' and site_id <> '-1';
+</textarea>
+
+</cffunction>
+
 
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
@@ -123,11 +206,13 @@
 	</div>
 
 	<p> 
-		1. Select the MLS ID you are moving FROM above.<br />
+		1. Manually remap all the office / agent id to new MLS: <a href="/z/listing/admin/remap-data/remapOfficeAgent" target="_blank">click here for example queries</a>.<br />
+		<!--- 2. Select the MLS ID you are moving FROM above.<br />
 		3. Click <a href="##" onclick="showAssociatedSites(); return false;" target="_blank">Show Associated Sites</a> to get a list of all sites using the selected mls_id.<br />
-		4. Activate the new mls and deactivate the old mls that uses it under server manager applications for each site.<br />
-		5. Select the MLS ID you are moving TO above.<br />
-		6. Click <a href="##" onclick="remapSites(); return false;">Remap Sites</a> and wait for it to complete.</p>
+		4. Activate the new mls and deactivate the old mls that uses it under server manager applications for each site.<br /> --->
+		2. Run <a href="/z/listing/admin/remap-data/index?zreset=all">zReset=all</a> and come back here.<br />
+		3. Select the MLS ID you are moving TO above.<br />
+		4. Click <a href="##" onclick="remapSites(); return false;">Remap Sites</a> and wait for it to complete.</p>
 
 	<div style="width:100%; float:left; padding-bottom:10px;"><strong>Remap Sites Status:</strong> <div class="statusDiv">
 		<cfif application.zcore.functions.zso(application.zcore, 'listingRemapCurrentSite') EQ "">
@@ -412,7 +497,8 @@
 			}
 		}
 	}  
-	writedump(mapStruct);
+	xCount=0;
+	//writedump(mapStruct);
 	db.sql="SELECT group_concat(mls_saved_search_id separator #db.param("','")#) idlist, 
 	`#form.searchCriteria#` field, `#form.searchCriteria2#` field2, mls_saved_search.site_id 
 	FROM #db.table("app_x_mls", request.zos.zcoreDatasource)#, 
@@ -480,6 +566,7 @@
 				mls_saved_search_deleted=0"); 
 				 abort;
 			*/
+			xCount++;
 			// `#form.searchCriteria#` = '#application.zcore.functions.zescape(result1)#',
 			db.sql="UPDATE #db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 			SET 
@@ -492,13 +579,14 @@
 		}
 	}
 	// application.zcore.functions.zabort();
-	application.zcore.status.setStatus(request.zsid, "Data mapped successfully.");
+	application.zcore.status.setStatus(request.zsid, "Data mapped for #xCount# records successfully.");
 	application.zcore.functions.zRedirect("#variables.backURL#&zsid=#request.zsid#");
 	</cfscript>
 </cffunction>
 
 <cffunction name="remapSites" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	setting requesttimeout="50000";
 	db=request.zos.queryObject; 
 	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager", true);
@@ -557,12 +645,12 @@
 			}
 			if(request.zos.isTestServer){
 				// uncomment this break only for debugging purposes
-				break;
+				//break;
 			}
 		}
 	}
 	if(form.showList){
-
+		echo(out);
 	}else{
 		structdelete(application.zcore, 'listingRemapCancel');
 		structdelete(application.zcore, 'listingRemapCurrentSite');
@@ -609,15 +697,14 @@
 		FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# 
 		WHERE 
 		site_id = #db.param(request.zos.globals.id)# and 
-		mls_saved_search_deleted = #db.param(0)# and 
-		search_frontage <> #db.param('')# 
+		mls_saved_search_deleted = #db.param(0)#  
 		LIMIT #db.param(offset)#, #db.param(50)# ";
-		qSaved=db.execute("qSaved"); 
+		qSaved=db.execute("qSaved");  
 		if(qSaved.recordcount EQ 0){
 			break;
 		}
 		echo('Processing '&qSaved.recordcount&' records<br />');
-		for(row2 in qSaved){
+		for(row2 in qSaved){ 
 			rowCount++;
 			row=duplicate(row2); 
 			for(i in variables.searchCriteriaStruct){
@@ -634,6 +721,8 @@
 				}
 			}
 
+			structdelete(row, 'search_status');
+			structdelete(row, 'search_liststatus');
 			structdelete(row, 'saved_search_created_date');
 			structdelete(row, 'saved_search_sent_date');
 			structdelete(row, 'saved_search_updated_date');

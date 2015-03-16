@@ -177,7 +177,26 @@ variables.tableLookup["G"]="G";
 	
 	local.listing_parking=this.listingLookupNewId("parking",ts['Parking']);
 
-	local.listing_sub_type_id=this.listingLookupNewId("listing_sub_type",ts['rets26_list_9']);
+
+	if(application.zcore.functions.zso(ts, "rets26_GF20150107140549889252000000") NEQ ""){
+		arrT=listtoarray(ts["rets26_GF20150107140549889252000000"]);
+	}else if(application.zcore.functions.zso(ts, "rets26_GF20150107201859464523000000") NEQ ""){
+		arrT=listtoarray(ts["rets26_GF20150107201859464523000000"]);
+	}else if(application.zcore.functions.zso(ts, "rets26_GF20141227193418087637000000") NEQ ""){
+		arrT=listtoarray(ts["rets26_GF20141227193418087637000000"]);
+	}else if(application.zcore.functions.zso(ts, "rets26_list_101") NEQ ""){
+		arrT=listtoarray(ts["rets26_list_101"]);
+	}else{
+		arrT=[];
+	}
+	arrT3=[];
+	for(i=1;i LTE arraylen(arrT);i++){
+		tmp=this.listingLookupNewId("listing_sub_type",arrT[i]);
+		if(tmp NEQ ""){
+			arrayappend(arrT3,tmp);
+		}
+	}
+	local.listing_sub_type_id=arraytolist(arrT3);  
 	
 	local.listing_type_id=this.listingLookupNewId("listing_type",ts['rets26_list_8']);
 
@@ -381,7 +400,6 @@ variables.tableLookup["G"]="G";
 	}
  
 	ts=this.convertRawDataToLookupValues(ts, ts["rets26_list_8"], ts["rets26_list_8"]);
-
 	ts2=structnew();
 	ts2.field="";
 	ts2.yearbuiltfield=ts['year built'];
@@ -398,13 +416,13 @@ variables.tableLookup["G"]="G";
 	} 
 
 	if(structkeyexists(ts, 'Special Conditions')){ 
-		if(ts['Special Conditions'] CONTAINS 'foreclosure'){
+		if(ts['Special Conditions'] CONTAINS '1AIXY5JV4D0R' or ts['Special Conditions'] CONTAINS '183I9Q7UF3EF' or ts['Special Conditions'] CONTAINS '183I9Q5LTN5H' or ts['Special Conditions'] CONTAINS '183I9PW30363' or ts['Special Conditions'] CONTAINS '183I7G4DC6ZK'){
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["foreclosure"]]=true;
 		}
-		if(ts['Special Conditions'] CONTAINS 'reo'){
+		if(ts['Special Conditions'] CONTAINS '183I7G3YQXGQ' or ts['Special Conditions'] CONTAINS '183I9PW2YO4R' or ts['Special Conditions'] CONTAINS '183I9Q5LSJVZ' or ts['Special Conditions'] CONTAINS '183I9Q7UDZQN' or ts['Special Conditions'] CONTAINS '1AIXY5JV387E'){
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["bank owned"]]=true;
 		}
-		if(ts['Special Conditions'] CONTAINS 'short sale'){
+		if(ts['Special Conditions'] CONTAINS '183I7G5SBAEJ' or ts['Special Conditions'] CONTAINS '183I9PW32YKE' or ts['Special Conditions'] CONTAINS '183I9Q5LW36P' or ts['Special Conditions'] CONTAINS '183I9Q7UH8OO' or ts['Special Conditions'] CONTAINS '1AIXY5JV6LL6'){
 			s[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.lookupStruct.statusStr["short sale"]]=true;
 		}   
 	}
@@ -414,7 +432,6 @@ variables.tableLookup["G"]="G";
 	local.listing_data_detailcache1=dataCom.getDetailCache1(ts);
 	local.listing_data_detailcache2=dataCom.getDetailCache2(ts);
 	local.listing_data_detailcache3=dataCom.getDetailCache3(ts);
-	
 	rs=structnew();
 	rs.listing_id=arguments.ss.listing_id;
 	rs.listing_acreage=ts["Acreage"];
@@ -433,6 +450,7 @@ variables.tableLookup["G"]="G";
 	}else{
 		rs.listing_beds=0;
 	}
+	rs.listing_condoname=application.zcore.functions.zso(ts,"rets26_list_130");
 	rs.listing_city=cid;
 	rs.listing_county=local.listing_county;
 	rs.listing_frontage=","&local.listing_frontage&",";
@@ -632,6 +650,8 @@ variables.tableLookup["G"]="G";
 			arrayappend(arrSQL,"('#this.mls_provider#','listing_type','#fd[i]#','#i2#','#request.zos.mysqlnow#','#i#','#request.zos.mysqlnow#', '0')");
 		}
 	}
+
+
 	for(g=1;g LTE arraylen(this.arrTypeLoop);g++){
 		fd=this.getRETSValues("property", this.arrTypeLoop[g],"list_41");
 		for(i in fd){

@@ -375,10 +375,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 			body&='<p>An SSL Certificate with common name, "#form.ssl_common_name#", was installed as the default active certificate for this site: #application.zcore.functions.zvar('domain', form.site_id)#.</p>
 			<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View Certificate</a></p>
 			<p><a href="#domain#">View Site</a></p>';
-		}
-		if(form.method EQ "update"){
-			body&='<p><a href="#request.zos.globals.serverDomain#/z/server-manager/admin/ssl/view?sid=#form.sid#&amp;ssl_id=#form.ssl_id#">View</a>';
-		}
+		} 
 	}else{
 		if(form.method EQ "insert"){
 			if(form.ssl_selfsign EQ "1"){

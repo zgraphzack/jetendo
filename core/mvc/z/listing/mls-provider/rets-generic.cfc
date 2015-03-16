@@ -559,8 +559,7 @@ variables.typeStruct["text"]="text";
 		}
 		if(left(i10, retsPrefixLength) EQ retsPrefix){
 			column=i10;
-			shortColumn=removechars(column, 1, retsPrefixLength);
-			value="";
+			shortColumn=removechars(column, 1, retsPrefixLength); 
 			value=idx[i10];
 			if(arrayLen(this.arrTypeLoop)){
 				shortColumn&="_"&arguments.tableName; // this was changed from arguments.tableId because it was wrong
