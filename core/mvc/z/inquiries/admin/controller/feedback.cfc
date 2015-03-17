@@ -355,7 +355,8 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_id = #db.param(request.zsession.user.id)# and 
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
-			user_server_administrator=#db.param('0')# </cfsavecontent>
+			user_server_administrator=#db.param('0')# and 
+			user_deleted = #db.param(0)# </cfsavecontent>
 			<cfscript>
 			qAgent=db.execute("qAgent");
 			</cfscript>
@@ -580,7 +581,8 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback 
 			WHERE inquiries_id = #db.param(form.inquiries_id)# and 
 			inquiries_feedback_id = #db.param(application.zcore.functions.zso(form, 'inquiries_feedback_id',false,''))# and 
-			site_id = #db.param(request.zos.globals.id)# </cfsavecontent>
+			site_id = #db.param(request.zos.globals.id)# and 
+			inquiries_feedback_deleted=#db.param(0)#</cfsavecontent>
 			<cfscript>
 			qFeedback=db.execute("qFeedback");
 			application.zcore.functions.zQueryToStruct(qFeedback,form,'inquiries_id');
@@ -636,7 +638,8 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	user_deleted = #db.param(0)#
 	WHERE 
 	inquiries_id = #db.param(form.inquiries_id)# and 
-	inquiries_feedback.site_id = #db.param(request.zos.globals.id)# 
+	inquiries_feedback.site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_feedback_deleted=#db.param(0)# 
 	ORDER BY inquiries_feedback_datetime DESC ";
 	qFeedback=db.execute("qFeedback");
 	</cfscript>

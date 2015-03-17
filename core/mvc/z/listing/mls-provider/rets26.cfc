@@ -432,9 +432,17 @@ variables.tableLookup["G"]="G";
 	local.listing_data_detailcache1=dataCom.getDetailCache1(ts);
 	local.listing_data_detailcache2=dataCom.getDetailCache2(ts);
 	local.listing_data_detailcache3=dataCom.getDetailCache3(ts);
+
 	rs=structnew();
+	rs.listing_acreage="";
+	if(application.zcore.functions.zso(ts, 'rets26_list_57') NEQ ""){
+		rs.listing_acreage=ts["rets26_list_57"];
+	}else if(application.zcore.functions.zso(ts, 'rets26_GF20141227192834317267000000') NEQ ""){
+		rs.listing_acreage=ts["rets26_GF20141227192834317267000000"];
+	}else if(application.zcore.functions.zso(ts, 'rets26_GF20141226230259827496000000') NEQ ""){
+		rs.listing_acreage=ts["rets26_GF20141226230259827496000000"];
+	}
 	rs.listing_id=arguments.ss.listing_id;
-	rs.listing_acreage=ts["Acreage"];
 	if(structkeyexists(ts, "Baths")){
 		rs.listing_baths=ts["Baths"];
 	}else if(structkeyexists(ts, 'Full Baths')){

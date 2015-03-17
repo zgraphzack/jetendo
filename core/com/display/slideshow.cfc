@@ -516,7 +516,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 	}
 	dirpath="/zupload/slideshow/#form.slideshow_id#/";
 	// this is to preserve case sensitivity for flash
-	arrKeys=["resizeImage","resizeImageBottom","imageFadeDuration","xDuration","yDuration","autoSlideDelay","tabs","slideDirection","activeTab","backImage","forwardImage","tabimages","tablinks","links","fulldesc","success","tab","images","thumbnails","desc2","thumbPadding","thumbAreaPadding","thumbWidth","thumbHeight","thumbTextHeight","movedTileCount","tab","ajaxEnabled","offset","count","backgroundImage","hideLargeImage","thumbMarginLeft","thumbMarginTop","thumbbarMargin","tabcaptions","tabclicklinks","tabPadding","tabSidePadding","tabBgColor","tabTextColor","tabOverBgColor","tabOverTextColor","tabIsText","thumbDisplayCount","hideThumbnails","city","price","bed","bath","listingid","condoname"];
+	arrKeys=["resizeImage","resizeImageBottom","imageFadeDuration","xDuration","yDuration","autoSlideDelay","tabs","slideDirection","activeTab","backImage","forwardImage","tabimages","tablinks","links","fulldesc","success","tab","images","thumbnails","desc2","thumbPadding","thumbAreaPadding","thumbWidth","thumbHeight","thumbTextHeight","movedTileCount","tab","ajaxEnabled","offset","count","backgroundImage","hideLargeImage","thumbMarginLeft","thumbMarginTop","thumbbarMargin","tabcaptions","tabclicklinks","tabPadding","tabSidePadding","tabBgColor","tabTextColor","tabOverBgColor","tabOverTextColor","tabIsText","thumbDisplayCount","hideThumbnails","city","price","bed","bath","listingid","condoname", "address"];
 	keyStruct=structnew();
 	for(i=1;i LTE arraylen(arrKeys);i++){
 		keyStruct[arrKeys[i]]=arrKeys[i];
@@ -625,6 +625,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		arrFullText=ArrayNew(1);
 		arrPhotoId=arraynew(1);
 		arrCity=arraynew(1);
+		arrAddress=arraynew(1);
 		arrRemarks=arraynew(1);
 		arrPhotoId=arraynew(1);
 		arrBed=arraynew(1);
@@ -645,6 +646,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 			arrayappend(arrPhotoId,'0-'&qss.slideshow_id&'-'&qss.slideshow_image_id);
 			arrayappend(arrRemarks,'');
 			arrayappend(arrCity,'');
+			arrayappend(arrAddress,'');
 			arrayappend(arrBath,'');
 			arrayappend(arrBed,'');
 			arrayappend(arrPrice,'');
@@ -693,6 +695,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		arrBath=arraynew(1);
 		arrPrice=arraynew(1);
 		arrCity=arraynew(1);
+		arrAddress=arraynew(1);
 		k222=structcount(returnStruct.orderStruct);
 		for(i=1;i LTE k222;i++){
 			arrText[i]="";
@@ -705,6 +708,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 			arrBath[i]="";
 			arrPrice[i]="";
 			arrCity[i]="";
+			arrAddress[i]="";
 			arrRemarks[i]="";
 			arrPhotoId[i]="";
 			arrCondo[i]="";
@@ -742,6 +746,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 						arrBed[i]='';
 					}
 					arrCity[i]=variables.cityName;
+					arrAddress[i]=curQuery.listing_data_address;
 					
 					arrayappend(arrT,'#titleStruct.propertyType#, ');
 					
@@ -782,6 +787,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		flashOut.listingid=arraytolist(arrListingId,chr(9));
 		flashOut.thumbnails=arraytolist(arrThumb,chr(9));
 		flashOut.price=arraytolist(arrPrice,chr(9));
+		flashOut.address=arraytolist(arrAddress,chr(9));
 		flashOut.city=arraytolist(arrCity,chr(9));
 		flashOut.condoname=arraytolist(arrCondo,chr(9));
 		flashOut.bed=arraytolist(arrBed,chr(9));
