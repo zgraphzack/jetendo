@@ -1,7 +1,10 @@
 html{
 	margin:0px;
 } 
-
+.zDeletedRow{ background-color:#CCC !important; color:#999 !important; font-weight:bold; text-align:center;}
+.zEditCellContainer{display:table;width:100%; }
+.zEditCellField, .zEditCellSave{width:95%; display:table-cell; margin:0px; padding:3px; font-size:13px; margin-left:-3px; height:15px; margin-top:-2px;  line-height:18px; background-color:#FFF; border:1px solid #CCC;}
+.zEditCellSave:link, .zEditCellSave:visited{display:table-cell;background-color:#CCC; padding:1px; width:36px;text-decoration:none; color:#000; text-align:center; cursor:pointer;}
 .sfc {
 	font-size:10px; padding:0px; margin:0px; padding:0px; margin-bottom:1px;
 }

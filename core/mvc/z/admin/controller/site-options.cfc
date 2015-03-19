@@ -52,7 +52,7 @@
 		return;
 	}
 	</cfscript>
-	<cfif form.method NEQ "internalGroupUpdate" and form.method NEQ "autoDeleteGroup" and form.method NEQ "publicAjaxInsertGroup" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
+	<cfif form.method NEQ "editGroup" and form.method NEQ "deleteGroup" and form.method NEQ "internalGroupUpdate" and form.method NEQ "autoDeleteGroup" and form.method NEQ "publicAjaxInsertGroup" and form.method NEQ "publicAddGroup" and application.zcore.user.checkGroupAccess("member") and application.zcore.functions.zIsWidgetBuilderEnabled()>
 		<table style="border-spacing:0px; width:100%; " class="table-list">
 			<tr>
 				<th><a href="/z/admin/site-options/index?site_option_app_id=#form.site_option_app_id#">Site Options</a></th>
@@ -1563,7 +1563,6 @@
 			}
 		}
 		form.inquiries_spam=0;
-		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',false,0);
 		if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
 			form.inquiries_spam=1;
 			//application.zcore.status.setStatus(request.zsid, "Invalid submission.  Please submit the form again.",form,true);
@@ -1690,7 +1689,7 @@
 			}else{
 				local.newMethod="editGroup";
 			}
-			application.zcore.functions.zRedirect("/z/admin/site-options/#local.newMethod#?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#");
+			application.zcore.functions.zRedirect("/z/admin/site-options/#local.newMethod#?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#form.modalpopforced#");
 		}
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1<br>'); startTime=gettickcount();
@@ -1722,7 +1721,7 @@
 			if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
 				return {success:false, zsid:request.zsid};
 			}else{
-				application.zcore.functions.zRedirect("/z/admin/site-options/#local.newAction#?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid=#request.zsid#");
+				application.zcore.functions.zRedirect("/z/admin/site-options/#local.newAction#?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_id=#form.site_x_option_group_set_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid=#request.zsid#&modalpopforced=#form.modalpopforced#");
 			}
 		}
 		nv=rs.value;
@@ -2128,9 +2127,12 @@
 				application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#local.setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#");
 			}
 		}
+	}else if(form.modalpopforced EQ 1 and (methodBackup EQ "updateGroup")){
+		application.zcore.functions.zRedirect("/z/admin/site-options/getRowHTML?zsid=#request.zsid#&site_x_option_group_set_id=#local.setIdBackup#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#form.modalpopforced#");
+		//application.zcore.functions.zRedirect("/z/misc/system/closeModal");
 	}else{
 		application.zcore.status.setStatus(request.zsid,"Saved successfully.");
-		application.zcore.functions.zRedirect("/z/admin/site-options/manageGroup?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#");
+		application.zcore.functions.zRedirect("/z/admin/site-options/manageGroup?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#form.modalpopforced#");
 	}
 	</cfscript>
 </cffunction>
@@ -2500,6 +2502,13 @@ Define this function in another CFC to override the default email format
 	</cfscript>
 </cffunction>
 
+<cffunction name="getRowHTML" localmode="modern" access="remote" roles="member">
+	<cfargument name="struct" type="struct" required="no" default="#{}#">
+	<cfscript>
+	this.manageGroup(arguments.struct);
+	</cfscript>
+</cffunction>
+
 <cffunction name="manageGroup" localmode="modern" access="remote" roles="member">
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
@@ -2532,524 +2541,649 @@ Define this function in another CFC to override the default email format
 	var ts2=0;
 	var qS=0;
 	var q12=0;
-	variables.init();
-	
-	defaultStruct={
-		addURL:"/z/admin/site-options/addGroup",
-		editURL:"/z/admin/site-options/editGroup",
-		sectionURL:"/z/admin/site-options/sectionGroup",
-		deleteURL:"/z/admin/site-options/deleteGroup",
-		insertURL:"/z/admin/site-options/insertGroup",
-		updateURL:"/z/admin/site-options/updateGroup",
-		listURL:"/z/admin/site-options/manageGroup"
-	};
-	structappend(arguments.struct, defaultStruct, false);
-	
-	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
-	application.zcore.functions.zstatusHandler(request.zsid);
-	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id',true);
-	form.site_x_option_group_set_parent_id=application.zcore.functions.zso(form, 'site_x_option_group_set_parent_id',true);
-	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
-	site_option_group_id = #db.param(form.site_option_group_id)# and 
-	site_option_group_deleted = #db.param(0)# and
-	site_id IN (#db.trustedsql(variables.siteIdList)# ) ";
-	qGroup=db.execute("qGroup");
-	if(qGroup.recordcount EQ 0){
-		application.zcore.functions.zredirect("/z/admin/site-options/index");
-	}
-	if(qGroup.site_option_group_enable_sorting EQ 1){
-		queueSortStruct.tableName = "site_x_option_group_set";
-		queueSortStruct.sortFieldName = "site_x_option_group_set_sort";
-		queueSortStruct.primaryKeyName = "site_x_option_group_set_id";
-		queueSortStruct.datasource=request.zos.zcoreDatasource;
-		queueSortStruct.ajaxTableId='sortRowTable';
-		queueSortStruct.ajaxURL=application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#");
+	savecontent variable="out"{
+		variables.init();
 		
-		queueSortStruct.where =" site_x_option_group_set.site_option_app_id = '#application.zcore.functions.zescape(form.site_option_app_id)#' and  
-		site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
-		site_x_option_group_set_parent_id='#application.zcore.functions.zescape(form.site_x_option_group_set_parent_id)#' and 
-		site_id = '#request.zos.globals.id#' and 
-		site_x_option_group_set_deleted='0' ";
+		defaultStruct={
+			addURL:"/z/admin/site-options/addGroup",
+			editURL:"/z/admin/site-options/editGroup",
+			sectionURL:"/z/admin/site-options/sectionGroup",
+			deleteURL:"/z/admin/site-options/deleteGroup",
+			insertURL:"/z/admin/site-options/insertGroup",
+			updateURL:"/z/admin/site-options/updateGroup",
+			listURL:"/z/admin/site-options/manageGroup"
+		};
+		structappend(arguments.struct, defaultStruct, false);
 		
-		queueSortStruct.disableRedirect=true;
-		queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
-		r1=queueSortCom.init(queueSortStruct);
-		if(structkeyexists(form, 'zQueueSort')){
-			// update cache
-			if(qGroup.site_option_group_enable_cache EQ 1){
-				application.zcore.siteOptionCom.updateSiteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id); 
-			}
-			//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
-			// redirect with zqueuesort renamed
-			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
-		}
-		if(structkeyexists(form, 'zQueueSortAjax')){
-			// update cache
-			if(qGroup.site_option_group_enable_cache EQ 1){
-				application.zcore.siteOptionCom.resortSiteOptionGroupSets(request.zos.globals.id, form.site_option_app_id, form.site_option_group_id, form.site_x_option_group_set_parent_id); 
-			}
-			queueSortCom.returnJson();
-		}
-	}
-	if(form.site_option_group_id NEQ 0){
-		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
-		where site_option_group_id = #db.param(form.site_option_group_id)# and 
+		form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
+		application.zcore.functions.zstatusHandler(request.zsid);
+		form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id',true);
+		form.site_x_option_group_set_parent_id=application.zcore.functions.zso(form, 'site_x_option_group_set_parent_id',true);
+		db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
+		site_option_group_id = #db.param(form.site_option_group_id)# and 
 		site_option_group_deleted = #db.param(0)# and
-		site_id = #db.param(request.zos.globals.id)# 
-		ORDER BY site_option_group_display_name";
-		q1=db.execute("q1");
-		if(q1.recordcount EQ 0){
-			application.zcore.functions.z301redirect("/z/admin/site-options/index");	
+		site_id IN (#db.trustedsql(variables.siteIdList)# ) ";
+		qGroup=db.execute("qGroup");
+		if(qGroup.recordcount EQ 0){
+			application.zcore.functions.zredirect("/z/admin/site-options/index");
 		}
-	}
-	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# site_option 
-	where site_option_group_id = #db.param(form.site_option_group_id)# and 
-	site_option_deleted = #db.param(0)# and
-	site_id =#db.param(request.zos.globals.id)# 
-	ORDER BY site_option_sort";
-	qS2=db.execute("qS2");
-	local.parentIndex=0;
-	local.arrSearchTable=[];
-	local.arrSortSQL=[];
-	for(local.row in qS2){
-		if(local.row.site_option_admin_searchable EQ 1){
-			arrayAppend(local.arrSearchTable, local.row);
-		}
-		local.added=false;
-		ts2={};
-		if(qGroup.site_option_group_parent_field NEQ "" and qGroup.site_option_group_parent_field EQ local.row.site_option_name){
-			local.added=true;
-			arrayappend(arrRow, local.row);
-			arrayappend(arrLabel, local.row.site_option_display_name);
-			arrayappend(arrVal, local.row.site_option_id);
-			arrayappend(arrType, local.row.site_option_type_id);
-			local.parentIndex=arraylen(arrVal);
-			if(local.row.site_option_primary_field EQ 1){
-				arrayAppend(arrDisplay, 1);
-			}else{
-				arrayAppend(arrDisplay, 0);
-			}
-		}else if(local.row.site_option_primary_field EQ 1){
-			local.added=true;
-			arrayAppend(arrDisplay, 1);
-			arrayappend(arrRow, local.row);
-			arrayappend(arrLabel, local.row.site_option_display_name);
-			arrayappend(arrVal, local.row.site_option_id);
-			arrayappend(arrType, local.row.site_option_type_id);
-		}
-		if(local.added){
-			if(local.row.site_option_admin_sort_field NEQ 0){ 
-				var currentCFC=application.zcore.siteOptionTypeStruct[local.row.site_option_type_id];
-				var sortDirection="asc";
-				if(local.row.site_option_admin_sort_field EQ 2){
-					sortDirection="desc";
-				}
-				local.tempSQL=currentCFC.getSortSQL(arraylen(arrVal), sortDirection);
-				if(local.tempSQL NEQ ""){
-					arrayAppend(local.arrSortSQL, local.tempSQL);
-				}
-			}
-		}
-		if(local.row.site_option_type_id EQ 0){
-			fakeRow=local.row;
-			fakePrimaryId=local.row.site_option_id;	
-			fakePrimaryLabel=local.row.site_option_display_name;	
-			fakePrimaryType=local.row.site_option_type_id;	
-		}
-	}
-	if(fakePrimaryId EQ 0 and qS2.recordcount NEQ 0){
-		for(local.row in qS2){
-			fakeRow=local.row;
-			break;
-		}
-		fakePrimaryId=qS2.site_option_id;
-		fakePrimaryLabel=qS2.site_option_display_name;
-		fakePrimaryType=qS2.site_option_type_id;
-	}
-	if(arraylen(arrVal) EQ 0){
-		arrayAppend(arrDisplay, 1);
-		arrayappend(arrRow, fakeRow);
-		arrayappend(arrVal, fakePrimaryId);
-		arrayappend(arrLabel, fakePrimaryLabel);
-		arrayappend(arrType, fakePrimaryType);
-	}
-	local.arrSearch=[];
-	var dataStruct=[];
-	for(i=1;i LTE arraylen(arrType);i++){
-		if(not structkeyexists(arrRow[i], 'site_option_type_json')){
-			continue;
-		}
-		var optionStruct=deserializeJson(arrRow[i].site_option_type_json);
-		arrayAppend(arrOptionStruct, optionStruct);
-		
-		var currentCFC=application.zcore.siteOptionTypeStruct[arrType[i]];
-		dataStruct[i]=currentCFC.onBeforeListView(arrRow[i], optionStruct, form);
-	}
-	theTitle="Manage #htmleditformat(qGroup.site_option_group_display_name)#(s)";
-	application.zcore.template.setTag("title",theTitle);
-	application.zcore.template.setTag("pagetitle",theTitle);
-	curParentId=q1.site_option_group_parent_id;
-	curParentSetId=form.site_x_option_group_set_parent_id;
-	if(not structkeyexists(arguments.struct, 'hideNavigation') or not arguments.struct.hideNavigation){
-		application.zcore.siteOptionCom.getSetParentLinks(q1.site_option_group_id, curParentId, curParentSetId, false);
-	}
-	db.sql="select *, count(s3.site_option_group_id) childCount 
-	from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
-	left join #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s3 ON 
-	site_option_group.site_option_group_id = s3.site_option_group_id and 
-	s3.site_id = site_option_group.site_id  and 
-	s3.site_x_option_group_set_deleted = #db.param(0)#
-	where 
-	site_option_group_deleted = #db.param(0)# and
-	site_option_group.site_option_group_parent_id = #db.param(form.site_option_group_id)# and 
-	site_option_group.site_id = #db.param(request.zos.globals.id)# 
-	GROUP BY site_option_group.site_option_group_id
-	ORDER BY site_option_group.site_option_group_display_name";
-	q1=db.execute("q1");
-	
-	local.arrSearchSQL=[];
-	local.searchStruct={};
-	searchFieldEnabledStruct={};
-	
-	local.tempGroupKey="#form.site_option_app_id#-#form.site_option_group_id#";
-	if(structkeyexists(request.zsession, 'siteOptionGroupSearch') and structkeyexists(request.zsession.siteOptionGroupSearch, local.tempGroupKey)){
-		if(structkeyexists(form, 'clearSearch')){
-			structdelete(request.zsession.siteOptionGroupSearch, local.tempGroupKey);
-		}else if(not structkeyexists(form, 'searchOn')){
-			form.searchOn=1;
-			structappend(form, request.zsession.siteOptionGroupSearch[local.tempGroupKey], false);
-		}
-	}
-	if(form.site_option_group_id NEQ 0 and arraylen(local.arrSearchTable)){ 
-		arrayAppend(local.arrSearch, '<form action="#arguments.struct.listURL#" method="get">
-		<input type="hidden" name="searchOn" value="1" />
-		<input type="hidden" name="site_option_group_id" value="#form.site_option_group_id#" />
-		<input type="hidden" name="site_option_app_id" value="#form.site_option_app_id#" />
-		<table class="table-list" style="width:100%;"><tr>');
-		for(n=1;n LTE arraylen(arrVal);n++){
-			local.arrSearchSQL[n]="";
-		}
-		for(i=1;i LTE arraylen(local.arrSearchTable);i++){
-			row=local.arrSearchTable[i];
-			for(n=1;n LTE arraylen(arrVal);n++){
-				if(row.site_option_id EQ arrVal[n]){
-					local.curValIndex=n;
-					break;
-				}
-			}
+		if(qGroup.site_option_group_enable_sorting EQ 1){
+			queueSortStruct.tableName = "site_x_option_group_set";
+			queueSortStruct.sortFieldName = "site_x_option_group_set_sort";
+			queueSortStruct.primaryKeyName = "site_x_option_group_set_id";
+			queueSortStruct.datasource=request.zos.zcoreDatasource;
+			queueSortStruct.ajaxTableId='sortRowTable';
+			queueSortStruct.ajaxURL=application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#");
 			
-			form['newvalue'&row.site_option_id]=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
-			 
-			var optionStruct=arrOptionStruct[local.curValIndex];
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
-			if(currentCFC.isSearchable()){
-				arrayAppend(local.arrSearch, '<td style="vertical-align:top;">'&row.site_option_name&'<br />');
-				var tempValue=currentCFC.getSearchValue(row, optionStruct, 'newvalue', form, local.searchStruct);
-				if(structkeyexists(form, 'searchOn')){
-					local.arrSearchSQL[local.curValIndex]=currentCFC.getSearchSQL(row, optionStruct, 'newvalue', form, 's#local.curValIndex#.site_x_option_group_value',  's#local.curValIndex#.site_x_option_group_date_value', tempValue); 
-					if(local.arrSearchSQL[local.curValIndex] NEQ ""){
-						searchFieldEnabledStruct[local.curValIndex]=true;
-					}
-					local.arrSearchSQL[local.curValIndex]=replace(local.arrSearchSQL[local.curValIndex], "?", "", "all");
-					local.searchStruct['newvalue'&row.site_option_id]=tempValue;
+			queueSortStruct.where =" site_x_option_group_set.site_option_app_id = '#application.zcore.functions.zescape(form.site_option_app_id)#' and  
+			site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
+			site_x_option_group_set_parent_id='#application.zcore.functions.zescape(form.site_x_option_group_set_parent_id)#' and 
+			site_id = '#request.zos.globals.id#' and 
+			site_x_option_group_set_deleted='0' ";
+			
+			queueSortStruct.disableRedirect=true;
+			queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
+			r1=queueSortCom.init(queueSortStruct);
+			if(structkeyexists(form, 'zQueueSort')){
+				// update cache
+				if(qGroup.site_option_group_enable_cache EQ 1){
+					application.zcore.siteOptionCom.updateSiteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id); 
 				}
-				arrayAppend(local.arrSearch, currentCFC.getSearchFormField(row, optionStruct, 'newvalue', form, tempValue, '')); 
-				arrayAppend(local.arrSearch, '</td>');
+				//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+				// redirect with zqueuesort renamed
+				application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
 			}
-		} 
-		if(structkeyexists(form, 'searchOn')){
-			if(not structkeyexists(request.zsession, 'siteOptionGroupSearch')){
-				request.zsession.siteOptionGroupSearch={};
-			}
-			request.zsession.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
-		}
-		local.arrNewSearchSQL=[];
-		for(n=1;n LTE arraylen(local.arrSearchSQL);n++){
-			if(local.arrSearchSQL[n] NEQ ""){
-				arrayappend(local.arrNewSearchSQL, local.arrSearchSQL[n]);
+			if(structkeyexists(form, 'zQueueSortAjax')){
+				// update cache
+				if(qGroup.site_option_group_enable_cache EQ 1){
+					application.zcore.siteOptionCom.resortSiteOptionGroupSets(request.zos.globals.id, form.site_option_app_id, form.site_option_group_id, form.site_x_option_group_set_parent_id); 
+				}
+				queueSortCom.returnJson();
 			}
 		}
-		local.arrSearchSQL=local.arrNewSearchSQL; 
+		if(form.site_option_group_id NEQ 0){
+			db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
+			where site_option_group_id = #db.param(form.site_option_group_id)# and 
+			site_option_group_deleted = #db.param(0)# and
+			site_id = #db.param(request.zos.globals.id)# 
+			ORDER BY site_option_group_display_name";
+			q1=db.execute("q1");
+			if(q1.recordcount EQ 0){
+				application.zcore.functions.z301redirect("/z/admin/site-options/index");	
+			}
+		}
+		db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# site_option 
+		where site_option_group_id = #db.param(form.site_option_group_id)# and 
+		site_option_deleted = #db.param(0)# and
+		site_id =#db.param(request.zos.globals.id)# 
+		ORDER BY site_option_sort";
+		qS2=db.execute("qS2");
+		local.parentIndex=0;
+		local.arrSearchTable=[];
+		local.arrSortSQL=[];
+		for(local.row in qS2){
+			if(local.row.site_option_admin_searchable EQ 1){
+				arrayAppend(local.arrSearchTable, local.row);
+			}
+			local.added=false;
+			ts2={};
+			if(qGroup.site_option_group_parent_field NEQ "" and qGroup.site_option_group_parent_field EQ local.row.site_option_name){
+				local.added=true;
+				arrayappend(arrRow, local.row);
+				arrayappend(arrLabel, local.row.site_option_display_name);
+				arrayappend(arrVal, local.row.site_option_id);
+				arrayappend(arrType, local.row.site_option_type_id);
+				local.parentIndex=arraylen(arrVal);
+				if(local.row.site_option_primary_field EQ 1){
+					arrayAppend(arrDisplay, 1);
+				}else{
+					arrayAppend(arrDisplay, 0);
+				}
+			}else if(local.row.site_option_primary_field EQ 1){
+				local.added=true;
+				arrayAppend(arrDisplay, 1);
+				arrayappend(arrRow, local.row);
+				arrayappend(arrLabel, local.row.site_option_display_name);
+				arrayappend(arrVal, local.row.site_option_id);
+				arrayappend(arrType, local.row.site_option_type_id);
+			}
+			if(local.added){
+				if(local.row.site_option_admin_sort_field NEQ 0){ 
+					var currentCFC=application.zcore.siteOptionTypeStruct[local.row.site_option_type_id];
+					var sortDirection="asc";
+					if(local.row.site_option_admin_sort_field EQ 2){
+						sortDirection="desc";
+					}
+					local.tempSQL=currentCFC.getSortSQL(arraylen(arrVal), sortDirection);
+					if(local.tempSQL NEQ ""){
+						arrayAppend(local.arrSortSQL, local.tempSQL);
+					}
+				}
+			}
+			if(local.row.site_option_type_id EQ 0){
+				fakeRow=local.row;
+				fakePrimaryId=local.row.site_option_id;	
+				fakePrimaryLabel=local.row.site_option_display_name;	
+				fakePrimaryType=local.row.site_option_type_id;	
+			}
+		}
+		if(fakePrimaryId EQ 0 and qS2.recordcount NEQ 0){
+			for(local.row in qS2){
+				fakeRow=local.row;
+				break;
+			}
+			fakePrimaryId=qS2.site_option_id;
+			fakePrimaryLabel=qS2.site_option_display_name;
+			fakePrimaryType=qS2.site_option_type_id;
+		}
+		if(arraylen(arrVal) EQ 0){
+			arrayAppend(arrDisplay, 1);
+			arrayappend(arrRow, fakeRow);
+			arrayappend(arrVal, fakePrimaryId);
+			arrayappend(arrLabel, fakePrimaryLabel);
+			arrayappend(arrType, fakePrimaryType);
+		}
+		local.arrSearch=[];
+		var dataStruct=[];
+		for(i=1;i LTE arraylen(arrType);i++){
+			if(not structkeyexists(arrRow[i], 'site_option_type_json')){
+				continue;
+			}
+			var optionStruct=deserializeJson(arrRow[i].site_option_type_json);
+			arrayAppend(arrOptionStruct, optionStruct);
+			
+			var currentCFC=application.zcore.siteOptionTypeStruct[arrType[i]];
+			dataStruct[i]=currentCFC.onBeforeListView(arrRow[i], optionStruct, form);
+		}
+		theTitle="Manage #htmleditformat(qGroup.site_option_group_display_name)#(s)";
+		application.zcore.template.setTag("title",theTitle);
+		application.zcore.template.setTag("pagetitle",theTitle);
+		curParentId=q1.site_option_group_parent_id;
+		curParentSetId=form.site_x_option_group_set_parent_id;
+		if(not structkeyexists(arguments.struct, 'hideNavigation') or not arguments.struct.hideNavigation){
+			application.zcore.siteOptionCom.getSetParentLinks(q1.site_option_group_id, curParentId, curParentSetId, false);
+		}
+		db.sql="select *, count(s3.site_option_group_id) childCount 
+		from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
+		left join #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s3 ON 
+		site_option_group.site_option_group_id = s3.site_option_group_id and 
+		s3.site_id = site_option_group.site_id  and 
+		s3.site_x_option_group_set_deleted = #db.param(0)# ";
+		if(form.method EQ "getRowHTML"){
+			db.sql&=" and site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+		}
+		db.sql&=" where 
+		site_option_group_deleted = #db.param(0)# and
+		site_option_group.site_option_group_parent_id = #db.param(form.site_option_group_id)# and 
+		site_option_group.site_id = #db.param(request.zos.globals.id)# 
+		GROUP BY site_option_group.site_option_group_id
+		ORDER BY site_option_group.site_option_group_display_name";
+		q1=db.execute("q1");
 		
-		if(qGroup.site_option_group_enable_approval EQ 1){
+		local.arrSearchSQL=[];
+		local.searchStruct={};
+		searchFieldEnabledStruct={};
+	
+		local.tempGroupKey="#form.site_option_app_id#-#form.site_option_group_id#";
+		if(structkeyexists(request.zsession, 'siteOptionGroupSearch') and structkeyexists(request.zsession.siteOptionGroupSearch, local.tempGroupKey)){
+			if(structkeyexists(form, 'clearSearch')){
+				structdelete(request.zsession.siteOptionGroupSearch, local.tempGroupKey);
+			}else if(not structkeyexists(form, 'searchOn')){
+				form.searchOn=1;
+				structappend(form, request.zsession.siteOptionGroupSearch[local.tempGroupKey], false);
+			}
+		}
+		if(form.site_option_group_id NEQ 0 and arraylen(local.arrSearchTable)){ 
+			arrayAppend(local.arrSearch, '<form action="#arguments.struct.listURL#" method="get">
+			<input type="hidden" name="searchOn" value="1" />
+			<input type="hidden" name="site_option_group_id" value="#form.site_option_group_id#" />
+			<input type="hidden" name="site_option_app_id" value="#form.site_option_app_id#" />
+			<table class="table-list" style="width:100%;"><tr>');
+			for(n=1;n LTE arraylen(arrVal);n++){
+				local.arrSearchSQL[n]="";
+			}
+			for(i=1;i LTE arraylen(local.arrSearchTable);i++){
+				row=local.arrSearchTable[i];
+				for(n=1;n LTE arraylen(arrVal);n++){
+					if(row.site_option_id EQ arrVal[n]){
+						local.curValIndex=n;
+						break;
+					}
+				}
+				
+				form['newvalue'&row.site_option_id]=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
+				 
+				var optionStruct=arrOptionStruct[local.curValIndex];
+				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+				if(currentCFC.isSearchable()){
+					arrayAppend(local.arrSearch, '<td style="vertical-align:top;">'&row.site_option_name&'<br />');
+					var tempValue=currentCFC.getSearchValue(row, optionStruct, 'newvalue', form, local.searchStruct);
+					if(structkeyexists(form, 'searchOn')){
+						local.arrSearchSQL[local.curValIndex]=currentCFC.getSearchSQL(row, optionStruct, 'newvalue', form, 's#local.curValIndex#.site_x_option_group_value',  's#local.curValIndex#.site_x_option_group_date_value', tempValue); 
+						if(local.arrSearchSQL[local.curValIndex] NEQ ""){
+							searchFieldEnabledStruct[local.curValIndex]=true;
+						}
+						local.arrSearchSQL[local.curValIndex]=replace(local.arrSearchSQL[local.curValIndex], "?", "", "all");
+						local.searchStruct['newvalue'&row.site_option_id]=tempValue;
+					}
+					arrayAppend(local.arrSearch, currentCFC.getSearchFormField(row, optionStruct, 'newvalue', form, tempValue, '')); 
+					arrayAppend(local.arrSearch, '</td>');
+				}
+			} 
 			if(structkeyexists(form, 'searchOn')){
-				local.searchStruct['site_x_option_group_set_approved']=application.zcore.functions.zso(form,'site_x_option_group_set_approved');
 				if(not structkeyexists(request.zsession, 'siteOptionGroupSearch')){
 					request.zsession.siteOptionGroupSearch={};
 				}
 				request.zsession.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
 			}
-			arrayAppend(local.arrSearch, '<td style="vertical-align:top;">Approval Status:<br />');
-			ts = StructNew();
-			ts.name = "site_x_option_group_set_approved";
-			ts.listLabels= "Approved|Pending|Deactivated By User|Rejected";
-			ts.listValues= "1|0|2|3";
-			ts.listLabelsdelimiter="|";
-			ts.listValuesdelimiter="|";
-			ts.output=false;
-			ts.struct=form;
-			arrayAppend(local.arrSearch, application.zcore.functions.zInputSelectBox(ts));
-			arrayAppend(local.arrSearch, '</td>');
-		}
-		arrayAppend(local.arrSearch, '<td style="vertical-align:top;"><input type="submit" name="searchSubmit1" value="Search" /> 
-			<input type="button" onclick="window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, 'site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;clearSearch=1')#'';" name="searchSubmit1" value="Clear Search" /></td></tr></table></form>');
-		 
-	}
-	status=application.zcore.functions.zso(local.searchStruct, 'site_x_option_group_set_approved');
-	if(qGroup.site_option_group_admin_paging_limit NEQ 0){
-		db.sql="SELECT count(site_option_group.site_option_group_id) count
-		FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
-		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set)  ";
-		for(i=1;i LTE arraylen(arrVal);i++){
-			if(structkeyexists(searchFieldEnabledStruct, i)){
-				db.sql&="LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s#i# on 
-				s#i#.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
-				s#i#.site_option_id = #db.param(arrVal[i])# and 
-				s#i#.site_option_group_id = site_option_group.site_option_group_id and 
-				s#i#.site_id = site_option_group.site_id and 
-				s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
-				s#i#.site_x_option_group_deleted = #db.param(0)# ";
+			local.arrNewSearchSQL=[];
+			for(n=1;n LTE arraylen(local.arrSearchSQL);n++){
+				if(local.arrSearchSQL[n] NEQ ""){
+					arrayappend(local.arrNewSearchSQL, local.arrSearchSQL[n]);
+				}
 			}
+			local.arrSearchSQL=local.arrNewSearchSQL; 
+			
+			if(qGroup.site_option_group_enable_approval EQ 1){
+				if(structkeyexists(form, 'searchOn')){
+					local.searchStruct['site_x_option_group_set_approved']=application.zcore.functions.zso(form,'site_x_option_group_set_approved');
+					if(not structkeyexists(request.zsession, 'siteOptionGroupSearch')){
+						request.zsession.siteOptionGroupSearch={};
+					}
+					request.zsession.siteOptionGroupSearch[local.tempGroupKey]=local.searchStruct;
+				}
+				arrayAppend(local.arrSearch, '<td style="vertical-align:top;">Approval Status:<br />');
+				ts = StructNew();
+				ts.name = "site_x_option_group_set_approved";
+				ts.listLabels= "Approved|Pending|Deactivated By User|Rejected";
+				ts.listValues= "1|0|2|3";
+				ts.listLabelsdelimiter="|";
+				ts.listValuesdelimiter="|";
+				ts.output=false;
+				ts.struct=form;
+				arrayAppend(local.arrSearch, application.zcore.functions.zInputSelectBox(ts));
+				arrayAppend(local.arrSearch, '</td>');
+			}
+			arrayAppend(local.arrSearch, '<td style="vertical-align:top;"><input type="submit" name="searchSubmit1" value="Search" /> 
+				<input type="button" onclick="window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, 'site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;clearSearch=1')#'';" name="searchSubmit1" value="Clear Search" /></td></tr></table></form>');
+			 
 		}
-		db.sql&="WHERE  
+		status=application.zcore.functions.zso(local.searchStruct, 'site_x_option_group_set_approved');
+		if(qGroup.site_option_group_admin_paging_limit NEQ 0){
+			db.sql="SELECT count(site_option_group.site_option_group_id) count
+			FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
+			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set)  ";
+			for(i=1;i LTE arraylen(arrVal);i++){
+				if(structkeyexists(searchFieldEnabledStruct, i)){
+					db.sql&="LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s#i# on 
+					s#i#.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
+					s#i#.site_option_id = #db.param(arrVal[i])# and 
+					s#i#.site_option_group_id = site_option_group.site_option_group_id and 
+					s#i#.site_id = site_option_group.site_id and 
+					s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
+					s#i#.site_x_option_group_deleted = #db.param(0)# ";
+				}
+			}
+			db.sql&="WHERE  
+			site_x_option_group_set_deleted = #db.param(0)# and 
+			site_option_group_deleted = #db.param(0)# and 
+			site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
+			site_option_group.site_id=site_x_option_group_set.site_id and 
+			site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
+			if(form.site_x_option_group_set_parent_id NEQ 0){
+				db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
+			}
+			if(status NEQ ""){
+				db.sql&=" and site_x_option_group_set_approved = #db.param(status)# ";
+			}
+			if(arraylen(local.arrSearchSQL)){
+				db.sql&=(" and "&arrayToList(local.arrSearchSQL, ' and '));
+			}
+			if(form.method EQ "getRowHTML"){
+				db.sql&=" and site_x_option_group_set.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+			}
+			db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
+			site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
+			site_option_group.site_option_group_type=#db.param('1')# ";
+			local.qCount=db.execute("qCount");
+		}
+		db.sql="SELECT site_option_group.*,  site_x_option_group_set.*";
+		for(i=1;i LTE arraylen(arrVal);i++){
+			db.sql&=" , s#i#.site_x_option_group_value sVal#i# ";
+		}
+		db.sql&=" FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
+		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set) ";
+		for(i=1;i LTE arraylen(arrVal);i++){
+			db.sql&="LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s#i# on 
+			s#i#.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
+			s#i#.site_option_id = #db.param(arrVal[i])# and 
+			s#i#.site_option_group_id = site_option_group.site_option_group_id and 
+			s#i#.site_id = site_option_group.site_id and 
+			s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
+			s#i#.site_x_option_group_deleted = #db.param(0)# ";
+		}
+		db.sql&="
+		WHERE  
+		site_option_group_deleted = #db.param(0)# and
 		site_x_option_group_set_deleted = #db.param(0)# and 
-		site_option_group_deleted = #db.param(0)# and 
 		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
 		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
-		if(form.site_x_option_group_set_parent_id NEQ 0){
-			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
+		if(arraylen(local.arrSearchSQL)){
+			db.sql&=(" and "&arrayToList(local.arrSearchSQL, ' and '));
 		}
 		if(status NEQ ""){
 			db.sql&=" and site_x_option_group_set_approved = #db.param(status)# ";
 		}
-		if(arraylen(local.arrSearchSQL)){
-			db.sql&=(" and "&arrayToList(local.arrSearchSQL, ' and '));
+		if(form.site_x_option_group_set_parent_id NEQ 0){
+			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
+		}
+		if(form.method EQ "getRowHTML"){
+			db.sql&=" and site_x_option_group_set.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
 		}
 		db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
 		site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
 		site_option_group.site_option_group_type=#db.param('1')# ";
-		local.qCount=db.execute("qCount");
-	}
-	db.sql="SELECT site_option_group.*,  site_x_option_group_set.*";
-	for(i=1;i LTE arraylen(arrVal);i++){
-		db.sql&=" , s#i#.site_x_option_group_value sVal#i# ";
-	}
-	db.sql&=" FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
-	#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set) ";
-	for(i=1;i LTE arraylen(arrVal);i++){
-		db.sql&="LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s#i# on 
-		s#i#.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
-		s#i#.site_option_id = #db.param(arrVal[i])# and 
-		s#i#.site_option_group_id = site_option_group.site_option_group_id and 
-		s#i#.site_id = site_option_group.site_id and 
-		s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
-		s#i#.site_x_option_group_deleted = #db.param(0)# ";
-	}
-	db.sql&="
-	WHERE  
-	site_option_group_deleted = #db.param(0)# and
-	site_x_option_group_set_deleted = #db.param(0)# and 
-	site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
-	site_option_group.site_id=site_x_option_group_set.site_id and 
-	site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
-	if(arraylen(local.arrSearchSQL)){
-		db.sql&=(" and "&arrayToList(local.arrSearchSQL, ' and '));
-	}
-	if(status NEQ ""){
-		db.sql&=" and site_x_option_group_set_approved = #db.param(status)# ";
-	}
-	if(form.site_x_option_group_set_parent_id NEQ 0){
-		db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
-	}
-	db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
-	site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
-	site_option_group.site_option_group_type=#db.param('1')# ";
-	//GROUP BY site_x_option_group_set.site_x_option_group_set_id
-	if(arraylen(local.arrSortSQL)){
-		db.sql&= "ORDER BY "&arraytolist(local.arrSortSQL, ", ");
-	}else{
-		db.sql&=" ORDER BY site_x_option_group_set_sort asc ";
-	}
-	if(qGroup.site_option_group_admin_paging_limit NEQ 0){
-		db.sql&=" LIMIT #db.param((form.zIndex-1)*qGroup.site_option_group_admin_paging_limit)#, #db.param(qGroup.site_option_group_admin_paging_limit)# ";
-	}
-	qS=db.execute("qS");
-	//writedump(qS);abort;
-	// sort and indent 
-	if(local.parentIndex NEQ 0){
-		local.rs=application.zcore.siteOptionCom.prepareRecursiveData(arrVal[local.parentIndex], form.site_option_group_id, arrOptionStruct[local.parentIndex], false);
-	}
-	
-	local.rowStruct={};
-	local.rowIndexFix=1;
-	if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
-		writeoutput('<p><a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Add #htmleditformat(application.zcore.functions.zFirstLetterCaps(qGroup.site_option_group_display_name))#</a></p>');
-	}
-	writeoutput(arraytolist(local.arrSearch, ""));
-	if(qS.recordcount){
-		writeoutput('<table id="sortRowTable" class="table-list" >
-		<thead>
-		<tr>');
-		for(i=1;i LTE arraylen(arrVal);i++){
-			if(arrDisplay[i]){
-				writeoutput('<th>#arrLabel[i]#</th>');
+		//GROUP BY site_x_option_group_set.site_x_option_group_set_id
+		if(arraylen(local.arrSortSQL)){
+			db.sql&= "ORDER BY "&arraytolist(local.arrSortSQL, ", ");
+		}else{
+			db.sql&=" ORDER BY site_x_option_group_set_sort asc ";
+		}
+		if(qGroup.site_option_group_admin_paging_limit NEQ 0){
+			db.sql&=" LIMIT #db.param((form.zIndex-1)*qGroup.site_option_group_admin_paging_limit)#, #db.param(qGroup.site_option_group_admin_paging_limit)# ";
+		}
+		qS=db.execute("qS");
+		//writedump(qS);abort;
+		// sort and indent 
+		if(local.parentIndex NEQ 0){
+			local.rs=application.zcore.siteOptionCom.prepareRecursiveData(arrVal[local.parentIndex], form.site_option_group_id, arrOptionStruct[local.parentIndex], false);
+		}
+		
+		local.rowStruct={};
+		local.rowIndexFix=1;
+		if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
+			writeoutput('<p><a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Add #htmleditformat(application.zcore.functions.zFirstLetterCaps(qGroup.site_option_group_display_name))#</a></p>');
+		}
+		writeoutput(arraytolist(local.arrSearch, ""));
+		if(qS.recordcount){
+			writeoutput('<table id="sortRowTable" class="table-list" >
+			<thead>
+			<tr>');
+			for(i=1;i LTE arraylen(arrVal);i++){
+				if(arrDisplay[i]){
+					writeoutput('<th>#arrLabel[i]#</th>');
+				}
 			}
-		}
-		if(qGroup.site_option_group_enable_approval EQ 1){
-			echo('<th>Approval Status</th>');
-		}
-		if(qGroup.site_option_group_enable_sorting EQ 1){
-			echo('<th>Sort</th>');
-		}
-		writeoutput('
-		<th style="white-space:nowrap;">Admin</th>
-		</tr>
-		</thead><tbody>');
-		var row=0;
-		var currentRowIndex=0;
-		for(row in qS){
-			currentRowIndex++;
-			if(local.parentIndex){
-				local.curRowIndex=0;
-				local.curIndent=0;
-				for(local.n=1;local.n LTE arraylen(local.rs.arrValue);local.n++){
-					if(row.site_x_option_group_set_id EQ local.rs.arrValue[local.n]){
-						local.curRowIndex=local.n;
-						local.curIndent=len(local.rs.arrLabel[local.n])-len(replace(local.rs.arrLabel[local.n], "_", "", "all"));
-						break;
+			if(qGroup.site_option_group_enable_approval EQ 1){
+				echo('<th>Approval Status</th>');
+			}
+			if(qGroup.site_option_group_enable_sorting EQ 1){
+				echo('<th>Sort</th>');
+			}
+			writeoutput('
+			<th>Last Edited</th>
+			<th style="white-space:nowrap;">Admin</th>
+			</tr>
+			</thead><tbody>');
+			var row=0;
+			var currentRowIndex=0;
+			for(row in qS){
+				currentRowIndex++;
+				if(local.parentIndex){
+					local.curRowIndex=0;
+					local.curIndent=0;
+					for(local.n=1;local.n LTE arraylen(local.rs.arrValue);local.n++){
+						if(row.site_x_option_group_set_id EQ local.rs.arrValue[local.n]){
+							local.curRowIndex=local.n;
+							local.curIndent=len(local.rs.arrLabel[local.n])-len(replace(local.rs.arrLabel[local.n], "_", "", "all"));
+							break;
+						}
 					}
+					if(local.curRowIndex EQ 0){
+						local.curRowIndex="1000000"&local.rowIndexFix;
+						local.rowIndexFix++;
+					}
+				}else{
+					local.curRowIndex=qS.currentrow;
 				}
-				if(local.curRowIndex EQ 0){
-					local.curRowIndex="1000000"&local.rowIndexFix;
-					local.rowIndexFix++;
-				}
-			}else{
-				local.curRowIndex=qS.currentrow;
-			}
-			local.firstDisplayed=true; 
-			savecontent variable="local.rowOutput"{ 
-				for(var i=1;i LTE arraylen(arrVal);i++){
-					if(arrDisplay[i]){
-						writeoutput('<td>');
-						if(local.firstDisplayed){
-							local.firstDisplayed=false;
-							if(local.parentIndex NEQ 0 and local.curIndent){
-								writeoutput(replace(ljustify(" ", local.curIndent*2), " ", "&nbsp;", "all"));
+				local.firstDisplayed=true; 
+				savecontent variable="local.rowOutput"{ 
+					for(var i=1;i LTE arraylen(arrVal);i++){
+						if(arrDisplay[i]){
+							writeoutput('<td>');
+							if(local.firstDisplayed){
+								local.firstDisplayed=false;
+								if(local.parentIndex NEQ 0 and local.curIndent){
+									writeoutput(replace(ljustify(" ", local.curIndent*2), " ", "&nbsp;", "all"));
+								}
+							}
+							var currentCFC=application.zcore.siteOptionTypeStruct[arrType[i]];
+							value=currentCFC.getListValue(dataStruct[i], arrOptionStruct[i], application.zcore.functions.zso(row, 'sVal'&i));
+							if(value EQ ""){
+								writeoutput(arrRow[i].site_option_default_value);
+							}else{
+								writeoutput(value);
+							}
+							writeoutput('</td>');
+						}
+					}
+					if(qGroup.site_option_group_enable_approval EQ 1){
+						echo('<td>'&application.zcore.siteOptionCom.getStatusName(row.site_x_option_group_set_approved)&'</td>');
+					}
+					if(qGroup.site_option_group_enable_sorting EQ 1){
+						echo('<td>');
+						if(row.site_id NEQ 0 or variables.allowGlobal){
+							queueSortCom.getRowStruct(row.site_x_option_group_set_id);
+							echo(queueSortCom.getAjaxHandleButton());
+						}
+						echo('</td>');
+					}
+					echo('<td>'&application.zcore.functions.zGetLastUpdatedDescription(row.site_x_option_group_set_updated_datetime)&'</td>');
+					writeoutput('<td style="white-space:nowrap;white-space: nowrap;">');
+					if(row.site_id NEQ 0 or variables.allowGlobal){
+						/*if(qGroup.site_option_group_enable_sorting EQ 1){
+							writeoutput(queueSortCom.getLinks(qS.recordcount, currentRowIndex, application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#"), "vertical-arrows"));
+						}*/
+						if(q1.recordcount NEQ 0){
+							writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
+							<option value="">-- Edit Sub-group --</option>');
+							/*arrGroupName=listToArray(row.groupNameList, chr(9));
+							arrGroupId=listToArray(row.groupIdList, chr(9));
+							childCount=row.childCount;
+							LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# sg3 ON 
+							site_option_group.site_option_group_id = sg3.site_option_group_parent_id AND 
+							site_option_group.site_id = sg3.site_id
+							LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# sg4 ON 
+							sg3.site_option_group_id = sg4.site_option_group_id AND 
+							sg3.site_id = sg4.site_id AND 
+							site_x_option_group_set.site_x_option_group_set_id = sg4.site_x_option_group_set_parent_id
+							*/ 
+							for(var n in q1){
+								writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
+								#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+							}
+							writeoutput('</select>
+							| ');
+						}
+
+						if(row.site_option_group_enable_unique_url EQ 1){
+							var tempLink="";
+							if(row.site_x_option_group_set_override_url NEQ ""){
+								tempLink=row.site_x_option_group_set_override_url;
+							}else{
+								tempLink="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#request.zos.globals.optionGroupURLID#-#row.site_x_option_group_set_id#.html";
+							}
+							if(row.site_x_option_group_set_approved EQ 1){
+								writeoutput('<a href="'&tempLink&'" target="_blank">View</a> | ');
+							}else{
+								writeoutput(' <a href="'&application.zcore.functions.zURLAppend(tempLink, "zpreview=1")&'" target="_blank">Preview</a> | ');
 							}
 						}
-						var currentCFC=application.zcore.siteOptionTypeStruct[arrType[i]];
-						value=currentCFC.getListValue(dataStruct[i], arrOptionStruct[i], application.zcore.functions.zso(row, 'sVal'&i));
-						if(value EQ ""){
-							writeoutput(arrRow[i].site_option_default_value);
-						}else{
-							writeoutput(value);
+						if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
+							writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
 						}
-						writeoutput('</td>');
-					}
-				}
-				if(qGroup.site_option_group_enable_approval EQ 1){
-					echo('<td>'&application.zcore.siteOptionCom.getStatusName(row.site_x_option_group_set_approved)&'</td>');
-				}
-				if(qGroup.site_option_group_enable_sorting EQ 1){
-					echo('<td>');
-					if(row.site_id NEQ 0 or variables.allowGlobal){
-						queueSortCom.getRowStruct(row.site_x_option_group_set_id);
-						echo(queueSortCom.getAjaxHandleButton());
-					}
-					echo('</td>');
-				}
-				writeoutput('<td style="white-space:nowrap;white-space: nowrap;">');
-				if(row.site_id NEQ 0 or variables.allowGlobal){
-					/*if(qGroup.site_option_group_enable_sorting EQ 1){
-						writeoutput(queueSortCom.getLinks(qS.recordcount, currentRowIndex, application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#"), "vertical-arrows"));
-					}*/
-					if(q1.recordcount NEQ 0){
-						writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
-						<option value="">-- Edit Sub-group --</option>');
-						/*arrGroupName=listToArray(row.groupNameList, chr(9));
-						arrGroupId=listToArray(row.groupIdList, chr(9));
-						childCount=row.childCount;
-						LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# sg3 ON 
-						site_option_group.site_option_group_id = sg3.site_option_group_parent_id AND 
-						site_option_group.site_id = sg3.site_id
-						LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# sg4 ON 
-						sg3.site_option_group_id = sg4.site_option_group_id AND 
-						sg3.site_id = sg4.site_id AND 
-						site_x_option_group_set.site_x_option_group_set_id = sg4.site_x_option_group_set_parent_id
-						*/ 
-						for(var n in q1){
-							writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
-							#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+						editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;modalpopforced=1");
+						
+						echo('<a href="#editLink#"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | ');
+						if(row.site_option_group_enable_section EQ 1){
+							echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> | ');
 						}
-						writeoutput('</select>
-						| ');
+						deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;returnJson=1&amp;confirm=1");
+						//zShowModalStandard(this.href, 2000,2000, true, true);
+						echo('<a href="##"  onclick="zDeleteTableRecordRow(this, ''#deleteLink#'');  return false;">Delete</a>');
 					}
-					if(row.site_option_group_enable_unique_url EQ 1){
-						var tempLink="";
-						if(row.site_x_option_group_set_override_url NEQ ""){
-							tempLink=row.site_x_option_group_set_override_url;
-						}else{
-							tempLink="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#request.zos.globals.optionGroupURLID#-#row.site_x_option_group_set_id#.html";
-						}
-						if(row.site_x_option_group_set_approved EQ 1){
-							writeoutput('<a href="'&tempLink&'" target="_blank">View</a> | ');
-						}else{
-							writeoutput(' <a href="'&application.zcore.functions.zURLAppend(tempLink, "zpreview=1")&'" target="_blank">Preview</a> | ');
-						}
-					}
-					if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
-						writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
-					}
-					writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Edit</a> | ');
-					if(row.site_option_group_enable_section EQ 1){
-						echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> | ');
-					}
-					echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Delete</a>');
+					writeoutput('</td>'); 
 				}
-				writeoutput('</td>'); 
-			}
-			local.rowStruct[local.curRowIndex]={
-				index:local.curRowIndex,
-				row:local.rowOutput,
-				trHTML:""
-			};
+				local.rowStruct[local.curRowIndex]={
+					index:local.curRowIndex,
+					row:local.rowOutput,
+					trHTML:""
+				};
 
-			if(qGroup.site_option_group_enable_sorting EQ 1){
-				if(row.site_id NEQ 0 or variables.allowGlobal){
-					local.rowStruct[local.curRowIndex].trHTML=queueSortCom.getRowHTML(row.site_x_option_group_set_id);
+				if(qGroup.site_option_group_enable_sorting EQ 1){
+					if(row.site_id NEQ 0 or variables.allowGlobal){
+						local.rowStruct[local.curRowIndex].trHTML=queueSortCom.getRowHTML(row.site_x_option_group_set_id);
+					}
 				}
 			}
-		}
-		local.arrKey=structsort(local.rowStruct, "numeric", "asc", "index");
-		arraysort(local.arrKey, "numeric", "asc");
-		for(i=1;i LTE arraylen(local.arrKey);i++){
-			writeoutput('<tr '&local.rowStruct[local.arrKey[i]].trHTML&' ');
-			if(i MOD 2 EQ 0){
-				writeoutput('class="row2"');
-			}else{
-				writeoutput('class="row1"');
-			}
-			writeoutput('>'&local.rowStruct[local.arrKey[i]].row&'</tr>');
-		} 
-		writeoutput('</tbody></table>');
-		if(form.site_option_group_id NEQ 0){
-			if(qGroup.site_option_group_admin_paging_limit NEQ 0){
-				searchStruct = StructNew();
-				searchStruct.count = qCount.count;
-				searchStruct.index = form.zIndex;
-				searchStruct.showString = "Results ";
-				searchStruct.url = application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#");
-				searchStruct.indexName = "zIndex";
-				searchStruct.buttons = 5;
-				searchStruct.perpage = qGroup.site_option_group_admin_paging_limit;
-				if(searchStruct.count GT searchStruct.perpage){
-					writeoutput( '<table class="table-list" style="width:100%; border-spacing:0px;" ><tr><td style="padding:0px;">'&application.zcore.functions.zSearchResultsNav(searchStruct)&'</td></tr></table>');
+			local.arrKey=structsort(local.rowStruct, "numeric", "asc", "index");
+			arraysort(local.arrKey, "numeric", "asc");
+			for(i=1;i LTE arraylen(local.arrKey);i++){
+				writeoutput('<tr '&local.rowStruct[local.arrKey[i]].trHTML&' ');
+				if(i MOD 2 EQ 0){
+					writeoutput('class="row2"');
+				}else{
+					writeoutput('class="row1"');
 				}
+				writeoutput('>'&local.rowStruct[local.arrKey[i]].row&'</tr>');
 			} 
+			writeoutput('</tbody></table>');
+			if(form.site_option_group_id NEQ 0){
+				if(qGroup.site_option_group_admin_paging_limit NEQ 0){
+					searchStruct = StructNew();
+					searchStruct.count = qCount.count;
+					searchStruct.index = form.zIndex;
+					searchStruct.showString = "Results ";
+					searchStruct.url = application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#");
+					searchStruct.indexName = "zIndex";
+					searchStruct.buttons = 5;
+					searchStruct.perpage = qGroup.site_option_group_admin_paging_limit;
+					if(searchStruct.count GT searchStruct.perpage){
+						writeoutput( '<table class="table-list" style="width:100%; border-spacing:0px;" ><tr><td style="padding:0px;">'&application.zcore.functions.zSearchResultsNav(searchStruct)&'</td></tr></table>');
+					}
+				} 
+			}
 		}
 	}
+
+
+	if(form.method EQ "getRowHTML"){
+		rowOut=local.rowStruct[1].row; 
+		echo('done.<script type="text/javascript">
+		window.parent.zReplaceTableRecordRow("#jsstringformat(rowOut)#");
+		window.parent.zCloseModal();
+		</script>');
+		abort;
+	}else{
+		echo(out);
+	}
 	</cfscript> 
+
+
+	<script type="text/javascript">
+	function zCalculateTableCells(table){
+		var max = 0;
+		for(var i=0;i<table.rows.length;i++) {
+			if(max < table.rows[i].cells.length){
+				max = table.rows[i].cells.length;
+			}
+		}
+		return max;
+	}
+	var zRowBeingEdited;
+	var zRowEditIndex=0;
+	function zTableRecordEdit(obj){
+		zShowModalStandard(obj.href, 2000,2000, true, true);
+		zRowEditIndex++;
+		window.location.href="##zEditTableRecord"+zRowEditIndex;
+		var i=0;
+		while(true){
+			i++;
+			if(obj.tagName.toLowerCase() == 'tr'){
+				tr=obj;
+				break;
+			}
+			obj=obj.parentNode;
+			if(i > 50){
+				alert('infinite loop. invalid table html structure');
+				return false;
+			}
+		}
+		zRowBeingEdited=obj;
+	}
+	function zReplaceTableRecordRow(html){
+		$(zRowBeingEdited).html(html);
+	}
+	window.onhashchange = function() {
+
+		if (window.location.hash.indexOf('zEditTableRecord') == -1){
+			zCloseModal();
+		}else{
+
+		}
+	}
+	function zDeleteTableRecordRow(obj, deleteLink){
+		var tr, table;
+		var i=0;
+		while(true){
+			i++;
+			if(obj.tagName.toLowerCase() == 'tr'){
+				tr=obj;
+			}else if(obj.tagName.toLowerCase() == 'table'){
+				table=obj;
+				break;
+			}
+			obj=obj.parentNode;
+			if(i > 50){
+				alert('infinite loop. invalid table html structure');
+				return false;
+			}
+		}
+		var cellCount=zCalculateTableCells(table);
+
+		$("td", tr).css("border-top", "2px solid ##900");
+		$("td", tr).css("border-bottom", "2px solid ##900");
+		$("td", tr).css("background-color", "##FFF0F0");
+		var r=confirm("Are you sure you want to delete this record?");
+		$("td", tr).css("border-top", "0px solid ##CCC");
+		$("td", tr).css("border-bottom", "1px solid ##CCC");
+		$("td", tr).css("background-color", "inherit");
+		if(r){
+			var obj={
+				id:"ajaxDeleteTableRecord",
+				method:"get",
+				ignoreOldRequests:true,
+				callback:function(r){
+					r=eval('('+r+')');
+					if(r.success){
+						$(tr).html('<td class="zDeletedRow" colspan="'+cellCount+'">Row Deleted</td>');
+					}else{
+						alert('Failed to delete the record. Error: '+r.errorMessage);
+					}
+
+				},
+				errorCallback:function(r){
+					alert('Failed to delete the record. Unknown error');
+				},
+				url:deleteLink
+			}; 
+			zAjax(obj);
+		}
+		return false;
+		
+	}
+	</script>
 </cffunction>
 
 
@@ -3095,8 +3229,20 @@ Define this function in another CFC to override the default email format
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	form.site_x_option_group_set_parent_id=application.zcore.functions.zso(form, 'site_x_option_group_set_parent_id',true);
 	
-	
-	
+	//if(form.method EQ "editGroup"){
+		//application.zcore.functions.zSetModalWindow();
+		//application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
+	//}
+
+	//if(local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup"){
+		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
+		if(form.modalpopforced EQ 1){
+			application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+			application.zcore.functions.zSetModalWindow();
+		}
+        	form.set9=application.zcore.functions.zGetHumanFieldIndex();
+	//}
+
 	form.jumpto=application.zcore.functions.zso(form, 'jumpto');
 	db.sql="SELECT * FROM (#db.table("site_option", request.zos.zcoreDatasource)# site_option, 
 	#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group) 
@@ -3216,13 +3362,6 @@ Define this function in another CFC to override the default email format
 	}
 	application.zcore.template.setTag("title",theTitle);
 	application.zcore.template.setTag("pagetitle",theTitle); 
-	if(local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup"){
-		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');
-		if(form.modalpopforced EQ 1){
-			application.zcore.functions.zSetModalWindow();
-		}
-        	form.set9=application.zcore.functions.zGetHumanFieldIndex();
-	}
 	local.arrEnd=arraynew(1);
 	</cfscript>
 	<script type="text/javascript">
@@ -3276,6 +3415,20 @@ Define this function in another CFC to override the default email format
 		<input type="hidden" name="site_x_option_group_set_id" value="#htmleditformat(form.site_x_option_group_set_id)#" />
 		<input type="hidden" name="site_x_option_group_set_parent_id" value="#htmleditformat(form.site_x_option_group_set_parent_id)#" />
 		<table style="border-spacing:0px;" class="table-list">
+
+			<cfif local.methodBackup EQ "addGroup" or local.methodBackup EQ "editGroup">
+				<tr><td>&nbsp;</td><td>
+					<button type="submit" name="submitForm">Save</button>
+						&nbsp;
+						<cfif form.modalpopforced EQ 1>
+							<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+						<cfelse>
+
+							<button type="button" name="cancel" onclick="window.location.href='/z/admin/site-options/manageGroup?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#';">Cancel</button>
+						</cfif>
+					</td></tr>
+			</cfif>
+	
 			<cfscript>
 			var row=0;
 			var currentRowIndex=0;
@@ -3464,6 +3617,10 @@ Define this function in another CFC to override the default email format
 				<th>&nbsp;</th>
 				<td>
 				#arraytolist(local.arrEnd, '')#
+				<cfif form.modalpopforced EQ 1>
+					<input type="hidden" name="modalpopforced" value="1" />
+				</cfif>
+	
 				<cfif local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup">
 					<button type="submit" name="submitForm" class="zSiteOptionGroupSubmitButton">Submit</button>
 					<div class="zSiteOptionGroupWaitDiv" style="display:none; float:left; padding:5px; margin-right:5px;">Please Wait...</div>
@@ -3472,14 +3629,18 @@ Define this function in another CFC to override the default email format
 					</cfif>
 					&nbsp;&nbsp; <a href="/z/user/privacy/index" target="_blank">Privacy Policy</a>
 					    <cfif form.modalpopforced EQ 1>
-						<input type="hidden" name="modalpopforced" value="1" />
-						<input type="hidden" name="js3811" id="js3811" value="" />
-						<input type="hidden" name="js3812" id="js3812" value="#application.zcore.functions.zGetFormHashValue()#" />
+							<input type="hidden" name="js3811" id="js3811" value="" />
+							<input type="hidden" name="js3812" id="js3812" value="#application.zcore.functions.zGetFormHashValue()#" />
 					    </cfif>
 				<cfelse>
 					<button type="submit" name="submitForm">Save</button>
 						&nbsp;
-						<button type="button" name="cancel" onclick="window.location.href='/z/admin/site-options/manageGroup?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#';">Cancel</button>
+						<cfif form.modalpopforced EQ 1>
+							<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+						<cfelse>
+
+							<button type="button" name="cancel" onclick="window.location.href='/z/admin/site-options/manageGroup?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#';">Cancel</button>
+						</cfif>
 				</cfif>
 				</td>
 			</tr>
@@ -3538,6 +3699,14 @@ Define this function in another CFC to override the default email format
 		listURL:"/z/admin/site-options/manageGroup",
 		errorURL:"/z/admin/site-options/index"
 	};
+	form.returnJson=application.zcore.functions.zso(form, 'returnJson', true, 0);
+	//if(form.method EQ "deleteGroup"){
+		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
+		if(form.modalpopforced EQ 1){
+			application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+			application.zcore.functions.zSetModalWindow();
+		}
+	//}
 	structappend(arguments.struct, defaultStruct, false);
 	
 	variables.init();
@@ -3635,6 +3804,8 @@ Define this function in another CFC to override the default email format
 		application.zcore.status.setStatus(request.zsid, "Deleted successfully.");
 		if(form.method EQ "autoDeleteGroup"){
 			return true;
+		}else if(form.returnJson EQ 1){
+			application.zcore.functions.zReturnJson({success:true});
 		}else{
 			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id="&form.site_option_app_id&"&site_option_group_id="&form.site_option_group_id&"&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid="&request.zsid));
 		}

@@ -84,26 +84,26 @@
 	</cfscript>
 	<div class="manualSortMessage" style="display:none; padding:5px; width:100%; float:left;">Manual sorting is disabled when you are using column sorting.  Please refresh the page to use manual sorting again.</div>
 	<table id="sortRowTable" class="display" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <!--- <th style="display:none;">ID</th> --->
-                <th>Name</th>
-                <th>Position</th>
-                <th>Office</th>
-                <th>Age</th> 
-                <th class="sortColumnHeader">Sort</th>
-                <th>Admin</th>
-            </tr>
-        </thead>
+		<thead>
+			<tr>
+				<!--- <th style="display:none;">ID</th> --->
+				<th>Name</th>
+				<th>Position</th>
+				<th>Office</th>
+				<th>Age</th> 
+				<th class="sortColumnHeader">Sort</th>
+				<th>Admin</th>
+			</tr>
+		</thead>
  		<tbody> 
   
-        </tbody>
-    </table>
+		</tbody>
+	</table>
 
-    <cfscript>
-    application.zcore.functions.zRequireDataTables();
+	<cfscript>
+	application.zcore.functions.zRequireDataTables();
 	</cfscript>
-    <script type="text/javascript">
+	<script type="text/javascript">
 		var table=-1;
 	zArrDeferredFunctions.push(function() {
 		/*	$('##example').dataTable( {
@@ -166,23 +166,25 @@
 				{ "data": "column4" },
 				{ "data": "Sort" },
 				{ "data": "Admin" }
-            ],
+			],
 			/*"columnDefs": [
 				{
 					"targets": [ 0 ],
 					"visible": false,
 					"searchable": false
 				}
-            ],*/
-            paging: true,
-            stateSave:false,
-            deferRender:true,
+			],*/
+			paging: true,
+			stateSave:false,
+			deferRender:true,
 			length:5,
-    		//"ajax": '../ajax/data/arrays.txt',
+			//"ajax": '../ajax/data/arrays.txt',
 			"processing": true,
 			"serverSide": true,
-			"ajax": "/z/blog/admin/blog-admin/getSortData"
+			"ajax": "/z/blog/admin/blog-admin/getSortData" 
 		};
+
+
 		for(var i=0;i<dataTableConfig.columns;i++){
 			if(dataTableConfig.columns[i].data == "Sort"){
 				sortColumnIndex=i;
@@ -203,16 +205,143 @@
 				return;
 			} 
 			/*
-		    .columns().nodes().flatten().to$().each(function(){
-		    	if(
-		    });
+			.columns().nodes().flatten().to$().each(function(){
+				if(
+			});
 			*/
 			checkColumnSortStatus();
 		});
+		$("##sortRowTable").on('dblclick', function(e){
+			console.log('doubleclick:'+e.target.tagName.toLowerCase()+":"+$(".zEditCellField", e.target).length);
+			var t=e.target;
+			var clickedTD=false;
+			var $editDiv;
+			while(true){
+				if(t.tagName.toLowerCase() == 'td'){
+					$editDiv=$(".zEditableCellValue", t);
+					if($editDiv.length==0){
+						return false;
+					}
+					clickedTD=true;
+					break;
+				}else if(t.tagName.toLowerCase() == 'table'){
+					return false;
+				}else{
+					t=t.parentNode;
+				}
+			}
+			if(clickedTD){
+				if($(".zEditCellField", e.target).length==0){
+					var v=$(e.target).html();
+   					var i = document.createElement("input");
+   					i.type="text";
+   					console.log("original value:"+v);
+   					i.setAttribute('data-originalvalue', v);
+   					i.onfocus=function(){
+   						console.log('field focused');
+   					};
+   					i.onblur=function(){
+   						console.log('field blurred');
+
+   						if(this.value == v){
+   							console.log('No value change detected');
+	   						$(e.target).html(v);
+   						}else{
+   							console.log('Saving change: TODO AJAX call');
+   							return;
+   							var link=$editDiv.attr("data-save-url");
+   							var fieldName=$editDiv.attr("data-save-field-name");
+   							if(link.indexOf("?") == -1){
+   								link+="?";
+   							}else{
+   								link+="&";
+   							}
+   							var postObj={};
+   							postObj[fieldName]=this.value;
+							var obj={
+								id:"ajaxSaveCell",
+								method:"post",
+								postObj:postObj,
+								ignoreOldRequests:false,
+								callback:function(r){
+		   							//r=eval('('+r+')');
+		   							r={success:true};
+		   							if(r.success){
+			   							$(e.target).html(i.getAttribute("data-originalvalue"));
+			   						}else{
+			   							alert('Value not saved. Please check your value and try again.');
+			   						}
+
+								},
+								errorCallback:function(){ alert('Unknown error occurred'); },
+								url:link
+							}; 
+							zAjax(obj);
+	   					}
+   					};
+   					i.onkeydown=function ( e ) {
+						if ( e.keyCode == 13 || e.keyCode ==9 ) {
+							e.preventDefault();
+							$(this).trigger("blur");
+	   					}
+	   				}
+   					var d = document.createElement("div");
+   					d.className="zEditCellContainer";
+   					i.name="cellEdit";
+   					i.id="cellEdit1";
+   					i.className="zEditCellField";
+   					i.value=v;
+   					$(d).append(i);
+   					var a = document.createElement("a");
+   					a.innerHTML='Save';
+   					a.href="##";
+   					a.onclick=function(){return false;};
+   					a.className="zEditCellSave";
+   					$(d).append(a);
+   					$(e.target).html(d);
+   					$(i).trigger("focus");
+   					i.select();
+				}else{
+					console.log('do nothing');
+				}
+			}
+		});
 	});
-    </script>
+	</script>
 
 
+</cffunction>
+
+
+<cffunction name="saveColumnData" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	/*
+	action=edit
+data[first_name]=Ashton
+data[last_name]=Cox2
+data[position]=Junior Technical Author
+data[office]=San Francisco
+data[extn]=1562
+data[start_date]=2009-01-12
+data[salary]=86000
+id=row_3
+
+need to return the edited row data as json.
+
+getSortFormObject
+
+
+			orderable:true,
+			searchable:true,
+			name:"column"&i
+			editable:true
+	*/
+	rs={
+		success:true,
+		data:form
+	}
+	application.zcore.functions.zReturnJson(rs);
+</cfscript>
 </cffunction>
 
 <cffunction name="sortSetup" localmode="modern" access="remote" roles="member">
@@ -335,15 +464,15 @@
 			continue;
 		}
 		rowStruct={};
-        sortHandleStruct=request.queueSortCom.getRowStruct(i);
-        rowStruct.__sortValue=i;
+		sortHandleStruct=request.queueSortCom.getRowStruct(i);
+		rowStruct.__sortValue=i;
 		rowStruct.DT_RowId=sortHandleStruct.id;
-        rowStruct.DT_RowData={
-                "primaryKeyId": sortHandleStruct.primaryKeyId
-        };
+		rowStruct.DT_RowData={
+				"primaryKeyId": sortHandleStruct.primaryKeyId
+		};
 		for(i2=1;i2 LTE 4;i2++){
-			rowStruct[sortStruct.arrColumn[i2].name]=i&"_"&i2; 
-		} 
+			rowStruct[sortStruct.arrColumn[i2].name]='<div class="zEditableCellValue" data-save-url="/z/blog/admin/blog-admin/saveColumnData?site_x_option_group_set_id=#i2#&amp;site_option_id=#i2#" data-save-field-name="site_x_option_group_value">'&i&"_"&i2&'</div>'; 
+		}
 		rowStruct["Sort"]=request.queueSortCom.getAjaxHandleButton();
 		rowStruct["Admin"]='<a href="##">View</a>'; 
 		arrayAppend(rs.data, rowStruct);
@@ -376,462 +505,462 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	<cfsavecontent variable="out">
 	{
   "data": [
-    [
-      "Tiger Nixon",
-      "System Architect",
-      "Edinburgh",
-      "5421",
-      "2011/04/25",
-      "$320,800"
-    ],
-    [
-      "Garrett Winters",
-      "Accountant",
-      "Tokyo",
-      "8422",
-      "2011/07/25",
-      "$170,750"
-    ],
-    [
-      "Ashton Cox",
-      "Junior Technical Author",
-      "San Francisco",
-      "1562",
-      "2009/01/12",
-      "$86,000"
-    ],
-    [
-      "Cedric Kelly",
-      "Senior Javascript Developer",
-      "Edinburgh",
-      "6224",
-      "2012/03/29",
-      "$433,060"
-    ],
-    [
-      "Airi Satou",
-      "Accountant",
-      "Tokyo",
-      "5407",
-      "2008/11/28",
-      "$162,700"
-    ],
-    [
-      "Brielle Williamson",
-      "Integration Specialist",
-      "New York",
-      "4804",
-      "2012/12/02",
-      "$372,000"
-    ],
-    [
-      "Herrod Chandler",
-      "Sales Assistant",
-      "San Francisco",
-      "9608",
-      "2012/08/06",
-      "$137,500"
-    ],
-    [
-      "Rhona Davidson",
-      "Integration Specialist",
-      "Tokyo",
-      "6200",
-      "2010/10/14",
-      "$327,900"
-    ],
-    [
-      "Colleen Hurst",
-      "Javascript Developer",
-      "San Francisco",
-      "2360",
-      "2009/09/15",
-      "$205,500"
-    ],
-    [
-      "Sonya Frost",
-      "Software Engineer",
-      "Edinburgh",
-      "1667",
-      "2008/12/13",
-      "$103,600"
-    ],
-    [
-      "Jena Gaines",
-      "Office Manager",
-      "London",
-      "3814",
-      "2008/12/19",
-      "$90,560"
-    ],
-    [
-      "Quinn Flynn",
-      "Support Lead",
-      "Edinburgh",
-      "9497",
-      "2013/03/03",
-      "$342,000"
-    ],
-    [
-      "Charde Marshall",
-      "Regional Director",
-      "San Francisco",
-      "6741",
-      "2008/10/16",
-      "$470,600"
-    ],
-    [
-      "Haley Kennedy",
-      "Senior Marketing Designer",
-      "London",
-      "3597",
-      "2012/12/18",
-      "$313,500"
-    ],
-    [
-      "Tatyana Fitzpatrick",
-      "Regional Director",
-      "London",
-      "1965",
-      "2010/03/17",
-      "$385,750"
-    ],
-    [
-      "Michael Silva",
-      "Marketing Designer",
-      "London",
-      "1581",
-      "2012/11/27",
-      "$198,500"
-    ],
-    [
-      "Paul Byrd",
-      "Chief Financial Officer (CFO)",
-      "New York",
-      "3059",
-      "2010/06/09",
-      "$725,000"
-    ],
-    [
-      "Gloria Little",
-      "Systems Administrator",
-      "New York",
-      "1721",
-      "2009/04/10",
-      "$237,500"
-    ],
-    [
-      "Bradley Greer",
-      "Software Engineer",
-      "London",
-      "2558",
-      "2012/10/13",
-      "$132,000"
-    ],
-    [
-      "Dai Rios",
-      "Personnel Lead",
-      "Edinburgh",
-      "2290",
-      "2012/09/26",
-      "$217,500"
-    ],
-    [
-      "Jenette Caldwell",
-      "Development Lead",
-      "New York",
-      "1937",
-      "2011/09/03",
-      "$345,000"
-    ],
-    [
-      "Yuri Berry",
-      "Chief Marketing Officer (CMO)",
-      "New York",
-      "6154",
-      "2009/06/25",
-      "$675,000"
-    ],
-    [
-      "Caesar Vance",
-      "Pre-Sales Support",
-      "New York",
-      "8330",
-      "2011/12/12",
-      "$106,450"
-    ],
-    [
-      "Doris Wilder",
-      "Sales Assistant",
-      "Sidney",
-      "3023",
-      "2010/09/20",
-      "$85,600"
-    ],
-    [
-      "Angelica Ramos",
-      "Chief Executive Officer (CEO)",
-      "London",
-      "5797",
-      "2009/10/09",
-      "$1,200,000"
-    ],
-    [
-      "Gavin Joyce",
-      "Developer",
-      "Edinburgh",
-      "8822",
-      "2010/12/22",
-      "$92,575"
-    ],
-    [
-      "Jennifer Chang",
-      "Regional Director",
-      "Singapore",
-      "9239",
-      "2010/11/14",
-      "$357,650"
-    ],
-    [
-      "Brenden Wagner",
-      "Software Engineer",
-      "San Francisco",
-      "1314",
-      "2011/06/07",
-      "$206,850"
-    ],
-    [
-      "Fiona Green",
-      "Chief Operating Officer (COO)",
-      "San Francisco",
-      "2947",
-      "2010/03/11",
-      "$850,000"
-    ],
-    [
-      "Shou Itou",
-      "Regional Marketing",
-      "Tokyo",
-      "8899",
-      "2011/08/14",
-      "$163,000"
-    ],
-    [
-      "Michelle House",
-      "Integration Specialist",
-      "Sidney",
-      "2769",
-      "2011/06/02",
-      "$95,400"
-    ],
-    [
-      "Suki Burks",
-      "Developer",
-      "London",
-      "6832",
-      "2009/10/22",
-      "$114,500"
-    ],
-    [
-      "Prescott Bartlett",
-      "Technical Author",
-      "London",
-      "3606",
-      "2011/05/07",
-      "$145,000"
-    ],
-    [
-      "Gavin Cortez",
-      "Team Leader",
-      "San Francisco",
-      "2860",
-      "2008/10/26",
-      "$235,500"
-    ],
-    [
-      "Martena Mccray",
-      "Post-Sales support",
-      "Edinburgh",
-      "8240",
-      "2011/03/09",
-      "$324,050"
-    ],
-    [
-      "Unity Butler",
-      "Marketing Designer",
-      "San Francisco",
-      "5384",
-      "2009/12/09",
-      "$85,675"
-    ],
-    [
-      "Howard Hatfield",
-      "Office Manager",
-      "San Francisco",
-      "7031",
-      "2008/12/16",
-      "$164,500"
-    ],
-    [
-      "Hope Fuentes",
-      "Secretary",
-      "San Francisco",
-      "6318",
-      "2010/02/12",
-      "$109,850"
-    ],
-    [
-      "Vivian Harrell",
-      "Financial Controller",
-      "San Francisco",
-      "9422",
-      "2009/02/14",
-      "$452,500"
-    ],
-    [
-      "Timothy Mooney",
-      "Office Manager",
-      "London",
-      "7580",
-      "2008/12/11",
-      "$136,200"
-    ],
-    [
-      "Jackson Bradshaw",
-      "Director",
-      "New York",
-      "1042",
-      "2008/09/26",
-      "$645,750"
-    ],
-    [
-      "Olivia Liang",
-      "Support Engineer",
-      "Singapore",
-      "2120",
-      "2011/02/03",
-      "$234,500"
-    ],
-    [
-      "Bruno Nash",
-      "Software Engineer",
-      "London",
-      "6222",
-      "2011/05/03",
-      "$163,500"
-    ],
-    [
-      "Sakura Yamamoto",
-      "Support Engineer",
-      "Tokyo",
-      "9383",
-      "2009/08/19",
-      "$139,575"
-    ],
-    [
-      "Thor Walton",
-      "Developer",
-      "New York",
-      "8327",
-      "2013/08/11",
-      "$98,540"
-    ],
-    [
-      "Finn Camacho",
-      "Support Engineer",
-      "San Francisco",
-      "2927",
-      "2009/07/07",
-      "$87,500"
-    ],
-    [
-      "Serge Baldwin",
-      "Data Coordinator",
-      "Singapore",
-      "8352",
-      "2012/04/09",
-      "$138,575"
-    ],
-    [
-      "Zenaida Frank",
-      "Software Engineer",
-      "New York",
-      "7439",
-      "2010/01/04",
-      "$125,250"
-    ],
-    [
-      "Zorita Serrano",
-      "Software Engineer",
-      "San Francisco",
-      "4389",
-      "2012/06/01",
-      "$115,000"
-    ],
-    [
-      "Jennifer Acosta",
-      "Junior Javascript Developer",
-      "Edinburgh",
-      "3431",
-      "2013/02/01",
-      "$75,650"
-    ],
-    [
-      "Cara Stevens",
-      "Sales Assistant",
-      "New York",
-      "3990",
-      "2011/12/06",
-      "$145,600"
-    ],
-    [
-      "Hermione Butler",
-      "Regional Director",
-      "London",
-      "1016",
-      "2011/03/21",
-      "$356,250"
-    ],
-    [
-      "Lael Greer",
-      "Systems Administrator",
-      "London",
-      "6733",
-      "2009/02/27",
-      "$103,500"
-    ],
-    [
-      "Jonas Alexander",
-      "Developer",
-      "San Francisco",
-      "8196",
-      "2010/07/14",
-      "$86,500"
-    ],
-    [
-      "Shad Decker",
-      "Regional Director",
-      "Edinburgh",
-      "6373",
-      "2008/11/13",
-      "$183,000"
-    ],
-    [
-      "Michael Bruce",
-      "Javascript Developer",
-      "Singapore",
-      "5384",
-      "2011/06/27",
-      "$183,000"
-    ],
-    [
-      "Donna Snider",
-      "Customer Support",
-      "New York",
-      "4226",
-      "2011/01/25",
-      "$112,000"
-    ]
+	[
+	  "Tiger Nixon",
+	  "System Architect",
+	  "Edinburgh",
+	  "5421",
+	  "2011/04/25",
+	  "$320,800"
+	],
+	[
+	  "Garrett Winters",
+	  "Accountant",
+	  "Tokyo",
+	  "8422",
+	  "2011/07/25",
+	  "$170,750"
+	],
+	[
+	  "Ashton Cox",
+	  "Junior Technical Author",
+	  "San Francisco",
+	  "1562",
+	  "2009/01/12",
+	  "$86,000"
+	],
+	[
+	  "Cedric Kelly",
+	  "Senior Javascript Developer",
+	  "Edinburgh",
+	  "6224",
+	  "2012/03/29",
+	  "$433,060"
+	],
+	[
+	  "Airi Satou",
+	  "Accountant",
+	  "Tokyo",
+	  "5407",
+	  "2008/11/28",
+	  "$162,700"
+	],
+	[
+	  "Brielle Williamson",
+	  "Integration Specialist",
+	  "New York",
+	  "4804",
+	  "2012/12/02",
+	  "$372,000"
+	],
+	[
+	  "Herrod Chandler",
+	  "Sales Assistant",
+	  "San Francisco",
+	  "9608",
+	  "2012/08/06",
+	  "$137,500"
+	],
+	[
+	  "Rhona Davidson",
+	  "Integration Specialist",
+	  "Tokyo",
+	  "6200",
+	  "2010/10/14",
+	  "$327,900"
+	],
+	[
+	  "Colleen Hurst",
+	  "Javascript Developer",
+	  "San Francisco",
+	  "2360",
+	  "2009/09/15",
+	  "$205,500"
+	],
+	[
+	  "Sonya Frost",
+	  "Software Engineer",
+	  "Edinburgh",
+	  "1667",
+	  "2008/12/13",
+	  "$103,600"
+	],
+	[
+	  "Jena Gaines",
+	  "Office Manager",
+	  "London",
+	  "3814",
+	  "2008/12/19",
+	  "$90,560"
+	],
+	[
+	  "Quinn Flynn",
+	  "Support Lead",
+	  "Edinburgh",
+	  "9497",
+	  "2013/03/03",
+	  "$342,000"
+	],
+	[
+	  "Charde Marshall",
+	  "Regional Director",
+	  "San Francisco",
+	  "6741",
+	  "2008/10/16",
+	  "$470,600"
+	],
+	[
+	  "Haley Kennedy",
+	  "Senior Marketing Designer",
+	  "London",
+	  "3597",
+	  "2012/12/18",
+	  "$313,500"
+	],
+	[
+	  "Tatyana Fitzpatrick",
+	  "Regional Director",
+	  "London",
+	  "1965",
+	  "2010/03/17",
+	  "$385,750"
+	],
+	[
+	  "Michael Silva",
+	  "Marketing Designer",
+	  "London",
+	  "1581",
+	  "2012/11/27",
+	  "$198,500"
+	],
+	[
+	  "Paul Byrd",
+	  "Chief Financial Officer (CFO)",
+	  "New York",
+	  "3059",
+	  "2010/06/09",
+	  "$725,000"
+	],
+	[
+	  "Gloria Little",
+	  "Systems Administrator",
+	  "New York",
+	  "1721",
+	  "2009/04/10",
+	  "$237,500"
+	],
+	[
+	  "Bradley Greer",
+	  "Software Engineer",
+	  "London",
+	  "2558",
+	  "2012/10/13",
+	  "$132,000"
+	],
+	[
+	  "Dai Rios",
+	  "Personnel Lead",
+	  "Edinburgh",
+	  "2290",
+	  "2012/09/26",
+	  "$217,500"
+	],
+	[
+	  "Jenette Caldwell",
+	  "Development Lead",
+	  "New York",
+	  "1937",
+	  "2011/09/03",
+	  "$345,000"
+	],
+	[
+	  "Yuri Berry",
+	  "Chief Marketing Officer (CMO)",
+	  "New York",
+	  "6154",
+	  "2009/06/25",
+	  "$675,000"
+	],
+	[
+	  "Caesar Vance",
+	  "Pre-Sales Support",
+	  "New York",
+	  "8330",
+	  "2011/12/12",
+	  "$106,450"
+	],
+	[
+	  "Doris Wilder",
+	  "Sales Assistant",
+	  "Sidney",
+	  "3023",
+	  "2010/09/20",
+	  "$85,600"
+	],
+	[
+	  "Angelica Ramos",
+	  "Chief Executive Officer (CEO)",
+	  "London",
+	  "5797",
+	  "2009/10/09",
+	  "$1,200,000"
+	],
+	[
+	  "Gavin Joyce",
+	  "Developer",
+	  "Edinburgh",
+	  "8822",
+	  "2010/12/22",
+	  "$92,575"
+	],
+	[
+	  "Jennifer Chang",
+	  "Regional Director",
+	  "Singapore",
+	  "9239",
+	  "2010/11/14",
+	  "$357,650"
+	],
+	[
+	  "Brenden Wagner",
+	  "Software Engineer",
+	  "San Francisco",
+	  "1314",
+	  "2011/06/07",
+	  "$206,850"
+	],
+	[
+	  "Fiona Green",
+	  "Chief Operating Officer (COO)",
+	  "San Francisco",
+	  "2947",
+	  "2010/03/11",
+	  "$850,000"
+	],
+	[
+	  "Shou Itou",
+	  "Regional Marketing",
+	  "Tokyo",
+	  "8899",
+	  "2011/08/14",
+	  "$163,000"
+	],
+	[
+	  "Michelle House",
+	  "Integration Specialist",
+	  "Sidney",
+	  "2769",
+	  "2011/06/02",
+	  "$95,400"
+	],
+	[
+	  "Suki Burks",
+	  "Developer",
+	  "London",
+	  "6832",
+	  "2009/10/22",
+	  "$114,500"
+	],
+	[
+	  "Prescott Bartlett",
+	  "Technical Author",
+	  "London",
+	  "3606",
+	  "2011/05/07",
+	  "$145,000"
+	],
+	[
+	  "Gavin Cortez",
+	  "Team Leader",
+	  "San Francisco",
+	  "2860",
+	  "2008/10/26",
+	  "$235,500"
+	],
+	[
+	  "Martena Mccray",
+	  "Post-Sales support",
+	  "Edinburgh",
+	  "8240",
+	  "2011/03/09",
+	  "$324,050"
+	],
+	[
+	  "Unity Butler",
+	  "Marketing Designer",
+	  "San Francisco",
+	  "5384",
+	  "2009/12/09",
+	  "$85,675"
+	],
+	[
+	  "Howard Hatfield",
+	  "Office Manager",
+	  "San Francisco",
+	  "7031",
+	  "2008/12/16",
+	  "$164,500"
+	],
+	[
+	  "Hope Fuentes",
+	  "Secretary",
+	  "San Francisco",
+	  "6318",
+	  "2010/02/12",
+	  "$109,850"
+	],
+	[
+	  "Vivian Harrell",
+	  "Financial Controller",
+	  "San Francisco",
+	  "9422",
+	  "2009/02/14",
+	  "$452,500"
+	],
+	[
+	  "Timothy Mooney",
+	  "Office Manager",
+	  "London",
+	  "7580",
+	  "2008/12/11",
+	  "$136,200"
+	],
+	[
+	  "Jackson Bradshaw",
+	  "Director",
+	  "New York",
+	  "1042",
+	  "2008/09/26",
+	  "$645,750"
+	],
+	[
+	  "Olivia Liang",
+	  "Support Engineer",
+	  "Singapore",
+	  "2120",
+	  "2011/02/03",
+	  "$234,500"
+	],
+	[
+	  "Bruno Nash",
+	  "Software Engineer",
+	  "London",
+	  "6222",
+	  "2011/05/03",
+	  "$163,500"
+	],
+	[
+	  "Sakura Yamamoto",
+	  "Support Engineer",
+	  "Tokyo",
+	  "9383",
+	  "2009/08/19",
+	  "$139,575"
+	],
+	[
+	  "Thor Walton",
+	  "Developer",
+	  "New York",
+	  "8327",
+	  "2013/08/11",
+	  "$98,540"
+	],
+	[
+	  "Finn Camacho",
+	  "Support Engineer",
+	  "San Francisco",
+	  "2927",
+	  "2009/07/07",
+	  "$87,500"
+	],
+	[
+	  "Serge Baldwin",
+	  "Data Coordinator",
+	  "Singapore",
+	  "8352",
+	  "2012/04/09",
+	  "$138,575"
+	],
+	[
+	  "Zenaida Frank",
+	  "Software Engineer",
+	  "New York",
+	  "7439",
+	  "2010/01/04",
+	  "$125,250"
+	],
+	[
+	  "Zorita Serrano",
+	  "Software Engineer",
+	  "San Francisco",
+	  "4389",
+	  "2012/06/01",
+	  "$115,000"
+	],
+	[
+	  "Jennifer Acosta",
+	  "Junior Javascript Developer",
+	  "Edinburgh",
+	  "3431",
+	  "2013/02/01",
+	  "$75,650"
+	],
+	[
+	  "Cara Stevens",
+	  "Sales Assistant",
+	  "New York",
+	  "3990",
+	  "2011/12/06",
+	  "$145,600"
+	],
+	[
+	  "Hermione Butler",
+	  "Regional Director",
+	  "London",
+	  "1016",
+	  "2011/03/21",
+	  "$356,250"
+	],
+	[
+	  "Lael Greer",
+	  "Systems Administrator",
+	  "London",
+	  "6733",
+	  "2009/02/27",
+	  "$103,500"
+	],
+	[
+	  "Jonas Alexander",
+	  "Developer",
+	  "San Francisco",
+	  "8196",
+	  "2010/07/14",
+	  "$86,500"
+	],
+	[
+	  "Shad Decker",
+	  "Regional Director",
+	  "Edinburgh",
+	  "6373",
+	  "2008/11/13",
+	  "$183,000"
+	],
+	[
+	  "Michael Bruce",
+	  "Javascript Developer",
+	  "Singapore",
+	  "5384",
+	  "2011/06/27",
+	  "$183,000"
+	],
+	[
+	  "Donna Snider",
+	  "Customer Support",
+	  "New York",
+	  "4226",
+	  "2011/01/25",
+	  "$112,000"
+	]
   ]
 }
 </cfsavecontent>
@@ -2525,23 +2654,23 @@ tabCom.enableSaveButtons();
 				blog_tag_deleted = #db.param(0)# 
 				GROUP BY blog_tag.blog_tag_id ORDER BY blog_tag_name ASC 
 				
-    			</cfsavecontent><cfscript>qTag=db.execute("qTag");
-    			if(qtag.recordcount NEQ 0){
-    				writeoutput('Existing Tags: ');
-    				selectStruct = StructNew();
-    				selectStruct.name = "select_tag_id";
-    				selectStruct.query = qTag;
-                    selectStruct.onchange="setTagBlock2(true);";
-    				//selectStruct.style="monoMenu";
-    				selectStruct.queryLabelField = "blog_tag_name";
-    				selectStruct.queryValueField = "blog_tag_id";
-    				application.zcore.functions.zInputSelectBox(selectStruct);
-    			   // writeoutput(' <input type="button" name="submitTag" onclick="setTagBlock2(true);" value="Add" /><br /><br />Type Tag: ');
-    				writeoutput('Type Tag: ');
-    			}else{
-    				writeoutput('Type Tag: ');
-    			}
-    			</cfscript>
+				</cfsavecontent><cfscript>qTag=db.execute("qTag");
+				if(qtag.recordcount NEQ 0){
+					writeoutput('Existing Tags: ');
+					selectStruct = StructNew();
+					selectStruct.name = "select_tag_id";
+					selectStruct.query = qTag;
+					selectStruct.onchange="setTagBlock2(true);";
+					//selectStruct.style="monoMenu";
+					selectStruct.queryLabelField = "blog_tag_name";
+					selectStruct.queryValueField = "blog_tag_id";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+				   // writeoutput(' <input type="button" name="submitTag" onclick="setTagBlock2(true);" value="Add" /><br /><br />Type Tag: ');
+					writeoutput('Type Tag: ');
+				}else{
+					writeoutput('Type Tag: ');
+				}
+				</cfscript>
 				<input type="text" name="tagbox" id="tagbox" value="" /> <input type="button" name="submitTag" onclick="setTagBlock(true);" value="Add" /> <br /><br />
 				<div id="tagBlock"></div>
 				 
@@ -2795,7 +2924,7 @@ tabCom.enableSaveButtons();
 		</tr> 
 		
 		</table>
-        #application.zcore.hook.trigger("blog.articleEditCustomFields", {query=qEdit})#
+		#application.zcore.hook.trigger("blog.articleEditCustomFields", {query=qEdit})#
 		#tabCom.endFieldSet()#
 		#tabCom.endTabMenu()#
 		<cfscript>application.zcore.functions.zEndForm();</cfscript>

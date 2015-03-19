@@ -324,6 +324,12 @@ this.app_id=12;
 			arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 		}
 		if(request.zos.istestserver){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
+				ts=structnew();
+				ts.featureName="Theme Options";
+				ts.link="/z/admin/theme-options/index";
+				arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
+			}
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
 				ts=structnew();
 				ts.featureName="Manage Design & Layout";

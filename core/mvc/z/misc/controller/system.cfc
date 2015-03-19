@@ -19,6 +19,10 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="closeModal" localmode="modern" access="remote">
+	<script type="text/javascript">window.parent.zCloseModal();</script><cfabort>
+</cffunction>
+
 <cffunction name="legal" localmode="modern" access="remote">
 	<cfscript>
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',false,0);

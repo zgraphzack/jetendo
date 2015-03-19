@@ -19,6 +19,36 @@
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="zGetLastUpdatedDescription" localmode="modern" access="public">
+	<cfargument name="date" type="string" required="yes">
+	<cfscript>
+	if(arguments.date NEQ "" and isDate(arguments.date)){
+		seconds=datediff("s", arguments.date, now());
+		if(seconds LT 5){
+			if(not structkeyexists(request.zos, 'justNowDivOutput')){
+				request.zos.justNowDivOutput=true;
+				application.zcore.skin.addDeferredScript('zJumpToId("zJustNowDiv", -50);');
+				return '<span class="lastUpdatedDescription" style="color:##900;font-weight:bold;" id="zJustNowDiv">Just now</span>';
+			}else{
+				return '<span class="lastUpdatedDescription" style="color:##900;">Just now</span>';
+			}
+		}
+		if(seconds LT 60){
+			return '<span class="lastUpdatedDescription" style="color:##990;">'&seconds&' seconds ago</span>';
+		}else if(seconds LT 3600){
+			return '<span class="lastUpdatedDescription" style="color:##090;">'&int(seconds/60)&' minutes ago</span>';
+		}else if(seconds LT 86400){
+			return '<span class="lastUpdatedDescription">'&int(seconds/3600)&' hours ago</span>';
+		}else{
+			return '<span class="lastUpdatedDescription">'&int(seconds/86400)&' days ago</span>';
+		}
+	}else{
+		return '<span  class="lastUpdatedDescription">unknown</span>';
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="zAddTimespanToDate" output="no" localmode="modern" returntype="date">
 	<cfargument name="timespan" type="numeric" required="yes">
 	<cfargument name="date" type="date" required="yes">

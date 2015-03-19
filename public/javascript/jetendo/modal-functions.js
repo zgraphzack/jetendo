@@ -7,6 +7,7 @@
 	var zModalPosIntervalId=false;
 	var zModalIndex=0;
 	var zModalKeepOpen=false;
+	var zModalSideReduce=50;
 	function zModalLockPosition(e){
 		var el = document.getElementById("zModalOverlayDiv"); 
 		if(el && el.style.display==="block"){
@@ -17,7 +18,7 @@
 			return true;
 		}
 	}
-	function zShowModalStandard(url, maxWidth, maxHeight){
+	function zShowModalStandard(url, maxWidth, maxHeight, disableClose, fullscreen){
 		var windowSize=zGetClientWindowSize();
 		if(url.indexOf("?") === -1){
 			url+="?";
@@ -30,8 +31,24 @@
 		if(typeof maxHeight === "undefined"){
 			maxHeight=3000;	
 		}
+		if(typeof disableClose === "undefined"){
+			disableClose=false;	
+		}
+		if(typeof fullscreen === "undefined"){
+			fullscreen=false;	
+		}
+		zModalSideReduce=50;
+		if(disableClose){
+			zModalSideReduce=0;
+		}
 		var modalContent1='<iframe src="'+url+'ztv='+Math.random()+'" frameborder="0"  style=" margin:0px; border:none; overflow:auto;" seamless="seamless" width="100%" height="98%" />';		
-		zShowModal(modalContent1,{'width':Math.min(maxWidth, windowSize.width-50),'height':Math.min(maxHeight, windowSize.height-50),"maxWidth":maxWidth, "maxHeight":maxHeight});
+		zShowModal(modalContent1,{
+			'width':Math.min(maxWidth, windowSize.width-zModalSideReduce),
+			'height':Math.min(maxHeight, windowSize.height-zModalSideReduce),
+			"maxWidth":maxWidth, 
+			"maxHeight":maxHeight, 
+			"disableClose":disableClose, 
+			"fullscreen":fullscreen});
 	}
 	function zFixModalPos(){
 		zGetClientWindowSize();
@@ -55,18 +72,23 @@
 				zArrModal[i].modalHeight=10000;
 			}
 			el.style.top=zArrModal[i].scrollPosition[1]+"px";
-			el.style.left=zArrModal[i].scrollPosition[0]+"px";
-			var newWidth=Math.min(zArrModal[i].modalWidth, Math.min(windowSize.width-100,((zArrModal[i].modalMaxWidth))));
-			var newHeight=Math.min(zArrModal[i].modalHeight, Math.min(windowSize.height-100,((zArrModal[i].modalMaxHeight))));
+			el.style.left=zArrModal[i].scrollPosition[0]+"px"; 
+			if(zArrModal[i].fullscreen){
+				var newWidth=windowSize.width-(zModalSideReduce*2);
+				var newHeight=windowSize.height-(zModalSideReduce*2); 
+			}else{
+				var newWidth=Math.min(zArrModal[i].modalWidth, Math.min(windowSize.width-(zModalSideReduce*2),((zArrModal[i].modalMaxWidth))));
+				var newHeight=Math.min(zArrModal[i].modalHeight, Math.min(windowSize.height-(zModalSideReduce*2),((zArrModal[i].modalMaxHeight))));
+			}
 			var left=Math.round(Math.max(0, windowSize.width-newWidth)/2);
 			var top=Math.round(Math.max(0, windowSize.height-newHeight)/2);
 			el2.style.left=left+'px';
 			el2.style.top=top+'px';
-			if(!zArrModal[zModalIndex].disableResize){
-				el2.style.width=newWidth+"px";
-				el2.style.height=newHeight+"px";
+			if(!zArrModal[i].disableResize){
+				el2.style.width=newWidth-(zArrModal[i].padding)-5+"px";
+				el2.style.height=(newHeight-(zArrModal[i].padding)-22)+"px";
 			}
-			$(".zCloseModalButton"+zModalIndex).css({
+			$(".zCloseModalButton"+i).css({
 				"left":((left+newWidth)-80)+"px",
 				"top":(top-25)+"px"
 			});
@@ -82,8 +104,12 @@
 			"modalMaxWidth":10000,
 			"modalMaxHeight":10000,
 			"modalWidth":10000,
-			"modalHeight":10000
+			"modalHeight":10000,
+			"fullscreen":false
 		};
+		if(typeof obj.fullscreen !== "undefined" && obj.fullscreen){
+			zArrModal[zModalIndex].fullscreen=obj.fullscreen;	
+		}
 		if(typeof obj.disableResize !== "undefined" && obj.disableResize){
 			zArrModal[zModalIndex].disableResize=obj.disableResize;	
 		}
@@ -108,8 +134,13 @@
 		var windowSize=zWindowSize;
 		zArrModal[zModalIndex].modalWidth=obj.width;
 		zArrModal[zModalIndex].modalHeight=obj.height;
-		obj.width=Math.min(zArrModal[zModalIndex].modalMaxWidth, Math.min(obj.width, windowSize.width));
-		obj.height=Math.min(zArrModal[zModalIndex].modalMaxHeight, Math.min(obj.height, windowSize.height));
+		if(zArrModal[zModalIndex].fullscreen){
+			obj.width=windowSize.width;
+			obj.height=windowSize.height;
+		}else{
+			obj.width=Math.min(zArrModal[zModalIndex].modalMaxWidth, Math.min(obj.width, windowSize.width));
+			obj.height=Math.min(zArrModal[zModalIndex].modalMaxHeight, Math.min(obj.height, windowSize.height));
+		}
 		if(typeof obj.maxWidth !== "undefined"){
 			zArrModal[zModalIndex].modalMaxWidth=obj.maxWidth;
 		}
@@ -182,8 +213,8 @@
 		var top=Math.round(Math.max(0, (windowSize.height-obj.height))/2);
 		el2.style.left=left+'px';
 		el2.style.top=top+'px';
-		el2.style.width=(obj.width)+"px";
-		el2.style.height=(obj.height)+"px";
+		el2.style.width=(obj.width-(zArrModal[zModalIndex].padding)-5)+"px";
+		el2.style.height=(obj.height-(zArrModal[zModalIndex].padding)-22)+"px";
 		$(".zCloseModalButton"+zModalIndex).css({
 			"left":((left+obj.width)-80)+"px",
 			"top":(top-25)+"px"

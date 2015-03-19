@@ -34,6 +34,7 @@
 	ms["Slideshows"]={ parent:'Content Manager', label:chr(9)&"Slideshows"};
 	ms["Site Options"]={ parent:'Content Manager', label:chr(9)&"Site Options"};
 	if(request.zos.isTestServer){
+		ms["Theme Options"]={ parent:'Content Manager', label:chr(9)&"Theme Options"};
 		ms["Manage Design & Layout"]={ parent:'Content Manager', label:chr(9)&"Manage Design & Layout"};
 	}
 	/*if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
