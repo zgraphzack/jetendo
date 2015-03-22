@@ -20,12 +20,12 @@
 	application.zcore.template.setTag("title",theTitle);
 	application.zcore.template.setTag("pagetitle",theTitle);
 	
-	this.displaySiteOptionAdminNav();
+	this.displayoptionAdminNav();
 	</cfscript>
 </cffunction>
 
 
-<cffunction name="displaySiteOptionAdminNav" access="public" localmode="modern">
+<cffunction name="displayoptionAdminNav" access="public" localmode="modern">
 	<cfscript>
 	
 	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id',false,0);
@@ -70,8 +70,8 @@
 		indent&=chr(9);
 	}
 
-	for(i in t9.siteOptionGroupLookup){
-		groupStruct=t9.siteOptionGroupLookup[i];
+	for(i in t9.optionGroupLookup){
+		groupStruct=t9.optionGroupLookup[i];
 		if(arguments.groupID NEQ 0 and arguments.groupID NEQ groupStruct.site_option_group_id){
 			continue;
 		}
@@ -80,14 +80,14 @@
 		}
 		echo(chr(10)&indent&"<h2>Group: "&groupStruct.site_option_group_display_name&'</h2>'&chr(10));
 		if(groupStruct.site_option_group_parent_id NEQ 0){
-			parentGroupStruct=t9.siteOptionGroupLookup[groupStruct.site_option_group_parent_id];
+			parentGroupStruct=t9.optionGroupLookup[groupStruct.site_option_group_parent_id];
 			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.siteOptionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
 		}else{
 			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.siteOptionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
 		}
 		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
-			for(n in t9.siteOptionGroupFieldLookup[groupStruct.site_option_group_id]){
-				optionStruct=t9.siteOptionLookup[n];
+			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+				optionStruct=t9.optionLookup[n];
 				echo(indent&chr(9)&'##curStruct#ss.curIndex#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##<br />'&chr(10));
 			}
 			if(groupStruct.site_option_group_enable_unique_url EQ 1){
@@ -150,7 +150,7 @@
 		
 		
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
-		groupStruct=t9.siteOptionGroupLookup[form.site_option_group_id];
+		groupStruct=t9.optionGroupLookup[form.site_option_group_id];
 		if(groupStruct.site_option_group_enable_unique_url EQ 1){
 		echo('Below is an example of a CFC that is used for making a custom page, search result, and search index for a site_x_option_group_set record.
 <cfcomponent>
@@ -250,8 +250,8 @@ displayGroupCom.add();')&'</pre>');
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id', true, 0);
 	
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData; 
-	for(i in t9.siteOptionGroupLookup){
-		groupStruct=t9.siteOptionGroupLookup[i];
+	for(i in t9.optionGroupLookup){
+		groupStruct=t9.optionGroupLookup[i];
 		if(form.site_option_group_id NEQ 0 and form.site_option_group_id NEQ groupStruct.site_option_group_id){
 			continue;
 		} 
@@ -260,12 +260,12 @@ displayGroupCom.add();')&'</pre>');
 		echo('<div style="width:100%; float:left; padding-bottom:10px;"><h2>Fields</h2>
 		<table class="table-list">');
 		ss={};
-		for(n in t9.siteOptionGroupFieldLookup[groupStruct.site_option_group_id]){
-			ss[n]=t9.siteOptionLookup[n];
+		for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+			ss[n]=t9.optionLookup[n];
 		}
 		arrKey=structsort(ss, "text", "asc", "site_option_name");
 		for(n=1;n LTE arraylen(arrKey);n++){
-			optionStruct=t9.siteOptionLookup[arrKey[n]];
+			optionStruct=t9.optionLookup[arrKey[n]];
 			echo('<tr>');
 			echo('<th style="width:150px; ">#htmleditformat(optionStruct.site_option_name)#</th><td>');
 			if(optionStruct.site_option_tooltip EQ ""){
@@ -288,7 +288,7 @@ displayGroupCom.add();')&'</pre>');
 	var db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	for(local.i=1;local.i LTE form.fieldcount;local.i++){
-		form.site_option_id=application.zcore.functions.zso(form, 'siteOption'&local.i);
+		form.site_option_id=application.zcore.functions.zso(form, 'option'&local.i);
 		form.mapField=application.zcore.functions.zso(form, 'mapField'&local.i);
 		if(form.mapField NEQ ""){
 			db.sql="INSERT INTO #db.table("site_option_group_map", request.zos.zcoredatasource)# 
@@ -330,7 +330,7 @@ displayGroupCom.add();')&'</pre>');
 		application.zcore.functions.zRedirect("/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#&zsid=#request.zsid#");
 	}
 	header name="Content-Disposition" value="attachment; filename=#dateformat(now(), "yyyy-mm-dd-")&qGroup.site_option_group_name#.csv";
-	siteOptionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	optionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 
 	db.sql="SELECT * FROM  
 	#db.table("site_option", request.zos.zcoreDatasource)# WHERE 
@@ -426,7 +426,7 @@ displayGroupCom.add();')&'</pre>');
 		application.zcore.status.setStatus(request.zsid, "Site option group no longer exists.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/site-option-group/index?site_option_app_id=#form.site_option_app_id#&zsid=#request.zsid#");
 	}
-	siteOptionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	optionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 
 	doffset=0;
 	for(i=1;i LTE 100000;i++){
@@ -474,7 +474,7 @@ displayGroupCom.add();')&'</pre>');
 			structappend(form, row, true);
 			// writedump(form);abort;
  
-			rs=siteOptionCom.internalGroupUpdate(); 
+			rs=optionCom.internalGroupUpdate(); 
 			if(not rs.success){
 				writedump(rs);
 				writedump(ts);
@@ -582,11 +582,11 @@ displayGroupCom.add();')&'</pre>');
 	local.index=1;
 	if(mappingEnabled){
 		writeoutput('<p>Map as many fields as you wish. You can map an option to the same field multiple times to automatically combine those values.</p>
-			<p>To save time, try clicking <a href="##" class="zSiteOptionGroupAutoMap">auto-map</a> first.</p>
-		<form id="siteOptionGroupMapForm" action="/z/admin/site-option-group/saveMapFields?site_option_group_id=#form.site_option_group_id#" method="post">
+			<p>To save time, try clicking <a href="##" class="zoptionGroupAutoMap">auto-map</a> first.</p>
+		<form id="optionGroupMapForm" action="/z/admin/site-option-group/saveMapFields?site_option_group_id=#form.site_option_group_id#" method="post">
 		<table class="table-list"><tr><th>Option Field</th><th>Map To Field</th></tr>');
 		for(row in qOption){
-			writeoutput('<tr><td><input type="hidden" name="siteOption#local.index#" value="#row.site_option_id#" /><div id="fieldLabel#local.index#" class="fieldLabelDiv" data-id="#local.index#">'&htmleditformat(row.site_option_display_name)&'</div></td><td>');
+			writeoutput('<tr><td><input type="hidden" name="option#local.index#" value="#row.site_option_id#" /><div id="fieldLabel#local.index#" class="fieldLabelDiv" data-id="#local.index#">'&htmleditformat(row.site_option_display_name)&'</div></td><td>');
 			if(structkeyexists(local.mapStruct, row.site_option_id)){
 				form["mapField"&local.index]=local.mapStruct[row.site_option_id];
 			}
@@ -689,8 +689,8 @@ displayGroupCom.add();')&'</pre>');
 	ts.struct=row;
 	ts.datasource=request.zos.zcoreDatasource;
 	ts.table="site_option_group";
-	local.newSiteOptionGroupId=application.zcore.functions.zInsert(ts);
-	arguments.groupStruct[arguments.site_option_group_id]=local.newSiteOptionGroupId;
+	local.newoptionGroupId=application.zcore.functions.zInsert(ts);
+	arguments.groupStruct[arguments.site_option_group_id]=local.newoptionGroupId;
 	db.sql="select * from #db.table("site_option", request.zos.zcoredatasource)# 
 	where site_id = #db.param(request.zos.globals.id)# and 
 	site_option_deleted = #db.param(0)# and
@@ -698,14 +698,14 @@ displayGroupCom.add();')&'</pre>');
 	local.qOptions=db.execute("qOptions");
 	for(row2 in local.qOptions){
 		row2.site_id=arguments.site_id;
-		row2.site_option_group_id=local.newSiteOptionGroupId;
+		row2.site_option_group_id=local.newoptionGroupId;
 		// row2.site_option_appidlist     
 		ts=structnew();
 		ts.struct=row2;
 		ts.datasource=request.zos.zcoreDatasource;
 		ts.table="site_option";
-		local.newSiteOptionId=application.zcore.functions.zInsert(ts);
-		arguments.optionStruct[row2.site_option_id]=local.newSiteOptionId;
+		local.newoptionId=application.zcore.functions.zInsert(ts);
+		arguments.optionStruct[row2.site_option_id]=local.newoptionId;
 	}
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	where site_option_group_parent_id = #db.param(arguments.site_option_group_id)# and 
@@ -713,7 +713,7 @@ displayGroupCom.add();')&'</pre>');
 	site_id = #db.param(request.zos.globals.id)# ";
 	local.qGroup=db.execute("qGroup");
 	for(row in local.qGroup){
-		row.site_option_group_parent_id=local.newSiteOptionGroupId;
+		row.site_option_group_parent_id=local.newoptionGroupId;
 		this.copyGroupRecursive(row.site_option_group_id, arguments.site_id, row, arguments.groupStruct, arguments.optionStruct);
 	}
 	</cfscript>
@@ -1254,7 +1254,7 @@ displayGroupCom.add();')&'</pre>');
 	}
 	
 	form.site_option_group_appidlist=","&application.zcore.functions.zso(form,'site_option_group_appidlist')&",";
-	 if(application.zcore.functions.zso(form,'siteoptiongroupglobal',false,0) EQ 1 and variables.allowGlobal){
+	 if(application.zcore.functions.zso(form,'optionGroupglobal',false,0) EQ 1 and variables.allowGlobal){
 		 form.site_id='0';
 	 }else{
 		 form.site_id=request.zos.globals.id;
@@ -1413,7 +1413,7 @@ displayGroupCom.add();')&'</pre>');
 			</tr>
 			<cfscript>
 			if(form.site_id EQ 0){
-				form.siteoptiongroupglobal='1';
+				form.optionGroupglobal='1';
 			}
 			</cfscript> 
 				<tr>
@@ -1456,8 +1456,8 @@ displayGroupCom.add();')&'</pre>');
 				</tr>
 				<cfif variables.allowGlobal>
 					<tr>
-						<th>#application.zcore.functions.zOutputHelpToolTip("Global","member.site-option-group.edit siteoptiongroupglobal")#</th>
-						<td>#application.zcore.functions.zInput_Boolean("siteoptiongroupglobal")#</td>
+						<th>#application.zcore.functions.zOutputHelpToolTip("Global","member.site-option-group.edit optionGroupglobal")#</th>
+						<td>#application.zcore.functions.zInput_Boolean("optionGroupglobal")#</td>
 					</tr>
 				</cfif>
 				<cfscript>
@@ -1737,7 +1737,7 @@ displayGroupCom.add();')&'</pre>');
 				 
 				
 		<cfif variables.allowGlobal EQ false>
-			<input type="hidden" name="siteoptiongroupglobal" value="0" />
+			<input type="hidden" name="optionGroupglobal" value="0" />
 		</cfif>
 	</form>
 	<script type="text/javascript">
@@ -1745,8 +1745,8 @@ displayGroupCom.add();')&'</pre>');
 		var arrD=[];<cfloop query="qG">arrD.push("#qG.site_id#");</cfloop>
 		var firstLoad11=true;
 		function doParentCheck(){
-			var d1=document.getElementById("siteoptiongroupglobal1");
-			var d0=document.getElementById("siteoptiongroupglobal0");
+			var d1=document.getElementById("optionGroupglobal1");
+			var d0=document.getElementById("optionGroupglobal0");
 			var groupMenuName=document.getElementById("groupMenuNameId");
 			var groupMenuName2=document.getElementById("groupMenuNameId2");
 			var groupMenuNameField=document.getElementById("site_option_group_menu_name");

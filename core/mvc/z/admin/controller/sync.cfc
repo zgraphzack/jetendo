@@ -7,35 +7,35 @@ Maybe a better export format uses groupNameList for all the site_option_group_id
 This allows avoiding remaps more easily.  Less code when importing.
  --->
 
-<cffunction name="getNextSiteOptionId" localmode="modern" returntype="numeric">
+<cffunction name="getNextOptionId" localmode="modern" returntype="numeric">
 	<cfargument name="groupNameList" type="string" required="yes">
 	<cfargument name="site_option_name" type="string" required="yes">
 	<cfscript>
-	if(not structkeyexists(request.nextSiteOptionStruct, arguments.groupNameList)){
-		request.nextSiteOptionStruct[arguments.groupNameList]={};
+	if(not structkeyexists(request.nextOptionStruct, arguments.groupNameList)){
+		request.nextOptionStruct[arguments.groupNameList]={};
 	}
-	if(structkeyexists(request.nextSiteOptionStruct[arguments.groupNameList], arguments.site_option_name)){
-		request.nextSiteOptionStruct[arguments.groupNameList][arguments.site_option_name];
+	if(structkeyexists(request.nextOptionStruct[arguments.groupNameList], arguments.site_option_name)){
+		request.nextOptionStruct[arguments.groupNameList][arguments.site_option_name];
 	}
-	request.nextSiteOptionId++;
-	request.nextSiteOptionStruct[arguments.groupNameList][arguments.site_option_name]=request.nextSiteOptionId;
-	return request.nextSiteOptionId;
+	request.nextOptionId++;
+	request.nextOptionStruct[arguments.groupNameList][arguments.site_option_name]=request.nextOptionId;
+	return request.nextOptionId;
 	</cfscript>
 </cffunction>
 
-<cffunction name="getNextSiteOptionGroupId" localmode="modern" returntype="numeric">
+<cffunction name="getNextOptionGroupId" localmode="modern" returntype="numeric">
 	<cfargument name="groupNameList" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(request.nextSiteOptionGroupStruct, arguments.groupNameList)){
-		return request.nextSiteOptionGroupStruct[arguments.groupNameList];
+	if(structkeyexists(request.nextOptionGroupStruct, arguments.groupNameList)){
+		return request.nextOptionGroupStruct[arguments.groupNameList];
 	}
-	request.nextSiteOptionGroupId++;
-	request.nextSiteOptionGroupStruct[arguments.groupNameList]=request.nextSiteOptionGroupId;
-	return request.nextSiteOptionGroupId;
+	request.nextOptionGroupId++;
+	request.nextOptionGroupStruct[arguments.groupNameList]=request.nextOptionGroupId;
+	return request.nextOptionGroupId;
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionGroupByName" localmode="modern">
+<cffunction name="getOptionGroupByName" localmode="modern">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfargument name="groupNameList" type="string" required="yes">
 	<cfargument name="createIfMissing" type="boolean" required="no" default="#false#">
@@ -46,17 +46,17 @@ This allows avoiding remaps more easily.  Less code when importing.
 		parentId=0;
 	}else{
 		arrayDeleteAt(arrGroup, arraylen(arrGroup));
-		parentStruct=getSiteOptionGroupByName(arguments.struct, arrayToList(arrGroup, chr(9)), arguments.createIfMissing);
+		parentStruct=getOptionGroupByName(arguments.struct, arrayToList(arrGroup, chr(9)), arguments.createIfMissing);
 		parentId=parentStruct.struct.site_option_group_id;
 	}
-	if(structkeyexists(arguments.struct.siteOptionGroupNameStruct, arguments.groupNameList)){
-		groupStruct=arguments.struct.siteOptionGroupStruct[arguments.struct.siteOptionGroupNameStruct[arguments.groupNameList]];
+	if(structkeyexists(arguments.struct.optionGroupNameStruct, arguments.groupNameList)){
+		groupStruct=arguments.struct.optionGroupStruct[arguments.struct.optionGroupNameStruct[arguments.groupNameList]];
 		return { success:true, struct:groupStruct };
 	}else if(arguments.createIfMissing){
 		groupStruct={
 			new:true,
 			site_option_group_name:site_option_group_name,
-			site_option_group_id:getNextSiteOptionGroupId(arguments.groupNameList),
+			site_option_group_id:getNextOptionGroupId(arguments.groupNameList),
 			site_option_group_parent_id:parentId,
 			site_id:request.zos.globals.id
 		};
@@ -67,12 +67,12 @@ This allows avoiding remaps more easily.  Less code when importing.
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionGroupById" localmode="modern">
+<cffunction name="getOptionGroupById" localmode="modern">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(arguments.struct.siteOptionGroupStruct, arguments.site_option_group_id)){
-		groupStruct=arguments.struct.siteOptionGroupStruct[arguments.site_option_group_id];
+	if(structkeyexists(arguments.struct.optionGroupStruct, arguments.site_option_group_id)){
+		groupStruct=arguments.struct.optionGroupStruct[arguments.site_option_group_id];
 		return { success:true, struct:groupStruct };
 	}else{
 		return {success:false};
@@ -80,12 +80,12 @@ This allows avoiding remaps more easily.  Less code when importing.
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionById" localmode="modern" returntype="struct">
+<cffunction name="getOptionById" localmode="modern" returntype="struct">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfargument name="site_option_id" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(arguments.struct.siteOptionStruct, arguments.site_option_id)){
-		optionStruct=arguments.struct.siteOptionStruct[arguments.site_option_id];
+	if(structkeyexists(arguments.struct.optionStruct, arguments.site_option_id)){
+		optionStruct=arguments.struct.optionStruct[arguments.site_option_id];
 		return { success:true, struct:optionStruct };
 	}else{
 		return {success:false};
@@ -93,24 +93,24 @@ This allows avoiding remaps more easily.  Less code when importing.
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionByName" localmode="modern" returntype="struct">
+<cffunction name="getOptionByName" localmode="modern" returntype="struct">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfargument name="groupNameList" type="string" required="yes">
 	<cfargument name="site_option_name" type="string" required="yes">
 	<cfargument name="createIfMissing" type="boolean" required="no" default="#false#">
 	<cfscript>
-	groupStruct=getSiteOptionGroupByName(arguments.struct, arguments.groupNameList, arguments.createIfMissing);
+	groupStruct=getOptionGroupByName(arguments.struct, arguments.groupNameList, arguments.createIfMissing);
 	if(not groupStruct.success){
 		return {success:false, errorMessage:"couldn't find group: "&arguments.groupNameList&"<br>"};
 	}
-	if(structkeyexists(arguments.struct.siteOptionNameStruct, arguments.groupNameList) and structkeyexists(arguments.struct.siteOptionNameStruct[arguments.groupNameList], arguments.site_option_name)){
-		optionStruct=arguments.struct.siteOptionStruct[arguments.struct.siteOptionNameStruct[arguments.groupNameList][arguments.site_option_name]];
+	if(structkeyexists(arguments.struct.optionNameStruct, arguments.groupNameList) and structkeyexists(arguments.struct.optionNameStruct[arguments.groupNameList], arguments.site_option_name)){
+		optionStruct=arguments.struct.optionStruct[arguments.struct.optionNameStruct[arguments.groupNameList][arguments.site_option_name]];
 		return { success:true, struct:optionStruct };
 	}else if(arguments.createIfMissing){
 		optionStruct={
 			new:true,
 			site_option_group_id:groupStruct.struct.site_option_group_id,
-			site_option_id:getNextSiteOptionId(arguments.groupNameList, arguments.site_option_name),
+			site_option_id:getNextOptionId(arguments.groupNameList, arguments.site_option_name),
 			site_id:request.zos.globals.id
 		};
 		return { success:true, struct:optionStruct };
@@ -120,13 +120,13 @@ This allows avoiding remaps more easily.  Less code when importing.
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionDataFromDatabase" access="public" localmode="modern" returntype="struct">
+<cffunction name="getOptionDataFromDatabase" access="public" localmode="modern" returntype="struct">
 	<cfscript>
 	db=request.zos.queryObject;
 	ts={
-		arrSiteOption:[],
-		arrSiteOptionGroup:[],
-	//	arrSiteOptionGroupMap:[],
+		arrOption:[],
+		arrOptionGroup:[],
+	//	arrOptionGroupMap:[],
 	};
 	// setup destination data
 	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# 
@@ -134,7 +134,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	site_option_deleted = #db.param(0)# ";
 	qOption=db.execute("qOption");
 	for(row in qOption){
-		arrayAppend(ts.arrSiteOption, row);
+		arrayAppend(ts.arrOption, row);
 	}
 	
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
@@ -163,7 +163,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 			}
 			row.inquiriesTypeName = qType.inquiries_type_name;
 		}
-		arrayAppend(ts.arrSiteOptionGroup, row);
+		arrayAppend(ts.arrOptionGroup, row);
 	}
 	/*
 	db.sql="select * from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
@@ -171,80 +171,80 @@ This allows avoiding remaps more easily.  Less code when importing.
 	site_option_group_map_deleted = #db.param(0)# ";
 	qMap=db.execute("qMap");
 	for(row in qMap){
-		arrayAppend(ts.arrSiteOptionGroupMap, row);
+		arrayAppend(ts.arrOptionGroupMap, row);
 	}*/
 	return ts;
 	</cfscript>
 </cffunction>
 
 
-<cffunction name="getSiteOptionMappedData" access="public" localmode="modern" returntype="struct">
+<cffunction name="getOptionMappedData" access="public" localmode="modern" returntype="struct">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
 	ts=arguments.dataStruct;
 	struct={
-		siteOptionStruct:{},
-		siteOptionGroupStruct:{},
-		//siteOptionGroupMapStruct:{},
-		siteOptionNameStruct:{},
-		siteOptionGroupNameStruct:{},
-		siteOptionGroupNameLookupById:{}
+		optionStruct:{},
+		optionGroupStruct:{},
+		//optionGroupMapStruct:{},
+		optionNameStruct:{},
+		optionGroupNameStruct:{},
+		optionGroupNameLookupById:{}
 	};
-	for(i=1;i LTE arraylen(ts.arrSiteOptionGroup);i++){
-		ts.arrSiteOptionGroup[i].site_id=request.zos.globals.id;
-		struct.siteOptionGroupStruct[ts.arrSiteOptionGroup[i].site_option_group_id]=ts.arrSiteOptionGroup[i];
+	for(i=1;i LTE arraylen(ts.arrOptionGroup);i++){
+		ts.arrOptionGroup[i].site_id=request.zos.globals.id;
+		struct.optionGroupStruct[ts.arrOptionGroup[i].site_option_group_id]=ts.arrOptionGroup[i];
 	}
-	//writedump(struct.siteOptionGroupStruct);
+	//writedump(struct.optionGroupStruct);
 	// force these to exist for options outside of a group to be synced.
-	struct.siteOptionGroupStruct["0"]={};
-	struct.siteOptionNameStruct["0"]={};
-	for(i=1;i LTE arraylen(ts.arrSiteOptionGroup);i++){
-		groupNameList=arrayToList(getFullGroupPath(struct, ts.arrSiteOptionGroup[i].site_option_group_parent_id, ts.arrSiteOptionGroup[i].site_option_group_name), chr(9));
-		struct.siteOptionGroupNameStruct[groupNameList]=ts.arrSiteOptionGroup[i].site_option_group_id;
-		struct.siteOptionNameStruct[groupNameList]={};
-		struct.siteOptionGroupNameLookupById[ts.arrSiteOptionGroup[i].site_option_group_id]=groupNameList;
+	struct.optionGroupStruct["0"]={};
+	struct.optionNameStruct["0"]={};
+	for(i=1;i LTE arraylen(ts.arrOptionGroup);i++){
+		groupNameList=arrayToList(getFullGroupPath(struct, ts.arrOptionGroup[i].site_option_group_parent_id, ts.arrOptionGroup[i].site_option_group_name), chr(9));
+		struct.optionGroupNameStruct[groupNameList]=ts.arrOptionGroup[i].site_option_group_id;
+		struct.optionNameStruct[groupNameList]={};
+		struct.optionGroupNameLookupById[ts.arrOptionGroup[i].site_option_group_id]=groupNameList;
 	}
-	for(i=1;i LTE arraylen(ts.arrSiteOption);i++){
-		ts.arrSiteOption[i].site_id=request.zos.globals.id;
-		struct.siteOptionStruct[ts.arrSiteOption[i].site_option_id]=ts.arrSiteOption[i];
-		if(ts.arrSiteOption[i].site_option_group_id NEQ 0 and structkeyexists(struct.siteOptionGroupStruct, ts.arrSiteOption[i].site_option_group_id)){ 
-			groupStruct=struct.siteOptionGroupStruct[ts.arrSiteOption[i].site_option_group_id];
+	for(i=1;i LTE arraylen(ts.arrOption);i++){
+		ts.arrOption[i].site_id=request.zos.globals.id;
+		struct.optionStruct[ts.arrOption[i].site_option_id]=ts.arrOption[i];
+		if(ts.arrOption[i].site_option_group_id NEQ 0 and structkeyexists(struct.optionGroupStruct, ts.arrOption[i].site_option_group_id)){ 
+			groupStruct=struct.optionGroupStruct[ts.arrOption[i].site_option_group_id];
 			groupNameList=getFullGroupPath(struct, groupStruct.site_option_group_parent_id, groupStruct.site_option_group_name);
-			struct.siteOptionNameStruct[arrayToList(groupNameList, chr(9))][ts.arrSiteOption[i].site_option_name]=ts.arrSiteOption[i].site_option_id;
+			struct.optionNameStruct[arrayToList(groupNameList, chr(9))][ts.arrOption[i].site_option_name]=ts.arrOption[i].site_option_id;
 		}else{
-			struct.siteOptionNameStruct["0"][ts.arrSiteOption[i].site_option_name]=ts.arrSiteOption[i].site_option_id;
+			struct.optionNameStruct["0"][ts.arrOption[i].site_option_name]=ts.arrOption[i].site_option_id;
 		}
 	}
 	/*
-	for(i=1;i LTE arraylen(ts.arrSiteOptionGroupMap);i++){
-		ts.arrSiteOptionGroupMap[i].site_id=request.zos.globals.id;
-		struct.siteOptionGroupMapStruct[ts.arrSiteOptionGroupMap[i].site_option_group_map_id]=ts.arrSiteOptionGroupMap[i];
+	for(i=1;i LTE arraylen(ts.arrOptionGroupMap);i++){
+		ts.arrOptionGroupMap[i].site_id=request.zos.globals.id;
+		struct.optionGroupMapStruct[ts.arrOptionGroupMap[i].site_option_group_map_id]=ts.arrOptionGroupMap[i];
 	}*/
 	return struct;
 	</cfscript>
 </cffunction>
 
 
-<cffunction name="remapSiteOption" localmode="modern" returntype="struct">
+<cffunction name="remapOption" localmode="modern" returntype="struct">
 	<cfargument name="source" type="struct" required="yes">
 	<cfargument name="destination" type="struct" required="yes">
-	<cfargument name="sourceSiteOptionId" type="numeric" required="yes">
+	<cfargument name="sourceOptionId" type="numeric" required="yes">
 	<cfargument name="skipIdRemap" type="boolean" required="no" default="#false#">
 	<cfscript>
 	sourceStruct=arguments.source;
 	destinationStruct=arguments.destination;
 	
-	row=duplicate(sourceStruct.siteOptionStruct[arguments.sourceSiteOptionId]);
+	row=duplicate(sourceStruct.optionStruct[arguments.sourceOptionId]);
 	// loop source site_option and check for select_menu group_id usage and any other fields that allow groupID
 	if(row.site_option_type_id EQ 7){
 		optionStruct=deserializeJson(row.site_option_type_json);
 		if(structkeyexists(optionStruct, 'selectmenu_groupid') and optionStruct.selectmenu_groupid NEQ ""){
-			rs=getSiteOptionGroupById(sourceStruct, optionStruct.selectmenu_groupid);
+			rs=getOptionGroupById(sourceStruct, optionStruct.selectmenu_groupid);
 			
 			if(rs.success){
 				groupNameList=arrayToList(getFullGroupPath(sourceStruct, rs.struct.site_option_group_parent_id, rs.struct.site_option_group_name), chr(9));
 				
-				selectGroupStruct=getSiteOptionGroupByName(destinationStruct, groupNameList, true);
+				selectGroupStruct=getOptionGroupByName(destinationStruct, groupNameList, true);
 				optionStruct.selectmenu_groupid=toString(selectGroupStruct.struct.site_option_group_id);
 			}else{
 				echo("Warning: selectmenu_groupid, ""#optionStruct.selectmenu_groupid#"", doesn't exist in source. The site option, #row.site_option_name# will be imported, but it must be manually corrected.");
@@ -258,13 +258,13 @@ This allows avoiding remaps more easily.  Less code when importing.
 	if(not arguments.skipIdRemap){
 		groupNameList="0";
 		if(row.site_option_group_id NEQ 0){
-			groupNameList=sourceStruct.siteOptionGroupNameLookupById[row.site_option_group_id];
-			rs=getSiteOptionGroupByName(destinationStruct, groupNameList, true);
+			groupNameList=sourceStruct.optionGroupNameLookupById[row.site_option_group_id];
+			rs=getOptionGroupByName(destinationStruct, groupNameList, true);
 			row.site_option_group_id=rs.struct.site_option_group_id;
 		}
 		
 		// this should work with site_option_group_id 0 as well.
-		optionStruct=getSiteOptionByName(destinationStruct, groupNameList, row.site_option_name, true);
+		optionStruct=getOptionByName(destinationStruct, groupNameList, row.site_option_name, true);
 		row.site_option_id=optionStruct.struct.site_option_id;
 	}
 	row.site_id = request.zos.globals.id;
@@ -274,16 +274,16 @@ This allows avoiding remaps more easily.  Less code when importing.
 
  
 
-<cffunction name="remapSiteOptionGroup" localmode="modern" returntype="struct">
+<cffunction name="remapOptionGroup" localmode="modern" returntype="struct">
 	<cfargument name="source" type="struct" required="yes">
 	<cfargument name="destination" type="struct" required="yes">
-	<cfargument name="sourceSiteOptionGroupId" type="numeric" required="yes">
+	<cfargument name="sourceOptionGroupId" type="numeric" required="yes">
 	<cfargument name="skipGroupIdRemap" type="boolean" required="no" default="#false#">
 	<cfscript>
 	db=request.zos.queryObject;
 	sourceStruct=arguments.source;
 	destinationStruct=arguments.destination;
-	row=sourceStruct.siteOptionGroupStruct[arguments.sourceSiteOptionGroupId];
+	row=sourceStruct.optionGroupStruct[arguments.sourceOptionGroupId];
 	
 	// find the user_group_id in destination site
 	if(row.site_option_group_user_group_id_list NEQ ""){
@@ -317,16 +317,16 @@ This allows avoiding remaps more easily.  Less code when importing.
 		//row.zinquiries_type_id = qType.inquiries_type_id;
 	}
 	if(not arguments.skipGroupIdRemap){
-		groupStruct=getSiteOptionGroupById(sourceStruct, row.site_option_group_id);
+		groupStruct=getOptionGroupById(sourceStruct, row.site_option_group_id);
 		groupNameList=arrayToList(getFullGroupPath(sourceStruct, groupStruct.struct.site_option_group_parent_id, row.site_option_group_name), chr(9));
 		if(row.site_option_group_parent_id NEQ 0){
-			parentGroupStruct=getSiteOptionGroupById(sourceStruct, row.site_option_group_parent_id);
+			parentGroupStruct=getOptionGroupById(sourceStruct, row.site_option_group_parent_id);
 			
 			parentGroupNameList=arrayToList(getFullGroupPath(sourceStruct, parentGroupStruct.struct.site_option_group_parent_id, parentGroupStruct.struct.site_option_group_name), chr(9));
-			rs=getSiteOptionGroupByName(destinationStruct, parentGroupNameList, true);
+			rs=getOptionGroupByName(destinationStruct, parentGroupNameList, true);
 			row.site_option_group_parent_id=rs.struct.site_option_group_id;
 		}
-		rs=getSiteOptionGroupByName(destinationStruct, groupNameList, true);
+		rs=getOptionGroupByName(destinationStruct, groupNameList, true);
 		row.site_option_group_id=rs.struct.site_option_group_id;
 	}
 	row.site_id = request.zos.globals.id;
@@ -372,8 +372,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 		if(currentParentId EQ 0){
 			break;
 		}else{ 
-			currentName=arguments.struct.siteOptionGroupStruct[currentParentId].site_option_group_name;
-			currentParentId=arguments.struct.siteOptionGroupStruct[currentParentId].site_option_group_parent_id; 
+			currentName=arguments.struct.optionGroupStruct[currentParentId].site_option_group_name;
+			currentParentId=arguments.struct.optionGroupStruct[currentParentId].site_option_group_parent_id; 
 		}
 		i++;
 		if( i GT 100){
@@ -384,7 +384,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionFieldChanges" localmode="modern">
+<cffunction name="getOptionFieldChanges" localmode="modern">
 	<cfargument name="source" type="struct" required="yes">
 	<cfargument name="destination" type="struct" required="yes">
 	<cfscript>
@@ -397,13 +397,13 @@ This allows avoiding remaps more easily.  Less code when importing.
 	newFields={};
 	extraFields={};
 	
-	for(i in sourceStruct.siteOptionGroupNameStruct){
-		groupId=sourceStruct.siteOptionGroupNameStruct[i];
+	for(i in sourceStruct.optionGroupNameStruct){
+		groupId=sourceStruct.optionGroupNameStruct[i];
 		
 		groupChanged=false; 
-		if(structkeyexists(destinationStruct.siteOptionGroupNameStruct, i)){
-			newGroupStruct=remapSiteOptionGroup(sourceStruct, destinationStruct, groupId);
-			currentDestinationStruct=destinationStruct.siteOptionGroupStruct[destinationStruct.siteOptionGroupNameStruct[i]];
+		if(structkeyexists(destinationStruct.optionGroupNameStruct, i)){
+			newGroupStruct=remapOptionGroup(sourceStruct, destinationStruct, groupId);
+			currentDestinationStruct=destinationStruct.optionGroupStruct[destinationStruct.optionGroupNameStruct[i]];
 			structdelete(newGroupStruct, 'site_option_group_updated_datetime');
 			structdelete(currentDestinationStruct, 'site_option_group_updated_datetime');
 			if(not objectequals(newGroupStruct, currentDestinationStruct)){
@@ -420,20 +420,20 @@ This allows avoiding remaps more easily.  Less code when importing.
 			}
 		}else{
 			// new group - need to translate to the destination ids...
-			newGroups[i]=remapSiteOptionGroup(sourceStruct, destinationStruct, groupId);
+			newGroups[i]=remapOptionGroup(sourceStruct, destinationStruct, groupId);
 		}
 		extraFields[i]={};
 		newFields[i]={};
 		// check for field changes
-		for(n in sourceStruct.siteOptionNameStruct[i]){
-			siteOptionId=sourceStruct.siteOptionNameStruct[i][n];
+		for(n in sourceStruct.optionNameStruct[i]){
+			optionId=sourceStruct.optionNameStruct[i][n];
 			
 			newField=false;
-			if(structkeyexists(destinationStruct.siteOptionNameStruct, i)){
-				if(structkeyexists(destinationStruct.siteOptionNameStruct[i], n)){
+			if(structkeyexists(destinationStruct.optionNameStruct, i)){
+				if(structkeyexists(destinationStruct.optionNameStruct[i], n)){
 					// check for field option changes
-					sourceFieldStruct=remapSiteOption(sourceStruct, destinationStruct, siteOptionId);
-					destinationFieldStruct=destinationStruct.siteOptionStruct[destinationStruct.siteOptionNameStruct[i][n]];
+					sourceFieldStruct=remapOption(sourceStruct, destinationStruct, optionId);
+					destinationFieldStruct=destinationStruct.optionStruct[destinationStruct.optionNameStruct[i][n]];
 					structdelete(sourceFieldStruct, 'site_option_updated_datetime');
 					structdelete(destinationFieldStruct, 'site_option_updated_datetime');
 					if(not objectequals(sourceFieldStruct, destinationFieldStruct)){
@@ -459,21 +459,21 @@ This allows avoiding remaps more easily.  Less code when importing.
 				if(form.debugEnabled){
 					echo("new field: "&i&" | "&n&"<br>");
 				}
-				newFields[i][n]=remapSiteOption(sourceStruct, destinationStruct, siteOptionId);
+				newFields[i][n]=remapOption(sourceStruct, destinationStruct, optionId);
 			}
 		}
 		if(form.deleteEnabled EQ 1){ 
-			if(structkeyexists(destinationStruct.siteOptionNameStruct, i)){
-				for(n in destinationStruct.siteOptionNameStruct[i]){
-					siteOptionId=destinationStruct.siteOptionNameStruct[i][n];
-					if(structkeyexists(sourceStruct.siteOptionNameStruct[i], n)){
+			if(structkeyexists(destinationStruct.optionNameStruct, i)){
+				for(n in destinationStruct.optionNameStruct[i]){
+					optionId=destinationStruct.optionNameStruct[i][n];
+					if(structkeyexists(sourceStruct.optionNameStruct[i], n)){
 						continue; // already checked
 					}else{
 						// extra field
 						if(form.debugEnabled){
 							echo("extra field: "&i&" | "&n&"<br>");
 						}
-						extraFields[i][n]=destinationStruct.siteOptionStruct[siteOptionId];
+						extraFields[i][n]=destinationStruct.optionStruct[optionId];
 					}
 				}
 			}
@@ -481,13 +481,13 @@ This allows avoiding remaps more easily.  Less code when importing.
 	}
 	
 	if(form.deleteEnabled EQ 1){
-		for(i in destinationStruct.siteOptionGroupNameStruct){
-			groupId=destinationStruct.siteOptionGroupNameStruct[i];
-			if(structkeyexists(sourceStruct.siteOptionGroupNameStruct, i)){
+		for(i in destinationStruct.optionGroupNameStruct){
+			groupId=destinationStruct.optionGroupNameStruct[i];
+			if(structkeyexists(sourceStruct.optionGroupNameStruct, i)){
 				continue; // skip, already checked above.
 			}else{
 				// extra group
-				extraGroups[i]=destinationStruct.siteOptionGroupStruct[groupId];
+				extraGroups[i]=destinationStruct.optionGroupStruct[groupId];
 			}
 		}
 	}
@@ -516,11 +516,11 @@ This allows avoiding remaps more easily.  Less code when importing.
 	</cfscript>
 </cffunction>
 
-<cffunction name="updateSiteOption" localmode="modern">
+<cffunction name="updateOption" localmode="modern">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="new" type="boolean" required="yes">
 	<cfscript>
-	throw("updateSiteOption not implemented.");
+	throw("updateOption not implemented.");
 	abort;
 	db=request.zos.queryObject;
 	arguments.row.site_option_updated_datetime = request.zos.mysqlnow;
@@ -535,7 +535,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
 		site_option_deleted = #db.param(0)# and
 		site_option_id = #db.param(arguments.row.site_option_id)# ";
-		result=db.insert("qSiteOptionInsert", request.zos.insertIDColumnForSiteIDTable);
+		result=db.insert("qOptionInsert", request.zos.insertIDColumnForSiteIDTable);
 		if(rs.success){
 			return rs.result;
 		}else{
@@ -552,17 +552,17 @@ This allows avoiding remaps more easily.  Less code when importing.
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
 		site_option_deleted = #db.param(0)# and
 		site_option_id = #db.param(arguments.row.site_option_id)# ";
-		return db.execute("qSiteOptionUpdate");
+		return db.execute("qOptionUpdate");
 	}
 	</cfscript>
 </cffunction>
 
 
-<cffunction name="updateSiteOptionGroup" localmode="modern">
+<cffunction name="updateOptionGroup" localmode="modern">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="new" type="boolean" required="yes">
 	<cfscript>
-	throw("updateSiteOptionGroup not implemented.");
+	throw("updateOptionGroup not implemented.");
 	abort;
 	db=request.zos.queryObject;
 	arguments.row.site_option_group_updated_datetime = request.zos.mysqlnow;
@@ -577,7 +577,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
 		site_option_group_deleted = #db.param(0)# and
 		site_option_group_id = #db.param(arguments.row.site_option_group_id)# ";
-		result=db.insert("qSiteOptionGroupInsert", request.zos.insertIDColumnForSiteIDTable);
+		result=db.insert("qOptionGroupInsert", request.zos.insertIDColumnForSiteIDTable);
 		if(rs.success){
 			return rs.result;
 		}else{
@@ -594,16 +594,16 @@ This allows avoiding remaps more easily.  Less code when importing.
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
 		site_option_group_deleted = #db.param(0)# and
 		site_option_group_id = #db.param(arguments.row.site_option_group_id)# ";
-		return db.execute("qSiteOptionGroupUpdate");
+		return db.execute("qOptionGroupUpdate");
 	}
 	</cfscript>
 </cffunction>
 <!--- 
-<cffunction name="updateSiteOptionGroupMap" localmode="modern">
+<cffunction name="updateOptionGroupMap" localmode="modern">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="new" type="boolean" required="yes">
 	<cfscript>
-	throw("updateSiteOptionGroupMap not implemented.");
+	throw("updateOptionGroupMap not implemented.");
 	abort;
 	db=request.zos.queryObject;
 	arguments.row.site_option_group_map_updated_datetime = request.zos.mysqlnow;
@@ -618,7 +618,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
 		site_option_group_map_deleted = #db.param(0)# and
 		site_option_group_map_id = #db.param(arguments.row.site_option_group_map_id)# ";
-		result=db.insert("qSiteOptionGroupMapInsert", request.zos.insertIDColumnForSiteIDTable);
+		result=db.insert("qOptionGroupMapInsert", request.zos.insertIDColumnForSiteIDTable);
 		if(rs.success){
 			return rs.result;
 		}else{
@@ -635,51 +635,51 @@ This allows avoiding remaps more easily.  Less code when importing.
 		WHERE site_id = #db.param(arguments.row.site_id)# and 
 		site_option_group_map_deleted = #db.param(0)# and 
 		site_option_group_map_id = #db.param(arguments.row.site_option_group_map_id)# ";
-		return db.execute("qSiteOptionGroupMapUpdate");
+		return db.execute("qOptionGroupMapUpdate");
 	}
 	</cfscript>
 </cffunction> --->
 
 <!--- 
-<cffunction name="remapSiteOptionGroupMap" localmode="modern" returntype="struct">
+<cffunction name="remapOptionGroupMap" localmode="modern" returntype="struct">
 	<cfargument name="source" type="struct" required="yes">
 	<cfargument name="destination" type="struct" required="yes">
-	<cfargument name="sourceSiteOptionGroupMapId" type="numeric" required="yes">
+	<cfargument name="sourceOptionGroupMapId" type="numeric" required="yes">
 	<cfscript>
 	sourceStruct=arguments.source;
 	destinationStruct=arguments.destination; 
 	
-	row=sourceStruct.siteOptionGroupMapStruct[arguments.sourceSiteOptionGroupMapId];
+	row=sourceStruct.optionGroupMapStruct[arguments.sourceOptionGroupMapId];
 	
 	
-	groupNameList=sourceStruct.siteOptionGroupNameLookupById[row.site_option_group_id];
+	groupNameList=sourceStruct.optionGroupNameLookupById[row.site_option_group_id];
 		
-	sourceGroupStruct=getSiteOptionGroupByName(sourceStruct, groupNameList, true);
+	sourceGroupStruct=getOptionGroupByName(sourceStruct, groupNameList, true);
 	
-	destinationGroupStruct=getSiteOptionGroupByName(destinationStruct, groupNameList, true);
+	destinationGroupStruct=getOptionGroupByName(destinationStruct, groupNameList, true);
 	
 	row.site_option_group_id=destinationGroupStruct.struct.site_option_group_id;
 	
 	// remap site_option_id
-	sourceOption=getSiteOptionById(sourceStruct, row.site_option_id);
+	sourceOption=getOptionById(sourceStruct, row.site_option_id);
 	if(not sourceOption.success){
 		return {success:false, errorMessage:"skipping source where row.site_option_id = ""#row.site_option_id#""<br />" };
 	}
-	destinationOptionStruct=getSiteOptionByName(destinationStruct, groupNameList, sourceOption.struct.site_option_name, true);
+	destinationOptionStruct=getOptionByName(destinationStruct, groupNameList, sourceOption.struct.site_option_name, true);
 	row.site_option_id=destinationOptionStruct.struct.site_option_id;
 	
 	// remap site_option_group_map_fieldname if this site_option_id is mapped to a site_option_group_id
 	if(sourceGroupStruct.struct.site_option_group_map_group_id NEQ 0){
-		if(structkeyexists(sourceStruct.siteOptionGroupNameLookupById, sourceGroupStruct.struct.site_option_group_map_group_id)){
+		if(structkeyexists(sourceStruct.optionGroupNameLookupById, sourceGroupStruct.struct.site_option_group_map_group_id)){
 			return {success:false, errorMessage:"can't map due to missing site_option_group_map_group_id, #sourceGroupStruct.struct.site_option_group_map_group_id#, in source<br />" };
 		}
-		groupNameList2=sourceStruct.siteOptionGroupNameLookupById[sourceGroupStruct.struct.site_option_group_map_group_id];
+		groupNameList2=sourceStruct.optionGroupNameLookupById[sourceGroupStruct.struct.site_option_group_map_group_id];
 		// remap site_option_id
-		sourceOption2=getSiteOptionById(sourceStruct, row.site_option_group_map_fieldname);
+		sourceOption2=getOptionById(sourceStruct, row.site_option_group_map_fieldname);
 		if(not sourceOption2.success){
 			return {success:false, errorMessage:"can't map due to missing site_option_id, #row.site_option_group_map_fieldname#, in source<br />" };
 		}else{
-			destinationOptionStruct2=getSiteOptionByName(destinationStruct, groupNameList2, sourceOption2.struct.site_option_name, true);
+			destinationOptionStruct2=getOptionByName(destinationStruct, groupNameList2, sourceOption2.struct.site_option_name, true);
 			// site_option_group_map_fieldname is a field in the site_option_group_map_group_id field of the current site_option_group_id
 			row.site_option_group_map_fieldname=destinationOptionStruct2.struct.site_option_id;
 		}
@@ -702,7 +702,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	
 	
 	// later I would load sourceDataStruct from external json.js file instead of database when comparing and importing structure changes.
-	sourceDataStruct=getSiteOptionDataFromDatabase();
+	sourceDataStruct=getOptionDataFromDatabase();
 	
 	/*
 	don't use menu, slideshow or other features yet in theme - too complex.
@@ -855,12 +855,12 @@ This allows avoiding remaps more easily.  Less code when importing.
 	arraySort(arrKey, "text", "asc");
 	for(g=1;g LTE arrayLen(arrKey);g++){
 		i=arrKey[g];
-		groupId=destinationStruct.siteOptionGroupNameStruct[i];
+		groupId=destinationStruct.optionGroupNameStruct[i];
 		if(form.debugEnabled){
 			echo("delete site_option_group where site_option_group_id=#groupId#<br>");
 		}else{
-			siteOptionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
-			siteOptionGroupCom.deleteGroupRecursively(groupId);
+			optionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
+			optionGroupCom.deleteGroupRecursively(groupId);
 		}
 	}
 	arrKey=structkeyarray(fieldChangeStruct.extraFields);
@@ -868,14 +868,14 @@ This allows avoiding remaps more easily.  Less code when importing.
 	for(g=1;g LTE arrayLen(arrKey);g++){
 		i=arrKey[g];
 		for(n in fieldChangeStruct.extraFields[i]){
-			siteOptionId=destinationStruct.siteOptionNameStruct[i][n];
+			optionId=destinationStruct.optionNameStruct[i][n];
 			if(form.debugEnabled){
-				echo("delete site_option_group where site_option_id=#siteOptionId#<br>");
+				echo("delete site_option_group where site_option_id=#optionId#<br>");
 			}else{
 				if(i EQ 0){
 					db.sql="select * from #db.table("site_x_option", request.zos.zcoreDatasource)# s1,
 					#db.table("site_option", request.zos.zcoreDatasource)# s2
-					where s1.site_option_id = #db.param(siteOptionId)# and 
+					where s1.site_option_id = #db.param(optionId)# and 
 					s1.site_id = #db.param(request.zos.globals.id)# and 
 					s1.site_x_option_deleted = #db.param(0)# and 
 					s2.site_option_deleted = #db.param(0)# and
@@ -886,19 +886,19 @@ This allows avoiding remaps more easily.  Less code when importing.
 						optionStruct=deserializeJson(row.site_option_type_json); 
 						currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 						if(currentCFC.hasCustomDelete()){
-							// call delete on siteOptionType
+							// call delete on optionType
 							currentCFC.onDelete(row, optionStruct);
 						}
 					}
 					db.sql="delete from #db.param("site_x_option", request.zos.zcoreDatasource)# 
-					where site_option_id = #db.param(siteOptionId)# and 
+					where site_option_id = #db.param(optionId)# and 
 					site_x_option_deleted = #db.param(0)# and
 					site_id = #db.param(request.zos.globals.id)#";
 					db.execute("qDelete");
 				}else{
 					db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group, 
 					#db.table("site_option", request.zos.zcoreDatasource)# site_option 
-					where site_x_option_group.site_option_id = #db.param(siteOptionId)# and 
+					where site_x_option_group.site_option_id = #db.param(optionId)# and 
 					site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
 					site_x_option_group_deleted = #db.param(0)# and 
 					site_option_deleted = #db.param(0)# and
@@ -909,24 +909,24 @@ This allows avoiding remaps more easily.  Less code when importing.
 						optionStruct=deserializeJson(row.site_option_type_json); 
 						currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 						if(currentCFC.hasCustomDelete()){
-							// call delete on siteOptionType
+							// call delete on optionType
 							currentCFC.onDelete(row, optionStruct);
 						}
 					}
 					db.sql="delete from #db.table("site_x_option_group", request.zos.zcoreDatasource)# 
-					where site_option_id = #db.param(siteOptionId)# and 
+					where site_option_id = #db.param(optionId)# and 
 					site_x_option_group_deleted = #db.param(0)# and
 					site_id = #db.param(request.zos.globals.id)#";
 					db.execute("qDelete");
 				} 
 				
 				/*db.sql="delete from #db.table("site_option_group_map", request.zos.zcoreDatasource)# 
-				where site_option_id = #db.param(siteOptionId)# and 
+				where site_option_id = #db.param(optionId)# and 
 				site_id = #db.param(request.zos.globals.id)#";
 				db.execute("qDelete");*/
 				
 				db.sql="delete from #db.table("site_option", request.zos.zcoreDatasource)# 
-				WHERE site_option_id=#db.param(siteOptionId)# and 
+				WHERE site_option_id=#db.param(optionId)# and 
 				site_option_deleted = #db.param(0)# and
 				site_id = #db.param(request.zos.globals.id)# ";
 				db.execute("qDeleteOption");
@@ -1013,10 +1013,10 @@ This allows avoiding remaps more easily.  Less code when importing.
 		}
 	}
 	/*
-	if(structcount(sourceStruct.siteOptionGroupMapStruct)){
+	if(structcount(sourceStruct.optionGroupMapStruct)){
 		groupIdStruct={};
-		for(i in sourceStruct.siteOptionGroupMapStruct){
-			mapStruct=remapSiteOptionGroupMap(sourceStruct, destinationStruct, i);
+		for(i in sourceStruct.optionGroupMapStruct){
+			mapStruct=remapOptionGroupMap(sourceStruct, destinationStruct, i);
 			if(mapStruct.success){
 				groupIdStruct[mapStruct.struct.site_option_group_id]=true;
 				ts={};
@@ -1074,22 +1074,22 @@ This allows avoiding remaps more easily.  Less code when importing.
 	form.deleteEnabled=application.zcore.functions.zso(form, 'deleteEnabled', true, 0);
 	form.debugEnabled=application.zcore.functions.zso(form, 'debugEnabled', true, 0);
 	
-	request.nextSiteOptionStruct={};
-	request.nextSiteOptionGroupStruct={};
+	request.nextOptionStruct={};
+	request.nextOptionGroupStruct={};
 
 	db.sql="select IF(ISNULL(MAX(site_option_id)), #db.param(0)#, MAX(site_option_id)) id from 
 	#db.table("site_option", request.zos.zcoredatasource)# 
 	where site_id = #db.param(request.zos.globals.id)# and 
 	site_option_deleted = #db.param(0)#";
-	qSiteOptionId=db.execute("qSiteOptionId");
-	request.nextSiteOptionId=qSiteOptionId.id+1;
+	qOptionId=db.execute("qOptionId");
+	request.nextOptionId=qOptionId.id+1;
 	
 	db.sql="select IF(ISNULL(MAX(site_option_group_id)), #db.param(0)#, MAX(site_option_group_id)) id from 
 	#db.table("site_option", request.zos.zcoredatasource)# 
 	where site_id = #db.param(request.zos.globals.id)# and 
 	site_option_deleted = #db.param(0)# ";
-	qSiteOptionGroupId=db.execute("qSiteOptionGroupId");
-	request.nextSiteOptionGroupId=qSiteOptionGroupId.id+1;
+	qOptionGroupId=db.execute("qOptionGroupId");
+	request.nextOptionGroupId=qOptionGroupId.id+1;
 	
 	
 	form.importId=application.zcore.functions.zso(form, 'importId', true, 0);
@@ -1118,12 +1118,12 @@ This allows avoiding remaps more easily.  Less code when importing.
 	}
 	variables.userGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.user_group_admin");
 	sourceDataStruct=deserializeJSON(sourceJsonString);
-	sourceStruct=getSiteOptionMappedData(sourceDataStruct);
+	sourceStruct=getOptionMappedData(sourceDataStruct);
 	
-	destinationDataStruct=getSiteOptionDataFromDatabase();
-	destinationStruct=getSiteOptionMappedData(destinationDataStruct);
+	destinationDataStruct=getOptionDataFromDatabase();
+	destinationStruct=getOptionMappedData(destinationDataStruct);
 	
-	fieldChangeStruct=getSiteOptionFieldChanges(sourceStruct, destinationStruct);
+	fieldChangeStruct=getOptionFieldChanges(sourceStruct, destinationStruct);
 	
 	if(form.finalize EQ 0){
 		preview(fieldChangeStruct, sourceStruct, destinationStruct);
@@ -1132,8 +1132,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 	}
 	/*if(form.debugEnabled){ 
 		writedump("The following new ids were created and their data was not fully mapped to them yet.");
-		writedump(request.nextSiteOptionStruct);
-		writedump(request.nextSiteOptionGroupStruct);
+		writedump(request.nextOptionStruct);
+		writedump(request.nextOptionGroupStruct);
 	}*/
 	// site_option_app is missing from this code - so any customizations for blog & content records would be lost in a theme export/import.
 	
@@ -1142,8 +1142,8 @@ This allows avoiding remaps more easily.  Less code when importing.
 
 <cffunction name="init" access="private" localmode="modern">
 	<cfscript>
-	siteOptionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
-	siteOptionGroupCom.displaySiteOptionAdminNav();
+	optionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
+	optionGroupCom.displayoptionAdminNav();
 	</cfscript>
 </cffunction>
 
