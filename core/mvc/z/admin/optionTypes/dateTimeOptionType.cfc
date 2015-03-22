@@ -1,5 +1,14 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="onBeforeImport" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
@@ -12,7 +21,7 @@
 	<cfargument name="fieldIndex" type="string" required="yes">
 	<cfargument name="sortDirection" type="string" required="yes">
 	<cfscript>
-	return "s"&arguments.fieldIndex&".site_x_option_group_date_value "&arguments.sortDirection;
+	return "s"&arguments.fieldIndex&".#variables.siteType#_x_option_group_date_value "&arguments.sortDirection;
 	</cfscript>
 </cffunction>
 
@@ -40,24 +49,19 @@
 	application.zcore.functions.zRequireJqueryUI();
 	if(structkeyexists(arguments.optionStruct, 'datetime_range_search_type') and (arguments.optionStruct.datetime_range_search_type EQ 1 or arguments.optionStruct.datetime_range_search_type EQ 2)){
 		savecontent variable="js"{
-			echo(' $( "###arguments.prefixString&arguments.row.site_option_id#" ).datepicker();');
+			echo(' $( "###arguments.prefixString&arguments.row["#variables.type#_option_id"]#" ).datepicker();');
 		}
 		if(structkeyexists(form, 'x_ajax_id')){
 			js='<script type="text/javascript">/* <![CDATA[ */'&js&'/* ]]> */</script>';
 		}else{
 			application.zcore.skin.addDeferredScript(js);
 			js='';
-		}
-		//application.zcore.functions.zRequireTimePicker();
-		/*$("###arguments.prefixString&arguments.row.site_option_id#_time").timePicker({
-			show24Hours: false,
-			step: 15
-		});*/
-		return '<input type="text" name="#arguments.prefixString##arguments.row.site_option_id#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row.site_option_id#" value="#htmleditformat(dateformat(arguments.value, 'mm/dd/yyyy'))#" size="9" /> '&js;
+		} 
+		return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(dateformat(arguments.value, 'mm/dd/yyyy'))#" size="9" /> '&js;
 	}else{
 		savecontent variable="js"{
-			echo(' $( "###arguments.prefixString&arguments.row.site_option_id#" ).datepicker();');
-			echo(' $( "###arguments.prefixString&arguments.row.site_option_id#_2" ).datepicker();');
+			echo(' $( "###arguments.prefixString&arguments.row["#variables.type#_option_id"]#" ).datepicker();');
+			echo(' $( "###arguments.prefixString&arguments.row["#variables.type#_option_id"]#_2" ).datepicker();');
 		}
 		if(structkeyexists(form, 'x_ajax_id')){
 			js='<script type="text/javascript">/* <![CDATA[ */'&js&'/* ]]> */</script>';
@@ -73,7 +77,7 @@
 			value1=arguments.value;
 			value2=arguments.value;
 		}
-		return '<input type="text" name="#arguments.prefixString##arguments.row.site_option_id#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row.site_option_id#" value="#htmleditformat(dateformat(value1, 'mm/dd/yyyy'))#" size="9" /> to <input type="text" name="#arguments.prefixString##arguments.row.site_option_id#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row.site_option_id#_2" value="#htmleditformat(dateformat(value2, 'mm/dd/yyyy'))#" size="9" /> '&js;//<input type="text" name="#arguments.prefixString##arguments.row.site_option_id#_time" id="#arguments.prefixString##arguments.row.site_option_id#_time" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" value="#htmleditformat(timeformat(arguments.value, 'h:mm tt'))#" size="9" />';
+		return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(dateformat(value1, 'mm/dd/yyyy'))#" size="9" /> to <input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#_2" value="#htmleditformat(dateformat(value2, 'mm/dd/yyyy'))#" size="9" /> '&js; 
 	}
 	</cfscript>
 </cffunction>
@@ -88,7 +92,7 @@
 	<cfscript>
 	ts={
 		type="=",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
@@ -118,13 +122,13 @@
 	if(searchType EQ 1){
 		// start date
 		request.zos.siteOptionSearchDateRangeSortEnabled=true;
-		return arguments.setTableName&".site_x_option_group_set_start_date";
+		return arguments.setTableName&".#variables.siteType#_x_option_group_set_start_date";
 	}else if(searchType EQ 2){
 		// end date
 		request.zos.siteOptionSearchDateRangeSortEnabled=true;
-		return arguments.setTableName&".site_x_option_group_set_end_date";
+		return arguments.setTableName&".#variables.siteType#_x_option_group_set_end_date";
 	}else{ 
-		return arguments.groupTableName&".site_x_option_group_date_value";
+		return arguments.groupTableName&".#variables.siteType#_x_option_group_date_value";
 	}
 	</cfscript>
 </cffunction>
@@ -168,14 +172,14 @@
 	<cfscript>
 	local.curTime="";
 	local.curDate="";
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date')){
-		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
-		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_date"]=local.tempDate;
-		local.tempTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_time'); 
-		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_time"]=local.tempTime;
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date')){
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date');
+		arguments.searchStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_date"]=local.tempDate;
+		local.tempTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time'); 
+		arguments.searchStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_time"]=local.tempTime;
 	}else{
-		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id]=local.tempDate;
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+		arguments.searchStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=local.tempDate;
 		local.tempTime="";
 	}
 	arrDate=listToArray(local.tempDate);
@@ -204,8 +208,8 @@
 		}
 		var finalDate=0;
 		if(local.curDate EQ ""){
-			if(arguments.row.site_option_admin_search_default NEQ "" and isnumeric(arguments.row.site_option_admin_search_default)){
-				finalDate=dateadd("d", arguments.row.site_option_admin_search_default, now());
+			if(arguments.row["#variables.type#_option_admin_search_default"] NEQ "" and isnumeric(arguments.row["#variables.type#_option_admin_search_default"])){
+				finalDate=dateadd("d", arguments.row["#variables.type#_option_admin_search_default"], now());
 			}else{
 				finalDate="";	
 			}
@@ -233,20 +237,20 @@
 	var cfcatch=0;
 	var curTime="";
 	var curDate="";
-	var disableTimeField="site_x_option_group_disable_time";
-	if(arguments.row.site_x_option_group_id EQ ""){
-		disableTimeField="site_x_option_disable_time";
+	var disableTimeField="#variables.siteType#_x_option_group_disable_time";
+	if(arguments.row["#variables.siteType#_x_option_group_id"] EQ ""){
+		disableTimeField="#variables.siteType#_x_option_disable_time";
 	}
 	try{
-		if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date') NEQ ""){
-			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id&'_date'], "mm/dd/yyyy");
+		if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date') NEQ ""){
+			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date'], "mm/dd/yyyy");
 			if(application.zcore.functions.zso(arguments.dataStruct, 'disableTimeField', true, 0) NEQ 1){
-				curTime=timeformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id&'_time'], "h:mm tt");
+				curTime=timeformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time'], "h:mm tt");
 			}
-		}else if(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id] NEQ ""){
-			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id], "mm/dd/yyyy");
+		}else if(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]] NEQ ""){
+			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]], "mm/dd/yyyy");
 			if(application.zcore.functions.zso(arguments.dataStruct, 'disableTimeField', true, 0) NEQ 1){
-				curTime=timeformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id], "h:mm tt");
+				curTime=timeformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]], "h:mm tt");
 			}
 		} 
 	}catch(Any excpt){
@@ -255,19 +259,19 @@
 	}
 	if(structkeyexists(arguments.optionStruct, 'datetime_value_type')){
 		if(arguments.optionStruct.datetime_value_type NEQ 0){
-			return { label: true, hidden: true, value:'<input type="hidden" name="#arguments.prefixString##arguments.row.site_option_id#" id="#arguments.prefixString##arguments.row.site_option_id#" value="1" />'};
+			return { label: true, hidden: true, value:'<input type="hidden" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="1" />'};
 		}
 	}
 	application.zcore.functions.zRequireTimePicker();
 	application.zcore.skin.addDeferredScript('
-	$( "###arguments.prefixString&arguments.row.site_option_id#_date" ).datepicker();
-	$("###arguments.prefixString&arguments.row.site_option_id#_time").timePicker({
+	$( "###arguments.prefixString&arguments.row["#variables.type#_option_id"]#_date" ).datepicker();
+	$("###arguments.prefixString&arguments.row["#variables.type#_option_id"]#_time").timePicker({
 		show24Hours: false,
 		step: 15
 	});
 	');
-	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString&arguments.row.site_option_id#_date" id="#arguments.prefixString&arguments.row.site_option_id#_date" value="#curDate#" size="9" />
-	 Time: <input type="text" name="#arguments.prefixString&arguments.row.site_option_id#_time" id="#arguments.prefixString&arguments.row.site_option_id#_time" value="#htmleditformat(curTime)#" size="10" /><br />(Time is optional)'};
+	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_date" id="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_date" value="#curDate#" size="9" />
+	 Time: <input type="text" name="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_time" id="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_time" value="#htmleditformat(curTime)#" size="10" /><br />(Time is optional)'};
 	</cfscript>
 </cffunction>
 
@@ -303,16 +307,16 @@
 	var nvdate=0;
 	var excpt=0;
 	var cfcatch=0;
-	var curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
-	var curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_time');
+	var curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date');
+	var curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time');
 	if(structkeyexists(arguments.optionStruct, 'datetime_value_type')){
-		if(structkeyexists(arguments.row, 'site_x_option_group_set_created_datetime')){
+		if(structkeyexists(arguments.row, '#variables.siteType#_x_option_group_set_created_datetime')){
 			if(arguments.optionStruct.datetime_value_type EQ 1){
-				curDate=arguments.row.site_x_option_group_set_created_datetime;
-				curTime=arguments.row.site_x_option_group_set_created_datetime;
+				curDate=arguments.row["#variables.siteType#_x_option_group_set_created_datetime"];
+				curTime=arguments.row["#variables.siteType#_x_option_group_set_created_datetime"];
 			}else if(arguments.optionStruct.datetime_value_type EQ 2){
-				curDate=arguments.row.site_x_option_group_set_updated_datetime;
-				curTime=arguments.row.site_x_option_group_set_updated_datetime;
+				curDate=arguments.row["#variables.siteType#_x_option_group_set_updated_datetime"];
+				curTime=arguments.row["#variables.siteType#_x_option_group_set_updated_datetime"];
 			}
 		}else{
 			if(arguments.optionStruct.datetime_value_type EQ 1 or arguments.optionStruct.datetime_value_type EQ 2){
@@ -322,19 +326,19 @@
 		}
 	}
 	if(curDate EQ ""){
-		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 		curTime=curDate;
 		if(curDate EQ ""){
 			return { success: true, value: "", dateValue: "" };
 		}
 	}
 
-	arguments.dataStruct.site_x_option_group_disable_time=0;
+	arguments.dataStruct["#variables.siteType#_x_option_group_disable_time"]=0;
 	if(curTime EQ ""){
-		arguments.dataStruct.site_x_option_group_disable_time=1;
+		arguments.dataStruct["#variables.siteType#_x_option_group_disable_time"]=1;
 	}
 	try{
-		if(arguments.dataStruct.site_x_option_group_disable_time EQ 1){
+		if(arguments.dataStruct["#variables.siteType#_x_option_group_disable_time"] EQ 1){
 			nvdate=dateformat(curDate, "yyyy-mm-dd")&" 00:00:00";
 			nv=dateformat(curDate, "m/d/yyyy");
 		}else{
@@ -344,15 +348,15 @@
 		if(structkeyexists(arguments.optionStruct, 'datetime_range_search_type')){
 			if(arguments.optionStruct.datetime_range_search_type EQ 1){
 				// start date
-				arguments.dataStruct.site_x_option_group_set_start_date=dateformat(curDate, "yyyy-mm-dd");
+				arguments.dataStruct["#variables.siteType#_x_option_group_set_start_date"]=dateformat(curDate, "yyyy-mm-dd");
 			}else if(arguments.optionStruct.datetime_range_search_type EQ 2){
 				// end date
-				arguments.dataStruct.site_x_option_group_set_end_date=dateformat(curDate, "yyyy-mm-dd");
+				arguments.dataStruct["#variables.siteType#_x_option_group_set_end_date"]=dateformat(curDate, "yyyy-mm-dd");
 			}
 		}
 	}catch(Any excpt){
-		application.zcore.status.setStatus(request.zsid, arguments.row.site_option_name&" must be a valid date.", form, true);
-		return { success: false, message: arguments.row.site_option_name&" must be a valid date.", value: "", dateValue: "" };
+		application.zcore.status.setStatus(request.zsid, arguments.row["#variables.type#_option_name"]&" must be a valid date.", form, true);
+		return { success: false, message: arguments.row["#variables.type#_option_name"]&" must be a valid date.", value: "", dateValue: "" };
 	}
 	return { success: true, value: nv, dateValue: nvdate };
 	</cfscript>
@@ -363,13 +367,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
+	<cfscript> 
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -380,9 +378,9 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date')){
-		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
-		curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_time');
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date')){
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date');
+		curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time');
 		if(isDate(curDate)){
 			if(isDate(curTime)){
 				curTime=dateformat(curTime, "HH:mm:ss");
@@ -398,7 +396,7 @@
 			return "";
 		}
 	}else{
-		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 		if(isDate(curDate)){
 			curTime=dateformat(curDate, "HH:mm:ss");
 			if(curTime EQ "00:00:00"){
@@ -435,7 +433,7 @@
 		datetime_range_search_type:application.zcore.functions.zso(arguments.dataStruct, 'datetime_range_search_type'),
 		datetime_value_type:application.zcore.functions.zso(arguments.dataStruct, 'datetime_value_type')
 	}
-	arguments.dataStruct.site_option_type_json=serializeJson(ts);
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -464,7 +462,7 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="4" onClick="setType(4);" <cfif value EQ 4>checked="checked"</cfif>/>
+	<input type="radio" name="#variables.type#_option_type_id" value="4" onClick="setType(4);" <cfif value EQ 4>checked="checked"</cfif>/>
 	Date/Time<br />
 	<div id="typeOptions4" style="display:none;padding-left:30px;">
 		Enable Date Range Search:  

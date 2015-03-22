@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -23,6 +32,7 @@
 	return "";
 	</cfscript>
 </cffunction>
+
 
 <cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
@@ -69,11 +79,11 @@
 	<cfscript>
 	ts={
 		type="LIKE",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&'%');
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -90,7 +100,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"%'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
 	</cfscript>
@@ -103,12 +113,25 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
 	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
+		return { success:false, message: arguments.row["#variables.type#_option_display_name"]&" must ..." };
 	}
 	*/
 	return {success:true};
+	</cfscript>
+</cffunction>
+
+<cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return false;
+	</cfscript>
+</cffunction>
+
+<cffunction name="onDelete" localmode="modern" access="public" output="no">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
 	</cfscript>
 </cffunction>
 
@@ -120,7 +143,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfscript>
-	return { label: false, hidden: false, value:arguments.optionStruct.htmlcontent};
+	return { label: false, hidden: true, value:'<input type="hidden" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row["#variables.type#_option_id"]#'))#" />'};
 	</cfscript>
 </cffunction>
 
@@ -129,7 +152,11 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
-	return '';
+	if(structkeyexists(arguments.dataStruct, arguments.value)){
+		return arguments.dataStruct[arguments.value];
+	}else{
+		return arguments.value; 
+	}
 	</cfscript>
 </cffunction>
 
@@ -148,7 +175,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>
@@ -158,13 +185,13 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	</cfscript>
 </cffunction>
 
 <cffunction name="getTypeName" localmode="modern" access="public">
 	<cfscript>
-	return 'HTML Separator';
+	return 'Hidden Field';
 	</cfscript>
 </cffunction>
 
@@ -180,27 +207,11 @@
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
-	ts={
-		htmlcontent:application.zcore.functions.zso(arguments.dataStruct, 'htmlcontent')	
-	};
-	arguments.dataStruct.site_option_type_json=serializeJson(ts);
+	arguments.dataStruct["#variables.type#_option_type_json"]="{}";
 	return { success:true};
 	</cfscript>
 </cffunction>
-
-<cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
-	<cfscript>
-	return false;
-	</cfscript>
-</cffunction>
 		
-<cffunction name="onDelete" localmode="modern" access="public" output="no">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="optionStruct" type="struct" required="yes">
-	<cfscript>
-	</cfscript>
-</cffunction>
-
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">
@@ -212,18 +223,9 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="11" onClick="setType(11);" <cfif value EQ 11>checked="checked"</cfif>/>
-	HTML Separator<br />
-	<div id="typeOptions11" style="display:none;padding-left:30px;"> HTML:
-		<cfscript>
-		var htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-		htmlEditor.instanceName	= "htmlcontent";
-		htmlEditor.value			= application.zcore.functions.zso(arguments.optionStruct, 'htmlcontent');
-		htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
-		htmlEditor.height		= 250;
-		htmlEditor.create();
-		</cfscript>
-	</div>	
+	<input type="radio" name="#variables.type#_option_type_id" value="12" onClick="setType(12);" <cfif value EQ 12>checked="checked"</cfif>/>
+	Hidden Field<br />
+	<div id="typeOptions12" style="display:none;padding-left:30px;"></div>	
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 

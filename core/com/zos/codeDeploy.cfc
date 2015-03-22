@@ -75,32 +75,7 @@
 		request.zos.functions=functions;
 		application.zcore.functions=functions; 
 		
-		siteOptionTypeStruct={
-			"0": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textSiteOptionType"),
-			"1": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textareaSiteOptionType"),
-			"2": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.htmlEditorSiteOptionType"),
-			"3": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.imageSiteOptionType"),
-			"4": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.dateTimeSiteOptionType"),
-			"5": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.dateSiteOptionType"),
-			"6": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.timeSiteOptionType"),
-			"7": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.selectMenuSiteOptionType"),
-			"8": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.checkboxSiteOptionType"),
-			"9": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.fileSiteOptionType"),
-			"10": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.emailSiteOptionType"),
-			"11": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.htmlSeparatorSiteOptionType"),
-			"12": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.hiddenSiteOptionType"),
-			"13": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.mapPickerSiteOptionType"),
-			"14": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.radioSiteOptionType"),
-			"15": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.urlSiteOptionType"),
-			"16": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.userPickerSiteOptionType"),
-			"17": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.numberSiteOptionType"),
-			"18": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.colorSiteOptionType"),
-			"19": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.stateSiteOptionType"),
-			"20": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.countrySiteOptionType"),
-			"21": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.listingSavedSearchSiteOptionType")
-		};
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy2'});
-		application.zcore.siteOptionTypeStruct=siteOptionTypeStruct;
 		
 		componentObjectCache=structnew();
 		componentObjectCache.context=CreateObject("component","zcorerootmapping.com.zos.context");
@@ -121,6 +96,10 @@
 		componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db");
 		componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 		componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
+
+		siteOptionTypeStruct=componentObjectCache.siteOptionCom.getOptionTypes();
+		application.zcore.siteOptionTypeStruct=siteOptionTypeStruct;
+
 		if(request.zos.isdeveloper and structkeyexists(request.zsession, 'verifyQueries') and request.zsession.verifyQueries){
 			local.verifyQueriesEnabled=true;
 		}else{

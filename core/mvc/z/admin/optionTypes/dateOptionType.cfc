@@ -1,5 +1,14 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="onBeforeImport" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
@@ -12,7 +21,7 @@
 	<cfargument name="fieldIndex" type="string" required="yes">
 	<cfargument name="sortDirection" type="string" required="yes">
 	<cfscript>
-	return "s"&arguments.fieldIndex&".site_x_option_group_date_value "&arguments.sortDirection;
+	return "s"&arguments.fieldIndex&".#variables.siteType#_x_option_group_date_value "&arguments.sortDirection;
 	</cfscript>
 </cffunction>
 
@@ -25,13 +34,13 @@
 	if(searchType EQ 1){
 		// start date
 		request.zos.siteOptionSearchDateRangeSortEnabled=true;
-		return arguments.setTableName&".site_x_option_group_set_start_date";
+		return arguments.setTableName&".#variables.siteType#_x_option_group_set_start_date";
 	}else if(searchType EQ 2){
 		// end date
 		request.zos.siteOptionSearchDateRangeSortEnabled=true;
-		return arguments.setTableName&".site_x_option_group_set_end_date";
+		return arguments.setTableName&".#variables.siteType#_x_option_group_set_end_date";
 	}else{
-		return arguments.groupTableName&".site_x_option_group_value";
+		return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	}
 	</cfscript>
 </cffunction>
@@ -58,7 +67,7 @@
 	<cfscript>
 	application.zcore.functions.zRequireJqueryUI();
 	savecontent variable="js"{
-		echo(' $( "###arguments.prefixString&arguments.row.site_option_id#" ).datepicker();');
+		echo(' $( "###arguments.prefixString&arguments.row["#variables.type#_option_id"]#" ).datepicker();');
 	}
 	if(structkeyexists(form, 'x_ajax_id')){
 		js='<script type="text/javascript">/* <![CDATA[ */'&js&'/* ]]> */</script>';
@@ -66,7 +75,7 @@
 		application.zcore.skin.addDeferredScript(js);
 		js='';
 	}
-	return '<input type="text" name="#arguments.prefixString##arguments.row.site_option_id#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row.site_option_id#" value="#htmleditformat(dateformat(arguments.value, 'mm/dd/yyyy'))#" size="9" />'&js;
+	return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onchange="#arguments.onChangeJavascript#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(dateformat(arguments.value, 'mm/dd/yyyy'))#" size="9" />'&js;
 	</cfscript>
 </cffunction>
 
@@ -79,12 +88,12 @@
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfscript>
 	local.curDate="";
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date')){
-		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
-		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id&"_date"]=local.tempDate;
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date')){
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date');
+		arguments.searchStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_date"]=local.tempDate;
 	}else{
-		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-		arguments.searchStruct[arguments.prefixString&arguments.row.site_option_id]=local.tempDate;
+		local.tempDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+		arguments.searchStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=local.tempDate;
 	}
 	if(local.tempDate NEQ "" and isdate(local.tempDate)){
 		try{
@@ -95,8 +104,8 @@
 	}
 	var finalDate=0;
 	if(local.curDate EQ ""){
-		if(arguments.row.site_option_admin_search_default NEQ "" and isnumeric(arguments.row.site_option_admin_search_default)){
-			finalDate=dateadd("d", arguments.row.site_option_admin_search_default, now());
+		if(arguments.row["#variables.type#_option_admin_search_default"] NEQ "" and isnumeric(arguments.row["#variables.type#_option_admin_search_default"])){
+			finalDate=dateadd("d", arguments.row["#variables.type#_option_admin_search_default"], now());
 		}else{
 			finalDate="";	
 		}
@@ -118,7 +127,7 @@
 	<cfscript>
 	ts={
 		type="=",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
@@ -159,7 +168,7 @@
 			return arguments.databaseDateField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(dateformat(arguments.value, 'yyyy-mm-dd')&' 00:00:00')&"'");
 		}
 	}
-	return ' 1 = 1 ';
+	return db.trustedSQL(' 1 = 1 ');
 	</cfscript>
 </cffunction>
 
@@ -174,17 +183,17 @@
 	var excpt=0;
 	var curDate="";
 	try{
-		if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date') NEQ ""){
-			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id&'_date'], "mm/dd/yyyy");
-		}else if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id) NEQ ""){
-			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id], "mm/dd/yyyy");
+		if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date') NEQ ""){
+			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date'], "mm/dd/yyyy");
+		}else if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]) NEQ ""){
+			curDate=dateformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]], "mm/dd/yyyy");
 		} 
 	}catch(Any excpt){
 		curDate="";
 	}
 	application.zcore.functions.zRequireJqueryUI();
-	application.zcore.skin.addDeferredScript('$( "###arguments.prefixString##arguments.row.site_option_id#_date" ).datepicker();');
-	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString&arguments.row.site_option_id#_date" id="#arguments.prefixString&arguments.row.site_option_id#_date" value="#curDate#" size="9" />'};
+	application.zcore.skin.addDeferredScript('$( "###arguments.prefixString##arguments.row["#variables.type#_option_id"]#_date" ).datepicker();');
+	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_date" id="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_date" value="#curDate#" size="9" />'};
 	</cfscript>
 </cffunction>
 
@@ -218,9 +227,9 @@
 	<cfscript>	
 	var cfcatch=0;
 	var excpt=0; 
-	var curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
+	var curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date');
 	if(curDate EQ ""){
-		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 		if(curDate EQ ""){
 			return { success: true, value: "", dateValue: "" };
 		}
@@ -229,8 +238,8 @@
 		var nvdate=dateformat(curDate, "yyyy-mm-dd")&" 00:00:00";
 		var nv=dateformat(curDate, "m/d/yyyy");
 	}catch(Any excpt){
-		application.zcore.status.setStatus(request.zsid, arguments.row.site_option_name&" must be a valid date.", form, true);
-		return { success: false, message: arguments.row.site_option_name&" must be a valid date.", value: "", dateValue: "" };
+		application.zcore.status.setStatus(request.zsid, arguments.row["#variables.type#_option_name"]&" must be a valid date.", form, true);
+		return { success: false, message: arguments.row["#variables.type#_option_name"]&" must be a valid date.", value: "", dateValue: "" };
 	}
 	return { success: true, value: nv, dateValue: nvdate };
 	</cfscript>
@@ -241,13 +250,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
+	<cfscript> 
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -258,15 +261,15 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date')){
-		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_date');
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date')){
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_date');
 		if(isDate(curDate)){
 			return dateformat(curDate, "yyyy-mm-dd");
 		}else{
 			return "";
 		}
 	}else{
-		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 		if(isDate(curDate)){
 			return dateformat(curDate, "yyyy-mm-dd");
 		}else{
@@ -311,7 +314,7 @@
 	ts={
 		datetime_range_search_type:application.zcore.functions.zso(arguments.dataStruct, 'datetime_range_search_type')	
 	};
-	arguments.dataStruct.site_option_type_json=serializeJson(ts);
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -327,7 +330,7 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="5" onClick="setType(5);" <cfif value EQ 5>checked="checked"</cfif>/>
+	<input type="radio" name="#variables.type#_option_type_id" value="5" onClick="setType(5);" <cfif value EQ 5>checked="checked"</cfif>/>
 	Date<br />
 	<div id="typeOptions5" style="display:none;padding-left:30px;"> </div>	
 	</cfsavecontent>

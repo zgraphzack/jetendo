@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -44,7 +53,7 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfargument name="onChangeJavascript" type="string" required="yes">
 	<cfscript>
-	return application.zcore.functions.zCountrySelect(arguments.prefixString&arguments.row.site_option_id, arguments.value, '', arguments.onChangeJavascript);
+	return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.value)#" size="8" />';
 	</cfscript>
 </cffunction>
 
@@ -56,7 +65,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	return arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]];
 	</cfscript>
 </cffunction>
 
@@ -68,12 +77,12 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
 	ts={
-		type="=",
-		field: arguments.row.site_option_name,
+		type="LIKE",
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]);
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -90,7 +99,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
 	</cfscript>
@@ -102,12 +111,10 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+	if(nv NEQ "" and not isNumeric(nv)){
+		return { success:false, message: arguments.row["#variables.type#_option_display_name"]&" must be a number with no punctuation." };
 	}
-	*/
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -132,7 +139,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfscript>
-	return { label: true, hidden: false, value:application.zcore.functions.zCountrySelect(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id))};  
+	return { label: true, hidden: false, value:'<input type="text" onkeyup="if(this.value != '''' && isNaN(this.value)){ this.value=''''; alert(''You must enter a number with no punctuation.''); }" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" style="width:90%;" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row["#variables.type#_option_id"]#'))#" />'};  
 	</cfscript>
 </cffunction>
 
@@ -141,11 +148,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(arguments.dataStruct, arguments.value)){
-		return arguments.dataStruct[arguments.value];
-	}else{
-		return arguments.value; 
-	}
+	return arguments.value; 
 	</cfscript>
 </cffunction>
 
@@ -164,7 +167,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>
@@ -174,13 +177,13 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	</cfscript>
 </cffunction>
 
 <cffunction name="getTypeName" localmode="modern" access="public">
 	<cfscript>
-	return 'Country';
+	return 'Number';
 	</cfscript>
 </cffunction>
 
@@ -196,7 +199,7 @@
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
-	arguments.dataStruct.site_option_type_json="{}";
+	arguments.dataStruct["#variables.type#_option_type_json"]="{}";
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -212,8 +215,8 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="20" onClick="setType(20);" <cfif value EQ "20">checked="checked"</cfif>/>
-	Country<br />
+	<input type="radio" name="#variables.type#_option_type_id" value="17" onClick="setType(17);" <cfif value EQ "17">checked="checked"</cfif>/>
+	Number<br />
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 

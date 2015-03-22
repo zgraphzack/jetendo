@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -82,11 +91,11 @@
 	<cfscript>
 	ts={
 		type="LIKE",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&'%');
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -104,7 +113,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"%'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
 	</cfscript>
@@ -118,10 +127,10 @@
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfsavecontent variable="local.output"> 
 		<!--- map picker needs to have ajax javascript in the getFormField that runs on the live data fields instead of requiring you to click on verify link. --->
-		<input type="text" name="#arguments.prefixString##arguments.row.site_option_id#" id="latlongSiteOption#arguments.row.site_option_id#" value="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])#" /> <a href="##" onclick="var address=mapPickerGetAddress#arguments.row.site_option_id#(); zShowModalStandard('/z/misc/map/modalMarkerPicker/mapPickerCallback#arguments.row.site_option_id#?address='+encodeURIComponent(address), zWindowSize.width-100, zWindowSize.height-100);return false;" rel="nofollow">Verify/Set Map Location</a>
+		<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" id="latlongSiteOption#arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])#" /> <a href="##" onclick="var address=mapPickerGetAddress#arguments.row["#variables.type#_option_id"]#(); zShowModalStandard('/z/misc/map/modalMarkerPicker/mapPickerCallback#arguments.row["#variables.type#_option_id"]#?address='+encodeURIComponent(address), zWindowSize.width-100, zWindowSize.height-100);return false;" rel="nofollow">Verify/Set Map Location</a>
 		<script type="text/javascript">
 		/* <![CDATA[ */
-		function mapPickerGetAddress#arguments.row.site_option_id#(){
+		function mapPickerGetAddress#arguments.row["#variables.type#_option_id"]#(){
 			var address=document.getElementById("newvalue#arguments.optionStruct.addressfield#");
 			var city=document.getElementById("newvalue#arguments.optionStruct.cityfield#");
 			var state=document.getElementById("newvalue#arguments.optionStruct.statefield#");
@@ -156,10 +165,10 @@
 	</cfsavecontent>
 	<cfscript>
 	application.zcore.skin.addDeferredScript('
-		function mapPickerCallback#arguments.row.site_option_id#(latitude, longitude){ 
-			$("##latlongSiteOption#arguments.row.site_option_id#").val(latitude+","+longitude);
+		function mapPickerCallback#arguments.row["#variables.type#_option_id"]#(latitude, longitude){ 
+			$("##latlongSiteOption#arguments.row["#variables.type#_option_id"]#").val(latitude+","+longitude);
 		}
-		window.mapPickerCallback#arguments.row.site_option_id#=mapPickerCallback#arguments.row.site_option_id#;
+		window.mapPickerCallback#arguments.row["#variables.type#_option_id"]#=mapPickerCallback#arguments.row["#variables.type#_option_id"]#;
 	');
 	return { label: true, hidden: false, value: local.output};  
 	</cfscript> 
@@ -170,13 +179,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
+	<cfscript> 
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -210,7 +213,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>
@@ -220,7 +223,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	</cfscript>
 </cffunction>
 
@@ -249,7 +252,7 @@
 		zipfield:application.zcore.functions.zso(arguments.dataStruct, 'zipfield'),
 		countryfield:application.zcore.functions.zso(arguments.dataStruct, 'countryfield')
 	};
-	arguments.dataStruct.site_option_type_json=serializeJson(ts);
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -263,14 +266,14 @@
 	var db=request.zos.queryObject;
 	var output="";
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
-	db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
+	db.sql="select * from #db.table("#variables.type#_option", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
-	site_option_deleted = #db.param(0)# and
-	site_option_group_id = #db.param(arguments.dataStruct.site_option_group_id)# 	";
+	#variables.type#_option_deleted = #db.param(0)# and
+	#variables.type#_option_group_id = #db.param(arguments.dataStruct["#variables.type#_option_group_id"])# 	";
 	qGroup=db.execute("qGroup");
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="13" onClick="setType(13);" <cfif value EQ 13>checked="checked"</cfif>/>
+	<input type="radio" name="#variables.type#_option_type_id" value="13" onClick="setType(13);" <cfif value EQ 13>checked="checked"</cfif>/>
 	#this.getTypeName()#<br />
 	<div id="typeOptions13" style="display:none;padding-left:30px;"> 
 		<p>Map all the fields to enable auto-populating the map address lookup field.</p>
@@ -281,8 +284,8 @@
 		selectStruct = StructNew();
 		selectStruct.name = "addressfield";
 		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
+		selectStruct.queryLabelField = "#variables.type#_option_name";
+		selectStruct.queryValueField = "#variables.type#_option_id";
 		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'addressfield');
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript> </td></tr>
@@ -292,8 +295,8 @@
 		selectStruct = StructNew();
 		selectStruct.name = "cityfield";
 		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
+		selectStruct.queryLabelField = "#variables.type#_option_name";
+		selectStruct.queryValueField = "#variables.type#_option_id";
 		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'cityfield');
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript> </td></tr>
@@ -303,8 +306,8 @@
 		selectStruct = StructNew();
 		selectStruct.name = "statefield";
 		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
+		selectStruct.queryLabelField = "#variables.type#_option_name";
+		selectStruct.queryValueField = "#variables.type#_option_id";
 		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'statefield');
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript> </td></tr>
@@ -314,8 +317,8 @@
 		selectStruct = StructNew();
 		selectStruct.name = "zipfield";
 		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
+		selectStruct.queryLabelField = "#variables.type#_option_name";
+		selectStruct.queryValueField = "#variables.type#_option_id";
 		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'zipfield');
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript></td>
@@ -326,8 +329,8 @@
 		selectStruct = StructNew();
 		selectStruct.name = "countryfield";
 		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
+		selectStruct.queryLabelField = "#variables.type#_option_name";
+		selectStruct.queryValueField = "#variables.type#_option_id";
 		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'countryfield');
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript> </td></tr>

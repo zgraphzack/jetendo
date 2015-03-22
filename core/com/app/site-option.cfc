@@ -1,62 +1,37 @@
 <cfcomponent>
 <cfoutput> 
-<!--- 
-
-make system to associate custom fields to another feature (site option group code) - but make it able to appear within the regular form as ajax modal window when you click on "Edit Custom Fields".
-
-
-application.zcore.siteOptionCom.activateSiteOptionAppId(application.zcore.functions.zso(form, 'content_site_option_app_id'));
-
-blog is actually 3 or 4 different types - i don't want custom fields to be enabled for all of them always do i?
-
-
-
-how to attach search_option_group to content, blog, slideshow, menu, rental, etc?
-when a new record is made, the id must be created like site_option_app_id.  then i must delete inactive ones on a scheduled task.  this requires adding an "active" field to all of the site_option_app_id records 
-interface for associating a group with other app_id - yes / no for each app or perhaps a drop down with add button so that the group becomes visible on all the other feature and strictly HIDDEN from the main view.
-when deleting an app's data, it must call a function that deletes the #request.zos.queryObject.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group and site_option_app records plus the files associated.
-make it just as simple as the site-option functions when integrating with a new app.
-FUTURE: enable custom fields AND validation options for form elements as a new type in the #request.zos.queryObject.table("site_option", request.zos.zcoreDatasource)# site_option add/edit page.
-
-	
-	<tr>
-	<th style="width:1%; white-space:nowrap;" class="table-white">#application.zcore.functions.zOutputHelpToolTip("Photo Layout","member.content.edit content_site_option_app_layout")#</th>
-	<td colspan="2" class="table-white">
-<cfscript>
-	ts=structnew();
-	ts.name="content_site_option_app_layout";
-	ts.value=content_site_option_app_layout;
-	application.zcore.siteOptionCom.getLayoutTypeForm(ts);
-	</cfscript>
-	</td>
-	</tr>
-	
-	
-<cfscript>
-	// you must have a group by in your query or it may miss rows
-	ts=structnew();
-	ts.site_option_app_id_field="content.content_site_option_app_id";
-	ts.count =  1; // how many images to get
-	rs2=application.zcore.siteOptionCom.getImageSQL(ts);
-	
-
-	ts=structnew();
-	ts.site_option_app_id=content_site_option_app_id;
-	ts.output=false;
-	ts.query=qsite;
-	ts.row=currentrow;
-	ts.size="100x70";
-	ts.crop=1;
-	ts.count = 1; // how many images to get
-	//zdump(ts);
-	arrImages=application.zcore.siteOptionCom.displayImageFromSQL(ts);
-	contentphoto99=""; 
-	if(arraylen(arrImages) NEQ 0){
-		contentphoto99=(arrImages[1].link);
+<cffunction name="getOptionTypes" returntype="struct" localmode="modern" access="public">
+	<cfscript>
+	ts={
+		"0": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.textOptionType"),
+		"1": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.textareaOptionType"),
+		"2": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.htmlEditorOptionType"),
+		"3": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.imageOptionType"),
+		"4": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.dateTimeOptionType"),
+		"5": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.dateOptionType"),
+		"6": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.timeOptionType"),
+		"7": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.selectMenuOptionType"),
+		"8": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.checkboxOptionType"),
+		"9": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.fileOptionType"),
+		"10": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.emailOptionType"),
+		"11": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.htmlSeparatorOptionType"),
+		"12": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.hiddenOptionType"),
+		"13": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.mapPickerOptionType"),
+		"14": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.radioOptionType"),
+		"15": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.urlOptionType"),
+		"16": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.userPickerOptionType"),
+		"17": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.numberOptionType"),
+		"18": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.colorOptionType"),
+		"19": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.stateOptionType"),
+		"20": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.countryOptionType"),
+		"21": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.listingSavedSearchOptionType")
+	};
+	for(i in ts){
+		ts[i].init("site", "site");
 	}
+	return ts;
 	</cfscript>
-
- --->
+</cffunction>
  
 <cffunction name="processSearchArraySQL" access="private" output="no" returntype="string" localmode="modern">
 	<cfargument name="arrSearch" type="array" required="yes"> 

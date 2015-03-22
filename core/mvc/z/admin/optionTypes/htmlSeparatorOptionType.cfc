@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -20,7 +29,7 @@
 	<cfargument name="fieldIndex" type="string" required="yes">
 	<cfargument name="sortDirection" type="string" required="yes">
 	<cfscript>
-	return "sVal"&arguments.fieldIndex&" "&arguments.sortDirection;
+	return "";
 	</cfscript>
 </cffunction>
 
@@ -56,7 +65,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	return '';
 	</cfscript>
 </cffunction>
 
@@ -68,12 +77,12 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
 	ts={
-		type="=",
-		field: arguments.row.site_option_name,
+		type="LIKE",
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]);
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -90,7 +99,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"%'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
 	</cfscript>
@@ -101,29 +110,11 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
+	<cfscript> 
 	return {success:true};
 	</cfscript>
 </cffunction>
 
-<cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
-	<cfscript>
-	return false;
-	</cfscript>
-</cffunction>
-
-<cffunction name="onDelete" localmode="modern" access="public" output="no">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="optionStruct" type="struct" required="yes">
-	<cfscript>
-	</cfscript>
-</cffunction>
 
 <cffunction name="getFormField" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
@@ -132,8 +123,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfscript>
-	application.zcore.functions.zIncludeJsColor();
-	return { label: true, hidden: false, value:'##<input type="text" class="zColorInput" name="#arguments.prefixString##arguments.row.site_option_id#" id="#arguments.prefixString##arguments.row.site_option_id#" onkeyup="this.value.replace(''##'', '''');" style="width:90%;" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row.site_option_id#'))#" />'};  
+	return { label: false, hidden: false, value:arguments.optionStruct.htmlcontent};
 	</cfscript>
 </cffunction>
 
@@ -142,7 +132,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
-		return '<div style="width:25px; height:25px; background-color:##'&arguments.value&'; " title="##'&arguments.value&'"></div>';
+	return '';
 	</cfscript>
 </cffunction>
 
@@ -161,10 +151,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	nv="";
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id)){
-		nv=arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
-	}
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>
@@ -174,17 +161,13 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	nv="";
-	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id)){
-		nv=arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
-	}
-	return nv;
+	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	</cfscript>
 </cffunction>
 
 <cffunction name="getTypeName" localmode="modern" access="public">
 	<cfscript>
-	return 'Color Picker';
+	return 'HTML Separator';
 	</cfscript>
 </cffunction>
 
@@ -200,11 +183,27 @@
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
-	arguments.dataStruct.site_option_type_json="{}";
+	ts={
+		htmlcontent:application.zcore.functions.zso(arguments.dataStruct, 'htmlcontent')	
+	};
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
+
+<cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
+	<cfscript>
+	return false;
+	</cfscript>
+</cffunction>
 		
+<cffunction name="onDelete" localmode="modern" access="public" output="no">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	</cfscript>
+</cffunction>
+
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">
@@ -213,14 +212,21 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var output="";
-	value="";
-	if(structkeyexists(arguments.dataStruct, arguments.fieldName)){
-		value=arguments.dataStruct[arguments.fieldName];
-	}
+	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="18" onClick="setType(18);" <cfif value EQ "18">checked="checked"</cfif>/>
-	Color Picker<br />
+	<input type="radio" name="#variables.type#_option_type_id" value="11" onClick="setType(11);" <cfif value EQ 11>checked="checked"</cfif>/>
+	HTML Separator<br />
+	<div id="typeOptions11" style="display:none;padding-left:30px;"> HTML:
+		<cfscript>
+		var htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+		htmlEditor.instanceName	= "htmlcontent";
+		htmlEditor.value			= application.zcore.functions.zso(arguments.optionStruct, 'htmlcontent');
+		htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
+		htmlEditor.height		= 250;
+		htmlEditor.create();
+		</cfscript>
+	</div>	
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 

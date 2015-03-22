@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -69,11 +78,11 @@
 	<cfscript>
 	ts={
 		type="LIKE",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&'%');
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -91,7 +100,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"%'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
 	</cfscript>
@@ -103,12 +112,6 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -124,13 +127,13 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
 	uploadPath=getUploadPath(arguments.optionStruct);
-	if(structkeyexists(arguments.row, 'site_x_option_group_value')){
-		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_group_value)){
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_group_value);
+	if(structkeyexists(arguments.row, '#variables.siteType#_x_option_group_value')){
+		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row["#variables.siteType#_x_option_group_value"])){
+			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row["#variables.siteType#_x_option_group_value"]);
 		}
 	}else{
-		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_value)){
-			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row.site_x_option_value);
+		if(fileexists(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row["#variables.siteType#_x_option_value"])){
+			application.zcore.functions.zdeletefile(application.zcore.functions.zvar('privatehomedir',arguments.row.site_id)&uploadPath&'/site-options/'&arguments.row["#variables.siteType#_x_option_value"]);
 		}
 	}
 	</cfscript>
@@ -145,25 +148,25 @@
 	<cfsavecontent variable="local.output">
 		<cfscript>
 		var allowDelete=true;
-		if(arguments.row.site_option_required EQ 1){
+		if(arguments.row["#variables.type#_option_required"] EQ 1){
 			allowDelete=false;
 		}
-		if(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id] NEQ ""){
+		if(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]] NEQ ""){
 			uploadPath=getUploadPath(arguments.optionStruct);
 			if(uploadPath EQ "zuploadsecure"){
 				if(application.zcore.user.checkGroupAccess("administrator")){
-					echo('<p><a href="#request.zos.currentHostName#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&'" target="_blank">Download File</a></p>');
+					echo('<p><a href="#request.zos.currentHostName#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&'" target="_blank">Download File</a></p>');
 				}else{
-					echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&' | You must be an administrator to download the file.</p>');
+					echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&' | You must be an administrator to download the file.</p>');
 				}
 			}else{
-				writeoutput('<p><a href="/'&uploadPath&'/site-options/#arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]#" 
+				writeoutput('<p><a href="/'&uploadPath&'/site-options/#arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]#" 
 				target="_blank" 
-				title="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])#">Download File</a></p>');
+				title="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])#">Download File</a></p>');
 			}
 		}
 		var ts3=StructNew();
-		ts3.name=arguments.prefixString&arguments.row.site_option_id;
+		ts3.name=arguments.prefixString&arguments.row["#variables.type#_option_id"];
 		ts3.allowDelete=allowDelete;
 		application.zcore.functions.zInput_file(ts3);
 		</cfscript>
@@ -219,27 +222,27 @@
 	<cfscript>	
 	var nv=0;
 	uploadPath=getUploadPath(arguments.optionStruct);
-	arguments.dataStruct.site_x_option_group_id=arguments.row.site_x_option_group_id;
-	nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	arguments.dataStruct["#variables.siteType#_x_option_group_id"]=arguments.row["#variables.siteType#_x_option_group_id"];
+	nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	var tempDir=getTempDirectory();
 	filename="";
-	if(structkeyexists(arguments.row, 'site_x_option_group_id')){
-		form.site_x_option_group_id=arguments.row.site_x_option_group_id;
-		fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', 'site_x_option_group', 'site_x_option_group_id', arguments.prefixString&arguments.row.site_option_id&'_delete', request.zos.zcoredatasource, 'site_x_option_group_value');	
+	if(structkeyexists(arguments.row, '#variables.siteType#_x_option_group_id')){
+		form["#variables.siteType#_x_option_group_id"]=arguments.row["#variables.siteType#_x_option_group_id"];
+		fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row["#variables.type#_option_id"], application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', '#variables.siteType#_x_option_group', '#variables.siteType#_x_option_group_id', arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_delete', request.zos.zcoredatasource, '#variables.siteType#_x_option_group_value');	
 	}else{
-		form.site_x_option_id=arguments.row.site_x_option_id;
-		fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row.site_option_id, application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', 'site_x_option', 'site_x_option_id', arguments.prefixString&arguments.row.site_option_id&'_delete', request.zos.zcoredatasource, 'site_x_option_value');	
+		form["#variables.siteType#_x_option_id"]=arguments.row["#variables.siteType#_x_option_id"];
+		fileName=application.zcore.functions.zUploadFileToDb(arguments.prefixString&arguments.row["#variables.type#_option_id"], application.zcore.functions.zvar('privatehomedir',request.zos.globals.id)&uploadPath&'/site-options/', '#variables.siteType#_x_option', '#variables.siteType#_x_option_id', arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_delete', request.zos.zcoredatasource, '#variables.siteType#_x_option_value');	
 	}
-	if(not structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id&'_delete') and (isNull(fileName) or fileName EQ "")){
-		if(structkeyexists(arguments.row, 'site_x_option_group_id')){
-			arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]=arguments.row.site_x_option_group_value;
-			nv=arguments.row.site_x_option_group_value;
+	if(not structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_delete') and (isNull(fileName) or fileName EQ "")){
+		if(structkeyexists(arguments.row, '#variables.siteType#_x_option_group_id')){
+			arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=arguments.row["#variables.siteType#_x_option_group_value"];
+			nv=arguments.row["#variables.siteType#_x_option_group_value"];
 		}else{
-			arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]=arguments.row.site_x_option_value;
-			nv=arguments.row.site_x_option_value;
+			arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=arguments.row["#variables.siteType#_x_option_value"];
+			nv=arguments.row["#variables.siteType#_x_option_value"];
 		}
 	}else{
-		arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]=fileName;
+		arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=fileName;
 		nv=fileName;
 	}
 	return { success: true, value: nv, dateValue: "" };
@@ -251,12 +254,12 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	if(nv EQ ""){
-		if(structkeyexists(arguments.row,'site_x_option_group_value')){
-			return arguments.row.site_x_option_group_value;
+		if(structkeyexists(arguments.row,'#variables.siteType#_x_option_group_value')){
+			return arguments.row["#variables.siteType#_x_option_group_value"];
 		}else{
-			return arguments.row.site_x_option_value;
+			return arguments.row["#variables.siteType#_x_option_value"];
 		}
 	}
 	return nv;
@@ -284,7 +287,7 @@
 	ts={
 		file_securepath:form.file_securepath
 	};
-	arguments.dataStruct.site_option_type_json=serializeJson(ts);
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -300,7 +303,7 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="9" onClick="setType(9);" <cfif value EQ 9>checked="checked"</cfif>/>
+	<input type="radio" name="#variables.type#_option_type_id" value="9" onClick="setType(9);" <cfif value EQ 9>checked="checked"</cfif>/>
 	File<br />
 	<div id="typeOptions9" style="display:none;padding-left:30px;">
 

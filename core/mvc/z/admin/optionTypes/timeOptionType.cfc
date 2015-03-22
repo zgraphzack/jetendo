@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -20,7 +29,7 @@
 	<cfargument name="fieldIndex" type="string" required="yes">
 	<cfargument name="sortDirection" type="string" required="yes">
 	<cfscript>
-	return "sVal"&arguments.fieldIndex&" "&arguments.sortDirection;
+	return "s"&arguments.fieldIndex&".#variables.siteType#_x_option_group_date_value "&arguments.sortDirection;
 	</cfscript>
 </cffunction>
 
@@ -32,7 +41,7 @@
 
 <cffunction name="isSearchable" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
-	return true;
+	return false;
 	</cfscript>
 </cffunction>
 
@@ -44,9 +53,9 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfargument name="onChangeJavascript" type="string" required="yes">
 	<cfscript>
-	return '<input type="text" name="#arguments.prefixString##arguments.row.site_option_id#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row.site_option_id#" value="#htmleditformat(arguments.value)#" size="8" />';
+	return '';
 	</cfscript>
-</cffunction>
+</cffunction> 
 
 
 <cffunction name="getSearchValue" localmode="modern" access="public">
@@ -56,7 +65,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	return '';
 	</cfscript>
 </cffunction>
 
@@ -69,11 +78,11 @@
 	<cfscript>
 	ts={
 		type="LIKE",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&'%');
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -90,9 +99,85 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"%'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
+	</cfscript>
+</cffunction>
+
+<cffunction name="getFormField" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="prefixString" type="string" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes"> 
+	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfscript>
+	var cfcatch=0;
+	var excpt=0;
+	try{
+	var curTime=""; 
+	if(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time') NEQ ""){ 
+		curTime=timeformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time'], "h:mm tt"); 
+	}else{
+		curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+	}
+	}catch(Any excpt){
+		curTime="";
+	}
+	application.zcore.functions.zRequireTimePicker();
+	application.zcore.skin.addDeferredScript('
+	$("###arguments.prefixString&arguments.row["#variables.type#_option_id"]#_time").timePicker({
+		show24Hours: false,
+		step: 15
+	});
+	');
+	
+	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_time" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#_time" value="#htmleditformat(curTime)#" size="10" />'};
+	</cfscript>
+</cffunction>
+
+<cffunction name="getListValue" localmode="modern" access="public">
+	<cfargument name="dataStruct" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="value" type="string" required="yes">
+	<cfscript>
+	if(structkeyexists(arguments.dataStruct, arguments.value)){
+		return arguments.dataStruct[arguments.value];
+	}else{
+		return arguments.value; 
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="onBeforeListView" localmode="modern" access="public" returntype="struct">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes">
+	<cfscript>
+	return {};
+	</cfscript>
+</cffunction>
+
+<cffunction name="onBeforeUpdate" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="prefixString" type="string" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes"> 
+	<cfscript>	 
+	var excpt=0;
+	var cfcatch=0;
+	var curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time');
+	if(curTime EQ ""){
+		var curTime=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+	}
+	try{
+		var nv=timeformat(curTime, "h:mm tt");
+		var nvdate='1999-01-01 '&timeformat(curTime, "HH:mm:ss"); 
+	}catch(Any excpt){
+		application.zcore.status.setStatus(request.zsid, arguments.row["#variables.type#_option_name"]&" must be a valid time.", form, true);
+		return { success: false, message:arguments.row["#variables.type#_option_name"]&" must be a valid time.", value: "", dateValue: "" };
+	}
+	return { success:true, value: nv, dateValue: nvdate }; 
 	</cfscript>
 </cffunction>
 
@@ -101,12 +186,37 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and not isNumeric(nv)){
-		return { success:false, message: arguments.row.site_option_display_name&" must be a number with no punctuation." };
-	}
+	<cfscript> 
 	return {success:true};
+	</cfscript>
+</cffunction>
+
+<cffunction name="getFormValue" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="prefixString" type="string" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes">
+	<cfscript>
+	if(structkeyexists(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time')){
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]&'_time');
+		if(isDate(curDate)){
+			return dateformat(curDate, "HH:mm:ss");
+		}else{
+			return "";
+		}
+	}else{
+		curDate=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+		if(isDate(curDate)){
+			return dateformat(curDate, "HH:mm:ss");
+		}else{
+			return "";
+		}
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getTypeName" localmode="modern" access="public">
+	<cfscript>
+	return 'Time';
 	</cfscript>
 </cffunction>
 
@@ -123,61 +233,6 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="getFormField" localmode="modern" access="public">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="optionStruct" type="struct" required="yes">
-	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
-	<cfscript>
-	return { label: true, hidden: false, value:'<input type="text" onkeyup="if(this.value != '''' && isNaN(this.value)){ this.value=''''; alert(''You must enter a number with no punctuation.''); }" name="#arguments.prefixString##arguments.row.site_option_id#" id="#arguments.prefixString##arguments.row.site_option_id#" style="width:90%;" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row.site_option_id#'))#" />'};  
-	</cfscript>
-</cffunction>
-
-<cffunction name="getListValue" localmode="modern" access="public">
-	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfargument name="optionStruct" type="struct" required="yes">
-	<cfargument name="value" type="string" required="yes">
-	<cfscript>
-	return arguments.value; 
-	</cfscript>
-</cffunction>
-
-<cffunction name="onBeforeListView" localmode="modern" access="public" returntype="struct">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="optionStruct" type="struct" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	return {};
-	</cfscript>
-</cffunction>
-
-<cffunction name="onBeforeUpdate" localmode="modern" access="public">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="optionStruct" type="struct" required="yes"> 
-	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	return { success: true, value: nv, dateValue: "" };
-	</cfscript>
-</cffunction>
-
-<cffunction name="getFormValue" localmode="modern" access="public">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	</cfscript>
-</cffunction>
-
-<cffunction name="getTypeName" localmode="modern" access="public">
-	<cfscript>
-	return 'Number';
-	</cfscript>
-</cffunction>
-
 <cffunction name="onUpdate" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
@@ -190,7 +245,10 @@
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
-	arguments.dataStruct.site_option_type_json="{}";
+	ts={
+		datetime_range_search_type:application.zcore.functions.zso(arguments.dataStruct, 'datetime_range_search_type')
+	}
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -206,8 +264,9 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="17" onClick="setType(17);" <cfif value EQ "17">checked="checked"</cfif>/>
-	Number<br />
+	<input type="radio" name="#variables.type#_option_type_id" value="6" onClick="setType(6);" <cfif value EQ 6>checked="checked"</cfif>/>
+	Time<br />
+	<div id="typeOptions6" style="display:none;padding-left:30px;"> </div>	
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 

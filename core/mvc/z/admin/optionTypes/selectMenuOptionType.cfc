@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -44,7 +53,7 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfargument name="onChangeJavascript" type="string" required="yes">
 	<cfscript>
-	return variables.createSelectMenu(arguments.row.site_option_id, arguments.row.site_option_group_id, arguments.optionStruct, true, arguments.onChangeJavascript);
+	return variables.createSelectMenu(arguments.row["#variables.type#_option_id"], arguments.row["#variables.type#_option_group_id"], arguments.optionStruct, true, arguments.onChangeJavascript);
 	</cfscript>
 </cffunction>
 
@@ -56,7 +65,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id];
+	return arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]];
 	</cfscript>
 </cffunction>
 
@@ -69,7 +78,7 @@
 	<cfscript>
 	ts={
 		type="=",
-		field: arguments.row.site_option_name
+		field: arguments.row["#variables.type#_option_name"]
 	};
 	if(arguments.optionStruct.selectmenu_delimiter EQ "|"){
 		ts.arrValue=listToArray(arguments.value, ',', true);
@@ -97,12 +106,22 @@
 			}else{
 				arrTemp=listToArray(arguments.value, '|', true);
 			}
-			for(var i=1;i LTE arrayLen(arrTemp);i++){
-				arrTemp[i]=arguments.databaseField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(arrTemp[i])&"'");
-			} 
+			if(arguments.optionStruct.selectmenu_multipleselection){
+				for(var i=1;i LTE arrayLen(arrTemp);i++){
+					arrTemp[i]=db.trustedSQL('concat(",", '&arguments.databaseField&', ",") like ')&db.trustedSQL("'%,"&application.zcore.functions.zescape(arrTemp[i])&",%'");
+				} 
+			}else{
+				for(var i=1;i LTE arrayLen(arrTemp);i++){
+					arrTemp[i]=arguments.databaseField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(arrTemp[i])&"'");
+				} 
+			}
 			return '('&arrayToList(arrTemp, ' or ')&')';
 		}else{
-			return arguments.databaseField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"'");
+			if(arguments.optionStruct.selectmenu_multipleselection EQ 1){
+				return db.trustedSQL('concat(",", '&arguments.databaseField&', ",") LIKE ')&db.trustedSQL("'%,"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&",%'");
+			}else{
+				return arguments.databaseField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"'");
+			}
 		}
 	}
 	return '';
@@ -114,13 +133,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
+	<cfscript> 
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -133,7 +146,7 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfscript>
-	return { label: true, hidden: false, value:variables.createSelectMenu(arguments.row.site_option_id, arguments.row.site_option_group_id, arguments.optionStruct, false, '')};
+	return { label: true, hidden: false, value:variables.createSelectMenu(arguments.row["#variables.type#_option_id"], arguments.row["#variables.type#_option_group_id"], arguments.optionStruct, false, '')};
 	</cfscript>
 </cffunction>
 
@@ -175,7 +188,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	return { success: true, value: nv, dateValue: "" }; 
 	</cfscript>
 </cffunction>
@@ -185,7 +198,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	</cfscript>
 </cffunction>
 
@@ -238,7 +251,7 @@
 		selectmenu_multipleselection:application.zcore.functions.zso(arguments.dataStruct, 'selectmenu_multipleselection'),
 		selectmenu_size:application.zcore.functions.zso(arguments.dataStruct, 'selectmenu_size')
 	};
-	arguments.dataStruct.site_option_type_json=serializeJson(ts);
+	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -267,7 +280,7 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-		<input type="radio" name="site_option_type_id" value="7" onClick="setType(7);" <cfif value EQ 7>checked="checked"</cfif>/>
+		<input type="radio" name="#variables.type#_option_type_id" value="7" onClick="setType(7);" <cfif value EQ 7>checked="checked"</cfif>/>
 		Select Menu<br />
 		<div id="typeOptions7" style="display:none;padding-left:30px;"> 
 			<table style="border-spacing:0px;">
@@ -287,18 +300,18 @@
 			<tr><td>Use Group: </td>
 			<td>
 			<cfscript>
-			db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
-			WHERE site_id = #db.param(request.zos.globals.id)#  and 
-			site_option_group_deleted = #db.param(0)# and 
-			site_option_group_parent_id=#db.param(0)# 
-			ORDER BY site_option_group_display_name"; 
+			db.sql="SELECT * FROM #db.table("#variables.type#_option_group", request.zos.zcoreDatasource)#
+			WHERE `#variables.type#_id` = #db.param(request.zos.globals.id)#  and 
+			#variables.type#_option_group_deleted = #db.param(0)# and 
+			#variables.type#_option_group_parent_id=#db.param(0)# 
+			ORDER BY #variables.type#_option_group_display_name"; 
 			var qGroup2=db.execute("qGroup2");
 			var selectStruct = StructNew();
 			form.selectmenu_groupid=application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_groupid');
 			selectStruct.name = "selectmenu_groupid";
 			selectStruct.query = qGroup2;
-			selectStruct.queryLabelField = "site_option_group_display_name";
-			selectStruct.queryValueField = "site_option_group_id";
+			selectStruct.queryLabelField = "#variables.type#_option_group_display_name";
+			selectStruct.queryValueField = "#variables.type#_option_group_id";
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript></td></tr>
 			<tr><td>Label Field: </td>
@@ -325,9 +338,7 @@
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction>
-<!--- 
-ts2=deserializeJson(row.site_option_type_json);
-selectMapStruct=this.buildSelectMap(ts2, true); --->
+
 <cffunction name="buildSelectMap" localmode="modern" access="public">
 	<cfargument name="typeOptions" type="struct" required="yes">
 	<cfargument name="indexById" type="boolean" required="yes">
@@ -350,24 +361,24 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 	}
 	if(structkeyexists(ts2, 'selectmenu_groupid') and ts2.selectmenu_groupid NEQ ""){
 		// grab all the group values and ids
-		db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)# s1, 
-		#db.table("site_option", request.zos.zcoreDatasource)# s2
+		db.sql="select * from #db.table("#variables.siteType#_x_option_group", request.zos.zcoreDatasource)# s1, 
+		#db.table("#variables.type#_option", request.zos.zcoreDatasource)# s2
 		WHERE 
-		s1.site_x_option_group_deleted = #db.param(0)# and
-		s2.site_option_deleted = #db.param(0)# and
-		s2.site_option_id = s1.site_option_id and 
-		s2.site_option_group_id = s1.site_option_group_id and 
-		s2.site_id = s1.site_id and 
-		s1.site_option_group_id = #db.param(ts2.selectmenu_groupid)# and 
+		s1.#variables.siteType#_x_option_group_deleted = #db.param(0)# and
+		s2.#variables.type#_option_deleted = #db.param(0)# and
+		s2.#variables.type#_option_id = s1.#variables.type#_option_id and 
+		s2.#variables.type#_option_group_id = s1.#variables.type#_option_group_id and 
+		s2.`#variables.type#_id` = s1.`#variables.type#_id` and 
+		s1.#variables.type#_option_group_id = #db.param(ts2.selectmenu_groupid)# and 
 		s1.site_id=#db.param(request.zos.globals.id)# ";
 		local.qGroupData=db.execute("qGroupData");
 		// loop the group data
 		local.tempSet={};
 		for(local.row2 in local.qGroupData){
-			if(not structkeyexists(local.tempSet, local.row2.site_x_option_group_set_id)){
-				local.tempSet[local.row2.site_x_option_group_set_id]={};
+			if(not structkeyexists(local.tempSet, local.row2["#variables.siteType#_x_option_group_set_id"])){
+				local.tempSet[local.row2["#variables.siteType#_x_option_group_set_id"]]={};
 			}
-			local.tempSet[local.row2.site_x_option_group_set_id][local.row2.site_option_name]=local.row2.site_x_option_group_value;
+			local.tempSet[local.row2["#variables.siteType#_x_option_group_set_id"]][local.row2["#variables.type#_option_name"]]=local.row2["#variables.siteType#_x_option_group_value"];
 		}
 		for(local.n in local.tempSet){
 			if(arguments.indexById){
@@ -382,19 +393,19 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 </cffunction>
 
 <cffunction name="getSelectMenuLabel" localmode="modern" access="private">
-	<cfargument name="site_option_id" type="string" required="yes">
-	<cfargument name="site_option_group_id" type="string" required="yes">
+	<cfargument name="option_id" type="string" required="yes">
+	<cfargument name="option_group_id" type="string" required="yes">
 	<cfargument name="setOptionStruct" type="struct" required="yes">
 	<cfscript> 
 	var ts=0;
 	var row=0; 
 	var i=0;
 	local.selectedValue="";
-	if(structkeyexists(form, "newvalue"&arguments.site_option_id)){
-		local.selectedValue=form["newvalue"&arguments.site_option_id];
+	if(structkeyexists(form, "newvalue"&arguments.option_id)){
+		local.selectedValue=form["newvalue"&arguments.option_id];
 	}
 	
-	local.rs=application.zcore.siteOptionCom.prepareRecursiveData(arguments.site_option_id, arguments.site_option_group_id, arguments.setOptionStruct, false); 
+	local.rs=application.zcore.siteOptionCom.prepareRecursiveData(arguments.option_id, arguments.option_group_id, arguments.setOptionStruct, false); 
 	ts=local.rs.ts; 
 	if(structkeyexists(ts,'selectmenu_labels') and ts.selectmenu_labels NEQ ""){ 
 		local.arrTemp=listToArray(ts.selectmenu_values, ts.selectmenu_delimiter, true);
@@ -425,21 +436,21 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 </cffunction>
 
 <cffunction name="createSelectMenu" localmode="modern" access="private">
-	<cfargument name="site_option_id" type="string" required="yes">
-	<cfargument name="site_option_group_id" type="string" required="yes">
+	<cfargument name="option_id" type="string" required="yes">
+	<cfargument name="option_group_id" type="string" required="yes">
 	<cfargument name="setOptionStruct" type="struct" required="yes">
 	<cfargument name="enableSearchView" type="boolean" required="yes">
 	<cfargument name="onChangeJavascript" type="string" required="yes">
 	<cfscript>
 	var selectStruct = StructNew();
 	var ts=0;
-	local.rs=application.zcore.siteOptionCom.prepareRecursiveData(arguments.site_option_id, arguments.site_option_group_id, arguments.setOptionStruct, arguments.enableSearchView);
-	selectStruct.name = "newvalue#arguments.site_option_id#";
+	local.rs=application.zcore.siteOptionCom.prepareRecursiveData(arguments.option_id, arguments.option_group_id, arguments.setOptionStruct, arguments.enableSearchView);
+	selectStruct.name = "newvalue#arguments.option_id#";
 	ts=local.rs.ts;
 	local.enabled=false;
 	selectStruct.size=application.zcore.functions.zso(ts, 'selectmenu_size', true, 1);
 	if(arguments.enableSearchView){
-		selectStruct.size=1;//min(selectStruct.size, 2);
+		selectStruct.size=1;
 	}
 	selectStruct.inlineStyle="width:95%;";
 	
@@ -460,8 +471,8 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 			selectStruct.listLabels=arraytolist(local.rs.arrLabel, ts.selectmenu_delimiter);
 			selectStruct.listValues=arraytolist(local.rs.arrValue, ts.selectmenu_delimiter);
 		}
-		if(structkeyexists(form, 'site_x_option_group_set_id')){
-			selectStruct.onchange="if(this.options[this.selectedIndex].value != '' && this.options[this.selectedIndex].value=='#form.site_x_option_group_set_id#'){alert('You can\'t select the same item you are editing.');this.selectedIndex=0;};";
+		if(structkeyexists(form, '#variables.siteType#_x_option_group_set_id')){
+			selectStruct.onchange="if(this.options[this.selectedIndex].value != '' && this.options[this.selectedIndex].value=='#form["#variables.siteType#_x_option_group_set_id"]#'){alert('You can\'t select the same item you are editing.');this.selectedIndex=0;};";
 		}
 		local.enabled=true;
 		// must use id as the value instead of "value" because parent_id can't be a string or uniqueness would be wrong.
@@ -469,7 +480,6 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 		local.enabled=true;
 		selectStruct.query = local.rs.qTemp2;
 		selectStruct.queryLabelField = "label";
-		//selectStruct.queryValueField = "value";
 		selectStruct.queryValueField = "id";
 	} 
 
@@ -483,7 +493,7 @@ selectMapStruct=this.buildSelectMap(ts2, true); --->
 			if(application.zcore.functions.zso(ts, 'selectmenu_multipleselection', true, 0) EQ 1){
 				selectStruct.multiple=true;
 				selectStruct.hideSelect=true;
-				application.zcore.functions.zSetupMultipleSelect(selectStruct.name, application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0));
+				application.zcore.functions.zSetupMultipleSelect(selectStruct.name, application.zcore.functions.zso(form, '#variables.siteType#_x_option_group_set_id', true, 0));
 			}
 		}
 		selectStruct.output=false;

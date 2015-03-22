@@ -1,11 +1,20 @@
-<cfcomponent implements="zcorerootmapping.interface.siteOptionType">
+<cfcomponent implements="zcorerootmapping.interface.optionType">
 <cfoutput>
+<cffunction name="init" localmode="modern" access="public" output="no">
+	<cfargument name="type" type="string" required="yes">
+	<cfargument name="siteType" type="string" required="yes">
+	<cfscript>
+	variables.type=arguments.type;
+	variables.siteType=arguments.siteType;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return arguments.groupTableName&".site_x_option_group_value";
+	return arguments.groupTableName&".#variables.siteType#_x_option_group_value";
 	</cfscript>
 </cffunction>
 <cffunction name="onBeforeImport" localmode="modern" access="public">
@@ -41,7 +50,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
 	// delete from the mls_saved_search table using the function from blog
-        request.zos.listing.functions.zMLSSearchOptionsUpdate('delete', arguments.row.site_x_option_group_value);
+        request.zos.listing.functions.zMLSSearchOptionsUpdate('delete', arguments.row["#variables.siteType#_x_option_group_value"]);
 	</cfscript>
 </cffunction>
 
@@ -84,11 +93,11 @@
 	<cfscript>
 	ts={
 		type="LIKE",
-		field: arguments.row.site_option_name,
+		field: arguments.row["#variables.type#_option_name"],
 		arrValue:[]
 	};
 	if(arguments.value NEQ ""){
-		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id]&'%');
+		arrayAppend(ts.arrValue, '%'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&'%');
 	}
 	return ts;
 	</cfscript>
@@ -106,7 +115,7 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	if(arguments.value NEQ ""){
-		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])&"%'");
+		return arguments.databaseField&' like '&db.trustedSQL("'%"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"%'");
 	}
 	return '';
 	</cfscript>
@@ -125,24 +134,24 @@
 		db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# WHERE 
 		site_id = #db.param(request.zos.globals.id)# and 
 		mls_saved_search_deleted = #db.param(0)# and
-		mls_saved_search_id = #db.param(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])# ";
+		mls_saved_search_id = #db.param(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])# ";
 		qSearch=db.execute("qSearch");
 		
-		echo('<div id="searchAsStringDiv#arguments.row.site_option_id#" style="">');
+		echo('<div id="searchAsStringDiv#arguments.row["#variables.type#_option_id"]#" style="">');
 		for(row in qSearch){
 			echo(arrayToList(request.zos.listing.functions.getSearchCriteriaDisplay(row), ", "));
 		}
 		echo('</div>');
 		</cfscript>
-		<input type="hidden" name="#arguments.prefixString##arguments.row.site_option_id#" id="savedSearchParentId#arguments.row.site_option_id#" value="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row.site_option_id])#" /> <a href="##" onclick=" zShowModalStandard('/z/listing/advanced-search/modalEditSearchForm?callback=savedSearchCallback#arguments.row.site_option_id#&mls_saved_search_id='+encodeURIComponent($('##savedSearchParentId#arguments.row.site_option_id#').val()), zWindowSize.width-100, zWindowSize.height-100);return false;" rel="nofollow">Edit Saved Search</a>
+		<input type="hidden" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" id="savedSearchParentId#arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])#" /> <a href="##" onclick=" zShowModalStandard('/z/listing/advanced-search/modalEditSearchForm?callback=savedSearchCallback#arguments.row["#variables.type#_option_id"]#&amp;mls_saved_search_id='+encodeURIComponent($('##savedSearchParentId#arguments.row["#variables.type#_option_id"]#').val()), zWindowSize.width-100, zWindowSize.height-100);return false;" rel="nofollow">Edit Saved Search</a>
 	</cfsavecontent>
 	<cfscript>
 	application.zcore.skin.addDeferredScript('
-		function savedSearchCallback#arguments.row.site_option_id#(obj){ 
-			$("##savedSearchParentId#arguments.row.site_option_id#").val(obj.mls_saved_search_id);
-			$("##searchAsStringDiv#arguments.row.site_option_id#").html(obj.searchAsString);
+		function savedSearchCallback#arguments.row["#variables.type#_option_id"]#(obj){ 
+			$("##savedSearchParentId#arguments.row["#variables.type#_option_id"]#").val(obj.mls_saved_search_id);
+			$("##searchAsStringDiv#arguments.row["#variables.type#_option_id"]#").html(obj.searchAsString);
 		}
-		window.savedSearchCallback#arguments.row.site_option_id#=savedSearchCallback#arguments.row.site_option_id#;
+		window.savedSearchCallback#arguments.row["#variables.type#_option_id"]#=savedSearchCallback#arguments.row["#variables.type#_option_id"]#;
 	');
 	return { label: true, hidden: false, value: local.output};  
 	</cfscript> 
@@ -153,13 +162,7 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	/*
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
-	if(nv NEQ "" and doValidation...){
-		return { success:false, message: arguments.row.site_option_display_name&" must ..." };
-	}
-	*/
+	<cfscript> 
 	return {success:true};
 	</cfscript>
 </cffunction>
@@ -199,7 +202,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
-	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>
@@ -209,7 +212,7 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row.site_option_id);
+	return application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	</cfscript>
 </cffunction>
 
@@ -231,7 +234,7 @@
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
-	arguments.dataStruct.site_option_type_json="{}";
+	arguments.dataStruct["#variables.type#_option_type_json"]="{}";
 	return { success:true};
 	</cfscript>
 </cffunction>
@@ -250,58 +253,9 @@
 	}
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="site_option_type_id" value="21" onClick="setType(21);" <cfif value EQ 21>checked="checked"</cfif>/>
+	<input type="radio" name="#variables.type#_option_type_id" value="21" onClick="setType(21);" <cfif value EQ 21>checked="checked"</cfif>/>
 	#this.getTypeName()#<br />
-	<div id="typeOptions21" style="display:none;padding-left:30px;"> 
-		<!--- 
-		<p>Map all the fields to enable auto-populating the map address lookup field.</p>
-		<table class="table-list">
-		<tr><td>
-		Address: </td><td>
-		<cfscript>
-		selectStruct = StructNew();
-		selectStruct.name = "addressfield";
-		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
-		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'addressfield');
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript> </td></tr>
-		<tr><td>
-		City: </td><td>
-		<cfscript>
-		selectStruct = StructNew();
-		selectStruct.name = "cityfield";
-		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
-		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'cityfield');
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript> </td></tr>
-		<tr><td>
-		State: </td><td>
-		<cfscript>
-		selectStruct = StructNew();
-		selectStruct.name = "statefield";
-		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
-		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'statefield');
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript> </td></tr>
-		<tr><td>
-		Zip: </td><td>
-		<cfscript>
-		selectStruct = StructNew();
-		selectStruct.name = "zipfield";
-		selectStruct.query = qGroup;
-		selectStruct.queryLabelField = "site_option_name";
-		selectStruct.queryValueField = "site_option_id";
-		selectStruct.selectedValues=application.zcore.functions.zso(arguments.optionStruct, 'zipfield');
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript></td>
-		</tr>
-		</table> --->
+	<div id="typeOptions21" style="display:none;padding-left:30px;">  
 	</div>
 	</cfsavecontent>
 	<cfreturn output>

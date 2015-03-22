@@ -112,31 +112,6 @@
 	 	arrayAppend(ts.arrListingJsFiles, replace(arrListingJsFiles[i], request.zos.installPath&"public/", "/z/"));
 	}
 
-
-	ts.siteOptionTypeStruct={
-		"0": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textSiteOptionType"),
-		"1": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.textareaSiteOptionType"),
-		"2": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.htmlEditorSiteOptionType"),
-		"3": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.imageSiteOptionType"),
-		"4": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.dateTimeSiteOptionType"),
-		"5": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.dateSiteOptionType"),
-		"6": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.timeSiteOptionType"),
-		"7": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.selectMenuSiteOptionType"),
-		"8": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.checkboxSiteOptionType"),
-		"9": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.fileSiteOptionType"),
-		"10": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.emailSiteOptionType"),
-		"11": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.htmlSeparatorSiteOptionType"),
-		"12": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.hiddenSiteOptionType"),
-		"13": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.mapPickerSiteOptionType"),
-		"14": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.radioSiteOptionType"),
-		"15": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.urlSiteOptionType"),
-		"16": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.userPickerSiteOptionType"),
-		"17": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.numberSiteOptionType"),
-		"18": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.colorSiteOptionType"),
-		"19": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.stateSiteOptionType"),
-		"20": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.countrySiteOptionType"),
-		"21": createobject("component", "zcorerootmapping.mvc.z.admin.siteOptionTypes.listingSavedSearchSiteOptionType")
-	};
 	
 	
 	// setup legacy url redirect routes
@@ -460,6 +435,7 @@
 	ts.componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 	ts.componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
 
+	ts.siteOptionTypeStruct=ts.componentObjectCache.siteOptionCom.getOptionTypes();
 
 	
 	structappend(ts, ts.componentObjectCache);
