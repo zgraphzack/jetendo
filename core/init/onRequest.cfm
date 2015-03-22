@@ -51,6 +51,12 @@
 								echo(application.zcore.functions.zReadFile(p));
 								abort;
 							}
+						}else if(ext EQ "html"){
+							var p=request.zos.globals.homedir&removechars(request.zos.originalURL, 1, 1);
+							if(fileexists(p)){
+								echo(application.zcore.functions.zReadFile(p));
+								abort;
+							}
 						}
 						application.zcore.functions.z404("onRequest missing include. "&request.zos.scriptNameTemplate);
 					}
