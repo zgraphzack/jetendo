@@ -99,9 +99,6 @@
 
 		componentObjectCache.siteOptionCom.init("site", "site");
 
-		ts.soGroupData={
-			optionTypeStruct:componentObjectCache.siteOptionCom.getOptionTypes()
-		};
 
 		if(request.zos.isdeveloper and structkeyexists(request.zsession, 'verifyQueries') and request.zsession.verifyQueries){
 			local.verifyQueriesEnabled=true;
@@ -119,6 +116,18 @@
 		
 		application.zcore.componentObjectCache=componentObjectCache;
 		structappend(application.zcore, application.zcore.componentObjectCache);
+		soGroupData={
+			optionTypeStruct:componentObjectCache.siteOptionCom.getOptionTypes()
+		};
+		application.zcore.soGroupData=soGroupData;
+		themeTypeData={
+			optionTypeStruct:{}
+		};
+		application.zcore.themeTypeData=themeTypeData;
+		widgetTypeData={
+			optionTypeStruct:{}
+		};
+		application.zcore.widgetTypeData=widgetTypeData;
 		if(request.zos.allowRequestCFC){
 			structappend(request.zos, application.zcore.componentObjectCache, true);
 		}

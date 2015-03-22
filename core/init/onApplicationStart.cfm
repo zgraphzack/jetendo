@@ -442,6 +442,12 @@
 	ts.soGroupData={
 		optionTypeStruct:ts.componentObjectCache.siteOptionCom.getOptionTypes()
 	};
+	ts.themeTypeData={
+		optionTypeStruct:{}
+	};
+	ts.widgetTypeData={
+		optionTypeStruct:{}
+	};
 
 	
 	structappend(ts, ts.componentObjectCache);
