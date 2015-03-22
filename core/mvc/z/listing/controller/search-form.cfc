@@ -817,7 +817,9 @@ application.zcore.functions.zinput_hidden(ts);
 <input type="text" name="zreset" value="site" /> (site reset)<br />
 </cfif>
 <cfif structkeyexists(request,'theSearchFormTemplate') EQ false>
- <div class="zResultCountAbsolute" id="resultCountAbsolute"></div>
+ <cfscript>
+	application.zcore.template.appendTag("scripts", '<div class="zResultCountAbsolute" id="resultCountAbsolute"></div>');
+</cfscript>
  </cfif>
  
  </cfsavecontent>
@@ -825,10 +827,7 @@ application.zcore.functions.zinput_hidden(ts);
 sfSortStruct["startFormTag"]=startFormTagHTML;
 writeoutput(startFormTagHTML);
 </cfscript>
-<div class="zSearchFormTable">
-<!---  
-<table class="zSearchFormTable" style="width:100%; border-spacing:1px;"  <!--- <cfif request.zos.istestserver EQ false and cgi.HTTP_USER_AGENT CONTAINS 'MSIE 6.0'>style="display:none;"</cfif> --->>  --->
-
+<div class="zSearchFormTable"> 
 <cfscript>
 //application.zcore.template.appendTag('meta',application.zcore.skin.includeJS(request.zos.listing.cityLookupFileName));
 </cfscript>
@@ -3547,24 +3546,9 @@ sfSortStruct["search_more_options"]=theCriteriaHTML;
 
 
 
-</cfscript>
-<!--- 
-<cfsavecontent variable="request.theSearchFormTemplate">
-<table style="border-spacing:5px;">
-<tr><td>CITY:</td><td>BEDS:</td><td>BATHS:</td></tr>
-<tr><td>##form.search_city_id##</td><td>##form.search_bedrooms##</td><td>##form.search_bathrooms##</td></tr>
-<tr><td>PROPERTY TYPE:</td><td>MIN PRICE:</td><td>MAX PRICE:</td></tr>
-<tr><td>##form.search_listing_type_id##</td><td>##form.search_rate_low##</td><td>##form.search_rate_high##</td></tr>
-<tr><td colspan="3"><a href="##">FIND HOMES</a> or <a href="##">Advanced Search</a></td></tr>
-</table>
-<!--- search_bathrooms,search_year_built,search_sqfoot,search_city_id,search_status,search_near_address,search_listing_type_id,search_listing_sub_type_id,search_view,search_bedrooms,search_county,search_more_options,search_rate,search_style,search_frontage,search_acreage,search_rate_low,search_rate_high
-
- --->
-</cfsavecontent> --->
+</cfscript> 
 <cfscript>
-if(structkeyexists(request,'theSearchFormTemplate') EQ false){
-	//writeoutput('keylist:'&structkeylist(sfSortStruct)&'<br />');
-	
+if(structkeyexists(request,'theSearchFormTemplate') EQ false){ 
 	if(structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'sort')){
 		arrKey=structkeyarray(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.sort);
 		arraysort(arrKey,"numeric","asc");
@@ -3752,22 +3736,15 @@ if(structkeyexists(request,'theSearchFormTemplate')){
 	} 
 propertyDataCom.setSearchCriteria(form);
 </cfscript>
-<cfif isDefined('request.contentEditor')> </td><td id="mlsResults" style="padding-left:10px;vertical-align:top;"></cfif>
+<cfif isDefined('request.contentEditor')> <div id="mlsResults" style="padding-left:10px;vertical-align:top;"></cfif>
 <cfif application.zcore.functions.zso(form, 'outputSearchForm',false,false) EQ false>
-<cfif isDefined('request.contentEditor') EQ false and isDefined('request.hideMLSResults') EQ false><!---  and structkeyexists(form, 'searchId')> --->
-<!--- <textarea cols="100" rows="5" name="mytest333" id="mytest333"></textarea> --->
-<!---  <textarea name="testdebug" id="testdebug" cols="50" rows="3"></textarea> --->
+<cfif isDefined('request.contentEditor') EQ false and isDefined('request.hideMLSResults') EQ false> 
         <div style="font-size:130%; width:100%; float:left;" id="zls-searchformusemessage">Use the form on the sidebar to search.</div>
-<table style="width:100%;">
-<tr>
-<td id="mlsResults">
-<table style="width:100%;">
-<tr><td style="vertical-align:top;padding-right:10px;">
+<div id="mlsResults" style="width:100%; float:left; margin-bottom:20px;">
+<div style="width:50%; margin-bottom:20px; float:left;">
 <div id="zls-searchformhelpdiv">
 <a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a>
-</div>
-<!--- <script type="text/javascript">/* <![CDATA[ */zListingDisplayHelpBox();/* ]]> */</script> --->
-
+</div> 
 <cfscript>
 if(isDefined('request.zsession.zListingHideMap') EQ false){
 	request.zsession.zListingHideMap=false;
@@ -3787,17 +3764,16 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 
 </cfscript>
 
-</td><td style="vertical-align:top; text-align:right; font-size:110%; font-weight:bold;">&nbsp;
+</div><div style="width:50%; margin-bottom:20px; float:left;  text-align:right; font-size:110%; font-weight:bold;">&nbsp;
 <cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
 	<cfif (isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false>
 		<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
-		<a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
+		<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
 	<cfelse>
-		<a id="zHideMapSearchButton"<!---  class="zNoContentTransition" ---> href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
+		<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
 	</cfif>
 </cfif>
-</td></tr> 
-</table> 
+</div> 
 <div id="zListingHelpDiv" style="display:none; margin-bottom:10px;border:1px solid ##990000; padding:10px; padding-top:10px;">
 <p style="font-size:14px; font-weight:bold;">Search Directions:</p>
 <p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Search MLS" and the results will load on the right. </p>
@@ -3906,15 +3882,13 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 				writeoutput(res);
 			</cfscript>
             </cfif>
-	
+			<h2><a href="##searchFormTopDiv">Revise Search</a></h2>
 		</cfif>
         
         <cfif structkeyexists(form, 'searchId') EQ false>
         <div style="width:100%; height:500px;">&nbsp;</div>
         </cfif>
-</td>
-</tr>
-</table>
+</div>
 
 <cfscript>
 if(request.cgi_script_name EQ "/z/listing/search-form/index" OR isDefined('request.contentEditor')){
@@ -3971,7 +3945,7 @@ if(application.zcore.functions.zso(form,'searchgotolistings') EQ 1){
 		mapCom.index(ms);
 		</cfscript><br />
             </cfif>
-            </td></tr></table>
+            </div>
             <cfif request.cgi_script_name EQ "/z/listing/search-form/index" OR isDefined('request.contentEditor')>
 <cfif isDefined('request.zMLSHideCount') EQ false and isDefined('request.contentEditor')>
 	<cfif structkeyexists(request.zos.tempObj,'getMLSCountOutput') EQ false>

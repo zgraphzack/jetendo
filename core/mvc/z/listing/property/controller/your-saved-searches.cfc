@@ -8,8 +8,9 @@
 	writeoutput('disabled');
 	abort;
         form.mls_saved_search_id=application.zcore.functions.zso(form, 'mls_saved_search_id', false, '-1');
+        application.zcore.template.appendTag("scripts", '<div id="resultCountAbsolute" style="float:left; font-weight:700; padding:10px;">0 Listings</div>');
         </cfscript>
-      <div id="resultCountAbsolute" style="float:left; font-weight:700; padding:10px;">0 Listings</div>
+     
       
         <cfsavecontent variable="db.sql">
         SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 

@@ -39,11 +39,9 @@
     	<script type="text/javascript">
 		zDisableOnGmapLoad=true;
 		</script>
-    </cfif>
-	<table style="border-spacing:5px;width:100%;">
+    </cfif> 
     <cfif arguments.hideSearchMLS EQ false>
-		<tr> 
-		<td style="vertical-align:top;">Search MLS <input type="radio" name="#arguments.fieldName#" value="1" <cfif arguments.searchMLS EQ 1>checked="checked"</cfif> onclick="rssToggleMLSForm(this);" style="border:none; background:none;" /> Yes | <input type="radio" name="#arguments.fieldName#" value="0" onclick="rssToggleMLSForm(this);" <cfif arguments.searchMLS EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
+    	Search MLS <input type="radio" name="#arguments.fieldName#" value="1" <cfif arguments.searchMLS EQ 1>checked="checked"</cfif> onclick="rssToggleMLSForm(this);" style="border:none; background:none;" /> Yes | <input type="radio" name="#arguments.fieldName#" value="0" onclick="rssToggleMLSForm(this);" <cfif arguments.searchMLS EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
           <script type="text/javascript">
 		  /* <![CDATA[ */
 		  function rssToggleMLSForm(obj){
@@ -60,15 +58,11 @@
 			}
 		  }
 		  /* ]]> */
-		  </script>
-		</td>
-		</tr>
+		  </script> 
         </cfif>
-		<tr>
-		<td style="vertical-align:top;">
-        
-        <table id="rssMlsSearchFormTR" <cfif arguments.searchMLS EQ 0>style="display:none;"</cfif>>
-<tr><td><cfsavecontent variable="db.sql">
+
+        <div id="rssMlsSearchFormTR" <cfif arguments.searchMLS EQ 0>style="display:none;"</cfif>>
+        <cfsavecontent variable="db.sql">
 			select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
             where mls_saved_search_id= #db.param(arguments.saved_search_id)# and 
 			site_id = #db.param(request.zos.globals.id)# and 
@@ -76,12 +70,11 @@
 		</cfsavecontent><cfscript>qList=db.execute("qList");
 		application.zcore.functions.zquerytostruct(qList, form);
 		request.zos.listing.functions.zMLSSetSearchStruct(form, form);
-local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
-local.tempCom.index();
-</cfscript>
-        <cfset form.action=ssaction>
-</td></tr>
-</table>
+		local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+		local.tempCom.index();
+		form.action=ssaction;
+		</cfscript>
+		</div>
 		
 	
 
@@ -103,22 +96,14 @@ local.tempCom.index();
 	request.contentEditor=true;
 	</cfscript>
 	
-	<table style="border-spacing:5px;width:100%">
-		<tr>
-		<td style="vertical-align:top;">
-        
-        <table id="rssMlsSearchFormTR">
-<cfscript>request.zos.listing.functions.zMLSSetSearchStruct(form, form);
+	<div id="rssMlsSearchFormTR">
+		<cfscript>request.zos.listing.functions.zMLSSetSearchStruct(form, form);
 
-local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
-local.tempCom.index();
-</cfscript>
-        <cfset form.action=ssaction>
-
-</td></tr>
-</table>
-		</td></tr>
-	</table>
+		local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+		local.tempCom.index();
+		form.action=ssaction;
+		</cfscript>
+	</div>
     <cfsavecontent variable="theMeta">
     <style type="text/css">
 	.zSearchFormTable{float:left; width:200px;}
@@ -373,7 +358,7 @@ zGetLatLong(ts);
 	</cfscript>
 	<cfsavecontent variable="moreLink">
 		<br style="clear:both;" /><a id="zbeginlistings"></a>
-		<h2>#application.zcore.functions.zvarso('See more properties for sale below')#</h2><br />
+		<h2>#application.zcore.functions.zvarso('See more properties for sale below', request.zos.globals.id, true)#</h2><br />
 		<cfif arguments.ss.disableInstantSearch EQ false and application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_enable_instant_search EQ 1>
 			<cfscript>
 			local.searchCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search");

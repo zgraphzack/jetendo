@@ -405,11 +405,9 @@ listing_longitude<>'0'";
 	var mapCom=0;
 	var tempHideMap=0;
 			writeoutput('<h2 id="zls-searchformusemessage">Use the form on the sidebar to search.</h2>');
-	writeoutput('<table style="width:100%;">
-	<tr>
-		<td id="mlsResults"><table style="width:100%;">
-				<tr>
-					<td style="vertical-align:top;padding-right:10px;"><div id="zls-searchformhelpdiv"> <a href="##" onclick="zToggleDisplay(''zListingHelpDiv'');return false;">Need help using search?</a><br />
+	writeoutput('<div id="mlsResults">
+		<div style="width:50%; float:left;">
+			<div id="zls-searchformhelpdiv"> <a href="##" onclick="zToggleDisplay(''zListingHelpDiv'');return false;">Need help using search?</a><br />
 							<div id="zListingHelpDiv" style="display:none; border:1px solid ##990000; padding:10px; padding-top:0px;">
 								<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
 								<p>Click on one of the search options on the sidebar and use the text fields, 
@@ -437,8 +435,8 @@ listing_longitude<>'0'";
 						}else{
 							tempHideMap=false;
 						}
-						writeoutput('</td>
-					<td style="vertical-align:top; text-align:right; font-size:14px; font-weight:bold;">&nbsp;');
+						writeoutput('</div>
+					<div style="width:50%; float:left; text-align:right; font-size:14px; font-weight:bold;">&nbsp;');
 						if(application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false){
 							if((isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false){
 								writeoutput('
@@ -448,9 +446,7 @@ listing_longitude<>'0'";
 								writeoutput('<a id="zHideMapSearchButton" href="#request.zos.listing.functions.getSearchFormLink()#?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>');// class="zNoContentTransition"
 							}
 						}
-						writeoutput('</td>
-				</tr>
-			</table>');
+						writeoutput('</div>');
 			ts = StructNew();
 			ts.offset = form.zIndex-1;
 			perpageDefault=10;
@@ -545,9 +541,7 @@ listing_longitude<>'0'";
 			if(structkeyexists(form, 'searchId') EQ false){
 				writeoutput('<div style="width:100%; height:500px;">&nbsp;</div>');
 			}
-			writeoutput('</td>
-	</tr>
-</table>');
+			writeoutput('</div>');
 	</cfscript>
 </cffunction>
 
@@ -566,7 +560,7 @@ listing_longitude<>'0'";
 	variables.propertyDataCom.setSearchCriteria(form);
 	variables.getSearchHelpBar();
 	if(isDefined('request.contentEditor')){
-		writeoutput('</td><td id="mlsResults" style="padding-left:10px;vertical-align:top;">');
+		writeoutput('<div id="mlsResults" style="padding-left:10px;vertical-align:top;">');
 	}
 	if(application.zcore.functions.zso(form, 'outputSearchForm',false,false) EQ false){
 		if(isDefined('request.contentEditor') EQ false and isDefined('request.hideMLSResults') EQ false){
@@ -617,9 +611,7 @@ listing_longitude<>'0'";
 					mapCom.index(ms);
 					writeoutput('<br />');
 				}
-				writeoutput('</td>
-				</tr>
-				</table>');
+				writeoutput('</div>');
 				if(request.zos.originalURL EQ request.zos.listing.functions.getSearchFormLink() OR isDefined('request.contentEditor')){
 					if(isDefined('request.zMLSHideCount') EQ false and isDefined('request.contentEditor')){
 						if(structkeyexists(request.zos.tempObj,'getMLSCountOutput') EQ false){
@@ -866,7 +858,7 @@ listing_longitude<>'0'";
 				writeoutput('<input type="text" name="zreset" value="site" /> (site reset)<br />');
 			}
 			if(structkeyexists(request,'theSearchFormTemplate') EQ false){
-				writeoutput('<div class="zResultCountAbsolute" id="resultCountAbsolute"></div>');
+				application.zcore.template.appendTag("scripts", '<div class="zResultCountAbsolute" id="resultCountAbsolute"></div>');
 			}
 		}
 		sfSortStruct["startFormTag"]=startFormTagHTML;

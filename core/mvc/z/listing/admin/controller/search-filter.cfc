@@ -162,12 +162,12 @@ returnStruct2 = propertyDataCom.getProperties(ts);
 
 <h2>There are currently #numberformat(returnStruct2.count-returnStruct.count)# of #numberformat(returnStruct2.count)# listings that are being filtered with the settings below.</h2>
 
-<cfset form.action="form">
-<cfset request.contentEditor=true>
-<cfscript>request.zos.listing.functions.zMLSSetSearchStruct(form, form);
-local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
-local.tempCom.index();
-</cfscript>
+	<cfset form.action="form">
+	<cfset request.contentEditor=true>
+	<cfscript>request.zos.listing.functions.zMLSSetSearchStruct(form, form);
+	local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
+	local.tempCom.index();
+	</cfscript>
         <br />
         Zip Codes: <input type="text" name="search_zip" size="70" value="#htmleditformat(form.search_zip)#" /> (Comma separated list)
         <br />

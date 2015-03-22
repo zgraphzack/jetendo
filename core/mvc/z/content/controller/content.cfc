@@ -1832,7 +1832,7 @@ configCom.includeContentByName(ts);
 		}
 		savecontent variable="output"{
 
-			beginEditLink(contentConfig, row.content_id);
+			beginEditLink(contentConfig, row.content_id, false);
 			if(structkeyexists(request.zos, 'propertyIncludeIndex') EQ false){
 				request.zos.propertyIncludeIndex=0;
 			}
@@ -2560,7 +2560,7 @@ configCom.includeContentByName(ts);
 				</div>');
 			}
 			if(ts994824713.content_text_position EQ 0){
-				beginEditLink(contentConfig, ts994824713.content_id);
+				beginEditLink(contentConfig, ts994824713.content_id, true);
 				echo(ct1948);
 				endEditLink(contentConfig);
 				if(ct1948 NEQ ""){
@@ -2689,7 +2689,7 @@ configCom.includeContentByName(ts);
 	}
 
 	if(ts994824713.content_text_position EQ 1){
-		beginEditLink(contentConfig, ts994824713.content_id);
+		beginEditLink(contentConfig, ts994824713.content_id, false);
 		writeoutput(ct1948);
 		if(trim(ct1948) NEQ ""){
 			writeoutput('<br style="clear:both;" />');
@@ -2706,12 +2706,15 @@ configCom.includeContentByName(ts);
 <cffunction name="beginEditLink" localmode="modern" access="public">
 	<cfargument name="contentConfig" type="struct" required="yes">
 	<cfargument name="content_id" type="numeric" required="yes">
+	<cfargument name="primary" type="boolean" required="yes" hint="If true, the h1 will be assigned to this record.">
 	<cfscript>
 	if(arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 	//structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
 		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</span>');
+		if(arguments.primary){
+			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
+			application.zcore.template.appendTag('pagetitle','</span>');
+		}
 	}
 	</cfscript>
 </cffunction>

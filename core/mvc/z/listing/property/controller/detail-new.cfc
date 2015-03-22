@@ -279,7 +279,7 @@ tempText=application.zcore.functions.zFixAbusiveCaps(replace(tempText,",",", ","
  </cfscript>
  
  <div class="zls-detail-box">
-     <div style="width:#topLeftColSize#px; height:#newTopHeight+100#px; float:left;">
+     <div class="zls-detail-leftbox" style="width:#topLeftColSize#px; height:#newTopHeight+100#px; ">
  
     <cfsavecontent variable="theJS">
 {
@@ -315,20 +315,21 @@ infobar_opacity: 1<!--- 				//FLOAT - transparency for info bar --->
 }
     </cfsavecontent>
     <input type="hidden" name="zGalleryViewSlideshow1_data" id="zGalleryViewSlideshow1_data" value="#htmleditformat(theJS)#" />
-	<ul id="zGalleryViewSlideshow1" class="zGalleryViewSlideshow">
-	<cfset hasPhotos=false>
-	<cfloop from="1" to="#form.listing_photocount#" index="i">
-		<cfif structkeyexists(idx,'photo'&i)>
-			<cfset hasPhotos=true>
-			<cfset curPhoto=application.zcore.listingCom.getThumbnail(idx['photo'&i], request.lastPhotoId, i, 10000, 10000, 0)> 
-			<li><img id="zmlslistingphoto#i#" data-frame="#curPhoto#" src="#curPhoto#" alt="<cfif structkeyexists(idx, 'photo_description'&i)>
-				#htmleditformat(idx['photo_description'&i])#<cfelse>Listing Photo #i#</cfif>" />
-			</li>
-		</cfif>
-	</cfloop>
-	</ul>
-
-	<div style="display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;">
+	<div class="zGalleryViewSlideshowContainer">
+		<ul id="zGalleryViewSlideshow1" class="zGalleryViewSlideshow">
+		<cfset hasPhotos=false>
+		<cfloop from="1" to="#form.listing_photocount#" index="i">
+			<cfif structkeyexists(idx,'photo'&i)>
+				<cfset hasPhotos=true>
+				<cfset curPhoto=application.zcore.listingCom.getThumbnail(idx['photo'&i], request.lastPhotoId, i, 10000, 10000, 0)> 
+				<li><img id="zmlslistingphoto#i#" data-frame="#curPhoto#" src="#curPhoto#" alt="<cfif structkeyexists(idx, 'photo_description'&i)>
+					#htmleditformat(idx['photo_description'&i])#<cfelse>Listing Photo #i#</cfif>" />
+				</li>
+			</cfif>
+		</cfloop>
+		</ul>
+	</div>
+	<div class="zls-view-larger-div">
 		<cfloop from="1" to="#form.listing_photocount#" index="i">
 			<cfif structkeyexists(idx,'photo'&i)>
 				<a href="#idx["photo"&i]#"  data-ajax="false" title="" rel="placeImageColorbox" class="zNoContentTransition placeImageColorbox">View larger images</a><br />
@@ -337,8 +338,7 @@ infobar_opacity: 1<!--- 				//FLOAT - transparency for info bar --->
 	</div>
 </div>
 
-
-     <div style="width:#topRightColSize-25#px; padding-left:25px; float:left;">
+     <div class="zls-detail-rightbox" style="width:#topRightColSize-25#px; ">
 <cfif form.listing_price NEQ "" and form.listing_price NEQ "0"><div class="zdetail-price">$#numberformat(form.listing_price)#</div> <cfif form.listing_price LT 20> per sqft</cfif></cfif><cfif idx.pricepersqft NEQ "" and idx.pricepersqft NEQ 0><br /><div class="zdetail-pricesqft">($#numberformat(idx.pricepersqft)#/sqft)</div></cfif>
 <br /><div class="zdetail-liststatus">List Status: #form.listingListStatus#</div>
 
@@ -391,7 +391,7 @@ link9&='&searchId='&application.zcore.functions.zso(form, 'searchId');
  leftColSize=request.zos.globals.maximagewidth-rightColSize;
  </cfscript>
  
-     <div style="width:#leftColSize#px; float:left;">
+     <div class="zls-detail-leftbox" style="width:#leftColSize#px;">
          <div class="zls-detail-box">
 <div class="zls-detail-subheading">Top Features</div>
          <div class="zls-detail-box">
@@ -448,7 +448,7 @@ if(form.listing_sub_type_id NEQ "" and form.listing_sub_type_id NEQ 0){
      
      
      </div>
-     <div style="width:#rightColSize-20#px; padding-left:20px; float:left;">
+     <div class="zls-detail-rightbox" style="width:#rightColSize-20#px;">
  
      
      

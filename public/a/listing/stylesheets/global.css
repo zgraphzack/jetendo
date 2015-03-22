@@ -514,3 +514,13 @@ div .property-title h2{
 .zls-detail-askquestion{width:100%; float:left;font-size:150%; padding-top:10px; padding-bottom:10px; line-height:100%;}
 .zls-detail-askquestion a:link, .zls-detail-askquestion a:visited{padding:4%; padding-top:10px; padding-bottom:10px; color:#EEE; width:90%; background-color:#333; margin-bottom:3px; border:1px solid #444; text-decoration:none; float:left; display:block;}
 .zls-detail-askquestion a:hover{ background-color:#555; color:#FFF !important;}
+.zls-detail-leftbox{ float:left;}
+.zls-detail-rightbox{padding-left:25px; float:left;}
+.zls-view-larger-div{display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;}
+
+
+@media only screen and (max-width: 980px) {
+	.zls-view-larger-div{display:none;}
+	.zls-detail-leftbox{width:100% !important; height:auto !important;}
+	.zls-detail-rightbox{width:100% !important;height:auto !important; padding-left:0px !important; margin-top:20px !important;}
+}
