@@ -415,5 +415,80 @@ used to do search for a list of values
 	}
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="processSearchArraySQL" access="private" output="no" returntype="string" localmode="modern">
+	<cfargument name="arrSearch" type="array" required="yes"> 
+	<cfargument name="fieldStruct" type="struct" required="yes">
+	<cfargument name="tableCount" type="numeric" required="yes"> 
+	<cfargument name="option_group_id" type="string" required="yes">
+	<cfscript> 
+	length=arraylen(arguments.arrSearch);
+	lastMatch=true;
+	arrSQL=[' ( '];
+	t9=getSiteData(request.zos.globals.id);
+	for(i=1;i LTE length;i++){
+		c=arguments.arrSearch[i]; 
+		if(isArray(c)){
+			sql=this.processSearchArraySQL(c, arguments.fieldStruct, arguments.tableCount, arguments.option_group_id);
+			arrayAppend(arrSQL, sql); 
+		}else if(isStruct(c)){
+			if(structkeyexists(c, 'subGroup')){
+				throw("subGroup, ""#c.subGroup#"", has caching disabled. subGroup search is not supported yet when caching is disabled (i.e. option_group_enable_cache = 0).");
+			}else{
+				optionId=t9.optionIdLookup[arguments.option_group_id&chr(9)&c.field];
+				if(not structkeyexists(arguments.fieldStruct, optionId)){
+					arguments.fieldStruct[optionId]=arguments.tableCount;
+					arguments.tableCount++;
+				} 
+				if(application.zcore.functions.zso(t9.optionLookup[optionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
+					multipleValues=true;
+					if(t9.optionLookup[optionId].optionStruct.selectmenu_delimiter EQ "|"){
+						delimiter=',';
+					}else{
+						delimiter='|';
+					}
+				}else{
+					multipleValues=false;
+					delimiter='';
+				}
+				if(structkeyexists(c, 'concatAppendPrepend')){
+					concatAppendPrepend=c.concatAppendPrepend;
+				}else{
+					concatAppendPrepend='';
+				}
+				tableName="sGroup"&arguments.fieldStruct[optionId];
+				field='sVal'&optionId;
+				currentCFC=getTypeCFC(t9.optionLookup[optionId].type);
+				fieldName=currentCFC.getSearchFieldName('s1', tableName, t9.optionLookup[optionId].optionStruct);
+				arrayAppend(arrSQL, this.processSearchGroupSQL(c, fieldName, multipleValues, delimiter, concatAppendPrepend));// "`"&tableName&"`.`"&field&"`"));
+				if(i NEQ length and not isSimpleValue(arguments.arrSearch[i+1])){
+					arrayAppend(arrSQL, ' and ');
+				}
+			}
+		}else if(c EQ "OR"){
+			if(i EQ 1 or i EQ length){
+				throw("""OR"" must be between an array or struct, not at the beginning or end or the array.");
+			}
+			arrayAppend(arrSQL, 'or');
+		}else if(c EQ "AND"){
+			if(i EQ 1 or i EQ length){
+				throw("""AND"" must be between an array or struct, not at the beginning or end or the array.");
+			}
+			arrayAppend(arrSQL, 'and');
+		}else{
+			savecontent variable="output"{
+				writedump(c);
+			}
+			throw("Invalid data type.  Dump of object:"&c);
+		}
+	}
+	if(arrayLen(arrSQL) EQ 1){
+		arrayAppend(arrSQL, "1=1");
+	}
+	arrayAppend(arrSQL, ' ) ');
+	return arrayToList(arrSQL, " ");
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

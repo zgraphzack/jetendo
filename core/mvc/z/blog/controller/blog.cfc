@@ -1818,7 +1818,7 @@ this.app_id=10;
 	}else{
 		currentBlogURL=qArticle.blog_unique_name;
 	}
-	application.zcore.siteOptionCom.setCurrentSiteOptionAppId(qarticle.blog_site_option_app_id);
+	application.zcore.siteOptionCom.setCurrentOptionAppId(qarticle.blog_site_option_app_id);
 	</cfscript>
 	
 	<cfif request.zos.trackingSpider EQ false>
@@ -2817,7 +2817,7 @@ this.app_id=10;
 			}
 		}
 	}
-	application.zcore.siteOptionCom.setCurrentSiteOptionAppId(qcategory.blog_category_site_option_app_id);
+	application.zcore.siteOptionCom.setCurrentOptionAppId(qcategory.blog_category_site_option_app_id);
 	db.sql="select count(*) as count from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 	left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
 	blog_x_category.blog_category_id = blog_category.blog_category_id and 
@@ -3088,7 +3088,7 @@ this.app_id=10;
 			}
 		}
 	}
-	application.zcore.siteOptionCom.setCurrentSiteOptionAppId(qcategory.blog_category_site_option_app_id);
+	application.zcore.siteOptionCom.setCurrentOptionAppId(qcategory.blog_category_site_option_app_id);
 	db.sql="select count(*) as count from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
 	left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
 	blog_x_category.blog_category_id = blog_category.blog_category_id and 
@@ -4141,7 +4141,7 @@ this.app_id=10;
 		}
 	}
 	
-	application.zcore.siteOptionCom.setCurrentSiteOptionAppId(qtagdata.blog_tag_site_option_app_id); 
+	application.zcore.siteOptionCom.setCurrentOptionAppId(qtagdata.blog_tag_site_option_app_id); 
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	select count(*) as count

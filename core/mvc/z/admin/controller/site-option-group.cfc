@@ -81,9 +81,9 @@
 		echo(chr(10)&indent&"<h2>Group: "&groupStruct.site_option_group_display_name&'</h2>'&chr(10));
 		if(groupStruct.site_option_group_parent_id NEQ 0){
 			parentGroupStruct=t9.optionGroupLookup[groupStruct.site_option_group_parent_id];
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.siteOptionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
+			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
 		}else{
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.siteOptionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
+			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
 		}
 		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
 			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
@@ -142,7 +142,7 @@
 	
 	echo('<div style="width:98% !important; float:left;margin:1%;">');
 	echo('<h2>Source code generated below.</h2>
-	<p>Note: searchSiteOptionGroup retrieves all the records.  If "Enable Memory Caching" is disabled for the group, it will perform a query to select all the data.  This can be very slow if you are working with hundreds or thousands of records and it may cause nested queries to run if the sub-groups also have "Enable Memory Caching" disabled.   Conversely, for small datasets, this feature is much faster then running a query.</p>
+	<p>Note: searchOptionGroup retrieves all the records.  If "Enable Memory Caching" is disabled for the group, it will perform a query to select all the data.  This can be very slow if you are working with hundreds or thousands of records and it may cause nested queries to run if the sub-groups also have "Enable Memory Caching" disabled.   Conversely, for small datasets, this feature is much faster then running a query.</p>
 	');
 	echo('<textarea name="a222" cols="100" rows="30" style="width:100%;">');
 	savecontent variable="output"{
@@ -158,7 +158,7 @@
 <cffunction name="index" access="remote" localmode="modern">
 	<cfargument name="query" type="query" required="yes">
 	<cfscript>
-	struct=application.zcore.siteOptionCom.getSiteOptionGroupSetById(arguments.query.site_x_option_group_set_id);
+	struct=application.zcore.siteOptionCom.getOptionGroupSetById(arguments.query.site_x_option_group_set_id);
 	writedump(struct);
 	
 	application.zcore.template.setTag("title", struct.__title);
@@ -190,8 +190,8 @@
 	<h2>Miscellaneous Code</h2>
 	<p>To select a single group set, use one of the following:</p>
 	<ul>
-	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getSiteOptionGroupSetById(site_x_option_group_set_id);</li>
-	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getSiteOptionGroupSetByID(site_x_option_group_set_id, request.zos.globals.id, ["Group", "SubGroup"], showUnapproved); </li>
+	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getOptionGroupSetById(site_x_option_group_set_id);</li>
+	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getOptionGroupSetByID(site_x_option_group_set_id, request.zos.globals.id, ["Group", "SubGroup"], showUnapproved); </li>
 	</ul>');
 	if(groupStruct.site_option_group_allow_public NEQ 0){
 		if(groupStruct.site_option_group_public_form_url NEQ ""){
@@ -204,20 +204,20 @@
 		echo('<h2>CFML Embed Form Code</h2><pre>'&htmlcodeformat('
 application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
 // Note: if this group is a child group, you must update the array below to have the parent groups as well.
-form.site_option_group_id=application.zcore.siteOptionCom.getSiteOptionGroupIDWithNameArray(["#groupstruct.site_option_group_name#"]);
+form.site_option_group_id=application.zcore.siteOptionCom.getOptionGroupIDWithNameArray(["#groupstruct.site_option_group_name#"]);
 displayGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
 displayGroupCom.add();')&'</pre>');
 	}
 	echo('<h2>Alternative Group Search Method</h2>
-	<p>application.zcore.siteOptionCom.searchSiteOptionGroup(); can also be used to filter records with SQL-LIKE object input.</p>
+	<p>application.zcore.siteOptionCom.searchOptionGroup(); can also be used to filter records with SQL-LIKE object input.</p>
 	<p>By default, all records are looped & compared in memory with a single thread, so be aware that it may take a lot of CPU time with a larger database.</p>
-	<p>When working with hundreds or thousands of records, you can achieve better performance & reduced memory usage with the database based search method that is built in to searchSiteOptionGroup.  It translates the structured input array into an efficient SQL query that returns only the records you select.  To switch to using database queries for searchSiteOptionGroup, you only need to disable "Enable Memory Caching" on the edit group form.  Keep in mind the sub-groups have their own "Enable Memory Caching" setting which you may want to enable or disable.</p>
+	<p>When working with hundreds or thousands of records, you can achieve better performance & reduced memory usage with the database based search method that is built in to searchOptionGroup.  It translates the structured input array into an efficient SQL query that returns only the records you select.  To switch to using database queries for searchOptionGroup, you only need to disable "Enable Memory Caching" on the edit group form.  Keep in mind the sub-groups have their own "Enable Memory Caching" setting which you may want to enable or disable.</p>
 	<p>Even when memory cache is disabled queries are only necessary to retrieve data value because the schema information is still cached in memory.</p>
 	<p>Simple Example with fake group/field info:</p>
 	<pre>
 	
 	groupName="groupName";
-	// build search as an array of structs.  Supports nested sub-group search, AND/OR, logic grouping, many operators, and multiple values.  See the function definition of searchSiteOptionGroup for more information.
+	// build search as an array of structs.  Supports nested sub-group search, AND/OR, logic grouping, many operators, and multiple values.  See the function definition of searchOptionGroup for more information.
 	arrSearch=[{
 		type="=",
 		field: "Title",
@@ -229,7 +229,7 @@ displayGroupCom.add();')&'</pre>');
 	offset=0;
 	limit=10;
 	// perform search and return struct with array of structs and whether or not there are more records.
-	rs=application.zcore.siteOptionCom.searchSiteOptionGroup(groupName, arrSearch, parentGroupId, showUnapproved, offset, limit);
+	rs=application.zcore.siteOptionCom.searchOptionGroup(groupName, arrSearch, parentGroupId, showUnapproved, offset, limit);
 	if(arraylen(rs.arrResult)){
 		for(i=1;i LTE arraylen(rs.arrResult);i++){
 			c=rs.arrResult[i];
@@ -470,7 +470,7 @@ displayGroupCom.add();')&'</pre>');
 			// get all site options with label and value for current row.
 
 			//throw("warning: this will delete unique url and image gallery id - because internalGroupUpdate is broken.");
-			application.zcore.siteOptionCom.setSiteOptionGroupImportStruct(qGroup.site_option_group_name, 0, 0, 0, ts, form); 
+			application.zcore.siteOptionCom.setOptionGroupImportStruct(qGroup.site_option_group_name, 0, 0, 0, ts, form); 
 			structappend(form, row, true);
 			// writedump(form);abort;
  

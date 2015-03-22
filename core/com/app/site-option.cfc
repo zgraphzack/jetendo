@@ -18,81 +18,8 @@
 	</cfscript>
 </cffunction>
  
-<cffunction name="processSearchArraySQL" access="private" output="no" returntype="string" localmode="modern">
-	<cfargument name="arrSearch" type="array" required="yes"> 
-	<cfargument name="fieldStruct" type="struct" required="yes">
-	<cfargument name="tableCount" type="numeric" required="yes"> 
-	<cfargument name="site_option_group_id" type="string" required="yes">
-	<cfscript> 
-	length=arraylen(arguments.arrSearch);
-	lastMatch=true;
-	arrSQL=[' ( '];
-	t9=getSiteData(request.zos.globals.id);
-	for(i=1;i LTE length;i++){
-		c=arguments.arrSearch[i]; 
-		if(isArray(c)){
-			sql=this.processSearchArraySQL(c, arguments.fieldStruct, arguments.tableCount, arguments.site_option_group_id);
-			arrayAppend(arrSQL, sql); 
-		}else if(isStruct(c)){
-			if(structkeyexists(c, 'subGroup')){
-				throw("subGroup, ""#c.subGroup#"", has caching disabled. subGroup search is not supported yet when caching is disabled (i.e. site_option_group_enable_cache = 0).");
-			}else{
-				optionId=t9.optionIdLookup[arguments.site_option_group_id&chr(9)&c.field];
-				if(not structkeyexists(arguments.fieldStruct, optionId)){
-					arguments.fieldStruct[optionId]=arguments.tableCount;
-					arguments.tableCount++;
-				} 
-				if(application.zcore.functions.zso(t9.optionLookup[optionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
-					multipleValues=true;
-					if(t9.optionLookup[optionId].optionStruct.selectmenu_delimiter EQ "|"){
-						delimiter=',';
-					}else{
-						delimiter='|';
-					}
-				}else{
-					multipleValues=false;
-					delimiter='';
-				}
-				if(structkeyexists(c, 'concatAppendPrepend')){
-					concatAppendPrepend=c.concatAppendPrepend;
-				}else{
-					concatAppendPrepend='';
-				}
-				tableName="sGroup"&arguments.fieldStruct[optionId];
-				field='sVal'&optionId;
-				currentCFC=application.zcore.siteOptionCom.getTypeCFC(t9.optionLookup[optionId].site_option_type_id);
-				fieldName=currentCFC.getSearchFieldName('s1', tableName, t9.optionLookup[optionId].optionStruct);
-				arrayAppend(arrSQL, this.processSearchGroupSQL(c, fieldName, multipleValues, delimiter, concatAppendPrepend));// "`"&tableName&"`.`"&field&"`"));
-				if(i NEQ length and not isSimpleValue(arguments.arrSearch[i+1])){
-					arrayAppend(arrSQL, ' and ');
-				}
-			}
-		}else if(c EQ "OR"){
-			if(i EQ 1 or i EQ length){
-				throw("""OR"" must be between an array or struct, not at the beginning or end or the array.");
-			}
-			arrayAppend(arrSQL, 'or');
-		}else if(c EQ "AND"){
-			if(i EQ 1 or i EQ length){
-				throw("""AND"" must be between an array or struct, not at the beginning or end or the array.");
-			}
-			arrayAppend(arrSQL, 'and');
-		}else{
-			savecontent variable="output"{
-				writedump(c);
-			}
-			throw("Invalid data type.  Dump of object:"&c);
-		}
-	}
-	if(arrayLen(arrSQL) EQ 1){
-		arrayAppend(arrSQL, "1=1");
-	}
-	arrayAppend(arrSQL, ' ) ');
-	return arrayToList(arrSQL, " ");
-	</cfscript>
-</cffunction>
 
-<cffunction name="updateSiteOptionCache" access="public" localmode="modern">
+<cffunction name="updateOptionCache" access="public" localmode="modern">
 	<cfargument name="siteStruct" type="struct" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
@@ -477,7 +404,7 @@
 <cffunction name="processSearchArray" access="private" output="yes" returntype="boolean" localmode="modern">
 	<cfargument name="arrSearch" type="array" required="yes">
 	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="site_option_group_id" type="string" required="yes">
+	<cfargument name="option_group_id" type="string" required="yes">
 	<cfscript>
 	row=arguments.row;
 	length=arraylen(arguments.arrSearch);
@@ -494,7 +421,7 @@
 			if(debugOn){
 				echo("before processSearchArray<br>");
 			}
-			lastMatch=this.processSearchArray(c, row, arguments.site_option_group_id); 
+			lastMatch=this.processSearchArray(c, row, arguments.option_group_id); 
 			if(debugOn){
 				echo("processSearchArray lastMatch:"&lastMatch&"<br>");
 			}
@@ -510,14 +437,7 @@
 			}
 			if(structkeyexists(c, 'subGroup')){
 				if(debugOn){ echo('in subgroup<br>');	}
-				/*if(not structkeyexists(request.zos.siteOptionSearchSubGroupCache, c.subGroup)){
-					groupStruct=application.zcore.functions.zGetSiteOptionGroupById(row.__groupId);
-					groupId=application.zcore.functions.zGetSiteOptionGroupIdWithNameArray([groupStruct.site_option_group_name, c.subGroup]);
-					childGroupStruct=application.zcore.functions.zGetSiteOptionGroupById(groupId);
-					// the child group MUST be cached in memory since we don't support subGroup on processSearchArraySQL yet.
-					request.zos.siteOptionSearchSubGroupCache[c.subGroup]=application.zcore.functions.zSiteOptionGroupStruct(c.subGroup, 0, request.zos.globals.id, row);
-				}*/
-				arrChild=application.zcore.functions.zSiteOptionGroupStruct(c.subGroup, 0, request.zos.globals.id, row);//request.zos.siteOptionSearchSubGroupCache[c.subGroup];
+				arrChild=optionGroupStruct(c.subGroup, 0, request.zos.globals.id, row);
 				lastMatch=false;
 				if(arrayLen(arrChild)){
 					//writedump(arrChild); 
@@ -548,7 +468,7 @@
 					echo("child lastMatch:"&lastMatch&"<br>");
 				}
 			}else{ 
-				optionId=typeStruct.optionIdLookup[arguments.site_option_group_id&chr(9)&c.field];
+				optionId=typeStruct.optionIdLookup[arguments.option_group_id&chr(9)&c.field];
 				if(application.zcore.functions.zso(typeStruct.optionLookup[optionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
 					multipleValues=true;
 					if(typeStruct.optionLookup[optionId].optionStruct.selectmenu_delimiter EQ "|"){
@@ -644,9 +564,9 @@ ts=[
 	]
 ];
 // Valid types are =, <>, <, <=, >, >=, between, not between, like, not like
-application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false);
+application.zcore.siteOptionCom.searchOptionGroup("groupName", ts, 0, false);
  --->
-<cffunction name="searchSiteOptionGroup" access="public" output="no" returntype="struct" localmode="modern">
+<cffunction name="searchOptionGroup" access="public" output="no" returntype="struct" localmode="modern">
 	<cfargument name="groupName" type="string" required="yes">
 	<cfargument name="arrSearch" type="array" required="yes">
 	<cfargument name="parentGroupId" type="string" required="yes">
@@ -682,7 +602,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 		optionGroupId=t9.optionGroupIdLookup[arguments.parentGroupId&chr(9)&arguments.groupName];
 		var groupStruct=t9.optionGroupLookup[optionGroupId];
 		if(groupStruct.site_option_group_enable_cache EQ 1){
-			arrGroup=application.zcore.functions.zSiteOptionGroupStruct(arguments.groupName);
+			arrGroup=optionGroupStruct(arguments.groupName);
 			if(arguments.orderBy NEQ ""){
 				tempStruct={};
 				for(i=1;i LTE arrayLen(arrGroup);i++){
@@ -751,7 +671,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			}*/
 			//writedump(sql);abort;
 
-			groupId=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray([arguments.groupName]);
+			groupId=getOptionGroupIDWithNameArray([arguments.groupName]);
 
 
 			arrTable=["site_x_option_group_set s1"];
@@ -780,7 +700,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 				if(structkeyexists(optionIdLookup, groupId&chr(9)&arguments.orderBy)){
 					site_option_id=optionIdLookup[groupId&chr(9)&arguments.orderBy];
 					site_option_type_id=t9.optionLookup[site_option_id].type;
-					currentCFC=application.zcore.siteOptionCom.getTypeCFC(site_option_type_id);
+					currentCFC=getTypeCFC(site_option_type_id);
 
 					arrayAppend(arrSelect, "s2.site_x_option_group_value sVal2");
 					arrayAppend(arrTable, "site_x_option_group s2");
@@ -796,7 +716,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 				}else{
 					throw("arguments.orderBy, ""#arguments.orderBy#"" is not a valid field in the site_option_group_id=#groupId# | ""#groupStruct.site_option_group_name#""");
 				}
-			}else if(structkeyexists(request.zos, 'siteOptionSearchDateRangeSortEnabled')){
+			}else if(structkeyexists(request.zos, '#variables.type#OptionSearchDateRangeSortEnabled')){
 				orderByStatement=" ORDER BY s1.site_x_option_group_set_start_date ASC ";
 			}else{
 				orderByStatement=" ORDER BY s1.site_x_option_group_set_id ASC ";
@@ -875,10 +795,10 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 					if(lastSetId NEQ 0){
 						arrayAppend(rs.arrResult, curStruct);
 					}
-					curStruct=variables.buildSiteOptionGroupSetId(row);
+					curStruct=variables.buildOptionGroupSetId(row);
 					lastSetId=row.site_x_option_group_set_id;
 				}
-				variables.buildSiteOptionGroupSetIdField(row, curStruct);
+				variables.buildOptionGroupSetIdField(row, curStruct);
 				
 			}
 			arrayAppend(rs.arrResult, curStruct);
@@ -898,10 +818,10 @@ ts.endDate=dateAdd("m", 1, now());
 ts.limit=3;
 ts.offset=0;
 ts.orderBy="startDateASC"; // startDateASC | startDateDESC
-arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, request.zos.globals.id);
+arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, request.zos.globals.id);
 </cfscript>
  --->
-<cffunction name="siteOptionGroupSetFromDatabaseBySearch" access="public" returntype="array" localmode="modern">
+<cffunction name="optionGroupSetFromDatabaseBySearch" access="public" returntype="array" localmode="modern">
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfscript>
@@ -915,7 +835,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	WHERE 
 	s1.site_x_option_group_set_deleted = #db.param(0)# and 
 	";
-	var groupId=application.zcore.functions.zGetSiteOptionGroupIdWithNameArray(ts.arrGroupName, arguments.site_id);
+	var groupId=getOptionGroupIdWithNameArray(ts.arrGroupName, arguments.site_id);
 	db.sql&="s1.site_option_group_id = #db.param(groupId)# and ";
 	if(structkeyexists(ts, 'endDate')){
 		if(structkeyexists(ts, 'startDate')){
@@ -992,10 +912,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			if(lastSetId NEQ 0){
 				arrayAppend(arrRow, curStruct);
 			}
-			curStruct=variables.buildSiteOptionGroupSetId(row);
+			curStruct=variables.buildOptionGroupSetId(row);
 			lastSetId=row.site_x_option_group_set_id;
 		}
-		variables.buildSiteOptionGroupSetIdField(row, curStruct);
+		variables.buildOptionGroupSetIdField(row, curStruct);
 		
 	}
 	arrayAppend(arrRow, curStruct);
@@ -1003,7 +923,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionGroupById" access="public" returntype="struct" localmode="modern">
+<cffunction name="getOptionGroupById" access="public" returntype="struct" localmode="modern">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript>
 	t9=getTypeData(request.zos.globals.id);
@@ -1015,7 +935,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionGroupNameById" access="public" returntype="string" localmode="modern">
+<cffunction name="getOptionGroupNameById" access="public" returntype="string" localmode="modern">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript>
 	t9=getTypeData(request.zos.globals.id);
@@ -1027,7 +947,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionFieldById" access="public" returntype="struct" localmode="modern">
+<cffunction name="getOptionFieldById" access="public" returntype="struct" localmode="modern">
 	<cfargument name="site_option_id" type="string" required="yes">
 	<cfscript>
 	t9=getTypeData(request.zos.globals.id);
@@ -1042,12 +962,12 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 
 <cffunction name="displaySectionNav" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	struct=application.zcore.functions.zGetSiteOptionGroupSetById(form.site_x_option_group_set_id);
+	struct=getOptionGroupSetById(form.site_x_option_group_set_id);
 	if(structcount(struct) EQ 0){
 		return;
 		// application.zcore.functions.z404("This set record doesn't exist, ""#form.site_x_option_group_set_id#""."); 
 	}else{
-		groupStruct=application.zcore.functions.zGetSiteOptionGroupById(struct.__groupId);
+		groupStruct=getOptionGroupById(struct.__groupId);
 	}
 	curGroupId=groupStruct.site_option_group_id;
 	curParentId=groupStruct.site_option_group_parent_id;
@@ -1072,7 +992,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	curGroupId=arguments.site_option_group_id;
 	curParentId=arguments.site_option_group_parent_id;
 	curParentSetId=arguments.site_x_option_group_set_parent_id;
-	groupStruct=application.zcore.functions.zGetSiteOptionGroupById(curGroupId);
+	groupStruct=getOptionGroupById(curGroupId);
 	if(arguments.linkCurrentPage){
 		if(form.method NEQ "sectionGroup"){
 			arrayAppend(arrParent, '<a href="/z/admin/site-options/sectionGroup?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Section</a> /');
@@ -1142,11 +1062,11 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	if(arguments.site_x_option_group_set_id EQ "" or arguments.site_x_option_group_set_id EQ 0){
 		return true;
 	}
-	struct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.site_x_option_group_set_id);
+	struct=getOptionGroupSetById(arguments.site_x_option_group_set_id);
 	if(structcount(struct) EQ 0){
 		return false;
 	}else{
-		groupStruct=application.zcore.functions.zGetSiteOptionGroupById(struct.__groupId);
+		groupStruct=getOptionGroupById(struct.__groupId);
 		if(groupStruct.site_option_group_enable_section EQ 1){
 			return true;
 		}else{
@@ -1156,7 +1076,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionFieldNameById" access="public" returntype="string" localmode="modern">
+<cffunction name="getOptionFieldNameById" access="public" returntype="string" localmode="modern">
 	<cfargument name="site_option_id" type="string" required="yes">
 	<cfscript>
 	t9=getTypeData(request.zos.globals.id);
@@ -1169,7 +1089,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 </cffunction>
 
 
-<cffunction name="siteOptionGroupSetCountFromDatabaseBySearch" access="public" returntype="numeric" localmode="modern">
+<cffunction name="optionGroupSetCountFromDatabaseBySearch" access="public" returntype="numeric" localmode="modern">
 	<cfargument name="searchStruct" type="struct" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfscript>
@@ -1181,7 +1101,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	 db.sql="SELECT count(site_x_option_group_set_id) count FROM 
 	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1
 	WHERE s1.site_x_option_group_set_deleted = #db.param(0)# and ";
-	var groupId=application.zcore.functions.zGetSiteOptionGroupIdWithNameArray(ts.arrGroupName, arguments.site_id);
+	var groupId=getOptionGroupIdWithNameArray(ts.arrGroupName, arguments.site_id);
 	db.sql&="s1.site_option_group_id = #db.param(groupId)# and ";
 	if(structkeyexists(ts, 'endDate')){
 		if(structkeyexists(ts, 'startDate')){
@@ -1204,7 +1124,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
  
-<cffunction name="siteOptionGroupSetFromDatabaseBySetId" access="public" returntype="struct" localmode="modern">
+<cffunction name="optionGroupSetFromDatabaseBySetId" access="public" returntype="struct" localmode="modern">
 	<cfargument name="setId" type="string" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
@@ -1229,10 +1149,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	lastSetId=0;
 	for(row in qS){
 		if(lastSetId NEQ row.site_x_option_group_set_id){
-			resultStruct=variables.buildSiteOptionGroupSetId(row);
+			resultStruct=variables.buildOptionGroupSetId(row);
 			lastSetId=row.site_x_option_group_set_id;
 		}
-		variables.buildSiteOptionGroupSetIdField(row, resultStruct);
+		variables.buildOptionGroupSetIdField(row, resultStruct);
 		
 	}
 	return resultStruct;
@@ -1240,7 +1160,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 </cffunction>
 
 
-<cffunction name="siteOptionGroupSetFromDatabaseBySortedArray" access="public" returntype="array" localmode="modern">
+<cffunction name="optionGroupSetFromDatabaseBySortedArray" access="public" returntype="array" localmode="modern">
 	<cfargument name="arrSetId" type="array" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfscript>
@@ -1272,10 +1192,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			if(lastSetId NEQ 0){
 				arrayAppend(arrRow, curStruct);
 			}
-			curStruct=variables.buildSiteOptionGroupSetId(row);
+			curStruct=variables.buildOptionGroupSetId(row);
 			lastSetId=row.site_x_option_group_set_id;
 		}
-		variables.buildSiteOptionGroupSetIdField(row, curStruct);
+		variables.buildOptionGroupSetIdField(row, curStruct);
 		
 	}
 	arrayAppend(arrRow, curStruct);
@@ -1283,7 +1203,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="siteOptionGroupSetFromDatabaseByGroupId" access="public" localmode="modern">
+<cffunction name="optionGroupSetFromDatabaseByGroupId" access="public" localmode="modern">
 	<cfargument name="groupId" type="string" required="yes">
 	<cfargument name="site_option_app_id" type="numeric" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
@@ -1315,10 +1235,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			if(lastSetId NEQ 0){
 				arrayAppend(arrRow, curStruct);
 			}
-			curStruct=variables.buildSiteOptionGroupSetId(row);
+			curStruct=variables.buildOptionGroupSetId(row);
 			lastSetId=row.site_x_option_group_set_id;
 		}
-		variables.buildSiteOptionGroupSetIdField(row, curStruct);
+		variables.buildOptionGroupSetIdField(row, curStruct);
 		
 	}
 	arrayAppend(arrRow, curStruct);
@@ -1326,7 +1246,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 	
-<cffunction name="buildSiteOptionGroupSetIdField" access="private" localmode="modern">
+<cffunction name="buildOptionGroupSetIdField" access="private" localmode="modern">
 	<cfargument name="row" type="struct" required="yes"> 
 	<cfargument name="curStruct" type="struct" required="yes"> 
 	<cfscript>
@@ -1351,7 +1271,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="buildSiteOptionGroupSetId" access="private" localmode="modern">
+<cffunction name="buildOptionGroupSetId" access="private" localmode="modern">
 	<cfargument name="row" type="struct" required="yes"> 
 	<cfscript>
 	row=arguments.row; 
@@ -1387,7 +1307,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 </cffunction>
 
 
-<cffunction name="setSiteOptionGroupImportStruct" access="public" localmode="modern">
+<cffunction name="setOptionGroupImportStruct" access="public" localmode="modern">
 	<cfargument name="site_option_group_name" type="string" required="yes">
 	<cfargument name="site_option_app_id" type="numeric" required="yes">
 	<cfargument name="site_option_group_parent_id" type="numeric" required="yes">
@@ -1401,7 +1321,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	form.site_x_option_group_set_id=0;
 	form.site_x_option_group_set_parent_id=arguments.site_x_option_group_set_parent_id;
 	form.site_option_app_id=arguments.site_option_app_id;
-	form.site_option_group_id=application.zcore.functions.zSiteOptionGroupIdByName(arguments.site_option_group_name, arguments.site_option_group_parent_id);
+	form.site_option_group_id=optionGroupIDByName(arguments.site_option_group_name, arguments.site_option_group_parent_id);
 
 	if(structkeyexists(request.zos["#variables.type#OptionGroupImportTable"], form.site_option_group_id)){
 		ts=request.zos["#variables.type#OptionGroupImportTable"][form.site_option_group_id];
@@ -1431,16 +1351,16 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
  
-<cffunction name="deleteSiteOptionGroupSetIdCache" localmode="modern" access="public">
+<cffunction name="deleteOptionGroupSetIdCache" localmode="modern" access="public">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes"> 
 	<cfscript>
-	variables.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, arguments.site_x_option_group_set_id, false);
+	variables.deleteOptionGroupSetIdCacheInternal(arguments.site_id, arguments.site_x_option_group_set_id, false);
 	application.zcore.functions.zCacheJsonSiteAndUserGroup(arguments.site_id, application.zcore.siteGlobals[arguments.site_id]);
 	</cfscript>
 </cffunction>
 
-<cffunction name="deleteSiteOptionGroupSetIdCacheInternal" localmode="modern" access="private">
+<cffunction name="deleteOptionGroupSetIdCacheInternal" localmode="modern" access="private">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfargument name="disableFileUpdate" type="boolean" required="yes">
@@ -1475,7 +1395,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var childGroup=duplicate(t9.optionGroupSetId[arguments.site_x_option_group_set_id&"_childGroup"]); 
 	for(var f in childGroup){
 		for(var g=1;g LTE arraylen(childGroup[f]);g++){ 
-			this.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, childGroup[f][g], true);
+			this.deleteOptionGroupSetIdCacheInternal(arguments.site_id, childGroup[f][g], true);
 		}
 	}
 	for(var n in t9.optionGroupFieldLookup[groupId]){ 
@@ -1497,7 +1417,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 </cffunction>
 
 
-<!--- <cffunction name="updateSiteOptionGroupIdCache" localmode="modern" access="public">
+<!--- <cffunction name="updateOptionGroupIdCache" localmode="modern" access="public">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_option_group_id" type="numeric" required="yes">
 	<cfscript>
@@ -1509,13 +1429,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	";
 	qSet=db.execute("qSet");
 	for(row in qSet){
-		updateSiteOptionGroupSetIdCache(row.site_id, row.site_x_option_group_set_id);
+		updateOptionGroupSetIdCache(row.site_id, row.site_x_option_group_set_id);
 	}
 	</cfscript>
 </cffunction> --->
 
 
-<cffunction name="resortSiteOptionGroupSets" localmode="modern" access="public">
+<cffunction name="resortOptionGroupSets" localmode="modern" access="public">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_option_app_id" type="numeric" required="yes">
 	<cfargument name="site_option_group_id" type="numeric" required="yes">
@@ -1552,7 +1472,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 	
-<cffunction name="updateSiteOptionGroupSetIdCache" localmode="modern" access="public">
+<cffunction name="updateOptionGroupSetIdCache" localmode="modern" access="public">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfscript>
@@ -1842,7 +1762,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	site_option_group.site_option_group_enable_unique_url = #db.param(1)# ";
 	local.qGroup=db.execute("qGroup");
 	for(row in local.qGroup){
-		local.arr1=application.zcore.functions.zSiteOptionGroupStruct(row.site_option_group_name, 0, row.site_id);
+		local.arr1=optionGroupStruct(row.site_option_group_name, 0, row.site_id);
 		for(i=1;i LTE arraylen(local.arr1);i++){
 			if(local.arr1[i].__approved EQ 1){
 				local.t2=StructNew();
@@ -1927,7 +1847,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 					arrayAppend(arrGroup, tempStruct.name);
 				}
 				arrayAppend(arrGroup, row.site_option_group_name);
-				indexSiteOptionGroupRow(row.site_x_option_group_set_id, row.site_id, arrGroup); 
+				indexOptionGroupRow(row.site_x_option_group_set_id, row.site_id, arrGroup); 
 			}
 		}
 	}
@@ -1951,11 +1871,11 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfscript>
 	var db=request.zos.queryObject;
 	var row=0;
-	indexSiteOptionGroupRow(arguments.setId, arguments.site_id, arguments.arrGroupName);
+	indexOptionGroupRow(arguments.setId, arguments.site_id, arguments.arrGroupName);
 	</cfscript>
 </cffunction>
 
-<cffunction name="deleteSiteOptionGroupSetIndex" localmode="modern" access="public">
+<cffunction name="deleteOptionGroupSetIndex" localmode="modern" access="public">
 	<cfargument name="setId" type="string" required="no" default="">
 	<cfargument name="site_id" type="string" required="no" default="">
 	<cfscript>
@@ -1969,7 +1889,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="deactivateSiteOptionGroupSet" localmode="modern" access="public">
+<cffunction name="deactivateOptionGroupSet" localmode="modern" access="public">
 	<cfargument name="setId" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="yes">
 	<cfargument name="isDisabledByUser" type="boolean" required="yes">
@@ -2189,7 +2109,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 </cffunction>
 
 
-<cffunction name="indexSiteOptionGroupRow" localmode="modern" access="public">
+<cffunction name="indexOptionGroupRow" localmode="modern" access="public">
 	<cfargument name="setId" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="yes">
 	<cfargument name="arrGroupName" type="array" required="yes">
@@ -2197,10 +2117,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var db=request.zos.queryObject;
 	var ts=0;
 	var i=0;
-	dataStruct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.setId, arguments.site_id, arguments.arrGroupName);
+	dataStruct=getOptionGroupSetById(arguments.setId, arguments.site_id, arguments.arrGroupName);
 	var t9=getTypeData(arguments.site_id);
 	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved NEQ 1){
-		deleteSiteOptionGroupSetIndex(arguments.setId, arguments.site_id);
+		deleteOptionGroupSetIndex(arguments.setId, arguments.site_id);
 		return;
 	}
 	groupStruct=t9.optionGroupLookup[dataStruct.__groupId]; 
@@ -2260,8 +2180,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
  
-<!--- application.zcore.siteOptionCom.activateSiteOptionAppId(site_option_app_id); --->
-<cffunction name="ActivateSiteOptionAppId" localmode="modern" returntype="any" output="no">
+<!--- application.zcore.siteOptionCom.activateOptionAppId(site_option_app_id); --->
+<cffunction name="activateOptionAppId" localmode="modern" returntype="any" output="no">
 	<cfargument name="site_option_app_id" type="string" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -2285,16 +2205,26 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}
 	</cfscript>
 </cffunction>
+<!--- application.zcore.siteOptionCom.getCurrentOptionAppId(); --->
+<cffunction name="getCurrentOptionAppId" localmode="modern" output="no" returntype="any">
+	<cfscript>
+	if(structkeyexists(request.zos, "currentSiteOptionAppId")){
+		return request.zos.currentSiteOptionAppId;
+	}else{
+		return 0;
+	}
+	</cfscript>
+</cffunction>
 
-<cffunction name="setCurrentSiteOptionAppId" localmode="modern" output="no" returntype="any">
+<cffunction name="setCurrentOptionAppId" localmode="modern" output="no" returntype="any">
 	<cfargument name="id" type="string" required="yes">
 	<cfscript>
 	request.zos.currentSiteOptionAppId=arguments.id;
 	</cfscript>
 </cffunction>
 
-<!--- /z/_com/app/site-option?method=getNewSiteOptionAppId --->
-<cffunction name="getNewSiteOptionAppId" localmode="modern" access="remote" roles="member" returntype="any" output="no">
+<!--- /z/_com/app/site-option?method=getNewOptionAppId --->
+<cffunction name="getNewOptionAppId" localmode="modern" access="remote" roles="member" returntype="any" output="no">
 	<cfargument name="app_id" type="string" required="yes">
 	<cfscript>
 	var site_option_app_id=0;
@@ -2309,9 +2239,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	//ts.struct.site_option_app_datetime=request.zos.mysqlnow;
 	site_option_app_id=application.zcore.functions.zInsert(ts);
 	if(site_option_app_id EQ false){
-		application.zcore.template.fail("Error: zcorerootmapping.com.app.site-option.cfc - getNewSiteOptionAppId() failed to insert into site_option_app.");
+		application.zcore.template.fail("Error: zcorerootmapping.com.app.site-option.cfc - getNewOptionAppId() failed to insert into site_option_app.");
 	}
-	if(application.zcore.functions.zso(form, 'method') EQ 'getNewSiteOptionAppId'){
+	if(application.zcore.functions.zso(form, 'method') EQ 'getNewOptionAppId'){
 		writeoutput('new id:'&site_option_app_id);
 		application.zcore.functions.zabort();
 	}else{
@@ -2320,8 +2250,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<!--- this.getSiteOptionAppById(site_option_app_id, app_id, newOnMissing); --->
-<cffunction name="getSiteOptionAppById" localmode="modern" returntype="any" output="yes">
+<!--- this.getOptionAppById(site_option_app_id, app_id, newOnMissing); --->
+<cffunction name="getOptionAppById" localmode="modern" returntype="any" output="yes">
 	<cfargument name="site_option_app_id" type="string" required="yes">
 	<cfargument name="app_id" type="string" required="yes">
 	<cfargument name="newOnMissing" type="boolean" required="no" default="#true#">
@@ -2335,7 +2265,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	qG=db.execute("qG");
 	if(qG.recordcount EQ 0){
 		if(arguments.newOnMissing){
-			arguments.site_option_app_id=this.getNewSiteOptionAppId(arguments.app_id);
+			arguments.site_option_app_id=this.getNewOptionAppId(arguments.app_id);
 			db.sql="SELECT * FROM #request.zos.queryObject.table("site_option_app", request.zos.zcoreDatasource)# site_option_app 
 			WHERE site_option_app_id = #db.param(arguments.site_option_app_id)# and 
 			site_option_app_deleted = #db.param(0)# and
@@ -2349,8 +2279,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction> 
 
-<!--- application.zcore.siteOptionCom.deleteSiteOptionAppId(site_option_app_id); --->
-<cffunction name="deleteSiteOptionAppId" localmode="modern" returntype="any" output="no">
+<!--- application.zcore.siteOptionCom.deleteOptionAppId(site_option_app_id); --->
+<cffunction name="deleteOptionAppId" localmode="modern" returntype="any" output="no">
 	<cfargument name="site_option_app_id" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
@@ -2440,7 +2370,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="siteoptionappform" localmode="modern" access="remote" roles="member" returntype="any" output="yes">
+<cffunction name="optionappform" localmode="modern" access="remote" roles="member" returntype="any" output="yes">
 	<cfscript>
 	var local=structnew();
 	var c=0;
@@ -2455,11 +2385,11 @@ ts=structnew();
 ts.name="site_option_app_id";
 ts.app_id=0;
 ts.value=site_option_app_id;
-application.zcore.siteOptionCom.getSiteOptionForm(ts); --->
-<cffunction name="getSiteOptionForm" localmode="modern" returntype="any" output="yes">
+application.zcore.siteOptionCom.getOptionForm(ts); --->
+<cffunction name="getOptionForm" localmode="modern" returntype="any" output="yes">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	var qLibrary=this.getSiteOptionAppById(arguments.ss.value, arguments.ss.app_id);
+	var qLibrary=this.getOptionAppById(arguments.ss.value, arguments.ss.app_id);
 	var site_option_app_id=qLibrary.site_option_app_id;
 	</cfscript>
 <script type="text/javascript">
@@ -2607,7 +2537,7 @@ if(not rs.success){
 	writeoutput('Success !');
 }
  --->
-<cffunction name="updateSiteOptionGroupSet" localmode="modern" access="public">
+<cffunction name="updateOptionGroupSet" localmode="modern" access="public">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -2636,14 +2566,14 @@ if(not rs.success){
 </cffunction>
 
 
-<cffunction name="getEditableSiteOptionGroupSetById" localmode="modern" access="public">
+<cffunction name="getEditableOptionGroupSetById" localmode="modern" access="public">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#"> 
 	<cfscript>
-	var s=getSiteOptionGroupSetById(arguments.site_x_option_group_set_id);
+	var s=getOptionGroupSetById(arguments.site_x_option_group_set_id);
 	var db=request.zos.queryObject;
 	if(arguments.site_id NEQ request.zos.globals.id){
-		throw("zGetEditableSiteOptionGroupSetById() doesn't support other site ids yet.");
+		throw("zGetEditableOptionGroupSetById() doesn't support other site ids yet.");
 	}
 	if(structcount(s) EQ 0){
 		throw("site_x_option_group_set_id, #arguments.site_x_option_group_set_id#, doesn't exist, so it can't be edited.");
@@ -2671,7 +2601,7 @@ if(not rs.success){
 
 
 <!--- application.zcore.functions.zGetSiteOptionGroupIdWithNameArray(["GroupName"]); --->
-<cffunction name="getSiteOptionGroupIdWithNameArray" localmode="modern" output="no" returntype="numeric" hint="returns the group id for the last group in the array.">
+<cffunction name="getOptionGroupIdWithNameArray" localmode="modern" output="no" returntype="numeric" hint="returns the group id for the last group in the array.">
 	<cfargument name="arrGroupName" type="array" required="no" default="An array of site_option_group_name">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
@@ -2690,7 +2620,7 @@ if(not rs.success){
 	</cfscript>
 </cffunction>
 
-<cffunction name="getSiteOptionGroupById" localmode="modern" output="yes" returntype="struct">
+<cffunction name="optionGroupById" localmode="modern" output="yes" returntype="struct">
 	<cfargument name="site_option_group_id" type="string" required="no" default="">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
@@ -2702,7 +2632,7 @@ if(not rs.success){
 	</cfscript>
 </cffunction>
      
-<cffunction name="getSiteOptionGroupSetById" localmode="modern" output="yes" returntype="struct">
+<cffunction name="getOptionGroupSetById" localmode="modern" output="yes" returntype="struct">
 	<cfargument name="site_option_group_set_id" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfargument name="arrGroupName" type="array" required="no" default="#[]#">
@@ -2711,20 +2641,19 @@ if(not rs.success){
 	typeStruct=getTypeData(arguments.site_id);
 	t9=getSiteData(arguments.site_id);
 	if(arraylen(arguments.arrGroupName)){
-		var groupId=getSiteOptionGroupIdWithNameArray(arguments.arrGroupName, arguments.site_id);
+		var groupId=getOptionGroupIdWithNameArray(arguments.arrGroupName, arguments.site_id);
 		var groupStruct=typeStruct.optionGroupLookup[groupId]; 
 		if(not arguments.showUnapproved and groupStruct.site_option_group_enable_cache EQ 1 and structkeyexists(t9.optionGroupSet, arguments.site_option_group_set_id)){
 			groupStruct=t9.optionGroupSet[arguments.site_option_group_set_id];
-			appendSiteOptionGroupDefaults(groupStruct, groupStruct.__groupId);
+			appendOptionGroupDefaults(groupStruct, groupStruct.__groupId);
 			return groupStruct;
 		}else{ 
-			return siteOptionGroupSetFromDatabaseBySetId(arguments.site_option_group_set_id, arguments.site_id, arguments.showUnapproved);
-			//throw("zGetSiteOptionGroupSetById with cache disabled is not implemented");
+			return optionGroupSetFromDatabaseBySetId(arguments.site_option_group_set_id, arguments.site_id, arguments.showUnapproved);
 		}
 	}else{
 		if(structkeyexists(t9, "optionGroupSet") and structkeyexists(t9.optionGroupSet, arguments.site_option_group_set_id)){
 			var groupStruct=t9.optionGroupSet[arguments.site_option_group_set_id];
-			appendSiteOptionGroupDefaults(groupStruct, groupStruct.__groupId);
+			appendOptionGroupDefaults(groupStruct, groupStruct.__groupId);
 			return groupStruct;
 		}
 	} 
@@ -2732,7 +2661,7 @@ if(not rs.success){
 	</cfscript>
 </cffunction>
 
-<cffunction name="siteOptionGroupIdByName" localmode="modern" output="no" returntype="numeric">
+<cffunction name="optionGroupIdByName" localmode="modern" output="no" returntype="numeric">
 	<cfargument name="groupName" type="string" required="yes">
 	<cfargument name="site_option_group_parent_id" type="numeric" required="no" default="#0#">
 	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#">
@@ -2746,7 +2675,7 @@ if(not rs.success){
 	</cfscript>
 </cffunction>
 
-<cffunction name="siteOptionGroupStruct" localmode="modern" output="yes" returntype="array">
+<cffunction name="optionGroupStruct" localmode="modern" output="yes" returntype="array">
 	<cfargument name="groupName" type="string" required="yes">
 	<cfargument name="site_option_app_id" type="string" required="no" default="0">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
@@ -2765,12 +2694,12 @@ if(not rs.success){
 			if(structkeyexists(t9.optionGroupSetArrays, arguments.site_option_app_id&chr(9)&optionGroupId&chr(9)&arguments.parentStruct.__setId)){
 				arrGroup=t9.optionGroupSetArrays[arguments.site_option_app_id&chr(9)&optionGroupId&chr(9)&arguments.parentStruct.__setId];
 				for(i=1;i LTE arraylen(arrGroup);i++){
-					appendSiteOptionGroupDefaults(arrGroup[i], optionGroupId);
+					appendOptionGroupDefaults(arrGroup[i], optionGroupId);
 				}
 				return arrGroup;
 			}
 		}else{
-			return siteOptionGroupSetFromDatabaseByGroupId(optionGroupId, arguments.site_option_app_id, arguments.site_id, arguments.parentStruct);
+			return optionGroupSetFromDatabaseByGroupId(optionGroupId, arguments.site_option_app_id, arguments.site_id, arguments.parentStruct);
 		}
 	} 
 	return arraynew(1);
@@ -2779,7 +2708,7 @@ if(not rs.success){
 
 
 <!---  application.zcore.functions.zAppendSiteOptionGroupDefaults(dataStruct, site_option_group_id); --->
-<cffunction name="appendSiteOptionGroupDefaults" localmode="modern" output="false" returntype="any">
+<cffunction name="appendOptionGroupDefaults" localmode="modern" output="false" returntype="any">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript> 

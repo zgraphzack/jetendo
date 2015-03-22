@@ -1121,7 +1121,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 		}
 	}
 	this.sortCat(0);
-	application.zcore.siteOptionCom.ActivateSiteOptionAppId(application.zcore.functions.zso(form, 'blog_category_site_option_app_id'));
+	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'blog_category_site_option_app_id'));
 	application.zcore.app.getAppCFC("blog").searchReindexBlogCategories(form.blog_category_id, false);
 	
 	application.zcore.functions.zMenuClearCache({blogCategory=true});
@@ -1161,7 +1161,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 		if(application.zcore.app.siteHasApp("listing")){
 			request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qlist.blog_category_saved_search_id);
 		}
-		application.zcore.siteOptionCom.deleteSiteOptionAppId(qList.blog_category_site_option_app_id);
+		application.zcore.siteOptionCom.deleteOptionAppId(qList.blog_category_site_option_app_id);
 		application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogCategory(form.blog_category_id);
 		db.sql="delete
 			from #db.table("blog_category", request.zos.zcoreDatasource)# 
@@ -1583,7 +1583,7 @@ blog_unique_name = #db.param(application.zcore.functions.zso(form, 'blog_unique_
 		}
 	}
 
-	application.zcore.siteOptionCom.ActivateSiteOptionAppId(application.zcore.functions.zso(form, 'blog_site_option_app_id'));
+	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'blog_site_option_app_id'));
 application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'blog_image_library_id'));
 	application.zcore.app.getAppCFC("blog").searchReindexBlogArticles(form.blog_id, false);
 	
@@ -1628,7 +1628,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 		if(application.zcore.app.siteHasApp("listing")){
 		request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qlist.mls_saved_search_id);
 		}
-		application.zcore.siteOptionCom.deleteSiteOptionAppId(qList.blog_site_option_app_id);
+		application.zcore.siteOptionCom.deleteOptionAppId(qList.blog_site_option_app_id);
 		application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogArticle(form.blog_id);
 		db.sql="delete
 		from #db.table("blog", request.zos.zcoreDatasource)# 
@@ -2055,7 +2055,7 @@ ts.struct=form;
 			application.zcore.template.fail("Failed to process rewrite URLs for blog blog_tag_id = 'blog_tag_id' and blog_tag_unique_name = #db.param(application.zcore.functions.zso(form, 'blog_tag_unique_name'))#.");
 		}
 	}
-	application.zcore.siteOptionCom.ActivateSiteOptionAppId(application.zcore.functions.zso(form, 'blog_tag_site_option_app_id'));
+	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'blog_tag_site_option_app_id'));
 	application.zcore.app.getAppCFC("blog").searchReindexBlogTags(form.blog_tag_id, false);
 	
 	
@@ -2183,7 +2183,7 @@ ts.struct=form;
 		if(application.zcore.app.siteHasApp("listing")){
 			request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qlist.blog_tag_saved_search_id);
 		}
-		application.zcore.siteOptionCom.deleteSiteOptionAppId(qList.blog_tag_site_option_app_id);
+		application.zcore.siteOptionCom.deleteOptionAppId(qList.blog_tag_site_option_app_id);
 		application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogTag(form.blog_tag_id);
 		</cfscript>
 		<cfsavecontent variable="db.sql">
@@ -2350,7 +2350,7 @@ tabCom.enableSaveButtons();
 		ts.name="blog_tag_site_option_app_id";
 		ts.app_id=application.zcore.app.getAppCFC("blog").app_id;
 		ts.value=form.blog_tag_site_option_app_id;
-		application.zcore.siteOptionCom.getSiteOptionForm(ts);
+		application.zcore.siteOptionCom.getOptionForm(ts);
 		</cfscript>
 		</td>
 		</tr>
@@ -2913,7 +2913,7 @@ tabCom.enableSaveButtons();
 		ts.name="blog_site_option_app_id";
 		ts.app_id=application.zcore.app.getAppCFC("blog").app_id;
 		ts.value=form.blog_site_option_app_id;
-		application.zcore.siteOptionCom.getSiteOptionForm(ts);
+		application.zcore.siteOptionCom.getOptionForm(ts);
 		</cfscript>
 		</td>
 		</tr>
@@ -3298,7 +3298,7 @@ tabCom.enableSaveButtons();
 	ts.name="blog_category_site_option_app_id";
 	ts.app_id=application.zcore.app.getAppCFC("blog").app_id;
 	ts.value=form.blog_category_site_option_app_id;
-	application.zcore.siteOptionCom.getSiteOptionForm(ts);
+	application.zcore.siteOptionCom.getOptionForm(ts);
 	</cfscript>
 	</td>
 	</tr>

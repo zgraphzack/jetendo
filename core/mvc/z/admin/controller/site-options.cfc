@@ -1887,7 +1887,7 @@
 	
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds3<br>'); startTime=gettickcount();
 	if(not structkeyexists(request.zos, 'disableSiteCacheUpdate') and local.qCheck.site_option_group_enable_cache EQ 1){ 
-		application.zcore.siteOptionCom.updateSiteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id); 
+		application.zcore.siteOptionCom.updateOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id); 
 		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id); 
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds4<br>'); startTime=gettickcount();
@@ -2519,7 +2519,7 @@ Define this function in another CFC to override the default email format
 			if(structkeyexists(form, 'zQueueSort')){
 				// update cache
 				if(qGroup.site_option_group_enable_cache EQ 1){
-					application.zcore.siteOptionCom.updateSiteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id); 
+					application.zcore.siteOptionCom.updateOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id); 
 				}
 				//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 				// redirect with zqueuesort renamed
@@ -2528,7 +2528,7 @@ Define this function in another CFC to override the default email format
 			if(structkeyexists(form, 'zQueueSortAjax')){
 				// update cache
 				if(qGroup.site_option_group_enable_cache EQ 1){
-					application.zcore.siteOptionCom.resortSiteOptionGroupSets(request.zos.globals.id, form.site_option_app_id, form.site_option_group_id, form.site_x_option_group_set_parent_id); 
+					application.zcore.siteOptionCom.resortOptionGroupSets(request.zos.globals.id, form.site_option_app_id, form.site_option_group_id, form.site_x_option_group_set_parent_id); 
 				}
 				queueSortCom.returnJson();
 			}
@@ -3709,7 +3709,7 @@ Define this function in another CFC to override the default email format
 			application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.site_x_option_group_set_image_library_id);
 		}
 		
-		application.zcore.siteOptionCom.deleteSiteOptionGroupSetIndex(form.site_x_option_group_set_id, request.zos.globals.id);
+		application.zcore.siteOptionCom.deleteOptionGroupSetIndex(form.site_x_option_group_set_id, request.zos.globals.id);
 		
 		if(qCheck.site_option_group_enable_sorting EQ 1){
 			queueSortStruct = StructNew();
@@ -3729,7 +3729,7 @@ Define this function in another CFC to override the default email format
 			queueSortCom.sortAll();
 		}
 		if(qCheck.site_option_group_enable_cache EQ 1){
-			application.zcore.siteOptionCom.deleteSiteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id);
+			application.zcore.siteOptionCom.deleteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id);
 		}
 		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 		application.zcore.status.setStatus(request.zsid, "Deleted successfully.");

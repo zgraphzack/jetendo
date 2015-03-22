@@ -350,7 +350,7 @@
 	ts.datasource="#request.zos.zcoreDatasource#";
 	application.zcore.functions.zInsert(ts);
 	
-	application.zcore.siteOptionCom.ActivateSiteOptionAppId(application.zcore.functions.zso(form, 'content_site_option_app_id'));
+	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'content_site_option_app_id'));
 	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'content_image_library_id'));
 	
 	application.zcore.app.getAppCFC("content").searchReindexContent(form.content_id, false);
@@ -1518,7 +1518,7 @@
 			ts.name="content_site_option_app_id";
 			ts.app_id=application.zcore.app.getAppCFC("content").app_id;
 			ts.value=form.content_site_option_app_id;
-			application.zcore.siteOptionCom.getSiteOptionForm(ts);
+			application.zcore.siteOptionCom.getOptionForm(ts);
 			</cfscript>
 		</td>
 	</tr>

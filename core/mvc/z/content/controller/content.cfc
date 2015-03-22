@@ -2350,7 +2350,7 @@ configCom.includeContentByName(ts);
 		ts994824713=structnew();
 		application.zcore.functions.zQueryToStruct(qContent,ts994824713);
 		
-		application.zcore.siteOptionCom.setCurrentSiteOptionAppId(ts994824713.content_site_option_app_id);
+		application.zcore.siteOptionCom.setCurrentOptionAppId(ts994824713.content_site_option_app_id);
 		contentSearchMLS=ts994824713.content_search_mls;
 		
 		request.zos.zPrimaryContentId=content_id;

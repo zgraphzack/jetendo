@@ -320,7 +320,7 @@ if(not rs.success){
 <cffunction name="zUpdateSiteOptionGroupSet" localmode="modern" access="public">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
-	return application.zcore.siteOptionCom.updateSiteOptionGroupSet(arguments.struct);
+	return application.zcore.siteOptionCom.updateOptionGroupSet(arguments.struct);
 	</cfscript>
 </cffunction>
 
@@ -329,7 +329,7 @@ if(not rs.success){
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#"> 
 	<cfscript>
-	return application.zcore.siteOptionCom.getEditableSiteOptionGroupSetById(arguments.site_x_option_group_set_id, arguments.site_id);
+	return application.zcore.siteOptionCom.getEditableOptionGroupSetById(arguments.site_x_option_group_set_id, arguments.site_id);
 	</cfscript>
 </cffunction>
 
@@ -1434,7 +1434,7 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="arrGroupName" type="array" required="no" default="An array of site_option_group_name">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	return application.zcore.siteOptionCom.getSiteOptionGroupIdWithNameArray(arguments.arrGroupName, arguments.site_id);
+	return application.zcore.siteOptionCom.getOptionGroupIdWithNameArray(arguments.arrGroupName, arguments.site_id);
 	</cfscript>
 </cffunction>
 
@@ -1442,7 +1442,7 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="site_option_group_id" type="string" required="no" default="">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	return application.zcore.siteOptionCom.getSiteOptionGroupById(arguments.site_option_group_id, arguments.site_id); 
+	return application.zcore.siteOptionCom.getOptionGroupById(arguments.site_option_group_id, arguments.site_id); 
 	</cfscript>
 </cffunction>
      
@@ -1452,7 +1452,7 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="arrGroupName" type="array" required="no" default="#[]#">
 	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
 	<cfscript> 
-	return application.zcore.siteOptionCom.getSiteOptionGroupSetById(arguments.site_option_group_set_id, arguments.site_id, arguments.arrGroupName, arguments.showUnapproved); 
+	return application.zcore.siteOptionCom.getOptionGroupSetById(arguments.site_option_group_set_id, arguments.site_id, arguments.arrGroupName, arguments.showUnapproved); 
 	</cfscript>
 </cffunction>
 
@@ -1461,7 +1461,7 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="site_option_group_parent_id" type="numeric" required="no" default="#0#">
 	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	return application.zcore.siteOptionCom.siteOptionGroupIdByName(arguments.groupName, arguments.site_option_group_parent_id, arguments.site_id); 
+	return application.zcore.siteOptionCom.optionGroupIdByName(arguments.groupName, arguments.site_option_group_parent_id, arguments.site_id); 
 	</cfscript>
 </cffunction>
 
@@ -1471,7 +1471,7 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfargument name="parentStruct" type="struct" required="no" default="#{__groupId=0,__setId=0}#">
 	<cfscript> 
-	return application.zcore.siteOptionCom.siteOptionGroupStruct(arguments.groupName, arguments.site_option_app_id, arguments.site_id, arguments.parentStruct); 
+	return application.zcore.siteOptionCom.optionGroupStruct(arguments.groupName, arguments.site_option_app_id, arguments.site_id, arguments.parentStruct); 
 	</cfscript>
 </cffunction> 
 
@@ -1912,7 +1912,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript> 
-	return application.zcore.siteOptionCom.appendSiteOptionGroupDefaults(arguments.dataStruct, arguments.site_option_group_id); 
+	return application.zcore.siteOptionCom.appendOptionGroupDefaults(arguments.dataStruct, arguments.site_option_group_id); 
 	</cfscript>
 </cffunction>
 
@@ -2021,7 +2021,7 @@ User's IP: #request.zos.cgi.remote_addr#
 		}
 	}
 
-	application.zcore.siteOptionCom.updateSiteOptionCache(tempStruct);
+	application.zcore.siteOptionCom.updateOptionCache(tempStruct);
 	tempStruct.themeData={};
 	tempStruct.widgetData={};
 

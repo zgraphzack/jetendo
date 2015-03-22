@@ -344,11 +344,11 @@ search sql generator has to be able to search on child group data for paging to 
 				if(left(i, 8) EQ 'newvalue'){
 					if(form[i] NEQ ""){
 						site_option_id=removeChars(i, 1, 8);
-						if(structkeyexists(tempStruct.siteOptionLookup, site_option_id)){
+						if(structkeyexists(tempStruct.optionLookup, site_option_id)){
 							searchCacheStruct[i]=form[i];
-							var currentCFC=application.zcore.siteOptionCom.getTypeCFC(tempStruct.siteOptionLookup[site_option_id].type);
+							var currentCFC=application.zcore.siteOptionCom.getTypeCFC(tempStruct.optionLookup[site_option_id].type);
 							if(currentCFC.isSearchable()){
-								ts=currentCFC.getSearchSQLStruct(tempStruct.siteOptionLookup[site_option_id], tempStruct.siteOptionLookup[site_option_id].optionStruct, 'newvalue', form, form[i]); 
+								ts=currentCFC.getSearchSQLStruct(tempStruct.optionLookup[site_option_id], tempStruct.optionLookup[site_option_id].optionStruct, 'newvalue', form, form[i]); 
 								if(structkeyexists(groupOptionStruct, site_option_id) and groupOptionStruct[site_option_id].groupId NEQ form.groupId){
 									ts.subGroup=groupOptionStruct[site_option_id].groupName;
 								}
@@ -359,7 +359,7 @@ search sql generator has to be able to search on child group data for paging to 
 				}
 			}
 			if(not structkeyexists(form, 'autosearch')){
-				rs2=application.zcore.siteOptionCom.searchSiteOptionGroup(groupStruct.site_option_group_name, arrSearch, 0, true, (form.zIndex-1)*10, 10);
+				rs2=application.zcore.siteOptionCom.searchOptionGroup(groupStruct.site_option_group_name, arrSearch, 0, true, (form.zIndex-1)*10, 10);
 				/*application.zcore.functions.zheader("x_ajax_id", form.x_ajax_id);
 				writedump(rs2); abort; //application.zcore.functions.zReturnJson({arrSearch:arrSearch, rs2:rs2});abort;
 				*/
