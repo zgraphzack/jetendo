@@ -1,35 +1,20 @@
-<cfcomponent>
+<cfcomponent extends="zcorerootmapping.com.app.option-base">
 <cfoutput> 
 <cffunction name="getOptionTypes" returntype="struct" localmode="modern" access="public">
 	<cfscript>
-	ts={
-		"0": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.textOptionType"),
-		"1": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.textareaOptionType"),
-		"2": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.htmlEditorOptionType"),
-		"3": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.imageOptionType"),
-		"4": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.dateTimeOptionType"),
-		"5": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.dateOptionType"),
-		"6": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.timeOptionType"),
-		"7": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.selectMenuOptionType"),
-		"8": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.checkboxOptionType"),
-		"9": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.fileOptionType"),
-		"10": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.emailOptionType"),
-		"11": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.htmlSeparatorOptionType"),
-		"12": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.hiddenOptionType"),
-		"13": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.mapPickerOptionType"),
-		"14": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.radioOptionType"),
-		"15": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.urlOptionType"),
-		"16": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.userPickerOptionType"),
-		"17": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.numberOptionType"),
-		"18": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.colorOptionType"),
-		"19": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.stateOptionType"),
-		"20": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.countryOptionType"),
-		"21": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.listingSavedSearchOptionType")
-	};
+	ts=getOptionTypeCFCs();
 	for(i in ts){
 		ts[i].init("site", "site");
 	}
 	return ts;
+	</cfscript>
+</cffunction>
+ 
+
+<cffunction name="getTypeData" returntype="struct" localmode="modern" access="public">
+	<cfargument name="site_id" type="string" required="yes" hint="site_id">
+	<cfscript>
+	return application.siteStruct[arguments.site_id].globals.soGroupData;
 	</cfscript>
 </cffunction>
  
@@ -42,7 +27,7 @@
 	length=arraylen(arguments.arrSearch);
 	lastMatch=true;
 	arrSQL=[' ( '];
-	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
+	t9=getSiteData();
 	for(i=1;i LTE length;i++){
 		c=arguments.arrSearch[i]; 
 		if(isArray(c)){
@@ -57,10 +42,9 @@
 					arguments.fieldStruct[siteOptionId]=arguments.tableCount;
 					arguments.tableCount++;
 				} 
-				tempStruct=application.siteStruct[request.zos.globals.id].globals.soGroupData;
-				if(application.zcore.functions.zso(tempStruct.siteOptionLookup[siteOptionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
+				if(application.zcore.functions.zso(t9.siteOptionLookup[siteOptionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
 					multipleValues=true;
-					if(tempStruct.siteOptionLookup[siteOptionId].optionStruct.selectmenu_delimiter EQ "|"){
+					if(t9.siteOptionLookup[siteOptionId].optionStruct.selectmenu_delimiter EQ "|"){
 						delimiter=',';
 					}else{
 						delimiter='|';
@@ -76,8 +60,8 @@
 				}
 				tableName="sGroup"&arguments.fieldStruct[siteOptionId];
 				field='sVal'&siteOptionId;
-				currentCFC=application.zcore.siteOptionTypeStruct[tempStruct.siteOptionLookup[siteOptionId].site_option_type_id];
-				fieldName=currentCFC.getSearchFieldName('s1', tableName, tempStruct.siteOptionLookup[siteOptionId].optionStruct);
+				currentCFC=application.zcore.siteOptionCom.getTypeCFC(t9.siteOptionLookup[siteOptionId].site_option_type_id);
+				fieldName=currentCFC.getSearchFieldName('s1', tableName, t9.siteOptionLookup[siteOptionId].optionStruct);
 				arrayAppend(arrSQL, this.processSearchGroupSQL(c, fieldName, multipleValues, delimiter, concatAppendPrepend));// "`"&tableName&"`.`"&field&"`"));
 				if(i NEQ length and not isSimpleValue(arguments.arrSearch[i+1])){
 					arrayAppend(arrSQL, ' and ');
@@ -108,154 +92,6 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="processSearchGroupSQL" access="private" output="no" returntype="string" localmode="modern">
-	<cfargument name="struct" type="struct" required="yes">
-	<cfargument name="field" type="string" required="yes">
-	<cfargument name="multipleValues" type="boolean" required="yes">
-	<cfargument name="delimiter" type="string" required="yes">
-	<cfargument name="concatAppendPrepend" type="string" required="yes">
-	<cfscript>
-	arrValue=arguments.struct.arrValue;
-	length=arrayLen(arrValue);
-	type=arguments.struct.type;
-	match=true;
-	arrSQL=[];
-	field=arguments.field;
-	if(arguments.concatAppendPrepend NEQ ""){
-		arguments.concatAppendPrepend=application.zcore.functions.zescape(arguments.concatAppendPrepend);
-		field="concat('#arguments.concatAppendPrepend#', #field#, '#arguments.concatAppendPrepend#')";
-	}
-	multipleError="arguments.multipleValues EQ true isn't supported by processSearchGroupSQL.  Only non-sql in-memory searches can have multiple values.";
-	if(type EQ "="){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrValue2[n]=arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend;
-					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" = '"&application.zcore.functions.zescape(arrValue[g])&"' ");
-			}
-		}
-	}else if(type EQ "<>"){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrValue2[n]=arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend;
-					arrayAppend(arrSQL2, field&" <> '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" <> '"&application.zcore.functions.zescape(arrValue[g])&"' ");
-			}
-		}
-	}else if(type EQ "between"){
-		if(arguments.multipleValues){
-			throw(multipleError);
-		}
-		if(arrayLen(arrValue) NEQ 2){
-			throw("You must supply exactly 2 item array for ""arrValue"" for a ""between"" search.");
-		}
-		arrayAppend(arrSQL, field&" BETWEEN '"&application.zcore.functions.zescape(arrValue[1])&"' and '"&application.zcore.functions.zescape(arrValue[2])&"' ");
-	}else if(type EQ "not between"){
-		if(arguments.multipleValues){
-			throw(multipleError);
-		}
-		if(arrayLen(arrValue) NEQ 2){
-			throw("You must supply exactly 2 item array for ""arrValue"" for a ""between"" search.");
-		}
-		arrayAppend(arrSQL, field&" NOT BETWEEN '"&application.zcore.functions.zescape(arrValue[1])&"' and '"&application.zcore.functions.zescape(arrValue[2])&"' ");
-	}else if(type EQ ">"){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrayAppend(arrSQL2, field&" > '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" > '"&application.zcore.functions.zescape(arrValue[g])&"' ");
-			}
-		}
-	}else if(type EQ ">="){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrayAppend(arrSQL2, field&" >= '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" >= '"&application.zcore.functions.zescape(arrValue[g])&"' ");
-			}
-		}
-	}else if(type EQ "<"){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " < "&arrayToList(arrSQL2, " or ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" < '"&application.zcore.functions.zescape(arrValue[g])&"' ");
-			}
-		}
-	}else if(type EQ "<="){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrayAppend(arrSQL2, field&" <= '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" <= '"&application.zcore.functions.zescape(arrValue[g])&"' ");
-			}
-		}
-	}else if(type EQ "like"){
-		for(g=1;g LTE length;g++){ 
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrValue2[n]='%'&arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend&'%';
-					arrayAppend(arrSQL2, field&" LIKE '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " or ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" LIKE '%"&application.zcore.functions.zescape(arrValue[g])&"%' ");
-			}
-		}
-	}else if(type EQ "not like"){
-		for(g=1;g LTE length;g++){
-			if(arguments.multipleValues){
-				arrValue2=listToArray(arrValue[g], arguments.delimiter, false);
-				arrSQL2=[];
-				for(n=1;n LTE arraylen(arrValue2);n++){
-					arrValue2[n]='%'&arguments.concatAppendPrepend&arrValue2[n]&arguments.concatAppendPrepend&'%';
-					arrayAppend(arrSQL2, field&" = '"&application.zcore.functions.zescape(arrValue2[n])&"' ");
-				}
-				arrayAppend(arrSQL, " ( "&arrayToList(arrSQL2, " and ")&" ) ");
-			}else{
-				arrayAppend(arrSQL, field&" NOT LIKE '%"&application.zcore.functions.zescape(arrValue[g])&"%' ");
-			}
-		}
-	}else{
-		throw("Invalid field type, ""#type#"".  Valid types are =, <>, <, <=, >, >=, between, not between, like, not like");
-	}
-	return " ( "&arrayToList(arrSQL, " or ")&" ) ";
-	</cfscript>
-</cffunction>
 
 <cffunction name="processSearchArray" access="private" output="yes" returntype="boolean" localmode="modern">
 	<cfargument name="arrSearch" type="array" required="yes">
@@ -269,6 +105,7 @@
 		return true;
 	}
 	debugOn=false;
+	typeStruct=getTypeData(request.zos.globals.id); 
 	for(i=1;i LTE length;i++){
 		c=arguments.arrSearch[i]; 
 		if(debugOn){ echo('<hr>');	writedump(c);	}
@@ -302,12 +139,11 @@
 				arrChild=application.zcore.functions.zSiteOptionGroupStruct(c.subGroup, 0, request.zos.globals.id, row);//request.zos.siteOptionSearchSubGroupCache[c.subGroup];
 				lastMatch=false;
 				if(arrayLen(arrChild)){
-					//writedump(arrChild);
-					tempStruct=application.siteStruct[request.zos.globals.id].globals.soGroupData;
-					siteOptionId=tempStruct.siteOptionIdLookup[arrChild[1].__groupId&chr(9)&c.field];
-					if(application.zcore.functions.zso(tempStruct.siteOptionLookup[siteOptionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
+					//writedump(arrChild); 
+					siteOptionId=typeStruct.siteOptionIdLookup[arrChild[1].__groupId&chr(9)&c.field];
+					if(application.zcore.functions.zso(typeStruct.siteOptionLookup[siteOptionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
 						multipleValues=true;
-						if(tempStruct.siteOptionLookup[siteOptionId].optionStruct.selectmenu_delimiter EQ "|"){
+						if(typeStruct.siteOptionLookup[siteOptionId].optionStruct.selectmenu_delimiter EQ "|"){
 							delimiter=',';
 						}else{
 							delimiter='|';
@@ -330,12 +166,11 @@
 				if(debugOn){
 					echo("child lastMatch:"&lastMatch&"<br>");
 				}
-			}else{
-				tempStruct=application.siteStruct[request.zos.globals.id].globals.soGroupData;
-				siteOptionId=tempStruct.siteOptionIdLookup[arguments.site_option_group_id&chr(9)&c.field];
-				if(application.zcore.functions.zso(tempStruct.siteOptionLookup[siteOptionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
+			}else{ 
+				siteOptionId=typeStruct.siteOptionIdLookup[arguments.site_option_group_id&chr(9)&c.field];
+				if(application.zcore.functions.zso(typeStruct.siteOptionLookup[siteOptionId].optionStruct,'selectmenu_multipleselection', true, 0) EQ 1){
 					multipleValues=true;
-					if(tempStruct.siteOptionLookup[siteOptionId].optionStruct.selectmenu_delimiter EQ "|"){
+					if(typeStruct.siteOptionLookup[siteOptionId].optionStruct.selectmenu_delimiter EQ "|"){
 						delimiter=',';
 					}else{
 						delimiter='|';
@@ -395,163 +230,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="processSearchGroup" access="private" output="no" returntype="boolean" localmode="modern">
-	<cfargument name="struct" type="struct" required="yes">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="multipleValues" type="boolean" required="yes">
-	<cfargument name="delimiter" type="string" required="yes">
-	<cfscript>
-	arrValue=arguments.struct.arrValue;
-	length=arrayLen(arrValue);
-	type=arguments.struct.type;
-	field=arguments.struct.field;
-	if(structkeyexists(arguments.struct, 'delimiter')){
-		arguments.delimiter=arguments.struct.delimiter;
-	}
-	row=arguments.row;
-	match=true;
-	
-	if(arguments.multipleValues){
-		arrRowValues=listToArray(row[field], arguments.delimiter);
-	}else{
-		arrRowValues=[row[field]];
-	}
-	rowLength=arrayLen(arrRowValues);
-	
-	if(type EQ "="){
-		match=false;
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(arrValue[g] EQ arrRowValues[n]){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else if(type EQ "<>"){
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(arrValue[g] EQ arrRowValues[n]){
-					match=false;
-					break;
-				}
-			}
-		}
-	}else if(type EQ "between"){
-		if(arrayLen(arrValue) NEQ 2){
-			throw("You must supply exactly 2 item array for ""arrValue"" for a ""between"" search.");
-		}
-		match=false;
-		for(n=1;n LTE rowLength;n++){
-			if(arrRowValues[n] GTE arrValue[1]  and arrRowValues[n] LTE arrValue[2]){
-				match=true; 
-				break;
-			}
-		}
-	}else if(type EQ "not between"){
-		if(arrayLen(arrValue) NEQ 2){
-			throw("You must supply exactly 2 item array for ""arrValue"" for a ""between"" search.");
-		}
-		match=false;
-		for(n=1;n LTE rowLength;n++){
-			if(arrRowValues[n] LT arrValue[1] or arrRowValues[n] GT arrValue[2]){
-				match=true; 
-			}
-		}
-	}else if(type EQ ">"){
-		match=false;
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(arrRowValues[n] GT arrValue[g]){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else if(type EQ ">="){
-		match=false;
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(arrRowValues[n] GTE arrValue[g]){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else if(type EQ "<"){
-		match=false;
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(arrRowValues[n] LT arrValue[g]){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else if(type EQ "<="){
-		match=false;
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(arrRowValues[n] LTE arrValue[g]){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else if(type EQ "like"){
-		match=false;
-		for(g=1;g LTE length;g++){ 
-			for(n=1;n LTE rowLength;n++){
-				if(refindnocase(replace('%'&arrValue[g]&'%', "%", ".*", "all"), arrRowValues[n]) NEQ 0){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else if(type EQ "not like"){
-		match=false;
-		for(g=1;g LTE length;g++){
-			for(n=1;n LTE rowLength;n++){
-				if(refindnocase(replace('%'&arrValue[g]&'%', "%", ".*", "all"), arrRowValues[n]) EQ 0){
-					match=true;
-					break;
-				}
-			}
-		}
-	}else{
-		throw("Invalid field type, ""#type#"".  Valid types are =, <>, <, <=, >, >=, between, not between, like, not like");
-	}
-	return match;
-	</cfscript>
-</cffunction>
 
-
-<!--- 
-used to do search for a list of values
- --->
-<cffunction name="getSearchListAsArray" localmode="modern" access="public">
-	<cfargument name="fieldName" type="string" required="true">
-	<cfargument name="valueList" type="string" required="true">
-	<cfargument name="compareOperator" type="string" required="true" hint="Valid values are =, !=, <, <=, >, >=, LIKE, NOT LIKE">
-	<cfargument name="groupOperator" type="string" required="true" hint="Valid values are AND or OR">
-	<cfscript>
-	arrValue=listToArray(arguments.valueList, ',', false);
-	count=arrayLen(arrValue);
-	arrSearch=[];
-	for(i=1;i LTE count;i++){
-		t9={
-			type=arguments.compareOperator,
-			field: arguments.fieldName,
-			arrValue:[arrValue[i]]	
-		}
-		arrayAppend(arrSearch, t9);
-		if(i NEQ count){
-			arrayAppend(arrSearch, arguments.groupOperator);
-		}
-	}
-	return arrSearch;
-	</cfscript>
-</cffunction>
  
 <!--- 
 // nested in-memory search is WORKING for all types.
@@ -602,7 +281,7 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 	rs={count:0, arrResult:[], hasMoreRecords:false};
 	arguments.offset=application.zcore.functions.zso(arguments, 'offset', true, 0);
 	arguments.limit=application.zcore.functions.zso(arguments, 'limit', true, 10); 
-	var t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
+	t9=getTypeData(request.zos.globals.id);
 	currentOffset=0;
 	if(arguments.orderBy NEQ ""){
 		if(arguments.orderByDataType EQ ""){
@@ -716,11 +395,11 @@ application.zcore.siteOptionCom.searchSiteOptionGroup("groupName", ts, 0, false)
 			}
 			if(arguments.orderBy NEQ ""){
 				// need to lookup the field site_option_id using the site_option_name and groupId
-				siteOptionIdLookup=request.zos.globals.soGroupData.siteOptionIdLookup;
+				siteOptionIdLookup=t9.siteOptionIdLookup;
 				if(structkeyexists(siteOptionIdLookup, groupId&chr(9)&arguments.orderBy)){
 					site_option_id=siteOptionIdLookup[groupId&chr(9)&arguments.orderBy];
-					site_option_type_id=request.zos.globals.soGroupData.siteOptionLookup[site_option_id].type;
-					currentCFC=application.zcore.siteOptionTypeStruct[site_option_type_id];
+					site_option_type_id=t9.siteOptionLookup[site_option_id].type;
+					currentCFC=application.zcore.siteOptionCom.getTypeCFC(site_option_type_id);
 
 					arrayAppend(arrSelect, "s2.site_x_option_group_value sVal2");
 					arrayAppend(arrTable, "site_x_option_group s2");
@@ -946,8 +625,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 <cffunction name="getSiteOptionGroupById" access="public" returntype="struct" localmode="modern">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionGroupLookup, arguments.site_option_group_id)){
-		return application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionGroupLookup[arguments.site_option_group_id];
+	t9=getTypeData(request.zos.globals.id);
+	if(structkeyexists(t9.siteOptionGroupLookup, arguments.site_option_group_id)){
+		return t9.siteOptionGroupLookup[arguments.site_option_group_id];
 	}else{
 		return {};
 	}
@@ -957,8 +637,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 <cffunction name="getSiteOptionGroupNameById" access="public" returntype="string" localmode="modern">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionGroupLookup, arguments.site_option_group_id)){
-		return application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionGroupLookup[arguments.site_option_group_id].site_option_group_name;
+	t9=getTypeData(request.zos.globals.id);
+	if(structkeyexists(t9.siteOptionGroupLookup, arguments.site_option_group_id)){
+		return t9.siteOptionGroupLookup[arguments.site_option_group_id].site_option_group_name;
 	}else{
 		return "";
 	}
@@ -968,8 +649,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 <cffunction name="getSiteOptionFieldById" access="public" returntype="struct" localmode="modern">
 	<cfargument name="site_option_id" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionLookup, arguments.site_option_id)){
-		return application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionLookup[arguments.site_option_id];
+	t9=getTypeData(request.zos.globals.id);
+	if(structkeyexists(t9.siteOptionLookup, arguments.site_option_id)){
+		return t9.siteOptionLookup[arguments.site_option_id];
 	}else{
 		return {};
 	}
@@ -1096,8 +778,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 <cffunction name="getSiteOptionFieldNameById" access="public" returntype="string" localmode="modern">
 	<cfargument name="site_option_id" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionLookup, arguments.site_option_id)){
-		return application.siteStruct[request.zos.globals.id].globals.soGroupData.siteOptionLookup[arguments.site_option_id].site_option_name;
+	t9=getTypeData(request.zos.globals.id);
+	if(structkeyexists(t9.siteOptionLookup, arguments.site_option_id)){
+		return t9.siteOptionLookup[arguments.site_option_id].site_option_name;
 	}else{
 		return "";
 	}
@@ -1266,7 +949,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfargument name="row" type="struct" required="yes"> 
 	<cfargument name="curStruct" type="struct" required="yes"> 
 	<cfscript>
-	var t9=application.zcore.siteGlobals[arguments.row.site_id].soGroupData;
+	var t9=getTypeData(arguments.row.site_id);
 	if(arguments.row.site_option_id NEQ ""){
 		typeId=t9.siteOptionLookup[arguments.row.site_option_id].type;
 		if(typeId EQ 3 or typeId EQ 9){
@@ -1291,7 +974,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfargument name="row" type="struct" required="yes"> 
 	<cfscript>
 	row=arguments.row; 
-	var t9=application.zcore.siteGlobals[row.site_id].soGroupData;
+	var t9=getTypeData(row.site_id);
 	ts=structnew();
 	ts.__sort=row.site_x_option_group_set_sort;
 	ts.__setId=row.site_x_option_group_set_id;
@@ -1371,34 +1054,28 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes"> 
 	<cfscript>
-	var debug=false;
-	if(debug){
-		variables.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, arguments.site_x_option_group_set_id, false, duplicate(application.zcore.siteGlobals[arguments.site_id], true));
-	}else{
-		variables.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, arguments.site_x_option_group_set_id, false, application.zcore.siteGlobals[arguments.site_id]);
-		application.zcore.functions.zCacheJsonSiteAndUserGroup(arguments.site_id, application.zcore.siteGlobals[arguments.site_id]); 
-	}
+	variables.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, arguments.site_x_option_group_set_id, false);
+	application.zcore.functions.zCacheJsonSiteAndUserGroup(arguments.site_id, application.zcore.siteGlobals[arguments.site_id]);
 	</cfscript>
 </cffunction>
 
-<cffunction name="deleteSiteOptionGroupSetIdCacheInternal" localmode="modern" access="private" returntype="struct">
+<cffunction name="deleteSiteOptionGroupSetIdCacheInternal" localmode="modern" access="private">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfargument name="disableFileUpdate" type="boolean" required="yes">
-	<cfargument name="siteStruct" type="struct" required="yes">
 	<cfscript>
 	var row=0;
-	var tempValue=0;
-	var tempStruct=arguments.siteStruct;
+	var tempValue=0; 
+	t9=getSiteData(arguments.site_id);
 	var db=request.zos.queryObject; 
 	// remove only the keys I need to and then publish  
-	if(not structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_groupId")){
-		return tempStruct;
+	if(not structkeyexists(t9.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_groupId")){
+		return;
 	}
-	var groupId=tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_groupId"];
-	var appId=tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_appId"];
-	var parentId=tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_parentId"]; 
-	var arrChild=tempStruct.soGroupData.siteOptionGroupSetId[parentId&"_childGroup"][groupId]; 
+	var groupId=t9.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_groupId"];
+	var appId=t9.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_appId"];
+	var parentId=t9.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_parentId"]; 
+	var arrChild=t9.siteOptionGroupSetId[parentId&"_childGroup"][groupId]; 
 	deleteIndex=0;
 	for(var i=1;i LTE arrayLen(arrChild);i++){
 		if(arguments.site_x_option_group_set_id EQ arrChild[i]){
@@ -1406,7 +1083,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 			break;
 		}
 	}
-	var arrChild2=tempStruct.soGroupData.siteOptionGroupSetArrays[appId&chr(9)&groupId&chr(9)&parentId];
+	var arrChild2=t9.siteOptionGroupSetArrays[appId&chr(9)&groupId&chr(9)&parentId];
 	deleteIndex2=0;
 	for(var i=1;i LTE arrayLen(arrChild2);i++){
 		if(arguments.site_x_option_group_set_id EQ arrChild2[i].__setId){
@@ -1414,14 +1091,14 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}
 	}
 	// recursively delete children from shared memory cache
-	var childGroup=duplicate(tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_childGroup"]); 
+	var childGroup=duplicate(t9.siteOptionGroupSetId[arguments.site_x_option_group_set_id&"_childGroup"]); 
 	for(var f in childGroup){
 		for(var g=1;g LTE arraylen(childGroup[f]);g++){ 
-			tempStruct=this.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, childGroup[f][g], true, tempStruct);
+			this.deleteSiteOptionGroupSetIdCacheInternal(arguments.site_id, childGroup[f][g], true);
 		}
 	}
-	for(var n in tempStruct.soGroupData.siteOptionGroupFieldLookup[groupId]){ 
-		structdelete(tempStruct.soGroupData.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_f"&n);
+	for(var n in t9.siteOptionGroupFieldLookup[groupId]){ 
+		structdelete(t9.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_f"&n);
 	}
 	if(deleteIndex){
 		arrayDeleteAt(arrChild, deleteIndex);
@@ -1429,12 +1106,12 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	if(deleteIndex2){
 		arrayDeleteAt(arrChild2, deleteIndex2);
 	} 
-	structdelete(tempStruct.soGroupData.siteOptionGroupSet, arguments.site_x_option_group_set_id);
-	structdelete(tempStruct.soGroupData.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_groupId");
-	structdelete(tempStruct.soGroupData.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_appId");
-	structdelete(tempStruct.soGroupData.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_parentId");
-	structdelete(tempStruct.soGroupData.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_childGroup"); 
-	return tempStruct;
+	structdelete(t9.siteOptionGroupSet, arguments.site_x_option_group_set_id);
+	structdelete(t9.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_groupId");
+	structdelete(t9.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_appId");
+	structdelete(t9.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_parentId");
+	structdelete(t9.siteOptionGroupSetId, arguments.site_x_option_group_set_id&"_childGroup"); 
+
 	</cfscript>
 </cffunction>
 
@@ -1481,16 +1158,16 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		sortStruct[row2.site_x_option_group_set_id]=i;
 		i++;
 	}
-	var tempStruct=application.zcore.siteGlobals[arguments.site_id];
-	tempStruct.soGroupData.siteOptionGroupSetId[arguments.site_x_option_group_set_parent_id&"_childGroup"][arguments.site_option_group_id]=arrTemp;
+	t9=getSiteData(arguments.site_id);
+	t9.siteOptionGroupSetId[arguments.site_x_option_group_set_parent_id&"_childGroup"][arguments.site_option_group_id]=arrTemp;
 
-	arrData=tempStruct.soGroupData.siteOptionGroupSetArrays[arguments.site_option_app_id&chr(9)&arguments.site_option_group_id&chr(9)&arguments.site_x_option_group_set_parent_id];
+	arrData=t9.siteOptionGroupSetArrays[arguments.site_option_app_id&chr(9)&arguments.site_option_group_id&chr(9)&arguments.site_x_option_group_set_parent_id];
 	arrDataNew=[];
 	for(i=1;i LTE arraylen(arrData);i++){
 		sortIndex=sortStruct[arrData[i].__setId];
 		arrDataNew[sortIndex]=arrData[i];
 	}
-	tempStruct.soGroupData.siteOptionGroupSetArrays[arguments.site_option_app_id&chr(9)&arguments.site_option_group_id&chr(9)&arguments.site_x_option_group_set_parent_id]=arrDataNew;
+	t9.siteOptionGroupSetArrays[arguments.site_option_app_id&chr(9)&arguments.site_option_group_id&chr(9)&arguments.site_x_option_group_set_parent_id]=arrDataNew;
 	</cfscript>
 </cffunction>
 	
@@ -1506,7 +1183,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	/* if(request.zos.isdeveloper){
 		 debug=true;
 	 }*/
-	var tempStruct=application.zcore.siteGlobals[arguments.site_id];
+
+	t9=getSiteData(arguments.site_id);
+	typeStruct=getTypeData(arguments.site_id);
 	db.sql="SELECT s1.*, s3.site_option_id groupSetOptionId, s4.site_option_type_id typeId, s3.site_x_option_group_value groupSetValue, s3.site_x_option_group_original groupSetOriginal  
 	FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1  
 	LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3  ON 
@@ -1532,21 +1211,21 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var newRecord=false;
 	for(row in qS){
 		var id=row.site_x_option_group_set_id;
-		if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, id&"_appId") EQ false){
+		if(structkeyexists(t9.siteOptionGroupSetId, id&"_appId") EQ false){
 			newRecord=true;
-			tempStruct.soGroupData.siteOptionGroupLookup[row.site_option_group_id].count++;
-			tempStruct.soGroupData.siteOptionGroupSetId[id&"_groupId"]=row.site_option_group_id;
-			tempStruct.soGroupData.siteOptionGroupSetId[id&"_appId"]=row.site_option_app_id;
-			tempStruct.soGroupData.siteOptionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
-			tempStruct.soGroupData.siteOptionGroupSetId[id&"_childGroup"]=structnew();
+			typeStruct.siteOptionGroupLookup[row.site_option_group_id].count++;
+			t9.siteOptionGroupSetId[id&"_groupId"]=row.site_option_group_id;
+			t9.siteOptionGroupSetId[id&"_appId"]=row.site_option_app_id;
+			t9.siteOptionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
+			t9.siteOptionGroupSetId[id&"_childGroup"]=structnew();
 		}
-		if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
-			if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
-				tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
+		if(structkeyexists(t9.siteOptionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
+			if(structkeyexists(t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
+				t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
 			}
-			if(tempStruct.soGroupData.siteOptionGroupLookup[row.site_option_group_id].site_option_group_enable_sorting EQ 1){
+			if(typeStruct.siteOptionGroupLookup[row.site_option_group_id].site_option_group_enable_sorting EQ 1){
 				if(structkeyexists(tempUniqueStruct, row.site_x_option_group_set_parent_id&"_"&id) EQ false){
-					var arrChild=tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
+					var arrChild=t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
 					var resort=false;
 					if(arrayLen(arrChild) LT row.site_x_option_group_set_sort){
 						resort=true;
@@ -1574,13 +1253,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 						for(var row2 in qSort){
 							arrayAppend(arrTemp, row2.site_x_option_group_set_id);
 						}
-						tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arrTemp;
+						t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arrTemp;
 					}
-					//writedump(tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]);
+					//writedump(t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]);
 					tempUniqueStruct[row.site_x_option_group_set_parent_id&"_"&id]=true;
 				}
 			}else if(newRecord){
-				var arrChild=tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
+				var arrChild=t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
 				var found=false;
 				for(var i=1;i LTE arrayLen(arrChild);i++){
 					if(row.site_x_option_group_set_id EQ arrChild[i]){
@@ -1595,7 +1274,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}
 		if(row.typeId EQ 3 or row.typeId EQ 9){
 			if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
-				optionStruct=tempStruct.soGroupData.siteOptionLookup[row.groupSetOptionId].optionStruct;
+				optionStruct=typeStruct.siteOptionLookup[row.groupSetOptionId].optionStruct;
 				if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
 					tempValue="/zuploadsecure/site-options/"&row.groupSetValue;
 				}else{
@@ -1607,20 +1286,14 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}else{
 			tempValue=row.groupSetValue;
 		}
-		tempStruct.soGroupData.siteOptionGroupSetId[id&"_f"&row.groupSetOptionId]=tempValue;
+		t9.siteOptionGroupSetId[id&"_f"&row.groupSetOptionId]=tempValue;
 		if(row.typeId EQ 3){
 			if(row.groupSetOriginal NEQ ""){
-				tempStruct.soGroupData.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
+				t9.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
 			}else{
-				tempStruct.soGroupData.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=tempValue;
+				t9.siteOptionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=tempValue;
 			}
-		}
-		/*if(len(row.childGroupId)){
-			var nk=id&"_s"&row.site_x_option_group_set_sort&"_g"&row.childGroupId&"_s"&row.childSetSort;
-			if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetId, nk) EQ false){
-				tempStruct.soGroupData.siteOptionGroupSetId[nk]=row.childSetId; 
-			}
-		} */
+		} 
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1-2<br>'); startTime=gettickcount();
 	 db.sql="SELECT * FROM 
@@ -1637,8 +1310,8 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1-3<br>'); startTime=gettickcount();
 	if(debug) writedump(qS);
 	for(row in qS){
-		if(structkeyexists(tempStruct.soGroupData.siteOptionGroupSetArrays, row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id) EQ false){
-			tempStruct.soGroupData.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id]=arraynew(1);
+		if(structkeyexists(t9.siteOptionGroupSetArrays, row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id) EQ false){
+			t9.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id]=arraynew(1);
 		}
 		var ts=structnew();
 		ts.__setId=row.site_x_option_group_set_id;
@@ -1662,8 +1335,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 				}
 				ts.__url="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#urlId#-#row.site_x_option_group_set_id#.html";
 			}
-		}
-		var t9=tempStruct.soGroupData;
+		} 
 		var fieldStruct=t9.siteOptionGroupFieldLookup[ts.__groupId];
 		
 		var defaultStruct=t9.siteOptionGroupDefaults[row.site_option_group_id];
@@ -1682,9 +1354,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		}
 		if(debug) writedump(ts);
 		
-		tempStruct.soGroupData.siteOptionGroupSet[row.site_x_option_group_set_id]= ts;
-		if(tempStruct.soGroupData.siteOptionGroupLookup[row.site_option_group_id].site_option_group_enable_sorting EQ 1){
-			var arrChild=tempStruct.soGroupData.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];
+		t9.siteOptionGroupSet[row.site_x_option_group_set_id]= ts;
+		if(typeStruct.siteOptionGroupLookup[row.site_option_group_id].site_option_group_enable_sorting EQ 1){
+			var arrChild=t9.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];
 			var resort=false;
 			if(arrayLen(arrChild) GTE row.site_x_option_group_set_sort){
 				if(arrayLen(arrChild) LT row.site_x_option_group_set_sort){
@@ -1698,13 +1370,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 				resort=true;
 			} 
 			if(resort){
-				var arrChild2=tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
+				var arrChild2=t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
 				var arrTemp=[]; 
 				try{
 					for(var i=1;i LTE arraylen(arrChild2);i++){
-						arrayAppend(arrTemp, tempStruct.soGroupData.siteOptionGroupSet[arrChild2[i]]);
+						arrayAppend(arrTemp, t9.siteOptionGroupSet[arrChild2[i]]);
 					}
-					tempStruct.soGroupData.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id]=arrTemp;
+					t9.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id]=arrTemp;
 				}catch(Any e){
 					application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 					ts={};
@@ -1744,13 +1416,13 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 				var qSort=db.execute("qSort");
 				var arrTemp=[];
 				for(var row2 in qSort){
-					arrayAppend(arrTemp, tempStruct.soGroupData.siteOptionGroupSet[row2.site_x_option_group_set_id]);
+					arrayAppend(arrTemp, t9.siteOptionGroupSet[row2.site_x_option_group_set_id]);
 				}
-				tempStruct.soGroupData.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id]=arrTemp;
+				t9.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id]=arrTemp;
 				*/
 			}
 		}else{// if(newRecord){
-			var arrChild=tempStruct.soGroupData.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];//tempStruct.soGroupData.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
+			var arrChild=t9.siteOptionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];//t9.siteOptionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
 			var found=false;
 			for(var i=1;i LTE arrayLen(arrChild);i++){
 				if(row.site_x_option_group_set_id EQ arrChild[i].__setID){
@@ -1767,7 +1439,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	}  
 	if(debug and structkeyexists(local, 'arrChild')) writedump(arrChild);
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1-4<br>'); startTime=gettickcount();
-	application.zcore.functions.zCacheJsonSiteAndUserGroup(arguments.site_id, tempStruct); 
+	application.zcore.functions.zCacheJsonSiteAndUserGroup(arguments.site_id, application.zcore.siteGlobals[arguments.site_id]); 
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1-5<br>'); startTime=gettickcount();
 	if(debug) application.zcore.functions.zabort();
 	</cfscript>
@@ -1945,8 +1617,9 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		if(qSet.site_x_option_group_set_image_library_id NEQ 0){
 			application.zcore.imageLibraryCom.unapproveLibraryId(qSet.site_x_option_group_set_image_library_id);
 		}
-		t9=application.zcore.siteGlobals[arguments.site_id].soGroupData;
-		var groupStruct=t9.siteOptionGroupLookup[groupId]; 
+		typeStruct=getTypeData(arguments.site_id);
+		t9=getSiteData(arguments.site_id);
+		var groupStruct=typeStruct.siteOptionGroupLookup[groupId]; 
 		if(groupStruct.site_option_group_enable_cache EQ 1 and structkeyexists(t9.siteOptionGroupSet, arguments.setId)){
 			groupStruct=t9.siteOptionGroupSet[arguments.setId];
 			groupStruct.__approved=approved;
@@ -2134,35 +1807,6 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	</cfscript>
 </cffunction>
 
-<cffunction name="rebuildParentStructData" localmode="modern" access="private">
-	<cfargument name="parentStruct" type="struct" required="yes">
-	<cfargument name="arrLabel" type="array" required="yes">
-	<cfargument name="arrValue" type="array" required="yes">
-	<cfargument name="arrCurrent" type="array" required="yes">
-	<cfargument name="level" type="numeric" required="yes">
-	<cfscript>
-	if(arguments.level GT 50){ 
-		throw("Possible infinite recursion.  Throwing error to prevent stackoverflow.");
-	}
-	for(local.f=1;local.f LTE arraylen(arguments.arrCurrent);local.f++){
-		if(arguments.level NEQ 0){
-			local.pad=replace(ljustify(" ", arguments.level*3), " ", "_", "ALL");
-		}else{
-			local.pad="";
-		}
-		arrayappend(arguments.arrLabel, local.pad&arguments.arrCurrent[local.f].label);
-		if(structkeyexists(arguments.arrCurrent[local.f], 'idChild')){
-			arrayappend(arguments.arrValue, arguments.arrCurrent[local.f].idChild);
-		}else{
-			arrayappend(arguments.arrValue, arguments.arrCurrent[local.f].id);
-		}
-		//writeoutput( arguments.arrCurrent[local.f].id&" | "& arguments.arrCurrent[local.f].label);
-		if(structkeyexists(arguments.parentStruct, arguments.arrCurrent[local.f].id) and arguments.arrCurrent[local.f].id NEQ 0){ 
-			variables.rebuildParentStructData(arguments.parentStruct, arguments.arrLabel, arguments.arrValue, arguments.parentStruct[arguments.arrCurrent[local.f].id], arguments.level+1);
-		}
-	}
-	</cfscript>
-</cffunction>
 
 <cffunction name="indexSiteOptionGroupRow" localmode="modern" access="public">
 	<cfargument name="setId" type="string" required="yes">
@@ -2173,7 +1817,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	var ts=0;
 	var i=0;
 	dataStruct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.setId, arguments.site_id, arguments.arrGroupName);
-	var t9=application.zcore.siteGlobals[arguments.site_id].soGroupData;
+	var t9=getTypeData(arguments.site_id);
 	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved NEQ 1){
 		deleteSiteOptionGroupSetIndex(arguments.setId, arguments.site_id);
 		return;
@@ -2219,11 +1863,10 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath); 
 		local.tempCom[groupStruct.site_option_group_search_index_cfc_method](dataStruct, ds);
 	}else{
-		arrFullText=[];
-		tempStruct=application.sitestruct[arguments.site_id].globals.soGroupData;
-		if(structkeyexists(tempStruct.siteOptionGroupFieldLookup, dataStruct.__groupId)){
-			for(i in tempStruct.siteOptionGroupFieldLookup[dataStruct.__groupId]){
-				c=tempStruct.siteOptionLookup[i];
+		arrFullText=[]; 
+		if(structkeyexists(t9.siteOptionGroupFieldLookup, dataStruct.__groupId)){
+			for(i in t9.siteOptionGroupFieldLookup[dataStruct.__groupId]){
+				c=t9.siteOptionLookup[i];
 				if(c.site_option_enable_search_index EQ 1){
 					arrayAppend(arrFullText, dataStruct[c.name]);
 				}
@@ -2332,6 +1975,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 	<cfscript>
 	var q=0;
 	var db=request.zos.queryObject;
+	typeStruct=getTypeData(arguments.site_id);
 	if(arguments.site_option_app_id NEQ 0 and arguments.site_option_app_id NEQ ""){
 		db.sql="SELECT * FROM #request.zos.queryObject.table("site_x_option", request.zos.zcoreDatasource)# site_x_option, 
 		#request.zos.queryObject.table("site_option", request.zos.zcoreDatasource)# site_option 
@@ -2348,7 +1992,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		securepath=application.zcore.functions.zvar('privatehomedir',arguments.site_id)&'zuploadsecure/site-options/';
 		qS=db.execute("qS");
 		for(i=1;i LTE qS.recordcount;i++){
-			optionStruct=tempStruct.soGroupData.siteOptionLookup[row.site_option_id].optionStruct;
+			optionStruct=typeStruct.siteOptionLookup[row.site_option_id].optionStruct;
 			if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ 'Yes'){
 				if(fileexists(securepath&qS.site_x_option_value[i])){
 					application.zcore.functions.zdeletefile(securepath&qS.site_x_option_value[i]);
@@ -2375,7 +2019,7 @@ arr1=application.zcore.siteOptionCom.siteOptionGroupSetFromDatabaseBySearch(ts, 
 		site_option_type_id=#db.param('3')#";
 		qS=db.execute("qS");
 		for(i=1;i LTE qS.recordcount;i++){
-			optionStruct=tempStruct.soGroupData.siteOptionLookup[row.site_option_id].optionStruct;
+			optionStruct=typeStruct.siteOptionLookup[row.site_option_id].optionStruct;
 			if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ 'Yes'){
 				if(fileexists(securepath&qS.site_x_option_group_value[i])){
 					application.zcore.functions.zdeletefile(securepath&qS.site_x_option_group_value[i]);

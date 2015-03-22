@@ -371,6 +371,8 @@
 	}
 
 	
+	ts.themeTypeData={};
+	ts.widgetTypeData={}
 	
 	var qDomain=0;
 	query name="qDomain" datasource="#ts.serverGlobals.serverdatasource#"{
@@ -435,7 +437,11 @@
 	ts.componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 	ts.componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
 
-	ts.siteOptionTypeStruct=ts.componentObjectCache.siteOptionCom.getOptionTypes();
+	ts.componentObjectCache.siteOptionCom.init("site", "site");
+
+	ts.soGroupData={
+		optionTypeStruct:ts.componentObjectCache.siteOptionCom.getOptionTypes()
+	};
 
 	
 	structappend(ts, ts.componentObjectCache);

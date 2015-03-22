@@ -884,7 +884,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 					qSiteXOption=db.execute("qSiteXOption");
 					for(row in qSiteXOption){
 						optionStruct=deserializeJson(row.site_option_type_json); 
-						currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+						currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 						if(currentCFC.hasCustomDelete()){
 							// call delete on siteOptionType
 							currentCFC.onDelete(row, optionStruct);
@@ -907,7 +907,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 					qSiteXOptionGroup=db.execute("qSiteXOptionGroup");
 					for(row in qSiteXOptionGroup){
 						optionStruct=deserializeJson(row.site_option_type_json); 
-						currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+						currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 						if(currentCFC.hasCustomDelete()){
 							// call delete on siteOptionType
 							currentCFC.onDelete(row, optionStruct);

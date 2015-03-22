@@ -1726,9 +1726,7 @@ if(rCom.isOK() EQ false){
 	if(structkeyexists(application.sitestruct[request.zos.globals.id].zcorecustomfunctions, 'getSiteMap')){
 		arguments.arrUrl=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.getSiteMap(arguments.arrUrl);
 	}
-	// get site-option site map
-	local.siteOptionCom=createobject("component", "zcorerootmapping.com.app.site-option");
-	arguments.arrURL=local.siteOptionCom.getSiteMap(arguments.arrURL);
+	arguments.arrURL=application.zcore.siteOptionCom.getSiteMap(arguments.arrURL);
 	
 	for(i in application.sitestruct[request.zos.globals.id].app.appCache){
 		configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath, true);

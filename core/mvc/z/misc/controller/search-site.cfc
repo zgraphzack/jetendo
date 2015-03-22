@@ -346,7 +346,7 @@ search sql generator has to be able to search on child group data for paging to 
 						site_option_id=removeChars(i, 1, 8);
 						if(structkeyexists(tempStruct.siteOptionLookup, site_option_id)){
 							searchCacheStruct[i]=form[i];
-							var currentCFC=application.zcore.siteOptionTypeStruct[tempStruct.siteOptionLookup[site_option_id].type];
+							var currentCFC=application.zcore.siteOptionCom.getTypeCFC(tempStruct.siteOptionLookup[site_option_id].type);
 							if(currentCFC.isSearchable()){
 								ts=currentCFC.getSearchSQLStruct(tempStruct.siteOptionLookup[site_option_id], tempStruct.siteOptionLookup[site_option_id].optionStruct, 'newvalue', form, form[i]); 
 								if(structkeyexists(groupOptionStruct, site_option_id) and groupOptionStruct[site_option_id].groupId NEQ form.groupId){
@@ -558,7 +558,7 @@ search sql generator has to be able to search on child group data for paging to 
 		optionStruct={};
 		for(row in qOption){
 			optionStruct[row.site_option_id]=deserializeJson(row.site_option_type_json);
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			dataStruct=currentCFC.onBeforeListView(row, optionStruct[row.site_option_id], form);
 			value=currentCFC.getListValue(dataStruct, optionStruct[row.site_option_id], application.zcore.functions.zso(form, "newvalue"&row.site_option_id));
 			if(value EQ ""){
@@ -568,7 +568,7 @@ search sql generator has to be able to search on child group data for paging to 
 		}
 		for(row in qOption){
 			echo('<div class="zSearchCriteriaField">'&row.site_option_display_name&"<br />");
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			var rs2=currentCFC.getSearchFormField(row, optionStruct[row.site_option_id], 'newvalue', form, application.zcore.functions.zso(form, "newvalue"&row.site_option_id), "#onchange#");
 			echo(rs2&"</div>");
 			echo('<input type="hidden" name="siteOptionGroupId" value="'&row.site_option_id&"|"&row.site_option_group_id&'" />');
@@ -601,7 +601,7 @@ search sql generator has to be able to search on child group data for paging to 
 		groupForceOpenStruct={};
 		for(row in qChildOption){
 			optionChildStruct[row.site_option_id]=deserializeJson(row.site_option_type_json);
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			dataStruct=currentCFC.onBeforeListView(row, optionChildStruct[row.site_option_id], form);
 			value=currentCFC.getListValue(dataStruct, optionChildStruct[row.site_option_id], application.zcore.functions.zso(form, "newvalue"&row.site_option_id));
 			if(not structkeyexists(groupForceOpenStruct, row.site_option_group_id)){
@@ -634,7 +634,7 @@ search sql generator has to be able to search on child group data for paging to 
 				echo('<a href="##" class="zSearchCriteriaSubGroup" data-group-id="#row.site_option_group_id#" id="zSearchCriteriaSubGroup#row.site_option_group_id#"><span class="zSearchCriteriaSubGroupLabel" data-group-id="#row.site_option_group_id#">'&childGroupStruct[row.site_option_group_id].site_option_group_display_name&'</span><span class="zSearchCriteriaSubGroupToggle" id="zSearchCriteriaSubGroupToggle#row.site_option_group_id#" data-group-id="#row.site_option_group_id#">#toggleHTML#</span></a><div class="zSearchCriteriaSubGroupContainer" id="zSearchCriteriaSubGroupContainer#row.site_option_group_id#" #groupForceOpenStruct[row.site_option_group_id]#>');
 			}
 			echo('<div class="zSearchCriteriaField">'&row.site_option_display_name&"<br />");
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			var rs2=currentCFC.getSearchFormField(row, optionChildStruct[row.site_option_id], 'newvalue', form, application.zcore.functions.zso(form, "newvalue"&row.site_option_id), "#onchange#");
 			echo(rs2&"</div>");
 			echo('<input type="hidden" name="siteOptionGroupId" value="'&row.site_option_id&"|"&row.site_option_group_id&'" />');

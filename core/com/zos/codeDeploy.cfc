@@ -97,8 +97,11 @@
 		componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 		componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
 
-		siteOptionTypeStruct=componentObjectCache.siteOptionCom.getOptionTypes();
-		application.zcore.siteOptionTypeStruct=siteOptionTypeStruct;
+		componentObjectCache.siteOptionCom.init("site", "site");
+
+		ts.soGroupData={
+			optionTypeStruct:componentObjectCache.siteOptionCom.getOptionTypes()
+		};
 
 		if(request.zos.isdeveloper and structkeyexists(request.zsession, 'verifyQueries') and request.zsession.verifyQueries){
 			local.verifyQueriesEnabled=true;

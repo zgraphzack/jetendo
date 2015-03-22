@@ -151,10 +151,8 @@
 	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
 	}
-	
-	searchIndexCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.site-option");
 	form.sid=request.zos.globals.id;
-	searchIndexCom.searchReindex();
+	application.zcore.siteOptionCom.searchReindex();
 	</cfscript>
 	<h2>Search reindexed for this site only.</h2>
 	<p><a href="/z/server-manager/tasks/search-index/index">Click here to reindex search on all sites</a></p>
@@ -279,7 +277,7 @@
 		local.defaultStruct[row.site_option_name]=row.site_option_default_value;
 		
 		optionStruct=deserializeJson(row.site_option_type_json); 
-		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+		var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 		dataStruct[row.site_option_id]=currentCFC.onBeforeImport(row, optionStruct); 
 		
 		if(row.site_option_required EQ 1){
@@ -531,8 +529,9 @@
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
 		var arrSiteOptionIdCustomDeleteStruct=[];
-		for(var i in application.zcore.siteOptionTypeStruct){
-			if(application.zcore.siteOptionTypeStruct[i].hasCustomDelete()){
+		typeCFCStruct=application.zcore.siteOptionCom.getTypeCFCStruct();
+		for(i in typeCFCStruct){
+			if(typeCFCStruct[i].hasCustomDelete()){
 				arrayAppend(arrSiteOptionIdCustomDeleteStruct, application.zcore.functions.zescape(i));
 			}
 		}
@@ -548,7 +547,7 @@
 		qS=db.execute("qS");
 		var row=0;
 		for(row in qS){
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			var optionStruct=deserializeJson(row.site_option_type_json);
 			currentCFC.onDelete(row, optionStruct); 
 		} 
@@ -564,7 +563,7 @@
 		site_option.site_option_id=#db.param(form.site_option_id)#";
 		var qSGroup=db.execute("qSGroup"); 
 		for(row in qSGroup){
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			var optionStruct=deserializeJson(row.site_option_type_json);
 			currentCFC.onDelete(row, optionStruct); 
 		} 
@@ -709,7 +708,7 @@
 		application.zcore.functions.zRedirect("/z/admin/site-options/#formAction#?zsid=#Request.zsid#&site_option_id=#form.site_option_id#"&returnAppendString);
 	}
 	var rs=0;
-	var currentCFC=application.zcore.siteOptionTypeStruct[form.site_option_type_id];
+	var currentCFC=application.zcore.siteOptionCom.getTypeCFC(form.site_option_type_id);
 	form.site_option_type_json="{}";
 	// need this here someday: var rs=currentCFC.validateFormField(row, optionStruct, 'newvalue', form);
 	rs=currentCFC.onUpdate(form);   
@@ -913,14 +912,14 @@
 					}
 					var typeStruct={};
 					var i=0;
-					for(i in application.zcore.siteOptionTypeStruct){
-						var currentCFC=application.zcore.siteOptionTypeStruct[i];
-						typeStruct[currentCFC.getTypeName()]=i;
+					typeCFCStruct=application.zcore.siteOptionCom.getTypeCFCStruct();
+					for(i in typeCFCStruct){
+						typeStruct[typeCFCStruct[i].getTypeName()]=i;
 					}
 					var arrTemp=structkeyarray(typeStruct);
 					arraySort(arrTemp, "text", "asc");
 					for(i=1;i LTE arraylen(arrTemp);i++){
-						var currentCFC=application.zcore.siteOptionTypeStruct[typeStruct[arrTemp[i]]];
+						var currentCFC=application.zcore.siteOptionCom.getTypeCFC(typeStruct[arrTemp[i]]);
 						writeoutput(currentCFC.getTypeForm(form, optionStruct, 'site_option_type_id'));
 					}
 					</cfscript> 
@@ -1288,7 +1287,7 @@
 			writeoutput('>
 				<td>#qS.site_option_name#</td>
 				<td>');
-				var currentCFC=application.zcore.siteOptionTypeStruct[qS.site_option_type_id];
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(qS.site_option_type_id);
 				writeoutput(currentCFC.getTypeName()); 
 				writeoutput('</td>');
 				if(variables.allowGlobal){
@@ -1376,7 +1375,7 @@
 		}
 		row.site_x_option_group_set_updated_datetime=request.zos.mysqlnow;
 
-		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];  
+		var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);  
 		nv=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
 		var optionStruct=deserializeJson(row.site_option_type_json);
 		if(row.siteOptionSiteId EQ 0){
@@ -1384,7 +1383,7 @@
 		}else{
 			form.siteIDType=1;
 		} 
-		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+		var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 		var rs=currentCFC.onBeforeUpdate(row, optionStruct, 'newvalue', form);
 		if(not rs.success){
 			application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
@@ -1638,7 +1637,7 @@
 		if(row.site_option_url_title_field EQ 1){
 			hasTitleField=true;
 		}
-		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+		var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 		if(structkeyexists(form, row.site_option_name)){
 			form['newvalue'&row.site_option_id]=form[row.site_option_name];
 		}
@@ -1708,7 +1707,7 @@
 		form.site_id=request.zos.globals.id;
 		form.site_x_option_group_disable_time=0;
 		var optionStruct=optionStructCache[row.site_option_id]; 
-		var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+		var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 		var rs=currentCFC.onBeforeUpdate(row, optionStruct, 'newvalue', form);
 		if(not rs.success){
 			application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
@@ -2649,7 +2648,7 @@ Define this function in another CFC to override the default email format
 			}
 			if(local.added){
 				if(local.row.site_option_admin_sort_field NEQ 0){ 
-					var currentCFC=application.zcore.siteOptionTypeStruct[local.row.site_option_type_id];
+					var currentCFC=application.zcore.siteOptionCom.getTypeCFC(local.row.site_option_type_id);
 					var sortDirection="asc";
 					if(local.row.site_option_admin_sort_field EQ 2){
 						sortDirection="desc";
@@ -2692,7 +2691,7 @@ Define this function in another CFC to override the default email format
 			var optionStruct=deserializeJson(arrRow[i].site_option_type_json);
 			arrayAppend(arrOptionStruct, optionStruct);
 			
-			var currentCFC=application.zcore.siteOptionTypeStruct[arrType[i]];
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(arrType[i]);
 			dataStruct[i]=currentCFC.onBeforeListView(arrRow[i], optionStruct, form);
 		}
 		theTitle="Manage #htmleditformat(qGroup.site_option_group_display_name)#(s)";
@@ -2754,7 +2753,7 @@ Define this function in another CFC to override the default email format
 				form['newvalue'&row.site_option_id]=application.zcore.functions.zso(form, 'newvalue'&row.site_option_id);
 				 
 				var optionStruct=arrOptionStruct[local.curValIndex];
-				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id];
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
 				if(currentCFC.isSearchable()){
 					arrayAppend(local.arrSearch, '<td style="vertical-align:top;">'&row.site_option_name&'<br />');
 					var tempValue=currentCFC.getSearchValue(row, optionStruct, 'newvalue', form, local.searchStruct);
@@ -2958,7 +2957,7 @@ Define this function in another CFC to override the default email format
 									writeoutput(replace(ljustify(" ", local.curIndent*2), " ", "&nbsp;", "all"));
 								}
 							}
-							var currentCFC=application.zcore.siteOptionTypeStruct[arrType[i]];
+							var currentCFC=application.zcore.siteOptionCom.getTypeCFC(arrType[i]);
 							value=currentCFC.getListValue(dataStruct[i], arrOptionStruct[i], application.zcore.functions.zso(row, 'sVal'&i));
 							if(value EQ ""){
 								writeoutput(arrRow[i].site_option_default_value);
@@ -3462,7 +3461,7 @@ Define this function in another CFC to override the default email format
 					}
 				}
 				optionStruct[row.site_option_id]=deserializeJson(row.site_option_type_json);
-				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 				dataStruct=currentCFC.onBeforeListView(row, optionStruct[row.site_option_id], form);
 				if(local.methodBackup EQ "addGroup" and not posted and not currentCFC.isCopyable()){
 					form["newvalue"&row.site_option_id]='';
@@ -3477,7 +3476,7 @@ Define this function in another CFC to override the default email format
 			for(row in qS){
 				currentRowIndex++;
 			
-				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 				var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form, labelStruct);
 				if(rs.hidden){
 					arrayAppend(local.arrEnd, '<input type="hidden" name="site_option_id" value="'&row.site_option_id&'" />');
@@ -3752,7 +3751,7 @@ Define this function in another CFC to override the default email format
 		qS=db.execute("qS");
 		var row=0;
 		for(row in qS){
-			var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 			if(currentCFC.hasCustomDelete()){
 				var optionStruct=deserializeJson(row.site_option_type_json);
 				currentCFC.onDelete(row, optionStruct); 
@@ -3777,8 +3776,7 @@ Define this function in another CFC to override the default email format
 			application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.site_x_option_group_set_image_library_id);
 		}
 		
-		local.siteOptionCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.site-option");
-		local.siteOptionCom.deleteSiteOptionGroupSetIndex(form.site_x_option_group_set_id, request.zos.globals.id);
+		application.zcore.siteOptionCom.deleteSiteOptionGroupSetIndex(form.site_x_option_group_set_id, request.zos.globals.id);
 		
 		if(qCheck.site_option_group_enable_sorting EQ 1){
 			queueSortStruct = StructNew();
@@ -3991,7 +3989,7 @@ Define this function in another CFC to override the default email format
 					}
 				}
 				optionStruct[row.site_option_id]=deserializeJson(row.site_option_type_json);
-				var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 				dataStruct=currentCFC.onBeforeListView(row, optionStruct[row.site_option_id], form);
 				value=currentCFC.getListValue(dataStruct, optionStruct[row.site_option_id], application.zcore.functions.zso(form, "newvalue"&row.site_option_id));
 				if(value EQ ""){
@@ -4020,7 +4018,7 @@ Define this function in another CFC to override the default email format
 					<input type="hidden" name="site_option_id" value="#row.site_option_id#" />
 					<input type="hidden" name="siteidtype" value="#application.zcore.functions.zGetSiteIdType(row.site_id)#" />
 					<br style="clear:both;" />');
-					var currentCFC=application.zcore.siteOptionTypeStruct[row.site_option_type_id]; 
+					var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
 					var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form, labelStruct);
 					writeoutput(rs.value);
 					writeoutput('</td>
