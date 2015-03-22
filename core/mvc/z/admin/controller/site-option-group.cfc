@@ -81,9 +81,9 @@
 		echo(chr(10)&indent&"<h2>Group: "&groupStruct.site_option_group_display_name&'</h2>'&chr(10));
 		if(groupStruct.site_option_group_parent_id NEQ 0){
 			parentGroupStruct=t9.siteOptionGroupLookup[groupStruct.site_option_group_parent_id];
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.functions.zSiteOptionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
+			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.siteOptionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
 		}else{
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.functions.zSiteOptionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
+			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.siteOptionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
 		}
 		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
 			for(n in t9.siteOptionGroupFieldLookup[groupStruct.site_option_group_id]){
@@ -158,7 +158,7 @@
 <cffunction name="index" access="remote" localmode="modern">
 	<cfargument name="query" type="query" required="yes">
 	<cfscript>
-	struct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.query.site_x_option_group_set_id);
+	struct=application.zcore.siteOptionCom.getSiteOptionGroupSetById(arguments.query.site_x_option_group_set_id);
 	writedump(struct);
 	
 	application.zcore.template.setTag("title", struct.__title);
@@ -190,8 +190,8 @@
 	<h2>Miscellaneous Code</h2>
 	<p>To select a single group set, use one of the following:</p>
 	<ul>
-	<li>Memory Cache Enabled: struct=application.zcore.functions.zGetSiteOptionGroupSetById(site_x_option_group_set_id);</li>
-	<li>Memory Cache Disabled: showUnapproved=false; struct=request.zos.functions.zGetSiteOptionGroupSetByID(site_x_option_group_set_id, request.zos.globals.id, ["Group", "SubGroup"], showUnapproved); </li>
+	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getSiteOptionGroupSetById(site_x_option_group_set_id);</li>
+	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getSiteOptionGroupSetByID(site_x_option_group_set_id, request.zos.globals.id, ["Group", "SubGroup"], showUnapproved); </li>
 	</ul>');
 	if(groupStruct.site_option_group_allow_public NEQ 0){
 		if(groupStruct.site_option_group_public_form_url NEQ ""){
@@ -204,7 +204,7 @@
 		echo('<h2>CFML Embed Form Code</h2><pre>'&htmlcodeformat('
 application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
 // Note: if this group is a child group, you must update the array below to have the parent groups as well.
-form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["#groupstruct.site_option_group_name#"]);
+form.site_option_group_id=application.zcore.siteOptionCom.getSiteOptionGroupIDWithNameArray(["#groupstruct.site_option_group_name#"]);
 displayGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
 displayGroupCom.add();')&'</pre>');
 	}
