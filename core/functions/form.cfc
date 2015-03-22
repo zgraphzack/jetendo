@@ -441,13 +441,14 @@ USAGE
 	</cfscript>
 	<cfsavecontent variable="tempText">
 	<cfif structkeyexists(form, arguments.field) and form[arguments.field] NEQ '' and fileexists(arguments.abspath&form[arguments.field])>
-		<cfif arguments.maxwidth NEQ 0>
+		<!--- <cfif arguments.maxwidth NEQ 0>
             <Cfscript>
 		local.imageSize=application.zcore.functions.zGetImageSize(arguments.abspath&form[arguments.field]);    
             arguments.maxwidth=min(local.imageSize.width,arguments.maxwidth);
             </Cfscript>
-        </cfif>
-        <img src="#arguments.path##form[arguments.field]#" alt="Uploaded Image" <cfif arguments.maxwidth NEQ 0>width="#arguments.maxwidth#"</cfif> /><br />
+        </cfif> --->
+        <img src="#arguments.path##form[arguments.field]#" alt="Uploaded Image" <cfif arguments.maxwidth NEQ 0>style="max-width:#arguments.maxWidth#px;"</cfif> /><br />
+        <!--- <cfif arguments.maxwidth NEQ 0>width="#arguments.maxwidth#"</cfif> --->
 		<cfif arguments.allowDelete>
 			<input type="checkbox" name="#arguments.field#_delete" value="1" style="background:none; border:none;height:15px; " /> Check to delete image and then submit form.<br />
 		</cfif>

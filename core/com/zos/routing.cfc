@@ -1198,47 +1198,9 @@
 	
 	this.convertRewriteToStruct(local.ts2);
 	
-	db.sql="select * from #db.table("site_option_group", request.zos.zcoredatasource)# site_option_group
-	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	site_option_group_allow_public=#db.param(1)# and 
-	site_option_group_deleted = #db.param(0)# and
-	site_option_group_public_form_url<> #db.param('')# ";
-	local.qS=db.execute("qS");
-	for(local.row in local.qS){
-		local.t9=structnew();
-		local.t9.scriptName="/z/misc/display-site-option-group/add";
-		local.t9.urlStruct=structnew();
-		local.t9.urlStruct[request.zos.urlRoutingParameter]="/z/misc/display-site-option-group/add";
-		local.t9.urlStruct.site_option_group_id=local.row.site_option_group_id;
-		local.ts2.uniqueURLStruct[trim(local.row.site_option_group_public_form_url)]=local.t9;
-	}
-	// setup built in routing
-	if(structkeyexists(request.zos.globals,'optionGroupURLID') and request.zos.globals.optionGroupURLID NEQ 0){
-		local.ts2.reservedAppUrlIdStruct[request.zos.globals.optionGroupURLid]=[];
-		local.t9=structnew();
-		local.t9.type=1;
-		local.t9.scriptName="/z/misc/display-site-option-group/index";
-		local.t9.urlStruct=structnew();
-		local.t9.urlStruct[request.zos.urlRoutingParameter]="/z/misc/display-site-option-group/index";
-		local.t9.mapStruct=structnew();
-		local.t9.mapStruct.urlTitle="zURLName";
-		local.t9.mapStruct.dataId="site_x_option_group_set_id";
-		arrayappend(local.ts2.reservedAppUrlIdStruct[request.zos.globals.optionGroupURLid], local.t9);
-		db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# site_x_option_group_set
-		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		site_x_option_group_set_override_url<> #db.param('')# and 
-		site_x_option_group_set_deleted = #db.param(0)# and
-		site_x_option_group_set_approved=#db.param(1)#";
-		local.qS=db.execute("qS");
-		for(local.row in local.qS){
-			local.t9=structnew();
-			local.t9.scriptName="/z/misc/display-site-option-group/index";
-			local.t9.urlStruct=structnew();
-			local.t9.urlStruct[request.zos.urlRoutingParameter]="/z/misc/display-site-option-group/index";
-			local.t9.urlStruct.site_x_option_group_set_id=local.row.site_x_option_group_set_id;
-			local.ts2.uniqueURLStruct[trim(local.row.site_x_option_group_set_override_url)]=local.t9;
-		}
-	}
+
+	application.zcore.siteOptionCom.setURLRewriteStruct(local.ts2);
+
 	
 	// loop apps and call the function with ts sharedstruct
 	 db.sql="SELECT app.app_id, app_x_site.site_id 

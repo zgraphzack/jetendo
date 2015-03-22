@@ -226,34 +226,7 @@
 		}
 
 		if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
-			db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
-			WHERE site_option_group_parent_id= #db.param(0)# and 
-			site_id = #db.param(request.zos.globals.id)# and 
-			site_option_group_deleted = #db.param(0)# and 
-			site_option_group.site_option_group_disable_admin=#db.param(0)# and 
-			site_option_group_admin_app_only= #db.param(0)#
-			ORDER BY site_option_group_display_name ";
-			qSiteOptionGroup=db.execute("qSiteOptionGroup"); 
-			for(local.i=1;local.i LTE qSiteOptionGroup.recordcount;local.i++){
-				ts=structnew();
-				ts.featureName="Custom: "&qSiteOptionGroup.site_option_group_display_name[local.i];
-				ts.link="/z/admin/site-options/manageGroup?site_option_group_id="&qSiteOptionGroup.site_option_group_id[local.i];
-				ts.children=structnew();
-				if(qSiteOptionGroup.site_option_group_menu_name[local.i] EQ ""){
-					local.curMenu="Custom";
-				}else{
-					local.curMenu=qSiteOptionGroup.site_option_group_menu_name[local.i];
-				}
-				
-				if(structkeyexists(arguments.sharedStruct, local.curMenu) EQ false){
-					arguments.sharedStruct[local.curMenu]={
-						featureName:"Custom",
-						link:"/z/admin/site-options/index",
-						children:{}
-					};
-				}
-				arguments.sharedStruct[local.curMenu].children["Manage "&qSiteOptionGroup.site_option_group_display_name[local.i]&"(s)"]=ts;
-			}
+			arguments.sharedStruct=application.zcore.siteOptionCom.getAdminLinks(arguments.sharedStruct);
 		}
 	}
 	if(structkeyexists(arguments.sharedStruct, "Help") EQ false){

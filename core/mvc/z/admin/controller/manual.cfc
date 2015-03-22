@@ -99,27 +99,7 @@ zdoc css style documentation
     <!--- make this personalized to each user based on request.zsession.user.limitManagerFeatureStruct --->
 	<cfscript>
 	arrS=getManualArray(showAll);
-
-	/*
-	db=request.zos.queryObject;
-	db.sql="SELECT site_option_group.* 
-	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group  
-	WHERE site_option_group.site_id = #db.param(request.zos.globals.id)# and 
-	site_option_group_parent_id = #db.param('0')# and 
-	site_option_group_deleted = #db.param(0)# and 
-	site_option_group_type =#db.param('1')# and 
-	site_option_group.site_option_group_disable_admin=#db.param(0)# 
-	ORDER BY site_option_group.site_option_group_display_name ASC ";
-	qGroup=db.execute("qGroup"); 
-	if(qGroup.recordcount NEQ 0){
-		ms["Custom"]={ parent:'', label: "Custom"};
-		// loop the groups
-		// get the code from manageoptions"
-		// site_option_group_disable_admin=0
-		for(row in qGroup){
-			ms["Custom: "&row.site_option_group_display_name]={ parent:'Custom', label:chr(9)&row.site_option_group_display_name&chr(10)};
-		}
-	}*/
+ 
 	arrParent=arraynew(1);
 	for(i=1;i LTE arraylen(arrS);i++){
 		ns=arrS[i];
