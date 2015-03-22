@@ -260,7 +260,7 @@
 			if(row.site_x_option_group_set_override_url NEQ ""){
 				ts.__url=row.site_x_option_group_set_override_url;
 			}else{
-				var urlId=qSite.site_option_group_url_id;
+				var urlId=tempStruct.optionGroupUrlId;
 				if(urlId EQ "" or urlId EQ 0){
 					throw("site_option_group_url_id is not set for site_id, #site_id#.");
 				}
@@ -301,7 +301,7 @@
 	LEFT JOIN #db.table("site_x_option", request.zos.zcoreDatasource)# site_x_option ON 
 	site_x_option.site_id =#db.param(site_id)# and 
 	site_x_option.site_option_id = site_option.site_option_id and 
-	site_option.site_id = if(site_x_option.site_option_id_siteIDType = #db.param(1)#, #db.param(qSite.site_id)#, if(site_x_option.site_option_id_siteIDType = #db.param(4)#, #db.param(0)#, #db.param(qSite.site_id)#)) and 
+	site_option.site_id = if(site_x_option.site_option_id_siteIDType = #db.param(1)#, #db.param(site_id)#, if(site_x_option.site_option_id_siteIDType = #db.param(4)#, #db.param(0)#, #db.param(site_id)#)) and 
 	site_x_option_deleted = #db.param(0)#
 	WHERE site_option.site_id IN (#db.param('0')#,#db.param(site_id)#) and 
 	site_option_deleted = #db.param(0)# and 
