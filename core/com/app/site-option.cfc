@@ -9,7 +9,7 @@
 	return ts;
 	</cfscript>
 </cffunction>
- 
+
 
 <cffunction name="getTypeData" returntype="struct" localmode="modern" access="public">
 	<cfargument name="site_id" type="string" required="yes" hint="site_id">
@@ -27,7 +27,7 @@
 	length=arraylen(arguments.arrSearch);
 	lastMatch=true;
 	arrSQL=[' ( '];
-	t9=getSiteData();
+	t9=getSiteData(request.zos.globals.id);
 	for(i=1;i LTE length;i++){
 		c=arguments.arrSearch[i]; 
 		if(isArray(c)){

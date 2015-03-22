@@ -1002,6 +1002,7 @@
 		<a href="/z/admin/member/index?showallusers=0">Hide Public Users</a>
 	</cfif>
 	| <a href="/z/misc/members/index" target="_blank">View Public Profiles</a>
+	| <a href="/z/user/home/index" target="_blank">View Public User Home Page</a>
 	| <a href="/z/admin/office/index">Manage Offices</a><br />
 	<br />
 	Users are other logins that have access to the system.  They can be assigned leads and you can choose whether they are able to do everything you can or just view their own leads. Users with a public profile can be sorted using the up and down arrows.<br />

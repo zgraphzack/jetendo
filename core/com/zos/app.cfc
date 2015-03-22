@@ -208,6 +208,12 @@
 				ts.target="_blank";
 				arguments.sharedStruct["Users"].children["View Public Profiles"]=ts;
 			}
+			if(structkeyexists(arguments.sharedStruct["Users"].children,"View Public User Home Page") EQ false){
+				ts=structnew();
+				ts.link="/z/user/home/index";
+				ts.target="_blank";
+				arguments.sharedStruct["Users"].children["View Public User Home Page"]=ts;
+			}
 	
 		}else if(structkeyexists(request.zos.userSession.groupAccess, "agent") and application.zcore.app.siteHasApp("content")){ 
 			if(structkeyexists(arguments.sharedStruct,"Update Profile") EQ false){
