@@ -582,7 +582,7 @@ displayGroupCom.add();')&'</pre>');
 	local.index=1;
 	if(mappingEnabled){
 		writeoutput('<p>Map as many fields as you wish. You can map an option to the same field multiple times to automatically combine those values.</p>
-			<p>To save time, try clicking <a href="##" class="zoptionGroupAutoMap">auto-map</a> first.</p>
+			<p>To save time, try clicking <a href="##" class="zOptionGroupAutoMap">auto-map</a> first.</p>
 		<form id="optionGroupMapForm" action="/z/admin/site-option-group/saveMapFields?site_option_group_id=#form.site_option_group_id#" method="post">
 		<table class="table-list"><tr><th>Option Field</th><th>Map To Field</th></tr>');
 		for(row in qOption){

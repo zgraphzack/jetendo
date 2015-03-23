@@ -115,9 +115,9 @@ var zLastAjaxVarName=""; */
 			document.getElementById("flashFileUpload").style.display="block";
 		}*/
 	}
-	function zSiteOptionGroupAutoMap(){
+	function zOptionGroupAutoMap(){
 		var matchCount=0;
-		$("#siteOptionGroupMapForm .fieldLabelDiv").each(function(){
+		$("#optionGroupMapForm .fieldLabelDiv").each(function(){
 			var id=$(this).attr("data-id");
 			var text=this.innerHTML.toLowerCase();
 			text=text.replace(/ /, "_");
@@ -164,22 +164,22 @@ var zLastAjaxVarName=""; */
 		return matchCount;
 	}
 	 
-	$(".zSiteOptionGroupAutoMap").bind("click", function(){
-		var matchCount=zSiteOptionGroupAutoMap();
+	$(".zOptionGroupAutoMap").bind("click", function(){
+		var matchCount=zOptionGroupAutoMap();
 		alert(matchCount+" fields were automatically mapped.");
 	}); 
 
-	function zSiteOptionGroupErrorCallback(){
+	function zOptionGroupErrorCallback(){
 		alert("There was a problem with the submission. Please try again later.");
-		$(".zSiteOptionGroupSubmitButton", $("#"+zSiteOptionGroupLastFormID)).show();
-		$(".zSiteOptionGroupWaitDiv", $("#"+zSiteOptionGroupLastFormID)).hide();
+		$(".zOptionGroupSubmitButton", $("#"+zOptionGroupLastFormID)).show();
+		$(".zOptionGroupWaitDiv", $("#"+zOptionGroupLastFormID)).hide();
 	}
-	function zSiteOptionGroupCallback(d){
+	function zOptionGroupCallback(d){
 		var rs=eval("("+d+")");
-		$(".zSiteOptionGroupSubmitButton", $("#"+zSiteOptionGroupLastFormID)).show();
-		$(".zSiteOptionGroupWaitDiv", $("#"+zSiteOptionGroupLastFormID)).hide();
-		if(zSiteOptionGroupLastFormID != ""){
-			$("#"+zSiteOptionGroupLastFormID+" input, #"+zSiteOptionGroupLastFormID+" textarea, #"+zSiteOptionGroupLastFormID+" select").bind("change", function(){
+		$(".zOptionGroupSubmitButton", $("#"+zOptionGroupLastFormID)).show();
+		$(".zOptionGroupWaitDiv", $("#"+zOptionGroupLastFormID)).hide();
+		if(zOptionGroupLastFormID != ""){
+			$("#"+zOptionGroupLastFormID+" input, #"+zOptionGroupLastFormID+" textarea, #"+zOptionGroupLastFormID+" select").bind("change", function(){
 				if(zGetFormFieldDataById(this.id) != ""){
 					$(this).closest("tr").removeClass("zFieldError");
 				}
@@ -192,10 +192,10 @@ var zLastAjaxVarName=""; */
 					$(this).closest("tr").removeClass("zFieldError");
 				}
 			});
-			zJumpToId(zSiteOptionGroupLastFormID, -50);
+			zJumpToId(zOptionGroupLastFormID, -50);
 		}
 		if(rs.success){
-			var link=$("#"+zSiteOptionGroupLastFormID).attr("data-thank-you-url");
+			var link=$("#"+zOptionGroupLastFormID).attr("data-thank-you-url");
 			if(link != ""){
 				window.location.href=link;
 			}else{
@@ -208,18 +208,18 @@ var zLastAjaxVarName=""; */
 			alert("Please correct the following errors and submit the form again\n"+rs.errorMessage);
 		}
 	}
-	function zSiteOptionGroupPostForm(formId){
-		zSiteOptionGroupLastFormID=formId;
-		$(".zSiteOptionGroupSubmitButton", $("#"+zSiteOptionGroupLastFormID)).hide();
-		$(".zSiteOptionGroupWaitDiv", $("#"+zSiteOptionGroupLastFormID)).show();
+	function zOptionGroupPostForm(formId){
+		zOptionGroupLastFormID=formId;
+		$(".zOptionGroupSubmitButton", $("#"+zOptionGroupLastFormID)).hide();
+		$(".zOptionGroupWaitDiv", $("#"+zOptionGroupLastFormID)).show();
 		var postObj=zGetFormDataByFormId(formId);
 		var obj={
-			id:"ajaxSiteOptionGroup",
+			id:"ajaxOptionGroup",
 			method:"post",
 			postObj:postObj,
 			ignoreOldRequests:false,
-			callback:zSiteOptionGroupCallback,
-			errorCallback:zSiteOptionGroupErrorCallback,
+			callback:zOptionGroupCallback,
+			errorCallback:zOptionGroupErrorCallback,
 			url:'/z/misc/display-site-option-group/ajaxInsert'
 		}; 
 		zAjax(obj);
@@ -1432,9 +1432,9 @@ var zLastAjaxVarName=""; */
 	window.confirmDeleteImageId=confirmDeleteImageId;
 	window.deleteImageId=deleteImageId;
 	window.setUploadField=setUploadField;
-	window.zSiteOptionGroupErrorCallback=zSiteOptionGroupErrorCallback;
-	window.zSiteOptionGroupCallback=zSiteOptionGroupCallback;
-	window.zSiteOptionGroupPostForm=zSiteOptionGroupPostForm;
+	window.zOptionGroupErrorCallback=zOptionGroupErrorCallback;
+	window.zOptionGroupCallback=zOptionGroupCallback;
+	window.zOptionGroupPostForm=zOptionGroupPostForm;
 	window.zSetupAjaxTableSort=zSetupAjaxTableSort;
 	window.zGetFormDataByFormId=zGetFormDataByFormId;
 	window.zGetFormFieldDataById=zGetFormFieldDataById;
