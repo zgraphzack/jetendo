@@ -15,7 +15,7 @@ form{ margin:0px; padding:0px; }
  }
 .listingInquiryErrorDiv{width:90%;font-weight:bold; color:#F00; background-color:#FFF; padding:5px; float:left; display:none;}
 .listingInquirySuccessDiv{width:90%; float:left; background-color:#FFF; padding:5px; color:#090;font-weight:bold; display:none;}
-
+#resultCountAbsolute{display:none;}
 
 input, label{ margin:0px; padding:0px; font-size:11px; vertical-align:middle; } label{ line-height:17px; } 
 label{ display:inline; }

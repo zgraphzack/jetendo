@@ -87,7 +87,7 @@ North West
 </div>
 <div id="zls-hover-box" class="z-fixed-n">
   <cfscript>
-	application.zcore.template.appendTag("scripts", '<div id="resultCountAbsolute" style="float:left; font-weight:700; padding:10px;">0 Listings</div>');
+	application.zcore.template.appendTag("scripts", '<div id="resultCountAbsolute" style="display:none;float:left; font-weight:700; padding:10px;">0 Listings</div>');
 </cfscript>
   <a href="##" id="zls-hover-box-refine-button">Refine Search</a>
   <!--- <a href="#" id="zls-hover-box-show-button" class="zls-hover-box-show-button-selected">Show Listings</a> --->

@@ -585,12 +585,12 @@ zSearchFormObj.loadForm=function(){
 
 zArrLoadFunctions.push({functionName:zSearchFormObj.loadForm});
 
-function updateCountPosition(e,r2){
+function updateCountPosition(e,r2){ 
 	zScrollPosition.left = (document.all ? document.scrollLeft : window.pageXOffset);
 	zScrollPosition.top = (document.all ? document.scrollTop : window.pageYOffset);
 	
 	r111=zModalLockPosition(e);
-	if(1===0 && typeof r2 === "undefined"){
+	if(1===0 && typeof r2 === "undefined"){ 
 		clearTimeout(zSearchFormTimeoutId);
 		zSearchFormTimeoutId=setTimeout("updateCountPosition(null,true);",300);	
 		return;
@@ -598,7 +598,12 @@ function updateCountPosition(e,r2){
 	var r9=document.getElementById("resultCountAbsolute");
 	var r95=document.getElementById("searchFormTopDiv"); 
 	if(r95===null || r9 === null) return; 
-	var p2=zFindPosition(r95);
+	var p2=zFindPosition(r95); 
+	if(p2[0]==0 && p2[0]==0){
+		r9.style.display="none";
+	}else{
+		r9.style.display="block";
+	}
 	var scrollP=$(window).scrollTop();
 	scrollP=Math.max(scrollP,p2[1]);
 	zSearchFormFloaterDisplayed=true;
@@ -692,7 +697,7 @@ var zSearchFormChanged=false;
 //var zDisableSearchFormSubmit=false;
 var firstSetMLSCount=true;
 var zDisableSearchCountBox=false;
-function setMLSCount2(c){
+function setMLSCount2(c){ 
 	if(zDisableSearchCountBox) return;
 	var r92=document.getElementById("resultCountAbsolute");
 	var r93=document.getElementById("searchFormTopDiv");

@@ -668,9 +668,9 @@ used to do search for a list of values
 
 <cffunction name="requireSectionEnabledSetId" access="public" returntype="any" localmode="modern">
 	<cfscript>
-	setid=application.zcore.functions.zso(form, '#variables.siteType#_x_option_group_set_id', true, 0);
-	if(not isSectionEnabledForSetId(setid)){
-		application.zcore.functions.z404("form.#variables.siteType#_x_option_group_set_id, ""#setid#"", doesn't exist or doesn't has enable section set to use for the option_group.");
+	form['#variables.siteType#_x_option_group_set_id']=application.zcore.functions.zso(form, '#variables.siteType#_x_option_group_set_id', true, 0);
+	if(not isSectionEnabledForSetId(form['#variables.siteType#_x_option_group_set_id'])){
+		application.zcore.functions.z404("form.#variables.siteType#_x_option_group_set_id, ""#form['#variables.siteType#_x_option_group_set_id']#"", doesn't exist or doesn't has enable section set to use for the option_group.");
 	}
 	</cfscript>
 </cffunction>
