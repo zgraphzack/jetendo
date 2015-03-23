@@ -747,6 +747,7 @@ displayGroupCom.add();')&'</pre>');
 	for(row in local.qGroup){
 		if(form.newGroupName NEQ ""){
 			row.site_option_group_name=form.newGroupName;
+			row.site_option_group_display_name=form.newGroupName;
 		}
 		this.copyGroupRecursive(form.site_option_group_id, form.newSiteId, row, groupStruct, optionStruct);
 	}
