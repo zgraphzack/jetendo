@@ -639,7 +639,7 @@ used to do search for a list of values
 	<cfscript>
 	t9=getTypeData(request.zos.globals.id);
 	if(structkeyexists(t9.optionGroupLookup, arguments.option_group_id)){
-		return t9.optionGroupLookup[arguments.option_group_id]["#variables.type#option_group_name"];
+		return t9.optionGroupLookup[arguments.option_group_id]["#variables.type#_option_group_name"];
 	}else{
 		return "";
 	}
@@ -710,6 +710,7 @@ used to do search for a list of values
 
 <cffunction name="displaySectionNav" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	form["#variables.siteType#_x_option_group_set_id"]=application.zcore.functions.zso(form, "#variables.siteType#_x_option_group_set_id");
 	struct=getOptionGroupSetById(form["#variables.siteType#_x_option_group_set_id"]);
 	if(structcount(struct) EQ 0){
 		return;

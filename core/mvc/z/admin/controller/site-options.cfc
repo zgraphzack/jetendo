@@ -3010,7 +3010,7 @@ Define this function in another CFC to override the default email format
 	}
 
 
-	if(form.method EQ "getRowHTML"){
+	if(form.method EQ "getRowHTML" and arraylen(local.rowStruct)){
 		rowOut=local.rowStruct[1].row; 
 		echo('done.<script type="text/javascript">
 		window.parent.zReplaceTableRecordRow("#jsstringformat(rowOut)#");
