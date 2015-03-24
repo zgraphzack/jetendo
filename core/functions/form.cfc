@@ -23,24 +23,25 @@
 	<cfscript>
 	var cfhttp=0;
 	</cfscript>
-	<cfif application.zcore.functions.zso(form, 'recaptcha_response_field') EQ "">
+	<cfif application.zcore.functions.zso(form, 'g-recaptcha-response') EQ "">
         <cfreturn false>
     </cfif>
-    <!--- 
-recaptcha key was for this global domain:
-This is a global key. It will work across all domains. --->
-        <cfhttp url="https://www.google.com/recaptcha/api/verify" method="post" timeout="10">
-        <cfhttpparam type="formfield" name="privatekey" value="#request.zos.recaptchaPrivateKey#">
-        <cfhttpparam type="formfield" name="challenge" value="#application.zcore.functions.zso(form, 'recaptcha_challenge_field')#">
+    <cftry>
+        <cfhttp url="https://www.google.com/recaptcha/api/siteverify" method="post" timeout="10">
+        <cfhttpparam type="formfield" name="secret" value="#request.zos.globals.recaptchaSecretKey#">
         <cfhttpparam type="formfield" name="remoteip" value="#request.zos.cgi.remote_addr#">
-        <cfhttpparam type="formfield" name="response" value="#application.zcore.functions.zso(form, 'recaptcha_response_field')#">
+        <cfhttpparam type="formfield" name="response" value="#application.zcore.functions.zso(form, 'g-recaptcha-response')#">
         </cfhttp>
         <cfif structkeyexists(CFHTTP,'statuscode') and left(CFHTTP.statusCode,3) EQ '200' and (isBinary(cfhttp.FileContent) or trim(CFHTTP.FileContent) NEQ "CFMXConnectionFailure" and trim(CFHTTP.FileContent) NEQ "Connection Failure")>
-            <cfif left(trim(CFHTTP.FileContent),4) EQ "true">
-                <cfreturn true>
-            </cfif>
+        	<cfscript>
+			a=deserializeJson(cfhttp.filecontent);
+			if(a.success){
+				return true;
+			}else{
+				return false;
+			}
+			</cfscript>
         </cfif>
-    <cftry>
     <cfcatch type="any"></cfcatch>
     </cftry>
     <cfreturn false>
@@ -115,16 +116,9 @@ This is a global key. It will work across all domains. --->
 <cffunction name="zDisplayRecaptcha" localmode="modern" output="yes" returntype="any">
 	<cfscript>
 	var theC=0;
+	application.zcore.skin.includeJS("https://www.google.com/recaptcha/api.js")
     </cfscript>
-	<cfsavecontent variable="theC"><script type="text/javascript">
-	var RecaptchaOptions = {   theme : 'white' };
-	</script><script type="text/javascript" src="https://www.google.com/recaptcha/api/challenge?k=6Letq9QSAAAAAN524uNL0_hQLk1Ws2YTcvOQZAw5"></script>
-    <noscript>
-     <iframe src="https://www.google.com/recaptcha/api/noscript?k=6Letq9QSAAAAAN524uNL0_hQLk1Ws2YTcvOQZAw5"
-         height="300" width="500" style="border:none;"></iframe><br />
-     <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-     <input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
-    </noscript></cfsavecontent>
+	<cfsavecontent variable="theC"><div class="g-recaptcha" data-sitekey="#request.zos.globals.recaptchaSiteKey#"></div></cfsavecontent>
     <cfreturn theC>
 </cffunction>
 

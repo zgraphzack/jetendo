@@ -186,8 +186,6 @@
     // port defined for the java server connector when using SSL - used to detect a secure connection instead of port 443.
     ts.zos.alternatesecureport="8889";
     
-    // google recaptcha key - http://www.google.com/recaptcha/ - domain name: global-key.farbeyondcode.com
-    ts.zos.recaptchaPrivateKey="";
     
     
     // administration site - It must end with a forward slash.

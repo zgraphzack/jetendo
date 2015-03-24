@@ -369,6 +369,10 @@
 	}
 	if(structkeyexists(form, 'site_require_captcha') EQ false){
 		form.site_require_captcha=0;
+	}else{
+		if(form.site_recaptcha_secretkey EQ "" or form.site_recaptcha_sitekey EQ ""){
+			application.zcore.status.setStatus(Request.zsid, "Recaptcha Secret Key and Site Key are required if you enable captcha on public forms.",form,true);
+		}
 	}
 	if(structkeyexists(form, 'site_enable_ssi_publish') EQ false){
 		form.site_enable_ssi_publish=0;
@@ -1444,6 +1448,14 @@
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
 			<td><input name="site_require_captcha" type="checkbox" value="1" <cfif form.site_require_captcha EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Require Captcha By Default on Public Forms?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Recaptcha Secret Key</td>
+			<td><input name="site_recaptcha_secretkey" type="text" value="#htmleditformat(form.site_recaptcha_secretkey)#" /> (Must register each site <a href="https://www.google.com/recaptcha/admin" target="_blank">here</a></td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Recaptcha Site Key</td>
+			<td><input name="site_recaptcha_sitekey" type="text" value="#htmleditformat(form.site_recaptcha_sitekey)#" /></td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>

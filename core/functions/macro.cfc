@@ -512,7 +512,6 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 
 <cffunction name="zSendUserAutoresponder" localmode="modern" output="no" returntype="any">
 	<cfargument name="user_id" type="string" required="no" default="">
-	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
     <cfscript>
 	if(application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) NEQ 1){
 		return;
@@ -533,7 +532,7 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
     user_deleted = #db.param(0)# and 
     <cfif arguments.user_id NEQ "">
 		user_id=#db.param(arguments.user_id)# and 
-		user.site_id = #db.param(arguments.site_id)# and 
+		user.site_id = #db.param(request.zos.globals.id)# and 
 	<cfelse>
 		user_sent_datetime BETWEEN #db.param('2008-02-12 00:09:00')# and 
 		#db.param(previousDateFormatted)# and 
@@ -658,7 +657,8 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	site_active=#db.param('1')# 
     <cfif arguments.mail_user_id NEQ "">
      and mail_user_id=#db.param(arguments.mail_user_id)#
-	<cfelse>
+	<cfelse> 
+	 and site.site_id = #db.param(request.zos.globals.id)# 
 	 and mail_user_sent_datetime BETWEEN #db.param('2008-02-12 00:09:00')# and #db.param(previousDateFormatted)#
 	</cfif>
     </cfsavecontent>

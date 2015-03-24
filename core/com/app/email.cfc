@@ -1437,7 +1437,7 @@ Password:#zemail.password#</p></td></tr>
 We respect your privacy. <cfif structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0>Unsubscribe will stop our newsletters.</cfif><br />
 This email was sent to: #zemail.protectedData.emailStruct.to#
 </td></tr><tr><td style="border-top:1px solid ##CCCCCC;padding:5px;vertical-align:top;padding-top:5px;">
-<a href="#request.zos.currentHostName#/z/user/privacy/index">Privacy Policy</a>
+<a href="#request.zos.globals.domain#/z/user/privacy/index">Privacy Policy</a>
 <!--- <cfif structkeyexists(arguments.ss,'zemail_campaign_id') and arguments.ss.zemail_campaign_id NEQ 0> --->
 <cfif zemail.preferencesURL NEQ "" and arguments.ss.user_id NEQ 0>
  | <a href="#zemail.preferencesURL#" style=" line-height:24px;">Contact Preferences</a>
