@@ -155,6 +155,7 @@
 		  <div class="zdashboard-panel">
 			  <h3>Customize</h3>
 			<p><a href="/z/server-manager/admin/white-label/index" target="_blank">White Label Settings</a></p>
+			<p><a href="/z/server-manager/admin/mobile-conversion/index">Mobile Conversion</a></p>
 		  	<h3>Maintenance Scripts</h3>
 			<p><a href="/z/server-manager/tasks/publish-system-css/index" target="_blank">Re-publish System CSS</a></p>
 			<p><a href="/z/server-manager/admin/site-import/index" target="_blank">Site Import</a></p>

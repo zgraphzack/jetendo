@@ -113,12 +113,15 @@
 	    <textarea name="inquiries_comments" cols="50" rows="5" style="width:96%; height:100px;">#application.zcore.functions.zso(form, 'inquiries_comments')#</textarea>
 	    
 	    </td></tr>
-		<tr>
-		<th>&nbsp;</th>
-			<td>
-			#application.zcore.functions.zDisplayRecaptcha()#
-			</td>
-		</tr>
+		<cfif application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1>
+			<tr>
+			<th>&nbsp;</th>
+				<td>
+				#application.zcore.functions.zDisplayRecaptcha()#
+				</td>
+			</tr>
+		</cfif>
+	
 		<tr>
 		<th>&nbsp;</th>
 			<td><button type="submit" name="submit">Submit</button</td>
@@ -132,9 +135,12 @@
 <cffunction name="processCopyrightAbuse" localmode="modern" access="remote">
 	<cfscript>
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',false,0);
-	if(not application.zcore.functions.zVerifyRecaptcha()){
-		application.zcore.status.setStatus(request.zsid, "The ReCaptcha security phrase wasn't entered correctly. Please try again.", form, true);
-		application.zcore.functions.zRedirect("/z/misc/system/legal?modalpopforced=#form.modalpopforced#");
+
+	if(application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1){
+		if(not application.zcore.functions.zVerifyRecaptcha()){
+			application.zcore.status.setStatus(request.zsid, "The ReCaptcha security phrase wasn't entered correctly. Please try again.", form, true);
+			application.zcore.functions.zRedirect("/z/misc/system/legal?modalpopforced=#form.modalpopforced#");
+		}
 	}
 	if(not application.zcore.functions.zEmailValidate(application.zcore.functions.zso(form, 'inquiries_email'))){
 		application.zcore.status.setStatus(request.zsid, "A valid email address is required.", form, true);

@@ -205,7 +205,8 @@
 			}
 			</cfscript>
               </cfif>
-	      ##zdebuggerTimeOutput##</div>
+	      ##zdebuggerTimeOutput##<br />
+	      <a href="/z/server-manager/admin/mobile-conversion/responsive?link=#urlencodedformat(request.zos.originalURL)#" target="_blank">Responsive Conversion</a></div>
           </div>
           </cfif>
   </cfsavecontent>

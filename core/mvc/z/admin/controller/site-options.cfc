@@ -1444,6 +1444,9 @@
 	var r1=0;
 	var nowDate=request.zos.mysqlnow;
 	var methodBackup=form.method;
+	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "insertGroup"){
+		form.site_x_option_group_set_id=0;
+	}
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', false, 0);
 	request.zos.siteOptionInsertGroupCache={};
 	form.site_option_app_id=application.zcore.functions.zso(form, 'site_option_app_id', true, 0);
