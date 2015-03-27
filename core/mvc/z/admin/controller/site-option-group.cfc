@@ -1502,6 +1502,11 @@ displayGroupCom.add();')&'</pre>');
 					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Admin?","member.site-option-group.edit site_option_group_disable_admin")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_admin")#</td>
 				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable List Recurse","member.site-option-group.edit site_option_group_enable_list_recurse")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_list_recurse")# (Displays this group's records on parent groups manager list view)</td>
+				</tr>
+
 				
 				<cfscript>
 				if(form.site_option_group_enable_cache EQ ""){
