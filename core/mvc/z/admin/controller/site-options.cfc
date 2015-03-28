@@ -2478,6 +2478,7 @@ Define this function in another CFC to override the default email format
 	var q12=0;
 	savecontent variable="out"{
 		defaultStruct={
+			copyURL:"/z/admin/site-option-group-deep-copy/index",
 			addURL:"/z/admin/site-options/addGroup",
 			editURL:"/z/admin/site-options/editGroup",
 			sectionURL:"/z/admin/site-options/sectionGroup",
@@ -2888,6 +2889,8 @@ Define this function in another CFC to override the default email format
 			}
 			echo('<thead>
 			<tr>');
+			echo('<th>ID</th>');
+			columnCount++;
 			for(i=1;i LTE arraylen(arrVal);i++){
 				if(arrDisplay[i]){
 					writeoutput('<th>#arrLabel[i]#</th>');
@@ -2931,6 +2934,7 @@ Define this function in another CFC to override the default email format
 				}
 				local.firstDisplayed=true; 
 				savecontent variable="local.rowOutput"{ 
+					echo('<td>'&row.site_x_option_group_set_id&'</td>');
 					for(var i=1;i LTE arraylen(arrVal);i++){
 						if(arrDisplay[i]){
 							writeoutput('<td>');
@@ -3003,7 +3007,11 @@ Define this function in another CFC to override the default email format
 							}
 						}
 						if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
-							writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
+							if(qGroup.site_option_group_enable_versioning EQ 1 and row.site_x_option_group_set_parent_id EQ 0){
+								echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.copyURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Copy</a> | ');
+							}else{
+								echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
+							}
 						}
 						editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;modalpopforced=1");
 						if(not sortEnabled){
@@ -3017,6 +3025,9 @@ Define this function in another CFC to override the default email format
 						deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;returnJson=1&amp;confirm=1");
 						//zShowModalStandard(this.href, 2000,2000, true, true);
 						echo('<a href="##"  onclick="zDeleteTableRecordRow(this, ''#deleteLink#'');  return false;">Delete</a>');
+						if(row.site_x_option_group_set_copy_id NEQ 0){
+							echo(' | <a title="This record is a copy of another record">Copy of ###row.site_x_option_group_set_copy_id#</a>');
+						}
 					}
 					writeoutput('</td>'); 
 				}
@@ -3704,6 +3715,7 @@ Define this function in another CFC to override the default email format
 	var i=0;
 	var result=0;   
 	defaultStruct={
+		copyURL:"/z/admin/site-option-group-deep-copy/index",
 		addURL:"/z/admin/site-options/addGroup",
 		editURL:"/z/admin/site-options/editGroup",
 		sectionURL:"/z/admin/site-options/sectionGroup",

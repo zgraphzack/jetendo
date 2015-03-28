@@ -594,10 +594,15 @@ function updateCountPosition(e,r2){
 		clearTimeout(zSearchFormTimeoutId);
 		zSearchFormTimeoutId=setTimeout("updateCountPosition(null,true);",300);	
 		return;
-	}
+	} 
 	var r9=document.getElementById("resultCountAbsolute");
 	var r95=document.getElementById("searchFormTopDiv"); 
-	if(r95===null || r9 === null) return; 
+	if(r95===null || r9 === null){
+		return; 
+	}
+	if(r9.innerHTML == ""){
+		return;
+	}
 	var p2=zFindPosition(r95); 
 	if(p2[0]==0 && p2[0]==0){
 		r9.style.display="none";
@@ -724,13 +729,14 @@ function setMLSCount(c){
 	r92.style.display="block";
 	var theHTML='<span style="font-size:21px;line-height:26px;">'+c+'</span><br /><span style="font-size:12px;">matching listings';
 	//if(zSearchFormChanged && (typeof zDisableSearchFormSubmit === "undefined" || zDisableSearchFormSubmit === false)){
-		theHTML+='<br /><button onclick="document.zMLSSearchForm.submit();" style="font-size:13px; font-weight:normal; background-image:url(/z/a/listing/images/mlsbg1.jpg); background-repeat:repeat-x; background-color:none; border:1px solid #999; margin-top:7px; width:130px; padding:3px; text-decoration:none; cursor:pointer;" name="sfbut1">Show Results</button>';
+		theHTML+='<br /><button onclick="document.zMLSSearchForm.submit();" class="zls-showResultsButton" style="font-size:13px; font-weight:normal; background-image:url(/z/a/listing/images/mlsbg1.jpg); background-repeat:repeat-x; background-color:none; border:1px solid #999; margin-top:7px; width:130px; padding:3px; text-decoration:none; cursor:pointer;" name="sfbut1">Show Results</button>';
 	//}
 	theHTML+='</span></span>';
 	if(r92!==null){
 		r92.innerHTML=theHTML;
 	}
 	if(firstSetMLSCount){
+		
 		firstSetMLSCount=false;
 		//updateCountPosition();
 	}

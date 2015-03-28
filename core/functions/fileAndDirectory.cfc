@@ -1164,7 +1164,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 			}else{
 				exists = false;
 			}
-			if(count GT 100){
+			if(count GT 200){
 				Request.zCopyFileError = "Copy File failed: Possible infinite loop";
 				return false;
 			}

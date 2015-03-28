@@ -1723,8 +1723,8 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 	select *, count(distinct c1.blog_comment_id) cc1 , count(distinct c2.blog_comment_id) cc2 
 	<cfif form.searchtext NEQ ''>
 		<cfif application.zcore.enableFullTextIndex>
-			MATCH(blog.blog_search) AGAINST (#db.param(form.searchText)#) as score , 
-			MATCH(blog.blog_search) AGAINST (#db.param(searchTextOriginal)#) as score2 , 
+			, MATCH(blog.blog_search) AGAINST (#db.param(form.searchText)#) as score,
+			MATCH(blog.blog_search) AGAINST (#db.param(searchTextOriginal)#) as score2
 		</cfif>
 	</cfif>
 	#db.trustedSQL(rs2.select)#  
@@ -1881,7 +1881,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 				}
 				</cfscript>
 			<a href="#viewlink#" target="_blank"><cfif qList.blog_status EQ 2 or (qList.blog_status EQ 1 and qList.blog_event EQ 0 and datecompare(parsedatetime(dateformat(qList.blog_datetime,'yyyy-mm-dd')),now()) EQ 1)>(Inactive, Click to Preview)<cfelse>View</cfif></a> | 
-			<cfif qList.blog_search_mls EQ 1><a href="#request.zos.currentHostName##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_bid=#qList.blog_id#")#">Search Results Only</a> | </cfif>
+			<cfif qList.blog_search_mls EQ 1><a href="#request.zos.currentHostName##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_bid=#qList.blog_id#")#" target="_blank">Search Results Only</a> | </cfif>
 			<a href="/z/blog/admin/blog-admin/commentList?blog_id=#qList.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">
 	<cfif application.zcore.functions.zIsExternalCommentsEnabled()>Comments<cfelse><cfif qList.cc1 NEQ 0> #qList.cc1# Comment<cfif qList.cc1 GT 1>s</cfif><cfif qList.cc2 NEQ 0> <strong>(#qList.cc2# New)</strong></cfif><cfelse>Comments</cfif></cfif></a> |
 			<a href="/z/blog/admin/blog-admin/articleEdit?blog_id=#qList.blog_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a> | 

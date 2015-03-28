@@ -161,7 +161,6 @@
 	if(this.searchCriteria.search_listdate NEQ ""){
 		this.searchCriteria.search_listdate=urldecode(this.searchCriteria.search_listdate);
 	}
-	
 	this.searchCriteriaBackup=duplicate(this.searchCriteria);
 	this.searchContentCriteria=duplicate(this.searchCriteria);
 	for(i in sc4){
@@ -198,7 +197,9 @@
 	booleanMode="";
 	
 	
+	/*
 	this.searchCriteria["search_remarks"]=trim(application.zcore.functions.zurlencode(this.searchCriteria["search_remarks"]," "));
+	writedump(this.searchCriteria["search_remarks"]);abort;
 	this.searchCriteria["search_remarks_negative"]=trim(application.zcore.functions.zurlencode(this.searchCriteria["search_remarks_negative"]," +"));
 	if(isSimpleValue(this.searchCriteria["search_remarks"]) and this.searchCriteria["search_remarks"] NEQ ""){
 		
@@ -206,7 +207,7 @@
 	}
 	if(isSimpleValue(this.searchCriteria["search_remarks_negative"]) and this.searchCriteria["search_remarks_negative"] NEQ ""){
 		this.searchCriteria["search_remarks_negative"]="-"&replace(this.searchCriteria["search_remarks_negative"]," "," -","all");
-	}
+	}*/
 	for(i in sc3){
 		if(this.searchCriteria[i] NEQ ""){
 			this.searchCriteria[i]="'"&replace(application.zcore.functions.zescape(this.searchCriteria[i]), ",","','","ALL")&"'";
@@ -655,42 +656,71 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         and (#this.searchCriteria.search_address#)
 		<!---and #REPLACE(this.searchCriteria.search_address,' ','  ')#--->
         </cfif>
-        <cfif structkeyexists(this.searchCriteria,'search_remarks') and this.searchCriteria.search_remarks NEQ "">
-			<cfset listingDataTable=true>
-			<cfif application.zcore.enableFullTextIndex><!---   --->
-				<cfif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
-					and match(listing_data.listing_data_remarks) AGAINST('#this.searchCriteria.search_remarks# #this.searchCriteria.search_remarks_negative#' in boolean mode) 
-				<cfelse>
-					and match(listing_data.listing_data_remarks) AGAINST('#replace(this.searchCriteria.search_remarks,"+","","all")#' )
-				</cfif>
-			<cfelse>
-				<cfif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
-					<cfscript>
-					local.tempSearch=arraytolist(listtoarray(trim(replace(replace(this.searchCriteria.search_remarks_negative, "+","","all"), "-","","all"))," ",false), " ");
-					</cfscript>
-					and listing_data.listing_data_remarks NOT LIKE '%#replace(local.tempSearch," ","%' and listing_data.listing_data_remarks NOT LIKE '%","all")#%' 
-				</cfif>
-				<cfscript>
-				local.tempSearch=arraytolist(listtoarray(trim(replace(this.searchCriteria.search_remarks, "+","","all"))," ",false), " ");
-				</cfscript>
-				and (listing_data.listing_data_remarks LIKE '%#replace(local.tempSearch," ","%' or listing_data.listing_data_remarks LIKE '%","all")#%')
-            </cfif><!---  --->
-        <cfelseif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
-        <cfset listingDataTable=true>
-        <!--- <cfset listingDataTable=true> --->
-			 <cfif application.zcore.enableFullTextIndex><!---  --->
-                	and not match(listing_data.listing_data_remarks) AGAINST('#replace(this.searchCriteria.search_remarks_negative,"-","","all")#')
-                <cfelse>
-					<cfscript>
-					local.tempSearch=arraytolist(listtoarray(trim(replace(replace(this.searchCriteria.search_remarks_negative, "+","","all"), "-","","all"))," ",false), " ");
-					</cfscript>
-                	and listing_data.listing_data_remarks NOT LIKE '%#replace(local.tempSearch," ", "%' and listing_data.listing_data_remarks NOT LIKE '%","all")#%' 
-            </cfif><!---  --->
-        </cfif>
-        <!--- <cfif structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "">
-        <cfset listingDataTable=true>
-        and (#this.searchCriteria.search_remarks_negative#)
-        </cfif> --->
+
+		<cfscript>
+		if((structkeyexists(this.searchCriteria,'search_remarks') and this.searchCriteria.search_remarks NEQ "") or (structkeyexists(this.searchCriteria,'search_remarks_negative') and this.searchCriteria.search_remarks_negative NEQ "")){
+			arrRemark=[];
+			if(structkeyexists(this.searchCriteria,'search_remarks')){
+				arrR=listToArray(this.searchCriteria["search_remarks"], ",");
+				for(i=1;i LTE arraylen(arrR);i++){
+					a=arrR[i];
+					a=trim(application.zcore.functions.zurlencode(a, " "));
+					if(a NEQ ""){
+						/*if(application.zcore.enableFullTextIndex){
+							a='+"'&replace(a," ",'" +"',"all")&'"';
+						}*/
+						arrayAppend(arrRemark, a);
+					}
+				}
+			}
+			arrRemarkNegative=[];
+			if(structkeyexists(this.searchCriteria,'search_remarks_negative')){
+				arrR=listToArray(this.searchCriteria["search_remarks_negative"], ",");
+				for(i=1;i LTE arraylen(arrR);i++){
+					a=arrR[i];
+					a=trim(application.zcore.functions.zurlencode(a, " "));
+					if(a NEQ ""){
+						/*if(application.zcore.enableFullTextIndex){
+							if(arrayLen(arrRemark)){
+								a='-"'&replace(a," ",'" -"',"all")&'"';
+							}else{
+								a='+"'&replace(a," ",'" +"',"all")&'"';
+							}
+						}*/
+						arrayAppend(arrRemarkNegative, a);
+					}
+				}
+			}
+			arrRemarkFinal=[];
+			/*if(application.zcore.enableFullTextIndex){
+				if(arraylen(arrRemark)){
+					positiveList=arrayToList(arrRemark, " ");
+					if(arraylen(arrRemarkNegative)){
+						negativeList=arrayToList(arrRemarkNegative, " ");
+						arrayAppend(arrRemarkFinal, " and match(listing_data.listing_data_remarks) AGAINST('#positiveList# #negativeList#' in boolean mode) ");
+					}else{
+						arrayAppend(arrRemarkFinal, " and match(listing_data.listing_data_remarks) AGAINST('#positiveList#' in boolean mode) ");
+					}
+				}else if(arraylen(arrRemarkNegative)){
+					negativeList=arrayToList(arrRemarkNegative, " ");
+					arrayAppend(arrRemarkFinal, " and not match(listing_data.listing_data_remarks) AGAINST('#negativeList#' in boolean mode) ");
+				}
+			}else{*/
+				if(arraylen(arrRemark)){
+					positiveList=" and (listing_data.listing_data_remarks LIKE '%"&arrayToList(arrRemark, "%' or listing_data.listing_data_remarks LIKE '%")&"%')";
+					arrayAppend(arrRemarkFinal, positiveList);
+				}
+				if(arraylen(arrRemarkNegative)){
+					negativeList=" and (listing_data.listing_data_remarks NOT LIKE '%"&arrayToList(arrRemarkNegative, "%' and listing_data.listing_data_remarks NOT LIKE '%")&"%')";
+					arrayAppend(arrRemarkFinal, negativeList);
+				}
+			//}
+			if(arrayLen(arrRemarkFinal)){
+				listingDataTable=true;
+				echo(arrayToList(arrRemarkFinal, " "));
+			}
+		}
+		</cfscript> 
         
         <!--- <cfif left(this.searchCriteria.search_sort,10) EQ "sortppsqft">
         <!--- <cfif structkeyexists(this.searchCriteria,'search_sortppsqft') and this.searchCriteria.search_sortppsqft EQ true> --->
@@ -1480,7 +1510,6 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
             </cfscript>
         </cfif>
     <cfelse>
-	
     <cfscript>
     cancelNextSearch=false;
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc before qPropertyCount'});

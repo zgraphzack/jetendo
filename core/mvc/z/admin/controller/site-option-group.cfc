@@ -1491,7 +1491,7 @@ displayGroupCom.add();')&'</pre>');
 					<td><input type="text" name="site_option_group_parent_field" id="site_option_group_parent_field" value="#htmleditformat(form.site_option_group_parent_field)#" /> (Optional, enables indented heirarchy on list view)</td>
 				</tr>
 				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">Enable Sorting</th>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Sorting","member.site-option-group.edit site_option_group_enable_sorting")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
 				</tr>
 				<tr>
@@ -1506,6 +1506,14 @@ displayGroupCom.add();')&'</pre>');
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable List Recurse","member.site-option-group.edit site_option_group_enable_list_recurse")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_list_recurse")# (Displays this group's records on parent groups manager list view)</td>
 				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Versioning?","member.site-option-group.edit site_option_group_enable_versioning")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_versioning")#</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Max ## of Versions","member.site-option-group.edit site_option_group_version_limit")#</th>
+					<td><input name="site_option_group_version_limit" id="site_option_group_version_limit" size="50" type="text" value="#htmleditformat(application.zcore.functions.zso(form, 'site_option_group_version_limit', true))#" maxlength="100" />
+							</td></tr>
 
 				
 				<cfscript>

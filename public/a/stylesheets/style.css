@@ -20,6 +20,8 @@ html{
 	font-size: 14px;
 	font-weight: bold;
 }
+.zls-showResultsButton{display:none;}
+#searchFormTopDiv{height:60px !important;}
 .re-s2 {color: #4363A0; text-decoration:none;}
 .re-s3 {
 	color: #B60033; 

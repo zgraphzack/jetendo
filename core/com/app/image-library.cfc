@@ -673,6 +673,55 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
     	</cfscript>
 </cffunction>
 
+
+<cffunction name="copyImageLibrary" localmode="modern" access="remote" returntype="any" output="yes">
+	<cfargument name="image_library_id" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("image_library", request.zos.zcoreDatasource)# WHERE 
+	image_library_id = #db.param(arguments.image_library_id)# and 
+	image_library_deleted=#db.param(0)# and 
+	site_id = #db.param(arguments.site_id)#";
+	qLibrary=db.execute("qLibrary");
+	for(row in qLibrary){
+		row.image_library_updated_datetime=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), 'HH:mm:ss');
+		structdelete(row, 'image_library_id');
+		ts=structnew();
+		ts.struct=row;
+		ts.datasource=request.zos.zcoreDatasource;
+		ts.table="image_library";
+		newLibraryId=application.zcore.functions.zInsert(ts);
+
+		oldPath=application.zcore.functions.zvar('privateHomedir', arguments.site_id)&'zupload/library/'&arguments.image_library_id&'/';
+		path=application.zcore.functions.zvar('privateHomedir', arguments.site_id)&'zupload/library/'&newLibraryId&'/';
+		application.zcore.functions.zcreatedirectory(path);
+
+		db.sql="select * from #db.table("image", request.zos.zcoreDatasource)# WHERE 
+		image_library_id = #db.param(arguments.image_library_id)# and 
+		image_deleted=#db.param(0)# and 
+		site_id = #db.param(arguments.site_id)#";
+		qImage=db.execute("qImage");
+		for(row2 in qImage){
+			structdelete(row2, 'image_id');
+			row2.image_library_id=newLibraryId;
+			newPath=application.zcore.functions.zcopyfile(oldPath&row2.image_file, path&row2.image_file, false);
+			row2.image_file=getfilefrompath(newPath);  
+			newPath=application.zcore.functions.zcopyfile(oldPath&row2.image_intermediate_file, path&row2.image_intermediate_file, false);
+			row2.image_intermediate_file=getfilefrompath(newPath); 
+			row2.image_updated_datetime=dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), 'HH:mm:ss');
+			ts=structnew();
+			ts.struct=row2;
+			ts.datasource=request.zos.zcoreDatasource;
+			ts.table="image";
+			newImageId=application.zcore.functions.zInsert(ts);
+		}
+		return newLibraryId;
+	}
+	return "0";
+	</cfscript>
+</cffunction>
+	
 <!--- /z/_com/app/image-library?method=imageprocessform --->
 <cffunction name="imageprocessform" localmode="modern" access="remote" returntype="any" output="yes">
 	<cfscript>

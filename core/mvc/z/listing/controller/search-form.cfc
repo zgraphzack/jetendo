@@ -818,7 +818,11 @@ application.zcore.functions.zinput_hidden(ts);
 </cfif>
 <cfif structkeyexists(request,'theSearchFormTemplate') EQ false>
  <cfscript>
+if(form.searchFormEnabledDropDownMenus){
+	echo('<div class="zResultCountAbsolute" id="resultCountAbsolute"></div>');
+}else{
 	application.zcore.template.appendTag("scripts", '<div class="zResultCountAbsolute" id="resultCountAbsolute"></div>');
+}
 </cfscript>
  </cfif>
  
@@ -3807,7 +3811,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 		} 
 		ts.enableThreading=false;
 		returnStruct = propertyDataCom.getProperties(ts);
-		structdelete(variables,'ts');
+		structdelete(variables,'ts'); 
 		mapQuery = returnStruct; 
 		if(returnStruct.count NEQ 0){
 			searchStruct = StructNew();

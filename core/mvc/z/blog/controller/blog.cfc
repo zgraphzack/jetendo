@@ -1909,7 +1909,7 @@ this.app_id=10;
 	}
 	db.sql&=" from #db.table("blog", request.zos.zcoreDatasource)# blog ";
 	if(application.zcore.enableFullTextIndex){
-		db.sql&=" FORCE INDEX(blog_search) ";
+		db.sql&=" FORCE INDEX(search) ";
 	} 
 	// blog_search like '%#db.param(replace(qArticle.blog_title,' ','%','ALL'))#%'  and
 	db.sql&="where 
@@ -4368,7 +4368,9 @@ this.app_id=10;
 	if(structkeyexists(form,'blog_id') EQ false){
 	    application.zcore.functions.zRedirect('/');
 	}
-	form.blog_id=listGetAt(form.blog_id, 1, ",");
+	if(form.blog_id CONTAINS ","){
+		form.blog_id=listGetAt(form.blog_id, 1, ",");
+	}
 	db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog where 
 	blog_id = #db.param(form.blog_id)# and 
 	site_id=#db.param(request.zos.globals.id)#";

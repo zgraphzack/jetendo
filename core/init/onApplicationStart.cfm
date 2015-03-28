@@ -499,6 +499,14 @@
 	db.sql="SHOW VARIABLES LIKE #db.param('version')#";
 	
 	local.qV=db.execute("qV");
+	ts.enableFullTextIndex=false;
+	if(local.qV.recordcount NEQ 0){
+		local.arrV=listtoarray(local.qV.value, ".", false);
+		if(local.arrV[1] GTE 10){
+			ts.enableFullTextIndex=true;
+		}
+	}
+	
 
 	db.sql="SELECT * FROM #db.table("state", request.zos.zcoreDatasource)# 
 	order by state_state asc";
@@ -519,14 +527,6 @@
 		arrayAppend(ts.arrCountry, row);
 	}
 
-	ts.enableFullTextIndex=false;
-	if(local.qV.recordcount NEQ 0){
-		local.arrV=listtoarray(local.qV.value, ".", false);
-		if(local.arrV[1] GTE 5 and local.arrV[2] GTE 6){
-			ts.enableFullTextIndex=true;
-		}
-	}
-	
 	ts.verifyTablesExcludeStruct={};
 	ts.verifyTablesExcludeStruct[request.zos.zcoreDatasource]={
 	};

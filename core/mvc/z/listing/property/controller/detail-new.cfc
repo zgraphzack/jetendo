@@ -387,8 +387,8 @@ link9&='&searchId='&application.zcore.functions.zso(form, 'searchId');
  <div class="zls-detail-box">
  
  <cfscript>
- rightColSize=max(270,request.zos.globals.maximagewidth-450);
- leftColSize=request.zos.globals.maximagewidth-rightColSize;
+ rightColSize=max(274,request.zos.globals.maximagewidth-446);
+ leftColSize=request.zos.globals.maximagewidth-rightColSize-6;
  </cfscript>
  
      <div class="zls-detail-leftbox" style="width:#leftColSize#px;">
