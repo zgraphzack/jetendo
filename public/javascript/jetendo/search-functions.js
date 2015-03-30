@@ -136,7 +136,7 @@
 		}
 		$("#zSearchTrackerzIndex").val(1);
 		$("#zSearchTabDiv a").each(function(){
-			currentGroupId=parseInt(this.getAttribute("data-groupId"));
+			var currentGroupId=parseInt(this.getAttribute("data-groupId"));
 			
 			if(groupId===currentGroupId){
 				$(this).addClass("zSearchTabDivSelected");
