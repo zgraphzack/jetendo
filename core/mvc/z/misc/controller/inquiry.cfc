@@ -311,7 +311,7 @@
           <cfif application.zcore.app.siteHasApp("listing") and application.zcore.app.getAppData("content").optionstruct.content_config_inquiry_qualify EQ 1>
           </table><br />
         
-            <table class="zinquiry-form-table">
+            <table class="zinquiry-form-table" id="zls-inquiry-listing-qualify">
           <tr>	
             <td colspan="2"><h2>What type of property are you interested in?</h2>
             <cfif application.zcore.functions.zso(form, 'qualifyRequired') EQ 1>You must enter at least property type and price range.<input type="hidden" name="qualifyRequired" value="1" /></cfif></td>
