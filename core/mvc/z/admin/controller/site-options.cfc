@@ -2478,6 +2478,7 @@ Define this function in another CFC to override the default email format
 	var q12=0;
 	savecontent variable="out"{
 		defaultStruct={
+			versionURL:"/z/admin/site-option-group-deep-copy/versionList",
 			copyURL:"/z/admin/site-option-group-deep-copy/index",
 			addURL:"/z/admin/site-options/addGroup",
 			editURL:"/z/admin/site-options/editGroup",
@@ -2513,6 +2514,7 @@ Define this function in another CFC to override the default email format
 		left join #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s3 ON 
 		site_option_group.site_option_group_id = s3.site_option_group_id and 
 		s3.site_id = site_option_group.site_id  and 
+		s3.site_x_option_group_set_master_set_id = #db.param(0)# and 
 		s3.site_x_option_group_set_deleted = #db.param(0)# ";
 		if(form.method EQ "getRowHTML"){
 			db.sql&=" and site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
@@ -2554,6 +2556,7 @@ Define this function in another CFC to override the default email format
 			site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
 			site_x_option_group_set_parent_id='#application.zcore.functions.zescape(form.site_x_option_group_set_parent_id)#' and 
 			site_id = '#request.zos.globals.id#' and 
+			site_x_option_group_set_master_set_id = '0' and 
 			site_x_option_group_set_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
@@ -2789,6 +2792,7 @@ Define this function in another CFC to override the default email format
 			site_x_option_group_set_deleted = #db.param(0)# and 
 			site_option_group_deleted = #db.param(0)# and 
 			site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
+			site_x_option_group_set_master_set_id = #db.param(0)# and 
 			site_option_group.site_id=site_x_option_group_set.site_id and 
 			site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
 			if(form.site_x_option_group_set_parent_id NEQ 0){
@@ -2826,6 +2830,7 @@ Define this function in another CFC to override the default email format
 		db.sql&="
 		WHERE  
 		site_option_group_deleted = #db.param(0)# and
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_x_option_group_set_deleted = #db.param(0)# and 
 		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
@@ -2906,7 +2911,7 @@ Define this function in another CFC to override the default email format
 				columnCount++;
 			}
 			writeoutput('
-			<th>Last Edited</th>
+			<th>Last Updated</th>
 			<th style="white-space:nowrap;">Admin</th>
 			</tr>
 			</thead><tbody>');
@@ -2973,18 +2978,7 @@ Define this function in another CFC to override the default email format
 						}*/
 						if(q1.recordcount NEQ 0){
 							writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
-							<option value="">-- Edit Sub-group --</option>');
-							/*arrGroupName=listToArray(row.groupNameList, chr(9));
-							arrGroupId=listToArray(row.groupIdList, chr(9));
-							childCount=row.childCount;
-							LEFT JOIN #db.table("site_option_group", request.zos.zcoreDatasource)# sg3 ON 
-							site_option_group.site_option_group_id = sg3.site_option_group_parent_id AND 
-							site_option_group.site_id = sg3.site_id
-							LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# sg4 ON 
-							sg3.site_option_group_id = sg4.site_option_group_id AND 
-							sg3.site_id = sg4.site_id AND 
-							site_x_option_group_set.site_x_option_group_set_id = sg4.site_x_option_group_set_parent_id
-							*/ 
+							<option value="">-- Edit Sub-group --</option>'); 
 							for(var n in q1){
 								writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
 								#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
@@ -3009,6 +3003,7 @@ Define this function in another CFC to override the default email format
 						if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
 							if(qGroup.site_option_group_enable_versioning EQ 1 and row.site_x_option_group_set_parent_id EQ 0){
 								echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.copyURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Copy</a> | ');
+								echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.versionURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Versions</a> | ');
 							}else{
 								echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Copy</a> | ');
 							}
@@ -3715,6 +3710,7 @@ Define this function in another CFC to override the default email format
 	var i=0;
 	var result=0;   
 	defaultStruct={
+		versionURL:"/z/admin/site-option-group-deep-copy/versionList",
 		copyURL:"/z/admin/site-option-group-deep-copy/index",
 		addURL:"/z/admin/site-options/addGroup",
 		editURL:"/z/admin/site-options/editGroup",
@@ -3798,6 +3794,11 @@ Define this function in another CFC to override the default email format
 		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
 		site_option_group_id=#db.param(form.site_option_group_id)#  and 
 		site_id= #db.param(request.zos.globals.id)#  ";
+
+		if(qCheck.site_x_option_group_set_master_set_id EQ 0){
+			// TODO: delete versions recursively
+			//a
+		}
 		result = db.execute("result");
 		if(qCheck.site_option_group_enable_image_library EQ 1 and qCheck.site_x_option_group_set_image_library_id NEQ 0){
 			application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.site_x_option_group_set_image_library_id);
@@ -3815,6 +3816,7 @@ Define this function in another CFC to override the default email format
 			queueSortStruct.where =" site_x_option_group_set.site_option_app_id = '#application.zcore.functions.zescape(form.site_option_app_id)#' and  
 			site_option_group_id = '#application.zcore.functions.zescape(form.site_option_group_id)#' and 
 			site_id = '#request.zos.globals.id#' and 
+			site_x_option_group_set_master_set_id = '0' and 
 			site_x_option_group_set_deleted='0' ";
 			
 			queueSortStruct.disableRedirect=true;
@@ -3912,6 +3914,7 @@ Define this function in another CFC to override the default email format
 	FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	LEFT JOIN #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set ON 
 	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	site_x_option_group_set.site_option_group_id = site_option_group.site_option_group_id and 
 	site_option_app_id=#db.param(form.site_option_app_id)# and 
 	site_x_option_group_set_deleted = #db.param(0)# 

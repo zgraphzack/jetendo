@@ -17,7 +17,7 @@
   ADD  INDEX `NewIndex3` (`site_id`, `site_option_group_id`),
   DROP INDEX `NewIndex4`,
   ADD  INDEX `NewIndex4` (`site_id`, `site_option_group_id`, `site_x_option_group_set_start_date`, `site_x_option_group_set_end_date`),
-  ADD  INDEX `NewIndex5` (`site_id`, `site_x_option_group_set_parent_id`, `site_x_option_group_set_master_set_id`);
+  ADD  INDEX `NewIndex5` (`site_id`, `site_x_option_group_set_master_set_id`);
 ")){
 		return false;
 	}

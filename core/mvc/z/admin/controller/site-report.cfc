@@ -535,6 +535,7 @@ more?
 		WHERE site_x_option_group.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
 		site_option_deleted = #db.param(0)# and 
 		site_x_option_group_deleted = #db.param(0)# and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_x_option_group_set_deleted = #db.param(0)# and
 		site_option.site_option_id = site_x_option_group.site_option_id and 
 		site_option.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("site_x_option_group.site_option_id_siteIDType"))# and 

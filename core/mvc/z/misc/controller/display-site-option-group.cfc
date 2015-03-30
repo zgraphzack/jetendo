@@ -50,6 +50,7 @@
 	#db.table("site_option_group", request.zos.zcoreDatasource)# 
 	WHERE site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
 	site_option_group_deleted = #db.param(0)# and 
+	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	site_x_option_group_set_deleted = #db.param(0)# and 
 	site_option_group.site_option_group_id = site_x_option_group_set.site_option_group_id and 
 	site_x_option_group_set.site_id = site_option_group.site_id and 

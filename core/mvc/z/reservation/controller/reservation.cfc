@@ -469,6 +469,7 @@ if(not application.zcore.app.getAppCFC("reservation").checkAvailability(ts)){
 			db.sql="SELECT count(site_x_option_group_set_id) count FROM 
 			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 			site_id = #db.param(request.zos.globals.id)# and 
+			site_x_option_group_set_master_set_id = #db.param(0)# and 
 			site_x_option_group_set_id = #db.param(ss.site_x_option_group_set_id)# and 
 			site_x_option_group_set_deleted=#db.param(0)# ";
 			qSet=db.execute("qSet");
@@ -1110,6 +1111,7 @@ if(not rs.success){
 			db.sql="select site_x_option_group_set_title, site_x_option_group_set.site_x_option_group_set_id from  
 			#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set 
 			WHERE site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and   
+			site_x_option_group_set_master_set_id = #db.param(0)# and 
 			site_x_option_group_set_deleted=#db.param(0)# and  
 			site_x_option_group_set.site_x_option_group_set_id=#db.param(row.site_x_option_group_set_id)# ";
 			qSet=db.execute("qSet"); 

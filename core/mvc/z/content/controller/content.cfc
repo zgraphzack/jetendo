@@ -87,6 +87,7 @@ this.app_id=12;
 		content_show_site_map = #db.param(1)# and 
 		content.site_x_option_group_set_id <> #db.param(0)# and 
 		content.site_x_option_group_set_id = s.site_x_option_group_set_id and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		content.site_id = s.site_id and 
 		s.site_x_option_group_set_deleted = #db.param(0)#
 		group by content.site_x_option_group_set_id

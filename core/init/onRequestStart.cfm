@@ -104,6 +104,7 @@
 			application.zcore.session=createobject("component", "zcorerootmapping.com.zos.session");
 		}
 		request.zsession=application.zcore.session.get();  
+
 		/*
 	application.zcore.session.clear();
 	writedump(request.zsession);
@@ -733,7 +734,12 @@
 	}else if(request.cgi_script_name EQ "/z/user/login/index"){ 
 		request.zos.inMemberArea=true;
 		application.zcore.skin.disableMinCat();
-	} 
+	}
+	if(application.zcore.user.checkGroupAccess("member")){
+		if(structkeyexists(form, 'zEnablePreviewMode')){
+			request.zsession.enablePreviewMode=form.zEnablePreviewMode;
+		}
+	}
 	//if(request.zos.inMemberArea){
 		/*for(local.i in url){
 			if(isSimpleValue(url[local.i])){

@@ -279,6 +279,7 @@ this.app_id=10;
 		blog_event =#db.param(1)#) and 
 		blog_status <> #db.param(2)#  and 
 		blog.site_id = blog_category.site_id and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		s.site_x_option_group_set_id = blog.site_x_option_group_set_id and 
 		s.site_id = blog.site_id and 
 		blog_category.site_id=#db.param(request.zos.globals.id)#
@@ -317,6 +318,7 @@ this.app_id=10;
 		blog_status <> #db.param(2)#  and 
 		blog.site_id=#db.param(request.zos.globals.id)# and 
 		blog.site_x_option_group_set_id <> #db.param(0)# and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		s.site_x_option_group_set_id = blog.site_x_option_group_set_id and 
 		blog.site_id = s.site_id 
 		group by blog.site_x_option_group_set_id
@@ -367,7 +369,8 @@ this.app_id=10;
 		blog_x_category_deleted = #db.param(0)# and 
 		blog_category_deleted = #db.param(0)# and 
 		blog_category_deleted = #db.param(0)# and 
-		site_x_option_group_set_deleted = #db.param(0)#
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
+		site_x_option_group_set_deleted = #db.param(0)# 
 		group by blog.site_x_option_group_set_id
 		order by s.site_x_option_group_set_title ASC
 		</cfsavecontent><cfscript>qsection=db.execute("qsection");

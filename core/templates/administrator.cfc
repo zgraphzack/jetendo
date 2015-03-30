@@ -59,8 +59,8 @@
 		userGroupId=0;
 	}
 	</cfscript>
-	<cfif not request.zos.inServerManager and (application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
-	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id))>
+	<cfif not structkeyexists(form, 'zEnablePreviewMode') and not request.zos.inServerManager and application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
+	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id)>
 		#application.siteStruct[request.zos.site_id].administratorTemplateMenuCache[request.zsession.user.site_id&"_"&request.zsession.user.id]#
 	<cfelse>
 		<cfsavecontent variable="templateMenuOutput">
@@ -99,9 +99,7 @@
 			.zDashboardButtonSummary{width:100%; float:left;}
 
 			@media only screen and (max-width: 980px) { 
-				.zDashboardContainer{width:100%;}
-				<cfif ws.whitelabel_dashboard_sidebar_html NEQ ""> 
-				</cfif>
+				.zDashboardContainer{width:100%;} 
 			}
 
 			@media only screen and (max-width: 660px) { 
@@ -117,7 +115,9 @@
 				.zdashboard-header-image640{display:none;}
 				.zdashboard-header-image320{display:block;}
 			}
-			#ws.whitelabel_css#
+			<cfscript>
+				echo(ws.whitelabel_css);
+			</cfscript>
 			</style>
 			<cfif ws.whitelabel_dashboard_header_image_320 NEQ "">
 	
@@ -144,6 +144,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 						 </div>
 						<div style="width:99%; padding:0.5%; float:left;">
 							Site Manager | <a href="/" target="_blank" style="color:##FFF;">View Home Page</a>
+							<cfif request.zos.istestserver>
+	
+								| Mode: 
+								<cfif application.zcore.functions.zso(request.zsession, 'enablePreviewMode', true, 0) EQ 0>
+									Live | <a href="#application.zcore.functions.zURLAppend(request.zos.originalURL, 'zEnablePreviewMode=1')#" style=" color:##FFFFFF;">Preview</a>
+								<cfelse>
+									<a href="#application.zcore.functions.zURLAppend(request.zos.originalURL, 'zEnablePreviewMode=0')#" style="color:##FFFFFF;">Live</a> | Preview
+								</cfif>
+							</cfif>
 						</div>
 					
 					 </cfif>

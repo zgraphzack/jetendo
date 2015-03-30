@@ -364,6 +364,7 @@ displayGroupCom.add();')&'</pre>');
 
 		db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 		WHERE site_option_group_id = #db.param(currentGroupId)# and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_x_option_group_set_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# 
 		LIMIT #db.param(doffset)#, #db.param(xlimit)#";
@@ -437,6 +438,7 @@ displayGroupCom.add();')&'</pre>');
 		db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 		WHERE site_option_group_id = #db.param(currentGroupId)# and 
 		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# 
 		LIMIT #db.param(doffset)#, #db.param(xlimit)#";
 		qGroups=db.execute("qGroups");

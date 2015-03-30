@@ -39,9 +39,11 @@
 	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
 		application.zcore.functions.zRedirect("/");
 	}
-	if(application.zcore.functions.zVerifyRecaptcha() EQ false){
-		application.zcore.status.setStatus(request.zsid, "Recaptcha image was typed incorrectly.  Please try again.",form,true);
-		application.zcore.functions.zRedirect(request.zscriptname&"&zsid="&request.zsid);
+	if(application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1){
+		if(application.zcore.functions.zVerifyRecaptcha() EQ false){
+			application.zcore.status.setStatus(request.zsid, "Recaptcha image was typed incorrectly.  Please try again.",form,true);
+			application.zcore.functions.zRedirect(request.zscriptname&"&zsid="&request.zsid);
+		}
 	}
 	arrEmail = ArrayNew(1);
 	error = false;
@@ -214,10 +216,13 @@ if(left(form.link, 4) NEQ "http"){
 		<td style="vertical-align:top; ">Comments:</td>
 		<td><textarea name="comments" rows="8" cols="50" style="width:100%">#application.zcore.functions.zso(form, 'comments')#</textarea></td>
 	</tr>
-	<tr>
-		<td style="vertical-align:top; ">&nbsp;</td>
-		<td>#application.zcore.functions.zDisplayRecaptcha()#</td>
-	</tr><!---  --->
+	<cfif application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1>
+	
+		<tr>
+			<td style="vertical-align:top; ">&nbsp;</td>
+			<td>#application.zcore.functions.zDisplayRecaptcha()#</td>
+		</tr>
+	</cfif>
     
 	<tr>
 		<td>&nbsp;</td>

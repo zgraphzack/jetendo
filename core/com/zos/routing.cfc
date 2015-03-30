@@ -1232,6 +1232,7 @@
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# site_x_option_group_set
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_x_option_group_set_deleted = #db.param(0)# and
+	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# ";
 	local.qS=db.execute("qS");
 	if(local.qS.recordcount NEQ 0){
@@ -1250,6 +1251,7 @@
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoredatasource)# site_x_option_group_set
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_x_option_group_set_deleted = #db.param(0)# and
+	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and 
 	site_x_option_group_set.site_x_option_group_set_approved=#db.param(1)# ";
 	local.qS=db.execute("qS");
