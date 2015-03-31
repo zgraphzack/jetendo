@@ -523,4 +523,5 @@ div .property-title h2{
 	.zls-view-larger-div{display:none;}
 	.zls-detail-leftbox{width:100% !important; height:auto !important;}
 	.zls-detail-rightbox{width:100% !important;height:auto !important; padding-left:0px !important; margin-top:20px !important;}
+	#myGoogleMapV3{width:100% !important;}
 }

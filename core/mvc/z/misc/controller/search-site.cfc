@@ -978,7 +978,7 @@ search sql generator has to be able to search on child group data for paging to 
 			</cfif>
 			) or (
 			<cfif application.zcore.enableFullTextIndex>
-				MATCH(content_search) AGAINST (#db.param(arguments.newemail)#) or 
+				MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or 
 				MATCH(content_search) AGAINST (#db.param('+#replace(searchTextOriginal,' ',' +','ALL')#')# IN BOOLEAN MODE)
 			<cfelse>
 				content_search like #db.param('%#replace(searchTextOriginal,' ','%','ALL')#%')#
@@ -1030,7 +1030,7 @@ search sql generator has to be able to search on child group data for paging to 
 			</cfif>
 			) or (
 			<cfif application.zcore.enableFullTextIndex>
-				MATCH(content_search) AGAINST (#db.param(arguments.newemail)#) or 
+				MATCH(content_search) AGAINST (#db.param(form.searchtext)#) or 
 				MATCH(content_search) AGAINST (#db.param('+#replace(searchTextOriginal,' ',' +','ALL')#')# IN BOOLEAN MODE)
 			<cfelse>
 				content_search like #db.param('%#replace(searchTextOriginal,' ','%','ALL')#%')#

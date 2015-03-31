@@ -226,6 +226,30 @@ When making a version the primary record, it will have option to preserve the or
 			}
 			row.site_x_option_group_set_copy_id=form.site_x_option_group_set_id;
 			if(form.createVersion EQ 1){
+				if(tempGroup.data.site_option_group_enable_versioning EQ 0){
+					application.zcore.status.setStatus(request.zsid, "Versioning is not allowed.", form, true);
+					application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
+				}
+				if(tempGroup.data.site_option_group_version_limit NEQ 0){
+					db.sql="select count(site_x_option_group_set_id) count from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+					WHERE site_x_option_group_set_master_set_id = #db.param(row.site_x_option_group_set_id)# and 
+					site_id = #db.param(row.site_id)# and 
+					site_x_option_group_set_deleted=#db.param(0)# ";
+					qVersionCount=db.execute("qVersionCount");
+					if(qVersionCount.recordcount NEQ 0 and tempGroup.data.site_option_group_version_limit GTE qVersionCount.count){
+						application.zcore.status.setStatus(request.zsid, "Version limit reached. You must delete a version before creating a new one.", form, true);
+						application.zcore.functions.zRedirect("/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#row.site_x_option_group_set_id#&zsid=#request.zsid#");
+					}
+				}
+				db.sql="select site_x_option_group_set_id from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+				WHERE site_x_option_group_set_master_set_id = #db.param(row.site_x_option_group_set_id)# and 
+				site_id = #db.param(row.site_id)# and 
+				site_x_option_group_set_deleted=#db.param(0)# and 
+				site_x_option_group_set_version_status = #db.param(1)#";
+				qVersionStatus=db.execute("qVersionStatus");
+				if(qVersionStatus.recordcount EQ 0 or qVersionStatus.count EQ 0){
+					row.site_x_option_group_set_version_status=1;
+				}
 				row.site_x_option_group_set_master_set_id=form.site_x_option_group_set_id;
 			}
 			this.copyGroupRecursive(form.site_x_option_group_set_id, form.newSiteId, row, groupStruct, optionStruct);
@@ -521,7 +545,7 @@ When making a version the primary record, it will have option to preserve the or
 			echo('<a href="/z/admin/site-option-group-deep-copy/archiveVersion?site_x_option_group_set_id=#row.site_x_option_group_set_id#">Archive</a>');
 		}
 
-		editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;modalpopforced=1&amp;disableSorting=1");
+		editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#"); // &amp;modalpopforced=1&amp;disableSorting=1
 		deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;returnJson=1&amp;confirm=1");
 
 		echo(' | <a href="#editLink#">Edit</a>');
@@ -565,6 +589,7 @@ When making a version the primary record, it will have option to preserve the or
 	</cfscript>
 
 	<h2>Select Copy Method</h2>
+	<p>Note: Creating a deep copy or a new version can take several seconds. Please be patient.</p>
 	<p>Selected Record ID###form.site_x_option_group_set_id# | Title: #qSet.site_x_option_group_set_title#</p>
 	<hr />
 	<div id="copyMessageDiv">
@@ -577,7 +602,7 @@ When making a version the primary record, it will have option to preserve the or
 				<h3>Version limit reached.  You must delete a previous version before creating a new one.</h3>
 				<p><a href="/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">List versions</a></p>
 			<cfelse>
-				<h3><a href="##" onclick="doDeepCopy('/z/admin/site-option-group-deep-copy/createVersion?site_x_option_group_set_id=#form.site_x_option_group_set_id#'); return false;">Create new version (coming soon)</a></h3>
+				<h3><a href="##" onclick="doDeepCopy('/z/admin/site-option-group-deep-copy/createVersion?site_x_option_group_set_id=#form.site_x_option_group_set_id#'); return false;">Create new version</a></h3>
 				<p>A version is a deep copy that is linked with the original record.  The new record will be invisible to the public until finalized.  You will be able to preserve the URL and existing relationships that the original record had when you set the version to be the primary record.</p>
 			</cfif>
 		</cfif>

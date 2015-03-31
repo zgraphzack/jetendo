@@ -3443,8 +3443,13 @@ Define this function in another CFC to override the default email format
 						<cfif form.modalpopforced EQ 1>
 							<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
 						<cfelse>
-
-							<button type="button" name="cancel" onclick="window.location.href='/z/admin/site-options/manageGroup?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#';">Cancel</button>
+							<cfscript>
+							cancelLink="/z/admin/site-options/manageGroup?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#";
+							if(local.methodBackup EQ "editGroup" and qSet.site_x_option_group_set_master_set_id NEQ 0){
+								cancelLink="/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#qSet.site_x_option_group_set_master_set_id#";
+							}
+							</cfscript>
+							<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
 						</cfif>
 					</td></tr>
 			</cfif>
@@ -3659,7 +3664,7 @@ Define this function in another CFC to override the default email format
 							<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
 						<cfelse>
 
-							<button type="button" name="cancel" onclick="window.location.href='/z/admin/site-options/manageGroup?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#';">Cancel</button>
+							<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
 						</cfif>
 				</cfif>
 				</td>
