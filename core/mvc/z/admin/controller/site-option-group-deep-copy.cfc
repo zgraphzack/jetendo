@@ -236,7 +236,7 @@ When making a version the primary record, it will have option to preserve the or
 					site_id = #db.param(row.site_id)# and 
 					site_x_option_group_set_deleted=#db.param(0)# ";
 					qVersionCount=db.execute("qVersionCount");
-					if(qVersionCount.recordcount NEQ 0 and tempGroup.data.site_option_group_version_limit GTE qVersionCount.count){
+					if(qVersionCount.recordcount NEQ 0 and tempGroup.data.site_option_group_version_limit LTE qVersionCount.count){
 						application.zcore.status.setStatus(request.zsid, "Version limit reached. You must delete a version before creating a new one.", form, true);
 						application.zcore.functions.zRedirect("/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#row.site_x_option_group_set_id#&zsid=#request.zsid#");
 					}
@@ -247,7 +247,7 @@ When making a version the primary record, it will have option to preserve the or
 				site_x_option_group_set_deleted=#db.param(0)# and 
 				site_x_option_group_set_version_status = #db.param(1)#";
 				qVersionStatus=db.execute("qVersionStatus");
-				if(qVersionStatus.recordcount EQ 0 or qVersionStatus.count EQ 0){
+				if(qVersionStatus.recordcount EQ 0){
 					row.site_x_option_group_set_version_status=1;
 				}
 				row.site_x_option_group_set_master_set_id=form.site_x_option_group_set_id;
@@ -280,9 +280,13 @@ When making a version the primary record, it will have option to preserve the or
 	}
 	logCopyMessage('');
 	rs={
-		success:true,
-		redirectURL:"/z/admin/site-options/manageGroup?site_x_option_group_set_parent_id=#qSet.site_x_option_group_set_parent_id#&site_option_app_id=#qSet.site_option_app_id#&site_option_group_id=#qSet.site_option_group_id#&zsid=#request.zsid#"
+		success:true
 	};
+	if(form.createVersion EQ 1){
+		rs.redirectURL="/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#qSet.site_x_option_group_set_id#";
+	}else{
+		rs.redirectURL="/z/admin/site-options/manageGroup?site_x_option_group_set_parent_id=#qSet.site_x_option_group_set_parent_id#&site_option_app_id=#qSet.site_option_app_id#&site_option_group_id=#qSet.site_option_group_id#&zsid=#request.zsid#";
+	}
 	application.zcore.functions.zReturnJSON(rs);
 	</cfscript>
 </cffunction>
@@ -465,6 +469,7 @@ When making a version the primary record, it will have option to preserve the or
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
+	site_x_option_group_set_master_set_id<>#db.param(0)# and 
 	site_x_option_group_set_deleted=#db.param(0)# ";
 	qArchive=db.execute("qArchive");
 
@@ -488,6 +493,7 @@ When making a version the primary record, it will have option to preserve the or
 <cffunction name="versionList" localmode="modern" access="remote" roles="member">
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
+	application.zcore.functions.zStatusHandler(request.zsid);
 	defaultStruct={
 		copyURL:"/z/admin/site-option-group-deep-copy/index",
 		addURL:"/z/admin/site-options/addGroup",
@@ -546,10 +552,11 @@ When making a version the primary record, it will have option to preserve the or
 		}
 
 		editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#"); // &amp;modalpopforced=1&amp;disableSorting=1
-		deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;returnJson=1&amp;confirm=1");
+		deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#");
 
 		echo(' | <a href="#editLink#">Edit</a>');
-		echo(' | <a href="##" onclick="zDeleteTableRecordRow(this, ''#deleteLink#'');  return false;">Delete</a>');
+		//echo(' | <a href="##" onclick="zDeleteTableRecordRow(this, ''#deleteLink#'');  return false;">Delete</a>');
+		echo(' | <a href="#deleteLink#">Delete</a>');
 		echo('</td>
 			</tr>');
 	}
@@ -646,7 +653,9 @@ When making a version the primary record, it will have option to preserve the or
 			method:"get",
 			ignoreOldRequests:false,
 			callback:ajaxMessageCallback,
-			errorCallback:function(){},
+			errorCallback:function(){
+			 	clearInterval(messageIntervalId);
+			 },
 			url:"/z/admin/site-option-group-deep-copy/getCopyMessage"
 		}; 
 		zAjax(obj);

@@ -2038,8 +2038,16 @@ if(not rs.success){
 	 }else{
 		 contentConfig.contentEmailFormat=false;
 	 }
-	 if(arguments.name EQ 'Visitor Tracking Code' and (structkeyexists(request.zos.userSession.groupAccess, "member") or request.zos.istestserver)){
-		 return '<script type="text/javascript">var zVisitorTrackingDisabled=true; </script>';
+	 if(arguments.name EQ 'Visitor Tracking Code'){
+	 	disabled=false;
+	 	if(structkeyexists(request.zos.userSession.groupAccess, "member") or request.zos.istestserver){
+			disabled=true;
+		}else if(structkeyexists(request.zos, 'trackingDisabled') and request.zos.trackingDisabled){
+			disabled=true;
+		}
+		if(disabled){
+			return '<script type="text/javascript">var zVisitorTrackingDisabled=true; </script>';
+		}
 	 }
 	 if(isDefined('request.zos.tempObj.zVarSOIndex') EQ false){
 		request.zos.tempObj.zVarSOIndex=0;

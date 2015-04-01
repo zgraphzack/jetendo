@@ -40,7 +40,7 @@
 		var i=0;
 		var curminute=timeformat(request.zos.now,"m");
 		var db=request.zos.queryObject;
-		var tempUserAgent=rereplace(lcase(request.zos.cgi.http_user_agent), "[^[a-z]]","_","ALL");
+		var tempUserAgent=application.zcore.functions.zURLEncode(rereplace(lcase(request.zos.cgi.http_user_agent), "[^[a-z]]","_","ALL"), '_');
 		request.zos.trackingspider=false;
 		
 		if(application.zcore.requestCacheIndex GT 3000){
@@ -112,7 +112,7 @@ USER WAS PERMANENTLY BLOCKED.');
 				header statuscode="403" statustext="Forbidden";
 				application.zcore.functions.zabort();
 			}
-		}*/
+		}*/ 
 		if(request.zos.cgi.HTTP_USER_AGENT EQ "" or replacelist(tempUserAgent, application.zcore.spiderList, application.zcore.spiderListReplace) NEQ tempUserAgent){
 			/*if(cgi.HTTP_USER_AGENT CONTAINS "baiduspider"){
 				header statuscode="404" statustext="Page not found";

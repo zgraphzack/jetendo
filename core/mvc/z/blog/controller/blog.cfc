@@ -1881,21 +1881,17 @@ this.app_id=10;
 	// or define the available fields right here.
 	
 	viewdata.article.story="";
-	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		viewdata.article.story&=('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</span>');
-	//}
+	viewdata.article.story&=('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
+	application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
+	application.zcore.template.appendTag('pagetitle','</span>');
 	if(isDefined('request.zos.supressBlogArticleDetails')){
 		tempText=qArticle.blog_story;
 		viewdata.article.story&=(replace(tempText,"##zbeginlistings","#tempCurrentBlogUrl###zbeginlistings","ALL"));
 		
 	}else{
 		viewdata.article.story&=qArticle.blog_story;
-	}
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		viewdata.article.story&=('</div>');
-	}
+	} 
+	viewdata.article.story&=('</div>'); 
 	// might need to support this in the skin language instead
 	//viewdata.article.secureEmailURL=application.zcore.functions.zEncodeEmail(qArticle.user_username);
 	//viewdata.article.secureEmailAddress=application.zcore.functions.zEncodeEmail(qArticle.user_username);
@@ -2864,19 +2860,15 @@ this.app_id=10;
 	application.zcore.template.setTag("pagenav",tempPageNav);
 	application.zcore.template.setTag("menu",tempMenu);
 	application.zcore.template.setTag("meta",tempMeta);
-    
-	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
-		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
-		application.zcore.template.appendTag('pagetitle','</span>');
-	//}
+     
+	writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+	application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+	application.zcore.template.appendTag('pagetitle','</span>'); 
 	</cfscript>
 	#qcategory.blog_category_description# <br style="clear:both;" />
 	
-	<cfscript>
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('</div>');
-	}
+	<cfscript> 
+	writeoutput('</div>'); 
 	</cfscript>
 	<cfif application.zcore.app.getAppData("blog").optionStruct.blog_config_show_detail EQ 1> 
 		<cfsavecontent variable="db.sql">

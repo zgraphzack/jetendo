@@ -3838,6 +3838,8 @@ Define this function in another CFC to override the default email format
 			return true;
 		}else if(form.returnJson EQ 1){
 			application.zcore.functions.zReturnJson({success:true});
+		}else if(qcheck.site_x_option_group_set_master_set_id NEQ 0){
+			application.zcore.functions.zRedirect("/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#qcheck.site_x_option_group_set_master_set_id#&zsid="&request.zsid);
 		}else{
 			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id="&form.site_option_app_id&"&site_option_group_id="&form.site_option_group_id&"&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid="&request.zsid));
 		}
@@ -3854,7 +3856,14 @@ Define this function in another CFC to override the default email format
 		#qcheck.site_option_group_display_name# 		<br />
 		ID## #form.site_x_option_group_set_id# <br />
 		<br />
-		<a href="#application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;confirm=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">No</a>
+		<cfscript>
+		if(qcheck.site_x_option_group_set_master_set_id NEQ 0){
+			deleteLink="/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#qcheck.site_x_option_group_set_master_set_id#";
+		}else{
+			deleteLink="#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#";
+		}
+		</cfscript>
+		<a href="#application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;confirm=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="#deleteLink#">No</a>
 	</cfif>
 </cffunction>
 
