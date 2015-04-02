@@ -2021,7 +2021,8 @@ User's IP: #request.zos.cgi.remote_addr#
 		}
 	}
 
-	application.zcore.siteOptionCom.updateOptionCache(tempStruct);
+	application.zcore.siteOptionCom.internalUpdateOptionAndGroupCache(tempStruct);
+
 	tempStruct.themeData={};
 	tempStruct.widgetData={};
 
@@ -2560,6 +2561,38 @@ writeoutput(rs.output);
 		<script src="/z/javascript/html5shiv.min.js"></script>
 		<script src="/z/javascript/respond.min.js"></script>
 	<![endif]-->');
+	</cfscript>
+</cffunction>
+
+
+<!--- application.zcore.functions.zGetSiteGlobals(site_id) --->
+<cffunction name="zGetSiteGlobals" access="public" localmode="modern">
+	<cfargument name="site_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	if(not structkeyexists(application.zcore.siteglobals, arguments.site_id)){
+		db.sql="select * from #db.table("site", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(arguments.site_id)# and 
+		site_active = #db.param(0)#";
+		qSite=db.execute("qSite");
+		if(qSite.recordcount EQ 0){
+			throw("site_id: #arguments.site_id#, doesn't exist.");
+		}
+		tempPath=application.zcore.functions.zGetDomainInstallPath(qSite.site_short_domain);
+		tempPath2=application.zcore.functions.zGetDomainWritableInstallPath(qSite.site_short_domain);
+		if(fileexists(tempPath2&"_cache/scripts/global.json")){
+			siteStruct=deserializeJson(application.zcore.functions.zreadfile(tempPath2&"_cache/scripts/global.json"));
+			siteStruct.homeDir=tempPath;
+			siteStruct.secureHomeDir=tempPath;
+			siteStruct.privateHomeDir=tempPath2; 
+			structappend(siteStruct, application.zcore.serverGlobals, false);
+		}else{
+			throw("global.json is missing for site_id: #arguments.site_id#.  Please edit/save globals for this site in the server manager to correct the problem.");
+		}
+	}else{
+		siteStruct=application.zcore.siteglobals[arguments.site_id];
+	}
+	return siteStruct;
 	</cfscript>
 </cffunction>
 </cfoutput>

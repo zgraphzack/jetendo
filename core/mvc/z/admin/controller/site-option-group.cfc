@@ -753,6 +753,7 @@ displayGroupCom.add();')&'</pre>');
 		}
 		this.copyGroupRecursive(form.site_option_group_id, form.newSiteId, row, groupStruct, optionStruct);
 	}
+	
 	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
 		
 	application.zcore.status.setStatus(request.zsid, "Site Option Group Copied.");
@@ -1191,7 +1192,8 @@ displayGroupCom.add();')&'</pre>');
 		<cfscript>
 		this.deleteGroupRecursively(form.site_option_group_id);
 		application.zcore.status.setStatus(request.zsid, "Group deleted successfully.");
-		application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id); 
+		application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qCheck.site_option_group_id);
+		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id); 
 		if(structkeyexists(request.zsession, "site_option_group_return"&form.site_option_group_id)){
 			tempLink=request.zsession["site_option_group_return"&form.site_option_group_id];
 			structdelete(request.zsession,"site_option_group_return"&form.site_option_group_id);
@@ -1303,7 +1305,8 @@ displayGroupCom.add();')&'</pre>');
 	}
 	
 	
-	application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+	application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(form.site_option_group_id);
+	//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 	structclear(application.sitestruct[request.zos.globals.id].administratorTemplateMenuCache);
 	application.zcore.routing.initRewriteRuleApplicationStruct(application.sitestruct[request.zos.globals.id]);
 	

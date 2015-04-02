@@ -753,12 +753,14 @@ used to do search for a list of values
 	var groupId=t9.optionGroupSetId[arguments.setId&"_groupId"];
 	var appId=t9.optionGroupSetId[arguments.setId&"_appId"];
 	var parentId=t9.optionGroupSetId[arguments.setId&"_parentId"]; 
-	var arrChild=t9.optionGroupSetId[parentId&"_childGroup"][groupId]; 
 	deleteIndex=0;
-	for(var i=1;i LTE arrayLen(arrChild);i++){
-		if(arguments.setId EQ arrChild[i]){
-			deleteIndex=1;
-			break;
+	if(structkeyexists(t9.optionGroupSetId[parentId&"_childGroup"], groupId)){
+		var arrChild=t9.optionGroupSetId[parentId&"_childGroup"][groupId]; 
+		for(var i=1;i LTE arrayLen(arrChild);i++){
+			if(arguments.setId EQ arrChild[i]){
+				deleteIndex=1;
+				break;
+			}
 		}
 	}
 	var arrChild2=t9.optionGroupSetArrays[appId&chr(9)&groupId&chr(9)&parentId];

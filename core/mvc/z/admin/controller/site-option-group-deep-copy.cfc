@@ -254,7 +254,13 @@ When making a version the primary record, it will have option to preserve the or
 			}
 			this.copyGroupRecursive(form.site_x_option_group_set_id, form.newSiteId, row, groupStruct, optionStruct);
 		}
-		application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
+
+		if(form.newSiteID NEQ request.zos.globals.id){
+			application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
+		}else{
+			siteStruct=application.zcore.functions.zGetSiteGlobals(form.newSiteId);
+			application.zcore.siteOptionCom.updateOptionGroupCache(siteStruct);
+		}
 
 	}catch(Any e){
 		logCopyMessage('An error occured while copying.');
@@ -451,7 +457,8 @@ When making a version the primary record, it will have option to preserve the or
 		transaction action="commit";
 	}
 
-	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
+	application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qMaster.site_option_group_id);
+	//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 
 	application.zcore.status.setStatus(request.zsid, "Successfully changed selected version to be the primary record.");
 	application.zcore.functions.zRedirect("/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#backupMasterSetId#");
@@ -463,30 +470,61 @@ When making a version the primary record, it will have option to preserve the or
 	<cfscript>
 	db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
+	form.statusValue=application.zcore.functions.zso(form, 'statusValue', true, 0);
+	form.site_x_option_group_set_master_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_master_set_id');
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 
 	// verify the set is a version
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
-	site_x_option_group_set_master_set_id<>#db.param(0)# and 
+	site_x_option_group_set_master_set_id=#db.param(form.site_x_option_group_set_master_set_id)# and 
 	site_x_option_group_set_deleted=#db.param(0)# ";
 	qArchive=db.execute("qArchive");
 
-	ts={
-		table:"site_x_option_group_set",
-		datasource:request.zos.zcoreDatasource,
-		struct:{
-			site_x_option_group_set_id:form.site_x_option_group_set_id,
-			site_x_option_group_set_updated_datetime:dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), 'HH:mm:ss'),
-			site_id:request.zos.globals.id,
-			site_x_option_group_set_version_status:0
+	if(qArchive.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "Version no longer exists.");
+		application.zcore.functions.zRedirect("/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#form.site_x_option_group_set_master_set_id#");
+	}
+
+	transaction action="begin"{
+		try{
+			if(form.statusValue EQ 1){
+				db.sql="update #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+				SET 
+				site_x_option_group_set_version_status=#db.param(0)#, 
+				site_x_option_group_set_updated_datetime=#db.param(dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), 'HH:mm:ss'))# 
+				WHERE site_id = #db.param(request.zos.globals.id)# and 
+				site_x_option_group_set_master_set_id=#db.param(form.site_x_option_group_set_master_set_id)# and 
+				site_x_option_group_set_deleted=#db.param(0)# ";
+				qUpdate=db.execute("qUpdate");
+			}
+			db.sql="update #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+			SET 
+			site_x_option_group_set_version_status=#db.param(form.statusValue)#, 
+			site_x_option_group_set_updated_datetime=#db.param(dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), 'HH:mm:ss'))# 
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
+			site_x_option_group_set_master_set_id=#db.param(form.site_x_option_group_set_master_set_id)# and 
+			site_x_option_group_set_deleted=#db.param(0)# ";
+			qUpdate=db.execute("qUpdate");  
+		}catch(Any e){
+			transaction action="rollback"; 
+			rethrow;
 		}
-	};
-	application.zcore.functions.zUpdate(ts);
+		transaction action="commit";
+	}
+
 
 	// TODO: consider removing the version data from memory using structdelete instead of full rebuild:
-	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
+	application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qArchive.site_option_group_id);
+	//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+	if(form.statusValue EQ 1){
+		application.zcore.status.setStatus(request.zsid, "Version preview enabled.");
+	}else{
+		application.zcore.status.setStatus(request.zsid, "Version archived.");
+	}
+	application.zcore.functions.zRedirect("/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#form.site_x_option_group_set_master_set_id#");
 	</cfscript>
 </cffunction>
 
@@ -507,6 +545,20 @@ When making a version the primary record, it will have option to preserve the or
 	structappend(arguments.struct, defaultStruct, false);
 	qSet=getSet(); 
 	db=request.zos.queryObject;
+	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#,
+	#db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+	site_option_group.site_option_group_id = site_x_option_group_set.site_option_group_id and 
+	site_option_group_deleted=#db.param(0)# and 
+	site_option_group.site_id = site_x_option_group_set.site_id and 
+	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)# and 
+	site_x_option_group_set_deleted=#db.param(0)# and 
+	site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)#";
+	qMaster=db.execute("qMaster");
+	if(qMaster.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "Invalid request", form, true);
+		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
+	}
+
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	echo('<h2>Showing versions for "'&qSet.site_x_option_group_set_title&'"</h2>');
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
@@ -514,6 +566,7 @@ When making a version the primary record, it will have option to preserve the or
 	site_x_option_group_set_deleted=#db.param(0)# and 
 	site_x_option_group_set_master_set_id=#db.param(form.site_x_option_group_set_id)#";
 	qVersion=db.execute("qVersion");
+
 
 	limitReached=isVersionLimitReached(form.site_x_option_group_set_id, request.zos.globals.id);
 	if(not limitReached){
@@ -524,7 +577,8 @@ When making a version the primary record, it will have option to preserve the or
 	echo('<p>Only 1 version can be set active at a time. When in preview mode, active versions will be displayed on the public web site instead of the original records.</p>');
 	echo('<table class="table-list">
 		<tr>
-		<th>ID</th>');
+		<th>ID</th>
+		<th>Title</th>');
 	// loop columns
 		echo('<th>Status</th>
 			<th>Last Updated</th>
@@ -532,24 +586,38 @@ When making a version the primary record, it will have option to preserve the or
 		</tr>');
 	for(row in qVersion){
 		echo('<tr>
-			<td>'&row.site_x_option_group_set_id&'</td>');
+			<td>'&row.site_x_option_group_set_id&'</td>
+			<td>'&row.site_x_option_group_set_title&'</td>');
 
 		echo('
 			<td>');
 		if(row.site_x_option_group_set_version_status EQ 0){
 			echo('Archived');
 		}else{
-			echo('Active');
+			echo('Preview Enabled');
 		}
 		echo('</td>
 		<td>'&application.zcore.functions.zGetLastUpdatedDescription(row.site_x_option_group_set_updated_datetime)&'</td>
 			<td>');
 		if(row.site_x_option_group_set_version_status EQ 0){
 			// 0 is archived | 1 is primary
-			echo('<a href="/z/admin/site-option-group-deep-copy/setVersionActive?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#">Set Active</a>');
+			echo('<a href="/z/admin/site-option-group-deep-copy/archiveVersion?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#&amp;statusValue=1">Enable Preview</a>');
 		}else{
-			echo('<a href="/z/admin/site-option-group-deep-copy/archiveVersion?site_x_option_group_set_id=#row.site_x_option_group_set_id#">Archive</a>');
+			if(qMaster.site_option_group_enable_unique_url EQ 1){
+				if(row.site_x_option_group_set_override_url NEQ ""){
+					link=row.site_x_option_group_set_override_url;
+				}else{
+					var urlId=application.zcore.functions.zvar('optionGroupUrlId', qMaster.site_id);
+					if(urlId EQ "" or urlId EQ 0){
+						throw("site_option_group_url_id is not set for site_id, #site_id#.");
+					}
+					link="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#urlId#-#row.site_x_option_group_set_id#.html";
+				}
+				echo('<a href="#link#" target="_blank">View</a> | ');
+			}
+			echo('<a href="/z/admin/site-option-group-deep-copy/archiveVersion?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#&amp;statusValue=0">Disable Preview</a>');
 		}
+		echo(' | <a href="/z/admin/site-option-group-deep-copy/setVersionActive?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#">Make Primary</a>');
 
 		editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#"); // &amp;modalpopforced=1&amp;disableSorting=1
 		deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#");

@@ -320,7 +320,8 @@
 		arrayClear(request.zos.arrQueryLog);
 	} 
 	// update cache only once for better performance.
-	application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+	application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(form.site_option_group_id);
+	//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 	application.zcore.status.setStatus(request.zsid, "Import complete.");
 	application.zcore.functions.zRedirect("/z/admin/site-options/import?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&zsid=#request.zsid#");
 	 
@@ -513,13 +514,19 @@
 		site_option_id_siteIDType=#db.param(form.siteIDType)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		q=db.execute("q");
-		application.zcore.functions.zDeleteRecord("site_option","site_option_id,site_id", request.zos.zcoreDatasource);
-		if(qS2.site_id EQ 0){
-			application.zcore.functions.zOS_rebuildCache();
+		if(qS2.site_option_group_id EQ 0 and qS2.site_id EQ 0){
+			form.site_id=0; 
+			application.zcore.functions.zDeleteRecord("site_option","site_option_id,site_id", request.zos.zcoreDatasource);
+			application.zcore.siteOptionCom.updateAllSitesOptionCache();
 		}else{
-			for(i=1;i LTE qS.recordcount;i++){
-				application.zcore.functions.zOS_cacheSiteAndUserGroups(qS.site_id[i]);
+			form.site_id=request.zos.globals.id;
+			application.zcore.functions.zDeleteRecord("site_option","site_option_id,site_id", request.zos.zcoreDatasource);
+			if(qS2.site_option_group_id EQ 0){
+				application.zcore.siteOptionCom.updateOptionCache(request.zos.globals.id);
+			}else{
+				application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qS2.site_option_group_id);
 			}
+			//application.zcore.functions.zOS_cacheSiteAndUserGroups(qS.site_id[i]);
 		}
 		if(qS2.site_option_group_id NEQ 0){
 			queueSortStruct = StructNew();
@@ -593,8 +600,7 @@
 	var db=request.zos.queryObject;
 	var qCheck=0;
 	var result=0;
-	var returnAppendString=0;
-	var siteglobal=0;
+	var returnAppendString=0; 
 	var tempURL=0;
 	var qDF=0;
 	var queueSortStruct=0;
@@ -603,6 +609,7 @@
 	var myForm=structnew();
 	var formaction=0;
 	variables.init();
+	form.siteglobal=application.zcore.functions.zso(form,'siteglobal', false, 0);
 
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	 
 	if(form.method EQ 'insert'){
@@ -610,7 +617,7 @@
 	}else{
 		formaction='edit';
 	}
-	if(structkeyexists(form, 'globalvar') or (application.zcore.functions.zso(form,'siteglobal', false, 0) EQ 1 and variables.allowGlobal)){
+	if(structkeyexists(form, 'globalvar') or (form.siteglobal EQ 1 and variables.allowGlobal)){
 		form.site_id=0;	
 		returnAppendString="&globalvar=1";
 	}else{
@@ -676,11 +683,14 @@
 			application.zcore.functions.zRedirect("/z/admin/site-options/#formaction#?site_option_id=#form.site_option_id#&zsid=#request.zsid#"&returnAppendString);	
 		}
 	}
-	
-	if(siteglobal EQ 1){
-		application.zcore.functions.zOS_rebuildCache();
+	if(form.site_option_group_id EQ 0){
+		if(form.siteglobal EQ 1 and variables.allowGlobal){
+			application.zcore.siteOptionCom.updateAllSitesOptionCache();
+		}else{
+			application.zcore.siteOptionCom.updateOptionCache(request.zos.globals.id); 
+		}
 	}else{
-		application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+		application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(form.site_option_group_id);
 	}
 	if(form.method EQ 'insert'){
 		if(form.site_option_group_id NEQ 0 and form.site_option_group_id NEQ ""){
@@ -1106,7 +1116,8 @@
 		queueComStruct["obj0"] = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 		queueComStruct["obj0"].init(queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
-			application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+			application.zcore.siteOptionCom.updateOptionCache(request.zos.globals.id);
+			//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
 		}
 		if(structkeyexists(form, 'zQueueSortAjax')){
@@ -1134,7 +1145,8 @@
 		queueComStruct["obj"&qGroup.site_option_group_id] = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 		queueComStruct["obj"&qGroup.site_option_group_id].init(queueSortStruct);
 		if(structkeyexists(form, 'zQueueSort')){
-			application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+			application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qGroup.site_option_group_id);
+			//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 			application.zcore.functions.zredirect(request.cgi_script_name&"?"&replacenocase(request.zos.cgi.query_string,"zQueueSort=","ztv=","all"));
 		}
 		if(structkeyexists(form, 'zQueueSortAjax')){
@@ -1349,7 +1361,9 @@
 	site_x_option_deleted = #db.param(0)# and
 	site_x_option_updated_datetime<#db.param(nowDate)#";
 	q=db.execute("q");
-	application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+
+	application.zcore.siteOptionCom.updateOptionCache(request.zos.globals.id);
+	//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 	
 	application.zcore.status.setStatus(request.zsid,"Site options saved.");
 	if(isDefined('request.zsession.siteoption_return') and form.site_option_app_id EQ 0){	
