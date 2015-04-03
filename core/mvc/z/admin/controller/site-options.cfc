@@ -3777,54 +3777,10 @@ Define this function in another CFC to override the default email format
 	</cfscript>
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
-		if(qCheck.site_x_option_group_set_image_library_id NEQ 0){
-			application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.site_x_option_group_set_image_library_id);
+		for(row in qCheck){
+			application.zcore.siteOptionCom.deleteGroupSetRecursively(row.site_x_option_group_set_id, row);
 		}
-		db.sql="SELECT * FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)# site_x_option_group, 
-		#db.table("site_option", request.zos.zcoreDatasource)# site_option WHERE 
-		site_option.site_id = site_x_option_group.site_id and 
-		site_x_option_group.site_option_app_id=#db.param(form.site_option_app_id)# and 
-		site_x_option_group.site_option_id = site_option.site_option_id and 
-		site_x_option_group_deleted = #db.param(0)# and 
-		site_option_deleted = #db.param(0)# and
-		site_option.site_option_group_id=#db.param(form.site_option_group_id)# and 
-		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
-		site_x_option_group.site_id =#db.param(request.zos.globals.id)#";
-		qS=db.execute("qS");
-		var row=0;
-		for(row in qS){
-			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
-			if(currentCFC.hasCustomDelete()){
-				var optionStruct=deserializeJson(row.site_option_type_json);
-				currentCFC.onDelete(row, optionStruct); 
-			}
-		}
-		db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
-		WHERE site_option_app_id=#db.param(form.site_option_app_id)# and 
-		site_x_option_group_deleted = #db.param(0)# and
-		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
-		site_option_group_id=#db.param(form.site_option_group_id)#  and 
-		site_id= #db.param(request.zos.globals.id)# ";
-		result = db.execute("result");
-		application.zcore.routing.deleteSiteOptionGroupSetUniqueURL(form.site_x_option_group_set_id);
-		db.sql="DELETE FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
-		WHERE site_option_app_id=#db.param(form.site_option_app_id)# and 
-		site_x_option_group_set_deleted = #db.param(0)# and
-		site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
-		site_option_group_id=#db.param(form.site_option_group_id)#  and 
-		site_id= #db.param(request.zos.globals.id)#  ";
-
-		if(qCheck.site_x_option_group_set_master_set_id EQ 0){
-			// TODO: delete versions recursively
-			//a
-		}
-		result = db.execute("result");
-		if(qCheck.site_option_group_enable_image_library EQ 1 and qCheck.site_x_option_group_set_image_library_id NEQ 0){
-			application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.site_x_option_group_set_image_library_id);
-		}
-		
-		application.zcore.siteOptionCom.deleteOptionGroupSetIndex(form.site_x_option_group_set_id, request.zos.globals.id);
-		
+ 
 		if(qCheck.site_option_group_enable_sorting EQ 1){
 			queueSortStruct = StructNew();
 			queueSortStruct.tableName = "site_x_option_group_set";
@@ -3843,7 +3799,7 @@ Define this function in another CFC to override the default email format
 			r1=queueSortCom.init(queueSortStruct);
 			queueSortCom.sortAll();
 		}
-		if(qCheck.site_option_group_enable_cache EQ 1){
+		if(qCheck.site_option_group_enable_cache EQ 1 or (qCheck.site_option_group_enable_versioning EQ 1 and qCheck.site_x_option_group_set_master_set_id NEQ 0)){
 			application.zcore.siteOptionCom.deleteOptionGroupSetIdCache(request.zos.globals.id, form.site_x_option_group_set_id);
 		}
 		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);

@@ -859,8 +859,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 		if(form.debugEnabled){
 			echo("delete site_option_group where site_option_group_id=#groupId#<br>");
 		}else{
-			optionGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-option-group");
-			optionGroupCom.deleteGroupRecursively(groupId);
+			application.zcore.siteOptionCom.deleteGroupRecursively(groupId);
 		}
 	}
 	arrKey=structkeyarray(fieldChangeStruct.extraFields);

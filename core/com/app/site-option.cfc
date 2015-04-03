@@ -25,20 +25,7 @@
 <cffunction name="updateOptionGroupCache" access="public" localmode="modern">
 	<cfargument name="siteStruct" type="struct" required="yes">
 	<cfscript>
-	db=request.zos.queryObject;
-	/*tempStruct={};
-	tempStruct.soGroupData={};
-	tempStruct.soGroupData.optionGroupFieldLookup=structnew();
-	tempStruct.soGroupData.optionGroupLookup=structnew();
-	tempStruct.soGroupData.optionGroupIdLookup=structnew();
-	tempStruct.soGroupData.optionGroupSetId=structnew();
-	tempStruct.soGroupData.optionGroupSet=structnew();
-	tempStruct.soGroupData.optionGroupSetArrays=structnew();
-	tempStruct.soGroupData.optionGroupDefaults=structnew();
-	sog=tempStruct.soGroupData;
-	site_id=arguments.siteStruct.id;
-	*/
-
+	db=request.zos.queryObject; 
 	db.sql="SELECT site_option_group_id FROM #db.table("site_option_group", request.zos.zcoreDatasource)# 
 	WHERE site_id =#db.param(arguments.siteStruct.id)# and 
 	site_option_group_deleted = #db.param(0)# 
@@ -46,205 +33,7 @@
 	qS=db.execute("qS"); 
 	for(row in qS){
 		internalUpdateOptionGroupCacheByGroupId(arguments.siteStruct, row.site_option_group_id);
-	}
-	return;
-
-
-	/*
-	 db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)# site_option 
-	WHERE site_option_group_id<> #db.param(0)# and  
-	site_option_deleted = #db.param(0)# and 
-	site_id = #db.param(site_id)#";
-	qS=db.execute("qS");
-	for(row in qS){
-		sog.optionLookup[row.site_option_id]=row;
-		structappend(sog.optionLookup[row.site_option_id], {
-			edit:row.site_option_edit_enabled,
-			name:row.site_option_name,
-			type:row.site_option_type_id,
-			optionStruct:{}
-		});
-		sog.optionLookup[row.site_option_id].optionStruct=deserializeJson(row.site_option_type_json);
-		if(not structkeyexists(sog.optionGroupDefaults, row.site_option_group_id)){
-			sog.optionGroupDefaults[row.site_option_group_id]={};
-		}
-		sog.optionGroupDefaults[row.site_option_group_id][row.site_option_name]=row.site_option_default_value;
-		sog.optionIdLookup[row.site_option_group_id&chr(9)&row.site_option_name]=row.site_option_id;
-		if(row.site_option_group_id NEQ 0){
-			if(structkeyexists(sog.optionGroupFieldLookup, row.site_option_group_id) EQ false){
-				sog.optionGroupFieldLookup[row.site_option_group_id]=structnew();
-			}
-			sog.optionGroupFieldLookup[row.site_option_group_id][row.site_option_id]=true;
-		}
-	}
-	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
-	WHERE site_id =#db.param(site_id)# and 
-	site_option_group_deleted = #db.param(0)# 
-	ORDER BY site_option_group_parent_id asc";
-	qS=db.execute("qS"); 
-	
-	var arrGroupCacheEnabled=[];
-	for(row in qS){
-		row.count=0;
-		sog.optionGroupLookup[row.site_option_group_id]=row;
-		if(row.site_option_group_enable_cache EQ 1){
-			arrayAppend(arrGroupCacheEnabled, row.site_option_group_id); 
-		}
-		sog.optionGroupIdLookup[row.site_option_group_parent_id&chr(9)&row.site_option_group_name]=row.site_option_group_id;
-	}
-	var cacheEnableGroupIdList="'"&arrayToList(arrGroupCacheEnabled, "','")&"'";
-	
-	db.sql="SELECT s1.* 
-	FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1   
-	WHERE s1.site_id = #db.param(site_id)#  and 
-	s1.site_x_option_group_set_deleted = #db.param(0)# and 
-	site_x_option_group_set_master_set_id = #db.param(0)# and 
-	s1.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) 
-	ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC "; 
-	qS=db.execute("qS"); 
-	tempUniqueStruct=structnew();
-	
-	sog.optionGroupSetId[0&"_groupId"]=0;
-	sog.optionGroupSetId[0&"_parentId"]=0;
-	sog.optionGroupSetId[0&"_appId"]=0;
-	sog.optionGroupSetId[0&"_childGroup"]=structnew();
-	for(row in qS){
-		id=row.site_x_option_group_set_id;
-		if(structkeyexists(sog.optionGroupSetId, id) EQ false){
-			if(structkeyexists(sog.optionGroupSetId, id&"_appId") EQ false){
-				sog.optionGroupLookup[row.site_option_group_id].count++;
-				sog.optionGroupSetId[id&"_groupId"]=row.site_option_group_id;
-				sog.optionGroupSetId[id&"_appId"]=row.site_option_app_id;
-				sog.optionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
-				sog.optionGroupSetId[id&"_childGroup"]=structnew();
-			}
-			if(structkeyexists(sog.optionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
-				if(structkeyexists(sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
-					sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
-				}
-				// used for looping all sets in the group
-				if(structkeyexists(tempUniqueStruct, row.site_x_option_group_set_parent_id&"_"&id) EQ false){ 
-					arrayappend(sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id], id);
-					tempUniqueStruct[row.site_x_option_group_set_parent_id&"_"&id]=true;
-				}
-			}
-		}
-	}
-	db.sql="SELECT s3.site_x_option_group_set_id, s3.site_option_id groupSetOptionId, 
-	s3.site_x_option_group_value groupSetValue , 
-	s3.site_x_option_group_original groupSetOriginal 
-	FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3 
-	WHERE s3.site_id = #db.param(site_id)#  and 
-	s3.site_x_option_group_deleted = #db.param(0)# and 
-	s3.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) "; 
-	qS=db.execute("qS"); 
-	tempUniqueStruct=structnew();
-	
-	for(row in qS){
-		id=row.site_x_option_group_set_id;
-		if(structkeyexists(sog.optionLookup, row.groupSetOptionId)){
-			var typeId=sog.optionLookup[row.groupSetOptionId].type;
-			if(typeId EQ 3 or typeId EQ 9){
-				if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
-					optionStruct=sog.optionLookup[row.groupSetOptionId].optionStruct;
-					if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
-						tempValue="/zuploadsecure/site-options/"&row.groupSetValue;
-					}else{
-						tempValue="/zupload/site-options/"&row.groupSetValue;
-					}
-				}else{
-					local.tempValue="";
-				}
-			}else{
-				local.tempValue=row.groupSetValue;
-			}
-			sog.optionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
-			if(typeId EQ 3){
-				if(row.groupSetOriginal NEQ ""){
-					sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
-				}else{
-					sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=local.tempValue;
-				}
-			}
-		}
-	}
-	 db.sql="SELECT * FROM 
-	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
-	 #db.table("site_option_group", request.zos.zcoreDatasource)# s2
-	WHERE s1.site_id = #db.param(site_id)# and 
-	s1.site_id = s2.site_id and 
-	s1.site_x_option_group_set_deleted = #db.param(0)# and 
-	s2.site_option_group_deleted = #db.param(0)# and 
-	s1.site_x_option_group_set_master_set_id = #db.param(0)# and 
-	s1.site_option_group_id = s2.site_option_group_id and 
-	s2.site_option_group_enable_cache = #db.param(1)#
-	ORDER BY s1.site_x_option_group_set_sort asc";
-	//s1.site_x_option_group_set_approved=#db.param(1)# and 
-	qS=db.execute("qS"); 
-	for(row in qS){
-		if(structkeyexists(sog.optionGroupSetArrays, row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id) EQ false){
-			sog.optionGroupSetArrays[row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id]=arraynew(1);
-		}
-		ts=structnew();
-		ts.__sort=row.site_x_option_group_set_sort;
-		ts.__setId=row.site_x_option_group_set_id;
-		ts.__dateModified=row.site_x_option_group_set_updated_datetime;
-		ts.__groupId=row.site_option_group_id;
-		ts.__approved=row.site_x_option_group_set_approved;
-		ts.__title=row.site_x_option_group_set_title;
-		ts.__parentID=row.site_x_option_group_set_parent_id;
-		ts.__summary=row.site_x_option_group_set_summary;
-		// build url
-		if(row.site_x_option_group_set_image_library_id NEQ 0){
-			ts.__image_library_id=row.site_x_option_group_set_image_library_id;
-		}
-		if(row.site_option_group_enable_unique_url EQ 1){
-			if(row.site_x_option_group_set_override_url NEQ ""){
-				ts.__url=row.site_x_option_group_set_override_url;
-			}else{
-				var urlId=arguments.siteStruct.optionGroupUrlId;
-				if(urlId EQ "" or urlId EQ 0){
-					throw("site_option_group_url_id is not set for site_id, #site_id#.");
-				}
-				ts.__url="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#urlId#-#row.site_x_option_group_set_id#.html";
-			}
-		}
-		t9=sog;
-		if(structkeyexists(t9.optionGroupDefaults, row.site_option_group_id)){
-			local.defaultStruct=t9.optionGroupDefaults[row.site_option_group_id];
-		}else{
-			local.defaultStruct={};
-		}
-		if(structkeyexists(t9.optionGroupSetId, ts.__setId&"_groupId")){
-			groupId=t9.optionGroupSetId[ts.__setId&"_groupId"];
-			if(structkeyexists(t9.optionGroupFieldLookup, groupId)){
-				local.fieldStruct=t9.optionGroupFieldLookup[groupId];
-			
-				for(local.i2 in local.fieldStruct){
-					local.cf=t9.optionLookup[local.i2];
-					if(structkeyexists(t9.optionGroupSetId, "__original "&ts.__setId&"_f"&local.i2)){
-						ts["__original "&local.cf.name]=t9.optionGroupSetId["__original "&ts.__setId&"_f"&local.i2];
-					}
-					if(structkeyexists(t9.optionGroupSetId, ts.__setId&"_f"&local.i2)){
-						ts[local.cf.name]=t9.optionGroupSetId[ts.__setId&"_f"&local.i2];
-					}else if(structkeyexists(local.defaultStruct, local.cf.name)){
-						ts[local.cf.name]=local.defaultStruct[local.cf.name];
-					}else{
-						ts[local.cf.name]="";
-					}
-				}
-			}
-		}
-		sog.optionGroupSet[row.site_x_option_group_set_id]= ts;
-		arrayappend(sog.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id], ts);
 	} 
-
-
-	if(not structkeyexists(arguments.siteStruct, 'soGroupData')){
-		arguments.siteStruct.soGroupData={};
-	}
-	structappend(arguments.siteStruct.soGroupData, sog, true);
-	*/
 	</cfscript>
 </cffunction>
 
@@ -294,6 +83,7 @@
 	db=request.zos.queryObject;
 	tempStruct={};
 	tempStruct.soGroupData={};
+	tempStruct.soGroupData.optionGroupSetVersion={};
 	tempStruct.soGroupData.optionGroupFieldLookup=structnew();
 	tempStruct.soGroupData.optionGroupLookup=structnew();
 	tempStruct.soGroupData.optionGroupIdLookup=structnew();
@@ -335,168 +125,205 @@
 	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 	WHERE site_id =#db.param(site_id)# and 
 	site_option_group_id = #db.param(groupId)# and 
-	site_option_group_deleted = #db.param(0)# 
-	ORDER BY site_option_group_parent_id asc";
-	qS=db.execute("qS"); 
-	
-	var arrGroupCacheEnabled=[];
-	for(row in qS){
+	site_option_group_deleted = #db.param(0)#";
+	qGroup=db.execute("qGroup"); 
+	 
+	cacheEnabled=false;
+	versioningEnabled=false;
+	for(row in qGroup){
 		row.count=0;
 		sog.optionGroupLookup[row.site_option_group_id]=row;
-		if(row.site_option_group_enable_cache EQ 1){
-			arrayAppend(arrGroupCacheEnabled, row.site_option_group_id); 
+		if(row.site_option_group_enable_cache EQ 1){ 
+			cacheEnabled=true;
+		}
+		if(row.site_option_group_enable_versioning EQ 1){
+			versioningEnabled=true;
 		}
 		sog.optionGroupIdLookup[row.site_option_group_parent_id&chr(9)&row.site_option_group_name]=row.site_option_group_id;
 	}
-	var cacheEnableGroupIdList="'"&arrayToList(arrGroupCacheEnabled, "','")&"'";
-	
-	db.sql="SELECT s1.* 
-	FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1   
-	WHERE s1.site_id = #db.param(site_id)#  and 
-	s1.site_x_option_group_set_deleted = #db.param(0)# and 
-	site_x_option_group_set_master_set_id = #db.param(0)# and 
-	s1.site_option_group_id = #db.param(groupId)# and 
-	s1.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) 
-	ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC "; 
-	qS=db.execute("qS"); 
-	tempUniqueStruct=structnew();
 	
 	sog.optionGroupSetId[0&"_groupId"]=0;
 	sog.optionGroupSetId[0&"_parentId"]=0;
 	sog.optionGroupSetId[0&"_appId"]=0;
 	sog.optionGroupSetId[0&"_childGroup"]=structnew();
-	for(row in qS){
-		id=row.site_x_option_group_set_id;
-		if(structkeyexists(sog.optionGroupSetId, id) EQ false){
-			if(structkeyexists(sog.optionGroupSetId, id&"_appId") EQ false){
-				sog.optionGroupLookup[row.site_option_group_id].count++;
-				sog.optionGroupSetId[id&"_groupId"]=row.site_option_group_id;
-				sog.optionGroupSetId[id&"_appId"]=row.site_option_app_id;
-				sog.optionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
-				sog.optionGroupSetId[id&"_childGroup"]=structnew();
-			}
-			if(structkeyexists(sog.optionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
-				if(structkeyexists(sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
-					sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
-				}
-				// used for looping all sets in the group
-				if(structkeyexists(tempUniqueStruct, row.site_x_option_group_set_parent_id&"_"&id) EQ false){ 
-					arrayappend(sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id], id);
-					tempUniqueStruct[row.site_x_option_group_set_parent_id&"_"&id]=true;
-				}
-			}
-		}
-	}
-	db.sql="SELECT s3.site_x_option_group_set_id, s3.site_option_id groupSetOptionId, 
-	s3.site_x_option_group_value groupSetValue , 
-	s3.site_x_option_group_original groupSetOriginal 
-	FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3 
-	WHERE s3.site_id = #db.param(site_id)#  and 
-	s3.site_option_group_id = #db.param(groupId)# and 
-	s3.site_x_option_group_deleted = #db.param(0)# and 
-	s3.site_option_group_id IN (#db.trustedSQL(cacheEnableGroupIdList)#) "; 
-	qS=db.execute("qS"); 
-	tempUniqueStruct=structnew();
-	
-	for(row in qS){
-		id=row.site_x_option_group_set_id;
-		if(structkeyexists(sog.optionLookup, row.groupSetOptionId)){
-			var typeId=sog.optionLookup[row.groupSetOptionId].type;
-			if(typeId EQ 3 or typeId EQ 9){
-				if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
-					optionStruct=sog.optionLookup[row.groupSetOptionId].optionStruct;
-					if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
-						tempValue="/zuploadsecure/site-options/"&row.groupSetValue;
-					}else{
-						tempValue="/zupload/site-options/"&row.groupSetValue;
-					}
-				}else{
-					local.tempValue="";
-				}
-			}else{
-				local.tempValue=row.groupSetValue;
-			}
-			sog.optionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
-			if(typeId EQ 3){
-				if(row.groupSetOriginal NEQ ""){
-					sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
-				}else{
-					sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=local.tempValue;
-				}
-			}
-		}
-	}
-	 db.sql="SELECT * FROM 
-	 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
-	 #db.table("site_option_group", request.zos.zcoreDatasource)# s2
-	WHERE s1.site_id = #db.param(site_id)# and 
-	s1.site_id = s2.site_id and 
-	s1.site_x_option_group_set_deleted = #db.param(0)# and 
-	s2.site_option_group_deleted = #db.param(0)# and 
-	s2.site_option_group_id = #db.param(groupId)# and 
-	s1.site_x_option_group_set_master_set_id = #db.param(0)# and 
-	s1.site_option_group_id = s2.site_option_group_id and 
-	s2.site_option_group_enable_cache = #db.param(1)#
-	ORDER BY s1.site_x_option_group_set_sort asc";
-	qS=db.execute("qS"); 
-	for(row in qS){
-		if(structkeyexists(sog.optionGroupSetArrays, row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id) EQ false){
-			sog.optionGroupSetArrays[row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id]=arraynew(1);
-		}
-		ts=structnew();
-		ts.__sort=row.site_x_option_group_set_sort;
-		ts.__setId=row.site_x_option_group_set_id;
-		ts.__dateModified=row.site_x_option_group_set_updated_datetime;
-		ts.__groupId=row.site_option_group_id;
-		ts.__approved=row.site_x_option_group_set_approved;
-		ts.__title=row.site_x_option_group_set_title;
-		ts.__parentID=row.site_x_option_group_set_parent_id;
-		ts.__summary=row.site_x_option_group_set_summary;
-		// build url
-		if(row.site_x_option_group_set_image_library_id NEQ 0){
-			ts.__image_library_id=row.site_x_option_group_set_image_library_id;
-		}
-		if(row.site_option_group_enable_unique_url EQ 1){
-			if(row.site_x_option_group_set_override_url NEQ ""){
-				ts.__url=row.site_x_option_group_set_override_url;
-			}else{
-				var urlId=arguments.siteStruct.optionGroupUrlId;
-				if(urlId EQ "" or urlId EQ 0){
-					throw("site_option_group_url_id is not set for site_id, #site_id#.");
-				}
-				ts.__url="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#urlId#-#row.site_x_option_group_set_id#.html";
-			}
-		}
-		t9=sog;
-		if(structkeyexists(t9.optionGroupDefaults, row.site_option_group_id)){
-			local.defaultStruct=t9.optionGroupDefaults[row.site_option_group_id];
-		}else{
-			local.defaultStruct={};
-		}
-		if(structkeyexists(t9.optionGroupSetId, ts.__setId&"_groupId")){
-			groupId=t9.optionGroupSetId[ts.__setId&"_groupId"];
-			if(structkeyexists(t9.optionGroupFieldLookup, groupId)){
-				local.fieldStruct=t9.optionGroupFieldLookup[groupId];
-			
-				for(local.i2 in local.fieldStruct){
-					local.cf=t9.optionLookup[local.i2];
-					if(structkeyexists(t9.optionGroupSetId, "__original "&ts.__setId&"_f"&local.i2)){
-						ts["__original "&local.cf.name]=t9.optionGroupSetId["__original "&ts.__setId&"_f"&local.i2];
-					}
-					if(structkeyexists(t9.optionGroupSetId, ts.__setId&"_f"&local.i2)){
-						ts[local.cf.name]=t9.optionGroupSetId[ts.__setId&"_f"&local.i2];
-					}else if(structkeyexists(local.defaultStruct, local.cf.name)){
-						ts[local.cf.name]=local.defaultStruct[local.cf.name];
-					}else{
-						ts[local.cf.name]="";
-					}
-				}
-			}
-		}
-		sog.optionGroupSet[row.site_x_option_group_set_id]= ts;
-		arrayappend(sog.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id], ts);
-	} 
 
+	if(versioningEnabled or cacheEnabled){
+		db.sql="SELECT s1.* 
+		FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1   
+		WHERE s1.site_id = #db.param(site_id)#  and 
+		s1.site_x_option_group_set_deleted = #db.param(0)# and 
+		site_x_option_group_set_master_set_id = #db.param(0)# and ";
+		if(cacheEnabled){
+			db.sql&=" (s1.site_x_option_group_set_master_set_id = #db.param(0)# or s1.site_x_option_group_set_version_status = #db.param(1)#) and ";
+		}else if(versioningEnabled){
+			db.sql&=" (s1.site_x_option_group_set_master_set_id <> #db.param(0)# and s1.site_x_option_group_set_version_status = #db.param(1)#) and ";
+		}else{
+			db.sql&=" #db.param(1)# = #db.param(0)# and ";
+		}
+		db.sql&=" s1.site_option_group_id = #db.param(groupId)# 
+		ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC "; 
+		qS=db.execute("qS"); 
+		tempUniqueStruct=structnew();
+		
+
+		arrVersionSetId=[];
+		for(row in qS){
+			id=row.site_x_option_group_set_id;
+			if(row.site_x_option_group_set_master_set_id NEQ 0){
+				arrayAppend(arrVersionSetId, id);
+			}
+			if(structkeyexists(sog.optionGroupSetId, id) EQ false){
+				if(structkeyexists(sog.optionGroupSetId, id&"_appId") EQ false){
+					sog.optionGroupLookup[row.site_option_group_id].count++;
+					sog.optionGroupSetId[id&"_groupId"]=row.site_option_group_id;
+					sog.optionGroupSetId[id&"_appId"]=row.site_option_app_id;
+					sog.optionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
+					sog.optionGroupSetId[id&"_childGroup"]=structnew();
+				}
+				if(structkeyexists(sog.optionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
+					if(structkeyexists(sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
+						sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
+					}
+					// used for looping all sets in the group
+					if(structkeyexists(tempUniqueStruct, row.site_x_option_group_set_parent_id&"_"&id) EQ false){ 
+						arrayappend(sog.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id], id);
+						tempUniqueStruct[row.site_x_option_group_set_parent_id&"_"&id]=true;
+					}
+				}
+			}
+		}
+		if(cacheEnabled or (versioningEnabled and arraylen(arrVersionSetId))){
+			db.sql="SELECT s3.site_x_option_group_set_id, s3.site_option_id groupSetOptionId, 
+			s3.site_x_option_group_value groupSetValue , 
+			s3.site_x_option_group_original groupSetOriginal 
+			FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)# s3 
+			WHERE s3.site_id = #db.param(site_id)#  and 
+			s3.site_option_group_id = #db.param(groupId)# and 
+			s3.site_x_option_group_deleted = #db.param(0)# "; 
+			if(not cacheEnabled){
+				db.sql&=" and s3.site_x_option_group_set_id IN (#db.trustedSQL(arrayToList(arrVersionSetId, ', '))#) ";
+			}
+			qS=db.execute("qS");  
+			
+			for(row in qS){
+				id=row.site_x_option_group_set_id;
+				if(structkeyexists(sog.optionLookup, row.groupSetOptionId)){
+					var typeId=sog.optionLookup[row.groupSetOptionId].type;
+					if(typeId EQ 3 or typeId EQ 9){
+						if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
+							optionStruct=sog.optionLookup[row.groupSetOptionId].optionStruct;
+							if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
+								tempValue="/zuploadsecure/site-options/"&row.groupSetValue;
+							}else{
+								tempValue="/zupload/site-options/"&row.groupSetValue;
+							}
+						}else{
+							local.tempValue="";
+						}
+					}else{
+						local.tempValue=row.groupSetValue;
+					}
+					sog.optionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
+					if(typeId EQ 3){
+						if(row.groupSetOriginal NEQ ""){
+							sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
+						}else{
+							sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]=local.tempValue;
+						}
+					}
+				}
+			}
+		}
+
+
+		 db.sql="SELECT * FROM 
+		 #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# s1, 
+		 #db.table("site_option_group", request.zos.zcoreDatasource)# s2
+		WHERE s1.site_id = #db.param(site_id)# and 
+		s1.site_id = s2.site_id and 
+		s1.site_x_option_group_set_deleted = #db.param(0)# and 
+		s2.site_option_group_deleted = #db.param(0)# and 
+		s2.site_option_group_id = #db.param(groupId)# and ";
+		if(cacheEnabled){
+			db.sql&=" (s1.site_x_option_group_set_master_set_id = #db.param(0)# or s1.site_x_option_group_set_version_status = #db.param(1)#) and ";
+		}else{
+			db.sql&=" (s1.site_x_option_group_set_master_set_id <> #db.param(0)# and s1.site_x_option_group_set_version_status = #db.param(1)#) and ";
+
+		}
+		db.sql&=" s1.site_option_group_id = s2.site_option_group_id 
+		ORDER BY s1.site_x_option_group_set_master_set_id asc, s1.site_x_option_group_set_sort asc";
+		qS=db.execute("qS"); 
+		for(row in qS){
+			if(structkeyexists(sog.optionGroupSetArrays, row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id) EQ false){
+				sog.optionGroupSetArrays[row.site_option_app_id&chr(9)&row.site_option_group_id&chr(9)&row.site_x_option_group_set_parent_id]=arraynew(1);
+			}
+			ts=structnew();
+			ts.__sort=row.site_x_option_group_set_sort;
+			ts.__setId=row.site_x_option_group_set_id;
+			ts.__dateModified=row.site_x_option_group_set_updated_datetime;
+			ts.__groupId=row.site_option_group_id;
+			ts.__approved=row.site_x_option_group_set_approved;
+			ts.__title=row.site_x_option_group_set_title;
+			ts.__parentID=row.site_x_option_group_set_parent_id;
+			ts.__summary=row.site_x_option_group_set_summary;
+			// build url
+			if(row.site_x_option_group_set_image_library_id NEQ 0){
+				ts.__image_library_id=row.site_x_option_group_set_image_library_id;
+			}
+			if(row.site_option_group_enable_unique_url EQ 1){
+				if(row.site_x_option_group_set_override_url NEQ ""){
+					ts.__url=row.site_x_option_group_set_override_url;
+				}else{
+					var urlId=arguments.siteStruct.optionGroupUrlId;
+					if(urlId EQ "" or urlId EQ 0){
+						throw("site_option_group_url_id is not set for site_id, #site_id#.");
+					}
+					ts.__url="/#application.zcore.functions.zURLEncode(row.site_x_option_group_set_title, '-')#-#urlId#-#row.site_x_option_group_set_id#.html";
+				}
+			}
+			t9=sog;
+			if(structkeyexists(t9.optionGroupDefaults, row.site_option_group_id)){
+				local.defaultStruct=t9.optionGroupDefaults[row.site_option_group_id];
+			}else{
+				local.defaultStruct={};
+			}
+			if(structkeyexists(t9.optionGroupSetId, ts.__setId&"_groupId")){
+				groupId=t9.optionGroupSetId[ts.__setId&"_groupId"];
+				if(structkeyexists(t9.optionGroupFieldLookup, groupId)){
+					local.fieldStruct=t9.optionGroupFieldLookup[groupId];
+				
+					for(local.i2 in local.fieldStruct){
+						local.cf=t9.optionLookup[local.i2];
+						if(structkeyexists(t9.optionGroupSetId, "__original "&ts.__setId&"_f"&local.i2)){
+							ts["__original "&local.cf.name]=t9.optionGroupSetId["__original "&ts.__setId&"_f"&local.i2];
+						}
+						if(structkeyexists(t9.optionGroupSetId, ts.__setId&"_f"&local.i2)){
+							ts[local.cf.name]=t9.optionGroupSetId[ts.__setId&"_f"&local.i2];
+						}else if(structkeyexists(local.defaultStruct, local.cf.name)){
+							ts[local.cf.name]=local.defaultStruct[local.cf.name];
+						}else{
+							ts[local.cf.name]="";
+						}
+					}
+				}
+			}
+			sog.optionGroupSet[row.site_x_option_group_set_id]= ts;
+
+
+			if(row.site_x_option_group_set_master_set_id NEQ 0){
+				if(structkeyexists(sog.optionGroupSet, row.site_x_option_group_set_master_set_id)){
+					masterStruct=sog.optionGroupSet[row.site_x_option_group_set_master_set_id];
+					ts.__sort=masterStruct.__sort;
+					if(row.site_option_group_enable_unique_url EQ 1){
+						ts.__url=masterStruct.__url;
+					}
+				}
+				sog.optionGroupSetVersion[row.site_x_option_group_set_master_set_id]=ts.__setId;
+			}else{
+				arrayappend(sog.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id], ts);
+			}
+		} 
+	}
 
 	if(not structkeyexists(arguments.siteStruct, 'soGroupData')){
 		arguments.siteStruct.soGroupData={};
@@ -509,6 +336,8 @@
 	}
 	</cfscript>
 </cffunction>
+
+
 	
 <cffunction name="internalUpdateOptionOptionCache" access="public" localmode="modern">
 	<cfargument name="siteStruct" type="struct" required="yes">
@@ -1504,11 +1333,11 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 	WHERE s1.site_id = #db.param(arguments.site_id)#  and 
 	s1.site_x_option_group_set_deleted = #db.param(0)# and 
 	s3.site_x_option_group_deleted = #db.param(0)# and 
-	s1.site_x_option_group_set_master_set_id = #db.param(0)# and 
 	s4.site_option_deleted = #db.param(0)# and 
 	s1.site_x_option_group_set_approved=#db.param(1)# and 
 	s1.site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)#
 	ORDER BY s1.site_x_option_group_set_parent_id ASC, s1.site_x_option_group_set_sort ASC ";
+	//s1.site_x_option_group_set_master_set_id = #db.param(0)# and 
 	//if(debug) writedump(db.sql);
 	var qS=db.execute("qS"); 
 	if(debug) writedump(qS);
@@ -1525,7 +1354,7 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 			t9.optionGroupSetId[id&"_parentId"]=row.site_x_option_group_set_parent_id;
 			t9.optionGroupSetId[id&"_childGroup"]=structnew();
 		}
-		if(structkeyexists(t9.optionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
+		if(row.site_x_option_group_set_master_set_id EQ 0 and structkeyexists(t9.optionGroupSetId, row.site_x_option_group_set_parent_id&"_childGroup")){
 			if(structkeyexists(t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id) EQ false){
 				t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=arraynew(1);
 			}
@@ -1664,70 +1493,75 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 		if(debug) writedump(ts);
 		
 		t9.optionGroupSet[row.site_x_option_group_set_id]= ts;
-		if(typeStruct.optionGroupLookup[row.site_option_group_id].site_option_group_enable_sorting EQ 1){
-			var arrChild=t9.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];
-			var resort=false;
-			if(arrayLen(arrChild) GTE row.site_x_option_group_set_sort){
-				if(arrayLen(arrChild) LT row.site_x_option_group_set_sort){
-					resort=true;
-				}else if(arrChild[row.site_x_option_group_set_sort].__setId NEQ row.site_x_option_group_set_id){
-					resort=true;
-				}else{ 
-					arrChild[row.site_x_option_group_set_sort]=ts;
-				} 
-			}else{
-				resort=true;
-			} 
-			if(resort){
-				var arrChild2=t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
-				var arrTemp=[]; 
-				try{
-					for(var i=1;i LTE arraylen(arrChild2);i++){
-						arrayAppend(arrTemp, t9.optionGroupSet[arrChild2[i]]);
-					}
-					t9.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id]=arrTemp;
-				}catch(Any e){
-					application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(row.site_option_group_id);
-					//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
-					ts={};
-					ts.subject="Site option group update resort failed";
-					savecontent variable="output"{
-						echo('#application.zcore.functions.zHTMLDoctype()#
-						<head>
-						<meta charset="utf-8" />
-						<title>Error</title>
-						</head>
-						
-						<body>');
+		arrChild=[];
 
-						writedump(form);
-						writedump(e);
-						echo('</body>
-						</html>');
-					}
-					ts.html=output;
-					ts.to=request.zos.developerEmailTo;
-					ts.from=request.zos.developerEmailFrom;
-					rCom=application.zcore.email.send(ts);
-					if(rCom.isOK() EQ false){
-						rCom.setStatusErrors(request.zsid);
-						application.zcore.functions.zstatushandler(request.zsid);
-						application.zcore.functions.zabort();
+		// don't sort versions
+		if(row.site_x_option_group_set_master_set_id EQ 0){
+			if(typeStruct.optionGroupLookup[row.site_option_group_id].site_option_group_enable_sorting EQ 1){
+				var arrChild=t9.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];
+				var resort=false;
+				if(arrayLen(arrChild) GTE row.site_x_option_group_set_sort){
+					if(arrayLen(arrChild) LT row.site_x_option_group_set_sort){
+						resort=true;
+					}else if(arrChild[row.site_x_option_group_set_sort].__setId NEQ row.site_x_option_group_set_id){
+						resort=true;
+					}else{ 
+						arrChild[row.site_x_option_group_set_sort]=ts;
+					} 
+				}else{
+					resort=true;
+				} 
+				if(resort){
+					var arrChild2=t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
+					var arrTemp=[]; 
+					try{
+						for(var i=1;i LTE arraylen(arrChild2);i++){
+							arrayAppend(arrTemp, t9.optionGroupSet[arrChild2[i]]);
+						}
+						t9.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id]=arrTemp;
+					}catch(Any e){
+						application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(row.site_option_group_id);
+						//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+						ts={};
+						ts.subject="Site option group update resort failed";
+						savecontent variable="output"{
+							echo('#application.zcore.functions.zHTMLDoctype()#
+							<head>
+							<meta charset="utf-8" />
+							<title>Error</title>
+							</head>
+							
+							<body>');
+
+							writedump(form);
+							writedump(e);
+							echo('</body>
+							</html>');
+						}
+						ts.html=output;
+						ts.to=request.zos.developerEmailTo;
+						ts.from=request.zos.developerEmailFrom;
+						rCom=application.zcore.email.send(ts);
+						if(rCom.isOK() EQ false){
+							rCom.setStatusErrors(request.zsid);
+							application.zcore.functions.zstatushandler(request.zsid);
+							application.zcore.functions.zabort();
+						}
 					}
 				}
-			}
-		}else{
-			var arrChild=t9.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];
-			var found=false;
-			for(var i=1;i LTE arrayLen(arrChild);i++){
-				if(row.site_x_option_group_set_id EQ arrChild[i].__setID){
-					found=true;
-					arrChild[i]=ts;
-					break;
+			}else{
+				var arrChild=t9.optionGroupSetArrays[row.site_option_app_id&chr(9)&ts.__groupId&chr(9)&row.site_x_option_group_set_parent_id];
+				var found=false;
+				for(var i=1;i LTE arrayLen(arrChild);i++){
+					if(row.site_x_option_group_set_id EQ arrChild[i].__setID){
+						found=true;
+						arrChild[i]=ts;
+						break;
+					}
 				}
-			}
-			if(not found){
-				arrayAppend(arrChild, ts);
+				if(not found){
+					arrayAppend(arrChild, ts);
+				}
 			}
 		}
 	}  
@@ -2404,5 +2238,170 @@ if(not rs.success){
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="deleteGroupSetRecursively" localmode="modern" access="public" roles="member">
+	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
+	<cfargument name="rowData" type="struct" required="no" default="#{}#">
+	<cfscript>
+	db=request.zos.queryObject;
+	if(structcount(arguments.rowData) EQ 0){
+		db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+		WHERE  site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)# and  
+		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_x_option_group_set.site_id = #db.param(request.zos.globals.id)#  ";
+		qSet=db.execute("qSet");
+		if(qSet.recordcount EQ 0){
+			return;
+		}
+		for(i in qSet){
+			row=i;
+		}
+	}else{
+		row=arguments.rowData;
+	}
+	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+	WHERE  site_x_option_group_set_parent_id=#db.param(arguments.site_x_option_group_set_id)# and  
+	site_x_option_group_set_deleted = #db.param(0)# and
+	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)#  ";
+	qSets=db.execute("qSets");
+	for(row2 in qSets){
+		deleteGroupSetRecursively(row2.site_x_option_group_set_id);
+	}
+	if(row.site_x_option_group_set_image_library_id NEQ 0){
+		application.zcore.imageLibraryCom.deleteImageLibraryId(row.site_x_option_group_set_image_library_id);
+	}
+	// delete versions
+	if(row.site_x_option_group_set_master_set_id EQ 0){
+		db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+		WHERE  site_x_option_group_set_master_set_id=#db.param(arguments.site_x_option_group_set_id)# and  
+		site_x_option_group_set_deleted = #db.param(0)# and
+		site_x_option_group_set.site_id = #db.param(request.zos.globals.id)#  ";
+		qVersion=db.execute("qVersion");
+		for(row2 in qVersion){
+			deleteGroupSetRecursively(row2.site_x_option_group_set_id);
+		}
+	}
+
+	if(arraylen(application.zcore.soGroupData.arrCustomDelete)){
+		typeIdList=arrayToList(application.zcore.soGroupData.arrCustomDelete, ",");
+
+		db.sql="SELECT * FROM 
+		#db.table("site_x_option_group", request.zos.zcoreDatasource)#,
+		#db.table("site_option", request.zos.zcoreDatasource)#  
+		WHERE site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)# and 
+		site_option_type_id in (#db.trustedSQL(typeIdList)#) and 
+		site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
+		site_option.site_id = site_x_option_group.site_id and 
+		site_x_option_group_value <> #db.param('')# and 
+		site_option_deleted = #db.param(0)# and 
+		site_x_option_group_deleted = #db.param(0)# and
+		site_option.site_option_id = site_x_option_group.site_option_id ";
+		qOptions=db.execute("qOptions");
+		path=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zupload/site-options/';
+		securepath=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zuploadsecure/site-options/';
+		for(row2 in qOptions){
+			if(structkeyexists(sog.optionLookup, row2.site_option_id)){
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(sog.optionLookup[row2.site_option_id].type); 
+				if(currentCFC.hasCustomDelete()){
+					optionStruct=sog.optionLookup[row2.site_option_id].optionStruct;
+					currentCFC.onDelete(row2, optionStruct); 
+				}
+			}
+		}
+	}
+
+	db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
+	WHERE  site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)# and  
+	site_x_option_group_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result");
+	db.sql="DELETE FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
+	WHERE  site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)# and  
+	site_x_option_group_set_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result");
+
+	</cfscript>
+</cffunction>
+	
+
+<cffunction name="deleteGroupRecursively" localmode="modern" access="public" roles="member">
+	<cfargument name="site_option_group_id" type="numeric" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var row=0;
+	var result=0;
+	siteStruct=application.zcore.functions.zGetSiteGlobals(request.zos.globals.id);
+	sog=siteStruct.soGroupData;
+	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)#  
+	WHERE  site_option_group_parent_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and
+	site_id = #db.param(request.zos.globals.id)# ";
+	qGroups=db.execute("qGroups");
+	for(row in qGroups){
+		deleteGroupRecursively(row.site_option_group_id);	
+	}
+	 
+	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+	WHERE  site_x_option_group_set.site_option_group_id=#db.param(arguments.site_option_group_id)# and  
+	site_x_option_group_set_deleted = #db.param(0)# and
+	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)#  ";
+	qSets=db.execute("qSets");
+	for(row in qSets){
+		if(row.site_x_option_group_set_image_library_id NEQ 0){
+			application.zcore.imageLibraryCom.deleteImageLibraryId(row.site_x_option_group_set_image_library_id);
+		}
+	}
+
+	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)#, 
+	#db.table("site_x_option_group", request.zos.zcoreDatasource)#  
+	WHERE  site_x_option_group.site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_type_id in (#db.param(3)#, #db.param(9)#) and 
+	site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
+	site_option.site_id = site_x_option_group.site_id and 
+	site_x_option_group_value <> #db.param('')# and 
+	site_option_deleted = #db.param(0)# and 
+	site_x_option_group_deleted = #db.param(0)# and
+	site_option.site_option_id = site_x_option_group.site_option_id ";
+	qOptions=db.execute("qOptions");
+	path=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zupload/site-options/';
+	securepath=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zuploadsecure/site-options/';
+	for(row in qOptions){
+		if(structkeyexists(sog.optionLookup, row.site_option_id)){
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(sog.optionLookup[row.site_option_id].type); 
+			if(currentCFC.hasCustomDelete()){
+				optionStruct=sog.optionLookup[row.site_option_id].optionStruct;
+				currentCFC.onDelete(row, optionStruct); 
+			}
+		}
+	}
+	db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
+	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_x_option_group_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result");
+	db.sql="DELETE FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
+	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result");
+	
+	db.sql="DELETE FROM #db.table("site_option_group_map", request.zos.zcoreDatasource)#  
+	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_group_map_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result");
+	db.sql="DELETE FROM #db.table("site_option", request.zos.zcoreDatasource)#  
+	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_deleted = #db.param(0)# and
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result");
+	db.sql="DELETE FROM #db.table("site_option_group", request.zos.zcoreDatasource)#  
+	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
+	site_option_group_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	result =db.execute("result"); 
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

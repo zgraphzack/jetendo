@@ -119,6 +119,7 @@
 		soGroupData={
 			optionTypeStruct:componentObjectCache.siteOptionCom.getOptionTypes()
 		};
+		soGroupData.arrCustomDelete=componentObjectCache.siteOptionCom.getTypeCustomDeleteArray();
 		application.zcore.soGroupData=soGroupData;
 		themeTypeData={
 			optionTypeStruct:{}

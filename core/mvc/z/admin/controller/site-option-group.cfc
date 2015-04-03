@@ -753,7 +753,6 @@ displayGroupCom.add();')&'</pre>');
 		}
 		this.copyGroupRecursive(form.site_option_group_id, form.newSiteId, row, groupStruct, optionStruct);
 	}
-	
 	application.zcore.functions.zOS_cacheSiteAndUserGroups(form.newSiteId);
 		
 	application.zcore.status.setStatus(request.zsid, "Site Option Group Copied.");
@@ -1083,88 +1082,6 @@ displayGroupCom.add();')&'</pre>');
 </cffunction>
 
 
-<cffunction name="deleteGroupRecursively" localmode="modern" access="public" roles="member">
-	<cfargument name="site_option_group_id" type="numeric" required="yes">
-	<cfscript>
-	var db=request.zos.queryObject;
-	var row=0;
-	var result=0;
-	db.sql="SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)#  
-	WHERE  site_option_group_parent_id=#db.param(arguments.site_option_group_id)# and 
-	site_option_group_deleted = #db.param(0)# and
-	site_id = #db.param(request.zos.globals.id)# ";
-	local.qGroups=db.execute("qGroups");
-	for(row in local.qGroups){
-		this.deleteGroupRecursively(row.site_option_group_id);	
-	}
-	
-	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
-	WHERE  site_x_option_group_set.site_option_group_id=#db.param(arguments.site_option_group_id)# and  
-	site_x_option_group_set_deleted = #db.param(0)# and
-	site_x_option_group_set.site_id = #db.param(request.zos.globals.id)#  ";
-	local.qSets=db.execute("qSets");
-	for(row in local.qSets){
-		if(row.site_x_option_group_set_image_library_id NEQ 0){
-			application.zcore.imageLibraryCom.deleteImageLibraryId(row.site_x_option_group_set_image_library_id);
-		}
-	}
-	db.sql="SELECT * FROM #db.table("site_option", request.zos.zcoreDatasource)#, 
-	#db.table("site_x_option_group", request.zos.zcoreDatasource)#  
-	WHERE  site_x_option_group.site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_option_type_id in (#db.param(3)#, #db.param(9)#) and 
-	site_x_option_group.site_id = #db.param(request.zos.globals.id)# and 
-	site_option.site_id = site_x_option_group.site_id and 
-	site_x_option_group_value <> #db.param('')# and 
-	site_option_deleted = #db.param(0)# and 
-	site_x_option_group_deleted = #db.param(0)# and
-	site_option.site_option_id = site_x_option_group.site_option_id ";
-	local.qOptions=db.execute("qOptions");
-	path=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zupload/site-options/';
-	securepath=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zuploadsecure/site-options/';
-	for(row in local.qOptions){
-		ts=deserializeJson(row.site_option_type_json);
-		if(application.zcore.functions.zso(ts, 'file_securepath') EQ 'Yes'){
-			if(fileexists(securepath&row.site_x_option_group_value)){
-				application.zcore.functions.zdeletefile(securepath&row.site_x_option_group_value);
-			}
-		}else{
-			if(fileexists(path&row.site_x_option_group_value)){
-				application.zcore.functions.zdeletefile(path&row.site_x_option_group_value);
-			}
-			if(row.site_x_option_group_original NEQ "" and fileexists(path&row.site_x_option_group_original)){
-				application.zcore.functions.zdeletefile(path&row.site_x_option_group_original);
-			}
-		}
-	}
-	db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
-	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_x_option_group_deleted = #db.param(0)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
-	result =db.execute("result");
-	db.sql="DELETE FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)#  
-	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_x_option_group_set_deleted = #db.param(0)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
-	result =db.execute("result");
-	
-	db.sql="DELETE FROM #db.table("site_option_group_map", request.zos.zcoreDatasource)#  
-	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_option_group_map_deleted = #db.param(0)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
-	result =db.execute("result");
-	db.sql="DELETE FROM #db.table("site_option", request.zos.zcoreDatasource)#  
-	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_option_deleted = #db.param(0)# and
-	site_id = #db.param(request.zos.globals.id)# ";
-	result =db.execute("result");
-	db.sql="DELETE FROM #db.table("site_option_group", request.zos.zcoreDatasource)#  
-	WHERE  site_option_group_id=#db.param(arguments.site_option_group_id)# and 
-	site_option_group_deleted = #db.param(0)# and 
-	site_id = #db.param(request.zos.globals.id)# ";
-	result =db.execute("result"); 
-	</cfscript>
-</cffunction>
-
 <cffunction name="delete" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -1190,7 +1107,7 @@ displayGroupCom.add();')&'</pre>');
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
-		this.deleteGroupRecursively(form.site_option_group_id);
+		application.zcore.siteOptionCom.deleteGroupRecursively(form.site_option_group_id);
 		application.zcore.status.setStatus(request.zsid, "Group deleted successfully.");
 		application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qCheck.site_option_group_id);
 		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id); 

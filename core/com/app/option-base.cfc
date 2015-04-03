@@ -74,7 +74,22 @@
 		"20": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.countryOptionType"),
 		"21": createobject("component", "zcorerootmapping.mvc.z.admin.optionTypes.listingSavedSearchOptionType")
 	};
+
 	return ts;
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="getTypeCustomDeleteArray" returntype="array" localmode="modern" access="public">
+	<cfscript>
+	ss=application.zcore[variables.typeStorageKey].optionTypeStruct;
+	arrCustomDelete=[];
+	for(i in ss){
+		if(ss[i].hasCustomDelete()){
+			arrayAppend(arrCustomDelete, i);
+		}
+	}
+	return arrCustomDelete;
 	</cfscript>
 </cffunction>
 
