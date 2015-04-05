@@ -746,11 +746,16 @@ notes: optionally delete an existing image that has a field in the specified dat
 	<cfscript>
 	var output = 0;
 	secureCommand="getImageMagickIdentify"&chr(9)&arguments.source;
-	output=application.zcore.functions.zSecureCommand(secureCommand, 10);
-	if(output CONTAINS "x" and listlen(output,"x") GTE 2){
-		return { width:listgetat(output,1,"x"), height:listgetat(output,listlen(output, "x"),"x") };
+	output=trim(application.zcore.functions.zSecureCommand(secureCommand, 10));
+	if(output CONTAINS "," and listlen(output,",") GTE 3){
+		arrOut=listtoarray(output, ",");
+		if(lcase(arrOut[3]) NEQ "srgb"){
+			return{ success: false, errorMessage:"The image must be converted to the sRGB color profile.  It is currently: "&arrOut[3] };
+		}
+		return { success:true, width:arrOut[1], height:arrOut[2] };
 	}else{
-		application.zcore.template.fail("resizeImage: failed to get source image dimensions with zSecureCommand: "&secureCommand&" | Output: "&output,true);
+		return{ success: false, errorMessage:"Unable to read image dimensions.  The image may be corrupted or an unsupported format.  Please try again with a RGB jpg, png or gif." };
+		//application.zcore.template.fail("resizeImage: failed to get source image dimensions with zSecureCommand: "&secureCommand&" | Output: "&output,true);
 	}
 	</cfscript>
 </cffunction>
@@ -822,7 +827,10 @@ notes: optionally delete an existing image that has a field in the specified dat
     if(len(fileName) EQ 0){
         return false;
     } 
-	local.imageSize=application.zcore.functions.zGetImageSize(arguments.source);     
+	local.imageSize=application.zcore.functions.zGetImageSize(arguments.source);         
+	if(not local.imageSize.success){
+		throw(local.imageSize.errorMessage);
+	}
 	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
 		writeoutput("identify: #local.imageSize.width#x#local.imageSize.height#<br />"); 
 	} 
@@ -982,17 +990,15 @@ notes: optionally delete an existing image that has a field in the specified dat
 			}
 			return false;
 		}
-		local.imageSize=application.zcore.functions.zGetImageSize(filePath);    
+		local.imageSize=application.zcore.functions.zGetImageSize(filePath);        
+		if(not local.imageSize.success){
+			throw(local.imageSize.errorMessage);
+		}
 		arrayAppend(request.arrLastImageWidth,local.imageSize.width);
-		arrayAppend(request.arrLastImageHeight,local.imageSize.height);
-		/*try{
-		}catch(Any e){
-			return false;
-		}*/
+		arrayAppend(request.arrLastImageHeight,local.imageSize.height); 
         if(fileexists(filePath) EQ false){
             return false;
-        } 
-        //application.zcore.functions.zdeletefile(arguments.source);
+        }  
         if(output EQ false){
             // failed to execute command for resizing image
             return false;

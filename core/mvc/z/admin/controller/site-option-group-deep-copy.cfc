@@ -329,6 +329,49 @@ When making a version the primary record, it will have option to preserve the or
 	</cfscript>
 </cffunction>
 
+<cffunction name="confirmVersionActive" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	
+	db=request.zos.queryObject;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
+	</cfscript>
+	<form action="/z/admin/site-option-group-deep-copy/setVersionActive" method="post">
+		<input type="hidden" name="site_x_option_group_set_id" value="#form.site_x_option_group_set_id#" />
+		<input type="hidden" name="site_x_option_group_set_master_set_id" value="#form.site_x_option_group_set_master_set_id#" />
+		<cfscript>
+	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+	where site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
+	site_x_option_group_set_deleted = #db.param(0)# and
+	site_id = #db.param(request.zos.globals.id)# ";
+	qVersion=db.execute("qVersion");
+		form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
+		form.site_x_option_group_set_master_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_master_set_id');
+		form.preserveURL=application.zcore.functions.zso(form, 'preserveURL', true, 1);
+		form.preserveMeta=application.zcore.functions.zso(form, 'preserveMeta', true, 1);
+		</cfscript>
+		<!--- TODO: consider showing new/old values to help user understand what is being asked. --->
+		<h2>Are you sure you want to make this version active?</h2>
+		<p>The active record will be made inactive, and this record will take its place.</p>
+		<p>ID: #qVersion.site_x_option_group_set_id# | Title: #qVersion.site_x_option_group_set_title#</p>
+
+		<p>URL: <cfif qVersion.site_x_option_group_set_override_url EQ "">
+			(Default/Automatic)
+		<cfelse>
+			#qVersion.site_x_option_group_set_override_url#
+		</cfif></p>
+		<p>Meta Title: #qVersion.site_x_option_group_set_metatitle#</p>
+		<p>Meta Keywords: #qVersion.site_x_option_group_set_metakey#</p>
+		<p>Meta Description: #qVersion.site_x_option_group_set_metadesc#</p>
+		<h3>Keep URL the same?
+		#application.zcore.functions.zInput_Boolean("preserveURL")#</h3>
+		<h3>Keep Meta Tags the same?
+		#application.zcore.functions.zInput_Boolean("preserveMeta")#</h3>
+
+		<p><input type="submit" name="submit1" value="Make Primary" />
+		<input type="button" name="cancel1" onclick="window.location.href='/z/admin/site-option-group-deep-copy/versionList?site_x_option_group_set_id=#qVersion.site_x_option_group_set_master_set_id#';" value="Cancel" /></p>
+	</form>
+</cffunction>
+
 <cffunction name="setVersionActive" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	db=request.zos.queryObject;
@@ -337,6 +380,8 @@ When making a version the primary record, it will have option to preserve the or
 
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
 	form.site_x_option_group_set_master_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_master_set_id');
+	form.preserveURL=application.zcore.functions.zso(form, 'preserveURL', true, 1);
+	form.preserveMeta=application.zcore.functions.zso(form, 'preserveMeta', true, 1);
 
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 	where site_x_option_group_set_id = #db.param(form.site_x_option_group_set_master_set_id)# and 
@@ -363,8 +408,6 @@ When making a version the primary record, it will have option to preserve the or
 		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
 	}
 
-	form.preserveURL=application.zcore.functions.zso(form, 'preserveURL', true, 0);
-	form.preserveMeta=application.zcore.functions.zso(form, 'preserveMeta', true, 0);
 
 	backupMasterSetId=tempMaster.site_x_option_group_set_id;
 	backupVersionSetId=tempVersion.site_x_option_group_set_id;
@@ -389,6 +432,10 @@ When making a version the primary record, it will have option to preserve the or
 		tempVersion.site_x_option_group_set_metakey=tempMaster.site_x_option_group_set_metakey;
 		tempVersion.site_x_option_group_set_metadesc=tempMaster.site_x_option_group_set_metadesc;
 	}
+
+	writedump(ts);
+	writedump(tempVersion);
+	abort;
 
 	newMasterId=application.zcore.functions.zInsert(ts);
 	transaction action="begin"{
@@ -617,7 +664,7 @@ When making a version the primary record, it will have option to preserve the or
 			}
 			echo('<a href="/z/admin/site-option-group-deep-copy/archiveVersion?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#&amp;statusValue=0">Disable Preview</a>');
 		}
-		echo(' | <a href="/z/admin/site-option-group-deep-copy/setVersionActive?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#">Make Primary</a>');
+		echo(' | <a href="/z/admin/site-option-group-deep-copy/confirmVersionActive?site_x_option_group_set_id=#row.site_x_option_group_set_id#&site_x_option_group_set_master_set_id=#row.site_x_option_group_set_master_set_id#">Make Primary</a>');
 
 		editLink=application.zcore.functions.zURLAppend(arguments.struct.editURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#"); // &amp;modalpopforced=1&amp;disableSorting=1
 		deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#row.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#");

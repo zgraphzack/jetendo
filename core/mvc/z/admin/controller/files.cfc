@@ -975,12 +975,17 @@ function setImage(){
 	<table style="text-align:center;">
 	<tr>
 	<td style="text-align:center;">
-<img src="#variables.siteRootDir##urlencodedformat(form.f)#" height="150" /><br />
-<cfscript> 
-imageSize=application.zcore.functions.zGetImageSize(variables.absDir&(form.f));  
-writeoutput('File Name: #getfilefrompath(form.f)# | Resolution: '&imageSize.width&'x'&imageSize.height);
-</cfscript>
-<br />
+		<img src="#variables.siteRootDir##urlencodedformat(form.f)#" height="150" /><br />
+		<cfscript> 
+		imageSize=application.zcore.functions.zGetImageSize(variables.absDir&(form.f));      
+		echo('File Name: #getfilefrompath(form.f)# | ');
+		if(not imageSize.success){
+			echo(imageSize.errorMessage);
+		}else{
+			echo('Resolution: '&imageSize.width&'x'&imageSize.height);
+		}
+		</cfscript>
+		<br />
 
 	How do you want this image to align with the text on this page?<br /> 
 	<form action="" name="iaform" id="iaform" method="get">

@@ -736,7 +736,15 @@
 	form.slideshow_forward_image_size=0;
 	if(form.slideshow_tabistext EQ 0 and fileexists(imPath)){
 		
-		local.imageSize=application.zcore.functions.zGetImageSize(imPath);   
+		local.imageSize=application.zcore.functions.zGetImageSize(imPath);      
+		if(not local.imageSize.success){
+			application.zcore.status.setStatus(request.zsid, local.imageSize.errorMessage, form, true);
+			if(form.method EQ "update"){
+				application.zcore.functions.zRedirect("/z/admin/slideshow/edit?slideshow_id=#form.slideshow_id#&zsid="&request.zsid);
+			}else{
+				application.zcore.functions.zRedirect("/z/admin/slideshow/add?slideshow_id=#form.slideshow_id#&zsid="&request.zsid);
+			}
+		}
 		if(form.slideshow_slide_direction EQ "y"){
     			form.slideshow_back_image_size=local.imageSize.height;
 		}else{
@@ -745,6 +753,14 @@
 	}
 	if(form.slideshow_tabistext EQ 0 and fileexists(imPath2)){
 		local.imageSize=application.zcore.functions.zGetImageSize(imPath2);    
+		if(not local.imageSize.success){
+			application.zcore.status.setStatus(request.zsid, local.imageSize.errorMessage, form, true);
+			if(form.method EQ "update"){
+				application.zcore.functions.zRedirect("/z/admin/slideshow/edit?slideshow_id=#form.slideshow_id#&zsid="&request.zsid);
+			}else{
+				application.zcore.functions.zRedirect("/z/admin/slideshow/add?slideshow_id=#form.slideshow_id#&zsid="&request.zsid);
+			}
+		}
 		if(form.slideshow_slide_direction EQ "y"){
     			form.slideshow_back_image_size=local.imageSize.height;
 		}else{
@@ -1142,7 +1158,7 @@
 	}
 	
 	if(isarray(arrList) EQ false){
-		application.zcore.status.setStatus(request.zsid, '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please upload a small to medium size JPEG (i.e. a file that ends with ".jpg").');	
+		application.zcore.status.setStatus(request.zsid, '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please upload a small to medium size JPEG (i.e. a file that ends with ".jpg").', form, true);	
 		StructDelete(form,'slideshow_tab_url');
 		StructDelete(variables,'slideshow_tab_url');
 	}else if(ArrayLen(arrList) NEQ 0){
@@ -1162,6 +1178,14 @@
 	form.slideshow_tab_size=0;
 	if(qcheck.slideshow_tabistext EQ 0 and imPath NEQ false and fileexists(imPath)){
 		local.imageSize=application.zcore.functions.zGetImageSize(imPath); 
+		if(not local.imageSize.success){
+			application.zcore.status.setStatus(request.zsid, local.imageSize.errorMessage, form, true);
+			if(form.method EQ "updateTab"){
+				application.zcore.functions.zRedirect("/z/admin/slideshow/editTab?slideshow_id=#form.slideshow_id#&slideshow_tab_id=#form.slideshow_tab_id#&zsid="&request.zsid);
+			}else{
+				application.zcore.functions.zRedirect("/z/admin/slideshow/addTab?slideshow_id=#form.slideshow_id#&zsid="&request.zsid);
+			}
+		}
 		form.slideshow_tab_size=local.imageSize.height; 
 	}
 	firstTileCount=0;
@@ -1310,9 +1334,9 @@
 	
 	The photo size required for a perfect fit is: #qImageData.slideshow_width#x#qImageData.slideshow_height#<br />
 	<br />
-	Select a .JPG or .GIF image
+	Select a .gif, .jpg, or .png image
 	<cfif currentMethod NEQ 'editPhoto'>
-		or a .ZIP archive with .JPG or .GIF files inside
+		or a .ZIP archive with .gif, .jpg, and .png files inside
 	</cfif>
 	</p>
 	<cfscript>
@@ -1448,7 +1472,12 @@
 	}
 	
 	if(isarray(arrList) EQ false){
-		application.zcore.status.setStatus(request.zsid, '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please upload a small to medium size JPEG (i.e. a file that ends with ".jpg").');	
+		application.zcore.status.setStatus(request.zsid, '<strong>PHOTO ERROR:</strong> invalid format or corrupted.  Please check the file is a valid 8-bit RGB color image (not CMYK).', form, true);	
+		if(form.method EQ 'insertPhoto'){
+			application.zcore.functions.zRedirect('/z/admin/slideshow/addPhoto?zsid=#request.zsid#&slideshow_id=#form.slideshow_id#&slideshow_tab_id=#form.slideshow_tab_id#');	
+		}else{
+			application.zcore.functions.zRedirect('/z/admin/slideshow/editPhoto?zsid=#request.zsid#&slideshow_id=#form.slideshow_id#&slideshow_image_id=#application.zcore.functions.zso(form, 'slideshow_image_id')#&slideshow_tab_id=#form.slideshow_tab_id#');	
+		}
 		StructDelete(form,'slideshow_image_thumbnail_url');
 		StructDelete(variables,'slideshow_image_thumbnail_url');
 	}else if(ArrayLen(arrList) EQ 2){

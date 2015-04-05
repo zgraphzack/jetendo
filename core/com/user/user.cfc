@@ -703,7 +703,12 @@ userCom.checkLogin(inputStruct);
 			return false;
 		}
 	}else if(arguments.version EQ 2){
-		return application.zcore.functions.zSecureCommand("getScryptCheck"&chr(9)&replace(arguments.password, chr(9), "", "all")&chr(9)&arguments.hashedPassword, 20);
+		result=application.zcore.functions.zSecureCommand("getScryptCheck"&chr(9)&replace(arguments.password, chr(9), "", "all")&chr(9)&arguments.hashedPassword, 20);
+		if(result EQ ""){
+			return false;
+		}else{
+			return result;
+		}
 	}else{
 		throw("convertPlainTextToSecurePassword() error: Invalid arguments.version. Supported values are: 0,1 or 2. 2 is recommended if Java is enabled.");	
 	}

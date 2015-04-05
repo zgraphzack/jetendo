@@ -1231,7 +1231,7 @@ function getImageMagickIdentify($a){
 			$found=true;
 		}
 		if($found){
-			$cmd="/usr/bin/identify -format %wx%h ".escapeshellarg($path)." 2>&1";
+			$cmd="/usr/bin/identify -format %w,%h,%[colorspace] ".escapeshellarg($path)." 2>&1";
 			$r=`$cmd`;
 			echo $cmd."\n".$r."\n";
 			return $r;

@@ -615,8 +615,9 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 				writedump(destination);
 				abort;
 				*/
-			 
+			 	
 				arrList = application.zcore.functions.zResizeImage(destination&s9.image_file,destination,"#request.zos.globals.maximagewidth#x2000",0); 
+
 				if(isarray(arrList) EQ false){
 					application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - saveImageId() failed because zResizeImage() failed.");
 				}else if(ArrayLen(arrList) EQ 1){
@@ -632,7 +633,10 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		if(not structkeyexists(s9, 'image_file')){
 			application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - saveImageId() failed to insert to database.");
 		}
-		local.imageSizeStruct=application.zcore.functions.zGetImageSize(destination&s9.image_file);
+		local.imageSizeStruct=application.zcore.functions.zGetImageSize(destination&s9.image_file);    
+		if(not local.imageSizeStruct.success){
+			throw(local.imageSizeStruct.errorMessage);
+		}
 		s9.image_width=local.imageSizeStruct.width;
 		s9.image_height=local.imageSizeStruct.height;
 		s9.site_id=request.zos.globals.id;
