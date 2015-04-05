@@ -605,8 +605,14 @@ When making a version the primary record, it will have option to preserve the or
 		application.zcore.status.setStatus(request.zsid, "Invalid request", form, true);
 		application.zcore.functions.zRedirect("/z/admin/site-options/index?zsid=#request.zsid#");
 	}
+	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_deleted=#db.param(0)# and 
+	site_option_group_id=#db.param(qMaster.site_option_group_id)# ";
+	qGroup=db.execute("qGroup");
 
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');
+	echo('<p><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qMaster.site_option_group_id#">Manage #qGroup.site_option_group_display_name#</a> /</p>');
 	echo('<h2>Showing versions for "'&qSet.site_x_option_group_set_title&'"</h2>');
 	db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 

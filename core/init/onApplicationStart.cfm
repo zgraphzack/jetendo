@@ -442,7 +442,7 @@
 	ts.soGroupData={
 		optionTypeStruct:ts.componentObjectCache.siteOptionCom.getOptionTypes()
 	};
-	ts.soGroupData.arrCustomDelete=ts.componentObjectCache.siteOptionCom.getTypeCustomDeleteArray();
+	ts.soGroupData.arrCustomDelete=ts.componentObjectCache.siteOptionCom.getTypeCustomDeleteArray(ts.soGroupData);
 	ts.themeTypeData={
 		optionTypeStruct:{}
 	};

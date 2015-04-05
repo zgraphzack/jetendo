@@ -81,8 +81,9 @@
 
 
 <cffunction name="getTypeCustomDeleteArray" returntype="array" localmode="modern" access="public">
+	<cfargument name="sharedStruct" type="struct" required="yes">
 	<cfscript>
-	ss=application.zcore[variables.typeStorageKey].optionTypeStruct;
+	ss=arguments.sharedStruct.optionTypeStruct;
 	arrCustomDelete=[];
 	for(i in ss){
 		if(ss[i].hasCustomDelete()){
