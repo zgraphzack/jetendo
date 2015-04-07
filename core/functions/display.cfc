@@ -2,6 +2,7 @@
 <cfoutput>
 <cffunction name="zSetupLightBox" access="public" localmode="modern">
 	<cfargument name="id" type="string" required="yes">
+	<cfargument name="className" type="string" required="no" default="">
 	<cfscript>
 	</cfscript>
 	<cfsavecontent variable="topMeta">
@@ -42,7 +43,7 @@
 				delegate: 'a',
 				type: 'image',
 				tLoading: 'Loading image ##%curr%...',
-				mainClass: 'mfp-no-margins mfp-with-zoom mfp-fade zThumbnailLightboxPopupDiv',
+				mainClass: 'mfp-no-margins mfp-with-zoom mfp-fade #arguments.className# zThumbnailLightboxPopupDiv',
 				closeBtnInside: false,
 				fixedContentPos: true,
 				/*retina:{

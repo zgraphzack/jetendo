@@ -3522,13 +3522,13 @@ Define this function in another CFC to override the default email format
 					arrayAppend(local.arrEnd, '<input type="hidden" name="site_option_id" value="'&row.site_option_id&'" />');
 					arrayAppend(local.arrEnd, rs.value);
 				}else{
-					writeoutput('<tr ');
+					writeoutput('<tr class="siteOptionFormField#qS.site_option_id# ');
 					if(currentRowIndex MOD 2 EQ 0){
-						writeoutput('class="row1"');
+						writeoutput('row1');
 					}else{
-						writeoutput('class="row2"');
+						writeoutput('row2');
 					}
-					writeoutput('>');
+					writeoutput('">');
 					if(rs.label and row.site_option_hide_label EQ 0){
 						tdOutput="";
 						if(row.site_option_small_width EQ 1){
@@ -3576,7 +3576,7 @@ Define this function in another CFC to override the default email format
 						form.site_x_option_group_set_approved=local.qSet.site_x_option_group_set_approved;
 					}
 					</cfscript>
-					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+					<tr class="siteOptionFormField#qS.site_option_id# <cfif local.tempIndex MOD 2 EQ 0>row1<cfelse>row2</cfif>">
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Approved?</div></th>
 					<td style="vertical-align:top;white-space: nowrap;">
 						<cfscript>
@@ -3622,7 +3622,7 @@ Define this function in another CFC to override the default email format
 				</cfif>
 			</cfif>
 			<cfif qS.site_option_group_enable_image_library EQ 1>
-				<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+				<tr class="siteOptionFormField#qS.site_option_id# <cfif local.tempIndex MOD 2 EQ 0>row1<cfelse>row2</cfif>">
 				<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Image Library:</div></th>
 				<td style="vertical-align:top;white-space: nowrap;">
 					<cfscript>
@@ -3644,7 +3644,7 @@ Define this function in another CFC to override the default email format
 				<cfset local.tempIndex++>
 			</cfif> 
 			<cfif qS.site_option_group_enable_public_captcha EQ 1 and (local.methodBackup EQ "publicAddGroup" or local.methodBackup EQ "publicEditGroup")>
-				<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+				<tr class="siteOptionFormField#qS.site_option_id# <cfif local.tempIndex MOD 2 EQ 0>row1<cfelse>row2</cfif>">
 				<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">&nbsp;</div></th>
 				<td style="vertical-align:top;white-space: nowrap;">
 				#application.zcore.functions.zDisplayRecaptcha()#
