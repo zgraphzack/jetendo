@@ -2299,6 +2299,8 @@ if(not rs.success){
 		qOptions=db.execute("qOptions");
 		path=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zupload/site-options/';
 		securepath=application.zcore.functions.zvar('privatehomedir', request.zos.globals.id)&'zuploadsecure/site-options/';
+		siteStruct=application.zcore.functions.zGetSiteGlobals(request.zos.globals.id);
+		sog=siteStruct.soGroupData;
 		for(row2 in qOptions){
 			if(structkeyexists(sog.optionLookup, row2.site_option_id)){
 				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(sog.optionLookup[row2.site_option_id].type); 
