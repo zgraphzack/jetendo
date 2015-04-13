@@ -750,6 +750,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 	if(output CONTAINS "," and listlen(output,",") GTE 3){
 		arrOut=listtoarray(output, ",");
 		if(lcase(arrOut[3]) NEQ "srgb"){
+			form.invalidImagePath=arguments.source;
 			return{ success: false, errorMessage:"The image must be converted to the sRGB color profile.  It is currently: "&arrOut[3] };
 		}
 		return { success:true, width:arrOut[1], height:arrOut[2] };

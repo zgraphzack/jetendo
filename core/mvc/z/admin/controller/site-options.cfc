@@ -3070,6 +3070,7 @@ Define this function in another CFC to override the default email format
 					trHTML:"",
 					sublist:recurseOut
 				};
+				lastRowStruct=local.rowStruct[local.curRowIndex];
 
 				if(sortEnabled){
 					if(row.site_id NEQ 0 or variables.allowGlobal){
@@ -3112,7 +3113,7 @@ Define this function in another CFC to override the default email format
 
 
 	if(form.method EQ "getRowHTML" and arraylen(local.rowStruct)){
-		rowOut=local.rowStruct[1].row; 
+		rowOut=lastRowStruct.row; 
 		echo('done.<script type="text/javascript">
 		window.parent.zReplaceTableRecordRow("#jsstringformat(rowOut)#");
 		window.parent.zCloseModal();
