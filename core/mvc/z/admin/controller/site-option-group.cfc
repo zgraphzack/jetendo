@@ -1110,6 +1110,8 @@ displayGroupCom.add();')&'</pre>');
 		application.zcore.siteOptionCom.deleteGroupRecursively(form.site_option_group_id);
 		application.zcore.status.setStatus(request.zsid, "Group deleted successfully.");
 		application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qCheck.site_option_group_id);
+
+		structclear(application.sitestruct[request.zos.globals.id].administratorTemplateMenuCache);
 		//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id); 
 		if(structkeyexists(request.zsession, "site_option_group_return"&form.site_option_group_id)){
 			tempLink=request.zsession["site_option_group_return"&form.site_option_group_id];

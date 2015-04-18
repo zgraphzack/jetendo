@@ -41,6 +41,9 @@ This allows avoiding remaps more easily.  Less code when importing.
 	<cfargument name="createIfMissing" type="boolean" required="no" default="#false#">
 	<cfscript>
 	arrGroup=listToArray(arguments.groupNameList, chr(9));
+	if(arraylen(arrGroup) EQ 0){
+		return {success:false};
+	}
 	site_option_group_name=arrGroup[arrayLen(arrGroup)];
 	if(arraylen(arrGroup) LTE 1 or arguments.groupNameList EQ 0){
 		parentId=0;
@@ -318,13 +321,25 @@ This allows avoiding remaps more easily.  Less code when importing.
 	}
 	if(not arguments.skipGroupIdRemap){
 		groupStruct=getOptionGroupById(sourceStruct, row.site_option_group_id);
-		groupNameList=arrayToList(getFullGroupPath(sourceStruct, groupStruct.struct.site_option_group_parent_id, row.site_option_group_name), chr(9));
+		if(groupStruct.success){
+			groupNameList=arrayToList(getFullGroupPath(sourceStruct, groupStruct.struct.site_option_group_parent_id, row.site_option_group_name), chr(9));
+		}else{
+			groupNameList=row.site_option_group_name;
+		}
 		if(row.site_option_group_parent_id NEQ 0){
 			parentGroupStruct=getOptionGroupById(sourceStruct, row.site_option_group_parent_id);
-			
-			parentGroupNameList=arrayToList(getFullGroupPath(sourceStruct, parentGroupStruct.struct.site_option_group_parent_id, parentGroupStruct.struct.site_option_group_name), chr(9));
+			if(parentGroupStruct.success){
+				
+				parentGroupNameList=arrayToList(getFullGroupPath(sourceStruct, parentGroupStruct.struct.site_option_group_parent_id, parentGroupStruct.struct.site_option_group_name), chr(9));
+			}else{
+				parentGroupNameList="";
+			}
 			rs=getOptionGroupByName(destinationStruct, parentGroupNameList, true);
-			row.site_option_group_parent_id=rs.struct.site_option_group_id;
+			if(rs.success){
+				row.site_option_group_parent_id=rs.struct.site_option_group_id;
+			}else{
+				row.site_option_group_parent_id=0;
+			}
 		}
 		rs=getOptionGroupByName(destinationStruct, groupNameList, true);
 		row.site_option_group_id=rs.struct.site_option_group_id;
@@ -369,7 +384,7 @@ This allows avoiding remaps more easily.  Less code when importing.
 	i=0;
 	while(true){
 		arrayPrepend(arrParent, currentName); 
-		if(currentParentId EQ 0){
+		if(currentParentId EQ 0 or not structkeyexists(arguments.struct.optionGroupStruct, currentParentId)){
 			break;
 		}else{ 
 			currentName=arguments.struct.optionGroupStruct[currentParentId].site_option_group_name;
