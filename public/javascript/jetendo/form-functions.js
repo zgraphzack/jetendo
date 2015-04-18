@@ -890,6 +890,7 @@ var zLastAjaxVarName=""; */
 		var d2=document.getElementById(id+"_label");
 		var f=false; 
 		var alphaExp = /[^\+0-9\.]/;
+		var v=zValues[zV+2];
 		v=v.split(",").join("").split("$").join("");
 		if(v.match(alphaExp) && v!=="min" && v!=="max"){
 			if(zV+3===zOff){
@@ -897,7 +898,7 @@ var zLastAjaxVarName=""; */
 			}else{
 				v=zValues[zV+4];
 			}
-			d2.value=v;
+			d2.value=v; 
 			f=true;
 			alert('You may type only numbers 0-9.');
 		}

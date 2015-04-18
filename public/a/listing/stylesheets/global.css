@@ -11,6 +11,7 @@ form{ margin:0px; padding:0px; }
     -ms-user-select: none;
     user-select: none;
 	}
+	.zls-hover-box1{float:right; width:250px;}
 #zlistingnextimagebutton span, #zlistingprevimagebutton span{ display:block; padding:3px; background-color:#FFF; float:left; height:14px; font-size:80%;
  }
 .listingInquiryErrorDiv{width:90%;font-weight:bold; color:#F00; background-color:#FFF; padding:5px; float:left; display:none;}

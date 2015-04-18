@@ -2625,7 +2625,7 @@ configCom.includeContentByName(ts);
 	}
 
 	if(ts994824713.content_subpage_link_layout NEQ 13 and ts994824713.content_subpage_link_layout NEQ 7){
-		echo('<div style="clear:both; width:100%; margin-top:20px; float:left;">');
+		echo('<div style="clear:both; width:100%; margin-top:20px;  ">');
 		if(form.offset-form.count GTE 0){
 			if(form.offset-form.count EQ 0){
 				link=request.zos.originalURL;
@@ -2637,7 +2637,7 @@ configCom.includeContentByName(ts);
 		if(childContentStruct.hasMoreRecords){
 			echo('<a href="#request.zos.originalURL#?offset=#form.offset+form.count#" style="padding:5px; display:block; float:right; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Next</a>');
 		}
-		echo('</div>');
+		echo('</div><br style="clear:both;">');
 	}
 	/*
 	outputStruct={};

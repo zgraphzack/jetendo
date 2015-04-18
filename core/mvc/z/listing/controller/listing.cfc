@@ -460,9 +460,9 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 		if(arguments.width EQ 10000 or arguments.height EQ 10000){ 
 			return local.c; 
 		}else if(listlen(arguments.listing_id,"-") EQ 3){
-			return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#&amp;a=#arguments.autocrop#";
+			return request.zos.currentHostName&"/z/index.php?method=size&amp;w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#&amp;a=#arguments.autocrop#";
 		}else{
-			return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;a=#arguments.autocrop#";
+			return request.zos.currentHostName&"/z/index.php?method=size&amp;w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;a=#arguments.autocrop#";
 		} 
 	}else{
 		return request.zos.currentHostName&'/z/a/listing/images/image-not-available.gif';	
@@ -470,12 +470,12 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 }else{
 	if(arguments.width EQ 10000 or arguments.height EQ 10000){
 		if(left(arguments.photourl,5) EQ "http:"){ 
-			return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;p=#urlencodedformat(arguments.photourl)#&amp;a=#arguments.autocrop#";
+			return request.zos.currentHostName&"/z/index.php?method=size&amp;w=#arguments.width#&amp;h=#arguments.height#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;p=#urlencodedformat(arguments.photourl)#&amp;a=#arguments.autocrop#";
 		}else{
 			return request.zos.currentHostName&arguments.photourl;
 		}
 	}else{
-		return request.zos.currentHostName&"/z/index.php?method=size&w=#arguments.width#&amp;h=#arguments.height#&amp;p=#urlencodedformat(arguments.photourl)#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;a=#arguments.autocrop#";
+		return request.zos.currentHostName&"/z/index.php?method=size&amp;w=#arguments.width#&amp;h=#arguments.height#&amp;p=#urlencodedformat(arguments.photourl)#&amp;m=#replace(arguments.listing_id,"-","&amp;f=")#-#arguments.num#.jpeg&amp;a=#arguments.autocrop#";
 	} 
 }
 </cfscript>

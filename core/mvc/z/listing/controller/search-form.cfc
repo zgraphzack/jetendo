@@ -3876,7 +3876,7 @@ if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zs
 
  <input type="hidden" name="zlsHoverBoxDisplayType" id="zlsHoverBoxDisplayType" value="<cfif application.zcore.functions.zso(form, 'search_result_layout') NEQ ""><cfif form.search_result_layout EQ 0>detail<cfelseif form.search_result_layout EQ 1>list<cfelseif form.search_result_layout EQ 2>grid<cfelse>detail</cfif><cfelse>detail</cfif>" />
             <div id="zls-matchinglistingsdiv" style="width:100%;">
-            <div style="float:right; width:250px;">
+            <div class="zls-hover-box1">
             <a href="##" id="zls-hover-box-map-button" style="float:right; display:none;">MAP</a>
             <a href="##" id="zls-hover-box-detail-button" style="float:right;">DETAIL</a>
             <a href="##" id="zls-hover-box-list-button" style="float:right;">LIST</a>

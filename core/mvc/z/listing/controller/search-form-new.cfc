@@ -532,7 +532,7 @@ listing_longitude<>'0'";
 				if(isnumeric(application.zcore.functions.zso(form, 'searchId')) or structkeyexists(form,'searchaction')){
 					writeoutput('<input type="hidden" name="zlsHoverBoxDisplayType" id="zlsHoverBoxDisplayType" value="#local.displayType#" />
 					<div id="zls-matchinglistingsdiv" style="width:100%;">
-						<div style="float:right; width:250px;"> <a href="##" id="zls-hover-box-map-button" style="float:right; display:none;">MAP</a> <a href="##" id="zls-hover-box-detail-button" style="float:right;">DETAIL</a> <a href="##" id="zls-hover-box-list-button" style="float:right;">LIST</a> <a href="##" id="zls-hover-box-grid-button" style="float:right;">GRID</a></div>
+						<div class="zls-hover-box1"> <a href="##" id="zls-hover-box-map-button" style="float:right; display:none;">MAP</a> <a href="##" id="zls-hover-box-detail-button" style="float:right;">DETAIL</a> <a href="##" id="zls-hover-box-list-button" style="float:right;">LIST</a> <a href="##" id="zls-hover-box-grid-button" style="float:right;">GRID</a></div>
 						<h2>Matching Listings</h2>
 					</div>');
 					writeoutput(res);

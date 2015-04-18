@@ -2192,16 +2192,10 @@ if(not rs.success){
 		if(disabled){
 			return '<script type="text/javascript">var zVisitorTrackingDisabled=true; </script>';
 		}
-	 }
-	 if(isDefined('request.zos.tempObj.zVarSOIndex') EQ false){
-		request.zos.tempObj.zVarSOIndex=0;
-		
-	 }
-	 request.zos.tempObj.zVarSOIndex++;
+	 } 
 	if(arguments.disableEditing EQ false and contentConfig.contentEmailFormat EQ false){
-		// and structkeyexists(application.zcore,'user') and structkeyexists(request.zos.userSession, 'groupAccess') and (structkeyexists(request.zos.userSession.groupAccess, "administrator"))
-		request.zos.tempObj.zVarSOIndex++;
-		start='<div style="display:inline;" id="zcidspan#request.zos.tempObj.zVarSOIndex#" class="zOverEdit" data-editurl="/z/admin/site-options/index?return=1&amp;jumpto=soid_#application.zcore.functions.zURLEncode(arguments.name,"_")#">';
+		// and structkeyexists(application.zcore,'user') and structkeyexists(request.zos.userSession, 'groupAccess') and (structkeyexists(request.zos.userSession.groupAccess, "administrator")) 
+		start='<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/admin/site-options/index?return=1&amp;jumpto=soid_#application.zcore.functions.zURLEncode(arguments.name,"_")#">';
 		end='</div>';
 	}
 	if(arguments.site_option_app_id EQ 0){
