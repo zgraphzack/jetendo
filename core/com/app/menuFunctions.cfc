@@ -12,6 +12,7 @@ menuCom.init(ts);
 	var db=request.zos.queryObject;
 	ts.menu_name="";
 	ts.site_id=request.zos.globals.id;
+	ts.idPrefix="";
 	structappend(arguments.ss,ts,false);
 	variables.menuName=arguments.ss.menu_name;
 	application.zcore.functions.zRequireJquery();
@@ -19,8 +20,8 @@ menuCom.init(ts);
 		application.sitestruct[request.zos.globals.id].menuIdCacheStruct=structnew();	
 		application.sitestruct[request.zos.globals.id].menuNameCacheStruct=structnew();	
 	}
-	if(structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct, variables.menuName) and structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName], 'qView')){
-		variables.qView=application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].qView;
+	if(structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct, arguments.ss.idPrefix&variables.menuName) and structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.ss.idPrefix&variables.menuName], 'qView')){
+		variables.qView=application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.ss.idPrefix&variables.menuName].qView;
 	}else{
 		db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 		LEFT JOIN #db.table("menu_button", request.zos.zcoreDatasource)# menu_button ON 
@@ -32,7 +33,7 @@ menuCom.init(ts);
 		menu_button_deleted = #db.param(0)# 
 		ORDER BY menu_button_sort";
 		variables.qView=db.execute("qView"); 
-		application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName]={
+		application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.ss.idPrefix&variables.menuName]={
 			qView:variables.qView
 		};
 	}
@@ -231,12 +232,13 @@ application.zcore.functions.zPublishCss(ts);
 </cffunction>
 
 <cffunction name="getMenuLinkArray" localmode="modern" returntype="array" access="public">
+	<cfargument name="idPrefix" type="string" required="yes">
 	<cfscript>
 	rs={
 		affectedStruct:{}
 	}
-	if(structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName], 'arrLink')){
-		return application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].arrLink;
+	if(structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName], 'arrLink')){
+		return application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName].arrLink;
 	}
 	db=request.zos.queryObject;
 	arrLink=[];
@@ -403,8 +405,8 @@ application.zcore.functions.zPublishCss(ts);
 		arrayAppend(arrLink, buttonStruct);
 	}
 	variables.arrLink=arrLink;
-	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].arrLink=variables.arrLink;
-	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].affectedStruct=rs.affectedStruct;
+	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName].arrLink=variables.arrLink;
+	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName].affectedStruct=rs.affectedStruct;
 	return arrLink;
 	</cfscript>
 </cffunction>
@@ -468,11 +470,12 @@ application.zcore.functions.zPublishCss(ts);
 </cffunction>
 
 <cffunction name="getMenuHTML" localmode="modern" returntype="string" output="no">
+	<cfargument name="idPrefix" type="string" required="yes">
 	<cfscript>
-	if(structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName], 'htmlOutput')){
-		return application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].htmlOutput;
+	if(structkeyexists(application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName], 'htmlOutput')){
+		return application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName].htmlOutput;
 	}
-	arrLink=application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].arrLink;
+	arrLink=application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName].arrLink;
 	savecontent variable="output"{
 		linkCount=arrayLen(arrLink);
 		if(linkCount){
@@ -481,14 +484,14 @@ application.zcore.functions.zPublishCss(ts);
 						echo(' zMenuEqualDiv');
 			}
 			echo('" data-button-margin="#variables.qView.menu_button_margin#">
-			<ul id="zMenuDiv#variables.qView.menu_id#" class="zMenuBarDiv');
+			<ul id="#arguments.idPrefix#zMenuDiv#variables.qView.menu_id#" class="zMenuBarDiv');
 			if(variables.qView.menu_enable_responsive EQ 1){
 						echo(' zMenuEqualUL');
 			}
 			echo('">');
 			for(i=1;i LTE linkCount;i++){
 				c=arrLink[i];
-				echo('<li id="#c.id#_mb" ');
+				echo('<li id="#arguments.idPrefix##c.id#_mb" ');
 				if(variables.qView.menu_enable_responsive EQ 1){
 					echo('class="zMenuEqualLI"');
 				}
@@ -511,7 +514,7 @@ application.zcore.functions.zPublishCss(ts);
 				
 				subCount=arrayLen(c.arrChildren);
 				if(subCount){
-					echo('<ul id="#c.id#_mb_menu">');
+					echo('<ul id="#arguments.idPrefix##c.id#_mb_menu">');
 					for(n=1;n LTE subCount;n++){
 						g=c.arrChildren[n];
 						echo('<li><a href="#(g.url)#" ');
@@ -527,15 +530,15 @@ application.zcore.functions.zPublishCss(ts);
 			echo('</ul>');
 			if(structkeyexists(request,'zMenuIncludeIndex') EQ false){
 				request.zMenuIncludeIndex=1;
-				echo('<div id="zMenuAdminClearUniqueId" class="zMenuClear"></div>');
+				echo('<div id="#arguments.idPrefix#zMenuAdminClearUniqueId" class="zMenuClear"></div>');
 			}else{
 				request.zMenuIncludeIndex++;
-				echo('<div id="zMenuAdminClearUniqueId#request.zMenuIncludeIndex#" class="zMenuClear"></div>');
+				echo('<div id="#arguments.idPrefix#zMenuAdminClearUniqueId#request.zMenuIncludeIndex#" class="zMenuClear"></div>');
 			}
 			echo('</div>');
 		}
 	}
-	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[variables.menuName].htmlOutput=application.zcore.functions.zRemoveHostName(output);
+	application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.idPrefix&variables.menuName].htmlOutput=application.zcore.functions.zRemoveHostName(output);
 	return output;
 	</cfscript>
 </cffunction>

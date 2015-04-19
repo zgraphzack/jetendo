@@ -518,7 +518,7 @@ div .property-title h2{
 .zls-detail-leftbox{ float:left;}
 .zls-detail-rightbox{padding-left:25px; float:left;}
 .zls-view-larger-div{display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;}
-
+#zls-matchinglistingsdiv{clear:both;}
 
 @media only screen and (max-width: 980px) {
 	.zls-view-larger-div{display:none;}

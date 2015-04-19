@@ -2514,6 +2514,7 @@ ts=structnew();
 ts.menu_id=5;
 // or
 ts.menu_name="";
+ts.idPrefix="";
 rs=zMenuInclude(ts);
 writeoutput(rs.output);
  --->
@@ -2522,9 +2523,10 @@ writeoutput(rs.output);
 	<cfscript>
 	menuCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.menuFunctions");
 	menuCom.init(arguments.ss);
-	arrLink=menuCom.getMenuLinkArray(); 
+	idPrefix=application.zcore.functions.zso(arguments.ss, 'idPrefix');
+	arrLink=menuCom.getMenuLinkArray(idPrefix); 
 	rs={
-		output:menuCom.getMenuHTML()
+		output:menuCom.getMenuHTML(idPrefix)
 	};
 	return rs;
 	</cfscript>
