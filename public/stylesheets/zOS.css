@@ -201,6 +201,7 @@ margin-left: -14px; margin-top:10px;
 .zMemberImageDiv{width:27%;float:left;}
 .zMemberTextDiv{ width:73%; text-align:left; float:left;}
 
+
 .zOS_mode_table {
 background-color:#FFFFFF; float:left; 
 color: #000000;
@@ -596,6 +597,15 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .z-search-link-summary{width:100%; float:left; }
 .z-search-link-date{width:100%;  font-style:italic; float:left; }
 .z-search-nav{width:100%; float:left; }
+
+@media (max-width:768px){
+	.zinquiry-form-table input, .zinquiry-form-table select, .zinquiry-form-table textarea{max-width:150px;}
+}
+@media (max-width: 680px){
+.zMemberImageDiv{width:100%;}
+.zMemberTextDiv{width:100%; padding-top:10px;}
+}
+
 @media (max-width: 580px){
 .z-search-link-image{ width:100%; display:block;float:left; padding-bottom:10px; padding-right:0px;margin-bottom:10px;}
 .z-search-link-text{ width:100%; display:block; float:left; clear:both; min-height:1px;vertical-align:top;}

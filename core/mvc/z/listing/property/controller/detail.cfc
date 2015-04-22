@@ -256,7 +256,7 @@ This listing was first listed on this web site on #dateformat(variables.listing_
 </div>
 </cfif>
 
-	<cfif listingHasMap and application.zcore.functions.zso(os, 'mls_option_enable_walkscore',true,1) EQ 1>
+	<cfif variables.listingHasMap and application.zcore.functions.zso(os, 'mls_option_enable_walkscore',true,1) EQ 1>
 <div style=" width:480px; font-size:18px; margin-bottom:10px; margin-top:10px;" id="walkscore-div"><a href="##" onclick="zAjaxWalkscore({'latitude':'#variables.listing_latitude#','longitude':'#variables.listing_longitude#'}); return false;">Click here to check Walkscore</a></div>
 </cfif>
 <span style="font-size:80%;">Source: #request.zos.globals.shortdomain#</span>
@@ -265,7 +265,7 @@ This listing was first listed on this web site on #dateformat(variables.listing_
 
 #idx.details#
 
-	<cfif listingHasMap>
+	<cfif variables.listingHasMap>
     <a id="googlemap"></a>
 <h3>Neighborhood Map</h3>
 	<cfscript>

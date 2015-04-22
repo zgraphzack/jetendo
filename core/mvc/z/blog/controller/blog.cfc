@@ -244,7 +244,7 @@ this.app_id=10;
 				t2=StructNew();
 				t2.groupName="Blog Categories";
 				t2.url=request.zos.currentHostName&replace(link,"##zIndex##",i);
-				t2.title=blog_category_name&" (page #i#)";
+				t2.title=qcat.blog_category_name&" (page #i#)";
 				arrayappend(arguments.arrUrl,t2);
 			}
 			</cfscript>
@@ -426,7 +426,7 @@ this.app_id=10;
 				t2=StructNew();
 				t2.groupName="Blog Tags";
 				t2.url=request.zos.currentHostName&replace(link,"##zIndex##",i);
-				t2.title=blog_tag_name&" Tag Page #i#";
+				t2.title=qTag.blog_tag_name&" Tag Page #i#";
 				arrayappend(arguments.arrUrl,t2);
 			}
 			t2=StructNew();

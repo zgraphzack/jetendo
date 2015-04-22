@@ -331,7 +331,7 @@ var arrOriginalMenuButtonWidth=[];
 	}
 
 	zArrLoadFunctions.push({functionName:function(){
-		if(zo('zMenuClearUniqueId') || zo('zMenuAdminClearUniqueId')){
+		if($(".zMenuClear").length){
 			zMenuInit(); 
 		}
 	}});

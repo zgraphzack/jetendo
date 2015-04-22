@@ -547,6 +547,9 @@ for(local.row in local.qSite){
 			t9=application.zcore.functions.zcreateobject("component",arguments.cpath, true);
 		}catch(Any e){
 			savecontent variable="local.e2"{
+				if(application.zcore.functions.zso(e, 'message') CONTAINS '-railo-dump'){
+					echo(e.message);
+				}
 				writedump(e);	
 			}
 			if(not fileexists(expandpath(replace(arguments.cpath, ".","/","all")&".cfc"))){

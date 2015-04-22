@@ -196,7 +196,8 @@ var ts=0;
 <cfsavecontent variable="db.sql">
 SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 WHERE rental_id = #db.param(form.rental_id)# and 
-site_id = #db.param(request.zos.globals.id)# 
+site_id = #db.param(request.zos.globals.id)# and 
+rental_deleted=#db.param(0)# 
 GROUP BY rental.rental_id 
 </cfsavecontent><cfscript>qRental=db.execute("qRental");
 if(qRental.recordcount EQ 0 or (qRental.rental_active EQ 0)){
@@ -221,6 +222,7 @@ arrCatId=listtoarray(rental_category_id_list,",",true);
 if(arraylen(arrCatId) GTE 2){
 	 db.sql="SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 	WHERE rental_category_id=#db.param(arrCatId[2])# and 
+	rental_category_deleted=#db.param(0)#  and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qCat=db.execute("qCat");
 	if(qCat.recordcount NEQ 0){
@@ -340,7 +342,7 @@ qXAmenity=db.execute("qXAmenity");
 	</cfscript>
 <cfif rental_amenities_text NEQ "" or arraylen(arrAmen) NEQ 0>
 <a id="zrental-amenities"></a>
-<div class="zrental-box">
+<div class="zrental-box zrental-amenities-box">
 <div class="zrental-subtitle"><div style="width:300px; text-align:right; float:right;"><a href="/Compare-Rental-Amenities-#application.zcore.app.getAppData("rental").optionstruct.rental_config_misc_url_id#-2.html" style="font-size:14px; font-weight:bold;">Click here to compare all rentals</a></div><h2 style="margin:0px; padding:0px;">Featured Amenities</h2></div>
 <div class="zrental-box-inner">
 <cfif rental_amenities_text NEQ "">#rental_amenities_text#</cfif>
@@ -421,8 +423,8 @@ ts.crop=0;
 ts.offset=0;
 arrImages2=application.zcore.imageLibraryCom.displayImages(ts);
 
-application.zcore.skin.includeJS("/z/javascript/jquery/lightbox/jquery.lightbox-0.5.min.js");
-application.zcore.skin.includeCSS("/z/javascript/jquery/lightbox/css/jquery.lightbox-0.5.css");
+//application.zcore.skin.includeJS("/z/javascript/jquery/lightbox/jquery.lightbox-0.5.min.js");
+//application.zcore.skin.includeCSS("/z/javascript/jquery/lightbox/css/jquery.lightbox-0.5.css");
 
 for(i=1;i LTE arraylen(arrImages);i=i+1){
 	// temporarily disabled the popup images.
@@ -435,12 +437,13 @@ for(i=1;i LTE arraylen(arrImages);i=i+1){
 	//writeoutput(' cursor:pointer" onclick="var winId=window.open(''#link#'',''null'',''height=360,width=475,status=yes,toolbar=no,menubar=no,location=no'');if (window.focus) {winId.focus()}" />');
 }
 
+application.zcore.functions.zSetupLightbox("zRentalThumbnailLightGallery");
 </cfscript>
-<script type="text/javascript">
+<!--- <script type="text/javascript">
 /* <![CDATA[ */ zArrDeferredFunctions.push(function(){
 $('##zRentalThumbnailLightGallery a').lightBox();
 }); /* ]]> */
-</script>
+</script>--->
 <br style="clear:both;" />
 </div>
 </div>  
@@ -1054,12 +1057,11 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
 application.zcore.functions.zRequireJquery();
 application.zcore.functions.zRequireJqueryUI();
 request.zHideInquiryForm=true;
-form.action=application.zcore.functions.zso(form, 'action',false,'form');
-//request.zos.page.setActions(structnew());
-
+form.action=application.zcore.functions.zso(form, 'action',false,'form'); 
 if(application.zcore.functions.zso(form, 'rental_id',true) NEQ 0){
-	 db.sql="SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
+	 db.sql="SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)#  
 	WHERE rental_id=#db.param(form.rental_id)# and 
+	rental_deleted=#db.param(0)#  and 
 	site_id = #db.param(request.zos.globals.id)# and 
 	rental_active=#db.param('1')#";
 	qrental=db.execute("qrental");
@@ -1266,12 +1268,13 @@ this.includeRentalById(ts);
 </Cfif>
             
 <br style="clear:both;" />
-<table style="border-spacing:5px;">
+<table style="border-spacing:0px;" class="zinquiry-form-table">
 <tr><td style="vertical-align:top; ">
 	<cfsavecontent variable="db.sql">
 		SELECT *
 		from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
 		WHERE inquiries_id = #db.param(-1)# and 
+		inquiries_deleted=#db.param(0)# and
 		site_id = #db.param(request.zos.globals.id)#
 	</cfsavecontent><cfscript>qInquiries=db.execute("qInquiries");</cfscript>
 
@@ -1399,7 +1402,8 @@ application.zcore.template.appendTag("meta",tempMeta);
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 	WHERE rental_id = #db.param(form.rental_id)# and 
-	site_id = #db.param(request.zos.globals.id)#
+	site_id = #db.param(request.zos.globals.id)# and 
+	rental_deleted=#db.param(0)# 
 	</cfsavecontent><cfscript>qRental=db.execute("qrental");
 	application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
 	if(qRental.recordcount EQ 0 or (qRental.rental_active EQ 0)){
@@ -1916,7 +1920,8 @@ application.zcore.app.getAppCFC("rental").onRentalPage();
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("rental_category", request.zos.zcoreDatasource)# rental_category 
 		WHERE rental_category_id = #db.param(cpi)# and 
-		site_id = #db.param(request.zos.globals.id)# 
+		site_id = #db.param(request.zos.globals.id)# and 
+		rental_category_deleted=#db.param(0)# 
         </cfsavecontent><cfscript>qpar=db.execute("qpar");</cfscript>
         <cfif qpar.recordcount EQ 0>
         	<cfbreak>

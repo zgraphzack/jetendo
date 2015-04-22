@@ -4,7 +4,7 @@
 	background-color:#EEE; color:#666; display:block; padding:5px;  margin-bottom:10px; margin-top:0px;}
 	
 .zrental-main{
-	background-color:#660000;  color:#FFFFFF; float:left; clear:both; }
+	background-color:#660000;  color:#FFFFFF; float:left; width:100%; clear:both; }
 .zrental-main-photo{float:left;border:1px solid #CCC; background-color:#FFF; text-align:center; padding:5px; width:450px; height:299px;} 
 .zrental-main-header {
 	display:block; float:left; padding:15px; font-size:12px;

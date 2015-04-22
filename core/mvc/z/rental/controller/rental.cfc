@@ -82,6 +82,7 @@
 		db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
 		site_id <> #db.param(-1)# and 
 		app_id = #db.param(this.app_id)# and 
+		search_deleted=#db.param(0)# and 
 		search_table_id LIKE #db.param("rental-page-%")# and 
 		search_updated_datetime < #db.param(startDate)#";
 		db.execute("qDelete");
@@ -99,6 +100,7 @@
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	app_id = #db.param(this.app_id)# and 
+	search_deleted=#db.param(0)# and 
 	search_table_id = #db.param("rental-"&arguments.id)#";
 	db.execute("qDelete");
 	</cfscript>
@@ -781,7 +783,8 @@
         <cfsavecontent variable="theText">
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("rental_config", request.zos.zcoreDatasource)# rental_config 
-		WHERE site_id = #db.param(form.sid)#
+		WHERE site_id = #db.param(form.sid)# and 
+		rental_config_deleted=#db.param(0)# 
         </cfsavecontent><cfscript>qConfig=db.execute("qConfig");
         application.zcore.functions.zQueryToStruct(qConfig);
 		if(qconfig.recordcount EQ 0){
@@ -944,6 +947,7 @@
 			 SET availability_type_sort = #db.param('1')# , 
 			 availability_type_name=#db.param('Holiday')#, 
 			 availability_type_color=#db.param('BBDDFF')#, 
+			availability_type_deleted=#db.param(0)#,
 			availability_type_updated_datetime=#db.param(request.zos.mysqlnow)#,
 			 site_id=#db.param(request.zos.globals.id)# ";
 			 db.execute("q");
@@ -1155,6 +1159,7 @@
 		
 		 db.sql="SELECT * FROM #db.table("rental", request.zos.zcoreDatasource)# rental 
 		WHERE rental_active = #db.param(1)# and 
+		rental_deleted=#db.param(0)# and 
 		rental_id = #db.param(arguments.ss.rental_id)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qrental=db.execute("qrental");
