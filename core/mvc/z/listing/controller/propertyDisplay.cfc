@@ -449,13 +449,13 @@ this.isPropertyDisplayCom=true;
 				structappend(idx, request.zos.listingMlsComObjects[idx.mls_id].getDetails(curQuery,curQuery.currentrow), true);
 			}else{
 				structappend(idx, request.zos.listingMlsComObjects[idx.mls_id].baseGetDetails(curQuery,curQuery.currentrow), true);
-				if(structkeyexists(request.zos.listingMlsComObjects[idx.mls_id], 'sysidfield2')){
-					photo1=application.zcore.listingCom.getPhoto(idx.listing_id,1, idx.sysidfield, idx.sysidfield2);
-				}else if(structkeyexists(request.zos.listingMlsComObjects[idx.mls_id], 'sysidfield')){
-					photo1=application.zcore.listingCom.getPhoto(idx.listing_id,1, idx.sysidfield);
-				}else{
-					photo1=application.zcore.listingCom.getPhoto(idx.listing_id,1);
-				}
+			}
+			if(structkeyexists(request.zos.listingMlsComObjects[idx.mls_id], 'sysidfield2')){
+				photo1=application.zcore.listingCom.getPhoto(idx.listing_id,1, idx.sysidfield, idx.sysidfield2);
+			}else if(structkeyexists(request.zos.listingMlsComObjects[idx.mls_id], 'sysidfield')){
+				photo1=application.zcore.listingCom.getPhoto(idx.listing_id,1, idx.sysidfield);
+			}else{
+				photo1=application.zcore.listingCom.getPhoto(idx.listing_id,1);
 			}
 			if(photo1 NEQ ""){	
 				photo1=application.zcore.listingCom.getThumbnail(photo1, request.lastPhotoId, 1, form.pw, form.ph, form.pa);
