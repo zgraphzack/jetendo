@@ -1426,6 +1426,18 @@ var zLastAjaxVarName=""; */
 		var el = document.getElementById("zOS_mode_table_tag");
 		el.style.display='block';
 	}
+
+	zArrDeferredFunctions.push(function(){
+		$(".zEditReadOnly").bind("click", function(){
+			var id=$(this).attr("data-fieldid");
+			var id2=$(this).attr("data-readonlyid");
+			$("#"+id).removeClass("zHideReadOnlyField");
+			$("#"+id2).hide();
+			alert('Warning: Changing read only values may cause things to break, or your changes may be overwritten during a future import process.');
+			return false;
+		});
+	});
+
 	window.zUpdateImageLibraryCount=zUpdateImageLibraryCount;
 	window.ajaxSaveSorting=ajaxSaveSorting;
 	window.ajaxSaveImage=ajaxSaveImage;

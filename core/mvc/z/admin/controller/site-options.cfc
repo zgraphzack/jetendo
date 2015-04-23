@@ -948,6 +948,10 @@
 					</tr>
 				</cfif>
 				<tr>
+					<th>Read-only:</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_readonly")#</td>
+				</tr>
+				<tr>
 					<th>Searchable (public):</th>
 					<td>
 					<input name="site_option_public_searchable" id="site_option_public_searchable1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_public_searchable', true, 0) EQ 1>checked="checked"</cfif>  /> Yes
@@ -3548,11 +3552,24 @@ Define this function in another CFC to override the default email format
 							writeoutput('<input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
 						}
 					} 
-					writeoutput(rs.value);
+					if(row.site_option_readonly EQ 1 and labelStruct[row.site_option_name] NEQ ""){
+						echo('<div class="zHideReadOnlyField" id="zHideReadOnlyField#currentRowIndex#">'&rs.value);
+					}else{
+						echo(rs.value);
+					}
 				}
 				if(row.site_option_required){
 					writeoutput(' * ');
 				} 
+
+				if(row.site_option_readonly EQ 1 and labelStruct[row.site_option_name] NEQ ""){
+					echo('</div>');
+					echo('<div id="zReadOnlyButton#currentRowIndex#" class="zReadOnlyButton">#labelStruct[row.site_option_name]#');
+					if(labelStruct[row.site_option_name] NEQ ""){
+						echo('<hr />');
+					}
+					echo('<strong>Read only value</strong> | <a href="##" class="zEditReadOnly" data-readonlyid="zReadOnlyButton#currentRowIndex#" data-fieldid="zHideReadOnlyField#currentRowIndex#">Edit Anyway</a></div> ')
+				}
 				if(rs.label){
 					writeoutput('</td>');	
 					writeoutput('</tr>');

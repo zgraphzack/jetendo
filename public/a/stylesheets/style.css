@@ -22,6 +22,8 @@ html{
 }
 .zls-showResultsButton{display:none;}
 #searchFormTopDiv{height:60px !important;}
+.zEditReadOnly:link, .zEditReadOnly:visited{border-radius:5px; padding:5px; background-color:#666 !important; border:1px solid #999 !important; display:inline-block;text-decoration:none; color:#FFF !important;}
+.zHideReadOnlyField{display:none;}
 .re-s2 {color: #4363A0; text-decoration:none;}
 .re-s3 {
 	color: #B60033; 
