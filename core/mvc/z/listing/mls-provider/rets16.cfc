@@ -434,10 +434,10 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
 			}
 			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc after the image fileexists calls'});
 		}
-			idx["agentName"]=query["rets16_144"];
+			idx["agentName"]=arguments.query["rets16_144"];
 			idx["agentPhone"]="";
 			idx["agentEmail"]="";
-			idx["officeName"]=query["rets16_165"];
+			idx["officeName"]=arguments.query["rets16_165"];
 			idx["officePhone"]="";
 			idx["officeCity"]="";
 			idx["officeAddress"]="";
@@ -445,7 +445,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
 			idx["officeState"]="";
 			idx["officeEmail"]="";
 			
-		idx["virtualtoururl"]=query["rets16_1223"];
+		idx["virtualtoururl"]=arguments.query["rets16_1223"];
 		idx["zipcode"]=arguments.query["rets#this.mls_id#_10"][arguments.row];
 		
 			idx["maintfees"]="";
