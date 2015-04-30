@@ -2076,17 +2076,20 @@ this.app_id=10;
 			</div>
 			<br style="clear:both;" />
 		</cfif>
+
 		<cfif qArticle.blog_category_name NEQ "" or qRelated.recordcount NEQ 0>
-			<hr />
-			<h3>Related Articles</h3>
-			<ul>
-			<cfloop query="qRelated">
-				<li><a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qRelated.blog_unique_name NEQ ''>#qRelated.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qRelated.blog_id,"html",qRelated.blog_title,qRelated.blog_datetime)#</cfif>">#htmleditformat(qRelated.blog_title)#</a></li>
-			</cfloop>
-			<cfif qArticle.blog_category_name NEQ "">
-				<li><a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qArticle.blog_category_unique_name NEQ ''>#qArticle.blog_category_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,qArticle.blog_category_id,"html",qArticle.blog_category_name)#</cfif>">View more articles in the #htmleditformat(qArticle.blog_category_name)# category</a></li>
-			</cfif>
-			</ul>
+			<div class="zblog-relatedarticles">
+				<hr />
+				<h3>Related Articles</h3>
+				<ul>
+				<cfloop query="qRelated">
+					<li><a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qRelated.blog_unique_name NEQ ''>#qRelated.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qRelated.blog_id,"html",qRelated.blog_title,qRelated.blog_datetime)#</cfif>">#htmleditformat(qRelated.blog_title)#</a></li>
+				</cfloop>
+				<cfif qArticle.blog_category_name NEQ "">
+					<li><a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qArticle.blog_category_unique_name NEQ ''>#qArticle.blog_category_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,qArticle.blog_category_id,"html",qArticle.blog_category_name)#</cfif>">View more articles in the #htmleditformat(qArticle.blog_category_name)# category</a></li>
+				</cfif>
+				</ul>
+			</div>
 		</cfif>
 		<cfsavecontent variable="db.sql">
 		select * from #db.table("blog", request.zos.zcoreDatasource)# blog where blog_id <> #db.param(qArticle.blog_id)# and  
@@ -2101,12 +2104,14 @@ this.app_id=10;
 		LIMIT #db.param(0)#,#db.param(10)#
 		</cfsavecontent><cfscript>qPopular=db.execute("qPopular");</cfscript>
 		<cfif qPopular.recordcount NEQ 0> 
-			<h3>Most Popular Articles</h3>
-			<ul>
-			<cfloop query="qPopular">
-				<li><a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qPopular.blog_unique_name NEQ ''>#qPopular.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qpopular.blog_id,"html",qPopular.blog_title,qPopular.blog_datetime)#</cfif>">#htmleditformat(qPopular.blog_title)#</a><!---  (#qPopular.blog_views# page views) ---></li>
-			</cfloop>
-			</ul> 
+			<div class="zblog-populararticles">
+				<h3>Most Popular Articles</h3>
+				<ul>
+				<cfloop query="qPopular">
+					<li><a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qPopular.blog_unique_name NEQ ''>#qPopular.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qpopular.blog_id,"html",qPopular.blog_title,qPopular.blog_datetime)#</cfif>">#htmleditformat(qPopular.blog_title)#</a><!---  (#qPopular.blog_views# page views) ---></li>
+				</cfloop>
+				</ul> 
+			</div>
 		</cfif>
 		<cfscript>
 		db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog where 
@@ -2119,24 +2124,28 @@ this.app_id=10;
 		ORDER BY blog_sticky desc, blog_datetime DESC LIMIT #db.param(0)#,#db.param(1)# ";
 		query=db.execute("query");
 		</cfscript>
-		<cfif query.recordcount NEQ 0 and isdate(query.blog_datetime)>
-			<cfset theLink =application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,query.blog_id,"html",query.blog_title,query.blog_datetime)>
-			<p>Previous Article: <a class="#application.zcore.functions.zGetLinkClasses()#" href="#theLink#">#htmleditformat(query.blog_title)#</a></p>
-		</cfif>
-		<cfscript>
-		nextMonth=dateformat(dateadd("m",1,curDate),'yyyy-mm-01')&' 00:00:00';
-		db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog where 
-		blog_deleted = #db.param(0)# and
-		site_id=#db.param(request.zos.globals.id)# and blog_id <> #db.param(form.blog_id)# and  
-		blog_datetime > #db.param(dateformat(qarticle.blog_datetime,'yyyy-mm-dd')&' '&Timeformat(qarticle.blog_datetime,'HH:mm:ss'))# 
-		ORDER BY blog_sticky asc, blog_datetime ASC 
-		LIMIT #db.param(0)#,#db.param(1)# ";
-		query=db.execute("query");
-		</cfscript>
-		<cfif query.recordcount NEQ 0>
-			<cfset theLink =application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,query.blog_id,"html",query.blog_title,query.blog_datetime)>
-			<p>Next Article: <a class="#application.zcore.functions.zGetLinkClasses()#" href="#theLink#">#htmleditformat(query.blog_title)#</a></p>
-		</cfif>
+
+
+		<div class="zblog-articlepagenav">
+			<cfif query.recordcount NEQ 0 and isdate(query.blog_datetime)>
+				<cfset theLink =application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,query.blog_id,"html",query.blog_title,query.blog_datetime)>
+				<p>Previous Article: <a class="#application.zcore.functions.zGetLinkClasses()#" href="#theLink#">#htmleditformat(query.blog_title)#</a></p>
+			</cfif>
+			<cfscript>
+			nextMonth=dateformat(dateadd("m",1,curDate),'yyyy-mm-01')&' 00:00:00';
+			db.sql="select * from #db.table("blog", request.zos.zcoreDatasource)# blog where 
+			blog_deleted = #db.param(0)# and
+			site_id=#db.param(request.zos.globals.id)# and blog_id <> #db.param(form.blog_id)# and  
+			blog_datetime > #db.param(dateformat(qarticle.blog_datetime,'yyyy-mm-dd')&' '&Timeformat(qarticle.blog_datetime,'HH:mm:ss'))# 
+			ORDER BY blog_sticky asc, blog_datetime ASC 
+			LIMIT #db.param(0)#,#db.param(1)# ";
+			query=db.execute("query");
+			</cfscript>
+			<cfif query.recordcount NEQ 0>
+				<cfset theLink =application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,query.blog_id,"html",query.blog_title,query.blog_datetime)>
+				<p>Next Article: <a class="#application.zcore.functions.zGetLinkClasses()#" href="#theLink#">#htmleditformat(query.blog_title)#</a></p>
+			</cfif>
+		</div>
 	</cfif> 
 	#application.zcore.app.getAppCFC("blog").getPopularTags()#
 </cffunction>
