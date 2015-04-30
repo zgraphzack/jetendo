@@ -161,13 +161,13 @@
 			$("#event_start_datetime_date").bind("change", function(){
 				self.drawPreviewCalendars();
 				$("#zRecurTypeExcludeDate").val($(this).val());
-				$("#event_end_datetime_date").val($(this).val());
+				//$("#event_end_datetime_date").val($(this).val());
 
 			});
-			$("#event_start_datetime_time").bind("change", function(){
-				$("#event_end_datetime_time").val($(this).val());
+			/*$("#event_start_datetime_time").bind("change", function(){
+				//$("#event_end_datetime_time").val($(this).val());
 
-			});
+			});*/
 			$('.zRecurEventBox :input').bind("change", function () { 
 				if(disableFormOnChange){
 					return false;
@@ -175,6 +175,10 @@
 				var ruleObj=self.getRulesFromForm();
 				var rule=self.convertFromRecurringEventToRRule(ruleObj);
 				arrMarked=self.getMarkedDates();
+
+				if($("#event_recur_ical_rules", window.parent.document).length){
+					$("#event_recur_ical_rules", window.parent.document).val(rule);
+				}
 
 				self.drawPreviewCalendars();
 			}); 
@@ -219,6 +223,7 @@
 				for(var n=0;n<calendarColumns;n++){
 					// currentDate + 1 month
 					var newDate=new Date(currentDate.getTime());
+					newDate.setDate(1);
 					newDate.setMonth(newDate.getMonth()+count);
 					newDate.setDate(1);
 					arrHTML.push('<div class="zRecurCalendarContainer">'+self.buildCalendarHTML(newDate)+'</div>');
@@ -411,10 +416,10 @@
 				ruleObj.endDate=new Date(Date.parse(ruleObj.endDate));
 				var dateAsString=(ruleObj.endDate.getMonth()+1)+"/"+ruleObj.endDate.getDate()+"/"+ruleObj.endDate.getFullYear();
 				$("#zRecurTypeRangeDate").val(dateAsString);
-			}else if(ruleObj.recurLimit != 0){
+			}else if(ruleObj.recurLimit != 0 && ruleObj.recurLimit != null){ 
 				$("#zRecurTypeRangeDays").val(ruleObj.recurLimit);
 				$("#zRecurTypeRangeRadio2").prop("checked", true);
-			}else{
+			}else{ 
 				$("#zRecurTypeRangeRadio1").prop("checked", true);
 			}
 			disableFormOnChange=false; 
@@ -628,7 +633,9 @@
 			var firstYear=true;
 			var lastYear=currentDate.getFullYear();
 			var firstDay=true;
-			for(var i=0;i<projectedDateCount;i++){
+
+			//var endDate=new Date($("#event_end_datetime_date").val()); 
+			for(var i=0;i<projectedDateCount;i++){ 
 				if(!firstDay && ruleObj.recurType == "Daily" && ruleObj.skipDays-1){
 					currentDate.setDate(currentDate.getDate()+(ruleObj.skipDays-1));
 				}
@@ -665,9 +672,12 @@
 				}
 				var day=currentDate.getDay();
 				var debugDate=new Date(currentDate.getTime());
-				var currentTime=currentDate.getTime();
+				var currentTime=currentDate.getTime(); 
 				var isEvent=false;
 				var disableEvent=false;
+				/*if(currentDate.getTime() > endDate.getTime()){ 
+					break;
+				}*/
 				if(!ruleObj.noEndDate && typeof ruleObj.endDate != "boolean"){
 					if(currentTime > ruleObj.endDate.getTime()){
 						break;
@@ -1029,7 +1039,13 @@
 				freq: 0,
 				interval: 1,
 				until: null
-			};
+			}; 
+			if(typeof ruleObj.endDate != "undefined"){
+				options.until=ruleObj.endDate;
+			}
+			if(typeof ruleObj.recurLimit != "undefined"){
+				options.count=ruleObj.recurLimit;
+			}
 			if(ruleObj.recurType=="Annually"){
 				options.freq=RRule.YEARLY;
 				if(ruleObj.annuallyDay !="" && ruleObj.annuallyWhich!="" && ruleObj.annuallyWhich!="Every"){

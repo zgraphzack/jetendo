@@ -77,7 +77,7 @@
 		step: #arguments.minutesPerOption#
 	});
 	');
-	if(!isDate(arguments.selectedDateTime)){
+	if(arguments.selectedDateTime NEQ "" and !isDate(arguments.selectedDateTime)){
 		arguments.selectedDateTime=now();
 	}
 	echo('<input type="text" name="#arguments.fieldName#_date" id="#arguments.fieldName#_date" value="#dateformat(arguments.selectedDateTime, 'm/d/yyyy')#" size="9" />

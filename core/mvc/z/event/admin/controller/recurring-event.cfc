@@ -16,8 +16,10 @@
 	application.zcore.skin.includeJs("/z/javascript/rrule/lib/nlp.js", '', 2);
 	application.zcore.skin.includeJs("/z/javascript/jetendo/zRecurringEvent.js");
 
+	application.zcore.template.setPlainTemplate();
 	form.event_start_datetime=application.zcore.functions.zso(form, 'event_start_datetime', false, now());
-	form.event_end_datetime=application.zcore.functions.zso(form, 'event_end_datetime', false, now());
+	//form.event_end_datetime=application.zcore.functions.zso(form, 'event_end_datetime', false, '');
+	form.event_recur_ical_rules=application.zcore.functions.zso(form, 'event_recur_ical_rules');
 	</cfscript>
 	<script type="text/javascript">
 	function testRules(){
@@ -31,6 +33,8 @@
 
 		//daily
 		r='COUNT=0;FREQ=DAILY;INTERVAL=2;UNTIL=20171224T000000Z';
+
+		r='#form.event_recur_ical_rules#';
 		//r='BYDAY=MO,TU,WE,TH,FR;COUNT=0;FREQ=DAILY;INTERVAL=1';
 
 		// weekly
@@ -55,12 +59,13 @@
 		var recur=new zRecurringEvent(options);
 		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
 		console.log(ruleObj);
-		recur.setFormFromRules(ruleObj, false);
-		return;
+		recur.setFormFromRules(ruleObj, false); 
 
 		var rule=recur.convertFromRecurringEventToRRule(ruleObj);
 
-
+		if($("##event_recur_ical_rules", window.parent.document).length){
+			$("##event_recur_ical_rules", window.parent.document).val(rule);
+		}
 		/*var rule = RRule.fromString(r);
 		rule.options.count=3;
 		console.log(rule);
@@ -70,10 +75,32 @@
 		*/
 	}
 
+	function initRules(){
+
+		var r='#form.event_recur_ical_rules#';
+		var options={ 
+			//ruleObj:ruleObj,
+			//arrExclude:arrExclude
+		};
+		var recur=new zRecurringEvent(options);
+		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
+		console.log(ruleObj);
+		recur.setFormFromRules(ruleObj, false); 
+
+		var rule=recur.convertFromRecurringEventToRRule(ruleObj);
+
+		if($("##event_recur_ical_rules", window.parent.document).length){
+			$("##event_recur_ical_rules", window.parent.document).val(rule);
+		}
+	}
 
 	zArrDeferredFunctions.push(function(){
-		testRules();
+		//testRules();return
+
+		initRules();
 		return;
+
+		/*
 		var ruleObj={};
 		ruleObj.recurType="Weekly";
 		ruleObj.noEndDate=false;
@@ -102,6 +129,7 @@
 		};
 		var recur=new zRecurringEvent(options);
 		//recur.setFormFromRules(ruleObj);
+		*/
 	});
 	</script>
 	<style type="text/css">
@@ -137,22 +165,10 @@
 .zRecurEventBox{width:100%; float:left;}
 </style>
 <div class="zRecurEventBox">
-	<div class="zRecurBoxColumn1">
-		<div class="zRecurBox">
-			<h3>Event Options</h3>
-			<table style="width:100%; border-spacing:0px;" class="table-list">
-				<tr>
-					<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Start Date","member.event.edit event_start_datetime")#</th>
-					<td>#application.zcore.functions.zDateTimeSelect("event_start_datetime", form.event_start_datetime, 15)#</td>
-				</tr>
-				<tr>
-					<th style="width:1%;white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("End Date","member.event.edit event_end_datetime")#</th>
-					<td>#application.zcore.functions.zDateTimeSelect("event_end_datetime", form.event_end_datetime, 15)#</td>
-				</tr>
-			</table>
-		</div>
+	<div class="zRecurBoxColumn1"> 
 		<div class="zRecurBox">
 			<h3>Recurrence type &amp; options</h3>
+			<p>Start date: #dateformat(form.event_start_datetime, 'm/d/yyyy')# <input type="hidden" id="event_start_datetime_date" name="event_start_datetime_date" value="#htmleditformat(form.event_start_datetime)#"></p>
 			<p><select size="1" id="zRecurTypeSelect">
 				<option value="Daily">Daily</option>
 				<option value="Weekly">Weekly</option>

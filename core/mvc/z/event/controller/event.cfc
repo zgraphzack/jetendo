@@ -4,6 +4,8 @@
 this.app_id=17;
 </cfscript>
 <!--- 
+mystandrews is using the event table for icalendar import.
+
 event and recurring event must work.
 	Must be able to reserve for a specific occurence of the recurring event.
 event
@@ -14,6 +16,7 @@ event
 	site_option_app_id
 	event_updated_datetime
 	event_deleted
+	event_calendar_id
 
 event_recur
 	event_recur_id
@@ -24,6 +27,7 @@ event_recur
 	site_id
 event_category
 	event_category_id
+	event_calendar_id
 	site_id
 	event_category_updated_datetime
 	event_category_deleted
@@ -35,7 +39,21 @@ event_x_category
 	event_x_category_updated_datetime
 	event_x_category_deleted
 
+event_calendar
+	event_calendar_id
 
+
+
+http://sa.farbeyondcode.com.127.0.0.2.xip.io/z/server-manager/tasks/verify-tables/index
+
+
+		createTriggerSQL: "CREATE TRIGGER `"&arguments.row.table&"_auto_inc` "&arguments.row.timing&" "&arguments.row.event&" ON `"&arguments.row.table&"` FOR EACH ROW "&arguments.row.statement&";"
+
+
+ts={};
+ts.event_calendar_id
+ts.event_category_id
+searchEvents(ts);
 
 
 in server manager, need event application - it should have option to adjust recurring event projection X days per site, which also prevents reservation of dates beyond that.
@@ -80,6 +98,47 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	<cfscript>
 	ts=application.zcore.app.getInstance(this.app_id);
 	db=request.zos.queryObject;
+
+
+	db.sql="SELECT * from #db.table("event", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(arguments.site_id)# and 
+	event_unique_url<>#db.param('')# and 
+	event_deleted = #db.param(0)#
+	ORDER BY event_unique_url DESC";
+	qF=db.execute("qF");
+	for(row in qF){
+		t2=StructNew();
+		t2.groupName="Event";
+		t2.url=request.zos.currentHostName&getEventURL(row);
+		t2.title=row.event_summary;
+		arrayappend(arguments.arrUrl,t2);
+	}
+	db.sql="SELECT * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(arguments.site_id)# and 
+	event_calendar_unique_url<>#db.param('')# and 
+	event_calendar_deleted = #db.param(0)#
+	ORDER BY event_calendar_unique_url DESC";
+	qF=db.execute("qF");
+	for(row in qF){
+		t2=StructNew();
+		t2.groupName="Event Calendar";
+		t2.url=request.zos.currentHostName&getEventCalendarURL(row);
+		t2.title=row.event_calendar_name;
+		arrayappend(arguments.arrUrl,t2);
+	}
+	db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(arguments.site_id)# and 
+	event_category_unique_url<>#db.param('')# and 
+	event_category_deleted = #db.param(0)#
+	ORDER BY event_category_unique_url DESC";
+	qF=db.execute("qF");
+	for(row in qF){
+		t2=StructNew();
+		t2.groupName="Event Category";
+		t2.url=request.zos.currentHostName&getEventURL(row);
+		t2.title=row.event_category_name;
+		arrayappend(arguments.arrUrl,t2);
+	}
 	return arguments.arrURL;
 	</cfscript>
 </cffunction>
@@ -91,22 +150,66 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	<cfscript>
 	var ts=0;
 	if(structkeyexists(request.zos.userSession.groupAccess, "administrator")){
-		if(structkeyexists(arguments.linkStruct,"event") EQ false){
+		if(structkeyexists(arguments.linkStruct,"Events") EQ false){
 			ts=structnew();
 			ts.featureName="Events";
-			ts.link='/z/event/admin/event-admin/index';
+			ts.link='/z/event/admin/manage-event-calendar/index';
 			ts.children=structnew();
-			arguments.linkStruct["event"]=ts;
+			arguments.linkStruct["Events"]=ts;
 		}
-		if(structkeyexists(arguments.linkStruct["event"].children,"Manage Events") EQ false){
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Add Event") EQ false){
+			ts=structnew();
+			ts.featureName="Add Events";
+			ts.link="/z/event/admin/manage-events/add";
+			arguments.linkStruct["Events"].children["Add Event"]=ts;
+		}
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Add Event Category") EQ false){
+			ts=structnew();
+			ts.featureName="Add Event Category";
+			ts.link="/z/event/admin/manage-event-category/add";
+			arguments.linkStruct["Events"].children["Add Event Category"]=ts;
+		}
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Add Event Calendar") EQ false){
+			ts=structnew();
+			ts.featureName="Add Event Calendar";
+			ts.link="/z/event/admin/manage-event-calendar/add";
+			arguments.linkStruct["Events"].children["Add Event Calendar"]=ts;
+		}
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Manage Events") EQ false){
 			ts=structnew();
 			ts.featureName="Manage Events";
-			ts.link="/z/event/admin/event-admin/index";
-			arguments.linkStruct["event"].children["Manage Events"]=ts;
+			ts.link="/z/event/admin/manage-events/index";
+			arguments.linkStruct["Events"].children["Manage Events"]=ts;
+		}
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Manage Event Calendars") EQ false){
+			ts=structnew();
+			ts.featureName="Manage Event Calendars";
+			ts.link="/z/event/admin/manage-event-calendar/index";
+			arguments.linkStruct["Events"].children["Manage Event Calendars"]=ts;
+		}
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Manage Event Categories") EQ false){
+			ts=structnew();
+			ts.featureName="Manage Event Categories";
+			ts.link="/z/event/admin/manage-event-category/index";
+			arguments.linkStruct["Events"].children["Manage Event Categories"]=ts;
 		}
 	}
 	return arguments.linkStruct;
 	</cfscript>
+</cffunction>
+
+<cffunction name="getAdminNavMenu" localmode="modern" access="public">
+	<cfscript>
+	</cfscript>
+	<p>Manage: 
+	<a href="/z/event/admin/manage-event-calendar/index">Calendars</a> | 
+	<a href="/z/event/admin/manage-event-category/index">Categories</a> | 
+	<a href="/z/event/admin/manage-events/index">Events</a> 
+	| Add:
+	<a href="/z/event/admin/manage-event-calendar/add">Calendar</a> | 
+	<a href="/z/event/admin/manage-event-category/add">Category</a> | 
+	<a href="/z/event/admin/manage-events/add">Event</a>
+	</p>
 </cffunction>
 
 <cffunction name="getCacheStruct" localmode="modern" output="no" access="public" returntype="struct" hint="publish the application cache">
@@ -118,11 +221,11 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	var arrcolumns=0;
 	var i=0;
 	var db=request.zos.queryObject;
-	db.sql="SELECT * FROM #db.table("event_config", request.zos.zcoreDatasource)# event_config 
+	db.sql="SELECT * FROM #db.table("event_config", request.zos.zcoreDatasource)# 
 	where 
 	site_id = #db.param(arguments.site_id)# and 
 	event_config_deleted = #db.param(0)#";
-	qData=db.execute("qData");
+	qData=db.execute("qData"); 
 	for(row in qData){
 		return row;
 	}
@@ -152,62 +255,82 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	event_config_deleted = #db.param(0)# and 
 	app_x_site_deleted = #db.param(0)# and 
 	site_deleted = #db.param(0)#";
-	qConfig=db.execute("qConfig"); 
-	/*
+	qConfig=db.execute("qConfig");  
 	loop query="qConfig"{
-		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_url_article_id]=[];
-		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_url_section_id]=[];
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_url_id]=[];
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_category_url_id]=[];
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_calendar_url_id]=[];
 		t9=structnew();
 		t9.type=1;
-		t9.scriptName="/z/content/content/viewPage";
+		t9.scriptName="/z/event/event/view";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/viewPage";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/view";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
-		t9.mapStruct.dataId="content_id";
-		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_url_article_id],t9);
-		if(qConfig.event_config_url_listing_user_id NEQ 0 and qConfig.event_config_url_listing_user_id NEQ ""){
-			arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_url_listing_user_id]=arraynew(1);
-			t9=structnew();
-			t9.type=1;
-			t9.scriptName="/z/listing/agent-listings/index";
-			t9.urlStruct=structnew();
-			t9.urlStruct[request.zos.urlRoutingParameter]="/z/listing/agent-listings/index";
-			t9.mapStruct=structnew();
-			t9.mapStruct.urlTitle="zURLName";
-			t9.mapStruct.dataId="content_listing_user_id";
-			arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_url_listing_user_id],t9);
-		}
-		t999=application.zcore.functions.zvar('contenturlid',qConfig.site_id);
-		if(t999 NEQ 0 and t999 NEQ ''){
-			arguments.sharedStruct.reservedAppUrlIdStruct[t999]=arraynew(1);
-			t9=structnew();
-			t9.type=1;
-			t9.scriptName="/z/content/content/viewPage";
-			t9.urlStruct=structnew();
-			t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/viewPage";
-			t9.mapStruct=structnew();
-			t9.mapStruct.entireURL="content_unique_name";
-			t9.mapStruct.urlTitle="zURLName";
-			t9.mapStruct.dataId="content_listing_user_id";
-			arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[t999],t9);
-			
-		}
-	}
+		t9.mapStruct.dataId="event_id";
+		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_url_id],t9); 
+		t9=structnew();
+		t9.type=1;
+		t9.scriptName="/z/event/event-category/view";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/view";
+		t9.mapStruct=structnew();
+		t9.mapStruct.urlTitle="zURLName";
+		t9.mapStruct.dataId="event_category_id";
+		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_category_url_id],t9); 
+		t9=structnew();
+		t9.type=1;
+		t9.scriptName="/z/event/event-calendar/view";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/view";
+		t9.mapStruct=structnew();
+		t9.mapStruct.urlTitle="zURLName";
+		t9.mapStruct.dataId="event_calendar_id";
+		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_calendar_url_id],t9);  
 
-	t9=structnew();
-	t9.type=1;
-	t9.scriptName="/z/content/content/displayContentSection";
-	t9.ifStruct=structnew();
-	t9.ifStruct.ext="html";
-	t9.urlStruct=structnew();
-	t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/displayContentSection";
-	t9.mapStruct=structnew();
-	t9.mapStruct.urlTitle="zURLName";
-	t9.mapStruct.dataId="site_x_option_group_set_id";
-	arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_url_section_id],t9);
-
-	*/
+		db.sql="SELECT * from #db.table("event", request.zos.zcoreDatasource)# 
+		WHERE site_id=#db.param(arguments.site_id)# and 
+		event_unique_url<>#db.param('')# and 
+		event_deleted = #db.param(0)#
+		ORDER BY event_unique_url DESC";
+		qF=db.execute("qF");
+		loop query="qF"{
+			t9=structnew();
+			t9.scriptName="/z/event/event/view";
+			t9.urlStruct=structnew();
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/view";
+			t9.urlStruct.event_id=qF.event_id;
+			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_unique_url)]=t9;
+		}
+		db.sql="SELECT * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
+		WHERE site_id=#db.param(arguments.site_id)# and 
+		event_calendar_unique_url<>#db.param('')# and 
+		event_calendar_deleted = #db.param(0)#
+		ORDER BY event_calendar_unique_url DESC";
+		qF=db.execute("qF");
+		loop query="qF"{
+			t9=structnew();
+			t9.scriptName="/z/event/event-calendar/view";
+			t9.urlStruct=structnew();
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/view";
+			t9.urlStruct.event_calendar_id=qF.event_calendar_id;
+			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_calendar_unique_url)]=t9;
+		}
+		db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
+		WHERE site_id=#db.param(arguments.site_id)# and 
+		event_category_unique_url<>#db.param('')# and 
+		event_category_deleted = #db.param(0)#
+		ORDER BY event_category_unique_url DESC";
+		qF=db.execute("qF");
+		loop query="qF"{
+			t9=structnew();
+			t9.scriptName="/z/event/event-category/view";
+			t9.urlStruct=structnew();
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/view";
+			t9.urlStruct.event_category_id=qF.event_category_id;
+			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_category_unique_url)]=t9;
+		}
+	} 
 	</cfscript>
 </cffunction>
 	
@@ -240,10 +363,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	var error=false;
 	var df=structnew();
 
-	df.event_config_sandbox_enabled=0;
-	df.event_config_order_confirmation_email_list="1,2,3";
-	df.event_config_order_change_email_list="1,2,3";
-	df.event_config_paypal_ipn_failure_email_list=1;
+	df.event_config_project_recurrence_days=365;
 	for(i in df){	
 		if(arguments.validate){
 			if(structkeyexists(form,i) EQ false or form[i] EQ ""){	
@@ -270,15 +390,17 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	var ts=StructNew();
 	var rCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.zos.return");
 	var result='';
+
 	if(this.loadDefaultConfig(true) EQ false){
 		rCom.setError("Please correct the above validation errors and submit again.",1);
 		return rCom;
 	}	
-	form.site_id=form.sid;
-	/*
+	form.site_id=form.sid; 
 	ts=StructNew();
 	ts.arrId=arrayNew(1);
 	arrayappend(ts.arrId,trim(form.event_config_category_url_id));
+	arrayappend(ts.arrId,trim(form.event_config_calendar_url_id));
+	arrayappend(ts.arrId,trim(form.event_config_event_url_id));
 	ts.site_id=form.site_id;
 	ts.app_id=this.app_id;
 	rCom=application.zcore.app.reserveAppUrlId(ts);
@@ -287,14 +409,15 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		application.zcore.functions.zstatushandler(request.zsid);
 		application.zcore.functions.zReturnRedirect(request.cgi_script_name&"?method=configForm&app_x_site_id=#this.app_x_site_id#&zsid=#request.zsid#");
 		application.zcore.functions.zabort();
-	}		
-	*/
+	} 
+	form.event_config_project_recurrence_days=application.zcore.functions.zso(form, 'event_config_project_recurrence_days', true);
+	form.event_config_deleted=0;
 	form.event_config_updated_datetime=request.zos.mysqlnow;
 	ts.table="event_config";
 	ts.struct=form;
 	ts.datasource=request.zos.zcoreDatasource;
 	if(application.zcore.functions.zso(form, 'event_config_id',true) EQ 0){ // insert
-		result=application.zcore.functions.zInsert(ts); 
+		result=application.zcore.functions.zInsert(ts);  
 		if(result EQ false){
 			rCom.setError("Failed to save configuration.",2);
 			return rCom;
@@ -329,125 +452,45 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		application.zcore.functions.zQueryToStruct(qConfig);//, "configStruct");
 		if(qConfig.recordcount EQ 0){
 			this.loadDefaultConfig();
-		}
-		/*
-event_config
-	event_config_id
-	event_config_schedule_ical_import char(1) 0 // 1 will auto-import each day and enable manager menu link for manual sync.
-	event_config_ical_url_list  TEXT comma separated ical urls.
-	event_config_project_recurrence_days X days
-	event_config_updated_datetime
-	event_config_deleted
-	site_id
-			*/
+		} 
 		application.zcore.functions.zStatusHandler(request.zsid,true);
 		echo('<input type="hidden" name="event_config_id" value="#form.event_config_id#" />
-		<table style="border-spacing:0px;" class="table-list">
+		<table style="border-spacing:0px;" class="table-list">');
+		echo('
 		<tr>
-		<th>Paypal Merchant ID:</th>
+		<th>ICal URL List:</th>
 		<td>');
 		ts = StructNew();
-		ts.name = "event_config_paypal_merchant_id";
+		ts.name = "event_config_ical_url_list";
+		application.zcore.functions.zInput_Text(ts);
+		echo('<br />(A comma separated list of urls to import on a daily basis.)</td>
+		</tr>
+		<tr>
+		<th>Project Recurrence ## of Days:</th>
+		<td>');
+		ts = StructNew();
+		ts.name = "event_config_project_recurrence_days";
 		application.zcore.functions.zInput_Text(ts);
 		echo('</td>
 		</tr>
 		<tr>
-		<th>Sandbox Enabled?</th>
+		<th>Event URL ID</th>
 		<td>');
-		form.event_config_sandbox_enabled=application.zcore.functions.zso(form, 'event_config_sandbox_enabled',true);
-		ts = StructNew();
-		ts.name = "event_config_sandbox_enabled";
-		ts.radio=true;
-		ts.separator=" ";
-		ts.listValuesDelimiter="|";
-		ts.listLabelsDelimiter="|";
-		ts.listLabels="Yes|No";
-		ts.listValues="1|0";
-		application.zcore.functions.zInput_Checkbox(ts);
-		echo(' (Yes, will disable real money transactions.)</td>
-		</tr>');
-		echo('<tr>
-		<th>Order Confirmation Email List:</th>
-		<td>');
-		selectStruct = StructNew();
-		selectStruct.name = "event_config_order_confirmation_email_list";
-		selectStruct.hideSelect=true;
-		selectStruct.multiple=true;
-		selectStruct.size=3;
-		selectStruct.listLabels="Developer,Administrator,Customer";
-		selectStruct.listValues = "1,2,3";
-		application.zcore.functions.zInputSelectBox(selectStruct);
+		writeoutput(application.zcore.app.selectAppUrlId("event_config_event_url_id", form.event_config_event_url_id, this.app_id));
 		echo('</td>
-		</tr>');
-
-		echo('<tr>
-		<th>Order Change Email List:</th>
+		</tr>
+		<tr>
+		<th>Calendar URL ID</th>
 		<td>');
-		selectStruct = StructNew();
-		selectStruct.name = "event_config_order_change_email_list";
-		selectStruct.hideSelect=true;
-		selectStruct.listLabels="Developer,Administrator,Customer";
-		selectStruct.listValues = "1,2,3";
-		selectStruct.multiple=true;
-		selectStruct.size=3;
-		application.zcore.functions.zInputSelectBox(selectStruct);
+		writeoutput(application.zcore.app.selectAppUrlId("event_config_calendar_url_id", form.event_config_calendar_url_id, this.app_id));
 		echo('</td>
-		</tr>');
-
-		echo('<tr>
-		<th>Paypal IPN Failure Email List:</th>
-		<td>');
-		selectStruct = StructNew();
-		selectStruct.name = "event_config_paypal_ipn_failure_email_list";
-		selectStruct.hideSelect=true;
-		selectStruct.listLabels="Developer,Administrator";
-		selectStruct.listValues = "1,2";
-		selectStruct.multiple=true;
-		selectStruct.size=2;
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		echo('</td>
-		</tr>');
-		
-		
-		
-		/*
+		</tr>
 		<tr>
 		<th>Category URL ID</th>
 		<td>');
 		writeoutput(application.zcore.app.selectAppUrlId("event_config_category_url_id", form.event_config_category_url_id, this.app_id));
 		echo('</td>
-		</tr>
-		<tr>
-		<th>Sidebar Tag</th>
-		<td>');
-		ts=StructNew();
-		ts.label="";
-		ts.name="event_config_sidebar_tag";
-		ts.size="20";
-		application.zcore.functions.zInput_Text(ts);
-		echo(' (i.e. type "sidebar" for &lt;z_sidebar&gt;)</td>
-		</tr>
-		
-		<tr>
-		<th>Default Parent Page<br />Link Layout</th>
-		<td>');
-		selectStruct = StructNew();
-		selectStruct.name = "event_config_default_parentpage_link_layout";
-		selectStruct.hideSelect=true;
-		selectStruct.listLabels="Invisible,Top with numbered columns,Top with columns,Top on one line";//,Bottom with summary (default),Bottom without summary,Left Sidebar,Right Sidebar";
-		selectStruct.listValues = "7,2,3,4";//,0,1,5,6";
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		echo('</td>
-		</tr>
-		<tr>
-		<th>Section Title Affix:</th>
-		<td>');
-		ts = StructNew();
-		ts.name = "event_config_section_title_affix";
-		application.zcore.functions.zInput_Text(ts);
-		echo('</td>
-		</tr>*/
-		echo('
+		</tr> 
 		
 		</table>');
 	}
@@ -456,7 +499,6 @@ event_config
 	return rCom;
 	</cfscript>
 </cffunction>
-
 
 
 <cffunction name="onRequestStart" localmode="modern" output="yes" returntype="void">
@@ -469,6 +511,594 @@ event_config
 	<cfscript>
 	
 	</cfscript>
+</cffunction>
+
+
+<cffunction name="getEventURL" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	if(row.event_unique_url NEQ ""){
+		return row.event_unique_url;
+	}else{
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.event_summary, '-')&"-"&urlId&"-"&row.event_id&".html";
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getCategoryURL" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	if(row.event_category_unique_url NEQ ""){
+		return row.event_category_unique_url;
+	}else{
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_category_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.event_category_name, '-')&"-"&urlId&"-"&row.event_category_id&".html";
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getCalendarURL" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	if(row.event_calendar_unique_url NEQ ""){
+		return row.event_calendar_unique_url;
+	}else{
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_calendar_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.event_calendar_name, '-')&"-"&urlId&"-"&row.event_calendar_id&".html";
+	}
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="onApplicationStart" localmode="modern">
+	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">
+	<cfscript>
+	ts={};
+	ts.timeZoneStruct={
+"Africa/Abidjan":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Accra":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Addis_Ababa":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Algiers":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Asmara":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Asmera":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Bamako":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Bangui":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Banjul":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Bissau":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Blantyre":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Brazzaville":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Bujumbura":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Cairo":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Casablanca":{ offset: "+00:00", dstOffset: "+01:00"},
+"Africa/Ceuta":{ offset: "+01:00", dstOffset: "+02:00"},
+"Africa/Conakry":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Dakar":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Dar_es_Salaam":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Djibouti":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Douala":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/El_Aaiun":{ offset: "+00:00", dstOffset: "+01:00"},
+"Africa/Freetown":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Gaborone":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Harare":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Johannesburg":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Juba":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Kampala":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Khartoum":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Kigali":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Kinshasa":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Lagos":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Libreville":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Lome":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Luanda":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Lubumbashi":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Lusaka":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Malabo":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Maputo":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Maseru":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Mbabane":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Mogadishu":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Monrovia":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Nairobi":{ offset: "+03:00", dstOffset: "+03:00"},
+"Africa/Ndjamena":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Niamey":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Nouakchott":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Ouagadougou":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Porto-Novo":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Sao_Tome":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Timbuktu":{ offset: "+00:00", dstOffset: "+00:00"},
+"Africa/Tripoli":{ offset: "+02:00", dstOffset: "+02:00"},
+"Africa/Tunis":{ offset: "+01:00", dstOffset: "+01:00"},
+"Africa/Windhoek":{ offset: "+01:00", dstOffset: "+02:00"},
+"America/Adak":{ offset: "−10:00", dstOffset: "−09:00"},
+"America/Anchorage":{ offset: "−09:00", dstOffset: "−08:00"},
+"America/Anguilla":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Antigua":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Araguaina":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Buenos_Aires":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Catamarca":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/ComodRivadavia":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Cordoba":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Jujuy":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/La_Rioja":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Mendoza":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Rio_Gallegos":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Salta":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/San_Juan":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/San_Luis":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Tucuman":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Argentina/Ushuaia":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Aruba":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Asuncion":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Atikokan":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Atka":{ offset: "−10:00", dstOffset: "−09:00"},
+"America/Bahia":{ offset: "−03:00", dstOffset: "−02:00"},
+"America/Bahia_Banderas":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Barbados":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Belem":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Belize":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Blanc-Sablon":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Boa_Vista":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Bogota":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Boise":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Buenos_Aires":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Cambridge_Bay":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Campo_Grande":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Cancun":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Caracas":{ offset: "−04:30", dstOffset: "−04:30"},
+"America/Catamarca":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Cayenne":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Cayman":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Chicago":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Chihuahua":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Coral_Harbour":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Cordoba":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Costa_Rica":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Creston":{ offset: "−07:00", dstOffset: "−07:00"},
+"America/Cuiaba":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Curacao":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Danmarkshavn":{ offset: "+00:00", dstOffset: "+00:00"},
+"America/Dawson":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Dawson_Creek":{ offset: "−07:00", dstOffset: "−07:00"},
+"America/Denver":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Detroit":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Dominica":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Edmonton":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Eirunepe":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/El_Salvador":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Ensenada":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Fort_Wayne":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Fortaleza":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Glace_Bay":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Godthab":{ offset: "−03:00", dstOffset: "−02:00"},
+"America/Goose_Bay":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Grand_Turk":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Grenada":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Guadeloupe":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Guatemala":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Guayaquil":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Guyana":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Halifax":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Havana":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Hermosillo":{ offset: "−07:00", dstOffset: "−07:00"},
+"America/Indiana/Indianapolis":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Indiana/Knox":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Indiana/Marengo":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Indiana/Petersburg":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Indiana/Tell_City":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Indiana/Valparaiso":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Indiana/Vevay":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Indiana/Vincennes":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Indiana/Winamac":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Indianapolis":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Inuvik":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Iqaluit":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Jamaica":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Jujuy":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Juneau":{ offset: "−09:00", dstOffset: "−08:00"},
+"America/Kentucky/Louisville":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Kentucky/Monticello":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Knox_IN":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Kralendijk":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/La_Paz":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Lima":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Los_Angeles":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Louisville":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Lower_Princes":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Maceio":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Managua":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Manaus":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Marigot":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Martinique":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Matamoros":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Mazatlan":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Mendoza":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Menominee":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Merida":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Metlakatla":{ offset: "−08:00", dstOffset: "−08:00"},
+"America/Mexico_City":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Miquelon":{ offset: "−03:00", dstOffset: "−02:00"},
+"America/Moncton":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Monterrey":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Montevideo":{ offset: "−03:00", dstOffset: "−02:00"},
+"America/Montreal":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Montserrat":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Nassau":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/New_York":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Nipigon":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Nome":{ offset: "−09:00", dstOffset: "−08:00"},
+"America/Noronha":{ offset: "−02:00", dstOffset: "−02:00"},
+"America/North_Dakota/Beulah":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/North_Dakota/Center":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/North_Dakota/New_Salem":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Ojinaga":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Panama":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Pangnirtung":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Paramaribo":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Phoenix":{ offset: "−07:00", dstOffset: "−07:00"},
+"America/Port_of_Spain":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Port-au-Prince":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Porto_Acre":{ offset: "−05:00", dstOffset: "−05:00"},
+"America/Porto_Velho":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Puerto_Rico":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Rainy_River":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Rankin_Inlet":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Recife":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Regina":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Resolute":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Rio_Branco":{ offset: "−05:00", dstOffset: ""},
+"America/Rosario":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Santa_Isabel":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Santarem":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Santiago":{ offset: "−03:00", dstOffset: "−03:00"},
+"America/Santo_Domingo":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Sao_Paulo":{ offset: "−03:00", dstOffset: "−02:00"},
+"America/Scoresbysund":{ offset: "−01:00", dstOffset: "+00:00"},
+"America/Shiprock":{ offset: "−07:00", dstOffset: "−06:00"},
+"America/Sitka":{ offset: "−09:00", dstOffset: "−08:00"},
+"America/St_Barthelemy":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/St_Johns":{ offset: "−03:30", dstOffset: "−02:30"},
+"America/St_Kitts":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/St_Lucia":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/St_Thomas":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/St_Vincent":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Swift_Current":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Tegucigalpa":{ offset: "−06:00", dstOffset: "−06:00"},
+"America/Thule":{ offset: "−04:00", dstOffset: "−03:00"},
+"America/Thunder_Bay":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Tijuana":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Toronto":{ offset: "−05:00", dstOffset: "−04:00"},
+"America/Tortola":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Vancouver":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Virgin":{ offset: "−04:00", dstOffset: "−04:00"},
+"America/Whitehorse":{ offset: "−08:00", dstOffset: "−07:00"},
+"America/Winnipeg":{ offset: "−06:00", dstOffset: "−05:00"},
+"America/Yakutat":{ offset: "−09:00", dstOffset: "−08:00"},
+"America/Yellowknife":{ offset: "−07:00", dstOffset: "−06:00"},
+"Antarctica/Casey":{ offset: "+11:00", dstOffset: "+08:00"},
+"Antarctica/Davis":{ offset: "+05:00", dstOffset: "+07:00"},
+"Antarctica/DumontDUrville":{ offset: "+10:00", dstOffset: "+10:00"},
+"Antarctica/Macquarie":{ offset: "+11:00", dstOffset: "+11:00"},
+"Antarctica/Mawson":{ offset: "+05:00", dstOffset: "+05:00"},
+"Antarctica/McMurdo":{ offset: "+12:00", dstOffset: "+13:00"},
+"Antarctica/Palmer":{ offset: "−04:00", dstOffset: "−03:00"},
+"Antarctica/Rothera":{ offset: "−03:00", dstOffset: "−03:00"},
+"Antarctica/South_Pole":{ offset: "+12:00", dstOffset: "+13:00"},
+"Antarctica/Syowa":{ offset: "+03:00", dstOffset: "+03:00"},
+"Antarctica/Troll":{ offset: "+00:00", dstOffset: "+02:00"},
+"Antarctica/Vostok":{ offset: "+06:00", dstOffset: "+06:00"},
+"Arctic/Longyearbyen":{ offset: "+01:00", dstOffset: "+02:00"},
+"Asia/Aden":{ offset: "+03:00", dstOffset: "+03:00"},
+"Asia/Almaty":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Amman":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Anadyr":{ offset: "+12:00", dstOffset: "+12:00"},
+"Asia/Aqtau":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Aqtobe":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Ashgabat":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Ashkhabad":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Baghdad":{ offset: "+03:00", dstOffset: "+03:00"},
+"Asia/Bahrain":{ offset: "+03:00", dstOffset: "+03:00"},
+"Asia/Baku":{ offset: "+04:00", dstOffset: "+05:00"},
+"Asia/Bangkok":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Beirut":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Bishkek":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Brunei":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Calcutta":{ offset: "+05:30", dstOffset: "+05:30"},
+"Asia/Choibalsan":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Chongqing":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Chungking":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Colombo":{ offset: "+05:30", dstOffset: "+05:30"},
+"Asia/Dacca":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Damascus":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Dhaka":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Dili":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Dubai":{ offset: "+04:00", dstOffset: "+04:00"},
+"Asia/Dushanbe":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Gaza":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Harbin":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Hebron":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Ho_Chi_Minh":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Hong_Kong":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Hovd":{ offset: "+07:00", dstOffset: "+08:00"},
+"Asia/Irkutsk":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Istanbul":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Jakarta":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Jayapura":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Jerusalem":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Kabul":{ offset: "+04:30", dstOffset: "+04:30"},
+"Asia/Kamchatka":{ offset: "+12:00", dstOffset: "+12:00"},
+"Asia/Karachi":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Kashgar":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Kathmandu":{ offset: "+05:45", offset: "+05:45"},
+"Asia/Katmandu":{ offset: "+05:45", offset: "+05:45"},
+"Asia/Khandyga":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Kolkata":{ offset: "+05:30", dstOffset: "+05:30"},
+"Asia/Krasnoyarsk":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Kuala_Lumpur":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Kuching":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Kuwait":{ offset: "+03:00", dstOffset: "+03:00"},
+"Asia/Macao":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Macau":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Magadan":{ offset: "+10:00", dstOffset: "+10:00"},
+"Asia/Makassar":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Manila":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Muscat":{ offset: "+04:00", dstOffset: "+04:00"},
+"Asia/Nicosia":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Novokuznetsk":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Novosibirsk":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Omsk":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Oral":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Phnom_Penh":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Pontianak":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Pyongyang":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Qatar":{ offset: "+03:00", dstOffset: "+03:00"},
+"Asia/Qyzylorda":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Rangoon":{ offset: "+06:30", dstOffset: "+06:30"},
+"Asia/Riyadh":{ offset: "+03:00", dstOffset: "+03:00"},
+"Asia/Saigon":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Sakhalin":{ offset: "+11:00", dstOffset: "+11:00"},
+"Asia/Samarkand":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Seoul":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Shanghai":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Singapore":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Taipei":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Tashkent":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Tbilisi":{ offset: "+04:00", dstOffset: "+04:00"},
+"Asia/Tehran":{ offset: "+03:30", dstOffset: "+04:30"},
+"Asia/Tel_Aviv":{ offset: "+02:00", dstOffset: "+03:00"},
+"Asia/Thimbu":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Thimphu":{ offset: "+06:00", dstOffset: "+06:00"},
+"Asia/Tokyo":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Ujung_Pandang":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Ulaanbaatar":{ offset: "+08:00", dstOffset: "+09:00"},
+"Asia/Ulan_Bator":{ offset: "+08:00", dstOffset: "+09:00"},
+"Asia/Urumqi":{ offset: "+08:00", dstOffset: "+08:00"},
+"Asia/Ust-Nera":{ offset: "+10:00", dstOffset: "+10:00"},
+"Asia/Vientiane":{ offset: "+07:00", dstOffset: "+07:00"},
+"Asia/Vladivostok":{ offset: "+10:00", dstOffset: "+10:00"},
+"Asia/Yakutsk":{ offset: "+09:00", dstOffset: "+09:00"},
+"Asia/Yekaterinburg":{ offset: "+05:00", dstOffset: "+05:00"},
+"Asia/Yerevan":{ offset: "+04:00", dstOffset: "+04:00"},
+"Atlantic/Azores":{ offset: "−01:00", dstOffset: "+00:00"},
+"Atlantic/Bermuda":{ offset: "−04:00", dstOffset: "−03:00"},
+"Atlantic/Canary":{ offset: "+00:00", dstOffset: "+01:00"},
+"Atlantic/Cape_Verde":{ offset: "−01:00", dstOffset: "−01:00"},
+"Atlantic/Faeroe":{ offset: "+00:00", dstOffset: "+01:00"},
+"Atlantic/Faroe":{ offset: "+00:00", dstOffset: "+01:00"},
+"Atlantic/Jan_Mayen":{ offset: "+01:00", dstOffset: "+02:00"},
+"Atlantic/Madeira":{ offset: "+00:00", dstOffset: "+01:00"},
+"Atlantic/Reykjavik":{ offset: "+00:00", dstOffset: "+00:00"},
+"Atlantic/South_Georgia":{ offset: "−02:00", dstOffset: "−02:00"},
+"Atlantic/St_Helena":{ offset: "+00:00", dstOffset: "+00:00"},
+"Atlantic/Stanley":{ offset: "−03:00", dstOffset: "−03:00"},
+"Australia/ACT":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/Adelaide":{ offset: "+09:30", dstOffset: "+10:30"},
+"Australia/Brisbane":{ offset: "+10:00", dstOffset: "+10:00"},
+"Australia/Broken_Hill":{ offset: "+09:30", dstOffset: "+10:30"},
+"Australia/Canberra":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/Currie":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/Darwin":{ offset: "+09:30", dstOffset: "+09:30"},
+"Australia/Eucla":{ offset: "+08:45", offset: "+08:45"},
+"Australia/Hobart":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/LHI":{ offset: "+10:30", dstOffset: "+11:00"},
+"Australia/Lindeman":{ offset: "+10:00", dstOffset: "+10:00"},
+"Australia/Lord_Howe":{ offset: "+10:30", dstOffset: "+11:00"},
+"Australia/Melbourne":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/North":{ offset: "+09:30", dstOffset: "+09:30"},
+"Australia/NSW":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/Perth":{ offset: "+08:00", dstOffset: "+08:00"},
+"Australia/Queensland":{ offset: "+10:00", dstOffset: "+10:00"},
+"Australia/South":{ offset: "+09:30", dstOffset: "+10:30"},
+"Australia/Sydney":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/Tasmania":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/Victoria":{ offset: "+10:00", dstOffset: "+11:00"},
+"Australia/West":{ offset: "+08:00", dstOffset: "+08:00"},
+"Australia/Yancowinna":{ offset: "+09:30", dstOffset: "+10:30"},
+"Brazil/Acre":{ offset: "−05:00", dstOffset: ""},
+"Brazil/DeNoronha":{ offset: "−02:00", dstOffset: "−02:00"},
+"Brazil/East":{ offset: "−03:00", dstOffset: "−02:00"},
+"Brazil/West":{ offset: "−04:00", dstOffset: "−04:00"},
+"Canada/Atlantic":{ offset: "−04:00", dstOffset: "−03:00"},
+"Canada/Central":{ offset: "−06:00", dstOffset: "−05:00"},
+"Canada/Eastern":{ offset: "−05:00", dstOffset: "−04:00"},
+"Canada/East-Saskatchewan":{ offset: "−06:00", dstOffset: "−06:00"},
+"Canada/Mountain":{ offset: "−07:00", dstOffset: "−06:00"},
+"Canada/Newfoundland":{ offset: "−03:30", dstOffset: "−02:30"},
+"Canada/Pacific":{ offset: "−08:00", dstOffset: "−07:00"},
+"Canada/Saskatchewan":{ offset: "−06:00", dstOffset: "−06:00"},
+"Canada/Yukon":{ offset: "−08:00", dstOffset: "−07:00"},
+"Chile/Continental":{ offset: "−03:00", dstOffset: "−03:00"},
+"Chile/EasterIsland":{ offset: "−05:00", dstOffset: "−05:00"},
+"Cuba":{ offset: "−05:00", dstOffset: "−04:00"},
+"Egypt":{ offset: "+02:00", dstOffset: "+03:00"},
+"Eire":{ offset: "+00:00", dstOffset: "+01:00"},
+"Etc/GMT":{ offset: "+00:00", dstOffset: "+00:00"},
+"Etc/GMT+0":{ offset: "+00:00", dstOffset: "+00:00"},
+"Etc/UCT":{ offset: "+00:00", dstOffset: "+00:00"},
+"Etc/Universal":{ offset: "+00:00", dstOffset: "+00:00"},
+"Etc/UTC":{ offset: "+00:00", dstOffset: "+00:00"},
+"Etc/Zulu":{ offset: "+00:00", dstOffset: "+00:00"},
+"Europe/Amsterdam":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Andorra":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Athens":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Belfast":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Belgrade":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Berlin":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Bratislava":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Brussels":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Bucharest":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Budapest":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Busingen":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Chisinau":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Copenhagen":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Dublin":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Gibraltar":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Guernsey":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Helsinki":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Isle_of_Man":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Istanbul":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Jersey":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Kaliningrad":{ offset: "+02:00", dstOffset: "+02:00"},
+"Europe/Kiev":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Lisbon":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Ljubljana":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/London":{ offset: "+00:00", dstOffset: "+01:00"},
+"Europe/Luxembourg":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Madrid":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Malta":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Mariehamn":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Minsk":{ offset: "+03:00", dstOffset: "+03:00"},
+"Europe/Monaco":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Moscow":{ offset: "+03:00", dstOffset: "+03:00"},
+"Europe/Nicosia":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Oslo":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Paris":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Podgorica":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Prague":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Riga":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Rome":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Samara":{ offset: "+04:00", dstOffset: "+04:00"},
+"Europe/San_Marino":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Sarajevo":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Simferopol":{ offset: "+03:00", dstOffset: "+03:00"},
+"Europe/Skopje":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Sofia":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Stockholm":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Tallinn":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Tirane":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Tiraspol":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Uzhgorod":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Vaduz":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Vatican":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Vienna":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Vilnius":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Volgograd":{ offset: "+03:00", dstOffset: "+03:00"},
+"Europe/Warsaw":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Zagreb":{ offset: "+01:00", dstOffset: "+02:00"},
+"Europe/Zaporozhye":{ offset: "+02:00", dstOffset: "+03:00"},
+"Europe/Zurich":{ offset: "+01:00", dstOffset: "+02:00"},
+"GB":{ offset: "+00:00", dstOffset: "+01:00"},
+"GB-Eire":{ offset: "+00:00", dstOffset: "+01:00"},
+"GMT":{ offset: "+00:00", dstOffset: "+00:00"},
+"GMT+0":{ offset: "+00:00", dstOffset: "+00:00"},
+"GMT0":{offset: "+00:00", dstOffset: "+00:00"},
+"GMT-0":{offset: "+00:00", dstOffset: "+00:00"},
+"Greenwich":{ offset: "+00:00", dstOffset: "+00:00"},
+"Hongkong":{ offset: "+08:00", dstOffset: "+08:00"},
+"Iceland":{ offset: "+00:00", dstOffset: "+00:00"},
+"Indian/Antananarivo":{ offset: "+03:00", dstOffset: "+03:00"},
+"Indian/Chagos":{ offset: "+06:00", dstOffset: "+06:00"},
+"Indian/Christmas":{ offset: "+07:00", dstOffset: "+07:00"},
+"Indian/Cocos":{ offset: "+06:30", dstOffset: "+06:30"},
+"Indian/Comoro":{ offset: "+03:00", dstOffset: "+03:00"},
+"Indian/Kerguelen":{ offset: "+05:00", dstOffset: "+05:00"},
+"Indian/Mahe":{ offset: "+04:00", dstOffset: "+04:00"},
+"Indian/Maldives":{ offset: "+05:00", dstOffset: "+05:00"},
+"Indian/Mauritius":{ offset: "+04:00", dstOffset: "+04:00"},
+"Indian/Mayotte":{ offset: "+03:00", dstOffset: "+03:00"},
+"Indian/Reunion":{ offset: "+04:00", dstOffset: "+04:00"},
+"Iran":{ offset: "+03:30", dstOffset: "+04:30"},
+"Israel":{ offset: "+02:00", dstOffset: "+03:00"},
+"Jamaica":{ offset: "−05:00", dstOffset: "−05:00"},
+"Japan":{ offset: "+09:00", dstOffset: "+09:00"},
+"Kwajalein":{ offset: "+12:00", dstOffset: "+12:00"},
+"Libya":{ offset: "+02:00", dstOffset: "+01:00"},
+"Mexico/BajaNorte":{ offset: "−08:00", dstOffset: "−07:00"},
+"Mexico/BajaSur":{ offset: "−07:00", dstOffset: "−06:00"},
+"Mexico/General":{ offset: "−06:00", dstOffset: "−05:00"},
+"Navajo":{ offset: "−07:00", dstOffset: "−06:00"},
+"NZ":{ offset: "+12:00", dstOffset: "+13:00"},
+"NZ-CHAT":{ offset: "+12:45", dstOffset: "+13:45"},
+"Pacific/Apia":{ offset: "+13:00", dstOffset: "+14:00"},
+"Pacific/Auckland":{ offset: "+12:00", dstOffset: "+13:00"},
+"Pacific/Chatham":{ offset: "+12:45", dstOffset: "+13:45"},
+"Pacific/Chuuk":{ offset: "+10:00", dstOffset: "+10:00"},
+"Pacific/Easter":{ offset: "−06:00", dstOffset: "−05:00"},
+"Pacific/Efate":{ offset: "+11:00", dstOffset: "+11:00"},
+"Pacific/Enderbury":{ offset: "+13:00", dstOffset: "+13:00"},
+"Pacific/Fakaofo":{ offset: "+13:00", dstOffset: "+13:00"},
+"Pacific/Fiji":{ offset: "+12:00", dstOffset: "+13:00"},
+"Pacific/Funafuti":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Galapagos":{ offset: "−06:00", dstOffset: "−06:00"},
+"Pacific/Gambier":{ offset: "−09:00", dstOffset: "−09:00"},
+"Pacific/Guadalcanal":{ offset: "+11:00", dstOffset: "+11:00"},
+"Pacific/Guam":{ offset: "+10:00", dstOffset: "+10:00"},
+"Pacific/Honolulu":{ offset: "−10:00", dstOffset: "−10:00"},
+"Pacific/Johnston":{ offset: "−10:00", dstOffset: "−10:00"},
+"Pacific/Kiritimati":{ offset: "+14:00", dstOffset: "+14:00"},
+"Pacific/Kosrae":{ offset: "+11:00", dstOffset: "+11:00"},
+"Pacific/Kwajalein":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Majuro":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Marquesas":{ offset: "−09:30", dstOffset: "−09:30"},
+"Pacific/Midway":{ offset: "−11:00", dstOffset: "−11:00"},
+"Pacific/Nauru":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Niue":{ offset: "−11:00", dstOffset: "−11:00"},
+"Pacific/Norfolk":{ offset: "+11:30", dstOffset: "+11:30"},
+"Pacific/Noumea":{ offset: "+11:00", dstOffset: "+11:00"},
+"Pacific/Pago_Pago":{ offset: "−11:00", dstOffset: "−11:00"},
+"Pacific/Palau":{ offset: "+09:00", dstOffset: "+09:00"},
+"Pacific/Pitcairn":{ offset: "−08:00", dstOffset: "−08:00"},
+"Pacific/Pohnpei":{ offset: "+11:00", dstOffset: "+11:00"},
+"Pacific/Ponape":{ offset: "+11:00", dstOffset: "+11:00"},
+"Pacific/Port_Moresby":{ offset: "+10:00", dstOffset: "+10:00"},
+"Pacific/Rarotonga":{ offset: "−10:00", dstOffset: "−10:00"},
+"Pacific/Saipan":{ offset: "+10:00", dstOffset: "+10:00"},
+"Pacific/Samoa":{ offset: "−11:00", dstOffset: "−11:00"},
+"Pacific/Tahiti":{ offset: "−10:00", dstOffset: "−10:00"},
+"Pacific/Tarawa":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Tongatapu":{ offset: "+13:00", dstOffset: "+13:00"},
+"Pacific/Truk":{ offset: "+10:00", dstOffset: "+10:00"},
+"Pacific/Wake":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Wallis":{ offset: "+12:00", dstOffset: "+12:00"},
+"Pacific/Yap":{ offset: "+10:00", dstOffset: "+10:00"},
+"Poland":{ offset: "+01:00", dstOffset: "+02:00"},
+"Portugal":{ offset: "+00:00", dstOffset: "+01:00"},
+"PRC":{ offset: "+08:00", dstOffset: "+08:00"},
+"ROC":{ offset: "+08:00", dstOffset: "+08:00"},
+"ROK":{ offset: "+09:00", dstOffset: "+09:00"},
+"Singapore":{ offset: "+08:00", dstOffset: "+08:00"},
+"Turkey":{ offset: "+02:00", dstOffset: "+03:00"},
+"UCT":{ offset: "+00:00", dstOffset: "+00:00"},
+"Universal":{ offset: "+00:00", dstOffset: "+00:00"},
+"US/Alaska":{ offset: "−09:00", dstOffset: "−08:00"},
+"US/Aleutian":{ offset: "−10:00", dstOffset: "−09:00"},
+"US/Arizona":{ offset: "−07:00", dstOffset: "−07:00"},
+"US/Central":{ offset: "−06:00", dstOffset: "−05:00"},
+"US/Eastern":{ offset: "−05:00", dstOffset: "−04:00"},
+"US/East-Indiana":{ offset: "−05:00", dstOffset: "−04:00"},
+"US/Hawaii":{ offset: "−10:00", dstOffset: "−10:00"},
+"US/Indiana-Starke":{ offset: "−06:00", dstOffset: "−05:00"},
+"US/Michigan":{ offset: "−05:00", dstOffset: "−04:00"},
+"US/Mountain":{ offset: "−07:00", dstOffset: "−06:00"},
+"US/Pacific":{ offset: "−08:00", dstOffset: "−07:00"},
+"US/Samoa":{ offset: "−11:00", dstOffset: "−11:00"},
+"UTC":{ offset: "+00:00", dstOffset: "+00:00"},
+"W-SU":{ offset: "+03:00", dstOffset: "+03:00"},
+"Zulu":{ offset: "+00:00", dstOffset: "+00:00"}
+}
+arguments.sharedStruct=ts;
+</cfscript>
+
 </cffunction>
 
 

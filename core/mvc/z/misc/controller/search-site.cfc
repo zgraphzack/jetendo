@@ -851,8 +851,6 @@ search sql generator has to be able to search on child group data for paging to 
 	ss=StructNew();
 	// required
 	form.searchtext=trim(application.zcore.functions.zso(form, 'searchtext'));
-	searchTextOriginal=form.searchtext;
-	
 	form.searchtext=application.zcore.functions.zCleanSearchText(form.searchtext,true);
 	if(len(form.searchtext) LTE 2){
 		application.zcore.status.setStatus(request.zsid,"The search searchText must be 3 or more characters.",form);
@@ -860,9 +858,13 @@ search sql generator has to be able to search on child group data for paging to 
 			application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#request.zsid#");
 		}
 	}
-	form.zsearchtexthighlight=form.searchtext;
+	</cfscript>
 	
-	searchTextReg=rereplace(trim(form.searchtext),"[^A-Za-z0-9[[:white:]]]*",".","ALL");
+	<cfscript>
+	form.zsearchtexthighlight=form.searchtext;
+	searchTextOriginal=rereplace(replace(form.searchtext, '+', ' ', 'all'), '\s', ' ', 'all');
+	
+	searchTextReg=rereplace(trim(form.searchtext),"[^A-Za-z0-9\s]*",".","ALL");
 	searchTextOReg=rereplace(trim(searchTextOriginal),"[^A-Za-z0-9 ]*",".","ALL");
 	</cfscript>
 	<cfif len(form.searchtext) GT 2>
@@ -956,7 +958,7 @@ search sql generator has to be able to search on child group data for paging to 
 				continue;
 			}
 		}	
-		</cfscript>
+		</cfscript> 
 		<cfif application.zcore.app.siteHasApp("content")>
 			<cfsavecontent variable="db.sql">
 			SELECT count(content_id) as count

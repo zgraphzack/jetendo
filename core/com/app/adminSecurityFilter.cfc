@@ -54,6 +54,10 @@
 		ms["Listing Search Filter"]={ parent:'Listings', label:chr(9)&"Listing Search Filter"};
 		ms["Widgets For Other Sites"]={ parent:'Listings', label:chr(9)&"Widgets For Other Sites"};
 	}
+	if(application.zcore.app.structHasApp(ss, "event")){
+		ms["Events"]={ parent:'', label:"Events"};
+		ms["Manage Events"]={ parent:'Events', label:chr(9)&"Manage Events"}; 
+	}
 
 	if(application.zcore.app.structHasApp(ss, "rental")){
 		ms["Rentals"]={ parent:'', label:"Rentals"};
@@ -78,8 +82,10 @@
 		ms["Reservation Types"]={ parent:'reservation', label:chr(9)&"Reservation Types"};
 	}
 	if(application.zcore.app.structHasApp(ss, "event")){
-		ms["events"]={ parent:'', label:"Events"};
-		ms["Manage Events"]={ parent:'events', label:chr(9)&"Manage Events"};
+		ms["Events"]={ parent:'', label:"Events"};
+		ms["Manage Events"]={ parent:'Events', label:chr(9)&"Manage Events"};
+		ms["Manage Event Calendars"]={ parent:'Events', label:chr(9)&"Manage Event Calendars"};
+		ms["Manage Event Categories"]={ parent:'Events', label:chr(9)&"Manage Event Categories"};
 	}
 
 	ms["Users"]={ parent:'', label:"Users"};

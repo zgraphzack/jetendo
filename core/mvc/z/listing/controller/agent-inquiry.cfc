@@ -117,6 +117,7 @@ agentCom.displayAgentInquiryForm(user_id, user_id_siteIdType);
 	rs={};
 	myForm=structnew(); 
 	form.inquiries_spam=0;
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', false, 0); 
 	form.user_id=application.zcore.functions.zso(form, 'user_id');
 	form.user_id_siteIdType=application.zcore.functions.zso(form, 'user_id_siteIdType');
 	if(form.user_id_siteIdType NEQ 1 and form.user_id_siteIdType NEQ 2){
@@ -124,7 +125,6 @@ agentCom.displayAgentInquiryForm(user_id, user_id_siteIdType);
 		application.zcore.functions.zRedirect("/z/misc/inquiry/index?modalpopforced=#form.modalpopforced#&zsid=#Request.zsid#");
 	}
 	currentSiteId=application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
-	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', false, 0); 
 	if(form.modalpopforced EQ 1){
 		if(application.zcore.functions.zso(form, 'js3811') NEQ "j219"){
 			form.inquiries_spam=1; 

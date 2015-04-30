@@ -2,6 +2,7 @@
 <cffunction name="javascriptHeadCode" localmode="modern" returntype="string" output="no">
 	<cfargument name="dynamicContent" type="string" required="yes">
 	<cfsavecontent variable="output">
+	<meta name="format-detection" content="telephone=no">
 	<script src="/z/javascript/jetendo-init.js" type="text/javascript"></script>
 	<script type="text/javascript">/* <![CDATA[ */
 	#arguments.dynamicContent#

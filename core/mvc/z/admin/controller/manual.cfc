@@ -441,6 +441,20 @@ zdoc css style documentation
 		arrayAppend(arrS, { id:"___9.3.1", url:"/wordpress-integration.html", title:"Wordpress Integration with SSI and Proxy"});
 		arrayAppend(arrS, { id:"__9.4", url:"/security.html", title:"Security"});
 	}
+
+	if(showAll or application.zcore.app.siteHasApp("event")){
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Events")){
+			arrayAppend(arrS, { id:"_10", url:"/events.html", title:"Events"});
+		}
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Events")){
+			arrayAppend(arrS, { id:"__10.1", url:"/manage-events.html", title:"Manage Events"});
+			arrayAppend(arrS, { id:"__10.2", url:"/add-edit-event.html", title:"Add/Edit Event"});
+			arrayAppend(arrS, { id:"__10.3", url:"/manage-event-calendars.html", title:"Manage Event Calendars"});
+			arrayAppend(arrS, { id:"__10.4", url:"/add-edit-event.html", title:"Add/Edit Event Calendar"});
+			arrayAppend(arrS, { id:"__10.5", url:"/manage-event-categories.html", title:"Manage Event Categories"});
+			arrayAppend(arrS, { id:"__10.6", url:"/add-edit-event.html", title:"Add/Edit Event Category"});
+		} 
+	}
 	return arrS;
 	</cfscript>
 </cffunction>

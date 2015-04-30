@@ -24,6 +24,7 @@
 	</cfscript>
 </cffunction>
 
+
 <!--- application.zcore.functions.zMarkDeleted("table", { table_id: form.table_id }, request.zos.zcoreDatasource); --->
 <cffunction name="zMarkDeleted" localmode="modern" returntype="any" output="true">
 	<cfargument name="tableName" type="string" required="yes">
@@ -1343,6 +1344,38 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 	}
 	return arguments.rs;
 	</cfscript>
+</cffunction>
+
+
+<!--- application.zcore.functions.zCreateSiteIdPrimaryKeyTrigger("jetendo", "table", "table_id"); --->
+<cffunction name="zCreateSiteIdPrimaryKeyTrigger" localmode="modern">
+	<cfargument name="datasource" type="string" required="yes">
+	<cfargument name="table" type="string" required="yes">
+	<cfargument name="primaryKeyFieldName" type="string" required="yes">
+	<cfscript>
+	db=request.zos.noVerifyQueryObject;
+
+	db.sql="DROP TRIGGER /*!50032 IF EXISTS */ `"&arguments.datasource&"`.`#arguments.table#_auto_inc`";
+	db.execute("q");
+	db.sql="CREATE TRIGGER `"&arguments.datasource&"`.`#arguments.table#_auto_inc` BEFORE INSERT ON `#arguments.table#` 
+	    FOR EACH ROW BEGIN
+		IF (@zDisableTriggers IS NULL) THEN
+			IF (NEW.`#arguments.primaryKeyFieldName#` > 0) THEN
+				SET @zLastInsertId = NEW.`#arguments.primaryKeyFieldName#`;
+			ELSE
+				SET @zLastInsertId=(
+					SELECT IFNULL(
+					(MAX(`#arguments.primaryKeyFieldName#`) - (MAX(`#arguments.primaryKeyFieldName#`) MOD @@auto_increment_increment))+@@auto_increment_increment+(@@auto_increment_offset-1), @@auto_increment_offset)  
+					FROM `#arguments.table#` 
+					WHERE `#arguments.table#`.site_id = NEW.site_id
+				);
+				SET NEW.`#arguments.primaryKeyFieldName#`=@zLastInsertId;
+			END IF;
+		END IF;
+	END";
+	db.execute("q");
+	</cfscript>
+	 
 </cffunction>
 
 </cfoutput>

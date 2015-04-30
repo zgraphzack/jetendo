@@ -1934,7 +1934,7 @@ this.app_id=10;
 		authorLabel=qArticle.user_username;
 	}
 	</cfscript>
-	<span class="zblog-author" style="font-size:100%; font-weight:700; clear:both; ">Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
+	<div class="zblog-author" style="font-size:100%; font-weight:700; clear:both; ">Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
 	<cfset curFeedLink=application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url')> 
 	<cfif qArticle.user_googleplus_url NEQ "" or qArticle.user_twitter_url NEQ "" or qArticle.user_facebook_url NEQ "">
 		&nbsp; Follow me: 
@@ -1963,8 +1963,8 @@ this.app_id=10;
 			<cfif qArticle.blog_hide_time EQ 0 and qArticle.blog_event EQ 1> to #timeformat(qArticle.blog_end_datetime, "h:mmtt")# </cfif>
 		</cfif>
 	</cfif>
-	</span></span><br />
-	<hr />
+	</span><br />
+	<hr /></div>
 	
 	<cfsavecontent variable="theImageOutputHTML">
 	<cfscript> 
