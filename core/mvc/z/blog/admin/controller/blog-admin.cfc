@@ -1011,6 +1011,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	}
 	
 	uniqueChanged=false;
+	oldURL="";
 	//if(application.zcore.user.checkSiteAccess()){
 		if((structkeyexists(form,'blog_category_id') EQ false or form.blog_category_id EQ '') and application.zcore.functions.zso(form, 'blog_category_unique_name') NEQ ""){
 			uniqueChanged=true;
@@ -1025,6 +1026,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 				application.zcore.status.setStatus(request.zsid,"This blog category no longer exists.");
 				application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 			}
+			oldURL=qCheck.blog_category_unique_name;
 			if(qcheck.blog_category_unique_name NEQ form.blog_category_unique_name){
 				uniqueChanged=true;	
 			}
@@ -1115,10 +1117,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	application.zcore.functions.zInsert(ts);
 
 	if(uniqueChanged){
-		res=application.zcore.app.getAppCFC("blog").updateRewriteRules();	
-		if(res EQ false){
-			application.zcore.template.fail("Failed to process rewrite URLs for blog blog_category_id = 'blog_category_id' and blog_category_unique_name = #db.param(application.zcore.functions.zso(form,'blog_category_unique_name'))#.");
-		}
+		application.zcore.app.getAppCFC("blog").updateRewriteRuleBlogCategory(form.blog_category_id, oldURL); 
 	}
 	this.sortCat(0);
 	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'blog_category_site_option_app_id'));
@@ -1171,7 +1170,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 		site_id=#db.param(request.zos.globals.id)#";
 		qDelete=db.execute("qDelete");
 		this.sortCat(0);
-		res=application.zcore.app.getAppCFC("blog").updateRewriteRules();
+		application.zcore.functions.zDeleteUniqueRewriteRule(qList.blog_category_unique_name);
 		application.zcore.functions.zMenuClearCache({blogCategory=true});
 			application.zcore.status.setStatus(request.zsid, 'This category was deleted successfully.', form,false);
 			application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/categoryList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
@@ -1408,6 +1407,7 @@ if(arraylen(arrUser) EQ 1){
 		}
 	}
 	uniqueChanged=false;
+	oldURL='';
 	if(form.method EQ 'articleInsert' and application.zcore.functions.zso(form, 'blog_unique_name') NEQ ""){
 		uniqueChanged=true;
 	}
@@ -1422,6 +1422,7 @@ if(arraylen(arrUser) EQ 1){
 			application.zcore.status.setStatus(request.zsid,"This blog article no longer exists.");
 			application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 		}
+		oldURL=qCheck.blog_unique_name;
 		if(qcheck.blog_unique_name NEQ form.blog_unique_name){
 			uniqueChanged=true;	
 		}
@@ -1569,18 +1570,14 @@ if(arraylen(arrUser) EQ 1){
 	site_id=#db.param(request.zos.globals.id)#";
 	qT9=db.execute("qT9"); 
 	application.zcore.functions.zQueryToStruct(qT9, form);
-		form.site_id=request.zos.globals.id;
+	form.site_id=request.zos.globals.id;
 	ts=StructNew();
 	ts.struct=form;
 	ts.table="blog_version";
 	ts.datasource=request.zos.zcoreDatasource;
 	application.zcore.functions.zInsert(ts);
 	if(uniqueChanged){
-		res=application.zcore.app.getAppCFC("blog").updateRewriteRules();	
-		if(res EQ false){
-			application.zcore.template.fail("Failed to process rewrite URLs for blog blog_id = #db.param(form.blog_id)# and 
-blog_unique_name = #db.param(application.zcore.functions.zso(form, 'blog_unique_name'))#.");
-		}
+		application.zcore.app.getAppCFC("blog").updateRewriteRuleBlogArticle(form.blog_id, oldURL); 
 	}
 
 	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'blog_site_option_app_id'));
@@ -1649,7 +1646,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 		db.execute("q");
 			
 		application.zcore.imageLibraryCom.deleteImageLibraryId(qList.blog_image_library_id);
-		res=application.zcore.app.getAppCFC("blog").updateRewriteRules();
+		application.zcore.functions.zDeleteUniqueRewriteRule(qList.blog_unique_name);
 		application.zcore.functions.zMenuClearCache({blogArticle=true});
 			application.zcore.status.setStatus(request.zsid, 'Your story has been deleted.');
 			application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/articleList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
@@ -1924,6 +1921,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags", true); 
 	application.zcore.siteOptionCom.requireSectionEnabledSetId();
 	uniqueChanged=false;
+	oldURL="";
 	//if(application.zcore.user.checkSiteAccess()){
 		if(form.method EQ 'tagInsert' and application.zcore.functions.zso(form, 'blog_tag_unique_name') NEQ ""){
 			uniqueChanged=true;
@@ -1938,6 +1936,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 				application.zcore.status.setStatus(request.zsid,"This tag no longer exists.");
 				application.zcore.functions.zRedirect("/z/blog/admin/blog-admin/tagList?zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#");
 			}
+			oldURL=qCheck.blog_tag_unique_name;
 			if(qcheck.blog_tag_unique_name NEQ form.blog_tag_unique_name){
 				uniqueChanged=true;	
 			}
@@ -2050,10 +2049,7 @@ ts.struct=form;
 	form.site_id=request.zos.globals.id;
 	application.zcore.functions.zInsert(ts);
 	if(uniqueChanged){
-		res=application.zcore.app.getAppCFC("blog").updateRewriteRules();	
-		if(res EQ false){
-			application.zcore.template.fail("Failed to process rewrite URLs for blog blog_tag_id = 'blog_tag_id' and blog_tag_unique_name = #db.param(application.zcore.functions.zso(form, 'blog_tag_unique_name'))#.");
-		}
+		application.zcore.app.getAppCFC("blog").updateRewriteRuleBlogTag(form.blog_tag_id, oldURL); 
 	}
 	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'blog_tag_site_option_app_id'));
 	application.zcore.app.getAppCFC("blog").searchReindexBlogTags(form.blog_tag_id, false);
@@ -2184,31 +2180,30 @@ ts.struct=form;
 			request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qlist.blog_tag_saved_search_id);
 		}
 		application.zcore.siteOptionCom.deleteOptionAppId(qList.blog_tag_site_option_app_id);
+		application.zcore.functions.zDeleteUniqueRewriteRule(qList.blog_tag_unique_name);
 		application.zcore.app.getAppCFC("blog").searchIndexDeleteBlogTag(form.blog_tag_id);
-		</cfscript>
-		<cfsavecontent variable="db.sql">
-		delete from #db.table("blog_tag", request.zos.zcoreDatasource)# 
+		db.sql="delete from #db.table("blog_tag", request.zos.zcoreDatasource)# 
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
 		site_id=#db.param(request.zos.globals.id)# and 
-		blog_tag_deleted = #db.param(0)#
-		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
-		<cfsavecontent variable="db.sql">
-		delete from #db.table("blog_x_tag", request.zos.zcoreDatasource)# 
+		blog_tag_deleted = #db.param(0)#";
+		qDelete=db.execute("qDelete");
+		db.sql="delete from #db.table("blog_x_tag", request.zos.zcoreDatasource)# 
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
 		blog_x_tag_deleted = #db.param(0)# and 
-		site_id=#db.param(request.zos.globals.id)#
-		</cfsavecontent><cfscript>qDelete=db.execute("qDelete");
-			application.zcore.status.setStatus(request.zsid, 'Your tag has been deleted.');
-			application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
+		site_id=#db.param(request.zos.globals.id)#";
+		qDelete=db.execute("qDelete");
+		application.zcore.status.setStatus(request.zsid, 'Your tag has been deleted.');
+		application.zcore.functions.zRedirect('/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
 		</cfscript>
 	<cfelse>
-		<cfsavecontent variable="db.sql">
-		select *
+		<cfscript>
+		db.sql="select *
 		from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag
 		WHERE blog_tag_id = #db.param(form.blog_tag_id)# and 
 		site_id=#db.param(request.zos.globals.id)# and 
-		blog_tag_deleted = #db.param(0)#
-		</cfsavecontent><cfscript>qList=db.execute("qList");</cfscript>
+		blog_tag_deleted = #db.param(0)#";
+		qList=db.execute("qList");
+		</cfscript>
 		<h2>Are you sure you want to delete #qList.blog_tag_name#?<br />
 		<br />
 		<a href="/z/blog/admin/blog-admin/tagDelete?confirm=yes&amp;ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;blog_tag_id=#form.blog_tag_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="/z/blog/admin/blog-admin/tagList?ListTagId=#application.zcore.functions.zso(form, 'listTagId')#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">No</a></h2>

@@ -94,7 +94,8 @@
 		variables.queueSortStruct.where = variables.queueSortWhere&" and content_parent_id='#qcheck.content_parent_id#' and content_deleted='0' ";
 		variables.queueSortCom.init(variables.queueSortStruct);
 		variables.queueSortCom.sortAll();
-		res=application.zcore.app.getAppCFC("content").updateRewriteRules();
+		application.zcore.functions.zDeleteUniqueRewriteRule(qCheck.content_unique_name);
+
 		application.zcore.functions.zMenuClearCache({content=true});
 		application.zcore.app.getAppCFC("content").updateContentAccessCache(application.siteStruct[request.zos.globals.id]);
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -180,6 +181,7 @@
 	}
 	
 	uniqueChanged=false;
+	oldURL='';
 	if(form.method EQ 'insert' and application.zcore.functions.zso(form, 'content_unique_name') NEQ ""){
 		uniqueChanged=true;
 	}
@@ -193,6 +195,7 @@
 			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this content.',form,true);
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
 		}
+		oldURL=qCheck.content_unique_name;
 		if(application.zcore.user.checkSiteAccess() EQ false and qCheck.content_locked EQ 1){
 			form.content_locked=qCheck.content_locked;
 		}else{
@@ -355,7 +358,7 @@
 	
 	application.zcore.app.getAppCFC("content").searchReindexContent(form.content_id, false);
 	if(uniqueChanged){
-		res=application.zcore.app.getAppCFC("content").updateRewriteRules();	
+		res=application.zcore.app.getAppCFC("content").updateRewriteRuleContent(form.content_id, oldURL);	
 		if(res EQ false){
 			application.zcore.template.fail("Failed to process rewrite URLs for content_id = #db.param(form.content_id)# and 
 			content_unique_name = #db.param(application.zcore.functions.zso(form, 'content_unique_name'))#.");

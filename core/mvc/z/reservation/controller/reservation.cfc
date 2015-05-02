@@ -1095,16 +1095,16 @@ if(not rs.success){
 
 		row.reservationTypeValue="";
 		if(application.zcore.app.siteHasApp("event") and row.event_id NEQ 0){
-			db.sql="select event_id, event_summary from 
+			db.sql="select event_id, event_name from 
 			#db.table("event", request.zos.zcoreDatasource)# event
 			WHERE
 			event.site_id = #db.param(request.zos.globals.id)# and 
 			event.event_deleted=#db.param(0)# and 
 			event.event_id = #db.param(row.event_id)# 
-			ORDER BY event_summary ASC ";
+			ORDER BY event_name ASC ";
 			qEvent=db.execute("qEvent");
 			for(row2 in qEvent){
-				row.reservationTypeValue=row2.event_summary;
+				row.reservationTypeValue=row2.event_name;
 			}
 		}
 		if(row.site_x_option_group_set_id NEQ 0){

@@ -181,7 +181,7 @@
 		form.keyword=application.zcore.functions.zso(form, 'keyword');
 	}
 	if(application.zcore.app.siteHasApp("event")){
-		db.sql="select reservation.event_id, event_summary from 
+		db.sql="select reservation.event_id, event_name from 
 		(#db.table("reservation", request.zos.zcoreDatasource)# reservation, 
 		#db.table("event", request.zos.zcoreDatasource)# event)
 		WHERE reservation.site_id = #db.param(request.zos.globals.id)# and 
@@ -193,7 +193,7 @@
 			db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
 		}
 		db.sql&=" GROUP BY reservation.event_id
-		ORDER BY event_summary ASC ";
+		ORDER BY event_name ASC ";
 		qEvent=db.execute("qEvent"); 
 	}
 	db.sql="select site_x_option_group_set_title, site_x_option_group_set.site_x_option_group_set_id, site_option_group_name from 
@@ -278,7 +278,7 @@
 						selectStruct.name = "event_id";
 						selectStruct.size=1;
 						selectStruct.query=qEvent;
-						selectStruct.queryLabelField="event_summary";
+						selectStruct.queryLabelField="event_name";
 						selectStruct.queryValueField="event_id";
 						application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>
@@ -598,7 +598,7 @@
 	qType=db.execute("qType");
 
 	if(application.zcore.app.siteHasApp("event")){
-		db.sql="select reservation.event_id, event_summary from 
+		db.sql="select reservation.event_id, event_name from 
 		(#db.table("reservation", request.zos.zcoreDatasource)# reservation, 
 		#db.table("event", request.zos.zcoreDatasource)# event)
 		WHERE reservation.site_id = #db.param(request.zos.globals.id)# and 
@@ -610,7 +610,7 @@
 			db.sql&=" and reservation.reservation_type_id = #db.param(form.reservation_type_id)# ";
 		}
 		db.sql&=" GROUP BY reservation.event_id
-		ORDER BY event_summary ASC ";
+		ORDER BY event_name ASC ";
 		qEvent=db.execute("qEvent"); 
 	}
 	db.sql="select site_x_option_group_set_title, site_x_option_group_set.site_x_option_group_set_id, site_option_group_name from 
@@ -728,7 +728,7 @@
 						selectStruct.name = "event_id";
 						selectStruct.size=1;
 						selectStruct.query=qEvent;
-						selectStruct.queryLabelField="event_summary";
+						selectStruct.queryLabelField="event_name";
 						selectStruct.queryValueField="event_id";
 						application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript></td>

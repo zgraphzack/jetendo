@@ -622,9 +622,11 @@ var zGalleryReloadTimeoutId=0;
 				};
 			}
 		}
+		//reloadDetailGallery();
+		/*
 		for(var i=0;i<a.length;i++){
 			$(a[i]).show().galleryView(myObj);
-		}
+		}*/
 	}
 	function reloadDetailGalleryTimeout(){
 		clearTimeout(zGalleryReloadTimeoutId);
@@ -659,7 +661,7 @@ var zGalleryReloadTimeoutId=0;
 		}
 	}
 	zArrLoadFunctions.push({functionName:loadDetailGallery});
-	zArrLoadFunctions.push({functionName:reloadDetailGalleryTimeout});
+	//zArrLoadFunctions.push({functionName:reloadDetailGalleryTimeout});
 	zArrResizeFunctions.push({functionName:reloadDetailGalleryTimeout});
 
 	window.zLoadAndCropImages=zLoadAndCropImages;

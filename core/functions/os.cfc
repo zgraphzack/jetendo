@@ -2597,5 +2597,17 @@ writeoutput(rs.output);
 	return siteStruct;
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="zDeleteUniqueRewriteRule" localmode="modern" access="public">
+	<cfargument name="uniqueURL" type="string" required="yes">
+	<cfscript>
+	if(arguments.uniqueURL NEQ ""){
+		s=application.sitestruct[request.zos.globals.id];
+		structdelete(s.urlRewriteStruct.uniqueURLStruct, trim(arguments.uniqueURL));
+	}
+	</cfscript>
+
+</cffunction>
 </cfoutput>
 </cfcomponent>

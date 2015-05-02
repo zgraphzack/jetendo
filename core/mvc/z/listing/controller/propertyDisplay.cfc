@@ -1105,7 +1105,7 @@ this.isPropertyDisplayCom=true;
 			<div id="m#arguments.idx.listing_id#" class="zls-list-grid-imagediv"><a href="#propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>> #application.zcore.functions.zLoadAndCropImage({id:"m#arguments.idx.listing_id#_img",width:iwidth,height:iheight, url:arguments.idx.photo1, style:"", canvasStyle:"", crop:true})# 
 				</a></div>
 		</cfif>
-		<div style="width:100%; height:110px; line-height:16px; padding-top:5px; float:left;">
+		<div class="zls-grid-summary-text" style="">
 		<div class="zls-buttonlink" style="float:right; position:relative; margin-top:-33px;"> <a href="#request.zos.currentHostName##propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>View</a> </div>
 		<cfif arguments.idx.listing_price NEQ "" and arguments.idx.listing_price NEQ "0">
 			<div style="font-weight:700; width:100%; font-size:110%;">

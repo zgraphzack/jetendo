@@ -1120,7 +1120,89 @@ this.app_id=10;
 </cffunction>
 
 
+<cffunction name="updateRewriteRuleBlogTag" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
 
+	db.sql="SELECT * from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	blog_tag_unique_name<>#db.param('')# and 
+	blog_tag_deleted = #db.param(0)# and 
+	blog_tag_id = #db.param(arguments.id)#";
+	qF=db.execute("qF");
+	if(qF.recordcount EQ 0){
+		structdelete(s.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/blog/blog/tagTemplate";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/blog/blog/tagTemplate";
+		t9.urlStruct.blog_tag_id=qF.blog_tag_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.blog_tag_unique_name)]=t9;
+	} 
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="updateRewriteRuleBlogCategory" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
+
+	db.sql="SELECT * from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	blog_category_unique_name<>#db.param('')# and 
+	blog_category_deleted = #db.param(0)# and 
+	blog_category_id = #db.param(arguments.id)#";
+	qF=db.execute("qF");
+	if(qF.recordcount EQ 0){
+		structdelete(s.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/blog/blog/categoryTemplate";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/blog/blog/categoryTemplate";
+		t9.urlStruct.blog_category_id=qF.blog_category_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.blog_category_unique_name)]=t9;
+	} 
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="updateRewriteRuleBlogArticle" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
+
+	db.sql="SELECT * from #db.table("blog", request.zos.zcoreDatasource)# blog 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	blog_unique_name<>#db.param('')# and 
+	blog_deleted = #db.param(0)# and 
+	blog_id = #db.param(arguments.id)#";
+	qF=db.execute("qF");
+	if(qF.recordcount EQ 0){
+		structdelete(s.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/blog/blog/articleTemplate";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/blog/blog/articleTemplate";
+		t9.urlStruct.blog_id=qF.blog_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.blog_unique_name)]=t9;
+	} 
+	return true;
+	</cfscript>
+</cffunction>
 
 <cffunction name="updateRewriteRules" localmode="modern" output="no" access="public" returntype="boolean">
 	<cfscript>

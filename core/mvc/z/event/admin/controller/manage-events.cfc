@@ -19,11 +19,15 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript> 
+		application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.event_image_library_id);
+
 		db.sql="DELETE FROM #db.table("event_x_category", request.zos.zcoreDatasource)#  
 		WHERE event_id= #db.param(application.zcore.functions.zso(form, 'event_id'))# and 
 		event_x_category_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
+
+		application.zcore.functions.zDeleteUniqueRewriteRule(qCheck.event_unique_url);
 
 		db.sql="DELETE FROM #db.table("event", request.zos.zcoreDatasource)#  
 		WHERE event_id= #db.param(application.zcore.functions.zso(form, 'event_id'))# and 
@@ -32,13 +36,14 @@
 		q=db.execute("q");
 
 
+
 		application.zcore.status.setStatus(Request.zsid, 'Event deleted');
 		application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
 		</cfscript>
 	<cfelse>
 		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this Event?<br />
 			<br />
-			#qCheck.event_summary#<br />
+			#qCheck.event_name#<br />
 			<br />
 			<a href="/z/event/admin/manage-events/delete?confirm=1&amp;event_id=#form.event_id#">Yes</a>&nbsp;&nbsp;&nbsp;
 			<a href="/z/event/admin/manage-events/index">No</a> 
@@ -54,10 +59,10 @@
 
 <cffunction name="update" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	db=request.zos.queryObject;
 	var ts={};
 	var result=0;
-	variables.init();
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Events", true);	
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events", true);	
 	form.site_id = request.zos.globals.id;
 	ts.event_name.required = true;
 	ts.event_start_datetime_date.required = true;
@@ -96,6 +101,29 @@
 	}
 	form.event_updated_datetime=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
  
+
+
+	uniqueChanged=false;
+	oldURL='';
+	if(form.method EQ 'insert' and application.zcore.functions.zso(form, 'event_unique_url') NEQ ""){
+		uniqueChanged=true;
+	}
+	if(form.method EQ 'update'){
+		db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# 
+		WHERE event_id = #db.param(form.event_id)# and 
+		event_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)#";
+		qCheck=db.execute("qCheck");
+		if(qCheck.recordcount EQ 0){
+			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this event.',form,true);
+			application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+		}
+		oldURL=qCheck.event_unique_url;
+		if(structkeyexists(form, 'event_unique_url') and qcheck.event_unique_url NEQ form.event_unique_url){
+			uniqueChanged=true;	
+		}
+	}
+
 	ts=StructNew();
 	ts.table='event';
 	ts.datasource=request.zos.zcoreDatasource;
@@ -107,8 +135,8 @@
 			application.zcore.functions.zRedirect('/z/event/admin/manage-events/add?zsid=#request.zsid#');
 		}else{
 			application.zcore.status.setStatus(request.zsid, 'Event saved.');
-			variables.queueSortCom.sortAll();
 		}
+
 	}else{
 		if(application.zcore.functions.zUpdate(ts) EQ false){
 			application.zcore.status.setStatus(request.zsid, 'Failed to save Event.',form,true);
@@ -118,6 +146,15 @@
 		}
 		
 	} 
+
+	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'site_option_app_id'));
+	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'event_image_library_id'));
+
+	if(uniqueChanged){
+		application.zcore.app.getAppCFC("event").updateRewriteRuleEvent(form.event_id, oldURL);	
+	}
+	application.zcore.app.getAppCFC("event").searchReindexEvent(form.event_id, false);
+
 	application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
 	</cfscript>
 </cffunction>
@@ -137,6 +174,11 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Events");	
 	if(application.zcore.functions.zso(form,'event_id') EQ ''){
 		form.event_id = -1;
+	}
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
+	if(form.modalpopforced EQ 1){
+		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+		application.zcore.functions.zSetModalWindow();
 	}
 	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
@@ -158,17 +200,45 @@
 		</cfif> Event</h2>
 	<form action="/z/event/admin/manage-events/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_id=#form.event_id#" method="post">
 		<input name="event_uid" type="hidden" value="#htmleditformat(application.zcore.functions.zso(form, 'event_uid'))#" />
-		<table style="width:100%;" class="table-list">
+		<table style="width:100%;" class="table-list">  
+			<tr>
+				<th style="width:1%;">&nbsp;</th>
+				<td><button type="submit" name="submitForm">Save</button>
+					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+			</tr>
+			<tr>
+				<th>Calendar</th>
+				<td>
+					<cfscript>
+					db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
+					site_id = #db.param(request.zos.globals.id)# and 
+					event_calendar_deleted=#db.param(0)# 
+					ORDER BY event_calendar_name ASC";
+					qCalendar=db.execute("qCalendar"); 
+					ts = StructNew();
+					ts.name = "event_calendar_id"; 
+					ts.size = 1; 
+					ts.multiple = true; 
+					ts.query = qCalendar;
+					ts.queryLabelField = "event_calendar_name";
+					ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
+					ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
+					ts.queryValueField = "event_calendar_id"; 
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id', true, 0));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript>
+				</td>
+			</tr>  
 			<tr>
 				<th>Name</th>
-				<td><input type="text" name="event_summary" value="#htmleditformat(form.event_summary)#" /></td>
+				<td><input type="text" name="event_name" style="width:500px;" value="#htmleditformat(form.event_name)#" /></td>
 			</tr>  
 			<tr>
 				<th>Category</th>
 				<td>
 					<cfscript>
 					db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# WHERE 
-					site_id = #db.param(0)# and 
+					site_id = #db.param(request.zos.globals.id)# and 
 					event_category_deleted=#db.param(0)# 
 					ORDER BY event_category_name ASC";
 					qCategory=db.execute("qCategory");
@@ -242,19 +312,19 @@
 			</tr> 
 			<tr>
 				<th>Location Name</th>
-				<td><input type="text" name="event_location" value="#htmleditformat(form.event_location)#" /></td>
+				<td><input type="text" name="event_location" style="width:500px;" value="#htmleditformat(form.event_location)#" /></td>
 			</tr> 
 			<tr>
 				<th>Address</th>
-				<td><input type="text" name="event_address" value="#htmleditformat(form.event_address)#" /></td>
+				<td><input type="text" name="event_address" style="width:500px;" value="#htmleditformat(form.event_address)#" /></td>
 			</tr> 
 			<tr>
 				<th>Address 2</th>
-				<td><input type="text" name="event_address2" value="#htmleditformat(form.event_address2)#" /></td>
+				<td><input type="text" name="event_address2" style="width:500px;" value="#htmleditformat(form.event_address2)#" /></td>
 			</tr> 
 			<tr>
 				<th>City</th>
-				<td><input type="text" name="event_city" value="#htmleditformat(form.event_city)#" /></td>
+				<td><input type="text" name="event_city" style="width:500px;" value="#htmleditformat(form.event_city)#" /></td>
 			</tr> 
 			<tr>
 				<th>State</th>
@@ -270,7 +340,7 @@
 			</tr> 
 			<tr>
 				<th>Web Site URL</th>
-				<td><input type="text" name="event_website" value="#htmleditformat(form.event_website)#" /></td>
+				<td><input type="text" name="event_website" style="width:500px;" value="#htmleditformat(form.event_website)#" /></td>
 			</tr> 
 			<tr>
 				<th>File 1</th>
@@ -283,7 +353,7 @@
 			</tr> 
 			<tr>
 				<th>File 1 Label</th>
-				<td><input type="text" name="event_file1label" value="#htmleditformat(form.event_file1label)#" /></td>
+				<td><input type="text" name="event_file1label" style="width:500px;" value="#htmleditformat(form.event_file1label)#" /></td>
 			</tr> 
 			<tr>
 				<th>File 2</th>
@@ -296,7 +366,7 @@
 			</tr> 
 			<tr>
 				<th>File 2 Label</th>
-				<td><input type="text" name="event_file2label" value="#htmleditformat(form.event_file2label)#" /></td>
+				<td><input type="text" name="event_file2label" style="width:500px;" value="#htmleditformat(form.event_file2label)#" /></td>
 			</tr> 
 			<tr>
 				<th>Featured Event</th>
@@ -308,6 +378,9 @@
 				<input type="hidden" name="event_recur_ical_rules" id="event_recur_ical_rules" value="#htmleditformat(form.event_recur_ical_rules)#" />
 				</td>
 			</tr> 
+			<!--- 
+fileName=application.zcore.functions.zUploadFile("filepath", request.zos.globals.privateHomedir&"zupload/user/");
+			 --->
 			<!--- 
 			http://www.farbeyondcode.com.127.0.0.2.xip.io/z/event/admin/recurring-event/index?event_start_datetime=04/30/2015%20&event_end_datetime=06/17/2015%20&event_recur_ical_rules=&ztv=0.33506121183745563
 			 --->
@@ -332,6 +405,29 @@
 			}
 			</script>
 			<tr>
+				<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Photos","member.event.edit event_image_library_id")#</th>
+				<td>
+					<cfscript>
+					ts=structnew();
+					ts.name="event_image_library_id";
+					ts.value=form.event_image_library_id;
+					application.zcore.imageLibraryCom.getLibraryForm(ts);
+					</cfscript>
+				</td>
+			</tr>
+
+			<tr>
+				<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Photo Layout","member.event.edit event_image_library_layout")#</th>
+				<td>
+					<cfscript>
+					ts=structnew();
+					ts.name="event_image_library_layout";
+					ts.value=form.event_image_library_layout;
+					application.zcore.imageLibraryCom.getLayoutTypeForm(ts);
+					</cfscript>
+				</td>
+			</tr>
+			<tr>
 				<th>Unique URL</th>
 				<td><input type="text" name="event_unique_url" value="#htmleditformat(form.event_unique_url)#" /></td>
 			</tr> 
@@ -354,7 +450,7 @@ Map Coordinates	Map Location Picker
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.location.href = '/z/event/admin/manage-events/index';">Cancel</button></td>
+					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
 			</tr>
 		</table>
 	</form>
@@ -388,10 +484,10 @@ Map Coordinates	Map Location Picker
 		<cfscript>
 		for(row in qList){
 			echo('<tr>
-				<td>#row.event_summary#</td>
+				<td>#row.event_name#</td>
 				<td>
 					<a href="#eventCom.getEventURL(row)#" target="_blank">View</a> | 
-					<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#">Edit</a> | 
+					<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
 					<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
 				</td>
 			</tr>');

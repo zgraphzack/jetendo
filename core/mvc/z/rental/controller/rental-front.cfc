@@ -68,7 +68,7 @@ ORDER BY rate_period DESC, rate_sort asc
 <cfset n2++>
 <tr>
 <!--- <td style="width:15px; <cfif n2 MOD 2 EQ 0>background-color:##F3F3F3;</cfif>">#n2#</td> --->
-<td style="width:300px;<cfif n2 MOD 2 EQ 0>background-color:##F3F3F3;</cfif>"><cfif rate_event_name NEQ ''>#rate_event_name#<br /></cfif>
+<td style="width:300px;<cfif n2 MOD 2 EQ 0>background-color:##F3F3F3;</cfif>"><cfif rate_event_summary NEQ ''>#rate_event_summary#<br /></cfif>
 <cfscript>
 if(rate_coupon_type EQ 1){
 	// day off
@@ -93,7 +93,7 @@ if(rate_coupon_type EQ 1){
 <cfset n2++>
 <tr>
 <!--- <td style="width:15px;<cfif n2 MOD 2 EQ 0>background-color:##F3F3F3;</cfif>">#n2#</td> --->
-<td style="width:300px; <cfif n2 MOD 2 EQ 0>background-color:##F3F3F3;</cfif>"><cfif rate_event_name NEQ ''>#rate_event_name#<br /></cfif>
+<td style="width:300px; <cfif n2 MOD 2 EQ 0>background-color:##F3F3F3;</cfif>"><cfif rate_event_summary NEQ ''>#rate_event_summary#<br /></cfif>
 <cfscript>
 if(rate_coupon_type EQ 1){
 	// day off

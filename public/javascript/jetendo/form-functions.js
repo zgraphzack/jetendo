@@ -1438,6 +1438,105 @@ var zLastAjaxVarName=""; */
 		});
 	});
 
+
+
+
+	function zCalculateTableCells(table){
+		var max = 0;
+		for(var i=0;i<table.rows.length;i++) {
+			if(max < table.rows[i].cells.length){
+				max = table.rows[i].cells.length;
+			}
+		}
+		return max;
+	}
+	var zRowBeingEdited=false;
+	var zRowEditIndex=0;
+	function zTableRecordEdit(obj){
+		zShowModalStandard(obj.href, 2000,2000, true, true);
+		zRowEditIndex++;
+		window.location.href="#zEditTableRecord"+zRowEditIndex;
+		var i=0;
+		while(true){
+			i++;
+			if(obj.tagName.toLowerCase() == 'tr'){ 
+				break;
+			}
+			obj=obj.parentNode;
+			if(i > 50){
+				alert('infinite loop. invalid table html structure');
+				return false;
+			}
+		}
+		zRowBeingEdited=obj;
+	}
+	function zReplaceTableRecordRow(html){
+		$(zRowBeingEdited).html(html);
+	}
+	zArrDeferredFunctions.push(function(){
+		$(window).bind("hashchange", function() {
+
+			if (window.location.hash.indexOf('zEditTableRecord') == -1){
+				zCloseModal();
+			}else{
+
+			}
+		});
+	});
+	function zDeleteTableRecordRow(obj, deleteLink){
+		var tr, table;
+		var i=0;
+		while(true){
+			i++;
+			if(obj.tagName.toLowerCase() == 'tr'){
+				tr=obj;
+			}else if(obj.tagName.toLowerCase() == 'table'){
+				table=obj;
+				break;
+			}
+			obj=obj.parentNode;
+			if(i > 50){
+				alert('infinite loop. invalid table html structure');
+				return false;
+			}
+		}
+		var cellCount=zCalculateTableCells(table);
+
+		$("td", tr).css("border-top", "2px solid #900");
+		$("td", tr).css("border-bottom", "2px solid #900");
+		$("td", tr).css("background-color", "#FFF0F0");
+		var r=confirm("Are you sure you want to delete this record?");
+		$("td", tr).css("border-top", "0px solid #CCC");
+		$("td", tr).css("border-bottom", "1px solid #CCC");
+		$("td", tr).css("background-color", "inherit");
+		if(r){
+			var obj={
+				id:"ajaxDeleteTableRecord",
+				method:"get",
+				ignoreOldRequests:true,
+				callback:function(r){
+					r=eval('('+r+')');
+					if(r.success){
+						$(tr).html('<td class="zDeletedRow" colspan="'+cellCount+'">Row Deleted</td>');
+					}else{
+						alert('Failed to delete the record. Error: '+r.errorMessage);
+					}
+
+				},
+				errorCallback:function(r){
+					alert('Failed to delete the record. Unknown error');
+				},
+				url:deleteLink
+			}; 
+			zAjax(obj);
+		}
+		return false;
+		
+	}
+	window.zCalculateTableCells=zCalculateTableCells;
+	window.zTableRecordEdit=zTableRecordEdit;
+	window.zReplaceTableRecordRow=zReplaceTableRecordRow;
+	window.zDeleteTableRecordRow=zDeleteTableRecordRow;
 	window.zUpdateImageLibraryCount=zUpdateImageLibraryCount;
 	window.ajaxSaveSorting=ajaxSaveSorting;
 	window.ajaxSaveImage=ajaxSaveImage;

@@ -19,6 +19,8 @@
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript> 
+		application.zcore.functions.zDeleteUniqueRewriteRule(qCheck.event_category_unique_url);
+
 		db.sql="DELETE FROM #db.table("event_category", request.zos.zcoreDatasource)#  
 		WHERE event_category_id= #db.param(application.zcore.functions.zso(form, 'event_category_id'))# and 
 		event_category_deleted = #db.param(0)# and 
@@ -54,8 +56,8 @@
 <cffunction name="update" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var ts={};
+	db=request.zos.queryObject;
 	var result=0;
-	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Event Categories", true);	
 	form.site_id = request.zos.globals.id;
 	ts.event_category_name.required = true;
@@ -68,6 +70,29 @@
 			application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/edit?event_category_id=#form.event_category_id#&zsid=#request.zsid#');
 		}
 	}
+
+
+	uniqueChanged=false;
+	oldURL='';
+	if(form.method EQ 'insert' and application.zcore.functions.zso(form, 'event_category_unique_url') NEQ ""){
+		uniqueChanged=true;
+	}
+	if(form.method EQ 'update'){
+		db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)# 
+		WHERE event_category_id = #db.param(form.event_category_id)# and 
+		event_category_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)#";
+		qCheck=db.execute("qCheck");
+		if(qCheck.recordcount EQ 0){
+			application.zcore.status.setStatus(request.zsid, 'You don''t have permission to edit this event category.',form,true);
+			application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
+		}
+		oldURL=qCheck.event_category_unique_url;
+		if(structkeyexists(form, 'event_category_unique_url') and qcheck.event_category_unique_url NEQ form.event_category_unique_url){
+			uniqueChanged=true;	
+		}
+	}
+
 	ts=StructNew();
 	ts.table='event_category';
 	ts.datasource=request.zos.zcoreDatasource;
@@ -79,7 +104,6 @@
 			application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/add?zsid=#request.zsid#');
 		}else{
 			application.zcore.status.setStatus(request.zsid, 'Event category saved.');
-			variables.queueSortCom.sortAll();
 		}
 	}else{
 		if(application.zcore.functions.zUpdate(ts) EQ false){
@@ -90,6 +114,11 @@
 		}
 		
 	} 
+	if(uniqueChanged){
+		application.zcore.app.getAppCFC("event").updateRewriteRuleCategory(form.event_category_id, oldURL);	
+	}
+	application.zcore.app.getAppCFC("event").searchReindexCategory(form.event_category_id, false);
+
 	application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
 	</cfscript>
 </cffunction>
@@ -110,6 +139,11 @@
 	if(application.zcore.functions.zso(form,'event_category_id') EQ ''){
 		form.event_category_id = -1;
 	}
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
+	if(form.modalpopforced EQ 1){
+		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+		application.zcore.functions.zSetModalWindow();
+	}
 	db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)# event_category 
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
 	event_category_deleted = #db.param(0)# and 
@@ -126,9 +160,14 @@
 			</cfscript>
 		<cfelse>
 			Edit
-		</cfif> Category</h2>
+		</cfif> Event Category</h2>
 	<form action="/z/event/admin/manage-event-category/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_category_id=#form.event_category_id#" method="post">
 		<table style="width:100%;" class="table-list">
+			<tr>
+				<th style="width:1%;">&nbsp;</th>
+				<td><button type="submit" name="submitForm">Save</button>
+					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+			</tr>
 			<tr>
 				<th>Name</th>
 				<td><input type="text" name="event_category_name" value="#htmleditformat(form.event_category_name)#" /></td>
@@ -153,7 +192,7 @@
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.location.href = '/z/event/admin/manage-event-category/index';">Cancel</button></td>
+					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
 			</tr>
 		</table>
 	</form>
@@ -172,9 +211,9 @@
 	eventCom=application.zcore.app.getAppCFC("event");
 	eventCom.getAdminNavMenu();
 	</cfscript>
-	<h2>Manage Categories</h2>
+	<h2>Manage Event Categories</h2>
 
-	<p><a href="/z/event/admin/manage-event-category/add">Add Category</a></p>
+	<p><a href="/z/event/admin/manage-event-category/add">Add Event Category</a></p>
 
 	<table class="table-list">
 		<tr>
@@ -187,7 +226,7 @@
 				<td>#row.event_category_name#</td>
 				<td>
 					<a href="#eventCom.getCategoryURL(row)#" target="_blank">View</a> | 
-					<a href="/z/event/admin/manage-event-category/edit?event_category_id=#row.event_category_id#">Edit</a> | 
+					<a href="/z/event/admin/manage-event-category/edit?event_category_id=#row.event_category_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
 					<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-category/delete?event_category_id=#row.event_category_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
 				</td>
 			</tr>');

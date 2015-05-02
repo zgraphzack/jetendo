@@ -67,12 +67,12 @@
 	<cfloop query="local.qquery">
 	<cfscript>
 		local.curDateLen=this.calculateEventLength(event_start_datetime,event_end_datetime, event_recur_datetime);
-		request.zos.template.settag("pagetitle","Event: "&event_summary);
-		request.zos.template.settag("title","Event: "&event_summary);
+		request.zos.template.settag("pagetitle","Event: "&event_name);
+		request.zos.template.settag("title","Event: "&event_name);
 		</cfscript>
 	<h3>
 	#local.curDateLen.string#<br />
-	<cfif event_summary NEQ "">Event: #event_summary#<br /></cfif>
+	<cfif event_name NEQ "">Event: #event_name#<br /></cfif>
 	<cfif event_description NEQ "">Description: #event_description#<br /></cfif>
 	<cfif event_location NEQ "">location: #event_location#<br /></cfif></h3>
 	</cfloop>
@@ -99,11 +99,11 @@
 	<cfloop query="local.qquery2">
 		<cfscript>
 		local.curDateLen=this.calculateEventLength(event_start_datetime,event_end_datetime, event_start_datetime);
-		request.zos.template.settag("pagetitle","Event: "&event_summary);
-		request.zos.template.settag("title","Event: "&event_summary);
+		request.zos.template.settag("pagetitle","Event: "&event_name);
+		request.zos.template.settag("title","Event: "&event_name);
 		</cfscript>
 		<h3>#local.curDateLen.string#<br />
-		<cfif event_summary NEQ "">Event: #event_summary#<br /></cfif>
+		<cfif event_name NEQ "">Event: #event_name#<br /></cfif>
 		<cfif event_description NEQ "">Description: #event_description#<br /></cfif>
 		<cfif event_location NEQ "">location: #event_location#<br /></cfif>
 		</h3>
@@ -179,18 +179,18 @@
 	</cfsavecontent>
 	<cfsavecontent variable="local.theHTML">
 	<!--- #local.curDateLen.string#<br />
-	<cfif event_summary NEQ "">Event: #event_summary#<br /></cfif>
+	<cfif event_name NEQ "">Event: #event_name#<br /></cfif>
 	<cfif event_description NEQ "">Description: #event_description#<br /></cfif>
 	<cfif event_location NEQ "">location: #event_location#<br /></cfif> --->
-	<div class="cd-4"><a href="/ical/ical-view.cfc?method=event&amp;event_id=#event_id#" title="#htmleditformat(event_summary&" | "&local.cTime)#"><span class="cd-5">#timeformat(local.curDateLen.date, 'h:mmtt')#</span> #event_summary#</a></div>
+	<div class="cd-4"><a href="/ical/ical-view.cfc?method=event&amp;event_id=#event_id#" title="#htmleditformat(event_name&" | "&local.cTime)#"><span class="cd-5">#timeformat(local.curDateLen.date, 'h:mmtt')#</span> #event_name#</a></div>
 	</cfsavecontent>
 	<cfscript>
 	
-	local.eventStruct[event_id]={dateHTML=local.dateHTML,html=local.theHTML, date=event_start_datetime, summary=event_summary&" | "&local.cTime};
+	local.eventStruct[event_id]={dateHTML=local.dateHTML,html=local.theHTML, date=event_start_datetime, summary=event_name&" | "&local.cTime};
 	local.dayCount=datediff("d", event_start_datetime, event_end_datetime);
 	if(local.dayCount GTE 1){
 		for(local.i3=1;local.i3 LTE local.dayCount;local.i3++){
-			local.eventStruct[event_id&"~"&local.i3]={ dateHTML=local.dateHTML, html=local.theHTML, date=dateadd("d", local.i3, event_start_datetime), summary=event_summary&" | "&local.cTime};
+			local.eventStruct[event_id&"~"&local.i3]={ dateHTML=local.dateHTML, html=local.theHTML, date=dateadd("d", local.i3, event_start_datetime), summary=event_name&" | "&local.cTime};
 		}
 	}
 	</cfscript>
@@ -236,17 +236,17 @@
 	    </div>
 	    </cfsavecontent>
 			<!--- #local.curDateLen.string#<br />
-	    <cfif event_summary NEQ "">Event: #event_summary#<br /></cfif>
+	    <cfif event_name NEQ "">Event: #event_name#<br /></cfif>
 	    <cfif event_description NEQ "">Description: #event_description#<br /></cfif>
 	    <cfif event_location NEQ "">location: #event_location#<br /></cfif> --->
 	    
 	    <!--- <div style="width:100%; float:left;"> --->
 		<cfsavecontent variable="local.theHTML">
-		<div class="cd-4"><a href="/ical/ical-view.cfc?method=eventRecur&amp;event_id=#event_id#&amp;event_recur_id=#event_recur_id#" title="#htmleditformat(event_summary&" | "&local.cTime)#"><span class="cd-5">#timeformat(local.curDateLen.date, 'h:mmtt')#</span> #event_summary#</a></div>
+		<div class="cd-4"><a href="/ical/ical-view.cfc?method=eventRecur&amp;event_id=#event_id#&amp;event_recur_id=#event_recur_id#" title="#htmleditformat(event_name&" | "&local.cTime)#"><span class="cd-5">#timeformat(local.curDateLen.date, 'h:mmtt')#</span> #event_name#</a></div>
 	    <!--- </div> --->
 	    </cfsavecontent>
 	    <cfscript>
-	    local.eventStruct[event_id&"_"&event_recur_id]={dateHTML=local.dateHTML,html=local.theHTML, date=event_recur_datetime, summary=event_summary&" | "&local.cTime};
+	    local.eventStruct[event_id&"_"&event_recur_id]={dateHTML=local.dateHTML,html=local.theHTML, date=event_recur_datetime, summary=event_name&" | "&local.cTime};
 	    </cfscript>
 	</cfif>
 	</cfloop>
@@ -437,11 +437,11 @@
 		}
 		</cfscript>
 		<cfsavecontent variable="local.theHTML2">
-		<cfif isDefined('local.qQuery2.event_start_datetime')> #lcase(timeformat(event_start_datetime,"h:mmtt"))#</cfif> #event_summary#
+		<cfif isDefined('local.qQuery2.event_start_datetime')> #lcase(timeformat(event_start_datetime,"h:mmtt"))#</cfif> #event_name#
 		</cfsavecontent>
 		<cfsavecontent variable="local.theHTML">
 		#local.curDateLen.string#<br />
-		<cfif event_summary NEQ ""><a href="/ical/ical-view.cfc?method=event&amp;event_id=#event_id#">Event: #event_summary#</a><br /></cfif>
+		<cfif event_name NEQ ""><a href="/ical/ical-view.cfc?method=event&amp;event_id=#event_id#">Event: #event_name#</a><br /></cfif>
 		<cfif event_description NEQ "">Description: #event_description#<br /></cfif>
 		<cfif event_location NEQ "">location: #event_location#<br /></cfif>
 		</cfsavecontent>
@@ -454,11 +454,11 @@
 			local.cTime=local.sTime;
 		}
 		
-		local.eventStruct[event_id]={event_id=event_id,html=local.theHTML,html2=local.theHTML2, date=event_start_datetime, summary=event_summary&" | "&local.cTime};
+		local.eventStruct[event_id]={event_id=event_id,html=local.theHTML,html2=local.theHTML2, date=event_start_datetime, summary=event_name&" | "&local.cTime};
 		local.dayCount=datediff("d", event_start_datetime, event_end_datetime);
 		if(local.dayCount GTE 1){
 			for(local.i3=1;local.i3 LTE local.dayCount;local.i3++){
-				local.eventStruct[event_id&"~"&local.i3]={event_id=event_id, html=local.theHTML, html2=local.theHTML2, date=dateadd("d", local.i3, event_start_datetime), summary=event_summary&" | "&local.cTime};
+				local.eventStruct[event_id&"~"&local.i3]={event_id=event_id, html=local.theHTML, html2=local.theHTML2, date=dateadd("d", local.i3, event_start_datetime), summary=event_name&" | "&local.cTime};
 			}
 		}
 		</cfscript>
@@ -489,11 +489,11 @@
 		</cfscript>
 		<cfif local.skipThisDay EQ false>
 		<cfsavecontent variable="local.theHTML2">
-		#lcase(timeformat(event_recur_datetime,"h:mmtt"))# #event_summary#
+		#lcase(timeformat(event_recur_datetime,"h:mmtt"))# #event_name#
 		</cfsavecontent>
 		<cfsavecontent variable="local.theHTML">
 		#local.curDateLen.string#<br />
-		<cfif event_summary NEQ ""><a href="/ical/ical-view.cfc?method=eventRecur&amp;event_id=#event_id#&amp;event_recur_id=#event_recur_id#">Event: #event_summary#</a><br /></cfif>
+		<cfif event_name NEQ ""><a href="/ical/ical-view.cfc?method=eventRecur&amp;event_id=#event_id#&amp;event_recur_id=#event_recur_id#">Event: #event_name#</a><br /></cfif>
 		<cfif event_description NEQ "">Description: #event_description#<br /></cfif>
 		<cfif event_location NEQ "">location: #event_location#<br /></cfif>
 		</cfsavecontent>
@@ -505,7 +505,7 @@
 		}else{
 		local.cTime=local.sTime;
 		}
-		local.eventStruct[event_id&"_"&event_recur_id]={event_id=event_id,event_recur_id=event_recur_id,html=local.theHTML,html2=local.theHTML2, date=event_recur_datetime,recur=true, summary=event_summary&" | "&local.cTime};
+		local.eventStruct[event_id&"_"&event_recur_id]={event_id=event_id,event_recur_id=event_recur_id,html=local.theHTML,html2=local.theHTML2, date=event_recur_datetime,recur=true, summary=event_name&" | "&local.cTime};
 		</cfscript>
 		</cfif>
 	</cfloop>

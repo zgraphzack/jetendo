@@ -422,12 +422,18 @@ function zIsDeveloper(){
 	}
 }
 var zAddThisLoaded=false;
+function zLoadAddThisJsDeferred(){
+	setTimeout(zLoadAddThisJs, 300);
+}
 function zLoadAddThisJs(){
-	if(1==0 && zIsTestServer()) return;
+	if(zIsTestServer()) return;
 	var a1=[];
 	var found=false;
 	for(var i=1;i<=5;i++){
 		d1=document.getElementById("zaddthisbox"+i);
+		if(!$("#zaddthisbox"+i).is(":visible")){
+			continue;
+		}
 		if(d1){
 			found=true;
 			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><a class="twitter-share-button" href="https://twitter.com/share">Tweet</a></div>';
@@ -444,7 +450,7 @@ function zLoadAddThisJs(){
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 	}
 }
-zArrLoadFunctions.push({functionName:zLoadAddThisJs});
+zArrLoadFunctions.push({functionName:zLoadAddThisJsDeferred});
 
 
 

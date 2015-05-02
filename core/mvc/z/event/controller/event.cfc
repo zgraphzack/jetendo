@@ -110,7 +110,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		t2=StructNew();
 		t2.groupName="Event";
 		t2.url=request.zos.currentHostName&getEventURL(row);
-		t2.title=row.event_summary;
+		t2.title=row.event_name;
 		arrayappend(arguments.arrUrl,t2);
 	}
 	db.sql="SELECT * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
@@ -234,6 +234,270 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 </cffunction>
 
 
+
+	
+<!--- application.zcore.app.getAppCFC("event").searchReindexCategory(false, true); --->
+<cffunction name="searchReindexCategory" localmode="modern" output="no" returntype="any">
+	<cfargument name="id" type="any" required="no" default="#false#">
+	<cfargument name="indexEverything" type="boolean" required="no" default="#false#">
+	<cfscript>
+	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
+	
+	offset=0;
+	limit=30;
+	while(true){
+		db.sql="SELECT event_category.*, event_config_event_url_id FROM #db.table("event_category", request.zos.zcoreDatasource)#,
+		#db.table("event_config", request.zos.zcoreDatasource)# 
+		WHERE 
+		event_config.site_id = event_category.site_id ";
+		if(arguments.indexeverything EQ false){
+			db.sql&=" and event_category.site_id = #db.param(request.zos.globals.id)# ";
+		}else{
+			db.sql&=" and event_category.site_id <> #db.param(-1)#  ";
+		}
+		if(arguments.id NEQ false){
+			db.sql&=" and event_category_id = #db.param(arguments.id)# ";
+		}
+		db.sql&=" and event_category_deleted=#db.param(0)# and 
+		event_config_deleted =#db.param(0)#	
+		LIMIT #db.param(offset)#, #db.param(limit)#";
+		qC=db.execute("qC");
+		offset+=limit;
+		if(qC.recordcount EQ 0){
+			if(arguments.id NEQ false){
+				this.searchIndexDeleteEvent(arguments.id);
+			}
+			break;
+		}else{
+			for(row in qC){
+				ds=searchCom.getSearchIndexStruct();
+				ds.search_fulltext=row.event_category_name&" "&row.event_category_description;
+				ds.search_title=row.event_category_name;
+				//if(len(ds.search_summary) EQ 0){
+					ds.search_summary=row.event_category_description;
+				//}
+				ds.search_summary=application.zcore.functions.zLimitStringLength(application.zcore.functions.zRemoveHTMLForSearchIndexer(ds.search_summary), 150);
+				
+				ds.search_url=getCategoryURL(row);
+				ds.search_table_id="event-category-"&row.event_category_id;
+				ds.app_id=this.app_id;
+				ds.search_content_datetime=dateformat(row.event_category_updated_datetime, "yyyy-mm-dd")&" "&timeformat(row.event_category_updated_datetime, "HH:mm:ss");
+				ds.site_id=row.site_id;
+				
+				searchCom.saveSearchIndex(ds); 
+				if(arguments.id NEQ false){
+					return;
+				}
+			}
+		}
+	}
+	if(arguments.indexeverything){
+		db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
+		site_id <> #db.param(-1)# and 
+		app_id = #db.param(this.app_id)# and  
+		search_table_id LIKE #db.param('event-category-%')# and
+		search_deleted = #db.param(0)# and
+		search_updated_datetime < #db.param(startDate)#";
+		db.execute("qDelete");
+	}
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="view" localmode="modern" access="remote">
+	<cfscript>
+	writedump(form);
+	</cfscript>
+</cffunction>
+	
+<!--- application.zcore.app.getAppCFC("event").searchReindexCalendar(false, true); --->
+<cffunction name="searchReindexCalendar" localmode="modern" output="no" returntype="any">
+	<cfargument name="id" type="any" required="no" default="#false#">
+	<cfargument name="indexEverything" type="boolean" required="no" default="#false#">
+	<cfscript>
+	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
+	
+	offset=0;
+	limit=30;
+	while(true){
+		db.sql="SELECT event_calendar.*, event_config_event_url_id FROM #db.table("event_calendar", request.zos.zcoreDatasource)#,
+		#db.table("event_config", request.zos.zcoreDatasource)# 
+		WHERE 
+		event_config.site_id = event_calendar.site_id ";
+		if(arguments.indexeverything EQ false){
+			db.sql&=" and event_calendar.site_id = #db.param(request.zos.globals.id)# ";
+		}else{
+			db.sql&=" and event_calendar.site_id <> #db.param(-1)#  ";
+		}
+		if(arguments.id NEQ false){
+			db.sql&=" and event_calendar_id = #db.param(arguments.id)# ";
+		}
+		db.sql&=" and 
+		event_calendar_deleted=#db.param(0)# and 
+		event_config_deleted =#db.param(0)#	
+		LIMIT #db.param(offset)#, #db.param(limit)#";
+		qC=db.execute("qC");
+		offset+=limit;
+		if(qC.recordcount EQ 0){
+			if(arguments.id NEQ false){
+				this.searchIndexDeleteEvent(arguments.id);
+			}
+			break;
+		}else{
+			for(row in qC){
+				ds=searchCom.getSearchIndexStruct();
+				ds.search_fulltext=row.event_calendar_name&" "&row.event_calendar_description;
+				ds.search_title=row.event_calendar_name;
+				//if(len(ds.search_summary) EQ 0){
+					ds.search_summary=row.event_calendar_description;
+				//}
+				ds.search_summary=application.zcore.functions.zLimitStringLength(application.zcore.functions.zRemoveHTMLForSearchIndexer(ds.search_summary), 150);
+				
+				ds.search_url=getCalendarURL(row);
+				ds.search_table_id="event-calendar-"&row.event_calendar_id;
+				ds.app_id=this.app_id;
+				ds.search_content_datetime=dateformat(row.event_calendar_updated_datetime, "yyyy-mm-dd")&" "&timeformat(row.event_calendar_updated_datetime, "HH:mm:ss");
+				ds.site_id=row.site_id;
+				
+				searchCom.saveSearchIndex(ds); 
+				if(arguments.id NEQ false){
+					return;
+				}
+			}
+		}
+	}
+	if(arguments.indexeverything){
+		db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
+		site_id <> #db.param(-1)# and 
+		app_id = #db.param(this.app_id)# and  
+		search_table_id LIKE #db.param('event-calendar-%')# and
+		search_deleted = #db.param(0)# and
+		search_updated_datetime < #db.param(startDate)#";
+		db.execute("qDelete");
+	}
+	</cfscript>
+</cffunction>
+	
+<!--- application.zcore.app.getAppCFC("event").searchReindexEvent(false, true); --->
+<cffunction name="searchReindexEvent" localmode="modern" output="no" returntype="any">
+	<cfargument name="id" type="any" required="no" default="#false#">
+	<cfargument name="indexEverything" type="boolean" required="no" default="#false#">
+	<cfscript>
+	db=request.zos.queryObject;
+	startDate=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
+	searchCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.searchFunctions");
+	
+	offset=0;
+	limit=30;
+	while(true){
+		db.sql="SELECT event.*, event_config_event_url_id FROM #db.table("event", request.zos.zcoreDatasource)#,
+		#db.table("event_config", request.zos.zcoreDatasource)# 
+		WHERE 
+		event_config.site_id = event.site_id ";
+		if(arguments.indexeverything EQ false){
+			db.sql&=" and event.site_id = #db.param(request.zos.globals.id)# ";
+		}else{
+			db.sql&=" and event.site_id <> #db.param(-1)#  ";
+		}
+		if(arguments.id NEQ false){
+			db.sql&=" and event_id = #db.param(arguments.id)# ";
+		}
+		db.sql&=" and event_status <> #db.param(1)# and  
+		event_deleted=#db.param(0)# and 
+		event_config_deleted =#db.param(0)#	
+		LIMIT #db.param(offset)#, #db.param(limit)#";
+		qC=db.execute("qC");
+		offset+=limit;
+		if(qC.recordcount EQ 0){
+			if(arguments.id NEQ false){
+				this.searchIndexDeleteEvent(arguments.id);
+			}
+			break;
+		}else{
+			for(row in qC){
+				ds=searchCom.getSearchIndexStruct();
+				ds.search_fulltext=row.event_name&" "&row.event_description;
+				ds.search_title=row.event_name;
+				//if(len(ds.search_summary) EQ 0){
+					ds.search_summary=row.event_description;
+				//}
+				ds.search_summary=application.zcore.functions.zLimitStringLength(application.zcore.functions.zRemoveHTMLForSearchIndexer(ds.search_summary), 150);
+				
+				ds.search_url=getEventURL(row);
+				ds.search_table_id="event-"&row.event_id;
+				ds.app_id=this.app_id;
+				ds.search_content_datetime=dateformat(row.event_updated_datetime, "yyyy-mm-dd")&" "&timeformat(row.event_updated_datetime, "HH:mm:ss");
+				ds.site_id=row.site_id;
+				
+				searchCom.saveSearchIndex(ds); 
+				if(arguments.id NEQ false){
+					return;
+				}
+			}
+		}
+	}
+	if(arguments.indexeverything){
+		db.sql="delete from #db.table("search", request.zos.zcoreDatasource)# WHERE 
+		site_id <> #db.param(-1)# and 
+		app_id = #db.param(this.app_id)# and  
+		search_table_id LIKE #db.param('event-%')# and
+		search_deleted = #db.param(0)# and
+		search_updated_datetime < #db.param(startDate)#";
+		db.execute("qDelete");
+	}
+	</cfscript>
+</cffunction>
+	
+	
+<!--- application.zcore.app.getAppCFC("event").searchIndexDeleteContent(event_id); --->
+<cffunction name="searchIndexDeleteEvent" localmode="modern" output="no" returntype="any">
+	<cfargument name="id" type="numeric" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	app_id = #db.param(this.app_id)# and 
+	search_table_id = #db.param("event-"&arguments.id)# and 
+	search_deleted = #db.param(0)#";
+	db.execute("qDelete");
+	</cfscript>
+</cffunction>
+
+	
+<!--- application.zcore.app.getAppCFC("event").searchIndexDeleteContent(event_category_id); --->
+<cffunction name="searchIndexDeleteCategory" localmode="modern" output="no" returntype="any">
+	<cfargument name="id" type="numeric" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	app_id = #db.param(this.app_id)# and 
+	search_table_id = #db.param("event-category-"&arguments.id)# and 
+	search_deleted = #db.param(0)#";
+	db.execute("qDelete");
+	</cfscript>
+</cffunction>
+
+	
+<!--- application.zcore.app.getAppCFC("event").searchIndexDeleteContent(event_calendar_id); --->
+<cffunction name="searchIndexDeleteCalendar" localmode="modern" output="no" returntype="any">
+	<cfargument name="id" type="numeric" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	app_id = #db.param(this.app_id)# and 
+	search_table_id = #db.param("event-calendar-"&arguments.id)# and 
+	search_deleted = #db.param(0)#";
+	db.execute("qDelete");
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="setURLRewriteStruct" localmode="modern" output="no" access="public" returntype="any" hint="Generate the URL rewrite rules as a string">
 	<cfargument name="site_id" type="numeric" required="yes" hint="site_id that need to be cached.">
 	<cfargument name="sharedStruct" type="struct" required="yes">
@@ -333,6 +597,93 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	} 
 	</cfscript>
 </cffunction>
+
+<cffunction name="updateRewriteRuleEvent" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
+
+	db.sql="SELECT * from #db.table("event", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	event_unique_url<>#db.param('')# and 
+	event_id=#db.param(arguments.id)# and 
+	event_deleted = #db.param(0)#
+	ORDER BY event_unique_url DESC";
+	qF=db.execute("qF");
+	if(qF.recordcount EQ 0){
+		structdelete(s.urlRewriteStruct.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/event/event/view";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/view";
+		t9.urlStruct.event_id=qF.event_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_unique_url)]=t9;
+	}
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="updateRewriteRuleCategory" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
+
+	db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	event_category_unique_url<>#db.param('')# and 
+	event_category_id=#db.param(arguments.id)# and 
+	event_category_deleted = #db.param(0)#
+	ORDER BY event_category_unique_url DESC";
+	qF=db.execute("qF");
+	if(qF.recordcount EQ 0){
+		structdelete(s.urlRewriteStruct.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/event/event-category/view";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/view";
+		t9.urlStruct.event_category_id=qF.event_category_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_category_unique_url)]=t9;
+	}
+	return true;
+	</cfscript>
+</cffunction>
+
+<cffunction name="updateRewriteRuleCalendar" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
+
+	db.sql="SELECT * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and 
+	event_calendar_unique_url<>#db.param('')# and 
+	event_calendar_id=#db.param(arguments.id)# and 
+	event_calendar_deleted = #db.param(0)#
+	ORDER BY event_calendar_unique_url DESC";
+	qF=db.execute("qF");
+	if(qF.recordcount EQ 0){
+		structdelete(s.urlRewriteStruct.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/event/event-calendar/view";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/view";
+		t9.urlStruct.event_calendar_id=qF.event_calendar_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_calendar_unique_url)]=t9;
+	}
+	return true;
+	</cfscript>
+</cffunction> 
 	
 <cffunction name="updateRewriteRules" localmode="modern" output="no" access="public" returntype="boolean">
 	<cfscript>
@@ -517,11 +868,12 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 <cffunction name="getEventURL" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
+	row=arguments.row;
 	if(row.event_unique_url NEQ ""){
 		return row.event_unique_url;
 	}else{
-		urlId=application.zcore.app.getAppData("event").optionstruct.event_url_id;
-		return "/"&application.zcore.functions.zURLEncode(row.event_summary, '-')&"-"&urlId&"-"&row.event_id&".html";
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_id&".html";
 	}
 	</cfscript>
 </cffunction>
@@ -529,10 +881,11 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 <cffunction name="getCategoryURL" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
+	row=arguments.row;
 	if(row.event_category_unique_url NEQ ""){
 		return row.event_category_unique_url;
 	}else{
-		urlId=application.zcore.app.getAppData("event").optionstruct.event_category_url_id;
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_config_category_url_id;
 		return "/"&application.zcore.functions.zURLEncode(row.event_category_name, '-')&"-"&urlId&"-"&row.event_category_id&".html";
 	}
 	</cfscript>
@@ -541,10 +894,11 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 <cffunction name="getCalendarURL" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
+	row=arguments.row;
 	if(row.event_calendar_unique_url NEQ ""){
 		return row.event_calendar_unique_url;
 	}else{
-		urlId=application.zcore.app.getAppData("event").optionstruct.event_calendar_url_id;
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_config_calendar_url_id;
 		return "/"&application.zcore.functions.zURLEncode(row.event_calendar_name, '-')&"-"&urlId&"-"&row.event_calendar_id&".html";
 	}
 	</cfscript>

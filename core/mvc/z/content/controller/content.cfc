@@ -472,6 +472,41 @@ this.app_id=12;
 	}
 	</cfscript>
 </cffunction>
+
+
+
+<cffunction name="updateRewriteRuleContent" localmode="modern" output="no" access="public" returntype="boolean">
+	<cfargument name="id" type="string" required="yes">
+	<cfargument name="oldURL" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	s=application.sitestruct[request.zos.globals.id];
+
+	db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content WHERE
+	content_system_url=#db.param(0)# and 
+	 site_id = #db.param(request.zos.globals.id)# and 
+	 content_unique_name <> #db.param('')# and  
+	 content_unique_name <> #db.param('/')# and 
+	 content_unique_name NOT LIKE #db.param('/z/%')# and 
+	 content_url_only = #db.param('')# and 
+	 content_for_sale<>#db.param(2)# and 
+	 content_id = #db.param(arguments.id)# and 
+	 content_deleted=#db.param(0)# ";
+	qF=db.execute("qF"); 
+	if(qF.recordcount EQ 0){
+		structdelete(s.uniqueURLStruct, arguments.oldURL);
+	}
+	loop query="qF"{
+		t9=structnew();
+		t9.scriptName="/z/content/content/viewPage";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/content/content/viewPage";
+		t9.urlStruct.content_id=qF.content_id;
+		s.urlRewriteStruct.uniqueURLStruct[trim(qF.content_unique_name)]=t9;
+	}
+	return true;
+	</cfscript>
+</cffunction>
 	
 <cffunction name="updateRewriteRules" localmode="modern" output="no" access="public" returntype="boolean">
 	<cfscript>
@@ -1585,7 +1620,8 @@ configCom.includeContentByName(ts);
 	db=request.zos.queryObject;
 	db.sql="DELETE FROM #db.table("search", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	app_id = #db.param(this.app_id)# and 
+	app_id = #db.param(this.app_id)#  and
+	search_table_id = #db.param(arguments.id)# and 
 	search_deleted = #db.param(0)#";
 	db.execute("qDelete");
 	</cfscript>

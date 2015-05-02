@@ -1178,23 +1178,6 @@
 	local.ts2.reservedAppUrlIdStruct=structnew();
 	local.t9.urlStruct=structnew();
 	
-	if(fileexists(request.zos.globals.homedir&"index.cfc")){
-		local.t9.scriptName="/index.cfc";
-		local.t9.urlStruct.method="index";
-	}else if(fileexists(request.zos.globals.homedir&"index.cfm")){
-		local.t9.scriptName="/index.cfm";
-	}else if(fileexists(request.zos.globals.homedir&"content/index.cfm")){
-		local.t9.scriptName="/content/index.cfm";
-	}else if(fileexists(request.zos.globals.homedir&"home/index.cfm")){
-		local.t9.scriptName="/home/index.cfm";
-	}else if(fileexists(request.zos.globals.homedir&"index.html")){
-		local.t9.scriptName="/index.html";
-	}else{
-		local.t9.scriptName="";
-	}
-	if(local.t9.scriptName NEQ ""){
-		local.ts2.uniqueURLStruct["/"]=local.t9;
-	}
 	
 	this.convertRewriteToStruct(local.ts2);
 	
@@ -1219,6 +1202,24 @@
 	}
 	if(fileexists(request.zos.globals.homedir&"zCoreCustomFunctions.cfc")){
 		local.ts2.siteRewriteRuleCom=application.zcore.functions.zcreateobject("component",request.zRootCFCPath&"zCoreCustomFunctions", true);
+	}
+	
+	if(fileexists(request.zos.globals.homedir&"index.cfc")){
+		local.t9.scriptName="/index.cfc";
+		local.t9.urlStruct.method="index";
+	}else if(fileexists(request.zos.globals.homedir&"index.cfm")){
+		local.t9.scriptName="/index.cfm";
+	}else if(fileexists(request.zos.globals.homedir&"content/index.cfm")){
+		local.t9.scriptName="/content/index.cfm";
+	}else if(fileexists(request.zos.globals.homedir&"home/index.cfm")){
+		local.t9.scriptName="/home/index.cfm";
+	}else if(fileexists(request.zos.globals.homedir&"index.html")){
+		local.t9.scriptName="/index.html";
+	}else{
+		local.t9.scriptName="";
+	}
+	if(local.t9.scriptName NEQ ""){
+		local.ts2.uniqueURLStruct["/"]=local.t9;
 	}
 	ts.urlRewriteStruct=local.ts2;
 	</cfscript>

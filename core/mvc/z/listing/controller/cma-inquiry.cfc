@@ -149,10 +149,10 @@
 	WHERE inquiries_id = #db.param(-1)# and 
 	site_id=#db.param(request.zos.globals.id)# ";
 	qInquiries=db.execute("qInquiries");
-	application.zcore.functions.zQueryToStruct(qInquiries);
+	application.zcore.functions.zQueryToStruct(qInquiries, form, 'inquiries_email');
 	application.zcore.functions.zStatusHandler(request.zsid, true);
-	if(structkeyexists(form, 'inquiries_email')){ variables.inquiries_email=form.inquiries_email; }
-	
+	form.inquiries_email=application.zcore.functions.zso(form, 'inquiries_email');
+
 	form.set9=application.zcore.functions.zGetHumanFieldIndex();
 	</cfscript>
 	<form id="myForm" action="/z/listing/cma-inquiry/send?modalpopforced=#form.modalpopforced#" method="post" onsubmit="zSet9('zset9_#form.set9#');" style="margin:0px; padding:0px;">

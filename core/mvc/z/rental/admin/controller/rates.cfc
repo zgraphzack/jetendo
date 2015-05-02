@@ -257,7 +257,7 @@
 			</tr>
 			<cfloop query = "qRates">
 			<tr>
-				<td>#qRates.rate_event_name#</td>
+				<td>#qRates.rate_event_summary#</td>
 				<td>#DateFormat(qRates.rate_start_date,'mm-dd-yyyy')#</td>
 				<td>#DateFormat(qRates.rate_end_date,'mm-dd-yyyy')#</td>
 				<td>#qRates.rate_rate#</td>
@@ -382,7 +382,7 @@
 						<th>Admin</th>
 					</tr>
 					<tr>
-						<td>#qCheck.rate_event_name#</td>
+						<td>#qCheck.rate_event_summary#</td>
 						<td>#DateFormat(qCheck.rate_start_date,'mm-dd-yyyy')#</td>
 						<td>#DateFormat(qCheck.rate_end_date,'mm-dd-yyyy')#</td>
 						<td>#qCheck.rate_rate#</td>
@@ -788,8 +788,8 @@
 			/* ]]> */
 			</script>
 			<tr>
-				<th style="vertical-align:top;white-space:nowrap;>#application.zcore.functions.zOutputHelpToolTip("Event Name","member.rental.edit rate_event_name")#</th>
-			<td colspan="2"><input name="rate_event_name" size="40" type="text" value="#form.rate_event_name#" maxlength="100" size="8" />
+				<th style="vertical-align:top;white-space:nowrap;>#application.zcore.functions.zOutputHelpToolTip("Event Name","member.rental.edit rate_event_summary")#</th>
+			<td colspan="2"><input name="rate_event_summary" size="40" type="text" value="#form.rate_event_summary#" maxlength="100" size="8" />
 					<br />
 					(i.e. Bike Week/Christmas/Memorial Day/Summer Rate)
 					</td>
