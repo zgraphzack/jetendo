@@ -872,7 +872,7 @@ var zLastAjaxVarName=""; */
 	function zSetSliderInputArray(id){
 		if(typeof zArrSetSliderInputUniqueArray[id] === "undefined"){
 			zArrSetSliderInputUniqueArray[id]=true;
-			d1=document.getElementById(id);
+			var d1=document.getElementById(id); 
 			zArrSetSliderInputArray.push(d1);
 		}
 	}
@@ -891,7 +891,7 @@ var zLastAjaxVarName=""; */
 		var f=false; 
 		var alphaExp = /[^\+0-9\.]/;
 		var v=zValues[zV+2];
-		v=v.split(",").join("").split("$").join("");
+		v=new String(v).split(",").join("").split("$").join("");
 		if(v.match(alphaExp) && v!=="min" && v!=="max"){
 			if(zV+3===zOff){
 				v=zValues[zV+5];
@@ -935,7 +935,6 @@ var zLastAjaxVarName=""; */
 			curPosition=a1.length;	
 		}
 		
-		v=v.split(",").join("").split("$").join("");
 		d2.value=v;
 		v=parseFloat(v);
 		if(zV+3===zOff){

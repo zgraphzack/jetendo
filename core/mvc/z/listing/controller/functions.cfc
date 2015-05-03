@@ -163,6 +163,7 @@
 			if(arguments.mls_saved_search_id NEQ "" and arguments.mls_saved_search_id NEQ 0){
 				db.sql="select mls_saved_search_id from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
 				WHERE mls_saved_search_id = #db.param(arguments.mls_saved_search_id)#  and 
+				mls_saved_search_deleted=#db.param(0)# and 
 				site_id = #db.param(request.zos.globals.id)#";
 				qC=db.execute("qC"); 
 			}else{

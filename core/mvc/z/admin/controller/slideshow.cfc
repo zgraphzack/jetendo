@@ -267,8 +267,8 @@
 							arrayappend(arrF, arrM[i]&"="&db.param(dateformat(qM[arrM[i]][1],'yyyy-mm-dd')&' '&timeformat(qM[arrM[i]][1],'HH:mm:ss')));
 						}else if(arrM[i] EQ "site_id"){
 							arrayappend(arrF, arrM[i]&"="&db.param(form.newsiteid));
-						}else if(arrS[i] EQ "mls_saved_search_updated_datetime"){
-							arrayappend(arrF, arrS[i]&"="&db.param(request.zos.mysqlnow));
+						}else if(arrM[i] EQ "mls_saved_search_updated_datetime"){
+							arrayappend(arrF, arrM[i]&"="&db.param(request.zos.mysqlnow));
 						}else{
 							arrayappend(arrF, arrM[i]&"="&db.param(qM[arrM[i]][1]));
 						}
