@@ -322,6 +322,7 @@
 		result = db.execute("result");
 		application.zcore.app.getAppCFC("rental").searchIndexDeleteRentalCategory(form.rental_category_id, false);
 		variables.queueSortCom.sortAll();
+		application.zcore.app.getAppCFC("rental").updateRewriteRules();	
         application.zcore.status.setStatus(request.zsid, "Rental Category deleted successfully.");
 		if(structkeyexists(request.zsession, "rental_category_return"&form.rental_category_id)){
 			tempLink=request.zsession["rental_category_return"&form.rental_category_id];

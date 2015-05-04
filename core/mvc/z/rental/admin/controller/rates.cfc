@@ -320,6 +320,8 @@
 		
 		application.zcore.app.getAppCFC("rental").searchIndexDeleteRental(form.rental_id, false);
 		variables.queueSortCom.sortAll();
+
+		application.zcore.app.getAppCFC("rental").updateRewriteRules();	
         application.zcore.status.setStatus(request.zsid, "Rental deleted successfully.");
         application.zcore.functions.zRedirect("/z/rental/admin/rates/index?zsid="&request.zsid);
         </cfscript>

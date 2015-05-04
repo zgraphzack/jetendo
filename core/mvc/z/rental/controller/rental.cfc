@@ -507,8 +507,18 @@
     </cffunction>
     
     
-    
-    
+    <cffunction name="updateRewriteRules" localmode="modern" output="no" access="public" returntype="any" hint="Generate the URL rewrite rules as a string">
+    	<cfscript>
+	
+		ts2=structnew();
+		ts2.uniqueURLStruct=structnew();
+		ts2.reservedAppUrlIdStruct=structnew();
+		setURLRewriteStruct(request.zos.globals.id,ts2);
+		</cfscript>
+    </cffunction>
+	
+
+
     <cffunction name="setURLRewriteStruct" localmode="modern" output="no" access="public" returntype="any" hint="Generate the URL rewrite rules as a string">
     	<cfargument name="site_id" type="numeric" required="yes" hint="site_id that need to be cached.">
 		<cfargument name="sharedStruct" type="struct" required="yes">
