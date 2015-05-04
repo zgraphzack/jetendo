@@ -139,6 +139,21 @@
 		htmlEditor.config.EnterMode= "br";
 		htmlEditor.create();
 		</cfscript>
+		<br />
+		Cache External Images: 
+			<cfscript>
+			form[arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_convertLinks"]=application.zcore.functions.zso(form, arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_convertLinks", true, 0); 
+			ts = StructNew();
+			ts.name = arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_convertLinks";
+			ts.radio=true;
+			ts.separator=" ";
+			ts.listValuesDelimiter="|";
+			ts.listLabelsDelimiter="|";
+			ts.listLabels="Yes|No";
+			ts.listValues="1|0";
+			application.zcore.functions.zInput_Checkbox(ts);
+			</cfscript> | Selecting "Yes", will cache the external images in the html editor to this domain.
+			 
 	</cfsavecontent>
 	<cfscript>
 	return { label: true, hidden: false, value: local.output};  
@@ -174,6 +189,10 @@
 	<cfargument name="dataStruct" type="struct" required="yes"> 
 	<cfscript>	
 	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
+	convertLinks=application.zcore.functions.zso(form, arguments.prefixString&arguments.row["#variables.type#_option_id"]&"_convertLinks", true, 0); 
+	if(convertLinks EQ 1){
+		nv=application.zcore.functions.zProcessAndStoreLinksInHTML("#variables.type#-option-"&arguments.row["#variables.type#_option_id"], nv);
+	}
 	return { success: true, value: nv, dateValue: "" };
 	</cfscript>
 </cffunction>

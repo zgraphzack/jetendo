@@ -2305,7 +2305,7 @@ tabCom.enableSaveButtons();
 				</td>
 			</tr>
 		<tr>
-			<th style="width:1%; white-space:nowrap;">Convert Links:</th>
+			<th style="width:1%; white-space:nowrap;">Cache External Images:</th>
 			<td>
 			<cfscript>
 			form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
@@ -2318,7 +2318,7 @@ tabCom.enableSaveButtons();
 			ts.listLabels="Yes|No";
 			ts.listValues="1|0";
 			application.zcore.functions.zInput_Checkbox(ts);
-			</cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
+			</cfscript> | Selecting "Yes", will cache the external images in the html editor to this domain.
 			</td>
 		</tr>
 			</table>
@@ -2508,7 +2508,7 @@ tabCom.enableSaveButtons();
 				</td>
 			</tr>
 			<tr>
-				<th style="width:1%; white-space:nowrap;">Convert Links:</th>
+				<th style="width:1%; white-space:nowrap;">Cache External Images:</th>
 				<td>
 				<cfscript>
 				form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
@@ -2521,7 +2521,7 @@ tabCom.enableSaveButtons();
 				ts.listLabels="Yes|No";
 				ts.listValues="1|0";
 				application.zcore.functions.zInput_Checkbox(ts);
-				</cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
+				</cfscript> | Selecting "Yes", will cache the external images in the html editor to this domain.
 				</td>
 			</tr>
 			<tr>
@@ -3223,7 +3223,7 @@ tabCom.enableSaveButtons();
 			</td>
 		</tr>
 		<tr>
-			<th style="width:1%; white-space:nowrap;">Convert Links:</th>
+			<th style="width:1%; white-space:nowrap;">Cache External Images:</th>
 			<td>
 			<cfscript>
 			form.convertLinks=application.zcore.functions.zso(form, 'convertLinks', true, 0); 
@@ -3236,7 +3236,7 @@ tabCom.enableSaveButtons();
 			ts.listLabels="Yes|No";
 			ts.listValues="1|0";
 			application.zcore.functions.zInput_Checkbox(ts);
-			</cfscript> | Selecting "Yes", will automatically convert external links to certain file types to be stored on your domain.
+			</cfscript> | Selecting "Yes", will cache the external images in the html editor to this domain.
 			</td>
 		</tr>
 		</table>

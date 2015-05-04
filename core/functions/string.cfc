@@ -509,7 +509,7 @@
 	<cfargument name="directoryName" type="string" required="yes">
 	<cfargument name="t" type="string" required="yes">
 	<cfscript>
-	setting requesttimeout="300";
+	setting requesttimeout="3000";
 	t=arguments.t;
 	fileTypes={
 		"pdf":true,

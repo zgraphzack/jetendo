@@ -4,9 +4,32 @@
 
 <cffunction name="index" access="remote" localmode="modern">
 	<cfscript> 
+	db=request.zos.queryObject;
+    application.zcore.template.setTag("pagetitle","Contact Us");
+    application.zcore.template.setTag("title","Contact Us");
+	application.zcore.functions.zStatusHandler(request.zsid, true);
 	form.user_id=application.zcore.functions.zso(form, 'user_id');
 	form.user_id_siteIdType=application.zcore.functions.zso(form, 'user_id_siteIdType');
-	displayContactAgentForm(form.user_id, form.user_id_siteIdType);
+ 
+	site_id=application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
+	if(site_id EQ request.zos.globals.id or (request.zos.globals.parentId NEQ 0 and site_id EQ request.zos.globals.parentId)){
+		// ok
+	}else{
+		application.zcore.functions.z404("Invalid user id");
+	}
+
+	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(site_id)# and 
+	user_active=#db.param(1)# and 
+	user_deleted=#db.param(0)# and 
+	user_id = #db.param(form.user_id)# and 
+	member_public_profile=#db.param(1)# ";
+	qUser=db.execute("qUser"); 
+	for(row in qUser){
+	    application.zcore.template.setTag("pagetitle","Contact "&row.user_first_name&" "&row.user_last_name);
+	    application.zcore.template.setTag("title","Contact "&row.user_first_name&" "&row.user_last_name);
+	}
+	displayAgentInquiryForm(form.user_id, form.user_id_siteIdType);
 	</cfscript>
 </cffunction>
 	
@@ -28,7 +51,9 @@ agentCom.displayAgentInquiryForm(user_id, user_id_siteIdType);
 		application.zcore.functions.zSetModalWindow();
     } 
 	structappend(form, application.zcore.functions.zNewRecord(request.zos.zcoreDatasource, "inquiries"), false);
-	application.zcore.functions.zStatusHandler(request.zsid, true);
+	if(request.zos.originalURL NEQ "/z/listing/agent-inquiry/index"){
+		application.zcore.functions.zStatusHandler(request.zsid, true);
+	}
 	for(i in url){
 		if(left(i,10) EQ "inquiries_"){
 			form[i]=url[i];

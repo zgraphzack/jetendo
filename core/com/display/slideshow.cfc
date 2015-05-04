@@ -516,7 +516,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 	}
 	dirpath="/zupload/slideshow/#form.slideshow_id#/";
 	// this is to preserve case sensitivity for flash
-	arrKeys=["resizeImage","resizeImageBottom","imageFadeDuration","xDuration","yDuration","autoSlideDelay","tabs","slideDirection","activeTab","backImage","forwardImage","tabimages","tablinks","links","fulldesc","success","tab","images","thumbnails","desc2","thumbPadding","thumbAreaPadding","thumbWidth","thumbHeight","thumbTextHeight","movedTileCount","tab","ajaxEnabled","offset","count","backgroundImage","hideLargeImage","thumbMarginLeft","thumbMarginTop","thumbbarMargin","tabcaptions","tabclicklinks","tabPadding","tabSidePadding","tabBgColor","tabTextColor","tabOverBgColor","tabOverTextColor","tabIsText","thumbDisplayCount","hideThumbnails","city","price","bed","bath","listingid","condoname", "address"];
+	arrKeys=["resizeImage","resizeImageBottom","imageFadeDuration","xDuration","yDuration","autoSlideDelay","tabs","slideDirection","activeTab","backImage","forwardImage","tabimages","tablinks","links","fulldesc","success","tab","images","thumbnails","desc2","thumbPadding","thumbAreaPadding","thumbWidth","thumbHeight","thumbTextHeight","movedTileCount","tab","ajaxEnabled","offset","count","backgroundImage","hideLargeImage","thumbMarginLeft","thumbMarginTop","thumbbarMargin","tabcaptions","tabclicklinks","tabPadding","tabSidePadding","tabBgColor","tabTextColor","tabOverBgColor","tabOverTextColor","tabIsText","thumbDisplayCount","hideThumbnails","city","price","bed","bath","listingid","condoname", "address", "listingType"];
 	keyStruct=structnew();
 	for(i=1;i LTE arraylen(arrKeys);i++){
 		keyStruct[arrKeys[i]]=arrKeys[i];
@@ -628,6 +628,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		arrAddress=arraynew(1);
 		arrRemarks=arraynew(1);
 		arrPhotoId=arraynew(1);
+		arrListingType=arraynew(1);
 		arrBed=arraynew(1);
 		arrBath=arraynew(1);
 		arrPrice=arraynew(1);
@@ -649,8 +650,10 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 			arrayappend(arrAddress,'');
 			arrayappend(arrBath,'');
 			arrayappend(arrBed,'');
+			arrayappend(arrListingType,'');
 			arrayappend(arrPrice,'');
 		}
+		flashOut.listingType=arraytolist(arrListingType,chr(9));
 		flashOut.links=arraytolist(arrLink,chr(9));
 		flashOut.fulldesc=arraytolist(arrFullText,chr(9));
 		flashOut.images=arraytolist(arrImages,chr(9));
@@ -682,6 +685,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		returnStruct=request.zos.listing.functions.zMLSSearchOptionsDisplay(variables.qslideshow.mls_saved_search_id, ts);
 		flashOut.count=returnStruct.count;
 		
+
 		arrImages=ArrayNew(1);
 		arrThumb=ArrayNew(1);
 		arrText=ArrayNew(1);
@@ -691,6 +695,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		arrRemarks=arraynew(1);
 		arrPhotoId=arraynew(1);
 		arrListingId=arraynew(1);
+		arrListingType=arraynew(1);
 		arrBed=arraynew(1);
 		arrBath=arraynew(1);
 		arrPrice=arraynew(1);
@@ -707,6 +712,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 			arrBed[i]="";
 			arrBath[i]="";
 			arrPrice[i]="";
+			arrListingType[i]="";
 			arrCity[i]="";
 			arrAddress[i]="";
 			arrRemarks[i]="";
@@ -773,6 +779,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 					arrText[i]=arrFullText[i];
 					arrLink[i]=propertyLink;
 					arrListingId[i]=curQuery.listing_id;
+					arrListingType[i]=titleStruct.propertyType;
 					arrImages[i]=photo1;
 					arrThumb[i]=photo1;
 					arrPhotoId[i]=request.lastPhotoId;
@@ -785,6 +792,7 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 		flashOut.images=arraytolist(arrImages,chr(9));
 		flashOut.desc2=arraytolist(arrText,chr(9));
 		flashOut.listingid=arraytolist(arrListingId,chr(9));
+		flashOut.listingtype=arraytolist(arrListingType,chr(9));
 		flashOut.thumbnails=arraytolist(arrThumb,chr(9));
 		flashOut.price=arraytolist(arrPrice,chr(9));
 		flashOut.address=arraytolist(arrAddress,chr(9));
@@ -1090,20 +1098,39 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 				if(request.cgi_script_name EQ "/z/misc/slideshow/index"){
 					request.znotemplate=1;
 				}
-				if(right(variables.qslideshow.slideshow_custom_include,4) EQ ".cfc"){
-					if(left(variables.qslideshow.slideshow_custom_include,17) NEQ "zcorerootmapping."){
-						local.tempCom=application.zcore.functions.zcreateobject(request.zRootCFCPath&variables.qslideshow.slideshow_custom_include);
-					}else{
-						local.tempCom=application.zcore.functions.zcreateobject(variables.qslideshow.slideshow_custom_include);
+				if(right(variables.qslideshow.slideshow_custom_include,4) NEQ ".cfm"){
+					if(left(variables.qslideshow.slideshow_custom_include,5) EQ "root."){
+						variables.qslideshow.slideshow_custom_include=replace(variables.qslideshow.slideshow_custom_include, "root.", request.zRootCFCPath);
 					}
-					for(i=1;i LTE arraylen(arrImages);i++){
-						local.tempCom.render(); // must pass a struct to the function which represents current row
+					local.tempCom=application.zcore.functions.zcreateobject("component", variables.qslideshow.slideshow_custom_include);
+					
+					t9={
+						"arrImages": "image",
+						"arrThumb": "thumb",
+						"arrText": "text",
+						"arrFullText": "fullText",
+						"arrLink": "link",
+						"arrCondo": "condo",
+						"arrRemarks": "remarks",
+						"arrPhotoId": "photoId",
+						"arrListingId": "listingId",
+						"arrListingType": "listingType",
+						"arrBed": "bed",
+						"arrBath": "bath",
+						"arrPrice": "price",
+						"arrCity": "city",
+						"arrAddress": "address"
+					}
+					for(i=1;i LTE arraylen(arrImages);i++){ 
+						ts={};
+						for(n in t9){
+							ts[t9[n]]= local[n][i];
+						}
+						local.tempCom.render(ts); // must pass a struct to the function which represents current row
 					}
 				}else{
 					for(i=1;i LTE arraylen(arrImages);i++){
-						if(left(variables.qslideshow.slideshow_custom_include,6) EQ "/zsa2/"){
-							include template="#variables.qslideshow.slideshow_custom_include#";
-						}else if(left(variables.qslideshow.slideshow_custom_include,18) EQ "/zcorerootmapping/"){
+						if(left(variables.qslideshow.slideshow_custom_include,18) EQ "/zcorerootmapping/"){
 							include template="#variables.qslideshow.slideshow_custom_include#";
 						}else{
 							include template="#request.zRootPath##removechars(variables.qslideshow.slideshow_custom_include,1,1)#";

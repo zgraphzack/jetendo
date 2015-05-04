@@ -1148,7 +1148,7 @@
 					ipStruct2[ipStruct.arrIp[i]]=true;
 				}
 				arrIp=structkeyarray(ipStruct2);
-				//arraysort(arrIp, "text", "asc");
+				arraysort(arrIp, "text", "asc");
 				selectStruct = StructNew();
 				selectStruct.name = "site_ip_address";
 				selectStruct.listvalues=arraytolist(arrIp,",");
