@@ -116,8 +116,7 @@ $oauthrequest->sign_request($signature_method, $consumer, $token);
 
 // Get the signed URL
 $signed_url = $oauthrequest->to_url();
-
-$debug=true;
+ 
 if(!$debug){
 	// Send Yelp API Call
 	$ch = curl_init($signed_url);
