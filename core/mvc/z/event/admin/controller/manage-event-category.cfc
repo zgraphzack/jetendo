@@ -12,6 +12,7 @@
 	site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	
+	form.returnJson=application.zcore.functions.zso(form, 'returnJson', true, 0);
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, 'Event category no longer exists', false,true);
 		application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
@@ -33,8 +34,12 @@
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
 
-		application.zcore.status.setStatus(Request.zsid, 'Event category deleted');
-		application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
+		if(form.returnJson EQ 1){
+			application.zcore.functions.zReturnJson({success:true});
+		}else{
+			application.zcore.status.setStatus(Request.zsid, 'Event category deleted');
+			application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
+		}
 		</cfscript>
 	<cfelse>
 		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this event category?<br />
@@ -119,7 +124,11 @@
 	}
 	application.zcore.app.getAppCFC("event").searchReindexCategory(form.event_category_id, false);
 
-	application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
+	if(form.modalpopforced EQ 1){
+		application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/getReturnEventCategoryRowHTML?event_category_id=#form.event_category_id#');
+	}else{
+		application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/index?zsid=#request.zsid#');
+	}
 	</cfscript>
 </cffunction>
 
@@ -139,11 +148,6 @@
 	if(application.zcore.functions.zso(form,'event_category_id') EQ ''){
 		form.event_category_id = -1;
 	}
-	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
-	if(form.modalpopforced EQ 1){
-		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
-		application.zcore.functions.zSetModalWindow();
-	}
 	db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)# event_category 
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
 	event_category_deleted = #db.param(0)# and 
@@ -151,6 +155,11 @@
 	qEvent=db.execute("qEvent");
 	application.zcore.functions.zQueryToStruct(qEvent);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
+	if(form.modalpopforced EQ 1){
+		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+		application.zcore.functions.zSetModalWindow();
+	}
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "add">
@@ -161,16 +170,27 @@
 		<cfelse>
 			Edit
 		</cfif> Event Category</h2>
+		<p>* denotes required field.</p>
 	<form action="/z/event/admin/manage-event-category/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_category_id=#form.event_category_id#" method="post">
+		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+					
+					<cfif form.modalpopforced EQ 1>
+						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+					<cfelse>
+						<cfscript>
+						cancelLink="/z/event/admin/manage-event-category/index";
+						</cfscript>
+						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+					</cfif>
+				</td></td>
 			</tr>
 			<tr>
 				<th>Name</th>
-				<td><input type="text" name="event_category_name" value="#htmleditformat(form.event_category_name)#" /></td>
+				<td><input type="text" name="event_category_name" value="#htmleditformat(form.event_category_name)#" /> *</td>
 			</tr> 
 			<tr>
 				<th>Description</th>
@@ -192,7 +212,16 @@
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+					
+					<cfif form.modalpopforced EQ 1>
+						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+					<cfelse>
+						<cfscript>
+						cancelLink="/z/event/admin/manage-event-category/index";
+						</cfscript>
+						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+					</cfif>
+				</td></td>
 			</tr>
 		</table>
 	</form>
@@ -205,11 +234,12 @@
 	application.zcore.functions.zSetPageHelpId("10.5");
 	db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
-	event_category_deleted=#db.param(0)# ";
+	event_category_deleted=#db.param(0)# 
+	ORDER BY event_category_name ASC";
 	qList=db.execute("qList");
 
-	eventCom=application.zcore.app.getAppCFC("event");
-	eventCom.getAdminNavMenu();
+	request.eventCom=application.zcore.app.getAppCFC("event");
+	request.eventCom.getAdminNavMenu();
 	</cfscript>
 	<h2>Manage Event Categories</h2>
 
@@ -218,22 +248,63 @@
 	<table class="table-list">
 		<tr>
 			<th>Name</th>
+			<th>Last Updated</th>
 			<th>Admin</th>
 		</tr>
-		<cfscript>
+		<cfscript> 
 		for(row in qList){
-			echo('<tr>
-				<td>#row.event_category_name#</td>
-				<td>
-					<a href="#eventCom.getCategoryURL(row)#" target="_blank">View</a> | 
-					<a href="/z/event/admin/manage-event-category/edit?event_category_id=#row.event_category_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
-					<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-category/delete?event_category_id=#row.event_category_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
-				</td>
-			</tr>');
-
+			echo('<tr>');
+			getEventCategoryRowHTML(row);
+			echo('</tr>');
 		}
 		</cfscript>  
 	</table>
+	<cfscript>
+	if(qList.recordcount EQ 0){
+		echo('<p>No event categoris found</p>');
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getReturnEventCategoryRowHTML" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	var db=request.zos.queryObject; 
+	db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)# 
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	event_category_deleted = #db.param(0)# and 
+	event_category_id=#db.param(form.event_category_id)#";
+	qCalendar=db.execute("qCalendar"); 
+	
+	request.eventCom=application.zcore.app.getAppCFC("event");
+	savecontent variable="rowOut"{
+		for(row in qCalendar){
+			getEventCategoryRowHTML(row);
+		}
+	}
+
+	echo('done.<script type="text/javascript">
+	window.parent.zReplaceTableRecordRow("#jsstringformat(rowOut)#");
+	window.parent.zCloseModal();
+	</script>');
+	abort;
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getEventCategoryRowHTML" localmode="modern" access="public" roles="member">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	echo('<td>#row.event_category_name#</td>
+		<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_category_updated_datetime)#</td>
+		<td>
+			<a href="#request.eventCom.getCategoryURL(row)#" target="_blank">View</a> | 
+			<a href="/z/event/admin/manage-events/add?event_category_id=#row.event_category_id#">Add Event</a> | 
+			<a href="/z/event/admin/manage-events/index?event_category_id=#row.event_category_id#">Manage Events</a> | 
+			<a href="/z/event/admin/manage-event-category/edit?event_category_id=#row.event_category_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
+			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-category/delete?event_category_id=#row.event_category_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
+		</td>');
+
+	</cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

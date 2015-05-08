@@ -1220,11 +1220,11 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			if(","&arguments.overrideFields&"," CONTAINS ","&columnName&arguments.currentRow&","){
 				overridden = true;
 			}	
-			if(overridden EQ false){
+			if(overridden EQ false or not structkeyexists(struct, columnName&arguments.currentRow)){
 				if(arguments.currentRow GT arguments.queryName.recordcount){
-					StructInsert(struct, columnName&arguments.currentRow, "", true);
+					struct[columnName&arguments.currentRow]="";
 				}else{
-					StructInsert(struct, columnName&arguments.currentRow, arguments.queryName[columnName][arguments.currentRow], true);
+					struct[columnName&arguments.currentRow]=arguments.queryName[columnName][arguments.currentRow];
 				}
 			}
 		}
@@ -1235,11 +1235,11 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			if(","&arguments.overrideFields&"," CONTAINS ","&columnName&","){
 				overridden = true;
 			}
-			if(overridden EQ false){
+			if(overridden EQ false or not structkeyexists(struct, columnName)){
 				if(arguments.currentRow GT arguments.queryName.recordcount){
-					StructInsert(struct, columnName, "", true);
+					struct[columnName]="";
 				}else{
-					StructInsert(struct, columnName, arguments.queryName[columnName][arguments.currentRow], true);
+					struct[columnName]=arguments.queryName[columnName][arguments.currentRow];
 				}
 			}
 		}

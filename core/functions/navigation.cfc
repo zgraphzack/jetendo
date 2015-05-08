@@ -23,7 +23,7 @@
 	searchStruct.textStyle = "small";
 	searchStruct.highlightStyle = "highlight";
 	
-	searchNav = zSearchResultsNav(searchStruct);
+	searchNav = application.zcore.functions.zSearchResultsNav(searchStruct);
 	</cfscript>
 --->
 <cffunction name="zSearchResultsNav" localmode="modern" returntype="any" output="true">

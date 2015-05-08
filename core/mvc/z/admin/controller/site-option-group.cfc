@@ -1496,10 +1496,12 @@ displayGroupCom.add();')&'</pre>');
 					ts.name = "site_option_group_user_group_id_list";
 					ts.friendlyName="";
 					// options for query data
+					ts.multiple=true;
 					ts.query = qGroup2;
 					ts.queryLabelField = "user_group_name";
 					ts.queryValueField = "user_group_id";
-					writeoutput(application.zcore.functions.zInput_Checkbox(ts));
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_group_user_group_id_list', true, 0));
+					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript></td>
 				</tr>
 				<tr>

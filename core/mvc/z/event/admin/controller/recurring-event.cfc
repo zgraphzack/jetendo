@@ -20,8 +20,17 @@
 	form.event_start_datetime=application.zcore.functions.zso(form, 'event_start_datetime', false, now());
 	//form.event_end_datetime=application.zcore.functions.zso(form, 'event_end_datetime', false, '');
 	form.event_recur_ical_rules=application.zcore.functions.zso(form, 'event_recur_ical_rules');
+	form.event_excluded_date_list=application.zcore.functions.zso(form, 'event_excluded_date_list');
+
+	if(form.event_excluded_date_list EQ ""){
+		excludeJson="[]";
+	}else{
+		excludeJson=serializeJson(listToArray(form.event_excluded_date_list,","));
+	}
+
 	</cfscript>
 	<script type="text/javascript">
+	<!---
 	function testRules(){
 		// might have to remove RRULE: from beginning of rules.
 		var r='FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=2';
@@ -34,7 +43,6 @@
 		//daily
 		r='COUNT=0;FREQ=DAILY;INTERVAL=2;UNTIL=20171224T000000Z';
 
-		r='#form.event_recur_ical_rules#';
 		//r='BYDAY=MO,TU,WE,TH,FR;COUNT=0;FREQ=DAILY;INTERVAL=1';
 
 		// weekly
@@ -52,6 +60,7 @@
 		//r='BYMONTH=3;BYDAY=+1SU;COUNT=0;FREQ=YEARLY;INTERVAL=1';
 		//r='BYMONTH=3;BYDAY=-1FR;COUNT=0;FREQ=YEARLY;INTERVAL=1';
 		//r='BYMONTH=4;BYDAY=SU;COUNT=0;FREQ=YEARLY;INTERVAL=1';
+		r='#form.event_recur_ical_rules#';
 		var options={ 
 			//ruleObj:ruleObj,
 			//arrExclude:arrExclude
@@ -73,19 +82,27 @@
 		console.log(rule.all());
 		console.log(rule.between(new Date(2014, 7, 1), new Date(2015, 8, 1)));
 		*/
-	}
+	}--->
 
 	function initRules(){
 
-		var r='#form.event_recur_ical_rules#';
+		var r='#form.event_recur_ical_rules#'; 
 		var options={ 
 			//ruleObj:ruleObj,
 			//arrExclude:arrExclude
 		};
-		var recur=new zRecurringEvent(options);
+
+		var recur=new zRecurringEvent(options); 
 		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
 		console.log(ruleObj);
+		console.log('---');
 		recur.setFormFromRules(ruleObj, false); 
+		var arrExclude=#excludeJson#;
+		for(var i=0;i<arrExclude.length;i++){
+			var date=new Date(arrExclude[i]);
+			console.log(date);
+			recur.addExcludeDate(date);
+		}
 
 		var rule=recur.convertFromRecurringEventToRRule(ruleObj);
 
@@ -158,7 +175,8 @@
 .zRecurDayButton label{ line-height:15px;cursor:pointer;  }
 .zRecurDayButton input{margin:0px; cursor:pointer; margin-top:1px;padding:0px;}
 .zRecurDayButton:hover{ background-color:##FFF;color:##000;}
-.zRecurExcludedDay{width:90px; float:left; margin-right:5px; margin-bottom:5px; color:##000; padding:5px;background-color:##F6F6F6;border:1px solid ##CCC; cursor:pointer; border-radius:5px; }
+.zRecurExcludedDayText{width:75px; float:left;}
+.zRecurExcludedDay{width:100px; float:left; margin-right:5px; margin-bottom:5px; color:##000; padding:5px;background-color:##F6F6F6;border:1px solid ##CCC; cursor:pointer; border-radius:5px; }
 .zRecurExcludedDay:hover{ background-color:##FFF;color:##000;}
 .zRecurExcludedDayDeleteButton{float:right;width:20px; border-radius:5px; text-align:center;background-color:##CCC; color:##000; margin-left:5px;}
 .zRecurCalendarDayExcluded{background-color:##900; color:##FFF;cursor:pointer;}
@@ -170,11 +188,15 @@
 			<h3>Recurrence type &amp; options</h3>
 			<p>Start date: #dateformat(form.event_start_datetime, 'm/d/yyyy')# <input type="hidden" id="event_start_datetime_date" name="event_start_datetime_date" value="#htmleditformat(form.event_start_datetime)#"></p>
 			<p><select size="1" id="zRecurTypeSelect">
+				<option value="None">No Recurrence</option>
 				<option value="Daily">Daily</option>
 				<option value="Weekly">Weekly</option>
 				<option value="Monthly">Monthly</option>
 				<option value="Annually">Annually</option>
 			</select></p>
+			<div id="zRecurTypeNone" class="zRecurType">
+				Recurrence disabled.
+			</div>
 			<div id="zRecurTypeDaily" class="zRecurType">
 				<p><input type="radio" name="zRecurTypeDailyRadio" id="zRecurTypeDailyRadio1" value="0" checked="checked" /> Every 
 				<input type="text" name="zRecurTypeDailyDays" style="width:30px;" id="zRecurTypeDailyDays" value="1" /> Day(s)</p>
@@ -292,11 +314,11 @@
 			<p><input type="radio" name="zRecurTypeRangeRadio" id="zRecurTypeRangeRadio2" value="1" /> Limit to 
 			<input type="text" name="zRecurTypeRangeDays" id="zRecurTypeRangeDays" style="width:30px;" value="1" /> recurrences(s)</p>
 			<p><input type="radio" name="zRecurTypeRangeRadio" id="zRecurTypeRangeRadio3"  value="2" /> Repeat until 
-			<input type="text" name="zRecurTypeRangeDate" id="zRecurTypeRangeDate" style="width:90px;"value="#dateformat(now(), "m/d/yyyy")#" /></p>
+			<input type="text" name="zRecurTypeRangeDate" id="zRecurTypeRangeDate" style="width:90px;"value="" /></p>
 		</div>
 		<div class="zRecurBox">
 			<h3>Exclude Days</h3>
-			<p>Select Date: <input type="text" name="zRecurTypeExcludeDate" id="zRecurTypeExcludeDate" style="width:90px;" value="#dateformat(now(), "m/d/yyyy")#" /> 
+			<p>Select Date: <input type="text" name="zRecurTypeExcludeDate" id="zRecurTypeExcludeDate" style="width:90px;" value="" /> 
 			<input type="button" name="zRecurTypeExcludeDateButton" id="zRecurTypeExcludeDateButton" value="Exclude" /></p>
 
 			<p>Excluded dates listed below. Click them to delete the exclusion.</p>

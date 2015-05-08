@@ -123,7 +123,7 @@
 				var d=new Date(Date.parse(options.arrExclude[i]));
 				arrExclude[d.getTime()]=d;
 			}
-
+ 
 			self.setFormFromRules(options.ruleObj, true); 
 
 			recurType=$("#zRecurTypeSelect").val();
@@ -156,30 +156,23 @@
 					return false;
 				}
 				self.addExcludeDate(date);
+				self.updateState();
 				return false;
 			});
+
+			/*
 			$("#event_start_datetime_date").bind("change", function(){
 				self.drawPreviewCalendars();
 				$("#zRecurTypeExcludeDate").val($(this).val());
 				//$("#event_end_datetime_date").val($(this).val());
 
 			});
+			*/
 			/*$("#event_start_datetime_time").bind("change", function(){
 				//$("#event_end_datetime_time").val($(this).val());
 
 			});*/
-			$('.zRecurEventBox :input').bind("change", function () { 
-				if(disableFormOnChange){
-					return false;
-				}
-				var ruleObj=self.getRulesFromForm();
-				var rule=self.convertFromRecurringEventToRRule(ruleObj);
-				arrMarked=self.getMarkedDates();
-
-				if($("#event_recur_ical_rules", window.parent.document).length){
-					$("#event_recur_ical_rules", window.parent.document).val(rule);
-				}
-
+			$('.zRecurEventBox :input').bind("change", function(){
 				self.drawPreviewCalendars();
 			}); 
 			setTimeout(function(){ 
@@ -189,6 +182,69 @@
 				arrMarked=self.getMarkedDates();
 				self.drawPreviewCalendars();
 			}, 200);
+		};
+		self.updateState=function () { 
+			if(disableFormOnChange){
+				return false;
+			}
+			var ruleObj=self.getRulesFromForm();
+			var rule=self.convertFromRecurringEventToRRule(ruleObj);
+			arrMarked=self.getMarkedDates();
+
+			var arrDate2=[];
+			for(var i in arrMarked){
+				var d=new Date();
+				d.setTime(i);
+				var m=d.getMonth()+1;
+				if(m<10){
+					m="0"+m;
+				}
+				var d2=d.getDate();
+				if(d2<10){
+					d2="0"+d2;
+				}
+				arrDate2.push(d.getFullYear()+"-"+(m)+"-"+d2);
+			}
+			console.log("['"+arrDate2.join("','")+"']");
+
+			if($("#event_recur_ical_rules", window.parent.document).length){
+				$("#event_recur_ical_rules", window.parent.document).val(rule.toString());
+
+				var arrExclude2=[];
+				for(var i in arrExclude){
+					var n=new Date();
+					n.setTime(i);
+					arrExclude2.push((n.getMonth()+1)+"/"+n.getDate()+"/"+n.getFullYear());
+				}
+
+				$("#event_excluded_date_list", window.parent.document).val(arrExclude2.join(","));
+				if($("#zRecurTypeSelect").val() == "None"){
+					$("#recurringConfig1", window.parent.document).html("No");
+				}else{
+					$("#recurringConfig1", window.parent.document).html("Yes");
+				}
+				if($("#zRecurTypeRangeRadio3")[0].checked){
+					$("#event_recur_until_datetime", window.parent.document).val($("#zRecurTypeRangeDate").val());
+				}else{
+					$("#event_recur_until_datetime", window.parent.document).val("");
+				}
+				if(rule.options.count != null){
+					$("#event_recur_count", window.parent.document).val(rule.options.count);
+				}else{
+					$("#event_recur_count", window.parent.document).val(0);
+				}
+				if(rule.options.interval != null){
+					$("#event_recur_interval", window.parent.document).val(rule.options.interval);
+				}else{
+					$("#event_recur_interval", window.parent.document).val(1);
+				}
+				if(rule.options.freq != null){
+					$("#event_recur_frequency", window.parent.document).val(rule.options.freq);
+				}else{
+					$("#event_recur_frequency", window.parent.document).val(1);
+				}
+			}
+
 		};
 		self.buildMonthlyCalendar=function(){
 			var arrHTML=[];
@@ -204,6 +260,7 @@
 			$("#zRecurTypeMonthlyCalendar").html(arrHTML.join(""));
 		};
 		self.drawPreviewCalendars=function(){ 
+			self.updateState();
 			var $calendarDiv=$("#zRecurPreviewCalendars");
 			var arrHTML=[];
 			var count=0;
@@ -315,7 +372,7 @@
 			for(var i=0;i<arrSort.length;i++){
 				var day=new Date(arrSort[i]);
 				var dateAsString=(day.getMonth()+1)+"/"+day.getDate()+"/"+day.getFullYear();
-				arrHTML.push('<div class="zRecurExcludedDay" data-date="'+day.getTime()+'">'+dateAsString+' <div class="zRecurExcludedDayDeleteButton">X</div></div>');
+				arrHTML.push('<div class="zRecurExcludedDay" data-date="'+day.getTime()+'"><div class="zRecurExcludedDayText">'+dateAsString+'</div><div class="zRecurExcludedDayDeleteButton">X</div></div>');
 			}
 			if(arrSort.length == 0){
 				arrHTML.push('No dates are excluded');
@@ -331,7 +388,7 @@
 		};
 		self.setFormFromRules=function(ruleObj, disablePreviewUpdate){
 			var defaultRuleObj={
-				recurType:"Daily",
+				recurType:"None",
 				noEndDate:false,
 				everyWeekday:false,
 				skipDays:1,
@@ -413,9 +470,11 @@
 			}
 			if(typeof ruleObj.endDate != "boolean"){
 				$("#zRecurTypeRangeRadio3").prop("checked", true);
-				ruleObj.endDate=new Date(Date.parse(ruleObj.endDate));
-				var dateAsString=(ruleObj.endDate.getMonth()+1)+"/"+ruleObj.endDate.getDate()+"/"+ruleObj.endDate.getFullYear();
-				$("#zRecurTypeRangeDate").val(dateAsString);
+				if(ruleObj.endDate != ""){
+					ruleObj.endDate=new Date(Date.parse(ruleObj.endDate));
+					var dateAsString=(ruleObj.endDate.getMonth()+1)+"/"+ruleObj.endDate.getDate()+"/"+ruleObj.endDate.getFullYear();
+					$("#zRecurTypeRangeDate").val(dateAsString);
+				}
 			}else if(ruleObj.recurLimit != 0 && ruleObj.recurLimit != null){ 
 				$("#zRecurTypeRangeDays").val(ruleObj.recurLimit);
 				$("#zRecurTypeRangeRadio2").prop("checked", true);
@@ -525,11 +584,14 @@
 
 				}
 			}else if($("#zRecurTypeRangeRadio3").prop("checked")){
-				try{
-					ruleObj.endDate=new Date(Date.parse($("#zRecurTypeRangeDate").val()));
-				}catch(e){
-					alert("Invalid end date");
-					$("#zRecurTypeRangeDate").val("");
+				var d=$("#zRecurTypeRangeDate").val();
+				if(d!=""){
+					try{
+						ruleObj.endDate=new Date(Date.parse(d));
+					}catch(e){
+						alert("Invalid end date");
+						$("#zRecurTypeRangeDate").val("");
+					}
 				}
 			}
 			return ruleObj;
@@ -541,15 +603,35 @@
 			return newDate.getDate();
 		};
 		self.getProjectedDateCount=function(startDate){
+			
+			var d=$("#zRecurTypeRangeDate").val();
+			var endDate=new Date();
+			if(d!=""){
+				try{
+					endDate=new Date(Date.parse(d));
+				}catch(e){
+					alert("Invalid end date");
+					endDate=new Date();
+				}
+			}
+			var d=new Date(startDate.getTime());
+			d.setFullYear(d.getFullYear()+2);
+			if(endDate > d){
+				d=endDate;
+			}
+			var count=(d-startDate)/(1000*60*60*24);
+			console.log("Project "+count+" days | startDate:"+startDate.toString()+" | endDate:"+d.toString());
+			return count;
+			/*
 			var projectedDateCount=0;
-			var monthCount=Math.floor($(".zRecurPreviewBox").width()/calendarWidth)*calendarRows;
+			var monthCount=Math.max(24, Math.floor($(".zRecurPreviewBox").width()/calendarWidth)*calendarRows);
 			var d=new Date(startDate.getTime());
 			for(var i=0;i<monthCount;i++){
 				var daysInMonth=self.getDaysInMonth(d);
 				projectedDateCount+=daysInMonth;
 				d.setMonth(d.getMonth()+1);
 			}
-			return projectedDateCount;
+			return projectedDateCount;*/
 		};
 		self.lastDayOfWeekOfMonth=function(date, day){
 			var month = date.getMonth();
@@ -575,7 +657,8 @@
 				return arrDate;
 			}
 			var startTime=currentDate.getTime();
-			currentDate.setDate(1);
+			// this was wrong...
+			//currentDate.setDate(1);
 			var projectedDateCount=self.getProjectedDateCount(currentDate);
 
 			var ruleObj=self.getRulesFromForm();
@@ -816,6 +899,7 @@
 					break;
 				}
 			}
+
 			//console.log(arrDebugDate);
 			return arrDate;
 		}
@@ -888,8 +972,10 @@
 			if(options.byyearday == null){
 				options.byyearday=[];
 			}
-			if(options.bymonth.length > 1 || options.bynweekday.length > 1 || options.bymonthday.length > 1 || 
-				options.byeaster.length > 0 || options.bynmonthday.length > 1 || options.bysetpos.length > 0){
+			if(options.bymonth.length > 1 || options.bynweekday.length > 1 || 
+				options.byeaster.length > 0 || options.bynmonthday.length > 1 || options.bysetpos.length > 0){ 
+				//options.bymonthday.length > 1 || 
+				console.log(options);
 				throw("Unsupported RRule: "+r);
 			}
 			var ruleObj={};
@@ -914,7 +1000,7 @@
 				}
 				$("#event_end_datetime_time").val(hours+":"+options.dtend.getMinutes()+" "+ampm);
 			}*/
-			if(options.until != null){
+			if(typeof options.until != "undefined" && options.until != null && options.until != ""){
 				ruleObj.endDate=options.until;
 				ruleObj.recurLimit=0;
 			}
@@ -1040,13 +1126,20 @@
 				interval: 1,
 				until: null
 			}; 
-			if(typeof ruleObj.endDate != "undefined"){
+			if(typeof ruleObj.endDate != "undefined" && ruleObj.endDate != "" && ruleObj.endDate != false && ruleObj.endDate != null){
 				options.until=ruleObj.endDate;
+			}else{
+				options.until=null;
 			}
 			if(typeof ruleObj.recurLimit != "undefined"){
 				options.count=ruleObj.recurLimit;
 			}
-			if(ruleObj.recurType=="Annually"){
+			if(ruleObj.recurType=="None"){
+				var rule = new RRule({});
+				console.log(rule);
+				console.log(rule.toString()); 
+				return rule;
+			}else if(ruleObj.recurType=="Annually"){
 				options.freq=RRule.YEARLY;
 				if(ruleObj.annuallyDay !="" && ruleObj.annuallyWhich!="" && ruleObj.annuallyWhich!="Every"){
 					//?
@@ -1111,7 +1204,6 @@
 					options.byweekday=[0,1,2,3,4];
 				}
 			}
-			console.log(options);
 			for(var i in options){
 				if(options[i] != null && typeof options[i].length != "undefined" && options[i].length == 0){
 					delete options[i];

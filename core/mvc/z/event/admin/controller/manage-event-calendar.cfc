@@ -12,6 +12,7 @@
 	site_id = #db.param(request.zos.globals.id)#";
 	qCheck=db.execute("qCheck");
 	
+	form.returnJson=application.zcore.functions.zso(form, 'returnJson', true, 0);
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, 'Event calendar no longer exists', false,true);
 		application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/index?zsid=#request.zsid#');
@@ -29,8 +30,12 @@
 
 		// also delete the categories and events, image libraries, and event_x_category attached to this calendar?
 
-		application.zcore.status.setStatus(Request.zsid, 'Event calendar deleted');
-		application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/index?zsid=#request.zsid#');
+		if(form.returnJson EQ 1){
+			application.zcore.functions.zReturnJson({success:true});
+		}else{
+			application.zcore.status.setStatus(Request.zsid, 'Event calendar deleted');
+			application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/index?zsid=#request.zsid#');
+		}
 		</cfscript>
 	<cfelse>
 		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this event calendar?<br />
@@ -116,7 +121,11 @@
 	}
 	application.zcore.app.getAppCFC("event").searchReindexCalendar(form.event_calendar_id, false);
 
-	application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/index?zsid=#request.zsid#');
+	if(form.modalpopforced EQ 1){
+		application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/getReturnEventCalendarRowHTML?event_calendar_id=#form.event_calendar_id#');
+	}else{
+		application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/index?zsid=#request.zsid#');
+	}
 	</cfscript>
 </cffunction>
 
@@ -136,11 +145,6 @@
 	if(application.zcore.functions.zso(form,'event_calendar_id') EQ ''){
 		form.event_calendar_id = -1;
 	}
-	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
-	if(form.modalpopforced EQ 1){
-		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
-		application.zcore.functions.zSetModalWindow();
-	}
 	db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)# event_calendar 
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
 	event_calendar_deleted = #db.param(0)# and 
@@ -148,6 +152,11 @@
 	qEvent=db.execute("qEvent");
 	application.zcore.functions.zQueryToStruct(qEvent);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0); 
+	if(form.modalpopforced EQ 1){
+		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+		application.zcore.functions.zSetModalWindow();
+	}
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "add">
@@ -158,17 +167,31 @@
 		<cfelse>
 			Edit
 		</cfif> Event Calendar</h2>
+		<p>* denotes required field.</p>
 	<form action="/z/event/admin/manage-event-calendar/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_calendar_id=#form.event_calendar_id#" method="post">
+		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+				
+					<cfif form.modalpopforced EQ 1>
+						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+					<cfelse>
+						<cfscript>
+						cancelLink="/z/event/admin/manage-event-calendar/index";
+						</cfscript>
+						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+					</cfif>
+				</td></td>
 			</tr>
 			<tr>
 				<th>Name</th>
-				<td><input type="text" name="event_calendar_name" value="#htmleditformat(form.event_calendar_name)#" /></td>
+				<td><input type="text" name="event_calendar_name" value="#htmleditformat(form.event_calendar_name)#" /> *</td>
 			</tr> 
+
+
+			
 			<tr>
 				<th>Description</th>
 				<td>
@@ -183,13 +206,45 @@
 				</td>
 			</tr> 
 			<tr>
+				<th>User Access Rights:</th>
+				<td>
+					<cfscript>
+					db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
+					WHERE site_id = #db.param(request.zos.globals.id)# and 
+					user_group_deleted = #db.param(0)# 
+					ORDER BY user_group_name asc"; 
+					var qGroup2=db.execute("qGroup2"); 
+					ts = StructNew();
+					ts.name = "event_calendar_user_group_idlist";
+					ts.friendlyName="";
+					ts.multiple=true;
+					// options for query data
+					ts.query = qGroup2;
+					ts.queryLabelField = "user_group_name";
+					ts.queryValueField = "user_group_id";
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_user_group_idlist', true, 0));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript>
+					(Leave empty unless you want to disable public access to this calendar and all its categories and events.)
+				</td>
+			</tr>
+			<tr>
 				<th>Unique URL</th>
 				<td><input type="text" name="event_calendar_unique_url" value="#htmleditformat(form.event_calendar_unique_url)#" /></td>
 			</tr> 
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+					
+					<cfif form.modalpopforced EQ 1>
+						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+					<cfelse>
+						<cfscript>
+						cancelLink="/z/event/admin/manage-event-calendar/index";
+						</cfscript>
+						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+					</cfif>
+				</td></td>
 			</tr>
 		</table>
 	</form>
@@ -200,13 +255,19 @@
 	db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Event Calendars");	
 	application.zcore.functions.zSetPageHelpId("10.3");
-	db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
-	site_id = #db.param(request.zos.globals.id)# and 
-	event_calendar_deleted=#db.param(0)# ";
-	qList=db.execute("qList");
-
-	eventCom=application.zcore.app.getAppCFC("event");
-	eventCom.getAdminNavMenu();
+	db.sql="select *, if(event.event_id IS NULL, #db.param(0)#, #db.param(1)#) hasEvents 
+	from #db.table("event_calendar", request.zos.zcoreDatasource)#
+	LEFT JOIN #db.table("event", request.zos.zcoreDatasource)# ON 
+	CONCAT(#db.param(',')#, event.event_calendar_id, #db.param(',')#) LIKE concat(#db.param('%,')#, event_calendar.event_calendar_id, #db.param(',%')#) and 
+	event_deleted=#db.param(0)# and 
+	event.site_id = event_calendar.site_id 
+	WHERE event_calendar.site_id =#db.param(request.zos.globals.id)# and 
+	event_calendar_deleted=#db.param(0)# 
+	GROUP BY event_calendar.event_calendar_id 
+	ORDER BY event_calendar_name ASC";
+	qList=db.execute("qList"); 
+	request.eventCom=application.zcore.app.getAppCFC("event");
+	request.eventCom.getAdminNavMenu();
 	</cfscript>
 	<h2>Manage Event Calendars</h2>
 
@@ -215,22 +276,74 @@
 	<table class="table-list">
 		<tr>
 			<th>Name</th>
+			<th>Last Updated</th>
 			<th>Admin</th>
 		</tr>
 		<cfscript>
 		for(row in qList){
-			echo('<tr>
-				<td>#row.event_calendar_name#</td>
-				<td>
-					<a href="#eventCom.getCalendarURL(row)#" target="_blank">View</a> | 
-					<a href="/z/event/admin/manage-event-calendar/edit?event_calendar_id=#row.event_calendar_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
-					<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-calendar/delete?event_calendar_id=#row.event_calendar_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
-				</td>
-			</tr>');
-
+			echo('<tr>');
+			getEventCalendarRowHTML(row);
+			echo('</tr>');
 		}
 		</cfscript>  
 	</table>
+	<cfscript>
+	if(qList.recordcount EQ 0){
+		echo('<p>No event categoris found</p>');
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getReturnEventCalendarRowHTML" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	var db=request.zos.queryObject; 
+	db.sql="SELECT *, if(event.event_id IS NULL, #db.param(0)#, #db.param(1)#) hasEvents 
+	FROM #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	LEFT JOIN #db.table("event", request.zos.zcoreDatasource)# ON 
+	CONCAT(#db.param(',')#, event.event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&form.event_calendar_id&',%')# and 
+	event_deleted=#db.param(0)# and 
+	event.site_id = event_calendar.site_id 
+	WHERE event_calendar.site_id =#db.param(request.zos.globals.id)# and 
+	event_calendar_deleted = #db.param(0)# and 
+	event_calendar.event_calendar_id=#db.param(form.event_calendar_id)# 
+	GROUP BY event_calendar.event_calendar_id ";
+	qCalendar=db.execute("qCalendar"); 
+	
+	request.eventCom=application.zcore.app.getAppCFC("event");
+	savecontent variable="rowOut"{
+		for(row in qCalendar){
+			getEventCalendarRowHTML(row);
+		}
+	}
+
+	echo('done.<script type="text/javascript">
+	window.parent.zReplaceTableRecordRow("#jsstringformat(rowOut)#");
+	window.parent.zCloseModal();
+	</script>');
+	abort;
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getEventCalendarRowHTML" localmode="modern" access="public" roles="member">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	echo('<td>#row.event_calendar_name#</td>
+	<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_calendar_updated_datetime)#</td>
+	<td>
+		<a href="#request.eventCom.getCalendarURL(row)#" target="_blank">View</a> | 
+		<a href="/z/event/admin/manage-events/add?event_calendar_id=#row.event_calendar_id#">Add Event</a> | 
+		<a href="/z/event/admin/manage-events/index?event_calendar_id=#row.event_calendar_id#">Manage Events</a> | 
+		<a href="/z/event/admin/manage-event-calendar/edit?event_calendar_id=#row.event_calendar_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a>');
+		if(not row.hasEvents){
+			echo(' | 
+			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-calendar/delete?event_calendar_id=#row.event_calendar_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>');
+		}else{
+			echo(' | Delete disabled');
+		}
+	echo('</td>');
+
+	</cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

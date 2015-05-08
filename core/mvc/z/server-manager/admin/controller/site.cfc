@@ -496,6 +496,10 @@
        	</cftry>
     </cfif>
 	<cfscript>
+	if(form.site_ip_address EQ ""){
+		application.zcore.status.setStatus(Request.zsid, "IP Address is required.",form,true);
+		application.zcore.status.setFieldError(Request.zsid, "site_ip_address");
+	}
 	if(application.zcore.functions.zEmailValidate(form.site_admin_email) EQ false){
 		application.zcore.status.setStatus(Request.zsid, "Site Admin Email is required and must be a valid email address.",form,true);
 		application.zcore.status.setFieldError(Request.zsid, "site_admin_email");
@@ -1135,9 +1139,9 @@
 				<cfscript>
 				ipStruct=application.zcore.functions.getSystemIpStruct();
 
-				if(form.site_ip_address EQ ""){
+				/*if(form.site_ip_address EQ ""){
 					form.site_ip_address=ipStruct.defaultIp;
-				}
+				}*/
 				ipStruct2={};
 				if(structkeyexists(request.zos, 'arrAdditionalLocalIp')){
 					for(i=1;i LTE arraylen(request.zos.arrAdditionalLocalIp);i++){

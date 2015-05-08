@@ -432,6 +432,8 @@ if(!$fail){
 			}
 			array_push($arrRow, $row);
 		}
+
+		$uniqueHost=array();
 		if(!$isTestServer){
 			// fix /etc/hosts
 			$arrHosts=array();
@@ -471,8 +473,10 @@ if(!$fail){
 
 				if($shortDomain != $domain){
 					array_push($arrHosts, $row["site_ip_address"]." ".$shortDomain);
+					$uniqueHost[$shortDomain]=true;
 				}
 				array_push($arrHosts, $row["site_ip_address"]." ".$domain);
+				$uniqueHost[$domain]=true;
 
 			}
 			$hostContents=implode("\n", $arrHosts);
@@ -493,6 +497,40 @@ if(!$fail){
 			$fileBeginContents=substr($contents, 0, $begin+strlen($beginString));
 			$fileContentsHosts=trim(substr($contents, $begin+strlen($beginString), $end-($begin+strlen($beginString))));
 			$fileEndContents=substr($contents, $end);
+
+			$arrLine=explode("\n", $fileBeginContents);
+			$arrNew=array();
+			for($i=0;$i<count($arrLine);$i++){
+				$arrLine2=explode(" ",trim(str_replace("\t", " ", $arrLine[$i])));
+				if(count($arrLine2)){
+					$d=$arrLine2[count($arrLine2)-1];
+					if(isset($uniqueHost[$d])){
+						//echo('Skipping '.$d."\n");
+						continue;
+					}else{
+						$uniqueHost[$d]=true;
+					}
+				}
+				array_push($arrNew, trim($arrLine[$i]));
+			}
+			$fileBeginContents=implode("\n", $arrNew);
+			$arrLine=explode("\n", $fileEndContents);
+			$arrNew=array();
+			for($i=0;$i<count($arrLine);$i++){
+				$arrLine2=explode(" ",trim(str_replace("\t", " ", $arrLine[$i])));
+				if(count($arrLine2)){
+					$d=$arrLine2[count($arrLine2)-1];
+					if(isset($uniqueHost[$d])){
+						//echo('Skipping '.$d."\n");
+						continue;
+					}else{
+						$uniqueHost[$d]=true;
+					}
+				}
+				array_push($arrNew, trim($arrLine[$i]));
+			}
+			$fileEndContents=implode("\n", $arrNew);
+
 			if($fileContentsHosts != $hostContents){
 				$newFileContents=$fileBeginContents.$hostContents.$fileEndContents;
 
@@ -510,7 +548,7 @@ if(!$fail){
 					$dnsMasqPath=`/usr/bin/which dnsmasq`;
 					$servicePath=`/usr/bin/which service`;
 					if(trim($dnsMasqPath) != ""){
-						$cmd=$servicePath." dnsmasq reload";
+						$cmd=$servicePath." dnsmasq restart";
 						echo $cmd."\n";
 						`$cmd`;
 					}
@@ -520,6 +558,7 @@ if(!$fail){
 		}
 	}
 }
+
 if(date('H') == '00'){
 	// daily verification
 	if(file_exists('/var/run/reboot-required')){

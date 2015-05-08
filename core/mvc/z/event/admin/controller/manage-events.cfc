@@ -10,6 +10,8 @@
 	WHERE event_id= #db.param(application.zcore.functions.zso(form,'event_id'))# and 
 	event_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
+
+	form.returnJson=application.zcore.functions.zso(form, 'returnJson', true, 0);
 	qCheck=db.execute("qCheck");
 	
 	if(qCheck.recordcount EQ 0){
@@ -37,8 +39,12 @@
 
 
 
-		application.zcore.status.setStatus(Request.zsid, 'Event deleted');
-		application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+		if(form.returnJson EQ 1){
+			application.zcore.functions.zReturnJson({success:true});
+		}else{
+			application.zcore.status.setStatus(Request.zsid, 'Event deleted');
+			application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+		}
 		</cfscript>
 	<cfelse>
 		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this Event?<br />
@@ -65,6 +71,7 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events", true);	
 	form.site_id = request.zos.globals.id;
 	ts.event_name.required = true;
+	ts.event_calendar_id.required = true;
 	ts.event_start_datetime_date.required = true;
 	ts.event_end_datetime_date.required = true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
@@ -82,7 +89,7 @@
 	if(form.event_uid EQ ""){
 		form.event_uid=createuuid();
 	}
-
+	form.event_category_id=application.zcore.functions.zso(form, 'event_category_id');
 
 	if(form.event_start_datetime_date NEQ "" and isdate(form.event_start_datetime_date)){
 		form.event_start_datetime=dateformat(form.event_start_datetime_date, 'yyyy-mm-dd');
@@ -99,9 +106,14 @@
 	if(form.method EQ 'insert'){
 		form.event_created_datetime=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	}
+
+	if(form.event_recur_until_datetime NEQ ""){
+		form.event_recur_until_datetime=dateformat(form.event_recur_until_datetime, 'yyyy-mm-dd')&' '&timeformat(form.event_recur_until_datetime, 'HH:mm:ss');
+	}
+
 	form.event_updated_datetime=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
  
-
+	application.zcore.functions.zcreatedirectory(request.zos.globals.privateHomedir&"zupload/event/");
 
 	uniqueChanged=false;
 	oldURL='';
@@ -146,6 +158,32 @@
 		}
 		
 	} 
+	application.zcore.functions.zUploadFileToDb("event_file1", request.zos.globals.privateHomedir&"zupload/event/", 'event', 'event_id', application.zcore.functions.zso(form, 'event_file1_deleted', true, 0), request.zos.zcoreDatasource); 
+	application.zcore.functions.zUploadFileToDb("event_file2", request.zos.globals.privateHomedir&"zupload/event/", 'event', 'event_id', application.zcore.functions.zso(form, 'event_file2_deleted', true, 0), request.zos.zcoreDatasource); 
+
+	db.sql="delete from #db.table("event_x_category", request.zos.zcoreDatasource)# WHERE 
+	event_id = #db.param(form.event_id)# and 
+	event_x_category_deleted=#db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	qDelete=db.execute("qDelete");
+
+	if(form.event_category_id NEQ ""){
+		arrCategory=listToArray(form.event_category_id, ',');
+		for(i=1;i LTE arraylen(arrCategory);i++){
+			ts={
+				struct:{
+					event_id:form.event_id,
+					site_id:request.zos.globals.id,
+					event_x_category_deleted:0,
+					event_x_category_updated_datetime:request.zos.mysqlnow,
+					event_category_id:arrCategory[i]
+				},
+				table:"event_x_category",
+				datasource:request.zos.zcoreDatasource
+			}
+			application.zcore.functions.zInsert(ts);
+		}
+	}
 
 	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'site_option_app_id'));
 	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'event_image_library_id'));
@@ -155,9 +193,16 @@
 	}
 	application.zcore.app.getAppCFC("event").searchReindexEvent(form.event_id, false);
 
-	application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+	if(form.modalpopforced EQ 1){
+		application.zcore.functions.zRedirect('/z/event/admin/manage-events/getReturnEventRowHTML?event_id=#form.event_id#');
+	}else{
+		application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+	}
 	</cfscript>
 </cffunction>
+
+
+	
 
 <cffunction name="add" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -175,19 +220,38 @@
 	if(application.zcore.functions.zso(form,'event_id') EQ ''){
 		form.event_id = -1;
 	}
+
+	db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)#  
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	event_calendar_deleted = #db.param(0)# 
+	LIMIT #db.param(0)#, #db.param(1)#";
+	qCalendar=db.execute("qCalendar");
+	if(qCalendar.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "You must add a calendar first.", form, true);
+		application.zcore.functions.zRedirect("/z/event/admin/manage-event-calendar/add?zsid=#request.zsid#");
+	}
+
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	event_deleted = #db.param(0)# and 
+	event_id=#db.param(form.event_id)#";
+	qEvent=db.execute("qEvent"); 
+	application.zcore.functions.zQueryToStruct(qEvent, form, 'event_calendar_id,event_category_id'); 
+	application.zcore.functions.zStatusHandler(request.zsid,true);
+	application.zcore.functions.zRequireJqueryUI();
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
 	if(form.modalpopforced EQ 1){
 		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
 		application.zcore.functions.zSetModalWindow();
 	}
-	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
-	WHERE site_id =#db.param(request.zos.globals.id)# and 
-	event_deleted = #db.param(0)# and 
-	event_id=#db.param(form.event_id)#";
-	qEvent=db.execute("qEvent");
-	application.zcore.functions.zQueryToStruct(qEvent);
-	application.zcore.functions.zStatusHandler(request.zsid,true);
-	application.zcore.functions.zRequireJqueryUI();
+	if(currentMethod EQ "add"){
+		form.event_uid='';
+		form.event_id="";
+		form.event_file1="";
+		form.event_file2="";
+		form.event_image_library_id="";
+		form.event_unique_url="";
+	}
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "add">
@@ -198,13 +262,24 @@
 		<cfelse>
 			Edit
 		</cfif> Event</h2>
+		<p>* denotes required field.</p>
 	<form action="/z/event/admin/manage-events/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_id=#form.event_id#" method="post">
 		<input name="event_uid" type="hidden" value="#htmleditformat(application.zcore.functions.zso(form, 'event_uid'))#" />
+		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">  
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+
+					<cfif form.modalpopforced EQ 1>
+						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+					<cfelse>
+						<cfscript>
+						cancelLink="/z/event/admin/manage-events/index";
+						</cfscript>
+						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+					</cfif>
+				</td>
 			</tr>
 			<tr>
 				<th>Calendar</th>
@@ -226,12 +301,12 @@
 					ts.queryValueField = "event_calendar_id"; 
 					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id', true, 0));
 					application.zcore.functions.zInputSelectBox(ts);
-					</cfscript>
+					</cfscript> *
 				</td>
 			</tr>  
 			<tr>
 				<th>Name</th>
-				<td><input type="text" name="event_name" style="width:500px;" value="#htmleditformat(form.event_name)#" /></td>
+				<td><input type="text" name="event_name" style="width:500px;" value="#htmleditformat(form.event_name)#" /> *</td>
 			</tr>  
 			<tr>
 				<th>Category</th>
@@ -254,7 +329,7 @@
 					ts.queryValueField = "event_category_id"; 
 					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_category_id', true, 0));
 					application.zcore.functions.zInputSelectBox(ts);
-					</cfscript>
+					</cfscript> 
 				</td>
 			</tr>  
 			<tr>
@@ -292,13 +367,13 @@
 				<td>
 					<input type="text" name="event_start_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(form.event_start_datetime, 'mm/dd/yyyy'))#" size="9" />
 					<input type="text" name="event_start_datetime_time" id="event_start_datetime_time" value="#htmleditformat(timeformat(form.event_start_datetime, 'HH:mm:ss'))#" size="9" />
-					 </td>
+					 * </td>
 			</tr> 
 
 			<tr>
 				<th>End Date</th>
 				<td><input type="text" name="event_end_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(form.event_end_datetime, 'mm/dd/yyyy'))#" size="9" />
-					<input type="text" name="event_end_datetime_time" id="event_end_datetime_time" value="#htmleditformat(timeformat(form.event_end_datetime, 'HH:mm:ss'))#" size="9" />
+					<input type="text" name="event_end_datetime_time" id="event_end_datetime_time" value="#htmleditformat(timeformat(form.event_end_datetime, 'HH:mm:ss'))#" size="9" /> *
 				</td>
 			</tr>  
 			<tr>
@@ -374,13 +449,17 @@
 			</tr>  
 			<tr>
 				<th>Recurring Event</th>
-				<td><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Show Config Here
+				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1"><cfif form.event_recur_ical_rules NEQ "">Yes<cfelse>No</cfif></span></strong>
+				 </span>
 				<input type="hidden" name="event_recur_ical_rules" id="event_recur_ical_rules" value="#htmleditformat(form.event_recur_ical_rules)#" />
+				<input type="hidden" name="event_excluded_date_list" id="event_excluded_date_list" value="#htmleditformat(form.event_excluded_date_list)#" />
+				<input type="hidden" name="event_recur_until_datetime" id="event_recur_until_datetime" value="#htmleditformat(form.event_recur_until_datetime)#" />
+				<input type="hidden" name="event_recur_count" id="event_recur_count" value="#htmleditformat(form.event_recur_count)#" />
+				<input type="hidden" name="event_recur_interval" id="event_recur_interval" value="#htmleditformat(form.event_recur_interval)#" />
+				<input type="hidden" name="event_recur_frequency" id="event_recur_frequency" value="#htmleditformat(form.event_recur_frequency)#" />
+
 				</td>
-			</tr> 
-			<!--- 
-fileName=application.zcore.functions.zUploadFile("filepath", request.zos.globals.privateHomedir&"zupload/user/");
-			 --->
+			</tr>  
 			<!--- 
 			http://www.farbeyondcode.com.127.0.0.2.xip.io/z/event/admin/recurring-event/index?event_start_datetime=04/30/2015%20&event_end_datetime=06/17/2015%20&event_recur_ical_rules=&ztv=0.33506121183745563
 			 --->
@@ -391,10 +470,12 @@ fileName=application.zcore.functions.zUploadFile("filepath", request.zos.globals
 				var endDate=$("##event_end_datetime_date").val();
 				var endTime=$("##event_end_datetime_time").val();
 				var rules=$("##event_recur_ical_rules").val();
+				var exclude=$("##event_excluded_date_list").val();
 				var d={
-					"event_start_datetime": startDate+" "+startTime,
-					"event_end_datetime": endDate+" "+endTime, 
-					"event_recur_ical_rules": rules
+					"event_start_datetime": escape(startDate+" "+startTime),
+					"event_end_datetime": escape(endDate+" "+endTime), 
+					"event_recur_ical_rules": escape(rules),
+					"event_excluded_date_list": escape(exclude)
 				};
 				var a=[];
 				for(var i in d){
@@ -450,7 +531,16 @@ Map Coordinates	Map Location Picker
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save</button>
-					<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button></td>
+					
+					<cfif form.modalpopforced EQ 1>
+						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+					<cfelse>
+						<cfscript>
+						cancelLink="/z/event/admin/manage-events/index";
+						</cfscript>
+						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+					</cfif>
+				</td></td>
 			</tr>
 		</table>
 	</form>
@@ -460,41 +550,262 @@ Map Coordinates	Map Location Picker
 	<cfscript>
 	db=request.zos.queryObject;
 
- 
+	application.zcore.functions.zRequireJqueryUI();
+ 	form.event_recur=application.zcore.functions.zso(form, 'event_recur');
+ 	form.event_start_date=application.zcore.functions.zso(form, 'event_start_date');
+ 	form.event_end_date=application.zcore.functions.zso(form, 'event_end_date');
+ 	form.event_searchtext=application.zcore.functions.zso(form, 'event_searchtext');
+ 	form.event_category_id=application.zcore.functions.zso(form, 'event_category_id');
+ 	form.event_calendar_id=application.zcore.functions.zso(form, 'event_calendar_id');
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events");
+
+
+	perpage=10;
+	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
+	if(form.zIndex LT 1){
+		form.zIndex=1;
+	}
+
+	searchOn=false;
 	application.zcore.functions.zSetPageHelpId("10.1");
 	db.sql="select * from #db.table("event", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
+	if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
+		searchOn=true;
+		db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+	}
+	if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
+		searchOn=true;
+		db.sql&=" and event_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+	}
+	if(form.event_recur EQ "1"){
+		searchOn=true;
+		db.sql&=" and event_recur_ical_rules <> #db.param('')# ";
+	}
+	if(form.event_searchtext NEQ ""){
+		searchOn=true;
+		db.sql&=" and concat(event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#form.event_searchtext#%')# ";
+	}
+	if(form.event_category_id NEQ ""){
+		searchOn=true;
+		db.sql&=" and CONCAT(#db.param(',')#,event_category_id, #db.param(',')#) LIKE #db.param('%,'&form.event_category_id&',%')# ";
+	}
+	if(form.event_calendar_id NEQ ""){
+		searchOn=true;
+		db.sql&=" and CONCAT(#db.param(',')#,event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&form.event_calendar_id&',%')# ";
+	}
+	db.sql&=" LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)#";
 	qList=db.execute("qList");
 
+	db.sql="select count(event_id) count from #db.table("event", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	event_deleted=#db.param(0)# ";
+	if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
+		db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+	}
+	if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
+		db.sql&=" and event_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+	}
+	if(form.event_recur EQ "1"){
+		db.sql&=" and event_recur_ical_rules <> #db.param('')# ";
+	}
+	if(form.event_searchtext NEQ ""){
+		db.sql&=" and concat(event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description) like #db.param('%#form.event_searchtext#%')# ";
+	}
+	if(form.event_category_id NEQ ""){ 
+		db.sql&=" and CONCAT(#db.param(',')#,event_category_id, #db.param(',')#) LIKE #db.param('%,'&form.event_category_id&',%')# ";
+	}
+	if(form.event_calendar_id NEQ ""){ 
+		db.sql&=" and CONCAT(#db.param(',')#,event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&form.event_calendar_id&',%')# ";
+	}
+	qCount=db.execute("qCount");
 	
-	eventCom=application.zcore.app.getAppCFC("event");
-	eventCom.getAdminNavMenu();
+	request.eventCom=application.zcore.app.getAppCFC("event");
+	request.eventCom.getAdminNavMenu();
+	if(searchOn){
+		echo('<h2>Manage Events | Search Results</h2>');
+	}else{
+		echo('<h2>Manage Events</h2>');
+	}
+
+
+	application.zcore.skin.addDeferredScript('   
+		$( "##event_start_date" ).datepicker();
+		$( "##event_end_date" ).datepicker();
+	'); 
 	</cfscript>
-	<h2>Manage Events</h2>
 
 	<p><a href="/z/event/admin/manage-events/add">Add Event</a></p>
+	<hr />
+	<div style="width:100%; float:left;">
+		<form action="/z/event/admin/manage-events/index" method="get">
+		<div style="width:150px;margin-bottom:10px; float:left; "><h2>Search Events</h2>
+		</div>
+		<div style="width:170px; margin-bottom:10px;float:left;">
+			Keyword:<br /> 
+			<input type="text" name="event_searchtext" value="#form.event_searchtext#" style="width:150px; " />
+		</div>
+		<div style="width:90px;margin-bottom:10px;float:left;">
+			Start: <br />
+			<input type="text" name="event_start_date" id="event_start_date" value="#form.event_start_date#" style="width:70px; " />
+		</div>
+		<div style="width:90px;margin-bottom:10px;float:left;">
+			End: <br />
+			<input type="text" name="event_end_date" id="event_end_date" value="#form.event_end_date#" style="width:70px; " />
+		</div>
+		<div style="width:110px;margin-bottom:10px;float:left;">
+			Recurring: <br />
+			#application.zcore.functions.zInput_Boolean("event_recur")#
+		</div>
+		<div style="width:120px;margin-bottom:10px;float:left;">
+			Calendar: <br />
+			<cfscript>
+			db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
+			site_id = #db.param(request.zos.globals.id)# and 
+			event_calendar_deleted=#db.param(0)# 
+			ORDER BY event_calendar_name ASC";
+			qCalendar=db.execute("qCalendar"); 
+			ts = StructNew();
+			ts.name = "event_calendar_id"; 
+			ts.size = 1; 
+			ts.inlineStyle="width:100px;";
+			ts.multiple = false; 
+			ts.query = qCalendar;
+			ts.queryLabelField = "event_calendar_name";
+			ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
+			ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
+			ts.queryValueField = "event_calendar_id"; 
+			//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id', true, 0));
+			application.zcore.functions.zInputSelectBox(ts);
+			</cfscript>
+		</div>
+		<div style="width:120px;margin-bottom:10px;float:left;">
+			Category: <br />
+			<cfscript>
+			db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# WHERE 
+			site_id = #db.param(request.zos.globals.id)# and 
+			event_category_deleted=#db.param(0)# 
+			ORDER BY event_category_name ASC";
+			qCategory=db.execute("qCategory");
 
+			ts = StructNew();
+			ts.name = "event_category_id"; 
+			ts.size = 1; 
+			ts.multiple = false; 
+			ts.inlineStyle="width:100px;";
+			ts.query = qCategory;
+			ts.queryLabelField = "event_category_name";
+			ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
+			ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
+			ts.queryValueField = "event_category_id"; 
+			//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_category_id', true, 0));
+			application.zcore.functions.zInputSelectBox(ts);
+			</cfscript> 
+
+
+		</div>
+		<div style="width:150px;margin-bottom:10px;float:left;">&nbsp;<br />
+			<input type="submit" name="search1" value="Search" />
+			<cfif searchOn>
+				<input type="button" name="search2" value="Show All" onclick="window.location.href='/z/event/admin/manage-events/index';">
+			</cfif>
+		</div>
+		</form>
+	</div>
+	<hr />
+	<cfscript>
+	searchStruct = StructNew(); 
+	searchStruct.showString = "Results ";
+	searchStruct.url = "/z/event/admin/manage-events/index?event_searchtext=#form.event_searchtext#&event_calendar_id=#form.event_calendar_id#&event_category_id=#form.event_category_id#&event_start_date=#form.event_start_date#&event_end_date=#form.event_end_date#&event_recur=#form.event_recur#";
+	searchStruct.indexName = "zIndex";
+	searchStruct.buttons = 5;
+	searchStruct.count = qCount.count;
+	searchStruct.index = form.zIndex;
+	searchStruct.perpage = perpage; 
+	
+	searchNav = application.zcore.functions.zSearchResultsNav(searchStruct);
+	if(qCount.count GT perpage){
+		echo(searchNav);
+	}
+	</cfscript>
 	<table class="table-list">
 		<tr>
 			<th>Name</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+			<th>Recurring</th>
+			<th>Last Updated</th>
 			<th>Admin</th>
 		</tr>
 		<cfscript>
 		for(row in qList){
-			echo('<tr>
-				<td>#row.event_name#</td>
-				<td>
-					<a href="#eventCom.getEventURL(row)#" target="_blank">View</a> | 
-					<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
-					<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
-				</td>
-			</tr>');
-
+			echo('<tr>');
+			getEventRowHTML(row);
+			echo('</tr>');
 		}
 		</cfscript>  
 	</table>
+	<cfscript>
+	
+	if(qList.recordcount EQ 0){
+		echo('<p>No events found</p>');
+	}
+	if(qCount.count GT perpage){
+		echo(searchNav);
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="getReturnEventRowHTML" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	var db=request.zos.queryObject; 
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	event_deleted = #db.param(0)# and 
+	event_id=#db.param(form.event_id)#";
+	qEvent=db.execute("qEvent"); 
+	
+	request.eventCom=application.zcore.app.getAppCFC("event");
+	savecontent variable="rowOut"{
+		for(row in qEvent){
+			getEventRowHTML(row);
+		}
+	}
+
+	echo('done.<script type="text/javascript">
+	window.parent.zReplaceTableRecordRow("#jsstringformat(rowOut)#");
+	window.parent.zCloseModal();
+	</script>');
+	abort;
+	</cfscript>
+</cffunction>
+	
+<cffunction name="getEventRowHTML" localmode="modern" access="public" roles="member">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	echo('
+		<td>#row.event_name#</td>
+		<td>#dateformat(row.event_start_datetime, 'm/d/yyyy')#</td>
+		<td>#dateformat(row.event_end_datetime, 'm/d/yyyy')#</td>
+		<td>');
+	if(row.event_recur_ical_rules NEQ ""){
+		echo('Yes');
+	}else{
+		echo('No');
+	}
+		echo('</td>
+		<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_updated_datetime)#</td>
+		<td>
+			<a href="#request.eventCom.getEventURL(row)#" target="_blank">View</a> | 
+			<a href="/z/event/admin/manage-events/add?event_id=#row.event_id#">Copy</a> | 
+			<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
+			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
+		</td>
+	');
+
+	</cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

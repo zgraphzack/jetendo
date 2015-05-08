@@ -99,11 +99,52 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	ts=application.zcore.app.getInstance(this.app_id);
 	db=request.zos.queryObject;
 
+	db.sql="SELECT * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and  
+	event_calendar_deleted = #db.param(0)#
+	ORDER BY event_calendar_unique_url DESC";
+	qF=db.execute("qF");
+
+	nonPublic={};
+	for(row in qF){
+		if(row.event_calendar_user_group_idlist NEQ ""){
+			nonPublic[row.event_calendar_id]=true;
+		}else{
+			t2=StructNew();
+			t2.groupName="Event Calendar";
+			t2.url=request.zos.currentHostName&getCalendarURL(row);
+			t2.title=row.event_calendar_name;
+			arrayappend(arguments.arrUrl,t2);
+		}
+	}
+	arrCalendar=structkeyarray(nonPublic); 
+	db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
+	WHERE site_id=#db.param(request.zos.globals.id)# and  
+	event_category_deleted = #db.param(0)# ";
+	if(arraylen(arrCalendar)){
+		for(i=1;i LTE arraylen(arrCalendar);i++){
+			db.sql&=" and CONCAT(#db.param(",")#, event_calendar_id, #db.param(",")#) NOT LIKE #db.param("%,#arrCalendar[i]#,%")# ";
+		}
+	}
+	db.sql&="ORDER BY event_category_unique_url DESC";
+	qF=db.execute("qF");
+	for(row in qF){
+		t2=StructNew();
+		t2.groupName="Event Category";
+		t2.url=request.zos.currentHostName&getCategoryURL(row);
+		t2.title=row.event_category_name;
+		arrayappend(arguments.arrUrl,t2);
+	}
 
 	db.sql="SELECT * from #db.table("event", request.zos.zcoreDatasource)# 
-	WHERE site_id=#db.param(arguments.site_id)# and 
-	event_unique_url<>#db.param('')# and 
-	event_deleted = #db.param(0)#
+	WHERE site_id=#db.param(request.zos.globals.id)# and  
+	event_deleted = #db.param(0)#";
+	if(arraylen(arrCalendar)){ 
+		for(i=1;i LTE arraylen(arrCalendar);i++){
+			db.sql&=" and CONCAT(#db.param(",")#, event_calendar_id, #db.param(",")#) NOT LIKE #db.param("%,#arrCalendar[i]#,%")# ";
+		}
+	}
+	db.sql&="
 	ORDER BY event_unique_url DESC";
 	qF=db.execute("qF");
 	for(row in qF){
@@ -111,32 +152,6 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		t2.groupName="Event";
 		t2.url=request.zos.currentHostName&getEventURL(row);
 		t2.title=row.event_name;
-		arrayappend(arguments.arrUrl,t2);
-	}
-	db.sql="SELECT * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
-	WHERE site_id=#db.param(arguments.site_id)# and 
-	event_calendar_unique_url<>#db.param('')# and 
-	event_calendar_deleted = #db.param(0)#
-	ORDER BY event_calendar_unique_url DESC";
-	qF=db.execute("qF");
-	for(row in qF){
-		t2=StructNew();
-		t2.groupName="Event Calendar";
-		t2.url=request.zos.currentHostName&getEventCalendarURL(row);
-		t2.title=row.event_calendar_name;
-		arrayappend(arguments.arrUrl,t2);
-	}
-	db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
-	WHERE site_id=#db.param(arguments.site_id)# and 
-	event_category_unique_url<>#db.param('')# and 
-	event_category_deleted = #db.param(0)#
-	ORDER BY event_category_unique_url DESC";
-	qF=db.execute("qF");
-	for(row in qF){
-		t2=StructNew();
-		t2.groupName="Event Category";
-		t2.url=request.zos.currentHostName&getEventURL(row);
-		t2.title=row.event_category_name;
 		arrayappend(arguments.arrUrl,t2);
 	}
 	return arguments.arrURL;
@@ -305,10 +320,269 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	</cfscript>
 </cffunction>
 
+<cffunction name="testRule" localmode="modern" access="remote">
+	<cfargument name="struct" type="struct" required="yes">
+	<cfscript>
+	struct=arguments.struct;
+	arrDate=request.ical.getRecurringDates(struct.startDate, struct.endDate, struct.rule, struct.excludeDayList);
+
+	//writedump(arrDate);abort;
+	dateStruct={};
+	for(i=1;i LTE arraylen(struct.arrCorrectDates);i++){
+		dateStruct[dateformat(struct.arrCorrectDates[i], 'yyyy-mm-dd')]=true;
+	}
+	arrError=[];
+	arrDate2=[];
+	for(i=1;i LTE arraylen(arrDate);i++){
+		d=dateformat(arrDate[i], 'yyyy-mm-dd');
+		arrayAppend(arrDate2, d);
+		if(not structkeyexists(dateStruct, d)){
+			arrayAppend(arrError, "Extra date returned that isn't correct: "&d);
+		}else{
+			structdelete(dateStruct, d);
+		}
+	}
+	arrDate3=structkeyarray(dateStruct);
+	arraysort(arrDate3, "text", "asc");
+	for(i=1;i LTE arraylen(arrDate3);i++){
+		i2=arrDate3[i];
+		arrayAppend(arrError, "Date expected but not matched: "&i2);
+	}
+	if(arraylen(arrError)){
+	writedump(struct);
+	writedump(arrDate);
+		writedump(arrError);abort;
+		throw("Invalid rule: #struct.id#<br />Matched Dates: #arrayToList(arrDate2, ", ")#<br /><br />Error details:<br />"&arrayToList(arrError, "<br>"));
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="testRules" localmode="modern" access="remote">
+	<cfscript> 
+
+	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	request.ical.init("");
+
+
+
+	ts={
+		id:"Rule 1",
+		startDate:"5/7/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=5;BYMONTHDAY=4;COUNT=0;FREQ=YEARLY;INTERVAL=1;UNTIL=20170514T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-07","2015-06-04","2016-06-04"]
+	}
+	testRule(ts);
+
+
+	ts={
+		id:"Rule 2",
+		startDate:"5/7/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=MO;COUNT=0;FREQ=WEEKLY;INTERVAL=1;UNTIL=20151129T040000Z",
+		excludeDayList:"10/12/2015",
+		arrCorrectDates:['2015-05-07','2015-05-11','2015-05-18','2015-05-25','2015-06-01','2015-06-08','2015-06-15','2015-06-22','2015-06-29','2015-07-06','2015-07-13','2015-07-20','2015-07-27','2015-08-03','2015-08-10','2015-08-17','2015-08-24','2015-08-31','2015-09-07','2015-09-14','2015-09-21','2015-09-28','2015-10-05','2015-10-19','2015-10-26','2015-11-02','2015-11-09','2015-11-16','2015-11-23']
+	}
+	testRule(ts);
+
+
+	ts={
+		id:"Rule 3",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=SA;COUNT=5;FREQ=WEEKLY;INTERVAL=2",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-23','2015-06-06','2015-06-20','2015-07-04']
+		//["2015-05-08","2015-05-16","2015-05-30","2015-06-13","2015-06-27","2015-07-11"]
+	}
+	testRule(ts);
+ 
+	
+	ts={
+		id:"Rule 4",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=FR;COUNT=0;FREQ=WEEKLY;INTERVAL=1;UNTIL=20150529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2015-05-15","2015-05-22","2015-05-29"]
+	}
+	testRule(ts);
+
+ 	ts={
+		id:"Rule 5",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=+2TU;COUNT=4;FREQ=MONTHLY;INTERVAL=1",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2015-05-19","2015-06-09","2015-07-14","2015-08-11"]
+	}
+	testRule(ts);
+	
+	ts={
+		id:"Rule 6",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTHDAY=10,18;COUNT=4;FREQ=MONTHLY;INTERVAL=1",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2015-05-10","2015-05-18","2015-06-10","2015-06-18"]
+	}
+	testRule(ts);
+ 
+
+	ts={
+		id:"Rule 7",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=+1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20170529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2016-01-04","2017-01-02"]
+	}
+	testRule(ts);
+	
+
+	ts={
+		id:"Rule 8",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=-1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20200529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2016-01-25","2017-01-30","2018-01-29","2019-01-28"]
+	}
+	testRule(ts);
+ 
+	ts={
+		id:"Rule 9",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYMONTHDAY=-1;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20200529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2016-01-31","2017-01-31","2018-01-31","2019-01-31"]
+	}
+	testRule(ts);
+
+
+	ts={
+		id:"Rule 10",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=+4MO;COUNT=4;FREQ=YEARLY;INTERVAL=2;UNTIL=20210529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2017-01-23","2019-01-28","2021-01-25"]
+	}
+	testRule(ts);
+
+
+
+	ts={
+		id:"Rule 11",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=+4MO;COUNT=6;FREQ=YEARLY;INTERVAL=1;UNTIL=20210529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2016-01-25","2017-01-23","2018-01-22","2019-01-28","2020-01-27","2021-01-25"]
+	}
+	testRule(ts);
+
+	ts={
+		id:"Rule 12",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTHDAY=4;COUNT=4;FREQ=MONTHLY;INTERVAL=2;UNTIL=20160529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2015-07-04","2015-09-04","2015-11-04","2016-01-04"]
+	}
+	testRule(ts); 
+
+	ts={
+		id:"Rule 13",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYMONTHDAY=1;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20200529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2016-01-01","2017-01-01","2018-01-01","2019-01-01"]
+	}
+	testRule(ts);
+
+	
+	ts={
+		id:"Rule 14",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=11;BYMONTHDAY=2;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20190529T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2015-12-02","2016-12-02","2017-12-02","2018-12-02"]
+	}
+	testRule(ts);
+
+
+	ts={
+		id:"Rule 15",
+		startDate:"5/7/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=5;BYMONTHDAY=4;COUNT=0;FREQ=YEARLY;INTERVAL=2;UNTIL=20200514T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-07","2015-06-04","2017-06-04","2019-06-04"]
+	}
+	testRule(ts);
+
+
+	echo('All rules passed.');abort;
+	</cfscript>
+</cffunction>
+	
 
 <cffunction name="view" localmode="modern" access="remote">
 	<cfscript>
+
+	testRules();
 	writedump(form);
+
+	// event_calendar_user_group_idlist
+
+	ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	ical.init("");
+	//a=ical.getRecurringDates("5/7/2015", "12/2/2016", "BYMONTH=5;BYMONTHDAY=4;COUNT=0;FREQ=YEARLY;INTERVAL=1;UNTIL=20170514T040000Z", "");
+
+	//a=ical.getRecurringDates("5/7/2015", "12/2/2015", "BYDAY=MO;COUNT=0;FREQ=WEEKLY;INTERVAL=1", "10/12/2015");
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYDAY=SA;COUNT=5;FREQ=WEEKLY;INTERVAL=2", "");
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYDAY=FR;COUNT=0;FREQ=WEEKLY;INTERVAL=1;UNTIL=20150529T040000Z", "");
+
+	// + and - not supported on this yet:
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYDAY=+2TU;COUNT=4;FREQ=MONTHLY;INTERVAL=1", "");
+
+	// DONE: doesn't support multiple bymonthday yet
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYMONTHDAY=10,18;COUNT=4;FREQ=MONTHLY;INTERVAL=1", "");
+	
+	// done: + and - not supported
+	//a=ical.getRecurringDates("5/8/2015", "8/2/2020", "BYMONTH=0;BYDAY=+1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
+
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYDAY=-1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
+
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYMONTHDAY=-1;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
+
+
+	// done: interval doesn't work right
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYDAY=+4MO;COUNT=4;FREQ=YEARLY;INTERVAL=2", ""); 
+	
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYDAY=+4MO;COUNT=4;FREQ=YEARLY;INTERVAL=2", ""); 
+
+	// done: interval doesn't work right
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYMONTHDAY=4;COUNT=4;FREQ=MONTHLY;INTERVAL=2", ""); 
+	//writedump(a);abort;
+
+
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYMONTHDAY=1;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
+
+	// DONE: zero index for month is wrong.  it needs to be + 1 in ical.cfc instead
+	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=11;BYMONTHDAY=2;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
+	var arrDate=[];
+	for(i=1;i LTE arraylen(a);i++){
+		arrayAppend(arrDate, dateformat(a[i], 'yyyy-mm-dd'));
+	}
+	echo('<textarea name="c1" cols="50" rows="3">'&serializeJson(arrDate)&'</textarea>');abort;
+	writedump(a);
+	abort;
 	</cfscript>
 </cffunction>
 	

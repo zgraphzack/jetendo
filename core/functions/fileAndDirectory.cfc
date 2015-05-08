@@ -560,7 +560,7 @@ rs=zGetHashPath(dir, id);
 	<cfreturn true>
 </cffunction>
 
-<!--- zUploadFileToDb(fieldName, destination, [tableName], [primary_key_id], [delete]); 
+<!--- zUploadFileToDb(fieldName, destination, [tableName], [primary_key_id], [delete], [datasource]); 
 notes: optionally delete an existing image that has a field in the specified database ---> 
 <cffunction name="zUploadFileToDb" localmode="modern" returntype="any" output="true">
 	<cfargument name="fieldName" required="true" type="string">

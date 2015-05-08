@@ -14,12 +14,12 @@ WHERE site_id <>'16'
 	variables.disableDeveloperLinks=false;
 	variables.registrationLoginLinks=false;
     variables.arrOpenIdProvider=[
-		{
+		/*{
 			url:"https://www.google.com/accounts/o8/ud", 
 			name:"Google", 
 			icon:"/z/images/icons/google-icon.png",
 			providerId:1
-		},
+		},*/
 		{
 			url:"https://open.login.yahooapis.com/openid/op/auth", 
 			name:"Yahoo", 
