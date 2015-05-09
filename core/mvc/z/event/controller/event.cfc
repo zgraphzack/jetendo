@@ -359,11 +359,11 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 
 <cffunction name="testRules" localmode="modern" access="remote">
 	<cfscript> 
-
+	setting requesttimeout="5";
 	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
 	request.ical.init("");
 
-
+   
 
 	ts={
 		id:"Rule 1",
@@ -378,13 +378,14 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 
 	ts={
 		id:"Rule 2",
-		startDate:"5/7/2015",
+		startDate:"5/8/2015",
 		endDate:"5/8/2015",
-		rule:"BYDAY=MO;COUNT=0;FREQ=WEEKLY;INTERVAL=1;UNTIL=20151129T040000Z",
+		rule:"BYDAY=MO;COUNT=0;FREQ=WEEKLY;INTERVAL=1;UNTIL=20150729T040000Z",
 		excludeDayList:"10/12/2015",
-		arrCorrectDates:['2015-05-07','2015-05-11','2015-05-18','2015-05-25','2015-06-01','2015-06-08','2015-06-15','2015-06-22','2015-06-29','2015-07-06','2015-07-13','2015-07-20','2015-07-27','2015-08-03','2015-08-10','2015-08-17','2015-08-24','2015-08-31','2015-09-07','2015-09-14','2015-09-21','2015-09-28','2015-10-05','2015-10-19','2015-10-26','2015-11-02','2015-11-09','2015-11-16','2015-11-23']
+		arrCorrectDates:['2015-05-08','2015-05-11','2015-05-18','2015-05-25','2015-06-01','2015-06-08','2015-06-15','2015-06-22','2015-06-29','2015-07-06','2015-07-13','2015-07-20','2015-07-27']
 	}
 	testRule(ts);
+
 
 
 	ts={
@@ -415,7 +416,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		endDate:"5/8/2015",
 		rule:"BYDAY=+2TU;COUNT=4;FREQ=MONTHLY;INTERVAL=1",
 		excludeDayList:"",
-		arrCorrectDates:["2015-05-08","2015-05-19","2015-06-09","2015-07-14","2015-08-11"]
+		arrCorrectDates:["2015-05-08","2015-05-12","2015-06-09","2015-07-14","2015-08-11"]
 	}
 	testRule(ts);
 	
@@ -429,17 +430,15 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	}
 	testRule(ts);
  
-
 	ts={
 		id:"Rule 7",
 		startDate:"5/8/2015",
 		endDate:"5/8/2015",
-		rule:"BYMONTH=0;BYDAY=+1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20170529T040000Z",
+		rule:"BYMONTH=0;BYDAY=+1MO;COUNT=0;FREQ=YEARLY;INTERVAL=1;UNTIL=20170529T040000Z",
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2016-01-04","2017-01-02"]
 	}
 	testRule(ts);
-	
 
 	ts={
 		id:"Rule 8",
@@ -447,9 +446,10 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		endDate:"5/8/2015",
 		rule:"BYMONTH=0;BYDAY=-1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20200529T040000Z",
 		excludeDayList:"",
-		arrCorrectDates:["2015-05-08","2016-01-25","2017-01-30","2018-01-29","2019-01-28"]
+		arrCorrectDates:['2015-05-08','2016-01-25','2017-01-30','2018-01-29','2019-01-28','2020-01-27']
 	}
 	testRule(ts);
+
  
 	ts={
 		id:"Rule 9",
@@ -457,7 +457,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		endDate:"5/8/2015",
 		rule:"BYMONTH=0;BYMONTHDAY=-1;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20200529T040000Z",
 		excludeDayList:"",
-		arrCorrectDates:["2015-05-08","2016-01-31","2017-01-31","2018-01-31","2019-01-31"]
+		arrCorrectDates:['2015-05-08','2016-01-31','2017-01-31','2018-01-31','2019-01-31','2020-01-31']
 	}
 	testRule(ts);
 
@@ -471,7 +471,6 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		arrCorrectDates:["2015-05-08","2017-01-23","2019-01-28","2021-01-25"]
 	}
 	testRule(ts);
-
 
 
 	ts={
@@ -490,7 +489,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		endDate:"5/8/2015",
 		rule:"BYMONTHDAY=4;COUNT=4;FREQ=MONTHLY;INTERVAL=2;UNTIL=20160529T040000Z",
 		excludeDayList:"",
-		arrCorrectDates:["2015-05-08","2015-07-04","2015-09-04","2015-11-04","2016-01-04"]
+		arrCorrectDates:['2015-05-08','2015-07-04','2015-09-04','2015-11-04','2016-01-04','2016-03-04','2016-05-04']
 	}
 	testRule(ts); 
 
@@ -500,7 +499,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		endDate:"5/8/2015",
 		rule:"BYMONTH=0;BYMONTHDAY=1;COUNT=4;FREQ=YEARLY;INTERVAL=1;UNTIL=20200529T040000Z",
 		excludeDayList:"",
-		arrCorrectDates:["2015-05-08","2016-01-01","2017-01-01","2018-01-01","2019-01-01"]
+		arrCorrectDates:['2015-05-08','2016-01-01','2017-01-01','2018-01-01','2019-01-01','2020-01-01']
 	}
 	testRule(ts);
 
@@ -526,7 +525,131 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	}
 	testRule(ts);
 
+ 	ts={
+		id:"Rule 16",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=+2TU;COUNT=4;FREQ=MONTHLY;INTERVAL=2",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2015-05-12','2015-07-14','2015-09-08','2015-11-10']
+	}
+	testRule(ts); 
 
+ 	ts={
+		id:"Rule 17",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=MO,TU,WE,TH,FR,SA,SU;COUNT=20;FREQ=MONTHLY;INTERVAL=1",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-10','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-16','2015-05-17','2015-05-18','2015-05-19','2015-05-20','2015-05-21','2015-05-22','2015-05-23','2015-05-24','2015-05-25','2015-05-26','2015-05-27']
+	}
+	testRule(ts); 
+
+
+ 	ts={
+		id:"Rule 18",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=TU;COUNT=4;FREQ=MONTHLY;INTERVAL=2",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2015-05-12','2015-05-19','2015-05-26','2015-07-07']
+	}
+	testRule(ts); 
+
+ 	ts={
+		id:"Rule 19",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=1;BYDAY=+3TH;COUNT=0;FREQ=YEARLY;INTERVAL=1;UNTIL=20210413T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2016-02-18','2017-02-16','2018-02-15','2019-02-21','2020-02-20','2021-02-18']
+	}
+	testRule(ts); 
+
+
+ 	ts={
+		id:"Rule 20",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=SU;COUNT=4;FREQ=YEARLY;INTERVAL=2",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2017-01-01','2017-01-08','2017-01-15','2017-01-22']
+	}
+	testRule(ts); 
+
+
+ 	ts={
+		id:"Rule 22",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=+3TH;COUNT=4;FREQ=YEARLY;INTERVAL=1",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2016-01-21','2017-01-19','2018-01-18','2019-01-17']
+	}
+	testRule(ts); 
+
+	ts={
+		id:"Rule 21",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=+1MO;COUNT=0;FREQ=YEARLY;INTERVAL=2;UNTIL=20190513T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2017-01-02','2019-01-07']
+	}
+	testRule(ts);
+
+	ts={
+		id:"Rule 22",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=MO,WE;COUNT=4;FREQ=WEEKLY;INTERVAL=1",
+		excludeDayList:"10/12/2015",
+		arrCorrectDates:['2015-05-08','2015-05-11','2015-05-13','2015-05-18','2015-05-20']
+	}
+	testRule(ts);
+
+	ts={
+		id:"Rule 23",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=MO,TU,WE,TH,FR;COUNT=7;FREQ=DAILY;INTERVAL=1",
+		excludeDayList:"10/12/2015",
+		arrCorrectDates:['2015-05-08','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-18']
+	}
+	testRule(ts);
+	
+	ts={
+		id:"Rule 24",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"COUNT=7;FREQ=DAILY;INTERVAL=2",
+		excludeDayList:"10/12/2015",
+		arrCorrectDates:['2015-05-08','2015-05-10','2015-05-12','2015-05-14','2015-05-16','2015-05-18','2015-05-20']
+	}
+	testRule(ts); 
+
+
+ 	ts={
+		id:"Rule 25",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=MO,TU,WE,TH,FR,SA,SU;COUNT=30;FREQ=MONTHLY;INTERVAL=2",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-10','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-16','2015-05-17','2015-05-18','2015-05-19','2015-05-20','2015-05-21','2015-05-22','2015-05-23','2015-05-24','2015-05-25','2015-05-26','2015-05-27','2015-05-28','2015-05-29','2015-05-30','2015-05-31','2015-07-01','2015-07-02','2015-07-03','2015-07-04','2015-07-05','2015-07-06']
+	}
+	testRule(ts); 
+
+
+ 	ts={
+		id:"Rule 26",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYMONTH=0;BYDAY=MO,TU,WE,TH,FR,SA,SU;COUNT=30;FREQ=YEARLY;INTERVAL=1",
+		excludeDayList:"",
+		arrCorrectDates:['2015-05-08','2016-01-01','2016-01-02','2016-01-03','2016-01-04','2016-01-05','2016-01-06','2016-01-07','2016-01-08','2016-01-09','2016-01-10','2016-01-11','2016-01-12','2016-01-13','2016-01-14','2016-01-15','2016-01-16','2016-01-17','2016-01-18','2016-01-19','2016-01-20','2016-01-21','2016-01-22','2016-01-23','2016-01-24','2016-01-25','2016-01-26','2016-01-27','2016-01-28','2016-01-29','2016-01-30']
+	}
+	testRule(ts); 
+   
 	echo('All rules passed.');abort;
 	</cfscript>
 </cffunction>

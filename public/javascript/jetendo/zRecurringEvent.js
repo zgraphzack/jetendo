@@ -405,6 +405,7 @@
 				annuallyDay:"",
 				annuallyMonth:""
 			};
+
 			for(var i in defaultRuleObj){
 				if(typeof ruleObj[i] == "undefined"){
 					ruleObj[i]=defaultRuleObj[i];
@@ -436,6 +437,8 @@
 				});
 
 			}else if(ruleObj.recurType == "Monthly"){
+
+
 				$("#zRecurTypeMonthlyDays").val(ruleObj.skipMonths);
 				if(ruleObj.arrMonthlyCalendarDay.length == 0){
 					$("#zRecurTypeMonthlyType1").prop("checked", true);
@@ -468,6 +471,7 @@
 					$("#zRecurTypeAnnuallyMonth2").val(ruleObj.annuallyMonth);
 				} 
 			}
+
 			if(typeof ruleObj.endDate != "boolean"){
 				$("#zRecurTypeRangeRadio3").prop("checked", true);
 				if(ruleObj.endDate != ""){
@@ -645,6 +649,16 @@
 			}
 			return d;
 		};
+
+		/* self.isNthDay(new Date(), 1, 2); */
+		self.isNthDay=function(theDate, dayOfWeek, dayNum){
+			if(Math.ceil(theDate.getDate()/7) == dayNum){
+				if(theDate.getDay() == dayOfWeek){
+					return true;
+				}
+			}
+			return false;
+		}
 		self.getMarkedDates=function(){
 			var arrDate=[];
 			var startDate=$("#event_start_datetime_date").val();
@@ -659,15 +673,23 @@
 			var startTime=currentDate.getTime();
 			// this was wrong...
 			//currentDate.setDate(1);
-			var projectedDateCount=self.getProjectedDateCount(currentDate);
+
 
 			var ruleObj=self.getRulesFromForm();
+			if(ruleObj.recurLimit != 0){
+				var projectedDateCount=50000;
+				console.log("Project "+projectedDateCount+" days | startDate:"+startDate.toString());
+			}else{
+				var projectedDateCount=self.getProjectedDateCount(currentDate);
+			}
+
 
 			//console.log("projectedDateCount:"+projectedDateCount);
 			var arrDebugDate=[];
 			var recurCount=0;
 			//console.log(ruleObj);
 
+			//return arrDate;
 
 			var lastDate=new Date(currentDate.getTime());
 			lastDate.setDate(lastDate.getDate()+projectedDateCount);
@@ -709,7 +731,6 @@
 				return arrDate;
 			}
 			var lastDayOfMonth=0;
-			var wasLastDayOfMonth=false;
 			var firstMonth=true;
 			var totalMonthCount=0;
 			var firstWeek=true;
@@ -717,8 +738,13 @@
 			var lastYear=currentDate.getFullYear();
 			var firstDay=true;
 
+
 			//var endDate=new Date($("#event_end_datetime_date").val()); 
 			for(var i=0;i<projectedDateCount;i++){ 
+				if(i == 50000){
+					alert("Infinite loop detected");
+					break;
+				}
 				if(!firstDay && ruleObj.recurType == "Daily" && ruleObj.skipDays-1){
 					currentDate.setDate(currentDate.getDate()+(ruleObj.skipDays-1));
 				}
@@ -799,32 +825,21 @@
 								monthDayCount++;	
 								dayMatch=true;
 							}
+
 							if(ruleObj.monthlyWhich == "Every"){
 								if(dayMatch){
 									isEvent=true;
 								}
-							}else if(ruleObj.monthlyWhich == "The First"){
-								if(dayMatch && monthDayCount == 1){
-									isEvent=true;
-								}
-							}else if(ruleObj.monthlyWhich == "The Second"){
-								if(dayMatch && monthDayCount == 2){
-									isEvent=true;
-								}
-							}else if(ruleObj.monthlyWhich == "The Third"){
-								if(dayMatch && monthDayCount == 3){
-									isEvent=true;
-								}
-							}else if(ruleObj.monthlyWhich == "The Fourth"){
-								if(dayMatch && monthDayCount == 4){
-									isEvent=true;
-								}
-							}else if(ruleObj.monthlyWhich == "The Fifth"){
-								if(dayMatch && monthDayCount == 5){
-									isEvent=true;
-								}
 							}else if(ruleObj.monthlyWhich == "The Last"){
 								if(dayMatch && currentDate.getDate() == monthlyLastDayOfWeekMatch.getDate()){
+									isEvent=true;
+								}
+							}else if(ruleObj.monthlyDay == "Day"){
+								if(currentDate.getDate() == whichLookup[ruleObj.monthlyWhich]){
+									isEvent=true;
+								}
+							}else{
+								if(dayMatch && self.isNthDay(currentDate, day, whichLookup[ruleObj.monthlyWhich])){
 									isEvent=true;
 								}
 							}
@@ -847,28 +862,16 @@
 								if(dayMatch){
 									isEvent=true;
 								}
-							}else if(ruleObj.annuallyWhich == "The First"){
-								if(dayMatch && monthDayCount == 1){
-									isEvent=true;
-								}
-							}else if(ruleObj.annuallyWhich == "The Second"){
-								if(dayMatch && monthDayCount == 2){
-									isEvent=true;
-								}
-							}else if(ruleObj.annuallyWhich == "The Third"){
-								if(dayMatch && monthDayCount == 3){
-									isEvent=true;
-								}
-							}else if(ruleObj.annuallyWhich == "The Fourth"){
-								if(dayMatch && monthDayCount == 4){
-									isEvent=true;
-								}
-							}else if(ruleObj.annuallyWhich == "The Fifth"){
-								if(dayMatch && monthDayCount == 5){
-									isEvent=true;
-								}
 							}else if(ruleObj.annuallyWhich == "The Last"){
 								if(dayMatch && currentDate.getDate() == monthlyLastDayOfWeekMatch.getDate()){
+									isEvent=true;
+								}
+							}else if(ruleObj.annuallyDay == "Day"){
+								if(currentDate.getDate() == whichLookup[ruleObj.annuallyWhich]){
+									isEvent=true;
+								}
+							}else{
+								if(dayMatch && self.isNthDay(currentDate, day, whichLookup[ruleObj.annuallyWhich])){
 									isEvent=true;
 								}
 							}
@@ -1007,7 +1010,11 @@
 			if(options.freq == RRule.YEARLY){
 				ruleObj.recurType="Annually";
 				if(options.bynweekday.length){
-					ruleObj.annuallyDay=dayNameLookup[pythonDayToJs[options.bynweekday[0][0]]];
+					if(typeof pythonDayNameLookup[options.bynweekday[0][0]] == "undefined"){
+						alert('Invalid bynweekday value.');
+						return [];
+					}
+					ruleObj.annuallyDay=pythonDayNameLookup[options.bynweekday[0][0]];
 					if(options.bynweekday[0][1]==-1){
 						ruleObj.annuallyWhich="The Last";
 					}else if(options.bynweekday[0][1]<0){
@@ -1016,8 +1023,12 @@
 						ruleObj.annuallyWhich=whichNameLookup[options.bynweekday[0][1]];
 					}
 				}else if(options.byweekday.length){
+					if(typeof pythonDayNameLookup[options.byweekday[0]] == "undefined"){
+						alert('Invalid byweekday value.');
+						return [];
+					}
 					ruleObj.annuallyWhich="Every";
-					ruleObj.annuallyDay=dayNameLookup[pythonDayNameLookup[options.byweekday[0]]];
+					ruleObj.annuallyDay=pythonDayNameLookup[options.byweekday[0]];
 					if(options.byweekday.length == 7){
 						ruleObj.monthlyDay="Day";
 					}else if(options.byweekday.length>1){
@@ -1039,7 +1050,11 @@
 				ruleObj.recurType="Monthly";
 				ruleObj.skipMonths=options.interval;
 				if(options.bynweekday.length){
-					ruleObj.monthlyDay=dayNameLookup[pythonDayNameLookup[options.bynweekday[0][0]]];
+					if(typeof pythonDayNameLookup[options.bynweekday[0][0]] == "undefined"){
+						alert('Invalid bynweekday value.');
+						return [];
+					}
+					ruleObj.monthlyDay=pythonDayNameLookup[options.bynweekday[0][0]];
 					if(options.bynweekday[0][1]==-1){
 						ruleObj.monthlyWhich="The Last";
 					}else if(options.bynweekday[0][1]<0){
@@ -1047,9 +1062,14 @@
 					}else{
 						ruleObj.monthlyWhich=whichNameLookup[options.bynweekday[0][1]];
 					}
+					console.log('day lookup:'+options.bynweekday[0][0]+":"+pythonDayNameLookup[1]+" python:"+pythonDayNameLookup[options.bynweekday[0][0]]+" final day:"+ruleObj.monthlyDay);
 				}else if(options.byweekday.length){
+					if(typeof pythonDayNameLookup[options.byweekday[0]] == "undefined"){
+						alert('Invalid byweekday value.');
+						return [];
+					}
 					ruleObj.monthlyWhich="Every";
-					ruleObj.monthlyDay=dayNameLookup[pythonDayNameLookup[options.byweekday[0]]];
+					ruleObj.monthlyDay=pythonDayNameLookup[options.byweekday[0]];
 					if(options.byweekday.length == 7){
 						ruleObj.monthlyDay="Day";
 					}else if(options.byweekday.length>1){

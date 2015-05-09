@@ -97,6 +97,7 @@
 		console.log(ruleObj);
 		console.log('---');
 		recur.setFormFromRules(ruleObj, false); 
+		return;
 		var arrExclude=#excludeJson#;
 		for(var i=0;i<arrExclude.length;i++){
 			var date=new Date(arrExclude[i]);
