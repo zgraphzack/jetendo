@@ -2,12 +2,8 @@
 <cfoutput>
 	<!--- 
 
-					// read docs: http://www.kanzaki.com/docs/ical/rrule.html
-					http://www.kanzaki.com/docs/ical/rrule.html
-
-	consider using this for RRULE I/O
-		https://www.npmjs.org/package/rrule
-		https://raw.githubusercontent.com/jakubroztocil/rrule/master/lib/rrule.js
+To test all recurring rule types, open the browser console and run this URL on your domain:
+/z/event/admin/recurring-event/index?runTests=1
 	 --->
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -17,6 +13,7 @@
 	application.zcore.skin.includeJs("/z/javascript/jetendo/zRecurringEvent.js");
 
 	application.zcore.template.setPlainTemplate();
+	form.runTests=application.zcore.functions.zso(form, 'runTests', true, 0);
 	form.event_start_datetime=application.zcore.functions.zso(form, 'event_start_datetime', false, now());
 	//form.event_end_datetime=application.zcore.functions.zso(form, 'event_end_datetime', false, '');
 	form.event_recur_ical_rules=application.zcore.functions.zso(form, 'event_recur_ical_rules');
@@ -30,75 +27,24 @@
 
 	</cfscript>
 	<script type="text/javascript">
-	<!---
-	function testRules(){
-		// might have to remove RRULE: from beginning of rules.
-		var r='FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=2';
-		r='FREQ=MONTHLY;UNTIL=20151224T000000Z;BYDAY=1FR'; // first friday every month
-		r='FREQ=MONTHLY;UNTIL=20151224T000000Z;BYDAY=FR'; // fridays every month
-		r='FREQ=YEARLY;UNTIL=20151224T000000Z;BYMONTH=2;BYDAY=FR'; // march fridays
-		//r='FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13'; // friday the 13 forever
-		r='FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYDAY=-1SU'; // first and last sunday - limit to 10 - every other // 1SU,
-
-		//daily
-		r='COUNT=0;FREQ=DAILY;INTERVAL=2;UNTIL=20171224T000000Z';
-
-		//r='BYDAY=MO,TU,WE,TH,FR;COUNT=0;FREQ=DAILY;INTERVAL=1';
-
-		// weekly
-		//r='BYDAY=MO,WE,FR;COUNT=0;FREQ=WEEKLY;INTERVAL=2';
-		//monthly
-		//r='BYDAY=SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
-		//r='BYDAY=+1SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
-		//r='BYDAY=-1SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
-		//r='BYMONTHDAY=-1;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
-		//r='BYDAY=MO,TU,WE,TH,FR,SA,SU;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
-		//r='BYMONTHDAY=2;COUNT=0;FREQ=MONTHLY;INTERVAL=1';
-
-		//annually
-		//r='BYMONTH=3;BYMONTHDAY=3;COUNT=0;FREQ=YEARLY;INTERVAL=1';
-		//r='BYMONTH=3;BYDAY=+1SU;COUNT=0;FREQ=YEARLY;INTERVAL=1';
-		//r='BYMONTH=3;BYDAY=-1FR;COUNT=0;FREQ=YEARLY;INTERVAL=1';
-		//r='BYMONTH=4;BYDAY=SU;COUNT=0;FREQ=YEARLY;INTERVAL=1';
-		r='#form.event_recur_ical_rules#';
-		var options={ 
-			//ruleObj:ruleObj,
-			//arrExclude:arrExclude
-		};
-		var recur=new zRecurringEvent(options);
-		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
-		console.log(ruleObj);
-		recur.setFormFromRules(ruleObj, false); 
-
-		var rule=recur.convertFromRecurringEventToRRule(ruleObj);
-
-		if($("##event_recur_ical_rules", window.parent.document).length){
-			$("##event_recur_ical_rules", window.parent.document).val(rule);
-		}
-		/*var rule = RRule.fromString(r);
-		rule.options.count=3;
-		console.log(rule);
-		console.log(rule.toString());
-		console.log(rule.all());
-		console.log(rule.between(new Date(2014, 7, 1), new Date(2015, 8, 1)));
-		*/
-	}--->
 
 	function initRules(){
 
 		var r='#form.event_recur_ical_rules#'; 
-		var options={ 
-			//ruleObj:ruleObj,
-			//arrExclude:arrExclude
-		};
+		arrExclude=#excludeJson#;
+		runRule(r, arrExclude);
+	}
 
+	function runRule(r, arrExclude, options){
+		if(typeof options == "undefined"){
+			options={};
+		}
 		var recur=new zRecurringEvent(options); 
 		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
 		console.log(ruleObj);
 		console.log('---');
 		recur.setFormFromRules(ruleObj, false); 
-		return;
-		var arrExclude=#excludeJson#;
+
 		for(var i=0;i<arrExclude.length;i++){
 			var date=new Date(arrExclude[i]);
 			console.log(date);
@@ -110,44 +56,93 @@
 		if($("##event_recur_ical_rules", window.parent.document).length){
 			$("##event_recur_ical_rules", window.parent.document).val(rule);
 		}
+		return recur;
+	}
+	function loadTestCallback(r){
+		var myObj=eval('('+r+')');
+		if(myObj.success){
+			console.log(myObj);
+			for(var i=0;i<myObj.arrTest.length;i++){
+				var t=myObj.arrTest[i];
+				console.clear();
+				console.log('Run test id:'+t.id);
+				var arrExclude="";
+				if(t.excludeDayList !=""){
+					arrExclude=t.excludeDayList.split(",");
+				}
+				$("##event_start_datetime_date").val(t.startDate);
+				$("##startDateLabel").html(t.startDate);
+
+				var options={
+					renderingEnabled:false
+				}
+				var recur=runRule(t.rule, arrExclude, options);
+
+				var arrMarked=recur.getMarkedDates();
+
+				var arrError=[];
+				var arrMarked2=[];
+				var arrMarked3=[];
+				for(var n in arrMarked){
+					var d=new Date();
+					d.setTime(n);
+					var m=d.getMonth()+1;
+					if(m<10){
+						m="0"+m;
+					}
+					var d2=d.getDate();
+					if(d2<10){
+						d2="0"+d2;
+					}
+					d=d.getFullYear()+"-"+(m)+"-"+d2;
+					arrMarked2[d]=true;
+					arrMarked3.push(d);
+				}
+				for(var n=0;n<t.arrCorrectDates.length;n++){
+					if(typeof arrMarked2[t.arrCorrectDates[n]] == "undefined"){
+						arrError.push("Date expected but not matched: "+t.arrCorrectDates[n]);
+					}else{
+						delete arrMarked2[t.arrCorrectDates[n]];
+					}
+				}
+				for(var n in arrMarked2){
+					arrError.push("Extra date returned that isn't correct: "+n);
+				}
+				if(arrError.length){
+					console.log("Rule:");
+					console.log(t);
+					console.log("Marked:");
+					console.log(arrMarked3.join("\n"));
+
+					console.log("Errors:");
+					console.log(arrError.join("\n"));
+					throw("Invalid rule: "+t.id);
+					break;
+				}
+			}
+			console.log('All Tests Passed');
+		}
 	}
 
+	function loadTests(){
+		
+		var tempObj={};
+		tempObj.id="zLoadTests";
+		tempObj.url="/z/event/event/getTestJson";
+		tempObj.callback=loadTestCallback;
+		tempObj.cache=false;
+		zAjax(tempObj);
+	}
 	zArrDeferredFunctions.push(function(){
 		//testRules();return
-
-		initRules();
-		return;
-
-		/*
-		var ruleObj={};
-		ruleObj.recurType="Weekly";
-		ruleObj.noEndDate=false;
-		ruleObj.everyWeekday=true;
-		ruleObj.skipDays=3;
-		ruleObj.recurLimit=5;
-		ruleObj.endDate=false;
-		//ruleObj.endDate="12/20/2014";
-		ruleObj.skipWeeks=1;
-		ruleObj.skipMonths=2;
-		ruleObj.skipYears=2;
-		ruleObj.arrWeeklyDays=[6];
-		ruleObj.monthlyWhich="Every";
-		ruleObj.monthlyDay="Sunday";
-		ruleObj.arrMonthlyCalendarDay=[];//1,10,15,20,21,0];
-		ruleObj.annuallyWhich="Every";
-		ruleObj.annuallyDay="Saturday";
-		ruleObj.annuallyMonth=6;
-		var arrExclude=[];
-		arrExclude.push("8/21/2014");
-		arrExclude.push("10/1/2014");
-		arrExclude.push("1/1/2015");
-		var options={ 
-			//ruleObj:ruleObj,
-			//arrExclude:arrExclude
-		};
-		var recur=new zRecurringEvent(options);
-		//recur.setFormFromRules(ruleObj);
-		*/
+		<cfif form.runTests>
+	
+			loadTests();
+			return;
+		<cfelse>
+			initRules();
+			return;
+		</cfif>
 	});
 	</script>
 	<style type="text/css">
@@ -187,7 +182,7 @@
 	<div class="zRecurBoxColumn1"> 
 		<div class="zRecurBox">
 			<h3>Recurrence type &amp; options</h3>
-			<p>Start date: #dateformat(form.event_start_datetime, 'm/d/yyyy')# <input type="hidden" id="event_start_datetime_date" name="event_start_datetime_date" value="#htmleditformat(form.event_start_datetime)#"></p>
+			<p>Start date: <span id="startDateLabel">#dateformat(form.event_start_datetime, 'm/d/yyyy')#</span> <input type="hidden" id="event_start_datetime_date" name="event_start_datetime_date" value="#htmleditformat(form.event_start_datetime)#"></p>
 			<p><select size="1" id="zRecurTypeSelect">
 				<option value="None">No Recurrence</option>
 				<option value="Daily">Daily</option>

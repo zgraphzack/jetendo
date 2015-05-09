@@ -116,6 +116,7 @@
 		// force defaults
 		options.ruleObj=zso(options, 'ruleObj', false, {});
 		options.arrExclude=zso(options, 'arrExclude', false, []);
+		options.renderingEnabled=zso(options, 'renderingEnabled', false, true);
 		function init(options){
 			//$cartDiv=$(".zcart."+options.name);
 			self.buildMonthlyCalendar();
@@ -160,28 +161,16 @@
 				return false;
 			});
 
-			/*
-			$("#event_start_datetime_date").bind("change", function(){
-				self.drawPreviewCalendars();
-				$("#zRecurTypeExcludeDate").val($(this).val());
-				//$("#event_end_datetime_date").val($(this).val());
-
-			});
-			*/
-			/*$("#event_start_datetime_time").bind("change", function(){
-				//$("#event_end_datetime_time").val($(this).val());
-
-			});*/
 			$('.zRecurEventBox :input').bind("change", function(){
 				self.drawPreviewCalendars();
 			}); 
-			setTimeout(function(){ 
+			/*setTimeout(function(){ 
 
 				calendarColumns=Math.floor((($(".zRecurPreviewBox").width()))/calendarWidth);
 				lastPreviewColumnCount=calendarColumns;
 				arrMarked=self.getMarkedDates();
 				self.drawPreviewCalendars();
-			}, 200);
+			}, 200);*/
 		};
 		self.updateState=function () { 
 			if(disableFormOnChange){
@@ -261,6 +250,9 @@
 		};
 		self.drawPreviewCalendars=function(){ 
 			self.updateState();
+			if(!options.renderingEnabled){
+				return;
+			}
 			var $calendarDiv=$("#zRecurPreviewCalendars");
 			var arrHTML=[];
 			var count=0;
@@ -433,6 +425,8 @@
 				$(".zRecurTypeWeeklyDay").each(function(){
 					if(typeof arrC[this.value] != "undefined"){
 						this.checked=true;
+					}else{
+						this.checked=false;
 					}
 				});
 
@@ -455,6 +449,8 @@
 					$(".zRecurTypeMonthlyCalendarDay").each(function(){
 						if(typeof arrC[this.value] != "undefined"){
 							this.checked=true;
+						}else{
+							this.checked=false;
 						}
 					});
 				}
@@ -1030,7 +1026,7 @@
 					ruleObj.annuallyWhich="Every";
 					ruleObj.annuallyDay=pythonDayNameLookup[options.byweekday[0]];
 					if(options.byweekday.length == 7){
-						ruleObj.monthlyDay="Day";
+						ruleObj.annuallyDay="Day";
 					}else if(options.byweekday.length>1){
 						throw("Unsupported RRule: "+r);
 					}
@@ -1124,7 +1120,6 @@
 			}
 			return ruleObj;
 		};
-
 
 		self.convertFromRecurringEventToRRule=function(ruleObj){
 			var options={

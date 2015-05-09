@@ -188,7 +188,7 @@
 	endDate=arguments.endDate;//dateadd("y",1,now());
 	startDate=arguments.startDate;//createdatetime(2008,3,1,0,0,0);
 	
-	debug=true;
+	debug=false;
 	arrExcludeDate=[];
 	if(arguments.excludeDateList NEQ ""){
 		arrExcludeDate=listToArray(arguments.excludeDateList, ',');
@@ -353,18 +353,20 @@
 			whichValue="Every";
 		}
 	}
-	writedump(ts);
-	writedump(whichValue);
-	writedump(weeklyDayLookup);//abort;
+	if(debug) writedump(ts);
+	if(debug) echo("whichValue:"&whichValue);
+	if(debug){
+		echo("weeklyDayLookup:<br>"); 
+		writedump(weeklyDayLookup);
+	}
 	var monthlyDayLookup={};
-	writedump(ts);
 	if(structkeyexists(ts, 'bymonthday')){
 		arrDay=listtoarray(ts.bymonthday,",");
 		for(var i=1;i<=arraylen(arrDay);i++){
 			monthlyDayLookup[arrDay[i]]=true;
 		}
 	}
-	writedump(monthlyDayLookup);
+	if(debug) writedump(monthlyDayLookup);
 	monthMatchLookup={};
 	if(structkeyexists(ts,'bymonth')){
 		arrMonth=listtoarray(ts.bymonth,",");
@@ -373,37 +375,37 @@
 		}
 	}
 
-	echo('skipWeeks:'&skipWeeks&' | skipDays:'&skipDays&' | skipMonths:'&skipMonths&' | skipYears:'&skipYears&'<br>');
+	if(debug) echo('skipWeeks:'&skipWeeks&' | skipDays:'&skipDays&' | skipMonths:'&skipMonths&' | skipYears:'&skipYears&'<br>');
 
 	curDate=parseDatetime(startDate);
-	echo("futureDaysToProject:"&futureDaysToProject&"<br>");
+	if(debug) echo("futureDaysToProject:"&futureDaysToProject&"<br>");
 
 	for(i=1;i LTE futureDaysToProject+1;i++){
 		if(i EQ 50000){
-			echo('Infinite loop detected<br>');
+			if(debug) echo('Infinite loop detected<br>');
 			abort;
 		} 
 		currentMonth=dateformat(curDate, "m");
 		currentYear=dateformat(curDate, "yyyy");
 		currentDay=dayOfWeek(curDate);
 		if(!firstWeek && ts.freq EQ "WEEKLY" and currentDay EQ 1 && skipWeeks-1 > 0){ 
-			echo(curDate&" | ");
+			if(debug) echo(curDate&" | ");
 			curDate=dateAdd("d", (skipWeeks-1)*7, curDate);
-			echo('skipWeeks! #curDate#<br>');
+			if(debug) echo('skipWeeks! #curDate#<br>');
 		}
 		if(!firstDay && ts.freq EQ "DAILY" && skipDays-1){
 			//i+=skipDays-1;
-			echo(curDate&" | ");
+			if(debug) echo(curDate&" | ");
 			curDate=dateAdd("d", skipDays-1, curDate);
-			echo('skipDays! #curDate#<br>');
+			if(debug) echo('skipDays! #curDate#<br>');
 		}
 		monthDayCount=0;
 		if(monthDayCountMonth != currentMonth){
 			totalMonthCount++;
 			if(!firstMonth && ts.freq EQ "MONTHLY" && skipMonths-1){ 
-				echo(curDate&" | ");
+				if(debug) echo(curDate&" | ");
 				curDate=dateAdd("m", skipMonths-1, curDate);
-				echo('skipMonths! #curDate#<br>');
+				if(debug) echo('skipMonths! #curDate#<br>');
 			}
 			firstMonth=false;
 
@@ -415,15 +417,15 @@
 				}
 				if(structkeyexists(ts.byday[1], 'fromEnd')){
 					monthlyLastDayOfWeekMatch=lastDayOfWeekOfMonth(curDate, dayLookup[ts.byday[1].day]);
-					echo('#curDate# | monthlyLastDayOfWeekMatch:'&monthlyLastDayOfWeekMatch&'<br>');
+					if(debug) echo('#curDate# | monthlyLastDayOfWeekMatch:'&monthlyLastDayOfWeekMatch&'<br>');
 				}
 			}
 		}
 		if(lastYear != currentYear){
 			if(ts.freq EQ "YEARLY" && skipYears-1){ 
-				echo(curDate&" | ");
+				if(debug) echo(curDate&" | ");
 				curDate=dateAdd("yyyy", skipYears-1, curDate);
-				echo('skipYears! #curDate#<br>');
+				if(debug) echo('skipYears! #curDate#<br>');
 			}
 		} 
 		currentMonth=dateformat(curDate, "m");
@@ -439,14 +441,14 @@
 
 		if(ts.freq == "Daily"){
 			if(everyWeekday){
-				echo(curDate&' | everyWeekday<br>');
+				if(debug) echo(curDate&' | everyWeekday<br>');
 				if(currentDay != 1 && currentDay != 7){
-					echo(curDate&' | everyWeekday2<br>');
+					if(debug) echo(curDate&' | everyWeekday2<br>');
 					isEvent=true;
 				}
 			}else{
 
-				echo(curDate&' | not everyWeekday<br>');
+				if(debug) echo(curDate&' | not everyWeekday<br>');
 				isEvent=true;
 			}
 		}else if(ts.freq == "Weekly"){
@@ -462,20 +464,19 @@
 					isEvent=true;
 				}
 			}else{
-				echo('here111<br>');
+				if(debug) echo('here111<br>');
 				if(structcount(weeklyDayLookup)){
 					var dayMatch=false;
-					//writedump(currentDay);					writedump(weeklyDayLookup);					abort;
 					if(everyDayEnabled or structkeyexists(weeklyDayLookup, currentDay) and weeklyDayLookup[currentDay]){
 						monthDayCount++;	
-				echo('here222<br>');
+						if(debug) echo('here222<br>');
 						dayMatch=true; 
 					}
 
 					if(whichValue == "Every"){
 
 						if(dayMatch){
-							echo('here666<br>');
+							if(debug) echo('here666<br>');
 							isEvent=true;
 						}
 					}else if(whichValue == "The Last"){
@@ -483,14 +484,14 @@
 							isEvent=true;
 						}
 					}else if(everyDayEnabled){
-				echo('here333<br>');
+						if(debug) echo('here333<br>');
 						if(dayMatch){
 							isEvent=true;
 						}
 					}else{
-				echo('here444<br>');
+						if(debug) echo('here444<br>');
 						if(dayMatch && curDate EQ getNthDayOfMonth(curDate, currentDay, whichValue)){
-				echo('here555<br>');
+						if(debug) echo('here555<br>');
 							isEvent=true;
 						}
 					}
@@ -499,66 +500,66 @@
 		}else if(ts.freq == "Yearly"){
 			if(structkeyexists(monthMatchLookup, currentMonth)){
  
-				echo('year1<br>');
+				if(debug) echo('year1<br>');
 				if(structcount(monthlyDayLookup)){
 					/*if(structkeyexists(monthlyDayLookup, "0") and curDate == lastDayOfMonth){
-					echo(curDate&' | year1-2<br>');
+						if(debug) echo(curDate&' | year1-2<br>');
 						isEvent=true;
 					}*/
 					if(structkeyexists(monthlyDayLookup, '-1')){
-						echo(curDate&' | year1-4<br />');
+						if(debug) echo(curDate&' | year1-4<br />');
 						if(lastDayOfMonth EQ curDate){
-							echo(curDate&' | year1-5<br />');
+							if(debug) echo(curDate&' | year1-5<br />');
 							isEvent=true;
 						}
 					}else if(structkeyexists(monthlyDayLookup, dateformat(curDate, "d"))){
-					echo(curDate&' | year1-3<br>');
+						if(debug) echo(curDate&' | year1-3<br>');
 						isEvent=true;
 					}
 				}else{
 					if(whichDayEnabled){
 						var dayMatch=false;
 						if(everyDayEnabled or (structkeyexists(weeklyDayLookup, currentDay) and weeklyDayLookup[currentDay])){
-							echo(curDate&' | year2<br>');
+							if(debug) echo(curDate&' | year2<br>');
 							monthDayCount++;	
 							dayMatch=true;
 						}
 						if(whichValue == "Every"){ // the first/second, etc
-							echo(curDate&' | year3<br>');
+							if(debug) echo(curDate&' | year3<br>');
 							if(dayMatch){
-								echo('year4<br>');
+								if(debug) echo('year4<br>');
 								isEvent=true;
 							}
 						}else if(whichValue == "The Last"){ // the first/second, etc
-							echo(curDate&' | year5<br>'); 
+							if(debug) echo(curDate&' | year5<br>'); 
 							if(dayMatch && curDate == monthlyLastDayOfWeekMatch){
-								echo('year6<br>');
+								if(debug) echo('year6<br>');
 								isEvent=true;
 							}
 						}else if(everyDayEnabled){
-							echo(curDate&' | year7<br>');
+							if(debug) echo(curDate&' | year7<br>');
 							if(dayMatch){
-								echo('year8<br>');
+								if(debug) echo('year8<br>');
 								isEvent=true;
 							}
 						}else{
 							if(dayMatch && curDate EQ getNthDayOfMonth(curDate, currentDay, whichValue)){
-								echo(curDate&' | year9<br>');
+								if(debug) echo(curDate&' | year9<br>');
 								isEvent=true;
 							}
 						}
 					}else{
 
-						echo(curDate&' | year10 | whichValue: '&whichValue&"<br>");
+						if(debug) echo(curDate&' | year10 | whichValue: '&whichValue&"<br>");
 						if(whichValue == dateformat(curDate, "d")){ // the first/second, etc
 
-							echo(curDate&' | year11<br>');
+							if(debug) echo(curDate&' | year11<br>');
 							isEvent=true;
 						}
 					}
 				}
 				if(i EQ 5){
-					echo('stop33');abort;
+					if(debug) echo('stop33');abort;
 				}
 			}
 		}
@@ -587,287 +588,8 @@
 		}
 	}
 
-	writedump(arrDate);
+	if(debug) writedump(arrDate);
 	return arrDate;
-
-
-	// old code
-	for(i=1;i LTE futureDaysToProject+1;i++){
-		break;
-
-		matchcount=0;
-		totalmatchcount=0;
-
-		
-		if(monthMatch2 NEQ dateformat(curDate,'m')){
-			dayMatch=0;
-		}
-		// on a monthly calendar, this become the first and only occurance day, like first tuesday, second thursday, etc.
-		if(structkeyexists(ts,'byday')){
-			totalmatchcount++;
-			//writedump(ts.byday);abort;
-			for(n=1;n LTE arraylen(ts.byday);n++){
-
-				if(ts.byday[n].day EQ dateformat(curDate,'dddd')){
-					//if(debug) echo('byday111:'&ts.byday[n].day&' EQ '&dateformat(curDate,'dddd')&'<br />');
-					if(structkeyexists(ts.byday[n], 'fromStart')){
-						m=dateformat(curDate, 'm');
-						if(byDayStartMatchMonth NEQ m){
-							byDayStartMatchMonth=m;
-							byDayStartMatchCount=0;
-						}
-						byDayStartMatchCount++;
-
-
-						targetDate=getNthDayOfMonth(curDate, ts.byday[n].dayIndex, ts.byday[n].num);
-
-						if(targetDate EQ curDate){
-							matchcount=1;
-							totalmatchcount=1;
-						}else{
-							matchcount=0;
-							totalmatchcount=1;
-						}
-						/*
-						if(dateformat(targetDate, 'm') NEQ m){
-						 
-						    targetDate = dateadd("d", -7, targetDate);
-						}
-						*/
-						/*if(byDayStartMatchCount EQ ts.byday[n].num){
-							matchcount=1;
-							totalmatchcount=1;
-						}else if(byDayStartMatchCount GT ts.byday[n].num){
-							matchcount=0;
-							totalmatchcount=1;
-						}*/
-						// need to know if we're already past the first date in month
-						// always start from beginning of month at top of loop, but don't save dates until the startDate
-					}else if(structkeyexists(ts.byday[n], 'fromEnd')){ 
-						m=dateformat(curDate, 'm');
-						if(byDayEndMatchMonth NEQ m){
-							byDayEndMatchMonth=m;
-							byDayEndMatchCount=0;
-						}
-
-						// currently only supports the "last day" and not -2MO, etc
-						if(byDayEndMatchCount NEQ 0){
-							continue;
-						}
-
-						dtLastDay=dateadd("d", -1, DateAdd( "m", 1, dateformat(curDate, 'yyyy-mm-01')));
-						targetDate = dateadd("d", -(DayOfWeek(dtLastDay)-ts.byday[n].dayIndex), dtLastDay);
-						if(dateformat(targetDate, 'm') NEQ m){
-						 
-						    targetDate = dateadd("d", -7, targetDate);
-						}
-						//targetDate=parsedatetime(dateformat(targetDate, 'yyyy-mm-dd'));
-						//if(debug) echo(ts.byday[n].dayIndex&" | "&ts.byday[n].day&" | "&curDate&" | "&targetDate&"<br>");
-						if(curDate EQ targetDate){
-							matchcount=1;
-							totalmatchcount=1;
-							byDayEndMatchCount++;
-						}else{
-							matchcount=0;
-							totalmatchcount=1;
-						}
-					}else{
-						/*if(ts.freq EQ "monthly" and ts.interval GT 1){
-							if(bydayMonthlyInterval NEQ dateformat(curDate, 'm'){
-								bydayMonthlyInterval=dateformat(curDate, 'm');
-								bydayMonthlyIntervalCount++;
-							}
-						}*/
-						if(ts.freq EQ "monthly"){
-							bydayMonthlyInterval=true;
-						}
-						if(debug) echo(curDate&' | byday was here<br />');
-						matchcount++;
-						dayMatch++; 
-					}
-				}
-			}
-		}
-		var matchcountBackup=0;
-		if(firstDate EQ curDate){
-			if(not structkeyexists(excludeStruct, dateformat(curDate, 'yyyymmdd'))){
-				if(debug) echo('already added first date: '&curDate&"<br>");
-				//matchcount=0;
-				//arrayappend(arrDate, curDate);
-			}
-			yearMatchCount=0;
-			intervalSkipCount=0; 
-			matchcountBackup=matchcount;
-			matchcount=0;
-		} 
-		if(structkeyexists(ts,'bymonthday')){
-			totalmatchcount++;
-			arrMonthDay=listtoarray(ts.bymonthday,",");
-			for(i2=1;i2 LTE arraylen(arrMonthDay);i2++){
-				if(arrMonthDay[i2] EQ "-1"){
-					dtLastDay=dateadd("d", -1, DateAdd( "m", 1, dateformat(curDate, 'yyyy-mm-01')));
-					if(dtLastDay EQ curDate){
-						totalmatchcount=1;
-						matchcount=1;
-					}
-				}else{
-					if(arrMonthDay[i2] EQ dateformat(curDate,'d')){
-						matchcount++;
-						//monthMatch2=dateformat(curDate,'m');
-						break;
-					}
-				}
-			}
-		}
-		if(structkeyexists(ts,'bymonth')){
-			monthNotMatching=false;
-			totalmatchcount++;
-			arrMonth=listtoarray(ts.bymonth,",");
-			for(i2=1;i2 LTE arraylen(arrMonth);i2++){
-				if(arrMonth[i2]+1 NEQ dateformat(curDate,'m')){
-					monthNotMatching=true;
-					//if(debug) echo('Month already passed<br />');
-					//yearMatch=dateformat(curDate, 'yyyy');
-					//yearMatchCount++;
-				}
-				if(arrMonth[i2]+1 EQ dateformat(curDate,'m')){
-					matchcount++;
-					break;
-				}
-			}
-			if(monthNotMatching){
-				futureDate=dateadd("m", 1, dateformat(curDate, 'yyyy-mm-01'));
-				dayCount=datediff("d", curDate, futureDate);
-				if(debug) echo("skip to next month | curDate: #curDate# | dayCount:"&dayCount&"<br>");
-				i+=dayCount-1;
-				continue;
-			}
-		}
-		// No existing use cases of this one: The WKST rule part specifies the day on which the workweek starts. Valid values are MO, TU, WE, TH, FR, SA and SU. This is significant when a WEEKLY RRULE has an interval greater than 1, and a BYDAY rule part is specified. This is also significant when in a YEARLY RRULE when a BYWEEKNO rule part is specified. The default value is MO.
-		if(ts.interval GT 1){
-			if(structkeyexists(ts,'WKST')){
-				request.zos.template.fail('WKST (Work week start day (i.e., Monday, Sunday, etc) is not supported yet when interval is greater then 1 (icalendar rules).');
-				totalmatchcount++;
-				if(ts.WKST.day EQ dateformat(curDate,'dddd')){
-					matchcount++;
-				}
-			}
-		} 
-		if(debug) echo(curDate&":"&matchcount&' EQ '&totalmatchcount&" | "&monthMatch&"<br>");
-		if(firstDate EQ curDate and matchcountBackup+matchcount EQ totalmatchcount){
-			countTotal++;
-		}
-		if(matchcount EQ totalmatchcount){
-		//if(matchcount EQ totalmatchcount or firstDate EQ curDate){
-			//if(ts.interval NEQ 1){
-				if(ts.freq EQ "monthly"){
-					/*if(monthMatch EQ dateformat(curDate,'m')){
-						if(debug) echo('skipping<br>');
-						continue;
-					}*/
-				}
-				if(ts.interval EQ 1){
-					intervalSkipCount=0;
-				}else{
-
-					if(ts.freq EQ "monthly"){
-						if(firstMatch){
-							firstMatch=false;
-							if(debug) echo('firstMatch<br />'); 
-							if(dateformat(firstDate, "m") EQ dateformat(curDate, "m")){ 
-								intervalSkipCount=0; 
-							}else{ 
-								intervalSkipCount=1; 
-							} 
-						}
-
-						if(bydayMonthlyInterval){
-
-						}
-					}
-
-					if(ts.freq EQ "yearly"){
-						if(firstMatch){
-							firstMatch=false;
-							if(debug) echo('firstMatch<br />'); 
-							if(dateformat(firstDate, "yyyy") EQ dateformat(curDate, "yyyy")){
-								yearMatchCount=0;
-								intervalSkipCount=0; 
-							}else{
-								yearMatchCount=1;
-								intervalSkipCount=1; 
-							}
-							yearMatch=dateformat(curDate, 'yyyy');
-						}else{
-							if(debug) echo('yearMatchCount:'&yearMatchCount&'<br>');
-							if(yearMatch NEQ dateformat(curDate,'yyyy')){
-								if(yearMatch EQ 0){
-									yearMatchCount=ts.interval;
-									yearMatch=dateformat(curDate, 'yyyy');
-								}else{
-									yearMatch=dateformat(curDate, 'yyyy');
-									yearMatchCount++;
-								}
-							}else{
-								//continue;
-							}
-							if(yearMatchCount GTE ts.interval){
-								intervalSkipCount=0;
-								yearMatchCount=0;
-							}else{
-								intervalSkipCount=1;
-							}
-						}
-					}
-				}
-				if(bydayMonthlyInterval){
-					intervalSkipCount=bydayMonthlyIntervalCount-1;
-				}
-				//totalmatchcount++;
-				if(debug) echo(curDate&" | yearMatchCount: #yearMatchCount# | intervalSkipCount:"&intervalSkipCount&" | interval: "&ts.interval&"<br>");
-				if(intervalSkipCount EQ 0){
-					//matchcount++;
-					//arrayappend(arrDate, dateformat(curDate,'yyyy-mm-dd dddd'));
-
-					if(not structkeyexists(excludeStruct, dateformat(curDate, 'yyyymmdd'))){
-						if(debug) echo('added date: '&curDate&"<br>");
-						arrayappend(arrDate, curDate);
-					}
-					countTotal++;
-					if(ts.count GT 0 and countTotal EQ ts.count){
-						// all occurrences have occured.
-						break;	
-					}
-					monthMatch=dateformat(curDate,'m');
-					//yearMatch=dateformat(curDate,'yyyy');
-				}
-
-				if(bydayMonthlyInterval){
-					if(bydayMonthlyIntervalMonth NEQ dateformat(curDate,'m')){
-						bydayMonthlyIntervalMonth=dateformat(curDate,'m');
-						bydayMonthlyIntervalCount++;
-					}
-					if(bydayMonthlyIntervalCount GTE ts.interval){
-						bydayMonthlyIntervalCount=0;
-						intervalSkipCount=0;
-					}
-				}else{
-					intervalSkipCount++;
-					if(intervalSkipCount GTE ts.interval){
-						intervalSkipCount=0;
-					}
-				}
-			//}
-		}
-		// writeoutput(dateformat(curDate,'yyyy-mm-dd dddd')&" | "&matchcount&" EQ "&totalmatchcount&"<br>");
-		if(datecompare(curDate, lastDate) EQ 0){
-			// this is the until date, stop processing!
-			break;	
-		}
-	}
-	//writedump(arrDate);abort;
-	return arrDate;
-	 //ts2.event_recur_ical_rules=eventData.rrule.data;
 	 </cfscript>
 	
 	<!--- notes from recur_functions.php in php icalendar

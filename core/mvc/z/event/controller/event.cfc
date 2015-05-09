@@ -357,14 +357,10 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	</cfscript>
 </cffunction>
 
-<cffunction name="testRules" localmode="modern" access="remote">
-	<cfscript> 
-	setting requesttimeout="5";
-	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
-	request.ical.init("");
 
-   
-
+<cffunction name="getTests" localmode="modern" access="remote">
+	<cfscript>
+	arrTest=[];
 	ts={
 		id:"Rule 1",
 		startDate:"5/7/2015",
@@ -373,8 +369,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-07","2015-06-04","2016-06-04"]
 	}
-	testRule(ts);
-
+	arrayAppend(arrTest, ts);
 
 	ts={
 		id:"Rule 2",
@@ -384,7 +379,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"10/12/2015",
 		arrCorrectDates:['2015-05-08','2015-05-11','2015-05-18','2015-05-25','2015-06-01','2015-06-08','2015-06-15','2015-06-22','2015-06-29','2015-07-06','2015-07-13','2015-07-20','2015-07-27']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 
 
@@ -397,7 +392,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-23','2015-06-06','2015-06-20','2015-07-04']
 		//["2015-05-08","2015-05-16","2015-05-30","2015-06-13","2015-06-27","2015-07-11"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
  
 	
 	ts={
@@ -408,7 +403,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2015-05-15","2015-05-22","2015-05-29"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
  	ts={
 		id:"Rule 5",
@@ -418,7 +413,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2015-05-12","2015-06-09","2015-07-14","2015-08-11"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 	
 	ts={
 		id:"Rule 6",
@@ -428,7 +423,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2015-05-10","2015-05-18","2015-06-10","2015-06-18"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
  
 	ts={
 		id:"Rule 7",
@@ -438,7 +433,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2016-01-04","2017-01-02"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 	ts={
 		id:"Rule 8",
@@ -448,7 +443,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2016-01-25','2017-01-30','2018-01-29','2019-01-28','2020-01-27']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
  
 	ts={
@@ -459,7 +454,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2016-01-31','2017-01-31','2018-01-31','2019-01-31','2020-01-31']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 
 	ts={
@@ -470,7 +465,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2017-01-23","2019-01-28","2021-01-25"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 
 	ts={
@@ -481,7 +476,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2016-01-25","2017-01-23","2018-01-22","2019-01-28","2020-01-27","2021-01-25"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 	ts={
 		id:"Rule 12",
@@ -491,7 +486,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2015-07-04','2015-09-04','2015-11-04','2016-01-04','2016-03-04','2016-05-04']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
 	ts={
 		id:"Rule 13",
@@ -501,7 +496,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2016-01-01','2017-01-01','2018-01-01','2019-01-01','2020-01-01']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 	
 	ts={
@@ -512,7 +507,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-08","2015-12-02","2016-12-02","2017-12-02","2018-12-02"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 
 	ts={
@@ -523,7 +518,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:["2015-05-07","2015-06-04","2017-06-04","2019-06-04"]
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
  	ts={
 		id:"Rule 16",
@@ -533,7 +528,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2015-05-12','2015-07-14','2015-09-08','2015-11-10']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
  	ts={
 		id:"Rule 17",
@@ -543,7 +538,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-10','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-16','2015-05-17','2015-05-18','2015-05-19','2015-05-20','2015-05-21','2015-05-22','2015-05-23','2015-05-24','2015-05-25','2015-05-26','2015-05-27']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
 
  	ts={
@@ -554,7 +549,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2015-05-12','2015-05-19','2015-05-26','2015-07-07']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
  	ts={
 		id:"Rule 19",
@@ -564,7 +559,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2016-02-18','2017-02-16','2018-02-15','2019-02-21','2020-02-20','2021-02-18']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
 
  	ts={
@@ -575,7 +570,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2017-01-01','2017-01-08','2017-01-15','2017-01-22']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
 
  	ts={
@@ -586,7 +581,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2016-01-21','2017-01-19','2018-01-18','2019-01-17']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
 	ts={
 		id:"Rule 21",
@@ -596,7 +591,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2017-01-02','2019-01-07']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 	ts={
 		id:"Rule 22",
@@ -606,7 +601,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"10/12/2015",
 		arrCorrectDates:['2015-05-08','2015-05-11','2015-05-13','2015-05-18','2015-05-20']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 
 	ts={
 		id:"Rule 23",
@@ -616,7 +611,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"10/12/2015",
 		arrCorrectDates:['2015-05-08','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-18']
 	}
-	testRule(ts);
+	arrayAppend(arrTest, ts);
 	
 	ts={
 		id:"Rule 24",
@@ -626,7 +621,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"10/12/2015",
 		arrCorrectDates:['2015-05-08','2015-05-10','2015-05-12','2015-05-14','2015-05-16','2015-05-18','2015-05-20']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts); 
 
 
  	ts={
@@ -637,9 +632,8 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-10','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-16','2015-05-17','2015-05-18','2015-05-19','2015-05-20','2015-05-21','2015-05-22','2015-05-23','2015-05-24','2015-05-25','2015-05-26','2015-05-27','2015-05-28','2015-05-29','2015-05-30','2015-05-31','2015-07-01','2015-07-02','2015-07-03','2015-07-04','2015-07-05','2015-07-06']
 	}
-	testRule(ts); 
-
-
+	arrayAppend(arrTest, ts);
+ 
  	ts={
 		id:"Rule 26",
 		startDate:"5/8/2015",
@@ -648,8 +642,37 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		excludeDayList:"",
 		arrCorrectDates:['2015-05-08','2016-01-01','2016-01-02','2016-01-03','2016-01-04','2016-01-05','2016-01-06','2016-01-07','2016-01-08','2016-01-09','2016-01-10','2016-01-11','2016-01-12','2016-01-13','2016-01-14','2016-01-15','2016-01-16','2016-01-17','2016-01-18','2016-01-19','2016-01-20','2016-01-21','2016-01-22','2016-01-23','2016-01-24','2016-01-25','2016-01-26','2016-01-27','2016-01-28','2016-01-29','2016-01-30']
 	}
-	testRule(ts); 
+	arrayAppend(arrTest, ts);
+	return arrTest;
    
+</cfscript>
+
+</cffunction>
+	
+
+<cffunction name="getTestJson" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	arrTest=getTests();
+	ts={
+		success:true,
+		arrTest:arrTest
+	}
+	application.zcore.functions.zReturnJson(ts);
+	</cfscript>	
+</cffunction>
+
+
+<cffunction name="testRules" localmode="modern" access="remote">
+	<cfscript> 
+	setting requesttimeout="5";
+	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	request.ical.init("");
+
+	arrTest=getTests();
+	for(i=1;i LTE arraylen(arrTest);i++){
+		testRule(arrTest[i]);
+	}
+
 	echo('All rules passed.');abort;
 	</cfscript>
 </cffunction>
