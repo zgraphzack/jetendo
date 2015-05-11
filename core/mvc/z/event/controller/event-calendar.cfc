@@ -6,6 +6,8 @@
 
 <cffunction name="view" localmode="modern" access="remote">
 	<cfscript>
+	db=request.zos.queryObject;
+	
 	writedump(form);
 	</cfscript>
 </cffunction>

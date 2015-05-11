@@ -31,6 +31,12 @@
 
 		application.zcore.functions.zDeleteUniqueRewriteRule(qCheck.event_unique_url);
 
+		db.sql="DELETE FROM #db.table("event_recur", request.zos.zcoreDatasource)#  
+		WHERE event_id= #db.param(application.zcore.functions.zso(form, 'event_id'))# and 
+		event_recur_deleted = #db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)# ";
+		q=db.execute("q");
+
 		db.sql="DELETE FROM #db.table("event", request.zos.zcoreDatasource)#  
 		WHERE event_id= #db.param(application.zcore.functions.zso(form, 'event_id'))# and 
 		event_deleted = #db.param(0)# and 
@@ -95,13 +101,13 @@
 		form.event_start_datetime=dateformat(form.event_start_datetime_date, 'yyyy-mm-dd');
 	}
 	if(form.event_start_datetime_time NEQ "" and isdate(form.event_start_datetime_time)){
-		form.event_start_datetime=form.event_start_datetime&" "&dateformat(form.event_start_datetime_time, 'HH:mm:ss');
+		form.event_start_datetime=form.event_start_datetime&" "&timeformat(form.event_start_datetime_time, 'HH:mm:ss');
 	}
 	if(form.event_end_datetime_date NEQ "" and isdate(form.event_end_datetime_date)){
 		form.event_end_datetime=dateformat(form.event_end_datetime_date, 'yyyy-mm-dd');
 	}
 	if(form.event_end_datetime_time NEQ "" and isdate(form.event_end_datetime_time)){
-		form.event_end_datetime=form.event_end_datetime&" "&dateformat(form.event_end_datetime_time, 'HH:mm:ss');
+		form.event_end_datetime=form.event_end_datetime&" "&timeformat(form.event_end_datetime_time, 'HH:mm:ss');
 	} 
 	if(form.method EQ 'insert'){
 		form.event_created_datetime=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
@@ -175,7 +181,7 @@
 					event_id:form.event_id,
 					site_id:request.zos.globals.id,
 					event_x_category_deleted:0,
-					event_x_category_updated_datetime:request.zos.mysqlnow,
+					event_x_category_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
 					event_category_id:arrCategory[i]
 				},
 				table:"event_x_category",
@@ -187,6 +193,62 @@
 
 	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'site_option_app_id'));
 	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'event_image_library_id'));
+
+	db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+	event_recur_deleted=#db.param(0)# and 
+	site_id=#db.param(request.zos.globals.id)# and 
+	event_id=#db.param(form.event_id)# ";
+	qDelete=db.execute("qDelete");
+	if(form.event_recur_ical_rules EQ ""){
+
+		ts={
+			table:"event_recur",
+			datasource:request.zos.zcoreDatasource,
+			struct:{
+				event_id:form.event_id,
+				site_id:request.zos.globals.id,
+				event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+				event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+				event_recur_end_datetime:dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+				event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
+				event_recur_deleted:0
+			}
+		}
+		application.zcore.functions.zInsert(ts);
+	}else{
+		// project event 
+		ical=createobject("component", "zcorerootmapping.com.ical.ical");
+		ical.init("");
+		forceDateLimit=true;
+		arrDate=ical.getRecurringDates(form.event_start_datetime, form.event_recur_ical_rules, form.event_excluded_date_list, forceDateLimit);
+
+		minutes=datediff("n", form.event_start_datetime, form.event_end_datetime);
+
+
+		for(i=1;i LTE arraylen(arrDate);i++){
+			startDate=arrDate[i];
+			endDate=dateadd("n", minutes, startDate);
+			ts={
+				table:"event_recur",
+				datasource:request.zos.zcoreDatasource,
+				struct:{
+					event_id:form.event_id,
+					site_id:request.zos.globals.id,
+					event_recur_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
+					event_recur_start_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
+					event_recur_end_datetime:dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss"),
+					event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
+					event_recur_deleted:0
+				}
+			}
+			application.zcore.functions.zInsert(ts);
+		}
+	}
+	// store projected dates in event_recur table 
+
+
+	// delete dates that weren't updated?
+
 
 	if(uniqueChanged){
 		application.zcore.app.getAppCFC("event").updateRewriteRuleEvent(form.event_id, oldURL);	
@@ -449,7 +511,18 @@
 			</tr>  
 			<tr>
 				<th>Recurring Event</th>
-				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1"><cfif form.event_recur_ical_rules NEQ "">Yes<cfelse>No</cfif></span></strong>
+				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
+					<cfif form.event_recur_ical_rules NEQ "">Yes | 
+						<cfscript>
+						
+						ical=createobject("component", "zcorerootmapping.com.ical.ical");
+						ical.init("");
+						echo(ical.getIcalRuleAsPlainEnglish(form.event_recur_ical_rules));
+						</cfscript>
+					<cfelse>
+						No
+					</cfif>
+				</span></strong>
 				 </span>
 				<input type="hidden" name="event_recur_ical_rules" id="event_recur_ical_rules" value="#htmleditformat(form.event_recur_ical_rules)#" />
 				<input type="hidden" name="event_excluded_date_list" id="event_excluded_date_list" value="#htmleditformat(form.event_excluded_date_list)#" />
@@ -514,13 +587,6 @@
 			</tr> 
 
 			<!---          
-event_recur_ical_rules      varchar(255)      utf8_general_ci  NO              (NULL)           select,insert,update,references        
-event_recur_until_datetime  datetime          (NULL)           NO              (NULL)           select,insert,update,references           
-event_recur_count           int(11) unsigned  (NULL)           NO              0                select,insert,update,references           
-event_recur_interval        int(11) unsigned  (NULL)           NO              0                select,insert,update,references           
-event_recur_frequency       varchar(15)       utf8_general_ci  NO              (NULL)           select,insert,update,references    
-event_excluded_date_list
- 
           
 event_generated - what is this?
 event_reservation_enabled - not needed yet.
@@ -546,6 +612,7 @@ Map Coordinates	Map Location Picker
 	</form>
 </cffunction>
 
+
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	db=request.zos.queryObject;
@@ -560,6 +627,8 @@ Map Coordinates	Map Location Picker
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events");
 
 
+	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	request.ical.init("");
 	perpage=10;
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	if(form.zIndex LT 1){
@@ -572,7 +641,7 @@ Map Coordinates	Map Location Picker
 	site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
 	if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
-		searchOn=true;
+		searchOn=true; 
 		db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
 	}
 	if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
@@ -766,6 +835,8 @@ Map Coordinates	Map Location Picker
 	event_id=#db.param(form.event_id)#";
 	qEvent=db.execute("qEvent"); 
 	
+	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	request.ical.init("");
 	request.eventCom=application.zcore.app.getAppCFC("event");
 	savecontent variable="rowOut"{
 		for(row in qEvent){
@@ -791,7 +862,8 @@ Map Coordinates	Map Location Picker
 		<td>#dateformat(row.event_end_datetime, 'm/d/yyyy')#</td>
 		<td>');
 	if(row.event_recur_ical_rules NEQ ""){
-		echo('Yes');
+		echo(request.ical.getIcalRuleAsPlainEnglish(row.event_recur_ical_rules));
+		
 	}else{
 		echo('No');
 	}

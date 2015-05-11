@@ -217,6 +217,7 @@
 					<p style="font-size:10px; "><a href="#local.qm.site_domain#/z/test/functions/fileAndDirectory/zGetDiskUsageTest/runTestRemote" target="_blank">/z/test/functions/fileAndDirectory/zGetDiskUsageTest/runTestRemote</a></p>
 					<p><a href="#local.qm.site_domain#/z/test/runAllTests/index" target="_blank">Run All Tests</a></p>
 				</cfif>
+				<p><a href="/z/event/event/testRules" target="_blank">Run Event Recurring Rule Tests</a></p>
 			</cfif>
 			<h3>Listing App</h3>
 			<p>These tasks may take a while to complete. Be patient and don't run the same task multiple times simultaneously.</p>

@@ -197,7 +197,8 @@
 			console.log("['"+arrDate2.join("','")+"']");
 
 			if($("#event_recur_ical_rules", window.parent.document).length){
-				$("#event_recur_ical_rules", window.parent.document).val(rule.toString());
+				var r=rule.toString();
+				$("#event_recur_ical_rules", window.parent.document).val(r);
 
 				var arrExclude2=[];
 				for(var i in arrExclude){
@@ -211,6 +212,18 @@
 					$("#recurringConfig1", window.parent.document).html("No");
 				}else{
 					$("#recurringConfig1", window.parent.document).html("Yes");
+
+					var tempObj={};
+					tempObj.id="zRecurAsPlainEnglish";
+					tempObj.url="/z/_com/ical/ical?method=getIcalRuleAsPlainEnglishAsJson&rule="+escape(r);
+					tempObj.callback=function(r2){
+						var m=eval("("+r2+")");
+						if(m.success){
+							$("#recurringConfig1", window.parent.document).html("Yes | "+m.string);
+						}
+					};
+					tempObj.cache=false;
+					zAjax(tempObj);
 				}
 				if($("#zRecurTypeRangeRadio3")[0].checked){
 					$("#event_recur_until_datetime", window.parent.document).val($("#zRecurTypeRangeDate").val());

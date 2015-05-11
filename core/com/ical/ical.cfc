@@ -178,78 +178,30 @@
 	</cfscript>
 </cffunction>
 	
-<cffunction name="getRecurringDates" localmode="modern" access="remote" returntype="any">
-	<cfargument name="startDate" type="date" required="yes">
-	<cfargument name="endDate" type="date" required="yes">
+
+<cffunction name="parseRule" localmode="modern" access="remote" returntype="any">
 	<cfargument name="rule" type="string" required="yes">
-	<cfargument name="excludeDateList" type="string" required="yes">
 	<cfscript>
-	emptydate='0000-00-00 00:00:00';
-	endDate=arguments.endDate;//dateadd("y",1,now());
-	startDate=arguments.startDate;//createdatetime(2008,3,1,0,0,0);
-	
-	debug=false;
-	arrExcludeDate=[];
-	if(arguments.excludeDateList NEQ ""){
-		arrExcludeDate=listToArray(arguments.excludeDateList, ',');
-	}
-	excludeStruct={};
-	for(i=1;i LTE arraylen(arrExcludeDate);i++){
-		excludeStruct[dateformat(arrExcludeDate[i], 'yyyymmdd')]=true;
-	}
-
-	 arrDate=[];
-	intervalSkipCount=0;
-	monthMatch=0;
-	monthMatch2=0;
-	yearMatch=0;
-	dayMatch=0;
-	yearMatchCount=0;
-	countTotal=0;
-
-	
-	/*v="FREQ=WEEKLY;INTERVAL=2;BYDAY=WE;BYMONTH=1,11;UNTIL=20130102T045959Z"; // works
-	v="FREQ=MONTHLY;INTERVAL=1;BYDAY=1TU;WKST=SU;UNTIL=20130102T045959Z";
-	v="FREQ=YEARLY;BYMONTH=3;BYDAY=2SU;COUNT=3";
-	*/
+	ts=structnew();
+	ts.count=0;
+	ts.interval=1;
+	ts.until='0000-00-00 00:00:00';
 	v=arguments.rule;
-	 arr1=listtoarray(v,";");
-	 ts=structnew();
-	 ts.count=0;
-	 ts.interval=1;
-	 ts.until='0000-00-00 00:00:00';
-	 for(n=1;n LTE arraylen(arr1);n++){
-		 arr2=listtoarray(arr1[n],"=");
-		 ts[arr2[1]]=arr2[2];
-	 }
-	firstDate="";
-	if(not structkeyexists(excludeStruct, dateformat(startDate, 'yyyymmdd'))){
-		firstDate=parsedatetime(dateformat(startDate, 'yyyy-mm-dd'));
-		//arrayappend(arrDate, firstDate);
-		yearMatch=dateformat(firstDate, 'yyyy');
-		yearMatchCount=2;
-		if(ts.interval GT 1){
-		//	intervalSkipCount++;
-		}
+	arr1=listtoarray(v,";");
+	for(n=1;n LTE arraylen(arr1);n++){
+		arr2=listtoarray(arr1[n],"=");
+		ts[arr2[1]]=arr2[2];
 	}
-
-	 if(emptydate EQ ts.until){
-		 lastDate=dateadd("yyyy",2,startDate); 
-	 }else{
-		 lastDate=icalParseDateTime(ts.until); 
-		 ts.count=0;
-	 } 
-	futureDaysToProject=datediff("d",startDate,lastDate);
-	if(ts.count != 0){
-		futureDaysToProject=50000;
-		lastDate=dateadd("d",futureDaysToProject,startDate); 
-	}
-	 g=1;
 	if(structkeyexists(ts,'byday') and ts.byday NEQ ""){
 		ts.byday=this.parseDay(ts.byday);
 	}
+	// wkst - this is the weekday the week starts on.  this impacts how weekly+byday with interval > 1 rules repeat - usually default is monday, but it can be sunday.   also YEARLY RRULE and BYWEEKNO need this - but i don't support that yet.  WKST hasn't been tested at all.
 	if(structkeyexists(ts,'WKST') and ts.WKST NEQ ""){
 		ts.WKST=this.parseDay(ts.WKST);
+	}
+	emptydate='0000-00-00 00:00:00';
+	if(emptydate NEQ ts.until){
+		ts.count=0;
 	}
 	unsupported={
 		"BYSECOND"=true,
@@ -264,9 +216,207 @@
 	
 	for(i in ts){
 		if(structkeyexists(unsupported, i)){
-			request.zos.template.fail(i&" icalendar recurring rule is unsupported.");
+			throw(i&" icalendar recurring rule is unsupported. Rule: #arguments.rule#");
 		}
 	}
+	return ts;
+	</cfscript>
+</cffunction>
+
+<cffunction name="getDayAsString" localmode="modern" access="public">
+	<cfargument name="d" type="string" required="yes">
+	<cfscript>
+	d=arguments.d;
+	if(d EQ "1"){
+		return "1st";
+	}else if(d EQ "2"){
+		return "2nd";
+	}else if(d EQ "3"){
+		return "3rd";
+	}else{
+		return d&"th";
+	}
+	</cfscript>	
+</cffunction>
+
+
+<cffunction name="getIcalRuleAsPlainEnglishAsJson" localmode="modern" access="remote">
+	<cfscript>
+	rs={
+		success:true,
+		string:getIcalRuleAsPlainEnglish(application.zcore.functions.zso(form, 'rule'))
+	};
+	application.zcore.functions.zReturnJson(rs);
+	</cfscript>
+</cffunction>
+	
+
+<cffunction name="getIcalRuleAsPlainEnglish" localmode="modern" access="public">
+	<cfargument name="rule" type="string" required="yes">	
+	<cfscript>
+	if(arguments.rule EQ ""){
+		return "";
+	}
+	ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	ical.init("");
+	ts=ical.parseRule(arguments.rule);
+	if(not isstruct(ts) or application.zcore.functions.zso(ts, 'freq') EQ ""){
+		return '';
+	}
+	emptydate='0000-00-00 00:00:00';
+	freqStruct={
+		"weekly": "week",
+		"yearly": "year",
+		"daily": "day",
+		"monthly": "month",
+	}
+	freq=freqStruct[ts.freq];
+	arr1=[];
+
+	// WKST  what is this?
+	hasByDay=false;
+	if(isarray(application.zcore.functions.zso(ts, 'byday'))){
+		hasByDay=true;
+		if(arraylen(ts.byday) EQ 1){ 
+			d=ts.byday[1].day;
+			whichNameLookup={
+				1:"The first",
+				2:"The second",
+				3:"The third",
+				4:"The fourth",
+				5:"The fifth",
+				"-1":"The last"
+			};
+			if(ts.byday[1].num NEQ 0){
+				arrayAppend(arr1, whichNameLookup[ts.byday[1].num]&" "&d);
+			}else{
+				arrayAppend(arr1, "Every "&d);
+			}
+		}else{
+			if(arraylen(ts.byday) EQ 7){
+				arrayAppend(arr1, "Every day");
+			}else{
+				hasSunday=false;
+				hasSaturday=false;
+				arrDay2=[];
+				for(i=1;i LTE arraylen(ts.byday);i++){
+					d=ts.byday[i].day;
+					if(i NEQ 1 and i EQ arraylen(ts.byday)){
+						arrayAppend(arrDay2, " and ");
+					}else if(i NEQ 1){
+						arrayAppend(arrDay2, ", ");
+					}
+					arrayAppend(arrDay2, d);
+					if(d EQ "Sunday"){
+						hasSunday=true;
+					}
+					if(d EQ "Saturday"){
+						hasSaturday=true;
+					}
+				}
+				if(not hasSunday and not hasSaturday and arraylen(ts.byday) EQ 5){
+					arrayAppend(arr1, "Every weekday");
+				}else{
+					arrayAppend(arr1, "Every "&arraytolist(arrDay2, ""));
+				}
+			}
+		}
+	}
+	if(application.zcore.functions.zso(ts, 'bymonthday') NEQ ""){
+		if(ts.bymonthday EQ "-1"){
+			arrayAppend(arr1, "The last day of the month");
+		}else{
+			arrDay=listToArray(ts.bymonthday, ",");
+			arrDay2=[];
+			for(i=1;i LTE arraylen(arrDay);i++){
+				if(i NEQ 1 and i EQ arraylen(arrDay)){
+					arrayAppend(arrDay2, " and ");
+				}else if(i NEQ 1){
+					arrayAppend(arrDay2, ", ");
+				}
+				arrayAppend(arrDay2, lcase(getDayAsString(arrDay[i])));
+			}
+			arrayAppend(arr1, "Every "&arrayToList(arrDay2, "")&" day");
+		}
+	}
+	if(application.zcore.functions.zso(ts, 'bymonth') NEQ ""){
+		month=monthAsString(ts.bymonth+1);
+		if(hasByDay){
+			arrayAppend(arr1, "of #month#");
+		}else{
+			arrayAppend(arr1, "of #month#");
+		}
+	}
+	if(ts.interval GT 1){
+		arrayAppend(arr1, "every "&ts.interval&" "&freq&"s");
+	}else{
+		arrayAppend(arr1, "every "&freq);
+	}
+	if(ts.count NEQ 0){
+		arrayAppend(arr1, "limited to "&ts.count&" occurrences");
+	}else{
+		if(ts.until NEQ emptydate){
+			arrayAppend(arr1, "until "&dateformat(icalParseDateTime(ts.until), "m/d/yyyy"));
+		}else{
+			arrayAppend(arr1, "forever");
+		}
+	}
+	return arrayToList(arr1, ' ');
+	</cfscript>
+</cffunction>
+
+	
+<cffunction name="getRecurringDates" localmode="modern" access="remote" returntype="any">
+	<cfargument name="startDate" type="date" required="yes">
+	<cfargument name="rule" type="string" required="yes">
+	<cfargument name="excludeDateList" type="string" required="yes">
+	<cfargument name="forceDateLimit" type="boolean" required="yes">
+	<cfscript>
+	emptydate='0000-00-00 00:00:00';
+	startDate=arguments.startDate;//createdatetime(2008,3,1,0,0,0);
+	
+	debug=false;
+	arrExcludeDate=[];
+	if(arguments.excludeDateList NEQ ""){
+		arrExcludeDate=listToArray(arguments.excludeDateList, ',');
+	}
+	excludeStruct={};
+	for(i=1;i LTE arraylen(arrExcludeDate);i++){
+		excludeStruct[dateformat(arrExcludeDate[i], 'yyyymmdd')]=true;
+	}
+
+	arrDate=[];
+	intervalSkipCount=0;
+	monthMatch=0;
+	monthMatch2=0;
+	yearMatch=0;
+	dayMatch=0;
+	yearMatchCount=0;
+	countTotal=0;
+
+	ts=parseRule(arguments.rule);
+	firstDate="";
+	if(not structkeyexists(excludeStruct, dateformat(startDate, 'yyyymmdd'))){
+		firstDate=parsedatetime(dateformat(startDate, 'yyyy-mm-dd'));
+		yearMatch=dateformat(firstDate, 'yyyy');
+		yearMatchCount=2;
+	}
+
+	if(arguments.forceDateLimit){
+		forceLastDate=dateadd("d", application.zcore.app.getAppData("event").optionStruct.event_config_project_recurrence_days,startDate);
+	}
+
+	if(emptydate EQ ts.until){
+		lastDate=dateadd("yyyy",2,startDate); 
+	}else{
+		lastDate=icalParseDateTime(ts.until); 
+	} 
+	futureDaysToProject=datediff("d",startDate,lastDate);
+	if(ts.count != 0){
+		futureDaysToProject=50000;
+		lastDate=dateadd("d",futureDaysToProject,startDate); 
+	}
+	g=1;
  
 	byDayStartMatchCount=0;
 	byDayStartMatchMonth="";
@@ -583,6 +733,10 @@
 			}
 		}
 		curDate=dateadd("d", 1, curDate);
+
+		if(arguments.forceDateLimit	and curDate > forceLastDate){
+			break;
+		}
 		if(ts.count != 0 && recurCount==ts.count){
 			break;
 		}

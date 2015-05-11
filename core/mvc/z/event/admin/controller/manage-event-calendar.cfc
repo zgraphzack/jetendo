@@ -331,7 +331,8 @@
 	echo('<td>#row.event_calendar_name#</td>
 	<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_calendar_updated_datetime)#</td>
 	<td>
-		<a href="#request.eventCom.getCalendarURL(row)#" target="_blank">View</a> | 
+		<a href="#request.eventCom.getCalendarURL(row)#" target="_blank">View Calendar</a> | 
+		<a href="#request.eventCom.getCalendarListURL(row)#" target="_blank">View List</a> | 
 		<a href="/z/event/admin/manage-events/add?event_calendar_id=#row.event_calendar_id#">Add Event</a> | 
 		<a href="/z/event/admin/manage-events/index?event_calendar_id=#row.event_calendar_id#">Manage Events</a> | 
 		<a href="/z/event/admin/manage-event-calendar/edit?event_calendar_id=#row.event_calendar_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a>');

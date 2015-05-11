@@ -324,7 +324,8 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	struct=arguments.struct;
-	arrDate=request.ical.getRecurringDates(struct.startDate, struct.endDate, struct.rule, struct.excludeDayList);
+	forceDateLimit=false;
+	arrDate=request.ical.getRecurringDates(struct.startDate, struct.endDate, struct.rule, struct.excludeDayList, forceDateLimit);
 
 	//writedump(arrDate);abort;
 	dateStruct={};
@@ -633,7 +634,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		arrCorrectDates:['2015-05-08','2015-05-09','2015-05-10','2015-05-11','2015-05-12','2015-05-13','2015-05-14','2015-05-15','2015-05-16','2015-05-17','2015-05-18','2015-05-19','2015-05-20','2015-05-21','2015-05-22','2015-05-23','2015-05-24','2015-05-25','2015-05-26','2015-05-27','2015-05-28','2015-05-29','2015-05-30','2015-05-31','2015-07-01','2015-07-02','2015-07-03','2015-07-04','2015-07-05','2015-07-06']
 	}
 	arrayAppend(arrTest, ts);
- 
+
  	ts={
 		id:"Rule 26",
 		startDate:"5/8/2015",
@@ -661,10 +662,25 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	</cfscript>	
 </cffunction>
 
-
-<cffunction name="testRules" localmode="modern" access="remote">
+<cffunction name="testPlainEnglishRules" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript> 
-	setting requesttimeout="5";
+	setting requesttimeout="10";
+	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
+	request.ical.init("");
+
+	arrTest=getTests();
+	for(i=1;i LTE arraylen(arrTest);i++){
+		a=request.ical.getIcalRuleAsPlainEnglish(arrTest[i].rule);
+		echo(arrTest[i].rule&"<br>"&a&"<hr>");
+	}
+	echo('All tests done');
+	abort;
+	</cfscript>
+</cffunction>
+
+<cffunction name="testRules" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript> 
+	setting requesttimeout="10";
 	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
 	request.ical.init("");
 
@@ -673,62 +689,15 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		testRule(arrTest[i]);
 	}
 
-	echo('All rules passed.');abort;
+	echo('All server-side rules passed.<br />Open browser console, and click <a href="/z/event/admin/recurring-event/index?runTests=1">run javascript tests</a> and <a href="/z/event/event/testPlainEnglishRules">run plain english tests</a>');abort;
 	</cfscript>
 </cffunction>
 	
 
 <cffunction name="view" localmode="modern" access="remote">
 	<cfscript>
-
-	testRules();
-	writedump(form);
-
-	// event_calendar_user_group_idlist
-
-	ical=createobject("component", "zcorerootmapping.com.ical.ical");
-	ical.init("");
-	//a=ical.getRecurringDates("5/7/2015", "12/2/2016", "BYMONTH=5;BYMONTHDAY=4;COUNT=0;FREQ=YEARLY;INTERVAL=1;UNTIL=20170514T040000Z", "");
-
-	//a=ical.getRecurringDates("5/7/2015", "12/2/2015", "BYDAY=MO;COUNT=0;FREQ=WEEKLY;INTERVAL=1", "10/12/2015");
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYDAY=SA;COUNT=5;FREQ=WEEKLY;INTERVAL=2", "");
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYDAY=FR;COUNT=0;FREQ=WEEKLY;INTERVAL=1;UNTIL=20150529T040000Z", "");
-
-	// + and - not supported on this yet:
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYDAY=+2TU;COUNT=4;FREQ=MONTHLY;INTERVAL=1", "");
-
-	// DONE: doesn't support multiple bymonthday yet
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYMONTHDAY=10,18;COUNT=4;FREQ=MONTHLY;INTERVAL=1", "");
-	
-	// done: + and - not supported
-	//a=ical.getRecurringDates("5/8/2015", "8/2/2020", "BYMONTH=0;BYDAY=+1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
-
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYDAY=-1MO;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
-
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYMONTHDAY=-1;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
-
-
-	// done: interval doesn't work right
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYDAY=+4MO;COUNT=4;FREQ=YEARLY;INTERVAL=2", ""); 
-	
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYDAY=+4MO;COUNT=4;FREQ=YEARLY;INTERVAL=2", ""); 
-
-	// done: interval doesn't work right
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2016", "BYMONTHDAY=4;COUNT=4;FREQ=MONTHLY;INTERVAL=2", ""); 
-	//writedump(a);abort;
-
-
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=0;BYMONTHDAY=1;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
-
-	// DONE: zero index for month is wrong.  it needs to be + 1 in ical.cfc instead
-	//a=ical.getRecurringDates("5/8/2015", "12/2/2021", "BYMONTH=11;BYMONTHDAY=2;COUNT=4;FREQ=YEARLY;INTERVAL=1", ""); 
-	var arrDate=[];
-	for(i=1;i LTE arraylen(a);i++){
-		arrayAppend(arrDate, dateformat(a[i], 'yyyy-mm-dd'));
-	}
-	echo('<textarea name="c1" cols="50" rows="3">'&serializeJson(arrDate)&'</textarea>');abort;
-	writedump(a);
-	abort;
+	echo('<h2>View Event</h2>');
+	//writedump(form);
 	</cfscript>
 </cffunction>
 	
@@ -1323,6 +1292,20 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	}
 	</cfscript>
 </cffunction>
+
+<cffunction name="getCalendarListURL" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	if(row.event_calendar_unique_url NEQ ""){
+		return row.event_calendar_unique_url&"?zview=list";
+	}else{
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_config_calendar_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.event_calendar_name, '-')&"-"&urlId&"-"&row.event_calendar_id&".html?zview=list";
+	}
+	</cfscript>
+</cffunction>
+
 
 
 <cffunction name="onApplicationStart" localmode="modern">
