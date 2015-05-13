@@ -1625,16 +1625,15 @@ if(rCom.isOK() EQ false){
 	if(not loaded){
 		ts=this.appUpdateCache(arguments.ss.site_id);
 	}
-	arguments.ss.app={appCache:ts};
-	for(i in arguments.ss.app.appCache){
-		configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[i].cfcPath, true);
-		configCom.site_id=request.zos.globals.id;
-		configCom.onSiteStart(arguments.ss.app.appCache[i].sharedStruct);
+	for(i in ts){
+		configCom=createobject("component", application.zcore.appComPathStruct[i].cfcPath); 
+		configCom.site_id=request.zos.globals.id;   
+		ts[i].sharedStruct=configCom.onSiteStart(ts[i].sharedStruct);   
 		if(application.zcore.appComPathStruct[i].cache){
-			arguments.ss.app.appCache[i].cfcCached=configCom;
+			ts[i].cfcCached=configCom;
 		}
 	}
-	arguments.ss.app.functionCompleted=true;
+	arguments.ss.app={appCache:ts, functionCompleted:true}; 
 	</cfscript>
 </cffunction>
 	

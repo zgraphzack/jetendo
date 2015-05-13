@@ -12,12 +12,6 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 
 
  --->
-<cffunction name="onSiteStart" localmode="modern" output="no" access="public"  returntype="struct" hint="Runs on application start and should return arguments.sharedStruct">
-	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">
-	<cfscript>
-	return arguments.sharedStruct;
-	</cfscript>
-</cffunction>
 
 <cffunction name="getCSSJSIncludes" localmode="modern" output="no" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
@@ -1539,20 +1533,15 @@ searchEvents(ts);
 	</cfscript>
 </cffunction>
 
-<!--- application.zcore.event.getIcalCFC(); --->
-<cffunction name="getIcalCFC" localmode="modern">
-	<cfscript>
-	return duplicate(application.zcore.getAppData("event").sharedStruct.icalCom);
-	</cfscript>
-</cffunction>
+
 	
-	
-<cffunction name="onApplicationStart" localmode="modern">
+<cffunction name="onSiteStart" access="public" localmode="modern">
 	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">
 	<cfscript>
-	ts={};
+	ts={}; 
+
 	ts.icalCom=createobject("component", "zcorerootmapping.com.ical.ical");
-	ts.icalCom.init("");
+	ts.icalCom.init(""); 
 	ts.timeZoneStruct={
 "Africa/Abidjan":{ offset: "+00:00", dstOffset: "+00:00"},
 "Africa/Accra":{ offset: "+00:00", dstOffset: "+00:00"},
@@ -2095,10 +2084,19 @@ searchEvents(ts);
 "Zulu":{ offset: "+00:00", dstOffset: "+00:00"}
 }
 arguments.sharedStruct=ts;
+return arguments.sharedStruct;
 </cfscript>
 
 </cffunction>
 
+
+<!--- application.zcore.app.getAppCFC("event").getIcalCFC(); --->
+<cffunction name="getIcalCFC" localmode="modern">
+	<cfscript>
+	return duplicate(application.zcore.app.getAppData("event").sharedStruct.icalCom);
+	</cfscript>
+</cffunction>
+	
 
 </cfoutput>
 </cfcomponent>

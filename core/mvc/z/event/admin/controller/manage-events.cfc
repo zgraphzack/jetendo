@@ -254,7 +254,7 @@
 			application.zcore.functions.zInsert(ts);
 		}else{
 			// project event 
-			ical=application.zcore.event.getIcalCFC();
+			ical=application.zcore.app.getAppCFC("event").getIcalCFC();
 			projectDays=application.zcore.app.getAppData("event").optionStruct.event_config_project_recurrence_days;
 			arrDate=ical.getRecurringDates(form.event_start_datetime, form.event_recur_ical_rules, form.event_excluded_date_list, projectDays);
 			minutes=datediff("n", form.event_start_datetime, form.event_end_datetime);
@@ -565,7 +565,7 @@
 				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
 					<cfif form.event_recur_ical_rules NEQ "">Yes | 
 						<cfscript>
-						ical=application.zcore.event.getIcalCFC();
+						ical=application.zcore.app.getAppCFC("event").getIcalCFC();
 						echo(ical.getIcalRuleAsPlainEnglish(form.event_recur_ical_rules));
 						</cfscript>
 					<cfelse>
@@ -677,7 +677,7 @@ Map Coordinates	Map Location Picker
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events");
 
 
-	request.ical=application.zcore.event.getIcalCFC();
+	request.ical=application.zcore.app.getAppCFC("event").getIcalCFC();
 	perpage=10;
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	if(form.zIndex LT 1){
@@ -935,7 +935,7 @@ Map Coordinates	Map Location Picker
 	event_id=#db.param(form.event_id)#";
 	qEvent=db.execute("qEvent"); 
 	
-	request.ical=application.zcore.event.getIcalCFC();
+	request.ical=application.zcore.app.getAppCFC("event").getIcalCFC();
 	request.eventCom=application.zcore.app.getAppCFC("event");
 	request.uniqueEvent={};
 	savecontent variable="rowOut"{

@@ -26,7 +26,7 @@
 		WHERE event_category_id= #db.param(application.zcore.functions.zso(form, 'event_category_id'))# and 
 		event_category_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
-		q=db.execute("q");
+		q=db.execute("q"); 
 
 		db.sql="DELETE FROM #db.table("event_x_category", request.zos.zcoreDatasource)#  
 		WHERE event_category_id= #db.param(application.zcore.functions.zso(form, 'event_category_id'))# and 

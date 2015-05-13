@@ -1478,15 +1478,15 @@ Primary Cities:</th>
 	</cfsavecontent><cfscript>qM=db.execute("qM");
 	arrM343=listtoarray(qm.columnlist,",");
 	</cfscript>
-<cfloop query="qM">
-	<cfscript>
-		for(i=1;i LTE arraylen(arrM343);i++){
-			ts.optionStruct[arrM343[i]]=qM[arrM343[i]];
-		}
-		ts.optionStruct["mls_option_primary_city_list"]=replace(qM.mls_option_primary_city_list,chr(9),"','","ALL");
-		ts.optionStruct["mls_option_exclude_city_list"]=replace(qM.mls_option_exclude_city_list,chr(9),"','","ALL");
-		</cfscript>
-</cfloop>
+	<cfloop query="qM">
+		<cfscript>
+			for(i=1;i LTE arraylen(arrM343);i++){
+				ts.optionStruct[arrM343[i]]=qM[arrM343[i]];
+			}
+			ts.optionStruct["mls_option_primary_city_list"]=replace(qM.mls_option_primary_city_list,chr(9),"','","ALL");
+			ts.optionStruct["mls_option_exclude_city_list"]=replace(qM.mls_option_exclude_city_list,chr(9),"','","ALL");
+			</cfscript>
+	</cfloop>
 	<cfloop query="qMLS">
 		<cfscript>
 		ts.mlsIdLookup[qMLS.mls_provider]=qMLS.mls_id;
@@ -2158,7 +2158,7 @@ return cs;
 	var tempStr=application.sitestruct[request.zos.globals.id].app.appCache[this.app_id].sharedStruct;
 	if(structkeyexists(tempStr,'searchFieldCache') EQ false or arguments.force){
 		if(structkeyexists(tempStr,'searchFieldCache') EQ false or arguments.force){
-	application.sitestruct[request.zos.globals.id].app.appCache[this.app_id].sharedStruct.searchFieldCache=this.updateSearchCriteriaCache();
+			application.sitestruct[request.zos.globals.id].app.appCache[this.app_id].sharedStruct.searchFieldCache=this.updateSearchCriteriaCache();
 		}
 	}
 </cfscript>
