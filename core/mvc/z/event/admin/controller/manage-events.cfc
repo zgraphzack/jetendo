@@ -84,6 +84,9 @@
 	var ts={};
 	var result=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events", true);	
+	if(form.method EQ "insert"){
+		form.event_id="";
+	}
 	form.site_id = request.zos.globals.id;
 	ts.event_name.required = true;
 	ts.event_calendar_id.required = true;
@@ -100,7 +103,6 @@
 			application.zcore.functions.zRedirect('/z/event/admin/manage-events/edit?event_id=#form.event_id#&zsid=#request.zsid#');
 		}
 	}
-
 	if(form.event_uid EQ ""){
 		form.event_uid=createuuid();
 	}
@@ -158,7 +160,9 @@
 		if(structkeyexists(form, 'event_unique_url') and qcheck.event_unique_url NEQ form.event_unique_url){
 			uniqueChanged=true;	
 		}
-	}
+	} 
+	form.event_file1=application.zcore.functions.zUploadFileToDb("event_file1", request.zos.globals.privateHomedir&"zupload/event/", 'event', 'event_id', application.zcore.functions.zso(form, 'event_file1_deleted', true, 0), request.zos.zcoreDatasource); 
+	form.event_file2=application.zcore.functions.zUploadFileToDb("event_file2", request.zos.globals.privateHomedir&"zupload/event/", 'event', 'event_id', application.zcore.functions.zso(form, 'event_file2_deleted', true, 0), request.zos.zcoreDatasource); 
 
 	ts=StructNew();
 	ts.table='event';
@@ -181,9 +185,7 @@
 			application.zcore.status.setStatus(request.zsid, 'Event updated.');
 		}
 		
-	} 
-	application.zcore.functions.zUploadFileToDb("event_file1", request.zos.globals.privateHomedir&"zupload/event/", 'event', 'event_id', application.zcore.functions.zso(form, 'event_file1_deleted', true, 0), request.zos.zcoreDatasource); 
-	application.zcore.functions.zUploadFileToDb("event_file2", request.zos.globals.privateHomedir&"zupload/event/", 'event', 'event_id', application.zcore.functions.zso(form, 'event_file2_deleted', true, 0), request.zos.zcoreDatasource); 
+	}   
 
 	db.sql="delete from #db.table("event_x_category", request.zos.zcoreDatasource)# WHERE 
 	event_id = #db.param(form.event_id)# and 
@@ -363,7 +365,7 @@
 			Edit
 		</cfif> Event</h2>
 		<p>* denotes required field.</p>
-	<form action="/z/event/admin/manage-events/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_id=#form.event_id#" method="post">
+	<form action="/z/event/admin/manage-events/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_id=#form.event_id#" method="post" enctype="multipart/form-data">
 		<input name="event_uid" type="hidden" value="#htmleditformat(application.zcore.functions.zso(form, 'event_uid'))#" />
 		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">  
@@ -496,7 +498,11 @@
 
 			<tr>
 				<th>Timezone</th>
-				<td><input type="text" name="event_timezone" value="#htmleditformat(form.event_timezone)#" /></td>
+				<td>
+					<cfscript>
+					form.event_timezone="US/Eastern";
+					</cfscript>Only United States/Eastern Time is currently supported.
+					<input type="hidden" name="event_timezone" value="#htmleditformat(form.event_timezone)#" /></td>
 			</tr> 
 			<tr>
 				<th>Location Name</th>
@@ -534,7 +540,8 @@
 				<th>File 1</th>
 				<td><cfscript>
 					ts={
-						name:"event_file1"
+						name:"event_file1",
+						downloadPath:"/zupload/event/"
 					};
 					application.zcore.functions.zInput_File(ts);
 					</cfscript></td>
@@ -547,7 +554,8 @@
 				<th>File 2</th>
 				<td><cfscript>
 					ts={
-						name:"event_file2"
+						name:"event_file2",
+						downloadPath:"/zupload/event/"
 					};
 					application.zcore.functions.zInput_File(ts);
 					</cfscript></td>

@@ -1436,6 +1436,7 @@ ts.size=20;
 ts.required=false;
 ts.allowDelete=true;
 ts.onchange="alert('neat');";
+ts.downloadPath="/zupload/event/";
 zInput_file(ts); --->
 <cffunction name="zInput_file" localmode="modern" returntype="any" output="yes">
 	<cfargument name="ss" type="struct" required="yes">
@@ -1482,7 +1483,10 @@ zInput_file(ts); --->
 	out&='"';
 	
 	if(value NEQ "" and arguments.ss.allowDelete){
-		writeoutput('<input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> Check to delete and then submit form<br />');
+		if(structkeyexists(arguments.ss, 'downloadPath')){
+			echo('<p><a href="/z/misc/download/index?fp=#arguments.ss.downloadPath##value#" target="_blank">Download File</a></p>');
+		}
+		echo('<p><input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> Check to delete and then submit form</p>');
 	}
 	if(application.zcore.functions.zso(request.zos, "zFormCurrentName") NEQ ""){
 		writeoutput('<script type="text/javascript">/* <![CDATA[ */

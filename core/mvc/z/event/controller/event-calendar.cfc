@@ -4,6 +4,10 @@
 <cffunction name="viewCalendar" access="remote" localmode="modern">
     <cfscript>
     db=request.zos.queryObject;
+	if(not request.zos.istestserver){
+		echo('<h2>View Event Calendar is coming soon.</h2>');
+		return;
+	}
 	var ts=structnew();
 	ts.content_unique_name="/calendar/index";
 	application.zcore.app.getAppCFC("content").includePageContentByName(ts);

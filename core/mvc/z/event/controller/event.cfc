@@ -11,6 +11,10 @@ TODO: only change recur db when the start,end or recur or exclude days fields ha
 Cancel an event that has reservations attached.  It should be able to cancel all the reservations in one step.
 
 
+all day event is not setup to work yet...
+
+timezone does nothing...
+
  --->
 
 <cffunction name="getCSSJSIncludes" localmode="modern" output="no" returntype="any">
@@ -156,6 +160,7 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 
 <cffunction name="getAdminNavMenu" localmode="modern" access="public">
 	<cfscript>
+	application.zcore.template.setTag("title", "Event Calendar");
 	</cfscript>
 	<p>Manage: 
 	<a href="/z/event/admin/manage-event-calendar/index">Calendars</a> | 
@@ -883,7 +888,10 @@ searchEvents(ts);
 <cffunction name="viewEvent" localmode="modern" access="remote">
 	<cfscript>
 	db=request.zos.queryObject;
-
+	if(not request.zos.istestserver){
+		echo('<h2>View Event is coming soon.</h2>');
+		return;
+	}
 	ts=structnew();
 	ts.image_library_id_field="event_image_library_id";
 	ts.count = 0; // how many images to get
@@ -1218,9 +1226,9 @@ searchEvents(ts);
 	}
 	loop query="qF"{
 		t9=structnew();
-		t9.scriptName="/z/event/event/view";
+		t9.scriptName="/z/event/event/viewEvent";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/view";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewEvent";
 		t9.urlStruct.event_id=qF.event_id;
 		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_unique_url)]=t9;
 	}
@@ -1247,9 +1255,9 @@ searchEvents(ts);
 	}
 	loop query="qF"{
 		t9=structnew();
-		t9.scriptName="/z/event/event-category/view";
+		t9.scriptName="/z/event/event-category/viewCategory";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/view";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/viewCategory";
 		t9.urlStruct.event_category_id=qF.event_category_id;
 		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_category_unique_url)]=t9;
 	}
@@ -1276,9 +1284,9 @@ searchEvents(ts);
 	}
 	loop query="qF"{
 		t9=structnew();
-		t9.scriptName="/z/event/event-calendar/view";
+		t9.scriptName="/z/event/event-calendar/viewCalendar";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/view";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/viewCalendar";
 		t9.urlStruct.event_calendar_id=qF.event_calendar_id;
 		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_calendar_unique_url)]=t9;
 	}

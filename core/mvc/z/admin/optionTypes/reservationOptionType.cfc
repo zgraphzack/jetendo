@@ -151,23 +151,25 @@
 		if(arguments.row["#variables.type#_option_required"] EQ 1){
 			allowDelete=false;
 		}
+		var ts3=StructNew();
+		ts3.name=arguments.prefixString&arguments.row["#variables.type#_option_id"];
+		ts3.allowDelete=allowDelete;
 		if(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]] NEQ ""){
 			uploadPath=getUploadPath(arguments.optionStruct);
 			if(uploadPath EQ "zuploadsecure"){
+				ts3.downloadPath="/zuploadsecure/site-options/";
 				if(application.zcore.user.checkGroupAccess("administrator")){
 					echo('<p><a href="#request.zos.currentHostName#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&'" target="_blank">Download File</a></p>');
 				}else{
 					echo('<p>'&arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]&' | You must be an administrator to download the file.</p>');
 				}
 			}else{
+				ts3.downloadPath="/zupload/site-options/";
 				writeoutput('<p><a href="/'&uploadPath&'/site-options/#arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]#" 
 				target="_blank" 
 				title="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])#">Download File</a></p>');
 			}
 		}
-		var ts3=StructNew();
-		ts3.name=arguments.prefixString&arguments.row["#variables.type#_option_id"];
-		ts3.allowDelete=allowDelete;
 		application.zcore.functions.zInput_file(ts3);
 		</cfscript>
 	</cfsavecontent>

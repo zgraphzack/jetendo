@@ -256,7 +256,7 @@
 						form.event_calendar_list_perpage=10;
 					}
 					</cfscript>
-					<input type="text" name="event_calendar_list_perpage" value="#htmleditformat(form.event_calendar_list_perpage)#" /> *
+					<input type="text" name="event_calendar_list_perpage" value="#htmleditformat(form.event_calendar_list_perpage)#" /> * (Applies to list view only)
 				</td>
 			</tr> 
 			<tr>
