@@ -4,7 +4,7 @@
 	
 </cffunction>
 
-<cffunction name="view" localmode="modern" access="remote">
+<cffunction name="viewCategory" localmode="modern" access="remote">
 	<cfscript>
 	writedump(form);
 	</cfscript>

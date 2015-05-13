@@ -391,3 +391,13 @@ img{border:none;}
 	color: #FFFFFF;
 
 }
+
+
+
+.zEventInfoButton:link, .zEventInfoButton:visited{padding:10px; font-size:120%; line-height:auto; background-color:#000; color:#FFF; border-radius:5px;}
+.zEventListContainer{width:100%; padding:20px; float:left;}
+.zEventListPhoto{width:200px; margin-right:20px;float:left;}
+.zEventListText{width:100%; float:left;}
+.zEventListSummary{width:100%; float:left;}
+.zEventListHeading{width:100%; float:left;}
+.zEventListSummary{width:100%; float:left;}

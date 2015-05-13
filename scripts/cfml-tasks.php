@@ -46,6 +46,14 @@ function getTasks(){
 	$t->url=$adminDomain."/z/server-manager/tasks/publish-missing/index";
 	array_push($arrTask, $t);
 
+
+	$t=new stdClass();
+	$t->interval="daily";
+	$t->logName="project-events.html";
+	$t->startTimeOffsetSeconds=2000;
+	$t->url=$adminDomain."/z/event/tasks/project-events/index";
+	array_push($arrTask, $t);
+
 	$t=new stdClass();
 	$t->interval="daily";
 	$t->logName="call-tracking-metrics-import.html";

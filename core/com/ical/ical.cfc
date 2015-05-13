@@ -370,7 +370,7 @@
 	<cfargument name="startDate" type="date" required="yes">
 	<cfargument name="rule" type="string" required="yes">
 	<cfargument name="excludeDateList" type="string" required="yes">
-	<cfargument name="forceDateLimit" type="boolean" required="yes">
+	<cfargument name="projectDays" type="numeric" required="yes">
 	<cfscript>
 	emptydate='0000-00-00 00:00:00';
 	startDate=arguments.startDate;//createdatetime(2008,3,1,0,0,0);
@@ -402,8 +402,8 @@
 		yearMatchCount=2;
 	}
 
-	if(arguments.forceDateLimit){
-		forceLastDate=dateadd("d", application.zcore.app.getAppData("event").optionStruct.event_config_project_recurrence_days,startDate);
+	if(arguments.projectDays NEQ 0){
+		forceLastDate=dateadd("d", arguments.projectDays,startDate);
 	}
 
 	if(emptydate EQ ts.until){
@@ -734,7 +734,7 @@
 		}
 		curDate=dateadd("d", 1, curDate);
 
-		if(arguments.forceDateLimit	and curDate > forceLastDate){
+		if(arguments.projectDays NEQ 0 and curDate > forceLastDate){
 			break;
 		}
 		if(ts.count != 0 && recurCount==ts.count){

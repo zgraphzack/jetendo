@@ -62,6 +62,8 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Event Calendars", true);
 	form.site_id = request.zos.globals.id;
 	ts.event_calendar_name.required = true;
+	ts.event_calendar_list_views.required=true;
+	ts.event_calendar_list_perpage.required=true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
 	if(result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
@@ -71,7 +73,9 @@
 			application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/edit?event_calendar_id=#form.event_calendar_id#&zsid=#request.zsid#');
 		}
 	}
-
+	if(form.event_calendar_list_perpage EQ "" or form.event_calendar_list_perpage EQ 0){
+		form.event_calendar_list_perpage=10;
+	}
 
 	uniqueChanged=false;
 	oldURL='';
@@ -203,6 +207,56 @@
 					htmlEditor.height		= 350;
 					htmlEditor.create();
 					</cfscript>   
+				</td>
+			</tr> 
+			<tr>
+				<th>List Views</th>
+				<td>
+					<cfscript>
+					ts = StructNew();
+					ts.name = "event_calendar_list_views"; 
+					ts.size = 1; // more for multiple select
+					ts.hideSelect=true;
+					ts.listLabels = "List,2 Months,Month,Week,Day";
+					ts.listValues = "List,2 Months,Month,Week,Day";
+					ts.listLabelsDelimiter = ","; 
+					ts.listValuesDelimiter = ",";
+					
+					if(form.event_calendar_list_views EQ ""){
+						form.event_calendar_list_views="List,Month";
+					}
+					ts.multiple = true; 
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_list_views', true, 0));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript> *
+				</td>
+			</tr> 
+			<tr>
+				<th>List Default View</th>
+				<td>
+					<cfscript>
+					ts = StructNew();
+					ts.name = "event_calendar_list_default_view"; 
+					ts.size = 1; // more for multiple select
+					ts.hideSelect=true;
+					ts.listLabels = "List,Calendar";
+					ts.listValues = "List,Calendar";
+					ts.listLabelsDelimiter = ","; 
+					ts.listValuesDelimiter = ",";
+					
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript>
+				</td>
+			</tr> 
+			<tr>
+				<th>Events Per Page</th>
+				<td>
+					<cfscript>
+					if(form.event_calendar_list_perpage EQ "" or form.event_calendar_list_perpage EQ 0){
+						form.event_calendar_list_perpage=10;
+					}
+					</cfscript>
+					<input type="text" name="event_calendar_list_perpage" value="#htmleditformat(form.event_calendar_list_perpage)#" /> *
 				</td>
 			</tr> 
 			<tr>

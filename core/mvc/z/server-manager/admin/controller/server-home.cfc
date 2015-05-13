@@ -184,6 +184,7 @@
 			<p><a href="/z/_com/display/skin?method=deleteOldCache">Delete Old Skin File Versioning Cache</a></p>
 			<p><a href="/z/server-manager/tasks/memory-dump/index" target="_blank">Memory Dump</a></p>
 			<p><a href="/z/misc/system/index" target="_blank">Railo uptime and session clearing</a></p>
+			<p><a href="/z/event/tasks/project-events/index" target="_blank">Project Events</a></p>
 			<p><a href="/z/server-manager/tasks/site-backup/index" target="_blank">Backup All Sites</a></p>
 			<p><a href="/z/server-manager/tasks/search-index/index" target="_blank">Re-index All Site Content</a></p>
 			<p><a href="/z/server-manager/tasks/call-tracking-metrics-import/index" target="_blank">CallTrackingMetrics Import</a> (

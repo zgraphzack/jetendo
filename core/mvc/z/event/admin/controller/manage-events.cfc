@@ -11,6 +11,9 @@
 	event_deleted = #db.param(0)# and
 	site_id = #db.param(request.zos.globals.id)#";
 
+	if(structkeyexists(form, 'return')){
+		StructInsert(request.zsession, "event_return"&form.event_id, request.zos.CGI.HTTP_REFERER, true);		
+	}
 	form.returnJson=application.zcore.functions.zso(form, 'returnJson', true, 0);
 	qCheck=db.execute("qCheck");
 	
@@ -45,11 +48,17 @@
 
 
 
-		if(form.returnJson EQ 1){
-			application.zcore.functions.zReturnJson({success:true});
+		if(structkeyexists(request.zsession, 'event_return'&form.event_id)){
+			a=request.zsession['event_return'&form.event_id];
+			structdelete(request.zsession, 'event_return'&form.event_id);
+			application.zcore.functions.zRedirect(a);
 		}else{
-			application.zcore.status.setStatus(Request.zsid, 'Event deleted');
-			application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+			if(form.returnJson EQ 1){
+				application.zcore.functions.zReturnJson({success:true});
+			}else{
+				application.zcore.status.setStatus(Request.zsid, 'Event deleted');
+				application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+			}
 		}
 		</cfscript>
 	<cfelse>
@@ -109,6 +118,15 @@
 	if(form.event_end_datetime_time NEQ "" and isdate(form.event_end_datetime_time)){
 		form.event_end_datetime=form.event_end_datetime&" "&timeformat(form.event_end_datetime_time, 'HH:mm:ss');
 	} 
+
+	if(datediff("d", form.event_start_datetime, form.event_end_datetime) LT 0){
+		application.zcore.status.setStatus(request.zsid, "The end date must be after the start date", form, true);
+		if(form.method EQ 'insert'){
+			application.zcore.functions.zRedirect('/z/event/admin/manage-events/add?zsid=#request.zsid#');
+		}else{
+			application.zcore.functions.zRedirect('/z/event/admin/manage-events/edit?event_id=#form.event_id#&zsid=#request.zsid#');
+		}
+	}
 	if(form.method EQ 'insert'){
 		form.event_created_datetime=dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	}
@@ -194,71 +212,88 @@
 	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'site_option_app_id'));
 	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'event_image_library_id'));
 
-	db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
-	event_recur_deleted=#db.param(0)# and 
-	site_id=#db.param(request.zos.globals.id)# and 
-	event_id=#db.param(form.event_id)# ";
-	qDelete=db.execute("qDelete");
-	if(form.event_recur_ical_rules EQ ""){
-
-		ts={
-			table:"event_recur",
-			datasource:request.zos.zcoreDatasource,
-			struct:{
-				event_id:form.event_id,
-				site_id:request.zos.globals.id,
-				event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-				event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-				event_recur_end_datetime:dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-				event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
-				event_recur_deleted:0
-			}
+	updateRecurRecords=false;
+	if(form.method EQ 'update'){
+		if(dateformat(qCheck.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(qCheck.event_start_datetime, "HH:mm:ss") NEQ form.event_start_datetime){
+			updateRecurRecords=true;
+		} 
+		if(dateformat(qCheck.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(qCheck.event_end_datetime, "HH:mm:ss") NEQ form.event_end_datetime){
+			updateRecurRecords=true;
 		}
-		application.zcore.functions.zInsert(ts);
+		if(qCheck.event_recur_ical_rules NEQ form.event_recur_ical_rules){
+			updateRecurRecords=true;
+		}
+		if(qCheck.event_excluded_date_list NEQ form.event_excluded_date_list){
+			updateRecurRecords=true;
+		}
 	}else{
-		// project event 
-		ical=createobject("component", "zcorerootmapping.com.ical.ical");
-		ical.init("");
-		forceDateLimit=true;
-		arrDate=ical.getRecurringDates(form.event_start_datetime, form.event_recur_ical_rules, form.event_excluded_date_list, forceDateLimit);
+		updateRecurRecords=true;
+	}
 
-		minutes=datediff("n", form.event_start_datetime, form.event_end_datetime);
+	if(updateRecurRecords){
+		db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+		event_recur_deleted=#db.param(0)# and 
+		site_id=#db.param(request.zos.globals.id)# and 
+		event_id=#db.param(form.event_id)# ";
+		qDelete=db.execute("qDelete");
+		if(form.event_recur_ical_rules EQ ""){
 
-
-		for(i=1;i LTE arraylen(arrDate);i++){
-			startDate=arrDate[i];
-			endDate=dateadd("n", minutes, startDate);
 			ts={
 				table:"event_recur",
 				datasource:request.zos.zcoreDatasource,
 				struct:{
 					event_id:form.event_id,
 					site_id:request.zos.globals.id,
-					event_recur_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
-					event_recur_start_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
-					event_recur_end_datetime:dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss"),
+					event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+					event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+					event_recur_end_datetime:dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
 					event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
 					event_recur_deleted:0
 				}
 			}
 			application.zcore.functions.zInsert(ts);
+		}else{
+			// project event 
+			ical=application.zcore.event.getIcalCFC();
+			projectDays=application.zcore.app.getAppData("event").optionStruct.event_config_project_recurrence_days;
+			arrDate=ical.getRecurringDates(form.event_start_datetime, form.event_recur_ical_rules, form.event_excluded_date_list, projectDays);
+			minutes=datediff("n", form.event_start_datetime, form.event_end_datetime);
+			for(i=1;i LTE arraylen(arrDate);i++){
+				startDate=arrDate[i];
+				endDate=dateadd("n", minutes, startDate);
+				ts={
+					table:"event_recur",
+					datasource:request.zos.zcoreDatasource,
+					struct:{
+						event_id:form.event_id,
+						site_id:request.zos.globals.id,
+						event_recur_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
+						event_recur_start_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
+						event_recur_end_datetime:dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss"),
+						event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
+						event_recur_deleted:0
+					}
+				}
+				application.zcore.functions.zInsert(ts);
+			}
 		}
 	}
-	// store projected dates in event_recur table 
-
-
-	// delete dates that weren't updated?
-
 
 	if(uniqueChanged){
 		application.zcore.app.getAppCFC("event").updateRewriteRuleEvent(form.event_id, oldURL);	
 	}
 	application.zcore.app.getAppCFC("event").searchReindexEvent(form.event_id, false);
 
-	if(form.modalpopforced EQ 1){
-		application.zcore.functions.zRedirect('/z/event/admin/manage-events/getReturnEventRowHTML?event_id=#form.event_id#');
+	if(structkeyexists(request.zsession, 'event_return'&form.event_id)){
+		a=request.zsession['event_return'&form.event_id];
+		structdelete(request.zsession, 'event_return'&form.event_id);
+		application.zcore.functions.zRedirect(a);
 	}else{
-		application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+		if(form.modalpopforced EQ 1){
+			application.zcore.functions.zRedirect('/z/event/admin/manage-events/getReturnEventRowHTML?event_id=#form.event_id#');
+		}else{
+			application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+		}
 	}
 	</cfscript>
 </cffunction>
@@ -281,6 +316,9 @@
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Events");	
 	if(application.zcore.functions.zso(form,'event_id') EQ ''){
 		form.event_id = -1;
+	}
+	if(structkeyexists(form, 'return')){
+		StructInsert(request.zsession, "event_return"&form.event_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
 
 	db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)#  
@@ -393,7 +431,20 @@
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript> 
 				</td>
-			</tr>  
+			</tr>    
+			<tr>
+				<th>Summary</th>
+				<td>
+					<cfscript>
+					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+					htmlEditor.instanceName	= "event_summary";
+					htmlEditor.value			= form.event_summary;
+					htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
+					htmlEditor.height		= 150;
+					htmlEditor.create();
+					</cfscript>   
+				</td>
+			</tr> 
 			<tr>
 				<th>Body Text</th>
 				<td>
@@ -401,7 +452,7 @@
 					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
 					htmlEditor.instanceName	= "event_description";
 					htmlEditor.value			= form.event_description;
-					htmlEditor.width			= "#request.zos.globals.maximagewidth#px";//"100%";
+					htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
 					htmlEditor.height		= 350;
 					htmlEditor.create();
 					</cfscript>   
@@ -514,9 +565,7 @@
 				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
 					<cfif form.event_recur_ical_rules NEQ "">Yes | 
 						<cfscript>
-						
-						ical=createobject("component", "zcorerootmapping.com.ical.ical");
-						ical.init("");
+						ical=application.zcore.event.getIcalCFC();
 						echo(ical.getIcalRuleAsPlainEnglish(form.event_recur_ical_rules));
 						</cfscript>
 					<cfelse>
@@ -624,11 +673,11 @@ Map Coordinates	Map Location Picker
  	form.event_searchtext=application.zcore.functions.zso(form, 'event_searchtext');
  	form.event_category_id=application.zcore.functions.zso(form, 'event_category_id');
  	form.event_calendar_id=application.zcore.functions.zso(form, 'event_calendar_id');
+	form.showRecurring=application.zcore.functions.zso(form, 'showRecurring', true, 0);
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events");
 
 
-	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
-	request.ical.init("");
+	request.ical=application.zcore.event.getIcalCFC();
 	perpage=10;
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex', true, 1);
 	if(form.zIndex LT 1){
@@ -637,16 +686,34 @@ Map Coordinates	Map Location Picker
 
 	searchOn=false;
 	application.zcore.functions.zSetPageHelpId("10.1");
-	db.sql="select * from #db.table("event", request.zos.zcoreDatasource)# WHERE 
-	site_id = #db.param(request.zos.globals.id)# and 
-	event_deleted=#db.param(0)# ";
-	if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
-		searchOn=true; 
-		db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+	
+	db.sql="select * from 
+	#db.table("event", request.zos.zcoreDatasource)#";
+	if(form.showRecurring EQ 1){
+		db.sql&=" , 
+		#db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+		event.site_id = event_recur.site_id and 
+		event.event_id = event_recur.event_id and 
+		event_recur_deleted=#db.param(0)# and ";
+	}else{
+		db.sql&=" WHERE ";
 	}
-	if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
-		searchOn=true;
-		db.sql&=" and event_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+	db.sql&=" event.site_id = #db.param(request.zos.globals.id)# and 
+	event_deleted=#db.param(0)# ";
+	if(form.showRecurring EQ 1){
+		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
+			db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+		}
+		if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
+			db.sql&=" and event_recur_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+		}
+	}else{
+		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
+			db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+		}
+		if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
+			db.sql&=" and event_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+		}
 	}
 	if(form.event_recur EQ "1"){
 		searchOn=true;
@@ -654,7 +721,7 @@ Map Coordinates	Map Location Picker
 	}
 	if(form.event_searchtext NEQ ""){
 		searchOn=true;
-		db.sql&=" and concat(event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#form.event_searchtext#%')# ";
+		db.sql&=" and concat(event.event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#form.event_searchtext#%')# ";
 	}
 	if(form.event_category_id NEQ ""){
 		searchOn=true;
@@ -664,23 +731,47 @@ Map Coordinates	Map Location Picker
 		searchOn=true;
 		db.sql&=" and CONCAT(#db.param(',')#,event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&form.event_calendar_id&',%')# ";
 	}
-	db.sql&=" LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)#";
+	if(form.showRecurring EQ 1){
+		db.sql&=" ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC";
+	}else{
+		db.sql&=" ORDER BY event_start_datetime ASC, event_end_datetime ASC";
+	}
+	db.sql&=" LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)# ";
 	qList=db.execute("qList");
 
-	db.sql="select count(event_id) count from #db.table("event", request.zos.zcoreDatasource)# WHERE 
-	site_id = #db.param(request.zos.globals.id)# and 
-	event_deleted=#db.param(0)# ";
-	if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
-		db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+	db.sql="select count(event.event_id) count from 
+	#db.table("event", request.zos.zcoreDatasource)#";
+	if(form.showRecurring EQ 1){
+		db.sql&=" , 
+		#db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+		event.site_id = event_recur.site_id and 
+		event.event_id = event_recur.event_id and 
+		event_recur_deleted=#db.param(0)# and ";
+	}else{
+		db.sql&=" WHERE ";
 	}
-	if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
-		db.sql&=" and event_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+	db.sql&=" event.site_id = #db.param(request.zos.globals.id)# and 
+	event_deleted=#db.param(0)# ";
+	if(form.showRecurring EQ 1){
+		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
+			db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+		}
+		if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
+			db.sql&=" and event_recur_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+		}
+	}else{
+		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
+			db.sql&=" and event_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
+		}
+		if(form.event_end_date NEQ "" and isdate(form.event_end_date)){
+			db.sql&=" and event_start_datetime <= #db.param(dateformat(form.event_end_date, 'yyyy-mm-dd'))# ";
+		}
 	}
 	if(form.event_recur EQ "1"){
 		db.sql&=" and event_recur_ical_rules <> #db.param('')# ";
 	}
 	if(form.event_searchtext NEQ ""){
-		db.sql&=" and concat(event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description) like #db.param('%#form.event_searchtext#%')# ";
+		db.sql&=" and concat(event.event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description) like #db.param('%#form.event_searchtext#%')# ";
 	}
 	if(form.event_category_id NEQ ""){ 
 		db.sql&=" and CONCAT(#db.param(',')#,event_category_id, #db.param(',')#) LIKE #db.param('%,'&form.event_category_id&',%')# ";
@@ -723,10 +814,15 @@ Map Coordinates	Map Location Picker
 			End: <br />
 			<input type="text" name="event_end_date" id="event_end_date" value="#form.event_end_date#" style="width:70px; " />
 		</div>
-		<div style="width:110px;margin-bottom:10px;float:left;">
-			Recurring: <br />
+		<div style="width:145px;margin-bottom:10px;float:left;">
+			Only Recurring Events: <br />
 			#application.zcore.functions.zInput_Boolean("event_recur")#
 		</div>
+		<div style="width:145px;margin-bottom:10px;float:left;">
+			Show Recurring Dates: <br />
+			#application.zcore.functions.zInput_Boolean("showRecurring")#
+		</div>
+		
 		<div style="width:120px;margin-bottom:10px;float:left;">
 			Calendar: <br />
 			<cfscript>
@@ -786,7 +882,7 @@ Map Coordinates	Map Location Picker
 	<cfscript>
 	searchStruct = StructNew(); 
 	searchStruct.showString = "Results ";
-	searchStruct.url = "/z/event/admin/manage-events/index?event_searchtext=#form.event_searchtext#&event_calendar_id=#form.event_calendar_id#&event_category_id=#form.event_category_id#&event_start_date=#form.event_start_date#&event_end_date=#form.event_end_date#&event_recur=#form.event_recur#";
+	searchStruct.url = "/z/event/admin/manage-events/index?event_searchtext=#form.event_searchtext#&event_calendar_id=#form.event_calendar_id#&event_category_id=#form.event_category_id#&event_start_date=#form.event_start_date#&event_end_date=#form.event_end_date#&event_recur=#form.event_recur#&showRecurring=#form.showRecurring#";
 	searchStruct.indexName = "zIndex";
 	searchStruct.buttons = 5;
 	searchStruct.count = qCount.count;
@@ -797,9 +893,12 @@ Map Coordinates	Map Location Picker
 	if(qCount.count GT perpage){
 		echo(searchNav);
 	}
+
+	request.uniqueEvent={};
 	</cfscript>
 	<table class="table-list">
 		<tr>
+			<th>ID</th>
 			<th>Name</th>
 			<th>Start Date</th>
 			<th>End Date</th>
@@ -812,6 +911,7 @@ Map Coordinates	Map Location Picker
 			echo('<tr>');
 			getEventRowHTML(row);
 			echo('</tr>');
+			request.uniqueEvent[row.event_id]=true;
 		}
 		</cfscript>  
 	</table>
@@ -835,12 +935,13 @@ Map Coordinates	Map Location Picker
 	event_id=#db.param(form.event_id)#";
 	qEvent=db.execute("qEvent"); 
 	
-	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
-	request.ical.init("");
+	request.ical=application.zcore.event.getIcalCFC();
 	request.eventCom=application.zcore.app.getAppCFC("event");
+	request.uniqueEvent={};
 	savecontent variable="rowOut"{
 		for(row in qEvent){
 			getEventRowHTML(row);
+			request.uniqueEvent[row.event_id]=true;
 		}
 	}
 
@@ -857,25 +958,40 @@ Map Coordinates	Map Location Picker
 	<cfscript>
 	row=arguments.row;
 	echo('
-		<td>#row.event_name#</td>
-		<td>#dateformat(row.event_start_datetime, 'm/d/yyyy')#</td>
-		<td>#dateformat(row.event_end_datetime, 'm/d/yyyy')#</td>
-		<td>');
+		<td>#row.event_id#</td>
+		<td>#row.event_name#</td>');
+	if(structkeyexists(row, 'event_recur_start_datetime')){
+		echo('<td>#dateformat(row.event_recur_start_datetime, 'm/d/yyyy')#</td>
+		<td>#dateformat(row.event_recur_end_datetime, 'm/d/yyyy')#</td>');
+	}else{
+		echo('<td>#dateformat(row.event_start_datetime, 'm/d/yyyy')#</td>
+		<td>#dateformat(row.event_end_datetime, 'm/d/yyyy')#</td>');
+	}
+		echo('<td>');
 	if(row.event_recur_ical_rules NEQ ""){
 		echo(request.ical.getIcalRuleAsPlainEnglish(row.event_recur_ical_rules));
-		
 	}else{
 		echo('No');
 	}
-		echo('</td>
+	echo('</td>
 		<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_updated_datetime)#</td>
-		<td>
-			<a href="#request.eventCom.getEventURL(row)#" target="_blank">View</a> | 
-			<a href="/z/event/admin/manage-events/add?event_id=#row.event_id#">Copy</a> | 
-			<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
-			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
-		</td>
-	');
+		<td>');
+		if(not structkeyexists(request.uniqueEvent, row.event_id)){
+			echo('<a href="#request.eventCom.getEventURL(row)#" target="_blank">View</a> | 
+			<a href="/z/event/admin/manage-events/add?event_id=#row.event_id#">Copy</a> | ');
+
+			if(row.event_recur_ical_rules NEQ ""){
+				echo('<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#&return=1">Edit</a>');
+				echo(' | <a href="/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;return=1">Delete</a>');
+			}else{
+				echo('<a href="/z/event/admin/manage-events/edit?event_id=#row.event_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a>');
+			echo(' | 
+			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>');
+			}
+		}else{
+			echo('Duplicate of Event #row.event_id# ');
+		}
+	echo('</td>');
 
 	</cfscript>
 </cffunction>

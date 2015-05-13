@@ -4,62 +4,9 @@
 this.app_id=17;
 </cfscript>
 <!--- 
-mystandrews is using the event table for icalendar import.
+mystandrews is using the same event table for icalendar import.  might need to modify/upgrade their site
 
-event and recurring event must work.
-	Must be able to reserve for a specific occurence of the recurring event.
-event
-	event_id
-	site_id
-	event_reservation_enabled char(1) 0
-	event_status
-	site_option_app_id
-	event_updated_datetime
-	event_deleted
-	event_calendar_id
-
-event_recur
-	event_recur_id
-	event_id
-	event_recur_datetime
-	event_recur_updated_datetime
-	event_recur_deleted
-	site_id
-event_category
-	event_category_id
-	event_calendar_id
-	site_id
-	event_category_updated_datetime
-	event_category_deleted
-event_x_category
-	event_x_category_id
-	event_id
-	event_category_id
-	site_id
-	event_x_category_updated_datetime
-	event_x_category_deleted
-
-event_calendar
-	event_calendar_id
-
-
-
-http://sa.farbeyondcode.com.127.0.0.2.xip.io/z/server-manager/tasks/verify-tables/index
-
-
-		createTriggerSQL: "CREATE TRIGGER `"&arguments.row.table&"_auto_inc` "&arguments.row.timing&" "&arguments.row.event&" ON `"&arguments.row.table&"` FOR EACH ROW "&arguments.row.statement&";"
-
-
-ts={};
-ts.event_calendar_id
-ts.event_category_id
-searchEvents(ts);
-
-
-in server manager, need event application - it should have option to adjust recurring event projection X days per site, which also prevents reservation of dates beyond that.
-	New scheduled task reads all recurring events, and projects them from event_last_projected_datetime to dateadd("d", x, now());
-	Also run this when a recurring event is updated.
-	When recur is disabled, make sure to delete all recurring entries.
+TODO: only change recur db when the start,end or recur or exclude days fields have changed.
 
 Cancel an event that has reservations attached.  It should be able to cancel all the reservations in one step.
 
@@ -324,8 +271,8 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
 	struct=arguments.struct;
-	forceDateLimit=false;
-	arrDate=request.ical.getRecurringDates(struct.startDate, struct.endDate, struct.rule, struct.excludeDayList, forceDateLimit);
+	projectDays=0;
+	arrDate=request.ical.getRecurringDates(struct.startDate, struct.rule, struct.excludeDayList, projectDays);
 
 	//writedump(arrDate);abort;
 	dateStruct={};
@@ -350,8 +297,8 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		arrayAppend(arrError, "Date expected but not matched: "&i2);
 	}
 	if(arraylen(arrError)){
-	writedump(struct);
-	writedump(arrDate);
+		writedump(struct);
+		writedump(arrDate);
 		writedump(arrError);abort;
 		throw("Invalid rule: #struct.id#<br />Matched Dates: #arrayToList(arrDate2, ", ")#<br /><br />Error details:<br />"&arrayToList(arrError, "<br>"));
 	}
@@ -694,10 +641,271 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 </cffunction>
 	
 
-<cffunction name="view" localmode="modern" access="remote">
+
+<cffunction name="getDateRangeString" access="public" localmode="modern">
+	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
-	echo('<h2>View Event</h2>');
-	//writedump(form);
+	rs=getDateRangeStruct(arguments.row);
+	return rs.dateRange
+	</cfscript>
+</cffunction>
+	
+
+<!--- request.zos.event.userHasAccessToEventCalendarID(event_calendar_id); --->
+<cffunction name="userHasAccessToEventCalendarID" access="public" localmode="modern">
+	<cfargument name="event_calendar_id" type="string" required="yes">
+	<cfscript>
+	arrEvent=listToarray(arguments.event_calendar_id, ",");
+	for(i=1;i LTE arraylen(arrEvent);i++){
+		if(structkeyexists(request.zos.calendarUserAccessStruct, arrEvent[i])){
+			return true;
+		}
+	}
+	return false;
+	</cfscript>
+	
+</cffunction>
+
+<cffunction name="getUserCalendarIDs" access="public" localmode="modern">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	event_calendar_deleted=#db.param(0)# ";
+	qCalendar=db.execute("qCalendar");
+
+	arrCalendar=[];
+	request.zos.calendarUserAccessStruct={};
+	for(row in qCalendar){
+		if(row.event_calendar_user_group_idlist NEQ ""){
+			arrUserGroup=listToArray(row.event_calendar_user_group_idlist, ",");
+			if(application.zcore.user.checkGroupAccess(arrUserGroup)){
+				arrayAppend(arrCalendar, row.event_calendar_id);
+				request.zos.calendarUserAccessStruct[row.event_calendar_id]=true;
+			}
+		}else{
+			arrayAppend(arrCalendar, row.event_calendar_id);
+			request.zos.calendarUserAccessStruct[row.event_calendar_id]=true;
+		}
+	}
+	if(arraylen(arrCalendar) EQ 0){
+		arrayAppend(arrCalendar, '-1');
+	}
+	return arrayToList(arrCalendar, ",");
+	</cfscript>
+</cffunction>
+
+<cffunction name="getDateRangeStruct" access="public" localmode="modern">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	rs={};
+	rs.startDate=dateformat(row.event_start_datetime, 'm/d/yyyy');
+	rs.startTime=timeformat(row.event_start_datetime, 'h:mm tt');
+	rs.dateRange=rs.startDate;
+	rs.timeRange=rs.startTime;
+	if(row.event_start_datetime != row.event_end_datetime){
+		rs.dateRange&=" to "&dateformat(row.event_end_datetime, 'm/d/yyyy');
+		rs.timeRange&=" to "&timeformat(row.event_end_datetime, 'h:mm tt');
+	}
+	return rs;
+	</cfscript>
+</cffunction>
+
+
+<!--- 
+ts={
+	// all criteria optional
+	ss.event_recur_id:"",
+	ss.event_id:"",
+	ss.categories:"",
+	ss.keyword:"",
+	ss.onlyFutureEvents:"",
+ 	ss.startDate:"",
+ 	ss.endDate:"",
+ 	ss.calendarids:""
+};
+searchEvents(ts);
+ --->
+<cffunction name="searchEvents" access="public" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.ss;
+	db=request.zos.queryObject;
+	ss.perpage=application.zcore.functions.zso(ss, 'perpage', true, 10);
+	ss.offset=application.zcore.functions.zso(ss, 'offset', true);
+	ss.event_recur_id=application.zcore.functions.zso(ss, 'event_recur_id', true);
+	ss.event_id=application.zcore.functions.zso(ss, 'event_id', true);
+	ss.categories=application.zcore.functions.zso(ss, 'categories');
+	ss.keyword=application.zcore.functions.zso(ss, 'keyword');
+	ss.onlyFutureEvents=application.zcore.functions.zso(ss, 'onlyFutureEvents', true, 1);
+ 	ss.startDate=application.zcore.functions.zso(ss, 'startDate');
+ 	ss.endDate=application.zcore.functions.zso(ss, 'endDate'); 
+ 	ss.calendarids=application.zcore.functions.zso(ss, 'calendarids');
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events");
+
+	arrCategory=listToArray(ss.categories, ',');
+	calendarIdList="";
+	arrCalendar=listToArray(ss.calendarids, ",");
+	if(arraylen(arrCalendar)){
+		arrCalendar2=[];
+		for(i=1;i LTE arraylen(arrCalendar);i++){
+			if(isnumeric(trim(arrCalendar[i]))){
+				arrayAppend(arrCalendar2, arrCalendar[i]);
+			}
+		}
+		calendarIdList=arrayToList(arrCalendar2, ",");
+	}
+	ts=structnew();
+	ts.image_library_id_field="event.event_image_library_id";
+	ts.count = 1; // how many images to get
+	rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
+	
+	db.sql="select *
+	#db.trustedsql(rs2.select)# from 
+	(#db.table("event", request.zos.zcoreDatasource)# , 
+	#db.table("event_recur", request.zos.zcoreDatasource)#) 
+	#db.trustedsql(rs2.leftJoin)#
+	WHERE 
+	event.site_id = event_recur.site_id and 
+	event.event_id = event_recur.event_id and 
+	event_recur_deleted=#db.param(0)# and 
+	event.site_id = #db.param(request.zos.globals.id)# and 
+	event_deleted=#db.param(0)# ";
+	if(ss.event_id NEQ 0){
+		db.sql&=" and event.event_id = #db.param(ss.event_id)# ";
+	}
+	if(ss.event_recur_id NEQ 0){
+		db.sql&=" and event_recur_id = #db.param(ss.event_recur_id)# ";
+	}
+	if(ss.onlyFutureEvents){
+		searchOn=true; 
+		db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(now(), 'yyyy-mm-dd')&' 00:00:00')# ";
+	}
+	if(ss.startDate NEQ "" and isdate(ss.startDate)){
+		searchOn=true; 
+		db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(ss.startDate, 'yyyy-mm-dd'))# ";
+	}
+	if(ss.endDate NEQ "" and isdate(ss.endDate)){
+		searchOn=true;
+		db.sql&=" and event_recur_start_datetime <= #db.param(dateformat(ss.endDate, 'yyyy-mm-dd'))# ";
+	}
+	if(ss.keyword NEQ ""){
+		searchOn=true;
+		db.sql&=" and concat(event.event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#ss.keyword#%')# ";
+	}
+	if(arraylen(arrCategory)){
+		db.sql&=" ( ";
+		searchOn=true;
+		for(i=1;i LTE arraylen(arrCategory);i++){
+			if(i NEQ 1){
+				db.sql&=" or ";
+			}
+			db.sql&=" CONCAT(#db.param(',')#,event_category_id, #db.param(',')#) LIKE #db.param('%,'&arrCategory[i]&',%')# ";
+		}
+		db.sql&=" ) ";
+	}
+	if(calendarIdList NEQ ""){
+		searchOn=true;
+		db.sql&=" and event_calendar_id IN (#db.trustedSQL(calendarIdList)#) ";
+	}
+	db.sql&=" 
+	GROUP BY event_recur.event_recur_id 
+	ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC
+	 LIMIT #db.param(ss.offset)#, #db.param(ss.perpage)# ";
+	qList=db.execute("qList");
+
+	if(ss.offset EQ 0 and qList.recordcount LTE ss.perpage){
+		qCount={count:qList.recordcount};
+	}else{
+
+		db.sql="select count(event.event_id) count from 
+		#db.table("event", request.zos.zcoreDatasource)#, 
+		#db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+		event.site_id = event_recur.site_id and 
+		event.event_id = event_recur.event_id and 
+		event_recur_deleted=#db.param(0)# and 
+		event.site_id = #db.param(request.zos.globals.id)# and 
+		event_deleted=#db.param(0)# ";
+		if(ss.event_id NEQ 0){
+			db.sql&=" and event.event_id = #db.param(ss.event_id)# ";
+		}
+		if(ss.event_recur_id NEQ 0){
+			db.sql&=" and event_recur_id = #db.param(ss.event_recur_id)# ";
+		}
+		if(ss.onlyFutureEvents){
+			searchOn=true; 
+			db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(now(), 'yyyy-mm-dd')&' 00:00:00')# ";
+		}
+		if(ss.startDate NEQ "" and isdate(ss.startDate)){
+			searchOn=true; 
+			db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(ss.startDate, 'yyyy-mm-dd'))# ";
+		}
+		if(ss.endDate NEQ "" and isdate(ss.endDate)){
+			searchOn=true;
+			db.sql&=" and event_recur_start_datetime <= #db.param(dateformat(ss.endDate, 'yyyy-mm-dd'))# ";
+		}
+		if(ss.keyword NEQ ""){
+			searchOn=true;
+			db.sql&=" and concat(event.event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#ss.keyword#%')# ";
+		}
+		if(arraylen(arrCategory)){
+			db.sql&=" ( ";
+			searchOn=true;
+			for(i=1;i LTE arraylen(arrCategory);i++){
+				if(i NEQ 1){
+					db.sql&=" or ";
+				}
+				db.sql&=" CONCAT(#db.param(',')#,event_category_id, #db.param(',')#) LIKE #db.param('%,'&arrCategory[i]&',%')# ";
+			}
+			db.sql&=" ) ";
+		}
+		if(calendarIdList NEQ ""){
+			searchOn=true;
+			db.sql&=" and event_calendar_id IN (#db.trustedSQL(calendarIdList)#) ";
+		}
+		qCount=db.execute("qCount");
+	}
+	arrData=[];
+	eventCom=application.zcore.app.getAppCFC("event");
+	hasPhotos=false;
+	for(row in qList){
+		if(row.event_recur_ical_rules NEQ ""){
+			row.__url=eventCom.getEventRecurURL(row);
+		}else{
+			row.__url=eventCom.getEventURL(row);
+		}
+		hasPhotos=true;
+		arrayAppend(arrData, row);
+	}
+	return { count: qCount.count, hasPhotos:hasPhotos, arrData: arrData };
+	</cfscript>
+</cffunction>
+
+<cffunction name="viewRecurringEvent" localmode="modern" access="remote">
+	
+</cffunction>
+
+<cffunction name="viewEvent" localmode="modern" access="remote">
+	<cfscript>
+	db=request.zos.queryObject;
+
+	ts=structnew();
+	ts.image_library_id_field="event_image_library_id";
+	ts.count = 0; // how many images to get
+	rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
+	
+	db.sql="select *
+	#db.trustedsql(rs2.select)# from 
+	#db.table("event", request.zos.zcoreDatasource)# , 
+	#db.table("event_recur", request.zos.zcoreDatasource)# 
+	#db.trustedsql(rs2.leftJoin)#
+	WHERE 
+	event.site_id = event_recur.site_id and 
+	event.event_id = event_recur.event_id and 
+	event_recur_deleted=#db.param(0)# and 
+	event.site_id = #db.param(request.zos.globals.id)# and 
+	event_deleted=#db.param(0)# ";
 	</cfscript>
 </cffunction>
 	
@@ -913,29 +1121,39 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_url_id]=[];
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_category_url_id]=[];
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_calendar_url_id]=[];
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_recur_url_id]=[];
 		t9=structnew();
 		t9.type=1;
-		t9.scriptName="/z/event/event/view";
+		t9.scriptName="/z/event/event/viewRecurringEvent";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/view";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewRecurringEvent";
+		t9.mapStruct=structnew();
+		t9.mapStruct.urlTitle="zURLName";
+		t9.mapStruct.dataId="event_recur_id";
+		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_recur_url_id],t9); 
+		t9=structnew();
+		t9.type=1;
+		t9.scriptName="/z/event/event/viewEvent";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewEvent";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
 		t9.mapStruct.dataId="event_id";
 		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_url_id],t9); 
 		t9=structnew();
 		t9.type=1;
-		t9.scriptName="/z/event/event-category/view";
+		t9.scriptName="/z/event/event-category/viewCategory";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/view";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/viewCategory";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
 		t9.mapStruct.dataId="event_category_id";
 		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_category_url_id],t9); 
 		t9=structnew();
 		t9.type=1;
-		t9.scriptName="/z/event/event-calendar/view";
+		t9.scriptName="/z/event/event-calendar/viewCalendar";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/view";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/viewCalendar";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
 		t9.mapStruct.dataId="event_calendar_id";
@@ -949,9 +1167,9 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		qF=db.execute("qF");
 		loop query="qF"{
 			t9=structnew();
-			t9.scriptName="/z/event/event/view";
+			t9.scriptName="/z/event/event/viewEvent";
 			t9.urlStruct=structnew();
-			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/view";
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewEvent";
 			t9.urlStruct.event_id=qF.event_id;
 			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_unique_url)]=t9;
 		}
@@ -963,9 +1181,9 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		qF=db.execute("qF");
 		loop query="qF"{
 			t9=structnew();
-			t9.scriptName="/z/event/event-calendar/view";
+			t9.scriptName="/z/event/event-calendar/viewCalendar";
 			t9.urlStruct=structnew();
-			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/view";
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/viewCalendar";
 			t9.urlStruct.event_calendar_id=qF.event_calendar_id;
 			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_calendar_unique_url)]=t9;
 		}
@@ -977,9 +1195,9 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		qF=db.execute("qF");
 		loop query="qF"{
 			t9=structnew();
-			t9.scriptName="/z/event/event-category/view";
+			t9.scriptName="/z/event/event-category/viewCategory";
 			t9.urlStruct=structnew();
-			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/view";
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-category/viewCategory";
 			t9.urlStruct.event_category_id=qF.event_category_id;
 			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_category_unique_url)]=t9;
 		}
@@ -1220,6 +1438,12 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 		echo('</td>
 		</tr>
 		<tr>
+		<th>Event Recur URL ID</th>
+		<td>');
+		writeoutput(application.zcore.app.selectAppUrlId("event_config_event_recur_url_id", form.event_config_event_recur_url_id, this.app_id));
+		echo('</td>
+		</tr>
+		<tr>
 		<th>Calendar URL ID</th>
 		<td>');
 		writeoutput(application.zcore.app.selectAppUrlId("event_config_calendar_url_id", form.event_config_calendar_url_id, this.app_id));
@@ -1253,6 +1477,15 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="getEventRecurURL" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_recur_url_id;
+	return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_recur_id&".html";
+	</cfscript>
+</cffunction>
 
 <cffunction name="getEventURL" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
@@ -1306,12 +1539,20 @@ Cancel an event that has reservations attached.  It should be able to cancel all
 	</cfscript>
 </cffunction>
 
-
-
+<!--- application.zcore.event.getIcalCFC(); --->
+<cffunction name="getIcalCFC" localmode="modern">
+	<cfscript>
+	return duplicate(application.zcore.getAppData("event").sharedStruct.icalCom);
+	</cfscript>
+</cffunction>
+	
+	
 <cffunction name="onApplicationStart" localmode="modern">
 	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">
 	<cfscript>
 	ts={};
+	ts.icalCom=createobject("component", "zcorerootmapping.com.ical.ical");
+	ts.icalCom.init("");
 	ts.timeZoneStruct={
 "Africa/Abidjan":{ offset: "+00:00", dstOffset: "+00:00"},
 "Africa/Accra":{ offset: "+00:00", dstOffset: "+00:00"},
