@@ -1050,6 +1050,93 @@ application.zcore.imageLibraryCom.displayImageFromSQL(ts);
 	</cfscript>
 </cffunction>
 
+<!--- 
+ts=structnew();
+ts.image_library_id;
+ts.output=true;
+ts.struct={};
+ts.size="250x160";
+ts.crop=0;
+ts.count = 1; // how many images to get
+application.zcore.imageLibraryCom.displayImageFromSQL(ts);
+ --->
+<cffunction name="displayImageFromStruct" localmode="modern" returntype="any" output="yes">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	var qImages=0;
+	var arrImageFile=0;
+	var g2=0;
+	var arrOutput=arraynew(1);
+	var ts=structnew();
+	var rs=structnew();
+	var count=0;
+	var arrId=arraynew(1);
+	var arrCaption=arraynew(1);
+	ts.output=true;
+	ts.row=1;
+	ts.crop=0;
+	struct=arguments.ss.struct;
+	ts.size="#request.zos.globals.maximagewidth#x2000";
+	structappend(arguments.ss,ts,false);
+	if(struct.imageIdList EQ ""){
+		arguments.ss.count=0;
+	}else{
+		arguments.ss.count=min(arguments.ss.count,arraylen(listtoarray(struct.imageIdList,chr(9),true)));
+	}
+	if(arguments.ss.count EQ 0){
+		return arrOutput;
+	}
+	if(arguments.ss.image_library_id EQ 0){
+		if(arguments.ss.output){
+			return;
+		}else{
+			return arrOutput;
+		}
+	}
+	application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, arguments.ss.size, arguments.ss.crop);
+	if(arguments.ss.output){
+		arrCaption=listtoarray(struct.imageCaptionList,chr(9),true);
+		arrId=listtoarray(struct.imageIdList,chr(9),true);
+		arrImageFile=listtoarray(struct.imageFileList,chr(9),true);
+		arrApproved=listtoarray(struct.imageApprovedList, chr(9), true);
+		arrUpdatedDate=listtoarray(struct.imageUpdatedDateList, chr(9), true);
+		loop from="1" to="#arguments.ss.count#" index="g2"{
+			if(arrApproved[g2] EQ 1){
+				writeoutput('<img src="#application.zcore.imageLibraryCom.getImageLink(arguments.ss.image_library_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2], arrUpdatedDate[g])#" ');
+				if(image_caption NEQ ""){
+					writeoutput('alt="#htmleditformat(arrCaption[g2])#"');
+				}
+				echo('style="border:none;" />');
+				if(arrCaption[g2] NEQ ""){
+					echo('<br /><div style="padding-top:5px;">#arrCaption[g2]#</div>');
+				}
+				echo('<br /><br />');
+			}
+		}
+	}else{
+		arrCaption=listtoarray(struct.imageCaptionList,chr(9),true);
+		arrId=listtoarray(struct.imageIdList,chr(9),true);
+		arrImageFile=listtoarray(struct.imageFileList,chr(9),true);
+		arrApproved=listtoarray(struct.imageApprovedList, chr(9), true);
+		arrImageUpdatedDate=listtoarray(struct.imageUpdatedDateList, chr(9), true);
+		if(arraylen(arrCaption) EQ 0){ arrayappend(arrCaption,""); }
+		if(arraylen(arrId) EQ 0){ arrayappend(arrId,""); }
+		if(arraylen(arrImageFile) EQ 0){ arrayappend(arrImageFile,""); }
+		if(arraylen(arrApproved) EQ 0){ arrayappend(arrApproved,""); }
+		if(arraylen(arrImageUpdatedDate) EQ 0){ arrayappend(arrImageUpdatedDate, ""); }
+		loop from="1" to="#arguments.ss.count#" index="g2"{
+			if(arrApproved[g2] EQ 1){
+				ts=structnew();
+				ts.link=application.zcore.imageLibraryCom.getImageLink(arguments.ss.image_library_id, arrId[g2], arguments.ss.size, arguments.ss.crop, true, arrCaption[g2], arrImageFile[g2], arrImageUpdatedDate[g2]);
+				ts.caption=arrCaption[g2];
+				ts.id=arrId[g2];
+				arrayappend(arrOutput,ts);
+			}
+		}
+		return arrOutput;
+	}
+	</cfscript>
+</cffunction>
 
 <!--- 
 // you must have a group by in your query or it may miss rows
@@ -1151,6 +1238,7 @@ application.zcore.imageLibraryCom.getLayoutTypeForm(ts); --->
 ts=structnew();
 ts.output=true;
 ts.image_library_id=image_library_id;
+ts.layoutType=""; // thumbnail-and-other-photos,contentflow,thumbnails-and-lightbox,galleryview-1.1
 ts.image_id = 0; // only use this if you want a specific image.
 ts.size="#request.zos.globals.maximagewidth#x2000";
 ts.crop=0;

@@ -471,6 +471,7 @@ userCom.checkLogin(inputStruct);
 			if(structkeyexists(form, 'zdebug')){
 				arrayAppend(rs.arrDebugLog, "Login successful, updating session and database.");
 			}
+			application.zcore.session.forceEnable();
 			request.zsession.member_id = qUserCheck.member_id;
 			local.config=application.zcore.db.getConfig();
 			local.config.cacheEnabled=false;
@@ -1133,9 +1134,11 @@ formString = userCom.loginForm(inputStruct);
 			ws=application.zcore.app.getWhitelabelStruct();
 			</cfscript>
 			<style type="text/css">
-			<cfif ws.whitelabel_login_header_image_960 NEQ "">
-				.zblanktemplatedivcontainer{ padding:0px !important;}
-			</cfif>
+			<cfscript>
+			if(ws.whitelabel_login_header_image_960 NEQ ""){
+				echo('.zblanktemplatedivcontainer{ padding:0px !important;}');
+			}
+			</cfscript>
 			.zloginContainerPad{width:97%; padding:1.5%; float:left;}
 			.zloginContainer{width:100%; }
 			.zloginHeader{width:98%; padding:1%; float:left;}
@@ -1157,9 +1160,7 @@ formString = userCom.loginForm(inputStruct);
 			
 
 			@media only screen and (max-width: 980px) { 
-				.zloginContainer{width:100%;}
-				<cfif ws.whitelabel_login_sidebar_html NEQ ""> 
-				</cfif>
+				.zloginContainer{width:100%;} 
 			}
 
 			@media only screen and (max-width: 660px) { 
@@ -1175,7 +1176,9 @@ formString = userCom.loginForm(inputStruct);
 				.zlogin-header-image640{display:none;}
 				.zlogin-header-image320{display:block;}
 			}
-			#ws.whitelabel_css#
+			<cfscript>
+			echo(ws.whitelabel_css);
+			</cfscript>
 			</style>
 			<cfif ws.whitelabel_login_header_image_320 NEQ "">
 	
@@ -1213,13 +1216,13 @@ formString = userCom.loginForm(inputStruct);
 			<cfif ss.styles.loginMessage NEQ false>
 				<span id="statusDiv" class="#ss.styles.loginMessage#" style="font-size:120%;">
 			</cfif>
-#ss.loginMessage#
+			#ss.loginMessage#
 			<cfif ss.styles.loginMessage NEQ false>
 				</span>
 			</cfif>
 			</p>
 		</cfif>
-		<cfelse>
+	<cfelse>
 		<div style="display:none; clear:both; color:##000; font-size:120%;" id="statusDiv"></div>
 	</cfif>
 

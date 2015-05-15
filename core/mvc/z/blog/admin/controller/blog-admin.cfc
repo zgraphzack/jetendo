@@ -1553,7 +1553,7 @@ if(arraylen(arrUser) EQ 1){
 				qId=db.execute("qId"); 
 				form.blog_tag_id=qid.blog_tag_id;
 			}
-			db.sql="INSERT INTO #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
+			db.sql="INSERT IGNORE INTO #db.table("blog_x_tag", request.zos.zcoreDatasource)#  
 			SET blog_id = #db.param(form.blog_id)#, 
 			blog_x_tag_updated_datetime = #db.param(request.zos.mysqlnow)#, 
 			blog_x_tag_deleted=#db.param(0)#,

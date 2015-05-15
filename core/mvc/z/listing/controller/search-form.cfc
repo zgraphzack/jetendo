@@ -702,6 +702,7 @@ if(form.zIndex EQ "" or isNumeric(form.zIndex) EQ false){
 	form.zIndex=1;
 }
 application.zcore.status.setField(form.searchId,'zIndex',form.zIndex);
+//a=application.zcore.status.getStruct(form.searchId);writedump(a);
 if(structkeyexists(form,'search_city_id') or structkeyexists(form,'search_map_coordinates_list')){
 	application.zcore.status.setStatus(form.searchId,false,form);
 	ts=application.zcore.status.getStruct(form.searchId);

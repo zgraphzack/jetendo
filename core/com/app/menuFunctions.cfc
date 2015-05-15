@@ -26,11 +26,11 @@ menuCom.init(ts);
 		db.sql="SELECT * FROM #db.table("menu", request.zos.zcoreDatasource)# menu 
 		LEFT JOIN #db.table("menu_button", request.zos.zcoreDatasource)# menu_button ON 
 		menu.menu_id = menu_button.menu_id and 
+		menu_button_deleted=#db.param(0)# and 
 		menu_button.site_id = menu.site_id 
 		WHERE menu.menu_name=#db.param(arguments.ss.menu_name)#  AND 
 		menu.site_id = #db.param(arguments.ss.site_id)# and 
-		menu_deleted = #db.param(0)# and 
-		menu_button_deleted = #db.param(0)# 
+		menu_deleted = #db.param(0)# 
 		ORDER BY menu_button_sort";
 		variables.qView=db.execute("qView"); 
 		application.sitestruct[request.zos.globals.id].menuNameCacheStruct[arguments.ss.idPrefix&variables.menuName]={

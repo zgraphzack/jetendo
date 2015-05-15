@@ -1352,16 +1352,26 @@
 			<cfscript>
 			if(directoryexists(request.zos.globals.homedir&"templates/")){
 				directory name="qTemplate" directory="#request.zos.globals.homedir#templates/" filter="*.cfm";
+				directory name="qTemplate2" directory="#request.zos.globals.homedir#templates/" filter="*.cfc";
 			}else{
 				qTemplate=querynew("name");
+				qTemplate2=querynew("name");
+			}
+			arrTemplate=[];
+			for(row in qTemplate){
+				arrayAppend(arrTemplate, row.name);
+			}
+			for(row in qTemplate2){
+				arrayAppend(arrTemplate, "root.templates."&left(row.name, len(row.name)-4));
 			}
 			selectStruct = StructNew();
 			selectStruct.name = "content_template";
 			selectStruct.selectedValues=form.content_template;
 			selectStruct.output = true;
-			selectStruct.query = qTemplate;
-			selectStruct.queryLabelField = "name";
-			selectStruct.queryValueField = "name";
+			selectStruct.listLabels = arrayToList(arrTemplate, ",");
+			selectStruct.listValues = selectStruct.listLabels;
+			selectStruct.listLabelsDelimiter = ","; 
+			selectStruct.listValuesDelimiter = ",";
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript> (Leave blank to inherit default template)
 		</td>

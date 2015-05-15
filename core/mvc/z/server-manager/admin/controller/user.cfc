@@ -475,6 +475,7 @@
 	form.user_id = application.zcore.functions.zso(form, 'user_id',false,-1);
 	db.sql=" SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_id = #db.param(form.user_id)# and 
+	user_deleted=#db.param(0)# and 
 	site_id =#db.param(form.sid)# ";
 	qUser=db.execute("qUser");
 	tempStruct={};
@@ -485,6 +486,7 @@
 	db.sql=" SELECT user_group.user_group_id, user_group.user_group_name, user_group.user_group_friendly_name 
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
 	WHERE site_id = #db.param(form.sid)# and 
+	user_group_deleted=#db.param(0)# and 
 	user_group_deleted = #db.param(0)# 
 	ORDER BY user_group_friendly_name ASC ";
 	qGroup=db.execute("qGroup");
@@ -516,7 +518,8 @@
 					<cfscript>
 					db.sql="SELECT *
 					FROM #db.table("company", request.zos.zcoreDatasource)# company
-					WHERE company_deleted = #db.param(0)# 
+					WHERE company_deleted = #db.param(0)# and
+					company_deleted=#db.param(0)# 
 					ORDER BY company_name ASC";
 					qcompany=db.execute("qcompany");
 					selectStruct = StructNew();
@@ -531,7 +534,8 @@
 			</cfif>
 			<cfscript>
 			db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
-			WHERE site_id = #db.param(form.sid)#";
+			WHERE site_id = #db.param(form.sid)# and 
+			user_group_deleted=#db.param(0)# ";
 			qGroup=db.execute("qGroup");
 			</cfscript>
 			<tr>

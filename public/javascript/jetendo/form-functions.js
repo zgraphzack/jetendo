@@ -927,18 +927,15 @@ var zLastAjaxVarName=""; */
 				break;
 			}
 			lastV=a1[i];
-		}
-		if(id.indexOf("search_Rate_low") !==-1){
-			//console.log(curPosition);
-		}
+		} 
 		if(!found){
 			curPosition=a1.length;	
 		}
 		
 		d2.value=v;
 		v=parseFloat(v);
-		if(zV+3===zOff){
-			if(parseFloat(zValues[zV+2])>parseFloat(v)){
+		/*if(zV+2===zOff){
+			if(parseFloat(zValues[zV+1])>parseFloat(v)){
 				v=zValues[zV+2];
 				if(d1.value===""){
 					if(sliderIndex===2){
@@ -949,25 +946,25 @@ var zLastAjaxVarName=""; */
 				}else{
 					d2.value=d1.value;//zValues[zV+5];
 				}
-				alert('The first value must be smaller than the second value. Your data has been reset.');
+				alert('The first value must be smaller than the second value. Your data has been reset..');
 				return;
 			}
 		}else{
-			if(parseFloat(v)>parseFloat(zValues[zV+3])){
-				v=zValues[zV+3];
+			if(parseFloat(v)>parseFloat(zValues[zV+2])){
+				v=zValues[zV+2];
 				if(d1.value===""){
 					if(sliderIndex===2){
-						d2.value=zValues[zV+3];
-					}else{
 						d2.value=zValues[zV+2];
+					}else{
+						d2.value=zValues[zV+1];
 					}
 				}else{
 					d2.value=d1.value;//zValues[zV+4];
 				}
-				alert('The first value must be smaller than the second value. Your data has been reset.');
+				alert('The first value must be smaller than the second value. Your data has been reset...');
 				return;
 			}
-		}
+		}*/
 		// get width of the bar
 		var tWidth=curPos.width-20;
 		var newSliderPos=Math.round((curPosition/(a1.length))*tWidth);

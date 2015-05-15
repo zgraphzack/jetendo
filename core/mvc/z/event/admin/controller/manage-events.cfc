@@ -233,27 +233,42 @@
 	}
 
 	if(updateRecurRecords){
-		db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+		db.sql="select * from #db.table("event_recur", request.zos.zcoreDatasource)#
+		WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
 		event_recur_deleted=#db.param(0)# and 
-		site_id=#db.param(request.zos.globals.id)# and 
-		event_id=#db.param(form.event_id)# ";
-		qDelete=db.execute("qDelete");
+		event_id=#db.param(form.event_id)#";
+		qEventRecur=db.execute("qEventRecur");
+		recurStruct={};
+		for(row2 in qEventRecur){
+			recurStruct[dateformat(row2.event_recur_start_datetime, "yyyy-mm-dd")&" "&timeformat(row2.event_recur_start_datetime, "HH:mm:ss")&" to "&dateformat(row2.event_recur_end_datetime, "yyyy-mm-dd")&" "&timeformat(row2.event_recur_end_datetime, "HH:mm:ss")]=row2.event_recur_id;
+		}
 		if(form.event_recur_ical_rules EQ ""){
 
-			ts={
-				table:"event_recur",
-				datasource:request.zos.zcoreDatasource,
-				struct:{
-					event_id:form.event_id,
-					site_id:request.zos.globals.id,
-					event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-					event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-					event_recur_end_datetime:dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-					event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
-					event_recur_deleted:0
-				}
+			mysqlStartDate=dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_start_datetime, "HH:mm:ss")&" to "&dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss");
+
+			if(not structkeyexists(recurStruct, mysqlStartDate)){
+				ts={
+					table:"event_recur",
+					datasource:request.zos.zcoreDatasource,
+					struct:{
+						event_id:form.event_id,
+						site_id:request.zos.globals.id,
+						event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+						event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+						event_recur_end_datetime:dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+						event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
+						event_recur_deleted:0
+					}
+				};
+				form.event_recur_id=application.zcore.functions.zInsert(ts);
+				db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+				event_recur_deleted=#db.param(0)# and 
+				site_id=#db.param(request.zos.globals.id)# and 
+				event_id=#db.param(form.event_id)# and 
+				event_recur_id <> #db.param(form.event_recur_id)# ";
+				qDelete=db.execute("qDelete");
 			}
-			application.zcore.functions.zInsert(ts);
 		}else{
 			// project event 
 			ical=application.zcore.app.getAppCFC("event").getIcalCFC();
@@ -263,20 +278,39 @@
 			for(i=1;i LTE arraylen(arrDate);i++){
 				startDate=arrDate[i];
 				endDate=dateadd("n", minutes, startDate);
-				ts={
-					table:"event_recur",
-					datasource:request.zos.zcoreDatasource,
-					struct:{
-						event_id:form.event_id,
-						site_id:request.zos.globals.id,
-						event_recur_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
-						event_recur_start_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
-						event_recur_end_datetime:dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss"),
-						event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
-						event_recur_deleted:0
+				mysqlStartDate=dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss")&" to "&dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss");
+
+				if(structkeyexists(recurStruct, mysqlStartDate)){
+					structdelete(recurStruct, mysqlStartDate);
+					// echo('skip '&mysqlStartDate&'<br>');
+				}else{
+					ts={
+						table:"event_recur",
+						datasource:request.zos.zcoreDatasource,
+						struct:{
+							event_id:form.event_id,
+							site_id:request.zos.globals.id,
+							event_recur_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
+							event_recur_start_datetime:dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss"),
+							event_recur_end_datetime:dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss"),
+							event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
+							event_recur_deleted:0
+						}
 					}
+					application.zcore.functions.zInsert(ts);
 				}
-				application.zcore.functions.zInsert(ts);
+			}
+			arrDelete=[];
+			for(i in recurStruct){
+				arrayAppend(arrDelete, recurStruct[i]);
+			}
+			if(arraylen(arrDelete)){
+				db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+				event_recur_deleted=#db.param(0)# and 
+				site_id=#db.param(request.zos.globals.id)# and 
+				event_id=#db.param(form.event_id)# and 
+				event_recur_id IN (#db.trustedSQL(arrayToList(arrDelete,  ", "))#) ";
+				qDelete=db.execute("qDelete");
 			}
 		}
 	}
@@ -510,28 +544,82 @@
 			</tr> 
 			<tr>
 				<th>Address</th>
-				<td><input type="text" name="event_address" style="width:500px;" value="#htmleditformat(form.event_address)#" /></td>
+				<td><input type="text" name="event_address" id="event_address" style="width:500px;" value="#htmleditformat(form.event_address)#" /></td>
 			</tr> 
 			<tr>
 				<th>Address 2</th>
-				<td><input type="text" name="event_address2" style="width:500px;" value="#htmleditformat(form.event_address2)#" /></td>
+				<td><input type="text" name="event_address2" id="event_address2" style="width:500px;" value="#htmleditformat(form.event_address2)#" /></td>
 			</tr> 
 			<tr>
 				<th>City</th>
-				<td><input type="text" name="event_city" style="width:500px;" value="#htmleditformat(form.event_city)#" /></td>
+				<td><input type="text" name="event_city" id="event_city" style="width:500px;" value="#htmleditformat(form.event_city)#" /></td>
 			</tr> 
 			<tr>
 				<th>State</th>
 				<td>#application.zcore.functions.zStateSelect("event_state", application.zcore.functions.zso(form, 'event_state'))#</td>
 			</tr> 
 			<tr>
+				<th>Zip/Postal Code</th>
+				<td><input type="text" name="event_zip" id="event_zip" value="#htmleditformat(form.event_zip)#" /></td>
+			</tr> 
+			<tr>
 				<th>Country</th>
 				<td>#application.zcore.functions.zCountrySelect("event_country", application.zcore.functions.zso(form, 'event_country'))#</td>
 			</tr> 
+
 			<tr>
-				<th>Zip/Postal Code</th>
-				<td><input type="text" name="event_zip" value="#htmleditformat(form.event_zip)#" /></td>
+				<th>Map Location</th>
+				<td>
+
+					<script type="text/javascript">
+					/* <![CDATA[ */
+					function mapPickerCallback(latitude, longitude){ 
+						$("##event_map_coordinates").val(latitude+","+longitude);
+					}
+					function mapPickerGetAddress(){
+						var address=document.getElementById("event_address");
+						var city=document.getElementById("event_city");
+						var state=document.getElementById("event_state");
+						var zip=document.getElementById("event_zip");
+						var country=document.getElementById("event_country");
+						
+						var arrField=[address, city, state, zip, country];
+						var arrAddress=[];
+						for(var i=0;i<arrField.length;i++){
+							var d=arrField[i];
+							var v="";
+							if(d != null && typeof d != "undefined"){
+								if(d.type == "select-one"){
+									if(d.options[d.selectedIndex].text !=""){
+										v=d.options[d.selectedIndex].text;
+									}
+								}else if(d.type == "text"){
+									v=d.value;
+								}
+							}
+							if(arrAddress.length){
+								arrAddress.push(", "+v);
+							}else{
+								arrAddress.push(v);
+							}
+						}
+						return arrAddress.join(" ");
+						
+					}
+					zArrDeferredFunctions.push(function(){
+						$(".mapLocationLink").bind("click", function(){
+							var address=mapPickerGetAddress(); 
+							zShowModalStandard('/z/misc/map/modalMarkerPicker/mapPickerCallback?address='+encodeURIComponent(address), zWindowSize.width-100, zWindowSize.height-100);
+							return false;
+						});
+					});
+					/* ]]> */
+					</script>
+
+					<input type="text" name="event_map_coordinates" id="event_map_coordinates" value="#htmleditformat(form.event_map_coordinates)#" /> 
+					<a href="##" class="mapLocationLink" rel="nofollow">Verify/Set Map Location</a></td>
 			</tr> 
+
 			<tr>
 				<th>Web Site URL</th>
 				<td><input type="text" name="event_website" style="width:500px;" value="#htmleditformat(form.event_website)#" /></td>
@@ -740,9 +828,9 @@ Map Coordinates	Map Location Picker
 		db.sql&=" and CONCAT(#db.param(',')#,event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&form.event_calendar_id&',%')# ";
 	}
 	if(form.showRecurring EQ 1){
-		db.sql&=" ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC";
+		db.sql&=" ORDER BY event_recur_start_datetime DESC, event_recur_end_datetime DESC";
 	}else{
-		db.sql&=" ORDER BY event_start_datetime ASC, event_end_datetime ASC";
+		db.sql&=" ORDER BY event_start_datetime DESC, event_end_datetime DESC";
 	}
 	db.sql&=" LIMIT #db.param((form.zIndex-1)*perpage)#, #db.param(perpage)# ";
 	qList=db.execute("qList");

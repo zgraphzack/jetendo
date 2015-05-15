@@ -1200,9 +1200,6 @@
 		local.configCom=application.zcore.functions.zcreateobject("component",application.zcore.appComPathStruct[row.app_id].cfcPath, true);
 		local.configCom.setURLRewriteStruct(row.site_id,local.ts2);
 	}
-	if(fileexists(request.zos.globals.homedir&"zCoreCustomFunctions.cfc")){
-		local.ts2.siteRewriteRuleCom=application.zcore.functions.zcreateobject("component",request.zRootCFCPath&"zCoreCustomFunctions", true);
-	}
 	
 	if(fileexists(request.zos.globals.homedir&"index.cfc")){
 		local.t9.scriptName="/index.cfc";
@@ -1282,8 +1279,8 @@
 	}
 	
 	if(local.newScriptName EQ ""){
-		if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct,'siteRewriteRuleCom') and structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.siteRewriteRuleCom, 'processURL')){
-			local.tempVar=application.sitestruct[request.zos.globals.id].urlRewriteStruct.siteRewriteRuleCom.processURL(arguments.theURL, true);
+		if(structkeyexists(application.sitestruct[request.zos.globals.id],'siteRewriteRuleCom') and structkeyexists(application.sitestruct[request.zos.globals.id].siteRewriteRuleCom, 'processURL')){
+			local.tempVar=application.sitestruct[request.zos.globals.id].siteRewriteRuleCom.processURL(arguments.theURL, true);
 			if(local.tempVar.scriptName NEQ ""){
 				local.newScriptName=local.tempVar.scriptName;
 				if(local.zdebugurl){
@@ -1585,8 +1582,8 @@
 	}
 	//writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct);
 	if(local.newScriptName EQ ""){
-		if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct,'siteRewriteRuleCom') and structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.siteRewriteRuleCom, 'processURL')){
-			local.tempVar=application.sitestruct[request.zos.globals.id].urlRewriteStruct.siteRewriteRuleCom.processURL(arguments.theURL, false);
+		if(structkeyexists(application.sitestruct[request.zos.globals.id],'siteRewriteRuleCom') and structkeyexists(application.sitestruct[request.zos.globals.id].siteRewriteRuleCom, 'processURL')){
+			local.tempVar=application.sitestruct[request.zos.globals.id].siteRewriteRuleCom.processURL(arguments.theURL, false);
 			if(local.tempVar.scriptName NEQ ""){
 				local.newScriptName=local.tempVar.scriptName;
 				if(local.zdebugurl){

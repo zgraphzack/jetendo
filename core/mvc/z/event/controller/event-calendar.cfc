@@ -122,8 +122,16 @@
 			},
 			defaultDate: '#dateformat(now(), "yyyy-mm-dd")#',
 			editable: false,
-			events: "/z/event/event-calendar/getFullCalendarJson?calendarids=#calendarIdList#"
+			eventSources: [{
+				url: '/z/event/event-calendar/getFullCalendarJson?calendarids=#calendarIdList#',
+				type: 'GET',
+				data: {},
+				error: function () {
+					alert('There was an error while fetching events!');
+				}
+			}]
 		});
+		console.log('setup full');
 		if(navigator.userAgent.indexOf("MSIE 7.0") != -1){
 			$(".fc-icon-left-single-arrow").html("&lt;");
 			$(".fc-icon-right-single-arrow").html("&gt;");
@@ -151,40 +159,42 @@
 				setupListView();
 			<cfelse>
 				var activeTab=1;
-				setupFullCalendar();
+				setTimeout(setupFullCalendar, 100);
 			</cfif>
 			$("##zCalendarHomeTabs").tabs({
 				active:activeTab,
 				activate:function(e, e2){ 
 					if(e2.newPanel[0].id == "zCalendarTab_Calendar"){
-						setupFullCalendar();
+						setTimeout(setupFullCalendar, 100);
 					}else if(e2.newPanel[0].id == "zCalendarTab_List"){
-						setupListView();
+						setTimeout(setupListView, 100);
 					}
 				}
 			});
 		<cfelse>
-			setupFullCalendar();
+			setTimeout(setupFullCalendar, 100);
 		</cfif>
 		
 	});
 	</script>  
+	<style type="text/css">
+	.zCalendarHomeTabs{}
+
+	</style>
 </cffunction>
 
 	
 
 <cffunction name="getListViewCalendarJson" access="remote" localmode="modern">
 	<cfscript>
-	ss={};
-	ss.thumbnailSize="200x150";
+	ss={}; 
 	ss.calendarids=application.zcore.functions.zso(form, 'calendarids');
  	ss.startDate=application.zcore.functions.zso(form, 'start', false, request.zos.mysqlnow);
  	ss.endDate=application.zcore.functions.zso(form, 'end', false, dateadd("d", application.zcore.app.getAppData("event").optionstruct.event_config_project_recurrence_days, request.zos.mysqlnow)); 
  	ss.perpage=min(application.zcore.functions.zso(form, 'perpage', true, 15),15);
 
  	eventCom=application.zcore.app.getAppCFC("event");
- 	rs=eventCom.searchEvents(ss);
-
+ 	rs=eventCom.searchEvents(ss); 
  	js={};
  	js.success=true;
  	</cfscript>
@@ -193,6 +203,16 @@
 	<cfloop from="1" to="#arrayLen(rs.arrData)#" index="i1">
 		<cfscript>row=rs.arrData[i1];
 		dateRangeStruct=eventCom.getDateRangeStruct(row);
+
+
+		ts=structnew();
+		ts.image_library_id=row.event_image_library_id;
+		ts.output=false;
+		ts.struct=row;
+		ts.size="250x150";
+		ts.crop=1;
+		ts.count = 1; // how many images to get
+		arrImage=application.zcore.imageLibraryCom.displayImageFromStruct(ts);
 
 		if(row.event_summary EQ ""){
 			summary=application.zcore.functions.zLimitStringLength(application.zcore.functions.zRemoveHTMLForSearchIndexer(row.event_description), 200);
@@ -204,12 +224,11 @@
 		<div class="zEventListContainer" style="">
 			<cfif rs.hasPhotos>
 				<div class="zEventListPhoto" style="">
-					<cfif true>
-						Photo
+					<cfif arrayLen(arrImage)>
+						<img src="#arrImage[1]#" alt="#htmleditformat(row.event_name)#">
 					<cfelse>
 						&nbsp;
 					</cfif>
-					&nbsp;
 				</div>
 				<div class="zEventListText" style="width:#request.zos.globals.maximagewidth-220#px;">
 			<cfelse>
@@ -240,19 +259,27 @@
  	ss.startDate=application.zcore.functions.zso(form, 'start', false, request.zos.mysqlnow);
  	ss.endDate=application.zcore.functions.zso(form, 'end', false, dateadd("d", application.zcore.app.getAppData("event").optionstruct.event_config_project_recurrence_days, request.zos.mysqlnow)); 
  	ss.perpage=1000;
- 	rs=application.zcore.app.getAppCFC("event").searchEvents(ss);
+ 	rs=application.zcore.app.getAppCFC("event").searchEvents(ss); 
  	arrData=[];
 
  	for(i=1;i LTE arraylen(rs.arrData);i++){
  		row=rs.arrData[i];
 		ts={
+			id:row.event_recur_id,
 			title:row.event_name,
-			start:'$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_start_datetime, "HH:mm:ss")&'")',
+			//start:'$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_start_datetime, "HH:mm:ss")&'")',
+			start:dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&" "&timeformat(row.event_recur_start_datetime, "HH:mm:ss"),
 			link:row.__url
+		}
+		if(row.event_allday EQ 1){
+			ts.allDay=true;
+		}else{
+			ts.allDay=false;
 		}
 
 		if(row.event_recur_start_datetime NEQ row.event_recur_end_datetime){
-			ts.end='$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'")'
+			ts.end=dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&" "&timeformat(row.event_recur_end_datetime, "HH:mm:ss");
+			//ts.end='$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'")'
 		}
 		arrayAppend(arrData, ts);
 	}

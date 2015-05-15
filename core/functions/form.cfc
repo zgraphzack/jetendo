@@ -2457,7 +2457,7 @@ zInputSlider(ts);
 		arrValues=listtoarray(replace(arguments.ss.listValues,chr(10)," ",'all'), arguments.ss.listValuesDelimiter,true);
 		arrLabels=listtoarray(replace(arguments.ss.listLabels,chr(10)," ",'all'), arguments.ss.listLabelsDelimiter,true);
 	}
-	local.tempRS=application.zcore.functions.zFormJSNewZValue(7);
+	local.tempRS=application.zcore.functions.zFormJSNewZValue(8);
 	zValue=local.tempRS.zValue;
 	if(application.zcore.functions.zso(request.zos, "zFormCurrentName") NEQ ""){
 		ds=structNew();
@@ -2550,7 +2550,21 @@ zInputSlider(ts);
 <cfsavecontent variable="output">
 #local.tempRS.output#
 <div style="float:left; width:50%;"><input type="hidden" name="zInputHiddenValues#zValue#" id="zInputHiddenValues#zValue#" onchange="#arguments.ss.onchange#" value="" />
-<cfif arguments.ss.leftLabel NEQ "">#arguments.ss.leftLabel#</cfif><input type="text" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name#_label" id="#arguments.ss.name#_label" value="#htmleditformat(label1value)#" onkeyup="zExpShowUpdateBar(#zValue+6#, 'block');" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+6#, 'none');zInputSliderSetValue('#arguments.ss.name#',#zValue#,#zValue+2#,this.value,#zValue+6#, 1);" /><input type="hidden" name="#arguments.ss.name#" id="#arguments.ss.name#" value="#htmleditformat(selectedValue1)#" /> </div><div style="float:right; text-align:right; width:50%;"><cfif arguments.ss.range><cfif arguments.ss.middleLabel NEQ "">#arguments.ss.middleLabel#</cfif><input type="text" onkeyup="zExpShowUpdateBar(#zValue+6#, 'block');" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+6#, 'none');zInputSliderSetValue('#arguments.ss.name2#',#zValue#,#zValue+3#,this.value,#zValue+6#, 2);" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name2#_label" value="#htmleditformat(label2value)#" id="#arguments.ss.name2#_label" /><input type="hidden" name="#arguments.ss.name2#" id="#arguments.ss.name2#" value="#htmleditformat(selectedValue2)#" /><cfif arguments.ss.rightLabel NEQ "">#arguments.ss.rightLabel#</cfif></cfif></div><br style="clear:both;" />
+<cfif arguments.ss.leftLabel NEQ "">#arguments.ss.leftLabel#</cfif>
+<input type="text" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name#_label" id="#arguments.ss.name#_label" value="#htmleditformat(label1value)#" onkeyup="zExpShowUpdateBar(#zValue+6#, 'block');" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+6#, 'none');zInputSliderSetValue('#arguments.ss.name#',#zValue#,#zValue+2#,this.value,#zValue+6#, 1);" />
+
+<input type="hidden" name="#arguments.ss.name#" id="#arguments.ss.name#" value="#htmleditformat(selectedValue1)#" /> 
+
+</div>
+
+<div style="float:right; text-align:right; width:50%;"><cfif arguments.ss.range><cfif arguments.ss.middleLabel NEQ "">#arguments.ss.middleLabel#</cfif>
+
+<input type="text" onkeyup="zExpShowUpdateBar(#zValue+7#, 'block');" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+7#, 'none');zInputSliderSetValue('#arguments.ss.name2#',#zValue+1#,#zValue+3#,this.value,#zValue+7#, 2);" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name2#_label" value="#htmleditformat(label2value)#" id="#arguments.ss.name2#_label" />
+
+<input type="hidden" name="#arguments.ss.name2#" id="#arguments.ss.name2#" value="#htmleditformat(selectedValue2)#" />
+
+<cfif arguments.ss.rightLabel NEQ "">#arguments.ss.rightLabel#</cfif></cfif>
+</div><br style="clear:both;" />
 <div id="zInputSliderBox#zValue#" class="zSliderBgDiv" style="width:100%; overflow:hidden;">
 <div id="zInputDragBox1_#zValue#" style="z-index:1;width:10px; height:15px; cursor:pointer; text-align:center; float:left;margin-left:#marginLeft#px; "><img src="/z/a/images/slider.jpg" alt="Click and drag this slider" width="10" height="15" style="float:left;" /></div>
 <cfif arguments.ss.range>
@@ -2570,7 +2584,7 @@ zValues[#zValue+5#]="<cfif label2value NEQ "">#label2value#<cfelse></cfif>";
 zSetSliderInputArray("#arguments.ss.name#_label");
 zSetSliderInputArray("#arguments.ss.name2#_label");
 zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",constrainObj:"zInputDragBox2_#zValue#",constrainLeft:false,labelId:"#arguments.ss.name#_label",valueId:"#arguments.ss.name#",zValue:#zValue#,zValueValue:#zValue+2#,zValueLabel:#zValue+4#,zExpOptionValue:#zValue+6#,range:#arguments.ss.range#});
-zDrag_makeDraggable(document.getElementById("zInputDragBox2_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",constrainObj:"zInputDragBox1_#zValue#",constrainLeft:true,labelId:"#arguments.ss.name2#_label",valueId:"#arguments.ss.name2#",zValue:#zValue#,zValueValue:#zValue+3#,zValueLabel:#zValue+5#,zExpOptionValue:#zValue+6#,range:#arguments.ss.range#});
+zDrag_makeDraggable(document.getElementById("zInputDragBox2_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",constrainObj:"zInputDragBox1_#zValue#",constrainLeft:true,labelId:"#arguments.ss.name2#_label",valueId:"#arguments.ss.name2#",zValue:#zValue#,zValueValue:#zValue+3#,zValueLabel:#zValue+5#,zExpOptionValue:#zValue+7#,range:#arguments.ss.range#});
 <cfelse>
 zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",labelId:"#arguments.ss.name#_label",valueId:"#arguments.ss.name#",zValue:#zValue#,zValueValue:#zValue+2#,zValueLabel:#zValue+4#,zExpOptionValue:#zValue+6#,range:#arguments.ss.range#});
 </cfif>
