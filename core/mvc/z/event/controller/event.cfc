@@ -812,7 +812,7 @@ application.zcore.app.getAppCFC("event").displayEventSearchForm(ts);
 					<div class="zEventSearchField">');
 				for(row in qCalendar){
 					echo('<div class="zEventSearchFieldItem">
-						<input type="checkbox" name="calendarids" class="zEventSearchCalandar" value="#row.event_calendar_id#" ');
+						<input type="checkbox" name="calendarids" class="zEventSearchCalendar" value="#row.event_calendar_id#" ');
 					if(structkeyexists(calendarSelectedStruct, row.event_calendar_id)){
 						echo('checked="checked"');
 					}
@@ -970,11 +970,11 @@ searchEvents(ts);
 		writedump(qList);
 	}
 
-	if(ss.offset EQ 0 and qList.recordcount LT ss.perpage){
+	if(ss.offset EQ 0 and (qList.recordcount EQ 1 or qList.recordcount LT ss.perpage)){
 		qCount={count:qList.recordcount};
 	}else{
 
-		db.sql="select count(event.event_id) count from 
+		db.sql="select count(event_recur_id) count from 
 		#db.table("event", request.zos.zcoreDatasource)#, 
 		#db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
 		event.site_id = event_recur.site_id and 
@@ -1019,7 +1019,7 @@ searchEvents(ts);
 			searchOn=true;
 			db.sql&=" and event_calendar_id IN (#db.trustedSQL(calendarIdList)#) ";
 		}
-		qCount=db.execute("qCount");
+		qCount=db.execute("qCount"); 
 	}
 	arrData=[];
 	eventCom=application.zcore.app.getAppCFC("event");
@@ -1030,6 +1030,8 @@ searchEvents(ts);
 		}else{
 			row.__url=eventCom.getEventURL(row);
 		}
+		row.event_start_datetime=row.event_recur_start_datetime;
+		row.event_end_datetime=row.event_recur_end_datetime;
 		hasPhotos=true;
 		arrayAppend(arrData, row);
 	}
@@ -1037,279 +1039,6 @@ searchEvents(ts);
 	</cfscript>
 </cffunction>
 
-<cffunction name="viewRecurringEvent" localmode="modern" access="remote">
-	<cfscript>
-	
-	db=request.zos.queryObject;
-	if(not request.zos.istestserver){
-		echo('<h2>View Event is coming soon.</h2>');
-		return;
-	}
-	form.event_recur_id=application.zcore.functions.zso(form, 'event_recur_id', true);
-	ts.event_recur_id=form.event_recur_id;
-	ts.onlyFutureEvents=false;
-	rs=searchEvents(ts);
-
-	if(rs.count NEQ 1){
-		application.zcore.functions.z404("Recurring event, #form.event_recur_id#, is missing");
-	}
-	rs.arrData[1].event_start_datetime=rs.arrData[1].event_recur_start_datetime;
-	rs.arrData[1].event_end_datetime=rs.arrData[1].event_recur_end_datetime;
-	displayEvent(rs.arrData[1]); 
-	</cfscript>
-</cffunction>
-
-
-<cffunction name="displayEvent" localmode="modern" access="private">
-	<cfargument name="struct" type="struct" required="yes">
-	<cfscript>
-	db=request.zos.queryObject;
-	struct=arguments.struct;
-	//writedump(struct);
- 	eventCalendarId=listGetAt(struct.event_calendar_id, 1);
-	db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
-	site_id = #db.param(request.zos.globals.id)# and 
-	event_calendar_deleted=#db.param(0)# and 
-	event_calendar_id = #db.param(eventCalendarId)# ";
-	qCalendar=db.execute("qCalendar");
-
-	calendarLink="##";
-	for(row in qCalendar){
-		calendarLink=getCalendarURL(row);
-	}
-	</cfscript>  
-	<cfif structkeyexists(form, 'print')>
-		<cfsavecontent variable="local.metaOutput">
-		<style type="text/css">
-		/* <![CDATA[ */
-		
-		/* ]]> */
-		</style>
-		</cfsavecontent>
-		<cfscript>
-		request.zos.template.appendTag("stylesheets", local.metaOutput);
-		</cfscript>
-	</cfif>  
-	<cfsavecontent variable="scriptOutput">
-		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
-		<script type="text/javascript">
-		/* <![CDATA[ */
-		function zEventMapSuccessCallback(){
-			$("##zEventMapContainerDiv").show();
-		}
-		zArrDeferredFunctions.push(function(){
-			$("##zEventSlideshowDiv").cycle({timeout:3000, speed:1200});
-			//$( "##startdate" ).datepicker();
-			//$( "##enddate" ).datepicker();
-			<cfif struct.event_address NEQ "">
-				var optionsObj={ zoom: 13 };
-				<cfif struct.event_map_coordinates NEQ "">
-					arrLatLng=[#struct.event_map_coordinates#]; 
-					zCreateMapWithLatLng("zEventMapDivId", arrLatLng[0], arrLatLng[1], optionsObj, zEventMapSuccessCallback);  
-				<cfelseif structkeyexists(cityStruct, 'name')>
-					zCreateMapWithAddress("zEventMapDivId", "#jsstringformat(struct.event_address&', '&struct.event_city&", "&struct.event_state&" "&struct.event_zip&" "&application.zcore.functions.zCountryAbbrToFullName(struct.event_country))#", optionsObj, zEventMapSuccessCallback); 
-				</cfif>
-			</cfif> 
-		});
-		/* ]]> */
-		</script> 
-	</cfsavecontent>
-	<cfscript>
-	request.zos.template.appendTag("meta", scriptOutput); 
-	request.zos.template.setTag("title", struct.event_name);
-	request.zos.template.setTag("pagetitle", struct.event_name);
-
-	countryName=application.zcore.functions.zCountryAbbrToFullName(struct.event_country);
-
-	savecontent variable="slideShowOut"{
-		ts=structnew();
-		ts.output=true;
-		ts.image_library_id=struct.event_image_library_id;
-		ts.layoutType=struct.event_image_library_layout;
-		ts.forceSize=true; 
-		ts.crop=0;
-		ts.offset=0;
-		ts.limit=0; 
-		arrImage=request.zos.imageLibraryCom.displayImages(ts); 
-	}
-	</cfscript>
-	<!--- <cfsavecontent variable="request.eventsSidebarHTML">#local.eventsCom.calendarSidebar()#</cfsavecontent>  --->
-					
-	<div style="width:100%; float:left;"> <a style="" href="##" onclick="window.print(); return false;" target="_blank" rel="nofollow">Print</a>&nbsp;&nbsp; 
-		<!--- <a style="" href="##" onclick="zShowModalStandard('/z/misc/share-with-friend/index?title=#urlencodedformat(struct.event_name)#&amp;link=#urlencodedformat(request.zos.currentHostName&struct.__url)#', 540, 630);return false;" rel="nofollow">Share</a>  --->
-	</div> 
-	<div style="width:100%; float:left;">
-		#getDateTimeRangeString(struct)#
-	
-		<!--- 
-			<cfif struct.event_end_datetime NEQ "" and dateformat(struct.event_start_datetime, "mmm") NEQ dateformat(struct.event_end_datetime, "mmm")>
-				<div class="sn-33"><span class="sh-98-2">#dateformat(struct.event_start_datetime, "m/d")#</span><span class="sh-98-2">to</span>
-				<span class="sh-98-2">#dateformat(struct.event_end_datetime, "m/d")#</span></div>
-			<cfelse>
-				<div class="sn-33">#dateformat(struct.event_start_datetime, "mmm")#<br />
-				<cfif struct.event_end_datetime NEQ "" and dateformat(struct.event_start_datetime, "d") NEQ dateformat(struct.event_end_datetime, "d")>
-					<span class="sh-99" style="font-size:16px;">#dateformat(struct.event_start_datetime, "d")#-#dateformat(struct.event_end_datetime, "d")#</span>
-				<cfelse>
-					<span class="sh-99">#dateformat(struct.event_start_datetime, "d")#</span>
-				</cfif>
-				</div> 
-			</cfif> --->
-	</div>
-	<div style="width:100%; float:left;">
-		<cfif struct.event_image_library_id NEQ 0>
-			#slideShowOut#
-			<cfscript>
-			/*
-			ts=structnew();
-			ts.output=true;
-			ts.image_library_id=struct.event_image_library_id;
-			ts.layoutType=struct.event_image_library_layout; // thumbnail-and-other-photos,contentflow,thumbnails-and-lightbox,galleryview-1.1
-			ts.size="#request.zos.globals.maximagewidth#x2000";
-			ts.crop=0;
-			ts.offset=0;
-			ts.limit=0; // zero will return all images
-			application.zcore.imageLibraryCom.displayImages(ts);
-			*/
-					/*ts.output=false;
-					ts.size="640x400";
-					ts.layoutType="";
-					var arrImage=request.zos.imageLibraryCom.displayImages(ts);
-					var i=0;*/
-			</cfscript>
-			<!--- 	<div style="display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;">  
-						<cfloop from="1" to="#arrayLen(arrImage)#" index="i">
-							<a href="#arrImage[i].link#" title="Image #i#" class="placeImageColorbox">View larger images</a><br />
-						</cfloop>
-						<cfscript>
-						request.zos.template.appendTag("meta", request.zos.skin.includeCSS("/z/javascript/jquery/colorbox/example3/colorbox.css")&request.zos.skin.includeJS("/z/javascript/jquery/colorbox/colorbox/jquery.colorbox-min.js")&'<style type="text/css">##cboxNext, ##cboxPrevious{display:none !important;}</style>');
-						request.zos.skin.addDeferredScript('$(".placeImageColorbox").colorbox({photo:true, slideshow: true});');
-						</cfscript>
-				</div> --->
-		</cfif>  
-					
-	</div>
-	<div style="width:100%; float:left;">
-		#struct.event_description#
-		<div style="width:100%; float:left;">
-			<cfif struct.event_address NEQ "">
-				<div class="zEventView-0">
-					<div class="zEventView1-1">Location:</div>
-					<div class="zEventView1-2">
-						#htmleditformat(struct.event_address)#<br />
-						#struct.event_city#
-
-						#htmleditformat(struct.event_state&" "&struct.event_zip)# 
-						<cfif struct.event_country NEQ "US">
-							#countryName#
-						</cfif>
-					</div>
-				</div>
-			</cfif> 
-			<cfif struct.event_phone NEQ "">
-				<div class="zEventView-0">
-					<div class="zEventView1-1">Contact:</div>
-					<div class="zEventView1-2"><a class="zPhoneLink">#htmleditformat(struct.event_phone)#</a></div>
-				</div>
-			</cfif>
-			<cfif left(struct.event_website, 7) EQ "http://" or left(struct.event_website, 8) EQ "https://">
-				<div class="zEventView-0">
-					<div class="zEventView1-1">Website:</div>
-					<div class="zEventView1-2"><a href="#htmleditformat(struct.event_website)#" target="_blank">#htmleditformat(struct.event_website)#</a></div>
-				</div>
-			</cfif>
-			<cfif struct.event_file1 NEQ "" or struct.event_file2 NEQ "">
-				<div class="zEventView-0">
-					<div class="zEventView1-1">Download Files:</div>
-					<div class="zEventView1-2">
-						<cfif struct.event_file1 NEQ "">
-							<a href="#htmleditformat(struct.event_file1)#" target="_blank">
-								<cfif struct.event_file1label NEQ "">
-									#struct.event_file1label#
-								<cfelse>
-									File 1
-								</cfif>
-							</a>
-						</cfif>
-						<cfif struct.event_file2 NEQ "">
-							<br /><a href="#htmleditformat(struct.event_file2)#" target="_blank">
-								<cfif struct.event_file2label NEQ "">
-									#struct.event_file2label#
-								<cfelse>
-									File 2
-								</cfif>
-							</a>
-						</cfif>
-					</div>
-				</div>
-			</cfif>
-			<div class="zEventView-0">
-				<div class="zEventView1-1">Share:</div>
-				<div class="zEventView1-2"> 
-					<a href="##"  data-ajax="false" onclick="zShowModalStandard('/z/misc/share-with-friend/index?title=#urlencodedformat(struct.event_name)#&amp;link=#urlencodedformat(request.zos.currentHostName&struct.__url)#', 540, 630);return false;" rel="nofollow" style="display:block; float:left; margin-right:10px;"><img src="/z/images/event/share_03.jpg" alt="Share by email" width="30" height="30" /></a>
-					<a href="https://www.facebook.com/sharer/sharer.php?u=#urlencodedformat(request.zos.currentHostName&struct.__url)#" target="_blank" style="display:block; float:left; margin-right:10px;"><img src="/z/images/event/share_05.jpg" alt="Share on facebook" width="30" height="30" /></a>
-					<a href="https://twitter.com/share?url=#urlencodedformat(request.zos.currentHostName&struct.__url)#" target="_blank" style="display:block; float:left; margin-right:10px;"><img src="/z/images/event/share_07.jpg" alt="Share on twitter" width="30" height="30" /></a>
-					<a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=#urlencodedformat(request.zos.currentHostName&struct.__url)#&amp;title=#urlencodedformat(struct.event_name)#&amp;summary=&amp;source=#urlencodedformat(request.zos.globals.shortDomain)#" target="_blank" style="display:block; float:left; margin-right:10px;"><img src="/z/images/event/share_09.jpg" alt="Share on linkedin" width="30" height="30" /></a> 
-				</div>
-			</div>
-		</div>
-		<cfif struct.event_address NEQ "">
-			<div id="zEventMapContainerDiv" style="width:100%; float:left;">
-				<div style="width:100%; float:left; height:300px; display:none;" id="zEventMapDivId"></div>
-				<div style="width:100%; float:left;"> <a href="https://maps.google.com/maps?q=#urlencodedformat(struct.event_address&", "&struct.event_city&", "&struct.event_state&" "&struct.event_zip&" "&struct.event_country)#" target="_blank">Launch In Google Maps</a></div>
-			</div>
-		</cfif>
-	</div>  
-
-	<style type="text/css">
-.zEventView1-0{width:100%; float:left;}
-.zEventView1-1{width:100px; float:left; font-weight:bold;}
-.zEventView1-2{width:227px; float:left;font-size:15px; line-height:19px;padding-top:16px;padding-bottom:16px; color:##000000; padding-left:37px;}
-	
-	</style>
-</cffunction>
-
-<cffunction name="viewEvent" localmode="modern" access="remote">
-	<cfscript>
-	db=request.zos.queryObject;
-	if(not request.zos.istestserver){
-		echo('<h2>View Event is coming soon.</h2>');
-		return;
-	}
-	form.event_id=application.zcore.functions.zso(form, 'event_id', true);
-	ts.event_id=form.event_id;
-	ts.perpage=1;
-	ts.onlyFutureEvents=true;
-	rs=searchEvents(ts); 
-	if(rs.count EQ 0){
-		ts.onlyFutureEvents=false;
-		rs=searchEvents(ts); 
-	}
-	if(rs.count NEQ 1){
-		application.zcore.functions.z404("Event, #form.event_id#, is missing");
-	}
-	rs.arrData[1].event_start_datetime=rs.arrData[1].event_recur_start_datetime;
-	rs.arrData[1].event_end_datetime=rs.arrData[1].event_recur_end_datetime; 
-
-
-	if(structkeyexists(form, 'zUrlName')){
-		if(rs.arrData[1].event_unique_url EQ ""){
-
-			curLink=rs.arrData[1].__url; 
-			urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_url_id;
-			actualLink="/"&application.zcore.functions.zURLEncode(form.zURLName, '-')&"-"&urlId&"-"&rs.arrData[1].event_id&".html";
-
-			if(compare(curLink,actualLink) neq 0){
-				application.zcore.functions.z301Redirect(curLink);
-			}
-		}else{
-			if(compare(rs.arrData[1].event_unique_url, request.zos.originalURL) NEQ 0){
-				application.zcore.functions.z301Redirect(rs.arrData[1].event_unique_url);
-			}
-		}
-	}
-	displayEvent(rs.arrData[1]);
-	</cfscript>
-</cffunction>
 	
 <!--- application.zcore.app.getAppCFC("event").searchReindexCalendar(false, true); --->
 <cffunction name="searchReindexCalendar" localmode="modern" output="no" returntype="any">
@@ -1526,18 +1255,18 @@ searchEvents(ts);
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_recur_url_id]=[];
 		t9=structnew();
 		t9.type=1;
-		t9.scriptName="/z/event/event/viewRecurringEvent";
+		t9.scriptName="/z/event/view-event/viewRecurringEvent";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewRecurringEvent";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/view-event/viewRecurringEvent";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
 		t9.mapStruct.dataId="event_recur_id";
 		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_recur_url_id],t9); 
 		t9=structnew();
 		t9.type=1;
-		t9.scriptName="/z/event/event/viewEvent";
+		t9.scriptName="/z/event/view-event/viewEvent";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewEvent";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/view-event/viewEvent";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
 		t9.mapStruct.dataId="event_id";
@@ -1569,9 +1298,9 @@ searchEvents(ts);
 		qF=db.execute("qF");
 		loop query="qF"{
 			t9=structnew();
-			t9.scriptName="/z/event/event/viewEvent";
+			t9.scriptName="/z/event/view-event/viewEvent";
 			t9.urlStruct=structnew();
-			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewEvent";
+			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/view-event/viewEvent";
 			t9.urlStruct.event_id=qF.event_id;
 			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_unique_url)]=t9;
 		}
@@ -1626,9 +1355,9 @@ searchEvents(ts);
 	}
 	loop query="qF"{
 		t9=structnew();
-		t9.scriptName="/z/event/event/viewEvent";
+		t9.scriptName="/z/event/view-event/viewEvent";
 		t9.urlStruct=structnew();
-		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event/viewEvent";
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/view-event/viewEvent";
 		t9.urlStruct.event_id=qF.event_id;
 		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_unique_url)]=t9;
 	}

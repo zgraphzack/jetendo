@@ -49,7 +49,9 @@
 	application.codeDeployModeEnabled=true;
 	try{
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy1'});
-		structclear(application.zcore.allcomponentcache);
+		if(structkeyexists(application.zcore, 'allcomponentcache')){
+			structclear(application.zcore.allcomponentcache);
+		}
 		if(structkeyexists(application.zcore, 'templateCFCCache')){
 			for(i in application.zcore.templateCFCCache){
 				structclear(application.zcore.templateCFCCache[i]);
@@ -192,7 +194,9 @@
 				}	
 			}
 			application.siteStruct[n].dbComponents=application.zcore.functions.getSiteDBObjects(application.sitestruct[n].globals);
-			application.zcore.functions.zUpdateCustomSiteFunctions(application.siteStruct[n]);
+			ts={site_id:n, globals:application.sitestruct[n].globals};
+			application.zcore.functions.zUpdateCustomSiteFunctions(ts);
+			structappend(application.siteStruct[n], ts, true);
 					
 		}
 

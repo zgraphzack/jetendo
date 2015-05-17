@@ -53,10 +53,10 @@
 				tempObj.callback=listViewCallback;
 				tempObj.cache=false;
 				zAjax(tempObj);
+				zJumpToId("zCalendarTab_List");
 			}
 		}
 		var p=new zPagination(options);
-		zJumpToId("zCalendarTab_List");
 	}
 	function listViewCallback(r){
 		var rs=eval("("+r+")");
@@ -178,8 +178,8 @@
 		});
 		$( "#zEventSearchStartDate" ).bind("change", zEventSearchGetData);
 		$( "#zEventSearchEndDate" ).bind("change", zEventSearchGetData);
-		$( ".zEventSearchCategory" ).bind("click", zEventSearchGetData);
-		$( ".zEventSearchCalendar" ).bind("click", zEventSearchGetData);
+		$( ".zEventSearchCategory" ).bind("change click", zEventSearchGetData);
+		$( ".zEventSearchCalendar" ).bind("change, click", zEventSearchGetData);
 
 	}
 	window.zEventSearchSetupForm=zEventSearchSetupForm;

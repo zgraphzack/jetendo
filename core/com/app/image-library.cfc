@@ -1209,6 +1209,18 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 	</cfscript>
 </cffunction>
 
+<cffunction name="isBottomLayoutType" localmode="modern" output="no" returntype="any">
+	<cfargument name="layoutTypeId" type="string" required="yes">
+	<cfscript>
+	if(arguments.layoutTypeId EQ "1" or arguments.layoutTypeId EQ "2" or arguments.layoutTypeId EQ "5"){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
+	
+
 <!--- 
 ts=structnew();
 ts.name="layout_type";

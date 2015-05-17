@@ -2625,10 +2625,12 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	}
 	request.zos.listingMlsComObjects=structnew();     
 	for(i in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
-		request.zos.listingMlsComObjects[i]=application.zcore.functions.zcreateobject("component",application.zcore.listingStruct.mlsStruct[i].mlsComPath);
-		request.zos.listingMlsComObjects[i].mls_id=i;//setMLS(i);
-		if(structkeyexists(request.zos.listingMlsComObjects[i], 'retsversion') and structkeyexists(application.zcore.listingStruct.mlsStruct[i].sharedStruct,'metastruct') EQ false){
-			request.zos.listingMlsComObjects[i].init(application.zcore.listingStruct.mlsStruct[i].sharedStruct);
+		if(structkeyexists(application.zcore.listingStruct.mlsStruct, i)){
+			request.zos.listingMlsComObjects[i]=application.zcore.functions.zcreateobject("component",application.zcore.listingStruct.mlsStruct[i].mlsComPath);
+			request.zos.listingMlsComObjects[i].mls_id=i;//setMLS(i);
+			if(structkeyexists(request.zos.listingMlsComObjects[i], 'retsversion') and structkeyexists(application.zcore.listingStruct.mlsStruct[i].sharedStruct,'metastruct') EQ false){
+				request.zos.listingMlsComObjects[i].init(application.zcore.listingStruct.mlsStruct[i].sharedStruct);
+			}
 		}
 	} 
 		
