@@ -1276,15 +1276,14 @@
 		local.zdebugurl=false;
 	}else{
 		local.zdebugurl=form.zdebugurl;
-	}
-	
+	} 
 	if(local.newScriptName EQ ""){
-		if(structkeyexists(application.sitestruct[request.zos.globals.id],'siteRewriteRuleCom') and structkeyexists(application.sitestruct[request.zos.globals.id].siteRewriteRuleCom, 'processURL')){
-			local.tempVar=application.sitestruct[request.zos.globals.id].siteRewriteRuleCom.processURL(arguments.theURL, true);
+		if(structkeyexists(application.sitestruct[request.zos.globals.id],'zcorecustomfunctions') and structkeyexists(application.sitestruct[request.zos.globals.id].zcorecustomfunctions, 'processURL')){
+			local.tempVar=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.processURL(arguments.theURL, true);
 			if(local.tempVar.scriptName NEQ ""){
 				local.newScriptName=local.tempVar.scriptName;
 				if(local.zdebugurl){
-					writeoutput('siteRewriteRuleCom match:'&local.newScriptName&'<br />');
+					writeoutput('zcorecustomfunctions match:'&local.newScriptName&'<br />');
 				}
 			}
 		}
@@ -1582,12 +1581,12 @@
 	}
 	//writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct);
 	if(local.newScriptName EQ ""){
-		if(structkeyexists(application.sitestruct[request.zos.globals.id],'siteRewriteRuleCom') and structkeyexists(application.sitestruct[request.zos.globals.id].siteRewriteRuleCom, 'processURL')){
-			local.tempVar=application.sitestruct[request.zos.globals.id].siteRewriteRuleCom.processURL(arguments.theURL, false);
+		if(structkeyexists(application.sitestruct[request.zos.globals.id],'zcorecustomfunctions') and structkeyexists(application.sitestruct[request.zos.globals.id].zcorecustomfunctions, 'processURL')){
+			local.tempVar=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.processURL(arguments.theURL, false);
 			if(local.tempVar.scriptName NEQ ""){
 				local.newScriptName=local.tempVar.scriptName;
 				if(local.zdebugurl){
-					writeoutput('siteRewriteRuleCom match:'&local.newScriptName&'<br />');
+					writeoutput('zcorecustomfunctions match:'&local.newScriptName&'<br />');
 				}
 			}
 		}

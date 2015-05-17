@@ -192,12 +192,6 @@
 				}	
 			}
 			application.siteStruct[n].dbComponents=application.zcore.functions.getSiteDBObjects(application.sitestruct[n].globals);
-			customExists=fileexists(application.sitestruct[n].globals.homedir&"zCoreCustomFunctions.cfc");
-			if(customExists){
-				application.siteStruct[n].siteRewriteRuleCom=createobject("component", request.zRootCFCPath&"zCoreCustomFunctions");
-			}else{
-				structdelete(application.siteStruct[n], 'siteRewriteRuleCom');
-			}
 			application.zcore.functions.zUpdateCustomSiteFunctions(application.siteStruct[n]);
 					
 		}

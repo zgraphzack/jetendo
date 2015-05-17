@@ -453,20 +453,6 @@ if(not rs.success){
 			arguments.ss.onSiteRequestEndEnabled=true;
 			
 		}
-	}else if(fileexists(arguments.ss.globals.homedir&'zCoreCustomFunctions.cfm')){
-		include template="#request.zRootPath#zCoreCustomFunctions.cfm";
-		if(not structkeyexists(arguments.ss, 'zcorecustomfunctions')){
-			arguments.ss.zcorecustomfunctions={};
-		}
-		structappend(arguments.ss.zcorecustomfunctions, variables.zcorecustomfunctions, true);
-		if(structkeyexists(arguments.ss.zcorecustomfunctions, 'onSiteRequestStart')){
-			arguments.ss.onSiteRequestStartEnabled=true;
-		}
-		if(structkeyexists(arguments.ss.zcorecustomfunctions, 'onSiteRequestEnd')){
-			arguments.ss.onSiteRequestEndEnabled=true;
-			
-		}
-		structdelete(variables, 'zcorecustomfunctions');
 	}else{
 		arguments.ss.zcoreCustomFunctions={};
 		arguments.ss.onSiteRequestStartEnabled=false;

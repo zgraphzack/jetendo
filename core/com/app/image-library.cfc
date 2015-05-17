@@ -764,7 +764,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 			application.zcore.functions.z404("No access to image_library_id");	
 		}
 	}
-	if(not fileexists(listGetAt(form.image_file, 1))){
+	if(not fileexists(form.image_file)){
 		if(form.disableImageProcessOutput){
 			return {
 				success:false,

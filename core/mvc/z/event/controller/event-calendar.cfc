@@ -32,7 +32,6 @@
 		application.zcore.functions.z404("form.event_calendar_id is required");
 	}
 
-
 	db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	event_calendar_deleted=#db.param(0)# and 
@@ -63,16 +62,32 @@
 
 	form.zview=application.zcore.functions.zso(form, 'zview');
 	arrView=listToArray(qCalendar.event_calendar_list_views, ",");
-	viewStruct={};
+
+	ss={};
+	ss.viewStruct={};
 	for(i=1;i<=arrayLen(arrView);i++){
-		viewStruct[arrView[i]]=true;
+		ss.viewStruct[arrView[i]]=true;
 	}
+	ss.defaultView=form.event_calendar_list_default_view;
 	if(form.zview NEQ ""){
-		form.event_calendar_list_default_view=form.zview;
+		ss.defaultView=form.zview;
 	}
-	arrEvent=[];
+	ss.jsonFullLink="/z/event/event-calendar/getFullCalendarJson?calendarids=#calendarIdList#";
+	ss.jsonListLink="/z/event/event-calendar/getListViewCalendarJson?calendarids=#calendarIdList#";
+	displayCalendar(ss);
 	</cfscript> 
-	<div id="zCalendarResultsDiv" style="width:100%; float:left;">
+
+
+</cffunction>
+
+	
+<cffunction name="displayCalendar" access="remote" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	viewStruct=arguments.ss.viewStruct;
+	defaultView=arguments.ss.defaultView;
+	</cfscript>
+	<div id="zCalendarResultsDiv" style="width:100%;  float:left;">
 
 		<cfif structkeyexists(viewStruct, 'list')>
 		<div id="zCalendarHomeTabs">
@@ -88,7 +103,7 @@
 			</ul>
 		</cfif>
 	
-			<div style="width:100%; float:left;">
+			<div style="width:100%; padding-top:20px; float:left;">
 				<div id="zCalendarTab_List">
 					
 				</div>
@@ -103,86 +118,34 @@
 	</div>
 	<cfscript>
 	application.zcore.functions.zRequireFullCalendar();
+	application.zcore.skin.includeJS("/z/javascript/jetendo-event/calendar.js");
 	</cfscript>
 	<script>
-
-	function setupFullCalendar(){
-
-		$('##zCalendarFullPageDiv').fullCalendar({
-		    eventClick: function(calEvent, jsEvent, view) {
-				if(typeof calEvent.link != "undefined"){
-					window.location.href=calEvent.link;
-				}
-				return;
-		    },
-			header: {
-				left: 'prev,next today',
-				center: 'title',
-				right: 'month,basicWeek,basicDay'
-			},
-			defaultDate: '#dateformat(now(), "yyyy-mm-dd")#',
-			editable: false,
-			eventSources: [{
-				url: '/z/event/event-calendar/getFullCalendarJson?calendarids=#calendarIdList#',
-				type: 'GET',
-				data: {},
-				error: function () {
-					alert('There was an error while fetching events!');
-				}
-			}]
-		});
-		console.log('setup full');
-		if(navigator.userAgent.indexOf("MSIE 7.0") != -1){
-			$(".fc-icon-left-single-arrow").html("&lt;");
-			$(".fc-icon-right-single-arrow").html("&gt;");
-		}
-	}
-	function listViewCallback(r){
-		var rs=eval("("+r+")");
-		if(rs.success){
-			$("##zCalendarTab_List").html(rs.html);
-		}
-	}
-	function setupListView(){
-
-		var tempObj={};
-		tempObj.id="zListCalendar";
-		tempObj.url="/z/event/event-calendar/getListViewCalendarJson?calendarids=#calendarIdList#";
-		tempObj.callback=listViewCallback;
-		tempObj.cache=false;
-		zAjax(tempObj);
-	}
-	zArrDeferredFunctions.push(function() {
+	zArrDeferredFunctions.push(function(){
+		s={};
+		s.defaultDate='#dateformat(now(), "yyyy-mm-dd")#';
+		s.jsonFullLink="#arguments.ss.jsonFullLink#";
+		s.jsonListLink="#arguments.ss.jsonListLink#";
 		<cfif structkeyexists(viewStruct, 'list')>
-			<cfif form.event_calendar_list_default_view EQ "List" or (not structkeyexists(viewStruct, 'Month') and not structkeyexists(viewStruct, '2 Months') and not structkeyexists(viewStruct, 'Week') and not structkeyexists(viewStruct, 'Day'))>
-				var activeTab=0;
-				setupListView();
-			<cfelse>
-				var activeTab=1;
-				setTimeout(setupFullCalendar, 100);
-			</cfif>
-			$("##zCalendarHomeTabs").tabs({
-				active:activeTab,
-				activate:function(e, e2){ 
-					if(e2.newPanel[0].id == "zCalendarTab_Calendar"){
-						setTimeout(setupFullCalendar, 100);
-					}else if(e2.newPanel[0].id == "zCalendarTab_List"){
-						setTimeout(setupListView, 100);
-					}
-				}
-			});
+			s.hasListView=true;
 		<cfelse>
-			setTimeout(setupFullCalendar, 100);
+			s.hasListView=false;
 		</cfif>
 		
+		<cfif defaultView EQ "List" or (not structkeyexists(viewStruct, 'Month') and not structkeyexists(viewStruct, '2 Months') and not structkeyexists(viewStruct, 'Week') and not structkeyexists(viewStruct, 'Day'))>
+			s.activeTab="0";
+		<cfelse>
+			s.activeTab="1";
+		</cfif>
+		zDisplayEventCalendar(s);
 	});
 	</script>  
 	<style type="text/css">
+	##zCalendarFullPageDiv .fc-event{cursor:pointer;}
 	.zCalendarHomeTabs{}
 
 	</style>
 </cffunction>
-
 	
 
 <cffunction name="getListViewCalendarJson" access="remote" localmode="modern">
@@ -268,9 +231,10 @@
 			id:row.event_recur_id,
 			title:row.event_name,
 			//start:'$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_start_datetime, "HH:mm:ss")&'")',
-			start:dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&" "&timeformat(row.event_recur_start_datetime, "HH:mm:ss"),
+			start:dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_start_datetime, "HH:mm:ss")&'.000+0400',
 			link:row.__url
 		}
+
 		if(row.event_allday EQ 1){
 			ts.allDay=true;
 		}else{
@@ -278,7 +242,7 @@
 		}
 
 		if(row.event_recur_start_datetime NEQ row.event_recur_end_datetime){
-			ts.end=dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&" "&timeformat(row.event_recur_end_datetime, "HH:mm:ss");
+			ts.end=dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'.000+0400';
 			//ts.end='$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'")'
 		}
 		arrayAppend(arrData, ts);

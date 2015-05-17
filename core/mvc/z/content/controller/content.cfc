@@ -494,7 +494,7 @@ this.app_id=12;
 	 content_deleted=#db.param(0)# ";
 	qF=db.execute("qF"); 
 	if(qF.recordcount EQ 0){
-		structdelete(s.uniqueURLStruct, arguments.oldURL);
+		structdelete(s.urlRewriteStruct.uniqueURLStruct, arguments.oldURL);
 	}
 	loop query="qF"{
 		t9=structnew();

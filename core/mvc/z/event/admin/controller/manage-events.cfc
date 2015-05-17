@@ -1085,6 +1085,7 @@ Map Coordinates	Map Location Picker
 			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-events/delete?event_id=#row.event_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>');
 			}
 		}else{
+			echo('<a href="#request.eventCom.getEventRecurURL(row)#" target="_blank">View</a> | ');
 			echo('Duplicate of Event #row.event_id# ');
 		}
 	echo('</td>');

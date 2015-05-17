@@ -380,17 +380,28 @@ used to do search for a list of values
 <cffunction name="getSearchListAsArray" localmode="modern" access="public">
 	<cfargument name="fieldName" type="string" required="true">
 	<cfargument name="valueList" type="string" required="true">
-	<cfargument name="compareOperator" type="string" required="true" hint="Valid values are =, !=, <, <=, >, >=, LIKE, NOT LIKE">
+	<cfargument name="compareOperator" type="string" required="true" hint="Valid values are BETWEEN, =, !=, <, <=, >, >=, LIKE, NOT LIKE">
 	<cfargument name="groupOperator" type="string" required="true" hint="Valid values are AND or OR">
+	<cfargument name="valueListDelimiter" type="string" required="no" default=",">
+	<cfargument name="valueListSubDelimiter" type="string" required="no" default="">
 	<cfscript>
-	arrValue=listToArray(arguments.valueList, ',', false);
+	arrValue=listToArray(arguments.valueList, arguments.valueListDelimiter, false);
 	count=arrayLen(arrValue);
 	arrSearch=[];
 	for(i=1;i LTE count;i++){
 		t9={
 			type=arguments.compareOperator,
-			field: arguments.fieldName,
-			arrValue:[arrValue[i]]	
+			field: arguments.fieldName
+		}
+		if(arguments.valueListSubDelimiter NEQ ""){
+			t9.arrValue=listToArray(arrValue[i], arguments.valueListSubDelimiter);
+			if(arguments.compareOperator EQ "BETWEEN" and arrayLen(t9.arrValue) NEQ 2){
+				t9.type="<>";
+				t9.field=arguments.fieldName;
+				t9.arrValue=["~~-1~~"];
+			}
+		}else{
+			t9.arrValue=[arrValue[i]];
 		}
 		arrayAppend(arrSearch, t9);
 		if(i NEQ count){
