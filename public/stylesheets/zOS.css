@@ -638,3 +638,28 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
   transform: translateX(0) translateY(0) !important;
   animation: none;
 }
+
+
+.zEventInfoButton:link, .zEventInfoButton:visited{padding:5px; padding-left:10px; padding-right:10px; float:left; display:block; clear:both; margin-top:10px;font-size:120%; line-height:auto; background-color:#000; color:#FFF; border-radius:5px;}
+.zEventListContainer{ padding:20px;display:table;}
+.zEventListPhoto{width:200px; margin-right:20px;display:table-cell;vertical-align:top;}
+.zEventListText{ display:table-cell; padding-left:20px; vertical-align:top;}
+.zEventListDate{width:100%; float:left; font-weight:bold;}
+.zEventListSummary{width:100%; float:left;}
+.zEventListHeading{width:100%; float:left;}
+.zEventListSummary{width:100%; float:left;}
+.zEventSearchHeading{font-weight:bold; font-size:120%; line-height:normal; padding-bottom:10px; width:100%; float:left;}
+.zEventSearchSubHeading{width:100%; float:left;}
+.zEventSearchField{padding-bottom:10px;width:100%; float:left;}
+.zEventSearchDateField{width:100%; float:left;}
+.zEventSearchFieldItem{width:100%; float:left;}
+
+.zPagination-container{width:100%;}
+.zPagination-container span,.zPagination-container a:link, .zPagination-container a:visited{ padding:5px; padding-left:10px; padding-right:10px; float:left; display:block; }
+
+/*
+mobile
+.zEventListContainer{width:100%;display:block; float:left;}
+.zEventListPhoto{display:block;float:left;}
+.zEventListText{display:block;float:left;}
+*/

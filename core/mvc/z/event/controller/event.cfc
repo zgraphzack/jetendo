@@ -674,50 +674,6 @@ timezone does nothing...
 	
 	
 
-<!--- request.zos.event.userHasAccessToEventCalendarID(event_calendar_id); --->
-<cffunction name="userHasAccessToEventCalendarID" access="public" localmode="modern">
-	<cfargument name="event_calendar_id" type="string" required="yes">
-	<cfscript>
-	arrEvent=listToarray(arguments.event_calendar_id, ",");
-	for(i=1;i LTE arraylen(arrEvent);i++){
-		if(structkeyexists(request.zos.calendarUserAccessStruct, arrEvent[i])){
-			return true;
-		}
-	}
-	return false;
-	</cfscript>
-	
-</cffunction>
-
-<cffunction name="getUserCalendarIDs" access="public" localmode="modern">
-	<cfscript>
-	db=request.zos.queryObject;
-	db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
-	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	event_calendar_deleted=#db.param(0)# ";
-	qCalendar=db.execute("qCalendar");
-
-	arrCalendar=[];
-	request.zos.calendarUserAccessStruct={};
-	for(row in qCalendar){
-		if(row.event_calendar_user_group_idlist NEQ ""){
-			arrUserGroup=listToArray(row.event_calendar_user_group_idlist, ",");
-			if(application.zcore.user.checkGroupAccess(arrUserGroup)){
-				arrayAppend(arrCalendar, row.event_calendar_id);
-				request.zos.calendarUserAccessStruct[row.event_calendar_id]=true;
-			}
-		}else{
-			arrayAppend(arrCalendar, row.event_calendar_id);
-			request.zos.calendarUserAccessStruct[row.event_calendar_id]=true;
-		}
-	}
-	if(arraylen(arrCalendar) EQ 0){
-		arrayAppend(arrCalendar, '-1');
-	}
-	return arrayToList(arrCalendar, ",");
-	</cfscript>
-</cffunction>
-
 <cffunction name="getDateRangeStruct" access="public" localmode="modern">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
@@ -744,6 +700,162 @@ timezone does nothing...
 	}
 	return rs;
 	</cfscript>
+</cffunction>
+
+<!--- 
+ts={
+	searchStruct:{
+		calendarids:1,
+		offset:0,
+		perpage:3
+	},
+	renderCFC: componentInstance,
+	renderFunction: "displayEvent"
+}
+application.zcore.app.getAppCFC("event").displayUpcomingEvents(ts);
+ --->
+<cffunction name="displayUpcomingEvents" access="public" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.ss;
+	rs=searchEvents(ss.searchStruct);
+
+	for(i=1;i LTE arraylen(rs.arrData);i++){
+		c=rs.arrData[i];
+		if(structkeyexists(ss, 'renderCFC')){
+			ss.renderCFC[ss.renderMethod](c);
+		}else{
+			echo(c.event_name&"<br />");
+		}
+	}
+	</cfscript>
+
+</cffunction>
+
+
+<!--- 
+ts={
+	searchCalendars:true,
+	searchCategories:true,
+	searchKeyword:true
+};
+application.zcore.app.getAppCFC("event").displayEventSearchForm(ts);
+ --->
+<cffunction name="displayEventSearchForm" access="public" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ts={
+		searchCalendars:true,
+		searchCategories:true,
+		searchKeyword:true
+	};
+	structappend(arguments.ss, ts, false);
+	ss=arguments.ss;
+	db=request.zos.queryObject;
+	application.zcore.functions.zRequireJqueryUI();
+
+	form.startdate=application.zcore.functions.zso(form, 'startdate');
+	form.enddate=application.zcore.functions.zso(form, 'enddate');
+	form.calendarids=application.zcore.functions.zso(form, 'calendarids');
+	form.categories=application.zcore.functions.zso(form, 'categories');
+	form.keyword=application.zcore.functions.zso(form, 'keyword');
+
+	arrCalendar=listToArray(form.calendarids, ",");
+	calendarSelectedStruct={};
+	for(i=1;i<=arrayLen(arrCalendar);i++){
+		calendarSelectedStruct[arrCalendar[i]]=true;
+	}
+	arrCategory=listToArray(form.categories, ",");
+	categorySelectedStruct={};
+	for(i=1;i<=arrayLen(arrCategory);i++){
+		categorySelectedStruct[arrCategory[i]]=true;
+	}
+
+	redirectToCalendar=false;
+	if(request.zos.originalURL NEQ "/z/event/event-search/index"){
+		redirectToCalendar=true;
+	}
+	</cfscript>
+	<div class="zEventSearchForm">
+		<div class="zEventSearchHeading">Dates:</div>
+		<div class="zEventSearchDateField">
+			<div class="zEventSearchSubHeading">Start Date:</div>
+			<div class="zEventSearchField">
+				<input type="text" size="10" name="startdate" id="zEventSearchStartDate" value="#form.startdate#" />
+			</div>
+			<div class="zEventSearchSubHeading">End Date:</div>
+			<div class="zEventSearchField">
+				<input type="text" size="10" name="enddate" id="zEventSearchEndDate" value="#form.enddate#" />
+			</div>
+			<cfif ss.searchKeyword>
+				<div class="zEventSearchHeading">Keyword:</div>
+				<div class="zEventSearchField">
+					<input type="text" size="10" name="keyword" id="zEventSearchKeyword" value="#form.keyword#" />
+				</div>
+			</cfif>
+		</div>
+
+		<cfscript>
+		if(ss.searchCalendars){
+			arrCalendar=getCalendarIdsUserHasAccessTo();
+			calendarids=arrayToList(arrCalendar, ",");
+			db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)#  
+			WHERE site_id =#db.param(request.zos.globals.id)# and 
+			event_calendar_deleted = #db.param(0)# and 
+			event_calendar_searchable = #db.param(1)# and 
+			event_calendar_id IN (#db.trustedSQL(calendarids)#) 
+			ORDER BY event_calendar_name ASC";
+			qCalendar=db.execute("qCalendar");
+
+			if(qCalendar.recordcount NEQ 0){
+				echo('<div class="zEventSearchHeading">Calendar:</div>
+					<div class="zEventSearchField">');
+				for(row in qCalendar){
+					echo('<div class="zEventSearchFieldItem">
+						<input type="checkbox" name="calendarids" class="zEventSearchCalandar" value="#row.event_calendar_id#" ');
+					if(structkeyexists(calendarSelectedStruct, row.event_calendar_id)){
+						echo('checked="checked"');
+					}
+					echo(' /> #htmleditformat(row.event_calendar_name)#</label></div>');
+				}
+				echo('</div>');
+			}
+		}
+
+
+		if(ss.searchCategories){
+			db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)# 
+			WHERE site_id =#db.param(request.zos.globals.id)# and 
+			event_category_deleted = #db.param(0)# and 
+			event_category_searchable = #db.param(1)#  and 
+			event_calendar_id IN (#db.trustedSQL(calendarids)#) 
+			ORDER BY event_category_name ASC";
+			qCategory=db.execute("qCategory");
+
+			if(qCategory.recordcount NEQ 0){
+				echo('<div class="zEventSearchHeading">Category:</div>
+					<div class="zEventSearchField">');
+				for(row in qCategory){
+					echo('<div class="zEventSearchFieldItem">
+						<input type="checkbox" name="categories" class="zEventSearchCategory" value="#row.event_category_id#" ');
+					if(structkeyexists(categorySelectedStruct, row.event_category_id)){
+						echo('checked="checked"');
+					}
+					echo(' /> #htmleditformat(row.event_category_name)#</label></div>');
+				}
+				echo('</div>');
+			}
+		}
+		</cfscript>
+	</div>
+
+	<script type="text/javascript">
+	/* <![CDATA[ */
+	zArrDeferredFunctions.push(function(){
+		zEventSearchSetupForm();
+	});
+	/* ]]> */
+	</script>
 </cffunction>
 
 
@@ -776,9 +888,17 @@ searchEvents(ts);
  	ss.startDate=application.zcore.functions.zso(ss, 'startDate');
  	ss.endDate=application.zcore.functions.zso(ss, 'endDate'); 
  	ss.calendarids=application.zcore.functions.zso(ss, 'calendarids');
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events");
 
 	arrCategory=listToArray(ss.categories, ',');
+	if(arraylen(arrCategory)){
+		arrCategory2=[];
+		for(i=1;i LTE arraylen(arrCategory);i++){
+			if(isnumeric(trim(arrCategory[i]))){
+				arrayAppend(arrCategory2, arrCategory[i]);
+			}
+		}
+		arrCategory=arrCategory2;
+	}
 	calendarIdList="";
 	arrCalendar=listToArray(ss.calendarids, ",");
 	if(arraylen(arrCalendar)){
@@ -828,7 +948,7 @@ searchEvents(ts);
 		db.sql&=" and concat(event.event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#ss.keyword#%')# ";
 	}
 	if(arraylen(arrCategory)){
-		db.sql&=" ( ";
+		db.sql&=" and ( ";
 		searchOn=true;
 		for(i=1;i LTE arraylen(arrCategory);i++){
 			if(i NEQ 1){
@@ -850,7 +970,7 @@ searchEvents(ts);
 		writedump(qList);
 	}
 
-	if(ss.offset EQ 0 and qList.recordcount LTE ss.perpage){
+	if(ss.offset EQ 0 and qList.recordcount LT ss.perpage){
 		qCount={count:qList.recordcount};
 	}else{
 
@@ -885,7 +1005,7 @@ searchEvents(ts);
 			db.sql&=" and concat(event.event_id, #db.param(' ')#, event_name, #db.param(' ')#, event_description)  like #db.param('%#ss.keyword#%')# ";
 		}
 		if(arraylen(arrCategory)){
-			db.sql&=" ( ";
+			db.sql&=" and ( ";
 			searchOn=true;
 			for(i=1;i LTE arraylen(arrCategory);i++){
 				if(i NEQ 1){
@@ -1169,6 +1289,24 @@ searchEvents(ts);
 	}
 	rs.arrData[1].event_start_datetime=rs.arrData[1].event_recur_start_datetime;
 	rs.arrData[1].event_end_datetime=rs.arrData[1].event_recur_end_datetime; 
+
+
+	if(structkeyexists(form, 'zUrlName')){
+		if(rs.arrData[1].event_unique_url EQ ""){
+
+			curLink=rs.arrData[1].__url; 
+			urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_url_id;
+			actualLink="/"&application.zcore.functions.zURLEncode(form.zURLName, '-')&"-"&urlId&"-"&rs.arrData[1].event_id&".html";
+
+			if(compare(curLink,actualLink) neq 0){
+				application.zcore.functions.z301Redirect(curLink);
+			}
+		}else{
+			if(compare(rs.arrData[1].event_unique_url, request.zos.originalURL) NEQ 0){
+				application.zcore.functions.z301Redirect(rs.arrData[1].event_unique_url);
+			}
+		}
+	}
 	displayEvent(rs.arrData[1]);
 	</cfscript>
 </cffunction>
@@ -1738,7 +1876,8 @@ searchEvents(ts);
 
 <cffunction name="onRequestStart" localmode="modern" output="yes" returntype="void">
 	<cfscript>
-	var db=request.zos.queryObject; 
+
+	application.zcore.skin.includeJS("/z/javascript/jetendo-event/calendar.js");
 	</cfscript>
 </cffunction>
 
@@ -1811,11 +1950,103 @@ searchEvents(ts);
 </cffunction>
 
 
+<!--- application.zcore.app.getAppCFC("event").getCalendarIdsUserHasAccessTo(); --->
+<cffunction name="getCalendarIdsUserHasAccessTo" access="public" returntype="array" localmode="modern">
+	<cfscript>
+	ss=application.zcore.app.getAppData("event").sharedStruct;
 	
+	arrCalendar=[-1];
+	for(id in ss.calendarCacheStruct){ 
+		row=ss.calendarCacheStruct[id];
+		if(row.event_calendar_user_group_idlist EQ ""){
+			arrayAppend(arrCalendar, row.event_calendar_id);
+		}else{
+			c=ss.calendarCacheStruct[row.event_calendar_id];
+			for(n=1;n LTE arraylen(c);n++){
+				if(application.zcore.user.checkGroupIdAccess(c[n])){
+					arrayAppend(arrCalendar, row.event_calendar_id);
+					break;
+				}
+			}
+		}
+	}
+	return arrCalendar;
+	</cfscript>
+	
+</cffunction>
+
+<!--- application.zcore.app.getAppCFC("event").userHasAccessToEventCalendarID(event_calendar_id); --->
+<cffunction name="userHasAccessToEventCalendarID" access="public" localmode="modern">
+	<cfargument name="event_calendar_id" type="string" required="yes">
+	<cfscript>
+	arrCalendar=listToarray(arguments.event_calendar_id, ",");
+	ss=application.zcore.app.getAppData("event").sharedStruct;
+	hasAccess=false;
+	for(i=1;i LTE arraylen(arrCalendar);i++){
+		if(structkeyexists(ss.calendarAccessCacheStruct, arrCalendar[i])){
+			c=ss.calendarAccessCacheStruct[arrCalendar[i]];
+			for(n=1;n LTE arraylen(c);n++){
+				if(c[n] NEQ "" and application.zcore.user.checkGroupIdAccess(c[n])){
+					hasAccess=true;
+					break;
+				}
+			}
+		}else{
+			hasAccess=true;
+		}
+	}
+	return hasAccess;
+	</cfscript>
+	
+</cffunction>
+
+
+<cffunction name="updateEventCalendarCache" access="public" localmode="modern">
+	<cfargument name="sharedStruct" type="struct" required="yes">
+	<cfscript>
+	ts=arguments.sharedStruct;
+	
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	event_calendar_deleted=#db.param(0)# ";
+	qCalendar=db.execute("qCalendar");
+	ts.calendarCacheStruct={};
+	ts.calendarAccessCacheStruct={};
+	for(row in qCalendar){
+		ts.calendarCacheStruct[row.event_calendar_id]=row;
+		ts.calendarAccessCacheStruct[row.event_calendar_id]=listToArray(row.event_calendar_user_group_idlist, ",");
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="updateEventCategoryCache" access="public" localmode="modern">
+	<cfargument name="sharedStruct" type="struct" required="yes">
+	<cfscript>
+	ts=arguments.sharedStruct;
+	
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	event_category_deleted=#db.param(0)# ";
+	qcategory=db.execute("qcategory");
+	ts.categoryCacheStruct={};
+	ts.categoryAccessCacheStruct={};
+	for(row in qcategory){
+		ts.categoryCacheStruct[row.event_category_id]=row;
+	}
+	</cfscript>
+</cffunction>
+
+
+
 <cffunction name="onSiteStart" access="public" localmode="modern">
 	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">
 	<cfscript>
 	ts={}; 
+	updateEventCalendarCache(ts);
+	updateEventCategoryCache(ts);
+	
 
 	ts.icalCom=createobject("component", "zcorerootmapping.com.ical.ical");
 	ts.icalCom.init(""); 

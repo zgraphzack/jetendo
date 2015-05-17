@@ -34,6 +34,12 @@
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
 
+		eventCom=application.zcore.app.getAppCFC("event");
+		eventCom.searchIndexDeleteCategory(form.event_category_id);
+
+		ss=application.zcore.app.getAppData("event").sharedStruct;
+		eventCom.updateEventCategoryCache(ss);
+
 		if(form.returnJson EQ 1){
 			application.zcore.functions.zReturnJson({success:true});
 		}else{
@@ -65,7 +71,10 @@
 	var result=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Event Categories", true);	
 	form.site_id = request.zos.globals.id;
+	ts.event_calendar_id.required=true;
 	ts.event_category_name.required = true;
+	ts.event_category_list_views.required=true;
+	ts.event_category_list_perpage.required=true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
 	if(result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
@@ -119,10 +128,14 @@
 		}
 		
 	} 
+	eventCom=application.zcore.app.getAppCFC("event");
+	ss=application.zcore.app.getAppData("event").sharedStruct;
+	eventCom.updateEventCategoryCache(ss);
+
 	if(uniqueChanged){
-		application.zcore.app.getAppCFC("event").updateRewriteRuleCategory(form.event_category_id, oldURL);	
+		eventCom.updateRewriteRuleCategory(form.event_category_id, oldURL);	
 	}
-	application.zcore.app.getAppCFC("event").searchReindexCategory(form.event_category_id, false);
+	eventCom.searchReindexCategory(form.event_category_id, false);
 
 	if(form.modalpopforced EQ 1){
 		application.zcore.functions.zRedirect('/z/event/admin/manage-event-category/getReturnEventCategoryRowHTML?event_category_id=#form.event_category_id#');
@@ -189,6 +202,29 @@
 				</td></td>
 			</tr>
 			<tr>
+				<th>Calendar</th>
+				<td>
+					<cfscript>
+					db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
+					site_id = #db.param(request.zos.globals.id)# and 
+					event_calendar_deleted=#db.param(0)# 
+					ORDER BY event_calendar_name ASC";
+					qCalendar=db.execute("qCalendar"); 
+					ts = StructNew();
+					ts.name = "event_calendar_id"; 
+					ts.size = 1; 
+					//ts.multiple = true; 
+					ts.query = qCalendar;
+					ts.queryLabelField = "event_calendar_name";
+					ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
+					ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
+					ts.queryValueField = "event_calendar_id"; 
+					//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id', true, 0));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript> *
+				</td>
+			</tr>  
+			<tr>
 				<th>Name</th>
 				<td><input type="text" name="event_category_name" value="#htmleditformat(form.event_category_name)#" /> *</td>
 			</tr> 
@@ -204,6 +240,65 @@
 					htmlEditor.create();
 					</cfscript>   
 				</td>
+			</tr> 
+			<tr>
+				<th>List Views</th>
+				<td>
+					<cfscript>
+					ts = StructNew();
+					ts.name = "event_category_list_views"; 
+					ts.size = 1; // more for multiple select
+					ts.hideSelect=true;
+					ts.listLabels = "List,2 Months,Month,Week,Day";
+					ts.listValues = "List,2 Months,Month,Week,Day";
+					ts.listLabelsDelimiter = ","; 
+					ts.listValuesDelimiter = ",";
+					
+					if(form.event_category_list_views EQ ""){
+						form.event_category_list_views="List,Month";
+					}
+					ts.multiple = true; 
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_category_list_views', true, 0));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript> *
+				</td>
+			</tr> 
+			<tr>
+				<th>List Default View</th>
+				<td>
+					<cfscript>
+					ts = StructNew();
+					ts.name = "event_category_list_default_view"; 
+					ts.size = 1; // more for multiple select
+					ts.hideSelect=true;
+					ts.listLabels = "List,Calendar";
+					ts.listValues = "List,Calendar";
+					ts.listLabelsDelimiter = ","; 
+					ts.listValuesDelimiter = ",";
+					
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript>
+				</td>
+			</tr> 
+			<tr>
+				<th>Events Per Page</th>
+				<td>
+					<cfscript>
+					if(form.event_category_list_perpage EQ "" or form.event_category_list_perpage EQ 0){
+						form.event_category_list_perpage=10;
+					}
+					</cfscript>
+					<input type="text" name="event_category_list_perpage" value="#htmleditformat(form.event_category_list_perpage)#" /> * (Applies to list view only)
+				</td>
+			</tr> 
+			<cfscript>
+			if(application.zcore.functions.zso(form,'event_category_searchable') EQ ""){
+				event_category_searchable="1";
+			}
+			</cfscript>
+			<tr>
+				<th>Searchable</th>
+				<td>#application.zcore.functions.zInput_Boolean("event_category_searchable")#</td>
 			</tr> 
 			<tr>
 				<th>Unique URL</th>
@@ -232,10 +327,18 @@
 	db=request.zos.queryObject;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Event Categories");	
 	application.zcore.functions.zSetPageHelpId("10.5");
+	searchOn=false;
+	form.event_calendar_id=application.zcore.functions.zso(form, 'event_calendar_id');
 	db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
-	event_category_deleted=#db.param(0)# 
-	ORDER BY event_category_name ASC";
+	event_category_deleted=#db.param(0)# ";
+
+	if(form.event_calendar_id NEQ ""){
+		searchOn=true;
+		db.sql&=" and event_calendar_id = #db.param(form.event_calendar_id)# ";
+	}
+
+	db.sql&=" ORDER BY event_category_name ASC";
 	qList=db.execute("qList");
 
 	request.eventCom=application.zcore.app.getAppCFC("event");
@@ -245,6 +348,41 @@
 
 	<p><a href="/z/event/admin/manage-event-category/add">Add Event Category</a></p>
 
+	<hr />
+	<div style="width:100%; float:left;">
+		<form action="/z/event/admin/manage-event-category/index" method="get">
+		<div style="width:150px;margin-bottom:10px; float:left; "><h2>Search</h2>
+		</div>
+		
+		<div style="width:120px;margin-bottom:10px;float:left;">
+			Calendar: <br />
+			<cfscript>
+			db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
+			site_id = #db.param(request.zos.globals.id)# and 
+			event_calendar_deleted=#db.param(0)# 
+			ORDER BY event_calendar_name ASC";
+			qCalendar=db.execute("qCalendar"); 
+			ts = StructNew();
+			ts.name = "event_calendar_id"; 
+			ts.size = 1; 
+			ts.inlineStyle="width:100px;"; 
+			ts.query = qCalendar;
+			ts.queryLabelField = "event_calendar_name";
+			ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
+			ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
+			ts.queryValueField = "event_calendar_id";  
+			application.zcore.functions.zInputSelectBox(ts);
+			</cfscript>
+		</div> 
+		<div style="width:150px;margin-bottom:10px;float:left;">&nbsp;<br />
+			<input type="submit" name="search1" value="Search" />
+			<cfif searchOn>
+				<input type="button" name="search2" value="Show All" onclick="window.location.href='/z/event/admin/manage-event-category/index';">
+			</cfif>
+		</div>
+		</form>
+	</div>
+	<hr />
 	<table class="table-list">
 		<tr>
 			<th>Name</th>
@@ -261,7 +399,7 @@
 	</table>
 	<cfscript>
 	if(qList.recordcount EQ 0){
-		echo('<p>No event categoris found</p>');
+		echo('<p>No event categories found</p>');
 	}
 	</cfscript>
 </cffunction>

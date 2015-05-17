@@ -28,6 +28,11 @@
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
 
+		eventCom=application.zcore.app.getAppCFC("event");
+		ss=application.zcore.app.getAppData("event").sharedStruct;
+		eventCom.updateEventCalendarCache(ss);
+		eventCom.searchIndexDeleteCalendar(form.event_calendar_id);
+
 		// also delete the categories and events, image libraries, and event_x_category attached to this calendar?
 
 		if(form.returnJson EQ 1){
@@ -76,6 +81,7 @@
 	if(form.event_calendar_list_perpage EQ "" or form.event_calendar_list_perpage EQ 0){
 		form.event_calendar_list_perpage=10;
 	}
+	form.event_calendar_user_group_idlist=application.zcore.functions.zso(form, 'event_calendar_user_group_idlist');
 
 	uniqueChanged=false;
 	oldURL='';
@@ -120,10 +126,14 @@
 		}
 		
 	} 
+	eventCom=application.zcore.app.getAppCFC("event");
+	ss=application.zcore.app.getAppData("event").sharedStruct;
+	eventCom.updateEventCalendarCache(ss);
 	if(uniqueChanged){
-		application.zcore.app.getAppCFC("event").updateRewriteRuleCalendar(form.event_calendar_id, oldURL);	
+		eventCom.updateRewriteRuleCalendar(form.event_calendar_id, oldURL);	
 	}
-	application.zcore.app.getAppCFC("event").searchReindexCalendar(form.event_calendar_id, false);
+	eventCom.searchReindexCalendar(form.event_calendar_id, false);
+
 
 	if(form.modalpopforced EQ 1){
 		application.zcore.functions.zRedirect('/z/event/admin/manage-event-calendar/getReturnEventCalendarRowHTML?event_calendar_id=#form.event_calendar_id#');
@@ -282,6 +292,15 @@
 					(Leave empty unless you want to disable public access to this calendar and all its categories and events.)
 				</td>
 			</tr>
+			<cfscript>
+			if(application.zcore.functions.zso(form,'event_calendar_searchable') EQ ""){
+				event_calendar_searchable="1";
+			}
+			</cfscript>
+			<tr>
+				<th>Searchable</th>
+				<td>#application.zcore.functions.zInput_Boolean("event_calendar_searchable")#</td>
+			</tr> 
 			<tr>
 				<th>Unique URL</th>
 				<td><input type="text" name="event_calendar_unique_url" value="#htmleditformat(form.event_calendar_unique_url)#" /></td>
@@ -389,6 +408,7 @@
 		<a href="#request.eventCom.getCalendarListURL(row)#" target="_blank">View List</a> | 
 		<a href="/z/event/admin/manage-events/add?event_calendar_id=#row.event_calendar_id#">Add Event</a> | 
 		<a href="/z/event/admin/manage-events/index?event_calendar_id=#row.event_calendar_id#">Manage Events</a> | 
+		<a href="/z/event/admin/manage-event-category/index?event_calendar_id=#row.event_calendar_id#">Manage Categories</a> | 
 		<a href="/z/event/admin/manage-event-calendar/edit?event_calendar_id=#row.event_calendar_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a>');
 		if(not row.hasEvents){
 			echo(' | 

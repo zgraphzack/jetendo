@@ -47,6 +47,8 @@
 		q=db.execute("q");
 
 
+		eventCom=application.zcore.app.getAppCFC("event");
+		eventCom.searchIndexDeleteEvent(form.event_id);
 
 		if(structkeyexists(request.zsession, 'event_return'&form.event_id)){
 			a=request.zsession['event_return'&form.event_id];
