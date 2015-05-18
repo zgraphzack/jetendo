@@ -13,6 +13,8 @@
 	request.ical=createobject("component", "zcorerootmapping.com.ical.ical");
 	request.ical.init("");
 
+	form.forceAll=application.zcore.functions.zso(form, 'forceAll', true, 0);
+
 	offset=0;
 	while(true){
 		db.sql="select * from #db.table("event", request.zos.zcoreDatasource)#, 
@@ -21,12 +23,14 @@
 		event.site_id = event_config.site_id and 
 		event_config_deleted=#db.param(0)# and 
 		event.site_id <> #db.param(-1)# and ";
-		if(structkeyexists(form, 'processNonRecurring')){
-			db.sql&=" event_recur_ical_rules=#db.param('')# and ";
-		}else{
-			db.sql&=" event_recur_ical_rules<> #db.param('')# and 
-			(event_recur_count = #db.param(0)# or 
-			event_recur_until_datetime >=#db.param(dateformat(now(), "yyyy-mm-dd")&" 00:00:00")#) and ";
+		if(form.forceAll EQ 0){
+			if(structkeyexists(form, 'processNonRecurring')){
+				db.sql&=" event_recur_ical_rules=#db.param('')# and ";
+			}else{
+				db.sql&=" event_recur_ical_rules<> #db.param('')# and 
+				(event_recur_count = #db.param(0)# or 
+				event_recur_until_datetime >=#db.param(dateformat(now(), "yyyy-mm-dd")&" 00:00:00")#) and ";
+			}
 		}
 		db.sql&=" 
 		event_deleted=#db.param(0)# 
@@ -58,7 +62,7 @@
 
 				mysqlStartDate=dateformat(row.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(row.event_start_datetime, "HH:mm:ss")&" to "&dateformat(row.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(row.event_end_datetime, "HH:mm:ss");
 
-				if(not structkeyexists(recurStruct, mysqlStartDate)){
+				if(form.forceAll EQ 1 or not structkeyexists(recurStruct, mysqlStartDate)){
 					startDate=dateformat(row.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(row.event_start_datetime, "HH:mm:ss");
 					ts={
 						table:"event_recur",
@@ -76,8 +80,16 @@
 					form.event_recur_id=application.zcore.functions.zInsert(ts);
 					db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
 					event_recur_deleted=#db.param(0)# and 
-					site_id=#db.param(request.zos.globals.id)# and 
-					event_id=#db.param(form.event_id)# and 
+					site_id=#db.param(row.site_id)# and 
+					event_id=#db.param(row.event_id)# and 
+					event_recur_id <> #db.param(form.event_recur_id)# ";
+					qDelete=db.execute("qDelete");
+				}else{
+					form.event_recur_id=recurStruct[mysqlStartDate];
+					db.sql="delete from #db.table("event_recur", request.zos.zcoreDatasource)# WHERE 
+					event_recur_deleted=#db.param(0)# and 
+					site_id=#db.param(row.site_id)# and 
+					event_id=#db.param(row.event_id)# and 
 					event_recur_id <> #db.param(form.event_recur_id)# ";
 					qDelete=db.execute("qDelete");
 				}
@@ -90,7 +102,7 @@
 					endDate=dateadd("n", minutes, startDate);
 					mysqlStartDate=dateformat(startDate, "yyyy-mm-dd")&" "&timeformat(startDate, "HH:mm:ss")&" to "&dateformat(endDate, "yyyy-mm-dd")&" "&timeformat(endDate, "HH:mm:ss");
 
-					if(structkeyexists(recurStruct, mysqlStartDate)){
+					if(form.forceAll EQ 0 and structkeyexists(recurStruct, mysqlStartDate)){
 						structdelete(recurStruct, mysqlStartDate);
 						// echo('skip '&mysqlStartDate&'<br>');
 					}else{
@@ -127,7 +139,12 @@
 		}
 		offset+=30;
 	}
-	echo('All event projections updated.<br />Need to process non-recurring events after an import? <a href="/z/event/tasks/project-events/index?processNonRecurring=1">click here</a>');
+	if(form.forceAll EQ 1){
+		echo('<h2>All event projections were forcefully recalculated.</h2>');
+	}else{
+		echo('<h2>All event projections updated.</h2>');
+	}
+	echo('  <a href="/z/event/tasks/project-events/index?forceAll=1">Force all events to be recalculated.</a><br />Need to process non-recurring events after an import? <a href="/z/event/tasks/project-events/index?processNonRecurring=1">click here</a>');
 	abort;
 	</cfscript>
 </cffunction>	

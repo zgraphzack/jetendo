@@ -55,7 +55,7 @@
 					ts.num=0;
 				}
 			}else if(left(d2, 1) EQ "-"){
-				ts.fromEnd=false;
+				ts.fromEnd=true;
 				ts.num=removeChars(d2, 1,1);
 				if(not isnumeric(ts.num)){
 					ts.num=0;
@@ -286,7 +286,10 @@
 				4:"The fourth",
 				5:"The fifth",
 				"-1":"The last"
-			};
+			}; 
+			if(structkeyexists(ts.byday[1], 'fromEnd') ){
+				ts.byday[1].num=-ts.byday[1].num;	
+			}
 			if(ts.byday[1].num NEQ 0){
 				arrayAppend(arr1, whichNameLookup[ts.byday[1].num]&" "&d);
 			}else{
@@ -504,7 +507,7 @@
 		}
 	}
 	if(debug) writedump(ts);
-	if(debug) echo("whichValue:"&whichValue);
+	if(debug) echo("whichValue:"&whichValue&"<br>");
 	if(debug){
 		echo("weeklyDayLookup:<br>"); 
 		writedump(weeklyDayLookup);
@@ -607,7 +610,7 @@
 			}
 		}else if(ts.freq == "Monthly"){
 			if(structcount(monthlyDayLookup)){
-				if(structkeyexists(monthlyDayLookup, "0") and curDate == lastDayOfMonth){
+				if(structkeyexists(monthlyDayLookup, "0") and dateformat(curDate, "yyyymmdd") == dateformat(lastDayOfMonth, "yyyymmdd")){
 					isEvent=true;
 				}
 				if(structkeyexists(monthlyDayLookup, dateformat(curDate, "d"))){
@@ -619,7 +622,7 @@
 					var dayMatch=false;
 					if(everyDayEnabled or structkeyexists(weeklyDayLookup, currentDay) and weeklyDayLookup[currentDay]){
 						monthDayCount++;	
-						if(debug) echo('here222<br>');
+						if(debug) echo('here222: #whichValue# | #curDate# | #monthlyLastDayOfWeekMatch#<br>');
 						dayMatch=true; 
 					}
 
@@ -630,7 +633,7 @@
 							isEvent=true;
 						}
 					}else if(whichValue == "The Last"){
-						if(dayMatch && curDate == monthlyLastDayOfWeekMatch){
+						if(dayMatch && dateformat(curDate, "yyyymmdd") == dateformat(monthlyLastDayOfWeekMatch, "yyyymmdd")){
 							isEvent=true;
 						}
 					}else if(everyDayEnabled){
@@ -640,7 +643,7 @@
 						}
 					}else{
 						if(debug) echo('here444<br>');
-						if(dayMatch && curDate EQ getNthDayOfMonth(curDate, currentDay, whichValue)){
+						if(dayMatch && dateformat(curDate, "yyyymmdd") EQ dateformat(getNthDayOfMonth(curDate, currentDay, whichValue), "yyyymmdd")){
 						if(debug) echo('here555<br>');
 							isEvent=true;
 						}
@@ -682,7 +685,7 @@
 							}
 						}else if(whichValue == "The Last"){ // the first/second, etc
 							if(debug) echo(curDate&' | year5<br>'); 
-							if(dayMatch && curDate == monthlyLastDayOfWeekMatch){
+							if(dayMatch && dateformat(curDate, "yyyymmdd") == dateformat(monthlyLastDayOfWeekMatch, "yyyymmdd")){
 								if(debug) echo('year6<br>');
 								isEvent=true;
 							}
@@ -693,7 +696,7 @@
 								isEvent=true;
 							}
 						}else{
-							if(dayMatch && curDate EQ getNthDayOfMonth(curDate, currentDay, whichValue)){
+							if(dayMatch && dateformat(curDate, "yyyymmdd") EQ dateformat(getNthDayOfMonth(curDate, currentDay, whichValue), "yyyymmdd")){
 								if(debug) echo(curDate&' | year9<br>');
 								isEvent=true;
 							}
@@ -723,7 +726,7 @@
 			if(structkeyexists(excludeStruct, dateformat(curDate, "yyyymmdd"))){
 				continue;
 			}
-			if(curDate>=startDate && curDate<=lastDate){
+			if(dateformat(curDate, "yyyymmdd")>=dateformat(startDate, "yyyymmdd") && curDate<=lastDate){
 
 				if(debug) echo('added date: '&curDate&" | #i# of #futureDaysToProject#<br>");
 				arrayAppend(arrDate, curDate);

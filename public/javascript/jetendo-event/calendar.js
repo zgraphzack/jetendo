@@ -45,7 +45,7 @@
 			perpage: rs.perpage, 
 			offset: rs.offset,
 			loadFunction: function(options){
-				var link=zURLAppend(calendarConfig.jsonListLink, "offset="+options.offset);
+				var link=zURLAppend(rs.link, "offset="+options.offset);
 
 				var tempObj={};
 				tempObj.id="zListCalendar";
@@ -99,6 +99,19 @@
 			setTimeout(setupFullCalendar, 100);
 		}
 		
+		zArrResizeFunctions.push({functionName:resizeEventCalendar});
+		resizeEventCalendar();
+	}
+	function resizeEventCalendar(){
+		if(zWindowSize.width < 600){
+			var active = $("#zCalendarHomeTabs").tabs( "option", "active" );
+			if(active == 1){ 
+				$("#zCalendarHomeTabs").tabs({active:0});
+			} 
+			$("#zCalendarHomeTabs .ui-tabs-nav").hide();
+		}else{ 
+			$("#zCalendarHomeTabs .ui-tabs-nav").show();
+		}
 	}
 
 
@@ -106,7 +119,10 @@
 	function zEventSearchCallback(r){
 		var r2=eval('(' + r + ')');
 		if(r2.success){
-			$("#zEventSearchResultsDiv").html(r2.html);
+			$("#zCalendarTab_List").html(r2.html);
+
+			setupPagination(r2);
+			zJumpToId("zEventSearchResults");
 		}
 	}
 	function zEventSearchGetData(){
@@ -144,11 +160,11 @@
 
 	function zEventSearchSetupForm(){
 		$( "#zEventSearchStartDate" ).datepicker({ 
-			minDate: -20, 
+			//minDate: -20, 
 			maxDate: "+1Y",
 			numberOfMonths:3,
 			onClose: function( selectedDate ) {
-				if($( "#zEventSearchEndDate" ).val() != ''){
+				if($( "#zEventSearchStartDate" ).val() == ''){
 					return;
 				}
 				$( "#zEventSearchEndDate" ).datepicker( "option", "minDate", selectedDate );
@@ -169,7 +185,7 @@
 			}
 		});
 		$( "#zEventSearchEndDate" ).datepicker({ 
-			minDate: -20, 
+			//minDate: -20, 
 			maxDate: "+1Y",
 			numberOfMonths:3,
 			onClose: function( selectedDate ) {
@@ -178,8 +194,10 @@
 		});
 		$( "#zEventSearchStartDate" ).bind("change", zEventSearchGetData);
 		$( "#zEventSearchEndDate" ).bind("change", zEventSearchGetData);
+		$("#zEventSearchKeyword").bind("change", zEventSearchGetData);
 		$( ".zEventSearchCategory" ).bind("change click", zEventSearchGetData);
-		$( ".zEventSearchCalendar" ).bind("change, click", zEventSearchGetData);
+		$( ".zEventSearchCalendar" ).bind("change click", zEventSearchGetData);
+		$("#zSearchEventButton").bind("click", zEventSearchGetData);
 
 	}
 	window.zEventSearchSetupForm=zEventSearchSetupForm;

@@ -3,18 +3,13 @@
 	
 <cffunction name="viewCalendar" access="remote" localmode="modern">
     <cfscript>
-    db=request.zos.queryObject;
-	if(not request.zos.istestserver){
-		echo('<h2>View Event Calendar is coming soon.</h2>');
-		return;
-	}
-
+    db=request.zos.queryObject; 
 	application.zcore.functions.zRequireJqueryUI();
 
-	form.event_calendar_id=application.zcore.functions.zso(form, 'event_calendar_id');
+	form.calendarids=application.zcore.functions.zso(form, 'calendarids');
 
 	calendarIdList="";
-	arrCalendar=listToArray(form.event_calendar_id, ",");
+	arrCalendar=listToArray(form.calendarids, ",");
 	if(arraylen(arrCalendar)){
 		arrCalendar2=[];
 		for(i=1;i LTE arraylen(arrCalendar);i++){
@@ -25,7 +20,7 @@
 		calendarIdList=arrayToList(arrCalendar2, ",");
 	}
 	if(calendarIdList EQ ""){
-		application.zcore.functions.z404("form.event_calendar_id is required");
+		application.zcore.functions.z404("form.calendarids is required");
 	}
 
 	db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# 
@@ -35,7 +30,7 @@
 	qCalendar=db.execute("qCalendar");
 	application.zcore.functions.zQueryToStruct(qCalendar, form);
 	if(qCalendar.recordcount EQ 0){
-		application.zcore.functions.z404("form.event_calendar_id doesn't exist.");
+		application.zcore.functions.z404("form.calendarids doesn't exist.");
 	}
 	calendarStruct={};
 
@@ -49,7 +44,7 @@
 
 		arraySort(arrCalendar, "numeric", "asc");
 		curLink="/z/event/event-calendar/viewCalendar?calendarids=#arrayToList(arrCalendar, ",")#";
-		actualLink=request.zos.originalURL;
+		actualLink=request.zos.originalURL&"?calendarids=#form.calendarids#";
 		if(compare(curLink,actualLink) neq 0){
 			application.zcore.functions.z301Redirect(curLink);
 		}
@@ -117,13 +112,14 @@
 				</cfif>
 	
 				<cfif structkeyexists(viewStruct, 'Month') or structkeyexists(viewStruct, '2 Months') or structkeyexists(viewStruct, 'Week') or structkeyexists(viewStruct, 'Day')>
-					<li><a href="##zCalendarTab_Calendar">Calendar View</a></li>
+					<li><a href="##zCalendarTab_Calendar" class="zCalendarViewTab">Calendar View</a></li>
 				</cfif>
+				<li><a href="##" onclick="window.location.href='/z/event/event-search/index?calendarids=#form.event_calendar_id#&amp;categories=#application.zcore.functions.zso(form, 'event_category_id')#'; return false;">Search Calendar</a></li>
 	
 			</ul>
 		</cfif>
 	
-			<div style="width:100%; padding-top:20px; float:left;">
+			<div class="zCalendarTabContainer">
 				<div id="zCalendarTab_List">
 					
 				</div>
@@ -132,6 +128,7 @@
 				</div>
 			</div>
 		<cfif structkeyexists(viewStruct, 'list')>
+			<br style="clear:both;">
 		</div>
 		</cfif>
 	
@@ -158,47 +155,32 @@
 		</cfif>
 		zDisplayEventCalendar(s);
 	});
-	</script>  
-	<style type="text/css">
-	##zCalendarFullPageDiv .fc-event{cursor:pointer;}
-	.zCalendarHomeTabs{}
-
-	</style>
+	</script>   
 </cffunction>
 	
 
-<cffunction name="getListViewCalendarJson" access="remote" localmode="modern">
+<cffunction name="returnListViewCalendarJson" access="remote" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	ss={}; 
-	if(structkeyexists(form, 'categories')){
-		ss.categories=application.zcore.functions.zso(form, 'categories');
-	}else{
-		ss.calendarids=application.zcore.functions.zso(form, 'calendarids');
-	}
- 	ss.startDate=application.zcore.functions.zso(form, 'start', false, request.zos.mysqlnow);
- 	ss.endDate=application.zcore.functions.zso(form, 'end', false, dateadd("d", application.zcore.app.getAppData("event").optionstruct.event_config_project_recurrence_days, request.zos.mysqlnow)); 
- 	ss.offset=min(application.zcore.functions.zso(form, 'offset', true, 0), 1000);
- 	ss.perpage=min(application.zcore.functions.zso(form, 'perpage', true, 15),50);
-
- 	eventCom=application.zcore.app.getAppCFC("event");
- 	rs=eventCom.searchEvents(ss); 
+	ss=arguments.ss;
  	js={};
  	js.offset=ss.offset;
- 	js.count=rs.count;
+ 	js.count=ss.count;
  	js.perpage=ss.perpage;
+ 	js.link=ss.link;
  	js.success=true;
+ 	eventCom=application.zcore.app.getAppCFC("event");
  	</cfscript>
 	<cfsavecontent variable="js.html">
-		<cfloop from="1" to="#arrayLen(rs.arrData)#" index="i1">
-			<cfscript>row=rs.arrData[i1];
+		<cfloop from="1" to="#arrayLen(ss.arrData)#" index="i1">
+			<cfscript>row=ss.arrData[i1];
 			dateRangeStruct=eventCom.getDateRangeStruct(row);
-
 
 			ts=structnew();
 			ts.image_library_id=row.event_image_library_id;
 			ts.output=false;
 			ts.struct=row;
-			ts.size="200x130";
+			ts.size="170x120";
 			ts.crop=1;
 			ts.count = 1; // how many images to get
 			arrImage=application.zcore.imageLibraryCom.displayImageFromStruct(ts);
@@ -211,12 +193,10 @@
 			</cfscript>
 
 			<div class="zEventListContainer">
-				<cfif rs.hasPhotos>
+				<cfif ss.hasPhotos>
 					<div class="zEventListPhoto">
 						<cfif arrayLen(arrImage)>
-							<img src="#arrImage[1].link#" alt="#htmleditformat(arrImage[1].caption)#">
-						<cfelse>
-							&nbsp;
+							<img src="#arrImage[1].link#" alt="#htmleditformat(arrImage[1].caption)#"> 
 						</cfif>
 					</div>
 					<div class="zEventListText" style="width:#request.zos.globals.maximagewidth-220#px;">
@@ -235,12 +215,45 @@
 			<hr /> 
 
 		</cfloop>
-		<div id="zEventListCalendarNav"></div>
+		<cfif ss.offset NEQ 0 or ss.count GT ss.perpage>
+			<div id="zEventListCalendarNav"></div>
+		</cfif>
 
 	</cfsavecontent>
 	<cfscript>
+
+ 	if(arraylen(ss.arrData) EQ 0){
+ 		js.html="<p>No events match your search.</p>";
+ 	}
 	application.zcore.functions.zReturnJson(js);
 	</cfscript>
+
+</cffunction>
+
+<cffunction name="getListViewCalendarJson" access="remote" localmode="modern">
+	<cfscript>
+	ss={}; 
+	if(structkeyexists(form, 'categories')){
+		ss.categories=application.zcore.functions.zso(form, 'categories');
+	}else{
+		ss.calendarids=application.zcore.functions.zso(form, 'calendarids');
+	}
+ 	ss.startDate=application.zcore.functions.zso(form, 'start', false, request.zos.mysqlnow);
+ 	ss.endDate=application.zcore.functions.zso(form, 'end', false, dateadd("d", application.zcore.app.getAppData("event").optionstruct.event_config_project_recurrence_days, request.zos.mysqlnow)); 
+ 	ss.offset=min(application.zcore.functions.zso(form, 'offset', true, 0), 1000);
+ 	ss.perpage=min(application.zcore.functions.zso(form, 'perpage', true, 15),50);
+
+ 	eventCom=application.zcore.app.getAppCFC("event");
+ 	rs=eventCom.searchEvents(ss); 
+ 	rs.offset=ss.offset;
+ 	rs.perpage=ss.perpage; 
+ 	if(structkeyexists(ss, 'categories')){
+	 	rs.link="/z/event/event-calendar/getListViewCalendarJson?categories=#ss.categories#";
+ 	}else{
+	 	rs.link="/z/event/event-calendar/getListViewCalendarJson?calendarids=#ss.calendarids#";
+	 }
+ 	returnListViewCalendarJson(rs);
+ 	</cfscript>
 </cffunction>
 	
 
@@ -252,6 +265,7 @@
 	}else{
 		ss.calendarids=application.zcore.functions.zso(form, 'calendarids');
 	}
+	ss.onlyFutureEvents=false;
  	ss.startDate=application.zcore.functions.zso(form, 'start', false, request.zos.mysqlnow);
  	ss.endDate=application.zcore.functions.zso(form, 'end', false, dateadd("d", application.zcore.app.getAppData("event").optionstruct.event_config_project_recurrence_days, request.zos.mysqlnow)); 
  	ss.perpage=1000;
@@ -272,6 +286,7 @@
 			ts.allDay=true;
 		}else{
 			ts.allDay=false;
+			ts.title=timeformat(row.event_recur_start_datetime, "h:mm tt - ")&ts.title;
 		}
 
 		if(row.event_recur_start_datetime NEQ row.event_recur_end_datetime){

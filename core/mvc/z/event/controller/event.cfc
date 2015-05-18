@@ -51,11 +51,10 @@ timezone does nothing...
 	ORDER BY event_calendar_unique_url DESC";
 	qF=db.execute("qF");
 
-	nonPublic={};
+	publicAccess={};
 	for(row in qF){
-		if(row.event_calendar_user_group_idlist NEQ ""){
-			nonPublic[row.event_calendar_id]=true;
-		}else{
+		if(row.event_calendar_user_group_idlist EQ ""){
+			publicAccess[row.event_calendar_id]=true;
 			t2=StructNew();
 			t2.groupName="Event Calendar";
 			t2.url=request.zos.currentHostName&getCalendarURL(row);
@@ -63,14 +62,19 @@ timezone does nothing...
 			arrayappend(arguments.arrUrl,t2);
 		}
 	}
-	arrCalendar=structkeyarray(nonPublic); 
+	arrCalendar=structkeyarray(publicAccess); 
 	db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
 	WHERE site_id=#db.param(request.zos.globals.id)# and  
 	event_category_deleted = #db.param(0)# ";
-	if(arraylen(arrCalendar)){
+	if(arraylen(arrCalendar)){ 
+		db.sql&=" and ( ";
 		for(i=1;i LTE arraylen(arrCalendar);i++){
-			db.sql&=" and CONCAT(#db.param(",")#, event_calendar_id, #db.param(",")#) NOT LIKE #db.param("%,#arrCalendar[i]#,%")# ";
+			if(i NEQ 1){
+				db.sql&=" or ";
+			}
+			db.sql&=" CONCAT(#db.param(",")#, event_calendar_id, #db.param(",")#) LIKE #db.param("%,#arrCalendar[i]#,%")# ";
 		}
+		db.sql&=" ) ";
 	}
 	db.sql&="ORDER BY event_category_unique_url DESC";
 	qF=db.execute("qF");
@@ -82,7 +86,8 @@ timezone does nothing...
 		arrayappend(arguments.arrUrl,t2);
 	}
 
-	db.sql="SELECT * from #db.table("event", request.zos.zcoreDatasource)#, 
+	db.sql="SELECT *, group_concat(event_recur_id order by event_recur_start_datetime asc SEPARATOR #db.param(',')#) recuridlist 
+	from #db.table("event", request.zos.zcoreDatasource)#, 
 	#db.table("event_recur", request.zos.zcoreDatasource)# 
 	WHERE event.site_id=#db.param(request.zos.globals.id)# and  
 	event_deleted = #db.param(0)# and 
@@ -92,17 +97,34 @@ timezone does nothing...
 	event_recur_end_datetime>=#db.param(dateformat(now(), "yyyy-mm-dd")&" 00:00:00")#
 	";
 	if(arraylen(arrCalendar)){ 
+		db.sql&=" and ( ";
 		for(i=1;i LTE arraylen(arrCalendar);i++){
-			db.sql&=" and CONCAT(#db.param(",")#, event_calendar_id, #db.param(",")#) NOT LIKE #db.param("%,#arrCalendar[i]#,%")# ";
+			if(i NEQ 1){
+				db.sql&=" or ";
+			}
+			db.sql&=" CONCAT(#db.param(",")#, event_calendar_id, #db.param(",")#) LIKE #db.param("%,#arrCalendar[i]#,%")# ";
 		}
+		db.sql&=" ) ";
 	}
-	db.sql&=" 
-	GROUP BY event.event_id ";
-	qF=db.execute("qF");
+	db.sql&="
+	GROUP BY event.event_id 
+	ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC";
+	qF=db.execute("qF"); 
+	//GROUP BY event.event_id  
+	uniqueEvent={};
 	for(row in qF){
+		if(structkeyexists(uniqueEvent, row.event_id)){
+			continue;
+		}
+		row.event_recur_id=listGetAt(row.recuridlist, 1);
+		uniqueEvent[row.event_id]=true;
 		t2=StructNew();
 		t2.groupName="Event";
-		t2.url=request.zos.currentHostName&getEventURL(row);
+		if(row.event_recur_ical_rules EQ ""){
+			t2.url=request.zos.currentHostName&getEventURL(row);
+		}else{
+			t2.url=request.zos.currentHostName&getNextRecurringEventURL(row);
+		}
 		t2.title=row.event_name;
 		arrayappend(arguments.arrUrl,t2);
 	}
@@ -280,7 +302,7 @@ timezone does nothing...
 	projectDays=0;
 	arrDate=request.ical.getRecurringDates(struct.startDate, struct.rule, struct.excludeDayList, projectDays);
 
-	//writedump(arrDate);abort;
+	//writedump(arrDate);abort; 
 	dateStruct={};
 	for(i=1;i LTE arraylen(struct.arrCorrectDates);i++){
 		dateStruct[dateformat(struct.arrCorrectDates[i], 'yyyy-mm-dd')]=true;
@@ -301,7 +323,7 @@ timezone does nothing...
 	for(i=1;i LTE arraylen(arrDate3);i++){
 		i2=arrDate3[i];
 		arrayAppend(arrError, "Date expected but not matched: "&i2);
-	}
+	} 
 	if(arraylen(arrError)){
 		writedump(struct);
 		writedump(arrDate);
@@ -314,7 +336,7 @@ timezone does nothing...
 
 <cffunction name="getTests" localmode="modern" access="remote">
 	<cfscript>
-	arrTest=[];
+	arrTest=[];  
 	ts={
 		id:"Rule 1",
 		startDate:"5/7/2015",
@@ -597,6 +619,16 @@ timezone does nothing...
 		arrCorrectDates:['2015-05-08','2016-01-01','2016-01-02','2016-01-03','2016-01-04','2016-01-05','2016-01-06','2016-01-07','2016-01-08','2016-01-09','2016-01-10','2016-01-11','2016-01-12','2016-01-13','2016-01-14','2016-01-15','2016-01-16','2016-01-17','2016-01-18','2016-01-19','2016-01-20','2016-01-21','2016-01-22','2016-01-23','2016-01-24','2016-01-25','2016-01-26','2016-01-27','2016-01-28','2016-01-29','2016-01-30']
 	}
 	arrayAppend(arrTest, ts);
+
+	ts={
+		id:"Rule 27",
+		startDate:"5/8/2015",
+		endDate:"5/8/2015",
+		rule:"BYDAY=+1TH;COUNT=0;FREQ=MONTHLY;INTERVAL=1;UNTIL=20150729T040000Z",
+		excludeDayList:"",
+		arrCorrectDates:["2015-05-08","2015-06-04","2015-07-02"]
+	}
+	arrayAppend(arrTest, ts);
 	return arrTest;
    
 </cfscript>
@@ -812,11 +844,15 @@ application.zcore.app.getAppCFC("event").displayEventSearchForm(ts);
 					<div class="zEventSearchField">');
 				for(row in qCalendar){
 					echo('<div class="zEventSearchFieldItem">
+					<div class="zEventSearchFieldItem1">
 						<input type="checkbox" name="calendarids" class="zEventSearchCalendar" value="#row.event_calendar_id#" ');
 					if(structkeyexists(calendarSelectedStruct, row.event_calendar_id)){
 						echo('checked="checked"');
 					}
-					echo(' /> #htmleditformat(row.event_calendar_name)#</label></div>');
+					echo(' />
+					</div>
+					<div class="zEventSearchFieldItem2"> #htmleditformat(row.event_calendar_name)#</label></div>
+					</div>');
 				}
 				echo('</div>');
 			}
@@ -837,16 +873,26 @@ application.zcore.app.getAppCFC("event").displayEventSearchForm(ts);
 					<div class="zEventSearchField">');
 				for(row in qCategory){
 					echo('<div class="zEventSearchFieldItem">
+					<div class="zEventSearchFieldItem1">
 						<input type="checkbox" name="categories" class="zEventSearchCategory" value="#row.event_category_id#" ');
 					if(structkeyexists(categorySelectedStruct, row.event_category_id)){
 						echo('checked="checked"');
 					}
-					echo(' /> #htmleditformat(row.event_category_name)#</label></div>');
+					echo(' />
+					</div>
+					<div class="zEventSearchFieldItem2"> #htmleditformat(row.event_category_name)#</label>
+					</div>
+					</div>');
 				}
 				echo('</div>');
 			}
 		}
 		</cfscript>
+
+		<div class="zEventSearchField">
+			<input type="button" size="10" name="zSearchEventButton" id="zSearchEventButton" value="Search Events" />
+		</div>
+
 	</div>
 
 	<script type="text/javascript">
@@ -888,6 +934,9 @@ searchEvents(ts);
  	ss.startDate=application.zcore.functions.zso(ss, 'startDate');
  	ss.endDate=application.zcore.functions.zso(ss, 'endDate'); 
  	ss.calendarids=application.zcore.functions.zso(ss, 'calendarids');
+
+
+	ss.keyword=replace(replace(ss.keyword, '+', '%', 'all'), ' ', '%', 'all');
 
 	arrCategory=listToArray(ss.categories, ',');
 	if(arraylen(arrCategory)){
@@ -1253,6 +1302,7 @@ searchEvents(ts);
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_category_url_id]=[];
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_calendar_url_id]=[];
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_recur_url_id]=[];
+		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_next_recur_url_id]=[];
 		t9=structnew();
 		t9.type=1;
 		t9.scriptName="/z/event/view-event/viewRecurringEvent";
@@ -1262,6 +1312,15 @@ searchEvents(ts);
 		t9.mapStruct.urlTitle="zURLName";
 		t9.mapStruct.dataId="event_recur_id";
 		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_recur_url_id],t9); 
+		t9={};
+		t9.type=1;
+		t9.scriptName="/z/event/view-event/viewNextRecurringEvent"; 
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/view-event/viewNextRecurringEvent";
+		t9.mapStruct=structnew();
+		t9.mapStruct.urlTitle="zURLName";
+		t9.mapStruct.dataId="event_id";
+		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_event_next_recur_url_id],t9); 
 		t9=structnew();
 		t9.type=1;
 		t9.scriptName="/z/event/view-event/viewEvent";
@@ -1287,7 +1346,7 @@ searchEvents(ts);
 		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/viewCalendar";
 		t9.mapStruct=structnew();
 		t9.mapStruct.urlTitle="zURLName";
-		t9.mapStruct.dataId="event_calendar_id";
+		t9.mapStruct.dataId="calendarids";
 		arrayappend(arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.event_config_calendar_url_id],t9);  
 
 		db.sql="SELECT * from #db.table("event", request.zos.zcoreDatasource)# 
@@ -1315,7 +1374,7 @@ searchEvents(ts);
 			t9.scriptName="/z/event/event-calendar/viewCalendar";
 			t9.urlStruct=structnew();
 			t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/viewCalendar";
-			t9.urlStruct.event_calendar_id=qF.event_calendar_id;
+			t9.urlStruct.calendarids=qF.event_calendar_id;
 			arguments.sharedStruct.uniqueURLStruct[trim(qF.event_calendar_unique_url)]=t9;
 		}
 		db.sql="SELECT * from #db.table("event_category", request.zos.zcoreDatasource)# 
@@ -1416,7 +1475,7 @@ searchEvents(ts);
 		t9.scriptName="/z/event/event-calendar/viewCalendar";
 		t9.urlStruct=structnew();
 		t9.urlStruct[request.zos.urlRoutingParameter]="/z/event/event-calendar/viewCalendar";
-		t9.urlStruct.event_calendar_id=qF.event_calendar_id;
+		t9.urlStruct.calendarids=qF.event_calendar_id;
 		s.urlRewriteStruct.uniqueURLStruct[trim(qF.event_calendar_unique_url)]=t9;
 	}
 	return true;
@@ -1490,6 +1549,8 @@ searchEvents(ts);
 	arrayappend(ts.arrId,trim(form.event_config_category_url_id));
 	arrayappend(ts.arrId,trim(form.event_config_calendar_url_id));
 	arrayappend(ts.arrId,trim(form.event_config_event_url_id));
+	arrayappend(ts.arrId,trim(form.event_config_event_recur_url_id));
+	arrayappend(ts.arrId,trim(form.event_config_event_next_recur_url_id));
 	ts.site_id=form.site_id;
 	ts.app_id=this.app_id;
 	rCom=application.zcore.app.reserveAppUrlId(ts);
@@ -1575,6 +1636,12 @@ searchEvents(ts);
 		echo('</td>
 		</tr>
 		<tr>
+		<th>Event Next Recur URL ID</th>
+		<td>');
+		writeoutput(application.zcore.app.selectAppUrlId("event_config_event_next_recur_url_id", form.event_config_event_next_recur_url_id, this.app_id));
+		echo('</td>
+		</tr>
+		<tr>
 		<th>Calendar URL ID</th>
 		<td>');
 		writeoutput(application.zcore.app.selectAppUrlId("event_config_calendar_url_id", form.event_config_calendar_url_id, this.app_id));
@@ -1639,6 +1706,16 @@ searchEvents(ts);
 	</cfscript>
 </cffunction>
 
+<cffunction name="getNextRecurringEventURL" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_next_recur_url_id;
+	return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_id&".html";
+	</cfscript>
+</cffunction>
+
+
 <cffunction name="getCategoryURL" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
@@ -1690,7 +1767,7 @@ searchEvents(ts);
 		if(row.event_calendar_user_group_idlist EQ ""){
 			arrayAppend(arrCalendar, row.event_calendar_id);
 		}else{
-			c=ss.calendarCacheStruct[row.event_calendar_id];
+			c=listToArray(row.event_calendar_user_group_idlist, ",");
 			for(n=1;n LTE arraylen(c);n++){
 				if(application.zcore.user.checkGroupIdAccess(c[n])){
 					arrayAppend(arrCalendar, row.event_calendar_id);
@@ -1714,10 +1791,14 @@ searchEvents(ts);
 	for(i=1;i LTE arraylen(arrCalendar);i++){
 		if(structkeyexists(ss.calendarAccessCacheStruct, arrCalendar[i])){
 			c=ss.calendarAccessCacheStruct[arrCalendar[i]];
-			for(n=1;n LTE arraylen(c);n++){
-				if(c[n] NEQ "" and application.zcore.user.checkGroupIdAccess(c[n])){
-					hasAccess=true;
-					break;
+			if(arraylen(c) EQ 0){
+				hasAccess=true;
+			}else{
+				for(n=1;n LTE arraylen(c);n++){
+					if(c[n] NEQ "" and application.zcore.user.checkGroupIdAccess(c[n])){
+						hasAccess=true;
+						break;
+					}
 				}
 			}
 		}else{

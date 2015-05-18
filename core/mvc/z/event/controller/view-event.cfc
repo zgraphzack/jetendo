@@ -116,10 +116,13 @@
 
 	#slideshowOutTop#
 	<div style="width:100%; float:left;">
-		<div class="zEventView1-3">
-			<h2>Event Description</h2>
-			#struct.event_description#
-		</div>
+		<cfif struct.event_description NEQ "">
+	
+			<div class="zEventView1-3">
+				<h2>Event Description</h2>
+				#struct.event_description#
+			</div>
+		</cfif>
 		<div class="zEventView1-3">
 			<cfif struct.event_address NEQ "">
 				<div class="zEventView1-0">
@@ -192,33 +195,62 @@
 	</div>  
 	#slideshowOutBottom#
 
-	
+	<a href="#calendarLink#" class="zEventView1-backToCalendar">Back To Calendar</a>
  
 </cffunction>
 </cfoutput>
 
 
-<cffunction name="viewRecurringEvent" localmode="modern" access="remote">
+<cffunction name="viewNextRecurringEvent" localmode="modern" access="remote">
 	<cfscript>
 	
-	db=request.zos.queryObject;
-	if(not request.zos.istestserver){
-		echo('<h2>View Event is coming soon.</h2>');
-		return;
+	db=request.zos.queryObject; 
+	form.event_id=application.zcore.functions.zso(form, 'event_id', true);
+	ts.event_id=form.event_id;
+	ts.onlyFutureEvents=true;
+	ts.perpage=1; 
+	eventCom=application.zcore.app.getAppCFC("event");
+	rs=eventCom.searchEvents(ts); 
+	if(rs.count NEQ 1){
+		application.zcore.functions.z404("Event id, #form.event_id#, is missing or doesn't have a future recurring date.");
 	}
+	row=rs.arrData[1];
+	urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_next_recur_url_id;
+	actualLink=eventCom.getNextRecurringEventURL(row);
+	curLink=request.zos.originalURL;
+
+	if(compare(curLink, actualLink) NEQ 0){
+		application.zcore.functions.z301redirect(actualLink);
+	}
+	row.event_start_datetime=row.event_recur_start_datetime;
+	row.event_end_datetime=row.event_recur_end_datetime;
+	displayEvent(row); 
+	</cfscript>
+</cffunction>
+
+<cffunction name="viewRecurringEvent" localmode="modern" access="remote">
+	<cfscript>
+	application.zcore.template.prependTag('meta','<meta name="robots" content="noindex,follow" />'); 
+	db=request.zos.queryObject; 
 	form.event_recur_id=application.zcore.functions.zso(form, 'event_recur_id', true);
 	ts.event_recur_id=form.event_recur_id;
 	ts.onlyFutureEvents=false;
+	ts.perpage=1;
 
 	eventCom=application.zcore.app.getAppCFC("event");
-	rs=eventCom.searchEvents(ts);
-
+	rs=eventCom.searchEvents(ts); 
 	if(rs.count NEQ 1){
 		application.zcore.functions.z404("Recurring event, #form.event_recur_id#, is missing");
 	}
-	rs.arrData[1].event_start_datetime=rs.arrData[1].event_recur_start_datetime;
-	rs.arrData[1].event_end_datetime=rs.arrData[1].event_recur_end_datetime;
-	displayEvent(rs.arrData[1]); 
+	row=rs.arrData[1];
+	actualLink=eventCom.getEventRecurURL(row);
+	curLink=request.zos.originalURL;
+	if(compare(curLink, actualLink) NEQ 0){
+		application.zcore.functions.z301redirect(actualLink);
+	}
+	row.event_start_datetime=row.event_recur_start_datetime;
+	row.event_end_datetime=row.event_recur_end_datetime;
+	displayEvent(row); 
 	</cfscript>
 </cffunction>
 
@@ -226,11 +258,7 @@
 
 <cffunction name="viewEvent" localmode="modern" access="remote">
 	<cfscript>
-	db=request.zos.queryObject;
-	if(not request.zos.istestserver){
-		echo('<h2>View Event is coming soon.</h2>');
-		return;
-	}
+	db=request.zos.queryObject; 
 	form.event_id=application.zcore.functions.zso(form, 'event_id', true);
 	ts.event_id=form.event_id;
 	ts.perpage=1;
@@ -245,27 +273,32 @@
 	if(rs.count NEQ 1){
 		application.zcore.functions.z404("Event, #form.event_id#, is missing");
 	}
-	rs.arrData[1].event_start_datetime=rs.arrData[1].event_recur_start_datetime;
-	rs.arrData[1].event_end_datetime=rs.arrData[1].event_recur_end_datetime; 
+	row=rs.arrData[1];
+	if(not eventCom.userHasAccessToEventCalendarID(row.event_calendar_id)){
+		application.zcore.status.setStatus(request.zsid, "You must login to view the calendar");
+		application.zcore.functions.zRedirect("/z/user/preference/index?zsid=#request.zsid#&returnURL=#urlencodedformat(request.zos.originalURL)#");
+	}
+	row.event_start_datetime=row.event_recur_start_datetime;
+	row.event_end_datetime=row.event_recur_end_datetime; 
 
 
 	if(structkeyexists(form, 'zUrlName')){
-		if(rs.arrData[1].event_unique_url EQ ""){
+		if(row.event_unique_url EQ ""){
 
-			curLink=rs.arrData[1].__url; 
+			curLink=row.__url; 
 			urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_url_id;
-			actualLink="/"&application.zcore.functions.zURLEncode(form.zURLName, '-')&"-"&urlId&"-"&rs.arrData[1].event_id&".html";
+			actualLink="/"&application.zcore.functions.zURLEncode(form.zURLName, '-')&"-"&urlId&"-"&row.event_id&".html";
 
 			if(compare(curLink,actualLink) neq 0){
 				application.zcore.functions.z301Redirect(curLink);
 			}
 		}else{
-			if(compare(rs.arrData[1].event_unique_url, request.zos.originalURL) NEQ 0){
-				application.zcore.functions.z301Redirect(rs.arrData[1].event_unique_url);
+			if(compare(row.event_unique_url, request.zos.originalURL) NEQ 0){
+				application.zcore.functions.z301Redirect(row.event_unique_url);
 			}
 		}
 	}
-	displayEvent(rs.arrData[1]);
+	displayEvent(row);
 	</cfscript>
 </cffunction>
 </cfcomponent>

@@ -11,11 +11,7 @@
 
 <cffunction name="viewCategory" localmode="modern" access="remote">
 	<cfscript>
-    db=request.zos.queryObject; 
-	if(not request.zos.istestserver){
-		echo('<h2>View Event Category is coming soon.</h2>');
-		return;
-	} 
+    db=request.zos.queryObject;  
 	application.zcore.functions.zRequireJqueryUI();
 
 	form.event_category_id=application.zcore.functions.zso(form, 'event_category_id', true);
@@ -29,6 +25,10 @@
 	application.zcore.functions.zQueryToStruct(qCategory, form);
 	if(qCategory.recordcount EQ 0){
 		application.zcore.functions.z404("form.event_category_id, #form.event_category_id#,  doesn't exist.");
+	}
+	if(not application.zcore.app.getAppCFC("event").userHasAccessToEventCalendarID(qCategory.event_calendar_id)){
+		application.zcore.status.setStatus(request.zsid, "You must login to view the calendar");
+		application.zcore.functions.zRedirect("/z/user/preference/index?zsid=#request.zsid#&returnURL=#urlencodedformat(request.zos.originalURL)#");
 	}
 	categoryStruct={};
 	for(row in qCategory){

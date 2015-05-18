@@ -30,7 +30,7 @@ To test all recurring rule types, open the browser console and run this URL on y
 
 	function initRules(){
 
-		var r='#form.event_recur_ical_rules#'; 
+		var r='#replace(form.event_recur_ical_rules, "= ", "=+")#'; 
 		arrExclude=#excludeJson#;
 		runRule(r, arrExclude);
 	}
@@ -40,6 +40,7 @@ To test all recurring rule types, open the browser console and run this URL on y
 			options={};
 		}
 		var recur=new zRecurringEvent(options); 
+		console.log("raw rule:"+r);
 		var ruleObj=recur.convertFromRRuleToRecurringEvent(r);
 		console.log(ruleObj);
 		console.log('---');
@@ -47,7 +48,7 @@ To test all recurring rule types, open the browser console and run this URL on y
 
 		for(var i=0;i<arrExclude.length;i++){
 			var date=new Date(arrExclude[i]);
-			console.log(date);
+			console.log("Excluding date:"+date);
 			recur.addExcludeDate(date);
 		}
 

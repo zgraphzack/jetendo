@@ -639,11 +639,11 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
   animation: none;
 }
 
-zEventView-0
-.zEventInfoButton:link, .zEventInfoButton:visited{padding:5px; padding-left:10px; padding-right:10px; float:left; display:block; clear:both; margin-top:10px;font-size:120%; line-height:auto; background-color:#000; color:#FFF; border-radius:5px;}
+.zEventInfoButton:link, .zEventInfoButton:visited{padding:5px; padding-left:10px; padding-right:10px; float:left; display:block; clear:both; margin-top:10px;font-size:120%; line-height:auto; background-color:#999; color:#FFF; border-radius:5px;}
 .zEventListContainer{ padding:10px;display:table;}
+#zCalendarTab_List{clear:both;width:100%; float:left;}
 #zCalendarTab_List hr{margin-top:10px; margin-bottom:10px;}
-.zEventListPhoto{width:200px; margin-right:20px;display:table-cell;vertical-align:top;}
+.zEventListPhoto{width:170px; margin-right:20px;width:1%;display:table-cell;vertical-align:top;}
 .zEventListText{ display:table-cell; padding-left:20px; vertical-align:top;}
 .zEventListDate{width:100%; float:left; font-weight:bold;}
 .zEventListSummary{width:100%; float:left;}
@@ -653,23 +653,44 @@ zEventView-0
 .zEventSearchSubHeading{width:100%; float:left;}
 .zEventSearchField{padding-bottom:10px;width:100%; float:left;}
 .zEventSearchDateField{width:100%; float:left;}
-.zEventSearchFieldItem{width:100%; float:left;}
+.zEventSearchFieldItem{width:100%; float:left; font-size:90%;}
 .zEventViewMapContainer{width:100%; display:none; float:left;}
 .zEventView1-0{width:100%; float:left;}
 .zEventView1-print:link, .zEventView1-print:visited{display:block; float:left; padding:5px; text-decoration:none;border:1px solid #666; background-color:#999; color:#FFF; border-radius:5px;}
 .zEventView1-print:hover{background-color:#000;}
 .zEventView1-1{width:100px; float:left; font-weight:bold;}
-.zEventView1-2{width:227px; float:left;font-size:15px; line-height:19px;padding-top:16px;padding-bottom:16px; color:#000000; padding-left:37px;}
+.zEventView1-2{width:227px; float:left;font-size:15px; line-height:19px;padding-top:16px;padding-bottom:16px; color:#000000; margin-left:37px;}
 .zEventView1-3{width:100%; float:left; padding-bottom:20px;}
 .zEventView1-4{width:100%; float:left; font-size:120%; font-weight:bold; line-height:normal;}
 .zEventView1-Map{width:100%; float:left; height:300px; display:none;}
 .zEventView1-larger{display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;}
+.zEventView1-backToCalendar:link, .zEventView1-backToCalendar:visited{ display:block; float:left; font-size:120%; line-height:normal; margin-top:20px; padding:5px; text-decoration:none;border:1px solid #666; background-color:#999; color:#FFF; border-radius:5px;}
+#zCalendarFullPageDiv .fc-event{cursor:pointer;}
+.zCalendarHomeTabs{}
+.zEventView1-print:hover{background-color:#000;}
+.zEventSearchContainer{display:table;}
+.zEventSearchForm{width:1%; min-width:150px; display:table-cell;vertical-align:top;}
+#zEventSearchResults{display:table-cell;vertical-align:top; padding-left:20px;}
+.zEventListHeading h2{margin:0px; padding:0px; padding-bottom:10px;}
+.zEventSearchFieldItem2, .zEventSearchFieldItem1{display:table-cell; vertical-align:top;}
+
+.ui-datepicker-group{background-color:#FFF; }
+
 .zPagination-container{width:100%;}
 .zPagination-container span,.zPagination-container a:link, .zPagination-container a:visited{ padding:5px; padding-left:10px; padding-right:10px; float:left; display:block; }
+.zCalendarTabContainer{width:100%; padding-top:20px; float:left;}
+#zCalendarHomeTabs{background:none; border:none;}
+#zCalendarHomeTabs .ui-tabs-nav{background:none; font-family:inherit;border:none;}
+.ui-widget{font-family:inherit;}
+#zCalendarFullPageDiv .fc-event-time, #zCalendarFullPageDiv .fc-event-title{float:left; line-height:normal;}
 
-/*
-mobile
+@media only screen and (max-width:600px) {
+.zCalendarTabContainer{padding-top:0px;}
+.zEventSearchContainer{display:block; width:100%; float:left;}
+.zEventSearchForm{width:100%; float:left; display:block;}
+#zEventSearchResults{width:100%; float:left; clear:both;display:block;padding-left:0px;}
 .zEventListContainer{width:100%;display:block; float:left;}
-.zEventListPhoto{display:block;float:left;}
-.zEventListText{display:block;float:left;}
-*/
+#zCalendarTab_List{padding:0px;}
+.zEventListPhoto{display:block;width:200px;float:left;}
+.zEventListText{display:block;float:left;width:100% !important;clear:both; padding-left:0px;}
+}
