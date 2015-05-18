@@ -721,14 +721,20 @@ timezone does nothing...
 	rs.dateRange=rs.startDate;
 	rs.timeRange=rs.startTime;
 	if(row.event_start_datetime != row.event_end_datetime){
-		rs.dateRange&=" to "&dateformat(row.event_end_datetime, 'm/d/yyyy');
+		rs.endDate=dateformat(row.event_end_datetime, 'm/d/yyyy');
+		rs.dateRange&=" to "&rs.endDate;
 		if(rs.startTime NEQ ""){
 			rs.timeRange&=" to "&rs.endTime;
+			rs.dateTimeRange=rs.startDate&" at "&rs.startTime&" to "&rs.endDate&" at "&rs.endTime;
+		}else{
+			rs.dateTimeRange=rs.startDate&" to "&rs.endDate;
 		}
-	}
-	rs.dateTimeRange=rs.dateRange;
-	if(rs.timeRange NEQ ""){
-		rs.dateTimeRange&=" at "&rs.timeRange;
+	}else{
+		if(rs.startTime NEQ ""){
+			rs.dateTimeRange=rs.startDate&" at  "&rs.startTime&" to "&rs.endTime;
+		}else{
+			rs.dateTimeRange=rs.startDate;
+		}
 	}
 	return rs;
 	</cfscript>

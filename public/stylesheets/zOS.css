@@ -682,7 +682,10 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 #zCalendarHomeTabs{background:none; border:none;}
 #zCalendarHomeTabs .ui-tabs-nav{background:none; font-family:inherit;border:none;}
 .ui-widget{font-family:inherit;}
-#zCalendarFullPageDiv .fc-event-time, #zCalendarFullPageDiv .fc-event-title{float:left; line-height:normal;}
+
+#zCalendarFullPageDiv .fc-scroller{height:auto !important;}
+#zCalendarFullPageDiv .fc-time, #zCalendarFullPageDiv .fc-title{float:left; line-height:normal;}
+#zCalendarFullPageDiv .fc-content{white-space:normal !important;}
 
 @media only screen and (max-width:600px) {
 .zCalendarTabContainer{padding-top:0px;}

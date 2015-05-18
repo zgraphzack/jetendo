@@ -18,8 +18,8 @@
 				right: 'month,basicWeek,basicDay'
 			},
 			eventRender: function(event, element) { 
-				//element.find('.fc-event-title').append("<br/>" + event.location); 
-				element.find('.fc-event-time').hide();
+				//element.find('.fc-title').append("<br/>" + event.location); 
+				element.find('.fc-time').hide();
 			},
 			defaultDate: calendarConfig.defaultDate,
 			editable: false,

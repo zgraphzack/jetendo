@@ -278,7 +278,7 @@
 			id:row.event_recur_id,
 			title:row.event_name,
 			//start:'$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_start_datetime, "HH:mm:ss")&'")',
-			start:dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_start_datetime, "HH:mm:ss")&'.000+0400',
+			start:dateformat(row.event_recur_start_datetime,"yyyy-mm-dd")&" "&timeformat(row.event_recur_start_datetime, "HH:mm:ss"),//&'.000+0400',
 			link:row.__url
 		}
 
@@ -290,7 +290,14 @@
 		}
 
 		if(row.event_recur_start_datetime NEQ row.event_recur_end_datetime){
-			ts.end=dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'.000+0400';
+			endTime=timeformat(row.event_recur_end_datetime, "HH:mm:ss");
+			/*if(endTime EQ "00:00:00"){
+				endTime="13:00:00";
+			}*/
+
+			// this forces event to appear on the end date on the calendar, the time has to be most of the day to make it visible.
+			endTime="23:59:59";
+			ts.end=dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&endTime;//+0400';
 			//ts.end='$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'")'
 		}
 		arrayAppend(arrData, ts);

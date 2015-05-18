@@ -118,7 +118,6 @@ application.zcore.functions.zClickTrackDisplayURL(ts);
 	}
 	application.zcore.template.appendTag("stylesheets", meta);
 
-	application.zcore.skin.includeCSS("/z/javascript/fullcalendar/fullcalendar.print.css");
 	application.zcore.skin.includeJS("/z/javascript/fullcalendar/lib/moment.min.js", "", 2);
 	application.zcore.skin.includeJS("/z/javascript/fullcalendar/fullcalendar.min.js", "", 3); 
 	</cfscript>
