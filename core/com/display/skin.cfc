@@ -618,7 +618,6 @@ todo: open source projects
 					local.n=replace(local.n,"https://","//");
 				} 
 				arrayappend(local.temparrJS, local.n);
-				if(local.debug) writeoutput('from global html varso:'&local.n&'<br />');
 			}
 			local.d=rereplacenocase(local.d,'<script [^>]*src="[^"]*"[^>]*>[^>]*</script>', '', 'all');
 			local.v3=rematchnocase('<link [^>]*href="[^"]*"[^>]*/>',local.d);
@@ -636,7 +635,6 @@ todo: open source projects
 					local.n=replace(local.n,"https://","//");
 				} 
 				arrayappend(local.temparrCSS, local.n);
-				if(local.debug) writeoutput('from global html varso:'&local.n&'<br />');
 			}
 			local.d=trim(rereplacenocase(local.d,'<link [^>]*href="[^"]*"[^>]*/>', '', 'all'))&arrayToList(arrNonStylesheet, chr(10));
 		}
