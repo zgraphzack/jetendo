@@ -158,6 +158,8 @@
 				}
 				self.addExcludeDate(date);
 				self.updateState();
+
+				self.drawPreviewCalendars();
 				return false;
 			});
 

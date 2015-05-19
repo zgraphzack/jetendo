@@ -1,7 +1,7 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="index" access="remote" localmode="modern">
-    <cfscript>
+    <!--- <cfscript>
     request.noSidebar=true;
 	var ts=structnew();
 	ts.content_unique_name="/suggest-an-event/index";
@@ -21,7 +21,7 @@
 	</div>
 	<div class="sh-32" >
 		<img src="/images/shell/suggest_03.jpg" alt="Suggest an Event" />
-	</div>
+	</div> --->
  
 </cffunction>
 </cfoutput>

@@ -720,8 +720,8 @@ timezone does nothing...
 	}
 	rs.dateRange=rs.startDate;
 	rs.timeRange=rs.startTime;
-	if(row.event_start_datetime != row.event_end_datetime){
-		rs.endDate=dateformat(row.event_end_datetime, 'm/d/yyyy');
+	rs.endDate=dateformat(row.event_end_datetime, 'm/d/yyyy');
+	if(rs.startDate != rs.endDate){
 		rs.dateRange&=" to "&rs.endDate;
 		if(rs.startTime NEQ ""){
 			rs.timeRange&=" to "&rs.endTime;
@@ -1662,6 +1662,10 @@ searchEvents(ts);
 		<tr>
 		<th>Disable Robot Recurring<br />Event Indexing:</th>
 		<td>');
+
+		if(form.event_config_disable_recur_indexing EQ ""){
+			form.event_config_disable_recur_indexing=1;
+		}
 		echo(application.zcore.functions.zInput_Boolean("event_config_disable_recur_indexing"));
 		echo('</td>
 		</tr>

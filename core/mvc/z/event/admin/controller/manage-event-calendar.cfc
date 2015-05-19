@@ -362,7 +362,7 @@
 	</table>
 	<cfscript>
 	if(qList.recordcount EQ 0){
-		echo('<p>No event categoris found</p>');
+		echo('<p>No event calendars found</p>');
 	}
 	</cfscript>
 </cffunction>
