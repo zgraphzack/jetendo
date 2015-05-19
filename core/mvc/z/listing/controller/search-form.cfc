@@ -837,7 +837,7 @@ writeoutput(startFormTagHTML);
 //application.zcore.template.appendTag('meta',application.zcore.skin.includeJS(request.zos.listing.cityLookupFileName));
 </cfscript>
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_city_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable,'search_city_id') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'city') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_city_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable,'search_city_id') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'city') EQ false>
 <cfscript>
 primaryCount=1;
 primaryCityId=application.zcore.app.getAppData("listing").sharedStruct.mls_primary_city_id;
@@ -1089,7 +1089,7 @@ if(form.searchFormEnabledDropDownMenus){
 sfSortStruct["search_city_id"]=theCriteriaHTML;
 </cfscript>
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_rate') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_rate') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'price') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_rate') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_rate') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'price') EQ false>
 <div class="zmlsformdiv">
 <cfscript>
 ts=StructNew();
@@ -1193,7 +1193,7 @@ writeoutput(theCriteriaHTML3);
 sfSortStruct["search_rate"]=theCriteriaHTML;
 </cfscript>
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_listing_type_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_listing_type_id') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'listing_type_id') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_listing_type_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_listing_type_id') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'listing_type_id') EQ false>
 	
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_listing_type_id') EQ false>
@@ -1312,7 +1312,7 @@ sfSortStruct["search_listing_type_id"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_region') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_region') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'region') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_region') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_region') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'region') EQ false>
 	
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_region') EQ false>
@@ -1422,7 +1422,7 @@ sfSortStruct["search_region"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_parking') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_parking') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'parking') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_parking') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_parking') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'parking') EQ false>
 	
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_parking') EQ false>
@@ -1532,7 +1532,7 @@ sfSortStruct["search_parking"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_condition') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_condition') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'condition') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_condition') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_condition') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'condition') EQ false>
 	
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_condition') EQ false>
@@ -1641,7 +1641,7 @@ sfSortStruct["search_condition"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_tenure') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_tenure') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'tenure') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_tenure') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_tenure') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'tenure') EQ false>
 	
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_tenure') EQ false>
@@ -1748,7 +1748,7 @@ sfSortStruct["search_tenure"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_listing_sub_type_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_listing_sub_type_id') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'listing_sub_type_id') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_listing_sub_type_id') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_listing_sub_type_id') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'listing_sub_type_id') EQ false>
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_listing_sub_type_id') EQ false>
 
@@ -1855,7 +1855,7 @@ sfSortStruct["search_listing_sub_type_id"]=theCriteriaHTML;
 
 <cfsavecontent variable="theCriteriaHTML">
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_bedrooms') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_bedrooms') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'bedrooms') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_bedrooms') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_bedrooms') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'bedrooms') EQ false>
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_bedrooms') EQ false>
 
@@ -1934,7 +1934,7 @@ if(form.searchFormEnabledDropDownMenus){
 sfSortStruct["search_bedrooms"]=theCriteriaHTML;
 </cfscript>
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_bathrooms') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_bathrooms') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'baths') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_bathrooms') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_bathrooms') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'baths') EQ false>
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_bathrooms') EQ false>
 
@@ -2016,7 +2016,7 @@ sfSortStruct["search_bathrooms"]=theCriteriaHTML;
 </cfscript>
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_sqfoot') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_sqfoot') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'square_feet') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_sqfoot') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_sqfoot') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'square_feet') EQ false>
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_sqfoot') EQ false>
     <cfsavecontent variable="db.sql">
@@ -2126,7 +2126,7 @@ sfSortStruct["search_sqfoot"]=theCriteriaHTML;
 
 <cfsavecontent variable="theCriteriaHTML">
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_year_built') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_year_built') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'year_built') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_year_built') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_year_built') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'year_built') EQ false>
 
 <div class="zmlsformdiv">
 <cfscript>
@@ -2188,7 +2188,7 @@ sfSortStruct["search_year_built"]=theCriteriaHTML;
 
 <cfsavecontent variable="theCriteriaHTML">
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_acreage') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_acreage') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'acreage') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_acreage') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_acreage') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'acreage') EQ false>
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_acreage') EQ false>
     <cfsavecontent variable="db.sql">
@@ -2273,7 +2273,7 @@ sfSortStruct["search_acreage"]=theCriteriaHTML;
 <cfsavecontent variable="theCriteriaHTML">
 
 <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only NEQ 1>
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_county') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_county') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'county') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_county') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_county') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'county') EQ false>
     
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_county') EQ false>
     <cfsavecontent variable="db.sql">
@@ -2379,7 +2379,7 @@ sfSortStruct["search_county"]=theCriteriaHTML;
 <cfsavecontent variable="theCriteriaHTML">
 <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only NEQ 1>
  </cfif>
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_view') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_view') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'view') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_view') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_view') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'view') EQ false>
 
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_view') EQ false>
@@ -2484,7 +2484,7 @@ sfSortStruct["search_view"]=theCriteriaHTML;
 <cfsavecontent variable="theCriteriaHTML">
 
 <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only NEQ 1>
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_status') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_status') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'status') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_status') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_status') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'status') EQ false>
 
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_status') EQ false>
@@ -2629,7 +2629,7 @@ ts.name="search_liststatus";
 application.zcore.functions.zinput_hidden(ts);
 </cfscript>
 </cfif>
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_liststatus') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_liststatus') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'liststatus') EQ false and (application.zcore.functions.zso(request,'contentEditor',false,false) EQ false or request.cgi_script_name EQ "/z/listing/admin/search-filter/index")>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_liststatus') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_liststatus') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'liststatus') EQ false and (application.zcore.functions.zso(request,'contentEditor',false,false) EQ false or request.cgi_script_name EQ "/z/listing/admin/search-filter/index")>
 
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_liststatus') EQ false>
@@ -2768,7 +2768,7 @@ sfSortStruct["search_liststatus"]=theCriteriaHTML;
 
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_style') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_style') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'style') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_style') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_style') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'style') EQ false>
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_style') EQ false>
     <cfsavecontent variable="db.sql">
     SELECT cast(group_concat(distinct listing_style SEPARATOR #db.param(',')#) AS CHAR) idlist 
@@ -2869,7 +2869,7 @@ sfSortStruct["search_style"]=theCriteriaHTML;
 </cfscript>
 
 <cfsavecontent variable="theCriteriaHTML">
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_frontage') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_frontage') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'frontage') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_frontage') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_frontage') EQ 1) and structkeyexists(form.searchFormHideCriteria, 'frontage') EQ false>
 
 <cfif forceSearchFormReset or structkeyexists(application.zcore.searchFormCache[request.zos.globals.id],'search_frontage') EQ false>
     <cfsavecontent variable="db.sql">
@@ -2974,7 +2974,7 @@ sfSortStruct["search_frontage"]=theCriteriaHTML;
 
 <cfsavecontent variable="theCriteriaHTML">
 <cfif structkeyexists(form.searchFormHideCriteria, 'more_options') EQ false and application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false)>
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_near_address') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable,'search_near_address') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_near_address') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable,'search_near_address') EQ 1)>
 <!--- <div class="zmlsformdiv">
 <cfsavecontent variable="featureHTML2"> 
 Type street address<br />
@@ -3046,12 +3046,13 @@ sfSortStruct["search_near_address"]=theCriteriaHTML;
 <cfsavecontent variable="theCriteriaHTML">
 <cfif request.cgi_script_name NEQ "/z/listing/admin/search-filter/index">
 <cfif structkeyexists(form.searchFormHideCriteria, 'more_options') EQ false>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_more_options') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_more_options') EQ 1)>
 <cfset addHeight=0>
 <div class="zmlsformdiv">
 <cfsavecontent variable="featureHTML"> 
 Use a comma to separate<br />
 multiple words/phrases<br />
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_subdivision') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_subdivision') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_subdivision') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_subdivision') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3086,7 +3087,7 @@ application.zcore.searchFormCache[request.zos.globals.id].search_condoname=qCNam
 	</cfscript>
 </cfif>
 <cfif qCname.count NEQ 0>
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_condoname') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_condoname') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_condoname') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_condoname') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3101,7 +3102,7 @@ application.zcore.functions.zInput_Text(ts);
 </cfif>
 </cfif>
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_remarks') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_remarks') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_remarks') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_remarks') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3116,7 +3117,7 @@ application.zcore.functions.zInput_Text(ts);
 <div class="zsearchformhr"></div>
 </cfif>
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_remarks_negative') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_remarks_negative') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_remarks_negative') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_remarks_negative') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3132,7 +3133,7 @@ application.zcore.functions.zInput_Text(ts);
 </cfif>
 
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_zip') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_zip') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_zip') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_zip') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3147,7 +3148,7 @@ application.zcore.functions.zInput_Text(ts);
 </cfif>
 
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_address') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_address') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_address') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_address') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3163,7 +3164,7 @@ application.zcore.functions.zInput_Text(ts);
 </cfif>
 
 
-<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'searchable.search_mls_number_list') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_mls_number_list') EQ 1)>
+<cfif (structkeyexists(form, 'zdisablesearchfilter') or structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_mls_number_list') EQ false or application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.searchable, 'search_mls_number_list') EQ 1)>
 <cfscript>
 addHeight+=45;
 ts=StructNew();
@@ -3543,6 +3544,7 @@ if(form.searchFormEnabledDropDownMenus){
 </script>
 </cfif>
 </div>
+</cfif>
 </cfif>
 </cfif>
 </cfsavecontent>

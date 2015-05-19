@@ -2574,12 +2574,14 @@ configCom.includeContentByName(ts);
 				}
 			}
 			if(ts994824713.content_html_text_bottom EQ 0 and ts994824713.content_html_text NEQ ""){
-				writeoutput(ts994824713.content_html_text&'<br style="clear:both;" /><br />');
+				writeoutput(ts994824713.content_html_text&'<br style="clear:both;" />');
+				if(application.zcore.app.siteHasApp("listing") and contentSearchMLS EQ 1){
+					echo('<hr />');
+				}
 			}
 			pcount=0;
 			returnPropertyDisplayStruct={};
 			if(application.zcore.app.siteHasApp("listing") and contentSearchMLS EQ 1){
-				echo('<hr />');
 				returnPropertyDisplayStruct=request.zos.listing.functions.zMLSSearchOptionsDisplay(ts994824713.content_saved_search_id);
 				pcount+=returnPropertyDisplayStruct.returnStruct.count;
 			}
@@ -2624,7 +2626,7 @@ configCom.includeContentByName(ts);
 				echo(theImageOutputHTML);
 			}
 			if(ts994824713.content_html_text_bottom EQ 1 and ts994824713.content_html_text NEQ ""){
-				writeoutput(ts994824713.content_html_text&'<br style="clear:both;" /><br />');
+				writeoutput('<div style="width:100%; float:left;">'&ts994824713.content_html_text&'</div>');
 			}
 			if(structkeyexists(request.zos,'listingApp') and structkeyexists(request.zos,'listingApp') and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_compliantidx',false,true) EQ true and ts994824713.content_firm_name NEQ ''){
 				echo('<br />Listing courtesy of #ts994824713.content_firm_name#');
@@ -2645,7 +2647,7 @@ configCom.includeContentByName(ts);
 	menuLinkStruct=getDisplayMenuLinks(ts994824713, contentConfig, parentLinkStruct.curParentSorting, childContentStruct.qContentChild, pcount, arrOutputStruct, form.count);
 	pcount=menuLinkStruct.propertyCount;
 	if(pcount NEQ 0){
-		echo('<br style="clear:both;" />');
+		//echo('<br style="clear:both;" />');
 	}
 
 	displaySummaryAndMap(qContent, returnPropertyDisplayStruct);
@@ -2661,19 +2663,22 @@ configCom.includeContentByName(ts);
 	}
 
 	if(ts994824713.content_subpage_link_layout NEQ 13 and ts994824713.content_subpage_link_layout NEQ 7){
-		echo('<div style="clear:both; width:100%; margin-top:20px;  ">');
-		if(form.offset-form.count GTE 0){
-			if(form.offset-form.count EQ 0){
-				link=request.zos.originalURL;
-			}else{
-				link="#request.zos.originalURL#?offset=#form.offset-form.count#";
+		savecontent variable="out1"{
+			if(form.offset-form.count GTE 0){
+				if(form.offset-form.count EQ 0){
+					link=request.zos.originalURL;
+				}else{
+					link="#request.zos.originalURL#?offset=#form.offset-form.count#";
+				}
+				echo('<a href="#link#" style="padding:5px; display:block; float:left; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Previous</a>');
 			}
-			echo('<a href="#link#" style="padding:5px; display:block; float:left; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Previous</a>');
+			if(childContentStruct.hasMoreRecords){
+				echo('<a href="#request.zos.originalURL#?offset=#form.offset+form.count#" style="padding:5px; display:block; float:right; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Next</a>');
+			}
 		}
-		if(childContentStruct.hasMoreRecords){
-			echo('<a href="#request.zos.originalURL#?offset=#form.offset+form.count#" style="padding:5px; display:block; float:right; border-radius:5px; background-color:##FFF; color:##000; border:1px solid ##999; text-decoration:none;">Next</a>');
+		if(out1 NEQ ""){
+			echo('<div style="clear:both;float:left; width:100%; margin-top:20px;  ">#out1#</div>');
 		}
-		echo('</div><br style="clear:both;">');
 	}
 	/*
 	outputStruct={};
