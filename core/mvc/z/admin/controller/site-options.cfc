@@ -59,8 +59,8 @@
 				<th style="text-align:right;"><strong>Developer Tools:</strong> 
 				<cfif application.zcore.functions.zso(form, 'site_option_group_id') NEQ "">
 					Current Group:
-					<a href="/z/admin/site-option-group/edit?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#">Edit</a> | 
-					<a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#">Edit Options</a> | 
+					<a href="/z/admin/site-option-group/edit?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#">Edit</a> | 
+					<a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#">Edit Options</a> | 
 					Manage: 
 				</cfif> 
 				<cfif application.zcore.user.checkServerAccess()>
@@ -2410,8 +2410,8 @@ Define this function in another CFC to override the default email format
 	var db=request.zos.queryObject;
 
 	//echo('<p><a href="/z/admin/site-options/manageGroup?site_option_group_id=9">Back to custom</a></p>');
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
-	application.zcore.siteOptionCom.displaySectionNav();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
+	//application.zcore.siteOptionCom.displaySectionNav();
 
 	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
 		echo('<h2>Pages</h2><p>');

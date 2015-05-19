@@ -2089,7 +2089,7 @@ application.zcore.siteOptionCom.getImageSQL(ts);
 
 
 <!--- 
-var ts=application.zcore.functions.zGetEditableSiteOptionGroupSetById(groupStruct.__setId);
+var ts=application.zcore.functions.zGetEditableSiteOptionGroupSetById(groupStruct.__groupId, groupStruct.__setId);
 ts.name="New name";
 var rs=application.zcore.functions.zUpdateSiteOptionGroupSet(ts);
 if(not rs.success){
@@ -2129,10 +2129,11 @@ if(not rs.success){
 
 
 <cffunction name="getEditableOptionGroupSetById" localmode="modern" access="public">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#"> 
 	<cfscript>
-	var s=getOptionGroupSetById(arguments.site_x_option_group_set_id);
+	var s=getOptionGroupSetById(arguments.arrGroupName, arguments.site_x_option_group_set_id);
 	var db=request.zos.queryObject;
 	if(arguments.site_id NEQ request.zos.globals.id){
 		throw("zGetEditableOptionGroupSetById() doesn't support other site ids yet.");

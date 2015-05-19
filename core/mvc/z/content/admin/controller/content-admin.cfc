@@ -56,7 +56,7 @@
 	var db=request.zos.queryObject;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
-    application.zcore.siteOptionCom.requireSectionEnabledSetId();
+    application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	if(structkeyexists(form, 'return')){
 		StructInsert(request.zsession, "content_return"&form.content_id, request.zos.CGI.HTTP_REFERER, true);		
 	}
@@ -148,7 +148,7 @@
 	var db=request.zos.queryObject;
 	this.init();
     application.zcore.adminSecurityFilter.requireFeatureAccess("Pages", true);
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	for(i in form){
 		if(isSimpleValue(form[i])){
 			form[i]=trim(form[i]);	
@@ -449,7 +449,7 @@
 		form.return=1;
 	}
 	
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 
 
 	form.content_id=application.zcore.functions.zso(form, 'content_id');
@@ -1859,8 +1859,8 @@
 	}
 	application.zcore.functions.zSetPageHelpId("2.1"); 
 	this.init();
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
-	application.zcore.siteOptionCom.displaySectionNav();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
+	//application.zcore.siteOptionCom.displaySectionNav();
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 
 
 	searchText=trim(application.zcore.functions.zso(form, 'searchText'));

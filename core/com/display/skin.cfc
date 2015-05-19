@@ -599,19 +599,12 @@ todo: open source projects
 	</cfscript>
 </cffunction>
     
-<cffunction name="compilePackage" localmode="modern" access="public" output="yes" returntype="any">
+<cffunction name="checkGlobalHeadCodeForUpdate" localmode="modern" access="public">
 	<cfscript>
-	var local=structnew();
-	var newHash=0;
-	var start3=gettickcount();
-	local.debug=false;
-	if((request.zos.isDeveloper or request.zos.isTestServer) and structkeyexists(form, 'debugSkinCompile')){
-		local.debug=true;
-	}
-		
+	
 	local.d=application.zcore.functions.zvarso("Global HTML Head Source Code");
 	newHash=hash(local.d);
-	if(structkeyexists(application.sitestruct[request.zos.globals.id],'globalHTMLHeadSourceArrCSS') EQ false or application.sitestruct[request.zos.globals.id].globalHTMLHeadSourceMD5 NEQ newHash){
+	if(not structkeyexists(application.sitestruct[request.zos.globals.id],'globalHTMLHeadSourceArrCSS') or application.sitestruct[request.zos.globals.id].globalHTMLHeadSourceMD5 NEQ newHash){
 		local.tempArrCSS=arraynew(1);
 		local.tempArrJS=arraynew(1);
 		if(local.d NEQ ""){
@@ -651,6 +644,19 @@ todo: open source projects
 		application.sitestruct[request.zos.globals.id].globalHTMLHeadSourceMD5=newHash;
 		application.sitestruct[request.zos.globals.id].globalHTMLHeadSourceArrCSS=local.tempArrCSS;
 		application.sitestruct[request.zos.globals.id].globalHTMLHeadSourceArrJS=local.tempArrJS;
+	}
+
+	</cfscript>
+</cffunction>
+
+<cffunction name="compilePackage" localmode="modern" access="public" output="yes" returntype="any">
+	<cfscript>
+	var local=structnew();
+	var newHash=0;
+	var start3=gettickcount();
+	local.debug=false;
+	if((request.zos.isDeveloper or request.zos.isTestServer) and structkeyexists(form, 'debugSkinCompile')){
+		local.debug=true;
 	}
 		
 	if(local.debug){

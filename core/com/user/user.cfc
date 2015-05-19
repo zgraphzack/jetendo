@@ -1069,7 +1069,11 @@ userCom.checkLogin(inputStruct);
 	}
 	if(isDefined('request.zsession') and structkeyexists(request.zsession,userSiteId) and structkeyexists(request.zsession[userSiteId],'server_administrator') and request.zsession[userSiteId].server_administrator EQ 1){
 		if(not structkeyexists(request.zsession[userSiteId], 'server_admin_site_id_list') or request.zsession[userSiteId].server_admin_site_id_list NEQ ""){
-			return false;
+			if(","&request.zsession[userSiteId].server_admin_site_id_list&"," CONTAINS ",#arguments.site_id#,"){
+				return true;
+			}else{
+				return false;
+			}
 		}else{
 			return true;
 		}

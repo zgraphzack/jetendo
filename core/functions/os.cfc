@@ -307,7 +307,7 @@
 </cffunction>
 
 <!--- 
-var ts=application.zcore.functions.zGetEditableSiteOptionGroupSetById(groupStruct.__setId);
+var ts=application.zcore.functions.zGetEditableSiteOptionGroupSetById(groupStruct.__groupId, groupStruct.__setId);
 ts.name="New name";
 var rs=application.zcore.functions.zUpdateSiteOptionGroupSet(ts);
 if(not rs.success){
@@ -326,10 +326,11 @@ if(not rs.success){
 
 
 <cffunction name="zGetEditableSiteOptionGroupSetById" localmode="modern" access="public">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
 	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#"> 
 	<cfscript>
-	return application.zcore.siteOptionCom.getEditableOptionGroupSetById(arguments.site_x_option_group_set_id, arguments.site_id);
+	return application.zcore.siteOptionCom.getEditableOptionGroupSetById(arguments.arrGroupName, arguments.site_x_option_group_set_id, arguments.site_id);
 	</cfscript>
 </cffunction>
 
@@ -1438,7 +1439,10 @@ application.zcore.functions.zLogError(ts);
 	<cfargument name="arrGroupName" type="array" required="no" default="#[]#">
 	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
 	<cfscript> 
-	return application.zcore.siteOptionCom.getOptionGroupSetById(arguments.site_option_group_set_id, arguments.site_id, arguments.arrGroupName, arguments.showUnapproved); 
+	if(request.zos.istestserver){
+		throw("zGetSiteOptionGroupSetById() must be replaced with application.zcore.siteOptionCom.getOptionGroupSetById([""group""], set_id); for improved security.");
+	}
+	return application.zcore.siteOptionCom.getOptionGroupSetById(arguments.arrGroupName, arguments.site_option_group_set_id, arguments.site_id, arguments.showUnapproved); 
 	</cfscript>
 </cffunction>
 

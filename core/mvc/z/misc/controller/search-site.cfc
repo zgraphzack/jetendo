@@ -405,7 +405,7 @@ search sql generator has to be able to search on child group data for paging to 
 								image=imageStruct[c.__setId];
 								echo('<div class="z-search-link-image">');
 								if(image NEQ ""){
-									echo('<img src="#arrImage[i2].link#" alt="#htmleditformat(arrImage[i2].caption)#" />');
+									echo(image);
 								}else{
 									echo('&nbsp;');
 								}

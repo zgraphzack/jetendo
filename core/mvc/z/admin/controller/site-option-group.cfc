@@ -158,7 +158,7 @@
 <cffunction name="index" access="remote" localmode="modern">
 	<cfargument name="query" type="query" required="yes">
 	<cfscript>
-	struct=application.zcore.siteOptionCom.getOptionGroupSetById(arguments.query.site_x_option_group_set_id);
+	struct=application.zcore.siteOptionCom.getOptionGroupSetById(["Group", "SubGroup"], arguments.query.site_x_option_group_set_id);
 	writedump(struct);
 	
 	application.zcore.template.setTag("title", struct.__title);
@@ -190,8 +190,8 @@
 	<h2>Miscellaneous Code</h2>
 	<p>To select a single group set, use one of the following:</p>
 	<ul>
-	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getOptionGroupSetById(site_x_option_group_set_id);</li>
-	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getOptionGroupSetByID(site_x_option_group_set_id, request.zos.globals.id, ["Group", "SubGroup"], showUnapproved); </li>
+	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getOptionGroupSetById(["Group", "SubGroup"], site_x_option_group_set_id);</li>
+	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getOptionGroupSetByID(["Group", "SubGroup"], site_x_option_group_set_id, request.zos.globals.id, showUnapproved); </li>
 	</ul>');
 	if(groupStruct.site_option_group_allow_public NEQ 0){
 		if(groupStruct.site_option_group_public_form_url NEQ ""){

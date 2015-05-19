@@ -471,6 +471,10 @@
 	if(request.zos.isDeveloper and structkeyexists(request.zos,'userSession') and structkeyexists(request.zos.userSession.groupAccess, "member")){
 		application.zcore.skin.disableMinCat();
 	}
+
+	if(structkeyexists(application.zcore.skin, 'checkGlobalHeadCodeForUpdate')){
+		application.zcore.skin.checkGlobalHeadCodeForUpdate();
+	}
 	if(structkeyexists(application.sitestruct[request.zos.globals.id],'globalHTMLHeadSourceArrCSS') EQ false or (structkeyexists(application.sitestruct[request.zos.globals.id],'app') and (request.zos.zreset EQ "all" or request.zos.zreset EQ "site" or request.zos.zreset EQ "app") or structkeyexists(application.sitestruct[request.zos.globals.id].skinObj,'curCompiledVersionNumber') EQ false)){
 		lock name="#request.zos.zcoreRootPath#-compilePackage" type="exclusive" timeout="30" throwontimeout="yes"{
 			if(structkeyexists(application.sitestruct[request.zos.globals.id],'globalHTMLHeadSourceArrCSS') EQ false or (structkeyexists(application.sitestruct[request.zos.globals.id],'app') and (request.zos.zreset EQ "all" or request.zos.zreset EQ "site" or request.zos.zreset EQ "app") or structkeyexists(application.sitestruct[request.zos.globals.id].skinObj,'curCompiledVersionNumber') EQ false)){

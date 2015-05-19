@@ -21,7 +21,7 @@
 	<cfscript>
 	//var link='';
 	var homelink='';
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	//link=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 4, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
 	
 	if(application.zcore.app.getAppData("blog").optionstruct.blog_config_root_url NEQ "{default}"){
@@ -31,9 +31,8 @@
 		homelink=request.zos.currentHostName&application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id,3,"html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
 	}
 	//homelink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id, 3, "html",application.zcore.app.getAppData("blog").optionStruct.blog_config_title);
-
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
-	application.zcore.siteOptionCom.displaySectionNav();
+ 
+	//application.zcore.siteOptionCom.displaySectionNav();
 	</cfscript>
 	<a href="#homelink#" target="_blank">Blog Home Page</a> | 
 	<a href="/z/blog/admin/blog-admin/articleList?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Articles</a> | 
@@ -991,7 +990,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	var qId=0;
 	init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	form.blog_datetime = dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss');
 	blogform = StructNew();
 	blogform.blog_category_name.required = true;
@@ -1143,7 +1142,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	var res=0;
 	this.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	db.sql="select *
 	from #db.table("blog_category", request.zos.zcoreDatasource)# blog_category
 	WHERE blog_category_id = #db.param(form.blog_category_id)# and 
@@ -1199,7 +1198,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	var db=request.zos.queryObject;
 	init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	select *
@@ -1243,7 +1242,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	var db=request.zos.queryObject;
 	init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	 db.sql="UPDATE #db.table("blog_comment", request.zos.zcoreDatasource)#  
 	 SET blog_comment_approved=#db.param(1)#, 
 	 blog_comment_updated_datetime=#db.param(request.zos.mysqlnow)#  
@@ -1266,7 +1265,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	var qc=0;
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	
 	form.blog_comment_id=application.zcore.functions.zso(form, 'blog_comment_id');
 	if(structkeyexists(form, 'deletef') and form.deletef EQ 1){
@@ -1357,7 +1356,7 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	var blogform=0;
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	blogform = StructNew();
 	blogform.blog_story.html = true;
 	blogform.uid.required=true;
@@ -1606,7 +1605,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	var res=0;
 	this.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	db.sql="select *
 	from #db.table("blog", request.zos.zcoreDatasource)# blog
 	
@@ -1672,7 +1671,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	this.init();
 	application.zcore.functions.zSetPageHelpId("3.1");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	if(structkeyexists(form, 'searchText')){
 		request.zsession.blogSearchText=form.searchText;
 	}else if(structkeyexists(form, 'searchText')){
@@ -1919,7 +1918,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 	var error=0;
 	variables.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	uniqueChanged=false;
 	oldURL="";
 	//if(application.zcore.user.checkSiteAccess()){
@@ -2079,7 +2078,7 @@ ts.struct=form;
 	this.init();
 	application.zcore.functions.zSetPageHelpId("3.6");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	
 	if(application.zcore.functions.zso(form, 'ListTagID') EQ ''){ 
 		form.ListTagId = application.zcore.status.getNewId(); 
@@ -2160,7 +2159,7 @@ ts.struct=form;
 	var db=request.zos.queryObject;
 	this.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags", true); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	select *
@@ -2229,7 +2228,7 @@ ts.struct=form;
 	backupMethod=form.method;
 	this.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Tags"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	form.blog_tag_id=application.zcore.functions.zso(form, 'blog_tag_id',false,-1);
 	if(structkeyexists(form, 'return')){
 		StructInsert(request.zsession, "blogtag_return"&form.blog_tag_id, request.zos.CGI.HTTP_REFERER, true);		
@@ -2376,7 +2375,7 @@ tabCom.enableSaveButtons();
 	this.init();
 	application.zcore.functions.zSetPageHelpId("3.2");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	if(structkeyexists(form, 'blog_event')){
 		local.blogEventChecked=true;
 	}
@@ -2938,7 +2937,7 @@ tabCom.enableSaveButtons();
 	this.init();
 	application.zcore.functions.zSetPageHelpId("3.3");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	application.zcore.functions.zstatushandler(request.zsid, true, false, form);
 	</cfscript>
 	<cfsavecontent variable="db.sql">
@@ -3086,7 +3085,7 @@ local.blogIdBackup=form.blog_id;
 	this.init();
 	application.zcore.functions.zSetPageHelpId("3.4");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 		select *,concat(repeat(#db.param("_")#,blog_category_level*#db.param(3)#),blog_category_name) catname, 
@@ -3147,7 +3146,7 @@ local.blogIdBackup=form.blog_id;
 	form.blog_category_id=application.zcore.functions.zso(form, 'blog_category_id');
 	this.init();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Categories"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 		select *
@@ -3324,7 +3323,7 @@ tabCom.enableSaveButtons();
 	this.init();
 	application.zcore.functions.zSetPageHelpId("3.1");
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Blog Articles"); 
-	application.zcore.siteOptionCom.requireSectionEnabledSetId();
+	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	form.blog_comment_id=application.zcore.functions.zso(form, 'blog_comment_id');
 	</cfscript>
 	<script type="text/javascript">

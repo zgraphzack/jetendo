@@ -694,21 +694,23 @@ used to do search for a list of values
 </cffunction>
 
 <cffunction name="requireSectionEnabledSetId" access="public" returntype="any" localmode="modern">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfscript>
 	form['#variables.siteType#_x_option_group_set_id']=application.zcore.functions.zso(form, '#variables.siteType#_x_option_group_set_id', true, 0);
-	if(not isSectionEnabledForSetId(form['#variables.siteType#_x_option_group_set_id'])){
+	if(not isSectionEnabledForSetId(arguments.arrGroupName, form['#variables.siteType#_x_option_group_set_id'])){
 		application.zcore.functions.z404("form.#variables.siteType#_x_option_group_set_id, ""#form['#variables.siteType#_x_option_group_set_id']#"", doesn't exist or doesn't has enable section set to use for the option_group.");
 	}
 	</cfscript>
 </cffunction>
 
 <cffunction name="isSectionEnabledForSetId" access="public" returntype="boolean" localmode="modern">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="setId" type="string" required="yes">
 	<cfscript>
 	if(arguments.setId EQ "" or arguments.setId EQ 0){
 		return true;
 	}
-	struct=getOptionGroupSetById(arguments.setId);
+	struct=getOptionGroupSetById(arguments.arrGroupName, arguments.setId);
 	if(structcount(struct) EQ 0){
 		return false;
 	}else{
@@ -736,9 +738,10 @@ used to do search for a list of values
 
 
 <cffunction name="displaySectionNav" localmode="modern" access="remote" roles="member">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfscript>
 	form["#variables.siteType#_x_option_group_set_id"]=application.zcore.functions.zso(form, "#variables.siteType#_x_option_group_set_id");
-	struct=getOptionGroupSetById(form["#variables.siteType#_x_option_group_set_id"]);
+	struct=getOptionGroupSetById(arguments.arrGroupName, form["#variables.siteType#_x_option_group_set_id"]);
 	if(structcount(struct) EQ 0){
 		return;
 	}else{
@@ -881,7 +884,7 @@ used to do search for a list of values
 	var db=request.zos.queryObject;
 	var ts=0;
 	var i=0;
-	dataStruct=getOptionGroupSetById(arguments.setId, arguments.site_id, arguments.arrGroupName);
+	dataStruct=getOptionGroupSetById(arguments.arrGroupName, arguments.setId, arguments.site_id);
 	var t9=getTypeData(arguments.site_id);
 	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved NEQ 1){
 		deleteOptionGroupSetIndex(arguments.setId, arguments.site_id);
@@ -997,9 +1000,9 @@ used to do search for a list of values
 
      
 <cffunction name="getOptionGroupSetById" localmode="modern" output="yes" returntype="struct">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="option_group_set_id" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
-	<cfargument name="arrGroupName" type="array" required="no" default="#[]#">
 	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
 	<cfscript> 
 	typeStruct=getTypeData(arguments.site_id);

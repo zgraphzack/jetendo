@@ -28,7 +28,7 @@
 <p>There isn't support for thumbnail / button navigation yet other then next/previous buttons.</p>
 <p>More detailed documentation will be forthcoming.  This plugin has been tested with Jquery 1.8. It may work with other versions.</p>
 
-<h2><a href="/manual/view/current/2.4.1/jquery-parallax-slider-examples.html" class="zNoContentTransition">View demo examples</a></h2>
+<h2><a href="/manual/view/current/9.2.4.1/jquery-parallax-slider-examples.html" class="zNoContentTransition">View demo examples</a></h2>
 
 
 
