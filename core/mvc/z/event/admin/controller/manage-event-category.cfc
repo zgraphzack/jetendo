@@ -329,16 +329,21 @@
 	application.zcore.functions.zSetPageHelpId("10.5");
 	searchOn=false;
 	form.event_calendar_id=application.zcore.functions.zso(form, 'event_calendar_id');
-	db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# WHERE 
-	site_id = #db.param(request.zos.globals.id)# and 
+	db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)#, 
+	#db.table("event_calendar", request.zos.zcoreDatasource)#  
+	WHERE 
+	event_category.site_id = event_calendar.site_id and 
+	event_calendar.event_calendar_id = event_category.event_calendar_id and 
+	event_calendar_deleted=#db.param(0)# and
+	event_category.site_id = #db.param(request.zos.globals.id)# and 
 	event_category_deleted=#db.param(0)# ";
 
 	if(form.event_calendar_id NEQ ""){
 		searchOn=true;
-		db.sql&=" and event_calendar_id = #db.param(form.event_calendar_id)# ";
+		db.sql&=" and event_category.event_calendar_id = #db.param(form.event_calendar_id)# ";
 	}
 
-	db.sql&=" ORDER BY event_category_name ASC";
+	db.sql&=" ORDER BY event_calendar_name ASC, event_category_name ASC";
 	qList=db.execute("qList");
 
 	request.eventCom=application.zcore.app.getAppCFC("event");
@@ -385,7 +390,9 @@
 	<hr />
 	<table class="table-list">
 		<tr>
-			<th>Name</th>
+			<th>Calendar</th>
+			<th>Category Name</th>
+			<th>Access</th>
 			<th>Last Updated</th>
 			<th>Admin</th>
 		</tr>
@@ -407,10 +414,15 @@
 <cffunction name="getReturnEventCategoryRowHTML" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject; 
-	db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)# 
-	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	db.sql="SELECT * FROM #db.table("event_category", request.zos.zcoreDatasource)#, 
+	#db.table("event_calendar", request.zos.zcoreDatasource)#  
+	WHERE 
+	event_category.site_id = event_calendar.site_id and 
+	event_calendar.event_calendar_id = event_category.event_calendar_id and 
+	event_calendar_deleted=#db.param(0)# and
+	event_category.site_id =#db.param(request.zos.globals.id)# and 
 	event_category_deleted = #db.param(0)# and 
-	event_category_id=#db.param(form.event_category_id)#";
+	event_category.event_category_id=#db.param(form.event_category_id)#";
 	qCalendar=db.execute("qCalendar"); 
 	
 	request.eventCom=application.zcore.app.getAppCFC("event");
@@ -432,12 +444,25 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
 	row=arguments.row;
-	echo('<td>#row.event_category_name#</td>
+	echo('
+		<td>#row.event_calendar_name#</td>
+		<td>#row.event_category_name#</td>
+	<td>');
+	if(row.event_calendar_user_group_idlist EQ ""){
+		echo('Public');
+	}else{
+		echo('Private');
+	}
+	echo('</td>
 		<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_category_updated_datetime)#</td>
 		<td>
 			<a href="#request.eventCom.getCategoryURL(row)#" target="_blank">View</a> | 
 			<a href="/z/event/admin/manage-events/add?event_category_id=#row.event_category_id#">Add Event</a> | 
-			<a href="/z/event/admin/manage-events/index?event_category_id=#row.event_category_id#">Manage Events</a> | 
+			<a href="/z/event/admin/manage-events/index?event_category_id=#row.event_category_id#">Manage Events</a> | ');
+		if(row.event_calendar_user_group_idlist EQ ""){
+			echo('<a href="/z/event/admin/manage-event-widgets/index?categories=#row.event_calendar_id#">Embed</a> | ');
+		}
+		echo('
 			<a href="/z/event/admin/manage-event-category/edit?event_category_id=#row.event_category_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
 			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-category/delete?event_category_id=#row.event_category_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>
 		</td>');

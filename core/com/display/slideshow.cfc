@@ -1121,12 +1121,16 @@ width:#slideshowConfig.thumbbarWidth#px;height:#slideshowConfig.thumbbarHeight#p
 						"arrCity": "city",
 						"arrAddress": "address"
 					}
+					row2={};
+					for(row in variables.qSlideshow){
+						row2=row;
+					}
 					for(i=1;i LTE arraylen(arrImages);i++){ 
 						ts={};
 						for(n in t9){
 							ts[t9[n]]= local[n][i];
 						}
-						local.tempCom.render(ts); // must pass a struct to the function which represents current row
+						local.tempCom.render(ts, {config:row, currentRow:i, recordcount:arraylen(arrImages)}); // must pass a struct to the function which represents current row
 					}
 				}else{
 					for(i=1;i LTE arraylen(arrImages);i++){

@@ -453,6 +453,7 @@ zdoc css style documentation
 			arrayAppend(arrS, { id:"__10.4", url:"/add-edit-event.html", title:"Add/Edit Event Calendar"});
 			arrayAppend(arrS, { id:"__10.5", url:"/manage-event-categories.html", title:"Manage Event Categories"});
 			arrayAppend(arrS, { id:"__10.6", url:"/add-edit-event.html", title:"Add/Edit Event Category"});
+			arrayAppend(arrS, { id:"__10.7", url:"/manage-event-widgets.html", title:"Manage Event Widgets"});
 		} 
 	}
 	return arrS;

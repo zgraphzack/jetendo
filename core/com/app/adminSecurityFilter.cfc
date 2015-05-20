@@ -86,6 +86,7 @@
 		ms["Manage Events"]={ parent:'Events', label:chr(9)&"Manage Events"};
 		ms["Manage Event Calendars"]={ parent:'Events', label:chr(9)&"Manage Event Calendars"};
 		ms["Manage Event Categories"]={ parent:'Events', label:chr(9)&"Manage Event Categories"};
+		ms["Manage Event Widgets"]={ parent:'Events', label:chr(9)&"Manage Event Widgets"};
 	}
 
 	ms["Users"]={ parent:'', label:"Users"};

@@ -545,7 +545,7 @@ for(local.row in local.qSite){
 	t7=application.zcore.templateCFCCache;
     if(structkeyexists(t7,arguments.cpath) EQ false or arguments.forceNew){
 		try{
-			t9=application.zcore.functions.zcreateobject("component",arguments.cpath, true);
+			t9=createobject("component",arguments.cpath);
 		}catch(Any e){
 			savecontent variable="local.e2"{
 				if(application.zcore.functions.zso(e, 'message') CONTAINS '-railo-dump'){
@@ -627,11 +627,21 @@ for(local.row in local.qSite){
 				cfcName=replace(replace(replace(request.zos.templateData.templatePath, request.zos.globals.homedir, "", "one"),".","$","all"),"/","$","all");
 				cfcCreatePath=request.zRootSecureCFCPath&'_cache.scripts.templates.'&cfcName;
 			}
-			if(request.zos.zreset EQ "template"){   
+			if(not structkeyexists(application.zcore, 'compiledSiteTemplatePathCache')){
+				application.zcore.compiledSiteTemplatePathCache={};
+			}
+			if(not structkeyexists(application.zcore.compiledSiteTemplatePathCache, request.zos.globals.id)){
+				application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id]={};
+			}
+			if(structkeyexists(application.zcore.compiledTemplatePathCache, sp&'/'&cfcName&".cfc")){
+				application.zcore.compiledTemplatePathCache[sp&'/'&cfcName&".cfc"]=true;
+			}
+			if(request.zos.zreset EQ "template" or not structkeyexists(application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id], sp&'/'&cfcName&".cfc")){   
 				structclear(application.zcore.templateCFCCache[request.zos.globals.id]);
 				if(fileexists(request.zos.templateData.templatePath)){
 					this.compileTemplateCFC();
 					tempIO=createTemplateObject("component",cfcCreatePath,true);
+					application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id][sp&'/'&cfcName&".cfc"]=true;
 				}else{
 					runTemplate=false;
 				}

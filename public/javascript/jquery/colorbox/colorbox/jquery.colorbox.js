@@ -359,8 +359,8 @@
 		// Cache values needed for size calculations
 		interfaceHeight = $topBorder.height() + $bottomBorder.height() + $content.outerHeight(true) - $content.height();//Subtraction needed for IE6
 		interfaceWidth = $leftBorder.width() + $rightBorder.width() + $content.outerWidth(true) - $content.width();
-		loadedHeight = $loaded.outerHeight(true);
-		loadedWidth = $loaded.outerWidth(true);
+		loadedHeight = $loaded.outerHeight(true)+interfaceHeight;
+		loadedWidth = $loaded.outerWidth(true)+interfaceWidth;
 		
 		// Setting padding to remove the need to do size conversions during the animation step.
 		$box.css({"padding-bottom": interfaceHeight, "padding-right": interfaceWidth}).hide();

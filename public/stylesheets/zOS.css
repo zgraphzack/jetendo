@@ -9,6 +9,8 @@ div.-railo-dump tr:nth-child(even) {background: #F2F2F2  !important;}
 div.-railo-dump tr tr:nth-child(even) {background: #F2F2F2  !important;}
 div.-railo-dump tr:hover{ background-color:#e6faeb !important;} 
 
+#cboxLoadedContent{border:none !important; margin-top:5px !important;}
+
 .zGearButton:link, .zGearButton:visited{
 	font-size:30px;line-height:36px; color:#000;
 }
@@ -687,8 +689,79 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 #zCalendarFullPageDiv .fc-time, #zCalendarFullPageDiv .fc-title{float:left; line-height:normal;}
 #zCalendarFullPageDiv .fc-content{white-space:normal !important;}
 
-@media only screen and (max-width:600px) {
 
+.zRecurBoxColumn1{ width:400px;vertical-align:top; display:table-cell; min-width:310px; max-width:372px;  }
+.zRecurBoxColumn2{ padding-left:5px;vertical-align:top; display:table-cell;  }
+@media only screen and (max-width: 640px) {
+	.zRecurBoxColumn1{display:block;width:95%; max-width:95%; min-width:320px;float:left;}
+	.zRecurBoxColumn2{display:block;width:95%; max-width:95%;  min-width:320px; padding-left:0px;float:left;}
+}
+.zRecurBox{ width:95%;border:1px solid #999; border-radius:5px; padding:2%; float:left; margin-bottom:10px;}
+.zRecurCalendarContainer{width:150px;margin:5px; background-color:#FFF; color:#000;float:left; }
+.zRecurCalendarMonth{ padding:1px;  font-weight:bold;text-align:center;width:100%; float:left;}
+.zRecurCalendar{
+	text-align:center; width:150px; display:table; table-layout:fixed; border-spacing:0px;  
+}
+.zRecurCalendarWeek{display:table-row;}
+.zRecurCalendarDayLabels{ padding:1px;  display:table-row;}
+.zRecurCalendarDayLabel{ padding:1px; display:table-cell; }
+.zRecurCalendarDay, .zRecurCalendarDayOtherMonth{
+	display:table-cell; padding:1px; margin:0px; line-height:normal;
+}
+.zRecurCalendarDayMarked{font-weight:bold; color:#369;cursor:pointer; background-color:#369 !important; color:#FFF !important;}
+.zRecurCalendarDayOtherMonth{ background-color:#EEE !important; color:#999 !important;}
+.zRecurType{display:none;}
+.zRecurDayButton{display:block; color:#000;background-color:#F6F6F6;border:1px solid #CCC; cursor:pointer; border-radius:5px; padding:4px; margin-right:3px; float:left;}
+.zRecurDayButton label{ line-height:15px;cursor:pointer;  }
+.zRecurDayButton input{margin:0px; cursor:pointer; margin-top:1px;padding:0px;}
+.zRecurDayButton:hover{ background-color:#FFF;color:#000;}
+.zRecurExcludedDayText{width:75px; float:left;}
+.zRecurExcludedDay{width:100px; float:left; margin-right:5px; margin-bottom:5px; color:#000; padding:5px;background-color:#F6F6F6;border:1px solid #CCC; cursor:pointer; border-radius:5px; }
+.zRecurExcludedDay:hover{ background-color:#FFF;color:#000;}
+.zRecurExcludedDayDeleteButton{float:right;width:20px; border-radius:5px; text-align:center;background-color:#CCC; color:#000; margin-left:5px;}
+.zRecurCalendarDayExcluded{background-color:#900; color:#FFF;cursor:pointer;}
+.zRecurEventBox{width:100%; float:left;}
+
+.zEventWidget-circle-2 {color:#3a4746;font-size: 16px; width:100%; clear:both;text-align:center; float:left; display:block;
+line-height: 16px;}
+.zEventWidget-circle-1 {width:66px; border:1px solid #000; border-radius:76px; height:56px; float:left; margin-left:0px;   text-align:center; padding-top:10px; font-size:16px; background-repeat:no-repeat; color:#896446;
+}
+.zEventWidget-circle-1-4{width:100%; float:left; text-align:center;}
+.zEventWidget-circle-1-3 {color:#440a05;font-size:21px; clear:both;line-height:24px;}
+.zEventWidget-circle-5 {width:200px; float:left; padding-top:10px; padding-left:10px;} 
+.zEventWidget-circle-7{ display:block;width:100%; float:left; clear:both; padding-bottom:10px;}
+.zEventWidget-circle-7:link, .zEventWidget-circle-7:visited{color:#FFF; font-size:16px; width:245px; float:left; line-height:19px;}
+.zEventWidget-circle-7:hover .zEventWidget-circle-5{color:#440a05;text-decoration:underline;}
+.zEventWidget-circle-7:hover .zEventWidget-circle-6{color:#253667;text-decoration:underline;} 
+#sh-calendar-widget{display:block;width:100%; float:left;}
+.zEventWidget-circle-7:link, .zEventWidget-circle-7:visited{   width:100% !important; color:#253667;}
+.zEventWidget-full-link:link, .zEventWidget-full-link:visited{ font-size:19px; border-radius:5px; padding:5px;  float:left; display:block; width:100%; text-align:center; max-width:230px; color:#000; border:1px solid #999; background-color:#999; line-height:normal; color:#FFF !important;}
+.zEventWidget-full-link:hover{background-color:#000; color:#FFF !important; text-decoration:none;}
+.zEventWidget-container{width:100%;float:left;}
+.zEventWidget-container h2{font-size:21px; padding-bottom:15px;line-height:normal;}
+.zEventView-preview-message{width:100%; float:left; margin-bottom:10px; background-color:#900; color:#FFF; padding:5px; border-radius:5px; }
+
+
+.ui-datepicker-calendar{background-color:#FFF;}
+div.time-picker li{white-space:nowrap;}
+div.time-picker{width:90px !important;}
+@media only screen and (max-width:200px) {
+	.zEventWidget-circle-5{ width:150px; }
+	.zEventWidget-circle-1-3{
+		font-size:14px;
+		line-height:14px;
+	}
+	.zEventWidget-circle-1{
+		padding-top:2px; 
+		width: 40px;
+		height: 40px;
+		font-size:12px;
+	}
+	.zEventWidget-circle-7:link, .zEventWidget-circle-7:visited{font-size:14px;}
+}
+
+@media only screen and (max-width:600px) {
+textarea { width:100% !important;}
 .zEventView1-1{width:100%; display:block; float:left; }
 .zEventView1-2{width:100%; display:block; float:left; margin-left:0px; }
 .zEventView1-3{width:100%; }

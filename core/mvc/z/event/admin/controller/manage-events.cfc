@@ -74,6 +74,14 @@
 	</cfif>
 </cffunction>
 
+
+
+<cffunction name="publicInsertEvent" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	this.update();
+	</cfscript>
+</cffunction>
+
 <cffunction name="insert" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	this.update();
@@ -86,9 +94,47 @@
 	var ts={};
 	var result=0;
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events", true);	
-	if(form.method EQ "insert"){
+	if(form.method EQ "insert" or form.method EQ "publicInsertEvent"){
 		form.event_id="";
 	}
+
+	errors=false;
+	if(form.method EQ "publicInsertEvent"){
+		form.event_unique_url='';
+		form.event_status=0;
+		form.event_featured='0';
+		form.event_summary=application.zcore.functions.zStripHTMLTags(application.zcore.functions.zso(form, 'event_summary'));
+		form.event_description=application.zcore.functions.zStripHTMLTags(application.zcore.functions.zso(form, 'event_description'));
+		if(request.zos.globals.recaptchaSecretkey NEQ ""){
+			if(not application.zcore.functions.zVerifyRecaptcha()){
+				application.zcore.status.setStatus(request.zsid, "The ReCaptcha security phrase wasn't entered correctly. Please try again.", form, true);
+				errors=true;
+			}
+		}
+		form.inquiries_spam=0;
+		if(application.zcore.functions.zFakeFormFieldsNotEmpty()){ 
+			application.zcore.status.setStatus(request.zsid, "Invalid submission.  Please submit the form again.",form,true);
+			errors=true;
+		}
+		if(form.modalpopforced EQ 1){
+			if(application.zcore.functions.zso(form, 'js3811') NEQ "j219"){
+				application.zcore.status.setStatus(request.zsid, "Invalid submission.  Please submit the form again.",form,true);
+				errors=true;
+			}
+			if(application.zcore.functions.zCheckFormHashValue(application.zcore.functions.zso(form, 'js3812')) EQ false){
+				application.zcore.status.setStatus(request.zsid, "Invalid submission.  Please submit the form again.",form,true);
+				errors=true;
+			}
+		}
+		if(application.zcore.functions.zso(form, 'zset9') NEQ "9989"){
+			application.zcore.status.setStatus(request.zsid, "Invalid submission.  Please submit the form again.",form,true);
+			errors=true;
+		}
+		if(errors){
+			application.zcore.functions.zRedirect("/z/event/suggest-an-event/index?zsid=#request.zsid#");
+		}
+	}
+
 	form.site_id = request.zos.globals.id;
 	ts.event_name.required = true;
 	ts.event_calendar_id.required = true;
@@ -99,13 +145,15 @@
 
 	if(result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
-		if(form.method EQ 'insert'){
+		if(form.method EQ 'publicInsertEvent'){
+			application.zcore.functions.zRedirect("/z/event/suggest-an-event/index?zsid=#request.zsid#");
+		}else if(form.method EQ 'insert'){
 			application.zcore.functions.zRedirect('/z/event/admin/manage-events/add?zsid=#request.zsid#');
 		}else{
 			application.zcore.functions.zRedirect('/z/event/admin/manage-events/edit?event_id=#form.event_id#&zsid=#request.zsid#');
 		}
 	}
-	if(form.event_uid EQ ""){
+	if(application.zcore.functions.zso(form, 'event_uid') EQ ""){
 		form.event_uid=createuuid();
 	}
 	form.event_category_id=application.zcore.functions.zso(form, 'event_category_id');
@@ -125,7 +173,9 @@
 
 	if(datediff("d", form.event_start_datetime, form.event_end_datetime) LT 0){
 		application.zcore.status.setStatus(request.zsid, "The end date must be after the start date", form, true);
-		if(form.method EQ 'insert'){
+		if(form.method EQ 'publicInsertEvent'){
+			application.zcore.functions.zRedirect("/z/event/suggest-an-event/index?zsid=#request.zsid#");
+		}else if(form.method EQ 'insert'){
 			application.zcore.functions.zRedirect('/z/event/admin/manage-events/add?zsid=#request.zsid#');
 		}else{
 			application.zcore.functions.zRedirect('/z/event/admin/manage-events/edit?event_id=#form.event_id#&zsid=#request.zsid#');
@@ -170,15 +220,18 @@
 	ts.table='event';
 	ts.datasource=request.zos.zcoreDatasource;
 	ts.struct=form;
-	if(form.method EQ 'insert'){
+	if(form.method EQ 'insert' or form.method EQ "publicInsertEvent"){
 		form.event_id = application.zcore.functions.zInsert(ts);
 		if(form.event_id EQ false){
 			application.zcore.status.setStatus(request.zsid, 'Failed to save Event.',form,true);
-			application.zcore.functions.zRedirect('/z/event/admin/manage-events/add?zsid=#request.zsid#');
+			if(form.method EQ "publicInsertEvent"){
+				application.zcore.functions.zRedirect("/z/event/suggest-an-event/index?zsid=#request.zsid#");
+			}else{
+				application.zcore.functions.zRedirect('/z/event/admin/manage-events/add?zsid=#request.zsid#');
+			}
 		}else{
 			application.zcore.status.setStatus(request.zsid, 'Event saved.');
 		}
-
 	}else{
 		if(application.zcore.functions.zUpdate(ts) EQ false){
 			application.zcore.status.setStatus(request.zsid, 'Failed to save Event.',form,true);
@@ -186,8 +239,7 @@
 		}else{
 			application.zcore.status.setStatus(request.zsid, 'Event updated.');
 		}
-		
-	}   
+	}
 
 	db.sql="delete from #db.table("event_x_category", request.zos.zcoreDatasource)# WHERE 
 	event_id = #db.param(form.event_id)# and 
@@ -336,15 +388,65 @@
 	}
 	application.zcore.app.getAppCFC("event").searchReindexEvent(form.event_id, false);
 
-	if(structkeyexists(request.zsession, 'event_return'&form.event_id)){
-		a=request.zsession['event_return'&form.event_id];
-		structdelete(request.zsession, 'event_return'&form.event_id);
-		application.zcore.functions.zRedirect(a);
+	if(form.method EQ "publicInsertEvent"){
+
+		// send email to admin about the event
+
+		ts={};
+		ts.subject="Suggest an event submission on #request.zos.globals.shortDomain#";
+		savecontent variable="output"{
+			echo('#application.zcore.functions.zHTMLDoctype()#
+			<head>
+			<meta charset="utf-8" />
+			<title>Suggest An Event</title>
+			</head>
+			
+			<body>
+				<h2>Suggest An Event Submission</h2>
+				<p>Event Name: #form.event_name#</p>
+				<p>Start Date: #dateformat(form.event_start_datetime, "m/d/yyyy")# at #timeformat(form.event_start_datetime, "h:mm tt")#</p>
+				<p>End Date: #dateformat(form.event_end_datetime, "m/d/yyyy")# at #timeformat(form.event_end_datetime, "h:mm tt")#</p>');
+				if(form.event_recur_ical_rules NEQ ""){
+					echo('<p>This is a recurring event</p>');
+				}else{
+					echo('<p>This is NOT a recurring event</p>');
+				}
+				echo('<p>Suggested By Name: #form.event_suggested_by_name#</p>
+				<p>Suggested By Email: <a href="mailto:#form.event_suggested_by_email#">#form.event_suggested_by_email#</a></p>
+				<p>Suggested By Phone: #form.event_suggested_by_phone#</p>
+				<p>This event will not appear on the public calendar until you edit it in the manager and set the "Active" field to "Yes".</p>
+				<p>It is wise not to trust the information submitted by a user.  Please make an attempt to verify the information and ensure it doesn''t contain any malicious or illegal information such as HTML code or stolen images.  You are ultimately responsible for the content on your web site.</p>
+				<h2><a href="/z/event/admin/manage-events/edit?event_id=#form.event_id#">Edit This Event</a></h2>
+				<h2><a href="/z/event/admin/manage-events/index">Manage Events</a></h2>
+
+				<p>This email was sent from the web site:<br /><a href="#request.zos.globals.domain#">#request.zos.globals.domain#</a></p>');
+				
+
+			echo('</body>
+			</html>');
+		}
+		ts.html=output;
+		ts.to=request.officeEmail;
+		ts.from=request.fromEmail; 
+		rCom=application.zcore.email.send(ts);
+		if(rCom.isOK() EQ false){
+			rCom.setStatusErrors(request.zsid);
+			application.zcore.functions.zstatushandler(request.zsid);
+			application.zcore.functions.zabort();
+		}
+
+		application.zcore.functions.zRedirect("/z/event/suggest-an-event/complete?modalpopforced=#form.modalpopforced#&zsid=#request.zsid#");
 	}else{
-		if(form.modalpopforced EQ 1){
-			application.zcore.functions.zRedirect('/z/event/admin/manage-events/getReturnEventRowHTML?event_id=#form.event_id#');
+		if(structkeyexists(request.zsession, 'event_return'&form.event_id)){
+			a=request.zsession['event_return'&form.event_id];
+			structdelete(request.zsession, 'event_return'&form.event_id);
+			application.zcore.functions.zRedirect(a);
 		}else{
-			application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+			if(form.modalpopforced EQ 1){
+				application.zcore.functions.zRedirect('/z/event/admin/manage-events/getReturnEventRowHTML?event_id=#form.event_id#');
+			}else{
+				application.zcore.functions.zRedirect('/z/event/admin/manage-events/index?zsid=#request.zsid#');
+			}
 		}
 	}
 	</cfscript>
@@ -352,6 +454,12 @@
 
 
 	
+<cffunction name="publicAddEvent" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	form.event_id="";
+	this.edit();
+	</cfscript>
+</cffunction>
 
 <cffunction name="add" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -364,8 +472,18 @@
 	var db=request.zos.queryObject; 
 	var currentMethod=form.method;
 	var htmlEditor=0;
-	application.zcore.functions.zSetPageHelpId("10.2");
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Events");	
+
+	if(currentMethod EQ "publicAddEvent"){
+       	form.set9=application.zcore.functions.zGetHumanFieldIndex();
+		notPublic=false;
+	}else{
+		notPublic=true;
+	}
+
+	if(notPublic){
+		application.zcore.functions.zSetPageHelpId("10.2");
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Events");	
+	}
 	if(application.zcore.functions.zso(form,'event_id') EQ ''){
 		form.event_id = -1;
 	}
@@ -379,8 +497,13 @@
 	LIMIT #db.param(0)#, #db.param(1)#";
 	qCalendar=db.execute("qCalendar");
 	if(qCalendar.recordcount EQ 0){
-		application.zcore.status.setStatus(request.zsid, "You must add a calendar first.", form, true);
-		application.zcore.functions.zRedirect("/z/event/admin/manage-event-calendar/add?zsid=#request.zsid#");
+		if(notPublic){
+			application.zcore.status.setStatus(request.zsid, "You must add a calendar first.", form, true);
+			application.zcore.functions.zRedirect("/z/event/admin/manage-event-calendar/add?zsid=#request.zsid#");
+		}else{
+			echo('<p>A calendar must be added by the site administrator before an event can be suggested. Please try again later.</p>');
+			return;
+		}
 	}
 
 	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
@@ -396,51 +519,95 @@
 		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
 		application.zcore.functions.zSetModalWindow();
 	}
-	if(currentMethod EQ "add"){
+	if(currentMethod EQ "add" or currentMethod EQ "publicAddEvent"){
 		form.event_uid='';
 		form.event_id="";
 		form.event_file1="";
 		form.event_file2="";
 		form.event_image_library_id="";
 		form.event_unique_url="";
+		application.zcore.functions.zCheckIfPageAlreadyLoadedOnce();
 	}
+	if(currentMethod EQ "publicAddEvent"){
+		application.zcore.template.setTag("title", "Suggest An Event");
+		application.zcore.template.setTag("pagetitle", "Suggest An Event");
+		action='/z/event/suggest-an-event/submit';
+	}else{
+		action='/z/event/admin/manage-events/';
+		echo('<h2>');
+		if(currentMethod EQ "add"){
+			echo('Add');
+			action&="insert";
+		}else{
+			echo('Edit');
+			action&="update&amp;event_id=#form.event_id#";
+		}
+		echo(' Event</h2>');
+	}
+
+
 	</cfscript>
-	<h2>
-		<cfif currentMethod EQ "add">
-			Add
-			<cfscript>
-			application.zcore.functions.zCheckIfPageAlreadyLoadedOnce();
-			</cfscript>
+	<p>* denotes required field.</p>
+	<form action="#action#" method="post" enctype="multipart/form-data" <cfif not notPublic>onsubmit="zSet9('zset9_#form.set9#');"</cfif>>
+		<cfif notPublic>
+			<input name="event_uid" type="hidden" value="#htmleditformat(application.zcore.functions.zso(form, 'event_uid'))#" />
 		<cfelse>
-			Edit
-		</cfif> Event</h2>
-		<p>* denotes required field.</p>
-	<form action="/z/event/admin/manage-events/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?event_id=#form.event_id#" method="post" enctype="multipart/form-data">
-		<input name="event_uid" type="hidden" value="#htmleditformat(application.zcore.functions.zso(form, 'event_uid'))#" />
+			<input type="hidden" name="event_image_library_layout" value="3">
+			<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
+			#application.zcore.functions.zFakeFormFields()#
+		</cfif>
 		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">  
-			<tr>
-				<th style="width:1%;">&nbsp;</th>
-				<td><button type="submit" name="submitForm">Save</button>
 
-					<cfif form.modalpopforced EQ 1>
-						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
-					<cfelse>
-						<cfscript>
-						cancelLink="/z/event/admin/manage-events/index";
-						</cfscript>
-						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
-					</cfif>
-				</td>
-			</tr>
+			<cfif notPublic>
+				<tr>
+					<th style="width:1%;">&nbsp;</th>
+					<td><button type="submit" name="submitForm">Save</button>
+
+						<cfif form.modalpopforced EQ 1>
+							<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+						<cfelse>
+							<cfscript>
+							cancelLink="/z/event/admin/manage-events/index";
+							</cfscript>
+							<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+						</cfif>
+					</td>
+				</tr> 
+			<cfelse>
+				<tr>
+					<td colspan="2"><h2>Your Contact Information</h2>
+						<p>Please provide some contact information in case we have a question about your submission.  This information will not be displayed on our web site.  It will only be used to communicate with you about your submission. </p>
+						<p>These fields are optional if you wish to remain anonymous.</p>
+
+				<tr>
+					<th>Name</th>
+					<td><input type="text" name="event_suggested_by_name" style="width:95%;" value="#htmleditformat(form.event_suggested_by_name)#" /></td>
+				</tr>  
+				<tr>
+					<th>Email</th>
+					<td><input type="text" name="event_suggested_by_email" style="width:95%;" value="#htmleditformat(form.event_suggested_by_email)#" /></td>
+				</tr>  
+				<tr>
+					<th>Phone</th>
+					<td><input type="text" name="event_suggested_by_phone" style="width:95%;" value="#htmleditformat(form.event_suggested_by_phone)#" /> </td>
+				</tr>  
+				<tr>
+					<td colspan="2"><h2>Event Information</h2></td>
+				</tr>
+			</cfif>
+	
 			<tr>
 				<th>Calendar</th>
 				<td>
 					<cfscript>
 					db.sql="select * from #db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
 					site_id = #db.param(request.zos.globals.id)# and 
-					event_calendar_deleted=#db.param(0)# 
-					ORDER BY event_calendar_name ASC";
+					event_calendar_deleted=#db.param(0)#";
+					if(not notPublic){
+						db.sql&=" and event_calendar_user_group_idlist=#db.param("")# ";
+					}
+					db.sql&=" ORDER BY event_calendar_name ASC";
 					qCalendar=db.execute("qCalendar"); 
 					ts = StructNew();
 					ts.name = "event_calendar_id"; 
@@ -451,23 +618,30 @@
 					ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
 					ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
 					ts.queryValueField = "event_calendar_id"; 
-					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id', true, 0));
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id'));
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript> *
 				</td>
 			</tr>  
 			<tr>
 				<th>Name</th>
-				<td><input type="text" name="event_name" style="width:500px;" value="#htmleditformat(form.event_name)#" /> *</td>
+				<td><input type="text" name="event_name" style="width:95%;" value="#htmleditformat(form.event_name)#" /> *</td>
 			</tr>  
 			<tr>
 				<th>Category</th>
 				<td>
 					<cfscript>
-					db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)# WHERE 
-					site_id = #db.param(request.zos.globals.id)# and 
-					event_category_deleted=#db.param(0)# 
-					ORDER BY event_category_name ASC";
+					db.sql="select * from #db.table("event_category", request.zos.zcoreDatasource)#, 
+					#db.table("event_calendar", request.zos.zcoreDatasource)# WHERE 
+					event_category.site_id = event_calendar.site_id and 
+					event_calendar_deleted=#db.param(0)# and 
+					event_category.event_calendar_id = event_calendar.event_calendar_id and 
+					event_category.site_id = #db.param(request.zos.globals.id)# and 
+					event_category_deleted=#db.param(0)# ";
+					if(not notPublic){
+						db.sql&=" and event_calendar_user_group_idlist=#db.param("")# ";
+					}
+					db.sql&=" ORDER BY event_category_name ASC";
 					qCategory=db.execute("qCategory");
 
 					ts = StructNew();
@@ -488,12 +662,21 @@
 				<th>Summary</th>
 				<td>
 					<cfscript>
-					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-					htmlEditor.instanceName	= "event_summary";
-					htmlEditor.value			= form.event_summary;
-					htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
-					htmlEditor.height		= 150;
-					htmlEditor.create();
+					if(notPublic){
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor.instanceName	= "event_summary";
+						htmlEditor.value			= form.event_summary;
+						htmlEditor.width			= "100%";
+						htmlEditor.height		= 150;
+						htmlEditor.create();
+					}else{
+
+						ts=StructNew();
+						ts.name="event_summary";
+						ts.style="width:95%; height:100px;";
+						ts.multiline=true;
+						application.zcore.functions.zInput_Text(ts);
+					}
 					</cfscript>   
 				</td>
 			</tr> 
@@ -501,12 +684,21 @@
 				<th>Body Text</th>
 				<td>
 					<cfscript>
-					htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-					htmlEditor.instanceName	= "event_description";
-					htmlEditor.value			= form.event_description;
-					htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
-					htmlEditor.height		= 350;
-					htmlEditor.create();
+					if(notPublic){
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor.instanceName	= "event_description";
+						htmlEditor.value			= form.event_description;
+						htmlEditor.width			= "100%";
+						htmlEditor.height		= 350;
+						htmlEditor.create();
+					}else{
+
+						ts=StructNew();
+						ts.name="event_description";
+						ts.style="width:95%; height:200px;";
+						ts.multiline=true;
+						application.zcore.functions.zInput_Text(ts);
+					}
 					</cfscript>   
 				</td>
 			</tr> 
@@ -556,19 +748,19 @@
 			</tr> 
 			<tr>
 				<th>Location Name</th>
-				<td><input type="text" name="event_location" style="width:500px;" value="#htmleditformat(form.event_location)#" /></td>
+				<td><input type="text" name="event_location" style="width:95%;" value="#htmleditformat(form.event_location)#" /></td>
 			</tr> 
 			<tr>
 				<th>Address</th>
-				<td><input type="text" name="event_address" id="event_address" style="width:500px;" value="#htmleditformat(form.event_address)#" /></td>
+				<td><input type="text" name="event_address" id="event_address" style="width:95%;" value="#htmleditformat(form.event_address)#" /></td>
 			</tr> 
 			<tr>
 				<th>Address 2</th>
-				<td><input type="text" name="event_address2" id="event_address2" style="width:500px;" value="#htmleditformat(form.event_address2)#" /></td>
+				<td><input type="text" name="event_address2" id="event_address2" style="width:95%;" value="#htmleditformat(form.event_address2)#" /></td>
 			</tr> 
 			<tr>
 				<th>City</th>
-				<td><input type="text" name="event_city" id="event_city" style="width:500px;" value="#htmleditformat(form.event_city)#" /></td>
+				<td><input type="text" name="event_city" id="event_city" style="width:95%;" value="#htmleditformat(form.event_city)#" /></td>
 			</tr> 
 			<tr>
 				<th>State</th>
@@ -638,7 +830,7 @@
 
 			<tr>
 				<th>Web Site URL</th>
-				<td><input type="text" name="event_website" style="width:500px;" value="#htmleditformat(form.event_website)#" /></td>
+				<td><input type="text" name="event_website" style="width:95%;" value="#htmleditformat(form.event_website)#" /></td>
 			</tr> 
 			<tr>
 				<th>File 1</th>
@@ -652,7 +844,7 @@
 			</tr> 
 			<tr>
 				<th>File 1 Label</th>
-				<td><input type="text" name="event_file1label" style="width:500px;" value="#htmleditformat(form.event_file1label)#" /></td>
+				<td><input type="text" name="event_file1label" style="width:95%;" value="#htmleditformat(form.event_file1label)#" /></td>
 			</tr> 
 			<tr>
 				<th>File 2</th>
@@ -666,12 +858,15 @@
 			</tr> 
 			<tr>
 				<th>File 2 Label</th>
-				<td><input type="text" name="event_file2label" style="width:500px;" value="#htmleditformat(form.event_file2label)#" /></td>
+				<td><input type="text" name="event_file2label" style="width:95%;" value="#htmleditformat(form.event_file2label)#" /></td>
 			</tr> 
-			<tr>
-				<th>Featured Event</th>
-				<td>#application.zcore.functions.zInput_Boolean("event_featured", application.zcore.functions.zso(form, 'event_featured'))#</td>
-			</tr>  
+			<cfif notPublic>
+	
+				<tr>
+					<th>Featured Event</th>
+					<td>#application.zcore.functions.zInput_Boolean("event_featured", application.zcore.functions.zso(form, 'event_featured'))#</td>
+				</tr>  
+			</cfif>
 			<tr>
 				<th>Recurring Event</th>
 				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
@@ -693,10 +888,7 @@
 				<input type="hidden" name="event_recur_frequency" id="event_recur_frequency" value="#htmleditformat(form.event_recur_frequency)#" />
 
 				</td>
-			</tr>  
-			<!--- 
-			http://www.farbeyondcode.com.127.0.0.2.xip.io/z/event/admin/recurring-event/index?event_start_datetime=04/30/2015%20&event_end_datetime=06/17/2015%20&event_recur_ical_rules=&ztv=0.33506121183745563
-			 --->
+			</tr>   
 			<script type="text/javascript">
 			function openRecurringEventOptions(){
 				var startDate=$("##event_start_datetime_date").val();
@@ -726,46 +918,87 @@
 					ts=structnew();
 					ts.name="event_image_library_id";
 					ts.value=form.event_image_library_id;
+
+					ts.allowPublicEditing=true;
 					application.zcore.imageLibraryCom.getLibraryForm(ts);
 					</cfscript>
 				</td>
 			</tr>
+			<cfif notPublic>
+	
+				<tr>
+					<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Photo Layout","member.event.edit event_image_library_layout")#</th>
+					<td>
+						<cfscript>
+						ts=structnew();
+						ts.name="event_image_library_layout";
+						ts.value=form.event_image_library_layout;
+						application.zcore.imageLibraryCom.getLayoutTypeForm(ts);
+						</cfscript>
+					</td>
+				</tr>
+			</cfif>
+			<cfif notPublic>
+ 			
+				<tr>
+					<th>Active</th>
+					<td><cfscript>
+		
+					if(form.event_status EQ ""){
+						form.event_status='1';
+					} 
+					</cfscript>#application.zcore.functions.zInput_Boolean("event_status")#</td>
+				</tr> 
+				<tr>
+					<th>Unique URL</th>
+					<td><input type="text" name="event_unique_url" value="#htmleditformat(form.event_unique_url)#" /></td>
+				</tr> 
 
-			<tr>
-				<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Photo Layout","member.event.edit event_image_library_layout")#</th>
-				<td>
-					<cfscript>
-					ts=structnew();
-					ts.name="event_image_library_layout";
-					ts.value=form.event_image_library_layout;
-					application.zcore.imageLibraryCom.getLayoutTypeForm(ts);
-					</cfscript>
-				</td>
-			</tr>
-			<tr>
-				<th>Unique URL</th>
-				<td><input type="text" name="event_unique_url" value="#htmleditformat(form.event_unique_url)#" /></td>
-			</tr> 
+				<cfif application.zcore.functions.zso(application.zcore.app.getAppData("event").optionStruct, 'event_config_enable_suggest_event', true) EQ 1>
+		
+					<tr>
+						<td colspan="2"><h2>Suggested By Information</h2>
+							<p>These fields will be populated when a user has submitted the event and choose to provide this optional information.  These fields are not to be displayed to the public. You can use this information to follow-up with the user to ask questions or let them know the event was posted.</p>
+						</td>
+					</tr>
+					<tr>
+						<th>Name</th>
+						<td><input type="text" name="event_suggested_by_name" style="width:95%;" value="#htmleditformat(form.event_suggested_by_name)#" /></td>
+					</tr>  
+					<tr>
+						<th>Email</th>
+						<td><input type="text" name="event_suggested_by_email" style="width:95%;" value="#htmleditformat(form.event_suggested_by_email)#" /></td>
+					</tr>  
+					<tr>
+						<th>Phone</th>
+						<td><input type="text" name="event_suggested_by_phone" style="width:95%;" value="#htmleditformat(form.event_suggested_by_phone)#" /></td>
+					</tr>  
+				</cfif>
+			</cfif>
 
-			<!---          
-          
-event_generated - what is this?
-event_reservation_enabled - not needed yet.
-event_status - what is this?
- 
-Map Coordinates	Map Location Picker  
-			 --->
+			<cfif not notPublic and request.zos.globals.recaptchaSecretkey NEQ "">
+				<tr>
+					<td colspan="2">
+					#application.zcore.functions.zDisplayRecaptcha()#
+					</td>
+				</tr>
+			</cfif>
+	
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
-				<td><button type="submit" name="submitForm">Save</button>
-					
-					<cfif form.modalpopforced EQ 1>
-						<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+				<td>
+					<cfif notPublic>
+						<button type="submit" name="submitForm">Save</button>
+						<cfif form.modalpopforced EQ 1>
+							<button type="button" name="cancel" onclick="window.parent.zCloseModal();">Cancel</button>
+						<cfelse>
+							<cfscript>
+							cancelLink="/z/event/admin/manage-events/index";
+							</cfscript>
+							<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+						</cfif>
 					<cfelse>
-						<cfscript>
-						cancelLink="/z/event/admin/manage-events/index";
-						</cfscript>
-						<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
+						<button type="submit" name="submitForm">Submit</button>
 					</cfif>
 				</td></td>
 			</tr>
@@ -779,6 +1012,7 @@ Map Coordinates	Map Location Picker
 	db=request.zos.queryObject;
 
 	application.zcore.functions.zRequireJqueryUI();
+	form.showInactive=application.zcore.functions.zso(form, 'showInactive', true);
  	form.event_recur=application.zcore.functions.zso(form, 'event_recur');
  	form.event_start_date=application.zcore.functions.zso(form, 'event_start_date');
  	form.event_end_date=application.zcore.functions.zso(form, 'event_end_date');
@@ -813,6 +1047,11 @@ Map Coordinates	Map Location Picker
 	}
 	db.sql&=" event.site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
+	if(form.showInactive EQ 0){
+		db.sql&=" and event_status = #db.param(1)# ";
+	}else{
+		searchOn=true;
+	}
 	if(form.showRecurring EQ 1){
 		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
 			db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
@@ -865,6 +1104,9 @@ Map Coordinates	Map Location Picker
 	}
 	db.sql&=" event.site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
+	if(form.showInactive EQ 0){
+		db.sql&=" and event_status = #db.param(1)# ";
+	}
 	if(form.showRecurring EQ 1){
 		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
 			db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(form.event_start_date, 'yyyy-mm-dd'))# ";
@@ -934,6 +1176,11 @@ Map Coordinates	Map Location Picker
 		<div style="width:145px;margin-bottom:10px;float:left;">
 			Show Recurring Dates: <br />
 			#application.zcore.functions.zInput_Boolean("showRecurring")#
+		</div>
+		<div style="width:145px;margin-bottom:10px;float:left;">
+			Show Inactive: <br />
+			<input type="checkbox" name="showInactive" value="1" <cfif form.showInactive EQ "1">checked="checked"</cfif>>
+
 		</div>
 		
 		<div style="width:120px;margin-bottom:10px;float:left;">
@@ -1016,6 +1263,7 @@ Map Coordinates	Map Location Picker
 			<th>Start Date</th>
 			<th>End Date</th>
 			<th>Recurring</th>
+			<th>Active</th>
 			<th>Last Updated</th>
 			<th>Admin</th>
 		</tr>
@@ -1083,6 +1331,13 @@ Map Coordinates	Map Location Picker
 		echo('<td>');
 	if(row.event_recur_ical_rules NEQ ""){
 		echo(request.ical.getIcalRuleAsPlainEnglish(row.event_recur_ical_rules));
+	}else{
+		echo('No');
+	}
+	echo('</td>
+		<td>');
+	if(row.event_status EQ 1){
+		echo('Yes');
 	}else{
 		echo('No');
 	}

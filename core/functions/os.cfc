@@ -576,6 +576,15 @@ if(not rs.success){
 	local.skin.onSiteStart(ts);
 	
 	ts.leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();
+
+
+	if(structkeyexists(application.zcore, 'templateCFCCache') and structkeyexists(application.zcore.templateCFCCache, request.zos.globals.id)){
+		structclear(application.zcore.templateCFCCache[request.zos.globals.id]);
+	}
+	if(structkeyexists(application.zcore, 'compiledSiteTemplatePathCache') and structkeyexists(application.zcore.compiledSiteTemplatePathCache, request.zos.globals.id)){
+		structclear(application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id]);
+	}
+
 	ts.getSiteRan=true;
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc getSite end'});
 	return ts;

@@ -349,6 +349,7 @@
 	<table class="table-list">
 		<tr>
 			<th>Name</th>
+			<th>Access</th>
 			<th>Last Updated</th>
 			<th>Admin</th>
 		</tr>
@@ -402,14 +403,24 @@
 	<cfscript>
 	row=arguments.row;
 	echo('<td>#row.event_calendar_name#</td>
+	<td>');
+	if(row.event_calendar_user_group_idlist EQ ""){
+		echo('Public');
+	}else{
+		echo('Private');
+	}
+	echo('</td>
 	<td>#application.zcore.functions.zGetLastUpdatedDescription(row.event_calendar_updated_datetime)#</td>
 	<td>
 		<a href="#request.eventCom.getCalendarURL(row)#" target="_blank">View Calendar</a> | 
 		<a href="#request.eventCom.getCalendarListURL(row)#" target="_blank">View List</a> | 
 		<a href="/z/event/admin/manage-events/add?event_calendar_id=#row.event_calendar_id#">Add Event</a> | 
 		<a href="/z/event/admin/manage-events/index?event_calendar_id=#row.event_calendar_id#">Manage Events</a> | 
-		<a href="/z/event/admin/manage-event-category/index?event_calendar_id=#row.event_calendar_id#">Manage Categories</a> | 
-		<a href="/z/event/admin/manage-event-calendar/edit?event_calendar_id=#row.event_calendar_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a>');
+		<a href="/z/event/admin/manage-event-category/index?event_calendar_id=#row.event_calendar_id#">Manage Categories</a> | ');
+	if(row.event_calendar_user_group_idlist EQ ""){
+		echo('<a href="/z/event/admin/manage-event-widgets/index?calendarids=#row.event_calendar_id#">Embed</a> | ');
+	}
+		echo('<a href="/z/event/admin/manage-event-calendar/edit?event_calendar_id=#row.event_calendar_id#&amp;modalpopforced=1"  onclick="zTableRecordEdit(this);  return false;">Edit</a>');
 		if(not row.hasEvents){
 			echo(' | 
 			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/event/admin/manage-event-calendar/delete?event_calendar_id=#row.event_calendar_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a>');

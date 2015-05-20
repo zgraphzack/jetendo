@@ -6,7 +6,9 @@
 	db=request.zos.queryObject;
 	struct=arguments.struct;
 
-
+	if(struct.event_status EQ 0){
+		application.zcore.template.prependTag("content", '<div class="zEventView-preview-message">This event is not active. The public can''t view it until it is made active.</div>');
+	}
 	eventCom=application.zcore.app.getAppCFC("event");
 	//writedump(struct);
  	eventCalendarId=listGetAt(struct.event_calendar_id, 1);
@@ -66,7 +68,8 @@
 
 	</cfscript>
 	<!--- <cfsavecontent variable="request.eventsSidebarHTML">#local.eventsCom.calendarSidebar()#</cfsavecontent>  --->
-					
+	
+
 	<div class="zEventView1-4">
 		<div class="zEventView1-1">Date:</div>
 		<div class="zEventView1-2">
@@ -196,7 +199,7 @@
 	#slideshowOutBottom#
 
 	<a href="#calendarLink#" class="zEventView1-backToCalendar">Back To Calendar</a>
- 
+ 	
 </cffunction>
 </cfoutput>
 
@@ -209,6 +212,9 @@
 	ts.event_id=form.event_id;
 	ts.onlyFutureEvents=true;
 	ts.perpage=1; 
+	if(application.zcore.user.checkGroupAccess("member")){
+		ts.showInactive=true;
+	}
 	eventCom=application.zcore.app.getAppCFC("event");
 	rs=eventCom.searchEvents(ts); 
 	if(rs.count NEQ 1){
@@ -236,7 +242,9 @@
 	ts.event_recur_id=form.event_recur_id;
 	ts.onlyFutureEvents=false;
 	ts.perpage=1;
-
+	if(application.zcore.user.checkGroupAccess("member")){
+		ts.showInactive=true;
+	}
 	eventCom=application.zcore.app.getAppCFC("event");
 	rs=eventCom.searchEvents(ts); 
 	if(rs.count NEQ 1){
@@ -263,6 +271,9 @@
 	ts.event_id=form.event_id;
 	ts.perpage=1;
 	ts.onlyFutureEvents=true;
+	if(application.zcore.user.checkGroupAccess("member")){
+		ts.showInactive=true;
+	}
 	eventCom=application.zcore.app.getAppCFC("event");
 	rs=eventCom.searchEvents(ts);
 	if(rs.count EQ 0){

@@ -106,7 +106,7 @@
 			}else{
 				arrTemp=listToArray(arguments.value, '|', true);
 			}
-			if(arguments.optionStruct.selectmenu_multipleselection){
+			if(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_multipleselection', true, 0) EQ 1){
 				for(var i=1;i LTE arrayLen(arrTemp);i++){
 					arrTemp[i]=db.trustedSQL('concat(",", '&arguments.databaseField&', ",") like ')&db.trustedSQL("'%,"&application.zcore.functions.zescape(arrTemp[i])&",%'");
 				} 
@@ -117,7 +117,7 @@
 			}
 			return '('&arrayToList(arrTemp, ' or ')&')';
 		}else{
-			if(arguments.optionStruct.selectmenu_multipleselection EQ 1){
+			if(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_multipleselection', true, 0) EQ 1){
 				return db.trustedSQL('concat(",", '&arguments.databaseField&', ",") LIKE ')&db.trustedSQL("'%,"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&",%'");
 			}else{
 				return arguments.databaseField&' = '&db.trustedSQL("'"&application.zcore.functions.zescape(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])&"'");

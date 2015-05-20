@@ -51,6 +51,15 @@ timezone does nothing...
 	ORDER BY event_calendar_unique_url DESC";
 	qF=db.execute("qF");
 
+
+	if(application.zcore.functions.zso(application.zcore.app.getAppData("event").optionStruct, 'event_config_enable_suggest_event', true) EQ 1){
+		t2=StructNew();
+		t2.groupName="Event Calendar";
+		t2.url=request.zos.currentHostName&"/z/event/suggest-an-event/index";
+		t2.title="Suggest An Event";
+		arrayappend(arguments.arrUrl,t2);
+	}
+
 	publicAccess={};
 	for(row in qF){
 		if(row.event_calendar_user_group_idlist EQ ""){
@@ -93,6 +102,7 @@ timezone does nothing...
 	event_deleted = #db.param(0)# and 
 	event_recur_deleted = #db.param(0)# and 
 	event.site_id = event_recur.site_id and 
+	event.event_status=#db.param(1)# and 
 	event_recur.event_id = event.event_id and 
 	event_recur_end_datetime>=#db.param(dateformat(now(), "yyyy-mm-dd")&" 00:00:00")#
 	";
@@ -176,11 +186,26 @@ timezone does nothing...
 			ts.link="/z/event/admin/manage-event-calendar/index";
 			arguments.linkStruct["Events"].children["Manage Event Calendars"]=ts;
 		}
+		if(structkeyexists(arguments.linkStruct["Events"].children,"Manage Event Widgets") EQ false){
+			ts=structnew();
+			ts.featureName="Manage Event Widgets";
+			ts.link="/z/event/admin/manage-event-widgets/index";
+			arguments.linkStruct["Events"].children["Manage Event Widgets"]=ts;
+		}
 		if(structkeyexists(arguments.linkStruct["Events"].children,"Manage Event Categories") EQ false){
 			ts=structnew();
 			ts.featureName="Manage Event Categories";
 			ts.link="/z/event/admin/manage-event-category/index";
 			arguments.linkStruct["Events"].children["Manage Event Categories"]=ts;
+		}
+		if(application.zcore.app.getAppData("event").optionStruct.event_config_enable_suggest_event EQ 1){
+			if(structkeyexists(arguments.linkStruct["Events"].children,"Suggest An Event") EQ false){
+				ts=structnew();
+				ts.featureName="Suggest An Event";
+				ts.link="/z/event/suggest-an-event/index";
+				ts.target="_blank";
+				arguments.linkStruct["Events"].children["Suggest An Event"]=ts;
+			}
 		}
 	}
 	return arguments.linkStruct;
@@ -940,7 +965,10 @@ searchEvents(ts);
  	ss.startDate=application.zcore.functions.zso(ss, 'startDate');
  	ss.endDate=application.zcore.functions.zso(ss, 'endDate'); 
  	ss.calendarids=application.zcore.functions.zso(ss, 'calendarids');
-
+ 	ss.showinactive=application.zcore.functions.zso(ss, 'showinactive');
+	if(not application.zcore.user.checkGroupAccess("member")){
+		ts.showInactive=false;
+	}
 
 	ss.keyword=replace(replace(ss.keyword, '+', '%', 'all'), ' ', '%', 'all');
 
@@ -980,6 +1008,9 @@ searchEvents(ts);
 	event_recur_deleted=#db.param(0)# and 
 	event.site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
+	if(ss.showInactive NEQ 1){
+		db.sql&=" and event.event_status=#db.param(1)# ";
+	}
 	if(ss.event_id NEQ 0){
 		db.sql&=" and event.event_id = #db.param(ss.event_id)# ";
 	}
@@ -1037,6 +1068,9 @@ searchEvents(ts);
 		event_recur_deleted=#db.param(0)# and 
 		event.site_id = #db.param(request.zos.globals.id)# and 
 		event_deleted=#db.param(0)# ";
+		if(ss.showInactive NEQ 1){
+			db.sql&=" and event.event_status=#db.param(1)# ";
+		}
 		if(ss.event_id NEQ 0){
 			db.sql&=" and event.event_id = #db.param(ss.event_id)# ";
 		}
@@ -1189,7 +1223,7 @@ searchEvents(ts);
 		if(arguments.id NEQ false){
 			db.sql&=" and event_id = #db.param(arguments.id)# ";
 		}
-		db.sql&=" and event_status <> #db.param(1)# and  
+		db.sql&=" and event_status = #db.param(1)# and  
 		event_deleted=#db.param(0)# and 
 		event_config_deleted =#db.param(0)#	
 		LIMIT #db.param(offset)#, #db.param(limit)#";
@@ -1659,6 +1693,16 @@ searchEvents(ts);
 		writeoutput(application.zcore.app.selectAppUrlId("event_config_category_url_id", form.event_config_category_url_id, this.app_id));
 		echo('</td>
 		</tr> 
+		<tr>
+		<th>Enable Suggest Event:</th>
+		<td>');
+
+		if(form.event_config_enable_suggest_event EQ ""){
+			form.event_config_enable_suggest_event=0;
+		}
+		echo(application.zcore.functions.zInput_Boolean("event_config_enable_suggest_event"));
+		echo('</td>
+		</tr>
 		<tr>
 		<th>Disable Robot Recurring<br />Event Indexing:</th>
 		<td>');
