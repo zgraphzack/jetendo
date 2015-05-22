@@ -1,5 +1,4 @@
-
-var zOpenMenuCache=[];
+ 
 var zValues=[];
 var zFormData=new Object();
 	var zTouchPosition={x:[0],y:[0],curX:[0],curY:[0],count:0,curCount:0};
@@ -22,38 +21,51 @@ var arrOriginalMenuButtonWidth=[];
 	}
 	function zFixMenuOnTablets(){
 		var a=zGetElementsByClassName("trigger");
+		$(".zMenuBarDiv ul").css("display", "none");
 		for(var i=0;i<a.length;i++){
-			a[i].onclick=function(){ 
-				if(this.parentNode.childNodes.length>=3){
-					if(this.parentNode.childNodes[2].style.display==="block"){
-						for(var i2=0;i2<zOpenMenuCache.length;i2++){
-							zOpenMenuCache[i2].style.display="none";	
+			a[i].onmousedown=function(){ 
+				var pos=zGetAbsPosition(this);
+				var pos2=$(this).position();
+				var c2=document.getElementById(this.parentNode.id+"_menu"); 
+				if(zContentTransition.firstLoad===false){
+					$(this).children("ul").css("display","block");
+				} 
+				if(c2){
+					 c2.style.position="absolute";
+					 var vertical=zo(this.id.split("_")[0]+"Vertical");
+					 if(vertical){
+						 c2.style.top=(pos2.top)+"px";c2.style.left=(pos2.left+pos.width)+"px";
+					 }else{ 
+						 c2.style.top=(pos2.top+pos.height)+"px";c2.style.left=pos2.left+"px";
+					 }
+				}
+			}; 
+			a[i].onclick=function(){  
+				if(zWindowSize.width < 960){
+					return true;
+				}
+				var c2=document.getElementById(this.parentNode.id+"_menu"); 
+				var currentDisplay=c2.style.display;
+				$(".zMenuBarDiv ul").css("display", "none");
+				c2.style.display='block'; 
+				if(c2){
+					if(currentDisplay!='none'){
+						var v=zContentTransition.doLinkOnClick(this); 
+						if(v){
+							$(".zMenuBarDiv ul").css("display", "none");
 						}
-						return zContentTransition.doLinkOnClick(this);//this.parentNode.childNodes[2].style.display="none";
+						return v;
 					}else{
-						for(var i2=0;i2<zOpenMenuCache.length;i2++){
-							zOpenMenuCache[i2].style.display="none";	
-						}
-						zOpenMenuCache=[];
-						this.parentNode.childNodes[2].style.display="block";
-						zOpenMenuCache.push(this.parentNode.childNodes[2]);
+						return false;
 					}
-					return false;
-				}
+				}else{
+					var v=zContentTransition.doLinkOnClick(this); 
+					if(v){
+						$(".zMenuBarDiv ul").css("display", "none");
+					}
+					return v;
+				} 
 			};
-		}
-		var lg=document.getElementsByTagName("UL");
-		if(lg){
-			for(var k=0;k<lg.length;k++){
-				if(lg[k].id.indexOf("_mb_menu")!==-1){
-					lg[k].onclick=function(){
-						for(var i2=0;i2<zOpenMenuCache.length;i2++){
-							zOpenMenuCache[i2].style.display="none";	
-						}	
-						zOpenMenuCache=[];
-					};
-				}
-			}
 		}
 	}
 	zArrDeferredFunctions.push(function(){
@@ -141,7 +153,7 @@ var arrOriginalMenuButtonWidth=[];
 			 if(lg){
 				 for(k=0;k<lg.length;k++){
 					if(lg[k].parentNode.id.indexOf("zMenuDiv")!==-1){ 
-						zMenuButtonCache.push(lg[k]);
+						zMenuButtonCache.push(lg[k]); 
 						 lg[k].onmouseover=function(){
 							 var pos=zGetAbsPosition(this);
 							 var pos2=$(this).position();
@@ -154,7 +166,7 @@ var arrOriginalMenuButtonWidth=[];
 								 var vertical=zo(this.id.split("_")[0]+"Vertical");
 								 if(vertical){
 									 c2.style.top=(pos2.top)+"px";c2.style.left=(pos2.left+pos.width)+"px";
-								 }else{
+								 }else{ 
 									 c2.style.top=(pos2.top+pos.height)+"px";c2.style.left=pos2.left+"px";
 								 }
 								c2.style.zIndex=2000;
