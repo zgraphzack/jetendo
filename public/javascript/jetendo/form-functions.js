@@ -890,7 +890,7 @@ var zLastAjaxVarName=""; */
 		var d2=document.getElementById(id+"_label");
 		var f=false; 
 		var alphaExp = /[^\+0-9\.]/;
-		var v=zValues[zV+2];
+		var v=d2.value;//zValues[zV+2];
 		v=new String(v).split(",").join("").split("$").join("");
 		if(v.match(alphaExp) && v!=="min" && v!=="max"){
 			if(zV+3===zOff){
@@ -901,17 +901,17 @@ var zLastAjaxVarName=""; */
 			d2.value=v; 
 			f=true;
 			alert('You may type only numbers 0-9.');
-		}
+		} 
 		if(v==="min" || v==="max"){
 			return;
-		}
+		} 
 		var a1=zValues[zV];
 		var lastV=a1[0];
 		var curV=a1[0];
 		var curPosition=0;
-		var t1=document.getElementById("zInputSliderBox"+zV);
+		var t1=document.getElementById("zInputSliderBox"+(zV-(sliderIndex-1)));
 		var curPos=zGetAbsPosition(t1);
-		var curSlider=document.getElementById("zInputDragBox"+sliderIndex+"_"+zV);
+		var curSlider=document.getElementById("zInputDragBox"+sliderIndex+"_"+(zV-(sliderIndex-1)));
 		var curValue=d2.value;
 		curValue=parseFloat(curValue.split(",").join("").split("$").join(""));
 		var found=false;
@@ -933,7 +933,7 @@ var zLastAjaxVarName=""; */
 		}
 		
 		d2.value=v;
-		v=parseFloat(v);
+		v=parseFloat(v); 
 		/*if(zV+2===zOff){
 			if(parseFloat(zValues[zV+1])>parseFloat(v)){
 				v=zValues[zV+2];
@@ -968,14 +968,17 @@ var zLastAjaxVarName=""; */
 		// get width of the bar
 		var tWidth=curPos.width-20;
 		var newSliderPos=Math.round((curPosition/(a1.length))*tWidth);
-		if(sliderIndex === 2){
-			curSlider.style.marginRight=(tWidth-newSliderPos)+"px";
-		}else{
-			curSlider.style.marginLeft=newSliderPos+"px";
+		if(typeof curSlider != "undefined"){
+			if(sliderIndex === 2){
+				curSlider.style.marginRight=(tWidth-newSliderPos)+"px";
+			}else{
+				curSlider.style.marginLeft=newSliderPos+"px";
+			}
 		}
 		d1.value=v;
 		zValues[zOff]=v;
-		zInputSlideOnChange('zInputHiddenValues'+zV,zValues[zV+2],zValues[zV+3],zExpValue);
+		var zOff9=(zV-(sliderIndex-1));
+		zInputSlideOnChange('zInputHiddenValues'+(zV-(sliderIndex-1)),zValues[zOff9+2],zValues[zOff9+3],zExpValue);
 	}
 
 	function zInputSlideLimit(obj,paramObj,forceOnChange){
@@ -1097,7 +1100,7 @@ var zLastAjaxVarName=""; */
 
 	function zExpOptionSetValue(i,v,h){
 		var d1=document.getElementById('zExpOption'+i+'_button');
-		if(h===null) h="none";
+		if(h===null || typeof h == "undefined") h="none"; 
 		if(d1!==null) d1.innerHTML=zExpOptionLabelHTML[i]+" <span id=\"zExpOption"+i+"_value\" style=\"display:"+h+";\">"+zStringReplaceAll(v,",",", ")+"</span>";
 	}
 

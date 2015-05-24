@@ -2551,7 +2551,7 @@ zInputSlider(ts);
 #local.tempRS.output#
 <div style="float:left; width:50%;"><input type="hidden" name="zInputHiddenValues#zValue#" id="zInputHiddenValues#zValue#" onchange="#arguments.ss.onchange#" value="" />
 <cfif arguments.ss.leftLabel NEQ "">#arguments.ss.leftLabel#</cfif>
-<input type="text" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name#_label" id="#arguments.ss.name#_label" value="#htmleditformat(label1value)#" onkeyup="zExpShowUpdateBar(#zValue+6#, 'block');" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+6#, 'none');zInputSliderSetValue('#arguments.ss.name#',#zValue#,#zValue+2#,this.value,#zValue+6#, 1);" />
+<input type="text" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name#_label" id="#arguments.ss.name#_label" value="#htmleditformat(label1value)#" onkeyup="zExpShowUpdateBar(#zValue+6#, 'block');zInputSliderSetValue('#arguments.ss.name#',#zValue#,#zValue+2#,this.value,#zValue+6#, 1);" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+6#, 'none');zInputSliderSetValue('#arguments.ss.name#',#zValue#,#zValue+2#,this.value,#zValue+6#, 1);" />
 
 <input type="hidden" name="#arguments.ss.name#" id="#arguments.ss.name#" value="#htmleditformat(selectedValue1)#" /> 
 
@@ -2559,7 +2559,7 @@ zInputSlider(ts);
 
 <div style="float:right; text-align:right; width:50%;"><cfif arguments.ss.range><cfif arguments.ss.middleLabel NEQ "">#arguments.ss.middleLabel#</cfif>
 
-<input type="text" onkeyup="zExpShowUpdateBar(#zValue+7#, 'block');" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+7#, 'none');zInputSliderSetValue('#arguments.ss.name2#',#zValue+1#,#zValue+3#,this.value,#zValue+7#, 2);" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name2#_label" value="#htmleditformat(label2value)#" id="#arguments.ss.name2#_label" />
+<input type="text" onkeyup="zExpShowUpdateBar(#zValue+7#, 'block');zInputSliderSetValue('#arguments.ss.name2#',#zValue+1#,#zValue+3#,this.value,#zValue+6#, 2);" onclick="zCacheSliderValues[this.id]=this.value;this.value='';" onblur="if(this.value==''){this.value=zCacheSliderValues[this.id];} zExpShowUpdateBar(#zValue+7#, 'none');zInputSliderSetValue('#arguments.ss.name2#',#zValue+1#,#zValue+3#,this.value,#zValue+6#, 2);" style="width:#arguments.ss.fieldWidth#px;" name="#arguments.ss.name2#_label" value="#htmleditformat(label2value)#" id="#arguments.ss.name2#_label" />
 
 <input type="hidden" name="#arguments.ss.name2#" id="#arguments.ss.name2#" value="#htmleditformat(selectedValue2)#" />
 
@@ -2584,7 +2584,7 @@ zValues[#zValue+5#]="<cfif label2value NEQ "">#label2value#<cfelse></cfif>";
 zSetSliderInputArray("#arguments.ss.name#_label");
 zSetSliderInputArray("#arguments.ss.name2#_label");
 zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",constrainObj:"zInputDragBox2_#zValue#",constrainLeft:false,labelId:"#arguments.ss.name#_label",valueId:"#arguments.ss.name#",zValue:#zValue#,zValueValue:#zValue+2#,zValueLabel:#zValue+4#,zExpOptionValue:#zValue+6#,range:#arguments.ss.range#});
-zDrag_makeDraggable(document.getElementById("zInputDragBox2_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",constrainObj:"zInputDragBox1_#zValue#",constrainLeft:true,labelId:"#arguments.ss.name2#_label",valueId:"#arguments.ss.name2#",zValue:#zValue#,zValueValue:#zValue+3#,zValueLabel:#zValue+5#,zExpOptionValue:#zValue+7#,range:#arguments.ss.range#});
+zDrag_makeDraggable(document.getElementById("zInputDragBox2_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",constrainObj:"zInputDragBox1_#zValue#",constrainLeft:true,labelId:"#arguments.ss.name2#_label",valueId:"#arguments.ss.name2#",zValue:#zValue#,zValueValue:#zValue+3#,zValueLabel:#zValue+5#,zExpOptionValue:#zValue+6#,range:#arguments.ss.range#});
 <cfelse>
 zDrag_makeDraggable(document.getElementById("zInputDragBox1_#zValue#"),{callbackFunction:zInputSlideLimit,boxObj:"zInputSliderBox#zValue#",labelId:"#arguments.ss.name#_label",valueId:"#arguments.ss.name#",zValue:#zValue#,zValueValue:#zValue+2#,zValueLabel:#zValue+4#,zExpOptionValue:#zValue+6#,range:#arguments.ss.range#});
 </cfif>
