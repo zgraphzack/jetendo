@@ -1971,6 +1971,7 @@ configCom.includeContentByName(ts);
 <cffunction name="getSectionHomeLink" localmode="modern" access="public" output="no" returntype="string">
 	<cfargument name="site_x_option_group_set_id" type="string" required="yes">
 	<cfscript>
+	application.zcore.functions.z404("getSectionHomeLink disabled");
 	struct=application.zcore.functions.zGetSiteOptionGroupSetById(arguments.site_x_option_group_set_id);
 	return "/#application.zcore.functions.zURLEncode(struct.__title,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_section_id#-#arguments.site_x_option_group_set_id#.html";
 	</cfscript>
@@ -1979,6 +1980,7 @@ configCom.includeContentByName(ts);
 <cffunction name="displayContentSection" localmode="modern" access="remote" output="yes" returntype="any">
 	<cfscript>
 	db=request.zos.queryObject;
+	application.zcore.functions.z404("displayContentSection disabled");
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
 
 	struct=application.zcore.functions.zGetSiteOptionGroupSetById(form.site_x_option_group_set_id);

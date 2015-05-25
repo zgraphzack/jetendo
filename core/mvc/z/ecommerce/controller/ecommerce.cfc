@@ -145,6 +145,28 @@ CREATE TABLE `order` (
   KEY `NewIndex3` (`site_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC
 
+Order should have copy of all customer, shipping, price fields
+
+
+don't delete.  copy when updated and deactivate old record.  ask user if they want to move existing orders to new address - if recurring orders exist.
+user_address
+	user_address_id
+	site_id
+	user_id
+	user_id_siteIDType
+	user_address_default char(1) 0 - only one can be 1 per user_address_type per user.
+	user_address_type char(1) 0 | 0 is billing, 1 is shipping
+	user_address_address
+	user_address_address2
+	user_address_city
+	user_address_zip
+	user_address_state
+	user_address_country
+	user_address_address_active char(1) 0
+	order_id
+
+	guest order doesn't need user_id and the order gets associated with user_address_id, but user can't retrieve access to the order.
+
 
 getActiveSubscription()
 	select * from order where user_id = #user_id# and 
@@ -167,7 +189,7 @@ order_item
 	order_item_key_data (json - like {"site_id":1,"table_id":1} )
 	order_item_updated_datetime
 	order_item_deleted
-	order_item_custom_json  longtext
+	order_item_custom_json  longtext - option config - could be in another table like order_item_x_option
 	site_id
 CREATE TABLE `product_category` (
   `product_category_id` int(11) unsigned NOT NULL DEFAULT '0',
@@ -222,8 +244,112 @@ CREATE TABLE `product` (
   PRIMARY KEY (`site_id`,`product_id`),
   KEY `NewIndex1` (`site_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+	product fields:
+		product_min_order_quantity
+		product_max_order_quantity
+		product_enable_inventory char(1) 0
+		min/max quantity per user
+		product_available_quantity int (including the option combinations)
+		product_list_available_quantity char(1) 0
+		product_min_available_to_allow_order 1 or more
+		product_hide_when_unavailable
+		rules for when out of stock - allow backorder or not
+		product_returnable
+		product_metatitle
+		product_msrp_price
+		product_summary TEXT
+
+	shipping rules per product...
+
+product_x_option_group
+	product_x_option_group_id
+	product_x_option_group_required char(1)
+	product_option_group_id
+	product_id
+	site_id
+
+product_x_option
+	product_option_original_image
+	product_option_full_image
+	product_option_thumbnail_image
+	
+
+product_x_option_x_group
+	product_x_option_x_group_id
+	product_option_id_list  (product_x_option_group_id sorted ascending)
+	product_x_option_x_group_quantity
+	product_x_option_x_group_price
+
+product_option_group
+	product_option_group_id
+	product_id
+	site_id
+	product_option_group_name
+
+product_option
+	product_option_id
+	product_id
+	site_id
+	product_option_name
 
 
+product_filter
+	product_filter_id
+	product_filter_name
+	product_category_id
+	site_id
+	product_filter_show_on_home
+	product_filter_display_limit
+	product_filter_show_count char(1) 0
+	product_filter_data_type varchar(10) range, indexed or list
+	product_filter_label_list
+	product_filter_value_list
+	product_filter_search_field_type from/to range, select menu, radio group, checkbox group, text field
+
+product_filter_x_section
+	product_filter_x_section_id
+	site_id
+	section_id
+	product_filter
+	product_filter_x_section_sort
+
+product_filter_x_product_category
+	product_filter_x_product_category_id
+	product_filter_id
+	product_category_id
+	product_filter_x_product_category_sort
+	site_id
+
+product_filter_range
+	product_filter_id
+	site_id
+
+product_filter_index
+	product_filter_index_id
+	site_id
+	product_filter_index_value
+	product_filter_index_active char(1) 0
+
+product_filter_count
+	product_filter_index_id_list
+
+product_search
+	product_search_title varchar 100
+	product_search_summary VARCHAR 255
+	product_option_id
+	product_option_id_list
+	product_search_text longtext
+	product_search_image
+	product_search_in_stock
+	product_search_allow_order
+	product_search_price
+	product_search_text fulltext index
+
+product_search_memory
+
+	how to filter on product options with fastest performance
+		lucene, sphinx, solr
+	product_search_filter1
 
 Using custom form builder and 30 hours or more, I could have most of the ecommerce stuff in Jetendo.   For product based sites, it would take a couple more days to have UPS quotes / coupons which are probably required.
 
@@ -313,6 +439,141 @@ Future Features:
 	Support foreign currencies and currency conversion for prices to help user.
 	Mobile / responsive 320+ width compatibility
  --->
+<cffunction name="testFacets" access="remote" localmode="modern"> 
+    <cfscript>
+	if(not request.zos.istestserver){
+		application.zcore.functions.z404("Only available on test server");
+	}
+
+	// https://mariadb.com/kb/en/mariadb/fulltext-index-overview/
+	/*
+	zdead.a5 table has fulltext index tests with facets in the fulltext column instead outside columns - it is fast. need to test with too much data
+
+#this query work for relevance with facets.   for search without facets, i could use natural language mode instead.
+SELECT SQL_NO_CACHE *, MATCH(a5_text) AGAINST ('+"facet2:2|"' IN BOOLEAN MODE) AS relevance FROM a5 
+WHERE MATCH(a5_text) AGAINST ('+":facet1:2|"' IN BOOLEAN MODE) 
+ORDER BY relevance DESC LIMIT 0,100;
+
+SELECT *, MATCH(a5_text) AGAINST ('"facet3:1"') AS relevance FROM a5 ORDER BY relevance DESC;
+SELECT *, MATCH(a5_text) AGAINST ('":facet3:1|" ":facet2:2|" "imagine magic"') AS relevance FROM a5 ORDER BY relevance DESC;
+SELECT *, MATCH(a5_text) AGAINST ('+":facet3:1|" -":facet2:2|" +"imagine magic"' IN BOOLEAN MODE) AS relevance FROM a5 ORDER BY relevance DESC;
+SELECT *, MATCH(a5_text) AGAINST ('+:facet1:2| +magic' IN BOOLEAN MODE) AS relevance FROM a5 ORDER BY relevance DESC;
+SELECT *, MATCH(a5_text) AGAINST (':facet1:2| magic') AS relevance FROM a5;
+*/
+
+	// filter format: :filter_option_id:value|:filter_option_id:value
+	fieldStruct={ facet1:3, facet2:3, facet3:2};//, facet4:3, facet5:5, facet6:3};
+	arrField=structkeyarray(fieldStruct);
+	arraySort(arrField, "text", "asc");
+
+	dataStruct={};
+	for(i=1;i LTE 200;i++){ 
+		arrRow=[];
+		for(n=1;n LTE arraylen(arrField);n++){
+			v=randrange(0, fieldStruct[arrField[n]]);
+			if(v GT 0){
+				arrayAppend(arrRow, ":"&arrField[n]&":"&v);
+			}
+		}
+		v=arrayToList(arrRow, "|");
+		if(not structkeyexists(dataStruct, v)){
+			dataStruct[v]=0;
+		}
+		dataStruct[v]++; 
+	}
+	structdelete(dataStruct, "");
+	for(i in dataStruct){
+		echo(i&"<br>");
+	}
+	writedump(dataStruct);
+	abort;
+	arrList=[];
+	index=1;
+	for(i in fieldStruct){
+		arrList[index]=[];
+		for(n=1;n LTE fieldStruct[i];n++){
+			arrayAppend(arrList[index], i&"-"&n);
+		}
+		index++;
+	}
+	//writedump(arrList);
+	arrResult=[];
+	arrResult2=[];
+	generatePermutations(dataStruct, arrList, 1, "");
+	echo("permutations:"&arrayLen(arrResult2)&"<hr>");
+	for(i in dataStruct){
+		if(dataStruct[i] NEQ 0){
+			echo(i&"="&dataStruct[i]&"<br>");
+		}
+	}
+
+	abort;
+    echo('done');
+    abort;
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="generatePermutations" access="public" localmode="modern">
+	<cfargument name="dataStruct" type="struct" required="yes"> 
+	<cfargument name="arrList" type="array" required="yes"> 
+	<cfargument name="depth" type="numeric" required="yes"> 
+	<cfargument name="current" type="string" required="yes"> 
+	<cfscript>
+	arrList=arguments.arrList;
+	dataStruct=arguments.dataStruct;
+	current=arguments.current;
+	depth=arguments.depth;
+    echo(current&"<br>");
+
+    if(structkeyexists(dataStruct, current)){
+    	dataStruct[current]++;
+    }
+    if(depth GT arrayLen(arrList)){
+       return;
+    }
+    if(len(current)){
+    	current="|"&current;
+    }
+    for(i =1; i LTE arrayLen(arrList[depth]); i++){ 
+        GeneratePermutations(dataStruct, arrList, depth+1, arrList[depth][i]&current);
+    }
+    </cfscript>
+</cffunction>
+
+<!--- working - returns instead of outputs --->
+<cffunction name="generatePermutations3" access="public" localmode="modern">
+	<cfargument name="arrList" type="array" required="yes"> 
+	<cfargument name="arrResult" type="array" required="yes"> 
+	<cfargument name="depth" type="numeric" required="yes"> 
+	<cfargument name="current" type="string" required="yes"> 
+	<cfargument name="arrResult2" type="array" required="yes"> 
+	<cfargument name="currentStruct" type="struct" required="yes"> 
+	<cfscript>
+	arrList=arguments.arrList;
+    //arguments.currentStruct[arguments.current]=true;
+    //echo(arguments.current&"<br>");
+    arrayAppend(arguments.arrResult2, arguments.currentStruct);
+    arrayAppend(arguments.arrResult, arguments.current);
+    if(arguments.depth GT arrayLen(arrList)){
+       return;
+    }
+    if(arguments.current NEQ ""){
+    	arguments.current="|"&arguments.current;
+    }
+
+    for(i =1; i LTE arrayLen(arrList[arguments.depth]); i++){ 
+    	v=arrList[arguments.depth][i]&arguments.current;
+    	arr=listToArray(v, "|");
+    	arguments.currentStruct={};
+    	arguments.currentStruct[arrList[arguments.depth][i]]=true;
+    	for(n=1;n LTE arraylen(arr);n++){
+	    	arguments.currentStruct[arr[n]]=true;
+	    }
+        GeneratePermutations(arrList, arguments.arrResult, arguments.depth + 1, v, arguments.arrResult2, arguments.currentStruct);
+    }
+    </cfscript>
+</cffunction>
 
 <cffunction name="onSiteStart" localmode="modern" output="no" access="public"  returntype="struct" hint="Runs on application start and should return arguments.sharedStruct">
 	<cfargument name="sharedStruct" type="struct" required="yes" hint="Exclusive application scope structure for this application.">

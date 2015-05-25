@@ -63,18 +63,6 @@ search sql generator has to be able to search on child group data for paging to 
 			}
 		}
 	}
-	/*
-	display search form fields on public url
-	site_option_public_searchable
-	
-	Allow filtering the search results by the public searchable groups
-		site_option_group_public_searchable
-		
-		fill in search criteria with ajax request, to make it fast.
-	*/
-	/*a=application.zcore.functions.zGetSiteOptionGroupSetById(751);
-	writedump(a);
-	abort;*/
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# , #db.table("site_option", request.zos.zcoreDatasource)# WHERE 
 	site_option.site_id = site_option_group.site_id and 

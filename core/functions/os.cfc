@@ -1441,7 +1441,7 @@ application.zcore.functions.zLogError(ts);
 	return application.zcore.siteOptionCom.getOptionGroupById(arguments.site_option_group_id, arguments.site_id); 
 	</cfscript>
 </cffunction>
-     
+     <!--- 
 <cffunction name="zGetSiteOptionGroupSetById" localmode="modern" output="yes" returntype="struct">
 	<cfargument name="site_option_group_set_id" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
@@ -1453,7 +1453,7 @@ application.zcore.functions.zLogError(ts);
 	}
 	return application.zcore.siteOptionCom.getOptionGroupSetById(arguments.arrGroupName, arguments.site_option_group_set_id, arguments.site_id, arguments.showUnapproved); 
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="zSiteOptionGroupIdByName" localmode="modern" output="no" returntype="numeric">
 	<cfargument name="groupName" type="string" required="yes">

@@ -1036,6 +1036,7 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 </cffunction>
  
 <cffunction name="optionGroupSetFromDatabaseBySetId" access="public" returntype="struct" localmode="modern">
+	<cfargument name="groupId" type="string" required="yes">
 	<cfargument name="setId" type="string" required="yes">
 	<cfargument name="site_id" type="numeric" required="yes">
 	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
@@ -1050,7 +1051,8 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	s1.site_id = s2.site_id and 
 	s1.site_option_group_id = s2.site_option_group_id and 
-	s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and ";
+	s1.site_x_option_group_set_id = s2.site_x_option_group_set_id and 
+	s1.site_option_group_id=#db.param(arguments.groupId)# and ";
 	if(not arguments.showUnapproved){
 		db.sql&=" s1.site_x_option_group_set_approved=#db.param(1)# and ";
 	}

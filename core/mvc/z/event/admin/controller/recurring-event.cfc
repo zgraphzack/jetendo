@@ -1,5 +1,5 @@
 <cfcomponent>
-<cfoutput>
+<cfoutput> 
 	<!--- 
 
 To test all recurring rule types, open the browser console and run this URL on your domain:
@@ -147,37 +147,6 @@ To test all recurring rule types, open the browser console and run this URL on y
 	});
 	</script>
 	<style type="text/css">
-.zRecurBoxColumn1{ width:400px;vertical-align:top; display:table-cell; min-width:310px; max-width:372px;  }
-.zRecurBoxColumn2{ padding-left:5px;vertical-align:top; display:table-cell;  }
-@media only screen and (max-width: 640px) {
-	.zRecurBoxColumn1{display:block;width:95%; max-width:95%; min-width:320px;float:left;}
-	.zRecurBoxColumn2{display:block;width:95%; max-width:95%;  min-width:320px; padding-left:0px;float:left;}
-}
-.zRecurBox{ width:95%;border:1px solid ##999; border-radius:5px; padding:2%; float:left; margin-bottom:10px;}
-.zRecurCalendarContainer{width:150px;margin:5px; background-color:##FFF; color:##000;float:left; }
-.zRecurCalendarMonth{ padding:1px;  font-weight:bold;text-align:center;width:100%; float:left;}
-.zRecurCalendar{
-	text-align:center; width:150px; display:table; table-layout:fixed; border-spacing:0px;  
-}
-.zRecurCalendarWeek{display:table-row;}
-.zRecurCalendarDayLabels{ padding:1px;  display:table-row;}
-.zRecurCalendarDayLabel{ padding:1px; display:table-cell; }
-.zRecurCalendarDay, .zRecurCalendarDayOtherMonth{
-	display:table-cell; padding:1px; margin:0px; line-height:normal;
-}
-.zRecurCalendarDayMarked{font-weight:bold; color:##369;cursor:pointer; background-color:##369; color:##FFF;}
-.zRecurCalendarDayOtherMonth{ background-color:##EEE; color:##999;}
-.zRecurType{display:none;}
-.zRecurDayButton{display:block; color:##000;background-color:##F6F6F6;border:1px solid ##CCC; cursor:pointer; border-radius:5px; padding:4px; margin-right:3px; float:left;}
-.zRecurDayButton label{ line-height:15px;cursor:pointer;  }
-.zRecurDayButton input{margin:0px; cursor:pointer; margin-top:1px;padding:0px;}
-.zRecurDayButton:hover{ background-color:##FFF;color:##000;}
-.zRecurExcludedDayText{width:75px; float:left;}
-.zRecurExcludedDay{width:100px; float:left; margin-right:5px; margin-bottom:5px; color:##000; padding:5px;background-color:##F6F6F6;border:1px solid ##CCC; cursor:pointer; border-radius:5px; }
-.zRecurExcludedDay:hover{ background-color:##FFF;color:##000;}
-.zRecurExcludedDayDeleteButton{float:right;width:20px; border-radius:5px; text-align:center;background-color:##CCC; color:##000; margin-left:5px;}
-.zRecurCalendarDayExcluded{background-color:##900; color:##FFF;cursor:pointer;}
-.zRecurEventBox{width:100%; float:left;}
 </style>
 <div class="zRecurEventBox">
 	<div class="zRecurBoxColumn1"> 

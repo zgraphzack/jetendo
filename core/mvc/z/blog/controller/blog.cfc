@@ -3784,12 +3784,14 @@ this.app_id=10;
 <cffunction name="getSectionHomeLink" localmode="modern" access="public" output="no" returntype="string">
 	<cfargument name="site_x_option_group_set_id" type="string" required="yes">
 	<cfscript>
+	application.zcore.functions.z404("getSectionHomeLink disabled");
 	return "/#application.zcore.functions.zURLEncode(application.zcore.app.getAppData("blog").optionStruct.blog_config_title,'-')#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_section_id#-#arguments.site_x_option_group_set_id#.html";
 	</cfscript>
 </cffunction>
 	
 <cffunction name="displayBlogSection" localmode="modern" access="remote" output="yes" returntype="any">
 	<cfscript>
+	application.zcore.functions.z404("displayBlogSection disabled");
 	variables.init();
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
 
@@ -3830,6 +3832,7 @@ this.app_id=10;
 
 <cffunction name="displayBlogCategorySection" localmode="modern" access="remote" output="yes" returntype="any">
 	<cfscript>
+	application.zcore.functions.z404("displayBlogCategorySection disabled");
 	variables.init();
 	form.blog_category_id=application.zcore.functions.zso(form, 'blog_category_id', true, 0);
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);

@@ -1012,10 +1012,13 @@ used to do search for a list of values
 		var groupStruct=typeStruct.optionGroupLookup[groupId]; 
 		if(not arguments.showUnapproved and groupStruct["#variables.type#_option_group_enable_cache"] EQ 1 and structkeyexists(t9.optionGroupSet, arguments.option_group_set_id)){
 			groupStruct=t9.optionGroupSet[arguments.option_group_set_id];
+			if(groupStruct.__groupID NEQ groupID){
+				application.zcore.functions.z404("#arrayToList(arguments.arrGroupName, ", ")# is not the right group for #variables.type#_option_group_set_id: #arguments.option_group_set_id#");
+			}
 			appendOptionGroupDefaults(groupStruct, groupStruct.__groupId);
 			return groupStruct;
 		}else{ 
-			return optionGroupSetFromDatabaseBySetId(arguments.option_group_set_id, arguments.site_id, arguments.showUnapproved);
+			return optionGroupSetFromDatabaseBySetId(groupId, arguments.option_group_set_id, arguments.site_id, arguments.showUnapproved);
 		}
 	}else{
 		if(structkeyexists(t9, "optionGroupSet") and structkeyexists(t9.optionGroupSet, arguments.option_group_set_id)){
