@@ -1649,9 +1649,13 @@
 	var row=0; 
 	var arrTempData=[];
 	local.newDataMappedStruct={};
+	newRecord=false;
+	insertCount=0;
+	updateCount=0;
 	for(row in qD){
 
 		if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
+			newRecord=true;
 			row.site_x_option_group_set_created_datetime=request.zos.mysqlnow;
 		}
 		row.site_x_option_group_set_updated_datetime=request.zos.mysqlnow;
@@ -1740,6 +1744,23 @@
 			site_x_option_group_updated_datetime: nowDate,
 			site_x_option_group_original:''
 		}
+		if(not newRecord){
+			db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)# 
+			WHERE site_id = #db.param(tempData.site_id)# and 
+			site_x_option_group_deleted=#db.param(0)# and 
+			site_option_id=#db.param(tempData.site_option_id)# and 
+			site_option_group_id=#db.param(tempData.site_option_group_id)# and 
+			site_x_option_group_set_id=#db.param(tempData.site_x_option_group_set_id)# ";
+			qUpdate=db.execute("qUpdate");
+			if(qUpdate.recordcount){
+				tempData.site_x_option_group_id=qUpdate.site_x_option_group_id;
+				updateCount++;
+			}else{
+				insertCount++;
+			}
+		}else{
+			insertCount++;
+		}
 		if(structkeyexists(rs, 'originalFile')){
 			tempData.site_x_option_group_original=rs.originalFile;
 		}
@@ -1781,7 +1802,8 @@
 		}
 	}
 	//writedump(arrTempData);	writedump(form);abort;
-	if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
+ 
+	if(methodBackup EQ "insertGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){ 
 		if(not structkeyexists(curCache, 'sortValue')){
 			db.sql="select max(site_x_option_group_set_sort) sortid 
 			from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set 
@@ -1835,27 +1857,58 @@
 		}  
 	}else{ 
 		structdelete(form, 'site_x_option_group_set_sort'); 
+
+
 	}
-	if(arraylen(arrTempData)){
-		var arrSQL=["REPLACE INTO #db.table("site_x_option_group", request.zos.zcoreDatasource)#  "];
-		var arrKey=structkeyarray(tempData);
-		var tempCount=arraylen(arrKey);
-		arrayAppend(arrSQL, " ( "&arrayToList(arrKey, ", ")&" ) VALUES ");
-		for(var n=1;n LTE arraylen(arrTempData);n++){
-			if(n NEQ 1){
-				arrayAppend(arrSQL, ", ");
-			}
-			arrayAppend(arrSQL, " ( ");
-			for(var i=1;i LTE tempCount;i++){
-				if(i NEQ 1){
+	if(arraylen(arrTempData)){ 
+		arrUpdate=[];
+		if(insertCount or newRecord){
+			var arrSQL=["INSERT INTO #db.table("site_x_option_group", request.zos.zcoreDatasource)#  "];
+			var arrKey=structkeyarray(tempData);
+			var tempCount=arraylen(arrKey);
+			arrayAppend(arrSQL, " ( "&arrayToList(arrKey, ", ")&" ) VALUES ");
+			for(var n=1;n LTE arraylen(arrTempData);n++){
+				if(structkeyexists(arrTempData[n], 'site_x_option_group_id')){
+					continue;
+				}
+				insertCount++;
+				if(n NEQ 1){
 					arrayAppend(arrSQL, ", ");
 				}
-				arrayAppend(arrSQL, db.param(arrTempData[n][arrKey[i]], 'cf_sql_varchar'));
+				arrayAppend(arrSQL, " ( ");
+				for(var i=1;i LTE tempCount;i++){
+					if(i NEQ 1){
+						arrayAppend(arrSQL, ", ");
+					}
+					arrayAppend(arrSQL, db.param(arrTempData[n][arrKey[i]], 'cf_sql_varchar'));
+				}
+				arrayAppend(arrSQL, " ) ");
 			}
-			arrayAppend(arrSQL, " ) ");
+			db.sql=arrayToList(arrSQL, "");
+			db.execute("qInsert");
 		}
-		db.sql=arrayToList(arrSQL, "");
-		db.execute("qReplace");
+		if(updateCount){ 
+			for(var n=1;n LTE arraylen(arrTempData);n++){
+				c=arrTempData[n];
+				if(not structkeyexists(c, 'site_x_option_group_id')){
+					continue;
+				}
+				db.sql="UPDATE #db.table("site_x_option_group", request.zos.zcoreDatasource)# SET  "; 
+				first=true;
+				for(i in c){
+					if(i EQ "site_id" or i EQ "site_x_option_group_id"){
+						continue;
+					}
+					if(not first){
+						db.sql&=", ";
+					}
+					first=false;
+					db.sql&="`"&i&"`="&db.param(c[i]);
+				} 
+				db.sql&=" WHERE site_id =#db.param(c.site_id)# and site_x_option_group_id=#db.param(c.site_x_option_group_id)# ";
+				db.execute("qUpdate");
+			}
+		}
 		
 	}
 	if(form.site_x_option_group_set_id EQ 0){

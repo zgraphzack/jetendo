@@ -48,10 +48,13 @@
 			//$( "##enddate" ).datepicker();
 			<cfif struct.event_address NEQ "">
 				var optionsObj={ zoom: 13 };
+				var markerObj={
+					infoWindowHTML:'<a href="https://maps.google.com/maps?q=#urlencodedformat(struct.event_address&", "&struct.event_city&", "&struct.event_state&" "&struct.event_zip&" "&struct.event_country)#" target="_blank">Get Directions on Google Maps</a>'
+				};
 				<cfif struct.event_map_coordinates NEQ "">
 					arrLatLng=[#struct.event_map_coordinates#]; 
-					zCreateMapWithLatLng("zEventMapDivId", arrLatLng[0], arrLatLng[1], optionsObj, zEventMapSuccessCallback);  
-				<cfelseif structkeyexists(cityStruct, 'name')>
+					zCreateMapWithLatLng("zEventMapDivId", arrLatLng[0], arrLatLng[1], optionsObj, zEventMapSuccessCallback, markerObj);  
+				<cfelse>
 					zCreateMapWithAddress("zEventMapDivId", "#jsstringformat(struct.event_address&', '&struct.event_city&", "&struct.event_state&" "&struct.event_zip&" "&application.zcore.functions.zCountryAbbrToFullName(struct.event_country))#", optionsObj, zEventMapSuccessCallback); 
 				</cfif>
 			</cfif> 
@@ -131,6 +134,9 @@
 				<div class="zEventView1-0">
 					<div class="zEventView1-1">Location:</div>
 					<div class="zEventView1-2">
+						<cfif struct.event_location NEQ "">
+							#struct.event_location#<br />
+						</cfif>
 						#htmleditformat(struct.event_address)#<br />
 						#struct.event_city#
 
@@ -188,11 +194,58 @@
 					<a href="##" onclick="window.print(); return false;" target="_blank" class="zEventView1-print" rel="nofollow">Print</a>
 				</div>
 			</div>
+
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("event").optionStruct, 'event_config_add_to_calendar_enabled') EQ "1">
+				<cfscript>
+				application.zcore.skin.includeJS("//addthisevent.com/libs/1.6.0/ate.min.js");
+				arrLocation=[];
+				if(struct.event_location NEQ ""){
+					arrayAppend(arrLocation, struct.event_location);
+				}
+				if(struct.event_address NEQ ""){
+					arrayAppend(arrLocation, struct.event_address&", ");
+				}
+				if(struct.event_city NEQ ""){
+					arrayAppend(arrLocation, struct.event_city&", ");
+				}
+				if(struct.event_state NEQ ""){
+					arrayAppend(arrLocation, struct.event_state);
+				}
+				if(struct.event_zip NEQ ""){
+					arrayAppend(arrLocation, struct.event_zip);
+				}
+				if(struct.event_country NEQ "" and struct.event_country NEQ "US"){
+					arrayAppend(arrLocation, countryName);
+				}
+				locationText=arrayToList(arrLocation, " ");
+				</cfscript>
+				<div class="zEventView1-0">
+					<div class="zEventView1-1">&nbsp;</div>
+					<div class="zEventView1-2"> 
+
+						<div title="Add to Calendar" class="addthisevent">
+							Add to Your Calendar
+							<span class="start">#dateformat(struct.event_start_datetime, "mm/dd/yyyy")# #timeformat(struct.event_start_datetime, "HH:mm tt")#</span>
+							<span class="end">#dateformat(struct.event_end_datetime, "mm/dd/yyyy")# #timeformat(struct.event_end_datetime, "HH:mm tt")#</span>
+							<span class="timezone">America/New_York</span>
+							<span class="title">#struct.event_name#</span>
+							<span class="description">#application.zcore.functions.zRemoveHTMLForSearchIndexer(struct.event_description)#</span>
+							<cfif locationText NEQ "">
+								<span class="location">#locationText#</span>
+							</cfif>
+							<span class="all_day_event"><cfif struct.event_allday EQ 1>true<cfelse>false</cfif></span>
+							<span class="date_format">MM/DD/YYYY</span>
+						</div>
+				
+					</div>
+				</div>
+			</cfif>
+
 		</div>
 		<cfif struct.event_address NEQ "">
 			<div id="zEventViewMapContainer">
 				<div class="zEventView1-Map"  id="zEventMapDivId"></div>
-				<div style="width:100%; float:left;"> <a href="https://maps.google.com/maps?q=#urlencodedformat(struct.event_address&", "&struct.event_city&", "&struct.event_state&" "&struct.event_zip&" "&struct.event_country)#" target="_blank">Launch In Google Maps</a></div>
+				<div style="width:100%; float:left;padding-top:10px; padding-bottom:10px;"> <a href="https://maps.google.com/maps?q=#urlencodedformat(struct.event_address&", "&struct.event_city&", "&struct.event_state&" "&struct.event_zip&" "&struct.event_country)#" target="_blank">Launch In Google Maps</a></div>
 			</div>
 		</cfif>
 	</div>  

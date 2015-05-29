@@ -1057,11 +1057,15 @@ If the link does not work, please copy and paste the entire link in your browser
 	
 
 	textMissing=false;
-	ts=structnew();
-	ts.content_unique_name='/z/user/preference/register';
-	ts.disableContentMeta=false;
-	ts.disableLinks=true; 
-	r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
+	if(application.zcore.app.siteHasApp("content")){
+		ts=structnew();
+		ts.content_unique_name='/z/user/preference/register';
+		ts.disableContentMeta=false;
+		ts.disableLinks=true; 
+		r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
+	}else{
+		r1=false;
+	}
 	if(r1 EQ false){
 
 		application.zcore.template.setTag("title","Create A Free Account");

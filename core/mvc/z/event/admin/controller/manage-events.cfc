@@ -743,6 +743,7 @@
 				<td>
 					<cfscript>
 					form.event_timezone="US/Eastern";
+					// TODO: addtocalendar requires America/New_York instead of US/Eastern.  Have to figure out how to map, or correct them if i ever support another time zone.
 					</cfscript>Only United States/Eastern Time is currently supported.
 					<input type="hidden" name="event_timezone" value="#htmleditformat(form.event_timezone)#" /></td>
 			</tr> 

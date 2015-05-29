@@ -1224,9 +1224,9 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 
 
 <cffunction name="setOptionGroupImportStruct" access="public" localmode="modern">
-	<cfargument name="site_option_group_name" type="string" required="yes">
+	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="site_option_app_id" type="numeric" required="yes">
-	<cfargument name="site_option_group_parent_id" type="numeric" required="yes">
+	<!--- <cfargument name="site_option_group_parent_id" type="numeric" required="yes"> --->
 	<cfargument name="site_x_option_group_set_parent_id" type="numeric" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfargument name="importStruct" type="struct" required="yes">
@@ -1234,10 +1234,12 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 	if(not structkeyexists(request.zos, '#variables.type#OptionGroupImportTable')){
 		request.zos["#variables.type#OptionGroupImportTable"]={};
 	}
+	var groupId=getOptionGroupIdWithNameArray(arguments.arrGroupName, request.zos.globals.id);
+	//var groupStruct=typeStruct.optionGroupLookup[groupId]; 
 	form.site_x_option_group_set_id=0;
 	form.site_x_option_group_set_parent_id=arguments.site_x_option_group_set_parent_id;
 	form.site_option_app_id=arguments.site_option_app_id;
-	form.site_option_group_id=optionGroupIDByName(arguments.site_option_group_name, arguments.site_option_group_parent_id);
+	form.site_option_group_id=groupId;//optionGroupIDByName(arguments.site_option_group_name, arguments.site_option_group_parent_id);
 
 	if(structkeyexists(request.zos["#variables.type#OptionGroupImportTable"], form.site_option_group_id)){
 		ts=request.zos["#variables.type#OptionGroupImportTable"][form.site_option_group_id];
@@ -2133,7 +2135,7 @@ if(not rs.success){
 <cffunction name="getEditableOptionGroupSetById" localmode="modern" access="public">
 	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
-	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#"> 
+	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#">  
 	<cfscript>
 	var s=getOptionGroupSetById(arguments.arrGroupName, arguments.site_x_option_group_set_id);
 	var db=request.zos.queryObject;

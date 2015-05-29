@@ -321,10 +321,35 @@
 					<input type="radio" name="inquiries_pool" style="border:none; background:none;" value="1" <cfif application.zcore.functions.zso(form, 'inquiries_pool') EQ 1>checked="checked"</cfif> />
 					No
 					<input type="radio" name="inquiries_pool" style="border:none; background:none;" value="0" <cfif application.zcore.functions.zso(form, 'inquiries_pool',true) EQ 0>checked="checked"</cfif> /></td>
+			</tr> 
+			<tr id="zcma-row17-2">
+				<td>Target Price</td>
+				<td><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "inquiries_target_price";
+					selectStruct.selectLabel = "-- Select --";
+					selectStruct.listLabels="$25,000|$50,000|$75,000|$100,000|$125,000|$150,000|$175,000|$200,000|$225,000|$250,000|$275,000|$300,000|$325,000|$350,000|$375,000|$400,000|";
+					selectStruct.listValues="25000|50000|75000|100000|125000|150000|175000|200000|225000|250000|275000|300000|325000|350000|375000|400000|";
+					arrPriceLabel=[];
+					arrPriceValue=[];
+					for(i=1;i LTE 71;i++){
+						arrayAppend(arrPriceLabel, "$"&numberformat(400000+(i*50000)));
+						arrayAppend(arrPriceValue, 400000+(i*50000));
+					}
+					arrayAppend(arrPriceLabel, "$4,000,000 or more");
+					arrayAppend(arrPriceValue, "4000000");
+					selectStruct.listLabels&=arrayToList(arrPriceLabel, "|");
+					selectStruct.listValues&=arrayToList(arrPriceValue, "|");
+					selectStruct.listLabelsDelimiter = "|"; 
+					selectStruct.listValuesDelimiter = "|";
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript>
+				</td>
 			</tr>
+			He wants to call it "Target Price" and wants the options to be in increments of $25,000.Â  He said beyond $400,000 you can change the increments to $50,000
 			<tr id="zcma-row18-2">
 				<td style="vertical-align:top; ">&nbsp;</td>
-				<td>Have a target price in mind?  Other special upgrades on your home like solar?  Describe them below.</td>
+				<td>Other special upgrades or considerations on your home like solar?  Describe them below.</td>
 			</tr>
 			<tr id="zcma-row18">
 				<td style="vertical-align:top; ">Comments:</td>

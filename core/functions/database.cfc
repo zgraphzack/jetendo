@@ -300,6 +300,8 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 		return request.zos.globals.serverid;
 	}else if(arguments.siteIdType EQ 4){
 		return 0;
+	}else{
+		return request.zos.globals.id;
 	}
 	</cfscript>
 </cffunction>

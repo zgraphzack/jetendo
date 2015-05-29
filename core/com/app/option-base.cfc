@@ -673,6 +673,32 @@ used to do search for a list of values
 	</cfscript>
 </cffunction>
 
+<cffunction name="getOptionGroupNameArrayById" access="public" returntype="array" localmode="modern">
+	<cfargument name="option_group_id" type="string" required="yes">
+	<cfscript>
+	t9=getTypeData(request.zos.globals.id);
+	arrGroupName=[];
+	i=0;
+	groupID=arguments.option_group_id;
+	while(true){
+		i++;
+		if(i GT 30){
+			throw("Possible infinite loop.  Verify that site_option_group_parent_id is able to reach the root for #arguments.option_group_id#");
+		}
+		if(structkeyexists(t9.optionGroupLookup, groupID)){
+			arrayPrepend(arrGroupName, t9.optionGroupLookup[groupID]["#variables.type#_option_group_name"]);
+			groupID=t9.optionGroupLookup[groupID]["#variables.type#_option_group_parent_id"];
+			if(groupID EQ 0){
+				break;
+			}
+		}else{
+			throw("groupID, ""#groupId#"", doesn't exist.  arguments.option_group_id was #arguments.option_group_id#");
+		}
+	}
+	return arrGroupName;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getOptionFieldById" access="public" returntype="struct" localmode="modern">
 	<cfargument name="option_id" type="string" required="yes">
 	<cfscript>
@@ -1003,7 +1029,7 @@ used to do search for a list of values
 	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="option_group_set_id" type="string" required="yes">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
-	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#">
+	<cfargument name="showUnapproved" type="boolean" required="no" default="#false#"> 
 	<cfscript> 
 	typeStruct=getTypeData(arguments.site_id);
 	t9=getSiteData(arguments.site_id);

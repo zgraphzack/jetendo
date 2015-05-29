@@ -1451,10 +1451,12 @@ var zLastAjaxVarName=""; */
 	}
 	var zRowBeingEdited=false;
 	var zRowEditIndex=0;
+	var zCurrentHash="";
 	function zTableRecordEdit(obj){
 		zShowModalStandard(obj.href, 2000,2000, true, true);
 		zRowEditIndex++;
-		window.location.href="#zEditTableRecord"+zRowEditIndex;
+		zCurrentHash="#zEditTableRecord"+zRowEditIndex+"-"+new Date().getTime()+"-"+Math.random();
+		window.location.href=zCurrentHash;
 		var i=0;
 		while(true){
 			i++;
@@ -1470,12 +1472,12 @@ var zLastAjaxVarName=""; */
 		zRowBeingEdited=obj;
 	}
 	function zReplaceTableRecordRow(html){
-		$(zRowBeingEdited).html(html);
+		$(zRowBeingEdited).html(html); 
 	}
 	zArrDeferredFunctions.push(function(){
 		$(window).bind("hashchange", function() {
 
-			if (window.location.hash.indexOf('zEditTableRecord') == -1){
+			if (window.location.hash.indexOf(zCurrentHash) == -1){
 				zCloseModal();
 			}else{
 

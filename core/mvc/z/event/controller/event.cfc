@@ -756,7 +756,11 @@ timezone does nothing...
 		}
 	}else{
 		if(rs.startTime NEQ ""){
-			rs.dateTimeRange=rs.startDate&" at  "&rs.startTime&" to "&rs.endTime;
+			if(rs.startTime NEQ rs.endTime){
+				rs.dateTimeRange=rs.startDate&" at  "&rs.startTime&" to "&rs.endTime;
+			}else{
+				rs.dateTimeRange=rs.startDate&" at  "&rs.startTime;
+			}
 		}else{
 			rs.dateTimeRange=rs.startDate;
 		}
@@ -1701,6 +1705,12 @@ searchEvents(ts);
 			form.event_config_enable_suggest_event=0;
 		}
 		echo(application.zcore.functions.zInput_Boolean("event_config_enable_suggest_event"));
+		echo('</td>
+		</tr>
+		<tr>
+		<th>Enable Add To Calendar:</th>
+		<td>');
+		echo(application.zcore.functions.zInput_Boolean("event_config_add_to_calendar_enabled"));
 		echo('</td>
 		</tr>
 		<tr>

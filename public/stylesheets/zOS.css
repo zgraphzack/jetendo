@@ -29,6 +29,8 @@ display:table-cell; padding:3px;
 .zGearButton:hover{ color:#666;}
  
 
+.addthisevent{visibility:hidden;}
+
 .zGearPopupInnerMenu{padding:2px; background-color:#333; float:left; border-radius:5px; }
 .zGearPopupMenu{ position:absolute; top:0; left:0; visibility:hidden; }
 .zGearPopupMenuButton:link, .zGearPopupMenuButton:visited{ color:#FFF;text-decoration:none; border-radius:5px; clear:both; display:block; float:left; margin-bottom:2px; background-color:#666; padding:5px;white-space:nowrap; padding-left:10px; padding-right:10px; font-size:13px; font-weight:bold; line-height:17px; }

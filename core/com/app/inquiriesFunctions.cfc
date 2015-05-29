@@ -793,6 +793,12 @@ Home Sq/Ft
 				<td style="#tdstyle#">Yes&nbsp;</td>
 			</tr>
 		</cfif>
+		<cfif trim(application.zcore.functions.zso(t, 'inquiries_target_price')) NEQ ''>
+			<tr>
+				<th style="#thstyle# text-align:left;" >Target Price:</th>
+				<td style="#tdstyle#">$#numberformat(t.inquiries_target_price)#</td>
+			</tr>
+		</cfif>
 		<cfif trim(application.zcore.functions.zso(t, 'inquiries_prequalified')) EQ '1'>
 			<tr>
 				<th style="#thstyle# text-align:left;" >Prequalified:</th>

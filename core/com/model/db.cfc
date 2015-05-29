@@ -184,6 +184,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			application.zcore.databaseRestarted=true; 
 		}else if(e.message CONTAINS "Deadlock found when trying to get lock"){
 			enableRetry=true;
+			form.retryCount=retryCount;
 		}
 		if(enableRetry){
 			retryCount++;

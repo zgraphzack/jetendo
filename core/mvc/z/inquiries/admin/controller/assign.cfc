@@ -70,10 +70,11 @@
     ORDER BY inquiries_datetime DESC   ";
     local.qPrevious=db.execute("qPrevious");
     if(local.qPrevious.recordcount NEQ 0){
-    	writeoutput('<td>');
+    	writeoutput('<td>'); 
     	if(local.qPrevious.user_id NEQ 0){
     		db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user
     		WHERE user_id = #db.param(local.qPrevious.user_id)# and 
+            user_deleted=#db.param(0)# and 
     		site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdFromSiteIdType(local.qPrevious.user_id_siteIDType))#";
     		local.qUserTemp=db.execute("qUserTemp");
     		if(local.qUserTemp.recordcount NEQ 0){
@@ -270,6 +271,7 @@
         UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
          SET inquiries_assign_email = #db.param("")#, 
          user_id = #db.param(qMember.user_id)#, 
+         user_id_siteIDType=#db.param(application.zcore.functions.zGetSiteIdType(local.assignSiteId))#, 
          inquiries_admin_comments = #db.param(form.inquiries_admin_comments)#, 
          <cfif qFeedback.count NEQ 0>inquiries_status_id = #db.param(3)#<cfelse>inquiries_status_id = #db.param(2)#</cfif> 
          WHERE inquiries_id = #db.param(form.inquiries_id)#  and

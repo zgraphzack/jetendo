@@ -472,7 +472,9 @@ displayGroupCom.add();')&'</pre>');
 			// get all site options with label and value for current row.
 
 			//throw("warning: this will delete unique url and image gallery id - because internalGroupUpdate is broken.");
-			application.zcore.siteOptionCom.setOptionGroupImportStruct(qGroup.site_option_group_name, 0, 0, 0, ts, form); 
+
+			arrGroupName =application.zcore.siteOptionCom.getOptionGroupNameArrayById(qGroup.site_option_group_id); 
+			application.zcore.siteOptionCom.setOptionGroupImportStruct(arrGroupName, 0, 0, ts, form); 
 			structappend(form, row, true);
 			// writedump(form);abort;
  

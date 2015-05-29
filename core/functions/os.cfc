@@ -307,7 +307,7 @@
 </cffunction>
 
 <!--- 
-var ts=application.zcore.functions.zGetEditableSiteOptionGroupSetById(groupStruct.__groupId, groupStruct.__setId);
+var ts=application.zcore.functions.zGetEditableSiteOptionGroupSetById(["GroupName"], groupStruct.__setId);
 ts.name="New name";
 var rs=application.zcore.functions.zUpdateSiteOptionGroupSet(ts);
 if(not rs.success){
@@ -328,7 +328,7 @@ if(not rs.success){
 <cffunction name="zGetEditableSiteOptionGroupSetById" localmode="modern" access="public">
 	<cfargument name="arrGroupName" type="array" required="yes">
 	<cfargument name="site_x_option_group_set_id" type="numeric" required="yes">
-	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#"> 
+	<cfargument name="site_id" type="numeric" required="no" default="#request.zos.globals.id#">  
 	<cfscript>
 	return application.zcore.siteOptionCom.getEditableOptionGroupSetById(arguments.arrGroupName, arguments.site_x_option_group_set_id, arguments.site_id);
 	</cfscript>
@@ -2064,6 +2064,8 @@ User's IP: #request.zos.cgi.remote_addr#
 		throw("site_id, #arguments.site_id#, doesn't exist.");
 	}
 	var curPrivatePath=application.zcore.functions.zGetDomainWritableInstallPath(shortDomain);
+
+	application.zcore.siteglobals[arguments.site_id]=arguments.tempStruct;
 	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', serializeJson(arguments.tempStruct));
 	</cfscript>
 </cffunction>

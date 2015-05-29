@@ -449,6 +449,27 @@ Future Features:
 	/*
 	zdead.a5 table has fulltext index tests with facets in the fulltext column instead outside columns - it is fast. need to test with too much data
 
+
+when a facet field is varchar, the maximum key length is 255 because of utf8 - this is up to 30 facet values for one product when the primary key ids are big.  This is too low.
+if we generate new tables from the indexing process, the problem is that they have to be completely replaced (create table _safe, rename _safe to live and make it live to users) , if the facet names change.  But the values 
+
+this format is better:
+	facetId:valueId facetId:valueId - this will index better.
+
+best performance is facet in separate field, with text not using boolean mode.  also found innodb is faster then myisam because of in memory caching.
+	SELECT SQL_NO_CACHE * FROM a5  FORCE INDEX(`a5_text`)
+	WHERE MATCH(a5_text) AGAINST ('lacinia nlor nisi') 
+	AND a5_price BETWEEN 0 AND 30000
+	AND (a5_facet LIKE '%:facet1:2|%' OR a5_facet LIKE '%:facet1%'  )    
+	  LIMIT 0,100;
+	SELECT SQL_NO_CACHE * FROM a5  FORCE INDEX(`a5_text`)
+	WHERE MATCH(a5_text) AGAINST ('lacinia nlor nisi') 
+	AND a5_price BETWEEN 0 AND 30000
+	AND (a5_facet LIKE '%:facet1:2|%' OR a5_facet LIKE '%:facet1%'  )    
+	ORDER BY a5_price ASC
+	  LIMIT 0,100;
+
+
 #this query work for relevance with facets.   for search without facets, i could use natural language mode instead.
 SELECT SQL_NO_CACHE *, MATCH(a5_text) AGAINST ('+"facet2:2|"' IN BOOLEAN MODE) AS relevance FROM a5 
 WHERE MATCH(a5_text) AGAINST ('+":facet1:2|"' IN BOOLEAN MODE) 

@@ -214,6 +214,14 @@
 				ts.target="_blank";
 				arguments.sharedStruct["Users"].children["View Public User Home Page"]=ts;
 			}
+			if(not request.zos.globals.enableDemoMode){
+				if(structkeyexists(arguments.sharedStruct["Users"].children,"Import Users") EQ false){
+					ts=structnew();
+					ts.link="/z/admin/member/import";
+					ts.target="_blank";
+					arguments.sharedStruct["Users"].children["Import Users"]=ts;
+				}
+			} 
 	
 		}else if(structkeyexists(request.zos.userSession.groupAccess, "agent") and application.zcore.app.siteHasApp("content")){ 
 			if(structkeyexists(arguments.sharedStruct,"Update Profile") EQ false){
