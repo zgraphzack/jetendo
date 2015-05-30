@@ -17,6 +17,13 @@
 		if(structkeyexists(request.zos,'trackingInitOnce') and isDefined('request.zsession.tracking') and structkeyexists(request.zos,'trackingDisableBackOneHit') EQ false){
 			request.zos.trackingDisableBackOneHit=true;
 			request.zsession.tracking.track_user_hits--;
+
+			if(application.zcore.functions.zso(request.zos.globals, 'enableUserStats', true, 0) EQ 1){
+				ts.name="zhit";
+				ts.value=max(1, application.zcore.functions.zso(cookie, 'zhit', true)-1);
+				ts.expires=60*request.zos.sessionExpirationInMinutes;
+				application.zcore.functions.zCookie(ts); 
+			}
 			if(arraylen(request.zsession.trackingArrPages) NEQ 0 and arrayisdefined(request.zsession.trackingArrPages, arraylen(request.zsession.trackingArrPages))){
 				try{
 				arraydeleteat(request.zsession.trackingArrPages, arraylen(request.zsession.trackingArrPages));
@@ -144,7 +151,36 @@ USER WAS PERMANENTLY BLOCKED.');
 	 	if(structkeyexists(request.zos.userSession.groupAccess, "member") or request.zos.inMemberArea){
 			request.zos.trackingDisabled=true;
 			return;	
-		}	
+		}	 
+
+		if(application.zcore.functions.zso(request.zos.globals, 'enableUserStats', true, 0) EQ 1){
+			ts=structnew();
+			ts.name="zfirstvisit";
+			if(structkeyexists(cookie, 'zfirstvisit')){
+				ts.value=cookie.zfirstvisit;
+			}else{
+				ts.value=request.zos.mysqlnow;
+			}
+			ts.expires=60*request.zos.sessionExpirationInMinutes;
+			application.zcore.functions.zCookie(ts); 
+			ts=structnew();
+			ts.name="zfirstpage";
+			if(structkeyexists(cookie, 'zfirstpage')){
+				ts.value=cookie.zfirstpage;
+			}else{
+				ts.value=request.zos.originalURL;
+				if(request.zos.cgi.query_string NEQ ""){
+					ts.value&="?"&request.zos.cgi.query_string;
+				}
+			}
+			ts.expires=60*request.zos.sessionExpirationInMinutes;
+			application.zcore.functions.zCookie(ts); 
+			ts=structnew();
+			ts.name="zhit";
+			ts.value=application.zcore.functions.zso(cookie, 'zhit', true)+1;
+			ts.expires=60*request.zos.sessionExpirationInMinutes;
+			application.zcore.functions.zCookie(ts); 
+		}
 		// check session
 		if(not structkeyexists(request, 'zsession')){
 			request.zsession=StructNew();
@@ -302,7 +338,19 @@ USER WAS PERMANENTLY BLOCKED.');
 	if(structkeyexists(cookie, 'zsource')){
 		local.tempSource=cookie.zsource;	
 	}
+	firstPageURL="";
 	request.zsession.tracking.inquiries_id=arguments.inquiries_id;
+	if(application.zcore.functions.zso(request.zos.globals, 'enableUserStats', true, 0) EQ 1){
+		request.zsession.tracking.track_user_hits=cookie.zhit;
+		if(structkeyexists(cookie, 'zfirstvisit') and cookie.zfirstvisit NEQ "" and isdate(cookie.zfirstvisit)){
+			request.zsession.tracking.track_user_datetime=dateformat(cookie.zfirstvisit, "yyyy-mm-dd")&" "&timeformat(cookie.zfirstvisit, "HH:mm:ss");
+		}
+		if(structkeyexists(cookie, 'zfirstpage')){
+			firstPageURL=cookie.zfirstpage;
+		}
+	}
+	request.zsession.tracking.track_user_recent_datetime=request.zos.mysqlnow;
+
 	local.c=application.zcore.db.getConfig();
 	local.c.autoReset=false;
 	local.c.datasource=request.zos.zcoreDatasource;
@@ -318,6 +366,7 @@ USER WAS PERMANENTLY BLOCKED.');
     db.sql&=" inquiries_id=#db.param(request.zsession.tracking.inquiries_id)#, 
     track_user_email=#db.param(request.zsession.tracking.track_user_email)#, 
     track_user_parent_id=#db.param(request.zsession.tracking.track_user_parent_id)#, 
+    track_user_first_page=#db.param(firstPageURL)#, 
     user_id=#db.param(request.zsession.tracking.user_id)#, 
     track_user_datetime=#db.param(dateformat(request.zsession.tracking.track_user_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_datetime,'HH:mm:ss'))#, 
     track_user_recent_datetime=#db.param(dateformat(request.zsession.tracking.track_user_recent_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.tracking.track_user_recent_datetime,'HH:mm:ss'))#, 
@@ -330,8 +379,8 @@ USER WAS PERMANENTLY BLOCKED.');
     track_user_conversions=#db.param(request.zsession.tracking.track_user_conversions)#, 
     track_user_ppc=#db.param(request.zsession.tracking.track_user_ppc)#, 
     track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
-    track_user_updated_datetime=#db.param(request.zos.mysqlnow)# ,
-track_user_source=#db.param(local.tempSource)#, 
+    track_user_updated_datetime=#db.param(request.zos.mysqlnow)#,
+	track_user_source=#db.param(local.tempSource)#, 
     zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)#, 
     site_id=#db.param(request.zos.globals.id)#
      ";

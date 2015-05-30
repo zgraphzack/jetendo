@@ -302,6 +302,8 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 			track_user_deleted = #db.param(0)#
 			LIMIT #db.param(0)#,#db.param(1)#";
 			qTrack=db.execute("qTrack");
+
+
 			</cfscript>
 			<cfif qTrack.recordcount NEQ 0>
 				<cfloop query="qTrack">
@@ -342,43 +344,83 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 							    }
 							    </cfscript>
 						<cfelse>
-							Source URL:<a href="#qTrack.track_user_referer#" target="_blank">#left(qTrack.track_user_referer,50)#</a><br />
+							Source URL: <a href="#qTrack.track_user_referer#" target="_blank">#left(qTrack.track_user_referer,50)#...</a><br />
 						</cfif>
 					</cfif>
 					<cfif qTrack.track_user_keywords NEQ "">
-Keyword:#qTrack.track_user_keywords#							<br />
+						Keyword:#qTrack.track_user_keywords#<br />
 					</cfif>
 					<cfscript>
-					formattedDate=DateFormat(qTrack.track_user_datetime,'yyyy-mm-dd')&' '&TimeFormat(qTrack.track_user_datetime,'HH:mm:ss');
-					firstDate=parsedatetime(formattedDate);
-					formattedDate2=DateFormat(qTrack.track_user_recent_datetime,'yyyy-mm-dd')&' '&TimeFormat(qTrack.track_user_recent_datetime,'HH:mm:ss');
-					if(isdate(formattedDate2)){
-					lastDate=parsedatetime(formattedDate2);
-					}else{
-						lastDate=firstDate;	
-					}
-					seconds=DateDiff("s", formattedDate, formattedDate2);
-					minutes=fix(seconds/60)&'mins ';
-					if(fix(seconds/60) EQ 0){
-						minutes="";
-					}
-					if(seconds MOD 60 NEQ 0){
-						minutes=minutes&(seconds MOD 60)&'secs';
-					}
-					</cfscript>
-					Length of Visit:#minutes#<br />
-					Clicks:#qTrack.track_user_hits#<br />
-					<cfscript>
-					db.sql="SELECT * FROM #db.table("track_page", request.zos.zcoreDatasource)# track_page 
-					WHERE site_id =#db.param(request.zOS.globals.id)# AND 
+
+						formattedDate=DateFormat(qTrack.track_user_datetime,'yyyy-mm-dd')&' '&TimeFormat(qTrack.track_user_datetime,'HH:mm:ss');
+						firstDate=parsedatetime(formattedDate);
+						formattedDate2=DateFormat(qTrack.track_user_recent_datetime,'yyyy-mm-dd')&' '&TimeFormat(qTrack.track_user_recent_datetime,'HH:mm:ss');
+						if(isdate(formattedDate2)){
+						lastDate=parsedatetime(formattedDate2);
+						}else{
+							lastDate=firstDate;	
+						}
+						seconds=DateDiff("s", formattedDate, formattedDate2);
+						minutes=fix(seconds/60)&'mins ';
+						if(fix(seconds/60) EQ 0){
+							minutes="";
+						}
+						if(seconds MOD 60 NEQ 0){
+							minutes=minutes&(seconds MOD 60)&'secs';
+						}
+						if(qTrack.track_user_datetime NEQ qTrack.track_user_recent_datetime){
+							echo('Length of Visit: #minutes#<br />');
+						}
+						if(qTrack.track_user_hits GT 1){
+							echo('Clicks: #qTrack.track_user_hits#<br />');
+						}
+						if(qTrack.track_user_first_page NEQ ""){
+							echo('Landing Page: <a href="#qTrack.track_user_first_page#" target="_blank">Click here</a> to view the first page they visited on the web site.');
+						}
+					/*
+					// this code was inefficient.  The new cookie "Enable User Stats Cookies" feature is able to be enabled per site instead to reduce server load for tracking.
+					db.sql="SELECT count(track_page_id) count, min(track_page_datetime) minDate , max(track_page_datetime) maxDate 
+					FROM #db.table("track_page", request.zos.zcoreDatasource)#  
+					WHERE site_id =#db.param(request.zOS.globals.id)# and 
 					track_user_id =#db.param(qTrack.track_user_id)# and 
-					track_page_datetime <=#db.param(dateformat(qTrack.track_user_recent_datetime, 'yyyy-mm-dd')&' '&timeformat(qTrack.track_user_recent_datetime,'HH:mm:ss'))# and 
-					track_page_deleted = #db.param(0)# 
-					ORDER BY track_page_datetime ASC 
+					track_page_datetime BETWEEN #db.param(dateformat(t.inquiries_datetime, 'yyyy-mm-dd')&' 00:00:00')# and #db.param(dateformat(t.inquiries_datetime, 'yyyy-mm-dd')&' 23:59:59')# and 
+					track_page_deleted = #db.param(0)#
 					LIMIT #db.param(0)#,#db.param(1)#";
-					qTrack2=db.execute("qTrack2");
+					qTrackPage=db.execute("qTrackPage"); 
+
+					if(qTrackPage.recordcount and qTrackPage.count GT 1){ 
+						formattedDate=DateFormat(qTrackPage.minDate,'yyyy-mm-dd')&' '&TimeFormat(qTrackPage.minDate,'HH:mm:ss');
+						firstDate=parsedatetime(formattedDate);
+						formattedDate2=DateFormat(qTrackPage.maxDate,'yyyy-mm-dd')&' '&TimeFormat(qTrackPage.maxDate,'HH:mm:ss');
+						if(isdate(formattedDate2)){
+						lastDate=parsedatetime(formattedDate2);
+						}else{
+							lastDate=firstDate;	
+						}
+						seconds=DateDiff("s", formattedDate, formattedDate2);
+						minutes=fix(seconds/60)&'mins ';
+						if(fix(seconds/60) EQ 0){
+							minutes="";
+						}
+						if(seconds MOD 60 NEQ 0){
+							minutes=minutes&(seconds MOD 60)&'secs';
+						}
+						echo('Length of Visit:#minutes#<br />');
+						echo('Clicks:#qTrackPage.count#<br />');
+						db.sql="SELECT * FROM #db.table("track_page", request.zos.zcoreDatasource)# track_page 
+						WHERE site_id =#db.param(request.zOS.globals.id)# AND 
+						track_user_id =#db.param(qTrack.track_user_id)# and 
+						track_page_datetime <=#db.param(dateformat(qTrack.track_user_recent_datetime, 'yyyy-mm-dd')&' '&timeformat(qTrack.track_user_recent_datetime,'HH:mm:ss'))# and 
+						track_page_deleted = #db.param(0)# 
+						ORDER BY track_page_datetime ASC 
+						LIMIT #db.param(0)#,#db.param(1)#";
+						qTrack2=db.execute("qTrack2");
+						echo('Landing Page:<a href="#qTrack2.track_page_script#?#htmleditformat(qTrack2.track_page_qs)#" target="_blank">Click here</a> to view the first page they visited on the web site.');
+
+
+					} */
 					</cfscript>
-					Landing Page:<a href="#qTrack2.track_page_script#?#htmleditformat(qTrack2.track_page_qs)#" target="_blank">Click here</a> to view the first page they visited on the web site.</td>
+					</td>
 				</tr>
 				</cfloop>
 			</cfif>

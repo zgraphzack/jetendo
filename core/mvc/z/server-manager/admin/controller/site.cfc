@@ -374,6 +374,9 @@
 			application.zcore.status.setStatus(Request.zsid, "Recaptcha Secret Key and Site Key are required if you enable captcha on public forms.",form,true);
 		}
 	}
+	if(not structkeyexists(form, 'site_enable_user_stats')){
+		form.site_enable_user_stats=0;
+	}
 	if(structkeyexists(form, 'site_enable_ssi_publish') EQ false){
 		form.site_enable_ssi_publish=0;
 	}
@@ -1396,6 +1399,10 @@
 		<tr>
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
 			<td><input name="site_disable_dns_monitor" type="checkbox" value="1" <cfif form.site_disable_dns_monitor EQ 1 or form.site_disable_dns_monitor EQ "">checked="checked"</cfif> style="background:none; border:none;"> Disable DNS Monitor?</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">&nbsp;</td>
+			<td><input name="site_enable_user_stats" type="checkbox" value="1" <cfif form.site_enable_user_stats EQ 1 or form.site_enable_user_stats EQ "">checked="checked"</cfif> style="background:none; border:none;"> Enable User Stats Cookies?</td>
 		</tr>
 		<tr >
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
