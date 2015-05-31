@@ -148,12 +148,13 @@ ts=structnew();
 ts.content_unique_name='/Rental-Reservation-Policies-#application.zcore.app.getAppData("rental").optionstruct.rental_config_misc_url_id#-1.html';
 </cfscript>
 <cfif form.method NEQ "rateInfoTemplate">
+	<hr />
 <cfscript>
 
 	ts.disableContentMeta=false;
 	ts.disableLinks=true;
 	var r1=application.zcore.app.getAppCFC("content").includeContentByName(ts);
-	writeoutput('<br /><br /><span style="font-size:14px; "><a href="/Rental-Reservation-Policies-#application.zcore.app.getAppData("rental").optionStruct.rental_config_misc_url_id#-1.html">Please review our rental reservation policies</a></span>');
+	writeoutput('<span style="font-size:14px; "><a href="/Rental-Reservation-Policies-#application.zcore.app.getAppData("rental").optionStruct.rental_config_misc_url_id#-1.html">Please review our rental reservation policies</a></span>');
 </cfscript>
 <cfelse>
 	<cfsavecontent variable="temppagenav">
