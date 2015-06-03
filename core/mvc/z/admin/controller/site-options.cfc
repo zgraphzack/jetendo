@@ -1867,13 +1867,15 @@
 			var arrKey=structkeyarray(tempData);
 			var tempCount=arraylen(arrKey);
 			arrayAppend(arrSQL, " ( "&arrayToList(arrKey, ", ")&" ) VALUES ");
+			first=true;
 			for(var n=1;n LTE arraylen(arrTempData);n++){
 				if(structkeyexists(arrTempData[n], 'site_x_option_group_id')){
 					continue;
-				}
-				insertCount++;
-				if(n NEQ 1){
+				} 
+				if(not first){
 					arrayAppend(arrSQL, ", ");
+				}else{
+					first=false;
 				}
 				arrayAppend(arrSQL, " ( ");
 				for(var i=1;i LTE tempCount;i++){

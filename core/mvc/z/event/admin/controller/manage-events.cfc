@@ -309,8 +309,8 @@
 					struct:{
 						event_id:form.event_id,
 						site_id:request.zos.globals.id,
-						event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
-						event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
+						event_recur_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_start_datetime, "HH:mm:ss"),
+						event_recur_start_datetime:dateformat(form.event_start_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_start_datetime, "HH:mm:ss"),
 						event_recur_end_datetime:dateformat(form.event_end_datetime, "yyyy-mm-dd")&" "&timeformat(form.event_end_datetime, "HH:mm:ss"),
 						event_recur_updated_datetime:dateformat(now(), 'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'),
 						event_recur_deleted:0
@@ -722,14 +722,14 @@
 			<tr>
 				<th>Start Date</th>
 				<td>
-					<input type="text" name="event_start_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(form.event_start_datetime, 'mm/dd/yyyy'))#" size="9" />
+					<input type="text" name="event_start_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(form.event_start_datetime, 'm/dd/yyyy'))#" size="10" />
 					<input type="text" name="event_start_datetime_time" id="event_start_datetime_time" value="#htmleditformat(timeformat(form.event_start_datetime, 'h:mm tt'))#" size="9" />
 					 * </td>
 			</tr> 
 
 			<tr>
 				<th>End Date</th>
-				<td><input type="text" name="event_end_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(form.event_end_datetime, 'mm/dd/yyyy'))#" size="9" />
+				<td><input type="text" name="event_end_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(form.event_end_datetime, 'm/dd/yyyy'))#" size="10" />
 					<input type="text" name="event_end_datetime_time" id="event_end_datetime_time" value="#htmleditformat(timeformat(form.event_end_datetime, 'h:mm tt'))#" size="9" /> *
 				</td>
 			</tr>  

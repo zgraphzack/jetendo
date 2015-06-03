@@ -30,6 +30,7 @@
 
 <cffunction name="add" localmode="modern" access="remote">
 	<cfscript>
+	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id', true);
 	local.soCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 	local.soCom.publicAddGroup();
 	</cfscript>

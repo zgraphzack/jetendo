@@ -249,8 +249,10 @@
 					ts.name = "event_category_list_views"; 
 					ts.size = 1; // more for multiple select
 					ts.hideSelect=true;
-					ts.listLabels = "List,2 Months,Month,Week,Day";
-					ts.listValues = "List,2 Months,Month,Week,Day";
+					ts.listLabels = "List,Month";
+					ts.listValues = "List,Month";
+					//ts.listLabels = "List,2 Months,Month,Week,Day";
+					//ts.listValues = "List,2 Months,Month,Week,Day";
 					ts.listLabelsDelimiter = ","; 
 					ts.listValuesDelimiter = ",";
 					

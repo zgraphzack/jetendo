@@ -252,6 +252,10 @@
 	#slideshowOutBottom#
 
 	<a href="#calendarLink#" class="zEventView1-backToCalendar">Back To Calendar</a>
+	<cfif application.zcore.user.checkGroupAccess("member") and application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Events", true)>
+		<a href="/z/event/admin/manage-events/edit?event_id=#struct.event_id#&amp;return=1" class="zEventView1-backToCalendar" style="margin-left:10px;">Edit</a>
+	</cfif>
+	
  	
 </cffunction>
 </cfoutput>

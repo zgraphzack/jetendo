@@ -223,7 +223,7 @@
 	<cfscript>
 
  	if(arraylen(ss.arrData) EQ 0){
- 		js.html="<p>No events match your search.</p>";
+ 		js.html="<p>No events found.</p>";
  	}
 	application.zcore.functions.zReturnJson(js);
 	</cfscript>

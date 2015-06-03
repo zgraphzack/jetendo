@@ -764,7 +764,7 @@ timezone does nothing...
 		}else{
 			rs.dateTimeRange=rs.startDate;
 		}
-	}
+	} 
 	return rs;
 	</cfscript>
 </cffunction>
@@ -786,7 +786,9 @@ application.zcore.app.getAppCFC("event").displayUpcomingEvents(ts);
 	<cfscript>
 	ss=arguments.ss;
 	rs=searchEvents(ss.searchStruct);
-
+	if(arraylen(rs.arrData) EQ 0){
+		echo('<p>There are no upcoming events at this time.</p>');
+	}
 	for(i=1;i LTE arraylen(rs.arrData);i++){
 		c=rs.arrData[i];
 		if(structkeyexists(ss, 'renderCFC')){
