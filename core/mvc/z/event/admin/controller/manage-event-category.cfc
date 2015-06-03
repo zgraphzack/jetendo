@@ -76,6 +76,10 @@
 	ts.event_category_list_views.required=true;
 	ts.event_category_list_perpage.required=true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
+	if(application.zcore.functions.zso(form,'event_category_unique_url') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'event_category_unique_url'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
+		result=true;
+	}
 	if(result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
 		if(form.method EQ 'insert'){
@@ -304,7 +308,8 @@
 			</tr> 
 			<tr>
 				<th>Unique URL</th>
-				<td><input type="text" name="event_category_unique_url" value="#htmleditformat(form.event_category_unique_url)#" /></td>
+				<td><input type="text" name="event_category_unique_url" value="#htmleditformat(form.event_category_unique_url)#" /><br />
+				It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.</td>
 			</tr> 
 			<tr>
 				<th style="width:1%;">&nbsp;</th>

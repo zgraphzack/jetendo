@@ -1338,5 +1338,49 @@ zEmailValidateList(addressList, displayFormat);
     return rs;
     </cfscript>
 </cffunction>
+
+<!--- application.zcore.functions.zValidateURL(link, true); --->
+<cffunction name="zValidateURL" access="public" localmode="modern"> 
+	<cfargument name="link" type="string" required="yes">
+	<cfargument name="disableSpecialCharacters" type="boolean" required="yes">
+	<cfargument name="disableExternal" type="boolean" required="yes">
+	<cfscript>
+	link=arguments.link;
+
+	if(arguments.disableSpecialCharacters){
+		link2=link;
+		if(left(link2, '7') EQ 'http://'){
+			link2=removeChars(link2, 1, 7);
+		}else if(left(link, '8') EQ 'https://'){
+			link2=removeChars(link2, 1, 8);
+		} 
+		if(link2 CONTAINS "/./"){
+			return false;
+		}else if(link2 CONTAINS "/../"){
+			return false;
+		}else if(find(" ", link2) NEQ 0 or find(chr(9), link2) NEQ 0){
+			return false;
+		}else if(rereplacenocase(link2, '[a-z0-9\._\-\/##]*', '', 'all') NEQ ""){
+			return false;
+		}
+	}
+
+	if(link NEQ ""){
+		if(left(link, 1) EQ "/" or left(link, 1) EQ "##"){
+			return true;
+		}else if(left(link, '7') EQ 'http://' or left(link, '8') EQ 'https://'){
+			if(arguments.disableExternal){
+				return false;
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
+
 </cfoutput>
 </cfcomponent>

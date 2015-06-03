@@ -997,8 +997,8 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	blogform.blog_category_description.html = true;
 	blogform.blog_category_description.allowNull = true;
 	result = application.zcore.functions.zValidateStruct(form, blogform, request.zsid, true);
-	if(form.blog_category_unique_name CONTAINS "?"){
-		application.zcore.status.setStatus(request.zsid, "The URL can't contain query string parameters.  I.e. ""?id=1""", form, true);
+	if(application.zcore.functions.zso(form,'blog_category_unique_name') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'blog_category_unique_name'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
 		result=true;
 	}
 	if(result){
@@ -1384,10 +1384,10 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 		application.zcore.status.setStatus(request.zsid, 'Invalid Date/Time Format.  Please try again or alert the administrator.',form,true);
 		error=true;
 	}
-if(form.blog_unique_name CONTAINS "?"){
-	application.zcore.status.setStatus(request.zsid, "The URL can't contain query string parameters.  I.e. ""?id=1""", form, true);
-	error=true;
-}
+	if(application.zcore.functions.zso(form,'blog_unique_name') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'blog_unique_name'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
+		error=true;
+	}
 	form.user_id=application.zcore.functions.zso(form, 'uid');
 arrUser=listToArray(form.user_id, "|");
 if(arraylen(arrUser) EQ 1){
@@ -1946,8 +1946,10 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 	blogform = StructNew();
 	blogform.blog_tag_name.required=true;
 	error = application.zcore.functions.zValidateStruct(form, blogform, request.zsid, true);
-	if(form.blog_tag_unique_name CONTAINS "?"){
-		application.zcore.status.setStatus(request.zsid, "The URL can't contain query string parameters.  I.e. ""?id=1""", form, true);
+
+
+	if(application.zcore.functions.zso(form,'blog_tag_unique_name') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'blog_tag_unique_name'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
 		error=true;
 	}
 	if(error){	
@@ -2913,7 +2915,8 @@ tabCom.enableSaveButtons();
 		</tr>
 		<tr> 
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.blog.edit blog_unique_name")#</th>
-		<td style="vertical-align:top; ">WARNING: DO NOT USE THIS FIELD!<br /><input type="text" name="blog_unique_name" value="#form.blog_unique_name#" size="100" />
+		<td style="vertical-align:top; "><input type="text" name="blog_unique_name" value="#form.blog_unique_name#" size="100" /><br />
+		It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.
 		</td>
 		</tr> 
 		
@@ -3298,7 +3301,8 @@ tabCom.enableSaveButtons();
 	</tr>
 	<tr> 
 	<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.blog.formcat blog_category_unique_name")#</th>
-	<td style="vertical-align:top; ">WARNING: DO NOT USE THIS FIELD!<br /><input type="text" name="blog_category_unique_name" value="#form.blog_category_unique_name#" size="100" /></td>
+	<td style="vertical-align:top; "><input type="text" name="blog_category_unique_name" value="#form.blog_category_unique_name#" size="100" /><br />
+It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.</td>
 	</tr>
 	<!--- <tr> 
 	<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.blog.formcat blog_category_enable_events")#</th>

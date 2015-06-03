@@ -142,6 +142,10 @@
 	ts.event_end_datetime_date.required = true;
 	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
 
+	if(application.zcore.functions.zso(form,'event_unique_url') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'event_unique_url'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
+		result=true;
+	}
 
 	if(result){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
@@ -511,8 +515,7 @@
 	event_deleted = #db.param(0)# and 
 	event_id=#db.param(form.event_id)#";
 	qEvent=db.execute("qEvent"); 
-	application.zcore.functions.zQueryToStruct(qEvent, form, 'event_calendar_id,event_category_id'); 
-	application.zcore.functions.zStatusHandler(request.zsid,true);
+	application.zcore.functions.zQueryToStruct(qEvent, form, 'event_calendar_id,event_category_id');  
 	application.zcore.functions.zRequireJqueryUI();
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',true, 0);
 	if(form.modalpopforced EQ 1){
@@ -528,6 +531,7 @@
 		form.event_unique_url="";
 		application.zcore.functions.zCheckIfPageAlreadyLoadedOnce();
 	}
+	application.zcore.functions.zStatusHandler(request.zsid,true);
 	if(currentMethod EQ "publicAddEvent"){
 		application.zcore.template.setTag("title", "Suggest An Event");
 		application.zcore.template.setTag("pagetitle", "Suggest An Event");
@@ -544,7 +548,6 @@
 		}
 		echo(' Event</h2>');
 	}
-
 
 	</cfscript>
 	<p>* denotes required field.</p>
@@ -952,7 +955,8 @@
 				</tr> 
 				<tr>
 					<th>Unique URL</th>
-					<td><input type="text" name="event_unique_url" value="#htmleditformat(form.event_unique_url)#" /></td>
+					<td><input type="text" name="event_unique_url" value="#htmleditformat(form.event_unique_url)#" /><br />
+				It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.</td>
 				</tr> 
 
 				<cfif application.zcore.functions.zso(application.zcore.app.getAppData("event").optionStruct, 'event_config_enable_suggest_event', true) EQ 1>

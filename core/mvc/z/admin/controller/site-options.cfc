@@ -1609,7 +1609,7 @@
 		}
 		var optionStruct=deserializeJson(row.site_option_type_json);
 		optionStructCache[row.site_option_id]=optionStruct; 
-		var rs=currentCFC.validateFormField(row, optionStruct, 'newvalue', form);
+		var rs=currentCFC.validateFormField(row, optionStruct, 'newvalue', form); 
 		if(not rs.success){
 			application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
 			application.zcore.status.setStatus(request.zsid, rs.message, form, true);
@@ -1617,8 +1617,8 @@
 			continue;
 		}
 	}  
-	if(application.zcore.functions.zso(form,'site_x_option_group_set_override_url') CONTAINS "?"){
-		application.zcore.status.setStatus(request.zsid, "The URL can't contain query string parameters.  I.e. ""?id=1""", form, true);
+	if(application.zcore.functions.zso(form,'site_x_option_group_set_override_url') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'site_x_option_group_set_override_url'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
 		local.errors=true;
 	}
 	if(local.errors){
@@ -1907,7 +1907,9 @@
 					first=false;
 					db.sql&="`"&i&"`="&db.param(c[i]);
 				} 
-				db.sql&=" WHERE site_id =#db.param(c.site_id)# and site_x_option_group_id=#db.param(c.site_x_option_group_id)# ";
+				db.sql&=" WHERE site_id =#db.param(c.site_id)# and 
+				site_x_option_group_deleted=#db.param(0)# and 
+				site_x_option_group_id=#db.param(c.site_x_option_group_id)# ";
 				db.execute("qUpdate");
 			}
 		}
@@ -3315,6 +3317,9 @@ Define this function in another CFC to override the default email format
 	if(local.methodBackup EQ "editGroup"){
 		if(local.qSet.recordcount EQ 0){
 			application.zcore.functions.z404("This site option group no longer exists.");	
+		}else{
+			application.zcore.functions.zQueryToStruct(local.qSet, form);
+			application.zcore.functions.zstatusHandler(request.zsid, true, true, form); 
 		}
 	}
 	
@@ -3578,24 +3583,24 @@ Define this function in another CFC to override the default email format
 		 
 					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Meta Title:</div></th>
-					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metatitle" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_metatitle)#<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metatitle'))#</cfif>" /> 
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metatitle" value="#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metatitle'))#" /> 
 					</td>
 					</tr>
 					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Meta Keywords:</div></th>
-					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metakey" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_metakey)#<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metakey'))#</cfif>" /> 
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metakey" value="#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metakey'))#" /> 
 					</td>
 					</tr>
 					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Meta Description:</div></th>
-					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metadesc" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metadesc'))#</cfif>" /> 
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_metadesc" value="#htmleditformat(application.zcore.functions.zso(form, 'site_x_option_group_set_metadesc'))#" /> 
 					</td>
 					</tr>
 				</cfif>
 				<cfif qS.site_option_group_enable_unique_url EQ 1>
 					<tr <cfif local.tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Override URL:</div></th>
-					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_override_url" value="<cfif local.qSet.recordcount NEQ 0>#htmleditformat(qSet.site_x_option_group_set_override_url)#</cfif>" /> <br />It is not recommended to use this feature.  It is used to change the URL within the site.  Don't use this for external links.
+					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_override_url" value="#application.zcore.functions.zso(form, 'site_x_option_group_set_override_url')#" /> <br />It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.
 					</td>
 					</tr>
 					<cfset local.tempIndex++>
@@ -3608,13 +3613,7 @@ Define this function in another CFC to override the default email format
 					<cfscript>
 					ts=structnew();
 					ts.name="site_x_option_group_set_image_library_id";
-					if(qSet.recordcount NEQ 0){
-						ts.value=qSet.site_x_option_group_set_image_library_id;
-					}else if(structkeyexists(form, 'site_x_option_group_set_image_library_id')){
-						ts.value=form.site_x_option_group_set_image_library_id;
-					}else{
-						ts.value=0;
-					}
+					ts.value=application.zcore.functions.zso(form, 'site_x_option_group_set_image_library_id', true);
 					ts.allowPublicEditing=true;
 					application.zcore.imageLibraryCom.getLibraryForm(ts);
 					

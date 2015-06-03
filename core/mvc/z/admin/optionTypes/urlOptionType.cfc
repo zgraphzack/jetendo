@@ -113,12 +113,11 @@
 	<cfscript>
 	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	if(nv NEQ ""){
-		if(left(nv, 1) EQ "/" or left(nv, 1) EQ "##"){
-			return {success:true};
-		}else if(left(nv, '7') EQ 'http://' or left(nv, '8') EQ 'https://'){
+		success=application.zcore.functions.zValidateURL(nv, true, false);
+		if(success){
 			return {success:true};
 		}else{
-			return { success:false, message: arguments.row["#variables.type#_option_display_name"]&" must be a valid URL, such as ""#request.zos.currentHostName#/"", ""/z/misc/inquiry/index"" or ""##namedAnchor"". Current value was: "&nv };
+			return { success:false, message: arguments.row["#variables.type#_option_display_name"]&" must be a valid URL, such as ""#request.zos.currentHostName#/"", ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /. The current value was: "&nv };
 		}
 	}
 	return {success:true};

@@ -224,6 +224,10 @@
 	myForm.content_metakey.html=true;
 	myForm.content_metadesc.html=true;
 	errors = application.zcore.functions.zValidateStruct(form, myForm, request.zsid, true);
+	if(application.zcore.functions.zso(form,'content_unique_name') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'content_unique_name'), true, true)){
+		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
+		errors=true;
+	}
 	if(errors){
 		application.zcore.status.setStatus(request.zsid,false,form,true);
 		if(form.method EQ "update"){
@@ -1382,8 +1386,9 @@
 	<table style="width:100%; border-spacing:0px;" class="table-list">
 	<tr> 
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.content.edit content_unique_name")#</th>
-		<td style="vertical-align:top; ">WARNING: DO NOT EDIT THIS FIELD!<br />
-			<input type="text" name="content_unique_name" value="#form.content_unique_name#" size="100" /></td>
+		<td style="vertical-align:top; "> 
+			<input type="text" name="content_unique_name" value="#form.content_unique_name#" size="100" /><br />
+		It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.</td>
 	</tr>
 	<tr> 
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("URL Rewriting","member.content.edit content_system_url")#</th>
