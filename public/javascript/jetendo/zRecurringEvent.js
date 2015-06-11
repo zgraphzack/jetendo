@@ -530,6 +530,11 @@
 				if($("#zRecurTypeDailyRadio1").prop("checked")){	
 					try{
 						ruleObj.skipDays=parseInt($("#zRecurTypeDailyDays").val());
+						if(isNaN(ruleObj.skipDays)){
+							alert('Interval must be a number');
+							$("#zRecurTypeDailyDays").val('1');
+							ruleObj.skipDays=1;
+						}
 					}catch(e){
 						alert("X must be a valid number for the Every X Day(s) field.");
 						$("#zRecurTypeDailyDays").val(1);
@@ -542,6 +547,11 @@
 			}else if(ruleObj.recurType == "Weekly"){
 					try{
 						ruleObj.skipWeeks=parseInt($("#zRecurTypeWeeklyWeeks").val());
+						if(isNaN(ruleObj.skipWeeks)){
+							alert('Interval must be a number');
+							$("#zRecurTypeWeeklyWeeks").val('1');
+							ruleObj.skipWeeks=1;
+						}
 					}catch(e){
 						alert("X must be a valid number for the Every X Week(s) field.");
 						$("#zRecurTypeWeeklyWeeks").val(1);
@@ -556,6 +566,11 @@
 			}else if(ruleObj.recurType == "Monthly"){
 				try{
 					ruleObj.skipMonths=parseInt($("#zRecurTypeMonthlyDays").val());
+					if(isNaN(ruleObj.skipMonths)){
+						alert('Interval must be a number');
+						$("#zRecurTypeMonthlyDays").val('1');
+						ruleObj.skipMonths=1;
+					}
 				}catch(e){
 					alert("X must be a valid number for the Every X Month(s) field.");
 					$("#zRecurTypeMonthlyDays").val(1);
@@ -574,6 +589,11 @@
 			}else if(ruleObj.recurType == "Annually"){
 				try{
 					ruleObj.skipYears=parseInt($("#zRecurTypeAnnuallyDays").val());
+					if(isNaN(ruleObj.skipYears)){
+						alert('Interval must be a number');
+						$("#zRecurTypeAnnuallyDays").val('1');
+						ruleObj.skipYears=1;
+					}
 				}catch(e){
 					alert("X must be a valid number for the Every X Year(s) field.");
 					$("#zRecurTypeAnnuallyDays").val(1);

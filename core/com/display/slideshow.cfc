@@ -24,7 +24,7 @@
 		<div class="zslideshowitem#request.zos.tempobj.zSlideShowUniqueIdIndex# zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-38-1">
 			<cfif ts.arrLink[ts.slideIndex] NEQ "">
 				<div onclick="zSlideshowClickLink('#htmleditformat(ts.arrLink[ts.slideIndex])#');" class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-1">
-					<div style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"> #application.zcore.functions.zLoadAndCropImage({id:"#imgid#",width:variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding,height:variables.qslideshow.slideshow_thumb_height, url:ts.arrThumb[ts.slideIndex], style:"", canvasStyle:"", crop:true})# </div>
+					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-4" style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"> #application.zcore.functions.zLoadAndCropImage({id:"#imgid#",width:variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding,height:variables.qslideshow.slideshow_thumb_height, url:ts.arrThumb[ts.slideIndex], style:"", canvasStyle:"", crop:true})# </div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-3"></div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-2">#ts.arrCity[ts.slideIndex]#</div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-40-1">#ts.arrPrice[ts.slideIndex]#</div>
@@ -55,7 +55,7 @@
 		<div class="zslideshowitem#request.zos.tempobj.zSlideShowUniqueIdIndex# zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-38-1">
 			<cfif ts.arrLink[ts.slideIndex] NEQ "">
 				<div onclick="zSlideshowClickLink('#htmleditformat(ts.arrLink[ts.slideIndex])#');" class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-1">
-					<div style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"> #application.zcore.functions.zLoadAndCropImage({id:"#imgid#",width:variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding,height:variables.qslideshow.slideshow_thumb_height, url:ts.arrThumb[ts.slideIndex], style:"", canvasStyle:"", crop:true})# 
+					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-4" style="float:left;width:#variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding#px; height:#variables.qslideshow.slideshow_thumb_height#px;"> #application.zcore.functions.zLoadAndCropImage({id:"#imgid#",width:variables.qslideshow.slideshow_thumb_width-variables.qslideshow.slideshow_thumb_padding,height:variables.qslideshow.slideshow_thumb_height, url:ts.arrThumb[ts.slideIndex], style:"", canvasStyle:"", crop:true})# 
 						</div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-3"></div>
 					<div class="zslideshow#request.zos.tempobj.zSlideShowUniqueIdIndex#-39-2">#ts.arrCity[ts.slideIndex]#</div>

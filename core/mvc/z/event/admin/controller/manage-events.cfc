@@ -339,7 +339,7 @@
 		}else{
 			// project event 
 			ical=application.zcore.app.getAppCFC("event").getIcalCFC();
-			projectDays=application.zcore.app.getAppData("event").optionStruct.event_config_project_recurrence_days;
+			projectDays=application.zcore.functions.zso(application.zcore.app.getAppData("event").optionStruct, 'event_config_project_recurrence_days', true);
 			echo('project event #projectDays# days into future: rrule: #form.event_recur_ical_rules#<br />');
 			arrDate=ical.getRecurringDates(form.event_start_datetime, form.event_recur_ical_rules, form.event_excluded_date_list, projectDays);
 			minutes=datediff("n", form.event_start_datetime, form.event_end_datetime);

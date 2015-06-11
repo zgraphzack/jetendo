@@ -22,7 +22,14 @@ To test all recurring rule types, open the browser console and run this URL on y
 	if(form.event_excluded_date_list EQ ""){
 		excludeJson="[]";
 	}else{
-		excludeJson=serializeJson(listToArray(form.event_excluded_date_list,","));
+		a=listToArray(form.event_excluded_date_list,",");
+		a2=[];
+		for(i=1;i LTE arraylen(a);i++){
+			if(a[i] DOES NOT CONTAIN 'NaN'){
+				arrayAppend(a2, a[i]);
+			}
+		}
+		excludeJson=serializeJson(a2);
 	}
 
 	</cfscript>
