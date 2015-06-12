@@ -122,7 +122,11 @@
 			self.buildMonthlyCalendar();
 			for(var i=0;i<options.arrExclude.length;i++){
 				var d=new Date(Date.parse(options.arrExclude[i]));
-				arrExclude[d.getTime()]=d;
+				if(d=='Invalid Date'){
+					alert(options.arrExclude[i]+' is an invalid exclude date, and was automatically removed.');
+				}else{
+					arrExclude[d.getTime()]=d;
+				}
 			}
  
 			self.setFormFromRules(options.ruleObj, true); 
@@ -152,6 +156,10 @@
 			$("#zRecurTypeExcludeDateButton").bind("click", function(){
 				try{
 					var date=new Date(Date.parse($("#zRecurTypeExcludeDate").val()));
+					if(date=='Invalid Date'){
+						alert($("#zRecurTypeExcludeDate").val()+' is an invalid date.  The date should be formatted: month/day/year using only numbers and /.');
+						return false;
+					}
 				}catch(e){
 					alert("You must specify a valid date first.");
 					return false;
@@ -206,7 +214,10 @@
 				for(var i in arrExclude){
 					var n=new Date();
 					n.setTime(i);
-					arrExclude2.push((n.getMonth()+1)+"/"+n.getDate()+"/"+n.getFullYear());
+					var d=(n.getMonth()+1)+"/"+n.getDate()+"/"+n.getFullYear();
+					if(d.indexOf("NaN") == -1){
+						arrExclude2.push(d);
+					}
 				}
 
 				$("#event_excluded_date_list", window.parent.document).val(arrExclude2.join(","));
