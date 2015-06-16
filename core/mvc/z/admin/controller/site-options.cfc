@@ -1343,19 +1343,36 @@
 			nv=row.site_option_default_value;
 			nvdate=nv;
 		} 
-		db.sql="REPLACE INTO #db.table("site_x_option", request.zos.zcoreDatasource)#  SET 
-		site_option_app_id=#db.param(form.site_option_app_id)#, 
-		site_id=#db.param(request.zos.globals.id)#, 
-		site_option_id_siteIDType=#db.param(form.siteIDType)#, 
-		site_x_option_value=#db.param(nv)#, 
-		site_x_option_date_value=#db.param(nvdate)#, 
-		site_x_option_deleted=#db.param(0)#, 
-		site_option_id=#db.param(row.site_option_id)#, 
-		site_x_option_updated_datetime=#db.param(nowDate)# ";
-		if(structkeyexists(rs, 'originalFile')){
-			db.sql&=", site_x_option_original=#db.param(rs.originalFile)#";
+		if(row.site_x_option_id EQ ""){
+			db.sql="INSERT INTO #db.table("site_x_option", request.zos.zcoreDatasource)#  SET 
+			site_option_app_id=#db.param(form.site_option_app_id)#, 
+			site_id=#db.param(request.zos.globals.id)#, 
+			site_option_id_siteIDType=#db.param(form.siteIDType)#, 
+			site_x_option_value=#db.param(nv)#, 
+			site_x_option_date_value=#db.param(nvdate)#, 
+			site_x_option_deleted=#db.param(0)#, 
+			site_option_id=#db.param(row.site_option_id)#, 
+			site_x_option_updated_datetime=#db.param(nowDate)# ";
+			if(structkeyexists(rs, 'originalFile')){
+				db.sql&=", site_x_option_original=#db.param(rs.originalFile)#";
+			}
+			qD2=db.execute("qD2");
+		}else{
+			db.sql="UPDATE #db.table("site_x_option", request.zos.zcoreDatasource)#  SET 
+			site_x_option_value=#db.param(nv)#, 
+			site_x_option_date_value=#db.param(nvdate)#, 
+			site_x_option_updated_datetime=#db.param(nowDate)# ";
+			if(structkeyexists(rs, 'originalFile')){
+				db.sql&=", site_x_option_original=#db.param(rs.originalFile)#";
+			}
+			db.sql&=" WHERE 
+			site_option_app_id=#db.param(form.site_option_app_id)# and 
+			site_id=#db.param(request.zos.globals.id)# and 
+			site_option_id_siteIDType=#db.param(form.siteIDType)# and 
+			site_x_option_deleted=#db.param(0)# and 
+			site_option_id=#db.param(row.site_option_id)# ";
+			qD2=db.execute("qD2");
 		}
-		qD2=db.execute("qD2");
 
 
 	}
@@ -1365,7 +1382,6 @@
 	site_x_option_deleted = #db.param(0)# and
 	site_x_option_updated_datetime<#db.param(nowDate)#";
 	q=db.execute("q");
-
 	application.zcore.siteOptionCom.updateOptionCache(request.zos.globals.id);
 	//application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
 	

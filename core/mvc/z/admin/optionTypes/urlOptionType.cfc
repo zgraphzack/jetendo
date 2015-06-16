@@ -113,7 +113,7 @@
 	<cfscript>
 	var nv=application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 	if(nv NEQ ""){
-		success=application.zcore.functions.zValidateURL(nv, true, false);
+		success=application.zcore.functions.zValidateURL(nv, false, false);
 		if(success){
 			return {success:true};
 		}else{

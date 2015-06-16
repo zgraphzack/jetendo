@@ -2065,6 +2065,8 @@ User's IP: #request.zos.cgi.remote_addr#
 	}
 	var curPrivatePath=application.zcore.functions.zGetDomainWritableInstallPath(shortDomain);
 
+
+	structappend(application.sitestruct[arguments.site_id].globals, arguments.tempStruct, true);
 	application.zcore.siteglobals[arguments.site_id]=arguments.tempStruct;
 	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', serializeJson(arguments.tempStruct));
 	</cfscript>
