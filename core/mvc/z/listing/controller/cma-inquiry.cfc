@@ -345,8 +345,7 @@
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript>
 				</td>
-			</tr>
-			He wants to call it "Target Price" and wants the options to be in increments of $25,000.Â  He said beyond $400,000 you can change the increments to $50,000
+			</tr> 
 			<tr id="zcma-row18-2">
 				<td style="vertical-align:top; ">&nbsp;</td>
 				<td>Other special upgrades or considerations on your home like solar?  Describe them below.</td>
