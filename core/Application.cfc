@@ -221,6 +221,7 @@ request.zos.cgi=local.tempCGI;
         return;
     }
     
+       
         
     if(request.zos.cgi.http_host CONTAINS ":"){
         request.zos.cgi.http_host=listgetat(request.zos.cgi.http_host,1,":");
