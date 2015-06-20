@@ -872,7 +872,7 @@ used to do search for a list of values
 		return 'Pending';
 	}else if(arguments.statusId EQ 2){
 		return 'Deactivated By User';
-	}else if(arguments.statusId EQ 1){
+	}else if(arguments.statusId EQ 3){
 		return 'Rejected';
 	}else{
 		throw("Invalid statusId, ""#arguments.statusId#""");
@@ -1088,11 +1088,15 @@ used to do search for a list of values
 		var groupStruct=typeStruct.optionGroupLookup[optionGroupId];
 		if(groupStruct["#variables.type#_option_group_enable_cache"] EQ 1){
 			if(structkeyexists(t9.optionGroupSetArrays, arguments.option_app_id&chr(9)&optionGroupId&chr(9)&arguments.parentStruct.__setId)){
-				arrGroup=t9.optionGroupSetArrays[arguments.option_app_id&chr(9)&optionGroupId&chr(9)&arguments.parentStruct.__setId];
+				arrGroup=t9.optionGroupSetArrays[arguments.option_app_id&chr(9)&optionGroupId&chr(9)&arguments.parentStruct.__setId]; 
+				arrGroup2=[];
 				for(i=1;i LTE arraylen(arrGroup);i++){
-					appendOptionGroupDefaults(arrGroup[i], optionGroupId);
+					if(not isNull(arrGroup[i])){
+						appendOptionGroupDefaults(arrGroup[i], optionGroupId);
+						arrayAppend(arrGroup2, arrGroup[i]);
+					}
 				}
-				return arrGroup;
+				return arrGroup2;
 			}
 		}else{
 			return optionGroupSetFromDatabaseByGroupId(optionGroupId, arguments.option_app_id, arguments.site_id, arguments.parentStruct);
