@@ -120,6 +120,13 @@ USER WAS PERMANENTLY BLOCKED.');
 				application.zcore.functions.zabort();
 			}
 		}*/ 
+
+		if(structkeyexists(application.zcore, 'referrerList') and request.zos.cgi.HTTP_REFERER NEQ "" and replacelist(request.zos.cgi.HTTP_REFERER, application.zcore.referrerList, application.zcore.referrerListReplace) NEQ request.zos.cgi.HTTP_REFERER){
+			request.zos.trackingDisabled=true;
+			request.zos.trackingspider=true;
+			application.zcore.functions.z404("Invalid Robot Request"); 
+		}
+
 		if(request.zos.cgi.HTTP_USER_AGENT EQ "" or replacelist(tempUserAgent, application.zcore.spiderList, application.zcore.spiderListReplace) NEQ tempUserAgent){
 			/*if(cgi.HTTP_USER_AGENT CONTAINS "baiduspider"){
 				header statuscode="404" statustext="Page not found";
