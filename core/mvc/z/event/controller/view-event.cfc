@@ -149,7 +149,7 @@
 			</cfif> 
 			<cfif struct.event_phone NEQ "">
 				<div class="zEventView1-0">
-					<div class="zEventView1-1">Contact:</div>
+					<div class="zEventView1-1">Phone:</div>
 					<div class="zEventView1-2"><a class="zPhoneLink">#htmleditformat(struct.event_phone)#</a></div>
 				</div>
 			</cfif>

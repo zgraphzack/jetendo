@@ -831,6 +831,10 @@
 					<input type="text" name="event_map_coordinates" id="event_map_coordinates" value="#htmleditformat(form.event_map_coordinates)#" /> 
 					<a href="##" class="mapLocationLink" rel="nofollow">Verify/Set Map Location</a></td>
 			</tr> 
+			<tr>
+				<th>Phone</th>
+				<td><input type="text" name="event_phone" style="width:95%;" value="#htmleditformat(form.event_phone)#" /></td>
+			</tr> 
 
 			<tr>
 				<th>Web Site URL</th>

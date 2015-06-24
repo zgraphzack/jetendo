@@ -233,7 +233,7 @@
 <cffunction name="getListViewCalendarJson" access="remote" localmode="modern">
 	<cfscript>
 	ss={}; 
-	if(structkeyexists(form, 'categories')){
+	if(structkeyexists(form, 'categories') and form.categories NEQ ""){
 		ss.categories=application.zcore.functions.zso(form, 'categories');
 	}else{
 		ss.calendarids=application.zcore.functions.zso(form, 'calendarids');
@@ -247,7 +247,7 @@
  	rs=eventCom.searchEvents(ss); 
  	rs.offset=ss.offset;
  	rs.perpage=ss.perpage; 
- 	if(structkeyexists(ss, 'categories')){
+ 	if(structkeyexists(form, 'categories') and form.categories NEQ ""){
 	 	rs.link="/z/event/event-calendar/getListViewCalendarJson?categories=#ss.categories#";
  	}else{
 	 	rs.link="/z/event/event-calendar/getListViewCalendarJson?calendarids=#ss.calendarids#";
