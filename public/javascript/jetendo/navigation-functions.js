@@ -44,7 +44,7 @@ var zPagination=function(options){
 		var arrR=new Array();
 		var firstOffset=0;
 		var linkCount=5;
-		var firstLinkCount=Math.floor((linkCount-1)/2);
+		var firstLinkCount=Math.floor((linkCount-1)/2); 
 		var beforeLinkCount=Math.min(firstLinkCount, options.offset/options.perpage);
 		
 		var pageCount=Math.min(Math.ceil(1000/perPage), Math.ceil(count/perPage));
@@ -58,13 +58,9 @@ var zPagination=function(options){
 
 			arrBind.push({
 				"selector":".zPagination-previousLink",
-				"func":function(){
-					options.offset=curOffset-perPage;
-					runLoad(); 
-					return false;
-				}
+				"offset":curOffset-perPage
 			});
-		}
+		} 
 		for(var i=0;i<linkCount;i++){
 			var coff=((i*perPage)+firstOffset);
 			var clabel=(coff/perPage)+1;
@@ -74,19 +70,14 @@ var zPagination=function(options){
 				}else if(coff == curOffset){
 					arrR.push('<span class="search-nav-t">'+clabel+'</span>');
 				}else{
-					arrR.push('<a href="##" class="zPagination-link'+clabel+'">'+clabel+'</a>');	
-					
+					arrR.push('<a href="##" class="zPagination-link'+clabel+'">'+clabel+'</a>');	 
 					arrBind.push({
 						"selector":'.zPagination-link'+clabel,
-						"func":function(){
-							options.offset=coff;
-							runLoad(); 
-							return false;
-						}
+						"offset": coff
 					});
 				}
 			}
-		}
+		} 
 		if(pageCount >= curOffset/perPage){
 			var clabel=((curOffset+perPage)/perPage)+1;
 			if(clabel <= pageCount){
@@ -94,11 +85,7 @@ var zPagination=function(options){
 				
 				arrBind.push({
 					"selector":".zPagination-nextLink",
-					"func":function(){
-						options.offset=curOffset+perPage;
-						runLoad(); 
-						return false;
-					}
+					"offset":curOffset+perPage
 				});
 			}
 		}
@@ -107,7 +94,14 @@ var zPagination=function(options){
 		$("#"+id).html(r);
 		for(var i=0;i<arrBind.length;i++){
 			$(arrBind[i].selector, "#"+id).unbind("click");
-			$(arrBind[i].selector, "#"+id).bind("click", arrBind[i].func);
+			var c=arrBind[i];
+			$(arrBind[i].selector, "#"+id).attr("data-offset", c.offset);
+			$(arrBind[i].selector, "#"+id).bind("click", function(){ 
+				var offset=parseInt($(this).attr("data-offset")); 
+				options.offset=offset;
+				runLoad(); 
+				return false;
+			});
 		}
 	}
 	render();

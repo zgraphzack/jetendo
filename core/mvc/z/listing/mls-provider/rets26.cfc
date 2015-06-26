@@ -445,6 +445,8 @@ variables.tableLookup["G"]="G";
 	rs.listing_id=arguments.ss.listing_id;
 	if(structkeyexists(ts, "Baths")){
 		rs.listing_baths=ts["Baths"];
+	}else if(structkeyexists(ts, "Baths - Total")){
+		rs.listing_baths=ts["Baths - Total"];
 	}else if(structkeyexists(ts, 'Full Baths')){
 		rs.listing_baths=ts["Full Baths"];
 	}else{
