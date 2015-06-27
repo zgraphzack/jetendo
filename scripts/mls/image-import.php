@@ -28,7 +28,7 @@ exit;
 */
 function downloadImageFile($path, $mlsId, $listingId, $imageURL, $imageNumber, $force){ 
 	//echo($listingId."\n");
-	//echo($imageURL);exit; 
+	//echo($imageURL);exit;  
 	$fname=$mlsId."-".$listingId."-".$imageNumber.".jpeg";//
 	$md5name=md5($fname);
 
@@ -129,12 +129,14 @@ function processImageFile($path, $mlsId, $fileName){
 	}
 	if ($handle) {
 		echo "Processing ".$newPath."\n";
-		while (($buffer = fgets($handle, 8096)) !== false) {
+		while (($buffer = fgets($handle, 38096)) !== false) {
 			$lineNumber++;
 			if($first || $skipToLineNumber>$lineNumber){
 				if($first){
 					$a=explode("\t", $buffer);
 					if(count($a) != 2){  
+						$s="Break was early because row was not 2 columns: ".$buffer;
+						zEmailErrorAndExit($s, $s." in ".$newPath); 
 						break;
 					}
 				}
@@ -143,11 +145,12 @@ function processImageFile($path, $mlsId, $fileName){
 			}
 			$a=explode("\t", $buffer);
 			if(count($a) != 2){  
+				$s="Break was early because row was not 2 columns: ".$buffer;
+				zEmailErrorAndExit($s, $s." in ".$newPath);  
 				break;
 			}
 			$listingId=$a[0];
-			$arrImage=explode(",", $a[1]); 
-
+			$arrImage=explode(",", $a[1]);  
 			$imageNumber=1;
 			for($n=0;$n<count($arrImage);$n++){
 				$i=trim($arrImage[$n]);

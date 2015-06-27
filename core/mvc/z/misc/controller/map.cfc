@@ -131,7 +131,8 @@
 	<!--- multi-marker display system for map function --->
 
 	<cfsavecontent variable="local.scriptOutput"> 
-	#application.zcore.functions.zRequireGoogleMaps()#
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
+	<!--- #application.zcore.functions.zRequireGoogleMaps()# --->
 	<script type="text/javascript">
 	/* <![CDATA[ */
 	
@@ -201,8 +202,7 @@
 		}
 	}
 	var currentMarker=0;
-	function onGMAPLoad(){
-	
+	function onGMAPLoad2(){ 
 		$("##centerMapButton").bind("click", centerMapButtonClick);
 		$("##setMarkerButton").bind("click", markerButtonClick);
 		if(currentMapAddress==""){
@@ -223,6 +223,9 @@
 		currentMarker=mapData.marker;
 		currentGoogleMap=mapData.map;
 	}
+	zArrDeferredFunctions.push(function(){ 
+		onGMAPLoad2();
+	});
 	/* ]]> */
 	</script> 
 	</cfsavecontent>

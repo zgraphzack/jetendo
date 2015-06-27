@@ -1108,7 +1108,7 @@ this.isPropertyDisplayCom=true;
 		<div class="zls-grid-summary-text" style="">
 		<div class="zls-buttonlink" style="float:right; position:relative; margin-top:-33px;"> <a href="#request.zos.currentHostName##propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>View</a> </div>
 		<cfif arguments.idx.listing_price NEQ "" and arguments.idx.listing_price NEQ "0">
-			<div style="font-weight:700; width:100%; font-size:110%;">
+			<div style="font-weight:700; width:100%; line-height:150%; font-size:110%;">
 			$#numberformat(arguments.idx.listing_price)#
 			<cfif arguments.idx.listing_price LT 20>
 				per sqft
