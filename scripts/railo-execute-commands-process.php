@@ -1222,6 +1222,7 @@ function getImageMagickIdentify($a){
 	if(file_exists($path)){
 		$path=getAbsolutePath($path);
 		$p=get_cfg_var("jetendo_root_path");
+		$p2=get_cfg_var("jetendo_scripts_path");
 		$found=false;
 		if(substr($path, 0, strlen($p)) == $p){
 			$found=true;
@@ -1233,6 +1234,14 @@ function getImageMagickIdentify($a){
 		if($found){
 			$cmd="/usr/bin/identify -format %w,%h,%[colorspace] ".escapeshellarg($path)." 2>&1";
 			$r=`$cmd`;
+
+			$a=explode(",", trim($r));
+			if(strtolower(trim($a[2]))=="cmyk"){
+				$cmd2="/usr/bin/convert ".escapeshellarg($path)." -profile ".$p2."icc-profiles/USWebCoatedSWOP.icc -profile ".$p2."icc-profiles/sRGB_IEC61966-2-1_black_scaled.icc ".escapeshellarg($path)." 2>&1";
+				$r2=`$cmd2`;
+				$a[2]="srgb";
+				$r=implode(",", $a);
+			}
 			echo $cmd."\n".$r."\n";
 			return $r;
 		}
