@@ -1754,8 +1754,12 @@ searchEvents(ts);
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
 	row=arguments.row;
-	urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_recur_url_id;
-	return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_recur_id&".html";
+	if(row.event_unique_url NEQ ""){
+		return row.event_unique_url&"?recurId="&row.event_recur_id;
+	}else{
+		urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_recur_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_recur_id&".html";
+	}
 	</cfscript>
 </cffunction>
 
@@ -1777,7 +1781,11 @@ searchEvents(ts);
 	<cfscript>
 	row=arguments.row;
 	urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_next_recur_url_id;
-	return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_id&".html";
+	if(row.event_unique_url NEQ ""){
+		return row.event_unique_url&"?nextOccurrence=1";
+	}else{
+		return "/"&application.zcore.functions.zURLEncode(row.event_name, '-')&"-"&urlId&"-"&row.event_id&".html";
+	}
 	</cfscript>
 </cffunction>
 

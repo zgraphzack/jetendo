@@ -1873,7 +1873,7 @@ zForm(ts);
 	ts.ignoreOldRequests=false;
 	ts.onLoadCallback="function(){};";
 	if(request.zos.istestserver){
-		ts.onErrorCallback="function(r){alert(r);};";
+		ts.onErrorCallback="function(r){/*alert(r);*/};";
 	}else{
 		ts.onErrorCallback="function(r){};";
 	}

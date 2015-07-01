@@ -3,6 +3,18 @@
 <cffunction name="displayEvent" localmode="modern" access="private">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
+	if(application.zcore.functions.zso(form, 'nextOccurrence', true) NEQ 0){
+		structdelete(form, 'nextOccurrence');
+		//writedump('test');abort;
+		viewNextRecurringEvent();
+		return;
+	}
+	if(application.zcore.functions.zso(form, 'recurId', true) NEQ 0){ 
+		form.event_recur_id=form.recurId;
+		structdelete(form, 'recurId');
+		viewRecurringEvent();
+		return;
+	}
 	db=request.zos.queryObject;
 	struct=arguments.struct;
 
@@ -253,13 +265,12 @@
 
 	<a href="#calendarLink#" class="zEventView1-backToCalendar">Back To Calendar</a>
 	<cfif application.zcore.user.checkGroupAccess("member") and application.zcore.adminSecurityFilter.checkFeatureAccess("Manage Events", true)>
-		<a href="/z/event/admin/manage-events/edit?event_id=#struct.event_id#&amp;return=1" class="zEventView1-backToCalendar" style="margin-left:10px;">Edit</a>
+		<a href="/z/event/admin/manage-events/edit?event_id=#struct.event_id#&amp;return=1" class="zNoContentTransition zEventView1-backToCalendar" style="margin-left:10px;">Edit</a>
 	</cfif>
 	
  	
 </cffunction>
 </cfoutput>
-
 
 <cffunction name="viewNextRecurringEvent" localmode="modern" access="remote">
 	<cfscript>
@@ -273,16 +284,15 @@
 		ts.showInactive=true;
 	}
 	eventCom=application.zcore.app.getAppCFC("event");
-	rs=eventCom.searchEvents(ts); 
+	rs=eventCom.searchEvents(ts);
 	if(rs.count NEQ 1){
 		application.zcore.functions.z404("Event id, #form.event_id#, is missing or doesn't have a future recurring date.");
 	}
 	row=rs.arrData[1];
 	urlId=application.zcore.app.getAppData("event").optionstruct.event_config_event_next_recur_url_id;
-	actualLink=eventCom.getNextRecurringEventURL(row);
-	curLink=request.zos.originalURL;
-
-	if(compare(curLink, actualLink) NEQ 0){
+	actualLink=eventCom.getEventRecurURL(row);
+	curLink=request.zos.originalURL; 
+	if(compare(curLink, actualLink) NEQ 0){ 
 		application.zcore.functions.z301redirect(actualLink);
 	}
 	row.event_start_datetime=row.event_recur_start_datetime;
@@ -301,15 +311,19 @@
 	ts.perpage=1;
 	if(application.zcore.user.checkGroupAccess("member")){
 		ts.showInactive=true;
-	}
+	} 
 	eventCom=application.zcore.app.getAppCFC("event");
-	rs=eventCom.searchEvents(ts); 
+	rs=eventCom.searchEvents(ts);  
 	if(rs.count NEQ 1){
 		application.zcore.functions.z404("Recurring event, #form.event_recur_id#, is missing");
 	}
 	row=rs.arrData[1];
-	actualLink=eventCom.getEventRecurURL(row);
-	curLink=request.zos.originalURL;
+	actualLink=eventCom.getEventRecurURL(row); 
+	if(row.event_unique_url NEQ ""){
+		curLink=request.zos.originalURL&"?recurId="&form.event_recur_id;
+	}else{
+		curLink=request.zos.originalURL;
+	}
 	if(compare(curLink, actualLink) NEQ 0){
 		application.zcore.functions.z301redirect(actualLink);
 	}
