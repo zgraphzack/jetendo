@@ -51,6 +51,7 @@ weatherHTML=zGetWeather(ts);
 	}
 	structdelete(request, 'zLastWeatherLookup');
 	request.zLastWeatherLookup={};
+	request.zLastWeatherLookup.temperature=0;
 	ss=application.sitestruct[request.zos.globals.id];
 	download=false;
 	if(not structkeyexists(ss, 'weatherset'&arguments.ss.zip&ctemp&'v2')){
@@ -69,6 +70,7 @@ weatherHTML=zGetWeather(ts);
 		}
 	}else{
 		request.zLastWeatherLookup=ss["weatherset"&arguments.ss.zip&ctemp&'cache-v2'];
+		request.zLastWeatherLookup.temperature=application.zcore.functions.zso(request.zLastWeatherLookup, 'temperature');
 		return request.zLastWeatherLookup.weatherHTML;
 	}
 	
@@ -177,8 +179,10 @@ weatherHTML=zGetWeather(ts);
 		}
 		if(not isstruct(request.zLastWeatherLookup) or not structkeyexists(request.zLastWeatherLookup, 'weatherHTML')){
 			request.zLastWeatherLookup={};
+			request.zLastWeatherLookup.temperature=application.zcore.functions.zso(request.zLastWeatherLookup, 'temperature');
 			return "";
 		}else{
+			request.zLastWeatherLookup.temperature=application.zcore.functions.zso(request.zLastWeatherLookup, 'temperature');
 			return request.zLastWeatherLookup.weatherHTML;	
 		}
 	}

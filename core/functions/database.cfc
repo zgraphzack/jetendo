@@ -155,45 +155,6 @@ application.zcore.functions.zGetDataById("insert", request.zos.zcoreDatasource, 
 
 </cffunction>
 
-  <!--- text=application.zcore.functions.zCleanSearchText(text); --->
- <cffunction name="zCleanSearchText" localmode="modern" output="yes" returntype="any">
-		<cfargument name="text" type="string" required="yes">
-		<cfargument name="nolinks" type="boolean" required="no" default="#false#">
-		<cfscript>
-	var links="";
-	var badTagList="style|link|head|script|embed|base|input|textarea|button|object|iframe|form";
-	arguments.text=lcase(arguments.text);
-	// remove tags that have useless contents nested in them
-	arguments.text=rereplacenocase(arguments.text,"<(#badTagList#)[^>]*?>.*?</\1>", " ", 'ALL');			
-	if(arguments.nolinks EQ false){
-		links=replace(arguments.text,chr(9),' ','ALL');		
-		links=replace(links,chr(10),' ','ALL');		
-		links=replace(links,chr(13),' ','ALL');
-		
-		// extract links with or without quotes
-		links=rereplacenocase(links,"[^>^<]*<(area|a)\s[^>]*\s?href\s*=\s*(""|'|)([^\2^\s]*)\2\s*?[^>]*>.*?</\1>[^>^<]*",chr(9)&'\3'&chr(9),'ALL');
-		
-		if(find(chr(9),links) EQ 0) links="";
-		// remove everything but the links
-		links=rereplacenocase(links,"[^\t]*?\t([^\t]*)\t?[^\t]*", "\1 ", 'ALL');
-		// put links at the top
-		arguments.text=links&arguments.text;
-	}
-	// remove all html tags
-	arguments.text=rereplacenocase(arguments.text,"<.*?>", " ", 'ALL');
-	// remove html entities
-	arguments.text=rereplacenocase(arguments.text,"&[^\s]*?;", " ", 'ALL');
-	
-	// remove http
-	arguments.text=rereplacenocase(arguments.text,"(http\:|https\:|mailto\:|www\.|\b(\S\S|\S)\b|[^a-z0-9@]|\s)", " ", 'ALL');
-	// remove consequtive spaces
-	arguments.text=rereplacenocase(arguments.text,"\s*(\S*)", " \1", 'ALL');
-	// trim and return
-	arguments.text=trim(arguments.text);
-	return arguments.text;
-	</cfscript>
-</cffunction>
-
 <cffunction name="zViewQueryError" localmode="modern" output="yes" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>

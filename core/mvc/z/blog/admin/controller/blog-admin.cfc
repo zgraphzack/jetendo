@@ -1679,7 +1679,7 @@ application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.
 	}
 	
 	form.searchText=trim(application.zcore.functions.zso(form, 'searchText'));
-	searchTextOriginal=form.searchText;
+	searchTextOriginal=replace(form.searchText, '@', '_', 'all');
 	if(not isnumeric(searchTextOriginal)){
 		form.searchText=application.zcore.functions.zCleanSearchText(form.searchText, true);
 		if(form.searchText NEQ "" and isNumeric(form.searchText) EQ false and len(form.searchText) LTE 2){

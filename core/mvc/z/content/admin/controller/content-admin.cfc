@@ -1301,15 +1301,7 @@
 			<input type="radio" name="content_show_site_map" value="1" <cfif application.zcore.functions.zso(form, 'content_show_site_map') EQ 1 or application.zcore.functions.zso(form, 'content_show_site_map') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
 			<input type="radio" name="content_show_site_map" value="0" <cfif application.zcore.functions.zso(form, 'content_show_site_map') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
 		</td>
-	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">
-			#application.zcore.functions.zOutputHelpToolTip("Hide Full Size Image?","member.content.edit content_photo_hide_image")#</th>
-		<td style="vertical-align:top; ">
-			<input type="radio" name="content_photo_hide_image" value="1" <cfif application.zcore.functions.zso(form, 'content_photo_hide_image') EQ 1 or application.zcore.functions.zso(form, 'content_photo_hide_image') EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
-			<input type="radio" name="content_photo_hide_image" value="0" <cfif application.zcore.functions.zso(form, 'content_photo_hide_image') EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> No 
-		</td>
-	</tr>
+	</tr> 
         <tr>
         <th>Thumbnail Image Size:</th>
         <td>

@@ -1652,11 +1652,6 @@
 	"html":"",
 	"label":"Subject"
 },
-	"member.content.edit content_photo_hide_image":{
-	"qs":"&tooltip_id=17&tooltip_section_id=6",
-	"html":"<p><strong>A</strong>llows you the option of viewing a full sized image on the page. Click yes to hide the full size image.</p>",
-	"label":"Hide Full Size Image?"
-},
 	"member.blog.edit blog_status":{
 	"qs":"&tooltip_id=307&tooltip_section_id=155",
 	"html":"",

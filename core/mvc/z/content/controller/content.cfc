@@ -2434,11 +2434,7 @@ configCom.includeContentByName(ts);
 			ts.size="#request.zos.globals.maximagewidth#x2000";
 			ts.crop=0; 
 			ts.top=true;
-			if(ts994824713.content_photo_hide_image EQ 1){
-				ts.offset=0;
-			}else{
-				ts.offset=1;
-			}
+			ts.offset=0;
 			if(ts994824713.content_image_library_layout EQ 7){
 				ts.limit=1;
 			}
@@ -2506,7 +2502,7 @@ configCom.includeContentByName(ts);
 			if(ts994824713.content_name2 NEQ ''){
 				echo('<h2>#htmleditformat(ts994824713.content_name2)#</h2>');
 			}
-			if(ts994824713.content_photo_hide_image EQ 0 and ts994824713.content_image_library_layout NEQ 8){
+			if(ts994824713.content_image_library_layout NEQ 8){
 				ts =structnew();
 				ts.image_library_id=ts994824713.content_image_library_id;
 				ts.output=false;
@@ -2614,12 +2610,7 @@ configCom.includeContentByName(ts);
 					ts =structnew();
 					ts.image_library_id=ts994824713.content_image_library_id;
 					ts.size="#request.zos.globals.maximagewidth#x2000";
-					ts.crop=0; 
-					if(ts994824713.content_photo_hide_image EQ 1){
-						ts.offset=1;
-					}else{
-						ts.offset=2;
-					} 
+					ts.crop=0;  
 					ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(ts994824713.content_image_library_layout);
 					application.zcore.imageLibraryCom.displayImages(ts);
 				}

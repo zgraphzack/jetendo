@@ -80,6 +80,9 @@
 	// remove html entities
 	arguments.text=rereplacenocase(arguments.text,"&[^\s]*?;", " ", 'ALL');
 	
+	// innodb full text boolean mode doesn't allow @ symbol
+	arguments.text=replace(arguments.text, '@', '_', 'all');
+
 	// remove http
 	arguments.text=rereplacenocase(arguments.text,"(http\:|https\:|mailto\:|www\.|\b(\S\S|\S)\b|[^a-z0-9@]|\s)", " ", 'ALL');
 	arguments.text=rereplacenocase(arguments.text,"\s*(\S*)", " \1", 'ALL');
