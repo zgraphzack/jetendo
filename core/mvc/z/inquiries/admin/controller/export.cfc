@@ -14,8 +14,8 @@
 	form.inquiries_start_date=application.zcore.functions.zso(form,'inquiries_start_date',false,createdatetime(2009,4,10,1,1,1));
 	form.inquiries_end_date=application.zcore.functions.zso(form,'inquiries_end_date',false,now());
 	form.exporttype=application.zcore.functions.zso(form,'exporttype',false,'0');
-	header name="Content-Type" value="text/plain" charset="utf-8";
 	if(form.format EQ 'csv'){
+		header name="Content-Type" value="text/plain" charset="utf-8";
 		header name="Content-Disposition" value="attachment; filename=#dateformat(now(), 'yyyy-mm-dd')#-inquiries.csv" charset="utf-8";
 		//setting enablecfoutputonly="yes";
 	}else if(form.format EQ 'html'){
@@ -71,8 +71,11 @@
 	}
 	fieldStruct={};
 	customStruct={};
+	sortStruct={};
 	for(i2=1;i2 LTE 2;i2++){
 		doffset=0;
+		// first loop finds all the field names
+		// second loop outputs the field names and data in alphabetic order
 		if(i2 EQ 2){ 
 			structdelete(fieldStruct, 'inquiries_datetime');
 			structdelete(fieldStruct, 'inquiries_custom_json');
@@ -90,24 +93,27 @@
 			arrF=structkeyarray(fieldStruct);
 			arrF2=structkeyarray(customStruct);
 			for(i3=1;i3 LTE arraylen(arrF2);i3++){
-				arrayappend(arrF, arrF2[i3]);
+				arrayAppend(arrF, arrF2[i3]);
 			}
-			arraysort(arrF, "text", "asc");
-			sortStruct={};
+
 			for(i3=1;i3 LTE arraylen(arrF);i3++){
-				sortStruct[arrF[i3]]=i3;
+				sortStruct[i3]={field:arrF[i3]};
 			}
+			arrFieldSort=structsort(sortStruct, "text", "asc", "field");
+			
 			if(form.format EQ 'html'){
 				writeoutput('<tr class="header"><td>Type</td><td>Date Received</td>');
-				for(i3=1;i3 LTE arraylen(arrF);i3++){
-					f=replace(replace(arrF[i3], 'inquiries_', ''), '_', ' ', 'all');
+				for(i3=1;i3 LTE arraylen(arrFieldSort);i3++){
+					c=sortStruct[arrFieldSort[i3]].field;
+					f=replace(replace(c, 'inquiries_', ''), '_', ' ', 'all');
 					echo('<td>'&f&'</td>');
 				}
 				echo('<td colspan="40">Associated Links</td></tr>'&chr(10));
 			}else if(form.format EQ 'csv'){
 				echo('"Type", "Date Received", ');
-				for(i3=1;i3 LTE arraylen(arrF);i3++){ 
-					f=replace(replace(arrF[i3], 'inquiries_', ''), '_', ' ', 'all');
+				for(i3=1;i3 LTE arraylen(arrFieldSort);i3++){ 
+					c=sortStruct[arrFieldSort[i3]].field;
+					f=replace(replace(c, 'inquiries_', ''), '_', ' ', 'all');
 					echo('"'&replace(f, '"', '', 'all')&'", ');
 				}
 				echo(' "Associated Links"'&chr(13)&chr(10));
@@ -312,19 +318,23 @@
 							writeoutput('<tr>');
 						}
 						writeoutput('<td>#typeName#</td><td>#dateTime#</td>');
-						for(i3=1;i3 LTE arraylen(arrF);i3++){
-							if(structkeyexists(j, arrF[i3])){
-								v=j[arrF[i3]];
-							}else if(structkeyexists(row, arrF[i3])){
-								v=row[arrF[i3]];
+						for(i3=1;i3 LTE arraylen(arrFieldSort);i3++){
+							c=sortStruct[arrFieldSort[i3]].field;
+							if(structkeyexists(j, c)){
+								v=j[c];
+							}else if(structkeyexists(row, c)){
+								v=row[c];
 							}else{
 								v="";
 							} 
 							v=left(replace(replace(replace(rereplace(v, '<.*?>', '', 'all'), chr(13), "", "all"), chr(10), " ", "all"), '"', "", 'all'), 100);
-							if(structkeyexists(j, arrF[i3])){
+							if(v EQ ""){
+								v="&nbsp;";
+							}
+							if(structkeyexists(j, c)){
 								echo('<td>'&v&'</td>');
-							}else if(structkeyexists(row, arrF[i3])){
-								echo('<td>'&v&'<td>');
+							}else if(structkeyexists(row, c)){
+								echo('<td>'&v&'</td>');
 							}else{
 								echo('<td>&nbsp;</td>');
 							} 
@@ -335,11 +345,12 @@
 						echo('</tr>'&chr(10));
 					}else if(form.format EQ 'csv'){
 						echo('"'&replace(typeName, '"', "", 'all')&'", "'&dateTime&'", ');
-						for(i3=1;i3 LTE arraylen(arrF);i3++){
-							if(structkeyexists(j, arrF[i3])){
-								v=j[arrF[i3]];
-							}else if(structkeyexists(row, arrF[i3])){
-								v=row[arrF[i3]];
+						for(i3=1;i3 LTE arraylen(arrFieldSort);i3++){
+							c=sortStruct[arrFieldSort[i3]].field;
+							if(structkeyexists(j, c)){
+								v=j[c];
+							}else if(structkeyexists(row, c)){
+								v=row[c];
 							}else{
 								v="";
 							} 

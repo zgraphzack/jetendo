@@ -2429,17 +2429,17 @@ configCom.includeContentByName(ts);
 
 		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 2'});
 		savecontent variable="theImageOutputHTML"{
-			ts =structnew();
-			ts.image_library_id=ts994824713.content_image_library_id;
-			ts.size="#request.zos.globals.maximagewidth#x2000";
-			ts.crop=0; 
-			ts.top=true;
-			ts.offset=0;
-			if(ts994824713.content_image_library_layout EQ 7){
-				ts.limit=1;
-			}
-			ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(ts994824713.content_image_library_layout);
-			application.zcore.imageLibraryCom.displayImages(ts);
+				ts =structnew();
+				ts.image_library_id=ts994824713.content_image_library_id;
+				ts.size="#request.zos.globals.maximagewidth#x2000";
+				ts.crop=0; 
+				ts.top=true;
+				ts.offset=0;
+				if(ts994824713.content_image_library_layout EQ 7){
+					ts.limit=1;
+				}
+				ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(ts994824713.content_image_library_layout);
+				application.zcore.imageLibraryCom.displayImages(ts);
 		}
 		savecontent variable="theContentHTMLSection"{
 			if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 3 or ts994824713.content_image_library_layout EQ 4 or ts994824713.content_image_library_layout EQ 6){
@@ -2502,7 +2502,7 @@ configCom.includeContentByName(ts);
 			if(ts994824713.content_name2 NEQ ''){
 				echo('<h2>#htmleditformat(ts994824713.content_name2)#</h2>');
 			}
-			if(ts994824713.content_image_library_layout NEQ 8){
+			/*if(ts994824713.content_image_library_layout NEQ 8){
 				ts =structnew();
 				ts.image_library_id=ts994824713.content_image_library_id;
 				ts.output=false;
@@ -2514,7 +2514,7 @@ configCom.includeContentByName(ts);
 				if(arraylen(arrImages) NEQ 0){
 					writeoutput('<p id="zcontentmainimagepid"><img id="zcontentmainimageimgid" src="'&arrImages[1].link&'" alt="#htmleditformat(arrImages[1].caption)#" style="border:none;" /></p>');
 				}
-			}
+			}*/
 			if(ts994824713.content_datetime NEQ ''){
 				echo('<strong class="news-date">Date: ');
 				if(isdate(ts994824713.content_datetime)){
@@ -2611,6 +2611,7 @@ configCom.includeContentByName(ts);
 					ts.image_library_id=ts994824713.content_image_library_id;
 					ts.size="#request.zos.globals.maximagewidth#x2000";
 					ts.crop=0;  
+					ts.offset=1;
 					ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(ts994824713.content_image_library_layout);
 					application.zcore.imageLibraryCom.displayImages(ts);
 				}

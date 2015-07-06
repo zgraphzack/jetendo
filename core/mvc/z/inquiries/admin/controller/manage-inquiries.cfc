@@ -350,10 +350,18 @@
 			inquiryFirstDate=dateFormat(now(), "yyyy-mm-dd")&" 00:00:00";
 		}
 		if(not structkeyexists(form, 'inquiries_end_date') or not isdate(form.inquiries_end_date)){ 
-			form.inquiries_end_date = application.zcore.functions.zGetDateSelect("inquiries_end_date");
+			if(not structkeyexists(form, 'inquiries_end_date_month')){
+				form.inquiries_end_date=now();
+			}else{
+				form.inquiries_end_date = application.zcore.functions.zGetDateSelect("inquiries_end_date");
+			}
 		}
 		if(not structkeyexists(form, 'inquiries_start_date') or not isdate(form.inquiries_start_date)){ 
-			form.inquiries_start_date = application.zcore.functions.zGetDateSelect("inquiries_start_date");
+			if(not structkeyexists(form, 'inquiries_start_date_month')){
+				form.inquiries_start_date=inquiryFirstDate;
+			}else{
+				form.inquiries_start_date = application.zcore.functions.zGetDateSelect("inquiries_start_date");
+			}
 		}
 		
 		if(form.inquiries_start_date EQ false or form.inquiries_end_date EQ false){
