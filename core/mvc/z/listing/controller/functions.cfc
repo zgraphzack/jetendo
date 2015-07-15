@@ -1277,6 +1277,7 @@ zGetLatLong(ts);
 		local.criteria.search_rate_low=round(arguments.idx.listing_price*.90);
 		local.criteria.search_rate_high=round(arguments.idx.listing_price*1.10);
 	}
+	local.criteria.search_subdivision=application.zcore.functions.zso(arguments.idx, 'search_subdivision');
 	local.criteria.search_bedrooms_low=arguments.idx.listing_beds;
 	local.criteria.search_bedrooms_high=arguments.idx.listing_beds;
 	local.criteria.search_bathrooms_low=arguments.idx.listing_baths;
@@ -1292,11 +1293,11 @@ zGetLatLong(ts);
 	request.zMLSSearchOptionsDisplaySearchId=searchId;
 	application.zcore.status.setStatus(searchId,false,ts18972.searchcriteria);
 	if(structkeyexists(form, 'debugsearchresults') and form.debugsearchresults){
-		ts18972.debug=true;
+		ts18972.debug=true; 
 	}else{
 		ts18972.debug=false;
 	}
-	ts18972.arrExcludeMLSPID=[arguments.idx.listing_id];
+	ts18972.arrExcludeMLSPID=[arguments.idx.listing_id]; 
 	var returnStruct = propertyDataCom.getProperties(ts18972); 
 	if(returnStruct.count NEQ 0){	
 		var propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");

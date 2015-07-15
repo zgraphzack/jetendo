@@ -551,5 +551,129 @@ weatherHTML=zGetWeather(ts);
 	return rs;
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="zDisplayRSSFeed" localmode="modern" access="public">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.ss;
+	if(not ss.success){
+		echo('News feed temporarily unavailable.  ');
+		if(request.zos.isTestServer or request.zos.isDeveloper){
+			echo(" | Error message:"&ss.errorMessage);
+		}
+		return;
+	} 
+	</cfscript>
+	<style type="text/css">
+	.zRssFeedItem{ margin-bottom:20px; border-bottom:1px solid ##999; padding-bottom:20px; padding-top:20px; width:100%;} 
+	</style> 
+	<cfloop index="x" from="1" to="#ArrayLen(ss.arrData)#">
+		<cfscript>
+		c=ss.arrData[x];
+
+		noHTML=application.zcore.functions.zStripHTMLTags(c.description);
+		summary=application.zcore.functions.zLimitStringLength(noHTML, 250); 
+		</cfscript>
+		<div class="zRssFeedItem"> 
+			<div style="width:100%; float:left;">
+				<h2><a href="#c.link#" target="_blank">#c.title#</a></h2>
+			</div>
+			<div id="zRssSummary#x#" style="  width:100%; float:left;">
+			<p>#summary#</p> 
+			</div>
+			<!---
+			<div id="zRssDescription#x#" style="display:none; width:100%; float:left;">
+				#c.description#
+			</div> --->
+			<p><a href="#c.link#" target="_blank" class="zRssReadMore" data-id="#x#">Read More</a></p>
+
+		</div>		
+	
+	</cfloop> 
+			<!---
+	<script type="text/javascript">
+	zArrDeferredFunctions.push(function(){
+		$(".zRssReadMore").bind("click", function(){
+			var id=$(this).attr("data-id");
+			$("##zRssSummary"+id).hide();
+			$("##zRssDescription"+id).show();
+			return false;
+		});
+
+	});
+	</script>--->
+</cffunction>
+
+<cffunction name="zGetRSSFeed" localmode="modern" access="public">
+	<cfargument name="ss" type="struct" required="yes"> 
+	<cfscript>
+	ss=arguments.ss;
+	rs={success:true};
+	found=false; 
+	feedFileName=application.zcore.functions.zURLEncode(ss.name, '-');
+	if(fileexists(request.zos.globals.privatehomedir&feedFileName&".xml") and structkeyexists(form, 'zForceRSSDownload') EQ false){
+		directory action="list" directory="#request.zos.globals.privatehomedir#" filter="#feedFileName#.xml" name="fileInfo";
+		fileDate = parseDateTime(fileInfo.dateLastModified);
+		if(dateDiff("s", fileDate, now()) GT ss.cacheSeconds){
+			found=false;
+		}else{
+			found=true;
+			x=application.zcore.functions.zreadfile(request.zos.globals.privatehomedir&feedFileName&".xml");
+		}
+
+	}
+	if(found EQ false){
+		try{
+			http url="#ss.url#" method="GET" timeout="5" throwonerror="yes" resolveurl="yes"{ }; 
+		}catch(Any e){ 
+			rs.success=false;
+			rs.errorMessage="Failed to download feed";
+			return rs;
+				
+		}
+		if(cfhttp.FileContent NEQ "Connection Timeout"){
+		    application.zcore.functions.zwritefile(request.zos.globals.privatehomedir&feedFileName&".xml", cfhttp.FileContent);
+		}else{
+			rs.success=false;
+			rs.errorMessage="Connection timeout for #ss.url#";
+			return rs;
+		}
+		blogs_xml=XMLParse(cfhttp.FileContent); 
+	}else{
+		try{
+			blogs_xml=XMLParse(x);
+		}catch(Any e){
+			rs.success=false;
+			rs.errorMessage="Failed to parse xml";
+			return rs;
+		}
+	}
+	//rs.xmlStruct=blogs_xml;
+
+	if(structkeyexists(blogs_xml, 'rss') and structkeyexists(blogs_xml.rss, 'xmlattributes') and structkeyexists(blogs_xml.rss.xmlattributes, 'version') and blogs_xml.rss.xmlattributes.version EQ "2.0"){
+		arrItems=blogs_xml.rss.channel.item;
+		arrData=[];
+		for(x=1;x LTE arraylen(arrItems);x++){
+			c=arrItems[x];
+			ts={
+				title:c.title.xmltext,
+				link:c.link.xmltext,
+				description:c.description.xmltext
+			};
+			arrayAppend(arrData, ts);
+		}
+		rs.arrData=arrData;
+	}else{
+		savecontent variable="out"{
+			writedump(arguments);
+			writedump(blogs_xml);
+		}
+		throw("RSS Version not implemented: "&out);
+	}
+	return rs;
+	</cfscript>
+	
+</cffunction>
 </cfoutput>
 </cfcomponent>

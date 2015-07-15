@@ -850,7 +850,7 @@ search sql generator has to be able to search on child group data for paging to 
 	
 	<cfscript>
 	form.zsearchtexthighlight=form.searchtext;
-	searchTextOriginal=rereplace(replace(form.searchtext, '+', ' ', 'all'), '\s', ' ', 'all');
+	searchTextOriginal=rereplace(replace(replace(form.searchtext, '"', '', "all"), '+', ' ', 'all'), '\s', ' ', 'all');
 	
 	searchTextReg=rereplace(trim(form.searchtext),"[^A-Za-z0-9\s]*",".","ALL");
 	searchTextOReg=rereplace(trim(searchTextOriginal),"[^A-Za-z0-9 ]*",".","ALL");

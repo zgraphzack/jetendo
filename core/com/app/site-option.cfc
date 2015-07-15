@@ -412,13 +412,13 @@
 	
 	if(not structkeyexists(tempStruct, 'soGroupData')){
 		tempStruct.soGroupData={};
-	}
-	tempStruct.soGroupData.optionLookup=structnew();
-	tempStruct.soGroupData.optionIdLookup=structnew();
-	sog=tempStruct.soGroupData;
+	} 
+	//tempStruct.soGroupData.optionLookup={};
+	//tempStruct.soGroupData.optionIdLookup={};
+	//sog=tempStruct.soGroupData;
 	
-	updateOptionGroupCache(arguments.siteStruct);
-	internalUpdateOptionOptionCache(arguments.siteStruct);
+	updateOptionGroupCache(tempStruct);
+	internalUpdateOptionOptionCache(tempStruct);
 	
 	</cfscript>
 	

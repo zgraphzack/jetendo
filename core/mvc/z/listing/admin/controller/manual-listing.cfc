@@ -55,7 +55,7 @@ still need to add all the meta data fields and photo display
 		application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 
 		searchText=trim(application.zcore.functions.zso(form, 'searchText'));
 		searchexactonly=application.zcore.functions.zso(form, 'searchexactonly',false,1);
-		searchTextOriginal=searchText;
+		searchTextOriginal=replace(searchText, '"', '', "all");
 		searchText=application.zcore.functions.zCleanSearchText(searchText, true);
 		if(searchText NEQ "" and isNumeric(searchText) EQ false and len(searchText) LTE 2){
 			application.zcore.status.setStatus(request.zsid,"The search searchText must be 3 or more characters.",form);

@@ -2048,8 +2048,7 @@ User's IP: #request.zos.cgi.remote_addr#
 	application.sitestruct[arguments.site_id]=tempStruct;
 	application.zcore.siteGlobals[arguments.site_id]=tempStruct.globals;
 	if(arguments.site_id EQ local.curSiteId){
-		application.sitestruct[request.zos.globals.id].globals=request.zos.globals; // used duplicate() previously and haven't needed to bring it back.
-		application.sitestruct[request.zos.globals.id]=application.sitestruct[arguments.site_id];
+		application.sitestruct[arguments.site_id].globals=request.zos.globals;
 	}
 	structdelete(application.sitestruct[arguments.site_id],'administratorTemplateMenu');
 	</cfscript>

@@ -2936,10 +2936,10 @@ application.zcore.searchFormCache[request.zos.globals.id].search_frontage=tv299;
 if(form.searchFormEnabledDropDownMenus){
 	ts.output=true;
 	if(form.searchFormLabelOnInput){
-		ts.selectLabel="Frontage";
+		ts.selectLabel="Water/Frontage";
 		ts.inlineStyle="width:#form.searchFormSelectWidth#;";
 	}else{
-		ts.label="Frontage:";
+		ts.label="Water/Frontage:";
 	}
 	ts.labelStyle="display:block; float:left;width:80px; padding-right:5px; text-align:right;";
 	application.zcore.functions.zInputSelectBox(ts);
@@ -2954,7 +2954,7 @@ if(form.searchFormEnabledDropDownMenus){
 		ts=StructNew();
 		ts.zExpOptionValue=rs.zExpOptionValue;
 		ts.value=rs.value;
-		ts.label="Frontage:";
+		ts.label="Water/Frontage:";
 		ts.contents=rs.output;
 		ts.height=40 + (arraylen(arrV) * 18);
 		ts.width="165";

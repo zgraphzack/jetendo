@@ -6,6 +6,9 @@
 	var qSiteOptionApp=0; 
 	variables.allowGlobal=false;
 
+
+	checkOptionCache();
+
 	form.site_id=request.zos.globals.id;
 	variables.siteIdList="'"&request.zos.globals.id&"'";
 	variables.publicSiteIdList="'0','"&request.zos.globals.id&"'";
@@ -2534,6 +2537,17 @@ Define this function in another CFC to override the default email format
 	this.manageGroup(arguments.struct);
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="checkOptionCache" localmode="modern" access="public">
+	<cfscript>
+	tempStruct=application.siteStruct[request.zos.globals.id].globals; 
+	if(not structkeyexists(tempStruct, 'soGroupData') or not structkeyexists(tempStruct.soGroupData, 'optionGroupLookup')){
+		application.zcore.siteOptionCom.internalUpdateOptionAndGroupCache(tempStruct);
+	}
+	</cfscript>
+</cffunction>
+
 
 <cffunction name="manageGroup" localmode="modern" access="remote" roles="member">
 	<cfargument name="struct" type="struct" required="no" default="#{}#">

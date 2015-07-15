@@ -1771,34 +1771,39 @@ configCom.includeContentByName(ts);
 			}
 			echo('</strong> <br />'); 
 		}
+		shortSummary="";
 		if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
 			if(row.content_summary EQ ""){
 				if(request.cgi_script_name EQ "/z/misc/search-site/results"){ 
 					shortSummary=left(rereplace(row.content_text,"<[^>]*>"," ","ALL"),250);  
-					writeoutput(shortSummary); 
 				}
 			}else{
-				echo(row.content_summary);
+				shortSummary=row.content_summary;
 			}
 		}
-		echo('<div style="font-weight:bold; font-size:13px;">');
-		detailShown=false;
-		if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id') and row.content_is_listing EQ 1){
-			echo('<a href="#propertyLink#">Read More</a>');
-			detailShown=true;
-		}
-		if(contentConfig.contentEmailFormat EQ false and row.content_is_listing EQ 1){
-			if(detailShown){
-				echo(' | ');
+		writeoutput(shortSummary); 
+		if(row.content_is_listing EQ 1){
+			echo('<div style="font-weight:bold; font-size:13px;">');
+			detailShown=false;
+			if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id') and shortSummary NEQ ""){
+				echo('<a href="#propertyLink#">Read More</a>');
+				detailShown=true;
 			}
-			if(contentConfig.contentDisableLinks EQ false){
-				echo('<a href="#application.zcore.functions.zblockurl('/z/misc/inquiry/index?content_id=#row.content_id#')#" style="font-size:14px; font-weight:bold;">Inquire about this property</a>');
+			if(contentConfig.contentEmailFormat EQ false){
+				if(detailShown){
+					echo(' | ');
+				}
+				if(contentConfig.contentDisableLinks EQ false){
+					echo('<a href="#application.zcore.functions.zblockurl('/z/misc/inquiry/index?content_id=#row.content_id#')#" style="font-size:14px; font-weight:bold;">Inquire about this property</a>');
+				}
 			}
+			if( row.content_virtual_tour NEQ ''){
+				echo(' | <a href="#application.zcore.functions.zblockurl(row.content_virtual_tour)#" rel="nofollow" onclick="window.open(this.href); return false;">View 360&deg; Virtual Tour</a>');
+			}
+			echo('</div>');
+		}else if(shortSummary NEQ ""){
+			echo('<p><strong><a href="#propertyLink#">Read More</a></strong></p>');
 		}
-		if( row.content_virtual_tour NEQ ''){
-			echo(' | <a href="#application.zcore.functions.zblockurl(row.content_virtual_tour)#" rel="nofollow" onclick="window.open(this.href); return false;">View 360&deg; Virtual Tour</a>');
-		}
-		echo('</div>');
 	}
 	echo('</td></tr></table>');
 	if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
