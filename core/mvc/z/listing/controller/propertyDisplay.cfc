@@ -1096,8 +1096,8 @@ this.isPropertyDisplayCom=true;
 	</cfif>
 	</cfloop>
 	</cfsavecontent>
-	<input type="hidden" name="m#arguments.idx.listing_id#_mlstempimagepaths" id="m#arguments.idx.listing_id#_mlstempimagepaths" value="#htmleditformat(replace(thePaths,'&amp;','&','all'))#" />
 	<div class="zls-list-grid-listingdiv" style="width:#iwidth#px; ">
+		<input type="hidden" name="m#arguments.idx.listing_id#_mlstempimagepaths" id="m#arguments.idx.listing_id#_mlstempimagepaths" value="#htmleditformat(replace(thePaths,'&amp;','&','all'))#" />
 		<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 0>
 			<div id="m#arguments.idx.listing_id#" class="zls-list-grid-imagediv" style="overflow:hidden; height:#iheight#px; float:left; width:100%;" onmousemove="zImageMouseMove('m#arguments.idx.listing_id#',event);" onmouseout="setTimeout('zImageMouseReset(\'m#arguments.idx.listing_id#\')',100);"><a href="#propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>
 			#application.zcore.functions.zLoadAndCropImage({id:"m#arguments.idx.listing_id#_img",width:iwidth,height:iheight, url:arguments.idx.photo1, style:"", canvasStyle:"", crop:true})# 				</a></div>

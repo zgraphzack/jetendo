@@ -41,7 +41,7 @@
 		}else{
 			if(isnumeric(arguments.value) and len(arguments.value) LT 10){
 				if(find(".", arguments.value)){
-					arrayappend(variables.config.arrParam, {value:arguments.value, cfsqltype:'cf_sql_decimal'});
+					arrayappend(variables.config.arrParam, {value:arguments.value, cfsqltype:'cf_sql_float'});
 				}else{
 					arrayappend(variables.config.arrParam, {value:arguments.value, cfsqltype:'cf_sql_bigint'});
 				}

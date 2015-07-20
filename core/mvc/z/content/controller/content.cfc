@@ -3060,7 +3060,7 @@ configCom.includeContentByName(ts);
 			}
 		}*/
 		if(arguments.qContent.content_show_map EQ 1){
-			echo('<div id="zMapOverlayDivV3" style="position:absolute; left:0px; top:0px; display:none; z-index:1000;"></div>');
+			application.zcore.template.appendTag('scripts', '<div id="zMapOverlayDivV3" style="position:absolute; left:0px; top:0px; display:none; z-index:1000;"></div>');
 		}
 		if(arguments.qContent.content_show_map EQ 1){
 			ts = StructNew();

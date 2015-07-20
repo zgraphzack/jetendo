@@ -48,23 +48,58 @@
 	rts.maxLat=0;
 	rts.minLong=0;
 	rts.maxLong=0;
+
+	optionStruct=application.zcore.app.getAppData("listing").sharedStruct.optionStruct;
 	backupSearchWithinMap=application.zcore.functions.zso(form, 'search_within_map',true);
 	if(application.zcore.functions.zso(form, 'search_within_map') NEQ 1 and request.cgi_script_name NEQ "/z/listing/property/detail/index" and request.cgi_script_name NEQ '/z/listing/property/detail-new/index'){
+
+/*
+
+// this wasn't working yet.
+		// get coordinates for primary city
+		maxDistance=application.zcore.functions.zso(optionStruct, 'mls_option_max_map_distance_from_primary', true, 0);
+		primaryCityId=optionStruct.mls_option_site_map_primary_city;
+		db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# 
+		WHERE city_id = #db.param(primaryCityId)# and 
+		city_deleted=#db.param(0)# ";
+		qCity=db.execute("qCity");
+		backupCoordinatesList=application.zcore.functions.zso(form, 'search_map_coordinates_list'); 
+		if(qCity.recordcount and (backupCoordinatesList EQ "" or backupCoordinatesList EQ 0)){
+			latitudeMin= (maxDistance / 69)-qCity.city_latitude;
+			latitudeMax= (maxDistance / 69)+qCity.city_latitude;
+			longitudeMin= (maxDistance / 60)-qCity.city_longitude;
+			longitudeMax= (maxDistance / 60)+qCity.city_longitude; 
+
+			form.search_map_coordinates_list="#longitudeMin#,#longitudeMax#,#latitudeMin#,#latitudeMax#";
+			backupCoordinatesList=form.search_map_coordinates_list;
+			//echo('maxDistance:'&maxDistance&'<br>');
+			//writedump(rts);
+			//writedump(mapstageStruct);		
+			rts.minLat=latitudeMin;
+			rts.maxLat=latitudeMax;
+			rts.minLong=longitudeMin;
+			rts.maxLong=longitudeMax;
+			noCoordinates=false;
+			mapStageStruct.avgLat=(rts.minLat+rts.maxLat)/2;
+			mapStageStruct.avgLong=(rts.minLong+rts.maxLong)/2;
+			writedump(rts);
+		} */
+		 
+		//echo("|"&backupCoordinatesList&"|<br>|"&form.search_map_coordinates_list);
 		ts = StructNew();
 		ts.offset =0;
 		ts.perpage = 1;
 		ts.distance = 30; // in miles
 		ts.zReturnSimpleQuery=true;
 		ts.requireValidCoordinates=true;
-		backupCoordinatesList=application.zcore.functions.zso(form, 'search_map_coordinates_list');
 		structdelete(form,"search_within_map");
 		structdelete(form,"search_map_coordinates_list");
 		propertyDataCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 		propertyDataCom.setSearchCriteria(form);
 		ts.onlyCount=true;
 		//ts.debug=true;
-		if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_map_state') NEQ ""){
-			ts.zwhere=" and listing_state = '"&application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_map_state&"' ";	
+		if(application.zcore.functions.zso(optionStruct, 'mls_option_map_state') NEQ ""){
+			ts.zwhere=" and listing_state = '"&optionStruct.mls_option_map_state&"' ";	
 		}
 		ts.zselect=" min(listing_latitude) minLat, max(listing_latitude) maxLat, min(listing_longitude) minLong, max(listing_longitude) maxLong";
 		returnStruct3 = propertyDataCom.getProperties(ts);
@@ -77,7 +112,7 @@
 			noCoordinates=false;
 			mapStageStruct.avgLat=(rts.minLat+rts.maxLat)/2;
 			mapStageStruct.avgLong=(rts.minLong+rts.maxLong)/2;
-		} 
+		}  
 	}else if(application.zcore.functions.zso(form,'search_map_coordinates_list') NEQ ""){
 		arrMap=listtoarray(form.search_map_coordinates_list);
 		arrMap2=["minLongitude","maxLongitude","minLatitude","maxLatitude"];
@@ -108,8 +143,9 @@
 		mapstageStruct.avgLat=application.zcore.app.getAppData("listing").sharedStruct.avgLat;
 		mapstageStruct.avgLong=application.zcore.app.getAppData("listing").sharedStruct.avgLong;
 	}
-	</cfscript>
-	<div id="zMapOverlayDivV3"></div>
+ 
+			application.zcore.template.appendTag('scripts', '<div id="zMapOverlayDivV3" style="position:absolute; left:0px; top:0px; display:none; z-index:1000;"></div>');
+	</cfscript> 
 	<cfsavecontent variable="theMapText">
 		<div id="zMapAllDiv" style="float:left;width:100%">
 		<cfif structkeyexists(request.zos, 'zForceEnableMap') or application.zcore.app.getAppCFC("content").isContentPage() or request.cgi_script_name EQ '/z/listing/map-fullscreen/index' or request.cgi_script_name EQ '/z/listing/map-embedded/index' or request.cgi_script_name EQ '/z/listing/property/your-saved-searches/index' or request.cgi_script_name EQ '/z/listing/property/saved-search/index' or request.zos.originalURL EQ request.zos.listing.functions.getSearchFormLink() or isDefined('request.zForceSearchFormInclude') or request.zos.inmemberarea>
@@ -145,7 +181,7 @@
 			<input type="hidden" name="search_within_map" value="1" />
 			</form>
 			
-			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_disable_search',true) EQ 0>
+			<cfif application.zcore.functions.zso(optionStruct,'mls_option_disable_search',true) EQ 0>
 			<div id="zmlssearchwithindiv"><h3><a href="##" onclick="searchWithinMap(true);return false;">Search for nearby listings</a></h3></div>
 			</cfif>
 			<div id="zGStreetView" style="display:none;">
@@ -193,7 +229,7 @@
 				from #db.table("listing", request.zos.zcoreDatasource)# 
 				where listing_latitude<>#db.param('')# and 
 				listing_deleted = #db.param(0)# and 
-				listing_city = #db.param(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_site_map_primary_city)# and 
+				listing_city = #db.param(optionStruct.mls_option_site_map_primary_city)# and 
 				#db.trustedSQL(tempSQL)#  
 				LIMIT #db.param(0)#,#db.param(1)#
 				</cfsavecontent>

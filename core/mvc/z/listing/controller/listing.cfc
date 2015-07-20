@@ -1333,6 +1333,12 @@ Primary Cities:</th>
 </td>
 </tr>
 <tr>
+<th>Max Map Distance:</th>
+<td><input type="text" name="mls_option_max_map_distance_from_primary" value="#htmleditformat(form.mls_option_max_map_distance_from_primary)#" /><br />
+Enter the maximum distance from the center of the primary city that you want the map to zoom out to. (Unit: miles)
+</td>
+</tr>
+<tr>
 <th>Directory URL ID:</th>
 <td>
 	<cfscript>

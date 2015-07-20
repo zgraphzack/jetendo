@@ -1665,8 +1665,9 @@
 		}
 	}
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds1<br>'); startTime=gettickcount();
-	var row=0; 
-	var arrTempData=[];
+	var row=0;  
+	arrTempDataInsert=[];
+	arrTempDataUpdate=[];
 	local.newDataMappedStruct={};
 	newRecord=false;
 	insertCount=0;
@@ -1763,6 +1764,9 @@
 			site_x_option_group_updated_datetime: nowDate,
 			site_x_option_group_original:''
 		}
+		if(structkeyexists(rs, 'originalFile')){
+			tempData.site_x_option_group_original=rs.originalFile;
+		}
 		if(not newRecord){
 			db.sql="select * from #db.table("site_x_option_group", request.zos.zcoreDatasource)# 
 			WHERE site_id = #db.param(tempData.site_id)# and 
@@ -1774,16 +1778,17 @@
 			if(qUpdate.recordcount){
 				tempData.site_x_option_group_id=qUpdate.site_x_option_group_id;
 				updateCount++;
+				arrayAppend(arrTempDataUpdate, tempData); 
 			}else{
 				insertCount++;
+				structdelete(tempData, 'site_x_option_group_id');
+				arrayAppend(arrTempDataInsert, tempData); 
 			}
 		}else{
 			insertCount++;
+			structdelete(tempData, 'site_x_option_group_id');
+			arrayAppend(arrTempDataInsert, tempData); 
 		}
-		if(structkeyexists(rs, 'originalFile')){
-			tempData.site_x_option_group_original=rs.originalFile;
-		}
-		arrayAppend(arrTempData, tempData); 
 	}
 	form.site_x_option_group_set_approved=application.zcore.functions.zso(form, 'site_x_option_group_set_approved', false, 1);
 	if(methodBackup EQ "publicUpdateGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
@@ -1869,9 +1874,9 @@
 		}else{
 			throw("Failed to insert site option group set");
 		} 
-		if(arraylen(arrTempData)){
-			for(var n=1;n LTE arraylen(arrTempData);n++){
-				arrTempData[n].site_x_option_group_set_id=form.site_x_option_group_set_id;
+		if(arraylen(arrTempDataInsert)){
+			for(var n=1;n LTE arraylen(arrTempDataInsert);n++){
+				arrTempDataInsert[n].site_x_option_group_set_id=form.site_x_option_group_set_id;
 			}
 		}  
 	}else{ 
@@ -1879,61 +1884,51 @@
 
 
 	}
-	if(arraylen(arrTempData)){ 
-		arrUpdate=[];
-		if(insertCount or newRecord){
-			var arrSQL=["INSERT INTO #db.table("site_x_option_group", request.zos.zcoreDatasource)#  "];
-			var arrKey=structkeyarray(tempData);
-			var tempCount=arraylen(arrKey);
-			arrayAppend(arrSQL, " ( "&arrayToList(arrKey, ", ")&" ) VALUES ");
-			first=true;
-			for(var n=1;n LTE arraylen(arrTempData);n++){
-				if(structkeyexists(arrTempData[n], 'site_x_option_group_id')){
-					continue;
-				} 
-				if(not first){
+	if(arraylen(arrTempDataInsert)){  
+		var arrSQL=["INSERT INTO #db.table("site_x_option_group", request.zos.zcoreDatasource)#  "]; 
+		var arrKey=structkeyarray(arrTempDataInsert[1]);
+		var tempCount=arraylen(arrKey);
+		arrayAppend(arrSQL, " ( "&arrayToList(arrKey, ", ")&" ) VALUES ");
+		first=true;
+		for(var n=1;n LTE arraylen(arrTempDataInsert);n++){ 
+			if(not first){
+				arrayAppend(arrSQL, ", ");
+			}else{
+				first=false;
+			}
+			arrayAppend(arrSQL, " ( ");
+			for(var i=1;i LTE tempCount;i++){
+				if(i NEQ 1){
 					arrayAppend(arrSQL, ", ");
-				}else{
-					first=false;
-				}
-				arrayAppend(arrSQL, " ( ");
-				for(var i=1;i LTE tempCount;i++){
-					if(i NEQ 1){
-						arrayAppend(arrSQL, ", ");
-					}
-					arrayAppend(arrSQL, db.param(arrTempData[n][arrKey[i]], 'cf_sql_varchar'));
-				}
-				arrayAppend(arrSQL, " ) ");
+				} 
+				arrayAppend(arrSQL, db.param(arrTempDataInsert[n][arrKey[i]], 'cf_sql_varchar'));
 			}
-			db.sql=arrayToList(arrSQL, "");
-			db.execute("qInsert");
+			arrayAppend(arrSQL, " ) ");
 		}
-		if(updateCount){ 
-			for(var n=1;n LTE arraylen(arrTempData);n++){
-				c=arrTempData[n];
-				if(not structkeyexists(c, 'site_x_option_group_id')){
+		db.sql=arrayToList(arrSQL, "");
+		db.execute("qInsert");
+	}
+	if(arraylen(arrTempDataUpdate)){
+		for(var n=1;n LTE arraylen(arrTempDataUpdate);n++){
+			c=arrTempDataUpdate[n]; 
+			db.sql="UPDATE #db.table("site_x_option_group", request.zos.zcoreDatasource)# SET  "; 
+			first=true;
+			for(i in c){
+				if(i EQ "site_id" or i EQ "site_x_option_group_id"){
 					continue;
 				}
-				db.sql="UPDATE #db.table("site_x_option_group", request.zos.zcoreDatasource)# SET  "; 
-				first=true;
-				for(i in c){
-					if(i EQ "site_id" or i EQ "site_x_option_group_id"){
-						continue;
-					}
-					if(not first){
-						db.sql&=", ";
-					}
-					first=false;
-					db.sql&="`"&i&"`="&db.param(c[i]);
-				} 
-				db.sql&=" WHERE site_id =#db.param(c.site_id)# and 
-				site_x_option_group_deleted=#db.param(0)# and 
-				site_x_option_group_id=#db.param(c.site_x_option_group_id)# ";
-				db.execute("qUpdate");
-			}
+				if(not first){
+					db.sql&=", ";
+				}
+				first=false;
+				db.sql&="`"&i&"`="&db.param(c[i]);
+			} 
+			db.sql&=" WHERE site_id =#db.param(c.site_id)# and 
+			site_x_option_group_deleted=#db.param(0)# and 
+			site_x_option_group_id=#db.param(c.site_x_option_group_id)# ";
+			db.execute("qUpdate");
 		}
-		
-	}
+	} 
 	if(form.site_x_option_group_set_id EQ 0){
 		throw("An error occurred when creating the site_x_option_group_set record.");
 	}

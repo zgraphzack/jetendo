@@ -3748,49 +3748,52 @@ propertyDataCom.setSearchCriteria(form);
 <cfif isDefined('request.contentEditor') EQ false and isDefined('request.hideMLSResults') EQ false> 
         <div style="font-size:130%; width:100%; float:left;" id="zls-searchformusemessage">Use the form on the sidebar to search.</div>
 <div id="mlsResults" style="width:100%; float:left; margin-bottom:20px;">
-<div style="width:50%; margin-bottom:20px; float:left;">
-<div id="zls-searchformhelpdiv">
-<a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a>
-</div> 
-<cfscript>
-if(isDefined('request.zsession.zListingHideMap') EQ false){
-	request.zsession.zListingHideMap=false;
-}
-if(structkeyexists(form, 'zListingHideMap')){
-	if(form.zListingHideMap EQ 1){
-		request.zsession.zListingHideMap=true;	
-	}else{
-		request.zsession.zListingHideMap=false;
-	}
-}
-if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_hide_map_until_search') EQ 1){
-	tempHideMap=true;	
-}else{
-	tempHideMap=false;
-}
 
-</cfscript>
+	<div id="zls-search-form-top-map-text">
+		<div style="width:50%; margin-bottom:20px; float:left;">
+		<div id="zls-searchformhelpdiv">
+		<a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a>
+		</div> 
+		<cfscript>
+		if(isDefined('request.zsession.zListingHideMap') EQ false){
+			request.zsession.zListingHideMap=false;
+		}
+		if(structkeyexists(form, 'zListingHideMap')){
+			if(form.zListingHideMap EQ 1){
+				request.zsession.zListingHideMap=true;	
+			}else{
+				request.zsession.zListingHideMap=false;
+			}
+		}
+		if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_hide_map_until_search') EQ 1){
+			tempHideMap=true;	
+		}else{
+			tempHideMap=false;
+		}
 
-</div><div style="width:50%; margin-bottom:20px; float:left;  text-align:right; font-size:110%; font-weight:bold;">&nbsp;
-<cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
-	<cfif (isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false>
-		<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
-		<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
-	<cfelse>
-		<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
-	</cfif>
-</cfif>
-</div> 
-<div id="zListingHelpDiv" style="display:none; margin-bottom:10px;border:1px solid ##990000; padding:10px; padding-top:10px;">
-<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
-<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Search MLS" and the results will load on the right. </p>
-<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>
-<p>After typing an entry, click "Update Results" to update your search. </p>
-<p>You can select or type as many options as you want.</p>
-<p>Your search will automatically show the ## of matching listings as you update each search field.</p>
-<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
-</div>
-<cfscript> 
+		</cfscript>
+
+		</div><div style="width:50%; margin-bottom:20px; float:left;  text-align:right; font-size:110%; font-weight:bold;">&nbsp;
+		<cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
+			<cfif (isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false>
+				<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
+				<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
+			<cfelse>
+				<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
+			</cfif>
+		</cfif>
+		</div> 
+	</div>
+	<div id="zListingHelpDiv" style="display:none; margin-bottom:10px;border:1px solid ##990000; padding:10px; padding-top:10px;">
+	<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
+	<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Search MLS" and the results will load on the right. </p>
+	<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>
+	<p>After typing an entry, click "Update Results" to update your search. </p>
+	<p>You can select or type as many options as you want.</p>
+	<p>Your search will automatically show the ## of matching listings as you update each search field.</p>
+	<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
+	</div>
+	<cfscript> 
 		ts = StructNew();
 		ts.offset = form.zIndex-1;
 		perpageDefault=10;
