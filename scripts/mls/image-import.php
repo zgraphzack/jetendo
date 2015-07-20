@@ -179,10 +179,12 @@ function processImageFile($path, $mlsId, $fileName){
 function processImageFiles(){
 	$path=get_cfg_var("jetendo_share_path")."mls-images/";
 
-
+	$validMLS=array(
+		"26"=>true
+	);
 	if ($handle = opendir($path)) {
 	    while (false !== ($entry = readdir($handle))) {
-			if($entry !="." && $entry !=".."){
+			if($entry !="." && $entry !=".." && isset($validMLS[$entry])){
 				$path2=$path.$entry."/";
 				//echo $path2."\n";
 				if (is_dir($path2) && $handle2 = opendir($path2)) {
