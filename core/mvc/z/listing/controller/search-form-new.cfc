@@ -831,9 +831,9 @@ listing_longitude<>'0'";
 				writeoutput('<div id="searchFormTopDiv" style="float:left;  width:100%; clear:both;"></div><br style="clear:both;" />');
 			}
 			if(structkeyexists(form, 'searchId') and form.searchFormEnabledDropDownMenus EQ false){
-				writeoutput('<br />
+				writeoutput('<div class="zls-saveSearchFormButton"><br />
 				<a href="##" onclick="zModalSaveSearch(#form.searchId#);return false;"><img src="/z/a/listing/images/save-this-search.jpg" alt="Save This Search" /></a><br />
-				<br />');
+				<br /></div>');
 			}
 			if(application.zcore.functions.zso(request,'zDisableSearchFormSubmit',false,false)){
 				local.disableTemp=true;

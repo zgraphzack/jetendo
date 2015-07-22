@@ -765,7 +765,7 @@ if(application.zcore.functions.zso(form, 'search_result_layout') EQ ""){
  <cfsavecontent variable="startFormTagHTML">
 
 <cfif structkeyexists(request,'theSearchFormTemplate') EQ false>
- <div id="searchFormTopDiv" style="<!--- height:<cfif isDefined('request.contentEditor')>90<cfelse>130</cfif>px; --->float:left;  width:100%; clear:both;"></div><br style="clear:both;" /></cfif><cfif structkeyexists(form, 'searchId') and form.searchFormEnabledDropDownMenus EQ false><br /><a href="##" onclick="zModalSaveSearch(#form.searchId#);return false;"><img src="/z/a/listing/images/save-this-search.jpg" alt="Save This Search" /></a><br />
+ <div id="searchFormTopDiv" style="<!--- height:<cfif isDefined('request.contentEditor')>90<cfelse>130</cfif>px; --->float:left;  width:100%; clear:both;"></div><br style="clear:both;" /></cfif><cfif structkeyexists(form, 'searchId') and form.searchFormEnabledDropDownMenus EQ false><div class="zls-saveSearchFormButton"><br /><a href="##" onclick="zModalSaveSearch(#form.searchId#);return false;"><img src="/z/a/listing/images/save-this-search.jpg" alt="Save This Search" /></a><br /></div>
  <cfif request.zos.listing.functions.hasSavedSearches()>
  	<div class="zSearchFormText"><a href="/z/listing/property/your-saved-searches">View Saved Searches</a></div><br />
  </cfif><br />

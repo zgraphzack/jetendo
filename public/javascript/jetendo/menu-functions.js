@@ -294,11 +294,11 @@ var arrOriginalMenuButtonWidth=[];
 		//console.log(currentMenu.marginSize);
 		currentMenu.ul.detach(); 
 		$("#"+containerDivId).width("100%");
-		currentMenu.containerWidth=$("#"+containerDivId).width();
-		var totalWidth = currentMenu.containerWidth-1;//-2;
+		currentMenu.containerWidth=$("#"+containerDivId).width()-1;
+		var totalWidth = currentMenu.containerWidth;//-2;
 		var navWidth = 0;
 		var deltaWidth = totalWidth - (currentMenu.navWidth);// + currentMenu.marginSize);
-		var padding = ((deltaWidth / currentMenu.arrItem.length) / 2);// - (currentMenu.marginSize/2); 
+		var padding = Math.floor((deltaWidth / currentMenu.arrItem.length) / 2);// - (currentMenu.marginSize/2); 
 		var floatEnabled=false;
 		if(totalWidth<currentMenu.navWidth + ((currentMenu.arrItem.length-1)*currentMenu.marginSize)){
 			//padding=0;
@@ -317,19 +317,51 @@ var arrOriginalMenuButtonWidth=[];
 			var curWidth=currentMenu.arrItemWidth[i];
 			//console.log(padding);
 			//$(currentMenu.arrItem[i]).width(curWidth-20);
-			var newWidth=curWidth+(padding*2); 
+			var newWidth=Math.floor(curWidth+(padding*2)); 
+
+			if(currentMenu.arrItem.length-1 == i){
+				/*totalWidth2=0;
+
+				for(var i2=0;i2<currentMenu.arrItem.length-1;i2++){ 
+					totalWidth2+=$(currentMenu.arrItem[i2]).width();
+				}*/
+				//console.log("newWidth:"+newWidth);
+				newWidth=Math.floor(currentMenu.containerWidth)-totalWidth2; 
+				if(newWidth>curWidth){
+					curWidth=newWidth;
+				}
+				if(typeof currentMenu.arrItem[i].style.setProperty != "undefined"){
+					currentMenu.arrItem[i].style.setProperty( 'border-right', '0px', 'important' );
+				}else{
+					currentMenu.arrItem[i].style["border-right"]="0px solid #FFF";
+				}
+				//console.log(totalWidth2+":"+newWidth+":"+padding);
+			}
+			totalWidth2+=Math.round(Math.max(curWidth, newWidth));
+			newWidth=(newWidth/currentMenu.containerWidth);
+			curWidth=(curWidth/currentMenu.containerWidth);
+ 			newWidth=(Math.round(newWidth*100000)/1000)-0.001;
+ 			curWidth=(Math.round(curWidth*100000)/1000)-0.001;
 			if($.browser.msie && $.browser.version <= 7 && floatEnabled){
+				$(currentMenu.arrItem[i]).parent().css({
+					"width": (newWidth)+"%",
+					"min-width":(curWidth)+"%"
+				});
 				$(currentMenu.arrItem[i]).css({
-					"width": Math.floor(newWidth),
-					"min-width":Math.floor(curWidth)
+					"width": (100)+"%",
+					"min-width":(100)+"%"
 					/*,
 					"padding-left": "5px",
 					"padding-right": "5px"*/
 				});
 			}else{
+				$(currentMenu.arrItem[i]).parent().css({
+					"width": (newWidth)+"%",
+					"min-width":(curWidth)+"%"
+				});
 				$(currentMenu.arrItem[i]).css({
-					"width": Math.floor(newWidth),
-					"min-width":Math.floor(curWidth)
+					"width": (100)+"%",
+					"min-width":(100)+"%"
 					/*,
 					"padding-left": "0px",
 					"padding-right": "0px"*/
@@ -337,7 +369,7 @@ var arrOriginalMenuButtonWidth=[];
 					
 			}
 			//$(currentMenu.arrItem[i]).css("padding", "0 "+padding+"px 0 "+padding+"px");
-		}
+		} 
 		$("#"+containerDivId).append(currentMenu.ul);
 		$("#"+containerDivId).css("visibility", "visible");
 	}

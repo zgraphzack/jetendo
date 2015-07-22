@@ -19,8 +19,10 @@ form{ margin:0px; padding:0px; }
 #resultCountAbsolute{display:none;}
 
 .zls-grid-summary-text{width:100%; height:140px; font-size:14px; line-height:15px; padding-top:5px; float:left;}
-input, label{ margin:0px; padding:0px; font-size:11px; vertical-align:middle; } label{ line-height:17px; } 
-label{ display:inline; }
+.zExpOption_contents input, .zExpOption_contents label{ margin:0px; padding:0px; font-size:11px; vertical-align:middle; } 
+.zExpOption_contents label{ line-height:17px; } 
+
+.zExpOption_contents label{ display:inline; }
 .zlisting-common-disclaimer{ clear:both; float:left; width:100%; font-size:10px; line-height:14px; color:#777;}
 .zls2-colorlegend{background-image:url(/z/a/listing/images/color-legend.jpg); width:282px; height:29px; float:left;}
 #mapContentDivId .zls2-colorlegend {

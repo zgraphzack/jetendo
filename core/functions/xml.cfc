@@ -661,6 +661,10 @@ weatherHTML=zGetWeather(ts);
 				link:c.link.xmltext,
 				description:c.description.xmltext
 			};
+
+			if(structkeyexists(ss, 'filterCFC') and structkeyexists(ss, 'filterMethod')){
+				ts=ss.filterCFC[ss.filterMethod](ts);
+			}
 			arrayAppend(arrData, ts);
 		}
 		rs.arrData=arrData;

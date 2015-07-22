@@ -93,26 +93,30 @@
 		ORDER BY mls_update_date ASC ";
 		qMLS=db.execute("qMLS"); 
 		this.optionstruct.filePath=false;
-		for(row in qMLS){
-			this.optionstruct.mls_id=row.mls_id;
-			this.optionstruct.delimiter=row.mls_delimiter;
-			this.optionstruct.csvquote=row.mls_csvquote;
-			this.optionstruct.first_line_columns=row.mls_first_line_columns;
-			this.optionstruct.row=row;
-			this.optionstruct.mlsProviderCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#row.mls_com#");
-			this.optionstruct.mlsproviderCom.setMLS(this.optionstruct.mls_id); 
-			if(row.mls_current_file_path NEQ "" and fileexists(request.zos.sharedPath&row.mls_current_file_path)){
-				this.optionstruct.filePath=replace(trim(row.mls_current_file_path),"\","/","ALL");
-				this.optionstruct.skipBytes=row.mls_skip_bytes;
-				break;
-			}else{
-				nextFile=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct)),"\","/","ALL");
-				if(nextFile EQ false){
-					continue;
-				}else{
-					this.optionstruct.filePath=nextFile;
-					this.optionstruct.skipBytes=0;
+
+		arrSold=[false, true];
+		for(i=1;i LTE 2;i++){
+			for(row in qMLS){
+				this.optionstruct.mls_id=row.mls_id;
+				this.optionstruct.delimiter=row.mls_delimiter;
+				this.optionstruct.csvquote=row.mls_csvquote;
+				this.optionstruct.first_line_columns=row.mls_first_line_columns;
+				this.optionstruct.row=row;
+				this.optionstruct.mlsProviderCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.mls-provider.#row.mls_com#");
+				this.optionstruct.mlsproviderCom.setMLS(this.optionstruct.mls_id); 
+				if(row.mls_current_file_path NEQ "" and fileexists(request.zos.sharedPath&row.mls_current_file_path)){
+					this.optionstruct.filePath=replace(trim(row.mls_current_file_path),"\","/","ALL");
+					this.optionstruct.skipBytes=row.mls_skip_bytes;
 					break;
+				}else{
+					nextFile=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct, arrSold[i])),"\","/","ALL");
+					if(nextFile EQ false){
+						continue;
+					}else{
+						this.optionstruct.filePath=nextFile;
+						this.optionstruct.skipBytes=0;
+						break;
+					}
 				}
 			}
 		}
@@ -293,7 +297,13 @@
 			application.zcore.functions.zDeleteFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported");	
 			r=application.zcore.functions.zRenameFile(request.zos.sharedPath&this.optionstruct.filepath, request.zos.sharedPath&this.optionstruct.filepath&"-imported");			
 			this.optionstruct.skipBytes=0;
-			this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct)),"\","/","ALL");
+			arrSold=[false, true];
+			for(i=1;i LTE 2;i++){
+				this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct, arrSold[i])),"\","/","ALL");
+				if(this.optionstruct.filePath NEQ false){
+					break;
+				}
+			}
 			if(this.optionstruct.filePath EQ false){
 				this.optionstruct.filePath="";
 				
