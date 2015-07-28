@@ -279,6 +279,11 @@
 	var qC=0;
 	var listingTrackTable=false;
 	var db2=request.zos.noVerifyQueryObject;
+
+
+	if(not structkeyexists(request.zos, 'arrListingsDisplayed')){
+		request.zos.arrListingsDisplayed=[];
+	}
    	errorMessage="";
 	application.zcore.functions.zNoCache();
 
@@ -450,12 +455,12 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 		arguments.ss.arrMLSPID=arraynew(1);
 		for(i=1;i LTE arraylen(arrId);i++){
 			for(i654 in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
-				arrayappend(arguments.ss.arrMLSPID, i654&"-"&arrId[i]);
+				arrayappend(arguments.ss.arrMLSPID, i654&"-"&trim(arrId[i]));
 			}
 			
 			for(i654 in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
 				arrId[i]=rereplace(arrId[i],"[a-zA-Z]*","","all");
-				arrayappend(arguments.ss.arrMLSPID, i654&"-"&arrId[i]);
+				arrayappend(arguments.ss.arrMLSPID, i654&"-"&trim(arrId[i]));
 			}
 		}
 	}
@@ -523,6 +528,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         and listing_baths BETWEEN #application.zcore.functions.zescape(this.searchCriteria.search_bathrooms_low)# and #application.zcore.functions.zescape(this.searchCriteria.search_bathrooms_high)#
         </cfif>
         
+        <cfif arraylen(request.zos.arrListingsDisplayed)>
+			and listing.listing_id NOT IN ('#arraytoList(request.zos.arrListingsDisplayed, "','")#')  
+		</cfif>
         
         <cfif this.searchCriteria.search_county NEQ "">
             and listing_county IN (#this.searchCriteria.search_county#)
@@ -1596,7 +1604,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				}
 				orderStruct[row.listing_id]=n22;
 				n22++;
-				
+				arrayappend(request.zos.arrListingsDisplayed, row.listing_id);
 				arrayappend(mlsStruct[mls_id], row.listing_id);
 			}
 			// you must have a group by in your query or it may miss rows

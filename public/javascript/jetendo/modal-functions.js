@@ -225,6 +225,13 @@
 			//right:20px; top:5px; position:fixed; 
 			//el2.innerHTML='<div class="zCloseModalButton" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>'+content;  
 		}
+
+		if($(".zModalOverlayDiv2 iframe").length){
+			$(".zModalOverlayDiv2").css("overflow", "hidden");
+			$(".zModalOverlayDiv2 iframe").height("100%");
+		}else{
+			$(".zModalOverlayDiv2").css("overflow", "auto");
+		}
 		el.style.top=zArrModal[zModalIndex].scrollPosition[1]+"px";
 		el.style.left=zArrModal[zModalIndex].scrollPosition[0]+"px";
 		el.style.height="100%";

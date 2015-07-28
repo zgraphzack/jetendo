@@ -8,7 +8,7 @@ this.customStruct = StructNew();
 
 <cffunction name="createAccountMessage" localmode="modern">
 	<cfscript>
-	return '<p>Did you know you can create an account to make your saved information easier to retrieve in the future? <a href="/z/user/preference/index">Create an account or login</cfscript></p>';
+	return '<p>Did you know you can create an account to make your saved information easier to retrieve in the future? <a href="/z/user/preference/index">Create an account or login</a></p>';
 	</cfscript>
 </cffunction>
 

@@ -118,7 +118,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets12_property where rets12_157 LIK
 		}
 		ts["list price"]=replace(ts["list price"],",","","ALL");
 		
-		
+		 
 		local.listing_subdivision="";
 		if(findnocase(","&ts["Subdivision Name"]&",", ",false,none,not on the list,not in subdivision,n/a,other,zzz,na,0,.,N,0000,00,/,") EQ 0 and ts["Subdivision Name"] NEQ ""){
 			ts["Subdivision Name"]=application.zcore.functions.zFirstLetterCaps(ts["Subdivision Name"]);

@@ -29,8 +29,9 @@ display:table-cell; padding:3px;
 .zGearButton:hover{ color:#666;}
  
 
-.addthisevent{visibility:hidden;}
 
+.addthisevent{visibility:hidden;}
+.zGalleryViewSlideshowContainer{width:100%; float:left; margin-bottom:20px;}
 .zGearPopupInnerMenu{padding:2px; background-color:#333; float:left; border-radius:5px; }
 .zGearPopupMenu{ position:absolute; top:0; left:0; visibility:hidden; }
 .zGearPopupMenuButton:link, .zGearPopupMenuButton:visited{ color:#FFF;text-decoration:none; border-radius:5px; clear:both; display:block; float:left; margin-bottom:2px; background-color:#666; padding:5px;white-space:nowrap; padding-left:10px; padding-right:10px; font-size:13px; font-weight:bold; line-height:17px; }
@@ -620,9 +621,10 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
  
 .zMenuEqualDiv{position:relative; z-index:1000;}
 .zMenuEqualUL{width:102%; float:left;display:block;position:relative; padding:0px; margin:0px; list-style:none; white-space:nowrap; z-index:999;}
-.zMenuEqualLI{width:auto; display:inline-block; *display:inline !important; float:left; *zoom:1; top:0; left:0; margin:0 auto;white-space:normal; position:relative;}
+.zMenuEqualLI{width:auto; display:inline-block; white-space:nowrap; *display:inline !important; float:left; *zoom:1; top:0; left:0; margin:0 auto; position:relative;}
 .zMenuEqualA{  text-decoration:none; padding:5px; float:left; margin:0 auto; position:relative; text-align:center; top:0; left:0; }
 .zMenuEqualUL ul{text-align:left;}
+
 
 
 

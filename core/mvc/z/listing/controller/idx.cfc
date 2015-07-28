@@ -95,6 +95,7 @@
 		this.optionstruct.filePath=false;
 
 		arrSold=[false, true];
+		hasBreaked=false;
 		for(i=1;i LTE 2;i++){
 			for(row in qMLS){
 				this.optionstruct.mls_id=row.mls_id;
@@ -107,6 +108,7 @@
 				if(row.mls_current_file_path NEQ "" and fileexists(request.zos.sharedPath&row.mls_current_file_path)){
 					this.optionstruct.filePath=replace(trim(row.mls_current_file_path),"\","/","ALL");
 					this.optionstruct.skipBytes=row.mls_skip_bytes;
+					hasBreaked=true;
 					break;
 				}else{
 					nextFile=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct, arrSold[i])),"\","/","ALL");
@@ -115,9 +117,13 @@
 					}else{
 						this.optionstruct.filePath=nextFile;
 						this.optionstruct.skipBytes=0;
+						hasBreaked=true;
 						break;
 					}
 				}
+			}
+			if(hasBreaked){
+				break;
 			}
 		}
 		if(this.optionstruct.filePath EQ false){
@@ -297,7 +303,8 @@
 			application.zcore.functions.zDeleteFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported");	
 			r=application.zcore.functions.zRenameFile(request.zos.sharedPath&this.optionstruct.filepath, request.zos.sharedPath&this.optionstruct.filepath&"-imported");			
 			this.optionstruct.skipBytes=0;
-			arrSold=[false, true];
+			this.optionstruct.filePath="";
+			/*arrSold=[false, true];
 			for(i=1;i LTE 2;i++){
 				this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct, arrSold[i])),"\","/","ALL");
 				if(this.optionstruct.filePath NEQ false){
@@ -307,7 +314,7 @@
 			if(this.optionstruct.filePath EQ false){
 				this.optionstruct.filePath="";
 				
-			} 
+			} */
 		}
 	}catch(Any local.e){
 		if(structkeyexists(variables, 'fileHandle')){

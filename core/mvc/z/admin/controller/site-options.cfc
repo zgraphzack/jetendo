@@ -1921,7 +1921,7 @@
 					db.sql&=", ";
 				}
 				first=false;
-				db.sql&="`"&i&"`="&db.param(c[i]);
+				db.sql&="`"&i&"`="&db.param(c[i], 'cf_sql_varchar');
 			} 
 			db.sql&=" WHERE site_id =#db.param(c.site_id)# and 
 			site_x_option_group_deleted=#db.param(0)# and 
