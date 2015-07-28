@@ -71,20 +71,18 @@
 	/* ]]> */
 	</script>
 </cffunction>
-</cfoutput>
-</cfcomponent><!--- <cfcomponent>
-<cfoutput>
+
 <cffunction name="index" localmode="modern" access="remote" returntype="any">
 <!--- 
 include quick search, then modify it to have everything in rows and columns
 then make it work with edit saved search
  --->
 <cfscript>
- application.zcore.template.settag("title","Advanced Search");
- application.zcore.template.settag("pagetitle","Advanced Search");
+ application.zcore.template.settag("title","Listing Search");
+ application.zcore.template.settag("pagetitle","Listing Search");
 
 </cfscript>
-<cfsavecontent variable="request.theSearchFormTemplate">
+<!--- <cfsavecontent variable="request.theSearchFormTemplate">
 ##startFormTag##
 <!--- <form name="quickSearchForm" id="quickSearchForm" action="##searchFormSubmitURL##" method="post"> --->
 <!--- <script type="text/javascript">zFormData["zMLSSearchForm"]=new Object(); zFormData["zMLSSearchForm"].arrFields=[];</script> --->
@@ -167,11 +165,8 @@ then make it work with edit saved search
     </div>
     <br style="clear:both;">
 
-##endFormTag##
-<!--- search_bathrooms,search_year_built,search_sqfoot,search_city_id,search_status,search_near_address,search_listing_type_id,search_listing_sub_type_id,search_view,search_bedrooms,search_county,search_more_options,search_rate,search_style,search_frontage,search_acreage,search_rate_low,search_rate_high
-
----> 
-</cfsavecontent>
+##endFormTag## 
+</cfsavecontent> --->
 <cfsavecontent variable="theFinalHTML">
 <cfscript>
 ts=structnew();
@@ -193,4 +188,4 @@ request.zHideInquiryForm=true;
 </cfscript>
 </cffunction>
 </cfoutput>
-</cfcomponent> --->
+</cfcomponent>  

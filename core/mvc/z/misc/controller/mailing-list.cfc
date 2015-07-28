@@ -64,11 +64,7 @@
 <cffunction name="process" localmode="modern" access="remote">
 	<cfscript> 
 	this.init();
-	
-	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
-		application.zcore.functions.zRedirect("/z/misc/mailing-list/thankyou?modalpopforced=#form.modalpopforced#");
-	}
-
+	form.returnJson = application.zcore.functions.zso(form, 'returnJson', true, 0);
 	form.return_url = application.zcore.functions.zso(form, 'return_url');
 	form.error_url=application.zcore.functions.zso(form, 'error_url');
 	if(form.return_url EQ ""){
@@ -80,25 +76,69 @@
 		form.error_url=application.zcore.functions.zURLAppend(form.error_url, 'zsid=#Request.zsid#');
 	}
 	
+	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
+		ts={
+			success:false,
+			errorMessage:"Invalid request ##3."
+		};
+		application.zcore.functions.zReturnJson(ts);
+		application.zcore.functions.zRedirect("/z/misc/mailing-list/thankyou?modalpopforced=#form.modalpopforced#");
+	}
+
+	
 	if(form.modalpopforced EQ 1){
 		if(application.zcore.functions.zso(form, 'js3811') NEQ "j219"){
+			if(form.returnJson EQ 1){
+				ts={
+					success:false,
+					errorMessage:"Invalid request ##1."
+				};
+				application.zcore.functions.zReturnJson(ts);
+			}
 			writeoutput('~n~');application.zcore.functions.zabort();
 		}
 		if(application.zcore.functions.zCheckFormHashValue(application.zcore.functions.zso(form, 'js3812')) EQ false){
+			if(form.returnJson EQ 1){
+				ts={
+					success:false,
+					errorMessage:"Your session has expired.  Please submit the form again."
+				};
+				application.zcore.functions.zReturnJson(ts);
+			}
 			application.zcore.status.setStatus(request.zsid, "Your session has expired.  Please submit the form again.",form,true);
 			application.zcore.functions.zRedirect(form.error_url);
 		}
 	}
 	if(application.zcore.functions.zso(form, 'zset9') NEQ "9989"){
+		if(form.returnJson EQ 1){
+			ts={
+				success:false,
+				errorMessage:"Invalid request ##2."
+			};
+			application.zcore.functions.zReturnJson(ts);
+		}
 		application.zcore.functions.zredirect('/');
 	} 
 	form.user_pref_list=1;
 	form.user_username=application.zcore.functions.zso(form, 'user_username');
 	if(form.user_username EQ "" or application.zcore.functions.zEmailValidate(form.user_username) EQ false){
+		if(form.returnJson EQ 1){
+			ts={
+				success:false,
+				errorMessage:"A valid email address is required."
+			};
+			application.zcore.functions.zReturnJson(ts);
+		}
 		application.zcore.status.setStatus(request.zsid, "A valid email address is required.", true);
 		application.zcore.functions.zRedirect(form.error_url);	
 	}
 	form.mail_user_id=application.zcore.user.automaticAddUser(form); 
+	if(form.returnJson EQ 1){
+		ts={
+			success:true
+		};
+		application.zcore.functions.zReturnJson(ts);
+	}
 	application.zcore.functions.zRedirect(form.return_url);	
 	</cfscript>
 </cffunction>
@@ -139,15 +179,42 @@
 
 
 <cffunction name="outputStartForm" localmode="modern" access="public">
-
+	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
+	ss=arguments.ss;
 	init();
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 
 	form.set9=application.zcore.functions.zGetHumanFieldIndex();
 	</cfscript>
-	<form action="/z/misc/mailing-list/process" onsubmit="zSet9('zset9_#form.set9#');" method="get">
+	<script type="text/javascript">
+	function zMailingListAjaxCallback(r){
+		var r=eval("("+r+")"); 
+		if(r.success){
+			var link=$("##mailingListSuccessURL").val();
+			window.location.href=link;
+		}else{
+			alert(r.errorMessage);
+		}
+	}
+	function zProcessMailingListAjax(){
+		var postObj=zGetFormDataByFormId("mailingListForm");
+
+		var tempObj={};
+		tempObj.id="zMailingListAjax";
+		tempObj.url="/z/misc/mailing-list/process";
+		tempObj.callback=zMailingListAjaxCallback;
+		tempObj.cache=false;
+		tempObj.postObj=postObj;
+		tempObj.method="post";
+		zAjax(tempObj);
+	}
+	</script>
+	<form id="mailingListForm" action="/z/misc/mailing-list/process" onsubmit="zSet9('zset9_#form.set9#'); <cfif application.zcore.functions.zso(ss, 'enableAjax', false, false)>zProcessMailingListAjax(); return false; </cfif>" method="post">
+		<input type="hidden" name="returnJson" value="<cfif application.zcore.functions.zso(ss, 'enableAjax', false, false)>1<cfelse>0</cfif>" />
 		<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
+		<input type="hidden" name="success_url" id="mailingListSuccessURL" value="#ss.successURL#">
+		<input type="hidden" name="error_url" value="#ss.errorURL#">
 		<cfif form.modalpopforced EQ 1>
 			<input type="hidden" name="modalpopforced" value="1" />
 			<input type="hidden" name="js3811" id="js3811" value="" />

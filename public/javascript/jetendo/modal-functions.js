@@ -87,27 +87,47 @@
 				var newHeight=windowSize.height-(zModalSideReduce*2); 
 			}else{
 				var newWidth=Math.min(zArrModal[i].modalWidth, Math.min(windowSize.width-(zModalSideReduce*2),((zArrModal[i].modalMaxWidth))));
-				var newHeight=Math.min(zArrModal[i].modalHeight, Math.min(windowSize.height-(zModalSideReduce*2),((zArrModal[i].modalMaxHeight))));
+				var newHeight=Math.min(zArrModal[i].modalHeight, Math.min(windowSize.height-(zModalSideReduce*2),((zArrModal[i].modalMaxHeight)))); 
 			}
-			var left=Math.round(Math.max(0, windowSize.width-newWidth)/2);
-			var top=Math.round(Math.max(0, windowSize.height-newHeight)/2);
+			var finalWidth=newWidth;
+			var finalHeight=newHeight;
+			if(windowSize.width < 768 && zArrModal[i].modalMaxMobileWidth < 768){
+				finalWidth=zArrModal[i].modalMaxMobileWidth;
+				finalHeight=zArrModal[i].modalMaxMobileHeight; 
+			} 
+			var left=Math.round(Math.max(0, windowSize.width-finalWidth)/2);
+			var top=Math.round(Math.max(0, windowSize.height-finalHeight)/2);
 			el2.style.left=left+'px';
 			if(zArrModal[i].disableClose){
 				el2.style.top=(top)+'px';
 			}else{
 				el2.style.top=(top+25)+'px';
-			}
-			if(!zArrModal[i].disableResize){
-				if(zArrModal[i].disableClose){
-					el2.style.width=newWidth-(zArrModal[i].padding)+"px";
-					el2.style.height=(newHeight-(zArrModal[i].padding))+"px";
+			} 
+			if(zArrModal[i].forceSize){
+				if(windowSize.width < 768 && zArrModal[i].modalMaxMobileWidth < 768){
+					finalWidth=zArrModal[i].modalMaxMobileWidth;
+					finalHeight=zArrModal[i].modalMaxMobileHeight; 
 				}else{
-					el2.style.width=newWidth-(zArrModal[i].padding)-5+"px";
-					el2.style.height=(newHeight-(zArrModal[i].padding)-22)+"px";
-				}
+					finalWidth=zArrModal[i].width;
+					finalHeight=zArrModal[i].height; 
+				} 
+			}else if(!zArrModal[i].disableResize){
+				if(windowSize.width < 768 && zArrModal[i].modalMaxMobileWidth < 768){
+
+				}else{
+					if(zArrModal[i].disableClose){
+						finalWidth=finalWidth-(zArrModal[i].padding);
+						finalHeight=finalHeight-(zArrModal[i].padding);
+					}else{
+						finalWidth=finalWidth-(zArrModal[i].padding)-5;
+						finalHeight=finalHeight-(zArrModal[i].padding)-22;
+					}
+				} 
+				el2.style.width=finalWidth+"px";
+				el2.style.height=finalHeight+"px"; 
 			}
 			$(".zCloseModalButton"+i).css({
-				"left":((left+newWidth)-80)+"px",
+				"left":((left+finalWidth)-80)+"px",
 				"top":(top)+"px"
 			});
 			
@@ -122,15 +142,21 @@
 			"disableResize":false,
 			"modalMaxWidth":10000,
 			"modalMaxHeight":10000,
+			"modalMaxMobileWidth":10000,
+			"modalMaxMobileHeight":10000,
 			"modalWidth":10000,
 			"modalHeight":10000,
-			"fullscreen":false
+			"fullscreen":false,
+			"forceSize":false
 		};
 		if(typeof obj.fullscreen !== "undefined" && obj.fullscreen){
 			zArrModal[zModalIndex].fullscreen=obj.fullscreen;	
 		}
 		if(typeof obj.disableResize !== "undefined" && obj.disableResize){
 			zArrModal[zModalIndex].disableResize=obj.disableResize;	
+		}
+		if(typeof obj.forceSize !== "undefined" && obj.forceSize){
+			zArrModal[zModalIndex].forceSize=obj.forceSize;	
 		}
 		var disableClose=false;
 		if(typeof obj.disableClose !== "undefined" && obj.disableClose){
@@ -166,6 +192,12 @@
 		}
 		if(typeof obj.maxHeight !== "undefined"){
 			zArrModal[zModalIndex].modalMaxHeight=obj.maxHeight;
+		}
+		if(typeof obj.maxMobileWidth !== "undefined"){
+			zArrModal[zModalIndex].modalMaxMobileWidth=obj.maxMobileWidth;
+		}
+		if(typeof obj.maxMobileHeight !== "undefined"){
+			zArrModal[zModalIndex].modalMaxMobileHeight=obj.maxMobileHeight;
 		}
 	    zArrModal[zModalIndex].scrollPosition = [
 	        self.pageXOffset ||
