@@ -9,8 +9,7 @@
 				return;
 			}
 			$(this).attr('data-zclickbindset', '1');
-			$(this).bind("click", zClickTrackDisplayValue);
-			console.log('test2');
+			$(this).bind("click", zClickTrackDisplayValue); 
 		});
 		$(".zClickTrackDisplayURL").each(function(){
 			if(this.getAttribute('data-zclickbindset')!=null){
@@ -20,8 +19,7 @@
 			$(this).bind("click", zClickTrackDisplayURL);
 		});
 	}		
-	function zClickTrackDisplayValue(){
-		console.log('neat');
+	function zClickTrackDisplayValue(){ 
 		var postValue=this.getAttribute("data-zclickpostvalue");
 		var eventCategory=this.getAttribute("data-zclickeventcategory");
 		var eventLabel=this.getAttribute("data-zclickeventlabel");

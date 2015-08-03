@@ -696,6 +696,13 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 
 .zRecurBoxColumn1{ width:400px;vertical-align:top; display:table-cell; min-width:310px; max-width:372px;  }
 .zRecurBoxColumn2{ padding-left:5px;vertical-align:top; display:table-cell;  }
+
+.zMobileOnly{display:none;}
+.zDesktopOnly{display:block;}
+@media only screen and (max-width: 960px) {
+	.zMobileOnly{display:block;}
+	.zDesktopOnly{display:none;}
+}
 @media only screen and (max-width: 640px) {
 	.zRecurBoxColumn1{display:block;width:95%; max-width:95%; min-width:320px;float:left;}
 	.zRecurBoxColumn2{display:block;width:95%; max-width:95%;  min-width:320px; padding-left:0px;float:left;}
@@ -764,18 +771,25 @@ div.time-picker{width:90px !important;}
 	.zEventWidget-circle-7:link, .zEventWidget-circle-7:visited{font-size:14px;}
 }
 
+.zImageLibraryImageRight{float:right; margin-left:20px; margin-bottom:20px;}
+.zImageLibraryImageLeft{float:left; margin-right:20px; margin-bottom:20px;}
+.zImageLibraryImageLeft img{max-width:100%;}
+.zImageLibraryImageRight img{max-width:100%;}
+
 @media only screen and (max-width:600px) {
-textarea { width:100% !important;}
-.zEventView1-1{width:100%; display:block; float:left; }
-.zEventView1-2{width:100%; display:block; float:left; margin-left:0px; }
-.zEventView1-3{width:100%; }
-.zEventView1-4{width:100%; display:block; float:left; }
-.zCalendarTabContainer{padding-top:0px;}
-.zEventSearchContainer{display:block; width:100%; float:left;}
-.zEventSearchForm{width:100%; float:left; display:block;}
-#zEventSearchResults{width:100%; float:left; clear:both;display:block;padding-left:0px;}
-.zEventListContainer{width:100%;display:block; float:left;}
-#zCalendarTab_List{padding:0px;}
-.zEventListPhoto{display:block;width:200px;float:left;}
-.zEventListText{display:block;float:left;width:100% !important;clear:both; padding-left:0px;}
+	.zImageLibraryImageLeft{width:100% !important; margin-right:0px;margin-left:0px; }
+	.zImageLibraryImageRight{width:100% !important; margin-right:0px; margin-left:0px; float:left;}
+	textarea { width:100% !important;}
+	.zEventView1-1{width:100%; display:block; float:left; }
+	.zEventView1-2{width:100%; display:block; float:left; margin-left:0px; }
+	.zEventView1-3{width:100%; }
+	.zEventView1-4{width:100%; display:block; float:left; }
+	.zCalendarTabContainer{padding-top:0px;}
+	.zEventSearchContainer{display:block; width:100%; float:left;}
+	.zEventSearchForm{width:100%; float:left; display:block;}
+	#zEventSearchResults{width:100%; float:left; clear:both;display:block;padding-left:0px;}
+	.zEventListContainer{width:100%;display:block; float:left;}
+	#zCalendarTab_List{padding:0px;}
+	.zEventListPhoto{display:block;width:200px;float:left;}
+	.zEventListText{display:block;float:left;width:100% !important;clear:both; padding-left:0px;}
 }

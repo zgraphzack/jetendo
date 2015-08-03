@@ -308,20 +308,44 @@ var zLastAjaxVarName=""; */
 		}
 	}
 
+	function zGetSelectValues(select) {
+		var result = [];
+		var options = select && select.options;
+		var opt;
+
+		for (var i=0, iLen=options.length; i<iLen; i++) {
+			opt = options[i];
+
+			if (opt.selected) {
+				result.push(opt.value || opt.text);
+			}
+		}
+		return result;
+	}
 
 	function zGetFormDataByFormId(formId){
 		var obj={};
-		$("input, textarea, select", $("#"+formId)).each(function(){
+		$("input, textarea, select", $("#"+formId)).each(function(e, e2){ 
 			if(typeof obj[this.name] === 'undefined'){
 				if(this.type === 'checkbox' || this.type === 'radio'){
-					obj[this.name]=$("input[name="+this.name+"]:checked", $("#"+formId)).map(function() {return this.value;}).get().join(','); 
+					if(this.checked){
+						obj[this.name]=this.value;
+					}
 				}else if(this.type.substr(0, 6) === 'select'){
-					obj[this.name]=$("select[name="+this.name+"]", $("#"+formId)).map(function() {return this.value;}).get().join(','); 
-				}else if(this.type === 'textarea'){
-					obj[this.name]=$("textarea[name="+this.name+"]", $("#"+formId)).map(function() {return this.value;}).get().join(','); 
+					obj[this.name]=zGetSelectValues(this).join(","); 
 				}else{
-					obj[this.name]=$("input[name="+this.name+"]", $("#"+formId)).map(function() {return this.value;}).get().join(','); 
+					obj[this.name]=this.value;
 				}
+			}else{
+				if(this.type === 'checkbox' || this.type === 'radio'){
+					if(this.checked){
+						obj[this.name]+=","+this.value;
+					}
+				}else if(this.type.substr(0, 6) === 'select'){
+					obj[this.name]+=","+zGetSelectValues(this).join(","); 
+				}else{
+					obj[this.name]+=","+this.value;
+				} 
 			}
 		});
 		return obj;
@@ -330,15 +354,16 @@ var zLastAjaxVarName=""; */
 		var field=$("#"+id);
 		if(field.length){
 			var f=field[0];
-			if(f.type === 'checkbox' || f.type === 'radio'){
-				return $("input[name="+f.name+"]:checked").map(function() {return f.value;}).get().join(','); 
-			}else if(field[0].type.substr(0, 6) === 'select'){
-				return $("select[name="+f.name+"]").map(function() {return f.value;}).get().join(','); 
-			}else if(f.type === 'textarea'){
-				return $("textarea[name="+f.name+"]").map(function() {return f.value;}).get().join(','); 
+			if(this.type === 'checkbox' || this.type === 'radio'){
+				if(this.checked){
+					return this.value;
+				}
+			}else if(this.type.substr(0, 6) === 'select'){
+				return zGetSelectValues(this).join(","); 
 			}else{
-				return $("input[name="+f.name+"]").map(function() {return f.value;}).get().join(','); 
+				return this.value;
 			}
+			return ""; 
 		}else{
 			return "";
 		}

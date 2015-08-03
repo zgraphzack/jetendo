@@ -239,7 +239,27 @@ displayGroupCom.add();')&'</pre>');
 			// show next button
 		}
 	}
-	</pre></div></div>
+	</pre>
+
+	<h2>Public Form Examples</h2>
+	<h3>Embed Public Form in any page</h3>
+	<p>Coming soon</p>
+
+	<h3>Custom Version Of Form Field Layout</h3>
+	<p>Coming soon</p>
+	
+	<h3>Ajax Insert</h3>
+	<p>Use this when the data needs to come from another form/request and you can''t display the form directly.</p>
+	'&htmlcodeformat('<cfscript>
+	request.zos.disableSpamCheck=true;
+    application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, ''x_ajax_id''));
+    form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["How Can We Help You Form"]);
+	
+    displayGroupCom=createobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
+    displayGroupCom.ajaxInsert();
+
+	</cfscript>')&'
+	</div></div>
 	');
 	
 	</cfscript>

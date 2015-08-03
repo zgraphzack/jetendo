@@ -1200,7 +1200,9 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 	}else if(arguments.layout_type EQ "5" or arguments.layout_type EQ "6"){
 		return "contentflow";
 	}else if(arguments.layout_type EQ "7"){
-		return "thumbnail-and-other-photos";
+		return "thumbnail-left-and-other-photos";
+	}else if(arguments.layout_type EQ "9"){
+		return "thumbnail-right-and-other-photos";
 	}else if(arguments.layout_type EQ "8"){
 		return "custom";
 	}else{
@@ -1208,6 +1210,19 @@ application.zcore.imageLibraryCom.getImageSQL(ts);
 	}
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="isAlwaysDisplayedLayoutType" localmode="modern" output="no" returntype="any">
+	<cfargument name="layoutTypeId" type="string" required="yes">
+	<cfscript>
+	if(arguments.layoutTypeId EQ "7" or arguments.layoutTypeId EQ "9"){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
+
 
 <cffunction name="isBottomLayoutType" localmode="modern" output="no" returntype="any">
 	<cfargument name="layoutTypeId" type="string" required="yes">
@@ -1237,8 +1252,8 @@ application.zcore.imageLibraryCom.getLayoutTypeForm(ts); --->
 	ts.selectedValues =  arguments.ss.value;
 	ts.selectedDelimiter = ","; // change if comma conflicts...
 	// options for list data
-	ts.listLabels = "Large Photos (1 Column),Gallery Slideshow At Bottom,Gallery Slideshow At Top,Thumbnails and Lightbox At Bottom,Thumbnails and Lightbox At Top,ContentFlow At Bottom,ContentFlow At Top,Thumbnail On Top Left - Other Large Photos At Bottom,Custom";
-	ts.listValues = "0,1,3,2,4,5,6,7,8";
+	ts.listLabels = "Large Photos (1 Column),Gallery Slideshow At Bottom,Gallery Slideshow At Top,Thumbnails and Lightbox At Bottom,Thumbnails and Lightbox At Top,ContentFlow At Bottom,ContentFlow At Top,Thumbnail On Top Left - Other Large Photos At Bottom,Thumbnail On Top Right - Other Large Photos At Bottom,Custom";
+	ts.listValues = "0,1,3,2,4,5,6,7,9,8";
 	ts.listLabelsDelimiter = ","; // tab delimiter
 	ts.listValuesDelimiter = ",";
 	
@@ -1250,7 +1265,7 @@ application.zcore.imageLibraryCom.getLayoutTypeForm(ts); --->
 ts=structnew();
 ts.output=true;
 ts.image_library_id=image_library_id;
-ts.layoutType=""; // thumbnail-and-other-photos,contentflow,thumbnails-and-lightbox,galleryview-1.1
+ts.layoutType=""; // thumbnail-left-and-other-photos,thumbnail-right-and-other-photos,contentflow,thumbnails-and-lightbox,galleryview-1.1
 ts.image_id = 0; // only use this if you want a specific image.
 ts.size="#request.zos.globals.maximagewidth#x2000";
 ts.crop=0;
@@ -1331,12 +1346,12 @@ application.zcore.imageLibraryCom.displayImages(ts);
 			return arrOutput;	
 		}
 	}
-	if(arguments.ss.layoutType EQ "thumbnail-and-other-photos" and not arguments.ss.top){
+	if((arguments.ss.layoutType EQ "thumbnail-left-and-other-photos" or arguments.ss.layoutType EQ "thumbnail-right-and-other-photos") and not arguments.ss.top){
 		arguments.ss.layoutType="";
 	}
 	</cfscript>
 	<cfif arguments.ss.output>
-	<cfif arguments.ss.layoutType EQ "thumbnail-and-other-photos">
+	<cfif arguments.ss.layoutType EQ "thumbnail-left-and-other-photos" or arguments.ss.layoutType EQ "thumbnail-right-and-other-photos">
 		<cfscript>
 		application.zcore.app.getAppCFC("content").setRequestThumbnailSize(0,0,0);
 		
@@ -1353,10 +1368,17 @@ application.zcore.imageLibraryCom.displayImages(ts);
 				thumbnailHeight=round((request.zos.globals.maximagewidth/3)*.6);
 			}
 		}
+		thumbnailWidth*=2;
+		thumbnailHeight*=2;
 		
 		</cfscript>
 		<cfloop query="qImages" startrow="1" endrow="1">
-			<div style="float:left; margin-right:20px; margin-bottom:20px;">
+			<cfif arguments.ss.layoutType EQ "thumbnail-right-and-other-photos">
+				<div class="zImageLibraryImageRight" style="width:#thumbnailWidth/2#px;">
+			<cfelse>
+				<div class="zImageLibraryImageLeft" style="width:#thumbnailWidth/2#px;">
+			</cfif>
+			
 				<img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
 			</div>
 		</cfloop>

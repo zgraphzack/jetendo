@@ -2055,13 +2055,19 @@ this.app_id=10;
 	ts.size="#request.zos.globals.maximagewidth#x2000";
 	ts.crop=0; 
 	ts.offset=0; 
-	ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(qArticle.blog_image_library_layout);
+	ts.top=true;
+	if(qArticle.blog_image_library_layout EQ 7 or qArticle.blog_image_library_layout EQ 9){
+		ts.limit=1;
+	}
+	ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(qArticle.blog_image_library_layout); 
 	application.zcore.imageLibraryCom.displayImages(ts); 
 	</cfscript>
 	</cfsavecontent>
-	<cfif qArticle.blog_image_library_layout EQ 3 or qArticle.blog_image_library_layout EQ 4 or qArticle.blog_image_library_layout EQ 6>
-		#theImageOutputHTML#
-	</cfif>
+	<cfscript> 
+	if(not application.zcore.imageLibraryCom.isBottomLayoutType(qArticle.blog_image_library_layout) or application.zcore.imageLibraryCom.isAlwaysDisplayedLayoutType(qArticle.blog_image_library_layout)){
+		echo(theImageOutputHTML);
+	}
+	</cfscript> 
 	
 	<cfif isDefined('request.zos.supressBlogArticleDetails')>
 		<cfscript>
@@ -2071,11 +2077,23 @@ this.app_id=10;
 	<cfelse>
 		#qArticle.blog_story#
 	</cfif>
-	<cfif qArticle.blog_image_library_layout EQ 1 or qArticle.blog_image_library_layout EQ 2 or qArticle.blog_image_library_layout EQ 0 or qArticle.blog_image_library_layout EQ 5>
-		#theImageOutputHTML#
-	</cfif>
-	
 	<cfscript>
+	
+	if(qArticle.blog_image_library_layout EQ 7 or qArticle.blog_image_library_layout EQ 9){
+		savecontent variable="theImageOutputHTML"{
+			ts =structnew();
+			ts.image_library_id=qArticle.blog_image_library_id;
+			ts.size="#request.zos.globals.maximagewidth#x2000";
+			ts.crop=0;  
+			ts.offset=1;
+			ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(qArticle.blog_image_library_layout);
+			application.zcore.imageLibraryCom.displayImages(ts);
+		}
+	}
+	if(application.zcore.imageLibraryCom.isBottomLayoutType(qArticle.blog_image_library_layout) or application.zcore.imageLibraryCom.isAlwaysDisplayedLayoutType(qArticle.blog_image_library_layout)){
+		echo(theImageOutputHTML);
+	}
+
 	writeoutput(viewdata.realEstateSearchResults);
 	</cfscript>
 	<cfif isDefined('request.zos.supressBlogArticleDetails') and request.zos.supressBlogArticleDetails EQ 1>

@@ -2440,14 +2440,14 @@ configCom.includeContentByName(ts);
 				ts.crop=0; 
 				ts.top=true;
 				ts.offset=0;
-				if(ts994824713.content_image_library_layout EQ 7){
+				if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 9){
 					ts.limit=1;
 				}
 				ts.layoutType=application.zcore.imageLibraryCom.getLayoutType(ts994824713.content_image_library_layout);
 				application.zcore.imageLibraryCom.displayImages(ts);
 		}
 		savecontent variable="theContentHTMLSection"{
-			if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 3 or ts994824713.content_image_library_layout EQ 4 or ts994824713.content_image_library_layout EQ 6){
+			if(not application.zcore.imageLibraryCom.isBottomLayoutType(ts994824713.content_image_library_layout) or application.zcore.imageLibraryCom.isAlwaysDisplayedLayoutType(ts994824713.content_image_library_layout)){
 				echo(theImageOutputHTML);
 			}
 			if(ts994824713.content_slideshow_id NEQ 0){
@@ -2506,20 +2506,7 @@ configCom.includeContentByName(ts);
 			}
 			if(ts994824713.content_name2 NEQ ''){
 				echo('<h2>#htmleditformat(ts994824713.content_name2)#</h2>');
-			}
-			/*if(ts994824713.content_image_library_layout NEQ 8){
-				ts =structnew();
-				ts.image_library_id=ts994824713.content_image_library_id;
-				ts.output=false;
-				ts.query=qContent;
-				ts.row=1;
-				ts.count = 1; // how many images to get
-				//application.zcore.functions.zdump(ts);
-				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts); 
-				if(arraylen(arrImages) NEQ 0){
-					writeoutput('<p id="zcontentmainimagepid"><img id="zcontentmainimageimgid" src="'&arrImages[1].link&'" alt="#htmleditformat(arrImages[1].caption)#" style="border:none;" /></p>');
-				}
-			}*/
+			} 
 			if(ts994824713.content_datetime NEQ ''){
 				echo('<strong class="news-date">Date: ');
 				if(isdate(ts994824713.content_datetime)){
@@ -2610,7 +2597,7 @@ configCom.includeContentByName(ts);
 				}
 			}
 			
-			if(ts994824713.content_image_library_layout EQ 7){
+			if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 9){
 				savecontent variable="theImageOutputHTML"{
 					ts =structnew();
 					ts.image_library_id=ts994824713.content_image_library_id;
@@ -2621,7 +2608,7 @@ configCom.includeContentByName(ts);
 					application.zcore.imageLibraryCom.displayImages(ts);
 				}
 			}
-			if(ts994824713.content_image_library_layout EQ 7 or ts994824713.content_image_library_layout EQ 1 or ts994824713.content_image_library_layout EQ 2 or ts994824713.content_image_library_layout EQ 0 or ts994824713.content_image_library_layout EQ 5){
+			if(application.zcore.imageLibraryCom.isBottomLayoutType(ts994824713.content_image_library_layout) or application.zcore.imageLibraryCom.isAlwaysDisplayedLayoutType(ts994824713.content_image_library_layout)){
 				echo(theImageOutputHTML);
 			}
 			if(ts994824713.content_html_text_bottom EQ 1 and ts994824713.content_html_text NEQ ""){
