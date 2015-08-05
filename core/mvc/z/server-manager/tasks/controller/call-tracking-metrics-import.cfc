@@ -188,6 +188,13 @@
 			http url="#u#" timeout="30" throwonerror="no" method="get"{ 
 				httpparam type="header" name="Authorization" value='Basic #ToBase64("#accessKey#:#secretKey#")#';
 			}
+			if(not structkeyexists(cfhttp, 'statuscode') or left(cfhttp.statuscode,3) NEQ '200'){
+				savecontent variable="out"{
+					writedump(cfhttp);
+
+				}
+				throw("Failed to download calltrackingmetrics. cfhttp response:"&out);
+			}
 			js=deserializeJSON(cfhttp.filecontent); 
 		}
 		qs.page+=1;

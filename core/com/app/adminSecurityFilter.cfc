@@ -52,7 +52,7 @@
 		ms["Listing Research Tool"]={ parent:'Listings', label:chr(9)&"Listing Research Tool"};
 		ms["Saved Listing Searches"]={ parent:'Listings', label:chr(9)&"Saved Listing Searches"};
 		ms["Listing Search Filter"]={ parent:'Listings', label:chr(9)&"Listing Search Filter"};
-		ms["Widgets For Other Sites"]={ parent:'Listings', label:chr(9)&"Widgets For Other Sites"};
+		ms["Real Estate Widgets and Links"]={ parent:'Listings', label:chr(9)&"Real Estate Widgets and Links"};
 	}
 	if(application.zcore.app.structHasApp(ss, "event")){
 		ms["Events"]={ parent:'', label:"Events"};

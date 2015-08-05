@@ -350,8 +350,8 @@ zdoc css style documentation
 		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Saved Listing Searches")){
 			arrayAppend(arrS, { id:"__6.5", url:"/managed-saved-searches.html", title:"Manage Saved Listing Searches"});
 		}
-		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Widgets For Other Sites")){
-			arrayAppend(arrS, { id:"__6.6", url:"/widget-for-other-sites.html", title:"Widgets For Other Sites"});
+		if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Real Estate Widgets and Links")){
+			arrayAppend(arrS, { id:"__6.6", url:"/widget-for-other-sites.html", title:"Real Estate Widgets and Links"});
 		}
 	}
 	if(application.zcore.app.siteHasApp("rental")){

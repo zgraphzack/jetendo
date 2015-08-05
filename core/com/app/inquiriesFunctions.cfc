@@ -675,10 +675,11 @@ Email Only
 		<cfif trim(application.zcore.functions.zso(t, 'inquiries_comments')) NEQ ''>
 			<tr>
 				<th style="#thstyle# vertical-align:top;text-align:left;">Comments:</th>
-				<td style="#tdstyle#"><cfif t.inquiries_comments does not contain "</">
-#application.zcore.functions.zParagraphFormat(wrap(t.inquiries_comments, 120))#
-						<cfelse>
-						#t.inquiries_comments#
+				<td style="#tdstyle#">
+					<cfif t.inquiries_comments does not contain "</">
+						#wrap(replace(t.inquiries_comments, chr(10), "<br>", "all"), 120)#
+					<cfelse>
+						#replace(t.inquiries_comments, chr(10), "<br>", "all")#
 					</cfif></td>
 			</tr>
 		</cfif>

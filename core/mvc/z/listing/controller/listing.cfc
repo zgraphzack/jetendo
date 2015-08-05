@@ -593,11 +593,11 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 			ts.link='/z/listing/admin/research-tool/index';
 			arguments.linkStruct["Real Estate"].children["Listing Research Tool"]=ts;
 		}  
-		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Widgets For Other Sites") EQ false){
+		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Real Estate Widgets and Links") EQ false){
 			ts=structnew();
-			ts.featureName="Widgets For Other Sites";
+			ts.featureName="Real Estate Widgets and Links";
 			ts.link='/z/listing/admin/real-estate-widgets/index';
-			arguments.linkStruct["Real Estate"].children["Widgets For Other Sites"]=ts;
+			arguments.linkStruct["Real Estate"].children["Real Estate Widgets and Links"]=ts;
 		}  
 	}
 	return arguments.linkStruct;
