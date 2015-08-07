@@ -1,0 +1,5 @@
+_getOffset function was modified to fix error.   
+			this code was added after the first if/else statements.
+			if(el.length == 0){
+				return {left:0, top:0};
+			}

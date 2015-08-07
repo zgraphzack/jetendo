@@ -1691,7 +1691,7 @@ displayGroupCom.add();')&'</pre>');
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Email CFC Method","member.site-option-group.edit site_option_group_email_cfc_method")#</th>
-					<td><input type="text" name="site_option_group_email_cfc_method" id="site_option_group_email_cfc_method" value="#htmleditformat(form.site_option_group_email_cfc_method)#" /> (A function name in the CFC with access="remote")</td>
+					<td><input type="text" name="site_option_group_email_cfc_method" id="site_option_group_email_cfc_method" value="#htmleditformat(form.site_option_group_email_cfc_method)#" /> (A function name in the CFC with access="public")</td>
 				</tr>
 		</table>
 		#tabCom.endFieldSet()# 

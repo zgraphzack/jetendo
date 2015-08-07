@@ -2021,6 +2021,7 @@
 	local.setIdBackup2=form.site_x_option_group_set_id;
 	local.groupIdBackup2=local.qCheck.site_option_group_id;
 	if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup") and local.qCheck.site_option_group_lead_routing_enabled EQ 1 and not structkeyexists(form, 'disableGroupEmail')){
+
 		local.newDataStruct.site_x_option_group_set_id=local.setIdBackup2; 
 		local.newDataStruct.site_option_group_id=local.groupIdBackup2;
 		
@@ -2032,11 +2033,12 @@
 			}
 		} 
 		if(local.qCheck.site_option_group_map_fields_type EQ 1){
-			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){
+ 
+			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){ 
 				local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
 				local.disableSendEmail=true;
 				local.emailStruct=local.tempCom[local.qCheck.site_option_group_email_cfc_method](local.newDataStruct, local.arrDataStructKeys);
-			}
+			} 
 		}else if(local.qCheck.site_option_group_map_fields_type EQ 0 or local.qCheck.site_option_group_map_fields_type EQ 2){
 			if(local.qCheck.site_option_group_email_cfc_path NEQ "" and local.qCheck.site_option_group_email_cfc_method NEQ ""){
 				local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath);

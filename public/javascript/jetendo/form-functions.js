@@ -312,12 +312,22 @@ var zLastAjaxVarName=""; */
 		var result = [];
 		var options = select && select.options;
 		var opt;
-
+		var hasValue=false;
+		
+		if(options.length >=2){
+			if(options[0].value != "" || options[1].value != ""){
+				hasValue=true;
+			}
+		}
 		for (var i=0, iLen=options.length; i<iLen; i++) {
 			opt = options[i];
 
 			if (opt.selected) {
-				result.push(opt.value || opt.text);
+				if(hasValue){
+					result.push(opt.value);
+				}else{
+					result.push(opt.text);
+				}
 			}
 		}
 		return result;
