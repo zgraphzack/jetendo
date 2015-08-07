@@ -7,6 +7,7 @@
 	variables.allowGlobal=false;
 
 
+	
 	checkOptionCache();
 
 	form.site_id=request.zos.globals.id;

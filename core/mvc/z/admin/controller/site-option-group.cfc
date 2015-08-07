@@ -1,6 +1,5 @@
 <cfcomponent>
-<cfoutput>
- 
+<cfoutput> 
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	var theTitle=0;
