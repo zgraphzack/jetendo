@@ -2,8 +2,8 @@
 <cfoutput>
 <cffunction name="init" localmode="modern" access="private">
 	<cfscript>
-	if(not request.zOS.railoAdminWriteEnabled){
-		throw("request.zOS.railoAdminWriteEnabled is not enabled.");
+	if(not request.zOS.cfmlAdminWriteEnabled){
+		throw("request.zOS.cfmlAdminWriteEnabled is not enabled.");
 	}
 	form.pw=application.zcore.functions.zso(form, 'pw');
 	form.remoteurl=application.zcore.functions.zso(form, 'remoteurl');
@@ -11,10 +11,10 @@
 	form.remotepw=application.zcore.functions.zso(form, 'remotepw');
 	if(request.zos.isTestServer){
 		if(form.pw NEQ ""){
-			application.zcore.functions.zcookie({name:'railolocaladminpassword',value:form.pw,expires='never'});
+			application.zcore.functions.zcookie({name:'cfmllocaladminpassword',value:form.pw,expires='never'});
 		}
 		if(form.remotepw NEQ ""){
-			application.zcore.functions.zcookie({name:'railoremoteadminpassword',value:form.remotepw,expires='never'});
+			application.zcore.functions.zcookie({name:'cfmlremoteadminpassword',value:form.remotepw,expires='never'});
 		}
 	}
 	form.adminType="web";
@@ -22,13 +22,17 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="deployRailoArchive" localmode="modern" access="private" output="no">
+<cffunction name="deployCfmlArchive" localmode="modern" access="private" output="no">
 	<cfscript>
 	var local=structnew();
 	var qDir=0;
-	var r1=0;
+	var r1=0; 
 	variables.init();
-	local.path=expandpath("/railo-context/")&"archives/";
+	if(request.zos.cfmlServerKey EQ "railo"){
+		local.path=expandpath("/railo-context/")&"archives/";
+	}else{
+		local.path=expandpath("/lucee/")&"archives/";
+	}
 	local.fileName=application.zcore.functions.zUploadFile(form.fileName, local.path);
 	
 	admin action="getMappings" type="#form.adminType#" password="#form.pw#" returnVariable="local.mappings";
@@ -107,16 +111,16 @@
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	<form action="/z/server-manager/tasks/deploy-archive/update" method="post">
-		<h2>Local Railo Web Admin</h2>
+		<h2>Local cfml Web Admin</h2>
 		<p>Password:
-			<input type="text" name="pw" id="pw" value="<cfif structkeyexists(cookie, 'railolocaladminpassword')>#cookie.railolocaladminpassword#</cfif>" />
+			<input type="text" name="pw" id="pw" value="<cfif structkeyexists(cookie, 'cfmllocaladminpassword')>#cookie.cfmllocaladminpassword#</cfif>" />
 		</p>
-		<h2>Remote Railo Web Admin</h2>
+		<h2>Remote cfml Web Admin</h2>
 		<p>URL:
 			<input type="text" name="remoteurl" style="width:500px;" value="#request.zOS.zcoreAdminDomain#/z/server-manager/tasks/deploy-archive/deploy" />
 		</p>
 		<p>Password:
-			<input type="text" name="remotepw" value="<cfif structkeyexists(cookie, 'railoremoteadminpassword')>#cookie.railoremoteadminpassword#</cfif>" />
+			<input type="text" name="remotepw" value="<cfif structkeyexists(cookie, 'cfmlremoteadminpassword')>#cookie.cfmlremoteadminpassword#</cfif>" />
 		</p>
 		<p>Clear Cache:
 			<input type="radio" name="clearcache" value="" <cfif form.clearcache EQ "">checked="checked"</cfif> />
@@ -148,7 +152,11 @@
 		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
 	}
 	variables.init();
-	local.path=expandpath("/railo-context/")&"archives/";
+	if(request.zos.cfmlServerKey EQ "railo"){
+		local.path=expandpath("/railo-context/")&"archives/";
+	}else{
+		local.path=expandpath("/lucee/")&"archives/";
+	}
 	admin action="getMappings" type="#form.adminType#" password="#form.pw#" returnVariable="local.mappings";
 	admin action="getRemoteClients" type="#form.adminType#" password="#form.pw#" returnVariable="local.clients";
 	local.found=false;
@@ -175,7 +183,7 @@
 	}
 	local.fileName="zcorerootmapping-archive"&dateformat(now(),'yyyymmdd')&timeformat(now(),'HHmmss')&".ras";
 	if(local.found EQ false){
-		application.zcore.template.fail("Mapping, /zcorerootmapping, not defined in Railo #form.adminType# admin.");
+		application.zcore.template.fail("Mapping, /zcorerootmapping, not defined in cfml #form.adminType# admin.");
 	}
 	try{
 		admin action="createArchive" type="#form.adminType#" password="#form.pw#" file="#local.path&local.fileName#" virtual="/zcorerootmapping" append="true" addCFMLFiles="false" addNonCFMLFiles="false" remoteClients="#local.clients#";
@@ -227,10 +235,10 @@
 			application.zDeployExclusiveLock=true;
 			lock type="exclusive" timeout="400" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{
 				sleep(1000); // allow other requests to finish before starting
-				variables.deployRailoArchive();
+				variables.deploycfmlArchive();
 			}
 		}else{
-			variables.deployRailoArchive();	
+			variables.deploycfmlArchive();	
 		}
 	}catch(Any e){
 		writeoutput('<h2>Failed to deploy archive</h2>');

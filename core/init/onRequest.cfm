@@ -38,7 +38,9 @@
 					application.zcore.template.replaceErrorContent("");
 				}else{
 					if(request.zos.scriptNameTemplate CONTAINS "/railo-context/"){
-						application.zcore.functions.z404("Railo-context can't be visited through a public port.");	
+						application.zcore.functions.z404("cfml admin can't be visited through a public port.");	
+					}else if(left(request.zos.scriptNameTemplate, 7) EQ "/lucee/"){
+						application.zcore.functions.z404("cfml admin can't be visited through a public port.");	
 					}
 					if(request.zos.globals.id EQ request.zos.globals.serverid){
 						request.zos.scriptNameTemplate=replace(request.zos.scriptNameTemplate, '/'&request.zos.globals.servershortdomain,'/zcorerootmapping/');	

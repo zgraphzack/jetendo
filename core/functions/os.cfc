@@ -1626,7 +1626,7 @@ User's IP: #request.zos.cgi.remote_addr#
 </cffunction>
 <cffunction name="zIsServer" localmode="modern" output="false" returntype="boolean">
 	<cfscript>
-	if((request.zos.cgi.remote_addr EQ '127.0.0.1' and (cgi.HTTP_USER_AGENT contains 'railo' or cgi.HTTP_USER_AGENT EQ 'cfschedule' or cgi.HTTP_USER_AGENT EQ 'Coldfusion')) or
+	if((request.zos.cgi.remote_addr EQ '127.0.0.1' and (cgi.HTTP_USER_AGENT contains 'lucee' or cgi.HTTP_USER_AGENT contains 'railo' or cgi.HTTP_USER_AGENT EQ 'cfschedule' or cgi.HTTP_USER_AGENT EQ 'Coldfusion')) or
 	 structkeyexists(request.zos.adminIpStruct,request.zos.cgi.remote_addr) and request.zos.adminIpStruct[request.zos.cgi.remote_addr]){
 		return true;
 	}else{
@@ -1641,18 +1641,33 @@ User's IP: #request.zos.cgi.remote_addr#
 	<cfargument name="label" type="string" required="no" default="">
 	<cfargument name="nodumpcode" type="boolean" required="no" default="#false#">
 	<cfdump var="#arguments.varName#" showudfs="no" format="html" label="#arguments.label#">
-	<style type="text/css"> 
-	div.-railo-dump  td span {font-weight:bold !important;}
-	div.-railo-dump table{ background-color:##FFF !important;font-family:Arial, Helvetica, sans-serif  !important; font-size:12px !important; empty-cells:show !important; color:##000 !important;border-spacing:0px !important;color:##000 !important;  border:none !important;}
-	div.-railo-dump td.r99f {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;}
-	div.-railo-dump td.rc9c {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;} 
-	div.-railo-dump td.r99f:nth-child(even) {background-color:##F2F2F2 !important;  }
-	div.-railo-dump td.rc9c:nth-child(even) {background-color:##F2F2F2 !important;  }
-	div.-railo-dump td {background-color:transparent !important; padding:3px !important; border:none !important; border-right:1px solid ##CCC !important;border-bottom:1px solid ##CCC !important;}
-	div.-railo-dump tr:nth-child(even) {background: ##F2F2F2  !important;}
-	div.-railo-dump tr tr:nth-child(even) {background: ##F2F2F2  !important;}
-	div.-railo-dump tr:hover{ background-color:##e6faeb !important;} 
-	</style>
+	<cfif request.zos.cfmlServerKey EQ "railo">
+		<style type="text/css"> 
+		div.-railo-dump  td span {font-weight:bold !important;}
+		div.-railo-dump table{ background-color:##FFF !important;font-family:Arial, Helvetica, sans-serif  !important; font-size:12px !important; empty-cells:show !important; color:##000 !important;border-spacing:0px !important;color:##000 !important;  border:none !important;}
+		div.-railo-dump td.r99f {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;}
+		div.-railo-dump td.rc9c {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;} 
+		div.-railo-dump td.r99f:nth-child(even) {background-color:##F2F2F2 !important;  }
+		div.-railo-dump td.rc9c:nth-child(even) {background-color:##F2F2F2 !important;  }
+		div.-railo-dump td {background-color:transparent !important; padding:3px !important; border:none !important; border-right:1px solid ##CCC !important;border-bottom:1px solid ##CCC !important;}
+		div.-railo-dump tr:nth-child(even) {background: ##F2F2F2  !important;}
+		div.-railo-dump tr tr:nth-child(even) {background: ##F2F2F2  !important;}
+		div.-railo-dump tr:hover{ background-color:##e6faeb !important;} 
+		</style>
+	<cfelse>
+		<style type="text/css"> 
+		div.-lucee-dump  td span {font-weight:bold !important;}
+		div.-lucee-dump table{ background-color:##FFF !important;font-family:Arial, Helvetica, sans-serif  !important; font-size:12px !important; empty-cells:show !important; color:##000 !important;border-spacing:0px !important;color:##000 !important;  border:none !important;}
+		div.-lucee-dump td.r99f {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;}
+		div.-lucee-dump td.rc9c {background-color:##FFF !important; border-right:1px solid ##CCC !important; border-bottom:1px solid ##CCC !important; padding:3px !important;} 
+		div.-lucee-dump td.r99f:nth-child(even) {background-color:##F2F2F2 !important;  }
+		div.-lucee-dump td.rc9c:nth-child(even) {background-color:##F2F2F2 !important;  }
+		div.-lucee-dump td {background-color:transparent !important; padding:3px !important; border:none !important; border-right:1px solid ##CCC !important;border-bottom:1px solid ##CCC !important;}
+		div.-lucee-dump tr:nth-child(even) {background: ##F2F2F2  !important;}
+		div.-lucee-dump tr tr:nth-child(even) {background: ##F2F2F2  !important;}
+		div.-lucee-dump tr:hover{ background-color:##e6faeb !important;} 
+		</style>
+	</cfif>
 </cffunction>
 
 
@@ -2139,7 +2154,7 @@ User's IP: #request.zos.cgi.remote_addr#
 						</cffunction>');
 					//tempStructString=application.zcore.functions.zStructToString("local", ts434);
 					tempComponentString='<cfcomponent>
-					<cffunction name="get" localmode="modern" access="public" hint="DO NOT EDIT THIS FILE. It is automatically regenerated when the /zcorerootmapping/mvc directory has new or removed CFC files.  This is done so that we can automatically cache CFC metadata when the application is deployed to the production server without the CFML source.  Railo supports sourceless deployment via the Secure Railo Archive (.ras) feature."  returntype="array">
+					<cffunction name="get" localmode="modern" access="public" hint="DO NOT EDIT THIS FILE. It is automatically regenerated when the /zcorerootmapping/mvc directory has new or removed CFC files.  This is done so that we can automatically cache CFC metadata when the application is deployed to the production server without the CFML source.   "  returntype="array">
 					<cfscript>
 					var local=structnew();
 					arrFile=arraynew(1);

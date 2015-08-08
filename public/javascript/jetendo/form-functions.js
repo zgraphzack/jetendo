@@ -107,7 +107,7 @@ var zLastAjaxVarName=""; */
 			if(navigator.mimeTypes ["application/x-shockwave-flash"] !== "undefined") hasFlash = true;
 		}
 		var d = document.getElementById("imagefiles");
-		// temporarily disable html 5 multiple file upload until Railo has fixed the bug with it.
+		// temporarily disable html 5 multiple file upload until cfml server has fixed the bug with it.
 		if(1===0){// typeof d.multiple === "boolean" || !hasFlash){
 			document.getElementById("flashFileUpload").style.display="none";
 		}else{

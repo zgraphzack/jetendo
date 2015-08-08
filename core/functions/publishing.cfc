@@ -69,7 +69,7 @@ result=zHTTPtoFile(source, destinationFile, timeout, throwOnError, useSecureComm
 	}
 	find2 = findNoCase("https://", arguments.source);
 	if(find2 NEQ 0){
-		// railo doesn't support SNI for SSL connections, so we force PHP Curl download on all SSL connections to avoid in case the domain uses SNI.
+		// cfml doesn't support SNI for SSL connections, so we force PHP Curl download on all SSL connections to avoid in case the domain uses SNI.
 		arguments.useSecureCommand=true;
 	}
 

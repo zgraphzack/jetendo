@@ -554,7 +554,7 @@
 
 
 	if(form.image_file CONTAINS ","){
-		// patched Railo 4.2.1.002 to support multiple file uploads
+		// patched the cfml server to support multiple file uploads
 		rs=application.zcore.functions.zFileUploadAll("image_file", variables.currentDir, false);
 		for(i=1;i LTE arraylen(rs.arrError);i++){
 			application.zcore.status.setStatus(request.zsid, rs.arrError[i], form, true);

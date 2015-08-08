@@ -967,7 +967,7 @@ USUAGE
 	find1 = findNoCase("http://", arguments.link);
 	find2 = findNoCase("https://", arguments.link);
 	if(find2 NEQ 0){
-		// railo doesn't support SNI for SSL connections, so we force PHP Curl download on all SSL connections to avoid in case the domain uses SNI.
+		// cfml doesn't support SNI for SSL connections, so we force PHP Curl download on all SSL connections to avoid in case the domain uses SNI.
 		arguments.useSecureCommand=true;
 	}
 	if(find1 EQ 0 and find2 EQ 0){

@@ -92,7 +92,7 @@
 	}else{
 		echo("No problems detected with following conventions.<br />");
 	}
-	echo("All CFCs are able to be compiled by Railo.<br />");
+	echo("All CFCs are able to be compiled by the CFML Server.<br />");
 	</cfscript>
 
 </cffunction>

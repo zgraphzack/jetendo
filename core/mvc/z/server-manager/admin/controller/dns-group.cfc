@@ -7,7 +7,7 @@ TODO: geo-location bind dns configuration:
 			http://backreference.org/2010/02/01/geolocation-aware-dns-with-bind/
 		
 	use cronjob to automate bulk dns api change to opposite IP address
-	update local nginx of remote server to call the other server while railo / database is down.
+	update local nginx of remote server to call the other server while cfml server or database is down.
 		location / {
 				proxy_pass              http://lb;
 				proxy_redirect          off;

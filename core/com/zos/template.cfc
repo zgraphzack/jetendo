@@ -548,7 +548,7 @@ for(local.row in local.qSite){
 			t9=createobject("component",arguments.cpath);
 		}catch(Any e){
 			savecontent variable="local.e2"{
-				if(application.zcore.functions.zso(e, 'message') CONTAINS '-railo-dump'){
+				if(application.zcore.functions.zso(e, 'message') CONTAINS '-railo-dump' or application.zcore.functions.zso(e, 'message') CONTAINS '-lucee-dump'){
 					echo(e.message);
 				}
 				writedump(e);	

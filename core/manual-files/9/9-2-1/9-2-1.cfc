@@ -71,7 +71,7 @@
 <p>In Jetendo CMS, I create an instance of db-dot-cfc during application.cfc's <code>onApplicationStart()</code> and then in <code>onRequestStart()</code>, I duplicate it into the request scope.   <code>request.zos.db=duplicate(application.zcore.db);</code>  This allows the application to use it without the overhead of creating a new object over and over.</p>
 <p>db.cfc component is thread-safe and can be cached in the application for reuse in every request.  dbQuery.cfc requires a separate instance for each simultaneous thread that is executing a query so you must call db.newQuery() at least once per thread/request.  Because the internal parameter array of dbQuery.cfc is only relevant for one query at a time, it's important to run <code>dbQuery.execute()</code> before attempting to build another SQL statement.  An error will be thrown if this mistake is detected.  </p>
 <h2 id="compatibility">Compatibility</h2>
-  <p>db-dot-cfc has been tested to work with Railo 4.1.  db-dot-cfc has no external dependencies, so it should work correctly in any CFML project.  If you notice a compatibility problem when using another database or CFML engine, feel free to improve the code and/or report the issue.</p>
+  <p>db-dot-cfc has been tested to work with the latest version of Lucee.  db-dot-cfc has no external dependencies, so it should work correctly in any CFML project.  If you notice a compatibility problem when using another database or CFML engine, feel free to improve the code and/or report the issue.</p>
   <p>The SQL Parser doesn't understand all syntax.  It can parse regular Delete, Insert, Select, Update statements.   Some statement such as <code>INSERT INTO ... SELECT ... FROM</code> or  subqueries will not work with the current version of the SQL Parser.  You can set <code>db.init({verifyQueriesEnabled=false;})</code> when you need to run one of these unsupported queries.</p>
 <h2 id="dbcfcoptions">db-dot-cfc Options Reference:</h2>
  <p>The <code>db.init(configStruct)</code> or <code>db.newQuery(configStruct)</code> functions can passed the following options.  The default values are shown below. </code></p>
@@ -98,7 +98,7 @@
  arrayappend(local.arrRow, {
 	 name:'cacheStruct',
 	 default:0,
-	 description:'Set to an application or server scope struct to store this data in shared memory instead of within db.cfc. Use structnew("soft") on Railo to have automatic garbage collection when the JVM is low on memory.  structnew("soft") has been tested and it will actively delete a large portion of the cached queries to free up heap space before throwing an OutOfMemory exception.'
+	 description:'Set to an application or server scope struct to store this data in shared memory instead of within db.cfc. Use structnew("soft") to have automatic garbage collection when the JVM is low on memory.  structnew("soft") has been tested and it will actively delete a large portion of the cached queries to free up heap space before throwing an OutOfMemory exception.'
  });
  
  arrayappend(local.arrRow, {
@@ -119,7 +119,7 @@
  arrayappend(local.arrRow, {
 	 name:'lazy',
 	 default:'false',
-	 description:'Railo''s <code>cfquery lazy=&quot;true&quot;</code> option returns a simple Java resultset instead of the CFML compatible query object.  This reduces memory usage when some of the columns are unused. This option does nothing when using ColdFusion.'
+	 description:'<code>cfquery lazy=&quot;true&quot;</code> option returns a simple Java resultset instead of the CFML compatible query object.  This reduces memory usage when some of the columns are unused. This option does nothing when using ColdFusion.'
  });
  arrayappend(local.arrRow, {
 	 name:'parseSQLFunctionStruct',

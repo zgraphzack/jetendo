@@ -11,12 +11,12 @@
 	// lock all requests so that the object dumps are consistent
 	lock type="exclusive" timeout="300" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{
 		application.zcore.functions.zCreateDirectory(request.zos.zcoreRootCachePath&"scripts/memory-dump/");
-		local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-zcore.bin";
+		local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-zcore.bin";
 		local.tempCoreDumpFile=local.coreDumpFile&"."&gettickcount();
 		objectsave(application.zcore, local.tempCoreDumpFile);
 		application.zcore.functions.zdeletefile(local.coreDumpFile);
 		application.zcore.functions.zRenameFile(local.tempCoreDumpFile, local.coreDumpFile);
-		local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-sitestruct.bin";
+		local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sitestruct.bin";
 		local.tempCoreDumpFile=local.coreDumpFile&"."&gettickcount();
 		objectsave(application.sitestruct, local.tempCoreDumpFile);
 		application.zcore.functions.zdeletefile(local.coreDumpFile);
@@ -27,7 +27,7 @@
 			if(structkeyexists(application,'sessionstruct')){
 				structappend(local.d, application.sessionstruct, false);
 			}
-			local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-sessions.bin";
+			local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
 			local.tempCoreDumpFile=local.coreDumpFile&"."&gettickcount();
 			objectsave(local.d, local.tempCoreDumpFile);
 			application.zcore.functions.zdeletefile(local.coreDumpFile);

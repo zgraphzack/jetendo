@@ -1701,7 +1701,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	tempPath=request.zos.globals.serverprivatehomedir&'_cache/temp_files/';
 	application.zcore.functions.zcreatedirectory(tempPath);
 	if(structkeyexists(form, 'imagefiles') and form.imagefiles NEQ ""){
-		// patched Railo 4.2.1.002 to support multiple file uploads
+		// patched cfml server to support multiple file uploads
 		file action="uploadAll" result="cffileresult" destination="#tempPath#" nameconflict="makeunique" filefield="imagefiles" charset="utf-8";
 		for(n=1;n LTE arraylen(cffileresult);n++){
 			form.image_file=cffileresult[n].serverDirectory&"/"&cffileresult[n].clientfile;
@@ -1805,8 +1805,8 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<table style="width:100%; border-spacing:0px;">
 	<tr><td style="vertical-align:top; width:1%; white-space:nowrap;">
 	<form id="form1" action="#request.cgi_script_name#?method=imageform&amp;image_library_id=#form.image_library_id#" enctype="multipart/form-data" method="post">
-		<div id="htmlFileUpload" style="padding-right:10px;">
-		<input type="file" name="imagefiles" id="imagefiles" <cfif server.railo.version EQ request.zos.customRailoVersion> multiple="multiple" </cfif> /><br /><br />
+		<div id="htmlFileUpload" style="padding-right:10px;"> 
+		<input type="file" name="imagefiles" id="imagefiles" <cfif server[request.zos.cfmlServerKey].version EQ request.zos.customCFMLVersion> multiple="multiple" </cfif> /><br /><br />
 		<div id="submitDiv1">
 		<input type="submit" name="submit222" value="Upload" onclick="$('##submitDiv1').hide();$('##waitDiv1').show();" />
 		</div>

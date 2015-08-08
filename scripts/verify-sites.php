@@ -259,6 +259,7 @@ function checkFilesystem(){
 	$result=zCheckDirectoryPermissions($dir."execute/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."execute/start/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."execute/complete/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
+	$result=zCheckDirectoryPermissions($dir."luceevhosts/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."railovhosts/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."themes/", $wwwUser, $wwwUser, "440", "550", true, $preview, $arrError, $isTestServer);
 	$result=zCheckDirectoryPermissions($dir."phptemp/", $wwwUser, $wwwUser, "660", "770", true, $preview, $arrError, $isTestServer);

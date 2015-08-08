@@ -451,7 +451,7 @@ StructDelete(request, 'cfdumpinited');
 	<cfset developerFlagged=true>
     <cfset testServerFlagged=true>
 </cfif><!---  --->
-<cfif cgi.HTTP_USER_AGENT contains 'railo' or cgi.HTTP_USER_AGENT EQ 'CFSCHEDULE' or cgi.HTTP_USER_AGENT EQ 'Coldfusion'>
+<cfif cgi.HTTP_USER_AGENT contains 'lucee' or cgi.HTTP_USER_AGENT contains 'railo' or cgi.HTTP_USER_AGENT EQ 'CFSCHEDULE' or cgi.HTTP_USER_AGENT EQ 'Coldfusion'>
  	<cfset developerFlagged=false>
 </cfif>
 
@@ -606,6 +606,7 @@ newId=0;
     </cfif>
     
 	<!--- true EQ server ip | false EQ user ip --->
+	<cfset request.zForceErrorEmail=true>
 	<cfif not structkeyexists(request, 'zForceErrorEmail') and request.zos.isserver>
 		<cfmail to="#Request.zOS.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="Connection Failure: #request.zOS.CGI.http_host# : CRITICAL PRIORITY" type="html">
 		#application.zcore.functions.zHTMLDoctype()#

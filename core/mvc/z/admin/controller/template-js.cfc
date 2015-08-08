@@ -538,7 +538,7 @@ s.table1.fields.field1.selectGroup="member"; // only members can select
 // need a way to enforce user_id in where clause
 
 //s.table1.fields.field1.update=true; // no one can update this
-//s.table1.fields.field1.updateGroup="member"; // requires member login for updating this field problem - C needs to know the login status of current user.  This would require sharing data with railo or mysql (an extra query on every hit)
+//s.table1.fields.field1.updateGroup="member"; // requires member login for updating this field problem - C needs to know the login status of current user.  This would require sharing data with cfml server or mysql (an extra query on every hit)
 
 sessionGroups=structnew();
 groupRequired=false;
@@ -559,9 +559,9 @@ if(left(q, 6) EQ "SELECT"){
 }*/
 
 
-v=getKvStoreValue("railo_session_loading");
+v=getKvStoreValue("cfml_session_loading");
 if(v EQ ""){
-	setKvStoreValue("railo_session_loading", "1");
+	setKvStoreValue("cfml_session_loading", "1");
 	// sleep(10000); // emulate a slow first time load of the kvstore off the disk backup (if it exists)
 	/* 
 	if(fileexists(backupPath)){
@@ -577,12 +577,12 @@ if(v EQ ""){
 		fileclose(f);
 	}
 	*/
-	setKvStoreValue("railo_session_loading", "0");
+	setKvStoreValue("cfml_session_loading", "0");
 }
 if(v NEQ "0"){
 	// block all requests until the kvstore is done loading
 	while(true){
-		v=getKvStoreValue("railo_session_loading");
+		v=getKvStoreValue("cfml_session_loading");
 		if(v NEQ "0"){
 			sleep(100);	// wait for kvStoreValue to populate	
 		}else{
@@ -663,7 +663,7 @@ for(i=1;i LTE arraylen(arrT);i++){
 if(groupRequired){
 	if(structkeyexists(form,'cfid') and structkeyexists(form,'cftoken') and sessionInited EQ false){ 
 		sessionInited=true; 
-		initSession("railo_session_"&form.cfid&"_"&form.cftoken); 
+		initSession("cfml_session_"&form.cfid&"_"&form.cftoken); 
 	}
 	if(request.zsessionInited EQ false){
 		writeoutput('{loginrequired:true,success:false,errorMessage:"Login required"}');
@@ -680,7 +680,7 @@ if(groupRequired){
 // safe to run query
 writeoutput(((gettickcount()-stime)/1000)&" seconds");
 
-	// get session state from gwan KV store so I can determine groups this user belongs to. the KV store key name is  railo_session_id - if it doesn't exist, then this user is not logged in
+	// get session state from gwan KV store so I can determine groups this user belongs to. the KV store key name is  cfml_session_id - if it doesn't exist, then this user is not logged in
 
 </cfscript>
 			<!---

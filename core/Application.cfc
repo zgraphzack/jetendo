@@ -4,7 +4,7 @@
 // DO NOT EDIT Application.cfc unless you are going to change the behavior of the Jetendo Core.
 
 
-// BEGIN override railo admin settings
+// BEGIN override cfml admin settings
 // regional
 // default locale used for formating dates, numbers ...
 this.sessionStorage = "memory";
@@ -33,7 +33,7 @@ this.bufferOutput = true;
 this.compression = false;
 this.suppressRemoteComponentContent = false;
 
-// If set to false Railo ignores type defintions with function arguments and return values
+// If set to false cfml ignores type defintions with function arguments and return values
 this.typeChecking = true;
 // request
 // max lifespan of a running request
@@ -46,7 +46,7 @@ this.charset.resource="UTF-8";
 this.scopeCascading = "standard";
 
 
-// END override railo admin settings
+// END override cfml admin settings
 
 </cfscript>
 <cffunction name="setupGlobals" localmode="modern" output="no">

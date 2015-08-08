@@ -41,11 +41,15 @@ for($i=1;$i <= 4;$i++){
 				//my
 				mail(get_cfg_var("jetendo_developer_email_to"),"HTTPD auto-restarted on live server at ".$host, $eBody, "From: <".get_cfg_var("jetendo_developer_email_from").">\nReply-To: \"Error\" <".get_cfg_var("jetendo_developer_email_from").">\nX-Mailer: php" );
 			}else{
-				$eBody="The monitoring script detected a railo crash/hang condition and restarted the railo process.";
-				$r=shell_exec('service railo_ctl restart');
+				$eBody="The monitoring script detected a cfml server crash/hang condition and restarted the cfml process.";
+				if(file_exists("/etc/init.d/railo_ctl")){
+					$r=shell_exec('service railo_ctl restart');
+				}else{
+					$r=shell_exec('service lucee_ctl restart');
+				}
 				echo $r."\n";
 				//my
-				mail(get_cfg_var("jetendo_developer_email_to"),"Railo auto-restarted on live server at ".$host, $eBody, "From: <".get_cfg_var("jetendo_developer_email_from").">\nReply-To: \"Error\" <".get_cfg_var("jetendo_developer_email_from").">\nX-Mailer: php" );
+				mail(get_cfg_var("jetendo_developer_email_to"),"CFML Application Server auto-restarted on live server at ".$host, $eBody, "From: <".get_cfg_var("jetendo_developer_email_from").">\nReply-To: \"Error\" <".get_cfg_var("jetendo_developer_email_from").">\nX-Mailer: php" );
 			}
 		}
 		echo 'Request '.$i.' failed.'."\n";

@@ -235,7 +235,7 @@
 		
 		
 		variables.csvParser=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.csvParser");
-		variables.csvParser.pathToOstermillerCSVParserJar=application.zcore.railowebinfpath&"lib/ostermillerutils.jar";
+		variables.csvParser.pathToOstermillerCSVParserJar=application.zcore.cfmlwebinfpath&"lib/ostermillerutils.jar";
 		variables.csvParser.enableJava=request.zos.isJavaEnabled;
 		variables.csvParser.arrColumn=this.optionstruct.arrColumns;
 		variables.csvParser.separator=this.optionStruct.delimiter;

@@ -575,20 +575,9 @@ todo: open source projects
 		}else{
 			local.curTempPath=application.zcore.functions.zGetDomainInstallPath(application.zcore.functions.zvar("shortDomain", arguments.site_id))&removechars(arguments.ss.file_path,1,1);
 		}
-		if(fileexists(local.curTempPath)){
-			/*if(request.zos.isExecuteEnabled){
-				// use google closure compiler here instead
-				local.out=trim(application.zcore.functions.zexecute('/var/jetendo-server/railo/jdk/jre/bin/java','-jar #request.zos.installPath#public/javascript/yuicompressor-2.4.6.jar "#local.curTempPath#" -o "#rs.tempFilePath#" --charset utf-8', 5));
-				if(local.out EQ "false" or local.out NEQ ""){
-					arrayappend(rs.arrErrors,"Failed to run yuicompressor on: "&rs.tempFilePath&'<br />command:'&'/var/jetendo-server/railo/jdk/jre/bin/java -jar #request.zos.installPath#public/javascript/yuicompressor-2.4.6.jar "#local.curTempPath#" -o "#rs.tempFilePath#" --charset utf-8<br /><br />result:'&local.out);
-					application.zcore.functions.zDeleteFile(rs.tempFilePath);
-					rs.success=false;
-					return rs;
-				}
-			}else{*/
-				local.out=application.zcore.functions.zreadfile(local.curTempPath); 
-				application.zcore.functions.zwritefile(rs.tempFilePath, local.out); 	
-			//}
+		if(fileexists(local.curTempPath)){ 
+			local.out=application.zcore.functions.zreadfile(local.curTempPath); 
+			application.zcore.functions.zwritefile(rs.tempFilePath, local.out);  
 		}else{ 
 			arrayappend(rs.arrErrors,"Failed to run yuicompressor because file is missing: #arguments.ss.file_path#<br /><br />#local.curTempPath#");
 			rs.success=false;

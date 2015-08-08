@@ -26,7 +26,7 @@
 	var arrTemp=0;
 	var row=0;  
 	var csvParser=createObject("component", "zcorerootmapping.com.app.csvParser");
-	csvParser.pathToOstermillerCSVParserJar=application.zcore.railowebinfpath&"lib/ostermillerutils.jar";
+	csvParser.pathToOstermillerCSVParserJar=application.zcore.cfmlwebinfpath&"lib/ostermillerutils.jar";
 	csvParser.enableJava=false;
 	csvParser.arrColumn=["Col1","Col2","Col3"];
 	csvParser.defaultStruct={};

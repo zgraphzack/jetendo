@@ -82,7 +82,7 @@ server-admin.com/z/server-manager/tasks/publish-ssi-skin/index</p>
 <p> You must put all your Wordpress files inside the &quot;wp&quot; directory for them to work through the proxy unless you modify the rewrite rules to support other URLs.<br />
 	<br />
 Once you have configured Wordpress and Jetendo CMS as described, you will login to   www.mydomain.com/wp/wp-admin/  instead of   wp.mydomain.com/wp/wp-admin/. wp.mydomain.com/wp/ will not be accessible anymore.  </p>
-<p>You won't be able to use the Wordpress site via proxy until the DNS have been configured correctly and updated. You may need to restart Railo or the web server where Jetendo CMS is installed if you have trouble getting the DNS to update since it may be caching the old DNS information.<br />
+<p>You won't be able to use the Wordpress site via proxy until the DNS have been configured correctly and updated. You may need to restart cfml server or the web server where Jetendo CMS is installed if you have trouble getting the DNS to update since it may be caching the old DNS information.<br />
 	<br />
 	Make sure you avoid using global css selectors like  div{} or body *{} or reset css files in your Wordpress code.  Those will break usually break Jetendo CMS.<br /><br />
 	You will need to delete the parts of the wordpress theme that are   redundant or unnecessary so that the Jetendo CMS works with Wordpress as expected. It is also possible to customize the Jetendo CMS theme so that it has a special version for Wordpress that is different then the regular web site.</p>

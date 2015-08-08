@@ -20,13 +20,13 @@ Copyright (c) 2013 Far Beyond Code LLC.
 			dbtype:'datasource', // query, hsql or datasource are valid values.
 			datasource:false, // Optional change the datasource.  This option is required if the query doesn't use dbQuery.table().
 			autoReset:true, // Set to false to allow the current db object to retain it's configuration after running db.execute().  Only the parameters will be cleared.
-			lazy:false, // Railo's lazy="true" option returns a simple Java resultset instead of the ColdFusion compatible query result.  This reduces memory usage when some of the columns are unused.
+			lazy:false, // Lucee/Railo's lazy="true" option returns a simple Java resultset instead of the ColdFusion compatible query result.  This reduces memory usage when some of the columns are unused.
 			cacheForSeconds:0, // optionally set to a number of seconds to enable query caching
 			sql:"", // specify the full sql statement
 			verifyQueriesEnabled:false, // Enabling sql verification takes more cpu time, so it should only run when testing in development.
 			parseSQLFunctionStruct:{}, // Each struct key value should be a function that accepts and returns parsedSQLStruct. Prototype: struct customFunction(required struct parsedSQLStruct, required string defaultDatabaseName);
 			queryLogFunction: false, // Set to a function that has a struct argument with the following keys { sql:, configStruct: , result: }
-			cacheStructKey:'variables.cacheStruct', // Set to an application or server scope struct to store this data in shared memory. Use structnew('soft') on railo to have automatic garbage collection when the JVM is low on memory.
+			cacheStructKey:'variables.cacheStruct', // Set to an application or server scope struct to store this data in shared memory. Use structnew('soft') to have automatic garbage collection when the JVM is low on memory.
 			cacheEnabled: true // Set to false to disable the query cache
 		};
 		if(structkeyexists(arguments, 'ts')){

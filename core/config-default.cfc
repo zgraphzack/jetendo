@@ -28,7 +28,7 @@
 
 	ts.zos.debugLeadRoutingSiteIdStruct={}; // if you want to debug leading routing in production for specific site_ids, add the site_id as a key to this struct.
 
-	ts.zos.customRailoVersion = ""; // if you build your own railo, and features for specific versions, then put in the custom railo version number here, i.e. 4.2.1.102
+	ts.zos.customCFMLVersion = ""; // if you build your own lucee/railo, and features for specific versions, then put in the custom lucee/railo version number here, i.e. 4.2.1.102
 
 	// sign up for grammarly's affiliate program and replace this url with a tracking url provided by their system to earn commission.
 	ts.zos.grammarlyTrackingURL="http://tr.grammarly.com/aff_c?offer_id=37&aff_id=3187";
@@ -37,6 +37,7 @@
 
 	ts.zos.mlsImagesDomain=""; // optionally change the domain that MLS images are served from. i.e. http://mls-images.mycompany.com, or leave blank.
 	if(ts.zos.istestserver){
+        ts.zos.cfmlServerKey="lucee";
 		ts.zos.testProxyCache=false; // you must also enable nginx proxy cache in site globals
 		ts.zos.serverStruct={
 			"1":{
@@ -70,11 +71,12 @@
 		ts.zos.zcoreDatasource="jetendo"; 
 		ts.zos.zcoreTempDatasource="ztemp"; 
 		ts.zOS.insertIDColumnForSiteIDTable="id2";
-		ts.zOS.railoUser="www-data";
+		ts.zOS.cfmlUser="www-data";
 		ts.zos.allowRequestCFC=true;
-		ts.zOS.railoAdminReadEnabled=true;
+		ts.zOS.cfmlAdminReadEnabled=true;
 
 	}else{ 
+        ts.zos.cfmlServerKey="lucee";
 		ts.zos.arrAdditionalLocalIp=[];
 		ts.zos.testProxyCache=false;
 		ts.zos.serverStruct={
@@ -115,8 +117,8 @@
 		ts.zos.zcoreDatasource="jetendo"; 
 		ts.zos.zcoreTempDatasource="ztemp";
 		ts.zOS.insertIDColumnForSiteIDTable="id2";
-		ts.zOS.railoUser="www-data";
-		ts.zOS.railoAdminReadEnabled=false;
+		ts.zOS.cfmlUser="www-data";
+		ts.zOS.cfmlAdminReadEnabled=false;
 	};
 	// all admin write requests are logged, but you can optionally log read only requests too.
 	ts.zos.auditTrackReadOnlyRequests=false;
@@ -126,7 +128,7 @@
 
 	ts.zos.enableDatabaseVersioning=true; // set to true to allow the user to restore previous versions and/or to allow jetendo to synchronize records between multiple servers.
 	ts.zos.geocodeFrequency=1; // 1 is every request on a domain that has the listing app installed, set to a higher number to use a random interval
-	ts.zOS.railoAdminWriteEnabled=false; // must be enabled to allow deploying railo archives.
+	ts.zOS.cfmlAdminWriteEnabled=false; // must be enabled to allow deploying lucee/railo archives.
 	ts.zos.errorEmailAlertsPerMinute=5;
 	
 	ts.zos.zcoreTestHost="test.your-company.com.127.0.0.2.xip.io";
@@ -168,7 +170,7 @@
     
     // global site administration test domain - It must NOT end with a forward slash.
     ts.zOS.zcoreTestAdminDomain="http://jetendo.your-company.com.127.0.0.2.xip.io";
-	ts.zOS.zcoreTestAdminRailoPassword="your_railo_password";
+	ts.zOS.zcoreTestAdminCFMLPassword="your_cfml_admin_password";
     
     
     

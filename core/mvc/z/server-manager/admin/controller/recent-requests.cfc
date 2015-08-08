@@ -11,7 +11,7 @@
 	var zsascriptruntime=0;
 	var c=0;
 	var zsascriptruntime2=0;
-	var railoPassword=0;
+	var cfmlPassword=0;
 	var data=0;
 	var pos2=0;
 	var i=0;
@@ -25,7 +25,7 @@
     <cfadmin 
         action="getContexts"
         type="server"
-        password="#railoPassword#"
+        password="#cfmlPassword#"
         returnVariable="contexts"> --->
 
 	for(local.i2 in data){
@@ -58,33 +58,33 @@
 			}
 	 --->
 	 
-	 <cfif request.zOS.railoAdminReadEnabled>
+	 <cfif request.zOS.cfmlAdminReadEnabled>
 		<h2>Running Threads</h2>
 		<cfscript>
 		form.pw=application.zcore.functions.zso(form, 'pw');
 		if(form.pw NEQ ""){
-			application.zcore.functions.zcookie({name:'railolocaladminpassword',value:form.pw,expires='never'});
+			application.zcore.functions.zcookie({name:'cfmllocaladminpassword',value:form.pw,expires='never'});
 		}
 		</cfscript>
-		<cfif structkeyexists(cookie, 'railolocaladminpassword') EQ false>
-			<p>Set the railo admin password to view/terminate running threads.</p>
+		<cfif structkeyexists(cookie, 'cfmllocaladminpassword') EQ false>
+			<p>Set the cfml admin password to view/terminate running threads.</p>
 		</cfif>
 		<form action="#request.cgi_script_name#" method="post">
-			Railo Admin Password:
-			<input type="text" name="pw" value="<cfif structkeyexists(cookie, 'railolocaladminpassword')>#cookie.railolocaladminpassword#</cfif>" />
+			cfml Admin Password:
+			<input type="text" name="pw" value="<cfif structkeyexists(cookie, 'cfmllocaladminpassword')>#cookie.cfmllocaladminpassword#</cfif>" />
 			<input type="submit" name="Submit" value="Submit" />
 		</form>
-		<cfif structkeyexists(cookie, 'railolocaladminpassword')>
+		<cfif structkeyexists(cookie, 'cfmllocaladminpassword')>
 			
 			<!--- java.util.ConcurrentModificationException - error can't be try/catch when looping surveillance data --->
-			<cfset railoPassword=cookie.railolocaladminpassword>
-			<cfif request.zOS.railoAdminWriteEnabled>
+			<cfset cfmlPassword=cookie.cfmllocaladminpassword>
+			<cfif request.zOS.cfmlAdminWriteEnabled>
 				<cfif structkeyexists(form,'action') and form.action EQ "killAllThreads">
-					<cfadmin action="surveillance" type="server" password="#railoPassword#" returnVariable="data">
+					<cfadmin action="surveillance" type="server" password="#cfmlPassword#" returnVariable="data">
 					<cfscript>
 					for(local.i2 in data){
 						for(local.i=1;local.i LTE arraylen(data[local.i2]);local.i++){
-							admin action="terminateRunningThread" type="server" password="#railoPassword#" id="#data[local.i2][local.i].requestid#";
+							admin action="terminateRunningThread" type="server" password="#cfmlPassword#" id="#data[local.i2][local.i].requestid#";
 						}
 					}
 					application.zcore.status.setStatus(request.zsid, "All threads terminated");
@@ -92,14 +92,14 @@
 					</cfscript>
 				</cfif>
 				<cfif structkeyexists(form,'action') and form.action EQ "killThread">
-					<cfadmin action="terminateRunningThread" type="server" password="#railoPassword#" id="#form.threadId#">
+					<cfadmin action="terminateRunningThread" type="server" password="#cfmlPassword#" id="#form.threadId#">
 					<cfscript>
 					application.zcore.status.setStatus(request.zsid, "Thread, #form.threadid#, terminated");
 					application.zcore.functions.zRedirect(request.cgi_script_name&"?zsid=#request.zsid#");
 					</cfscript>
 				</cfif>
 			</cfif>
-			<cfadmin action="surveillance" type="server" password="#railoPassword#" returnVariable="data">
+			<cfadmin action="surveillance" type="server" password="#cfmlPassword#" returnVariable="data">
 			<cfscript>
 			c=0;
 			for(local.i2 in data){
@@ -140,7 +140,7 @@
 							htmleditformat(data[local.i2][local.i].TagContext[local.n].codeprintplain));
 						}
 						writeoutput('</textarea></td><td>');
-						if(request.zOS.railoAdminWriteEnabled){
+						if(request.zOS.cfmlAdminWriteEnabled){
 							echo('<a href="/z/server-manager/admin/recent-requests/index?action=killThread&threadId=#data[local.i2][local.i].requestid#">Terminate</a>');
 						}
 						echo('	</td>
@@ -149,7 +149,7 @@
 					}
 					</cfscript>
 				</table>
-				<cfif request.zOS.railoAdminWriteEnabled>
+				<cfif request.zOS.cfmlAdminWriteEnabled>
 				<p><a href="/z/server-manager/admin/recent-requests/index?action=killAllThreads">Terminate All Running Threads</a></p>
 				</cfif>
 			</cfif>

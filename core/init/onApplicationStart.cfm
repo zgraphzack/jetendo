@@ -6,9 +6,7 @@
 	var t9=0;		
 	var ts=arguments.ss;
 	ts.tempTokenCache=structnew();
-
-	
-	// railo 4.1.010 can't do soft serialization yet, but it was fixed in the next version
+ 
 	ts.queryCache=structnew('soft');
 	
 	ts.robotThatHitSpamTrap=structnew();
@@ -599,9 +597,12 @@
 	if(fileexists(request.zos.installPath&"database-upgrade/tooltips.json")){
 		ts.helpStruct=deserializeJson(application.zcore.functions.zreadfile(request.zos.installPath&"database-upgrade/tooltips.json"));
 	}
-	ts.railowebinfpath=expandpath("/railo-context/");
-	ts.railowebinfpath=listdeleteat(ts.railowebinfpath, listlen(ts.railowebinfpath,"/"),"/")&"/";
-	
+	if(request.zos.cfmlServerKey EQ "railo"){
+		ts.cfmlwebinfpath=expandpath("/railo-context/");
+	}else{
+		ts.cfmlwebinfpath=expandpath("/lucee-context/");
+	}
+	ts.cfmlwebinfpath=listdeleteat(ts.cfmlwebinfpath, listlen(ts.cfmlwebinfpath,"/"),"/")&"/";
 	ts.searchformresetdate=now();
 	ts.templateCache=structnew();
 	ts.searchFormCache=structnew();
@@ -672,8 +673,8 @@
 	}
 	
 	local.dumpLoadFailed=true;
-	local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-zcore.bin";
-	local.coreDumpFile2=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-sitestruct.bin";
+	local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-zcore.bin";
+	local.coreDumpFile2=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sitestruct.bin";
 	local.dumpLoadFailed=false;
 	if(fileexists(local.coreDumpFile) and request.zos.zreset NEQ "all" and request.zos.zreset NEQ "app"){
 		try{
@@ -688,7 +689,7 @@
 			application.zcore.functions.zdeletefile(local.coreDumpFile2);
 			/*
 			if(request.zos.isJavaEnabled){
-				local.coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server.railo.version&"-sessions.bin";
+				local.coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
 				application.sessionStruct=objectload(local.coreDumpFile3);
 				application.zcore.functions.zdeletefile(local.coreDumpFile3);
 			}*/

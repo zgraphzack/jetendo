@@ -1,1 +1,1 @@
-<cfcomponent output="no"></cfcomponent><!--- this is put as the base component in railo administrator --->
+<cfcomponent output="no"></cfcomponent><!--- this is put as the base component in cfml administrator --->

@@ -1052,8 +1052,8 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	}
 	request.zos.isImplicitScopeCheckRun=true;
 	savecontent variable="output"{
-		if(request.zOS.railoAdminReadEnabled){
-			admin action="getDebug"	type="web" password="#request.zos.zcoreTestAdminRailoPassword#"	returnVariable="ts";
+		if(request.zOS.cfmlAdminReadEnabled){
+			admin action="getDebug"	type="web" password="#request.zos.zcoreTestAdminCFMLPassword#"	returnVariable="ts";
 			if(not ts.implicitAccess){
 				return;
 			}
