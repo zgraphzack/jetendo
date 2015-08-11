@@ -2591,6 +2591,8 @@ return "`"&arguments.table&"`.listing_mls_id IN "&application.zcore.app.getAppDa
 	var qMapCheck=0;
 	var tempSQL=0;
 
+	application.zcore.session.forceEnable();
+
 	// proxy cache disabled on all real estate sites to avoid bugs.
 	application.zcore.functions.zNoCache();
 
