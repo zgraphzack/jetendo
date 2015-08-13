@@ -743,45 +743,33 @@
 		if(structkeyexists(form, 'zEnablePreviewMode')){
 			request.zsession.enablePreviewMode=form.zEnablePreviewMode;
 		}
+	} 
+	siteDomain=application.zcore.functions.zvar('domain');
+	siteSecureDomain=application.zcore.functions.zvar('securedomain');
+	if(siteSecureDomain EQ siteDomain){
+		siteSecureDomain="";
 	}
-	//if(request.zos.inMemberArea){
-		/*for(local.i in url){
-			if(isSimpleValue(url[local.i])){
-				if(url[local.i] CONTAINS request.zos.globals.domain&"/"){
-					url[local.i]=replacenocase(url[local.i], request.zos.globals.domain&"/","/", "all");
-				}
-				if(url[local.i] CONTAINS request.zos.currentHostName&"/"){
-					url[local.i]=replacenocase(url[local.i], request.zos.currentHostName&"/","/", "all");
+	siteDomain2=request.zos.currentHostName;
+	if(siteDomain2 EQ siteDomain){
+		siteDomain2="";
+	}
+	for(local.i in form){
+		if(isSimpleValue(form[local.i])){
+			if(form[local.i] CONTAINS siteDomain&"/"){
+				form[local.i]=replacenocase(form[local.i], siteDomain&"/","/", "all");
+			}
+			if(len(siteSecureDomain)){
+				if(form[local.i] CONTAINS siteSecureDomain&"/"){
+					form[local.i]=replacenocase(form[local.i], siteSecureDomain&"/","/", "all");
 				}
 			}
-		}*/
-		siteDomain=application.zcore.functions.zvar('domain');
-		siteSecureDomain=application.zcore.functions.zvar('securedomain');
-		if(siteSecureDomain EQ siteDomain){
-			siteSecureDomain="";
-		}
-		siteDomain2=request.zos.currentHostName;
-		if(siteDomain2 EQ siteDomain){
-			siteDomain2="";
-		}
-		for(local.i in form){
-			if(isSimpleValue(form[local.i])){
-				if(form[local.i] CONTAINS siteDomain&"/"){
-					form[local.i]=replacenocase(form[local.i], siteDomain&"/","/", "all");
-				}
-				if(len(siteSecureDomain)){
-					if(form[local.i] CONTAINS siteSecureDomain&"/"){
-						form[local.i]=replacenocase(form[local.i], siteSecureDomain&"/","/", "all");
-					}
-				}
-				if(len(siteDomain2)){
-					if(form[local.i] CONTAINS siteDomain2&"/"){
-						form[local.i]=replacenocase(form[local.i], siteDomain2&"/","/", "all");
-					}
+			if(len(siteDomain2)){
+				if(form[local.i] CONTAINS siteDomain2&"/"){
+					form[local.i]=replacenocase(form[local.i], siteDomain2&"/","/", "all");
 				}
 			}
 		}
-	//}
+	} 
 	if(structkeyexists(form,'zab') EQ false){
 		application.zcore.tracking.init();
 	}

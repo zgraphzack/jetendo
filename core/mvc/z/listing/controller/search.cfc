@@ -75,7 +75,7 @@
 	this.rangeCriteria.search_sqfoot=true;
 	
 	
-	this.queryStringSearchToStruct(url);
+	this.queryStringSearchToStruct(form);
 	</cfscript>
     
      
@@ -1151,9 +1151,9 @@ if(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_opt
 		var local=structnew();
 		
 		local.i=0;
-		for(local.i in url){
-			if(structkeyexists(this.searchCriteria2, local.i) and isSimpleValue(url[local.i]) and url[local.i] NEQ "" and url[local.i] NEQ 0){
-				arguments.sharedStruct[this.searchCriteria2[local.i]]=url[local.i];
+		for(local.i in form){
+			if(structkeyexists(this.searchCriteria2, local.i) and isSimpleValue(form[local.i]) and form[local.i] NEQ "" and form[local.i] NEQ 0){
+				arguments.sharedStruct[this.searchCriteria2[local.i]]=form[local.i];
 			}
 		}
 		</cfscript>

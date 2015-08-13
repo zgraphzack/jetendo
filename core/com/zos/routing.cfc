@@ -1546,19 +1546,19 @@
 									// unknown multiple page nav or other
 								}
 							}
-							if(local.urlMatched){
+							if(local.urlMatched){ 
 								if(local.zdebugurl) writeoutput('Matched: '&local.n&'<br />');
 								// copy urlStruct to url
 								structappend(form,  local.curApp.urlStruct, true);
 								structappend(form, local.curApp.urlStruct, true);
 								for(local.i2 in local.curApp.mapStruct){
 									if(structkeyexists(local, local.i2)){
-										url[local.curApp.mapStruct[local.i2]]=local[local.i2];
+										form[local.curApp.mapStruct[local.i2]]=local[local.i2];
 									}else{
 										if(local.zdebugurl) writedump(local.i2&' doesn''t exist<br />');
 									}
 								}
-								if(local.zdebugurl) writedump(url);
+								if(local.zdebugurl) writedump(form);
 								break;
 							}
 						}
@@ -1573,6 +1573,7 @@
 					}
 				}else{
 					if(local.zdebugurl){
+						writedump(form);
 						writeoutput('advanced match:'&local.newScriptName&'<br />');
 					}
 				}
