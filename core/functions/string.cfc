@@ -1075,8 +1075,9 @@ USUAGE
     var tmpE="";
     var arrM=0;
     var n=0;
-    var class="\!\##\$\%&'\*\-\?\^_`\.\{\|\}~";
-    var reg = "^[a-zA-Z0-9#class#][#class#\+/=\w\.-]*[#class#a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$";
+    //var class="\!\##\$\%&'\*\-\?\^_`\.\{\|\}~";
+    //var reg = "^[a-zA-Z0-9#class#][#class#\+/=\w\.-]*[#class#a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$";
+    reg="^[a-zA-Z0-9.!##$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
     var ipCheck="";
     arguments.email=trim(arguments.email);
     if(len(arguments.email) EQ 0){

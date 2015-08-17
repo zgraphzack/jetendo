@@ -796,7 +796,7 @@ for(local.row in local.qSite){
 					local.scriptIncludeStruct[request.zos.arrScriptIncludeLevel[local.i]][request.zos.arrScriptInclude[local.i]]=true;
 				}
 			}
-			local.scriptCount=structcount(local.scriptIncludeStruct);
+			local.scriptCount=structcount(local.scriptIncludeStruct); 
 			local.arrBeginFunction=[];
 			local.arrEndFunction=[];
 			for(local.i=1;local.i LTE 5;local.i++){
@@ -806,13 +806,13 @@ for(local.row in local.qSite){
 				}
 			}
 			local.scriptOutput=arraytolist(local.arrBeginFunction, "")&arrayToList(local.arrEndFunction,"");
-			
-			append2='<script type="text/javascript">/* <![CDATA[ */ 
+
+			append2='<script type="text/javascript">/* <![CDATA[ */  
 				setTimeout(function(){
 					var tempM=new zLoader();tempM.loadScripts(["/z/javascript/jquery/jquery-1.10.2.min.js"]
 					'&local.scriptOutput&'
 					);
-				},0); /* ]]> */</script>';
+				},0); /* ]]> */</script>'; 
 		}
 	}
 	
