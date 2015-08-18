@@ -38,6 +38,8 @@ function processContents($contents){
 	$contents=array_shift($a);
 	if($contents == "getUserList"){
 		return getUserList();
+	}else if($contents == "compileHandlebarsPath"){
+		return compileHandlebarsPath($a);
 	}else if($contents =="getNewerCoreMVCFiles"){
 		return getNewerCoreMVCFiles();
 	}else if($contents =="getSystemIpList"){
@@ -104,6 +106,84 @@ function processContents($contents){
 		return sslDeleteCertificate($a);
 	}
 	return "";
+}
+function compileHandlebarsPath($a){ 
+	set_time_limit(100);
+	if(count($a) != 2){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"2 arguments are required: templatePath and outputFilePath."
+		];
+		return json_encode($r);
+	}
+	$templatePath=$a[0];
+	$outputFilePath=$a[1];
+	$sp=get_cfg_var("jetendo_sites_path");
+	$swp=get_cfg_var("jetendo_sites_writable_path");
+	if($templatePath == ""){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"The templatePath is a required argument."
+		];
+		return json_encode($r); 
+	}
+
+	$templatePath=getAbsolutePath($templatePath);
+	if($templatePath == "" || !is_dir($templatePath)){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"The templatePath absolute directory doesn't exist: ".$templatePath
+		];
+		return json_encode($r); 
+	}
+	$found=false;
+	if(substr($templatePath, 0, strlen($sp)) == $sp){
+		$found=true;
+	}
+	if(!$found){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"An attempt to break out of the sites directory was detected: ".$templatePath
+		];
+		return json_encode($r); 
+	}
+	if($outputFilePath == ""){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"The outputFilePath is a required argument."
+		];
+		return json_encode($r); 
+	}
+
+	$outputFilePath=getAbsolutePath($outputFilePath);
+	$outputDir=dirname($outputFilePath);
+	if($outputFilePath == "" || !is_dir($outputDir)){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"The outputFilePath absolute directory doesn't exist: ".$outputFilePath
+		];
+		return json_encode($r); 
+	}
+	$found=false;
+	if(substr($outputFilePath, 0, strlen($swp)) == $swp){
+		$found=true;
+	}
+	if(!$found){
+		$r=[
+			"success"=>false,
+			"errorMessage"=>"An attempt to break out of the sites directory was detected: ".$outputFilePath."\n"
+		];
+		return json_encode($r); 
+	}
+	// precompile and minimize the handlerbar templates that have the html file extension
+	$cmd="/usr/bin/handlebars -m -e html ".escapeshellarg($templatePath)." -f ".escapeshellarg($outputFilePath);
+	$output=`$cmd`;
+	$r=[
+		"success"=>true,
+		"command"=>$cmd,
+		"output"=>$output
+	];
+	return json_encode($r); 
 }
 function sslDeleteCertificate($a){
 	$rs=new stdClass();
