@@ -195,7 +195,7 @@ variables.allfields=structnew();
 	
 idxExclude["rets24_list_163"]="List Office Board Id";
 idxExclude["rets24_list_97"]="Seller Phone ##";
-idxExclude["rets24_list_102"]="Book Msg 2";
+//idxExclude["rets24_list_102"]="Book Msg 2";
 idxExclude["rets24_list_103"]="Hot Sheet Comments";
 idxExclude["rets24_gf20140122194042742595000000"]="Term Based Comp";
 idxExclude["rets24_list_107"]="Brokerage Interest";
