@@ -1065,16 +1065,22 @@ if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true)
 				<a href="/z/admin/files/addFolder?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/directory.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">Create Folder</a> | 
 				<a href="/z/admin/files/addFile?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/file.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">Upload File</a> | 
 				<a href="/z/admin/files/add?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/image.gif" style="vertical-align:bottom; padding-left:4px; padding-right:4px;">Upload Image</a> | 
-			<cfelse>
-				<a href="/z/admin/files/galleryAddFolder?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/directory.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">Create Folder</a> | 
-				<a href="/z/admin/files/galleryAdd?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/image.gif" style="vertical-align:bottom; padding-left:4px; padding-right:4px;">Upload Image</a> | 
-			</cfif>
 				Sort by: 
 				<cfif application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true) EQ 0>
 					<a href="/z/admin/files/index?csort=date&amp;d=#URLEncodedFormat(form.d)#">Date</a> | Name | 
 				<cfelse>
 					Date | <a href="/z/admin/files/index?csort=name&d=#URLEncodedFormat(form.d)#">Name</a> | 
 				</cfif> 
+			<cfelse>
+				<a href="/z/admin/files/galleryAddFolder?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/directory.gif" style="vertical-align:bottom;padding-left:4px; padding-right:4px;">Create Folder</a> | 
+				<a href="/z/admin/files/galleryAdd?d=#URLEncodedFormat(form.d)#"><img src="/z/images/page/image.gif" style="vertical-align:bottom; padding-left:4px; padding-right:4px;">Upload Image</a> | 
+				Sort by: 
+				<cfif application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true) EQ 0>
+					<a href="/z/admin/files/gallery?csort=date&amp;d=#URLEncodedFormat(form.d)#">Date</a> | Name | 
+				<cfelse>
+					Date | <a href="/z/admin/files/gallery?csort=name&d=#URLEncodedFormat(form.d)#">Name</a> | 
+				</cfif> 
+			</cfif>
 				<a href="/z/admin/files/gallery?d=#URLEncodedFormat(form.d)#">Refresh</a> 
 			 
 			</td>
