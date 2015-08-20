@@ -22,6 +22,17 @@
 	var testserverflagged=0;
 	var zallrequestvars=0;
 	var supportedformats=0;
+
+	if(structkeyexists(request.zos, 'applicationLoading')){
+		structdelete(request.zos, 'applicationLoading');
+		application.onstartcount=0;
+		application.zcoreLoadAgain=true;
+	}
+	if(not structkeyexists(application, 'zcoreIsInit')){
+		header statuscode="503" statustext="Service Temporarily Unavailable";
+    	header name="retry-after" value="60";
+		echo('<h1>Service Temporarily Unavailable');abort;
+	}
 	currentMinute=timeformat(now(), "m");
 	if(not structkeyexists(application, 'zErrorMinuteTime')){
 		application.zErrorMinuteTime=currentMinute;
@@ -675,7 +686,7 @@ newId=0;
 <head>
 <title>Sorry, this page has generated an error.</title>
 <meta charset="utf-8" />
-<META HTTP-EQUIV=Refresh CONTENT="25; URL=<cfif structkeyexists(Request.zOS, 'currentHostName')>#Request.zOS.currentHostName#<cfelse>http://#request.zos.CGI.HTTP_HOST#</cfif>">
+<META HTTP-EQUIV=Refresh CONTENT="25; URL=<cfif structkeyexists(Request.zOS, 'currentHostName')><cfif left(Request.zOS.currentHostName, 4) NEQ "http">http://</cfif>#Request.zOS.currentHostName#<cfelse>http://#request.zos.CGI.HTTP_HOST#</cfif>">
 <style type="text/css">
 <!--
 .style1 {

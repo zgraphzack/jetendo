@@ -1,5 +1,149 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="viewSharedMemory" access="remote" localmode="modern" roles="serveradministrator">
+	
+	<cfscript>
+	setting requesttimeout="500";
+	echo('<h1>Shared Memory Usage</h1>');
+	db=request.zos.queryObject;
+	db.sql="
+	SELECT site_short_domain, site_option_group_name, site.site_id, COUNT(*) c 
+	FROM #db.table("site", request.zos.zcoreDatasource)#, 
+	#db.table("site_x_option_group", request.zos.zcoreDatasource)# s2, 
+	#db.table("site_option_group", request.zos.zcoreDatasource)# s1  
+	WHERE site_active=#db.param(1)# AND 
+	site.site_deleted=#db.param(0)# and 
+	s2.site_x_option_group_deleted=#db.param(0)# and 
+	s1.site_option_group_deleted=#db.param(0)# and 
+	s1.site_id = site.site_id AND 
+	s1.site_option_group_id = s2.site_option_group_id AND 
+	s1.site_id = s2.site_id AND 
+	site_option_group_enable_cache = #db.param(1)# 
+	GROUP BY site.site_id ";
+	if(structkeyexists(form, 'groupReport')){
+		db.sql&=", s1.site_option_group_id 
+		ORDER BY c desc ";
+	}else{
+		db.sql&=" ORDER BY site_short_domain ASC";
+	}
+	qD=db.execute("qD");
+
+	if(not structkeyexists(form, 'groupReport')){
+		echo('<div style="width:450px; float:left; margin-right:20px;">');
+		echo('<h2>## of cached values per site</h2>');
+	}else{
+		echo('<p><a href="/z/server-manager/admin/server-home/viewSharedMemory">Back to main report</a> /</p>');
+		echo('<h2>## of cached values per site per group</h2>');
+	}
+	
+	if(not structkeyexists(form, 'groupReport')){
+		echo('<p><a href="/z/server-manager/admin/server-home/viewSharedMemory?groupReport=1">Show Top Groups Report</a></p>');
+	}
+	echo('<table class="table-list">
+		<tr><th>Domain</th>');
+	if(structkeyexists(form, 'groupReport')){
+		echo('<th>Group</th>');
+	}
+	echo('<th>Count</th>
+		<th>Size</th>
+		</tr>');
+	for(row in qD){
+		echo('<tr><td>'&row.site_short_domain&'</td>');
+		if(structkeyexists(form, 'groupReport')){
+			echo('<td>#row.site_option_group_name#</td>');
+		}
+		echo('<td>'&row.c&'</td>
+			<td>'&bytesToMB(sizeof(application.zcore.functions.zso(application.siteStruct, row.site_id)))&'mb</td>
+		</tr>');
+	}
+	echo('</table>');
+
+	if(not structkeyexists(form, 'groupReport')){
+
+
+	echo('</div><div style="width:450px; float:left; margin-right:20px;">');
+		/*
+
+	 SELECT site_domain, COUNT(*) c FROM site, site_x_option_group_set s2, site_option_group s1  WHERE site_active='1' AND s1.site_id = site.site_id AND s1.site_option_group_id = s2.site_option_group_id AND s1.site_id = s2.site_id AND site_option_group_enable_cache = '1' GROUP BY site.site_id ORDER BY c DESC;
+
+	 SELECT site_domain, COUNT(*) c FROM site, site_x_option_group s2, site_option_group s1  WHERE site_active='1' AND s1.site_id = site.site_id AND s1.site_option_group_id = s2.site_option_group_id AND s1.site_id = s2.site_id AND site_option_group_enable_cache = '1' GROUP BY site.site_id ORDER BY c DESC;
+	  
+		*/
+		application.zcore.user.requireAllCompanyAccess();
+		a=[request, application, server];
+		a2=['request', 'application', 'server'];
+		a=[application, server];
+		a2=['application', 'server'];
+		for(i=1;i LTE arraylen(a);i++){
+			c=a[i];
+			totalSize=0;
+			echo('<h2>'&a2[i]&'</h2>');
+			echo('<table class="table-list">
+				<tr><th>Key</th>
+				<th>Type</th>
+				<th>Count</th>
+				<th>Size</th>
+				</tr>');
+			for(n in c){
+				f=c[n];
+				type="string";
+				count=1;
+				if(isstruct(f)){
+					type="struct";
+					count=structcount(f);
+				}else if(isarray(f)){
+					type="array";
+					count=arraylen(f); 
+				}else{
+					continue;
+				}
+				s=sizeof(f);
+				echo('<tr><td>#n#</td>
+				<td>#type#</td>
+				<td>#count#</td>
+				<td>#bytesToMB(s)#mb</td>
+				</tr>'); 
+				if(a2[i] EQ "application" and (n EQ "customSessionStruct" or n EQ "siteStruct")){
+					continue;
+				}
+				for(n2 in f){
+					f2=f[n2];
+					type="string";
+					count=1;
+					s=sizeof(f2);
+					totalSize+=s;
+					if(isstruct(f2)){
+						type="struct";
+						count=structcount(f2);
+					}else if(isarray(f2)){
+						type=" array";
+						count=arraylen(f2);  
+					}else{
+						continue;
+					}
+					echo('<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;#n2#</td>
+					<td>#type#</td>
+					<td>#count#</td>
+					<td>#bytesToMB(s)#mb</td>
+					</tr>');  
+				}
+			}
+			echo('</table><br />');
+			echo('<p><strong>Total Size for #a2[i]#: #bytesToMB(totalSize)#mb</strong></p><hr />');
+			echo('</div><div style="width:450px; float:left; margin-right:20px;">');
+		} 
+		echo('</div>');
+	}
+	</cfscript>
+
+</cffunction>
+
+<cffunction name="bytesToMB" localmode="modern" access="public">
+	<cfargument name="bytes" type="numeric" required="yes">
+	<cfscript>
+	return numberformat(arguments.bytes/1024/1024, "_.__");
+	</cfscript>
+</cffunction>
 <cffunction name="viewErrors" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	application.zcore.user.requireAllCompanyAccess();
@@ -157,6 +301,7 @@
 			<p><a href="/z/server-manager/admin/white-label/index" target="_blank">White Label Settings</a></p>
 			<p><a href="/z/server-manager/admin/mobile-conversion/index">Mobile Conversion</a></p>
 		  	<h3>Maintenance Scripts</h3>
+		  	<p><a href="/z/server-manager/admin/server-home/viewSharedMemory">View Shared Memory</a></p>
 			<p><a href="/z/server-manager/tasks/publish-system-css/index" target="_blank">Re-publish System CSS</a></p>
 			<p><a href="/z/server-manager/admin/site-import/index" target="_blank">Site Import</a></p>
 			<p><a href="/z/server-manager/admin/server-home/countLines">CFML Line Counter</a></p> 

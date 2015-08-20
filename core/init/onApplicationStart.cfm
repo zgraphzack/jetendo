@@ -638,6 +638,16 @@
 	var local=structnew();
 	var ts=structnew();
 	setting requesttimeout="500";
+	if(not structkeyexists(application, 'onstartcount')){
+		application.onstartcount=0;
+	}
+	if(not structkeyexists(application, 'zcoreIsInit') and application.onstartcount NEQ 0){
+		header statuscode="503" statustext="Service Temporarily Unavailable";
+    	header name="retry-after" value="60";
+		echo('<h1>Service Temporarily Unavailable');abort;
+	}
+	application.onstartcount++;
+	request.zos.applicationLoading=true;
        
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart begin'});
 	if(structkeyexists(form, request.zos.urlRoutingParameter) EQ false){
@@ -731,6 +741,7 @@
 			application.sitestruct[request.zos.globals.id]=local.siteStruct[local.n];
 		}
 	} 
+	application.onstartcount=0;
 	application.zcoreIsInit=true;
 	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart end'});
 	</cfscript>

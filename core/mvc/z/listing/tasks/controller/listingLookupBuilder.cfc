@@ -11,8 +11,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="index" localmode="modern" access="remote" returntype="any">
-	<cfsetting requesttimeout="5000">
+<cffunction name="index" localmode="modern" access="remote" returntype="any"> 
 	<cfscript>
 	var db=request.zos.queryObject;
 	var arrError=arraynew(1);
@@ -26,6 +25,8 @@
 	var rs=0;
 	var r1=0;
 	var i=0;
+	setting requesttimeout="5000";
+	application.zcore.listingCom.makeListingImportDataReady();
 	//request.zos.listing=structnew();
 	//request.zos.listing.mlsStruct=structnew();
 	if(request.zos.istestserver EQ false and application.zcore.functions.zso(form,'zforcelisting') NEQ 1){

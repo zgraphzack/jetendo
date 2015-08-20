@@ -1,11 +1,12 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" localmode="modern" access="remote" returntype="any">
-	<cfsetting requesttimeout="5000">
+
+<cffunction name="index" localmode="modern" access="remote" returntype="any"> 
 	<cfscript>
 	var myloops=0;
 	var idxCom=0;
 	var r=0;
+	setting requesttimeout="5000";
 	request.ignoreslowscript=true;
 	myloops=46;
 	if(structkeyexists(application.zcore, 'importMLSRunning')){
@@ -14,6 +15,8 @@
 			application.zcore.functions.zabort();
 		}
 	}
+	application.zcore.listingCom.makeListingImportDataReady();
+ 
 	application.zcore.importMLSRunning=true;
 	try{
 		while(myloops GT 0){

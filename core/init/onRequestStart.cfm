@@ -66,6 +66,20 @@
 <cffunction name="OnRequestStart" localmode="modern" access="public" returntype="any" output="true" hint="Fires at first part of page processing.">
   <cfargument name="TargetPage" type="string" required="true" /><cfscript>   
 
+	if(structkeyexists(application, 'zcoreLoadAgain') or (not structkeyexists(application, 'zcoreIsInit') and (request.zos.isserver or request.zos.isdeveloper or request.zos.istestserver))){
+		structdelete(application, 'zcoreLoadAgain');
+		lock name="#request.zos.installPath#|loadApplication" timeout="200" type="exclusive"{
+			if(not structkeyexists(application, 'zcoreIsInit')){
+				onApplicationStart();
+			}
+		}
+	}
+	if(not structkeyexists(application, 'zcoreIsInit') or not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'sitePaths')){
+		header statuscode="503" statustext="Service Temporarily Unavailable";
+    	header name="retry-after" value="60";
+		echo('<h1>Service Temporarily Unavailable');abort;
+	}
+
 	s=gettickcount('nano'); 
 
 	application.zcore.functions.zheader("P3P", "CP='Not using P3P, find the privacy policy on our site instead.'");
@@ -223,7 +237,7 @@
 			structdelete(application.zcore, 'databaseRestarted');
 			form.zforce=true;
 			form.zrebuildramtable=true;
-			application.zcore.listingCom.onApplicationStart();
+			application.zcore.listingStruct=application.zcore.listingCom.onApplicationStart({});
 		}
 		request.zos.site_id=local.site_id;
 		if(request.zos.isdeveloper and isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){

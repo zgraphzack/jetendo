@@ -453,5 +453,12 @@
 	//var db=request.zos.queryObject;
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="makeListingImportDataReady" localmode="modern" access="remote">
+	<cfscript> 
+	</cfscript>
+</cffunction>
+
 </cfoutput>
 </cfcomponent>

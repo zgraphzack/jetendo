@@ -1825,8 +1825,8 @@ local.primaryCityId=ts.mls_primary_city_id;
 		ts.mlsStruct[qMLS.mls_id].mls_name=qMLS.mls_name;
 		ts.mlsStruct[qMLS.mls_id].mls_disclaimer_name=qMLS.mls_disclaimer_name;
 		ts.mlsStruct[qMLS.mls_id].mls_login_url=qMLS.mls_login_url;
-		ts.mlsStruct[qMLS.mls_id].sharedStruct={
-			metadataDateLastModified=createdate(2000,1,1)
+		ts.mlsStruct[qMLS.mls_id].sharedStruct={ 
+			metadataDateLastModified:createdate(2000,1,1)
 		}
 		</cfscript>
 	</cfloop>
@@ -1890,6 +1890,17 @@ local.primaryCityId=ts.mls_primary_city_id;
 	return arguments.sharedStruct;
 	</cfscript>
 </cffunction>
+
+<cffunction name="makeListingImportDataReady" localmode="modern" access="remote">
+	<cfscript>
+	for(i in application.zcore.listingStruct.mlsComObjects){
+		//mlsStruct=application.zcore.listingStruct.mlsStruct[i];
+		mlsCom=application.zcore.listingStruct.mlsComObjects[i];
+		mlsCom.makeListingImportDataReady(); 
+	}
+	</cfscript>
+</cffunction>
+	
 
 <cffunction name="updateSearchCriteriaCache" localmode="modern" output="yes" returntype="any">
 <cfscript>

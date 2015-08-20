@@ -200,69 +200,14 @@ this.isPropertyDisplayCom=true;
 			}
 			t2=duplicate(ts);
 			t2.tenure=idx.listingTenure;
-			if(idx.mls_id EQ 20){
-				t2.liststatus=idx.listingListStatus;
-				t2.taxparcelid=removechars(replace(curQuery.rets20_parcelnumber,"-","","all"),1,1);
-				if(curQuery.rets20_YearRemodeled EQ 0){
-					t2.remodelyear="";
-				}else{
-					t2.remodelyear=curQuery.rets20_YearRemodeled;
-				}
-				if(t2.tenure NEQ ""){
-					t2.tenure=trim(listgetat(t2.tenure,2, "-"));
-				}
-				t2.assessamountimprove=curQuery.rets20_TaxAssessedValueImprovements;
-				t2.assessamountland=curQuery.rets20_TaxAssessedValueLand;
-				t2.assessedvalue=curQuery.rets20_taxassessedvalue;
-				t2.schoolelem=curQuery.rets20_ElementarySchool;
-				t2.schooljunior=curQuery.rets20_MiddleOrJuniorSchool;
-				t2.schoolhigh=curQuery.rets20_HighSchool;
-			
-				t2.daysonmarket=curQuery.rets20_DaysOpenNumberOf;
-				t2.solddate=dateformat(curQuery.rets20_closedate,'m/d/yyyy');
-				t2.pricesold=curQuery.rets20_closeprice;
-				t2.priceoriginal=curQuery.rets20_OriginalListPrice;
-				t2.taxamount=curQuery.rets20_taxamount;
-				t2.listdate=dateformat(curQuery.rets20_OriginalEntryTimestamp,'m/d/yyyy');
+			if(curQuery.listing_square_feet neq '' and curQuery.listing_square_feet NEQ 0){
 				t2.square_footage=curQuery.listing_square_feet;
-				
-				arrNewList=["zoning","OwnerOccupancyPercentage"];
-				arrNewList2=["zoning","OwnerOccupancyPercentage"];
-			
-				for(i4=1;i4 LTE arraylen(arrNewList);i4++){
-					argtype=arrNewList[i4];
-					arglist=curQuery["rets20_"&argtype][curQuery.currentrow];
-					if(structkeyexists(request.zos.listing.mlsStruct[20].sharedStruct.metaStruct["property"].fieldLookup, argtype)){
-						
-						arrV=listtoarray(trim(arglist),',',false);
-						arrV2=arraynew(1);
-						for(n=1;n LTE arraylen(arrV);n++){
-							t2=replace(arrV[n]," ","","ALL");
-							t3=request.zos.listing.mlsStruct[20].sharedStruct.metaStruct["property"].typeStruct[request.zos.listing.mlsStruct[20].sharedStruct.metaStruct["property"].fieldLookup[argtype]].valueStruct;
-							if(structkeyexists(t3, t2)){
-								t1=application.zcore.functions.zfirstlettercaps(t3[t2]);
-							}else{
-								t1="";	
-							}
-							if(t1 NEQ ""){
-								arrayappend(arrV2,t1);
-							}
-						}
-						value=arraytolist(arrV2,", ");
-					}
-					t2[arrNewList2[i4]]=value;
-				}
-				
+			}else if(curQuery.listing_lot_square_feet neq '' and curQuery.listing_lot_square_feet NEQ 0){
+				t2.square_footage=curQuery.listing_lot_square_feet;
 			}else{
-				if(curQuery.listing_square_feet neq '' and curQuery.listing_square_feet NEQ 0){
-					t2.square_footage=curQuery.listing_square_feet;
-				}else if(curQuery.listing_lot_square_feet neq '' and curQuery.listing_lot_square_feet NEQ 0){
-					t2.square_footage=curQuery.listing_lot_square_feet;
-				}else{
-					t2.square_footage="";
-				}
-				t2.listdate=dateformat(curQuery.listing_track_datetime,'m/d/yyyy');
+				t2.square_footage="";
 			}
+			t2.listdate=dateformat(curQuery.listing_track_datetime,'m/d/yyyy'); 
 			t2.yearbuilt=curQuery.listing_year_built;
 			t2.zip=curQuery.listing_zip;
 			t2.condition=idx.listingCondition;
@@ -465,89 +410,15 @@ this.isPropertyDisplayCom=true;
 			if(isDefined('this.optionStruct.showInactive') and this.optionStruct.showInactive){
 				propertyLink=application.zcore.functions.zURLAppend(propertyLink,"showInactive=1");
 			}
-			if(arraylen(rs.data.price) EQ 0 and idx.mls_id EQ 20){
-				rs.data.zoning=arraynew(1);
-				rs.data.taxamount=arraynew(1);
-				rs.data.listdate=arraynew(1);
-				rs.data.priceoriginal=arraynew(1);
-				rs.data.pricesold=arraynew(1);
-				rs.data.solddate=arraynew(1);
-				rs.data.daysonmarket=arraynew(1);
-				rs.data.schoolelem=arraynew(1);
-				rs.data.schooljunior=arraynew(1);
-				rs.data.schoolhigh=arraynew(1);
-				rs.data.assessamountimprove=arraynew(1);
-				rs.data.assessamountland=arraynew(1);
-				rs.data.assessedvalue=arraynew(1);
-				rs.data.occupancy=arraynew(1);
-				rs.data.remodelyear=arraynew(1);
-				rs.data.taxparcelid=arraynew(1);
-				
-			}
 			rs.data.tenure[idx.arrayindex]=idx.listingTenure;
-			if(idx.mls_id EQ 20){
-				rs.data.liststatus[idx.arrayindex]=idx.listingListStatus;
-				rs.data.taxparcelid[idx.arrayindex]=removechars(replace(curQuery.rets20_parcelnumber,"-","","all"),1,1);
-				if(curQuery.rets20_YearRemodeled EQ 0){
-					rs.data.remodelyear[idx.arrayindex]="";
-				}else{
-					rs.data.remodelyear[idx.arrayindex]=curQuery.rets20_YearRemodeled;
-				}
-				if(rs.data.tenure[idx.arrayindex] NEQ ""){
-					rs.data.tenure[idx.arrayindex]=trim(listgetat(rs.data.tenure[idx.arrayindex],2, "-"));
-				}
-				rs.data.assessamountimprove[idx.arrayindex]=curQuery.rets20_TaxAssessedValueImprovements;
-				rs.data.assessamountland[idx.arrayindex]=curQuery.rets20_TaxAssessedValueLand;
-				rs.data.assessedvalue[idx.arrayindex]=curQuery.rets20_taxassessedvalue;
-				rs.data.schoolelem[idx.arrayindex]=curQuery.rets20_ElementarySchool;
-				rs.data.schooljunior[idx.arrayindex]=curQuery.rets20_MiddleOrJuniorSchool;
-				rs.data.schoolhigh[idx.arrayindex]=curQuery.rets20_HighSchool;
-			
-				rs.data.daysonmarket[idx.arrayindex]=curQuery.rets20_DaysOpenNumberOf;
-				rs.data.solddate[idx.arrayindex]=dateformat(curQuery.rets20_closedate,'m/d/yyyy');
-				rs.data.pricesold[idx.arrayindex]=curQuery.rets20_closeprice;
-				rs.data.priceoriginal[idx.arrayindex]=curQuery.rets20_OriginalListPrice;
-				rs.data.taxamount[idx.arrayindex]=curQuery.rets20_taxamount;
-				rs.data.listdate[idx.arrayindex]=dateformat(curQuery.rets20_OriginalEntryTimestamp,'m/d/yyyy');
+			if(curQuery.listing_square_feet neq '' and curQuery.listing_square_feet NEQ 0){
 				rs.data.square_footage[idx.arrayindex]=curQuery.listing_square_feet;
-				
-				arrNewList=["zoning","OwnerOccupancyPercentage"];
-				arrNewList2=["zoning","OwnerOccupancyPercentage"];
-			
-				for(i4=1;i4 LTE arraylen(arrNewList);i4++){
-					argtype=arrNewList[i4];
-					arglist=curQuery["rets20_"&argtype][curQuery.currentrow];
-					if(structkeyexists(request.zos.listing.mlsStruct[20].sharedStruct.metaStruct["property"].fieldLookup, argtype)){
-						
-						arrV=listtoarray(trim(arglist),',',false);
-						arrV2=arraynew(1);
-						for(n=1;n LTE arraylen(arrV);n++){
-							t2=replace(arrV[n]," ","","ALL");
-							t3=request.zos.listing.mlsStruct[20].sharedStruct.metaStruct["property"].typeStruct[request.zos.listing.mlsStruct[20].sharedStruct.metaStruct["property"].fieldLookup[argtype]].valueStruct;
-							if(structkeyexists(t3, t2)){
-								t1=application.zcore.functions.zfirstlettercaps(t3[t2]);
-							}else{
-								t1="";	
-							}
-							if(t1 NEQ ""){
-								arrayappend(arrV2,t1);
-							}
-						}
-						value=arraytolist(arrV2,", ");
-					}
-					rs.data[arrNewList2[i4]][idx.arrayindex]=value;
-				}
-				
+			}else if(curQuery.listing_lot_square_feet neq '' and curQuery.listing_lot_square_feet NEQ 0){
+				rs.data.square_footage[idx.arrayindex]=curQuery.listing_lot_square_feet;
 			}else{
-				if(curQuery.listing_square_feet neq '' and curQuery.listing_square_feet NEQ 0){
-					rs.data.square_footage[idx.arrayindex]=curQuery.listing_square_feet;
-				}else if(curQuery.listing_lot_square_feet neq '' and curQuery.listing_lot_square_feet NEQ 0){
-					rs.data.square_footage[idx.arrayindex]=curQuery.listing_lot_square_feet;
-				}else{
-					rs.data.square_footage[idx.arrayindex]="";
-				}
-				rs.data.listdate[idx.arrayindex]=dateformat(curQuery.listing_track_datetime,'m/d/yyyy');
+				rs.data.square_footage[idx.arrayindex]="";
 			}
+			rs.data.listdate[idx.arrayindex]=dateformat(curQuery.listing_track_datetime,'m/d/yyyy'); 
 			rs.data.yearbuilt[idx.arrayindex]=curQuery.listing_year_built;
 			rs.data.zip[idx.arrayindex]=curQuery.listing_zip;
 			rs.data.condition[idx.arrayindex]=idx.listingCondition;

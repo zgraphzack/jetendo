@@ -14,8 +14,8 @@
 	setting requesttimeout="6000";
 	//arrProgress=[];
 	for(i in application.zcore.listingStruct.mlsStruct){ 
-		local.object=application.zcore.functions.zcreateobject("component",application.zcore.listingStruct.mlsStruct[i].mlsComPath);
-		local.object.mls_id=i; 
+		object=application.zcore.functions.zcreateobject("component",application.zcore.listingStruct.mlsStruct[i].mlsComPath);
+		object.mls_id=i; 
 		//arrayappend(arrProgress, i&" started");
 		//application.zcore.functions.zwritefile(request.zos.globals.privatehomedir&"metadatatemp.txt", arraytolist(arrProgress, chr(10)));
 		if(request.zos.isServer or request.zos.isDeveloper){
@@ -26,7 +26,8 @@
 				application.zcore.listingStruct.mlsStruct[i].sharedStruct.metadataDateLastModified=qD.dateLastModified[1];	
 			}
 		}
-		local.object.init(application.zcore.listingStruct.mlsStruct[i].sharedStruct); 
+		object.init(application.zcore.listingStruct.mlsStruct[i].sharedStruct); 
+		object.makeListingImportDataReady();
 	}
 	//application.zcore.functions.zwritefile(request.zos.globals.privatehomedir&"metadatatemp.txt", arraytolist(arrProgress, chr(10)));
 	echo('Done.');

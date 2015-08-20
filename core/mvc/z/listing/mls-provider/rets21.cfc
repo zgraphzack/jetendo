@@ -634,10 +634,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets21_property where rets21_MLnumbe
 					arrayappend(arrSQL,"('#this.mls_provider#','parking','#trim(fd[i])#','#trim(i)#','#request.zos.mysqlnow#','#trim(i)#','#request.zos.mysqlnow#', '0')");
 				}
 			}
-			
-			/*writedump(request.zos.listing.mlsStruct["21"].sharedStruct.metaStruct["property"].typeStruct);
-			application.zcore.functions.zabort();
-			*/
+			 
 			fd=this.getRETSValues("property", this.arrTypeLoop[g],"city");
 			//application.zcore.functions.zdump(fd);
 			//writeoutput(structcount(fd)&'<br />');
