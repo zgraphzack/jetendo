@@ -1702,6 +1702,7 @@ if(rCom.isOK() EQ false){
 	
 	</cfscript>
 </cffunction>
+
 	
 <cffunction name="getSiteMap" localmode="modern" output="no" access="public" returntype="array" hint="sitemap the adhere to sitemaps.org protocol">
 	<cfargument name="arrUrl" type="array" required="no" default="#arraynew(1)#">
@@ -1713,6 +1714,8 @@ if(rCom.isOK() EQ false){
 		arguments.arrUrl=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.getSiteMap(arguments.arrUrl);
 	}
 	arguments.arrURL=application.zcore.siteOptionCom.getSiteMap(arguments.arrURL);
+
+	//arguments.arrURL=getMVCLandingPages(arguments.arrURL);
 	
 	for(i in application.sitestruct[request.zos.globals.id].app.appCache){
 		configCom=createObject("component", application.zcore.appComPathStruct[i].cfcPath, true);

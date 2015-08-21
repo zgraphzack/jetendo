@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput> 
-<cffunction name="getLinks" localmode="modern" access="private" returntype="array">
+<cffunction name="getLinks" localmode="modern" access="public" returntype="array">
 	<cfscript>
 	var arrURL=arraynew(1);
 	var arrURL2=arraynew(1);

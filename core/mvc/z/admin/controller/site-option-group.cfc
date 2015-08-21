@@ -150,15 +150,16 @@
 		
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
 		groupStruct=t9.optionGroupLookup[form.site_option_group_id];
+		groupNameArray=arrayToList(application.zcore.siteOptionCom.getOptionGroupNameArrayById(groupStruct.site_option_group_id), '","');
 		if(groupStruct.site_option_group_enable_unique_url EQ 1){
 		echo('Below is an example of a CFC that is used for making a custom page, search result, and search index for a site_x_option_group_set record.
 <cfcomponent>
 <cfoutput>
-<cffunction name="index" access="remote" localmode="modern">
+<cffunction name="index" access="public" localmode="modern">
 	<cfargument name="query" type="query" required="yes">
 	<cfscript>
-	struct=application.zcore.siteOptionCom.getOptionGroupSetById(["Group", "SubGroup"], arguments.query.site_x_option_group_set_id);
-	writedump(struct);
+	struct=application.zcore.siteOptionCom.getOptionGroupSetById(["#groupNameArray#"], arguments.query.site_x_option_group_set_id);
+	curStruct1=(struct);
 	
 	application.zcore.template.setTag("title", struct.__title);
 	application.zcore.template.setTag("pagetitle", struct.__title);
@@ -189,8 +190,8 @@
 	<h2>Miscellaneous Code</h2>
 	<p>To select a single group set, use one of the following:</p>
 	<ul>
-	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getOptionGroupSetById(["Group", "SubGroup"], site_x_option_group_set_id);</li>
-	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getOptionGroupSetByID(["Group", "SubGroup"], site_x_option_group_set_id, request.zos.globals.id, showUnapproved); </li>
+	<li>Memory Cache Enabled: struct=application.zcore.siteOptionCom.getOptionGroupSetById(["#groupNameArray#"], site_x_option_group_set_id);</li>
+	<li>Memory Cache Disabled: showUnapproved=false; struct=application.zcore.siteOptionCom.getOptionGroupSetByID(["#groupNameArray#"], site_x_option_group_set_id, request.zos.globals.id, showUnapproved); </li>
 	</ul>');
 	if(groupStruct.site_option_group_allow_public NEQ 0){
 		if(groupStruct.site_option_group_public_form_url NEQ ""){
@@ -203,7 +204,7 @@
 		echo('<h2>CFML Embed Form Code</h2><pre>'&htmlcodeformat('
 application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
 // Note: if this group is a child group, you must update the array below to have the parent groups as well.
-form.site_option_group_id=application.zcore.siteOptionCom.getOptionGroupIDWithNameArray(["#groupstruct.site_option_group_name#"]);
+form.site_option_group_id=application.zcore.siteOptionCom.getOptionGroupIDWithNameArray(["#groupNameArray#"]);
 displayGroupCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
 displayGroupCom.add();')&'</pre>');
 	}
@@ -252,7 +253,7 @@ displayGroupCom.add();')&'</pre>');
 	'&htmlcodeformat('<cfscript>
 	request.zos.disableSpamCheck=true;
     application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, ''x_ajax_id''));
-    form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["How Can We Help You Form"]);
+    form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["#groupNameArray#"]);
 	
     displayGroupCom=createobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
     displayGroupCom.ajaxInsert();

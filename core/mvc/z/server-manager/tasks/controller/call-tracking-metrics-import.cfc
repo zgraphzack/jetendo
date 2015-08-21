@@ -1,6 +1,9 @@
 <cfcomponent>
 <cffunction name="progress" localmode="modern" access="remote">
 	<cfscript>
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
 	m=application.zcore.functions.zso(application, 'callTrackingMetricsImportProgress');
 	//echo('<h2>CallTrackingMetrics Import Progress</h2>');
 	if(m EQ ""){
@@ -14,6 +17,9 @@
 
 <cffunction name="cancel" localmode="modern" access="remote">
 	<cfscript>
+	if(not request.zos.isDeveloper and not request.zos.isServer and not request.zos.isTestServer){
+		application.zcore.functions.z404("Can't be executed except on test server or by server/developer ips.");
+	}
 	m=application.zcore.functions.zso(application, 'callTrackingMetricsImportProgress');
 	//echo('<h2>CallTrackingMetrics Import Progress</h2>');
 	if(m NEQ ""){

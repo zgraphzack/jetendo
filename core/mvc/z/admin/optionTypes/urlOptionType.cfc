@@ -154,9 +154,9 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfscript>
 	if(structkeyexists(arguments.dataStruct, arguments.value)){
-		return arguments.dataStruct[arguments.value];
+		return '<a href="#arguments.dataStruct[arguments.value]#" target="_blank">'&arguments.dataStruct[arguments.value]&'</a>';
 	}else{
-		return arguments.value; 
+		return '<a href="#arguments.value#" target="_blank">'&arguments.value&'</a>'; 
 	}
 	</cfscript>
 </cffunction>
