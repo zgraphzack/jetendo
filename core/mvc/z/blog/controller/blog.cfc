@@ -1807,6 +1807,8 @@ this.app_id=10;
 	}
 	if(application.zcore.user.checkGroupAccess("member")){
 		form.preview=true;
+	}else{
+		structdelete(form, 'preview');
 	}
 	</cfscript>
 	<script type="text/javascript">
@@ -1849,7 +1851,7 @@ this.app_id=10;
 	blog.site_id=#db.param(request.zos.globals.id)# and
 	blog_deleted = #db.param(0)# 
 	<cfif structkeyexists(form, 'preview') EQ false> 
-		and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' 23:59:59')# or 
+		and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&" "&timeformat(now(),'HH:mm:ss'))# or 
 		blog_event =#db.param(1)#) and 
 		blog_status <> #db.param(2)#
 	</cfif>
@@ -1857,7 +1859,7 @@ this.app_id=10;
 	order by blog_sticky desc, blog_datetime, blog_comment_datetime
 	</cfsavecontent>
 	<cfscript>
-	qArticle=db.execute("qArticle");
+	qArticle=db.execute("qArticle"); 
 	form.blog_category_id=qArticle.blog_category_id;
    	if(qArticle.site_x_option_group_set_id NEQ 0){
    		form.site_x_option_group_set_id=qArticle.site_x_option_group_set_id;

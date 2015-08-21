@@ -181,6 +181,9 @@ application.zcore.functions.zEnableContentTransition(); --->
 	}
 	if(structkeyexists(arguments.ss, 'arrIgnoreURLContains')){
 		for(local.i=1;local.i LTE arraylen(arguments.ss.arrIgnoreURLContains);local.i++){
+			if(arguments.ss.arrIgnoreURLContains[local.i] EQ "/z/misc/system/redirect"){
+				arguments.ss.arrIgnoreURLContains[local.i]="/z/misc/system/ext";
+			}
 			local.metaAppend&='zContentTransition.arrIgnoreURLContains.push("'&arguments.ss.arrIgnoreURLContains[local.i]&'");';
 		}
 	} 
