@@ -120,6 +120,9 @@
 		ts.zOS.cfmlUser="www-data";
 		ts.zOS.cfmlAdminReadEnabled=false;
 	};
+	// open redirect attacks can be prevented easily by setting this string to something random and unique.  It is used by the redirect feature of the app.
+    ts.zos.redirectSecretKey="Set to something random and unique";
+    
 	// all admin write requests are logged, but you can optionally log read only requests too.
 	ts.zos.auditTrackReadOnlyRequests=false;
 

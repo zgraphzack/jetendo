@@ -215,7 +215,7 @@ if(typeof zLocalDomains === "undefined"){
 	};
 	zContentTransition.arrIgnoreURLs=["/z/listing/search-form/index"];
 	zContentTransition.arrIgnoreURLContains=["mailto:",
-	"/z/misc/system/redirect",
+	"/z/misc/system/ext",
 	"/z/listing/sl/index",
 	"/z/_a/member/",
 	"/z/listing/search-js/index",

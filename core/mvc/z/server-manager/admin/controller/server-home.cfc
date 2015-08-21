@@ -33,7 +33,7 @@
 		echo('<h2>## of cached values per site</h2>');
 	}else{
 		echo('<p><a href="/z/server-manager/admin/server-home/viewSharedMemory">Back to main report</a> /</p>');
-		echo('<h2>## of cached values per site per group</h2>');
+		echo('<h2>## of cached values per site per group (note size column is for entire site, not the group)</h2>');
 	}
 	
 	if(not structkeyexists(form, 'groupReport')){

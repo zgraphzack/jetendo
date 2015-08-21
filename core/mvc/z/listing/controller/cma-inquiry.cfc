@@ -147,6 +147,7 @@
 	db.sql="SELECT *
 	from #request.zos.queryObject.table("inquiries", request.zos.zcoreDatasource)# inquiries
 	WHERE inquiries_id = #db.param(-1)# and 
+	inquiries_deleted=#db.param(0)# and 
 	site_id=#db.param(request.zos.globals.id)# ";
 	qInquiries=db.execute("qInquiries");
 	application.zcore.functions.zQueryToStruct(qInquiries, form, 'inquiries_email');

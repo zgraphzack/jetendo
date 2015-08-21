@@ -481,7 +481,7 @@ zEmbedHTML5Video(ts);
 	<cfargument name="link" type="string" required="yes">
 	<cfscript>
 	arguments.link=replacenocase(arguments.link, "zajaxdownloadcontent","zADCDisabled98","all");
-	return "/z/misc/system/redirect?link="&urlencodedformat(arguments.link);
+	return "/z/misc/system/ext?n="&urlencodedformat(arguments.link)&"&k="&hash(request.zos.redirectSecretKey&arguments.link);
 	</cfscript>
 </cffunction>
 

@@ -39,12 +39,11 @@
 	<!--- trackCom.init(); --->
 	<cffunction name="init" localmode="modern" output="true">
 		<cfscript>
-		var t4=0;
-		var tempVar=structnew();
-		var ts=0;
-		var tempVar2=0;
-		var local=structnew();
-		var i=0;
+
+		if(request.zos.originalURL EQ "/z/misc/system/ext" or request.zos.originalURL EQ "/z/misc/system/index" or request.zos.originalURL EQ "/z/misc/system/checkHealth2" or request.zos.originalURL EQ "/z/misc/system/redirect"){
+			request.zos.trackingDisabled=true;
+			return;	
+		}
 		var curminute=timeformat(request.zos.now,"m");
 		var db=request.zos.queryObject;
 		var tempUserAgent=application.zcore.functions.zURLEncode(rereplace(lcase(request.zos.cgi.http_user_agent), "[^[a-z]]","_","ALL"), '_');

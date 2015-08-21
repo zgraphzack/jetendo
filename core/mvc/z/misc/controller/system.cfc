@@ -226,18 +226,24 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 	</cfscript>
 </cffunction>
 
-<cffunction name="redirect" localmode="modern" access="remote">
+<cffunction name="ext" localmode="modern" access="remote" hint="This function forwards user to new url, but has some security added to prevent an open redirect attack.">
 	<cfscript>
 	request.znotemplate=true;
 	application.zcore.tracking.backOneHit();
 	application.zcore.functions.zModalCancel();
-	form.link=application.zcore.functions.zso(form, 'link');
-	if(left(form.link,1) EQ "/"){
-		application.zcore.functions.zRedirect(form.link);
-	}else if(left(form.link,7) NEQ "http://" and left(form.link,8) NEQ "https://"){
+	// form.n is a url
+	link=application.zcore.functions.zso(form, 'n');
+	form.k=application.zcore.functions.zso(form, 'k');
+	verifyK=hash(request.zos.redirectSecretKey&link); 
+	if(compare(form.k, verifyK) NEQ 0){
+		application.zcore.functions.z404("Sorry, this redirect link has expired.");
+	}
+	if(left(link,1) EQ "/"){
+		application.zcore.functions.zRedirect(link);
+	}else if(left(link,7) NEQ "http://" and left(link,8) NEQ "https://"){
 		application.zcore.functions.z301redirect('/');	
 	}else{
-		application.zcore.functions.zRedirect(form.link);	
+		application.zcore.functions.zRedirect(link);	
 	}
 	</cfscript>
 </cffunction>
