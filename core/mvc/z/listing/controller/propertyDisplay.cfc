@@ -1126,7 +1126,7 @@ this.isPropertyDisplayCom=true;
 					echo('@');
 				}
 				if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 2){
-					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, iwidth, iheight, 0));
+					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 221, 165, 0));
 				}else{
 					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 10000,10000, 0));
 				}

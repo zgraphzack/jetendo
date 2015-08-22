@@ -21,8 +21,7 @@ function zLoadListingSavedSearches(){
 		tempObj.id="zListingSavedSearchAjax"+ssid;
 		tempObj.cache=false;
 		tempObj.method="get"; 
-		tempObj.callback=function(d){  
-			console.log(ssid+":"+currentDiv);
+		tempObj.callback=function(d){   
 			try{
 				var r=eval("("+d+")");
 				if(r.success){ 
