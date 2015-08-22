@@ -392,18 +392,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">
         <cfargument name="fulldetails" type="boolean" required="no" default="#false#">
-    	<cfscript>
-		var q1=0;
-		var t1=0;
-		var t3=0;
-		var t2=0;
-		var i10=0;
-		var value=0;
-		var n=0;
-		var column=0;
-		var arrV=0;
-		var arrV2=0;
-		var idx=0;
+    	<cfscript> 
 		idx=this.baseGetDetails(arguments.query, arguments.row, arguments.fulldetails);
 		t99=gettickcount();
 		idx["features"]="";

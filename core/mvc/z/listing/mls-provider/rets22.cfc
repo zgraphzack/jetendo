@@ -104,6 +104,8 @@ this.remapFieldStruct=t5;
 <cffunction name="parseRawData" localmode="modern" output="yes" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
+	
+	var db=request.zos.queryObject;
 	var columnIndex=structnew();
 	var a9=arraynew(1); 
 	if(structcount(this.emptyStruct) EQ 0){
@@ -439,6 +441,14 @@ this.remapFieldStruct=t5;
 	rs.listing_subdivision=local.listing_subdivision;
 	rs.listing_year_built=application.zcore.functions.zso(ts, "rets22_list_53");
 	rs.listing_office=ts["rets22_list_106"];
+	db.sql="select * from #db.table("rets22_office", request.zos.zcoreDatasource)# rets22_office 
+	where rets22_office_0=#db.param(rs.listing_office)#";
+	qOffice=db.execute("qOffice");  
+	if(qOffice.recordcount NEQ 0){
+		rs.listing_office_name=qOffice.rets22_office_2;
+	}else{
+		rs.listing_office_name="";
+	}
 	rs.listing_agent=ts["rets22_list_5"];
 	rs.listing_latitude=curLat;
 	rs.listing_longitude=curLong;
@@ -491,23 +501,7 @@ this.remapFieldStruct=t5;
 	<cfargument name="query" type="query" required="yes">
 	<cfargument name="row" type="numeric" required="no" default="#1#">
 	<cfargument name="fulldetails" type="boolean" required="no" default="#false#">
-	<cfscript>
-	var db=request.zos.queryObject;
-	var q1=0;
-	var t44444=0;
-	var t99=0;
-	var qOffice=0;
-	var details=0;
-	var i=0;
-	var t1=0;
-	var t3=0;
-	var t2=0;
-	var i10=0;
-	var value=0;
-	var n=0;
-	var column=0;
-	var arrV=0;
-	var arrV2=0;
+	<cfscript> 
 	var idx=this.baseGetDetails(arguments.query, arguments.row, arguments.fulldetails);
 	t99=gettickcount();
 	idx["features"]="";
@@ -525,16 +519,10 @@ this.remapFieldStruct=t5;
 			idx["photo"&i]=request.zos.retsPhotoPath&'22/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}
 	} 
-	db.sql="select * from #db.table("rets22_office", request.zos.zcoreDatasource)# rets22_office 
-	where rets22_office_0=#db.param(idx.listing_office)#";
-	qOffice=db.execute("qOffice");  
 	idx["agentName"]="";
 	idx["agentPhone"]="";
 	idx["agentEmail"]="";
-	idx["officeName"]="";
-	if(qOffice.recordcount NEQ 0){
-		idx["officeName"]=qOffice.rets22_office_2;
-	}
+	idx["officeName"]=idx.listing_office_name;
 	idx["officePhone"]="";
 	idx["officeCity"]="";
 	idx["officeAddress"]="";

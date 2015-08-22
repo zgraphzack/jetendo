@@ -44,33 +44,9 @@
     <cffunction name="parseRawData" localmode="modern" output="yes" returntype="any">
     	<cfargument name="ss" type="struct" required="yes">
     	<cfscript>
-		var rs5=0;
-		var r222=0;
-		var values="";
-		var newlist="";
-		var i=0;
-		var columnIndex=structnew();
-		var cityname=0;
-		var cid=0;
-		var mediaphotopath=0;
-		var cityName=0;
-		var address=0;
-		var cid=0;
-		var curLat=0;
-		var curLong=0;
-		var s=0;
-		var cityStruct222=0;
-		var arrt3=0;
-		var uns=0;
-		var tmp=0;
-		var arrt=0;
-		var arrt2=0;
-		var ts2=0;
-		var datacom=0;
-		var values=0;
-		var ts=structnew();
-		var idx=0;
-		var rs=0;
+		var db=request.zos.queryObject;
+		var columnIndex=structnew(); 
+		var ts=structnew(); 
 		/*
 		
 		wipe out the listings to reimport them again...
@@ -234,6 +210,14 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 		rs.listing_subdivision=application.zcore.functions.zso(ts, 'rets18_subdivision');
 		rs.listing_year_built=application.zcore.functions.zso(ts, 'rets18_yearbuilt');
 		rs.listing_office=application.zcore.functions.zso(ts, 'rets18_officelist');
+		db.sql="select * from #db.table("rets18_office", request.zos.zcoreDatasource)# rets18_office 
+		where rets18_uid=#db.param(ts.rets18_officelist)#";
+		q1=db.execute("q1"); 
+		if(q1.recordcount NEQ 0){
+			rs.listing_office_name=q1.rets18_officename;
+		}else{
+			rs.listing_office_name="";
+		}
 		rs.listing_agent=application.zcore.functions.zso(ts, 'rets18_agentlist');
 		rs.listing_latitude=curLat;
 		rs.listing_longitude=curLong;
@@ -282,20 +266,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
     	<cfargument name="query" type="query" required="yes">
         <cfargument name="row" type="numeric" required="no" default="#1#">
         <cfargument name="fulldetails" type="boolean" required="no" default="#false#">
-    	<cfscript>
-		var q1=0;
-		var t1=0;
-		var db=request.zos.queryObject;
-		var t3=0;
-		var t2=0;
-		var i10=0;
-		var value=0;
-		var n=0;
-		var column=0;
-		var arrV=0;
-		var qPIC=0;
-		var qVT=0;
-		var arrV2=0;
+    	<cfscript> 
 		var idx=this.baseGetDetails(arguments.query, arguments.row, arguments.fulldetails);
 		idx["features"]="";
 		idx.listingSource=request.zos.listing.mlsStruct[listgetat(idx.listing_id,1,'-')].mls_disclaimer_name;
@@ -321,27 +292,17 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets18_property where rets18_mlsnum 
 				}
 			}
 		}
-		db.sql="select * from #db.table("rets18_agent", request.zos.zcoreDatasource)# rets18_agent 
-		where rets18_uid=#db.param(arguments.query.listing_agent[arguments.row])#";
-		q1=db.execute("q1"); 
 		oid1="0";
-		if(q1.recordcount NEQ 0){
-			idx["agentName"]=q1.rets18_fullname;
-			idx["agentPhone"]="";
-			idx["agentEmail"]="";
-		}
-		db.sql="select * from #db.table("rets18_office", request.zos.zcoreDatasource)# rets18_office 
-		where rets18_uid=#db.param(arguments.query.listing_office[arguments.row])#";
-		q1=db.execute("q1"); 
-		if(q1.recordcount NEQ 0){
-			idx["officeName"]=q1.rets18_officename;
-			idx["officePhone"]="";
-			idx["officeCity"]="";
-			idx["officeAddress"]="";
-			idx["officeZip"]="";
-			idx["officeState"]="";
-			idx["officeEmail"]="";
-		}
+		idx["agentName"]="";
+		idx["agentPhone"]="";
+		idx["agentEmail"]="";
+		idx["officeName"]=idx.listing_office_name;
+		idx["officePhone"]="";
+		idx["officeCity"]="";
+		idx["officeAddress"]="";
+		idx["officeZip"]="";
+		idx["officeState"]="";
+		idx["officeEmail"]=""; 
 		// virtual tour is in media table.
 		db.sql="SELECT * FROM #db.table("rets18_media", request.zos.zcoreDatasource)# rets18_media 
 		where rets18_mediatype=#db.param('vt')# and 

@@ -66,34 +66,10 @@ variables.tableLookup["I"]="I";
 
 <cffunction name="parseRawData" localmode="modern" output="yes" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
-	<cfscript>
-	var rs5=0;
-	var r222=0;
-	var values="";
-	var newlist="";
-	var i=0;
-	var columnIndex=structnew();
-	var cityname=0;
-	var cid=0;
+	<cfscript> 
+	var columnIndex=structnew(); 
 	var a9=arraynew(1);
-	var ts=0;
-	var col=0;
-	var tmp=0;
-	var uns=0;
-	var arrt3=0;
-	var address=0;
-	var arrt2=0;
-	var datacom=0;
-	var ad=0;
-	var liststatus=0;
-	var s2=0;
-	var curlat=0;
-	var curlong=0;
-	var ts2=0;
-	var s=0;
-	var arrT=0;
-	var rs=0;
-	
+	var db=request.zos.queryObject;
 	if(structcount(this.emptyStruct) EQ 0){
 		for(i=1;i LTE arraylen(this.arrColumns);i++){
 			this.emptyStruct[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].tableFields[this.arrColumns[i]].longname]="";
@@ -398,6 +374,14 @@ variables.tableLookup["I"]="I";
 	rs.listing_subdivision=local.listing_subdivision;
 	rs.listing_year_built=ts["year built"];
 	rs.listing_office=ts["Office ID"];
+	db.sql="select * from #db.table("rets24_office", request.zos.zcoreDatasource)# rets24_office 
+	where rets24_office_0=#db.param(rs.listing_office)#";
+	qOffice=db.execute("qOffice"); 
+	if(qOffice.recordcount NEQ 0){
+		rs.listing_office_name=qOffice.rets24_office_2;
+	}else{
+		rs.listing_office_name="";
+	}
 	rs.listing_agent=ts["Agent ID"];
 	rs.listing_latitude=curLat;
 	rs.listing_longitude=curLong;
@@ -448,7 +432,6 @@ variables.tableLookup["I"]="I";
 	<cfargument name="row" type="numeric" required="no" default="#1#">
 	<cfargument name="fulldetails" type="boolean" required="no" default="#false#">
 	<cfscript>
-	var db=request.zos.queryObject;
 	var q1=0;
 	var t44444=0;
 	var t99=0;
@@ -480,17 +463,11 @@ variables.tableLookup["I"]="I";
 			local.fNameTempMd51=lcase(hash(local.fNameTemp1, 'MD5'));
 			idx["photo"&i]=request.zos.retsPhotoPath&'24/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}
-	} 
-	db.sql="select * from #db.table("rets24_office", request.zos.zcoreDatasource)# rets24_office 
-	where rets24_office_0=#db.param(idx.listing_office)#";
-	qOffice=db.execute("qOffice");  
+	}  
 	idx["agentName"]="";
 	idx["agentPhone"]="";
 	idx["agentEmail"]="";
-	idx["officeName"]="";
-	if(qOffice.recordcount NEQ 0){
-		idx["officeName"]=qOffice.rets24_office_2;
-	}
+	idx["officeName"]=idx.listing_office_name;
 	idx["officePhone"]="";
 	idx["officeCity"]="";
 	idx["officeAddress"]="";
