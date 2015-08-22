@@ -340,6 +340,9 @@
 				<h2>Let us help you negotiate the best price on this property.</h2>');
 			}
 		}
+	}else{
+		application.zcore.template.setTag("title","Property Inquiry");
+		application.zcore.template.setTag("pagetitle","Property Inquiry");
 	}
 	writeoutput('<br style="clear:both;" />	#variables.propertyHTML#');
 	echo('</div>
