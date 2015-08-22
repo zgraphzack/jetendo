@@ -216,7 +216,7 @@ displayGroupCom.add();')&'</pre>');
 	<p>Simple Example with fake group/field info:</p>
 	<pre>
 	
-	groupName="groupName";
+	groupName="#groupStruct.site_option_group_name#";
 	// build search as an array of structs.  Supports nested sub-group search, AND/OR, logic grouping, many operators, and multiple values.  See the function definition of searchOptionGroup for more information.
 	arrSearch=[{
 		type="=",
@@ -239,28 +239,87 @@ displayGroupCom.add();')&'</pre>');
 			// show next button
 		}
 	}
-	</pre>
+	</pre>');
 
-	<h2>Public Form Examples</h2>
-	<h3>Embed Public Form in any page</h3>
-	<p>Coming soon</p>
+	if(groupStruct.site_option_group_allow_public NEQ 0){
+		echo('<h2>Public Form Examples</h2>
+		<h3>Embed Public Form in any page</h3>
+		'&htmlcodeformat('<cfscript>
+form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["#groupNameArray#"]);
+displayGroupCom=createobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
+displayGroupCom.add();
+</cfscript>')&'
 
-	<h3>Custom Version Of Form Field Layout</h3>
-	<p>Coming soon</p>
-	
-	<h3>Ajax Insert</h3>
-	<p>Use this when the data needs to come from another form/request and you can''t display the form directly.</p>
-	'&htmlcodeformat('<cfscript>
+		<h3>Custom Version Of Form Field Layout With Custom Ajax Processing</h3>
+		'&htmlcodeformat('
+<cffunction name="customFormProcess" access="remote" localmode="modern">
+	<cfscript>
+
 	request.zos.disableSpamCheck=true;
-    application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, ''x_ajax_id''));
+    application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id")); 
     form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["#groupNameArray#"]);
 	
     displayGroupCom=createobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
     displayGroupCom.ajaxInsert();
 
-	</cfscript>')&'
-	</div></div>
-	');
+	</cfscript>
+</cffunction>
+<cffunction name="customForm" access="remote" localmode="modern">
+ 	<form id="customForm1" action="" method="post">
+		<div class="rowDiv1">
+			<div class="labelDiv1">
+				Field Name
+			</div>
+			<div class="fieldDiv1"> 
+				<input type="text" name="Field Name" value="" />
+			</div>
+		</div>
+		<input type="submit" name="submit1" value="Submit" />
+	</form>
+	<script type="text/javascript">
+	$("##customForm1").bind("submit", function(){
+		var postObj=zGetFormDataByFormId("customForm1"); 
+		var tempObj={};
+		tempObj.id="ajaxModalFormLoad";
+		tempObj.cache=false;
+		tempObj.method="post";
+		tempObj.postObj=postObj;
+		tempObj.callback=function(d){ 
+			try{
+				var r=eval("("+d+")");
+				if(!r.success){ 
+					alert(r.errorMessage);
+					return;
+				}
+			}catch(e){
+				alert("Failed to register.");
+				throw e;
+				return;
+			} 
+			window.location.href="#groupStruct.site_option_group_public_thankyou_url#";
+		};
+		tempObj.ignoreOldRequests=true;
+		tempObj.url="/form/buyerProcess";
+		zAjax(tempObj);
+		return false;
+	});
+	</script>
+</cffunction>')&'
+		
+		<h3>Ajax Insert</h3>
+		<p>Use this when the data needs to come from another form/request and you can''t display the form directly.</p>
+		'&htmlcodeformat('<cfscript>
+request.zos.disableSpamCheck=true;
+application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
+form.site_option_group_id=application.zcore.functions.zGetSiteOptionGroupIDWithNameArray(["#groupNameArray#"]);
+
+displayGroupCom=createobject("component", "zcorerootmapping.mvc.z.misc.controller.display-site-option-group");
+displayGroupCom.ajaxInsert();
+</cfscript>'));
+	}
+	// custom version - use moving to sunny as example...
+
+	echo('</div></div>');
 	
 	</cfscript>
 </cffunction>

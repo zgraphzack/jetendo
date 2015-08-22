@@ -453,7 +453,21 @@ zGetLatLong(ts);
 	return rs;
 	</cfscript>
  </cffunction>
-
+ 
+<cffunction name="zListingDisplaySavedSearch" localmode="modern" access="public">
+	<cfargument name="mls_saved_search_id" type="string" required="yes">
+	<div class="zls-listingSavedSearchDiv" data-ssid="#arguments.mls_saved_search_id#"></div> 
+ </cffunction>
+<cffunction name="zListingDisplaySavedSearchMapSummary" localmode="modern" access="public">
+	<cfargument name="mls_saved_search_id" type="string" required="yes">
+	<div class="zls-listingSavedSearchMapSummaryDiv" data-ssid="#arguments.mls_saved_search_id#" style="width:100%; clear:both; float:left;">
+		<div class="contentPropertySummaryDiv" style="width:#request.zos.globals.maximagewidth-400#px; float:left;">
+		</div>
+		
+		<div class="mapContentDiv" style="width:380px; float:right; margin-left:20px; margin-bottom:20px;">  
+		</div>
+	</div> 
+ </cffunction> 
 
 <!--- zMLSSetSearchStruct(variables, searchStruct); --->
 <cffunction name="zMLSSetSearchStruct" localmode="modern" output="no" returntype="any">

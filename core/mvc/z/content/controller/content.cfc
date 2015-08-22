@@ -2569,25 +2569,11 @@ configCom.includeContentByName(ts);
 					echo('<hr />');
 				}
 			}
-			pcount=0;
-			returnPropertyDisplayStruct={};
-			if(application.zcore.app.siteHasApp("listing") and contentSearchMLS EQ 1){
-				returnPropertyDisplayStruct=request.zos.listing.functions.zMLSSearchOptionsDisplay(ts994824713.content_saved_search_id);
-				pcount+=returnPropertyDisplayStruct.returnStruct.count;
-			}
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 6'});
-		
-			if(ts994824713.content_show_map EQ 1 and pcount NEQ 0){
-				echo('<div style="width:100%; clear:both; float:left;">
-				<div id="contentPropertySummaryDiv" style="width:#request.zos.globals.maximagewidth-400#px; float:left;">
-				</div>
-				
-				<div id="mapContentDivId" style="width:380px; float:right; margin-left:20px; margin-bottom:20px;">
-					<iframe id="embeddedmapiframe" src="/z/listing/map-embedded/index?content_id=#ts994824713.content_id#" width="100%" height="340" style="border:none; overflow:auto;" seamless="seamless"></iframe>
-
-				</div>
-				</div>');
-			}
+			pcount=0;  
+		 
+			if(application.zcore.app.siteHasApp("listing") and qContent.content_search_mls EQ 1 and qContent.content_show_map EQ 1 and application.zcore.functions.zso(form, 'hidemls',true) EQ 0){
+				application.zcore.listingStruct.functions.zListingDisplaySavedSearchMapSummary(ts994824713.content_saved_search_id);
+			}   
 			if(ts994824713.content_text_position EQ 0){
 				beginEditLink(contentConfig, ts994824713.content_id, true);
 				echo(ct1948);
@@ -2636,7 +2622,6 @@ configCom.includeContentByName(ts);
 		//echo('<br style="clear:both;" />');
 	}
 
-	displaySummaryAndMap(qContent, returnPropertyDisplayStruct);
 
 
 	uniqueChildStruct3838=structnew();
@@ -2713,7 +2698,7 @@ configCom.includeContentByName(ts);
 		}
 	}*/
 	if(application.zcore.app.siteHasApp("listing") and contentSearchMLS EQ 1){
-		writeoutput(returnPropertyDisplayStruct.output);
+		application.zcore.listingStruct.functions.zListingDisplaySavedSearch(ts994824713.content_saved_search_id);
 	}
 
 	if(ts994824713.content_text_position EQ 1){
@@ -3029,101 +3014,6 @@ configCom.includeContentByName(ts);
 </cffunction>
 
 	
-<cffunction name="displaySummaryAndMap" localmode="modern" access="private">
-	<cfargument name="qContent" type="any" required="yes">
-	<cfargument name="returnPropertyDisplayStruct" type="struct" required="yes">
-	<cfscript>
-	returnPropertyDisplayStruct=arguments.returnPropertyDisplayStruct;
-	if(application.zcore.app.siteHasApp("listing") and arguments.qContent.content_search_mls EQ 1 and application.zcore.functions.zso(form, 'hidemls',true) EQ 0){
-		/*if((returnPropertyDisplayStruct.mlsSearchSearchQuery.search_Rate_low NEQ 0 AND returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_high neq 0)){
-			startPrice=returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_low;
-			endPrice=returnPropertyDisplayStruct.mlsSearchSearchQuery.search_rate_high;
-		}else{
-			content_price=arguments.qContent.content_price;
-			if(application.zcore.functions.zso(local, 'content_price',true) NEQ 0){
-				percent=arguments.qContent.content_price*0.25;
-				startPrice=max(0,arguments.qContent.content_price-percent);
-				endPrice=arguments.qContent.content_price+percent;
-			}
-		}*/
-		if(arguments.qContent.content_show_map EQ 1){
-			application.zcore.template.appendTag('scripts', '<div id="zMapOverlayDivV3" style="position:absolute; left:0px; top:0px; display:none; z-index:1000;"></div>');
-		}
-		if(arguments.qContent.content_show_map EQ 1){
-			ts = StructNew();
-			ts.offset =0;
-			ts.perpage = 1;
-			ts.distance = 30; // in miles
-			ts.zReturnSimpleQuery=true;
-			ts.onlyCount=true;
-			//ts.debug=true;
-			ts.zselect=" min(listing.listing_price) minprice, max(listing.listing_price) maxprice, count(listing.listing_id) count";
-			rs4 = returnPropertyDisplayStruct.propertyDataCom.getProperties(ts);
-			ts.zselect=" min(listing.listing_square_feet) minsqft, max(listing.listing_square_feet) maxsqft";
-			ts.zwhere=" and listing.listing_square_feet <> '' and listing.listing_square_feet <>'0'";
-			rs4_2 = returnPropertyDisplayStruct.propertyDataCom.getProperties(ts);
-			ts.zselect=" min(listing.listing_beds) minbed, min(listing.listing_beds) maxbed";
-			ts.zwhere=" and listing.listing_beds <> '' and listing.listing_beds<>'0'";
-			rs4_3 = returnPropertyDisplayStruct.propertyDataCom.getProperties(ts);
-			ts.zselect=" min(listing.listing_baths) minbath, max(listing.listing_baths) maxbath";
-			ts.zwhere=" and listing.listing_baths <> '' and listing.listing_baths<>'0'";
-			rs4_4 = returnPropertyDisplayStruct.propertyDataCom.getProperties(ts);
-			ts.zselect=" min(listing.listing_year_built) minyear, max(listing.listing_year_built) maxyear";
-			ts.zwhere=" and listing.listing_year_built <> '' and listing.listing_year_built<>'0'";
-			rs4_5 = returnPropertyDisplayStruct.propertyDataCom.getProperties(ts);
-			if(rs4.count NEQ 0){
-				savecontent variable="contentSummaryHTML"{
-					if(rs4.count NEQ 0){
-						echo('<div style="font-weight:bold; font-size:120%; padding-bottom:10px;"> #numberformat(rs4.count)# listings</div>');
-					}
-					echo('<div style="font-weight:bold;">Listing Summary:</div>');
-					if(rs4.minprice NEQ "" and rs4.minprice NEQ 0){
-						echo('$#numberformat(rs4.minprice)# ');
-						if(rs4.minprice NEQ rs4.maxprice){
-							echo('to $#numberformat(rs4.maxprice)#}<br />');
-						}
-					}
-					if(rs4_2.minsqft NEQ "" and rs4_2.minsqft NEQ 0){
-						echo(numberformat((rs4_2.minsqft)));
-						if(rs4_2.minsqft NEQ rs4_2.maxsqft){
-							echo(' to #numberformat((rs4_2.maxsqft))#');
-						}
-						echo(' square feet (living area)<br />');
-					}
-					if(rs4_3.minbed NEQ "" and rs4_3.minbed NEQ 0){
-						echo(rs4_3.minbed);
-						if(rs4_3.minbed NEQ rs4_3.maxbed){
-							echo(rs4_3.maxbed);
-						}
-						echo(' Bedrooms<br />');
-					}
-					if(rs4_4.minbath NEQ "" and rs4_4.minbath NEQ 0){
-						echo(rs4_4.minbath);
-						if(rs4_4.minbath NEQ rs4_4.maxbath){
-							echo(' to #(rs4_4.maxbath)#');
-						}
-						echo(' Bathrooms<br />');
-					}
-					if(rs4_5.minyear NEQ "" and rs4_5.minyear NEQ 0){
-						echo('Built ');
-						if(rs4_5.minyear NEQ rs4_5.maxyear){
-							echo(' between #(rs4_5.minyear)# &amp; #(rs4_5.maxyear)#');
-						}else{
-							echo(' in #(rs4_5.minyear)#');
-						}
-						echo('<br />');
-					}
-					echo('<br /> <div style="font-weight:bold; font-size:120%;"><a href="##zbeginlistings">View Listings</a></div>');
-				}
-				echo('<script type="text/javascript">/* <![CDATA[ */ 
-				document.getElementById(''contentPropertySummaryDiv'').innerHTML="#jsstringformat(contentSummaryHTML)#";
-				 /* ]]> */
-				 </script>');
-			}
-		}
-	}
-	</cfscript>
-</cffunction>
 
 	
 	

@@ -213,6 +213,7 @@ function zImageMouseMove(id,mev,forceResize){
   }
 }
 function zImageForceCloseEnlarger(){
+	zLoadImageEnlargerDiv();
 	var d99=document.getElementById('zListingImageEnlargeDiv');
 	if(d99 !== null){
 		d99.style.display="none";
@@ -221,17 +222,28 @@ function zImageForceCloseEnlarger(){
 zArrLoadFunctions.push({functionName:zImageForceCloseEnlarger});
 
 
+var zImageEnlargerLoaded=false;
+function zLoadImageEnlargerDiv(){
+	if(zImageEnlargerLoaded){
+		return;
+	}
+	zImageEnlargerLoaded=true;
+
+	$(document.body).append('<div id="zListingImageEnlargeDiv" style="position:absolute; cursor:pointer;pointer-events:none; display:none; left:0px; top:0px; width:540px;background-color:#FFF; max-width:100%; z-index:1002;  color:##999;  padding-top:0px; font-size:10px; line-height:11px; text-align:center;"><div style="width:98%; float:left;clear:both;background-color:#FFF;padding:1%;">ROLL YOUR MOUSE LEFT AND RIGHT TO VIEW ALL PHOTOS. <strong>CLICK TO READ MORE.</strong></div><br style="clear:both;" /><div id="zListingImageEnlargeImageParent" style="width:100%;text-align:center;float:left;"><img src="/z/a/images/s.gif" id="zListingImageEnlargeImage" style="max-width:100%;max-height:100%;display:inline-block;" alt="Enlarged Image" /></div></div>');
+}
+
+
 function zImageShowEnlarger(id,dimg,dpos,src){
 	var d=document.getElementById(id);
 	if(d===null) return;
 	zSetScrollPosition();
 	//if(typeof zIArrMDead[id] === "undefined"){
 		var ws=getWindowSize();
+		zLoadImageEnlargerDiv();
 		var d99=document.getElementById('zListingImageEnlargeDiv');
 		if(d99 !== null){
 			if(d99.style.display==="none" || zCurEnlargeImageId !== id){
-				zCurEnlargeImageId=id;
-				//d99.style.left=((dpos.x+(dpos.width/2))-(540/2)+408)-zPositionObjSubtractPos[0]+"px";
+				zCurEnlargeImageId=id; 
 				// detect which side of listing image has more room
 				
 				var newLeft=0;
@@ -239,54 +251,27 @@ function zImageShowEnlarger(id,dimg,dpos,src){
 				if(dpos.x + (dpos.width/2) > ws.width / 2 || ws.width < 580 ){
 					// left bigger
 					
-					newLeft=Math.max(20, dpos.x-580);//,((dpos.x+(dpos.width/2))-(zIImageMaxWidth/2)+398)-zPositionObjSubtractPos[0];
+					newLeft=Math.max(20, dpos.x-580); 
 				}else{
 					newLeft=Math.min(dpos.x+dpos.width+20, (ws.width-580)-zPositionObjSubtractPos[0]);
 				}
 				if(dpos.y + (dpos.height/2) > ws.height / 2 || ws.height < 470){
 					// top bigger
-					newTop=Math.max(dpos.y-470,zScrollPosition.top+20);//((dpos.y+(dpos.height/2))-(zIImageMaxHeight/2))-zPositionObjSubtractPos[1];
+					newTop=Math.max(dpos.y-470,zScrollPosition.top+20); 
 				}else{
 					newTop=Math.min(dpos.y+dpos.height+20, zScrollPosition.top+(ws.height-470));
 				}
 				
-				d99.style.left=newLeft+"px";//(Math.min(ws.width-600,((dpos.x+(dpos.width/2))-(zIImageMaxWidth/2)+398))-zPositionObjSubtractPos[0])+"px";
-				d99.style.top=newTop+"px";//((dpos.y+(dpos.height/2))-(zIImageMaxHeight/2))-zPositionObjSubtractPos[1]+"px";
-				/*d99.onmousemove=d.onmousemove;
-				d99.onmouseout=d.onmouseout;
-				d99.onmouseup=function(){ window.location.href=zIArrMLink[id];	}*/
+				d99.style.left=newLeft+"px"; 
+				d99.style.top=newTop+"px"; 
 			}
-			d92=document.getElementById('zListingImageEnlargeImage');
-			//d99.src='/z/a/listing/images/image-not-available.gif';//zIArrM[id][n];
-			d92.onload=function(){
+			d92=document.getElementById('zListingImageEnlargeImage'); 
+			/*d92.onload=function(){
 				
-				var d99=document.getElementById('zListingImageEnlargeDiv');
-				//zResizeWithRatio('zListingImageEnlargeImage',580,420);
-				//d99.style.display="block";
-				//var tWidth=this.width;
-				//var tHeight=this.height;
-				
-				/*
-				if(this.width>zIImageMaxWidth){
-					this.width=zIImageMaxWidth;	
-				}
-				if(this.height>zIImageMaxHeight-20){
-					this.height=zIImageMaxHeight-20;	
-				}*/
-				
-				
-				
-				
+				var d99=document.getElementById('zListingImageEnlargeDiv'); 
 				if(typeof zIArrMSize[this.src] === "undefined"){
 					return;
-				}
-				/*if(zIArrMSize[this.src] && zIArrMSize[this.src][1]==0){
-					zIArrMSize[this.src][1]=this.height;
-					zIArrMSize[this.src][0]=this.width;
-					setTimeout("zImageMouseLoadDelayed('"+this.id+"',true)",100);
-					return;
-				}*/
-				//alert(zIArrMSize[this.src]);
+				} 
 				zIArrMSize[this.src]=[this.width,this.height];
 				if(zIArrMSize[this.src][0]<=zIImageMaxWidth && zIArrMSize[this.src][1]<=zIImageMaxHeight-20){
 					if(zIArrMSize[this.src][0] !== 0){
@@ -306,8 +291,7 @@ function zImageShowEnlarger(id,dimg,dpos,src){
 						var r1=(zIImageMaxHeight-20)/zIArrMSize[this.src][1];
 						var nw=Math.round(r1*zIArrMSize[this.src][0]);
 						var nh=zIImageMaxHeight-20;
-					}
-					//alert(nw+":"+nh+":"+zIArrMSize[this.src][0]+":"+zIArrMSize[this.src][1]);
+					} 
 					if(nw===0){
 						if(zIImageMaxWidth !== 0){
 							this.width=zIImageMaxWidth;
@@ -319,30 +303,17 @@ function zImageShowEnlarger(id,dimg,dpos,src){
 							this.height=Math.floor(nh);
 						}
 					}
-				}
-				//alert(this.width+":"+nw+":"+this.height+":"+nh);
-				
-				//return;
-				//alert(this.style.width+":"+this.style.height+":"+this.width+":"+this.height);
+				} 
 				this.style.cssFloat="left";
 				this.style.marginLeft=Math.max(0,Math.floor((zIImageMaxWidth-this.width)/2))+"px";
-				this.style.marginTop=Math.max(0,Math.floor((zIImageMaxHeight-this.height)/2))+"px";
-				//d99.style.display="block";
-			};
-			//d99.style.width="auto";
-			//d99.style.height="auto";
-			//zResizeWithRatio('zListingImageEnlargeImage',580,420);
-		}
-		if(d92.src === '/z/a/images/s.gif' || d92.src !== src){
-			//d92.style.width="auto";
-			//d92.style.height="auto";
-			//d92.src="";
-		//	d99.style.display="none";
-			d99.style.display="block";
-			document.getElementById('zListingImageEnlargeImageParent').innerHTML='<img id="zListingImageEnlargeImage" alt="Image" src="'+src+'" onerror="zImageOnError(this);" />';
-			//d92.src=src;//zIArrM[id][n];
-		}else{
-			d99.style.display="block";
+				this.style.marginTop=Math.max(0,Math.floor((zIImageMaxHeight-this.height)/2))+"px"; 
+			}; */
+			if(d92.src === '/z/a/images/s.gif' || d92.src !== src){ 
+				d99.style.display="block";
+				document.getElementById('zListingImageEnlargeImageParent').innerHTML='<img id="zListingImageEnlargeImage" alt="Image" src="'+src+'" style="display:inline-block; max-width:100%;max-height:100%;" onerror="zImageOnError(this);" />'; 
+			}else{
+				d99.style.display="block";
+			}
 		}
 	//}
 }

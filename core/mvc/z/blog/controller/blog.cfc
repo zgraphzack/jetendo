@@ -1978,14 +1978,7 @@ this.app_id=10;
 	viewdata.article.story&=('</div>'); 
 	// might need to support this in the skin language instead
 	//viewdata.article.secureEmailURL=application.zcore.functions.zEncodeEmail(qArticle.user_username);
-	//viewdata.article.secureEmailAddress=application.zcore.functions.zEncodeEmail(qArticle.user_username);
-	viewdata.realEstateSearchResults='';
-	if(application.zcore.app.siteHasApp("listing") and qArticle.blog_search_mls EQ 1){
-		if(isDefined('request.zos.supressBlogArticleDetails') EQ false or request.zos.supressBlogArticleDetails NEQ 1){
-			r9=request.zos.listing.functions.zMLSSearchOptionsDisplay(qArticle.mls_saved_search_id);
-			viewdata.realEstateSearchResults='<hr />'&r9.output;
-		}
-	}
+	//viewdata.article.secureEmailAddress=application.zcore.functions.zEncodeEmail(qArticle.user_username); 
 	db.sql="select * ";
 	if(application.zcore.enableFullTextIndex){
 		db.sql&=" , MATCH(blog_search) AGAINST (#db.param(qArticle.blog_title)# ) c ";// WITH QUERY EXPANSION 
@@ -2096,7 +2089,11 @@ this.app_id=10;
 		echo(theImageOutputHTML);
 	}
 
-	writeoutput(viewdata.realEstateSearchResults);
+	if(application.zcore.app.siteHasApp("listing") and qArticle.blog_search_mls EQ 1){
+		if(not structkeyexists(request.zos, 'supressBlogArticleDetails') or request.zos.supressBlogArticleDetails NEQ 1){
+			application.zcore.listingStruct.functions.zListingDisplaySavedSearch(qArticle.mls_saved_search_id); 
+		}
+	} 
 	</cfscript>
 	<cfif isDefined('request.zos.supressBlogArticleDetails') and request.zos.supressBlogArticleDetails EQ 1>
 		<h2><a href="#tempCurrentBlogUrl###addC">Leave a comment</a></h2>
@@ -3084,8 +3081,7 @@ this.app_id=10;
 	<cfif application.zcore.app.siteHasApp("listing") and qcategory.blog_category_search_mls EQ 1>
 		<hr />
 		<cfscript>
-		r9=request.zos.listing.functions.zMLSSearchOptionsDisplay(qCategory.blog_category_saved_search_id);
-		writeoutput(r9.output);
+		application.zcore.listingStruct.functions.zListingDisplaySavedSearch(qCategory.blog_category_saved_search_id); 
 		</cfscript>
 	</cfif> 
 	#application.zcore.app.getAppCFC("blog").getPopularTags()#
@@ -3369,8 +3365,7 @@ this.app_id=10;
 	<cfif application.zcore.app.siteHasApp("listing") and qcategory.blog_category_search_mls EQ 1>
 		<hr />
 		<cfscript>
-		r9=request.zos.listing.functions.zMLSSearchOptionsDisplay(qCategory.blog_category_saved_search_id);
-		writeoutput(r9.output);
+		application.zcore.listingStruct.functions.zListingDisplaySavedSearch(qCategory.blog_category_saved_search_id); 
 		</cfscript>
 	</cfif> 
 	#application.zcore.app.getAppCFC("blog").getPopularTags()#
@@ -4335,8 +4330,7 @@ this.app_id=10;
 	<cfif application.zcore.app.siteHasApp("listing") and qtagdata.blog_tag_search_mls EQ 1>
 		<hr />
 		<cfscript>
-		r9=request.zos.listing.functions.zMLSSearchOptionsDisplay(qtagdata.blog_tag_saved_search_id);
-		writeoutput(r9.output);
+		application.zcore.listingStruct.functions.zListingDisplaySavedSearch(qtagdata.blog_tag_saved_search_id);
 		</cfscript>
 	</cfif> 
 	#application.zcore.app.getAppCFC("blog").getPopularTags()#

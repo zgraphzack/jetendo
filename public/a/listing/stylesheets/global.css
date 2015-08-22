@@ -28,7 +28,7 @@ form{ margin:0px; padding:0px; }
 #mapContentDivId .zls2-colorlegend {
 display: none;
 }
-
+.zls-more-link-heading{float:left; width:100%;}
 .zls-saveThisSearchLink{ background-image:url(/z/a/listing/images/save-this-search.jpg); width:146px; height:60px; float:left; display:block;}
 
 #zmls-thumbnailboxid{width:100%; margin-bottom:15px; clear:both; float:left;}

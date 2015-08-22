@@ -1,45 +1,26 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" returntype="any">
-<cfscript>
-var perpage=0;
-var ts3=0;
-var randcount=0;
-var theScript=0;
-var i=0;
-var propertyDataCom=0;
-var qC=0;
-var mapQuery=0;
-var returnStruct=0;
-var propDisplayCom=0;
-var mapCom=0;
-var ts2=0;
-var perpageDefault=0;
-var tempSearchFormAction=0;
-var ms=0;
-var mapStageStruct=0;
-var ts=0;
-var propertyHTML=0;
-var db=request.zos.queryObject;
+<cfscript> 
+db=request.zos.queryObject;
 Request.zPageDebugDisabled=true;
 application.zcore.template.setTemplate("zcorerootmapping.templates.plain",true,true);
-form.content_id=application.zcore.functions.zso(form, 'content_id',true);
-db.sql="select * from 
-#request.zos.queryObject.table("content", request.zos.zcoreDatasource)# content, 
+form.ssid=application.zcore.functions.zso(form, 'ssid',true);
+db.sql="select * from  
 #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-where mls_saved_search.mls_saved_search_id = content.content_saved_search_id and 
-mls_saved_search.site_id = content.site_id and 
-content_for_sale <> #db.param('2')# and 
+where
+saved_search_email=#db.param('')# and 
+user_id=#db.param(0)# and 
+mail_user_id=#db.param(0)# and 
 mls_saved_search_deleted = #db.param(0)# and 
-content_deleted = #db.param(0)# and 
-content_id = #db.param(form.content_id)# and 
+mls_saved_search_id = #db.param(form.ssid)# and 
 mls_saved_search.site_id=#db.param(request.zos.globals.id)#";
 qC=db.execute("qC");
-
-application.zcore.functions.zquerytostruct(qc, form);
-if(qC.recordcount EQ 0 or form.content_show_map NEQ 1){
-	application.zcore.functions.zabort();	
+ 
+if(qC.recordcount EQ 0){
+	abort;
 }
+application.zcore.functions.zquerytostruct(qc, form);
 
 propertyHTML="";
 propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
@@ -56,55 +37,53 @@ ts.searchCriteria=structnew();
 request.zos.listing.functions.zMLSSetSearchStruct(ts.searchcriteria, form);
 
 form.searchId=application.zcore.status.getNewId();
-application.zcore.status.setStatus(form.searchid,false,ts.searchcriteria);
-if(form.content_show_map EQ 1){
-    writeoutput('<script type="text/javascript">/* <![CDATA[ */ zMLSSearchFormName="contentSearchHiddenForm"; /* ]]> */</script>');
-    ts2=StructNew();
-    ts2.name="contentSearchHiddenForm";
-    ts2.ajax=false;
-    ts2.debug=false;
-    ts2.action=application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "searchaction=search&searchId=#form.searchid#");
-    tempSearchFormAction=ts2.action;
-    ts2.onLoadCallback="loadMLSResults";
-    ts2.method="post";
-    ts2.ignoreOldRequests=true;
-    ts2.successMessage=false;
-    ts2.onChangeCallback="getMLSCount";
-    application.zcore.functions.zForm(ts2);
-	
-        ts3=structnew();
-        ts3.name="search_map_long_blocks";
-        application.zcore.functions.zinput_hidden(ts3);
-        ts3=structnew();
-        ts3.name="search_map_lat_blocks";
-        application.zcore.functions.zinput_hidden(ts3);
-        ts3=structnew();
-        ts3.name="zforcemapresults";
-        application.zcore.functions.zinput_hidden(ts3);
-    
-    for(i in ts.searchCriteria){
-        ts3=structnew();
-        ts3.name=lcase(i);
-        form[i]=ts.searchCriteria[i];
-        application.zcore.functions.zinput_hidden(ts3);
-    }
-    application.zcore.functions.zEndForm();
+application.zcore.status.setStatus(form.searchid,false,ts.searchcriteria); 
+writeoutput('<script type="text/javascript">/* <![CDATA[ */ zMLSSearchFormName="contentSearchHiddenForm"; /* ]]> */</script>');
+ts2=StructNew();
+ts2.name="contentSearchHiddenForm";
+ts2.ajax=false;
+ts2.debug=false;
+ts2.action=application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "searchaction=search&searchId=#form.searchid#");
+tempSearchFormAction=ts2.action;
+ts2.onLoadCallback="loadMLSResults";
+ts2.method="post";
+ts2.ignoreOldRequests=true;
+ts2.successMessage=false;
+ts2.onChangeCallback="getMLSCount";
+application.zcore.functions.zForm(ts2);
+
+ts3=structnew();
+ts3.name="search_map_long_blocks";
+application.zcore.functions.zinput_hidden(ts3);
+ts3=structnew();
+ts3.name="search_map_lat_blocks";
+application.zcore.functions.zinput_hidden(ts3);
+ts3=structnew();
+ts3.name="zforcemapresults";
+application.zcore.functions.zinput_hidden(ts3);
+
+for(i in ts.searchCriteria){
+	ts3=structnew();
+	ts3.name=lcase(i);
+	form[i]=ts.searchCriteria[i];
+	application.zcore.functions.zinput_hidden(ts3);
 }
+application.zcore.functions.zEndForm(); 
 if(structkeyexists(form, 'debugsearchresults') and form.debugsearchresults){
 ts.debug=true;
 }
 propertyHTML="";
 if(isDefined('request.zForceHideContentProperties') EQ false){ 
-    returnStruct = propertyDataCom.getProperties(ts);
-    structdelete(variables,'ts'); 
-    if(returnStruct.count NEQ 0){	
-        propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
-        
-    }
+	returnStruct = propertyDataCom.getProperties(ts);
+	structdelete(variables,'ts'); 
+	if(returnStruct.count NEQ 0){	
+		propDisplayCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+		
+	}
 }
 randcount=randrange(5,10);
 </cfscript>
-    <div id="mapContentDivId" style="width:100%; float:left;"></div>
+	<div id="mapContentDivId" style="width:100%; float:left;"></div>
 	<cfscript>
 	mapStageStruct=StructNew();
 	mapStageStruct.width=380;

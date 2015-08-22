@@ -947,26 +947,22 @@ this.isPropertyDisplayCom=true;
 		propertyLink=application.zcore.functions.zURLAppend(propertyLink,"showInactive=1");
 	}
 	propertyLink=htmleditformat(propertyLink);
-	priceChange=0;
-	/*if(structkeyexists(arguments.idx,'listing_track_datetime') and arguments.idx.listing_track_datetime NEQ ""){
-		priceChange=application.zcore.functions.zso(arguments.idx, 'listing_track_price',true)-application.zcore.functions.zso(arguments.idx, 'listing_track_price_change',true);
-	}*/
-	application.zcore.listingCom.outputEnlargementDiv();
+	priceChange=0; 
+	savecontent variable="thePaths"{
+		loop from="1" to="#arguments.idx.listing_photocount#" index="i"{
+			if(structkeyexists(arguments.idx, 'photo'&i)){
+				if(i NEQ 1){
+					echo('@');
+				}
+				if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 2){
+					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, iwidth, iheight, 0));
+				}else{
+					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 10000,10000, 0));
+				}
+			}
+		}
+	}
 	</cfscript>
-	<cfsavecontent variable="thePaths">
-	<cfloop from="1" to="#arguments.idx.listing_photocount#" index="i">
-	<cfif isDefined('arguments.idx.photo'&i)>
-		<cfif i NEQ 1>
-			@
-		</cfif>
-		<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 2>
-			#application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, iwidth, iheight, 0)#
-			<cfelse>
-			#application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 10000,10000, 0)#
-		</cfif>
-	</cfif>
-	</cfloop>
-	</cfsavecontent>
 	<div class="zls-list-grid-listingdiv" style="width:#iwidth#px; ">
 		<input type="hidden" name="m#arguments.idx.listing_id#_mlstempimagepaths" id="m#arguments.idx.listing_id#_mlstempimagepaths" value="#htmleditformat(replace(thePaths,'&amp;','&','all'))#" />
 		<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 0>
@@ -1122,21 +1118,22 @@ this.isPropertyDisplayCom=true;
 	</cfif>
 	<cfscript>
 	   propertyLink=htmleditformat(propertyLink);
-	   </cfscript>
-	<cfsavecontent variable="thePaths">
-	<cfloop from="1" to="#arguments.idx.listing_photocount#" index="i">
-	<cfif isDefined('arguments.idx.photo'&i)>
-		<cfif i NEQ 1>
-			@
-		</cfif>
-		<cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 2>
-			#application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 221, 165, 0)#
-		<cfelse>
-			#application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 10000,10000, 0)#
-		</cfif>
-	</cfif>
-	</cfloop>
-	</cfsavecontent>
+
+	savecontent variable="thePaths"{
+		loop from="1" to="#arguments.idx.listing_photocount#" index="i"{
+			if(structkeyexists(arguments.idx, 'photo'&i)){
+				if(i NEQ 1){
+					echo('@');
+				}
+				if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_image_enlarge',false,0) EQ 2){
+					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, iwidth, iheight, 0));
+				}else{
+					echo(application.zcore.listingCom.getThumbnail(arguments.idx['photo'&i], request.lastPhotoId, i, 10000,10000, 0));
+				}
+			}
+		}
+	}
+	</cfscript> 
 	<input type="hidden" name="m#arguments.idx.listing_id#_mlstempimagepaths" id="m#arguments.idx.listing_id#_mlstempimagepaths" value="#htmleditformat(replace(thePaths,'&amp;','&','all'))#" />
 	<cfscript> 
 	tempText = rereplace(arguments.idx.listing_data_remarks, "<.*?>","","ALL");
@@ -1173,8 +1170,7 @@ this.isPropertyDisplayCom=true;
 	if(isDefined('this.isPropertyDisplayCom') EQ false or this.optionStruct.compact EQ false or this.optionStruct.compactWithLinks){
 	}else{
 		rowSpan1--;
-	}
-	application.zcore.listingCom.outputEnlargementDiv();
+	} 
 	</cfscript>
 	<table class="zls2-1">
 		<tr>
@@ -1580,8 +1576,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 		}else if(arguments.idx.content_for_sale EQ '3'){
 			statusMessage="SOLD";	
 		}
-		
-	application.zcore.listingCom.outputEnlargementDiv();
+		 
 	
 	titleStruct = request.zos.listing.functions.zListinggetTitle(arguments.idx);
 	</cfscript>
