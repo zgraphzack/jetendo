@@ -982,7 +982,7 @@ this.app_id=12;
 				application.zcore.functions.zCookie(ts);
 				request.zsession.zUserInquiryInfoLoaded=true;
 			}
-		}else if(application.zcore.functions.zso(cookie, 'z_user_id') NEQ "" and application.zcore.functions.zso(cookie, 'z_user_key') NEQ ""){
+		}else if(application.zcore.functions.zso(cookie, 'inquiries_email') EQ "" and application.zcore.functions.zso(cookie, 'z_user_id') NEQ "" and application.zcore.functions.zso(cookie, 'z_user_key') NEQ ""){
 			tmpUsrId=cookie.z_user_id;
 			db.sql="SELECT user_username, user_first_name, user_last_name, user_phone 
 			FROM #db.table("user", request.zos.zcoreDatasource)# user 

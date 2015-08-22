@@ -95,6 +95,7 @@ variables.tableLookup["G"]="G";
 	var arrT=0;
 	var rs=0;
 	
+	var db=request.zos.queryObject;
 	if(structcount(this.emptyStruct) EQ 0){
 		for(i=1;i LTE arraylen(this.arrColumns);i++){
 			this.emptyStruct[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].tableFields[this.arrColumns[i]].longname]="";
@@ -498,6 +499,14 @@ variables.tableLookup["G"]="G";
 	rs.listing_year_built=ts["year built"];
 	rs.listing_office=ts["Office ID"];
 	rs.listing_agent=ts["Agent ID"];
+	db.sql="select * from #db.table("rets26_office", request.zos.zcoreDatasource)# rets26_office 
+	where rets26_office_0=#db.param(rs.listing_office)#";
+	qOffice=db.execute("qOffice");  
+	if(qOffice.recordcount NEQ 0){
+		rs.listing_office_name=qOffice.rets26_office_2;
+	}else{
+		rs.listing_office_name='';
+	}
 	rs.listing_latitude=curLat;
 	rs.listing_longitude=curLong;
 	rs.listing_pool=local.listing_pool;
@@ -548,7 +557,6 @@ variables.tableLookup["G"]="G";
 	<cfargument name="row" type="numeric" required="no" default="#1#">
 	<cfargument name="fulldetails" type="boolean" required="no" default="#false#">
 	<cfscript>
-	var db=request.zos.queryObject;
 	var q1=0;
 	var t44444=0;
 	var t99=0;
@@ -581,16 +589,10 @@ variables.tableLookup["G"]="G";
 			idx["photo"&i]=request.zos.retsPhotoPath&'26/'&left(local.fNameTempMd51,2)&"/"&mid(local.fNameTempMd51,3,1)&"/"&local.fNameTemp1;
 		}
 	} 
-	db.sql="select * from #db.table("rets26_office", request.zos.zcoreDatasource)# rets26_office 
-	where rets26_office_0=#db.param(idx.listing_office)#";
-	qOffice=db.execute("qOffice");  
 	idx["agentName"]="";
 	idx["agentPhone"]="";
-	idx["agentEmail"]="";
-	idx["officeName"]="";
-	if(qOffice.recordcount NEQ 0){
-		idx["officeName"]=qOffice.rets26_office_2;
-	}
+	idx["agentEmail"]=""; 
+	idx["officeName"]=idx.listing_office_name;
 	idx["officePhone"]="";
 	idx["officeCity"]="";
 	idx["officeAddress"]="";

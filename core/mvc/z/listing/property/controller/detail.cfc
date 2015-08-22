@@ -292,7 +292,7 @@ This listing was first listed on this web site on #dateformat(variables.listing_
 			listing_longitude=variables.listing_longitude,
 			listing_data_address=variables.listing_data_address,
 			listing_data_zip=variables.listing_data_zip,
-			cityName=cityName,
+			cityName=variables.cityName,
 			hideMapControls=hideMapControls	
 		}
 		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");

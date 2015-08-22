@@ -2469,9 +2469,9 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 		if(isDefined('request.zsession.tempVars.zListingSearchId')){
 			writeoutput('<div id="zListingSearchBarEnabledDiv" style="display:none;"></div>');
 		}
-		if(request.zos.globals.enableInstantLoad EQ 1 or (structkeyexists(cookie,'SAVEDLISTINGCOUNT') and cookie.SAVEDLISTINGCOUNT NEQ 0) or (structkeyexists(cookie,'SAVEDCONTENTCOUNT') and cookie.savedContentCount NEQ 0)){
-			application.zcore.template.prependTag("topcontent","<div id=""sl894nsdh783"" style=""width:100%; float:left; clear:both;""></div><script type=""text/javascript"" src=""/z/listing/sl/index?saveAct=list&amp;zFPE=1""> </script>");
-		}
+		if(request.zos.globals.enableInstantLoad EQ 1 or (structkeyexists(cookie,'SAVEDLISTINGCOUNT') and cookie.SAVEDLISTINGCOUNT NEQ 0)){
+			application.zcore.template.prependTag("topcontent",'<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>');
+		} 
 	}
 	if (not request.zos.trackingspider and (not request.zos.istestserver or structkeyexists(form, 'debugajaxgeocoder')) and request.zos.originalURL NEQ "/z/listing/ajax-geocoder/index" and (randrange(1, request.zos.geocodeFrequency) EQ 1)){
 		savecontent variable="geocodeOutput"{
@@ -2945,7 +2945,7 @@ zCreateMemoryTable(ts);
 <cfscript>
 	var db=request.zos.queryObject;
 	if(isDefined('request.zsession.user.id')){
-		if((isDefined('request.zsession.listing.savedContentStruct') and structcount(request.zsession.listing.savedContentStruct) EQ 0) and (isDefined('request.zsession.listing.savedListingStruct') EQ false and structcount(request.zsession.listing.savedListingStruct) EQ 0)){
+		if((isDefined('request.zsession.listing.savedListingStruct') EQ false and structcount(request.zsession.listing.savedListingStruct) EQ 0)){
 			db.sql="DELETE FROM #db.table("saved_listing", request.zos.zcoreDatasource)#  
 			WHERE site_id=#db.param(request.zos.globals.id)# and 
 			user_id=#db.param(request.zsession.user.id)#  and 
@@ -2954,9 +2954,7 @@ zCreateMemoryTable(ts);
 		}else{
 			 db.sql="REPLACE INTO #db.table("saved_listing", request.zos.zcoreDatasource)#  
 			 SET saved_listing_count=#db.param(structcount(request.zsession.listing.savedListingStruct))#,
-			  saved_listing_idlist=#db.param(structkeylist(request.zsession.listing.savedListingStruct))#, 
-			  saved_content_count=#db.param(structcount(request.zsession.listing.savedContentStruct))#, 
-			  saved_content_idlist=#db.param(structkeylist(request.zsession.listing.savedContentStruct))#, 
+			  saved_listing_idlist=#db.param(structkeylist(request.zsession.listing.savedListingStruct))#,  
 			  saved_listing_datetime=#db.param(request.zos.mysqlnow)#,  
 			  site_id=#db.param(request.zos.globals.id)#, 
 			  user_id=#db.param(request.zsession.user.id)#, 

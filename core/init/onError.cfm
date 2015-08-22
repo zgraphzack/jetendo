@@ -21,7 +21,7 @@
 	var developerflagged=0;
 	var testserverflagged=0;
 	var zallrequestvars=0;
-	var supportedformats=0;
+	var supportedformats=0; 
 
 	if(structkeyexists(request.zos, 'applicationLoading')){
 		structdelete(request.zos, 'applicationLoading');

@@ -1,68 +1,8 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" returntype="any">
-<cfscript>
-var detailCom=0;
-var ts=0;
-var firstImageToShow=0;
-var temp=structnew();
-var ps=0;
-var propertyDataCom=0;
-var propertyDisplayCom=0;
-var hideSearchBar=0;
-var h=0;
-var returnStruct=0;
-var isOfficeListing=0;
-var idx=0;
-var titleStruct=0;
-var tempURL=0;
-var propertyLink=0;
-var fullPropertyLink=0;
-var tempText=0;
-var theBegin=0;
-var theEnd=0;
-var pos=0;
-var hideSearchBar=0;
-var searchStruct=0;
-var i=0;
-var newD=0;
-var message1=0;
-var message2=0;
-var message3=0;
-var message4=0;
-var mapStageStruct=0;
-var hideControls=0;
-var cfcatch=0;
-var mapHTML=0;
-var ms=0;
-var mapCom=0;
-var d3=0;
-var metacontent=0;
-var featureText=0;
-var metaKey=0;
-var topRightColSize=0;
-var hideMapControls=0;
-var maintfees=0;
-var theJS=0;
-var mapQuery=0;
-var tempCom=0;
-var excpt=0;
-var link9=0;
-var tempName=0;
-var userusergroupid=0;
-var agentStruct=0;
-var userGroupCom=0;
-var cityName=0;
-var curPhoto=0;
-var newTopHeight=0;
-var leftColSize=0;
-var tempAgent=0;
-var nw=0;
-var topLeftColSize=0;
-var fullTextBackup=0;
-var rightColSize=0;
-var priceChange=0;
-var nh=0;
+<cfscript> 
+var temp=structnew();  
 application.zcore.template.setTag("title","Property Detail");
 //request.zos.page.setDefaultAction('list');
 ts=StructNew();
@@ -353,22 +293,9 @@ infobar_opacity: 1<!--- 				//FLOAT - transparency for info bar --->
 
 <div class="zls-detail-askquestion"><a href="##" onclick="zShowModalStandard('/z/listing/inquiry/index?action=form&amp;modalpopforced=1&amp;listing_id=#form.listing_id#', 540, 630);return false;" rel="nofollow">Ask A Question</a></div>
  
-<cfscript>
-link9='/z/listing/sl/index?saveAct=check&listing_id=#form.listing_id#';
-if(structkeyexists(form, 'searchId') and form.searchid NEQ ""){
-	link9&='&searchid=#form.searchid#';
-}
-/*if(structkeyexists(form, request.zos.urlRoutingParameter) AND form[request.zos.urlRoutingParameter] NEQ ""){
-	link9&='&returnURL='&urlEncodedFormat(request.zos.originalURL);
-}else{*/
-	link9&='&returnURL='&urlEncodedFormat(request.zos.originalURL&"?"&replacenocase(replacenocase(request.zos.cgi.QUERY_STRING,"searchid=","ztv=","ALL"),"__zcoreinternalroutingpath=","ztv=","ALL"));
-//}
-link9&='&searchId='&application.zcore.functions.zso(form, 'searchId');
-</cfscript>
-
 <div class="zls-detail-toplinks">
 <cfif form.virtualtoururl neq '' and findnocase("http://", form.virtualtoururl) NEQ 0><a href="#application.zcore.functions.zBlockURL(form.virtualtoururl)#" rel="nofollow" onclick="window.open(this.href); return false;">Virtual Tour</a></cfif>
-<a href="#request.zos.currentHostName&application.zcore.functions.zBlockURL(link9)#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
+<a href="##" class="zls-saveListingButton" data-listing-id="#form.listing_id#" rel="nofollow" class="zNoContentTransition">Save Listing</a>
 
 <cfif application.zcore.functions.zvar('sendConfirmOptIn', request.zos.globals.id) EQ 1>
 	

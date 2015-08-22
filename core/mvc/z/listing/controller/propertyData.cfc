@@ -2050,7 +2050,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	db.sql="select * from #db.table("mls_filter", request.zos.zcoreDatasource)# mls_filter 
 	where mls_filter.site_id = #db.param(request.zos.globals.id)# and 
 	mls_filter_deleted = #db.param(0)#";
-	qList=db.execute("qList");
+	qMLSFilter=db.execute("qMLSFilter");
 	rs.whereSQL="";
 	rs.whereOptionsSQL="";
 	rs.citySQL="";
@@ -2075,24 +2075,24 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	nodragstruct["filter_zip"]=true;
 	nodragstruct["filter_address"]=true;
 	
-	arrC=listtoarray(qList.columnlist); 
+	arrC=listtoarray(qMLSFilter.columnlist); 
 	local.maxSort=0;
 	
-	if(qList.recordcount NEQ 0){
+	if(qMLSFilter.recordcount NEQ 0){
 		for(i=1;i LTE arraylen(arrC);i++){
-			local.c=listlen(qlist[arrC[i]], ",");
+			local.c=listlen(qMLSFilter[arrC[i]], ",");
 			if(local.c EQ 4){
-				local.c2=listgetat(qlist[arrC[i]], 3,",");
+				local.c2=listgetat(qMLSFilter[arrC[i]], 3,",");
 				if(local.c2 NEQ 99){
 					local.maxSort=max(local.maxSort, local.c2);
 				}
 			}
 		}
 	}
-	if(qList.recordcount NEQ 0){
+	if(qMLSFilter.recordcount NEQ 0){
 		local.arrC2=arraynew(1);
 		for(i=1;i LTE arraylen(arrC);i++){
-			if(local.qlist[arrC[i]] EQ ""){
+			if(local.qMLSFilter[arrC[i]] EQ ""){
 				local.maxSort++;
 				arrayappend(local.arrC2, lcase(arrC[i])&"='1,0,"&local.maxSort&",0'");
 			}
@@ -2108,7 +2108,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 	}
 	flen=len("filter_");
 	arrCurrentSort=arraynew(1);
-	if(qList.recordcount EQ 0){
+	if(qMLSFilter.recordcount EQ 0){
 		for(i=1;i LTE arraylen(arrDefaultSort);i++){
 			key="search_"&removeChars(arrDefaultSort[i],1,flen);
 			if(structkeyexists(nodragstruct,arrDefaultSort[i]) EQ false){
@@ -2129,21 +2129,21 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			}
 		}
 	}
-	if(qList.recordcount EQ 0){
+	if(qMLSFilter.recordcount EQ 0){
 		return rs;
 	}
 	db.sql="select * FROM #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-	where mls_saved_search_id=#db.param(qList.mls_saved_search_id)# and 
+	where mls_saved_search_id=#db.param(qMLSFilter.mls_saved_search_id)# and 
 	site_id=#db.param(request.zos.globals.id)# and 
 	mls_saved_search_deleted =#db.param(0)# " ;
-	qList2=db.execute("qList2");
-	if(qList2.recordcount EQ 0){
+	qMLSFilter2=db.execute("qMLSFilter2");
+	if(qMLSFilter2.recordcount EQ 0){
 		return rs;
 	}
 	for(i=1;i LTE arraylen(arrC);i++){
 		field=arrC[i];
 		if(left(field,flen) EQ "filter_"){
-			arrCur=listtoarray(qList[field][1]);
+			arrCur=listtoarray(qMLSFilter[field][1]);
 			key="search_"&removeChars(arrC[i],1,flen);
 			rs.hideListings[key]=false;	
 			if(arraylen(arrCur) GTE 4){
@@ -2168,9 +2168,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			}
 		}
 	}
-	arrC=listtoarray(qList2.columnlist);
+	arrC=listtoarray(qMLSFilter2.columnlist);
 	for(i=1;i LTE arraylen(arrC);i++){
-		rs.data[arrC[i]]=qList2[arrC[i]][1];
+		rs.data[arrC[i]]=qMLSFilter2[arrC[i]][1];
 	}
 	for(i in rs.data){
 		if(isNumeric(rs.data[i]) and rs.data[i] EQ 0){

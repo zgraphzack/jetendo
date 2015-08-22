@@ -68,13 +68,6 @@
 		assert(true);
 		</cfscript>
 	</cffunction>
-
-	<cffunction name="contentTemplate" localmode="modern" returntype="void" access="public">
-    	<cfscript>
-		variables.propertyDisplayCom.contentTemplate(variables.idx);
-		assert(true);
-		</cfscript>
-	</cffunction>
     
 	<cffunction name="descriptionLinkTemplate" localmode="modern" returntype="void" access="public">
     	<cfscript>

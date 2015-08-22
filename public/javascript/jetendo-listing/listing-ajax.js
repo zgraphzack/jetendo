@@ -55,5 +55,98 @@ function zLoadListingSavedSearches(){
 }
 zArrLoadFunctions.push({functionName:zLoadListingSavedSearches});
 
+function zListingLoadSavedCart(){
+	if(typeof zIsModalWindow != "undefined"){
+		return;
+	}
+	var listingCount=zGetCookie("SAVEDLISTINGCOUNT"); 
+	var enabled=false;
+	if(listingCount!="0" && listingCount!=""){
+		enabled=true; 
+	}
+	if(enabled){
+		var tempObj={};
+		tempObj.id="zListingLoadSavedCart";
+		tempObj.cache=false;
+		tempObj.method="get"; 
+		tempObj.callback=function(d){  
+			var r=eval("("+d+")");
+			if(r.success){ 
+				if($("#sl894nsdh783").length){
+					$("#sl894nsdh783").show().html(r.output);   
+				}
+			} 
+		}; 
+		tempObj.ignoreOldRequests=false;
+		tempObj.url="/z/listing/sl/index";  
+		zAjax(tempObj);  
+	}else{
+		$("#sl894nsdh783").html("").hide(); 
+	}
+}
+
+zArrDeferredFunctions.push(zListingLoadSavedCart);
+
+function zSetupListingCartButtons(){
+
+	$(document).on("click", ".zls-saveListingButton", function(e){
+		e.preventDefault();
+		var tempObj={};
+		tempObj.id="zListingLoadSavedCart";
+		tempObj.cache=false;
+		tempObj.method="get"; 
+		tempObj.callback=function(d){  
+			var r=eval("("+d+")");
+			if(r.success){ 
+				zListingLoadSavedCart();
+			}else{
+				alert('Listing saved');
+			} 
+		}; 
+		tempObj.ignoreOldRequests=false;
+		var id=$(e.target).attr("data-listing-id");
+
+		tempObj.url="/z/listing/sl/add?listing_id="+id;  
+		zAjax(tempObj);   
+	}); 
+
+	$(document).on("click", ".zls-removeListingButton", function(e){
+		e.preventDefault();
+		var tempObj={};
+		tempObj.id="zListingLoadSavedCart";
+		tempObj.cache=false;
+		tempObj.method="get"; 
+		tempObj.callback=function(d){  
+			var r=eval("("+d+")");
+			if(r.success){ 
+				zListingLoadSavedCart();
+			} 
+		}; 
+		tempObj.ignoreOldRequests=false;
+		var id=$(e.target).attr("data-listing-id");
+		tempObj.url="/z/listing/sl/delete?listing_id="+id;  
+		zAjax(tempObj);   
+	});
+	$(document).on("click", ".zls-removeAllListingButton", function(e){
+		e.preventDefault();
+		var tempObj={};
+		tempObj.id="zListingLoadSavedCart";
+		tempObj.cache=false;
+		tempObj.method="get"; 
+		tempObj.callback=function(d){  
+			var r=eval("("+d+")");
+			if(r.success){ 
+				zListingLoadSavedCart();
+			} 
+		}; 
+		tempObj.ignoreOldRequests=false;
+		tempObj.url="/z/listing/sl/deleteAll";  
+		zAjax(tempObj);   
+	});
+}
+zArrLoadFunctions.push({functionName:zSetupListingCartButtons});
+
+
+
 
 })(jQuery, window, document, "undefined"); 

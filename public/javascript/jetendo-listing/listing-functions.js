@@ -1,6 +1,4 @@
 
-
-
 function zClearSelection() {
     if(document.selection && document.selection.empty) {
         document.selection.empty();

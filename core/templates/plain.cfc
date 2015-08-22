@@ -1,19 +1,26 @@
 <cfcomponent implements="zcorerootmapping.interface.view">
 <cfoutput>
 <cffunction name="init" access="public" returntype="string" localmode="modern">
-	<cfscript>
-	application.zcore.functions.zrequirejquery(); 
+	<cfscript> 
 	</cfscript>
 </cffunction>
 <cffunction name="render" access="public" returntype="string" localmode="modern">
 	<cfargument name="tagStruct" type="struct" required="yes">
 	<cfscript>
 	var tagStruct=arguments.tagStruct;
+
+	tempPath=request.zos.globals.homedir&"stylesheets/zblank.css";
+	if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath)){
+		stylesheetExists=application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath];
+	}else{
+		stylesheetExists=fileexists(tempPath);
+		application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]=stylesheetExists;
+	}
 	</cfscript>
 	<cfsavecontent variable="output">
 	<cfscript>
 	request.znotemplate=1;
-	if(application.zcore.functions.zIsTestServer() EQ false){
+	if(not request.zos.istestserver){
 		application.zcore.functions.zheader("X-UA-Compatible", "IE=edge,chrome=1");
 	}
 	</cfscript>#application.zcore.functions.zHTMLDoctype()#
@@ -26,8 +33,8 @@
 	 	h2{ font-size: 14px; } /* ]]> */</style>
 		#tagStruct.stylesheets ?: ""#
 		#tagStruct.meta ?: ""#
-		<cfif fileexists(request.zos.globals.homedir&"stylesheets/zblank.css")>
-		#application.zcore.skin.includeCSS("/stylesheets/zblank.css")#
+		<cfif stylesheetExists>
+		#application.zcore.skin.includeCSS(tempPath)#
 		</cfif>
 	</head>
 	<body class="zblanktemplatebody">

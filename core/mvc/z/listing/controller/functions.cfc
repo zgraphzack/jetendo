@@ -19,11 +19,8 @@
 	<cfargument name="fieldName" type="string" required="yes">
 	<cfargument name="searchMLS" type="string" required="yes">
 	<cfargument name="hideSearchMlS" type="boolean" required="no" default="#false#">
-	<cfscript>
-	var local=structnew();
-		var db=request.zos.queryObject;
-	var qlist=0;
-	var ssaction=0;
+	<cfscript> 
+	db=request.zos.queryObject; 
 	if(structkeyexists(form,'action')){
         ssaction=form.action;
 	}else{
@@ -67,8 +64,8 @@
             where mls_saved_search_id= #db.param(arguments.saved_search_id)# and 
 			site_id = #db.param(request.zos.globals.id)# and 
 			mls_saved_search_deleted =#db.param(0)# 
-		</cfsavecontent><cfscript>qList=db.execute("qList");
-		application.zcore.functions.zquerytostruct(qList, form);
+		</cfsavecontent><cfscript>qSavedSearch=db.execute("qSavedSearch");
+		application.zcore.functions.zquerytostruct(qSavedSearch, form);
 		request.zos.listing.functions.zMLSSetSearchStruct(form, form);
 		local.tempCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.search-form");
 		local.tempCom.index();
@@ -216,17 +213,13 @@
 	<cfargument name="mls_saved_search_id" type="string" required="yes">
 	<cfargument name="ss" type="struct" required="no" default="#structnew()#">
 	<cfscript>
-		var db=request.zos.queryObject;
-	var qlist=0;
-	var local=structnew();
-	</cfscript>
-	<cfsavecontent variable="db.sql">
-		select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
-		where mls_saved_search_id= #db.param(arguments.mls_saved_search_id)# and 
-		site_id = #db.param(request.zos.globals.id)# and 
-			mls_saved_search_deleted =#db.param(0)# 
-	</cfsavecontent><cfscript>qList=db.execute("qList");
-	return qList;
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
+	where mls_saved_search_id= #db.param(arguments.mls_saved_search_id)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	mls_saved_search_deleted =#db.param(0)# ";
+	qSavedSearch2=db.execute("qSavedSearch2");
+	return qSavedSearch2;
 	</cfscript>
 </cffunction>
 
@@ -303,20 +296,9 @@ zGetLatLong(ts);
 <cffunction name="zMLSSearchOptionsDisplay" localmode="modern" returntype="any" output="true">
 	<cfargument name="mls_saved_search_id" type="string" required="yes">
 	<cfargument name="ss" type="struct" required="no" default="#structnew()#">
-	<cfscript>
-	var local=structnew();
-	var ts18972=0;
-	var returnStruct={count:0};
-	var qlist=0;
-	var propertyDataCom = 0;
-	var perpageDefault = 0;
-	var perpage = 0;
-	var searchID = 0;
-	var propDisplayCom = 0;
-	var propertyHTML = 0;
-		var db=request.zos.queryObject;
-	var moreLink="";
-	var randcount = 0;
+	<cfscript> 
+	var returnStruct={count:0}; 
+	var db=request.zos.queryObject; 
 	var t9=structnew();
 	var t8942=structnew();
 	var rs=structnew();
@@ -350,9 +332,9 @@ zGetLatLong(ts);
 	where mls_saved_search_id= #db.param(arguments.mls_saved_search_id)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
 	mls_saved_search_deleted = #db.param(0)#";
-	qList=db.execute("qList");
-	application.zcore.functions.zquerytostruct(qList, t8942);
-	rs.mlsSearchSearchQuery=qList;
+	qSavedSearch3=db.execute("qSavedSearch3");
+	application.zcore.functions.zquerytostruct(qSavedSearch3, t8942);
+	rs.mlsSearchSearchQuery=qSavedSearch3;
 	if(structkeyexists(arguments.ss,'search_sort') and arguments.ss.search_sort EQ ""){
 		arguments.ss.search_sort="priceasc";	
 	}
@@ -455,12 +437,13 @@ zGetLatLong(ts);
  </cffunction>
  
 <cffunction name="zListingDisplaySavedSearch" localmode="modern" access="public">
-	<cfargument name="mls_saved_search_id" type="string" required="yes">
-	<div class="zls-listingSavedSearchDiv" data-ssid="#arguments.mls_saved_search_id#"></div> 
+	<cfargument name="amls_saved_search_id" type="string" required="yes">
+	<div class="zls-listingSavedSearchDiv" data-ssid="#arguments.amls_saved_search_id#"></div> 
  </cffunction>
+
 <cffunction name="zListingDisplaySavedSearchMapSummary" localmode="modern" access="public">
-	<cfargument name="mls_saved_search_id" type="string" required="yes">
-	<div class="zls-listingSavedSearchMapSummaryDiv" data-ssid="#arguments.mls_saved_search_id#" style="width:100%; clear:both; float:left;">
+	<cfargument name="amls_saved_search_id" type="string" required="yes">
+	<div class="zls-listingSavedSearchMapSummaryDiv" data-ssid="#arguments.amls_saved_search_id#" style="width:100%; clear:both; float:left;">
 		<div class="contentPropertySummaryDiv" style="width:#request.zos.globals.maximagewidth-400#px; float:left;">
 		</div>
 		

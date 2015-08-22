@@ -19,6 +19,9 @@ this.setDomainCookies = false;
 this.setClientCookies = false;
 
 // disable sessions and cookies when using ab.exe benchmarking to prevent timeouts of this failed request type: length
+if(cgi.user_agent CONTAINS "apachebench"){
+	form.zab=1;
+}
 if(structkeyexists(form,'zab')){
     this.SessionManagement = false;
     this.setDomainCookies = false; 
@@ -78,10 +81,10 @@ this.scopeCascading = "standard";
 	ts.zmailserverpassword="password";
 	ts.httpCompressionType="deflate;q=0.5";
 	ts.inMemberArea=false;
-
 	
 	ts.searchServerCollectionName="entiresite_verity";
 	ts.zos.disableSystemCaching=false;
+	ts.zos.trackingspider=false;
 	ts.zos.arrScriptInclude=arraynew(1);
 	ts.zos.jsIncludeUniqueStruct={};
 	ts.zos.cssIncludeUniqueStruct={};

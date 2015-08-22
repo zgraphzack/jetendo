@@ -6,7 +6,7 @@
 	</cfscript>
 	<h2>Saved Search Example</h2>
 	<cfscript>
-	application.zcore.listingStruct.functions.zListingDisplaySavedSearch("2065");
+	application.zcore.listingStruct.functions.zListingDisplaySavedSearch("2065"); 
 	</cfscript>
 	
 </cffunction>

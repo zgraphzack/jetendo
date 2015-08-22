@@ -1,28 +1,28 @@
 "site_option_id","site_option_name","site_option_display_name","site_option_default_value","site_option_type_id","site_id","site_option_line_breaks","site_option_edit_enabled","site_option_listing_only","site_option_group_id","site_option_sort","site_option_primary_field","site_option_appidlist","site_option_admin_searchable","site_option_required","site_option_validator_cfc","site_option_validator_method","site_option_url_title_field","site_option_admin_search_default","site_option_admin_sort_field","site_option_allow_public","site_option_hide_label","site_option_tooltip","site_option_public_searchable","site_option_search_summary_field","site_option_enable_search_index","site_option_type_json","site_option_small_width"
-"51","Autoresponder Html","Autoresponder Html","<table width=\"600\" cellpadding=\"10\" cellspacing=\"0\" border=\"0\" style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px;line-height:14px;\"> \
-<tr> \
-<td><span style=\"font-size:18px; line-height:24px;\">Thank you for using our website.</span> \
-<p>Thank you for joining our newsletter.</p> \
-</td> \
-</tr> \
-</table>","2","0","1","1","0","0","0","0",",,,,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"600\",\"editorheight\":\"400\"}","0"
-"52","Autoresponder Plain Text","Autoresponder Plain Text","Thank you for using our website. \
-Thank you for joining our newsletter.","1","0","1","1","0","0","0","0",",,,,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"600\",\"editorheight2\":\"400\"}","0"
-"117","Form Privacy Message","Form Privacy Message","","0","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
-"80","Global Email HTML Footer","Global Email HTML Footer","","2","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"640\",\"editorheight\":\"200\"}","0"
-"79","Global Email HTML Header","Global Email HTML Header","","2","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"640\",\"editorheight\":\"200\"}","0"
-"82","Global Email Plain Text Footer","Global Email Plain Text Footer","","1","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"640\",\"editorheight2\":\"200\"}","0"
-"81","Global Email Plain Text Header","Global Email Plain Text Header","","1","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"640\",\"editorheight2\":\"200\"}","0"
-"110","Global HTML Head Source Code","Global HTML Head Source Code","","1","0","0","0","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"600\",\"editorheight2\":\"150\"}","0"
+"51","Autoresponder Html","Autoresponder Html","<table width=\"600\" cellpadding=\"10\" cellspacing=\"0\" border=\"0\" style=\"font-family:Verdana, Arial, Helvetica, sans-serif; font-size:11px;line-height:14px;\">\
+<tr>\
+<td><span style=\"font-size:18px; line-height:24px;\">Thank you for using our website.</span>\
+<p>Thank you for joining our newsletter. Please add us to your address book to continue receiving our emails.</p>\
+</td>\
+</tr>\
+</table>","2","0","1","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"600\",\"editorheight\":\"400\"}","0"
+"52","Autoresponder Plain Text","Autoresponder Plain Text","Thank you for using our website.\
+Thank you for joining our newsletter. Please add us to your address book to continue receiving our emails.","1","0","1","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"600\",\"editorheight2\":\"400\"}","0"
+"173","Form Privacy Message","Form Privacy Message","We don't sell your information.  You can opt out at any time.","0","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
+"95","Global Email HTML Footer","Global Email HTML Footer","","2","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"640\",\"editorheight\":\"200\"}","0"
+"94","Global Email HTML Header","Global Email HTML Header","","2","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"640\",\"editorheight\":\"200\"}","0"
+"97","Global Email Plain Text Footer","Global Email Plain Text Footer","","1","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"640\",\"editorheight2\":\"200\"}","0"
+"96","Global Email Plain Text Header","Global Email Plain Text Header","","1","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"640\",\"editorheight2\":\"200\"}","0"
+"151","Global HTML Head Source Code","Global HTML Head Source Code","","1","0","0","0","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"600\",\"editorheight2\":\"150\"}","0"
 "45","Lead Conversion Tracking Code","Lead Conversion Tracking Code","","1","0","0","0","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"300\",\"editorheight2\":\"100\"}","0"
-"50","Listing: Email Text","Listing: Email Text","I'd like to make an offer of:","0","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
+"50","Listing: Email Text","Listing: Email Text","I'd like to make an offer of: ","0","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
 "47","Listing: Sales Message 1","Listing: Sales Message 1","We are experts at price negotiation:","0","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
 "48","Listing: Sales Message 2","Listing: Sales Message 2","MAKE AN OFFER and we'll help you save thousands","0","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
 "49","Listing: Sales Message 3","Listing: Sales Message 3","<p>We work hard to quickly narrow the thousands of properties down to just a select few that meet your family's needs.  Our services are paid for by the seller.  We represent your best interests on every transaction to make sure home is safe, more financially sound and in the right neighborhood for your lifestyle. <strong><a href=\"/z/_a/inquiry\">Contact Us</a></strong> to learn how we can work for you.</p>","2","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"400\",\"editorheight\":\"130\"}","0"
-"116","New Account Marketing Information","New Account Marketing Information","","2","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"590\",\"editorheight\":\"300\"}","0"
-"77","New listing email alert html","New listing email alert html","","2","0","0","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"640\",\"editorheight\":\"300\"}","0"
-"78","New listing email alert plain text","New listing email alert plain text","","1","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"640\",\"editorheight2\":\"300\"}","0"
-"118","Newsletter Signup Text","Newsletter Signup Text","Check the box to join our newsletter.","0","0","0","0","0","0","0","0",",,","0","1","","","0","","0","0","0","","0","0","0","{}","0"
-"64","See more properties for sale below","See more properties for sale below","See more properties for sale below","0","0","0","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
+"172","New Account Marketing Information","New Account Marketing Information","","2","0","0","1","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"590\",\"editorheight\":\"300\"}","0"
+"92","New listing email alert html","New listing email alert html","","2","0","0","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth\":\"640\",\"editorheight\":\"300\"}","0"
+"93","New listing email alert plain text","New listing email alert plain text","","1","0","1","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"640\",\"editorheight2\":\"300\"}","0"
+"174","Newsletter Signup Text","Newsletter Signup Text","Check the box to join our newsletter.","0","0","0","0","0","0","0","0",",,","0","1","","","0","","0","0","0","","0","0","0","{}","0"
+"88","See more properties for sale below","See more properties for sale below","See more properties for sale below","0","0","0","1","1","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"
 "46","Visitor Tracking Code","Visitor Tracking Code","","1","0","0","0","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{\"editorwidth2\":\"300\",\"editorheight2\":\"100\"}","0"
 "29","zofficeemail","Office Email","","0","0","1","0","0","0","0","0",",,","0","0","","","0","","0","0","0","","0","0","0","{}","0"

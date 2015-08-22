@@ -47,7 +47,7 @@
 		var curminute=timeformat(request.zos.now,"m");
 		var db=request.zos.queryObject;
 		var tempUserAgent=application.zcore.functions.zURLEncode(rereplace(lcase(request.zos.cgi.http_user_agent), "[^[a-z]]","_","ALL"), '_');
-		request.zos.trackingspider=false;
+		
 		
 		if(application.zcore.requestCacheIndex GT 3000){
 			application.zcore.requestCacheIndex=0;	
