@@ -1,15 +1,5 @@
  <cfcomponent>
-<cfoutput>
-<cffunction name="test" localmode="modern" access="remote" returntype="any">
-	<cfscript>
-	
-	</cfscript>
-	<h2>Saved Search Example</h2>
-	<cfscript>
-	application.zcore.listingStruct.functions.zListingDisplaySavedSearch("2065"); 
-	</cfscript>
-	
-</cffunction>
+<cfoutput> 
 	
 <cffunction name="index" localmode="modern" access="remote" returntype="any">
 	<cfscript>

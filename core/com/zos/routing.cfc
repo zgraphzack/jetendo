@@ -28,13 +28,13 @@
 		if(arguments.theURL EQ ""){
 			application.zcore.functions.z404("Path doesn't exist or is a directory.");
 		}else if((not structkeyexists(form,'__zcoreinternalroutingpath') or trim(form.__zcoreinternalroutingpath) EQ "")){
-			local.notCFC=false;
+			notCFC=false;
 			if(find(".cfc", arguments.theURL) EQ 0){
-				local.notCFC=true;
+				notCFC=true;
 			}
-			local.ctemp1=request.zos.globals.homedir&removechars(arguments.theURL,1,1);
-			if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.ctemp1)){
-				application.sitestruct[request.zos.globals.id].fileExistsCache[local.ctemp1]=fileexists(local.ctemp1);
+			ctemp1=request.zos.globals.homedir&removechars(arguments.theURL,1,1);
+			if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, ctemp1)){
+				application.sitestruct[request.zos.globals.id].fileExistsCache[ctemp1]=fileexists(ctemp1);
 			}
 			/*
 			// this code was unnecessary
@@ -42,7 +42,7 @@
 				application.sitestruct[request.zos.globals.id].fileExistsCache[arguments.theURL]=fileexists(arguments.theURL);
 			}*/
 			request.zos.routingDisableComponentInvoke=true;
-			if(not local.notCFC and (application.sitestruct[request.zos.globals.id].fileExistsCache[local.ctemp1])){// or application.sitestruct[request.zos.globals.id].fileExistsCache[arguments.theURL]
+			if(not notCFC and (application.sitestruct[request.zos.globals.id].fileExistsCache[ctemp1])){// or application.sitestruct[request.zos.globals.id].fileExistsCache[arguments.theURL]
 				if(right(arguments.theURL,4) EQ ".cfc"){
 					request.zos.routingIsCFC=true;
 					if(structkeyexists(form,'method') EQ false){
@@ -60,79 +60,79 @@
 				//form.__zcoreinternalroutingpath=removechars(form[request.zos.urlRoutingParameter],1,1);
 				arrURL=listtoarray(form.__zcoreinternalroutingpath,"/",true);
 				// find a matching registered controller
-				local.curURLData="";
-				local.urlPathCount=arraylen(arrURL);
-				local.isUsingMVCAppScope=true;
-				local.controllerFound=true;
-				local.routingISMVC=false;
-				for(local.i4=1;local.i4 LTE local.urlPathCount;local.i4++){
-					local.lastURLData=local.curURLData;
-					local.curURLData&="/"&arrURL[1];
-					local.curURLPath=arrURL[1];
+				curURLData="";
+				urlPathCount=arraylen(arrURL);
+				isUsingMVCAppScope=true;
+				controllerFound=true;
+				routingISMVC=false;
+				for(i4=1;i4 LTE urlPathCount;i4++){
+					lastURLData=curURLData;
+					curURLData&="/"&arrURL[1];
+					curURLPath=arrURL[1];
 					arraydeleteat(arrURL, 1);
 					
 						if(form.zdebugurl2){
-								writeoutput('curdata:'&local.curURLData&'<br />');
+								writeoutput('curdata:'&curURLData&'<br />');
 						}
-					if(structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, "/controller"&local.curURLData)){
+					if(structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, "/controller"&curURLData)){
 						if(form.zdebugurl2){
-							writeoutput("Found controller in application scope: "&"/controller"&local.curURLData&".cfc<br />");
+							writeoutput("Found controller in application scope: "&"/controller"&curURLData&".cfc<br />");
 						}
 						break;
-					}else if(structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerPathStruct, local.curURLData) EQ false){
+					}else if(structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerPathStruct, curURLData) EQ false){
 						
-						cfcLookupName=local.lastURLData&"/controller/"&local.curURLPath;
-						cfcURLName=local.lastURLData&"/"&local.curURLPath;
+						cfcLookupName=lastURLData&"/controller/"&curURLPath;
+						cfcURLName=lastURLData&"/"&curURLPath;
 						
-						if(local.isUsingMVCAppScope and structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, cfcLookupName)){
-							local.routingISMVC=true;
+						if(isUsingMVCAppScope and structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, cfcLookupName)){
+							routingISMVC=true;
 							request.zos.routingIsCFC=true;
 							request.zos.scriptNameTemplate=application.sitestruct[request.zos.globals.id].registeredControllerStruct[cfcLookupName];
 							if(form.zdebugurl2){
-								writeoutput("Found controller in site struct: "&local.curURLData&"<br />");
+								writeoutput("Found controller in site struct: "&curURLData&"<br />");
 							}
 						}else{
 							if(form.zdebugurl2){
-								writeoutput("Missing controller in application scope: "&local.curURLData&" | switching to global application struct<br />");
+								writeoutput("Missing controller in application scope: "&curURLData&" | switching to global application struct<br />");
 							}
-							local.controllerFound=false;
+							controllerFound=false;
 						}
 						break;
 					}
 				}
-				if(local.controllerFound EQ false){
-					local.lastURLData="";
-					local.curURLData="";
+				if(controllerFound EQ false){
+					lastURLData="";
+					curURLData="";
 					arrURL=listtoarray(form.__zcoreinternalroutingpath,"/",true);
-					for(local.i4=1;local.i4 LTE local.urlPathCount;local.i4++){
-						local.lastURLData=local.curURLData;
-						local.curURLData&="/"&arrURL[1];
-						local.curURLPath=arrURL[1];
+					for(i4=1;i4 LTE urlPathCount;i4++){
+						lastURLData=curURLData;
+						curURLData&="/"&arrURL[1];
+						curURLPath=arrURL[1];
 						arraydeleteat(arrURL, 1);
 						
-						if(structkeyexists(application.zcore.registeredControllerStruct, "/controller"&local.curURLData)){
+						if(structkeyexists(application.zcore.registeredControllerStruct, "/controller"&curURLData)){
 							if(form.zdebugurl2){
-								writeoutput("Found controller in site struct: "&"/controller"&local.curURLData&".cfc<br />");
+								writeoutput("Found controller in site struct: "&"/controller"&curURLData&".cfc<br />");
 							}
-							local.isUsingMVCAppScope=false;
+							isUsingMVCAppScope=false;
 							break;
-						}else if(structkeyexists(application.zcore.registeredControllerStruct, local.curURLData) EQ false){
+						}else if(structkeyexists(application.zcore.registeredControllerStruct, curURLData) EQ false){
 							if(form.zdebugurl2){
-								writeoutput("Missing path: "&local.curURLData&" | switching to global application struct<br />");
+								writeoutput("Missing path: "&curURLData&" | switching to global application struct<br />");
 							}
-							local.isUsingMVCAppScope=false;
-							if(structkeyexists(application.zcore.registeredControllerPathStruct, local.curURLData) EQ false){
+							isUsingMVCAppScope=false;
+							if(structkeyexists(application.zcore.registeredControllerPathStruct, curURLData) EQ false){
 								break;
 							}
 						}
 					}
 				}
 				
-				cfcLookupName=local.lastURLData&"/controller/"&local.curURLPath;
-				cfcURLName=local.lastURLData&"/"&local.curURLPath;
+				cfcLookupName=lastURLData&"/controller/"&curURLPath;
+				cfcURLName=lastURLData&"/"&curURLPath;
 				
 				if(form.zdebugurl2){
-					writeoutput('cfcLookupName:'&cfcLookupName&'<br />cfcURLName:'&cfcURLName&"<br />isUsingMVCAppScope:"&local.isUsingMVCAppScope&"<br />");
+					writeoutput('cfcLookupName:'&cfcLookupName&'<br />cfcURLName:'&cfcURLName&"<br />isUsingMVCAppScope:"&isUsingMVCAppScope&"<br />");
 					writeoutput('Application MVC Cache<br />');
 					writeoutput('application.zcore.registeredControllerPathStruct<br />');
 					writedump(application.zcore.registeredControllerPathStruct);
@@ -143,19 +143,19 @@
 					writeoutput('application.sitestruct[request.zos.globals.id].registeredControllerStruct<br />');
 					writedump(application.sitestruct[request.zos.globals.id].registeredControllerStruct);
 				}
-				local.routingISMVC=false;
-				if(local.isUsingMVCAppScope and structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, cfcLookupName)){
-					local.routingISMVC=true;
+				routingISMVC=false;
+				if(isUsingMVCAppScope and structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, cfcLookupName)){
+					routingISMVC=true;
 					request.zos.routingIsCFC=true;
 					request.zos.scriptNameTemplate=application.sitestruct[request.zos.globals.id].registeredControllerStruct[cfcLookupName];
 				}else{
 					if(structkeyexists(application.zcore.registeredControllerStruct, cfcLookupName)){
-						local.routingISMVC=true;
+						routingISMVC=true;
 						request.zos.routingIsCFC=true;
 						request.zos.scriptNameTemplate=application.zcore.registeredControllerStruct[cfcLookupName];
 					}
 				}
-				if(local.routingISMVC){
+				if(routingISMVC){
 					request.zos.cgi.SCRIPT_NAME="/"&form.__zcoreinternalroutingpath;
 					//arraydeleteat(arrURL,1);
 					request.zos.routingCfcMethodWasMissing=true;
@@ -320,25 +320,25 @@
 			}
 			request.znotemplate=true;
 		}
-		local.notFound=true;
+		notFound=true;
 		if(not request.zos.isTestServer){
 			if(isServerCFC EQ false and structkeyexists(application.sitestruct[request.zos.globals.id].controllerComponentCache, comPath)){
 				request.zos.routingCurrentComponentObject=duplicate(application.sitestruct[request.zos.globals.id].controllerComponentCache[comPath]);
-				local.notFound=false;
+				notFound=false;
 			}else if(structkeyexists(application.zcore.controllerComponentCache, comPath)){
 				request.zos.routingCurrentComponentObject=duplicate(application.zcore.controllerComponentCache[comPath]);
-				local.notFound=false;
+				notFound=false;
 			}else if(Structkeyexists(application.sitestruct[request.zos.globals.id].comCache, comPath)){
 				request.zos.routingCurrentComponentObject=duplicate(application.sitestruct[request.zos.globals.id].comCache[comPath]);
-				local.notFound=false;
+				notFound=false;
 			}
 		}
-		if(local.notFound){
+		if(notFound){
 			//try{
 			request.zos.routingCurrentComponentObject=application.zcore.functions.zcreateobject("component",comPath, true);
-			/*}catch(Any local.excpt){
+			/*}catch(Any excpt){
 				writeoutput(comPath);
-				writedump(local.excpt);
+				writedump(excpt);
 				abort;	
 			}*/
 			if(not request.zos.isTestServer){
@@ -1098,69 +1098,69 @@
     arguments.theC=replace(arguments.theC,chr(9)," ","all");
     arguments.theC=replace(arguments.theC,chr(10)&chr(10),chr(10),"all");
     arguments.theC=replace(arguments.theC,chr(10)&chr(10),chr(10),"all");
-    local.a1=listtoarray(arguments.theC,chr(10));
-    local.b="/";
-    local.c2="";
-    local.r=arraynew(1);
-    for(local.i=1;local.i LTE arraylen(local.a1);local.i++){
-		local.a1[local.i]=replace(local.a1[local.i],"\\",chr(10),"all");
-		local.a1[local.i]=replace(local.a1[local.i],"\ ",chr(9),"all");
-        local.a2=listtoarray(trim(local.a1[local.i])," ",false);
-		for(local.i4=1;local.i4 LTE arraylen(local.a2);local.i4++){
-			local.a2[local.i4]=replace(replace(local.a2[local.i4],chr(10),"\\","all"),chr(9),"\ ","all");	
+    a1=listtoarray(arguments.theC,chr(10));
+    b="/";
+    c2="";
+    r=arraynew(1);
+    for(i=1;i LTE arraylen(a1);i++){
+		a1[i]=replace(a1[i],"\\",chr(10),"all");
+		a1[i]=replace(a1[i],"\ ",chr(9),"all");
+        a2=listtoarray(trim(a1[i])," ",false);
+		for(i4=1;i4 LTE arraylen(a2);i4++){
+			a2[i4]=replace(replace(a2[i4],chr(10),"\\","all"),chr(9),"\ ","all");	
 		}
-        local.c="";
-        if(arraylen(local.a2) NEQ 0){
-            if(local.a2[1] CONTAINS "RewriteEngine") continue;
-            if(local.a2[1] CONTAINS "RewriteMap") continue;
-            if(local.a2[1] CONTAINS "RewriteBase"){
+        c="";
+        if(arraylen(a2) NEQ 0){
+            if(a2[1] CONTAINS "RewriteEngine") continue;
+            if(a2[1] CONTAINS "RewriteMap") continue;
+            if(a2[1] CONTAINS "RewriteBase"){
                 continue;
-            }else if(left(trim(local.a1[local.i]),1) EQ "##" or local.a2[1] CONTAINS "RewriteCond"){
-				local.c2=local.a1[local.i]&chr(10);
+            }else if(left(trim(a1[i]),1) EQ "##" or a2[1] CONTAINS "RewriteCond"){
+				c2=a1[i]&chr(10);
 				
-                arrayappend(local.r, local.c2);
-            }else if(local.a2[1] CONTAINS "RewriteRule"){
-                arraydeleteat(local.a2, 1);
-                if(left(trim(local.a2[1]),1) EQ "^"){
-                    local.a2[1]=replace(local.a2[1],"^","^"&local.b,"one");
+                arrayappend(r, c2);
+            }else if(a2[1] CONTAINS "RewriteRule"){
+                arraydeleteat(a2, 1);
+                if(left(trim(a2[1]),1) EQ "^"){
+                    a2[1]=replace(a2[1],"^","^"&b,"one");
                 }else{
-                    local.a2[1]=b&local.a2[1];
+                    a2[1]=b&a2[1];
                 }
-				if(left(local.a2[1],2) EQ "//"){
-                	local.a2[1]=replace(local.a2[1],"//","/","one");
+				if(left(a2[1],2) EQ "//"){
+                	a2[1]=replace(a2[1],"//","/","one");
 				}
-                local.a2[2]=b&local.a2[2];
-                    local.c&=chr(10)&'RewriteRule '&local.a2[1]&' ';
-                local.a2[2]=replace(local.a2[2],"//","/","all");
-                local.a2[2]=replace(local.a2[2],"/http:/","http://","all");
-                local.a2[2]=replace(local.a2[2],"/https:/","https://","all");
-				if(trim(local.a2[2]) EQ "/-"){
-					local.a2[2]="-";	
+                a2[2]=b&a2[2];
+                    c&=chr(10)&'RewriteRule '&a2[1]&' ';
+                a2[2]=replace(a2[2],"//","/","all");
+                a2[2]=replace(a2[2],"/http:/","http://","all");
+                a2[2]=replace(a2[2],"/https:/","https://","all");
+				if(trim(a2[2]) EQ "/-"){
+					a2[2]="-";	
 				}
-                if(arraylen(local.a2) EQ 2){
-                	arrayappend(local.a2,'[L,QSA]');
+                if(arraylen(a2) EQ 2){
+                	arrayappend(a2,'[L,QSA]');
 				}
-				if(local.a2[3] CONTAINS "R=301"){
+				if(a2[3] CONTAINS "R=301"){
                     // 301
-                    local.c&=local.a2[2]&' [L,R=301,QSA]'&chr(10);
+                    c&=a2[2]&' [L,R=301,QSA]'&chr(10);
                 }else{
-                    local.t2=replace(local.a2[2],"\?","","ALL");
-                    local.a3=listtoarray(local.t2,"?");
-                    if(local.a2[3] CONTAINS "P," or (local.a2[3] CONTAINS ",P" and local.a2[3] DOES NOT CONTAIN ",PT") or local.a3[1] CONTAINS ".cfm" or local.a3[1] CONTAINS ".cfc"){
+                    t2=replace(a2[2],"\?","","ALL");
+                    a3=listtoarray(t2,"?");
+                    if(a2[3] CONTAINS "P," or (a2[3] CONTAINS ",P" and a2[3] DOES NOT CONTAIN ",PT") or a3[1] CONTAINS ".cfm" or a3[1] CONTAINS ".cfc"){
                         // passthrough coldfusion	
-                        local.c&=' '&arguments.proxyURL&local.a2[2]&' [L,P,QSA]'&chr(10);
+                        c&=' '&arguments.proxyURL&a2[2]&' [L,P,QSA]'&chr(10);
                     }else{
                         // static or non-cfml proxy
-                        local.c&=' '&local.a2[2]&' '&local.a2[3]&chr(10);
+                        c&=' '&a2[2]&' '&a2[3]&chr(10);
                     }
                 }
-                arrayappend(local.r, local.c);
+                arrayappend(r, c);
             }else{
-                application.zcore.template.fail('Unknown rewriterule: '&local.a1[local.i]&'<br />');	
+                application.zcore.template.fail('Unknown rewriterule: '&a1[i]&'<br />');	
             }
         }
     }
-    return arraytolist(local.r,"")&chr(10);
+    return arraytolist(r,"")&chr(10);
     </cfscript>
 </cffunction>
 
@@ -1172,17 +1172,17 @@
 	var local=structnew();
 	var ts=arguments.ss;
 	var row=0;
-	local.t9=structnew();
-	local.ts2=structnew();
-	local.ts2.uniqueURLStruct=structnew();
-	local.ts2.reservedAppUrlIdStruct=structnew();
-	local.t9.urlStruct=structnew();
+	t9=structnew();
+	ts2=structnew();
+	ts2.uniqueURLStruct=structnew();
+	ts2.reservedAppUrlIdStruct=structnew();
+	t9.urlStruct=structnew();
 	
 	
-	this.convertRewriteToStruct(local.ts2);
+	this.convertRewriteToStruct(ts2);
 	
 
-	application.zcore.siteOptionCom.setURLRewriteStruct(local.ts2);
+	application.zcore.siteOptionCom.setURLRewriteStruct(ts2);
 
 	
 	// loop apps and call the function with ts sharedstruct
@@ -1195,30 +1195,30 @@
 	app_deleted = #db.param(0)# and 
 	app_x_site_deleted = #db.param(0)# and
 	app.app_id=app_x_site.app_id ";
-	local.qApps=db.execute("qApps");
-	for(row in local.qApps){
-		local.configCom=application.zcore.functions.zcreateobject("component",application.zcore.appComPathStruct[row.app_id].cfcPath, true);
-		local.configCom.setURLRewriteStruct(row.site_id,local.ts2);
+	qApps=db.execute("qApps");
+	for(row in qApps){
+		configCom=application.zcore.functions.zcreateobject("component",application.zcore.appComPathStruct[row.app_id].cfcPath, true);
+		configCom.setURLRewriteStruct(row.site_id,ts2);
 	}
 	
 	if(fileexists(request.zos.globals.homedir&"index.cfc")){
-		local.t9.scriptName="/index.cfc";
-		local.t9.urlStruct.method="index";
+		t9.scriptName="/index.cfc";
+		t9.urlStruct.method="index";
 	}else if(fileexists(request.zos.globals.homedir&"index.cfm")){
-		local.t9.scriptName="/index.cfm";
+		t9.scriptName="/index.cfm";
 	}else if(fileexists(request.zos.globals.homedir&"content/index.cfm")){
-		local.t9.scriptName="/content/index.cfm";
+		t9.scriptName="/content/index.cfm";
 	}else if(fileexists(request.zos.globals.homedir&"home/index.cfm")){
-		local.t9.scriptName="/home/index.cfm";
+		t9.scriptName="/home/index.cfm";
 	}else if(fileexists(request.zos.globals.homedir&"index.html")){
-		local.t9.scriptName="/index.html";
+		t9.scriptName="/index.html";
 	}else{
-		local.t9.scriptName="";
+		t9.scriptName="";
 	}
-	if(local.t9.scriptName NEQ ""){
-		local.ts2.uniqueURLStruct["/"]=local.t9;
+	if(t9.scriptName NEQ ""){
+		ts2.uniqueURLStruct["/"]=t9;
 	}
-	ts.urlRewriteStruct=local.ts2;
+	ts.urlRewriteStruct=ts2;
 	</cfscript>
 </cffunction>
 
@@ -1232,10 +1232,10 @@
 	site_x_option_group_set_deleted = #db.param(0)# and
 	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# ";
-	local.qS=db.execute("qS");
-	if(local.qS.recordcount NEQ 0){
-		if(local.qS.site_x_option_group_set_override_url NEQ ""){
-			structdelete(application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct, trim(local.qS.site_x_option_group_set_override_url));
+	qS=db.execute("qS");
+	if(qS.recordcount NEQ 0){
+		if(qS.site_x_option_group_set_override_url NEQ ""){
+			structdelete(application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct, trim(qS.site_x_option_group_set_override_url));
 		}
 	}
 	return true;
@@ -1252,14 +1252,14 @@
 	site_x_option_group_set_master_set_id = #db.param(0)# and 
 	site_x_option_group_set_id = #db.param(arguments.site_x_option_group_set_id)# and 
 	site_x_option_group_set.site_x_option_group_set_approved=#db.param(1)# ";
-	local.qS=db.execute("qS");
-	if(local.qS.recordcount NEQ 0){
-		local.t9=structnew();
-		local.t9.scriptName="/z/misc/display-site-option-group/index";
-		local.t9.urlStruct=structnew();
-		local.t9.urlStruct[request.zos.urlRoutingParameter]="/z/misc/display-site-option-group/index";
-		local.t9.urlStruct.site_x_option_group_set_id=local.qS.site_x_option_group_set_id;
-		application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct[trim(local.qS.site_x_option_group_set_override_url)]=local.t9;
+	qS=db.execute("qS");
+	if(qS.recordcount NEQ 0){
+		t9=structnew();
+		t9.scriptName="/z/misc/display-site-option-group/index";
+		t9.urlStruct=structnew();
+		t9.urlStruct[request.zos.urlRoutingParameter]="/z/misc/display-site-option-group/index";
+		t9.urlStruct.site_x_option_group_set_id=qS.site_x_option_group_set_id;
+		application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct[trim(qS.site_x_option_group_set_override_url)]=t9;
 	}
 	return true;
 	</cfscript>
@@ -1269,296 +1269,296 @@
 	<cfargument name="theURL" type="string" required="yes">
 	<cfscript>
 	var local=structnew();
-	local.newScriptName="";
-	local.isDir=false;
-	local.entireURL=trim(arguments.theURL);
+	newScriptName="";
+	isDir=false;
+	entireURL=trim(arguments.theURL);
 	if(structkeyexists(form, 'zdebugurl') EQ false or form.zdebugurl EQ false){
-		local.zdebugurl=false;
+		zdebugurl=false;
 	}else{
-		local.zdebugurl=form.zdebugurl;
+		zdebugurl=form.zdebugurl;
 	} 
-	if(local.newScriptName EQ ""){
+	if(newScriptName EQ ""){
 		if(structkeyexists(application.sitestruct[request.zos.globals.id],'zcorecustomfunctions') and structkeyexists(application.sitestruct[request.zos.globals.id].zcorecustomfunctions, 'processURL')){
-			local.tempVar=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.processURL(arguments.theURL, true);
-			if(local.tempVar.scriptName NEQ ""){
-				local.newScriptName=local.tempVar.scriptName;
-				if(local.zdebugurl){
-					writeoutput('zcorecustomfunctions match:'&local.newScriptName&'<br />');
+			tempVar=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.processURL(arguments.theURL, true);
+			if(tempVar.scriptName NEQ ""){
+				newScriptName=tempVar.scriptName;
+				if(zdebugurl){
+					writeoutput('zcorecustomfunctions match:'&newScriptName&'<br />');
 				}
 			}
 		}
 	}
-	if(local.newScriptName EQ ""){
-		if(structkeyexists(application.zcore.urlRewriteStruct.redirectStruct, local.entireURL)){
-			local.tempVar=application.zcore.urlRewriteStruct.redirectStruct[local.entireURL];
-			if(structkeyexists(local.tempVar, 'urlStruct')){
-				structappend(form, local.tempVar.urlStruct, true);
+	if(newScriptName EQ ""){
+		if(structkeyexists(application.zcore.urlRewriteStruct.redirectStruct, entireURL)){
+			tempVar=application.zcore.urlRewriteStruct.redirectStruct[entireURL];
+			if(structkeyexists(tempVar, 'urlStruct')){
+				structappend(form, tempVar.urlStruct, true);
 			}
 			structdelete(form, request.zos.urlRoutingParameter);
 			structdelete(form, 'fieldnames');
 			structdelete(form, 'zdebugurl');
-			local.arrU=[];
-			for(local.i in form){
-				if(isSimpleValue(form[local.i])){
-					arrayappend(local.arrU, lcase(local.i)&"="&urlencodedformat(form[local.i]));
+			arrU=[];
+			for(i in form){
+				if(isSimpleValue(form[i])){
+					arrayappend(arrU, lcase(i)&"="&urlencodedformat(form[i]));
 				}
 			}
-			local.tempLink=local.tempVar.url;
-			if(arraylen(local.arrU)){
-				local.tempLink&="?"&arraytolist(local.arrU, "&");	
+			tempLink=tempVar.url;
+			if(arraylen(arrU)){
+				tempLink&="?"&arraytolist(arrU, "&");	
 			}
-			if(local.zdebugurl){
-				writeoutput('server redirectStruct match1<br />'&local.tempLink);
+			if(zdebugurl){
+				writeoutput('server redirectStruct match1<br />'&tempLink);
 				application.zcore.functions.zabort();
 			}else{
-				application.zcore.functions.z301redirect(local.tempLink);
+				application.zcore.functions.z301redirect(tempLink);
 			}
 		}
 		if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct,'customRules')){
-			if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.redirectStruct, local.entireURL)){
-					if(local.zdebugurl) writeoutput('customRules.redirectStruct match<br />');
-				application.zcore.functions.z301redirect(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.redirectStruct[local.entireURL]);	
+			if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.redirectStruct, entireURL)){
+					if(zdebugurl) writeoutput('customRules.redirectStruct match<br />');
+				application.zcore.functions.z301redirect(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.redirectStruct[entireURL]);	
 			}
-			if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct, local.entireURL)){
-				if(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[local.entireURL].cfml){
-					if(local.zdebugurl) writeoutput('customRules.uniqueStruct match<br />');
+			if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct, entireURL)){
+				if(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[entireURL].cfml){
+					if(zdebugurl) writeoutput('customRules.uniqueStruct match<br />');
 					// set vars	
-					structappend(form, application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[local.entireURL].vs, true);
-					local.newScriptName=application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[local.entireURL].url;
+					structappend(form, application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[entireURL].vs, true);
+					newScriptName=application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[entireURL].url;
 				}else{
-					local.path=application.zcore.functions.zGetDomainInstallPath(application.zcore.functions.zvar("shortDomain", request.zos.globals.id))&removechars(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[local.entireURL].url,1,1);
-					writeoutput(application.zcore.functions.zreadfile(local.path));
+					path=application.zcore.functions.zGetDomainInstallPath(application.zcore.functions.zvar("shortDomain", request.zos.globals.id))&removechars(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.uniqueStruct[entireURL].url,1,1);
+					writeoutput(application.zcore.functions.zreadfile(path));
 					application.zcore.functions.zabort();
 				}
 			}
-			for(local.i in application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.wildcardRedirectStruct){
-				if(compare(left(local.entireURL, len(local.i)), local.i) EQ 0){
-					application.zcore.functions.z301redirect(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.wildcardRedirectStruct[local.i]);
+			for(i in application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.wildcardRedirectStruct){
+				if(compare(left(entireURL, len(i)), i) EQ 0){
+					application.zcore.functions.z301redirect(application.sitestruct[request.zos.globals.id].urlRewriteStruct.customRules.wildcardRedirectStruct[i]);
 				}
 			}
 		}
 		
-		if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct, local.entireURL)){
-			local.backupOriginal=form[request.zos.urlRoutingParameter];
-			if(local.zdebugurl) writeoutput("unique url match:"&local.entireURL&"<br />");
-			if(local.zdebugurl) writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct[local.entireURL]);
-			local.curApp=application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct[local.entireURL];
-			if(right(local.curApp.scriptName,5) EQ ".html"){
-				writeoutput(application.zcore.functions.zreadfile(request.zos.globals.homedir&removeChars(local.curApp.scriptName,1,1)));
+		if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct, entireURL)){
+			backupOriginal=form[request.zos.urlRoutingParameter];
+			if(zdebugurl) writeoutput("unique url match:"&entireURL&"<br />");
+			if(zdebugurl) writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct[entireURL]);
+			curApp=application.sitestruct[request.zos.globals.id].urlRewriteStruct.uniqueURLStruct[entireURL];
+			if(right(curApp.scriptName,5) EQ ".html"){
+				writeoutput(application.zcore.functions.zreadfile(request.zos.globals.homedir&removeChars(curApp.scriptName,1,1)));
 				application.zcore.functions.zabort();
 			}
-			structappend(url,  local.curApp.urlStruct, true);
-			structappend(form, local.curApp.urlStruct, true);
-			local.newScriptName=local.curApp.scriptName;
-			form[request.zos.urlRoutingParameter]=local.backupOriginal;
-			if(local.entireURL EQ "/" and request.zos.globals.id EQ request.zos.globals.serverId){
-				request.zos.scriptNameTemplate="zcorerootmapping/"&removechars(local.newScriptName,1,1);
+			structappend(url,  curApp.urlStruct, true);
+			structappend(form, curApp.urlStruct, true);
+			newScriptName=curApp.scriptName;
+			form[request.zos.urlRoutingParameter]=backupOriginal;
+			if(entireURL EQ "/" and request.zos.globals.id EQ request.zos.globals.serverId){
+				request.zos.scriptNameTemplate="zcorerootmapping/"&removechars(newScriptName,1,1);
 				if(structkeyexists(form,'method') EQ false){
 					form.method="index";
 				}
 			}
 		}else{
-			if(right(local.entireURL, 5) EQ ".html"){
-				local.ext="html";
-			}else if(right(local.entireURL, 4) EQ ".xml"){
-				local.ext="xml";	
-			}else if(right(local.entireURL, 4) EQ ".cfm"){
-				local.ext="cfm";	
+			if(right(entireURL, 5) EQ ".html"){
+				ext="html";
+			}else if(right(entireURL, 4) EQ ".xml"){
+				ext="xml";	
+			}else if(right(entireURL, 4) EQ ".cfm"){
+				ext="cfm";	
 			}else{
-				local.ext="";	
+				ext="";	
 			}
-			if(local.zdebugurl) writeoutput("local.ext:"&local.ext&"<br />");
-			if(left(local.entireURL, 5) EQ "/z/_e"){
-				form.__zcoreinternalroutingpath=mid(local.entireURL,5, len(local.entireURL)-4)&".cfm";
-				local.newScriptName=local.entireURL;
-				if(local.zdebugurl) writeoutput(form.__zcoreinternalroutingpath&"|1<br />");
+			if(zdebugurl) writeoutput("ext:"&ext&"<br />");
+			if(left(entireURL, 5) EQ "/z/_e"){
+				form.__zcoreinternalroutingpath=mid(entireURL,5, len(entireURL)-4)&".cfm";
+				newScriptName=entireURL;
+				if(zdebugurl) writeoutput(form.__zcoreinternalroutingpath&"|1<br />");
 				
-			}else if(left(local.entireURL, 7) EQ "/z/_com"){
-				form.__zcoreinternalroutingpath=mid(local.entireURL,5, len(local.entireURL)-4)&".cfc";
-				if(local.zdebugurl) writeoutput(form.__zcoreinternalroutingpath&"|2<br />");
-				local.newScriptName=local.entireURL;
-			}else if(left(local.entireURL, 5) EQ "/z/-e"){
-				form.__zcoreinternalroutingpath="-"&mid(local.entireURL,5, len(local.entireURL)-4);
-				local.newScriptName=local.entireURL;
-				if(local.zdebugurl) writeoutput(form.__zcoreinternalroutingpath&"|3<br />");
-			}else if(right(local.entireURL,1) EQ "/"){
-				local.tempPath=Request.zOSHomeDir&removeChars(local.entireURL,1,1);
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.cfm") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfm"]=fileexists(local.tempPath&"index.cfm");
+			}else if(left(entireURL, 7) EQ "/z/_com"){
+				form.__zcoreinternalroutingpath=mid(entireURL,5, len(entireURL)-4)&".cfc";
+				if(zdebugurl) writeoutput(form.__zcoreinternalroutingpath&"|2<br />");
+				newScriptName=entireURL;
+			}else if(left(entireURL, 5) EQ "/z/-e"){
+				form.__zcoreinternalroutingpath="-"&mid(entireURL,5, len(entireURL)-4);
+				newScriptName=entireURL;
+				if(zdebugurl) writeoutput(form.__zcoreinternalroutingpath&"|3<br />");
+			}else if(right(entireURL,1) EQ "/"){
+				tempPath=Request.zOSHomeDir&removeChars(entireURL,1,1);
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.cfm") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfm"]=fileexists(tempPath&"index.cfm");
 				} 
 				
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.cfc") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfc"]=fileexists(local.tempPath&"index.cfc");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.cfc") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfc"]=fileexists(tempPath&"index.cfc");
 				}
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.htm") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.htm"]=fileexists(local.tempPath&"index.htm");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.htm") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.htm"]=fileexists(tempPath&"index.htm");
 				}
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.html") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.html"]=fileexists(local.tempPath&"index.html");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.html") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.html"]=fileexists(tempPath&"index.html");
 				}
-				if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfm"]){
-					local.newScriptName=local.entireURL&"index.cfm";
-					request.zos.scriptNameTemplate=request.zRootPath&removechars(local.newScriptName,1,1);
+				if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfm"]){
+					newScriptName=entireURL&"index.cfm";
+					request.zos.scriptNameTemplate=request.zRootPath&removechars(newScriptName,1,1);
 					form.__zcoreinternalroutingpath="";
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfc"]){
-					local.newScriptName=local.entireURL&"index.cfc";
-					request.zos.scriptNameTemplate=request.zRootPath&removechars(local.newScriptName,1,1);
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfc"]){
+					newScriptName=entireURL&"index.cfc";
+					request.zos.scriptNameTemplate=request.zRootPath&removechars(newScriptName,1,1);
 					form.__zcoreinternalroutingpath="";
 					if(structkeyexists(form,'method') EQ false){
 						form.method="index";
 					}
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.htm"]){
-					writeoutput(application.zcore.functions.zreadfile(request.zos.globals.homedir&removeChars(local.entireURL,1,1)&"index.htm"));
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.htm"]){
+					writeoutput(application.zcore.functions.zreadfile(request.zos.globals.homedir&removeChars(entireURL,1,1)&"index.htm"));
 					application.zcore.functions.zabort();
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.html"]){
-					writeoutput(application.zcore.functions.zreadfile(request.zos.globals.homedir&removeChars(local.entireURL,1,1)&"index.html"));
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.html"]){
+					writeoutput(application.zcore.functions.zreadfile(request.zos.globals.homedir&removeChars(entireURL,1,1)&"index.html"));
 					application.zcore.functions.zabort();
 				}else{
 					
 					if(request.zos.themePath NEQ ""){
-						local.newScriptName=request.zos.themePath&"index.cfc";
-						request.zos.scriptNameTemplate=request.zos.themePath&removechars(local.newScriptName,1,1);
+						newScriptName=request.zos.themePath&"index.cfc";
+						request.zos.scriptNameTemplate=request.zos.themePath&removechars(newScriptName,1,1);
 						form.__zcoreinternalroutingpath="";
 						if(structkeyexists(form,'method') EQ false){
 							form.method="index";
 						}
 					}else{
-						local.isDir=true;
+						isDir=true;
 					}
 				}
-				if(local.zdebugurl) writeoutput('got in4:'&local.entireURL&"<br />");
-			}else if(local.ext EQ "cfm" or local.ext EQ "cfc"){
-				local.tempPath=Request.zOSHomeDir&removeChars(local.entireURL,1,1);
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath) EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath]=fileexists(local.tempPath);
+				if(zdebugurl) writeoutput('got in4:'&entireURL&"<br />");
+			}else if(ext EQ "cfm" or ext EQ "cfc"){
+				tempPath=Request.zOSHomeDir&removeChars(entireURL,1,1);
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath) EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]=fileexists(tempPath);
 				}
-				if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath]){
-					local.newScriptName=local.entireURL;
-					request.zos.scriptNameTemplate=request.zRootPath&removechars(local.newScriptName,1,1);
+				if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]){
+					newScriptName=entireURL;
+					request.zos.scriptNameTemplate=request.zRootPath&removechars(newScriptName,1,1);
 					form.__zcoreinternalroutingpath="";
 					if(structkeyexists(form,'method') EQ false){
 						form.method="index";
 					}
 				}else{
-					if(local.zdebugurl){
-						writeoutput(expandpath(local.entireURL)&"| was 404 - second one<br />");
+					if(zdebugurl){
+						writeoutput(expandpath(entireURL)&"| was 404 - second one<br />");
 						application.zcore.functions.zabort();
 					}else{
-						application.zcore.functions.z404("processInternalURLRewrite(): "&expandpath(local.entireURL)&"| was 404 - second one<br />");
+						application.zcore.functions.z404("processInternalURLRewrite(): "&expandpath(entireURL)&"| was 404 - second one<br />");
 					}
 				}
-			}else if(local.ext EQ "html" or local.ext EQ "xml"){
-				if(local.ext EQ "html"){
-					local.arrT=listtoarray(left(local.entireURL, len(local.entireURL)-5), "-",true);
+			}else if(ext EQ "html" or ext EQ "xml"){
+				if(ext EQ "html"){
+					arrT=listtoarray(left(entireURL, len(entireURL)-5), "-",true);
 				}else{
-					local.arrT=listtoarray(left(local.entireURL, len(local.entireURL)-4), "-",true);
+					arrT=listtoarray(left(entireURL, len(entireURL)-4), "-",true);
 				}
-				local.count=arraylen(local.arrT);
-				if(local.zdebugurl) writeoutput('got in3:'&local.entireURL&"<br />");
-				local.urlMatched=false;
-				if(local.count GTE 3){
+				count=arraylen(arrT);
+				if(zdebugurl) writeoutput('got in3:'&entireURL&"<br />");
+				urlMatched=false;
+				if(count GTE 3){
 					// check for title-1-2
-					local.dataId=local.arrT[local.count];
-					local.appId=local.arrT[local.count-1];
-					arraydeleteat(local.arrT,local.count);
-					arraydeleteat(local.arrT,local.count-1);
-					local.urlTitle=removechars(arraytolist(local.arrT,"-"),1,1);
+					dataId=arrT[count];
+					appId=arrT[count-1];
+					arraydeleteat(arrT,count);
+					arraydeleteat(arrT,count-1);
+					urlTitle=removechars(arraytolist(arrT,"-"),1,1);
 					
-					if(local.zdebugurl) writeoutput('local.dataID:'&local.dataID&'<br />local.appId:'&local.appId&'<br />local.urlTitle:'&local.urlTitle&'<br />');
-					if(local.zdebugurl) writeoutput('got in2:'&local.entireURL&"<br />");
-					if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct, local.appId)){
-						if(local.zdebugurl) writeoutput('got in:'&local.entireURL&"<br />");
+					if(zdebugurl) writeoutput('dataID:'&dataID&'<br />appId:'&appId&'<br />urlTitle:'&urlTitle&'<br />');
+					if(zdebugurl) writeoutput('got in2:'&entireURL&"<br />");
+					if(structkeyexists(application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct, appId)){
+						if(zdebugurl) writeoutput('got in:'&entireURL&"<br />");
 						
-						if(local.zdebugurl) writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct[local.appId]);
+						if(zdebugurl) writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct[appId]);
 						
-						for(local.n=1;local.n LTE arraylen(application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct[local.appId]);local.n++){
-							local.curApp=application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct[local.appId][local.n];
-							local.newScriptName=local.curApp.scriptName;
-							if(structkeyexists(local.curApp, 'ifStruct')){
+						for(n=1;n LTE arraylen(application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct[appId]);n++){
+							curApp=application.sitestruct[request.zos.globals.id].urlRewriteStruct.reservedAppUrlIdStruct[appId][n];
+							newScriptName=curApp.scriptName;
+							if(structkeyexists(curApp, 'ifStruct')){
 								// test conditions - it doesn't match, then continue;
-								local.ifMatch=true;
-								for(local.i2 in local.curApp.ifStruct){
-									if(local[local.i2] NEQ local.curApp.ifStruct[local.i2]){
-										local.ifMatch=false;
+								ifMatch=true;
+								for(i2 in curApp.ifStruct){
+									if(local[i2] NEQ curApp.ifStruct[i2]){
+										ifMatch=false;
 										break;
 									}
 								}
-								if(local.ifMatch EQ false){
+								if(ifMatch EQ false){
 									continue;
 								}
 							}
-							if(local.curApp.type EQ 1){
+							if(curApp.type EQ 1){
 								// numeric
-								if(isNumeric(local.dataId)){
-									local.urlMatched=true;	
+								if(isNumeric(dataId)){
+									urlMatched=true;	
 								}
-							}else if(local.curApp.type EQ 2){
+							}else if(curApp.type EQ 2){
 								// alphanumeric (including other punctuation like underscore - always match
-								local.urlMatched=true;
-							}else if(local.curApp.type EQ 3){
+								urlMatched=true;
+							}else if(curApp.type EQ 3){
 								// numeric with optional pagenav
-								local.arrDataId=listToArray(local.dataId,"_");
-								local.dataIdCount=arraylen(local.arrDataId);
-								if(local.dataIdCount EQ 1){
-									local.dataId=local.arrDataId[1];
-									local.urlMatched=true;	
-								}else if(local.dataIdCount EQ 2){
+								arrDataId=listToArray(dataId,"_");
+								dataIdCount=arraylen(arrDataId);
+								if(dataIdCount EQ 1){
+									dataId=arrDataId[1];
+									urlMatched=true;	
+								}else if(dataIdCount EQ 2){
 									// has pagenav set
-									local.dataId=local.arrDataId[1];
-									local.dataId2=local.arrDataId[2];
-									local.urlMatched=true;	
+									dataId=arrDataId[1];
+									dataId2=arrDataId[2];
+									urlMatched=true;	
 								}else{
 									// unknown multiple page nav or other
 								}
-							}else if(local.curApp.type EQ 4){
+							}else if(curApp.type EQ 4){
 								// blog archive date
-								if(local.count GTE 5){
-									local.tempYear=local.arrT[local.count-3];
-									local.tempMonth=local.arrT[local.count-2];
-									if(len(local.tempYear) EQ 4 and len(local.tempMonth) EQ 2 and isNumeric(local.tempYear) and isNumeric(local.tempMonth)){
-										local.dataId2=local.tempYear&"-"&local.tempMonth;
-										local.urlMatched=true;	
+								if(count GTE 5){
+									tempYear=arrT[count-3];
+									tempMonth=arrT[count-2];
+									if(len(tempYear) EQ 4 and len(tempMonth) EQ 2 and isNumeric(tempYear) and isNumeric(tempMonth)){
+										dataId2=tempYear&"-"&tempMonth;
+										urlMatched=true;	
 									}
 								}
-							}else if(local.curApp.type EQ 5){
+							}else if(curApp.type EQ 5){
 								// rental photo url
-								if(local.count GTE 5){
-									if(local.arrT[local.count-3] EQ "Photo"){
-										local.dataId2=local.arrT[local.count-2];
-										local.urlMatched=true;
+								if(count GTE 5){
+									if(arrT[count-3] EQ "Photo"){
+										dataId2=arrT[count-2];
+										urlMatched=true;
 									}
 								}
-							}else if(local.curApp.type EQ 6){
+							}else if(curApp.type EQ 6){
 								// 2 numerics with optional pagenav
-								local.arrDataId=listToArray(local.dataId,"_");
-								local.dataIdCount=arraylen(local.arrDataId);
-								if(local.dataIdCount EQ 2){
-									local.dataId=local.arrDataId[1];
-									local.dataId2=local.arrDataId[2];
-									local.urlMatched=true;	
-								}else if(local.dataIdCount EQ 3){
+								arrDataId=listToArray(dataId,"_");
+								dataIdCount=arraylen(arrDataId);
+								if(dataIdCount EQ 2){
+									dataId=arrDataId[1];
+									dataId2=arrDataId[2];
+									urlMatched=true;	
+								}else if(dataIdCount EQ 3){
 									// has pagenav set
-									local.dataId=local.arrDataId[1];
-									local.dataId2=local.arrDataId[2];
-									local.dataId3=local.arrDataId[3];
-									local.urlMatched=true;	
+									dataId=arrDataId[1];
+									dataId2=arrDataId[2];
+									dataId3=arrDataId[3];
+									urlMatched=true;	
 								}else{
 									// unknown multiple page nav or other
 								}
 							}
-							if(local.urlMatched){ 
-								if(local.zdebugurl) writeoutput('Matched: '&local.n&'<br />');
+							if(urlMatched){ 
+								if(zdebugurl) writeoutput('Matched: '&n&'<br />');
 								// copy urlStruct to url
-								structappend(form,  local.curApp.urlStruct, true);
-								structappend(form, local.curApp.urlStruct, true);
-								for(local.i2 in local.curApp.mapStruct){
-									if(structkeyexists(local, local.i2)){
-										form[local.curApp.mapStruct[local.i2]]=local[local.i2];
+								structappend(form,  curApp.urlStruct, true);
+								structappend(form, curApp.urlStruct, true);
+								for(i2 in curApp.mapStruct){
+									if(structkeyexists(local, i2)){
+										form[curApp.mapStruct[i2]]=local[i2];
 									}else{
-										if(local.zdebugurl) writedump(local.i2&' doesn''t exist<br />');
+										if(zdebugurl) writedump(i2&' doesn''t exist<br />');
 									}
 								}
-								if(local.zdebugurl) writedump(form);
+								if(zdebugurl) writedump(form);
 								break;
 							}
 						}
@@ -1566,71 +1566,71 @@
 				}else{
 					// some other kind of url	
 				}
-				if(local.urlMatched EQ false){
+				if(urlMatched EQ false){
 					// unknown url
-					if(local.zdebugurl){
-						writeoutput('not matched:'&local.entireURL&'<br />');
+					if(zdebugurl){
+						writeoutput('not matched:'&entireURL&'<br />');
 					}
 				}else{
-					if(local.zdebugurl){
+					if(zdebugurl){
 						writedump(form);
-						writeoutput('advanced match:'&local.newScriptName&'<br />');
+						writeoutput('advanced match:'&newScriptName&'<br />');
 					}
 				}
 			}
 		}
 	}
 	//writedump(application.sitestruct[request.zos.globals.id].urlRewriteStruct);
-	if(local.newScriptName EQ ""){
+	if(newScriptName EQ ""){
 		if(structkeyexists(application.sitestruct[request.zos.globals.id],'zcorecustomfunctions') and structkeyexists(application.sitestruct[request.zos.globals.id].zcorecustomfunctions, 'processURL')){
-			local.tempVar=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.processURL(arguments.theURL, false);
-			if(local.tempVar.scriptName NEQ ""){
-				local.newScriptName=local.tempVar.scriptName;
-				if(local.zdebugurl){
-					writeoutput('zcorecustomfunctions match:'&local.newScriptName&'<br />');
+			tempVar=application.sitestruct[request.zos.globals.id].zcorecustomfunctions.processURL(arguments.theURL, false);
+			if(tempVar.scriptName NEQ ""){
+				newScriptName=tempVar.scriptName;
+				if(zdebugurl){
+					writeoutput('zcorecustomfunctions match:'&newScriptName&'<br />');
 				}
 			}
 		}
 	}
-	if(local.newScriptName EQ ""){
-		local.tempPath=Request.zOSHomeDir&removeChars(local.entireURL,1,1);
-		if(structkeyexists(application.sitestruct[request.zos.globals.id].directoryExistsCache, local.tempPath) EQ false){
-			application.sitestruct[request.zos.globals.id].directoryExistsCache[local.tempPath]=directoryexists(local.tempPath);
+	if(newScriptName EQ ""){
+		tempPath=Request.zOSHomeDir&removeChars(entireURL,1,1);
+		if(structkeyexists(application.sitestruct[request.zos.globals.id].directoryExistsCache, tempPath) EQ false){
+			application.sitestruct[request.zos.globals.id].directoryExistsCache[tempPath]=directoryexists(tempPath);
 		}
-		if(application.sitestruct[request.zos.globals.id].directoryExistsCache[local.tempPath]){
-			if(right(local.entireURL,1) NEQ "/"){
-				local.tempPath=Request.zOSHomeDir&removeChars(local.entireURL,1,1)&"/";
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.cfm") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfm"]=fileexists(local.tempPath&"index.cfm");
+		if(application.sitestruct[request.zos.globals.id].directoryExistsCache[tempPath]){
+			if(right(entireURL,1) NEQ "/"){
+				tempPath=Request.zOSHomeDir&removeChars(entireURL,1,1)&"/";
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.cfm") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfm"]=fileexists(tempPath&"index.cfm");
 				}
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.cfc") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfc"]=fileexists(local.tempPath&"index.cfc");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.cfc") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfc"]=fileexists(tempPath&"index.cfc");
 				}
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.php") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.php"]=fileexists(local.tempPath&"index.php");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.php") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.php"]=fileexists(tempPath&"index.php");
 				}
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.htm") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.htm"]=fileexists(local.tempPath&"index.htm");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.htm") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.htm"]=fileexists(tempPath&"index.htm");
 				}
-				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, local.tempPath&"index.html") EQ false){
-					application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.html"]=fileexists(local.tempPath&"index.html");
+				if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath&"index.html") EQ false){
+					application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.html"]=fileexists(tempPath&"index.html");
 				}
 				// might still have .cfm or .cfc index
-				if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfm"]){
-					local.newPath=local.entireURL&"/";
-					application.zcore.functions.z301redirect(local.newPath);
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.cfc"]){
-					local.newPath=local.entireURL&"/";
-					application.zcore.functions.z301redirect(local.newPath);
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.php"]){
-					local.newPath=local.entireURL&"/";
-					application.zcore.functions.z301redirect(local.newPath);
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.htm"]){
-					local.newPath=local.entireURL&"/";
-					application.zcore.functions.z301redirect(local.newPath);
-				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[local.tempPath&"index.html"]){
-					local.newPath=local.entireURL&"/";
-					application.zcore.functions.z301redirect(local.newPath);
+				if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfm"]){
+					newPath=entireURL&"/";
+					application.zcore.functions.z301redirect(newPath);
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.cfc"]){
+					newPath=entireURL&"/";
+					application.zcore.functions.z301redirect(newPath);
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.php"]){
+					newPath=entireURL&"/";
+					application.zcore.functions.z301redirect(newPath);
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.htm"]){
+					newPath=entireURL&"/";
+					application.zcore.functions.z301redirect(newPath);
+				}else if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath&"index.html"]){
+					newPath=entireURL&"/";
+					application.zcore.functions.z301redirect(newPath);
 				}else{
 					// application.zcore.functions.z404("processInternalURLRewrite() newScriptName was empty and there was no default index file");
 				}
@@ -1638,32 +1638,32 @@
 				application.zcore.functions.z404("processInternalURLRewrite() newScriptName was empty and this is not a directory.");
 			}
 		}else{
-			local.newScriptName=arguments.theURL;
+			newScriptName=arguments.theURL;
 		}
 	}
-	if(local.newScriptName EQ ""){
-		if(local.zdebugurl){
-			writeoutput('unknown url:'&local.entireURL&'<br />');
+	if(newScriptName EQ ""){
+		if(zdebugurl){
+			writeoutput('unknown url:'&entireURL&'<br />');
 			application.zcore.functions.zabort();
 		}
 	}else{
 		if(request.zos.isDeveloper){
-			if(local.zdebugurl){
+			if(zdebugurl){
 				writedump(url, true, 'simple');
 				writedump(cgi, true, 'simple');
 				
-				writeoutput('going to be this url:'&local.newScriptName&'<br />');
+				writeoutput('going to be this url:'&newScriptName&'<br />');
 				
 			}
 		}
-		request.zos.scriptNameTemplate=local.newScriptName;
+		request.zos.scriptNameTemplate=newScriptName;
 	}
 	//n=c;
-	if(local.zdebugurl){
-		writeoutput("original:"&local.entireURL&"<br />translated:"&local.newScriptName&"<br />__zcoreinternalroutingpath:"&application.zcore.functions.zso(form, '__zcoreinternalroutingpath'));
+	if(zdebugurl){
+		writeoutput("original:"&entireURL&"<br />translated:"&newScriptName&"<br />__zcoreinternalroutingpath:"&application.zcore.functions.zso(form, '__zcoreinternalroutingpath'));
 		writeoutput('<hr />');
 	}
-	return local.newScriptName;
+	return newScriptName;
 	
 	</cfscript>
     
@@ -1681,134 +1681,134 @@
 	site_deleted = #db.param(0)# and 
 	CONCAT(rewrite_rule_image,rewrite_rule_zsa, rewrite_rule_site) <> #db.param('')# and 
 	site.site_id = #db.param(request.zos.globals.id)#";
-	local.qR=db.execute("qR");
-	local.specialRuleStruct=structnew();
-	local.totalSpecialCount=0;
-	loop query="local.qR"{
-		local.rzsa=replacelist(rereplace(local.qR.rewrite_rule_zsa, "##[^\n]*","","all"),'^,\',',');
-		local.rsite=replacelist(rereplace(local.qR.rewrite_rule_site, "##[^\n]*","","all"),'^,\',',');
-		local.rimage=replacelist(rereplace(local.qR.rewrite_rule_image, "##[^\n]*","","all"),'^,\',',');
-		local.arrR=arraynew(1);
-		arrayappend(local.arrR,listtoarray(local.rzsa,chr(10),false));
-		arrayAppend(local.arrR,listtoarray(local.rsite,chr(10),false));
-		arrayAppend(local.arrR,listtoarray(local.rimage,chr(10),false));
+	qR=db.execute("qR");
+	specialRuleStruct=structnew();
+	totalSpecialCount=0;
+	loop query="qR"{
+		rzsa=replacelist(rereplace(qR.rewrite_rule_zsa, "##[^\n]*","","all"),'^,\',',');
+		rsite=replacelist(rereplace(qR.rewrite_rule_site, "##[^\n]*","","all"),'^,\',',');
+		rimage=replacelist(rereplace(qR.rewrite_rule_image, "##[^\n]*","","all"),'^,\',',');
+		arrR=arraynew(1);
+		arrayappend(arrR,listtoarray(rzsa,chr(10),false));
+		arrayAppend(arrR,listtoarray(rsite,chr(10),false));
+		arrayAppend(arrR,listtoarray(rimage,chr(10),false));
 		
-		local.ts=structnew();
-		local.ts.redirectStruct=structnew();
-		local.ts.wildcardRedirectStruct=structnew();
-		local.ts.wildcardSpecialStruct=structnew();
-		local.ts.uniqueStruct=structnew();
-		local.ts.requestStruct=structnew();
+		ts=structnew();
+		ts.redirectStruct=structnew();
+		ts.wildcardRedirectStruct=structnew();
+		ts.wildcardSpecialStruct=structnew();
+		ts.uniqueStruct=structnew();
+		ts.requestStruct=structnew();
 		
 		
-		local.tempSkipURL=structnew();
-		local.tempSkipURL["/(.*(.gif|.jpg|.png|.css|.js))"]=true;
-		local.tempSkipURL["/livezilla/.*"]=true;
-		local.tempSkipURL["/(.*)/(.*).html"]=true;
-		//local.tempSkipURL["/(.*).html"]=true;
-		//local.tempSkipURL[""]=true;
+		tempSkipURL=structnew();
+		tempSkipURL["/(.*(.gif|.jpg|.png|.css|.js))"]=true;
+		tempSkipURL["/livezilla/.*"]=true;
+		tempSkipURL["/(.*)/(.*).html"]=true;
+		//tempSkipURL["/(.*).html"]=true;
+		//tempSkipURL[""]=true;
 	
-		for(local.n=1;local.n LTE arraylen(local.arrR);local.n++){
-			for(local.i=1;local.i LTE arraylen(local.arrR[local.n]);local.i++){
+		for(n=1;n LTE arraylen(arrR);n++){
+			for(i=1;i LTE arraylen(arrR[n]);i++){
 				// detect rewrite rule type
-				local.cur=trim(local.arrR[local.n][local.i]);
-				if(local.cur EQ "") continue;
-				local.a301=false;
-				local.aProxy=false;
-				local.aWildCard=false;
-				local.aWildCard2=false;
-				local.aCFML=false;
-				if(right(local.cur,10) CONTAINS 'R=301'){
-					local.a301=true;
+				cur=trim(arrR[n][i]);
+				if(cur EQ "") continue;
+				a301=false;
+				aProxy=false;
+				aWildCard=false;
+				aWildCard2=false;
+				aCFML=false;
+				if(right(cur,10) CONTAINS 'R=301'){
+					a301=true;
 				}
-				if(right(local.cur,10) CONTAINS ',P' or right(local.cur,10) CONTAINS 'P,' or right(local.cur,10) CONTAINS '[P' or right(local.cur,10) CONTAINS 'P]'){
-					local.aProxy=true;
+				if(right(cur,10) CONTAINS ',P' or right(cur,10) CONTAINS 'P,' or right(cur,10) CONTAINS '[P' or right(cur,10) CONTAINS 'P]'){
+					aProxy=true;
 				}
-				if(left(local.cur, len("RewriteRule")) EQ "RewriteRule"){
-					local.cur="/"&removechars(local.cur, 1, len("RewriteRule")+1);
-					local.arrC=listtoarray(local.cur, "$", true);
-					local.newCount=arraylen(local.arrC);
-					local.arrC[1]=trim(local.arrC[1]);
-					if(right(local.arrC[1],2) EQ ".*"){
-						local.aWildCard=true;
-					}else if(local.arrC[1] CONTAINS ".*" or local.arrC[1] CONTAINS "[" or local.arrC[1] CONTAINS "*"){
-						local.aWildCard2=true;	
+				if(left(cur, len("RewriteRule")) EQ "RewriteRule"){
+					cur="/"&removechars(cur, 1, len("RewriteRule")+1);
+					arrC=listtoarray(cur, "$", true);
+					newCount=arraylen(arrC);
+					arrC[1]=trim(arrC[1]);
+					if(right(arrC[1],2) EQ ".*"){
+						aWildCard=true;
+					}else if(arrC[1] CONTAINS ".*" or arrC[1] CONTAINS "[" or arrC[1] CONTAINS "*"){
+						aWildCard2=true;	
 					}
-					local.sUrl=local.arrC[1];
-					if(structkeyexists(local.tempSkipURL, local.sUrl)){
+					sUrl=arrC[1];
+					if(structkeyexists(tempSkipURL, sUrl)){
 						continue;	
 					}
-					arraydeleteat(local.arrC,1);
-					local.dUrl=arraytolist(local.arrC,"$");
-					if(local.newCount GTE 2){
-						local.pos=find("[", local.dUrl);
-						if(local.pos NEQ 0){
-							local.dUrl=left(local.dUrl, local.pos-1);
+					arraydeleteat(arrC,1);
+					dUrl=arraytolist(arrC,"$");
+					if(newCount GTE 2){
+						pos=find("[", dUrl);
+						if(pos NEQ 0){
+							dUrl=left(dUrl, pos-1);
 						}
-						local.dUrl=trim(local.dUrl);
-						if(left(local.dUrl,4) EQ "http"){
+						dUrl=trim(dUrl);
+						if(left(dUrl,4) EQ "http"){
 							// don't change url
-						}else if(left(local.dUrl,1) NEQ "/"){
-							local.dUrl="/"&local.dUrl;
+						}else if(left(dUrl,1) NEQ "/"){
+							dUrl="/"&dUrl;
 						}
 					}else{
-						writeoutput('Broken url:'&local.cur&'<br />');	
+						writeoutput('Broken url:'&cur&'<br />');	
 					}
-					if(local.dUrl EQ "/-"){
-						local.dUrl="-";
+					if(dUrl EQ "/-"){
+						dUrl="-";
 					}
-					if(local.dUrl CONTAINS ".cfm" or local.dUrl CONTAINS ".cfc"){
-						local.aCFML=true;
+					if(dUrl CONTAINS ".cfm" or dUrl CONTAINS ".cfc"){
+						aCFML=true;
 					}
-					if(local.aWildCard2){
-						writeoutput('special rule: '&local.sUrl&' | '&local.cur&'<br />');
-						local.ts.wildcardSpecialStruct[local.sUrl]=local.dUrl;
+					if(aWildCard2){
+						writeoutput('special rule: '&sUrl&' | '&cur&'<br />');
+						ts.wildcardSpecialStruct[sUrl]=dUrl;
 					}else{
-						if(local.a301){
-							if(local.aWildCard){
+						if(a301){
+							if(aWildCard){
 								//writeoutput('wildcard: ');
-								local.ts.wildcardRedirectStruct[left(local.sUrl,len(local.sUrl)-2)]=local.dUrl;
+								ts.wildcardRedirectStruct[left(sUrl,len(sUrl)-2)]=dUrl;
 							}else{
-								local.ts.redirectStruct[local.sUrl]=local.dUrl;
+								ts.redirectStruct[sUrl]=dUrl;
 							}
 						}else{
-							if(local.aWildCard){
-								application.zcore.template.fail('requestStruct is never used - wildcard: probably needs to be removed: '&local.sUrl&"<br />"&local.dUrl);
-								local.t9=structnew();
-								local.t9.url=local.dUrl;
-								local.t9.cfml=local.aCFML;
-								local.ts.requestStruct[local.sUrl]=local.t9;
-								writeoutput(' map '&local.sUrl&' to '&local.dUrl&'<br />');
+							if(aWildCard){
+								application.zcore.template.fail('requestStruct is never used - wildcard: probably needs to be removed: '&sUrl&"<br />"&dUrl);
+								t9=structnew();
+								t9.url=dUrl;
+								t9.cfml=aCFML;
+								ts.requestStruct[sUrl]=t9;
+								writeoutput(' map '&sUrl&' to '&dUrl&'<br />');
 							}else{
-								local.t9=structnew();
-								local.t9.url=replacelist(local.dUrl,"$1,$2,$3,$4,$5,$6",",,,,,");
-								local.t9.cfml=local.aCFML;
-								local.t9.vs=structnew();
-								local.arrT=listtoarray(local.t9.url,"?");
-								local.t9.url=local.arrT[1];
-								writeoutput(' setup unique '&local.sUrl&' to '&local.dUrl&'<br />');
-								if(arraylen(local.arrT) EQ 2){
-									local.arrTF=listtoarray(local.arrT[2], "&");
-									for(local.i2=1;local.i2 LTE arraylen(local.arrTF);local.i2++){
-										local.arrTFV=listToArray(local.arrTF[local.i2], "=", true);
-										local.t9.vs[local.arrTFV[1]]=URLDecode(local.arrTFV[2]);
+								t9=structnew();
+								t9.url=replacelist(dUrl,"$1,$2,$3,$4,$5,$6",",,,,,");
+								t9.cfml=aCFML;
+								t9.vs=structnew();
+								arrT=listtoarray(t9.url,"?");
+								t9.url=arrT[1];
+								writeoutput(' setup unique '&sUrl&' to '&dUrl&'<br />');
+								if(arraylen(arrT) EQ 2){
+									arrTF=listtoarray(arrT[2], "&");
+									for(i2=1;i2 LTE arraylen(arrTF);i2++){
+										arrTFV=listToArray(arrTF[i2], "=", true);
+										t9.vs[arrTFV[1]]=URLDecode(arrTFV[2]);
 									}
-								}else if(arraylen(local.arrT) GT 2){
-									application.zcore.template.fail("invalid destination url:"&local.tempURL);
+								}else if(arraylen(arrT) GT 2){
+									application.zcore.template.fail("invalid destination url:"&tempURL);
 								}
-								local.ts.uniqueStruct[local.sUrl]=local.t9;
+								ts.uniqueStruct[sUrl]=t9;
 							}
 						}
 					}
-				}else if(left(local.cur, len("RewriteRule")) EQ "RewriteCond"){
-					writeoutput('rewritecond:'&local.cur&'<br />');
+				}else if(left(cur, len("RewriteRule")) EQ "RewriteCond"){
+					writeoutput('rewritecond:'&cur&'<br />');
 				}else{
-					writeoutput('unknown url:'& local.cur&'<br />');	
+					writeoutput('unknown url:'& cur&'<br />');	
 				}
 				
 			}
 		}
-		arguments.sharedStruct.customRules=local.ts;
+		arguments.sharedStruct.customRules=ts;
 	};
 	return;
 	</cfscript>

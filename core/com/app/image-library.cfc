@@ -200,7 +200,13 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 		ext=lcase(application.zcore.functions.zGetFileExt(qImage.image_file));
 		filePath="zupload/library/"&arguments.image_library_id&"/"&application.zcore.functions.zURLEncode(qImage.image_caption,'-')&"-"&arguments.image_id&"-"&arguments.size&"-"&arguments.crop&"."&ext;
 	}
-	if(fileexists(request.zos.globals.privatehomedir&filePath)){
+
+
+	tempPath=request.zos.globals.privatehomedir&filePath;
+	if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempPath) EQ false){
+		application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]=fileexists(tempPath);
+	} 
+	if(application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]){
 		return "/"&filePath&"?ztv=#dateformat(qImage.image_updated_datetime, "yyyymmdd")&timeformat(qImage.image_updated_datetime, "HHmmss")#";
 	}else{
 		return replace("/z/_com/app/image-library?method=generateImage&image_library_id=#arguments.image_library_id#&image_id=#arguments.image_id#&size=#arguments.size#&crop=#arguments.crop#&ztv=#gettickcount()#","&","&amp;","ALL");
@@ -368,7 +374,9 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 				type="image/gif";
 			}
 			if(qImage.image_approved EQ 0){
-				content type="#type#" file="#request.zos.globals.privatehomedir&destination&newFileName#";
+				tempPath=request.zos.globals.privatehomedir&destination&newFileName;
+				application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]=true;
+				content type="#type#" file="#tempPath#";
 				application.zcore.functions.zabort();
 			}else{
 				application.zcore.functions.zheader("Content-Type", type);
