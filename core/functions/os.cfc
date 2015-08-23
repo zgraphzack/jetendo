@@ -470,7 +470,7 @@ if(not rs.success){
 	var template=0;
 	var ts=structnew();
 	application.zcore.functions.zClearCFMLTemplateCache();
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc getSite begin'});
+	request.zos.requestLogEntry('Application.cfc getSite begin');
 	request.zos.globals=arguments.ss.globals;
 	request.zos.site_id=request.zos.globals["id"];
 	ts.globals=arguments.ss.globals;
@@ -586,7 +586,7 @@ if(not rs.success){
 	}
 
 	ts.getSiteRan=true;
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc getSite end'});
+	request.zos.requestLogEntry('Application.cfc getSite end');
 	return ts;
 	</cfscript>
 </cffunction>
@@ -2120,7 +2120,7 @@ User's IP: #request.zos.cgi.remote_addr#
 			}else{
 				output=1;
 			}
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4-2'});
+			request.zos.requestLogEntry('Application.cfc onApplicationStart 3-4-2');
 			if(output NEQ ""){
 				directory action="list" recurse="yes" directory="#request.zos.installPath#core/mvc" name="qD" filter="*.cfc";//,*.html";
 				ts434=structnew();
@@ -2178,7 +2178,7 @@ User's IP: #request.zos.cgi.remote_addr#
 						}
 					}
 				}
-				arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-5'});
+				request.zos.requestLogEntry('Application.cfc onApplicationStart 3-5');
 			}
 		}
 		if(arrayLen(arrLocalFile)){

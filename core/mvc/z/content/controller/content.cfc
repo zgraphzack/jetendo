@@ -2366,7 +2366,7 @@ configCom.includeContentByName(ts);
 	}else{
 		request.zos.zcontentshowinactive=false;
 	}
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 1'});
+	request.zos.requestLogEntry('content.cfc viewPage 1');
 	savecontent variable="output"{
 		// you must have a group by in your query or it may miss rows
 		ts =structnew();
@@ -2432,7 +2432,7 @@ configCom.includeContentByName(ts);
 	
 		form.content_parent_id = ts994824713.content_parent_id;
 
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 2'});
+		request.zos.requestLogEntry('content.cfc viewPage 2');
 		savecontent variable="theImageOutputHTML"{
 				ts =structnew();
 				ts.image_library_id=ts994824713.content_image_library_id;
@@ -2457,7 +2457,7 @@ configCom.includeContentByName(ts);
 			}
 			application.zcore.app.getAppCFC("content").excludeContentId(ts994824713.content_id);
 			rs=hasAccessToContentId(ts994824713.content_id); 
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 3'});
+			request.zos.requestLogEntry('content.cfc viewPage 3');
 			if(not rs.hasAccess or rs.forceLogin){
 				returnStruct9 = application.zcore.functions.zGetRepostStruct();
 				if(structkeyexists(form,  request.zos.urlRoutingParameter)){
@@ -2549,13 +2549,13 @@ configCom.includeContentByName(ts);
 			form.offset=application.zcore.functions.zso(form, 'offset', true, 0);
 			form.count=application.zcore.functions.zso(form, 'count', true, 20);
 
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 4'});
+			request.zos.requestLogEntry('content.cfc viewPage 4');
 			childContentStruct=displayChildContent(ts994824713, contentConfig, ct1948, form.offset, form.count);
 			if(form.offset LT 0 or (form.offset NEQ 0 and childContentStruct.qContentChild.recordcount EQ 0)){
 				application.zcore.functions.z301Redirect(request.zos.originalURL);
 			}
 			ct1948=childContentStruct.bodyText;
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'content.cfc viewPage 5'});
+			request.zos.requestLogEntry('content.cfc viewPage 5');
 			if(arraylen(contentConfig.arrContentReplaceKeywords)){
 				for(i=1;i LTE arraylen(contentConfig.arrContentReplaceKeywords);i++){
 					if(isDefined(contentConfig.arrContentReplaceKeywords[i])){

@@ -267,7 +267,7 @@
 		}
 		if(request.zos.routingIsCFC and structkeyexists(form,'method')){
 			this.checkCFCSecurity(request.zos.scriptNameTemplate, form.method);
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'routing.cfc after checkCFCSecurity'});
+			request.zos.requestLogEntry('routing.cfc after checkCFCSecurity');
 			request.zos.currentController=request.zos.scriptNameTemplate;
 			//writeoutput('in isCFC'&request.zos.routingDisableComponentInvoke);
 			if(request.zos.routingDisableComponentInvoke EQ false){

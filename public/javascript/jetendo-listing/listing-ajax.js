@@ -60,10 +60,10 @@ function zListingLoadSavedCart(){
 		return;
 	}
 	var listingCount=zGetCookie("SAVEDLISTINGCOUNT"); 
-	var enabled=false;
-	if(listingCount!="0" && listingCount!=""){
-		enabled=true; 
-	}
+	var enabled=true;
+	if(listingCount=="0" || listingCount==""){
+		enabled=false; 
+	} 
 	if(enabled){
 		var tempObj={};
 		tempObj.id="zListingLoadSavedCart";
@@ -73,7 +73,12 @@ function zListingLoadSavedCart(){
 			var r=eval("("+d+")");
 			if(r.success){ 
 				if($("#sl894nsdh783").length){
-					$("#sl894nsdh783").show().html(r.output);   
+					var listingCount=zGetCookie("SAVEDLISTINGCOUNT"); 
+					if(listingCount=="0" || listingCount==""){
+						$("#sl894nsdh783").html("").hide(); 
+					}else{
+						$("#sl894nsdh783").show().html(r.output);   
+					}
 				}
 			} 
 		}; 

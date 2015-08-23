@@ -122,7 +122,7 @@
 		application.zcore.functions.zCookie(ts); 
 	}
 	rs={
-		success:true
+		success:true 
 	};
 	application.zcore.functions.zReturnJSON(rs);
 	</cfscript>
@@ -207,7 +207,31 @@
 	ts.compact=true;
 	propDisplayCom.init(ts);
 	//zdump(ts.datastruct);
+	ts=structnew();
+	ts.name="savedListingCount";
+	ts.value=returnStruct.count;
+	ts.expires="never";
+	application.zcore.functions.zCookie(ts);
 
+	if(returnStruct.query.recordcount NEQ structcount(request.zsession.listing.savedListingStruct)){
+		ns={};
+		for(row in returnStruct.query){
+			ns[row.listing_id]=true;
+		}
+		request.zsession.listing.savedListingStruct=ns;
+
+		ts=structnew();
+		ts.name="savedListingStruct";
+		ts.value=structkeyarray(ns);
+		ts.expires="never";
+		application.zcore.functions.zCookie(ts);
+		ts=structnew();
+		ts.name="savedListingCount";
+		ts.value=structcount(ns);
+		ts.expires="never";
+		application.zcore.functions.zCookie(ts); 
+		request.zsession.listing.savedListingStruct=structnew(); 
+	}
 	// inputStruct should contain all search parameters. (on daytona beach page, this would only be city_name and state_abbr)
 	propertyHTML = propDisplayCom.displayTop();	 
 	

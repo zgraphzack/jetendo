@@ -85,7 +85,7 @@
 	application.zcore.functions.zheader("P3P", "CP='Not using P3P, find the privacy policy on our site instead.'");
 	 
 	savecontent variable="local.output"{
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart begin'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart begin');
 		if(structkeyexists(application, 'zDeployExclusiveLock') and ((request.zos.isDeveloper EQ false and request.zos.isServer EQ false) or not structkeyexists(form, 'zreset') or form.zreset EQ "")){	
 			setting requesttimeout="350";
 			lock type="exclusive" timeout="300" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{};
@@ -292,21 +292,21 @@
 		}
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0simple stuff<br />');	local.s=gettickcount('nano');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0<br />');	local.s=gettickcount('nano');
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart1'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart before onRequestStart1');
 		variables.onRequestStart1();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart12'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart before onRequestStart12');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds1<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart12();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart2'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart before onRequestStart2');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds12<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart2();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart3'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart before onRequestStart3');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds2<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart3();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart before onRequestStart4'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart before onRequestStart4');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds3<br />');	local.s=gettickcount('nano');
 		variables.onRequestStart4();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart after onRequestStart4'});
+		request.zos.requestLogEntry('Application.cfc onRequestStart after onRequestStart4');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds4<br />');	local.s=gettickcount('nano');
 	}
 	if(request.zos.isDeveloper and structkeyexists(form, 'displayRunTime')){
@@ -874,7 +874,7 @@
 					}
 				}
 			}
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart4 after checkLogin'});
+			request.zos.requestLogEntry('Application.cfc onRequestStart4 after checkLogin');
 			application.zcore.template.setTag("stylesheet","/z/stylesheets/manager.css",false);
 			application.zcore.template.requireTag("title");
 			application.zcore.template.setTag("title","Server Manager");
@@ -928,7 +928,7 @@
 			local.roles="";
 		}
 	}
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestStart4 before processRequestURL'});
+	request.zos.requestLogEntry('Application.cfc onRequestStart4 before processRequestURL');
 	application.zcore.routing.processRequestURL(request.zos.cgi.SCRIPT_NAME);
 	</cfscript>
 </cffunction>

@@ -420,8 +420,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets16_property where rets16_157 LIK
 					}
 					idx["photo"&i]='/z/a/listing/images/image-not-available.gif'; 
 				}*/
-			}
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyDisplay.cfc after the image fileexists calls'});
+			} 
 		}
 			idx["agentName"]=arguments.query["rets16_144"];
 			idx["agentPhone"]="";

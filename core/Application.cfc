@@ -16,7 +16,7 @@ this.clientStorage = "cookie";
 
 // using domain cookies or not
 this.setDomainCookies = false; 
-this.setClientCookies = false;
+this.setClientCookies = false; 
 
 // disable sessions and cookies when using ab.exe benchmarking to prevent timeouts of this failed request type: length
 if(cgi.user_agent CONTAINS "apachebench"){
@@ -52,6 +52,23 @@ this.scopeCascading = "standard";
 // END override cfml admin settings
 
 </cfscript>
+
+<cffunction name="requestLogEntry" localmode="modern" output="no">
+	<cfargument name="message" type="string" required="yes">
+	<cfscript>
+	time=gettickcount('nano');
+	arrayappend(request.zos.arrRunTime, {time:time, name:arguments.message});
+	if(not structkeyexists(request, 'lastTickCount')){
+		request.lastTickCount=request.zos.startTime;
+	}
+	timeOut=((time-request.lastTickCount)/1000000000)&' seconds';
+	request.lastTickCount=time;
+	</cfscript>
+	<cfif not structkeyexists(application, 'zcoreIsInit')>
+		<cffile action="append" file="#request.zos.zcoreRootCachePath#jetendo-start-log.txt" output="#dateformat(now(), "yyyy-mm-dd")&" "&timeformat(now(), "h:mm tt")# | #timeOut# | #arguments.message#" addNewLine="true" charset="utf-8" mode="770">
+	</cfif>
+</cffunction> 
+
 <cffunction name="setupGlobals" localmode="modern" output="no">
 	<cfargument name="tempCGI" type="struct" required="yes">
 	<cfscript>
@@ -119,6 +136,7 @@ if(structkeyexists(requestData.headers,'http_host')){
 	local.tempCGI.http_host=requestData.headers.http_host;
 }
 setupGlobals(local.tempCGI);
+request.zos.requestLogEntry=requestLogEntry;
 request.zos.requestData=requestData;
 request.zos.cgi=local.tempCGI;
 </cfscript>
@@ -257,8 +275,7 @@ request.zos.cgi=local.tempCGI;
     Request.zOS.modes.time.begin = request.zos.startTime;
     request.zOS.mysqlnow=DateFormat(request.zos.now,'yyyy-mm-dd')&' '&TimeFormat(request.zos.now,'HH:mm:ss');
     
-    variables.getApplicationConfig();
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onCoreRequest complete'});
+    variables.getApplicationConfig(); 
     </cfscript>
 </cffunction>
         

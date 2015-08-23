@@ -48,7 +48,7 @@
 	<cfscript>
 	application.codeDeployModeEnabled=true;
 	try{
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy1'});
+		request.zos.requestLogEntry('onCodeDeploy1');
 		if(structkeyexists(application.zcore, 'allcomponentcache')){
 			structclear(application.zcore.allcomponentcache);
 		}
@@ -77,7 +77,7 @@
 		request.zos.functions=functions;
 		application.zcore.functions=functions; 
 		
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy2'});
+		request.zos.requestLogEntry('onCodeDeploy2');
 		
 		componentObjectCache=structnew();
 		componentObjectCache.context=CreateObject("component","zcorerootmapping.com.zos.context");
@@ -135,11 +135,11 @@
 			structappend(request.zos, application.zcore.componentObjectCache, true);
 		}
 		
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy3'});
+		request.zos.requestLogEntry('onCodeDeploy3');
 		
 		
 		application.zcore.skin.onCodeDeploy(application.zcore.skinObj);
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy4'});
+		request.zos.requestLogEntry('onCodeDeploy4');
 		application.zcore.listingCom=createobject("component","zcorerootmapping.mvc.z.listing.controller.listing");
 		application.zcore.listingStruct.configCom=application.zcore.listingCom;
 		// loop all app CFCs
@@ -149,7 +149,7 @@
 				currentCom.onCodeDeploy(application.zcore);
 			}
 		}
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy5'});
+		request.zos.requestLogEntry('onCodeDeploy5');
 		
 
 		request.zos.functions.zUpdateGlobalMVCData(application.zcore, true);
@@ -201,13 +201,13 @@
 		}
 
 		structappend(request, backupStruct, true);
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy6'});
+		request.zos.requestLogEntry('onCodeDeploy6');
 
 		versionCom=createobject("component", "zcorerootmapping.version");
 	    ts2=versionCom.getVersion();
 
 
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'onCodeDeploy7'});
+		request.zos.requestLogEntry('onCodeDeploy7');
 		runDatabaseUpgrade=false;
 	    if(not structkeyexists(application.zcore, 'databaseVersion') or application.zcore.databaseVersion NEQ ts2.databaseVersion){
 	    	// do database upgrade

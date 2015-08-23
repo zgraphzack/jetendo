@@ -324,22 +324,22 @@
 	ds.environment.test=duplicate(es);
 	ds.environment.live=duplicate(es);
 	
-	local.zTempGlobalStruct=StructNew();
-	local.zTempCurrentPath="";
+	zTempGlobalStruct=StructNew();
+	zTempCurrentPath="";
 	/*ts.abusiveIPStruct=structnew();
-	for(local.i=0;local.i LTE 59;local.i++){
-		ts.abusiveIPStruct[local.i]=structnew();
+	for(i=0;i LTE 59;i++){
+		ts.abusiveIPStruct[i]=structnew();
 	}
 	ts.abusiveIPDate=0;
 	if(isDefined('application.zcore.abusiveBlockedIpStruct') and structkeyexists(form,  'force') EQ false){
 		ts.abusiveBlockedIpStruct=application.zcore.abusiveBlockedIpStruct;
 	}else{
-		query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
+		query name="qS" datasource="#request.zos.zcoreDatasource#"{
 			writeoutput('SELECT ip_block_ip FROM ip_block WHERE ip_block_deleted=0 ');
 		}
 		ts.abusiveBlockedIpStruct=structnew();
-		for(local.i=1;local.i LTE local.qs.recordcount;local.i++){
-		ts.abusiveBlockedIpStruct[local.qs.ip_block_ip[local.i]]=true;	
+		for(i=1;i LTE qs.recordcount;i++){
+		ts.abusiveBlockedIpStruct[qs.ip_block_ip[i]]=true;	
 		}
 	}*/
 	ts.processList=structnew(); 
@@ -364,7 +364,7 @@
 	ts.serverglobals.serveremailpopserver = "mailserver";
 	ts.serverglobals.serveremailpassword = "password";
 	ts.serverglobals.serveremailusername = "username";
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-1-2'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-1-2');
 	 
 	if(fileexists(ts.serverglobals.serverprivatehomedir&"_cache/scripts/sites.json")){
 		ts.sitePaths=deserializeJson(application.zcore.functions.zreadfile(ts.serverglobals.serverprivatehomedir&"_cache/scripts/sites.json"));
@@ -400,7 +400,7 @@
 		}
 		ts.domainRedirectStruct[row.domain_redirect_old_domain]=row;
 	}
-	query name="local.qS" datasource="#request.zos.zcoreDatasource#"{
+	query name="qS" datasource="#request.zos.zcoreDatasource#"{
 		writeoutput("SELECT site_id, site_short_domain FROM `site` 
 		WHERE site_active='1' ");
 	}
@@ -409,23 +409,23 @@
 	}else{
 		ts.siteglobals={};
 	}
-	for(local.row in local.qS){
+	for(row in qS){
 		if(structkeyexists(row, 'site_deleted') and row.site_deleted EQ 0){
 			continue;
 		}
-		local.tempPath=application.zcore.functions.zGetDomainInstallPath(local.row.site_short_domain);
-		local.tempPath2=application.zcore.functions.zGetDomainWritableInstallPath(local.row.site_short_domain);
-		if(not structkeyexists(ts.siteglobals, local.row.site_id) and fileexists(local.tempPath2&"_cache/scripts/global.json")){
-			local.tempGlobal=deserializeJson(application.zcore.functions.zreadfile(local.tempPath2&"_cache/scripts/global.json"));
-			structappend(local.tempGlobal, ts.serverGlobals, false);
-			local.tempGlobal.homeDir=local.tempPath;
-			local.tempGlobal.secureHomeDir=local.tempPath;
-			local.tempGlobal.privateHomeDir=local.tempPath2; 
-			ts.siteglobals[local.row.site_id]=local.tempGlobal;
+		tempPath=application.zcore.functions.zGetDomainInstallPath(row.site_short_domain);
+		tempPath2=application.zcore.functions.zGetDomainWritableInstallPath(row.site_short_domain);
+		if(not structkeyexists(ts.siteglobals, row.site_id) and fileexists(tempPath2&"_cache/scripts/global.json")){
+			tempGlobal=deserializeJson(application.zcore.functions.zreadfile(tempPath2&"_cache/scripts/global.json"));
+			structappend(tempGlobal, ts.serverGlobals, false);
+			tempGlobal.homeDir=tempPath;
+			tempGlobal.secureHomeDir=tempPath;
+			tempGlobal.privateHomeDir=tempPath2; 
+			ts.siteglobals[row.site_id]=tempGlobal;
 		}
 	} 
 	
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-1'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-1');
 	ts.componentObjectCache=structnew();
 	ts.componentObjectCache.context=CreateObject("component","zcorerootmapping.com.zos.context");
 	ts.componentObjectCache.cache=CreateObject("component","zcorerootmapping.com.zos.cache");
@@ -466,23 +466,23 @@
 	}
 	application.zcore.db=ts.db;
 	
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-2'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-2');
 	ts.cacheData={
 		tagHashCache:structnew()
 	}
 	/*
 	// this need to be within request.zos.installPath now.
-	directory action="list" recurse="yes" directory="/var/jetendo-server/nginx/tagcache/" name="local.qD";
-	for(local.row IN local.qD){
-		ts.cacheData.tagHashCache[left(local.row.name, len(local.row.name)-5)]=true;
+	directory action="list" recurse="yes" directory="/var/jetendo-server/nginx/tagcache/" name="qD";
+	for(row IN qD){
+		ts.cacheData.tagHashCache[left(row.name, len(row.name)-5)]=true;
 	}
 	*/
 	request.zos.globals=structnew();
 	structappend(request.zos.globals,duplicate(ts.serverGlobals));
 	if(request.zos.isdeveloper and isDefined('request.zsession.verifyQueries') and request.zsession.verifyQueries){
-		local.verifyQueriesEnabled=true;
+		verifyQueriesEnabled=true;
 	}else{
-		local.verifyQueriesEnabled=false;
+		verifyQueriesEnabled=false;
 	}
 	ts.dbInitConfigStruct={
 		insertIdSQL:"select @zLastInsertId id2, last_insert_id() id",
@@ -491,28 +491,28 @@
 			checkSiteId:application.zcore.functions.zVerifySiteIdsInDBCFCQuery
 			, checkDeletedField:application.zcore.functions.zVerifyDeletedInDBCFCQuery
 		},
-		verifyQueriesEnabled:local.verifyQueriesEnabled,
+		verifyQueriesEnabled:verifyQueriesEnabled,
 		cacheStructKey:'application.zcore.queryCache'
 	}
 	ts.db.init(ts.dbInitConfigStruct);
 	request.zos.queryObject=ts.db.newQuery();
 	
 	
-	local.c=ts.db.getConfig();
-	local.c.datasource=request.zos.globals.serverdatasource;
-	local.c.verifyQueriesEnabled=false;
-	local.c.cacheDisabled=false;
-	local.c.autoReset=false;
-	request.zos.noVerifyQueryObject=ts.db.newQuery(local.c);
+	c=ts.db.getConfig();
+	c.datasource=request.zos.globals.serverdatasource;
+	c.verifyQueriesEnabled=false;
+	c.cacheDisabled=false;
+	c.autoReset=false;
+	request.zos.noVerifyQueryObject=ts.db.newQuery(c);
 
 	db=request.zos.queryObject;
 	db.sql="SHOW VARIABLES LIKE #db.param('version')#";
 	
-	local.qV=db.execute("qV");
+	qV=db.execute("qV");
 	ts.enableFullTextIndex=false;
-	if(local.qV.recordcount NEQ 0){
-		local.arrV=listtoarray(local.qV.value, ".", false);
-		if(local.arrV[1] GTE 10){
+	if(qV.recordcount NEQ 0){
+		arrV=listtoarray(qV.value, ".", false);
+		if(arrV[1] GTE 10){
 			ts.enableFullTextIndex=true;
 		}
 	}
@@ -545,14 +545,14 @@
 	//ts.primaryKeyMapStruct[request.zos.zcoreDatasource&".special_rate"]="rate_id";
 	
 	ts.helpStruct=structnew();
-	local.datasourceUniqueStruct=structnew();
-	local.datasourceUniqueStruct[request.zos.zcoredatasource]=true;
-	ts.arrGlobalDatasources=structkeyarray(local.datasourceUniqueStruct);
+	datasourceUniqueStruct=structnew();
+	datasourceUniqueStruct[request.zos.zcoredatasource]=true;
+	ts.arrGlobalDatasources=structkeyarray(datasourceUniqueStruct);
 	ts.tableColumns=structnew();
 	ts.tablesWithSiteIdStruct=structnew();
 
 
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-3'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-3');
 
 
 	application.zcore.functions.zUpdateTableColumnCache(ts);
@@ -587,7 +587,7 @@
 	}
 
 
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-4'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-4');
 	
 	ts.controllerComponentCache=structnew();
 	ts.registeredControllerStruct=structnew();
@@ -607,7 +607,7 @@
 	ts.templateCache=structnew();
 	ts.searchFormCache=structnew();
 	
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-6'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-6');
 	if(request.zos.zreset EQ "app" and structkeyexists(application, 'zcore') and structkeyexists(form, 'zforcelisting') EQ false and structkeyexists(application.zcore,'listing') and structkeyexists(application.zcore,'listingStruct')){
 		ts.listingStruct=application.zcore.listingStruct;
 		ts.listingCom=application.zcore.listingCom;
@@ -623,7 +623,7 @@
 		ts.listingStruct=ts.listingCom.onApplicationStart(ts.listingStruct);
 		ts.listingStruct.configCom=ts.listingCom;
 	}
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3-7'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 3-7');
 	ts.skin.onApplicationStart(ts);
 	application.zcore=ts;
 	</cfscript>
@@ -644,12 +644,16 @@
 	if(not structkeyexists(application, 'zcoreIsInit') and application.onstartcount NEQ 0){
 		header statuscode="503" statustext="Service Temporarily Unavailable";
     	header name="retry-after" value="60";
-		echo('<h1>Service Temporarily Unavailable');abort;
-	}
+		echo('<h1>Service Temporarily Unavailable');
+		if(request.zos.isdeveloper){
+			writeoutput('<p>application.cfc onApplicationStart() is running.</p>');
+		}
+		abort;
+	} 
 	application.onstartcount++;
 	request.zos.applicationLoading=true;
        
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart begin'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart begin');
 	if(structkeyexists(form, request.zos.urlRoutingParameter) EQ false){
 		return;	
 	}
@@ -662,60 +666,51 @@
 	if(structkeyexists(request.zos,'onApplicationStartCalled')){
 		return;
 	}
-	request.zos.onApplicationStartCalled=true;
-	if(request.zos.zreset EQ ''){
-		if(structkeyexists(application, 'zcoreIsInit') EQ false){
-			application.zcoreIsInit=false;
-		}else if(application.zcoreIsInit EQ false){
-			header statuscode="503" statustext="HTTP Error 503 - Service unavailable";
-			writeoutput('<h1>HTTP Error 503 - Service Unavailable</h1>');
-			if(request.zos.isdeveloper){
-				writeoutput('<p>application.cfc onApplicationStart() is running.</p>');
-			}
-			writeoutput('<p>Please try again in a few seconds.</p>');
-			abort;
-		}else{
-			application.zcoreIsInit=true;
-		}
-	}
+	request.zos.requestLogEntry('Application.cfc onApplicationStart session duplicated');
+	request.zos.onApplicationStartCalled=true; 
+
 	if(request.zos.zreset EQ "all"){
 		setting requesttimeout="12000";
 	}
 	
-	local.dumpLoadFailed=true;
-	local.coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-zcore.bin";
-	local.coreDumpFile2=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sitestruct.bin";
-	local.dumpLoadFailed=false;
-	if(fileexists(local.coreDumpFile) and request.zos.zreset NEQ "all" and request.zos.zreset NEQ "app"){
-		try{
-			ts.zcore=objectload(local.coreDumpFile);
-			ts.siteStruct=objectload(local.coreDumpFile2);
-			application.zcore=ts.zcore;
-			application.siteStruct=ts.siteStruct;
-			if(request.zos.allowRequestCFC){
-				request.zos.functions=application.zcore.functions;
+	dumpLoadFailed=true;
+	if(request.zos.isTestServer){
+		coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-zcore.bin";
+		coreDumpFile2=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sitestruct.bin";
+		dumpLoadFailed=false;
+		request.zos.requestLogEntry('Application.cfc onApplicationStart before load core dump');
+		if(fileexists(coreDumpFile) and request.zos.zreset NEQ "all" and request.zos.zreset NEQ "app"){
+			try{
+				ts.zcore=objectload(coreDumpFile);
+				ts.siteStruct=objectload(coreDumpFile2);
+				application.zcore=ts.zcore;
+				application.siteStruct=ts.siteStruct;
+				if(request.zos.allowRequestCFC){
+					request.zos.functions=application.zcore.functions;
+				}
+				application.zcore.functions.zdeletefile(coreDumpFile);
+				application.zcore.functions.zdeletefile(coreDumpFile2);
+				//if(request.zos.isJavaEnabled){
+				//	coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
+				//	application.sessionStruct=objectload(coreDumpFile3);
+				//	application.zcore.functions.zdeletefile(coreDumpFile3);
+				//}
+				application.zcore.runOnCodeDeploy=true; 
+				application.zcore.runMemoryDatabaseStart=true; 
+			}catch(Any e){
+				dumpLoadFailed=true;  
+				request.zos.requestLogEntry('Application.cfc onApplicationStart dumploadFailed');
 			}
-			application.zcore.functions.zdeletefile(local.coreDumpFile);
-			application.zcore.functions.zdeletefile(local.coreDumpFile2);
-			/*
-			if(request.zos.isJavaEnabled){
-				local.coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
-				application.sessionStruct=objectload(local.coreDumpFile3);
-				application.zcore.functions.zdeletefile(local.coreDumpFile3);
-			}*/
-			application.zcore.runOnCodeDeploy=true; 
-			application.zcore.runMemoryDatabaseStart=true; 
-		}catch(Any local.e){
-			local.dumpLoadFailed=true;
 		}
 	}
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 1');
 
-	if(local.dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all" or not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'functions')){
+	if(dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all" or not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'functions')){
 		ts.zcore=structnew();
 		variables.setupAppGlobals1(ts.zcore);
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 2'});
+		request.zos.requestLogEntry('Application.cfc onApplicationStart 2');
 		variables.setupAppGlobals2(ts.zcore);
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 3'});
+		request.zos.requestLogEntry('Application.cfc onApplicationStart 3');
 		application.zcore=ts.zcore;
 	}
 	if(request.zos.allowRequestCFC){
@@ -725,25 +720,25 @@
 	
 
 
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart 4'});
+	request.zos.requestLogEntry('Application.cfc onApplicationStart 4');
 	if(structkeyexists(application, 'siteStruct') EQ false){
 		application.siteStruct=structnew();
 	}  
-	for(local.n IN ts.zcore.siteGlobals){
-		if((ts.zcore.siteGlobals[local.n].homedir EQ Request.zOSHomeDir and (not structkeyexists(application.siteStruct, local.n) or not structkeyexists(application.siteStruct[local.n], 'getSiteRan'))) or request.zos.zreset EQ "all"){
-			local.siteStruct[local.n]=structnew();
-			local.siteStruct[local.n].globals=duplicate(ts.zcore.serverglobals);
-			structappend(local.siteStruct[local.n].globals,(ts.zcore.siteGlobals[local.n]),true);
-			local.siteStruct[local.n].site_id=local.n;
-			local.siteStruct[local.n]=application.zcore.functions.zGetSite(local.siteStruct[local.n]);
+	for(n IN ts.zcore.siteGlobals){
+		if((ts.zcore.siteGlobals[n].homedir EQ Request.zOSHomeDir and (not structkeyexists(application.siteStruct, n) or not structkeyexists(application.siteStruct[n], 'getSiteRan'))) or request.zos.zreset EQ "all"){
+			siteStruct[n]=structnew();
+			siteStruct[n].globals=duplicate(ts.zcore.serverglobals);
+			structappend(siteStruct[n].globals,(ts.zcore.siteGlobals[n]),true);
+			siteStruct[n].site_id=n;
+			siteStruct[n]=application.zcore.functions.zGetSite(siteStruct[n]);
 			arrayClear(request.zos.arrQueryLog);
-			application.siteStruct[local.n]=local.siteStruct[local.n];
-			application.sitestruct[request.zos.globals.id]=local.siteStruct[local.n];
+			application.siteStruct[n]=siteStruct[n];
+			application.sitestruct[request.zos.globals.id]=siteStruct[n];
 		}
 	} 
+	request.zos.requestLogEntry('Application.cfc onApplicationStart end');
 	application.onstartcount=0;
 	application.zcoreIsInit=true;
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onApplicationStart end'});
 	</cfscript>
 	</cffunction>
 </cfoutput>

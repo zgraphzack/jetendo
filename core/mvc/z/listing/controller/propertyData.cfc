@@ -1520,7 +1520,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfelse>
     <cfscript>
     cancelNextSearch=false;
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc before qPropertyCount'});
+	request.zos.requestLogEntry('propertyData.cfc before qPropertyCount');
 	if(arguments.ss.disableCount EQ false){
 	    try{
 	    	if(arguments.ss.enableThreading){
@@ -1555,7 +1555,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			}
 		}
     }
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc after qPropertyCount'});
+	request.zos.requestLogEntry('propertyData.cfc after qPropertyCount');
     if(arguments.ss.debug){
     	echo('<span style="border:1px solid ##999999; padding:5px;font-size:10px; line-height:11px; display:block; ">');
     }
@@ -1658,7 +1658,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			}
 		}
 	}
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'propertyData.cfc after getProperties'});
+	request.zos.requestLogEntry('propertyData.cfc after getProperties');
 	</cfscript>
 	   
     <cfif arguments.ss.disableCount EQ false>

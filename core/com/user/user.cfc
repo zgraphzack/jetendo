@@ -237,7 +237,7 @@ userCom.checkLogin(inputStruct);
 	application.zcore.functions.zNoCache();
 	
 	rs.arrDebugLog=[];
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin start'});
+	request.zos.requestLogEntry('user.cfc checkLogin start');
 	local.failedLogin=false;
 	StructAppend(ss, ts, false);
 	if(ss.site_id NEQ request.zos.globals.id){
@@ -341,7 +341,7 @@ userCom.checkLogin(inputStruct);
 				application.zcore.template.abort(overrideContent);
 			}
 		}
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin before password hashing'});
+		request.zos.requestLogEntry('user.cfc checkLogin before password hashing');
 		db.sql="SELECT *
 		FROM #db.table("user", request.zos.zcoreDatasource)# user 
 		WHERE user.user_username = #db.param(form.zUsername)# and 
@@ -466,7 +466,7 @@ userCom.checkLogin(inputStruct);
 				failedLogin=true; // user doesn't exist.
 			} 
 		} 
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin after password hashing'}); 
+		request.zos.requestLogEntry('user.cfc checkLogin after password hashing'); 
 		if(not failedLogin){
 			if(structkeyexists(form, 'zdebug')){
 				arrayAppend(rs.arrDebugLog, "Login successful, updating session and database.");
@@ -494,14 +494,14 @@ userCom.checkLogin(inputStruct);
 			db.execute("q"); 
 			application.zcore.tracking.setUserEmail(qUserCheck.user_username);
 			this.setLoginLog(1);
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin before createToken'});
+			request.zos.requestLogEntry('user.cfc checkLogin before createToken');
 			
 			if(structkeyexists(form,'zautologin') and compare(form.zautologin,"1") EQ 0){
 				this.createToken(); // set permanent login cookie
 			}else if(structkeyexists(cookie,'zautologin') and compare(cookie.zautologin,"1") EQ 0){
 				this.createToken(); // set permanent login cookie
 			}
-			arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'user.cfc checkLogin after createToken'});
+			request.zos.requestLogEntry('user.cfc checkLogin after createToken');
 			
 			if(ss.noLoginForm){
 				rs.error=0;
@@ -802,7 +802,7 @@ userCom.checkLogin(inputStruct);
 	var ss = arguments.inputStruct;
 	ts.site_id = request.zos.globals.id;
 	StructAppend(ss,ts,false);
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'updateSession start'});
+	request.zos.requestLogEntry('updateSession start');
 	
 	
 	if(ss.site_id NEQ request.zos.globals.id){

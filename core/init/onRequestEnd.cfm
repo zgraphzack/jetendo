@@ -3,7 +3,7 @@
 	var template=0;
 	var db=request.zos.queryObject;
 	local.notemplate=false; 
-	arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestEnd begin'});
+	request.zos.requestLogEntry('Application.cfc onRequestEnd begin');
 	if(not structkeyexists(form, request.zos.urlRoutingParameter)){
 		return; 
 	}
@@ -68,7 +68,7 @@
 	savecontent variable="local.output2"{
 		application.zcore.functions.zProcessQueryQueueThreaded(); // i should probably put this at the beginning of onRequestEnd and prevent templates from doing an asynchronous query to hide the overhead of of the <cfthread> call.
 		application.zcore.tracking.endRequest();
-		arrayappend(request.zos.arrRunTime, {time:gettickcount('nano'), name:'Application.cfc onRequestEnd end'});
+		request.zos.requestLogEntry('Application.cfc onRequestEnd end');
 		application.zcore.functions.zEndOfRunningScript();  
 		
 		if(request.zos.isdeveloper and structkeyexists(request.zos, 'debugbarOutput')){
