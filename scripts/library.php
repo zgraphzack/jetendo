@@ -733,7 +733,7 @@ function installJetendoCronTabs($debug){
 	echo("Installing crontab\n");
 $crontabs="#every minute
 */1 * * * * /usr/bin/php ".$scriptsPath."newsite.php >/dev/null 2>&1
-*/1 * * * * /usr/bin/php ".$scriptsPath."railo-execute-commands.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php ".$scriptsPath."execute-commands.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php ".$scriptsPath."zqueue/queue.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php ".$scriptsPath."zqueue/queue-check-running.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php ".$scriptsPath."cfml-tasks.php >/dev/null 2>&1

@@ -17,7 +17,7 @@ $startPath=get_cfg_var("jetendo_root_path")."execute/start/";
 
 $runningThreads=0;
 
-$script='/usr/bin/php "'.get_cfg_var("jetendo_scripts_path").'railo-execute-commands-process.php" ';
+$script='/usr/bin/php "'.get_cfg_var("jetendo_scripts_path").'execute-commands-process.php" ';
 if($debug && !zIsTestServer()){
 	$background=' ';
 }else{

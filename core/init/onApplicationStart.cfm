@@ -673,36 +673,34 @@
 		setting requesttimeout="12000";
 	}
 	
-	dumpLoadFailed=true;
-	if(request.zos.isTestServer){
-		coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-zcore.bin";
-		coreDumpFile2=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sitestruct.bin";
-		dumpLoadFailed=false;
-		request.zos.requestLogEntry('Application.cfc onApplicationStart before load core dump');
-		if(fileexists(coreDumpFile) and request.zos.zreset NEQ "all" and request.zos.zreset NEQ "app"){
-			try{
-				ts.zcore=objectload(coreDumpFile);
-				ts.siteStruct=objectload(coreDumpFile2);
-				application.zcore=ts.zcore;
-				application.siteStruct=ts.siteStruct;
-				if(request.zos.allowRequestCFC){
-					request.zos.functions=application.zcore.functions;
-				}
-				application.zcore.functions.zdeletefile(coreDumpFile);
-				application.zcore.functions.zdeletefile(coreDumpFile2);
-				//if(request.zos.isJavaEnabled){
-				//	coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
-				//	application.sessionStruct=objectload(coreDumpFile3);
-				//	application.zcore.functions.zdeletefile(coreDumpFile3);
-				//}
-				application.zcore.runOnCodeDeploy=true; 
-				application.zcore.runMemoryDatabaseStart=true; 
-			}catch(Any e){
-				dumpLoadFailed=true;  
-				request.zos.requestLogEntry('Application.cfc onApplicationStart dumploadFailed');
+	dumpLoadFailed=true; 
+	coreDumpFile=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-zcore.bin";
+	coreDumpFile2=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sitestruct.bin";
+	dumpLoadFailed=false;
+	request.zos.requestLogEntry('Application.cfc onApplicationStart before load core dump');
+	if(fileexists(coreDumpFile) and request.zos.zreset NEQ "all" and request.zos.zreset NEQ "app"){
+		try{
+			ts.zcore=objectload(coreDumpFile);
+			ts.siteStruct=objectload(coreDumpFile2);
+			application.zcore=ts.zcore;
+			application.siteStruct=ts.siteStruct;
+			if(request.zos.allowRequestCFC){
+				request.zos.functions=application.zcore.functions;
 			}
+			application.zcore.functions.zdeletefile(coreDumpFile);
+			application.zcore.functions.zdeletefile(coreDumpFile2);
+			//if(request.zos.isJavaEnabled){
+			//	coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
+			//	application.sessionStruct=objectload(coreDumpFile3);
+			//	application.zcore.functions.zdeletefile(coreDumpFile3);
+			//}
+			application.zcore.runOnCodeDeploy=true; 
+			application.zcore.runMemoryDatabaseStart=true; 
+		}catch(Any e){
+			dumpLoadFailed=true;  
+			request.zos.requestLogEntry('Application.cfc onApplicationStart dumploadFailed');
 		}
-	}
+	} 
 	request.zos.requestLogEntry('Application.cfc onApplicationStart 1');
 
 	if(dumpLoadFailed or request.zos.zreset EQ "app" or request.zos.zreset EQ "all" or not structkeyexists(application, 'zcore') or not structkeyexists(application.zcore, 'functions')){
