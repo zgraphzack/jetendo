@@ -67,6 +67,11 @@ after map is dragged, get the new coordinates and send the new and old coordinat
 
 determine which points are outside the map (& delete them)
 	run 
+
+latDistanceInMiles=100;
+longDistanceInMiles=100;
+latDegrees=latDistanceInMiles/69; 
+longDegrees=longDistanceInMiles/69;
 	
 SELECT zipcode.*, 
 						ROUND((ACOS((SIN(#qZip.zipcode_latitude#/57.2958) * SIN(zipcode_latitude/57.2958)) + (COS(#qZip.zipcode_latitude#/57.2958) * COS(zipcode_latitude/57.2958) * COS(zipcode_longitude/57.2958 - #qZip.zipcode_longitude#/57.2958)))) * 3963, 0) AS distance, `city_memory`.city_id 
@@ -87,105 +92,115 @@ SELECT zipcode.*,
  --->
  <cfcomponent>
 <cfoutput>
-<cffunction name="index" localmode="modern" access="remote" returntype="any">
-<cfscript>
-application.zcore.session.forceEnable();
-db=request.zos.queryObject; 
-var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData"); 
-var returnStruct={count:0};
-var mapQuery={}; 
-
-application.zcore.functions.zNoCache();
-
-var propDisplayCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
-application.zcore.functions.zDisbleEndFormCheck();
-if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){
-	form.searchId=request.zsession.tempVars.zListingSearchId;
-	form.zIndex=application.zcore.status.getField(form.searchId, "zIndex",1);
-}
-if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
-	writeoutput('.<!-- stop spamming -->');
-	application.zcore.functions.zabort();
-}
- if(request.cgi_script_name EQ '/z/listing/search-form/index'){
- application.zcore.template.settag("title","Search Results");
- application.zcore.template.settag("pagetitle","Search Results");
- }
-if(structkeyexists(form, 'debugSearchForm') and form.debugSearchForm){
-	form.debugSearchForm=true;	
-}else{
-	form.debugSearchForm=false;
-}
-if(structkeyexists(form, 'debugSearchResults') and form.debugSearchResults){
-	form.debugSearchResults=true;	
-}else{
-	form.debugSearchResults=false;
-}
-form.searchFormLabelOnInput=application.zcore.functions.zso(form, 'searchFormLabelOnInput',false,false);
-/*if(isDefined('request.searchFormSelectWidth')){
-	form.searchFormSelectWidth=request.searchFormSelectWidth;
-}else{
-	form.searchFormSelectWidth=application.zcore.functions.zso(form, 'searchFormSelectWidth',false,'165px');
-}*/
-form.searchFormSelectWidth="100%";
-form.searchFormEnabledDropDownMenus=application.zcore.functions.zso(form, 'searchFormEnabledDropDownMenus',false,false);
-form.searchDisableExpandingBox=application.zcore.functions.zso(form, 'searchDisableExpandingBox',false,false);
-if(isboolean(form.searchFormEnabledDropDownMenus) EQ false){
-	form.searchFormEnabledDropDownMenus=false;
-}
-form.action=application.zcore.functions.zso(form, 'action',false,'form');
-if(application.zcore.app.siteHasApp("listing") EQ false){
-	application.zcore.functions.z301redirect('/');
-}
-
-form.search_listdate=application.zcore.functions.zso(form, 'search_listdate');
-
-</cfscript><cfif form.action EQ 'nearAddress'><cfscript>application.zcore.tracking.backOneHit();</cfscript>
+<cffunction name="init" localmode="modern" access="private">
 	<cfscript>
-		// /z/listing/search-form/nearAddress?search_near_address=113 Mariners Dr, Ormond Beach, FL&seach_near_radius=0.5
-		lat=0;
-		long=0;
+	application.zcore.session.forceEnable();
+	db=request.zos.queryObject; 
+	var returnStruct={count:0};
+	var mapQuery={}; 
+
+	application.zcore.functions.zNoCache();
+
+	application.zcore.functions.zDisbleEndFormCheck();
+	if(structkeyexists(form,'showLastSearch') and isDefined('request.zsession.tempVars.zListingSearchId')){
+		form.searchId=request.zsession.tempVars.zListingSearchId;
+		form.zIndex=application.zcore.status.getField(form.searchId, "zIndex",1);
+	}
+	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
+		writeoutput('.<!-- stop spamming -->');
+		application.zcore.functions.zabort();
+	}
+	if(request.cgi_script_name EQ '/z/listing/search-form/index'){
+		application.zcore.template.settag("title","Search Results");
+		application.zcore.template.settag("pagetitle","Search Results");
+	}
+	if(structkeyexists(form, 'debugSearchForm') and form.debugSearchForm){
+		form.debugSearchForm=true;	
+	}else{
+		form.debugSearchForm=false;
+	}
+	if(structkeyexists(form, 'debugSearchResults') and form.debugSearchResults){
+		form.debugSearchResults=true;	
+	}else{
+		form.debugSearchResults=false;
+	}
+	form.searchFormLabelOnInput=application.zcore.functions.zso(form, 'searchFormLabelOnInput',false,false); 
+	form.searchFormSelectWidth="100%";
+	form.searchFormEnabledDropDownMenus=application.zcore.functions.zso(form, 'searchFormEnabledDropDownMenus',false,false);
+	form.searchDisableExpandingBox=application.zcore.functions.zso(form, 'searchDisableExpandingBox',false,false);
+	if(isboolean(form.searchFormEnabledDropDownMenus) EQ false){
+		form.searchFormEnabledDropDownMenus=false;
+	}
+	form.action=application.zcore.functions.zso(form, 'action',false,'form');
+	if(application.zcore.app.siteHasApp("listing") EQ false){
+		application.zcore.functions.z301redirect('/');
+	}
+
+	form.search_listdate=application.zcore.functions.zso(form, 'search_listdate');
+	
+	</cfscript>
+</cffunction>
+<cffunction name="nearAddress" localmode="modern" access="remote">
+	<cfscript>
+	init();
+
+	application.zcore.tracking.backOneHit();
+	// /z/listing/search-form/nearAddress?search_near_address=113 Mariners Dr, Ormond Beach, FL&seach_near_radius=0.5
+	lat=0;
+	long=0;
+
+	ts=structnew();
+	ts.debug=false;
+	ts.address=search_near_address;
+	rs5=request.zos.listing.functions.zGetLatLong(ts);
+	if(rs5.error){
+		jsonText=('{"success":false,"errorMsg":"#rs5.errorMessage#\nAddress not found.  Please type a complete, valid address and try again."}');
+	}else{
+		lat=rs5.latitude;
+		long=rs5.longitude;
+	}
 		
-			ts=structnew();
-			ts.debug=false;
-			ts.address=search_near_address;
-			rs5=request.zos.listing.functions.zGetLatLong(ts);
-			if(rs5.error){
-				jsonText=('{"success":false,"errorMsg":"#rs5.errorMessage#\nAddress not found.  Please type a complete, valid address and try again."}');
-			}else{
-				lat=rs5.latitude;
-				long=rs5.longitude;
-			}
-			
-		// calculate radius and make lat/long box
-		if(lat NEQ 0 and long NEQ 0){
-			// 1 degree is 69.047 miles.
-			degreeConstant=69.047;
-			latRatio=search_near_radius/degreeConstant;
-			longRatio=latRatio*cos(latRatio);
-			minLat=lat-(latRatio/2);
-			maxLat=lat+(latRatio/2);
-			minLong=long-(longRatio/2);
-			maxLong=long+(longRatio/2);
-			arrMap2=["minLongitude","maxLongitude","minLatitude","maxLatitude"];
-			form.search_map_coordinates_list="#minLong#,#maxLong#,#minLat#,#maxLat#";
-			jsonText=('{"success":true,"errorMsg":"","search_map_coordinates_list":"#form.search_map_coordinates_list#"}');
-		}else{
-			jsonText=('{"success":false,"errorMsg":"Address not found.  Please type a complete, valid address and try again."}');	
-		}
-		if(structkeyexists(form, 'x_ajax_id') EQ false){
-			application.zcore.functions.zAbort();	
-		}
-		</cfscript><cfsavecontent variable="out">#jsonText#</cfsavecontent><cfheader name="x_ajax_id" value="#form.x_ajax_id#">#out#<cfscript>application.zcore.functions.zabort();</cfscript><cfelseif form.action EQ 'ajaxMapListing'><cfscript>application.zcore.tracking.backOneHit();
-		if(structkeyexists(form, 'x_ajax_id') EQ false){
-			application.zcore.functions.zAbort();	
-		}
+	// calculate radius and make lat/long box
+	if(lat NEQ 0 and long NEQ 0){
+		// 1 degree is 69.047 miles.
+		degreeConstant=69.047;
+		latRatio=search_near_radius/degreeConstant;
+		longRatio=latRatio*cos(latRatio);
+		minLat=lat-(latRatio/2);
+		maxLat=lat+(latRatio/2);
+		minLong=long-(longRatio/2);
+		maxLong=long+(longRatio/2);
+		arrMap2=["minLongitude","maxLongitude","minLatitude","maxLatitude"];
+		form.search_map_coordinates_list="#minLong#,#maxLong#,#minLat#,#maxLat#";
+		jsonText=('{"success":true,"errorMsg":"","search_map_coordinates_list":"#form.search_map_coordinates_list#"}');
+	}else{
+		jsonText=('{"success":false,"errorMsg":"Address not found.  Please type a complete, valid address and try again."}');	
+	}
+	if(structkeyexists(form, 'x_ajax_id') EQ false){
+		abort;
+	}
+	savecontent variable="out"{
+		echo(jsonText);
+	}
+	header name="x_ajax_id" value="#form.x_ajax_id#";
+	echo(out);
+	abort;
+	</cfscript>
+</cffunction>
+
+<cffunction name="ajaxMapListing" localmode="modern" access="remote">
+	<cfscript>
+	init();
+	var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData"); 
+	var propDisplayCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	application.zcore.tracking.backOneHit();
+	if(structkeyexists(form, 'x_ajax_id') EQ false){
+		abort;
+	}
 	start=gettickcount();
 	form.zIndex=application.zcore.functions.zso(form, 'zIndex',false,1);
-	form.zIndex=max(form.zIndex,1);
-	if(1 EQ 1){
-		structdelete(form,'fieldnames');
-	}
+	form.zIndex=max(form.zIndex,1); 
+	structdelete(form,'fieldnames'); 
 	for(i in form){
 		form[i]=urldecode(form[i]);	
 	}
@@ -216,8 +231,21 @@ form.search_listdate=application.zcore.functions.zso(form, 'search_listdate');
 	theHTML =propDisplayCom.displayTop();
 	
 	jsonText='{"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct.count#,"success":true,"link":"#request.currentmappropertylink#","html":"#jsstringformat(theHTML)#"}';
-	</cfscript><cfsavecontent variable="out">#jsonText#</cfsavecontent><cfheader name="x_ajax_id" value="#form.x_ajax_id#">#out#<cfscript>application.zcore.functions.zabort();</cfscript><cfelseif form.action EQ 'ajaxCount'><cfscript>
-	
+	savecontent variable="out"{
+		echo(jsonText);
+	}
+	header name="x_ajax_id" value="#form.x_ajax_id#";
+	echo(out);
+	abort;
+	</cfscript>
+</cffunction>
+
+<cffunction name="ajaxCount" localmode="modern" access="remote">
+	<cfscript>
+	init();
+
+	var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData"); 
+	var propDisplayCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
 	for(i in form){
 		if(left(i, 7) EQ "search_" and isSimpleValue(form[i]) and form[i] EQ 0){
 			form[i]='';
@@ -251,7 +279,7 @@ form.search_listdate=application.zcore.functions.zso(form, 'search_listdate');
 	if(structkeyexists(form,'mapfullscreen')){
 		ts.zselect="count(listing.listing_id), MIN(listing.listing_latitude) minLat, MAX(listing.listing_latitude) maxLat, MIN(listing.listing_longitude) minLong, MAX(listing.listing_longitude) maxLong";
 		ts.zwhere="and listing_latitude<> '0' and 
-listing_longitude<>'0'";
+		listing_longitude<>'0'";
 	}
 	propertyDataCom.setSearchCriteria(form);
 	returnStruct2 = propertyDataCom.getProperties(ts);
@@ -261,192 +289,204 @@ listing_longitude<>'0'";
 		structdelete(ts,'zwhere');
 		structdelete(ts,'contentTableEnabled');
 	}
-	</cfscript><cfif structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ true))><cfscript>
-	fs='';
-	if(returnStruct2.count EQ 0){
-		fs&='"errorMessage":"#jsstringformat(returnStruct2.errorMessage)#", ';
-	}
-	jsonText='{#fs#"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,"success":true}';
-	</cfscript><cfelse><cfscript>
-	ts.zReturnSimpleQuery=true;
-	ts.disableCount=true;
-	
-	form.search_within_map=1;
-	propertyDataCom.setSearchCriteria(form);
-	ts.onlyCount=false;
+	if(structkeyexists(form,'zforcemapresults') EQ false and ((application.zcore.functions.zso(form, 'search_map_coordinates_list') EQ "" or application.zcore.functions.zso(form, 'mapNotAvailable') EQ 1) or (isDefined('request.zsession.zListingHideMap') and request.zsession.zListingHideMap EQ true))){
+		fs='';
+		if(returnStruct2.count EQ 0){
+			fs&='"errorMessage":"#jsstringformat(returnStruct2.errorMessage)#", ';
+		}
+		jsonText='{#fs#"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,"success":true}';
+	}else{
+		ts.zReturnSimpleQuery=true;
+		ts.disableCount=true;
 		
-		
-	arrMap=listtoarray(form.search_map_coordinates_list);
-	arrMap2=["minLongitude","maxLongitude","minLatitude","maxLatitude"];
-	mapCoor=structnew();
-	mapFail=false;
-	if(arraylen(arrMap) EQ 4){
-		for(i=1;i LTE arraylen(arrMap);i++){
-			if(isnumeric(arrMap[i])){
-				mapCoor[arrMap2[i]]=arrMap[i];
-			}else{
-				break;	
+		form.search_within_map=1;
+		propertyDataCom.setSearchCriteria(form);
+		ts.onlyCount=false;
+			
+			
+		arrMap=listtoarray(form.search_map_coordinates_list);
+		arrMap2=["minLongitude","maxLongitude","minLatitude","maxLatitude"];
+		mapCoor=structnew();
+		mapFail=false;
+		if(arraylen(arrMap) EQ 4){
+			for(i=1;i LTE arraylen(arrMap);i++){
+				if(isnumeric(arrMap[i])){
+					mapCoor[arrMap2[i]]=arrMap[i];
+				}else{
+					break;	
+				}
 			}
 		}
-	}
-	</cfscript><cfif structcount(mapCoor) LT 4><cfscript>
-	jsonText='{"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":0,"success":false,"errorMessage":"invalid request - mapping should be disabled (1): #form.search_map_coordinates_list#"}';
-	</cfscript>#jsonText#<cfscript>application.zcore.functions.zabort();</cfscript></cfif><cfscript>
-	ts.searchMapCoordinates=mapCoor;
-	</cfscript><cfif application.zcore.functions.zso(form, 'search_map_long_blocks',true) NEQ 0 and application.zcore.functions.zso(form, 'search_map_lat_blocks',true) NEQ 0><cfscript>
-	
-	latSize=abs(mapCoor.minLatitude-mapCoor.maxLatitude)/form.search_map_lat_blocks;
-	longSize=abs(mapCoor.minLongitude-mapCoor.maxLongitude)/form.search_map_long_blocks;
-	</cfscript><cfelse><cfscript>
-	latSize=1;
-	longSize=1;
-	</cfscript></cfif><cfscript>
-	arrPrice=arraynew(1);
-	arrId=arraynew(1);
-	arrLat=arraynew(1);
-	arrLong=arraynew(1);
-	arrCount=arraynew(1);
-	arrAvgLat=arraynew(1);
-	arrAvgLong=arraynew(1);
-	arrMinLat=arraynew(1);
-	arrMaxLat=arraynew(1);
-	arrMinLong=arraynew(1);
-	arrMaxLong=arraynew(1);
-	arrColor=arraynew(1);
-	arrCountAtAddress=arraynew(1);
-	
-	minPrice=1000000000;
-	maxPrice=0;
-	</cfscript><cfif structkeyexists(form,'mapfullscreen') EQ false and returnStruct2.count LT 10><cfscript>
-	if(form.debugSearchForm){
-		ts.debug=true;	
-	}
-	if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_map_state') NEQ ""){
-		ts.zwhere=" and listing_state ='#application.zcore.functions.zescape(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_map_state)#' ";	
-	}
-	ts.zselect="CAST(GROUP_CONCAT(listing.listing_id SEPARATOR '"",""') as CHAR) listing_id, CAST(GROUP_CONCAT(listing.listing_latitude SEPARATOR ',') as CHAR) listing_latitude, CAST(GROUP_CONCAT(listing.listing_longitude SEPARATOR ',') as CHAR) listing_longitude, CAST(GROUP_CONCAT(listing.listing_price SEPARATOR ',') as CHAR) listing_price";
-	returnStruct = propertyDataCom.getProperties(ts);
-		// no grouping	
-	arrayappend(arrPrice,'0');
-	arrayappend(arrId,returnStruct.listing_id);
-	arrayappend(arrLat,returnStruct.listing_latitude);
-	arrayappend(arrLong,returnStruct.listing_longitude);
-	arrayappend(arrCount,'0');
-	arrayappend(arrAvgLat,'0');
-	arrayappend(arrAvgLong,'0');
-	arrayappend(arrMinLat,'0');
-	arrayappend(arrMaxLat,'0');
-	arrayappend(arrMinLong,'0');
-	arrayappend(arrMaxLong,'0');
-	arrayappend(arrCountAtAddress,'0');
-	arrLPrice=listtoarray(returnStruct.listing_price);
-	for(i=1;i LTE arraylen(arrLPrice);i++){
-		minPrice=min(arrLPrice[i],minPrice);
-		maxPrice=max(arrLPrice[i],maxPrice);
-	}
-	for(i=1;i LTE arraylen(arrLPrice);i++){
-		color=11-max(1,ceiling(((arrLPrice[i]-minPrice)/max(1,(maxPrice-minPrice)))*10));
-		arrayappend(arrColor,color);
-	}
-	</cfscript><cfelse><cfscript>
-	latSign="+";
-	longSign="+";
-	if(mapCoor.minLatitude<0){
-		latSign="-";
-	}
-	if(mapCoor.minLongitude<0){
-		longSign="-";
-	}
-	if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_map_state') NEQ ""){
-		ts.zwhere=" and listing_state = '#application.zcore.functions.zescape(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_map_state)#' ";	
-	}
-	ts.zselect=" 
-ROUND(AVG(listing_price)) avgPrice, 
-(((FLOOR(ABS(ABS(listing_latitude)-#abs(mapCoor.minLatitude)#) / #latSize#))*#latSize#)#latSign##abs(mapCoor.minLatitude)#) latGroup, 
-(((FLOOR(ABS(ABS(listing_longitude)-#abs(mapCoor.minLongitude)#) / #longSize#)+1)*#longSize#)#longSign##abs(mapCoor.minLongitude)#) longGroup, 
-if(VAR_POP(listing_longitude+listing_latitude)=0,1,0) countAtAddress, 
-COUNT(listing.listing_id) COUNT, 
-IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_price SEPARATOR ',') AS CHAR),'') listing_price, 
-IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_id SEPARATOR '"",""') AS CHAR),'') listing_id, 
-IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_latitude SEPARATOR ',') AS CHAR),listing_latitude) listing_latitude, 
-IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_longitude SEPARATOR ',') AS CHAR),listing_longitude) listing_longitude  ";
-	ts.zgroupby="GROUP BY FLOOR(ABS(ABS(listing_latitude)-#abs(mapCoor.minLatitude)#) / #latSize#), FLOOR(ABS(ABS(listing_longitude)-#abs(mapCoor.minLongitude)#) / #longSize#)";//latGroup, longGroup ";//
-
-	returnStruct = propertyDataCom.getProperties(ts);
-	structdelete(variables,'ts');
-	rs=structnew();
-	rs.count=returnStruct2.count;
-	
-	</cfscript><cfloop query="returnStruct"><cfscript>
-	if(returnStruct.listing_id EQ ""){
-		minPrice=min(returnStruct.avgprice,minPrice);
-		maxPrice=max(returnStruct.avgprice,maxPrice);
-	}else{
-		arrPrice2=listtoarray(returnStruct.listing_price);
-		for(i=1;i LTE arraylen(arrPrice2);i++){
-			minPrice=min(arrPrice2[i],minPrice);
-			maxPrice=max(arrPrice2[i],maxPrice);
+		if(structcount(mapCoor) LT 4){
+			jsonText='{"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":0,"success":false,"errorMessage":"invalid request - mapping should be disabled (1): #form.search_map_coordinates_list#"}';
+			echo(jsonText);
+			abort;
 		}
-	}
-	</cfscript></cfloop><cfloop query="returnStruct"><cfscript>
-	arrayappend(arrCountAtAddress,returnStruct.countAtAddress);
-	if(returnStruct.listing_id EQ ""){
-		arrayappend(arrId,"0");
-		if(returnStruct.countAtAddress EQ 1){
+		ts.searchMapCoordinates=mapCoor;
+		if(application.zcore.functions.zso(form, 'search_map_long_blocks',true) NEQ 0 and application.zcore.functions.zso(form, 'search_map_lat_blocks',true) NEQ 0){
+		
+			latSize=abs(mapCoor.minLatitude-mapCoor.maxLatitude)/form.search_map_lat_blocks;
+			longSize=abs(mapCoor.minLongitude-mapCoor.maxLongitude)/form.search_map_long_blocks;
+		}else{
+			latSize=1;
+			longSize=1;
+		}
+		arrPrice=arraynew(1);
+		arrId=arraynew(1);
+		arrLat=arraynew(1);
+		arrLong=arraynew(1);
+		arrCount=arraynew(1);
+		arrAvgLat=arraynew(1);
+		arrAvgLong=arraynew(1);
+		arrMinLat=arraynew(1);
+		arrMaxLat=arraynew(1);
+		arrMinLong=arraynew(1);
+		arrMaxLong=arraynew(1);
+		arrColor=arraynew(1);
+		arrCountAtAddress=arraynew(1);
+		
+		minPrice=1000000000;
+		maxPrice=0;
+		if(structkeyexists(form,'mapfullscreen') EQ false and returnStruct2.count LT 10){
+			if(form.debugSearchForm){
+				ts.debug=true;	
+			}
+			if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_map_state') NEQ ""){
+				ts.zwhere=" and listing_state ='#application.zcore.functions.zescape(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_map_state)#' ";	
+			}
+			ts.zselect="CAST(GROUP_CONCAT(listing.listing_id SEPARATOR '"",""') as CHAR) listing_id, CAST(GROUP_CONCAT(listing.listing_latitude SEPARATOR ',') as CHAR) listing_latitude, CAST(GROUP_CONCAT(listing.listing_longitude SEPARATOR ',') as CHAR) listing_longitude, CAST(GROUP_CONCAT(listing.listing_price SEPARATOR ',') as CHAR) listing_price";
+			returnStruct = propertyDataCom.getProperties(ts);
+				// no grouping	
+			arrayappend(arrPrice,'0');
+			arrayappend(arrId,returnStruct.listing_id);
 			arrayappend(arrLat,returnStruct.listing_latitude);
 			arrayappend(arrLong,returnStruct.listing_longitude);
-		}else{
-			arrayappend(arrLat,0);
-			arrayappend(arrLong,0);
-		}
-		color=11-max(1,ceiling(((returnStruct.avgprice-minPrice)/max(1,(maxPrice-minPrice)))*10));
-		arrayappend(arrColor,color);
-		arrayappend(arrCount,returnStruct.count);
-		arrayappend(arrPrice,"$"&numberformat(returnStruct.avgprice));
-		arrayappend(arrMinLat,returnStruct.latGroup);
-		arrayappend(arrMinLong,returnStruct.longGroup);
-	}else{
-		arrayappend(arrId,returnStruct.listing_id);
-		arrayappend(arrLat,returnStruct.listing_latitude);
-		arrayappend(arrLong,returnStruct.listing_longitude);
-		if(returnStruct.listing_id NEQ ""){
+			arrayappend(arrCount,'0');
+			arrayappend(arrAvgLat,'0');
+			arrayappend(arrAvgLong,'0');
+			arrayappend(arrMinLat,'0');
+			arrayappend(arrMaxLat,'0');
+			arrayappend(arrMinLong,'0');
+			arrayappend(arrMaxLong,'0');
+			arrayappend(arrCountAtAddress,'0');
 			arrLPrice=listtoarray(returnStruct.listing_price);
-			for(i=1;i LTE returnStruct.count;i++){
-				arrayappend(arrPrice,'0');
-				arrayappend(arrCount,'0');
-				if(i GT 1){
-					arrayappend(arrCountAtAddress,"0");
-				}
+			for(i=1;i LTE arraylen(arrLPrice);i++){
+				minPrice=min(arrLPrice[i],minPrice);
+				maxPrice=max(arrLPrice[i],maxPrice);
+			}
+			for(i=1;i LTE arraylen(arrLPrice);i++){
 				color=11-max(1,ceiling(((arrLPrice[i]-minPrice)/max(1,(maxPrice-minPrice)))*10));
 				arrayappend(arrColor,color);
-				arrayappend(arrMinLat,'0');
-				arrayappend(arrMinLong,'0');
+			}
+		}else{
+			latSign="+";
+			longSign="+";
+			if(mapCoor.minLatitude<0){
+				latSign="-";
+			}
+			if(mapCoor.minLongitude<0){
+				longSign="-";
+			}
+			if(application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_map_state') NEQ ""){
+				ts.zwhere=" and listing_state = '#application.zcore.functions.zescape(application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_map_state)#' ";	
+			}
+			ts.zselect=" 
+			ROUND(AVG(listing_price)) avgPrice, 
+			(((FLOOR(ABS(ABS(listing_latitude)-#abs(mapCoor.minLatitude)#) / #latSize#))*#latSize#)#latSign##abs(mapCoor.minLatitude)#) latGroup, 
+			(((FLOOR(ABS(ABS(listing_longitude)-#abs(mapCoor.minLongitude)#) / #longSize#)+1)*#longSize#)#longSign##abs(mapCoor.minLongitude)#) longGroup, 
+			if(VAR_POP(listing_longitude+listing_latitude)=0,1,0) countAtAddress, 
+			COUNT(listing.listing_id) COUNT, 
+			IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_price SEPARATOR ',') AS CHAR),'') listing_price, 
+			IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_id SEPARATOR '"",""') AS CHAR),'') listing_id, 
+			IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_latitude SEPARATOR ',') AS CHAR),listing_latitude) listing_latitude, 
+			IF(COUNT(listing.listing_id) < 10, CAST(GROUP_CONCAT(listing.listing_longitude SEPARATOR ',') AS CHAR),listing_longitude) listing_longitude  ";
+			ts.zgroupby="GROUP BY FLOOR(ABS(ABS(listing_latitude)-#abs(mapCoor.minLatitude)#) / #latSize#), FLOOR(ABS(ABS(listing_longitude)-#abs(mapCoor.minLongitude)#) / #longSize#)";//latGroup, longGroup ";//
+
+			returnStruct = propertyDataCom.getProperties(ts);
+			structdelete(variables,'ts');
+			rs=structnew();
+			rs.count=returnStruct2.count;
+			
+			loop query="returnStruct"{
+				if(returnStruct.listing_id EQ ""){
+					minPrice=min(returnStruct.avgprice,minPrice);
+					maxPrice=max(returnStruct.avgprice,maxPrice);
+				}else{
+					arrPrice2=listtoarray(returnStruct.listing_price);
+					for(i=1;i LTE arraylen(arrPrice2);i++){
+						minPrice=min(arrPrice2[i],minPrice);
+						maxPrice=max(arrPrice2[i],maxPrice);
+					}
+				}
+			}
+			loop query="returnStruct"{
+				arrayappend(arrCountAtAddress,returnStruct.countAtAddress);
+				if(returnStruct.listing_id EQ ""){
+					arrayappend(arrId,"0");
+					if(returnStruct.countAtAddress EQ 1){
+						arrayappend(arrLat,returnStruct.listing_latitude);
+						arrayappend(arrLong,returnStruct.listing_longitude);
+					}else{
+						arrayappend(arrLat,0);
+						arrayappend(arrLong,0);
+					}
+					color=11-max(1,ceiling(((returnStruct.avgprice-minPrice)/max(1,(maxPrice-minPrice)))*10));
+					arrayappend(arrColor,color);
+					arrayappend(arrCount,returnStruct.count);
+					arrayappend(arrPrice,"$"&numberformat(returnStruct.avgprice));
+					arrayappend(arrMinLat,returnStruct.latGroup);
+					arrayappend(arrMinLong,returnStruct.longGroup);
+				}else{
+					arrayappend(arrId,returnStruct.listing_id);
+					arrayappend(arrLat,returnStruct.listing_latitude);
+					arrayappend(arrLong,returnStruct.listing_longitude);
+					if(returnStruct.listing_id NEQ ""){
+						arrLPrice=listtoarray(returnStruct.listing_price);
+						for(i=1;i LTE returnStruct.count;i++){
+							arrayappend(arrPrice,'0');
+							arrayappend(arrCount,'0');
+							if(i GT 1){
+								arrayappend(arrCountAtAddress,"0");
+							}
+							color=11-max(1,ceiling(((arrLPrice[i]-minPrice)/max(1,(maxPrice-minPrice)))*10));
+							arrayappend(arrColor,color);
+							arrayappend(arrMinLat,'0');
+							arrayappend(arrMinLong,'0');
+						}
+					}
+				}
 			}
 		}
+		if(structkeyexists(form,'mapfullscreen')){
+			fs='"allMinLat":#returnstruct2.query.minlat#,"allMaxLat":#returnstruct2.query.maxlat#,"allMinLong":#returnstruct2.query.minlong#,"allMaxLong":#returnstruct2.query.maxlong#,';
+		}else{
+			fs="";	
+		}
+		if(returnStruct2.count EQ 0){
+			fs&='"errorMessage":"#jsstringformat(returnStruct2.errorMessage)#",';
+		}
+		jsonText='{#fs#"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,success:true,"avgPrice":["#arraytolist(arrPrice,'","')#"],"listing_id":["#arraytolist(arrId,'","')#"],"listing_latitude":[#arraytolist(arrLat,',')#],"listing_longitude":[#arraytolist(arrLong,',')#],"arrCount":[#arraytolist(arrCount,',')#],"minLat":[#arraytolist(arrMinLat,',')#],"minLong":[#arraytolist(arrMinLong,',')#],"arrCountAtAddress":[#arraytolist(arrCountAtAddress,',')#],"arrColor":[#arraytolist(arrColor)#]';
+		
+		if(structkeyexists(form,'zforcemapresults')){
+			jsonText&=',"disableSetCount":true';
+		}
+		jsonText&="}";
 	}
-    </cfscript></cfloop><cfscript>
-	
-	</cfscript></cfif><cfscript>
-	if(structkeyexists(form,'mapfullscreen')){
-		fs='"allMinLat":#returnstruct2.query.minlat#,"allMaxLat":#returnstruct2.query.maxlat#,"allMinLong":#returnstruct2.query.minlong#,"allMaxLong":#returnstruct2.query.maxlong#,';
-	}else{
-		fs="";	
-	}
-	if(returnStruct2.count EQ 0){
-		fs&='"errorMessage":"#jsstringformat(returnStruct2.errorMessage)#",';
-	}
-	jsonText='{#fs#"loadtime":"#((gettickcount()-start)/1000)# seconds","COUNT":#returnStruct2.count#,success:true,"avgPrice":["#arraytolist(arrPrice,'","')#"],"listing_id":["#arraytolist(arrId,'","')#"],"listing_latitude":[#arraytolist(arrLat,',')#],"listing_longitude":[#arraytolist(arrLong,',')#],"arrCount":[#arraytolist(arrCount,',')#],"minLat":[#arraytolist(arrMinLat,',')#],"minLong":[#arraytolist(arrMinLong,',')#],"arrCountAtAddress":[#arraytolist(arrCountAtAddress,',')#],"arrColor":[#arraytolist(arrColor)#]';
-	
-	if(structkeyexists(form,'zforcemapresults')){
-		jsonText&=',"disableSetCount":true';
-	}
-	jsonText&="}";
-	</cfscript></cfif><cfscript>
+
 	writeoutput(jsonText);
-	application.zcore.functions.zabort();
+	abort;
 	</cfscript>
-	</cfif>
-<cfif form.action EQ 'form'>
+</cffunction>
+
+<cffunction name="index" localmode="modern" access="remote">
+	<cfscript>
+	init(); 
+
+	var propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData"); 
+	var propDisplayCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyDisplay");
+	db=request.zos.queryObject; 
+	</cfscript>
+ 
 
  
  <cfscript>
@@ -3865,8 +3905,7 @@ if(application.zcore.functions.zso(form,'searchgotolistings') EQ 1){
 		zArrDeferredFunctions.push(function(){getMLSCount('zMLSSearchForm');  });
 	/* ]]> */</script></cfif></cfif></cfif>
 </cfif>
-</cfif>
-</cfif>
+</cfif> 
 <!--- </cfthread>
 
 <cfthread action="join" name="zThreadListingSearchForm" />

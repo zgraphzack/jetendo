@@ -5,11 +5,11 @@
 	arrRunningSQL=[];
 	try{
 		query name="qProcessList" datasource="#request.zos.zcoreDatasource#"{
-			echo("SHOW PROCESSLIST");
+			echo("SHOW FULL PROCESSLIST");
 		}
 		for(row in qProcessList){
 			if(row.info NEQ ""){
-				if(row.info CONTAINS "SHOW PROCESSLIST"){
+				if(row.info CONTAINS "SHOW FULL PROCESSLIST"){
 					continue;
 				}else if(row.info CONTAINS "password"){
 					row.info="SQL STATEMENT MAY CONTAIN PASSWORD AND HAS BEEN REMOVED FOR SECURITY.";

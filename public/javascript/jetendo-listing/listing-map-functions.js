@@ -828,6 +828,7 @@ function zMapMarkerRollOutV3Delay(){
 	zMapMarkerRollOutV3TimeoutId=setTimeout(function(){zMapMarkerRollOutV3();}, 100);
 
 }
+
 function zMapLoadListingV3(obj){
 	 zMapOverlayDivObjV3.style.width="300px";
 	zMapOverlayDivObjV3.style.height="120px";
@@ -836,7 +837,7 @@ function zMapLoadListingV3(obj){
 //	 zMapOverlayDivObj.style.height="110px";
 	var tempObj={};
 	tempObj.id="zMapListing";
-	tempObj.url="/z/listing/search-form/index?action=ajaxMapListing&listing_id="+obj.id;
+	tempObj.url="/z/listing/search-form/ajaxMapListing?listing_id="+obj.id;
 	if(zDebugMLSAjax){
 		tempObj.debug=true;
 	}
@@ -1134,7 +1135,7 @@ function zAjaxFailNearAddress(){
 function zAjaxSetNearAddress(){
 	var d1=document.getElementById("searchNearAddress");
 	var d2=document.getElementById("search_near_radius");
-	var d3="/z/listing/search-form/index?action=nearAddress&search_near_address="+escape(d1.value)+"&search_near_radius="+escape(d2.value);
+	var d3="/z/listing/search-form/nearAddress?search_near_address="+escape(d1.value)+"&search_near_radius="+escape(d2.value);
 	
 	var tempObj={};
 	tempObj.id="zMapNearAddress";

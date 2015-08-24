@@ -281,6 +281,8 @@
 	var db2=request.zos.noVerifyQueryObject;
 
 
+	listingSharedData=application.zcore.app.getAppData("listing");
+
 	if(not structkeyexists(request.zos, 'arrListingsDisplayed')){
 		request.zos.arrListingsDisplayed=[];
 	}
@@ -294,7 +296,7 @@
 	ts.returnWhereSQLOnly=false;
 	ts.contentTableEnabled=true;
 	ts.forceSimpleLimit=false;	
-	ts.enableThreading=true;
+	ts.enableThreading=false;
 	ts.searchCriteria=structnew();
     ts.noCityTable=true;
 	ts.useMlsCopy=false;
@@ -410,7 +412,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 			WHERE city_parent_id = #db.param(c)# and 
 			city_distance < #db.param(arguments.ss.distance)# and 
 			city_distance_deleted = #db.param(0)# and 
-			city_id NOT IN (#db.trustedSQL("'#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#'")#) 
+			city_id NOT IN (#db.trustedSQL("'#listingSharedData.sharedStruct.optionStruct.mls_option_exclude_city_list#'")#) 
             
            </cfsavecontent><cfscript>qC=db.execute("qC");
 		   if(qC.recordcount NEQ 0 and qC.idlist NEQ ""){
@@ -446,7 +448,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     listing.listing_office IN ('#replace(arguments.ss.listingOfficeSearch,",","','","ALL")#') and
 	</cfif>
       
-    <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list NEQ ""> listing_city NOT IN ('#application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_exclude_city_list#') AND </cfif>
+    <cfif listingSharedData.sharedStruct.optionStruct.mls_option_exclude_city_list NEQ ""> listing_city NOT IN ('#listingSharedData.sharedStruct.optionStruct.mls_option_exclude_city_list#') AND </cfif>
     
     <cfscript>
 	
@@ -454,11 +456,11 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 		arrId=listtoarray(this.searchCriteria.search_mls_number_list, ",", false);
 		arguments.ss.arrMLSPID=arraynew(1);
 		for(i=1;i LTE arraylen(arrId);i++){
-			for(i654 in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
+			for(i654 in listingSharedData.sharedStruct.mlsStruct){
 				arrayappend(arguments.ss.arrMLSPID, i654&"-"&trim(arrId[i]));
 			}
 			
-			for(i654 in application.zcore.app.getAppData("listing").sharedStruct.mlsStruct){
+			for(i654 in listingSharedData.sharedStruct.mlsStruct){
 				arrId[i]=rereplace(arrId[i],"[a-zA-Z]*","","all");
 				arrayappend(arguments.ss.arrMLSPID, i654&"-"&trim(arrId[i]));
 			}
@@ -588,14 +590,14 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         and listing_pool = '1' 
         </cfif>
         <cfif this.searchCriteria.search_office_only>
-        <cfif application.zcore.app.getAppData("listing").sharedStruct.officeSQL NEQ ""> and (#application.zcore.app.getAppData("listing").sharedStruct.officeSQL#)<cfelse> and 1 = 0 </cfif>
+        <cfif listingSharedData.sharedStruct.officeSQL NEQ ""> and (#listingSharedData.sharedStruct.officeSQL#)<cfelse> and 1 = 0 </cfif>
         <cfelseif this.searchCriteria.search_agent_only>
-        <cfif application.zcore.app.getAppData("listing").sharedStruct.agentSQL NEQ ""> and (#application.zcore.app.getAppData("listing").sharedStruct.agentSQL#)<cfelse> and 1 = 0 </cfif>
+        <cfif listingSharedData.sharedStruct.agentSQL NEQ ""> and (#listingSharedData.sharedStruct.agentSQL#)<cfelse> and 1 = 0 </cfif>
         </cfif>
         
         <cfif this.searchCriteria.search_within_map EQ 1>
             <cfscript>
-			local.inclusiveLatLongBox=' and listing_latitude BETWEEN '&application.zcore.app.getAppData("listing").sharedStruct.minLat&' and '&application.zcore.app.getAppData("listing").sharedStruct.maxLat&' and listing_longitude BETWEEN '&application.zcore.app.getAppData("listing").sharedStruct.minLong&' and '&application.zcore.app.getAppData("listing").sharedStruct.maxLong;
+			local.inclusiveLatLongBox=' and listing_latitude BETWEEN '&listingSharedData.sharedStruct.minLat&' and '&listingSharedData.sharedStruct.maxLat&' and listing_longitude BETWEEN '&listingSharedData.sharedStruct.minLong&' and '&listingSharedData.sharedStruct.maxLong;
 			if(structcount(arguments.ss.searchMapCoordinates) EQ 4){
 				writeoutput(' and listing_latitude BETWEEN '&application.zcore.functions.zescape(arguments.ss.searchMapCoordinates.minLatitude)&' AND '&application.zcore.functions.zescape(arguments.ss.searchMapCoordinates.maxLatitude)&' AND listing_longitude BETWEEN '&application.zcore.functions.zescape(arguments.ss.searchMapCoordinates.minLongitude)&' AND '&application.zcore.functions.zescape(arguments.ss.searchMapCoordinates.maxLongitude)&' ');//(listing_latitude >= #arguments.ss.searchMapCoordinates.minLatitude# and listing_latitude <= #arguments.ss.searchMapCoordinates.maxLatitude#) and (listing_longitude >= #arguments.ss.searchMapCoordinates.minLongitude# and listing_longitude <= #arguments.ss.searchMapCoordinates.maxLongitude#) ');
 				
@@ -762,7 +764,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 
 )        
 <cfif this.searchCriteria.search_agent_always EQ 1>
-        <cfif application.zcore.app.getAppData("listing").sharedStruct.agentSQL NEQ ""> or (
+        <cfif listingSharedData.sharedStruct.agentSQL NEQ ""> or (
         1=1 
     <cfif arguments.ss.noCityTable EQ false>
         <cfif this.searchCriteria.search_city_id EQ "" or structkeyexists(arguments.ss,'arrMLSPID')>
@@ -805,10 +807,10 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         <cfif this.searchCriteria.search_with_pool EQ 1>
         and listing_pool = '1' 
         </cfif> and 
-        #application.zcore.app.getAppData("listing").sharedStruct.agentSQL#) </cfif>
+        #listingSharedData.sharedStruct.agentSQL#) </cfif>
 </cfif>
 <cfif this.searchCriteria.search_office_always EQ 1>
-        <cfif application.zcore.app.getAppData("listing").sharedStruct.officeSQL NEQ ""> or (
+        <cfif listingSharedData.sharedStruct.officeSQL NEQ ""> or (
         1=1 
     <cfif arguments.ss.noCityTable EQ false>
         <cfif this.searchCriteria.search_city_id EQ "" or structkeyexists(arguments.ss,'arrMLSPID')>
@@ -851,8 +853,13 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         <cfif this.searchCriteria.search_with_pool EQ 1>
         and listing_pool = '1' 
         </cfif> and 
-        #application.zcore.app.getAppData("listing").sharedStruct.officeSQL#) </cfif>
+        #listingSharedData.sharedStruct.officeSQL#) </cfif>
 </cfif>
+
+<cfif structkeyexists(listingSharedData.sharedStruct, 'latLongBoundaries')>
+	#listingSharedData.sharedStruct.latLongBoundaries# 
+</cfif>
+
 <cfif this.searchCriteria.search_agent_always EQ 1 or this.searchCriteria.search_office_always EQ 1>
     )
     </cfif>
@@ -863,12 +870,12 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <!---  --->
         
         
-       <cfif structkeyexists(form, 'zdisablesearchfilter') EQ false and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'whereSQL')> #application.zcore.app.getAppData("listing").sharedStruct.filterStruct.whereSQL#
-       <cfif application.zcore.app.getAppData("listing").sharedStruct.filterStruct.listingDataTable>
+       <cfif structkeyexists(form, 'zdisablesearchfilter') EQ false and structkeyexists(listingSharedData.sharedStruct.filterStruct, 'whereSQL')> #listingSharedData.sharedStruct.filterStruct.whereSQL#
+       <cfif listingSharedData.sharedStruct.filterStruct.listingDataTable>
        	<cfset listingDataTable=true>
        </cfif>
         </cfif>
-	<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE '%,7,%' </cfif>
+	<cfif listingSharedData.sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE '%,7,%' </cfif>
         
         <cfif arguments.ss.tempWhere NEQ ''>
             #(arguments.ss.tempWhere)#
@@ -972,16 +979,16 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         
         <cfset arrTopSort=arraynew(1)>
 <cfif this.searchCriteria.search_sort_agent_first EQ 1>
-	<cfif application.zcore.app.getAppData("listing").sharedStruct.agentSQL NEQ "">
+	<cfif listingSharedData.sharedStruct.agentSQL NEQ "">
 		<cfscript>
-        arrayappend(arrTopSort,"if("&application.zcore.app.getAppData("listing").sharedStruct.agentSQL&",1,0) desc,");
+        arrayappend(arrTopSort,"if("&listingSharedData.sharedStruct.agentSQL&",1,0) desc,");
         </cfscript>
     </cfif>
 </cfif>
 <cfif this.searchCriteria.search_sort_office_first EQ 1>
-	<cfif application.zcore.app.getAppData("listing").sharedStruct.officeSQL NEQ "">
+	<cfif listingSharedData.sharedStruct.officeSQL NEQ "">
 		<cfscript>
-        arrayappend(arrTopSort,"if("&application.zcore.app.getAppData("listing").sharedStruct.officeSQL&",1,0) desc,");
+        arrayappend(arrTopSort,"if("&listingSharedData.sharedStruct.officeSQL&",1,0) desc,");
         </cfscript>
     </cfif>
 </cfif>
@@ -1375,7 +1382,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 				chs[mls_dir_hash].mls_saved_search_id=qdir.mls_saved_search_id;
 				chs[mls_dir_hash].mls_dir_title=qdir.mls_dir_title;
 				curLabel=hashStruct[mls_dir_hash].label & " (" & hashStruct[mls_dir_hash].count & ")";
-				tempLink="/"&application.zcore.functions.zUrlEncode(mls_dir_title,"-")&"-"&application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_dir_url_id&"-"&mls_dir_id&".html";
+				tempLink="/"&application.zcore.functions.zUrlEncode(mls_dir_title,"-")&"-"&listingSharedData.sharedStruct.optionStruct.mls_option_dir_url_id&"-"&mls_dir_id&".html";
 				//arrayappend(arrL,'<a href="#arrdirid222[currentrow]#">#arrLabels[currentrow]#</a>');
 				fs[curLabel&"_"&hashStruct[mls_dir_hash].value]='<a href="'&tempLink&'">'&curLabel&'</a>';
 				structdelete(hashStruct,mls_dir_hash);
@@ -1383,7 +1390,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
                 // all downloaded!
 				perfect=true;
 				curLabel=hashStruct[mls_dir_hash].label & " (" & hashStruct[mls_dir_hash].count & ")";
-				tempLink="/"&application.zcore.functions.zUrlEncode(mls_dir_title,"-")&"-"&application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_dir_url_id&"-"&mls_dir_id&".html";
+				tempLink="/"&application.zcore.functions.zUrlEncode(mls_dir_title,"-")&"-"&listingSharedData.sharedStruct.optionStruct.mls_option_dir_url_id&"-"&mls_dir_id&".html";
 				//arrayappend(arrL,'<a href="#arrdirid222[currentrow]#">#arrLabels[currentrow]#</a>');
 				fs[curLabel&"_"&hashStruct[mls_dir_hash].value]='<a href="'&tempLink&'">'&curLabel&'</a>';
                 </cfscript></cfloop></cfif><cfscript>
@@ -1448,7 +1455,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 							for(i=1;i LTE arraylen(arrHash);i++){
 								hashStruct[arrHash[i]].mls_dir_id=newId+(i-1);
 								curLabel=hashStruct[arrHash[i]].label & " (" & hashStruct[arrHash[i]].count & ")";
-								tempLink="/"&application.zcore.functions.zUrlEncode(hashStruct[arrHash[i]].mls_dir_title,"-")&"-"&application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_dir_url_id&"-"&hashStruct[arrHash[i]].mls_dir_id&".html";
+								tempLink="/"&application.zcore.functions.zUrlEncode(hashStruct[arrHash[i]].mls_dir_title,"-")&"-"&listingSharedData.sharedStruct.optionStruct.mls_option_dir_url_id&"-"&hashStruct[arrHash[i]].mls_dir_id&".html";
 								fs[curLabel&"_"&hashStruct[arrHash[i]].value]='<a href="'&tempLink&'">'&curLabel&'</a>';
 							}
 						}
@@ -1548,7 +1555,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 					lineNumber:''
 				}
 				application.zcore.functions.zLogError(ts);
-				qPropertyCount={recordcount:0};
+				qPropertyCount={recordcount:0, count:0};
 				qProperty={recordcount:0};
 				cancelNextSearch=true;
 				errorMessage='Listing search count is not available right now due to other system activity.';
@@ -1582,13 +1589,13 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 						lineNumber:''
 					}
 					application.zcore.functions.zLogError(ts);
-					qPropertyCount={recordcount:0};
+					qPropertyCount={recordcount:0, count:0};
 					qProperty={recordcount:0};
-				errorMessage='Listing search detail is not available right now due to other system activity.';
+					errorMessage='Listing search detail is not available right now due to other system activity.';
 				}
 			}
 		}
-        if(qProperty.recordcount NEQ 0){
+        if(structkeyexists(qProperty, 'recordcount') and qProperty.recordcount NEQ 0){
 			mlsStruct=structnew();
 			arrQuery=arraynew(1);
 			orderStruct=structnew();
@@ -2472,9 +2479,9 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         and listing_pool = '1' 
         </cfif>
         <cfif this.filterCriteria.search_office_only>
-        <cfif application.zcore.app.getAppData("listing").sharedStruct.officeSQL NEQ ""> and (#application.zcore.app.getAppData("listing").sharedStruct.officeSQL#)<cfelse> and 1 = 0 </cfif>
+        <cfif listingSharedData.sharedStruct.officeSQL NEQ ""> and (#listingSharedData.sharedStruct.officeSQL#)<cfelse> and 1 = 0 </cfif>
         <cfelseif this.filterCriteria.search_agent_only>
-        <cfif application.zcore.app.getAppData("listing").sharedStruct.agentSQL NEQ ""> and (#application.zcore.app.getAppData("listing").sharedStruct.agentSQL#)<cfelse> and 1 = 0 </cfif>
+        <cfif listingSharedData.sharedStruct.agentSQL NEQ ""> and (#listingSharedData.sharedStruct.agentSQL#)<cfelse> and 1 = 0 </cfif>
         </cfif> --->
         
        <cfif this.filterCriteria.search_within_map EQ 1>

@@ -1021,8 +1021,17 @@ Primary Cities:</th>
 </tr>
 <tr>
 <th>Max Map Distance:</th>
+<cfscript>
+if(not isnumeric(form.mls_option_max_map_distance_from_primary)){
+	mls_option_max_map_distance_from_primary=0;
+}else if(form.mls_option_max_map_distance_from_primary GT 200){
+	mls_option_max_map_distance_from_primary=200;
+}else if(mls_option_max_map_distance_from_primary LT 0){
+	mls_option_max_map_distance_from_primary=0;
+}
+</cfscript>
 <td><input type="text" name="mls_option_max_map_distance_from_primary" value="#htmleditformat(form.mls_option_max_map_distance_from_primary)#" /><br />
-Enter the maximum distance from the center of the primary city that you want the map to zoom out to. (Unit: miles)
+Enter the maximum distance from the center of the primary city that you want the map to zoom out to. (Unit: miles) Maximum value is 200.  The default of 0 also defaults to 200 miles.
 </td>
 </tr>
 <tr>
@@ -1257,8 +1266,26 @@ Enter the maximum distance from the center of the primary city that you want the
 		}
 		</cfscript>
 	</cfloop>
-<cfscript>
-local.primaryCityId=ts.mls_primary_city_id;
+	<cfscript>
+	local.primaryCityId=ts.mls_primary_city_id; 
+
+	db.sql="select * from #db.table("city", request.zos.zcoreDatasource)# city 
+	WHERE city_deleted = #db.param(0)# and 
+	city_id=#db.param(primaryCityId)# ";
+	qC2=db.execute("qC2"); 
+
+	ts.latLongBoundaries=''; 
+	if(qC2.recordcount NEQ 0 and qC2.city_latitude NEQ 0){
+
+		distanceFromPrimary=max(200, ts.optionStruct.mls_option_max_map_distance_from_primary);
+		diffDegree=distanceFromPrimary/69;
+		ts.latLongBoundaries=' and (listing_latitude = 0 or (
+		listing_latitude>=#qC2.city_latitude-diffDegree# and 
+		listing_latitude<=#qC2.city_latitude+diffDegree# and 
+		listing_longitude>=#qC2.city_longitude-diffDegree# and 
+		listing_longitude<=#qC2.city_longitude+diffDegree#)) ';
+			 
+	}
 
 	if(local.primaryCityId NEQ 0){
 		db.sql="SELECT city_latitude avgLat, city_longitude avgLong 

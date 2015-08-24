@@ -222,7 +222,7 @@
 
 		ts=structnew();
 		ts.name="savedListingStruct";
-		ts.value=structkeyarray(ns);
+		ts.value=structkeylist(ns);
 		ts.expires="never";
 		application.zcore.functions.zCookie(ts);
 		ts=structnew();

@@ -38,7 +38,7 @@
 		</cfif>
 	</head>
 	<body class="zblanktemplatebody">
-	#tagStruct.topcontent ?: ""#
+	<!--- #tagStruct.topcontent ?: ""# --->
 	<cfif application.zcore.template.getTagContent("pagetitle") NEQ "">
 		<h1>#tagStruct.pagetitle ?: ""#</h1>
 	</cfif>

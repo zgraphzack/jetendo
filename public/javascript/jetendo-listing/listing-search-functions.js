@@ -989,7 +989,8 @@ function getMLSCount(formName,newForm){
 		zFormData[formName].onLoadCallback=displayMLSCount;
 	}
 	zFormData[formName].successMessage=false;
-	zFormData[formName].action='/z/listing/search-form/index?action=ajaxCount';
+	
+	zFormData[formName].action='/z/listing/search-form/ajaxCount';
 	if(zDisableSearchFilter===1){
 		zFormData[formName].action+="&zDisableSearchFilter=1";
 	}
