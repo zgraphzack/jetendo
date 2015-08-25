@@ -83,7 +83,12 @@ var zLoggedIn=false;
 			if((typeof zUserLoggedIn != "undefined" || zWasLoggedIn) && !zLoggedIn){
 				// this was a login protected page, we must redirect away for security.
 				document.body.innerHTML='Your session has expired.';
-				window.location.replace('/z/expired.htm');
+				var isAdmin=zGetCookie("ZISADMIN");
+				if(isAdmin=="1"){
+					window.location.replace('/z/expired-admin.htm');
+				}else{
+					window.location.replace('/z/expired.htm');
+				}
 			}
 			if(zLoggedIn){
 				zWasLoggedIn=true;

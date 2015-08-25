@@ -1,0 +1,21 @@
+<!DOCTYPE>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Session Expired</title> 
+</head>
+<body>
+<h2>Thanks for visiting <span id="domainDiv"></span></h2>
+<h1>Your session has expired due to inactivity.</h1>
+
+<p>If you'd like to login again, <a href="/z/admin/admin-home/index">click here</a></p>
+
+<p><a href="/">or click here return to the home page</a></p>
+<script type="text/javascript">
+var d=document.getElementById("domainDiv");
+var a=window.location.href.split("/");
+var d2=a.splice(2, 1);
+d.innerHTML=d2;
+</script>
+</body>
+</html>
