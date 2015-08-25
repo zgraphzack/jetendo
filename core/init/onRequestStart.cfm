@@ -753,6 +753,12 @@
 		request.zos.inMemberArea=true;
 		application.zcore.skin.disableMinCat();
 	}
+	if(application.zcore.user.checkGroupAccess("user")){ 
+		header name="Expires" value="0";
+		header name="Pragma" value="no-cache";
+		header name="Cache-Control" value="no-cache, no-store, must-revalidate";
+		application.zcore.template.appendTag("scripts", '<script type="text/javascript">var zUserLoggedIn=true;</script>');
+	}
 	if(application.zcore.user.checkGroupAccess("member")){
 		if(structkeyexists(form, 'zEnablePreviewMode')){
 			request.zsession.enablePreviewMode=form.zEnablePreviewMode;

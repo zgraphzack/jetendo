@@ -13,26 +13,81 @@ var zLoggedIn=false;
 			return false;
 		}
 	}
+	var showingIdleLogoutWarning=false;
 
 	function zIsLoggedIn(){
 		var loggedIn=zGetCookie("ZLOGGEDIN");
 		var d=zGetCookie("ZSESSIONEXPIREDATE");
 		if(loggedIn === "1" && d !== ""){
 			var n=new Date(d.toLocaleString()); 
-			if(n < new Date()){
+			var newDate=new Date();
+			if(n < newDate){
+				if(showingIdleLogoutWarning){
+					showingIdleLogoutWarning=false;
+					zCloseModal();
+				}
 				zDeleteCookie("ZSESSIONEXPIREDATE");
 				return false;
 			}else{
+				var secondsBeforeLogout=30;
+				if(n-newDate<=secondsBeforeLogout*1000){ 
+					if(!showingIdleLogoutWarning){
+						showingIdleLogoutWarning=true;
+						var modalContent1='<h2>Idle Session Warning</h2><p>You will be logged out in <span id="zIdleWarningDiv1"></span> seconds.</p><p><strong><a href="##" id="zIdleWarningButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Continue session</a> <a href="##" id="zIdleLogoutButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Log Out</a></strong></p>';
+						zShowModal(modalContent1,{'width':270,'height':130, 'disableClose':true});
+						$("#zIdleLogoutButton").bind("click", function(e){
+							e.preventDefault();
+							window.location.replace('/z/user/home/index?zlogout=1');
+						});
+						$("#zIdleWarningButton").bind("click", function(e){
+							e.preventDefault();
+
+							var obj={
+								id:"zContinueSession",
+								method:"get",
+								callback:function(r){
+									console.log('Session extended');
+								},
+								errorCallback:function(){ alert('Unknown error occurred'); },
+								url:"/z/user/home/extendSession"
+							}; 
+							zAjax(obj);
+							showingIdleLogoutWarning=false;
+							zCloseModal();
+						});
+					}
+					$("#zIdleWarningDiv1").html(Math.round((n-newDate)/1000));
+				}else{
+					if(showingIdleLogoutWarning){
+						showingIdleLogoutWarning=false;
+						zCloseModal();
+					}
+				}
 				return true;
 			}
 		}else{
+			if(showingIdleLogoutWarning){
+				showingIdleLogoutWarning=false;
+				zCloseModal();
+			}
+			showingIdleLogoutWarning=false;
 			return false;
 		}
 	}
+	var zWasLoggedIn=false;
 	var zLoggedInTimeoutID=false;
+
 	zArrDeferredFunctions.push(function(){
 		zLoggedInTimeoutID=setInterval(function(){
-			zLoggedIn=zIsLoggedIn();
+			zLoggedIn=zIsLoggedIn(); 
+			if((typeof zUserLoggedIn != "undefined" || zWasLoggedIn) && !zLoggedIn){
+				// this was a login protected page, we must redirect away for security.
+				document.body.innerHTML='Your session has expired.';
+				window.location.replace('/z/expired.htm');
+			}
+			if(zLoggedIn){
+				zWasLoggedIn=true;
+			}
 		}, 1000);
 	});
 

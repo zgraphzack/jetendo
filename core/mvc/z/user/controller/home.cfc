@@ -1,5 +1,12 @@
 <cfcomponent>
 <cfoutput>
+<cffunction name="extendSession" access="remote" localmode="modern">
+	<cfscript>
+	ts={success:true};
+	application.zcore.functions.zReturnJson(ts);
+	</cfscript>
+</cffunction>
+
 <cffunction name="index" access="remote" localmode="modern">
 	<cfscript>
 	if(not application.zcore.user.checkGroupAccess("user")){

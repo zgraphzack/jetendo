@@ -3952,7 +3952,7 @@ this.app_id=10;
 	// set from query string or default value 
 	searchStruct.perpage = 10;	
 	searchNav = application.zcore.functions.zSearchResultsNav(searchStruct);
-	searchStruct.index = application.zcore.status.getField(form.listId, "zIndex",1); 
+	searchStruct.index = min(1000,application.zcore.status.getField(form.listId, "zIndex",1)); 
 	start = searchStruct.perpage * max(1,searchStruct.index) - 10;
 	ts=structnew();
 	ts.image_library_id_field="blog.blog_image_library_id";
