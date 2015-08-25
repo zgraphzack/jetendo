@@ -2723,7 +2723,7 @@ zCreateMemoryTable(ts);
 	var db2=0;
 	var db=0;
 	arrCreate=[];
-	setting requesttimeout="2000";
+	setting requesttimeout="5000";
 	local.c=application.zcore.db.getConfig();
 	local.c.autoReset=false;
 	local.c.datasource=request.zos.zcoreDatasource;

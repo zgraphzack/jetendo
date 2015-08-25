@@ -282,7 +282,20 @@ if(isdefined('arguments.cferror.message') and arguments.cferror.message EQ ""){
 }else{
 	local.curMessage=arguments.cferror.message;
 }
+
+if(structkeyexists(request.zos, 'startTime')){
+	echo('<p>Request ran for : #(gettickcount('nano')-request.zos.startTime)/1000000000# seconds</p>');
+}
+
+if(structkeyexists(request.zos, 'idxFileHandle')){
+	try{
+		fileclose(request.zos.idxFileHandle);
+	}catch(Any e){
+		// ignore exception
+	}
+}
 </cfscript> 
+ 
 <cfif isDefined('Request.zOS.customError')>
 	#local.curMessage#
 	<cfif findnocase("The filename, directory name, or volume label syntax is incorrect null", local.curMessage) NEQ 0>
@@ -430,19 +443,23 @@ StructDelete(request, 'cfdumpinited');
 </cfif>
  	<cfset developerFlagged=false>
  <cfif isDefined('request.zos.globals.serverId')>
- <cfquery name="quc" datasource="#request.zos.zcoreDatasource#">
- SELECT * from user where user_active = '1' 
- <cfif isDefined('request.zsession.user.id')>
- and user_id = '#request.zsession.user.id#' 
- </cfif>
- and user_updated_ip = '#request.zos.cgi.remote_addr#' and 
- user_ip_blocked = '0' 
- and user_intranet_administrator='1' and 
- site_id = '#request.zos.globals.serverId#' 
- </cfquery>
- <cfif quc.recordcount NEQ 0>
- 	<cfset developerFlagged=true>
- </cfif>
+ 	<cftry> 
+		 <cfquery name="quc" datasource="#request.zos.zcoreDatasource#">
+		 SELECT * from user where user_active = '1' 
+		 <cfif isDefined('request.zsession.user.id')>
+		 and user_id = '#request.zsession.user.id#' 
+		 </cfif>
+		 and user_updated_ip = '#request.zos.cgi.remote_addr#' and 
+		 user_ip_blocked = '0' 
+		 and user_intranet_administrator='1' and 
+		 site_id = '#request.zos.globals.serverId#' 
+		 </cfquery>
+		 <cfif quc.recordcount NEQ 0>
+		 	<cfset developerFlagged=true>
+		 </cfif>
+	<cfcatch type="Any">
+	</cfcatch>
+	</cftry>
  </cfif>
  <cfif isDefined('request.zos.isDeveloper')>
  	<cfset developerFlagged=request.zos.isDeveloper>

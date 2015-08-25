@@ -1,19 +1,24 @@
 <cfcomponent>
 <cfoutput>
 <cffunction name="checkImportTimer" localmode="modern" access="remote">
-	<cfscript>
+	<cfscript>  
 	if(not request.zos.isServer and not request.zos.isDeveloper){
 		application.zcore.functions.z404("Only server or developer can access this url.");
-	}
+	} 
 	if(structkeyexists(application, 'idxImportTimerStruct')){
 		echo('<h2>Import MLS Timer (total time for each sub-task)</h2>');
 		for(i in application.idxImportTimerStruct){
+			if(structkeyexists(form, 'resetTimes')){
+				application.idxImportTimerStruct[i]=0;	
+			}
 			c=application.idxImportTimerStruct[i];
 			echo('<p>'&(c/1000000000)&' seconds for #i#</p>');
 		}
 	}else{
 		echo("<p>Import hasn't run yet.</p>");
 	}
+
+	echo('<p><a href="/z/listing/tasks/importMLS/checkImportTimer?resetTimes=1">Reset times to zero</a></p>');
 	abort;
 	</cfscript>
 </cffunction>

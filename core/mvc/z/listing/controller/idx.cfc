@@ -225,11 +225,11 @@
 		 
 		request.zTempIDXFilePath=request.zos.sharedPath&this.optionstruct.filePath;
 		
-		variables.fileHandle=fileOpen("#request.zos.sharedPath&this.optionstruct.filePath#", 'read', "windows-1252");
+		request.zos.idxFileHandle=fileOpen("#request.zos.sharedPath&this.optionstruct.filePath#", 'read', "windows-1252");
 		 
 
 		if(this.optionstruct.skipBytes NEQ 0){
-			fileSkipBytes(variables.fileHandle, this.optionStruct.skipBytes-10); 
+			fileSkipBytes(request.zos.idxFileHandle, this.optionStruct.skipBytes-10); 
 		}
 		writeoutput(request.zos.sharedPath&this.optionstruct.filePath&'<br />');
 		
@@ -243,9 +243,9 @@
 		variables.csvParser.init();
 		if(this.optionstruct.skipBytes NEQ 0){
 			// skip the partially read line
-			line2=fileReadLine(variables.fileHandle);
+			line2=fileReadLine(request.zos.idxFileHandle);
 		}else if(this.optionstruct.first_line_columns EQ 1){
-			line2=fileReadLine(variables.fileHandle); // ignore columns since they were already read
+			line2=fileReadLine(request.zos.idxFileHandle); // ignore columns since they were already read
 		}else{
 			line2="ignore";	
 		}
@@ -282,11 +282,11 @@
 				}
 				application.zcore.idxImportStatus="Bytes read: "&this.optionStruct.skipBytes&" of "&request.zos.sharedPath&this.optionstruct.filepath;
 				loopcount++;
-				if(fileIsEOF(variables.fileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
+				if(fileIsEOF(request.zos.idxFileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
 					fileComplete=true;
 					break;	
 				}
-				line=fileReadLine(variables.fileHandle);
+				line=fileReadLine(request.zos.idxFileHandle);
 				this.optionstruct.skipBytes+=len(line)+1;
 				line=variables.csvParser.parseLineIntoArray(line);  
 
@@ -305,7 +305,7 @@
 				if(r1 EQ false){
 					addRowFailCount++;
 					if(addRowFailCount GTE 10){
-						fileClose(variables.fileHandle);
+						fileClose(request.zos.idxFileHandle);
 						application.zcore.functions.zRenameFile(request.zos.sharedPath&this.optionstruct.filepath, request.zos.sharedPath&this.optionstruct.filepath&"-corrupt-"&dateformat(now(),'yyyy-mm-dd')&'-'&timeformat(now(),'HH-mm-ss'));	
 						if(fileexists(request.zos.sharedPath&this.optionstruct.filepath&"-imported")){
 							application.zcore.functions.zCopyFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported", request.zos.sharedPath&this.optionstruct.filepath);	
@@ -335,7 +335,7 @@
 			}
 		}
 		
-		fileClose(variables.fileHandle);
+		fileClose(request.zos.idxFileHandle);
 		mlsUpdateDate="";
 		if(fileComplete){
 			writeoutput('File import, "#request.zos.sharedPath&this.optionstruct.filepath#",  is complete<br />');
@@ -357,7 +357,7 @@
 		}
 	}catch(Any local.e){
 		if(structkeyexists(variables, 'fileHandle')){
-			fileClose(variables.fileHandle);
+			fileClose(request.zos.idxFileHandle);
 		}
 		rethrow;
 	}
