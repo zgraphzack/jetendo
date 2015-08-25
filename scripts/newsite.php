@@ -8,11 +8,27 @@ $sitesPath=get_cfg_var("jetendo_sites_path");
 // must grant the mysql user select and update permissions on jetendo main database.
 // */1 * * * * /usr/bin/php /root/newsite.php >/dev/null 2>&1
 
-
-
 $debug=false;
 $timeout=60; // seconds
 $host=`hostname`;
+
+
+if((int)date("i") % 2 == 0){
+	$avgLoad=explode(" ", `cat /proc/loadavg`);
+	$cpuLimit=3;
+	if($avgLoad[1] >$cpuLimit){ 
+		$to      = get_cfg_var('jetendo_developer_email_to');
+		$subject = 'CPU load is very high on '.$host;
+			
+		$headers = 'From: '.get_cfg_var('jetendo_developer_email_from')."\r\n" .
+			'Reply-To: '.get_cfg_var('jetendo_developer_email_from')."\r\n" .
+			'X-Mailer: PHP/' . phpversion();
+		$topProcesses=`ps aux | sort -rk 3,3 | head -n 6`;
+		$message = "Average load exceeded ".$cpuLimit.".\nCurrent load averages (minute, 5 minute, 15 minutes): \n".implode(", ", $avgLoad)."\nThe following processes are consuming a large amount of CPU on the system.\n\n".$topProcesses;
+		mail($to, $subject, $message, $headers);
+	}
+}
+
 $testDomain=get_cfg_var("jetendo_test_domain"); 
 if(strpos($host, $testDomain) !== FALSE){
 	$isTestServer=true;
