@@ -2055,7 +2055,10 @@ User's IP: #request.zos.cgi.remote_addr#
 			curPrivatePath=tempPrivatePath;
 		}
 	}
-	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', serializeJson(tempStruct));
+	lock name="#request.zos.installPath#-zCacheJsonSiteAndUserGroup-serialize" type="exclusive" timeout="10"{
+		a=serializeJson(arguments.tempStruct);
+	}
+	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', a);
 	curSiteId=tempStruct.id;
 	request.zos.globals=duplicate(application.zcore.serverglobals);
 	structappend(Request.zos.globals, firstTempStruct, true);
@@ -2087,7 +2090,10 @@ User's IP: #request.zos.cgi.remote_addr#
 
 	structappend(application.sitestruct[arguments.site_id].globals, arguments.tempStruct, true);
 	application.zcore.siteglobals[arguments.site_id]=arguments.tempStruct;
-	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', serializeJson(arguments.tempStruct));
+	lock name="#request.zos.installPath#-zCacheJsonSiteAndUserGroup-serialize" type="exclusive" timeout="10"{
+		a=serializeJson(arguments.tempStruct);
+	}
+	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', a);
 	</cfscript>
 </cffunction>
 
