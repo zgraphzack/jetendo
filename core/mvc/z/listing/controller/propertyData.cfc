@@ -1578,6 +1578,10 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
 						echo('Listing search is not available right now. Running queries:');
 						arrS=application.zcore.functions.zGetRunningQueries();
 						writedump(arrS);
+						rs=application.zcore.functions.zDownloadLink(request.zos.globals.serverDomain&"/z/listing/tasks/importMLS/checkImportTimer", 5);
+						if(rs.success){
+							echo(rs.cfhttp.filecontent);
+						}
 					}
 					ts={
 						type:"Custom",

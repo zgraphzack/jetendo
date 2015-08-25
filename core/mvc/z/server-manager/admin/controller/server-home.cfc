@@ -410,9 +410,10 @@
 					<a href="/z/listing/tasks/importMLS/abortImport">Cancel</a> 
 					<cfif structkeyexists(application.zcore, 'idxImportStatus')>
 						| #application.zcore.idxImportStatus#
-					</cfif>
+					</cfif> | 
 				)
-			</cfif></p>
+			</cfif>
+			 | <a href="/z/listing/tasks/importMLS/checkImportTimer" target="_blank">Check Import Timer</a></p>
 			<p><a href="/z/listing/tasks/generateData/index" target="_blank">Generate Cache Data</a></p>
 			<p><a href="/z/listing/tasks/listingLookupBuilder/index" target="_blank">Update Lookup Tables</a></p>
 			<p><a href="/z/listing/tasks/listingLookupBuilder/updateDistanceCache" target="_blank">Update City Distance Table</a></p>

@@ -72,13 +72,14 @@ function zListingLoadSavedCart(){
 		tempObj.callback=function(d){  
 			var r=eval("("+d+")");
 			if(r.success){ 
-				if($("#sl894nsdh783").length){
-					var listingCount=zGetCookie("SAVEDLISTINGCOUNT"); 
-					if(listingCount=="0" || listingCount==""){
-						$("#sl894nsdh783").html("").hide(); 
-					}else{
-						$("#sl894nsdh783").show().html(r.output);   
-					}
+				if($("#sl894nsdh783").length==0){
+					$("#zTopContent").append('<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>');
+				}
+				var listingCount=zGetCookie("SAVEDLISTINGCOUNT"); 
+				if(listingCount=="0" || listingCount==""){
+					$("#sl894nsdh783").html("").hide(); 
+				}else{
+					$("#sl894nsdh783").show().html(r.output);   
 				}
 			} 
 		}; 

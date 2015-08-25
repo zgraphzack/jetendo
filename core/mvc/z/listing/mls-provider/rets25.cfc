@@ -94,6 +94,10 @@
 		var c=0;
 		var liststatus=0;
 		var ad=0;
+
+		startTime=gettickcount('nano');
+
+
 		if(structcount(this.emptyStruct) EQ 0){
 			for(i=1;i LTE arraylen(this.arrColumns);i++){
 				if(structkeyexists(request.zos.listing.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].tableFields, this.arrColumns[i])){
@@ -489,6 +493,12 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		if(ts["pool"] EQ "private"){
 			local.listing_pool=1;	
 		}
+
+
+		tempTime=gettickcount('nano');
+		application.idxImportTimerStruct.parseRow1+=(tempTime-startTime);
+		startTime=tempTime;
+
 		ts=this.convertRawDataToLookupValues(ts, 'listing', ts.rets25_propertytype);
 		dataCom=this.getRetsDataObject();
 		local.listing_data_detailcache1=dataCom.getDetailCache1(ts);
@@ -540,6 +550,12 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 		rs.listing_data_detailcache2=listing_data_detailcache2;
 		rs.listing_data_detailcache3=listing_data_detailcache3;
 		//writedump(rs);		writedump(ts);abort;
+
+
+		tempTime=gettickcount('nano');
+		application.idxImportTimerStruct.parseRow2+=(tempTime-startTime);
+		startTime=tempTime;
+
 		return {
 			listingData:rs,
 			columnIndex:columnIndex,

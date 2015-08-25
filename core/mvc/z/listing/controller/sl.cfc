@@ -72,8 +72,7 @@
 	<cfscript>
 	application.zcore.template.setTag("title", "Your Saved Listings");
 	application.zcore.template.setTag("pagetitle", "Your Saved Listings"); 
-	form.returnURL=request.zos.originalURL;
-	variables.index();  
+	form.returnURL=request.zos.originalURL; 
 	pageNav='<a href="/">Home</a> / ';
 	
 	if(application.zcore.user.checkGroupAccess("user")){
@@ -82,8 +81,11 @@
 		echo(application.zcore.user.createAccountMessage());
 	}
 	application.zcore.template.setTag("pagenav", pagenav);
+
+
 	</cfscript>
-	
+	<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>
+	<!--- 
 	<cfif cookie.SAVEDLISTINGCOUNT EQ 0>
 		<h2>You have no saved listings at this time.</h2>
 	<cfelse>
@@ -96,7 +98,7 @@
 		});
 		/* ]]> */
 		</script>
-	</cfif>
+	</cfif> --->
 	<!--- this is empty on purpose to allow viewing ONLY the saved listings --->
 </cffunction>
 
@@ -187,7 +189,7 @@
 	</cfscript> 
 </cffunction>
 
-<cffunction name="view" localmode="modern" access="remote">
+<cffunction name="viewData" localmode="modern" access="private">
 	
 	<cfscript> 
 	init();
@@ -269,7 +271,7 @@
 		</table>
 		<div style="width:100%; margin-bottom:15px; float:left; overflow:auto; ">
 			<cfscript>
-			view();
+			viewData();
 			</cfscript> 
 		</div>
     </cfsavecontent>

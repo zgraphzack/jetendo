@@ -825,7 +825,8 @@
 		application.zcore.functions.zStatusHandler(form.zld,true,true);
 	}
 	application.zcore.template.prependContent(trim(application.zcore.app.onRequestStart()));
-	
+	application.zcore.template.prependTag("topcontent", '<div id="zTopContent" style="width:100%; float:left;"></div>');
+
 	if(structkeyexists(request.zos,'scriptNameTemplate') EQ false){
 		request.zos.scriptNameTemplate=cgi.script_name;
 	}else{

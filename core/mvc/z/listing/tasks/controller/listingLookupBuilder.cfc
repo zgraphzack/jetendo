@@ -25,6 +25,10 @@
 	var rs=0;
 	var r1=0;
 	var i=0;
+	
+	if(not request.zos.isServer and not request.zos.isDeveloper){
+		application.zcore.functions.z404("Only server or developer can access this url.");
+	}
 	setting requesttimeout="5000";
 	application.zcore.listingCom.makeListingImportDataReady();
 	//request.zos.listing=structnew();

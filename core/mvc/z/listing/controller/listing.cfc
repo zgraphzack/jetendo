@@ -2496,9 +2496,7 @@ if(right(form[request.zos.urlRoutingParameter],4) NEQ ".xml" and right(request.c
 		if(isDefined('request.zsession.tempVars.zListingSearchId')){
 			writeoutput('<div id="zListingSearchBarEnabledDiv" style="display:none;"></div>');
 		}
-		if(request.zos.globals.enableInstantLoad EQ 1 or (structkeyexists(cookie,'SAVEDLISTINGCOUNT') and cookie.SAVEDLISTINGCOUNT NEQ 0)){
-			application.zcore.template.prependTag("topcontent",'<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>');
-		} 
+		//application.zcore.template.prependTag("topcontent",'<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>');
 	}
 	if (not request.zos.trackingspider and (not request.zos.istestserver or structkeyexists(form, 'debugajaxgeocoder')) and request.zos.originalURL NEQ "/z/listing/ajax-geocoder/index" and (randrange(1, request.zos.geocodeFrequency) EQ 1)){
 		savecontent variable="geocodeOutput"{

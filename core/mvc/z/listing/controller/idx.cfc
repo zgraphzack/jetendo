@@ -254,9 +254,29 @@
 		loopcount=0;
 		stillParsing=true;
 		addRowFailCount=0;
+
+		application.idxImportTimerStruct={
+			parseLine:0,
+			addRow:0,
+			checkDuplicates:0,
+			parseRow1:0,
+			parseRow2:0, 
+			"import-update-track-only":0,
+			"import-listing":0,
+			"import-listing_data":0,
+			"import-listing_track":0,
+			"import-listing_memory":0,
+			"import-update-listing":0,
+			"import-update-listing_data":0,
+			"import-update-listing_track":0,
+			"import-update-listing_memory":0
+		};
 		structdelete(application.zcore, 'abortIdxImport');
 		while(gettickcount()-startTime LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
 			for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
+
+				startTime=gettickcount('nano');
+
 				if(structkeyexists(application.zcore, 'abortIdxImport')){
 					throw("Aborting IDX Import due to manual cancellation");
 				}
@@ -269,8 +289,19 @@
 				line=fileReadLine(variables.fileHandle);
 				this.optionstruct.skipBytes+=len(line)+1;
 				line=variables.csvParser.parseLineIntoArray(line);  
+
+
+				tempTime=gettickcount('nano');
+				application.idxImportTimerStruct.parseLine+=(tempTime-startTime);
+				startTime=tempTime;
+
 				request.curline=line;
 				r1=this.addRow(line);
+
+				tempTime=gettickcount('nano');
+				application.idxImportTimerStruct.addRow+=(tempTime-startTime);
+				startTime=tempTime;
+
 				if(r1 EQ false){
 					addRowFailCount++;
 					if(addRowFailCount GTE 10){
@@ -283,8 +314,16 @@
 					}
 				}
 			}
+			startTime=gettickcount('nano');
 			this.checkDuplicates();
+
+			tempTime=gettickcount('nano');
+			application.idxImportTimerStruct.checkDuplicates+=(tempTime-startTime);
+			startTime=tempTime;
+
 			r22=this.import();
+ 
+
 			if(r22 EQ false){
 				break;	
 			}
@@ -456,6 +495,9 @@
 	for(i in this.datastruct){
 		arrayClear(request.zos.arrQueryLog);
 		if(this.datastruct[i].update EQ false and this.datastruct[i].haslisting and this.datastruct[i].haslisting2){
+
+			startTime=gettickcount('nano');
+
 			db.sql="update #db.table("listing_track", request.zos.zcoreDatasource)#  
 			set listing_track_processed_datetime = #db.param(nowDate1)#, 
 			listing_track_updated_datetime=#db.param(request.zos.mysqlnow)#,   
@@ -463,6 +505,10 @@
 			WHERE listing_id = #db.param(i)# and 
 			listing_track_deleted = #db.param(0)#";
 			db.execute("q"); 	
+
+			tempTime=gettickcount('nano');
+			application.idxImportTimerStruct["import-update-track-only"]+=(tempTime-startTime);
+			startTime=tempTime;
 		}else{
 			if(this.datastruct[i].new){
 				this.datastruct[i].listing_track_datetime=this.nowDate;
@@ -470,6 +516,8 @@
 			this.datastruct[i].listing_track_updated_datetime=this.nowDate;
 			rs2=this.optionstruct.mlsProviderCom.parseRawData(this.datastruct[i]);//, this.optionstruct);
 			rs=rs2.listingData;
+
+
 			
 			if(this.datastruct[i].new){
 				if(structkeyexists(this.datastruct[i], 'listing_track_price') EQ false){
@@ -511,7 +559,7 @@
 				rs.listing_track_updated_datetime=this.datastruct[i].listing_track_updated_datetime;
 				rs.listing_track_processed_datetime=nowDate1;
 			}
-			rs.mls_id=this.optionStruct.mls_id;
+			rs.mls_id=this.optionStruct.mls_id; 
 			ts2={
 				debug:true,
 				datasource:request.zos.zcoreDatasource,
@@ -550,14 +598,24 @@
 				for(i2 in rs2.columnIndex){
 					ts1.struct[i2]=rs2.arrData[rs2.columnIndex[i2]];
 				}
+				if(not structkeyexists(application.idxImportTimerStruct, "import-"&ts1.table)){
+					application.idxImportTimerStruct["import-"&ts1.table]=0;
+					application.idxImportTimerStruct["import-update-"&ts1.table]=0;
+					application.idxImportTimerStruct["import-update-fail-"&ts1.table]=0;
+				}
 			}  
 
 			transaction action="begin"{
 				try{
 					if(structkeyexists(rs2, 'columnIndex')){
+						startTime=gettickcount('nano');
 						if(not this.datastruct[i].hasListing2){
 							try{
 								application.zcore.functions.zInsert(ts1);
+
+								tempTime=gettickcount('nano');
+								application.idxImportTimerStruct["import-"&ts1.table]+=(tempTime-startTime);
+								startTime=tempTime;
 							}catch(Any e){
 								ts1.forceWhereFields=lcase(this.optionstruct.mlsProviderCom.getListingIdField());
 								// later uncomment this when field exists: 
@@ -566,6 +624,10 @@
 
 								ts1.struct[lcase(ts1.forceWhereFields)]=rs.listing_id;
 								application.zcore.functions.zUpdate(ts1);
+
+								tempTime=gettickcount('nano');
+								application.idxImportTimerStruct["import-update-fail-"&ts1.table]+=(tempTime-startTime);
+								startTime=tempTime;
 							}
 						}else{
 							ts1.forceWhereFields=lcase(this.optionstruct.mlsProviderCom.getListingIdField());
@@ -575,30 +637,72 @@
 
 							ts1.struct[lcase(ts1.forceWhereFields)]=rs.listing_id;
 							application.zcore.functions.zUpdate(ts1);
+
+							tempTime=gettickcount('nano');
+							application.idxImportTimerStruct["import-"&ts1.table]+=(tempTime-startTime);
+							startTime=tempTime;
 						}
 					}
-					if(this.datastruct[i].new){
+
+
+					if(this.datastruct[i].new){ 
 						application.zcore.functions.zInsert(ts4);
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-"&ts4.table]+=(tempTime-startTime);
+						startTime=tempTime;
 					}else{
 						ts4.forceWhereFields="listing_id,listing_track_deleted";
 						application.zcore.functions.zUpdate(ts4);
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-update-"&ts4.table]+=(tempTime-startTime);
+						startTime=tempTime;
 					}
+
 					if(this.datastruct[i].hasListing){
 						ts2.forceWhereFields="listing_id,listing_deleted";
 						application.zcore.functions.zUpdate(ts2);
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-update-"&ts2.table]+=(tempTime-startTime);
+						startTime=tempTime;
+
 						ts3.forceWhereFields="listing_id,listing_data_deleted";
 						application.zcore.functions.zUpdate(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade
+
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-update-"&ts3.table]+=(tempTime-startTime);
+						startTime=tempTime;
 					}else{
 						application.zcore.functions.zInsert(ts2); 
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-"&ts2.table]+=(tempTime-startTime);
+						startTime=tempTime;
+
 						application.zcore.functions.zInsert(ts3); // TODO: myisam table is not actually transaction here - it will be innodb after mariadb 10 upgrade 
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-"&ts3.table]+=(tempTime-startTime);
+						startTime=tempTime;
 					}
 					transaction action="commit";
 					if(this.datastruct[i].hasListing){
 						ts5.forceWhereFields="listing_id,listing_deleted";
 						application.zcore.functions.zUpdate(ts5);
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-update-"&ts5.table]+=(tempTime-startTime);
+						startTime=tempTime;
 					}else{
 						structdelete(ts5.struct, 'listing_unique_id');
 						application.zcore.functions.zInsert(ts5);
+
+						tempTime=gettickcount('nano');
+						application.idxImportTimerStruct["import-"&ts5.table]+=(tempTime-startTime);
+						startTime=tempTime;
 					}
 
 				}catch(Any e){
