@@ -72,7 +72,9 @@
 		db.sql="SELECT *, if(inquiries_type_locked = #db.param(1)#,#db.param(1)#,#db.param(0)#) locked 
 		from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
 		WHERE inquiries_type.inquiries_type_id = #db.param(form.inquiries_type_id)# and 
-		inquiries_type.site_id=#db.param(form.site_id)# GROUP BY inquiries_type.inquiries_type_id";
+		inquiries_type_deleted=#db.param(0)# and 
+		inquiries_type.site_id=#db.param(form.site_id)# 
+		GROUP BY inquiries_type.inquiries_type_id";
 		qTypes=db.execute("qTypes");
 		if(qTypes.recordcount EQ 0 or qTypes.locked EQ 1){
 			application.zcore.status.setStatus(request.zsid, 'Group is locked.',false,true);

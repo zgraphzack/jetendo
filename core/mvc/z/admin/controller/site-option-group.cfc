@@ -1556,7 +1556,19 @@ displayGroupCom.ajaxInsert();
 							</td></tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Public Form?","member.site-option-group.edit site_option_group_allow_public")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_allow_public")#</td>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_allow_public")#
+
+					<script type="text/javascript">
+					zArrDeferredFunctions.push(function(){
+						$("##site_option_group_allow_public1").bind("click", function(){
+							$("##site_option_group_enable_cache0")[0].checked=true;
+						});
+						$("##site_option_group_allow_public0").bind("click", function(){
+							$("##site_option_group_enable_cache1")[0].checked=true;
+						});
+					});
+					</script>
+					</td>
 				</tr>
 				<tr>
 					<th>Require Captcha<br />For Public Data Entry:</th>

@@ -2056,7 +2056,7 @@ User's IP: #request.zos.cgi.remote_addr#
 		}
 	}
 	lock name="#request.zos.installPath#-zCacheJsonSiteAndUserGroup-serialize" type="exclusive" timeout="10"{
-		a=serializeJson(arguments.tempStruct);
+		a=serializeJson(tempStruct);
 	}
 	application.zcore.functions.zWriteFile(curPrivatePath&'_cache/scripts/global.json', a);
 	curSiteId=tempStruct.id;
