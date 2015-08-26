@@ -397,6 +397,7 @@
 	<hr />
 	<table class="table-list">
 		<tr>
+			<th>ID</th>
 			<th>Calendar</th>
 			<th>Category Name</th>
 			<th>Access</th>
@@ -452,6 +453,7 @@
 	<cfscript>
 	row=arguments.row;
 	echo('
+		<td>#row.event_category_id#</td>
 		<td>#row.event_calendar_name#</td>
 		<td>#row.event_category_name#</td>
 	<td>');
