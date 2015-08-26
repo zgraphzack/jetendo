@@ -2835,7 +2835,7 @@ zCreateMemoryTable(ts);
 					}else{
 						ks[curName].type=" key `#qMLS.key_name#` ";
 						if(arguments.ss.allowFulltext EQ false){
-							application.zcore.template.fail('FULLTEXT indexes can not be used with MEMORY tables in MySQL 5.0.  Please set "ts.allowFullText" to "true" when calling "zCreateMemoryTable" to ignore this error and use "KEY" instead of "FULLTEXT KEY". Full text searches will not work on a memory table.');
+							throw('FULLTEXT indexes can not be used with MEMORY tables in MySQL 5.0.  Please set "ts.allowFullText" to "true" when calling "zCreateMemoryTable" to ignore this error and use "KEY" instead of "FULLTEXT KEY". Full text searches will not work on a memory table.');
 						}
 					}
 				}

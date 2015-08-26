@@ -83,7 +83,7 @@
 		if(request.zos.istestserver){
 			this.optionstruct.delaybetweenloops=0;
 		}else{
-			this.optionstruct.delaybetweenloops=0; // 30
+			this.optionstruct.delaybetweenloops=10; // 30
 		}
 		this.optionstruct.timeLimitInSeconds=75; // 75
 		// process the mls provider that is the most out of date first
@@ -130,6 +130,7 @@
 			writeoutput('All files are complete.');
 			this.cleanInactive();
 			
+			/*
 			// update price only once each day
 			db.sql="select max(content_price_update_datetime) mdate 
 			FROM #db.table("content", request.zos.zcoreDatasource)# content 
@@ -159,7 +160,7 @@
 					 content_id = #db.param(qP.content_id[x])#";
 					 qU = db.execute("qU");
 				}
-			}
+			}*/
 			return true;
 		}
 		
@@ -581,13 +582,13 @@
 				struct:rs
 			};
 			ts4.struct.listing_track_deleted='0';
-			ts5={
+			/*ts5={
 				debug:true,
 				datasource:request.zos.zcoreDatasource,
 				table:"listing_memory",
 				struct:rs
 			};
-			ts5.struct.listing_deleted='0';
+			ts5.struct.listing_deleted='0';*/
 			if(structkeyexists(rs2, 'columnIndex')){
 				ts1={
 					debug:true,
@@ -689,7 +690,7 @@
 						startTime=tempTime;
 					}
 					transaction action="commit";
-					if(this.datastruct[i].hasListing){
+					/*if(this.datastruct[i].hasListing){
 						ts5.forceWhereFields="listing_id,listing_deleted";
 						application.zcore.functions.zUpdate(ts5);
 
@@ -703,7 +704,7 @@
 						tempTime=gettickcount('nano');
 						application.idxImportTimerStruct["import-"&ts5.table]+=(tempTime-startTime);
 						startTime=tempTime;
-					}
+					}*/
 
 				}catch(Any e){
 					transaction action="rollback";
@@ -871,9 +872,8 @@
 				db2.sql="DELETE FROM #db2.table("listing_data", request.zos.zcoreDatasource)#  
 				WHERE listing_id IN (#idlist#) and listing_data_deleted = #db2.param(0)# ";
 				db2.execute("qDelete");
-				db2.sql="DELETE FROM #db2.table("listing_memory", request.zos.zcoreDatasource)#  
-				WHERE listing_id IN (#idlist#) and listing_deleted = #db2.param(0)# ";
-				db2.execute("qDelete");
+				//db2.sql="DELETE FROM #db2.table("listing_memory", request.zos.zcoreDatasource)# WHERE listing_id IN (#idlist#) and listing_deleted = #db2.param(0)# ";
+				//db2.execute("qDelete");
 				db2.sql="UPDATE #db2.table("listing_track", request.zos.zcoreDatasource)# listing_track 
 				SET listing_track_hash=#db2.param('')#, 
 				listing_track_inactive=#db2.param(1)#, 
@@ -947,6 +947,13 @@
 		</cfif>
 	</cfloop> 
 	<cfscript>
+	ts={};
+	ts.table="listing";
+	ts.force=true;
+	ts.allowFulltext=true;
+	application.zcore.listingCom.zCreateMemoryTable(ts);
+
+
 	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
 	where mls_status=#db.param('1')# and 
 	(mls_update_date <#db.param(dateformat(oneDayAgo,"yyyy-mm-dd"))# or 
