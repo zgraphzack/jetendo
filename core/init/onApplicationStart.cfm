@@ -688,12 +688,7 @@
 				request.zos.functions=application.zcore.functions;
 			}
 			application.zcore.functions.zdeletefile(coreDumpFile);
-			application.zcore.functions.zdeletefile(coreDumpFile2);
-			//if(request.zos.isJavaEnabled){
-			//	coreDumpFile3=request.zos.zcoreRootCachePath&"scripts/memory-dump/"&server[request.zos.cfmlServerKey].version&"-sessions.bin";
-			//	application.sessionStruct=objectload(coreDumpFile3);
-			//	application.zcore.functions.zdeletefile(coreDumpFile3);
-			//}
+			application.zcore.functions.zdeletefile(coreDumpFile2); 
 			application.zcore.runOnCodeDeploy=true; 
 			application.zcore.runMemoryDatabaseStart=true; 
 		}catch(Any e){

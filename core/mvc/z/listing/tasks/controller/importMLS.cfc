@@ -41,6 +41,7 @@
 			application.zcore.functions.zabort();
 		}
 	}
+	request.totalRunTime=gettickcount();
 	application.zcore.listingCom.makeListingImportDataReady();
  
 	application.zcore.importMLSRunning=true;
@@ -55,13 +56,18 @@
 			}else{
 				break;
 			}
+			if(gettickcount()-request.totalRunTime GT 4800000){
+				echo('Aborted due to nearing time limit');
+				structdelete(application.zcore, 'importMLSRunning');
+				abort;
+			}
 		}
 	}catch(Any e){
 		structdelete(application.zcore, 'importMLSRunning');
 		rethrow;	
 	}
 	structdelete(application.zcore, 'importMLSRunning');
-	application.zcore.functions.zabort();
+	abort;
 	</cfscript>
 </cffunction>
 

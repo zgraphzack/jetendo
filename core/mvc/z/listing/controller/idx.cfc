@@ -208,10 +208,13 @@
 	var line=0;
 	var fileComplete=0;
 	var p=0;
-	var startTime=gettickcount();
+	var startTimeTemp=gettickcount();
 	var mlsUpdateDate=0;
 	var r=0;
 	try{
+		if(not structkeyexists(request, 'totalRunTime')){
+			request.totalRunTime=gettickcount();
+		}
 		if(this.optionstruct.delimiter EQ ""){
 			application.zcore.template.fail("The delimiter for mls_id, "&this.optionstruct.mls_id&", can't be an empty string.");	
 		}
@@ -273,7 +276,7 @@
 			"import-update-listing_memory":0
 		};
 		structdelete(application.zcore, 'abortIdxImport');
-		while(gettickcount()-startTime LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
+		while(gettickcount()-startTimeTemp LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
 			for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
 
 				startTime=gettickcount('nano');
@@ -311,8 +314,11 @@
 						if(fileexists(request.zos.sharedPath&this.optionstruct.filepath&"-imported")){
 							application.zcore.functions.zCopyFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported", request.zos.sharedPath&this.optionstruct.filepath);	
 						}
-						application.zcore.template.fail(request.addRowErrorMessage);
+						throw(request.addRowErrorMessage);
 					}
+				}
+				if(this.optionstruct.delaybetweenloops NEQ 0){
+					sleep(this.optionstruct.delaybetweenloops);
 				}
 			}
 			startTime=gettickcount('nano');
@@ -328,11 +334,14 @@
 			if(r22 EQ false){
 				break;	
 			}
-			if(this.optionstruct.delaybetweenloops NEQ 0){
-				sleep(this.optionstruct.delaybetweenloops);
-			}
 			if(fileComplete){
 				break;
+			}
+			if(gettickcount()-request.totalRunTime GT 4800000){
+				echo('Aborted due to nearing time limit');
+				fileClose(request.zos.idxFileHandle);
+				structdelete(application.zcore, 'importMLSRunning');
+				abort;
 			}
 		}
 		
@@ -376,8 +385,8 @@
 	mls_deleted=#db.param(0)#";
 	db.execute("q"); 
 	
-	if(gettickcount()-startTime LT this.optionstruct.timeLimitInSeconds*1000){
-		writeoutput('Completed in #(gettickcount()-startTime)/1000# seconds');
+	if(gettickcount()-startTimeTemp LT this.optionstruct.timeLimitInSeconds*1000){
+		writeoutput('Completed in #(gettickcount()-startTimeTemp)/1000# seconds');
 	}else{
 		writeoutput('Stopped after #this.optionstruct.timeLimitInSeconds# seconds');
 	}

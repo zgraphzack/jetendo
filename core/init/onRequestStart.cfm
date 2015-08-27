@@ -89,19 +89,7 @@
 		if(structkeyexists(application, 'zDeployExclusiveLock') and ((request.zos.isDeveloper EQ false and request.zos.isServer EQ false) or not structkeyexists(form, 'zreset') or form.zreset EQ "")){	
 			setting requesttimeout="350";
 			lock type="exclusive" timeout="300" throwontimeout="no" name="#request.zos.installPath#-zDeployExclusiveLock"{};
-		}
-		if(structkeyexists(application,'sessionstruct') and structkeyexists(application.sessionstruct, request.zsession.sessionid)){
-			request.zos.oldestPossibleSessionDate=now()-this.sessiontimeout;
-			request.zos.oldestPossibleSessionDate=createodbcdatetime(dateformat(request.zos.oldestPossibleSessionDate,"yyyy-mm-dd")&" "&timeformat(request.zos.oldestPossibleSessionDate, "HH:mm:ss"));
-			if(datecompare(application.sessionstruct[request.zsession.sessionid].lastvisit, request.zos.oldestPossibleSessionDate) LTE 0){
-				structdelete(application.sessionstruct, request.zsession.sessionid);
-			}else{
-				structappend(request.zsession, application.sessionStruct[request.zsession.sessionid], true);
-				structdelete(application.sessionStruct,request.zsession.sessionid);
-				//writeoutput('copied session<br />');
-				
-			}
-		}
+		} 
 		request.zos.inMemberArea=false;
 		request.zos.inServerManager=false;
 		
