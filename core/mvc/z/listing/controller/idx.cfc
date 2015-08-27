@@ -277,6 +277,7 @@
 		};
 		structdelete(application.zcore, 'abortIdxImport');
 		while(gettickcount()-startTimeTemp LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
+			processedRow=false;
 			for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
 
 				startTime=gettickcount('nano');
@@ -294,6 +295,7 @@
 				this.optionstruct.skipBytes+=len(line)+1;
 				line=variables.csvParser.parseLineIntoArray(line);  
 
+				processedRow=true;
 
 				tempTime=gettickcount('nano');
 				application.idxImportTimerStruct.parseLine+=(tempTime-startTime);
@@ -320,6 +322,9 @@
 				if(this.optionstruct.delaybetweenloops NEQ 0){
 					sleep(this.optionstruct.delaybetweenloops);
 				}
+			}
+			if(not processedRow){
+				break;
 			}
 			startTime=gettickcount('nano');
 			this.checkDuplicates();
