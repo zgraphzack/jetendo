@@ -693,9 +693,9 @@ this.app_id=12;
 		<tr>
 		<th>Contact Links?</th>
 		<td>');
-		form.content_config_contact_links=application.zcore.functions.zso(form, 'content_config_contact_links',false,1);
+		form.content_config_contact_links=application.zcore.functions.zso(form, 'content_config_contact_links',true,0);
 		if(form.content_config_contact_links EQ ""){
-			form.content_config_contact_links=1;
+			form.content_config_contact_links=0;
 		}
 		ts = StructNew();
 		ts.name = "content_config_contact_links";

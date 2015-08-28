@@ -143,7 +143,11 @@ SELECT zipcode.*,
 <cffunction name="nearAddress" localmode="modern" access="remote">
 	<cfscript>
 	init();
-
+	search_near_address=trim(application.zcore.functions.zso(form, 'search_near_address'));
+	if(search_near_address EQ ""){
+		application.zcore.functions.z404("Invalid request - search_near_address is required");
+	}
+	application.zcore.functions.z404("this can't depend on zGetLatLong anymore. need to make it use client side geocoding.");
 	application.zcore.tracking.backOneHit();
 	// /z/listing/search-form/nearAddress?search_near_address=113 Mariners Dr, Ormond Beach, FL&seach_near_radius=0.5
 	lat=0;

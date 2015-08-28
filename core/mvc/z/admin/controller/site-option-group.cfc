@@ -1764,6 +1764,14 @@ displayGroupCom.ajaxInsert();
 					<th>#application.zcore.functions.zOutputHelpToolTip("Email CFC Method","member.site-option-group.edit site_option_group_email_cfc_method")#</th>
 					<td><input type="text" name="site_option_group_email_cfc_method" id="site_option_group_email_cfc_method" value="#htmleditformat(form.site_option_group_email_cfc_method)#" /> (A function name in the CFC with access="public")</td>
 				</tr>
+				<tr>
+					<th>Custom Email<br />Options</th>
+					<td><p>If the custom email cfc path/method feature is used, the regular lead email will be disabled.</p>
+					<p>Do you want to force the regular email to be sent as well?</p>
+					<p>#application.zcore.functions.zInput_Boolean("site_option_group_force_send_default_email")#</p>
+					<p>Disable routing for the custom email?</p>
+					<p>#application.zcore.functions.zInput_Boolean("site_option_group_disable_custom_routing")#</p></td>
+				</tr>
 		</table>
 		#tabCom.endFieldSet()# 
 		#tabCom.endTabMenu()#

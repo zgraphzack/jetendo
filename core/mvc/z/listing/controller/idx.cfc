@@ -768,6 +768,7 @@
 	var db2=request.zos.noVerifyQueryObject;
 	oneDayAgo=dateformat(oneDayAgo,'yyyy-mm-dd')&' '&timeformat(oneDayAgo,'HH:mm:ss');
 	
+	setting requesttimeout="1000";
 	//return;
 	application.zcore.idxImportStatus="cleanInactive executed";
 

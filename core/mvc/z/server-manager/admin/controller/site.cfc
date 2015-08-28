@@ -802,7 +802,7 @@
 	}else{
 		qId2={id:local.rs.result};
 	}
-	 db.sql="INSERT INTO #db.table("content_config", request.zos.zcoreDatasource)#  (content_config_deleted, `content_config_url_article_id`,`content_config_sidebar_tag`,`content_config_url_listing_user_id`,`content_config_inquiry_qualify`,`content_config_override_stylesheet`,`content_config_phone_required`,`content_config_default_subpage_link_layout`,`content_config_default_parentpage_link_layout`,`content_config_hide_inquiring_about`,`content_config_email_required`,`app_x_site_id`,`site_id`, content_config_updated_datetime) VALUES #db.trustedSQL("(0, '6','','5','0','0','1','0','7','0','1','#qId2.id#','#form.site_id#', '#request.zos.mysqlnow#')")#";
+	 db.sql="INSERT INTO #db.table("content_config", request.zos.zcoreDatasource)#  (content_config_deleted, `content_config_url_article_id`,`content_config_sidebar_tag`,`content_config_url_listing_user_id`,`content_config_inquiry_qualify`,`content_config_override_stylesheet`,`content_config_phone_required`,`content_config_default_subpage_link_layout`,`content_config_default_parentpage_link_layout`,`content_config_hide_inquiring_about`,`content_config_email_required`,`app_x_site_id`,`site_id`, content_config_updated_datetime, `content_config_contact_links`) VALUES #db.trustedSQL("(0, '6','','5','0','0','1','0','7','0','1','#qId2.id#','#form.site_id#', '#request.zos.mysqlnow#', '0')")#";
 	local.rs=db.insert("insertCheck", request.zOS.insertIDColumnForSiteIDTable); 
 	if(not local.rs.success){
 		application.zcore.template.fail("Failed to create site.  See the sql errors below.");	

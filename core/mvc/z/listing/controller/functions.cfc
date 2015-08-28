@@ -230,7 +230,7 @@ ts.debug=false;
 ts.address="";
 zGetLatLong(ts);
  --->
-<cffunction name="zGetLatLong" localmode="modern">
+<!--- <cffunction name="zGetLatLong" localmode="modern">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	var rs=structnew();
@@ -245,7 +245,7 @@ zGetLatLong(ts);
 	if(arguments.ss.debug EQ false){
 		theLink='http://maps.google.com/maps/geo?q=#urlencodedformat(arguments.ss.address)#&output=csv&oe=utf8&sensor=false&key=#request.zos.globals.googlemapsapikey#';
 		r1=application.zcore.functions.zDownloadLink(theLink);
-		if(r1){
+		if(r1.success){
 			r2=r1.cfhttp.FileContent;
 		}else{
 			application.zcore.template.fail("Failed to access google geocoder API<br /><a href=""#theLink#"">#theLink#</a>");	
@@ -289,7 +289,7 @@ zGetLatLong(ts);
 	return rs;
 	</cfscript>
 </cffunction>
-
+ --->
 
 
 <!--- zMLSSearchOptionsDisplay('variables'); --->
