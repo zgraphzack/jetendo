@@ -390,6 +390,7 @@
 
 	if(gettickcount()-request.totalRunTime GT 170000){
 		echo('Aborted due to nearing time limit');
+		structdelete(application.zcore, 'importMLSRunning');
 		abort;
 	}
 	</cfscript>

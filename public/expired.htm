@@ -3,14 +3,19 @@
 <head>
 <meta charset="utf-8">
 <title>Session Expired</title> 
+<link rel="stylesheet" href="/z/stylesheets/expired.css" type="text/css" /> 
 </head>
 <body>
-<h2>Thanks for visiting <span id="domainDiv"></span></h2>
+<div class="zexpired-top">
+	<h2>Thanks for visiting <span id="domainDiv"></span></h2>
+</div>
+<div class="zexpired-middle">
 <h1>Your session has expired due to inactivity.</h1>
 
 <p>If you'd like to login again, <a href="/z/user/home/index">click here</a></p>
 
 <p><a href="/">or click here return to the home page</a></p>
+</div>
 <script type="text/javascript">
 var d=document.getElementById("domainDiv");
 var a=window.location.href.split("/");
