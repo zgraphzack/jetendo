@@ -70,7 +70,7 @@ function getTasks(){
 
 	$t=new stdClass();
 	$t->logName="importMLSData.html";
-	$t->interval=3600;
+	$t->interval=180;
 	$t->startTimeOffsetSeconds=0;
 	$t->url=$adminDomain."/z/listing/tasks/importMLS/index";
 	array_push($arrTask, $t);

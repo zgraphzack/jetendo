@@ -85,7 +85,7 @@
 		}else{
 			this.optionstruct.delaybetweenloops=10; // 30
 		}
-		this.optionstruct.timeLimitInSeconds=75; // 75
+		this.optionstruct.timeLimitInSeconds=55; // 75
 		// process the mls provider that is the most out of date first
 		db.sql="SELECT * FROM #db.table("mls", request.zos.zcoreDatasource)# mls 
 		WHERE mls_status=#db.param('1')# and 
@@ -264,6 +264,7 @@
 			addRow:0,
 			checkDuplicates:0,
 			parseRow1:0,
+			loops:0,
 			parseRow2:0, 
 			"import-update-track-only":0,
 			"import-listing":0,
@@ -278,8 +279,9 @@
 		structdelete(application.zcore, 'abortIdxImport');
 		while(gettickcount()-startTimeTemp LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
 			processedRow=false;
+			stopProcessing=false;
 			for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
-
+				application.idxImportTimerStruct.loops++;
 				startTime=gettickcount('nano');
 
 				if(structkeyexists(application.zcore, 'abortIdxImport')){
@@ -288,7 +290,7 @@
 				application.zcore.idxImportStatus="Bytes read: "&this.optionStruct.skipBytes&" of "&request.zos.sharedPath&this.optionstruct.filepath;
 				loopcount++;
 				if(fileIsEOF(request.zos.idxFileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
-					fileComplete=true;
+					fileComplete=true; 
 					break;	
 				}
 				line=fileReadLine(request.zos.idxFileHandle);
@@ -307,7 +309,7 @@
 				tempTime=gettickcount('nano');
 				application.idxImportTimerStruct.addRow+=(tempTime-startTime);
 				startTime=tempTime;
-
+ 
 				if(r1 EQ false){
 					addRowFailCount++;
 					if(addRowFailCount GTE 10){
@@ -319,12 +321,16 @@
 						throw(request.addRowErrorMessage);
 					}
 				}
+				if(gettickcount()-request.totalRunTime GT 170000){
+					echo('Aborted due to nearing time limit');
+					stopProcessing=true;
+					//fileClose(request.zos.idxFileHandle);
+					//structdelete(application.zcore, 'importMLSRunning');
+					break;
+				}
 				if(this.optionstruct.delaybetweenloops NEQ 0){
 					sleep(this.optionstruct.delaybetweenloops);
 				}
-			}
-			if(not processedRow){
-				break;
 			}
 			startTime=gettickcount('nano');
 			this.checkDuplicates();
@@ -342,11 +348,8 @@
 			if(fileComplete){
 				break;
 			}
-			if(gettickcount()-request.totalRunTime GT 4800000){
-				echo('Aborted due to nearing time limit');
-				fileClose(request.zos.idxFileHandle);
-				structdelete(application.zcore, 'importMLSRunning');
-				abort;
+			if(not processedRow or stopProcessing){
+				break;
 			}
 		}
 		
@@ -357,18 +360,7 @@
 			application.zcore.functions.zDeleteFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported");	
 			r=application.zcore.functions.zRenameFile(request.zos.sharedPath&this.optionstruct.filepath, request.zos.sharedPath&this.optionstruct.filepath&"-imported");			
 			this.optionstruct.skipBytes=0;
-			this.optionstruct.filePath="";
-			/*arrSold=[false, true];
-			for(i=1;i LTE 2;i++){
-				this.optionstruct.filePath=replace(trim(this.optionstruct.mlsProviderCom.getImportFilePath(this.optionstruct, arrSold[i])),"\","/","ALL");
-				if(this.optionstruct.filePath NEQ false){
-					break;
-				}
-			}
-			if(this.optionstruct.filePath EQ false){
-				this.optionstruct.filePath="";
-				
-			} */
+			this.optionstruct.filePath=""; 
 		}
 	}catch(Any local.e){
 		if(structkeyexists(variables, 'fileHandle')){
@@ -394,6 +386,11 @@
 		writeoutput('Completed in #(gettickcount()-startTimeTemp)/1000# seconds');
 	}else{
 		writeoutput('Stopped after #this.optionstruct.timeLimitInSeconds# seconds');
+	}
+
+	if(gettickcount()-request.totalRunTime GT 170000){
+		echo('Aborted due to nearing time limit');
+		abort;
 	}
 	</cfscript>
 </cffunction>

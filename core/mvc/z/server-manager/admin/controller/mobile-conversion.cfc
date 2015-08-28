@@ -17,6 +17,7 @@ textarea{font-size:14px; line-height:16px;}
 	<div id="parentContainer1" style="display:none;">
 </div>
 <h2>Input CFML+JS+CSS+HTML that has inline styles</h2>
+<p><a href="/z/server-manager/admin/mobile-conversion/inline-class">Go to responsive conversion</a></p>
  <textarea cols="100" rows="10" style="height:150px !important;" id="htmlContents"></textarea><br />
 
 	<input type="text" name="classPrefix" id="classPrefix" value="sh-" />
@@ -74,6 +75,7 @@ textarea{font-size:14px; line-height:16px;}
 	<cfsavecontent variable="out">
 </cfsavecontent>
 <h2>Input CFML+JS+CSS+HTML that has inline styles</h2>
+<p><a href="/z/server-manager/admin/mobile-conversion/inline-class">Go to inline to class conversion</a></p>
  <div class="sh-table111">
 Convert Type: <input type="radio" name="mobiletype" id="mobiletype1" value="1" checked="checked" /> Responsive
  <input type="radio" name="mobiletype" id="mobiletype2" value="1" /> Mobile Phone (single column percent based)<br />

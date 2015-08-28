@@ -300,7 +300,7 @@
 		var isServerCFC=false;
 		var tempcommeta=0;
 		var comTempPath=arguments.scriptName;
-		arguments.method=trim(arguments.method);
+		arguments.method=arguments.method;
 		comPath=replace(replace(replace(mid(comTempPath,2,len(comTempPath)-5),"\",".","ALL"),"/",".","ALL"), request.zRootDomain&".", request.zRootCFCPath);
 		if(left(comPath, 17) EQ "zcorerootmapping."){
 			isServerCFC=true;

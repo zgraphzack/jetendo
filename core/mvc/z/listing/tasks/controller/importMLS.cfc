@@ -32,7 +32,7 @@
 	if(not request.zos.isServer and not request.zos.isDeveloper){
 		application.zcore.functions.z404("Only server or developer can access this url.");
 	}
-	setting requesttimeout="5000";
+	setting requesttimeout="200";
 	request.ignoreslowscript=true;
 	myloops=46;
 	if(structkeyexists(application.zcore, 'importMLSRunning')){
@@ -56,7 +56,7 @@
 			}else{
 				break;
 			}
-			if(gettickcount()-request.totalRunTime GT 4800000){
+			if(gettickcount()-request.totalRunTime GT 170000){
 				echo('Aborted due to nearing time limit');
 				structdelete(application.zcore, 'importMLSRunning');
 				abort;

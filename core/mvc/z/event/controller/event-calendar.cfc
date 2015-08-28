@@ -181,7 +181,7 @@
 			ts.output=false;
 			ts.struct=row;
 			ts.size="170x120";
-			ts.crop=1;
+			ts.crop=0;
 			ts.count = 1; // how many images to get
 			arrImage=application.zcore.imageLibraryCom.displayImageFromStruct(ts);
 
