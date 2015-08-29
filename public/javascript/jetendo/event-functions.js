@@ -4,7 +4,7 @@ var zWindowIsLoaded=false;
 var zScrollPosition={left:0,top:0};
 var zPositionObjSubtractId=false;
 var zPositionObjSubtractPos=new Array(0,0);
-var zModernizrLoadedRan=false;
+var zJetendoLoadedRan=false;
 var zHumanMovement=false;
 
 (function($, window, document, undefined){
@@ -53,9 +53,9 @@ zArrDeferredFunctions.push(function(){
 	setTimeout(zAnimateVisibleElements, 100);
 });
 
-	function zModernizrLoaded(){ 
-		if(zModernizrLoadedRan) return;
-		zModernizrLoadedRan=true;
+	function zJetendoLoaded(){ 
+		if(zJetendoLoadedRan) return;
+		zJetendoLoadedRan=true;
 		if(!zWindowIsLoaded){
 			zWindowOnLoad();	
 		}
@@ -235,10 +235,7 @@ zArrDeferredFunctions.push(function(){
 
 	function zWindowOnLoad(){
 		if(zWindowIsLoaded) return;
-		zWindowIsLoaded=true;
-		if(typeof zModernizr99 === "undefined"){
-			zModernizrLoaded();
-		}
+		zWindowIsLoaded=true; 
 		zSetScrollPosition();
 		zGetClientWindowSize();
 		if(typeof window.zCloseModal !== "undefined" || typeof window.parent.zCloseModal !== "undefined"){ 
@@ -272,7 +269,7 @@ zArrDeferredFunctions.push(function(){
 		zWindowOnResize();
 	});
 	window.zIsVisibleOnScreen=zIsVisibleOnScreen;
-	window.zModernizrLoaded=zModernizrLoaded;
+	window.zJetendoLoaded=zJetendoLoaded;
 	window.zLoadMapFunctions=zLoadMapFunctions;
 	window.zSetScrollPosition=zSetScrollPosition;
 	window.getWindowSize=getWindowSize;

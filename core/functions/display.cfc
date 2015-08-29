@@ -95,24 +95,24 @@
 	<cfargument name="absolutePath" type="string" required="yes">
 	<cfargument name="relativePath" type="string" required="yes">
 	<cfscript>
-	local.arrOutput=[];
-	local.imageFileExt={ "jpeg":true, "jpg":true, "gif":true, "png":true };
-	directory action="list" directory="#arguments.absolutePath#" name="local.qDir";
-	for(local.row in local.qDir){
-		local.fileExt=application.zcore.functions.zGetFileExt(local.row.name);
-		if(structkeyexists(local.imageFileExt, local.fileExt)){
-			local.s=imageinfo(local.row.directory&"/"&local.row.name);
-			arrayAppend(local.arrOutput, '<img width="#local.s.width#" height="#local.s.height#" src="#arguments.relativePath##local.row.Name#" alt="#htmleditformat(application.zcore.functions.zgetfilename(local.row.name))#" />');
+	arrOutput=[];
+	imageFileExt={ "jpeg":true, "jpg":true, "gif":true, "png":true };
+	directory action="list" directory="#arguments.absolutePath#" name="qDir";
+	for(row in qDir){
+		fileExt=application.zcore.functions.zGetFileExt(row.name);
+		if(structkeyexists(imageFileExt, fileExt)){
+			s=imageinfo(row.directory&"/"&row.name);
+			arrayAppend(arrOutput, '<img width="#s.width#" height="#s.height#" src="#arguments.relativePath##row.Name#" alt="#htmleditformat(application.zcore.functions.zgetfilename(row.name))#" />');
 		}
 	}
-	for(local.row in local.qDir){
-		local.fileExt=application.zcore.functions.zGetFileExt(local.row.name);
-		if(structkeyexists(local.imageFileExt, local.fileExt)){
-			local.s=imageinfo(local.row.directory&"/"&local.row.name);
-			arrayAppend(local.arrOutput, '<div style=" width:#local.s.width#px; height:#local.s.height#px; float:left; background-image:url(#arguments.relativePath##local.row.Name#); background-repeat:no-repeat;"></div>');
+	for(row in qDir){
+		fileExt=application.zcore.functions.zGetFileExt(row.name);
+		if(structkeyexists(imageFileExt, fileExt)){
+			s=imageinfo(row.directory&"/"&row.name);
+			arrayAppend(arrOutput, '<div style=" width:#s.width#px; height:#s.height#px; float:left; background-image:url(#arguments.relativePath##row.Name#); background-repeat:no-repeat;"></div>');
 		}
 	}
-	return arrayToList(local.arrOutput, chr(10));
+	return arrayToList(arrOutput, chr(10));
 	</cfscript>
 </cffunction>
 
@@ -144,8 +144,12 @@ application.zcore.functions.zEnableContentTransition(); --->
 <cffunction name="zProcessContentTransition" localmode="modern" output="no" returntype="any">
 	<cfargument name="ss" type="struct" required="no" default="#structnew()#">
 	<cfscript>
+	return;
+	/*
 	var local=structnew();
-	local.skipUrl=structnew(); 
+	skipUrl=structnew(); 
+
+
 	if(request.zos.cgi.http_user_agent CONTAINS "MSIE 7.0" or request.zos.cgi.http_user_agent CONTAINS "MSIE 8.0" or request.zos.cgi.http_user_agent CONTAINS "MSIE 9.0" or request.zos.cgi.http_user_agent CONTAINS "MSIE 6.0"){
 		return;	
 	}
@@ -156,14 +160,14 @@ application.zcore.functions.zEnableContentTransition(); --->
 		return;	
 	}
 	if(structkeyexists(arguments.ss, 'allowHomePage') EQ false or arguments.ss.allowHomePage EQ false){
-		local.skipUrl["/index.cfm"]=true;
-		local.skipUrl["/content/index.cfm"]=true;
+		skipUrl["/index.cfm"]=true;
+		skipUrl["/content/index.cfm"]=true;
 	}
-	local.skipUrl["/z/listing/search-js/index"]=true; 
-	if(structkeyexists(local.skipUrl, request.cgi_script_name)){
+	skipUrl["/z/listing/search-js/index"]=true; 
+	if(structkeyexists(skipUrl, request.cgi_script_name)){
 		return;	
 	}
-	local.metaAppend="";
+	metaAppend="";
 	if(structKeyExists(request.zos.tempObj, 'zEnableContentTransitionLoaded')){
 		return;
 	}
@@ -175,16 +179,16 @@ application.zcore.functions.zEnableContentTransition(); --->
 	
     application.zcore.functions.zIncludeZOSFORMS();
 	if(structkeyexists(arguments.ss, 'arrIgnoreURLs')){
-		for(local.i=1;local.i LTE arraylen(arguments.ss.arrIgnoreURLs);local.i++){
-			local.metaAppend&='zContentTransition.arrIgnoreURLs.push("'&arguments.ss.arrIgnoreURLs[local.i]&'");';
+		for(i=1;i LTE arraylen(arguments.ss.arrIgnoreURLs);i++){
+			metaAppend&='zContentTransition.arrIgnoreURLs.push("'&arguments.ss.arrIgnoreURLs[i]&'");';
 		}
 	}
 	if(structkeyexists(arguments.ss, 'arrIgnoreURLContains')){
-		for(local.i=1;local.i LTE arraylen(arguments.ss.arrIgnoreURLContains);local.i++){
-			if(arguments.ss.arrIgnoreURLContains[local.i] EQ "/z/misc/system/redirect"){
-				arguments.ss.arrIgnoreURLContains[local.i]="/z/misc/system/ext";
+		for(i=1;i LTE arraylen(arguments.ss.arrIgnoreURLContains);i++){
+			if(arguments.ss.arrIgnoreURLContains[i] EQ "/z/misc/system/redirect"){
+				arguments.ss.arrIgnoreURLContains[i]="/z/misc/system/ext";
 			}
-			local.metaAppend&='zContentTransition.arrIgnoreURLContains.push("'&arguments.ss.arrIgnoreURLContains[local.i]&'");';
+			metaAppend&='zContentTransition.arrIgnoreURLContains.push("'&arguments.ss.arrIgnoreURLContains[i]&'");';
 		}
 	} 
     application.zcore.template.prependTag("pagenav",'<span id="zContentTransitionPageNavSpan">', true);
@@ -194,15 +198,13 @@ application.zcore.functions.zEnableContentTransition(); --->
     application.zcore.template.prependTag("content",'<div id="zContentTransitionContentDiv">', true);
     application.zcore.template.appendTag("content",'</div>');
     </cfscript>
-    <cfsavecontent variable="local.scriptHTML">
+    <cfsavecontent variable="scriptHTML">
             
-	    <cfif cgi.HTTP_USER_AGENT CONTAINS "MSIE 7.0" or cgi.HTTP_USER_AGENT CONTAINS "MSIE 8.0" or cgi.HTTP_USER_AGENT CONTAINS "MSIE 9.0" or cgi.HTTP_USER_AGENT CONTAINS "MSIE 6.0">
-	  <!---   #application.zcore.skin.includeJS("/z/javascript/jquery/balupton-history/scripts/bundled/html4+html5/jquery.history.js")# --->
+	    <cfif cgi.HTTP_USER_AGENT CONTAINS "MSIE 7.0" or cgi.HTTP_USER_AGENT CONTAINS "MSIE 8.0" or cgi.HTTP_USER_AGENT CONTAINS "MSIE 9.0" or cgi.HTTP_USER_AGENT CONTAINS "MSIE 6.0"> 
 	    <cfelse>
 	    #application.zcore.skin.includeJS("/z/javascript/jquery/balupton-history/scripts/bundled/html5/jquery.history.js", "", 2)#
 	    </cfif>
-    <script type="text/javascript">
-   /* <![CDATA[ */
+    <script type="text/javascript"> 
     var zContentTransitionEnabled=true;
     var zLocalDomains=["#request.zos.globals.domain#","#replace(request.zos.globals.domain,"www.","")#"<cfif request.zos.globals.securedomain NEQ "">,"#request.zos.globals.securedomain#","#replace(request.zos.globals.securedomain,"www.","")#"</cfif><cfscript>
     if(request.zos.globals.domainAliases NEQ ""){
@@ -214,12 +216,12 @@ application.zcore.functions.zEnableContentTransition(); --->
         }
     }
     </cfscript>];
-	zArrDeferredFunctions.push(function(){#local.metaAppend# zContentTransition.checkLoad(); });
-	/* ]]> */
+	zArrDeferredFunctions.push(function(){#metaAppend# zContentTransition.checkLoad(); }); 
     </script>
     </cfsavecontent>
     <cfscript>
-	application.zcore.template.appendTag("scripts",local.scriptHTML);
+	application.zcore.template.appendTag("scripts",scriptHTML);
+	*/
 	</cfscript>
 </cffunction>
 
@@ -314,25 +316,25 @@ zSlideShow(ts);
 		WHERE slideshow_codename=#db.param(arguments.ss.slideshow_codename)# and 
 		slideshow_deleted = #db.param(0)# and
 		site_id =#db.param(arguments.ss.site_id)# ";
-		local.qss=db.execute("qss");
-		if(local.qss.recordcount EQ 0){
+		qss=db.execute("qss");
+		if(qss.recordcount EQ 0){
 			writeoutput('<p>Slideshow, "#arguments.ss.slideshow_codename#", is missing</p>');
 			return {flashout:{tablinks:"",tabcaptions:""}};
 		}
-		arguments.ss.width=local.qss.slideshow_width;
-		arguments.ss.height=local.qss.slideshow_height;
-		arguments.ss.dataurl="/z/misc/slideshow/index?action=json&slideshow_id=#URLEncodedFormat(local.qss.slideshow_id)#";
+		arguments.ss.width=qss.slideshow_width;
+		arguments.ss.height=qss.slideshow_height;
+		arguments.ss.dataurl="/z/misc/slideshow/index?action=json&slideshow_id=#URLEncodedFormat(qss.slideshow_id)#";
 	}else if(structkeyexists(arguments.ss,'slideshow_id')){
 		db.sql="select * from #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
 		WHERE slideshow_id=#db.param(arguments.ss.slideshow_id)# and 
 		slideshow_deleted = #db.param(0)# and
 		site_id =#db.param(arguments.ss.site_id)# ";
-		local.qss=db.execute("qss");
-		if(local.qss.recordcount EQ 0){
+		qss=db.execute("qss");
+		if(qss.recordcount EQ 0){
 			return {flashout:{tablinks:"",tabcaptions:""}};
 		}
-		arguments.ss.width=local.qss.slideshow_width;
-		arguments.ss.height=local.qss.slideshow_height;
+		arguments.ss.width=qss.slideshow_width;
+		arguments.ss.height=qss.slideshow_height;
 		arguments.ss.dataurl="/z/misc/slideshow/index?action=json&slideshow_id=#URLEncodedFormat(arguments.ss.slideshow_id)#";
 	}else if(structkeyexists(arguments.ss,'dataurl') EQ false){
 		application.zcore.template.fail("arguments.ss.dataurl or arguments.ss.slideshow_id is required");
@@ -344,61 +346,61 @@ zSlideShow(ts);
 			application.zcore.template.fail("arguments.ss.height is required");
 		}
 	}
-	request.zos.tempObj.zSlideShowUniqueIdIndex=local.qss.slideshow_id;
+	request.zos.tempObj.zSlideShowUniqueIdIndex=qss.slideshow_id;
 	form.uniqueIdIndex=request.zos.tempobj.zSlideShowUniqueIdIndex;// or 1 EQ 1
-	form.slideshow_id=local.qss.slideshow_id;
-	local.useNewFormat=true;
-	local.slideshowConfig={ arrTab:[] };
+	form.slideshow_id=qss.slideshow_id;
+	useNewFormat=true;
+	slideshowConfig={ arrTab:[] };
 	slideshowCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.slideshow");
 	savecontent variable="theBigSlideshowOutput"{
-		if(local.useNewFormat or local.qss.slideshow_format EQ 1){
+		if(useNewFormat or qss.slideshow_format EQ 1){
 			backupaction=application.zcore.functions.zso(form, 'action');
 			form.action="json";
-			form.slideshow_id=local.qss.slideshow_id;
+			form.slideshow_id=qss.slideshow_id;
 			savecontent variable="theSlideshowResultHTML"{
 				rs=slideshowCom.getData(arguments.ss);
 				structappend(local, rs, true);
 			}
-			if(local.qss.slideshow_format EQ 1 and local.qss.slideshow_custom_include NEQ ""){
+			if(qss.slideshow_format EQ 1 and qss.slideshow_custom_include NEQ ""){
 				echo(theSlideshowResultHTML);
 			}
 			form.action=backupaction;
 		}else{
 			application.zcore.template.fail("Flash slideshow was permanently disabled");
 		}
-		if(local.useNewFormat and structkeyexists(local, 'qss') and local.qss.slideshow_custom_include EQ ""){
+		if(useNewFormat and structkeyexists(local, 'qss') and qss.slideshow_custom_include EQ ""){
 		
 			g="";
-			for(i in local.slideshowConfig){
-				if(isSimpleValue(local.slideshowConfig[i])){
-					g&=local.slideshowConfig[i];	
+			for(i in slideshowConfig){
+				if(isSimpleValue(slideshowConfig[i])){
+					g&=slideshowConfig[i];	
 				}
 			}
-			g&=local.qss.slideshow_updated_datetime;
+			g&=qss.slideshow_updated_datetime;
 			g=hash(g);
 		}
-		if(structkeyexists(local.slideshowConfig, 'slideContainer') and (local.qss.slideshow_hash NEQ g or structkeyexists(form,'resetSlideshowCSS') or request.zos.zreset EQ "site")){
+		if(structkeyexists(slideshowConfig, 'slideContainer') and (qss.slideshow_hash NEQ g or structkeyexists(form,'resetSlideshowCSS') or request.zos.zreset EQ "site")){
 			ts={
 				slideshowHash:g,
 				site_id:arguments.ss.site_id,
 				index:request.zos.tempobj.zSlideShowUniqueIdIndex,
-				qss:local.qss,
-				slideshowConfig:local.slideshowConfig
+				qss:qss,
+				slideshowConfig:slideshowConfig
 			};
 			slideshowCom.updateSlideshowCSS(ts);
 		}
-		if(local.qss.slideshow_custom_include EQ ""){
+		if(qss.slideshow_custom_include EQ ""){
 			echo('<script type="text/javascript">/* <![CDATA[ */
 			zArrDeferredFunctions.push(function(){
-				zArrSlideshowIds.push({rotateGroupIndex:0,rotateIndex:0,id:#request.zos.tempObj.zSlideShowUniqueIdIndex#, layout:#local.qss.slideshow_large_image#, slideDirection:"#local.qss.slideshow_slide_direction#", slideDelay:#local.qss.slideshow_auto_slide_delay#, movedTileCount:#local.qss.slideshow_moved_tile_count#});
+				zArrSlideshowIds.push({rotateGroupIndex:0,rotateIndex:0,id:#request.zos.tempObj.zSlideShowUniqueIdIndex#, layout:#qss.slideshow_large_image#, slideDirection:"#qss.slideshow_slide_direction#", slideDelay:#qss.slideshow_auto_slide_delay#, movedTileCount:#qss.slideshow_moved_tile_count#});
 			});
 			/* ]]> */</script> ');
-			if(local.qss.slideshow_large_image EQ 0){
+			if(qss.slideshow_large_image EQ 0){
 				echo('<div id="zUniqueSlideshowContainerId#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-				if(local.qss.slideshow_slide_direction EQ "y" and arraylen(local.slideshowConfig.arrTab) GT 1){
+				if(qss.slideshow_slide_direction EQ "y" and arraylen(slideshowConfig.arrTab) GT 1){
 					echo('<div id="zslideshowhomeslidenav#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-					for(i=1;i LTE arraylen(local.slideshowConfig.arrTab);i++){
-						echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(local.slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#local.slideshowConfig.arrTabCaptions[i]#</a>');
+					for(i=1;i LTE arraylen(slideshowConfig.arrTab);i++){
+						echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#slideshowConfig.arrTabCaptions[i]#</a>');
 					}
 				}
 				echo('</div>');
@@ -408,10 +410,10 @@ zSlideShow(ts);
 				}
 				echo('</div>');
 				echo('<div id="zUniqueSlideshowId#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-				if(local.qss.slideshow_slide_direction EQ "x" and arraylen(local.slideshowConfig.arrTab) GT 1){
+				if(qss.slideshow_slide_direction EQ "x" and arraylen(slideshowConfig.arrTab) GT 1){
 					echo('<div id="zslideshowhomeslidenav#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-					for(i=1;i LTE arraylen(local.slideshowConfig.arrTab);i++){
-						echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(local.slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#local.slideshowConfig.arrTabCaptions[i]#</a>');
+					for(i=1;i LTE arraylen(slideshowConfig.arrTab);i++){
+						echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#slideshowConfig.arrTabCaptions[i]#</a>');
 					}
 					echo('</div>');
 				}
@@ -421,7 +423,7 @@ zSlideShow(ts);
 					<div id="zslideshowslides#request.zos.tempobj.zSlideShowUniqueIdIndex#">
 						<div class="zslideshowslides_container#request.zos.tempobj.zSlideShowUniqueIdIndex#">
 							<div class="zslideshowslide#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-							if(local.qss.slideshow_tab_type_id EQ 2){
+							if(qss.slideshow_tab_type_id EQ 2){
 								for(slideIndex=1;slideIndex LTE arraylen(arrImages);slideIndex++){
 									slideshowCom.getListing(local);
 								}
@@ -438,14 +440,14 @@ zSlideShow(ts);
 					</div>
 					</div>
 				</div>');
-			}else if(local.qss.slideshow_large_image EQ 1){
+			}else if(qss.slideshow_large_image EQ 1){
 				echo('
 				<div id="zUniqueSlideshowContainerId#request.zos.tempobj.zSlideShowUniqueIdIndex#">
 					<div id="zUniqueSlideshowId#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-						if(arraylen(local.slideshowConfig.arrTab) GT 1 ){
+						if(arraylen(slideshowConfig.arrTab) GT 1 ){
 							echo('<div id="zslideshowhomeslidenav#request.zos.tempobj.zSlideShowUniqueIdIndex#"> ');
-							for(i=1;i LTE arraylen(local.slideshowConfig.arrTab);i++){
-								echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(local.slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#local.slideshowConfig.arrTabCaptions[i]#</a>');
+							for(i=1;i LTE arraylen(slideshowConfig.arrTab);i++){
+								echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#slideshowConfig.arrTabCaptions[i]#</a>');
 							}
 							echo('</div>');
 						}
@@ -454,7 +456,7 @@ zSlideShow(ts);
 							<div id="zslideshowslides#request.zos.tempobj.zSlideShowUniqueIdIndex#">
 								<div class="zslideshowslides_container#request.zos.tempobj.zSlideShowUniqueIdIndex#">
 									<div class="zslideshowslide#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-										if(local.qss.slideshow_tab_type_id EQ 2){
+										if(qss.slideshow_tab_type_id EQ 2){
 											for(slideIndex=1;slideIndex LTE arraylen(arrImages);slideIndex++){
 												slideshowCom.getListing(local);
 											}
@@ -471,12 +473,12 @@ zSlideShow(ts);
 						</div>
 					</div>
 				</div>');
-			}else if(local.qss.slideshow_large_image EQ 2){
+			}else if(qss.slideshow_large_image EQ 2){
 				echo('<div id="zUniqueSlideshowContainerId#request.zos.tempobj.zSlideShowUniqueIdIndex#">');
-				if(arraylen(local.slideshowConfig.arrTab) GT 1){
+				if(arraylen(slideshowConfig.arrTab) GT 1){
 					echo('<div id="zslideshowhomeslidenav#request.zos.tempobj.zSlideShowUniqueIdIndex#"> ');
-					for(i=1;i LTE arraylen(local.slideshowConfig.arrTab);i++){
-						echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(local.slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#local.slideshowConfig.arrTabCaptions[i]#</a>');
+					for(i=1;i LTE arraylen(slideshowConfig.arrTab);i++){
+						echo('<a href="##" onclick="zUpdateListingSlides(#request.zos.tempobj.zSlideShowUniqueIdIndex#, ''#htmleditformat(slideshowConfig.arrTab[i])#''); return false;" class="zslideshowtablink#request.zos.tempobj.zSlideShowUniqueIdIndex#">#slideshowConfig.arrTabCaptions[i]#</a>');
 					}
 					echo('</div>');
 				}
@@ -494,14 +496,14 @@ zSlideShow(ts);
 	rs.output=application.zcore.functions.zRemoveHostName(theBigSlideshowOutput);
 	rs.javascriptoutput="";
 	rs.lastUpdated=td22;
-	rs.codename=local.qss.slideshow_codename;
+	rs.codename=qss.slideshow_codename;
 	if(structkeyexists(request,'zMLSSearchOptionsDisplaySearchId')){
 		rs.zMLSSearchOptionsDisplaySearchId=request.zMLSSearchOptionsDisplaySearchId;
 	}
 	
 	rs.flashout=rsBackup.flashout;
-	application.sitestruct[arguments.ss.site_id].slideshowNameCacheStruct[local.qss.slideshow_codename]=local.qss.slideshow_id;
-	application.sitestruct[arguments.ss.site_id].slideshowIdCacheStruct[local.qss.slideshow_id]=rs;
+	application.sitestruct[arguments.ss.site_id].slideshowNameCacheStruct[qss.slideshow_codename]=qss.slideshow_id;
+	application.sitestruct[arguments.ss.site_id].slideshowIdCacheStruct[qss.slideshow_id]=rs;
 	
 	writeoutput(rs.output);
 	if(structkeyexists(form, 'debugsearchresults') and form.debugsearchresults){

@@ -1,9 +1,0 @@
-replaced calculateWidth function with the following in order to make responsive work correctly within Cascade Framework.
-        calculateWidth : function () {
-            var base = this;
-            base.$elem.css("max-width", "10px");
-            base.itemWidth = Math.round(base.$elem.parent().innerWidth() / base.options.items);
-            base.$elem.css({
-                "max-width": (base.options.items*base.itemWidth)-1
-            });
-        },

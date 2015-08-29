@@ -791,29 +791,13 @@ if(not rs.success){
 	application.zcore.template.appendTag("meta",theOutput);
 	</cfscript>
 </cffunction>
-
-<!--- application.zcore.functions.zRequireModernizr(); --->
-<cffunction name="zRequireModernizr" localmode="modern" output="yes" returntype="any">
-    <cfargument name="package" type="string" required="no" default="">
-    <cfscript>
-	var theMeta="";
-	var ts=structnew();
-    application.zcore.functions.zForceIncludePackage("zRequireModernizr", arguments.package);
-	</cfscript>
-    <cfif structkeyexists(request.zos,'JavascriptRequiredModernizr') EQ false>
-	<!--- <cfsavecontent variable="theMeta"><cfif request.zos.istestserver><!--- <script src="/z/javascript/jquery/modernizr.2.6.1.min-small.js"></script> ---><!--- <script src="/z/javascript/jquery/modernizr.2.6.1.min.js"></script> ---><cfelse><!--- <script src="/z/javascript/jquery/modernizr.2.6.1.min-small.js"></script> ---></cfif></cfsavecontent> --->
-    <cfscript>//application.zcore.template.appendTag("meta",theMeta);
-    request.zos.JavascriptRequiredModernizr=true;</cfscript>
-    </cfif>
-</cffunction>
-
+ 
 
 <!--- application.zcore.functions.zExecuteCSSJSIncludes(); --->
 <cffunction name="zExecuteCSSJSIncludes" localmode="modern" output="yes" returntype="any">
 	<cfscript>
 	var local=structnew();
-	tout="";
-	
+	tout=""; 
 	
 	jsLength=arraylen(request.zos.arrJSIncludes);
 	cssLength=arraylen(request.zos.arrCSSIncludes);
@@ -1203,13 +1187,13 @@ application.zcore.functions.zLogError(ts);
     if(structkeyexists(request.zos,"zOSFORMSIncluded") EQ false){
 		request.zos.zOSFORMSIncluded=true;
 		if(allowJs){
-			ts={
+			/*ts={
 				type:"zIncludeZOSFORMS",
 				url:"/z/javascript/jquery/balupton-history/scripts/uncompressed/json2.js",
 				package:arguments.package,
 				forcePosition:""
 			}
-			arrayappend(request.zos.arrJSIncludes, ts);
+			arrayappend(request.zos.arrJSIncludes, ts);*/
 			c=arraylen(application.zcore.arrJsFiles);
 			for(i=1;i LTE c;i++){
 				ts={

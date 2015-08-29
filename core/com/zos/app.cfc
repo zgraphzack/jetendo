@@ -1656,7 +1656,7 @@ if(rCom.isOK() EQ false){
 	var r='<script type="text/javascript">zBindEvent(window, ''load'', zWindowOnLoad);</script>';
 	var qI=0;
 	
-	arrayappend(arguments.ss.js, "/z/javascript/jquery/balupton-history/scripts/uncompressed/json2.js");
+	//arrayappend(arguments.ss.js, "/z/javascript/jquery/balupton-history/scripts/uncompressed/json2.js");
 	
 	// check for jquery ui
 	if(structkeyexists(request.zos.globals,'enableJqueryUI') and request.zos.globals.enableJqueryUI EQ 1){
@@ -1678,11 +1678,7 @@ if(rCom.isOK() EQ false){
 	arrayappend(arguments.ss.js, "/z/javascript/jquery/jquery.easing.1.3.js");
 	arrayappend(arguments.ss.js, "/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.js");
 	arrayappend(arguments.ss.js, "/z/javascript/jquery/galleryview-1.1/jquery.timers-1.2.js");
-	
-	/*
-	if(structkeyexists(request.zos.globals,'enableInstantLoad') and request.zos.globals.enableInstantLoad EQ 1 and (structkeyexists(request.zos,'inmemberarea') EQ false or request.zos.inmemberarea EQ false)){//structKeyExists(request.zos.tempObj, 'zEnableContentTransitionLoaded')){
-		arrayappend(arguments.ss.js, "/z/javascript/jquery/balupton-history/scripts/uncompressed/history.ie-jquery.js");
-	}*/
+	 
 	
 	for(i in application.sitestruct[request.zos.globals.id].app.appCache){
 		configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[i].cfcPath, true);

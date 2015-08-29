@@ -1,6 +1,7 @@
 
 (function($, window, document, undefined){
 	"use strict";
+	
 var zResponsiveHTML=function(options){
 	var self=this;
 	var currentStylesheet=0;

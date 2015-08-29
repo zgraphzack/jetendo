@@ -676,9 +676,7 @@ for(local.row in local.qSite){
 	} 
 	if(Request.zOS.isdeveloper and application.zcore.user.checkAllCompanyAccess() and structkeyexists(form, 'zab') EQ false){
 		application.zcore.debugger.init();
-	}
-	
-	application.zcore.functions.zRequireModernizr();
+	} 
 	
 	local.retrytemplatecompile=false;
 	if(runCFCTemplate){

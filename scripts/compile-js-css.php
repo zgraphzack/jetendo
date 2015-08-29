@@ -5,7 +5,7 @@ function compileAllPackages(){
 	
 	$a=glob($jsPath."jetendo/*");
 	// everything
-	array_push($a, $jsPath.'jquery/balupton-history/scripts/uncompressed/json2.js');
+	//array_push($a, $jsPath.'jquery/balupton-history/scripts/uncompressed/json2.js');
 	$isCompiled=compileJS($a, "jetendo-no-listing.js");
 	if(!$isCompiled){
 		return false;

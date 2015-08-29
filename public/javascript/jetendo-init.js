@@ -8,18 +8,17 @@ var zMSIEBrowser=window.navigator.userAgent.indexOf("MSIE");
 if(zMSIEBrowser != -1){	
 	zMSIEVersion= (window.navigator.userAgent.substring (zMSIEBrowser+5, window.navigator.userAgent.indexOf (".", zMSIEBrowser ))); 
 }
-var zModernizrLoadedRan=false;
+var zJetendoLoadedRan=false;
 var zArrDeferredFunctions=[];
 var zArrLoadFunctions=[];
-zModernizrLoaded=function(){};
-var zModernizr99=true;
+zJetendoLoaded=function(){}; 
 function zOverEditDiv(){};
 function zImageMouseMove(){};
 function zImageMouseReset(){};
 function onGMAPLoad(){};
 zLoadMapID=false;
 function zMapInit(){ 
-	if(zModernizrLoadedRan){ 
+	if(zJetendoLoadedRan){ 
 		zLoadMapFunctions(); 
 		onGMAPLoad(true); 
 	}else{ 
@@ -125,8 +124,8 @@ var zLoader=function(){
 		if(this.count==this.loaded){
 			if(this.completeCallback){
 				this.completeCallback();
-			}else if(typeof zModernizrLoaded != "undefined"){
-				zModernizrLoaded();
+			}else if(typeof zJetendoLoaded != "undefined"){
+				zJetendoLoaded();
 			}
 		}
 	};
