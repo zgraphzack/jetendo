@@ -752,40 +752,10 @@ if(not rs.success){
 	var theOutput="";
     if(structkeyexists(request.zos, 'zRequireContentFlowSlideshowIncluded')) return;
 	request.zos.zRequireContentFlowSlideshowIncluded=true;
-	</cfscript>
-	<!--- <cfscript>
-	var ts=structnew();
-    if(structkeyexists(request.zos, 'zRequireContentFlowSlideshowIncluded')) return;
-	application.zcore.functions.zRequireJquery();
-	request.zos.zRequireContentFlowSlideshowIncluded=true;
-	ts.type="zRequireContentFlowSlideshow";
-	if(request.zos.istestserver){
-		ts.url="/z/javascript/ContentFlow/contentflow_src.js";
-	}else{
-		ts.url="/z/javascript/ContentFlow/contentflow.js";
-	}
-	ts.package=arguments.package;
-	ts.forcePosition="";
-	arrayappend(request.zos.arrJSIncludes, ts);
-	ts=structnew();
-	ts.type="zRequireContentFlowSlideshow";
-	if(request.zos.istestserver){
-		ts.url="/z/javascript/ContentFlow/contentflow_src.css";
-	}else{
-		ts.url="/z/javascript/ContentFlow/contentflow.css";
-	}
-	ts.package=arguments.package;
-	ts.forcePosition="";
-	arrayappend(request.zos.arrCSSIncludes, ts);
-    </cfscript> --->
-    <cfsavecontent variable="theOutput">
-    <cfif request.zos.istestserver>
+	</cfscript> 
+    <cfsavecontent variable="theOutput"> 
     <link type="text/css" href="/z/javascript/ContentFlow/contentflow_src.css" rel="stylesheet" />
-    <script type="text/javascript" src="/z/javascript/ContentFlow/contentflow_src.js"></script>
-    <cfelse>
-    <link type="text/css" href="/z/javascript/ContentFlow/contentflow.css" rel="stylesheet" />
-    <script type="text/javascript" src="/z/javascript/ContentFlow/contentflow.js"></script>
-    </cfif>
+    <script type="text/javascript" src="/z/javascript/ContentFlow/contentflow_src.js"></script> 
     </cfsavecontent>
     <cfscript>
 	application.zcore.template.appendTag("meta",theOutput);

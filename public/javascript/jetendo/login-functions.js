@@ -78,6 +78,9 @@ var zLoggedIn=false;
 	var zLoggedInTimeoutID=false;
 
 	zArrDeferredFunctions.push(function(){
+		if(zIsTestServer() || zIsDeveloper()){
+			return;
+		}
 		zLoggedInTimeoutID=setInterval(function(){
 			zLoggedIn=zIsLoggedIn(); 
 			if((typeof zUserLoggedIn != "undefined" || zWasLoggedIn) && !zLoggedIn){
