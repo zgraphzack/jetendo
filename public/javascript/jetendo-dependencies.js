@@ -1,0 +1,290 @@
+// each inner array is loaded as a group before the next array index.
+var JetendoDependencies={
+"arrFile": {  
+
+"jquery":[[
+	"jquery\/jquery-1.10.2.min.js"
+]],
+"jetendo-core":[[
+		"jquery",
+	],[
+		"jetendo\/cookie-functions.js",
+		"jetendo\/event-functions.js",
+		"jetendo\/flash-functions.js",
+		"jetendo\/form-functions.js",
+		"jetendo\/history-functions.js",
+		"jetendo\/image-functions.js",
+		"jetendo\/login-functions.js",
+		"jetendo\/map-functions.js",
+		"jetendo\/menu-functions.js",
+		"jetendo\/misc-functions.js",
+		"jetendo\/mobile-functions.js",
+		"jetendo\/modal-functions.js",
+		"jetendo\/mouse-functions.js",
+		"jetendo\/navigation-functions.js",
+		"jetendo\/position-functions.js",
+		"jetendo\/search-functions.js",
+		"jetendo\/tooltip-functions.js",
+		"jetendo\/tracking-functions.js",
+		"jetendo\/video-library-functions.js",
+		"jetendo\/zAjaxCycle.js",
+		"jetendo\/zCart.js",
+		"jetendo\/zRecurringEvent.js"
+	]
+],
+"jetendo-listing":[[
+		"jquery",
+	],[
+		"jetendo-listing\/listing-ajax.js",
+		"jetendo-listing\/listing-functions.js",
+		"jetendo-listing\/listing-image-functions.js",
+		"jetendo-listing\/listing-map-functions.js",
+		"jetendo-listing\/listing-search-functions.js",
+		"jetendo-listing\/walkscore-functions.js",
+		"jetendo-listing\/zlsHoverBox.js",
+		"jetendo-listing\/zScrollApp.js"
+	]
+],
+"contentflow":[[
+	"ContentFlow\/contentflow_src.js",
+]],
+"zDocumentation":[[
+	"zDocumentation.js"
+]],
+"jetendo-init":[[
+	"jetendo-init.js"
+]],
+"jetendo-event":[[
+		"jquery"
+	],[
+		"jetendo-event\/calendar.js"
+	]
+],
+"zResponsiveHTML":[[
+		"jquery",
+	],[
+		"zResponsiveHTML.js"
+	]
+],
+"zDocumentation":[[
+	"zDocumentation.js"
+]],
+"zTableDragAndDrop":[[
+	"zTableDragAndDrop.js"
+]],
+"zTransformHTML":[[
+		"jquery",
+	],[
+		"zTransformHTML.js"
+	]
+],
+"zTypeKitOnLoad":[[
+	"zTypeKitOnLoad.js"
+]],
+"flowplayer3":[[
+	"flowplayer\/flowplayer-3.2.8.min.js",
+	"flowplayer\/ipad-plugin.js"
+]],
+"handlebars":[[
+	"handlebars.js\/handlebars-v3.0.3.js",
+	"handlebars.js\/handlebars.form-helpers.min.js"
+]],
+"handlebars-runtime":[[
+	"handlebars.js\/handlebars.runtime-v3.0.3.js",
+	"handlebars.js\/handlebars.form-helpers.min.js"
+]],
+"fullcalendar":[[
+	"fullcalendar\/fullcalendar.min.js",
+	"fullcalendar\/lib\/moment.min.js",
+]],
+"iscroll":[[
+	"iscroll-lite.js"
+]],
+"jasmine":[
+	[
+		"jasmine\/lib\/jasmine-2.3.4\/jasmine.css", 
+		"jasmine\/lib\/jasmine-2.3.4\/jasmine.js"
+	],[
+		"jasmine\/lib\/jasmine-2.3.4\/jasmine-html.js"
+	],[
+		"jasmine\/lib\/jasmine-2.3.4\/boot.js"
+	]
+],
+"stacktrace":[[
+	"javascript-stacktrace\/stacktrace.js"
+]],
+"jquery-datatables":[[
+		"jquery",
+	],[ 
+		"DataTables\/media\/css\/jquery.dataTables.css",
+		"DataTables\/extensions\/Responsive\/css\/dataTables.responsive.css",
+		"DataTables\/media\/js\/jquery.dataTables.js"
+	],[
+		"DataTables\/extensions\/Responsive\/js\/dataTables.responsive.min.js"
+	]
+],
+"jquery-galleryview":[[
+		"jquery",
+	],[
+		"jquery\/galleryview-1.1\/jquery.galleryview-3.0-dev.css",
+		"jquery\/galleryview-1.1\/jquery.galleryview-3.0-dev.js", 
+		"jquery\/galleryview-1.1\/jquery.timers-1.2.js"
+	]
+],
+"jquery-lazyload":[[
+		"jquery",
+	],[
+		"jquery\/jquery-lazyload\/jquery.lazyload.min.js"
+	]
+],
+"jquery-parallax-slider":[[
+		"jquery",
+	],[
+		"jquery\/jquery-parallax-slider\/jquery.parallax-slider.css",
+		"jquery\/jquery-parallax-slider\/jquery.parallax-slider.js"
+	]
+],
+"jquery-ui":[[
+		"jquery",
+	],[
+		"jquery\/jquery-ui\/jquery-ui-1.10.3.min.css",
+		"jquery\/jquery-ui\/jquery-ui-1.10.3.min.js"
+	]
+],
+"jquery-ui-tabs-megamenu":[[
+		"jquery",
+	],[
+		"jquery\/jquery-ui-tabs-megamenu\/jquery-ui-tabs-megamenu.js"
+	]
+],
+"jquery-animate-colors":[[
+		"jquery",
+	],[
+		"jquery\/jquery.animate-colors.js"
+	]
+],
+"jquery-colorbox":[[
+		"jquery",
+	],[
+		"jquery\/colorbox\/example3\/colorbox.css",
+		"jquery\/colorbox\/colorbox\/jquery.colorbox-min.js"
+	]
+],
+"jquery-cookie":[[
+		"jquery",
+	],[
+		"jquery\/jquery.cookie.js"
+	]
+],
+"jquery-cycle1-all2.74":[[
+		"jquery",
+	],[
+		"jquery\/jquery.cycle.all.2.74.js"
+	]
+],
+"jquery-cycle1-all":[[
+		"jquery",
+	],[
+		"jquery\/jquery.cycle.all.js"
+	]
+],
+"jquery-cycle1-lite":[[
+		"jquery",
+	],[
+		"jquery\/jquery.cycle.all.js"
+	]
+],
+"jquery-cycle2":[[
+		"jquery",
+	],[
+		"jquery\/jquery.cycle2.js",
+		"jquery\/jquery.cycle2.swipe.min.js"
+	]
+],
+"jquery-easing":[[
+		"jquery",
+	],[
+		"jquery\/jquery.easing.1.3.js"
+	]
+],
+"jquery-equalheights":[[
+		"jquery",
+	],[
+		"jquery\/jquery.equalheights.js"
+	]
+],
+"jquery-responsive-images":[[
+		"jquery",
+	],[
+		"jquery\/jquery.rwdImages.min.js"
+	]
+],
+"jquery-lightbox":[[
+		"jquery",
+	],[
+		"jquery\/lightbox\/css\/jquery.lightbox-0.5.css",
+		"jquery\/lightbox\/jquery.lightbox-0.5.min.js"
+	]
+],
+"jquery-ui-multiselect":[[
+		"jquery",
+	],[ 
+		"jquery\/jquery-ui-multiselect-widget\/jquery.multiselect.css",
+		"jquery\/jquery-ui-multiselect-widget\/jquery.multiselect.filter.css"
+	],[
+		"jquery\/jquery-ui-multiselect-widget\/src\/jquery.multiselect.js",
+		"jquery\/jquery-ui-multiselect-widget\/src\/jquery.multiselect.filter.js"
+	]
+],
+"jquery-magnific-popup":[[
+		"jquery",
+	],[
+		"Magnific-Popup\/magnific-popup.css",
+		"Magnific-Popup\/jquery.magnific-popup.min.js"
+	]
+],
+"jquery-response":[[
+		"jquery",
+	],[
+		"jquery\/response.0.6.0.min.js"
+	]
+],
+"jquery-selectbox":[[
+		"jquery",
+	],[
+		"jquery\/SelectBox\/jquery.selectBox.css",
+		"jquery\/SelectBox\/jquery.selectBox.js"
+	]
+],
+"jquery-timepicker":[[
+		"jquery",
+	],[
+		"jquery\/timePicker\/jquery.timePicker.js"
+	]
+],
+"jquery-xdomainrequest":[[
+		"jquery",
+	],[
+		"jquery\/XDomainRequest-1.0.4\/jQuery.XDomainRequest.js"
+	]
+],
+"jscolor":[[
+	"jscolor.js"
+]],
+"swfobject":[[
+	"swfobject.js"
+]],
+"video-js":[[
+	"video-js\/video.js"
+]],
+"prettify":[[
+	"prettify\/src\/sons-of-oblivion.css",
+	"prettify\/src\/prettify.js"
+]],
+"pwdmeter":[[
+	"pwdmeter\/css\/pwdmeter-custom.css",
+	"pwdmeter\/js\/pwdmeter-custom.js"
+]]
+},
+"appVersion": "1"
+};
