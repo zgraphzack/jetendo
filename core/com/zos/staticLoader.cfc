@@ -24,16 +24,25 @@ features:
 /*
 
 
-need to define a javascript file that shows all the scripts that were auto-loaded already.
+problem: zOS.css and other stylesheets outside javascript can't be built because the path is restricted currently.
+	I should make the build copy EVERYTHING in public to public-build - exclude that from sublime, exclude public from rsync, and rsync deploy from public-build instead of public in the future
+	add these afterwards to Dependencies.js
+		//"\/z\/stylesheets\/zOS.css",
+		//"\/z\/a\/listing\/stylesheets\/global.css",
+		//"\/z\/a\/listing\/stylesheets\/listing_template.css",
+/z/zcache/autoload/ files need to be published to javascript-compiled2/ so that rsync works.   This is not possible currently due to lucee readonly access.  Need to translate some of this file to php or use zSecureCommand to do it.
 
 make new every minute cronjob called build-static.php and check for changes to js/css files every few seconds.   do incremental build to reduce deploy times, and faster testing using actual version numbers/urls.
 
 	Make deploy process able to check for jetendo/logs/build-static-error-log.txt to ensure no errors exist before allowing deployment to continue.
 	
 	build separate files for "site" vs "global" to eliminate needing to publish all sites separately.  ensure the "require" syntax allows site vs global too.
+		need to support Dependencies.js and AutoloadGroups.js in site root of each site.  Read these onSiteStart.
+
+	make it so that Loader and Dependencies.js can load async
 
 
-
+	need to process css files with the spriteMap code and also so relative urls are forced to root relative.
 
 redo how static css and js is loaded by site?
 	change the js include logic from jetendo to the new code
@@ -54,6 +63,9 @@ redo how static css and js is loaded by site?
 			If the server version has changed, trigger a client side reload button to appear.   Handle this inside the zAjax() library functions, instead of in each errorCallback.
 	convert all ajax requests to zReturnJSON.   Make sure to always use struct, instead of array or string.   And append version / other request info to the struct as "_system" key.   
 	instead of eval(), pass all ajax responses through a zParseJson(), which uses JSON.parseJSON() and also does version checks for a "_system", key that stores system/debug info useful to developers too.
+
+
+done: need to define a javascript file that shows all the scripts that were auto-loaded already.
 	
 	done: concatenated files need a record that stores the lastModifiedDate and all the included files - these need to be re-generated if that changes.	 
 	done: publish a version json file that has matching json package names to track versions in a file that is automatically generated.  this file is excluded from open source project.
@@ -69,10 +81,12 @@ redo how static css and js is loaded by site?
 	done: publish to new build directory with version number in filename.
 	
 	*/
+	request.zos.disableOldZLoader=true;
 
 	request.cssStruct={};
 	request.javascriptStruct={};
 	request.javascriptPackageStruct={};
+	request.cssPackageStruct={};
 
 	js("jquery-galleryview");
 	js("jetendo-core");
@@ -100,21 +114,29 @@ redo how static css and js is loaded by site?
 		changesDetected=true;
 	}  
 
-	if(request.zos.isTestServer){
-		statusStruct=getBuildStatus(appVersion, compiledStruct); 
-		if(changesDetected or statusStruct.changesDetected){
-			generateAutoloadFiles(appVersion, autoloadStruct, statusStruct, compiledStruct, dependStruct); 
-			statusStruct=getBuildStatus(appVersion, compiledStruct);
-			if(statusStruct.version EQ 0){
-				throw("generateAutoloadFiles failed somehow. statusStruct.version can't be 0.");
+	request.excludeLoadFileStruct={};
+	testPackages=true;
+	// build status detects changes by mistake sometimes still because this is not integrated with build-static yet
+	if(testPackages){
+		if(request.zos.isTestServer){
+			statusStruct=getBuildStatus(appVersion, compiledStruct); 
+			if(changesDetected or statusStruct.changesDetected){
+				//writedump(changesDetected);			writedump(statusStruct.changesDetected);abort;
+				generateAutoloadFiles(appVersion, autoloadStruct, statusStruct, compiledStruct, dependStruct); 
+				statusStruct=getBuildStatus(appVersion, compiledStruct);
+				if(statusStruct.version EQ 0){
+					throw("generateAutoloadFiles failed somehow. statusStruct.version can't be 0.");
+				}
 			}
-		}
-	} 
-	if(true or not request.zos.isTestServer){
+		} 
+	}
+
+	// You should force jsPackage to run when debugging the package behavior.
+	if(testPackages or not request.zos.isTestServer){
 		jsPackage("jetendo");
 	}
 	loadSequence(compiledStruct, dependStruct);
-	outputCSSJS();
+	outputCSSJS(compiledStruct);
 
 
 
@@ -160,9 +182,11 @@ redo how static css and js is loaded by site?
 	}else{
 		for(file in buildInfo.arrFile){
 			if(not structkeyexists(arguments.compiledStruct.arrFile, file) or arguments.compiledStruct.arrFile[file].lastModifiedDate NEQ buildInfo.arrFile[file].lastModifiedDate){ 
+				writedump(file&" date doesn't match<br>");
 				rs.changesDetected=true;
 				break;
 			}
+			request.excludeLoadFileStruct[file]=true;
 		}
 		rs.version=buildInfo.version+1;
 	}
@@ -220,6 +244,7 @@ redo how static css and js is loaded by site?
 				filePath2=request.zos.globals.homedir&removeChars(sequenceStruct.arrCSS[i],1,1);
 			}
 			arrayAppend(arrOut, application.zcore.functions.zReadFile(filePath));
+			arrayAppend(arrOut, 'Jetendo.loadedFiles["'&jsstringformat(sequenceStruct.arrCSS[i])&'"]=true;');
 			fileInfo=getfileinfo(filePath2);
 			buildInfo.arrFile[sequenceStruct.arrCSS[i]]={
 				"lastModifiedDate":dateformat(fileInfo.lastModified, "yyyymmdd")&timeformat(fileInfo.lastModified, "HHmmss")
@@ -238,7 +263,7 @@ redo how static css and js is loaded by site?
 				filePath2=request.zos.globals.homedir&removeChars(sequenceStruct.arrJS[i],1,1);
 			}
 			arrayAppend(arrOut, application.zcore.functions.zReadFile(filePath));
-			arrayAppend(arrOut, 'Jetendo.loadedFiles["'&jsstringformat(file)&'"]=true;');
+			arrayAppend(arrOut, 'Jetendo.loadedFiles["'&jsstringformat(sequenceStruct.arrJS[i])&'"]=true;');
 			fileInfo=getfileinfo(filePath2);
 
 			buildInfo.arrFile[sequenceStruct.arrJS[i]]={
@@ -249,7 +274,8 @@ redo how static css and js is loaded by site?
 		application.zcore.functions.zwritefile(path&group&"."&arguments.appVersion&"."&buildInfo.version&".js", arrayToList(arrOut, chr(10)), "660", true);
 
 		buildInfo.arrGroup[group]={
-			urlPath:"/z/zcache/autoload/"&group&"."&arguments.appVersion&"."&buildInfo.version&".js"
+			jsUrlPath:"/z/zcache/autoload/"&group&"."&arguments.appVersion&"."&buildInfo.version&".js",
+			cssUrlPath:"/z/zcache/autoload/"&group&"."&arguments.appVersion&"."&buildInfo.version&".css",
 		}
 
 	}
@@ -287,6 +313,16 @@ redo how static css and js is loaded by site?
 
 	//writedump(sequenceStruct);
 
+	request.arrJS=[];
+	for(i=1;i<=arraylen(sequenceStruct.arrJS);i++){
+		/*arrayAppend(request.arrJS, '<script type="text/javascript">var a=document.createElement("script");
+		a.async=true;
+		a.src="#sequenceStruct.arrJS[i]#";
+		document.getElementsByTagName("head")[0].appendChild(a);</script>');*/
+		if(not structkeyexists(request.excludeLoadFileStruct, sequenceStruct.arrJS[i])){
+			arrayAppend(request.arrJS, '<script type="text/javascript" defer="defer" src="#sequenceStruct.arrJS[i]#"></script>');
+		}
+	}
 	for(i=1;i<=arraylen(sequenceStruct.arrCSS);i++){
 		css(sequenceStruct.arrCSS[i]);
 	}
@@ -368,30 +404,39 @@ redo how static css and js is loaded by site?
 </cffunction>
 
 <cffunction name="outputCSSJS" localmode="modern" access="public">
+	<cfargument name="compiledStruct" type="struct" required="yes">
 	<cfscript>
 	arrCSS=[];
 	arrCSSLoaded=[];
+
+	/*sequenceStruct=buildSequentialArray(compiledStruct);
+	for(i=1;i<=arraylen(sequenceStruct.arrCSS);i++){
+		request.cssStruct[sequenceStruct.arrCSS[i]]=true;
+	}*/ 
+
 	for(i in request.cssStruct){
-		arrayAppend(arrCSS, '<link rel="stylesheet" type="text/css" href="#i#" />');
-		arrayAppend(arrCSSLoaded, 'Jetendo.loadedFiles["'&jsStringFormat(i)&'"]=true;');
-	}
-	application.zcore.template.prependTag('scripts', arrayToList(arrCSS, chr(10)));
-	//writedump(request.javascriptStruct);
-	for(i in request.javascriptPackageStruct){
-		application.zcore.template.appendTag('scripts', '<script type="text/javascript" src="'&i&'"></script>');
-	}
-	application.zcore.template.appendTag('scripts', 
-		'<input type="hidden" name="zDependJS" id="zDependJS" value="#structkeylist(request.javascriptStruct)#" />
-		<script type="text/javascript" src="/z/javascript/jetendo-core/Dependencies.js"></script>
-		<script type="text/javascript" src="/z/javascript/jetendo-core/Loader.js"></script>
-		<script type="text/javascript">
-		#arrayToList(arrCSSLoaded, chr(10))#
-		for(var i=0;i<zArrDeferredFunctions.length;i++){
-			Jetendo.Loader.addLoadFunction(zArrDeferredFunctions[i]);
+		if(not structkeyexists(request.excludeLoadFileStruct, i)){
+			arrayAppend(arrCSS, '<link rel="stylesheet" type="text/css" href="#i#" />');
 		}
-		Jetendo.Loader.addLoadFunction(function(){ console.log("custom onload function works"); });
-		Jetendo.Loader.load();
-		</script>');
+		arrayAppend(arrCSSLoaded, i);//'Jetendo.loadedFiles["'&jsStringFormat(i)&'"]=true;');
+	}
+	//writedump(request.javascriptStruct);
+	application.zcore.template.prependTag('scripts', '<script type="text/javascript">var Jetendo={loadCount:0,loadedFiles:{}};</script>');
+	jsCount=10+structcount(request.javascriptPackageStruct);
+	for(i in request.javascriptPackageStruct){
+		application.zcore.template.appendTag('scripts', '<script type="text/javascript"  src="'&i&'"></script>');
+	}
+	for(i in request.javascriptPackageStruct){
+		arrayAppend(arrCSS, '<link rel="stylesheet" type="text/css" href="#i#" />');
+	}
+	application.zcore.template.prependTag('stylesheets', arrayToList(arrCSS, chr(10)));
+	// <input type="hidden" name="JetendoDependJS" id="JetendoDependJS" data-count="#jsCount#" data-loaded="#htmleditformat(arrayToList(arrCSSLoaded,","))#" value="#structkeylist(request.javascriptStruct)#" />
+	application.zcore.template.appendTag('scripts', '<script type="text/javascript" defer="defer" src="/z/javascript/jetendo-core/Dependencies.js"></script>
+		<script type="text/javascript" defer="defer" src="/z/javascript/jetendo-core/Loader.js"></script>
+		#arrayToList(request.arrJS, chr(10))#
+		<script type="text/javascript" defer="defer" src="/z/javascript/jetendo-core/custom.js"></script>');
+	// 
+		//#arrayToList(arrCSSLoaded, chr(10))#
 	</cfscript>
 </cffunction>
 
@@ -419,7 +464,8 @@ redo how static css and js is loaded by site?
 		throw("Invalid package name: "&packageName&" | Must be an AutoloadGroup.");
 	}
 	buildInfo=application.buildInfoCache.arrGroup[arguments.packageName];
-	request.javascriptPackageStruct[buildInfo.urlPath]=true;   
+	request.javascriptPackageStruct[buildInfo.jsUrlPath]=true;   
+	request.cssPackageStruct[buildInfo.cssUrlPath]=true;   
 	//request.javascriptStruct[buildInfo.urlPath]=true;   
 	</cfscript>
 </cffunction>

@@ -11,7 +11,8 @@ Jetendo.Loader=(function(Jetendo, window, document, undefined){
 	var onloadCallback=[];
 	var loadComplete=false;
 
-	var debug=false; 
+	var debug=true; 
+
 	function loadFile(name, callback){ 
 		if(typeof loadingFiles[name] != undefined){
 			return;
@@ -242,7 +243,14 @@ Jetendo.Loader=(function(Jetendo, window, document, undefined){
 		}
 	} 
 	function load(){ 
-		var files=document.getElementById("zDependJS").value.split(","); 
+		return;
+		var d=document.getElementById("JetendoDependJS");
+		var count=parseInt(d.getAttribute("data-count"));
+		var loadedFiles=d.getAttribute("data-loaded").split(",");
+		for(var i=0;i<loadedFiles.length;i++){
+			Jetendo.loadedFiles[loadedFiles[i]]=true;
+		}
+		var files=d.value.split(","); 
 		loadWithAjax(Jetendo.Dependencies, files); 
 		return; 
 		/*
@@ -251,11 +259,27 @@ Jetendo.Loader=(function(Jetendo, window, document, undefined){
 		runLoadFunctions();
 		*/
 	} 
+	function addLoadEvent(func) {
+		var oldonload = window.onload;
+		if (typeof window.onload != "function") {
+			window.onload = func;
+		}
+		else {
+			window.onload = function() {
+				if (oldonload) {
+					oldonload();
+				}
+				func();
+			};
+		}
+	}
 	return {
 		load:load,
 		buildSequentialArray:buildSequentialArray,
 		loadWithAjax:loadWithAjax,
-		addLoadFunction:addLoadFunction
+		addLoadFunction:addLoadFunction,
+		addLoadEvent:addLoadEvent
 	}
 
 })(Jetendo, window, document, "undefined");
+Jetendo.Loader.addLoadEvent(Jetendo.Loader.load);

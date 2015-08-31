@@ -1,6 +1,11 @@
 <cfcomponent output="no"><cfoutput>
 <cffunction name="javascriptHeadCode" localmode="modern" returntype="string" output="no">
 	<cfargument name="dynamicContent" type="string" required="yes">
+	<cfscript>
+	if(request.zos.originalURL EQ "/z/_com/zos/staticLoader"){
+		return "";
+	}
+	</cfscript>
 	<cfsavecontent variable="output">
 	<meta name="format-detection" content="telephone=no">
 	<script src="/z/javascript/jetendo-init.js" type="text/javascript"></script>
@@ -784,7 +789,7 @@ for(local.row in local.qSite){
 	if(structkeyexists(request.zos.templateData.appendTagContent, arguments.name)){
 		append=arraytolist(request.zos.templateData.appendTagContent[arguments.name].arrContent,"");
 	}
-	if(arguments.name EQ "scripts"){
+	if(arguments.name EQ "scripts" and not structkeyexists(request.zos, 'disableOldZLoader')){
 		if(arraylen(request.zos.arrScriptInclude) neq 0){
 			local.lastScript=request.zos.arrScriptInclude[arraylen(request.zos.arrScriptInclude)];
 			local.jqueryIncludeLength=len("/z/javascript/jquery/jquery-1.10.2.min.js");
