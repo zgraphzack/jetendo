@@ -25,11 +25,11 @@ Function.prototype.inheritsFrom = function( parentClassOrObject ){
 	return this;
 };
 
-(function($, window, document, undefined){
+(function(Jetendo, $, window, document, undefined){
 "use strict";  
 
 
-function JetendoSPA(options){
+Jetendo.SPA=function(options){
 	window.jetendoSPA=this;
 	var self=this;
 	var objectCache={};
@@ -102,7 +102,7 @@ function JetendoSPA(options){
 
 	function hashRoute(){  
 		var hash=window.location.hash;
-		if(typeof forceAjaxCrawl != "undefined" && forceAjaxCrawl){
+		if(typeof forceAjaxCrawl != undefined && forceAjaxCrawl){
 			//window.location.replace("/listing/manage-providers/index?_escaped_fragment_="+hash.substr(2));
 			//return false;
 		}
@@ -157,7 +157,7 @@ function JetendoSPA(options){
 		}
 	};
 	self.registerDefinedCallback=function(objectPath, callback){
-		if(typeof loadCallbackCache[objectPath] == "undefined"){
+		if(typeof loadCallbackCache[objectPath] == undefined){
 			loadCallbackCache[objectPath]=[];
 		}
 		loadCallbackCache[objectPath].push(callback);
@@ -385,7 +385,6 @@ function BaseController(){
 		}
 	}
 } 
-window.JetendoSPA=JetendoSPA;
 
 
-})(jQuery, window, document, "undefined"); 
+})(Jetendo, jQuery, window, document, "undefined"); 

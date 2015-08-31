@@ -1,3 +1,11 @@
+
+if(typeof Jetendo == "undefined"){
+	var Jetendo={
+		loadedFiles:{}
+	}
+} 
+
+
 var zArrMapFunctions=new Array();
 var zArrScrollFunctions=new Array();
 var zImageOnError=function(){};
@@ -39,26 +47,31 @@ function zBindEvent(elem, evt, cb){
 }
 var zStackTraceLoaded=false;
 var zJavascriptErrorLogged=false;
-function zLoadStackTrace(){
+function zLoadStackTrace(callback){
 	if(zStackTraceLoaded){
 		return;
 	}
 	zStackTraceLoaded=true;
-	if(window.XMLHttpRequest){ 
-		var xhr = new XMLHttpRequest();  
-	}else if (window.ActiveXObject){ 
-		var xhr = new ActiveXObject('Microsoft.XMLHTTP');  
-	} 
-	// open and send a synchronous request
-	xhr.open('GET', '/z/javascript/javascript-stacktrace/stacktrace.js', false);
-	xhr.send('');
-	// add the returned content to a newly created script tag
-	var se = document.createElement('script');
-	se.type = "text/javascript";
-	se.text = xhr.responseText;
-	document.getElementsByTagName('head')[0].appendChild(se);
+	var a = document.createElement('script');  
+	a.setAttribute("data-scriptLoaded","0");
+	a.onreadystatechange=function(){
+		if(this.readyState=="loaded" || this.readyState=="complete"){
+			if (this.getAttribute("data-scriptLoaded")=="0"){
+				this.setAttribute("data-scriptLoaded","1");
+				callback();
+			}
+		}
+	};
+	a.onload=function(){
+		if (this.getAttribute("data-scriptLoaded")=="0"){
+			this.setAttribute("data-scriptLoaded","1"); 
+			callback();
+		}
+	}; 
+	a.src="/z/javascript/javascript-stacktrace/stacktrace.js"; 
+	document.getElementsByTagName('head')[0].appendChild(a);
 }
-function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
+function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) { 
 	try{
 		if(message.substr(0, 17) === "Unspecified error" || message.substr(0, 12) === "Script error" || message.substr(0, 12) === "Syntax error" || message.substr(0, 18) ===  "Not enough storage"){
 			return false; // ignore origin errors
@@ -67,53 +80,54 @@ function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
 			return false;
 		}
 		zJavascriptErrorLogged=true; // only log 1 error per page view
-		zLoadStackTrace();
-			
-		arrStack=printStackTrace();  
-		arrNewStack=[];
-		if(typeof arrStack !== "undefined"){
-			for(var i=0;i < arrStack.length;i++){
-				// ignore internal calls
-				if(arrStack[i].indexOf('printStackTrace') === -1){
-					arrNewStack.push(arrStack[i]);
+		zLoadStackTrace(function(){ 
+			arrStack=printStackTrace();  
+			arrNewStack=[];
+			if(typeof arrStack !== "undefined"){
+				for(var i=0;i < arrStack.length;i++){
+					// ignore internal calls
+					if(arrStack[i].indexOf('printStackTrace') === -1){
+						arrNewStack.push(arrStack[i]);
+					}
+					// ignore disqus, facebook, google, twitter, etc...
 				}
-				// ignore disqus, facebook, google, twitter, etc...
 			}
-		}
-		postObj={};
-		postObj.requestURL=window.location.href;
-		postObj.errorStacktrace=arrNewStack.join("\n");
-		postObj.errorMessage=message;
-		postObj.errorUrl=url;
-		if(typeof columnOffset !== "undefined"){
-			postObj.errorColumnOffset=columnOffset;
-		}
-		postObj.errorLineNumber=lineNumber;
-		if(typeof errorObj !== "undefined"){
-			if(typeof JSON !== "undefined" && typeof JSON.stringify !== "undefined"){
-				errorObj=JSON.stringify(errorObj, null, 4);
+			postObj={};
+			postObj.requestURL=window.location.href;
+			postObj.errorStacktrace=arrNewStack.join("\n");
+			postObj.errorMessage=message;
+			postObj.errorUrl=url;
+			if(typeof columnOffset !== "undefined"){
+				postObj.errorColumnOffset=columnOffset;
 			}
-			postObj.errorObj=errorObj;
-		}
-		if(window.XMLHttpRequest){ 
-			var xhr = new XMLHttpRequest();  
-		}else if (window.ActiveXObject){ 
-			var xhr = new ActiveXObject('Microsoft.XMLHTTP');  
-		} 
-		xhr.open("POST", "/z/misc/system/logClientError", true);
-		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		var postData="";
-		for(var i in postObj){
-			postData+=i+"="+encodeURIComponent(postObj[i])+"&";
-		}
-		xhr.send(postData);
-		// hide errors for real users
-		if(typeof console != "undefined" && typeof console.log != "undefined"){
-			console.log("A javascript error occured and the web developer was notified.");
-		}
-		return false; 
+			postObj.errorLineNumber=lineNumber;
+			if(typeof errorObj !== "undefined"){
+				if(typeof JSON !== "undefined" && typeof JSON.stringify !== "undefined"){
+					errorObj=JSON.stringify(errorObj, null, 4);
+				}
+				postObj.errorObj=errorObj;
+			}
+			if(window.XMLHttpRequest){ 
+				var xhr = new XMLHttpRequest();  
+			}else if (window.ActiveXObject){ 
+				var xhr = new ActiveXObject('Microsoft.XMLHTTP');  
+			} 
+			xhr.open("POST", "/z/misc/system/logClientError", true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			var postData="";
+			for(var i in postObj){
+				postData+=i+"="+encodeURIComponent(postObj[i])+"&";
+			}
+			xhr.send(postData);
+			// hide errors for real users
+			if(typeof console != "undefined" && typeof console.log != "undefined"){
+				console.log("A javascript error occured and the web developer was notified.");
+			}
+			return false; 
+		});
 	}catch(e){
 		// ignore errors.
+		//throw(e);
 	}
 }
 window.onerror=zGlobalErrorHandler;

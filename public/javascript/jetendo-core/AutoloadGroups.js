@@ -1,0 +1,24 @@
+Jetendo.AutoloadGroups={
+	"jetendo":[
+		"jquery",
+		"jetendo-core",
+		"jetendo-init",
+		"jetendo-event",
+		"jquery-galleryview",
+		"jquery-ui",
+		"jquery-ui-multiselect"
+	],
+	"jetendo-listing":[
+		"jquery",
+		"jetendo-core",
+		"jetendo-init",
+		"jetendo-event",
+		"jquery-galleryview",
+		"jquery-ui",
+		"jquery-ui-multiselect",
+		"jetendo-listing"
+	],
+	"jetendo-admin":[
+		"*"
+	]
+};

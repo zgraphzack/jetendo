@@ -536,7 +536,7 @@ rs=zGetHashPath(dir, id);
 		</cftry>
 	<cfelse>
 		<cfscript>
-		application.zcore.template.fail('zWriteFile: filePath cannot be an empty string.',true);
+		throw('zWriteFile: filePath cannot be an empty string.');
 		</cfscript>
 	</cfif>
 	<cfreturn true>

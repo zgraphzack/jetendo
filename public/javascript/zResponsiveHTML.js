@@ -265,7 +265,7 @@ function getStyleByNode(node) {
 				node:node,
 				css: css2,
 				cssOriginal: cssOriginal,
-				pos: parentPos,
+				pos: parentPos
 			};
 			//console.log(m2);
 			tempIndex=arrNode.length
