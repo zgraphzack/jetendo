@@ -1023,11 +1023,11 @@ Primary Cities:</th>
 <th>Max Map Distance:</th>
 <cfscript>
 if(not isnumeric(form.mls_option_max_map_distance_from_primary)){
-	mls_option_max_map_distance_from_primary=0;
+	form.mls_option_max_map_distance_from_primary=0;
 }else if(form.mls_option_max_map_distance_from_primary GT 200){
-	mls_option_max_map_distance_from_primary=200;
-}else if(mls_option_max_map_distance_from_primary LT 0){
-	mls_option_max_map_distance_from_primary=0;
+	form.mls_option_max_map_distance_from_primary=200;
+}else if(form.mls_option_max_map_distance_from_primary LT 0){
+	form.mls_option_max_map_distance_from_primary=0;
 }
 </cfscript>
 <td><input type="text" name="mls_option_max_map_distance_from_primary" value="#htmleditformat(form.mls_option_max_map_distance_from_primary)#" /><br />
@@ -1172,6 +1172,8 @@ Enter the maximum distance from the center of the primary city that you want the
 	arrOfficeSQL=arraynew(1);
 	ts.mls_primary_city_id=0;
 	ts.mlsIdLookup=structnew();
+
+	primaryNotSet=true;
 	</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #db.table("mls_option", request.zos.zcoreDatasource)# mls_option 
@@ -1247,8 +1249,9 @@ Enter the maximum distance from the center of the primary city that you want the
 		ts.mlsStruct[qMLS.mls_id].app_x_mls_url_id=qMLS.app_x_mls_url_id;
 		ts.mlsStruct[qMLS.mls_id].mls_id=qMLS.mls_id;
 		ts.mlsStruct[qMLS.mls_id].app_x_mls_primary=qMLS.app_x_mls_primary;
-		if(qMLS.app_x_mls_primary EQ 1){
+		if(qMLS.app_x_mls_primary EQ 1 or (primaryNotSet and qMLS.recordcount EQ qMLS.currentRow)){
 			ts.primaryMlsId=qMLS.mls_id;
+			primaryNotSet=false;
 			ts.mls_primary_city_id=qMLS.mls_primary_city_id;
 		}
 		ts.urlMLSIdStruct[qMLS.app_x_mls_url_id]=qMLS.mls_id;

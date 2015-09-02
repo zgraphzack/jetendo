@@ -93,7 +93,6 @@
 	db=request.zos.queryObject;
 	var ts={};
 	var result=0;
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events", true);	
 	if(form.method EQ "insert" or form.method EQ "publicInsertEvent"){
 		form.event_id="";
 	}
@@ -133,6 +132,8 @@
 		if(errors){
 			application.zcore.functions.zRedirect("/z/event/suggest-an-event/index?zsid=#request.zsid#");
 		}
+	}else{
+		application.zcore.adminSecurityFilter.requireFeatureAccess("Manage Events", true);	
 	}
 
 	form.site_id = request.zos.globals.id;
@@ -1021,7 +1022,7 @@
 	db=request.zos.queryObject;
 
 	application.zcore.functions.zRequireJqueryUI();
-	form.showInactive=application.zcore.functions.zso(form, 'showInactive', true);
+	form.eventStatus=application.zcore.functions.zso(form, 'eventStatus', true, 1);
  	form.event_recur=application.zcore.functions.zso(form, 'event_recur');
  	form.event_start_date=application.zcore.functions.zso(form, 'event_start_date');
  	form.event_end_date=application.zcore.functions.zso(form, 'event_end_date');
@@ -1056,8 +1057,8 @@
 	}
 	db.sql&=" event.site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
-	if(form.showInactive EQ 0){
-		db.sql&=" and event_status = #db.param(1)# ";
+	if(form.eventStatus NEQ 2){
+		db.sql&=" and event_status = #db.param(form.eventStatus)# ";
 	}else{
 		searchOn=true;
 	}
@@ -1113,8 +1114,8 @@
 	}
 	db.sql&=" event.site_id = #db.param(request.zos.globals.id)# and 
 	event_deleted=#db.param(0)# ";
-	if(form.showInactive EQ 0){
-		db.sql&=" and event_status = #db.param(1)# ";
+	if(form.eventStatus NEQ 2){
+		db.sql&=" and event_status = #db.param(form.eventStatus)# ";
 	}
 	if(form.showRecurring EQ 1){
 		if(form.event_start_date NEQ "" and isdate(form.event_start_date)){
@@ -1187,8 +1188,19 @@
 			#application.zcore.functions.zInput_Boolean("showRecurring")#
 		</div>
 		<div style="width:145px;margin-bottom:10px;float:left;">
-			Show Inactive: <br />
-			<input type="checkbox" name="showInactive" value="1" <cfif form.showInactive EQ "1">checked="checked"</cfif>>
+			Status: <br />
+			<cfscript> 
+			ts = StructNew();
+			ts.name = "eventStatus"; 
+			ts.size = 1; 
+			ts.inlineStyle="width:100px;";
+			ts.multiple = false; 
+			ts.listLabels = "Active|Pending|All";
+			ts.listValues = "1|0|2";
+			ts.listLabelsDelimiter = "|"; // tab delimiter
+			ts.listValuesDelimiter = "|";
+			application.zcore.functions.zInputSelectBox(ts);
+			</cfscript> 
 
 		</div>
 		

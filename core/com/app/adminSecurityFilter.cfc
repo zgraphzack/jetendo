@@ -16,8 +16,7 @@
 	if(application.zcore.app.structHasApp(ss, "content")){
 		ms["Pages"]={ parent:'Content Manager', label:chr(9)&"Pages"};
 		ms["Content Permissions"]={ parent:'Content Manager', label:chr(9)&"Content Permissions"};
-	}	
-	ms["Image Library"]={ parent:'Content Manager', label:chr(9)&"Images Library"};
+	}	 
 	ms["Files & Images"]={ parent:'Content Manager', label:chr(9)&"Files & Images"};
 	ms["Menus"]={ parent:'Content Manager', label:chr(9)&"Menus"};
 	ms["Problem Link Report"]={ parent:'Content Manager', label:	chr(9)&"Problem Link Report"};

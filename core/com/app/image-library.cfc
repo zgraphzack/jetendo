@@ -22,8 +22,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 
 <!--- /z/_com/app/image-library?method=remoteDeleteImageId&image_id=#image_id# --->
 <cffunction name="remoteDeleteImageId" localmode="modern" access="remote" returntype="any" output="no">
-	<cfscript>
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
+	<cfscript> 
 	this.deleteImageId(application.zcore.functions.zso(form, 'image_id'));
 	writeoutput('{"success":"1"}');
 	application.zcore.functions.zabort();
@@ -444,6 +443,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 <cffunction name="allowPublicEditingForImageLibraryId" localmode="modern">
 	<cfargument name="image_library_id" type="numeric" required="yes">
 	<cfscript>
+	application.zcore.session.forceEnable();
 	if(not structkeyexists(request.zsession, 'publicImageLibraryIdStruct')){
 		request.zsession.publicImageLibraryIdStruct={};
 	}
@@ -507,8 +507,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	var newFileName='';
 	var filePath='';
 	var oldFileName='';
-	var db=request.zos.queryObject;
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
+	var db=request.zos.queryObject; 
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
 		application.zcore.functions.z404("No access to image_library_id");	
 	}
@@ -756,8 +755,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	var arrErrors=[];
 	var imageCount=0;
 	var returnValue=0;
-	var arrOut=arraynew(1);
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
+	var arrOut=arraynew(1); 
 	form.disableImageProcessOutput=application.zcore.functions.zso(form, 'disableImageProcessOutput', false, false);
 	form.image_caption=application.zcore.functions.zso(form, 'image_caption');
 	form.image_file=application.zcore.functions.zso(form, 'image_file');
@@ -1680,22 +1678,24 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	setting requesttimeout="3600";
 	application.zcore.template.setTag("title", "Image Library");
 	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
-	tempId=form.image_library_id
+	tempId=form.image_library_id;
+
 	var qLibrary=this.getLibraryById(form.image_library_id);
 	var i=0;
 	var cffileresult=0;
 	var rd=gethttprequestdata();
-	application.zcore.functions.zSetPageHelpId("2.9");
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library");
 	form.image_library_id=qLibrary.image_library_id;
 	if(tempId EQ 0){
 		allowPublicEditingForImageLibraryId(form.image_library_id);
 	}
-	request.zos.inMemberArea=true;
 	form.fieldId=application.zcore.functions.zso(form, 'fieldId');
 	
 	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
 		application.zcore.functions.z404("No access to image_library_id");	
+	}
+	if(application.zcore.user.checkGroupAccess("member")){
+		application.zcore.functions.zSetPageHelpId("2.9");
+		request.zos.inMemberArea=true; 
 	}
 	//if(structkeyexists(form, 'image_file') and form.image_file NEQ ""){
 		request.imageLibraryHTMLUpload=true;
@@ -1854,8 +1854,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var qLibrary=this.getLibraryById(application.zcore.functions.zso(form, 'image_library_id'),false);
 	var qCheck=0;
 	var i=0;
-	var arrImageId=0;
-	application.zcore.adminSecurityFilter.requireFeatureAccess("Image Library", true);
+	var arrImageId=0; 
 	if(isQuery(qLibrary) EQ false){
 		writeoutput('{"success":"0","errorMessage":"Invalid image_library_id"}');
 		application.zcore.functions.zabort();
