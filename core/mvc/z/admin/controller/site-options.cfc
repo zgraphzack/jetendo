@@ -1218,6 +1218,7 @@
 		<tr>
 			<th>Name</th>
 			<th>Type</th>
+			<th>Public</th>
 			<cfif variables.allowGlobal>
 				<th>Global</th>
 			</cfif>
@@ -1243,6 +1244,11 @@
 				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(qS.site_option_type_id);
 				writeoutput(currentCFC.getTypeName()); 
 				writeoutput('</td>');
+				if(row.site_option_allow_public EQ 1){
+					echo('<td>Yes</td>');
+				}else{
+					echo('<td>No</td>');
+				}
 				if(variables.allowGlobal){
 					writeoutput('<td>');
 					if(qS.site_id EQ 0){

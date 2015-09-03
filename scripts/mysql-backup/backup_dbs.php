@@ -227,14 +227,18 @@ $arrSkip2=array();
 if(isset($_GET['skipDatabases'])){
 	$a=explode(",", $_GET['skipDatabases']);
 	for($i=0;$i<count($a);$i++){
-		$arrSkip2[$a[$i]]=true;
+		if(trim($a[$i]) != ""){
+			$arrSkip2[$a[$i]]=true;
+		}
 	}
 }
 $arrSkip=array();
 if(isset($_GET['skipTables'])){
 	$a=explode(",", $_GET['skipTables']);
 	for($i=0;$i<count($a);$i++){
-		$arrSkip[$a[$i]]=true;
+		if(trim($a[$i]) != ""){
+			$arrSkip[$a[$i]]=true;
+		}
 	}
 }
 
