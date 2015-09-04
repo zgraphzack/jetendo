@@ -34,7 +34,7 @@
 		<tr>
 		<td>Loan Amount</td>
 		<td>$</td><td>
-		<input type="text" name="loan_amount" class="loanInputClass" id="loan_amount" value="#loan_amount#" />
+		<input type="text" name="loan_amount" class="loanInputClass" id="loan_amount" value="#form.loan_amount#" />
 		</td>
 		</tr>
 		<tr><td>Interest (APR)</td>

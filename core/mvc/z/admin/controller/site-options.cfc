@@ -1218,6 +1218,8 @@
 		<tr>
 			<th>Name</th>
 			<th>Type</th>
+			<th>List View?</th>
+			<th>Required</th>
 			<th>Public</th>
 			<cfif variables.allowGlobal>
 				<th>Global</th>
@@ -1244,6 +1246,16 @@
 				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(qS.site_option_type_id);
 				writeoutput(currentCFC.getTypeName()); 
 				writeoutput('</td>');
+				if(row.site_option_primary_field EQ 1){
+					echo('<td>Yes</td>');
+				}else{
+					echo('<td>No</td>');
+				}
+				if(row.site_option_required EQ 1){
+					echo('<td>Yes</td>');
+				}else{
+					echo('<td>No</td>');
+				}
 				if(row.site_option_allow_public EQ 1){
 					echo('<td>Yes</td>');
 				}else{
