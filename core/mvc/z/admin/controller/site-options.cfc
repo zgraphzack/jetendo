@@ -2165,21 +2165,28 @@
 	if(debug) writeoutput(((gettickcount()-startTime)/1000)& 'seconds5<br>'); startTime=gettickcount();
 	if(debug) application.zcore.functions.zabort();
 
+	urlformtoken="";
+	if(qCheck.site_option_group_public_thankyou_token NEQ ""){
+		formtoken=setIdBackup&"-"&application.zcore.functions.zso(form, 'inquiries_id');
+		request.zsession[qCheck.site_option_group_public_thankyou_token]=formtoken;
+		urlformtoken="&"&qCheck.site_option_group_public_thankyou_token&"="&formtoken;
+	}
+
 	request.zsession.zLastSiteXOptionGroupSetId=setIdBackup;
 	request.zsession.zLastInquiriesID=application.zcore.functions.zso(form, 'inquiries_id');
 	if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
-		ts={success:true, zsid:request.zsid, site_x_option_group_set_id:setIdBackup, inquiries_id: application.zcore.functions.zso(form, 'inquiries_id')};
+		ts={success:true, zsid:request.zsid, site_x_option_group_set_id:setIdBackup, formtoken:formtoken, inquiries_id: application.zcore.functions.zso(form, 'inquiries_id')};
 		return ts;
 	}else if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicUpdateGroup"){ 
 		form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced');
 		application.zcore.status.setStatus(request.zsid,"Saved successfully.");
 		if(structkeyexists(arguments.struct, 'successURL')){
-			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.successURL, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"));
+			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.successURL, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"&urlformtoken));
 		}else{
 			if(qCheck.site_option_group_public_thankyou_url NEQ ""){
-				application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(qCheck.site_option_group_public_thankyou_url, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"));
+				application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(qCheck.site_option_group_public_thankyou_url, "zsid=#request.zsid#&modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"&urlformtoken));
 			}else{
-				application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#");
+				application.zcore.functions.zRedirect("/z/misc/thank-you/index?modalpopforced=#form.modalpopforced#&site_x_option_group_set_id=#setIdBackup#&inquiries_id=#application.zcore.functions.zso(form,'inquiries_id')#"&urlformtoken);
 			}
 		}
 	}else if(form.modalpopforced EQ 1 and (methodBackup EQ "updateGroup")){

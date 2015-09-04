@@ -1614,6 +1614,12 @@ displayGroupCom.ajaxInsert();
 					</td>
 				</tr>
 				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Session Form Token","member.site-option-group.edit site_option_group_public_thankyou_token")#</th>
+					<td>
+							<input name="site_option_group_public_thankyou_token" id="site_option_group_public_thankyou_token" size="50" type="text" value="#htmleditformat(form.site_option_group_public_thankyou_token)#" maxlength="100" /> (The thank you url will have this token added to it with a unique value that will also be added to the user's session memory.  Comparing these 2 values on the server side will allow you to show content to only users that have submitted the form.  I.e. allow them to download a file, etc.)
+					</td>
+				</tr>
+				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Ajax?","member.site-option-group.edit site_option_group_ajax_enabled")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_ajax_enabled")# (Yes will make public form insertions use ajax instead, but not for updating existing records.)</td>
 				</tr>
