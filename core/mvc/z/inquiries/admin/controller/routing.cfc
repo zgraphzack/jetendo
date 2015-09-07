@@ -495,7 +495,7 @@ enable round robin for users - need a new option to disable for staff.
 				<cfelse>
 					#qRoutes.inquiries_type_name#
 				</cfif></td>
-				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td>#variables.queueSortCom.getAjaxHandleButton(qRoutes.inquiries_routing_id)#</td>
 				<td><!--- #variables.queueSortCom.getLinks(qRoutes.recordcount, qRoutes.currentrow, '/z/inquiries/admin/routing/index?inquiries_routing_id=#qRoutes.inquiries_routing_id#', "vertical-arrows")#  --->
 				<a href="/z/inquiries/admin/routing/edit?inquiries_routing_id=#qRoutes.inquiries_routing_id#">Edit</a> | 
 				<a href="/z/inquiries/admin/routing/delete?inquiries_routing_id=#qRoutes.inquiries_routing_id#">Delete</a>&nbsp;</td>

@@ -281,7 +281,7 @@ var arrOriginalMenuButtonWidth=[];
 				$(jItem).css({ 
 					"width": curWidth+"px"
 				});
-				currentMenu.navWidth+=curWidth+curBorderAndPadding;
+				currentMenu.navWidth+=curWidth+curBorderAndPadding; 
 				//console.log(curWidth+marginSize+curBorderAndPadding);
 			}else{
 				$(jItem).css({
@@ -326,12 +326,7 @@ var arrOriginalMenuButtonWidth=[];
 			//$(currentMenu.arrItem[i]).width(curWidth-20);
 			var newWidth=Math.floor(curWidth+(padding*2)); 
 
-			if(currentMenu.arrItem.length-1 == i){
-				/*totalWidth2=0;
-
-				for(var i2=0;i2<currentMenu.arrItem.length-1;i2++){ 
-					totalWidth2+=$(currentMenu.arrItem[i2]).width();
-				}*/
+			/*if(currentMenu.arrItem.length-1 == i){ 
 				//console.log("newWidth:"+newWidth);
 				newWidth=Math.floor(currentMenu.containerWidth)-totalWidth2; 
 				if(newWidth>curWidth){
@@ -343,7 +338,7 @@ var arrOriginalMenuButtonWidth=[];
 					currentMenu.arrItem[i].style["border-right"]="0px solid #FFF";
 				}
 				//console.log(totalWidth2+":"+newWidth+":"+padding);
-			}
+			}*/
 			totalWidth2+=Math.round(Math.max(curWidth, newWidth))+10;
 			newWidth=(newWidth/currentMenu.containerWidth);
 			curWidth=(curWidth/currentMenu.containerWidth);

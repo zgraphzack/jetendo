@@ -150,7 +150,7 @@
 			</cfscript>
 			<tr <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 			<td>#qProp.product_category_name#</td>
-			<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+			<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(qProp.product_category_id)#</td>
 			<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/ecommerce/admin/product-category/#form.method#?product_category_parent_id=#form.product_category_parent_id#&product_category_id=#qProp.product_category_id#&action=#form.method#', "vertical-arrows")#  --->
 			<a href="#application.zcore.app.getAppCFC("ecommerce").getCategoryLink(qProp.product_category_id,qProp.product_category_name,qProp.product_category_url)#">View</a> | 
 			<cfif qProp.hasChildren EQ 1>

@@ -472,7 +472,7 @@ getSortFormObject
 		for(i2=1;i2 LTE 4;i2++){
 			rowStruct[sortStruct.arrColumn[i2].name]='<div class="zEditableCellValue" data-save-url="/z/blog/admin/blog-admin/saveColumnData?site_x_option_group_set_id=#i2#&amp;site_option_id=#i2#" data-save-field-name="site_x_option_group_value">'&i&"_"&i2&'</div>'; 
 		}
-		rowStruct["Sort"]=request.queueSortCom.getAjaxHandleButton();
+		rowStruct["Sort"]=request.queueSortCom.getAjaxHandleButton(i);
 		rowStruct["Admin"]='<a href="##">View</a>'; 
 		arrayAppend(rs.data, rowStruct);
 		count++;

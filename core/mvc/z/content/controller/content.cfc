@@ -325,6 +325,18 @@ this.app_id=12;
 			arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 		}
 		if(request.zos.istestserver){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
+				ts=structnew();
+				ts.featureName="Manage Sections";
+				ts.link="/z/admin/section/index";
+				arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
+			}
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Layouts") EQ false){
+				ts=structnew();
+				ts.featureName="Manage Layouts";
+				ts.link="/z/admin/layout-page/index";
+				arguments.linkStruct["Content Manager"].children["Manage Layouts"]=ts;
+			}
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
 				ts=structnew();
 				ts.featureName="Theme Options";

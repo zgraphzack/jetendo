@@ -38,6 +38,7 @@ enable round robin for offices - need a new option to disable for staff.
 		office_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
+		variables.queueSortCom.sortAll();
 		application.zcore.status.setStatus(Request.zsid, 'Office deleted');
 		application.zcore.functions.zRedirect('/z/admin/office/index?zsid=#request.zsid#');
 		</cfscript>
@@ -303,7 +304,7 @@ enable round robin for offices - need a new option to disable for staff.
 						#qOffice.office_zip# #qOffice.office_country#
 						</td>
 					<td>#qOffice.office_phone#</td>
-					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(qOffice.office_id)#</td>
 					<td><!--- #variables.queueSortCom.getLinks(qOffice.recordcount, qOffice.currentrow, "/z/admin/office/index?office_id=#qOffice.office_id#", "vertical-arrows")#  --->
 					<a href="/z/admin/office/edit?office_id=#qOffice.office_id#">Edit</a> | 
 					<a href="/z/admin/office/delete?office_id=#qOffice.office_id#">Delete</a></td>

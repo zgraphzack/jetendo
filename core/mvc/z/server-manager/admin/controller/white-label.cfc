@@ -493,7 +493,7 @@
 					}
 					variables["queueSortCom"&arguments.public].getRowStruct(row.whitelabel_button_id);
 					echo('</td>
-					<td>#variables["queueSortCom"&arguments.public].getAjaxHandleButton()#</td>
+					<td>#variables["queueSortCom"&arguments.public].getAjaxHandleButton(row.whitelabel_button_id)#</td>
 					<td><a href="/z/server-manager/admin/white-label/editButton?whitelabel_button_id=#row.whitelabel_button_id#&amp;whitelabel_id=#form.whitelabel_id#&amp;sid=#form.sid#">Edit</a> |  
 					<a href="/z/server-manager/admin/white-label/deleteButton?whitelabel_button_id=#row.whitelabel_button_id#&amp;whitelabel_id=#form.whitelabel_id#&amp;sid=#form.sid#">Delete</a></td></tr>');
 				}

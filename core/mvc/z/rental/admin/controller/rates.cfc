@@ -207,7 +207,7 @@
 					#qProp.rental_bath#
 				</cfif>
 			<td>#qProp.rental_rate#</td>
-			<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+			<td>#variables.queueSortCom.getAjaxHandleButton(qProp.rental_id)#</td>
 			<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rates/#form.method#?rental_id=#qProp.rental_id#', "vertical-arrows")#  --->
 			<a href="#application.zcore.app.getAppCFC("rental").getRentalLink(qProp.rental_id,qProp.rental_name,qProp.rental_url)#" target="_blank">View</a> | 
 			<a href="/z/rental/admin/rates/editRental?rental_id=#qProp.rental_id#">Edit</a> |

@@ -229,7 +229,7 @@
 													<br />
 													<strong><em>(Inactive)</em></strong>
 												</cfif></td>
-											<td style="vertical-align:top; ">#variables["queueSortCom"&qProp.rental_category_id].getAjaxHandleButton()#</td>
+											<td style="vertical-align:top; ">#variables["queueSortCom"&qProp.rental_category_id].getAjaxHandleButton(qProp.rental_category_id)#</td>
 											<!--- <td>#variables.queueSortCom2.getLinks(qProp2.recordcount, qProp2.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&amp;rental_category_id=#qProp2.rental_category_id#&amp;rental_id=#qProp2.rental_id#', "vertical-arrows")# </td> --->
 										</tr>
 									</cfloop>
@@ -276,7 +276,7 @@
 				</cfscript>
 				<tr #variables.queueSortCom.getRowHTML(qProp.rental_category_id)# <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<td>#qProp.rental_category_name#</td>
-					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(qProp.rental_category_id)#</td>
 					<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-category/#form.method#?rental_category_parent_id=#form.rental_category_parent_id#&rental_category_id=#qProp.rental_category_id#&action=#form.method#', "vertical-arrows")#  --->
 					<a href="#application.zcore.app.getAppCFC("rental").getCategoryLink(qProp.rental_category_id,qProp.rental_category_name,qProp.rental_category_url)#">View</a> | 
 					<cfif qProp.hasChildren EQ 1>

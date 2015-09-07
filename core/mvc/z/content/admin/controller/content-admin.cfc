@@ -2291,7 +2291,7 @@
 			</td>
 			<td style="vertical-align:top; white-space:nowrap;" >
 			<cfif parentChildSorting EQ 0 and application.zcore.functions.zso(form, 'searchtext') EQ '' and qsortcom.getorderby(false) EQ ''> 
-				#variables.queueSortCom.getAjaxHandleButton()#
+				#variables.queueSortCom.getAjaxHandleButton(qSite.content_id)#
 				<!--- #variables.queueSortCom.getLinks(qSite.recordcount, qSite.currentrow, "/z/content/admin/content-admin/"&form.method&"?content_id="&qSite.content_id&"&content_parent_id="&qSite.content_parent_id, "vertical-arrows")# --->
 			</cfif></td><td style="vertical-align:top; ">
 				<cfif (structkeyexists(form, 'qcontentp') EQ false or qcontentp.content_featured_listing_parent_page NEQ 1)>

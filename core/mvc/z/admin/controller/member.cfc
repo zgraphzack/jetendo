@@ -1086,7 +1086,7 @@
 					&nbsp;</td>
 				<td>#qMember.member_phone#&nbsp;</td>
 				<td>#qMember.user_group_name#</td>
-				<td><cfif qMember.member_public_profile EQ 1>#variables.queueSortCom.getAjaxHandleButton()#</cfif></td> 
+				<td><cfif qMember.member_public_profile EQ 1>#variables.queueSortCom.getAjaxHandleButton(qMember.user_id)#</cfif></td> 
 				<td><!--- <cfif qMember.member_public_profile EQ 1>
 						#variables.queueSortCom.getLinks(qMember.recordcount, qMember.currentrow, '/z/admin/member/index?user_id=#qMember.user_id#', "vertical-arrows")#
 					</cfif> --->

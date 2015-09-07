@@ -102,7 +102,9 @@ queueSortCom.init(inputStruct);
 
 
 <cffunction name="getAjaxHandleButton" localmode="modern" access="public">
+	<cfargument name="primaryKeyId" type="string" required="yes">
 	<cfscript>
+	variables.primaryKeyId=arguments.primaryKeyId;
 	return '<span class="#this.ajaxTableId#_handle" data-ztable-sort-primary-key-id="#variables.primaryKeyId#" title="Click and drag the arrow up or down to change the sort order." style="font-size:200%;cursor:move;">&##x21C5;</span>';
 	</cfscript>
 </cffunction>

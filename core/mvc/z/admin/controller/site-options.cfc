@@ -1274,7 +1274,7 @@
 					if(qS.site_id NEQ 0 or variables.allowGlobal){
 						queueComStruct["obj"&qS.site_option_group_id].getRowStruct(qS.site_option_id);
 						echo('<td>');
-							echo('#queueComStruct["obj"&qS.site_option_group_id].getAjaxHandleButton()#');
+							echo('#queueComStruct["obj"&qS.site_option_group_id].getAjaxHandleButton(qS.site_option_id)#');
 						echo('</td>');
 					}
 				}
@@ -2166,6 +2166,7 @@
 	if(debug) application.zcore.functions.zabort();
 
 	urlformtoken="";
+	formtoken="";
 	if(qCheck.site_option_group_public_thankyou_token NEQ ""){
 		formtoken=setIdBackup&"-"&application.zcore.functions.zso(form, 'inquiries_id');
 		request.zsession[qCheck.site_option_group_public_thankyou_token]=formtoken;
@@ -3104,7 +3105,7 @@ Define this function in another CFC to override the default email format
 						echo('<td>');
 						if(row.site_id NEQ 0 or variables.allowGlobal){
 							queueSortCom.getRowStruct(row.site_x_option_group_set_id);
-							echo(queueSortCom.getAjaxHandleButton());
+							echo(queueSortCom.getAjaxHandleButton(row.site_x_option_group_set_id));
 						}
 						echo('</td>');
 					}

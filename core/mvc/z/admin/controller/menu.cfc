@@ -862,7 +862,7 @@
 					<td style="vertical-align:top; width:30px; ">#qMenuItemLinks.menu_button_link_id#</td>
 					<td style="vertical-align:top; ">#qMenuItemLinks.menu_button_link_text#</td>
 					<td style="vertical-align:top; ">#application.zcore.functions.zLimitStringLength(qMenuItemLinks.menu_button_link_url, 80)#</td>
-					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(qMenuItemLinks.menu_button_link_id)#</td>
 					<td style="vertical-align:top; white-space:nowrap;">
 					<!--- #variables.queueSortCom.getLinks(qMenuItemLinks.recordcount, qMenuItemLinks.currentrow, 
 					'/z/admin/menu/manageItemLinks?menu_id=#form.menu_id#&amp;menu_button_id=#qMenuItemLinks.menu_button_id#&amp;menu_button_link_id=#qMenuItemLinks.menu_button_link_id#', "vertical-arrows")#  --->
@@ -933,7 +933,7 @@
 					<td style="vertical-align:top; width:30px; ">#qMenuItems.menu_button_id#</td>
 					<td style="vertical-align:top; ">#qMenuItems.menu_button_text#</td>
 					<td style="vertical-align:top;">#application.zcore.functions.zLimitStringLength(qMenuItems.menu_button_link, 80)#</td>
-					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(qMenuItems.menu_button_id)#</td>
 					<td style="vertical-align:top; white-space:nowrap;">
 						<!--- #variables.queueSortCom.getLinks(qMenuItems.recordcount, qMenuItems.currentrow, '/z/admin/menu/manageMenu?menu_id=#qMenuItems.menu_id#&menu_button_id=#qMenuItems.menu_button_id#', "vertical-arrows")#  --->
 						<a href="/z/admin/menu/editItem?menu_id=#qMenuItems.menu_id#&amp;menu_button_id=#qMenuItems.menu_button_id#&amp;return=1">Edit</a> | 

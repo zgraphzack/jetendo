@@ -23,6 +23,9 @@
 	ms["Slideshows"]={ parent:'Content Manager', label:chr(9)&"Slideshows"};
 	ms["Site Options"]={ parent:'Content Manager', label:chr(9)&"Site Options"};
 	if(request.zos.isTestServer){
+		ms["Layouts"]={ parent:'Content Manager', label:chr(9)&"Layouts"};
+		ms["Landing Pages"]={ parent:'Content Manager', label:chr(9)&"Landing Pages"};
+		ms["Sections"]={ parent:'Content Manager', label:chr(9)&"Sections"};
 		ms["Theme Options"]={ parent:'Content Manager', label:chr(9)&"Theme Options"};
 		ms["Manage Design & Layout"]={ parent:'Content Manager', label:chr(9)&"Manage Design & Layout"};
 	}

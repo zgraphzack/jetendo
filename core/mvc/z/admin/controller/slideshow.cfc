@@ -1891,7 +1891,7 @@
 				<tr #variables.queueSortCom.getRowHTML(qImages.slideshow_image_id)# <cfif qImages.currentrow MOD 2 EQ 0>class="table-bright"<cfelse>class="table-white"</cfif>>
 					<td style="width:100px;"><img src="/zupload/slideshow/#qImages.slideshow_id#/#qImages.slideshow_image_thumbnail_url#" /></td>
 					<td>#qImages.slideshow_image_caption#</td>
-					<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+					<td>#variables.queueSortCom.getAjaxHandleButton(qImages.slideshow_image_id)#</td>
 					<td><!--- #variables.queueSortCom.getLinks(qImages.recordcount, qImages.currentrow, 
 					'/z/admin/slideshow/managePhoto?slideshow_id=#qImages.slideshow_id#&slideshow_tab_id=#qImages.slideshow_tab_id#&slideshow_image_id=#qImages.slideshow_image_id#', 
 					"vertical-arrows")#  --->
@@ -1970,7 +1970,7 @@
 					</cfif></td>
 				<td>#qTabs.slideshow_tab_caption#</td>
 				<td>#qTabs.slideshow_tab_link#</td>
-				<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(qTabs.slideshow_tab_id)#</td>
 				<td><!--- #variables.queueSortCom.getLinks(qTabs.recordcount, qTabs.currentrow, '/z/admin/slideshow/manageTabs?slideshow_id=#qTabs.slideshow_id#&slideshow_tab_id=#qTabs.slideshow_tab_id#', "vertical-arrows")# ---> <a href="/z/admin/slideshow/editTab?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Edit</a> |
 				<cfif qTabs.slideshow_tab_type_id EQ 1>
 					<a href="/z/admin/slideshow/managePhoto?slideshow_id=#qTabs.slideshow_id#&amp;slideshow_tab_id=#qTabs.slideshow_tab_id#&amp;return=1">Manage Photos</a> |

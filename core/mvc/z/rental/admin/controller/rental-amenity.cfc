@@ -62,7 +62,7 @@
 			</cfscript>
 			<tr #variables.queueSortCom.getRowHTML(qProp.rental_amenity_id)# <cfif qProp.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 				<td>#qProp.rental_amenity_name#</td>
-				<td>#variables.queueSortCom.getAjaxHandleButton()#</td>
+				<td>#variables.queueSortCom.getAjaxHandleButton(qProp.rental_amenity_id)#</td>
 				<td><!--- #variables.queueSortCom.getLinks(qProp.recordcount, qProp.currentrow, '/z/rental/admin/rental-amenity/index?rental_amenity_id=#qProp.rental_amenity_id#', "vertical-arrows")#  --->
 				<a href="/z/rental/admin/rental-amenity/edit?rental_amenity_id=#qProp.rental_amenity_id#&amp;return=1">Edit</a> | 
 				<a href="/z/rental/admin/rental-amenity/delete?rental_amenity_id=#qProp.rental_amenity_id#&amp;return=1">Delete</a></td>
