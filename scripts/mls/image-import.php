@@ -180,7 +180,8 @@ function processImageFiles(){
 	$path=get_cfg_var("jetendo_share_path")."mls-images/";
 
 	$validMLS=array(
-		"26"=>true
+		"26"=>true,
+		"27"=>true
 	);
 	if ($handle = opendir($path)) {
 	    while (false !== ($entry = readdir($handle))) {

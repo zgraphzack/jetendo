@@ -599,23 +599,28 @@ WHERE mls_deleted = #db.param(0)#
  ORDER BY mls_name
 </cfsavecontent><cfscript>qMLS=db.execute("qMLS");</cfscript>
 <table style="border-spacing:0px;">
-<tr><td>&nbsp;</td><td>MLS Name</td><td>Office ID</td><td>Agent ID</td><td>Primary</td><td>URL ID</td></tr>
+<tr><td>&nbsp;</td><td>MLS ID</td><td>MLS Name</td><td>Office ID</td><td>Agent ID</td><td>Active</td><td>Primary</td><td>URL ID</td></tr>
 <cfloop query="qmls">
 		<tr <cfif qmls.currentrow MOD 2 EQ 0>style="background-color:##EFEFEF;"</cfif>>
 		<cfif application.zcore.functions.zso(form, 'submitform') EQ 'save'>
 				<td><input type="checkbox" name="mls_id" value="#qmls.mls_id#" <cfif ","&application.zcore.functions.zso(form, 'mls_id')&"," CONTAINS ",#qmls.mls_id#,">checked="checked"</cfif>></td>
+				<td>#qmls.mls_id#</td>
 				<td>#qmls.mls_name#</td>
 				<td>Office Id: <input type="text" name="app_x_mls_office_id#qmls.mls_id#" value="<cfif application.zcore.functions.zso(form, 'app_x_mls_office_id#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'app_x_mls_office_id#qmls.mls_id#')#</cfif>"></td>
 				<td>Agent Id: <input type="text" name="app_x_mls_agent_id#qmls.mls_id#" value="<cfif application.zcore.functions.zso(form, 'app_x_mls_agent_id#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'app_x_mls_agent_id#qmls.mls_id#')#</cfif>"></td>
+				<td><cfif qmls.mls_status EQ 1>Yes<cfelse>No</cfif></td>
 				<td><input type="radio" name="app_x_mls_primary" value="#qmls.mls_id#" <cfif app_x_mls_primary EQ 1>checked="checked"</cfif>></td>
 				<td>
 				<cfscript>
 				writeoutput(application.zcore.app.selectAppUrlId("app_x_mls_url_id#qmls.mls_id#",application.zcore.functions.zso(form, 'app_x_mls_url_id#qmls.mls_id#'), this.app_id));
 				</cfscript></td>
 		<cfelse>
-				<td><input type="checkbox" name="mls_id" value="#qmls.mls_id#" <cfif qmls.app_x_mls_url_id NEQ "">checked="checked"</cfif>></td><td>#qmls.mls_name#</td>
+				<td><input type="checkbox" name="mls_id" value="#qmls.mls_id#" <cfif qmls.app_x_mls_url_id NEQ "">checked="checked"</cfif>></td>
+				<td>#qmls.mls_id#</td>
+				<td>#qmls.mls_name#</td>
 				<td><input type="text" name="app_x_mls_office_id#qmls.mls_id#" value="#qmls.app_x_mls_office_id#"></td>
 				<td><input type="text" name="app_x_mls_agent_id#qmls.mls_id#" value="#qmls.app_x_mls_agent_id#"></td>
+				<td><cfif qmls.mls_status EQ 1>Yes<cfelse>No</cfif></td>
 				<td><input type="radio" name="app_x_mls_primary" value="#qmls.mls_id#" <cfif qmls.app_x_mls_primary EQ 1>checked="checked"</cfif>></td>
 				<td>
 				<cfscript>
