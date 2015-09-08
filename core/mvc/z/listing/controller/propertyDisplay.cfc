@@ -938,10 +938,10 @@ this.isPropertyDisplayCom=true;
 			<div id="m#arguments.idx.listing_id#" class="zls-list-grid-imagediv"><a href="#propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>> #application.zcore.functions.zLoadAndCropImage({id:"m#arguments.idx.listing_id#_img",width:iwidth,height:iheight, url:arguments.idx.photo1, style:"", canvasStyle:"", crop:true})# 
 				</a></div>
 		</cfif>
-		<div class="zls-grid-summary-text" style="">
+		<div class="zls-grid-summary-text">
 		<div class="zls-buttonlink" style="float:right; position:relative; margin-top:-33px;"> <a href="#request.zos.currentHostName##propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>View</a> </div>
 		<cfif arguments.idx.listing_price NEQ "" and arguments.idx.listing_price NEQ "0">
-			<div style="font-weight:700; width:100%; line-height:150%; font-size:110%;">
+			<div class="zls-grid-price">
 			$#numberformat(arguments.idx.listing_price)#
 			<cfif arguments.idx.listing_price LT 20>
 				per sqft

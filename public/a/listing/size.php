@@ -347,7 +347,7 @@ if(isset($_GET['a']) && $_GET['a']=='1'){
 	$_GET['a']=0;
 }
 $photourl="";
-if(isset($_GET['p']) && $_GET['p'] != ""){
+if(isset($_GET['p']) && $_GET['p'] != "" && $_GET['p'] != "0"){
 	$photourl=$_GET['p'];
 	if(preg_match ("/image-not-available/", $photourl)==1){
 		z404();
@@ -450,7 +450,7 @@ try {
 				}
 				z404();	
 			}
-			if($debug) echo 'Downloading photourl<br />';
+			if($debug) echo 'Downloading photourl:'.$photourl.'<br />';
 			if(!is_dir($serverRootPath.'/'.$_GET['m'])){
 				@mkdir($serverRootPath.'/'.$_GET['m']);
 			}
@@ -586,7 +586,7 @@ try {
 		
 		if($debug){
 			//echo 'file timestamp:'.filemtime($outputpath)."<br />";
-			 echo '<h2>Original Photo</h2><p><img src="/zretsphotos'.$filename.'" style="border:2px solid #000;" /></p>';
+			 echo '<h2>Original Photo</h2><p><img src="/zretsphotos/'.$filename.'" style="border:2px solid #000;" /></p>';
 			 echo '<h2>Cropped Photo</h2><p><img src="'.$displaypath.'" style="border:2px solid #000;" /></p>';
 			$time_end = microtime_float();
 			$time = $time_end - $time_start;

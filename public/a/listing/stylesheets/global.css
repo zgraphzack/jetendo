@@ -527,6 +527,8 @@ div .property-title h2{
 .zls-view-larger-div{display:block; width:100%; height:30px; margin-bottom:10px; overflow:hidden; line-height:30px; font-size:18px; float:left;}
 #zls-matchinglistingsdiv{clear:both;}
 
+.zls-grid-price{font-weight:700; width:100%; line-height:150%; font-size:110%;}
+
 @media only screen and (max-width: 980px) {
 	.zls-view-larger-div{display:none;}
 	#zls-inquiry-listing-qualify{display:none;}
