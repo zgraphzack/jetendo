@@ -1029,11 +1029,11 @@ searchEvents(ts);
 	}
 	if(ss.startDate NEQ "" and isdate(ss.startDate)){
 		searchOn=true; 
-		db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(ss.startDate, 'yyyy-mm-dd'))# ";
+		db.sql&=" and event_recur_end_datetime >= #db.param(dateformat(ss.startDate, 'yyyy-mm-dd')&' 00:00:00')# ";
 	}
 	if(ss.endDate NEQ "" and isdate(ss.endDate)){
 		searchOn=true;
-		db.sql&=" and event_recur_start_datetime <= #db.param(dateformat(ss.endDate, 'yyyy-mm-dd'))# ";
+		db.sql&=" and event_recur_start_datetime <= #db.param(dateformat(ss.endDate, 'yyyy-mm-dd')&' 23:59:59')# ";
 	}
 	if(ss.keyword NEQ ""){
 		searchOn=true;
