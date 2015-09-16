@@ -11,6 +11,7 @@
 
 <cffunction name="complete" access="remote" localmode="modern">
 	<cfscript>
+	request.zos.currentURLISAnEventPage=true;
 	init();
 	application.zcore.template.setTag("title", "Event Submitted Successfully");
 	application.zcore.template.setTag("pagetitle", "Event Submitted Successfully");
@@ -32,6 +33,7 @@
 
 <cffunction name="index" access="remote" localmode="modern">
 	<cfscript>
+	request.zos.currentURLISAnEventPage=true;
 	init();
 	application.zcore.template.setTag("title", "Suggest An Event");
 	application.zcore.template.setTag("pagetitle", "Suggest An Event");

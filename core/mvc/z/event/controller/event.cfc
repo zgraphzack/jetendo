@@ -16,7 +16,7 @@ all day event is not setup to work yet...
 
 timezone does nothing...
 
- --->
+ ---> 
 
 <cffunction name="getCSSJSIncludes" localmode="modern" output="no" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
@@ -2490,5 +2490,14 @@ return arguments.sharedStruct;
 </cffunction>
 	
 
+<cffunction name="isCurrentPageInEvent" localmode="modern" returntype="boolean" access="remote">
+	<cfscript>
+	if(structkeyexists(request.zos, 'currentURLISAnEventPage')){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

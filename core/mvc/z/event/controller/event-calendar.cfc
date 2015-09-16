@@ -3,6 +3,7 @@
 	
 <cffunction name="viewCalendar" access="remote" localmode="modern">
     <cfscript>
+	request.zos.currentURLISAnEventPage=true;
     db=request.zos.queryObject; 
 	application.zcore.functions.zRequireJqueryUI();
 
@@ -311,6 +312,7 @@
 
 <cffunction name="displayCalendarResults" access="private" localmode="modern">
 	<cfscript>
+	request.zos.currentURLISAnEventPage=true;
 	var ts=0;
 	</cfscript> 
 	<cfsavecontent variable="output">

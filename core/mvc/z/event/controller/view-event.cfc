@@ -3,6 +3,7 @@
 <cffunction name="displayEvent" localmode="modern" access="private">
 	<cfargument name="struct" type="struct" required="yes">
 	<cfscript>
+	request.zos.currentURLISAnEventPage=true;
 	if(application.zcore.functions.zso(form, 'nextOccurrence', true) NEQ 0){
 		structdelete(form, 'nextOccurrence');
 		//writedump('test');abort;

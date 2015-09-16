@@ -11,6 +11,7 @@
 
 <cffunction name="viewCategory" localmode="modern" access="remote">
 	<cfscript>
+	request.zos.currentURLISAnEventPage=true;
     db=request.zos.queryObject;  
 	application.zcore.functions.zRequireJqueryUI();
 

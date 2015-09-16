@@ -36,6 +36,7 @@
 
 <cffunction name="index" access="remote" localmode="modern">
 	<cfscript>
+	request.zos.currentURLISAnEventPage=true;
 	application.zcore.template.setTag("title", "Event Search");
 	application.zcore.template.setTag("pagetitle", "Event Search");
 	</cfscript>
