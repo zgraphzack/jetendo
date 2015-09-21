@@ -18,7 +18,7 @@
             try{
                 t7=createobject("component",arguments.cpath);
             }catch(Any e){
-                if(not fileexists(expandpath(replace(arguments.cpath, ".","/","all")&".cfc"))){
+                if(not request.zos.istestserver and not fileexists(expandpath(replace(arguments.cpath, ".","/","all")&".cfc"))){
                     savecontent variable="local.e2"{
                         writedump(e, true, 'simple');   
                     }
@@ -37,7 +37,7 @@
     		try{
     			t7=createobject("component",arguments.cpath);
     		}catch(Any e){
-    			if(not fileexists(expandpath(replace(arguments.cpath, ".","/","all")&".cfc"))){
+    			if(not request.zos.istestserver and not fileexists(expandpath(replace(arguments.cpath, ".","/","all")&".cfc"))){
                     savecontent variable="local.e2"{
                         writedump(e, true, 'simple');   
                     }

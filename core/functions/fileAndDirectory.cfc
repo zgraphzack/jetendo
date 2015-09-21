@@ -749,7 +749,8 @@ notes: optionally delete an existing image that has a field in the specified dat
 	output=trim(application.zcore.functions.zSecureCommand(secureCommand, 10));
 	if(output CONTAINS "," and listlen(output,",") GTE 3){
 		arrOut=listtoarray(output, ",");
-		if(lcase(arrOut[3]) NEQ "srgb"){
+		ext=application.zcore.functions.zGetFileExt(arguments.source);
+		if(ext NEQ "gif" and ext NEQ "png" and lcase(arrOut[3]) NEQ "srgb"){
 			form.invalidImagePath=arguments.source;
 			return{ success: false, errorMessage:"The image must be converted to the sRGB color profile.  It is currently: "&arrOut[3] };
 		}
