@@ -819,7 +819,7 @@ notes: optionally delete an existing image that has a field in the specified dat
         tempDestination = tempDestination&"/";
     }
     if(fileexists(arguments.source) EQ false){
-        application.zcore.template.fail("resizeImage: source file doesn't exist. Path: #arguments.source#",true);
+        throw("resizeImage: source file doesn't exist. Path: #arguments.source#");
         // start writing trace message that show up in debugger, but don't force errors.
         return false;
     }

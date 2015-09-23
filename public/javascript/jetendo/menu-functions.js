@@ -245,7 +245,8 @@ var arrOriginalMenuButtonWidth=[];
 		$(currentMenu.arrLI).each(function(){ $(this).css("margin-right", "0px"); });
 
 		//console.log("run equal width: "+ containerDivId+":"+currentMenu.arrItem.length);
-		for(var i=0;i<currentMenu.arrItem.length;i++){ 
+		var sLen=currentMenu.arrItem.length;
+		for(var i=0;i<sLen;i++){ 
 			var jItem=$(currentMenu.arrItem[i]);
 				/*$(currentMenu.arrItem[i]).css({ 
 					"padding-left": "0px",
@@ -271,7 +272,7 @@ var arrOriginalMenuButtonWidth=[];
 				"padding-left":"0px",
 				"padding-right":"0px"
 			}); 
-			if(i===currentMenu.arrItem.length-1){
+			if(i===sLen-1){
 				//curWidth-=0.5;
 				$(jItem).css({
 					"margin-right": "0px"
@@ -298,6 +299,7 @@ var arrOriginalMenuButtonWidth=[];
  
 		//console.log(currentMenu.marginSize);
 		//currentMenu.ul.detach(); 
+		console.log(containerDivId+":"+"containerWidth:"+$("#"+containerDivId).width());
 		$("#"+containerDivId).width("100%");
 		currentMenu.containerWidth=$("#"+containerDivId).width()-1;
 		//console.log(currentMenu.containerWidth+":"+currentMenu.navWidth+":"+currentMenu.marginSize);
@@ -320,31 +322,25 @@ var arrOriginalMenuButtonWidth=[];
 		} 
 		//console.log(containerDivId+":"+"marginSize:"+currentMenu.marginSize+" containerWidth:" +currentMenu.containerWidth+" totalWidth:"+totalWidth+" navWidth:"+currentMenu.navWidth+" deltaWidth:"+deltaWidth+" padding:"+padding);
 		var totalWidth2=0;
-		for(var i=0;i<currentMenu.arrItem.length;i++){ 
+		var sLen=currentMenu.arrItem.length;
+		for(var i=0;i<sLen;i++){ 
 			var curWidth=currentMenu.arrItemWidth[i];
 			//console.log(padding);
 			//$(currentMenu.arrItem[i]).width(curWidth-20);
 			var newWidth=Math.floor(curWidth+(padding*2)); 
-
-			/*if(currentMenu.arrItem.length-1 == i){ 
-				//console.log("newWidth:"+newWidth);
-				newWidth=Math.floor(currentMenu.containerWidth)-totalWidth2; 
-				if(newWidth>curWidth){
-					curWidth=newWidth;
-				}
-				if(typeof currentMenu.arrItem[i].style.setProperty != "undefined"){
-					currentMenu.arrItem[i].style.setProperty( 'border-right', '0px', 'important' );
-				}else{
-					currentMenu.arrItem[i].style["border-right"]="0px solid #FFF";
-				}
-				//console.log(totalWidth2+":"+newWidth+":"+padding);
-			}*/
-			totalWidth2+=Math.round(Math.max(curWidth, newWidth))+10;
+ 
+			var addWidth=Math.max(curWidth, newWidth);
 			newWidth=(newWidth/currentMenu.containerWidth);
 			curWidth=(curWidth/currentMenu.containerWidth);
  			newWidth=(Math.round(newWidth*100000)/1000)-0.001;
- 			curWidth=(Math.round(curWidth*100000)/1000)-0.001;
-			if(currentMenu.arrItem.length-1 == i){
+ 			curWidth=(Math.round(curWidth*100000)/1000)-0.001; 
+			if(sLen-1 == i){
+				
+				newWidth=(currentMenu.containerWidth-totalWidth2);
+	 			addWidth=newWidth;
+	 			newWidth=newWidth/currentMenu.containerWidth;
+	 			newWidth=(Math.round(newWidth*100000)/1000)-0.001;
+	 			curWidth=newWidth;
 				$(currentMenu.arrItem[i]).parent().css({
 					"width": (newWidth)+"%",
 					"min-width":(curWidth)+"%"
@@ -365,7 +361,7 @@ var arrOriginalMenuButtonWidth=[];
 				});
 					
 			}
-			//$(currentMenu.arrItem[i]).css("padding", "0 "+padding+"px 0 "+padding+"px");
+			totalWidth2+=Math.round(addWidth);
 		} 
 		$("#"+containerDivId).append(currentMenu.ul);
 		$("#"+containerDivId).css("visibility", "visible");
