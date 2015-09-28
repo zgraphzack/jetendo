@@ -147,7 +147,7 @@
 	}
 	userGroupIdSQL="'"&arrayToList(arrGroup, "','")&"'";
 	db=request.zos.queryObject;
-	db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("user.user_id"))# as siteIDType
+	db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("user.site_id"))# as siteIDType
 	FROM #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
 	user_deleted = #db.param(0)# ";

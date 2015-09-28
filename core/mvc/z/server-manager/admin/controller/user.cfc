@@ -395,10 +395,10 @@
 				<td style="width:130px;">&nbsp;</td>
 				<td style="vertical-align:top;">Primary Group</td>
 				<cfloop query="qUserGroup">
-					<td style="vertical-align:top;"><cfif qUserGroup.user_group_friendly_name NEQ "">
-						#qUserGroup.user_group_friendly_name#
+					<td style="vertical-align:top; border-left:1px solid ##CCC;"><cfif qUserGroup.user_group_friendly_name NEQ "">
+						#application.zcore.functions.zFirstLetterCaps(qUserGroup.user_group_friendly_name)#
 					<cfelse>
-						#qUserGroup.user_group_name#
+						#application.zcore.functions.zFirstLetterCaps(qUserGroup.user_group_name)#
 					</cfif></td>
 				</cfloop>
 			</tr>
@@ -422,9 +422,9 @@
 				<tr>
 					<td style="width:130px;">
 						<cfif qUserGroup.user_group_friendly_name NEQ "">
-							#qUserGroup.user_group_friendly_name#
+							#application.zcore.functions.zFirstLetterCaps(qUserGroup.user_group_friendly_name)#
 						<cfelse>
-							#qUserGroup.user_group_name#
+							#application.zcore.functions.zFirstLetterCaps(qUserGroup.user_group_name)#
 						</cfif>
 						Permissions:
 						<input type="hidden" name="user_group_id" id="user_group_id" value="#qUserGroup.user_group_id#"></td>
@@ -432,17 +432,17 @@
 					<cfset pid = qUserGroup.user_group_id>
 					<cfset form.user_group_x_group_type = 0>
 					<cfloop query="qUserXGroup">
-						<td  style="text-align:right;white-space:nowrap; ">
+						<td  style="text-align:center;white-space:nowrap; ">
 						<cfif pid NEQ qUserXGroup.user_group_id>
-							Login Access:
+							<!--- Login Access: --->
 							<input type="checkbox" name="user_group_id_list#i#" id="user_group_id_list#i#" value="#qUserXGroup.user_group_id#" <cfif pid EQ qUserXGroup.parentid and qUserXGroup.user_group_login_access EQ 1>checked="checked"</cfif> class="input-plain">
 						</cfif>
-						<br />
+						<!--- <br />
 						Modify Users:
 						<input type="checkbox" name="user_group_id_user#i#" id="user_group_id_user#i#" value="#qUserXGroup.user_group_id#" <cfif pid EQ qUserXGroup.parentid and qUserXGroup.user_group_modify_user EQ 1>checked="checked"</cfif> class="input-plain">
 						<br />
 						Share Users:
-						<input type="checkbox" name="user_group_share_user#i#" id="user_group_share_user#i#" value="#qUserXGroup.user_group_id#" <cfif pid EQ qUserXGroup.parentid and qUserXGroup.user_group_share_user EQ 1>checked="checked"</cfif> class="input-plain"></td>
+						<input type="checkbox" name="user_group_share_user#i#" id="user_group_share_user#i#" value="#qUserXGroup.user_group_id#" <cfif pid EQ qUserXGroup.parentid and qUserXGroup.user_group_share_user EQ 1>checked="checked"</cfif> class="input-plain"> ---></td>
 					</cfloop>
 				</tr>
 			</cfloop>

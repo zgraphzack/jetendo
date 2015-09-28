@@ -361,11 +361,13 @@ var arrOriginalMenuButtonWidth=[];
 				});
 					
 			}
-			totalWidth2+=Math.round(addWidth);
+			totalWidth2+=Math.round(addWidth+marginSize);
 		} 
 		$("#"+containerDivId).append(currentMenu.ul);
 		$("#"+containerDivId).css("visibility", "visible");
 	}
+
+
 
 	zArrLoadFunctions.push({functionName:function(){
 		if($(".zMenuClear").length){

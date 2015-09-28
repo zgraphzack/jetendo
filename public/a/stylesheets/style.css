@@ -393,3 +393,17 @@ img{border:none;}
 }
 
 
+.table-list input{min-width:800px; width:95%;}
+.table-list .table-list input{min-width:auto; width:auto;}
+.table-list input[type="button"], .table-list input[type="submit"], .table-list input[type="radio"], .table-list input[type="checkbox"]{width:auto; min-width:auto;}
+@media only screen and (max-width: 1200px) { 
+.table-list input{min-width:600px;}
+.table-list .table-list input{min-width:auto;}
+}
+@media only screen and (max-width: 980px) { 
+.table-list input{min-width:500px;}
+.table-list .table-list input{min-width:auto;}
+}
+@media only screen and (max-width: 768px) { 
+.table-list input, .table-list textarea{min-width:100%;}
+}
