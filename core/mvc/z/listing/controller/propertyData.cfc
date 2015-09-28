@@ -484,9 +484,19 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
     <cfif structkeyexists(arguments.ss,'arrMLSPID')>
         <cfif ArrayLen(arguments.ss.arrMLSPID) NEQ 0>
             <cfscript>
+
+            hideStruct={}
+            if(structkeyexists(request.zos, 'arrListingsDisplayed')){
+            	for(n=1;n<=arraylen(request.zos.arrListingsDisplayed);n++){
+            		hideStruct[request.zos.arrListingsDisplayed[n]]=true;
+            	}
+            }
             for(n=1;n LTE ArrayLen(arguments.ss.arrMLSPID);n=n+1){
 				arguments.ss.arrMLSPID[n]=application.zcore.functions.zescape(trim(arguments.ss.arrMLSPID[n]));
+				
+				structdelete(hideStruct, arguments.ss.arrMLSPID[n]);
             }
+            request.zos.arrListingsDisplayed=structkeyarray(hideStruct);
             writeoutput(" listing.listing_id IN ('#arraytolist(arguments.ss.arrMLSPID,"','")#')");
             </cfscript>
              and

@@ -726,15 +726,15 @@
 			<tr>
 				<th>Start Date</th>
 				<td>
-					<input type="text" name="event_start_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(form.event_start_datetime, 'm/dd/yyyy'))#" size="10" />
-					<input type="text" name="event_start_datetime_time" id="event_start_datetime_time" value="#htmleditformat(timeformat(form.event_start_datetime, 'h:mm tt'))#" size="9" />
+					<input type="text" name="event_start_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(form.event_start_datetime, 'm/dd/yyyy'))#" size="10" />
+					<input type="text" name="event_start_datetime_time" style="max-width:80px;min-width:80px;" id="event_start_datetime_time" value="#htmleditformat(timeformat(form.event_start_datetime, 'h:mm tt'))#" size="9" />
 					 * </td>
 			</tr> 
 
 			<tr>
 				<th>End Date</th>
-				<td><input type="text" name="event_end_datetime_date" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(form.event_end_datetime, 'm/dd/yyyy'))#" size="10" />
-					<input type="text" name="event_end_datetime_time" id="event_end_datetime_time" value="#htmleditformat(timeformat(form.event_end_datetime, 'h:mm tt'))#" size="9" /> *
+				<td><input type="text" name="event_end_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(form.event_end_datetime, 'm/dd/yyyy'))#" size="10" />
+					<input type="text" name="event_end_datetime_time" style="max-width:80px;min-width:80px;" id="event_end_datetime_time" value="#htmleditformat(timeformat(form.event_end_datetime, 'h:mm tt'))#" size="9" /> *
 				</td>
 			</tr>  
 			<tr>
