@@ -2,10 +2,11 @@
 <cfoutput>
 <cffunction name="index" localmode="modern" access="remote" output="yes">
 	<cfscript>
+	form.fp=application.zcore.functions.zso(form, 'fp');
 	if(left(form.fp, 15) EQ "/zuploadsecure/" and not application.zcore.user.checkGroupAccess("administrator")){
 		application.zcore.user.requireLogin("administrator");
 	} 
-	downloadFile(application.zcore.functions.zso(form, 'fp')); 
+	downloadFile(form.fp); 
 	</cfscript> 
 </cffunction>
 

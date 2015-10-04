@@ -98,12 +98,13 @@ strong,b{
 .table-list .row1{
 }
 .table-list .row2{
-	background-color:#F6F6F6;
+}
+.table-list tbody tr:nth-child(even){
+	background-color:#F6F6F6; 
 }
 .table-list .row2:hover, .table-list .row1:hover{
 	background-color:#DFEFCF;
 }
-
 .mapText{
 	font-size:10px;
 	font-weight:bold;

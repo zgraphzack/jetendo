@@ -25,6 +25,7 @@ queueSortCom.init(inputStruct);
 	this.primaryKeyName = "";
 	this.where = "";
 	this.sortVarNameAjax="zQueueSortAjax";
+	this.sortVarNameAjaxOriginal="zQueueSortAjaxOriginal";
 	this.ajaxTableId="";
 	this.ajaxURL="";
 	this.disableRedirect=false;
@@ -34,14 +35,13 @@ queueSortCom.init(inputStruct);
 
 	// prepend this var name for query string variable
 	this.sortVarName = "zQueueSort";
-
-
+ 
 	var ts=0;
 	StructAppend(this, arguments.inputStruct, true);
 	if(this.ajaxTableId NEQ "" and this.ajaxURL NEQ ""){
 		application.zcore.functions.zRequireJqueryUI();
 		application.zcore.skin.addDeferredScript("
-			zSetupAjaxTableSort('#this.ajaxTableId#', '#this.ajaxURL#', '#this.sortVarNameAjax#');
+			zSetupAjaxTableSort('#this.ajaxTableId#', '#this.ajaxURL#', '#this.sortVarNameAjax#', '#this.sortVarNameAjaxOriginal#');
 		");
 	}
 	if(len(this.tableName) EQ 0){
@@ -55,7 +55,11 @@ queueSortCom.init(inputStruct);
 	}
 	if(structkeyexists(form, this.sortVarNameAjax)){
 		arrId=listToArray(form[this.sortVarNameAjax], "|");
-		processAjaxSortChange(arrId);
+		arrOriginalId=listToArray(form[this.sortVarNameAjaxOriginal], "|"); 
+		request.zos.queueSortAjaxResult=processAjaxSortChange(arrOriginalId, arrId);
+		if(not request.zos.queueSortAjaxResult.success){
+			returnJson();
+		}
 	}else if(structkeyexists(form, this.sortVarName) and structkeyexists(form, this.primaryKeyName)){
 		ts = StructNew();
 		ts.id = form[this.primaryKeyName];
@@ -72,11 +76,8 @@ queueSortCom.init(inputStruct);
 
 <cffunction name="returnJson" localmode="modern" access="public">
 	<cfscript>
-	if(structkeyexists(form, this.sortVarNameAjax)){
-		rs={
-			success:true
-		};
-		application.zcore.functions.zReturnJson(rs);
+	if(structkeyexists(form, this.sortVarNameAjax)){ 
+		application.zcore.functions.zReturnJson(request.zos.queueSortAjaxResult);
 	}
 	</cfscript>
 </cffunction>
@@ -109,17 +110,49 @@ queueSortCom.init(inputStruct);
 	</cfscript>
 </cffunction>
 
-<cffunction name="processAjaxSortChange" localmode="modern" access="private">
+<cffunction name="processAjaxSortChange" localmode="modern" access="private" returntype="struct">
+	<cfargument name="arrOriginalId" type="array" required="yes">
 	<cfargument name="arrId" type="array" required="yes">
 	<cfscript>
 	db=request.zos.queryObject;
 	arrId=arguments.arrId;
+	arrOriginalId=arguments.arrOriginalId;
+
 	db.sql="show fields from #db.table(this.tableName, this.datasource)# like #db.param(this.tableName&"_deleted")#";
 	qCheck=db.execute("qCheck");
+
+	arrOriginal=[];
+	for(i=1;i LTE arraylen(arrOriginalId);i++){
+		arrayAppend(arrOriginal, application.zcore.functions.zescape(arrOriginalId[i]));
+	}
+	db.sql="SELECT `#this.primaryKeyName#` id FROM #db.table(this.tableName, this.datasource)# #this.tablename# 
+	WHERE #db.param(1)# = #db.param(1)# ";// `#this.primaryKeyName#` IN (#db.trustedSQL("'"&arrayToList(arrOriginal, "','")&"'")#)";
+	if(qCheck.recordcount NEQ 0){
+		db.sql&=" and `#this.tableName#_deleted`=#db.param(0)#";
+	}
+	if(len(this.where) NEQ 0){
+		db.sql&=" and #db.trustedSQL(this.where)#";
+	}
+	db.sql&=" ORDER BY `#this.sortFieldName#` asc";
+	qSort=db.execute("qSort");
+	if(qSort.recordcount NEQ arraylen(arrOriginalId)){
+		return {success:false, errorMessage:"Sort cancelled. Data has changed. Please refresh and try again."};
+	}
+	arrOldSort=[];
+	for(row in qSort){
+		arrayAppend(arrOldSort, row.id);
+	}
+	if(compare(arrayToList(arrOldSort, ","), arrayTOList(arrOriginalId, ",")) NEQ 0){
+		if(request.zos.istestserver){
+			return {success:false, errorMessage:"Sort cancelled. Sort order has changed. Please refresh and try again."&chr(10)&"old:"&arrayToList(arrOldSort, ",")&chr(10)&"new:"&arrayTOList(arrOriginalId, ",")};
+		}else{
+			return {success:false, errorMessage:"Sort cancelled. Sort order has changed. Please refresh and try again." };//&chr(10)&arrayToList(arrOldSort, ",")&chr(10)&arrayTOList(arrOriginalId, ",")&chr(10)&out};
+		}
+	}
 	transaction action="begin"{
 		try{
 			for(i=1;i LTE arraylen(arrId);i++){
-				id=deserializeJson(arrId[i]); 
+				id=arrId[i]; 
 				db.sql="UPDATE #db.table(this.tableName, this.datasource)# #this.tablename# 
 				SET `#this.sortFieldName#` = #db.param(i)#, 
 				`#this.tablename#_updated_datetime` = #db.param(request.zos.mysqlnow)# 
@@ -143,6 +176,7 @@ queueSortCom.init(inputStruct);
 			rethrow;
 		}
 	}
+	return {success:true};
 	</cfscript>
 </cffunction>
 

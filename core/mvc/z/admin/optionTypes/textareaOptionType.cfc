@@ -222,10 +222,11 @@
 	<cfsavecontent variable="output">
 	<input type="radio" name="#variables.type#_option_type_id" value="1" onClick="setType(1);" <cfif value EQ 1>checked="checked"</cfif>/>
 	Textarea<br />
-	<div id="typeOptions1" style="display:none;padding-left:30px;"> Editor Width:
-		<input type="text" name="editorwidth2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2'))#" />
-		Editor Height:
-		<input type="text" name="editorheight2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight2'))#" />
+	<div id="typeOptions1" style="display:none;padding-left:30px;"> 
+		<p>Editor Width:
+		<input type="text" name="editorwidth2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2'))#" /></p>
+		<p>Editor Height:
+		<input type="text" name="editorheight2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight2'))#" /></p>
 	</div>
 	</cfsavecontent>
 	<cfreturn output>

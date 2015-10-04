@@ -289,13 +289,13 @@
 			form.selectmenu_multipleselection=application.zcore.functions.zso(arguments.optionStruct, "selectmenu_multipleselection", true, 0);
 			echo(application.zcore.functions.zInput_Boolean("selectmenu_multipleselection"));
 			</cfscript></td></tr>
-			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> (Makes more options visible for easier multiple selection)</td></tr>
+			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" style="max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> (Makes more options visible for easier multiple selection)</td></tr>
 			<tr><td colspan="2">Configure a manually entered list of values: </td></tr>
 			<tr>
 			<th>
-			Delimiter </th><td><input type="text" name="selectmenu_delimiter" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_delimiter', false, '|'))#" size="1" maxlength="1" /></td></tr>
-			<tr><td>Labels List: </td><td><input type="text" name="selectmenu_labels" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_labels'))#" /></td></tr>
-			<tr><td>Values List:</td><td> <input type="text" name="selectmenu_values" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_values'))#" /></td></tr>
+			Delimiter </th><td><input type="text" name="selectmenu_delimiter" style="max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_delimiter', false, '|'))#" size="1" maxlength="1" /></td></tr>
+			<tr><td>Labels List: </td><td><input type="text" style="min-width:150px;" name="selectmenu_labels" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_labels'))#" /></td></tr>
+			<tr><td>Values List:</td><td> <input type="text" style="min-width:150px;" name="selectmenu_values" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_values'))#" /></td></tr>
 			<tr><td colspan="2">Configure a group as a datasource: </td></tr>
 			<tr><td>Use Group: </td>
 			<td>
@@ -315,21 +315,21 @@
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript></td></tr>
 			<tr><td>Label Field: </td>
-			<td><input type="text" name="selectmenu_labelfield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_labelfield'))#" /></td></tr>
-			<tr><td>Value Field: </td><td><input type="text" name="selectmenu_valuefield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_valuefield'))#" /></td></tr>
+			<td><input type="text" style="min-width:150px;" name="selectmenu_labelfield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_labelfield'))#" /></td></tr>
+			<tr><td>Value Field: </td><td><input type="text" style="min-width:150px;" name="selectmenu_valuefield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_valuefield'))#" /></td></tr>
 			<tr><td>Parent Field: </td><td>
-			<input type="text" name="selectmenu_parentfield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_parentfield'))#" /> (Optional, only use when this group will allow recursive heirarchy)</td></tr>
+			<input type="text" name="selectmenu_parentfield" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_parentfield'))#" /> (Optional, only use when this group will allow recursive heirarchy)</td></tr>
 			
 			
 			
 			<tr><td colspan="2">Configure a database table as a datasource: </td></tr>
 			<tr><td>Table name: </td>
-			<td><input type="text" name="selectmenu_table" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_table'))#" /></td></tr>
+			<td><input type="text" name="selectmenu_table" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_table'))#" /></td></tr>
 			<tr><td>Label Field: </td>
-			<td><input type="text" name="selectmenu_tablelabelfield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tablelabelfield'))#" /></td></tr>
-			<tr><td>Value Field: </td><td><input type="text" name="selectmenu_tablevaluefield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tablevaluefield'))#" /></td></tr>
+			<td><input type="text" name="selectmenu_tablelabelfield" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tablelabelfield'))#" /></td></tr>
+			<tr><td>Value Field: </td><td><input type="text" name="selectmenu_tablevaluefield" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tablevaluefield'))#" style="min-width:150px;" /></td></tr>
 			<tr><td>Parent Field: </td><td>
-			<input type="text" name="selectmenu_tableparentfield" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tableparentfield'))#" /> (Optional, only use when this table has a parent_id field to allow recursive heirarchy)</td></tr>
+			<input type="text" name="selectmenu_tableparentfield" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tableparentfield'))#" /> (Optional, only use when this table has a parent_id field to allow recursive heirarchy)</td></tr>
 			
 			
 			</table>

@@ -1798,7 +1798,7 @@ configCom.includeContentByName(ts);
 			echo('<div style="font-weight:bold; font-size:13px;">');
 			detailShown=false;
 			if(contentConfig.contentDisableLinks EQ false and row.content_id NEQ application.zcore.functions.zso(form, 'content_id') and shortSummary NEQ ""){
-				echo('<a href="#propertyLink#">Read More</a>');
+				echo('<a href="#propertyLink#" class="zcontent-readmore-link">Read More</a>');
 				detailShown=true;
 			}
 			if(contentConfig.contentEmailFormat EQ false){
@@ -1814,7 +1814,7 @@ configCom.includeContentByName(ts);
 			}
 			echo('</div>');
 		}else if(contentConfig.contentDisableLinks EQ false and shortSummary NEQ ""){
-			echo('<p><strong><a href="#propertyLink#">Read More</a></strong></p>');
+			echo('<p class="zcontent-readmore-link"><strong><a href="#propertyLink#">Read More</a></strong></p>');
 		}
 	}
 	echo('</td></tr></table>');

@@ -6,6 +6,13 @@ if (typeof window.console === "undefined") {
         log: function(obj){ }
     };  
 }
+
+if (typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function () {
+    return this.replace(/^\s+|\s+$/g, '');
+  }
+}
+
 function zKeyExists(obj, key){
 	return (key in obj);
 }

@@ -259,10 +259,11 @@
 	<cfsavecontent variable="output">
 	<input type="radio" name="#variables.type#_option_type_id" value="2" onClick="setType(2);" <cfif value EQ 2>checked="checked"</cfif>/>
 	HTML Editor<br />
-	<div id="typeOptions2" style="display:none;padding-left:30px;"> Editor Width:
-		<input type="text" name="editorwidth" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth'))#" />
-		Editor Height:
-		<input type="text" name="editorheight" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight'))#" />
+	<div id="typeOptions2" style="display:none;padding-left:30px;"> 
+		<p>Editor Width:
+		<input type="text" name="editorwidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth'))#" /></p>
+		<p>Editor Height:
+		<input type="text" name="editorheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight'))#" /></p>
 	</div>	
 	</cfsavecontent>
 	<cfreturn output>

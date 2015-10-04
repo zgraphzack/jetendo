@@ -3286,6 +3286,13 @@ Define this function in another CFC to override the default email format
 	if(not structkeyexists(arguments.struct, 'action')){
 		arguments.struct.action='/z/misc/display-site-option-group/insert';	
 	}
+	if(application.zcore.functions.zso(form, 'site_option_group_id') EQ ""){
+		if(application.zcore.user.checkGroupAccess("member")){
+			application.zcore.functions.z301redirect("/z/admin/site-options/index");
+		}else{
+			application.zcore.functions.z301redirect("/");
+		}
+	}
 	if(not structkeyexists(arguments.struct, 'returnURL')){
 		arguments.struct.returnURL='/z/misc/display-site-option-group/add?site_option_group_id=#form.site_option_group_id#';	
 	}

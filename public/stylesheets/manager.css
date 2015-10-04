@@ -160,11 +160,15 @@ th {
 	background-color:#EEEEEE !important;
 	font-weight:bold;
 }
-.table-list .row1{
+.table-list .row1{ 
+}
+.table-list .row2{ 
+}
+.table-list tbody tr:nth-child(odd){
 	background-color:#FFFFFF !important;
 }
-.table-list .row2{
-	background-color:#EEEEEE !important;
+.table-list tbody tr:nth-child(even){
+	background-color:#EEEEEE !important; 
 }
 .table-list .row3{
 	background-color:#DFDFDF !important;

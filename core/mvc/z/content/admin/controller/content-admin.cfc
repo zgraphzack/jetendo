@@ -62,7 +62,8 @@
 	}
 	db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 	WHERE content_id = #db.param(form.content_id)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	content_deleted=#db.param(0)# ";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, 'You don''t have permission to delete this content.',false,true);
@@ -85,7 +86,8 @@
 		SET content_deleted=#db.param(1)#, 
 		content_updated_datetime=#db.param(request.zos.mysqlnow)#  
 		WHERE content_id = #db.param(form.content_id)# and 
-		site_id = #db.param(request.zos.globals.id)#";
+		site_id = #db.param(request.zos.globals.id)# and 
+		content_deleted=#db.param(0)# ";
 		db.execute("q"); 
 		application.zcore.status.setStatus(request.zsid, 'Page deleted.');
 		if(qCheck.content_file NEQ ''){
@@ -1831,31 +1833,35 @@
 	var i=0;
 	var searchTextOriginal=0;
 	var contentphoto99=0;
-	linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
 
-	if(structkeyexists(linkStruct, "Content Manager")){
-		childStruct=linkStruct["Content Manager"].children;
-		echo('<h2>Content Manager</h2> <div style="float:left; margin-bottom:10px;width:100%;">');
-		arrKey=structkeyarray(childStruct);
-		arraySort(arrKey, "text", "asc");
-		count=0;
-		for(i=1;i LTE arraylen(arrKey);i++){
-			i2=arrKey[i];
-			if(application.zcore.adminSecurityFilter.checkFeatureAccess(childStruct[i2].featureName)){
-				if(count NEQ 0){
-					echo(' | ');
+	savecontent variable="navOut"{
+		linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
+
+		if(structkeyexists(linkStruct, "Content Manager")){
+			childStruct=linkStruct["Content Manager"].children;
+			echo('<h2>Content Manager</h2> <div style="float:left; margin-bottom:10px;width:100%;">');
+			arrKey=structkeyarray(childStruct);
+			arraySort(arrKey, "text", "asc");
+			count=0;
+			for(i=1;i LTE arraylen(arrKey);i++){
+				i2=arrKey[i];
+				if(application.zcore.adminSecurityFilter.checkFeatureAccess(childStruct[i2].featureName)){
+					if(count NEQ 0){
+						echo(' | ');
+					}
+					count++;
+					echo('<a href="#childStruct[i2].link#">'&i2&'</a>');
 				}
-				count++;
-				echo('<a href="#childStruct[i2].link#">'&i2&'</a>');
 			}
+			echo('</div>');
 		}
-		echo('</div>');
 	}
 	if(not application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
 		return;
 	}
 	application.zcore.functions.zSetPageHelpId("2.1"); 
 	this.init();
+	echo(navOut);
 	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	//application.zcore.siteOptionCom.displaySectionNav();
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 

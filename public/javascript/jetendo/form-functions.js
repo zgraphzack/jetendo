@@ -230,7 +230,7 @@ var zLastAjaxVarName=""; */
 			//zSetupAjaxTableSort(zLastAjaxTableId, zLastAjaxURL, zLastAjaxVarName);
 		}
 	}*/
-	function zSetupAjaxTableSort(tableId, ajaxURL, ajaxVarName){
+	function zSetupAjaxTableSort(tableId, ajaxURL, ajaxVarName, ajaxVarNameOriginal){
 		/*zLastAjaxTableId=tableId;
 		zLastAjaxURL=ajaxURL;
 		zLastAjaxVarName=ajaxVarName;*/
@@ -254,41 +254,54 @@ var zLastAjaxVarName=""; */
 			validated=false;
 			arrError.push('queueSortCom.ajaxTableId is set to "'+tableId+'", but this table is missing the <tbody> tag around the body rows, which is required for table row sorting to function.');
 		}
+		var arrSort=[];
 		$( '#'+tableId+' tbody tr' ).each(function(){
-			if(this.id == '' || ($("."+tableId+"_handle").length && $("."+tableId+"_handle")[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
+			if(this.id == '' || ($("."+tableId+"_handle", this).length && $("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
 				validated=false;
+			}else{
+				arrSort.push($("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id'));
 			}
 		}); 
+		var originalSortOrderList=arrSort.join("|");
+		$("#"+tableId+" tbody").attr("data-original-sort", originalSortOrderList);
 		if(validated){
 			$('#'+tableId+' tbody' ).sortable({
 				handle: '.'+tableId+'_handle',
 				stop:function(e, e2){
+					var originalSortOrderList=$("#"+tableId+" tbody").attr("data-original-sort");
 					var arrId=$("#"+tableId+" tbody").sortable("toArray");
 					var arrId2=[]; 
 					for(var i=0;i<arrId.length;i++){
-						var v=$("#"+arrId[i]+" ."+tableId+"_handle").attr("data-ztable-sort-primary-key-id");
-						if(!isNaN(v)){
-							var id=parseInt(v);
-							arrId2.push(id);
-						}
+						var v=$("#"+arrId[i]+" ."+tableId+"_handle").attr("data-ztable-sort-primary-key-id"); 
+						arrId2.push(v); 
 					}
 					var sortOrderList=arrId2.join("|");
 					//console.log("sorted list:"+sortOrderList);
 					var tempObj={};
 					tempObj.id="zAjaxChangeSortOrder";
-					var u=zAjaxSortURLCache[tableId].url;
-					if(u.indexOf("?") != -1){
-						tempObj.url=u+"&"+ajaxVarName+"="+escape(sortOrderList);
-					}else{
-						tempObj.url=u+"?"+ajaxVarName+"="+escape(sortOrderList);
-					}
+					tempObj.url=zAjaxSortURLCache[tableId].url;
+					tempObj.method="post";
+					tempObj.postObj={};
+					tempObj.postObj[ajaxVarName]=sortOrderList;
+					tempObj.postObj[ajaxVarNameOriginal]=originalSortOrderList; 
 					tempObj.callback=function(r){
 						var d=eval('('+r+')');
 						if(!d.success){
 							//$("#"+tableId).html(zAjaxSortURLCache[tableId].cache);
-							alert("Failed to sort records.");
+							alert(d.errorMessage);
 						}else{
 							zAjaxSortURLCache[tableId].cache=$("#"+tableId).html();
+
+							arrSort=[];
+							$( '#'+tableId+' tbody tr' ).each(function(){
+								if(this.id == '' || ($("."+tableId+"_handle", this).length && $("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
+									validated=false;
+								}else{
+									arrSort.push($("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id'));
+								}
+							}); 
+							originalSortOrderList=arrSort.join("|");
+							$("#"+tableId+" tbody").attr("data-original-sort", originalSortOrderList);
 						}
 					};
 					tempObj.errorCallback=function(){

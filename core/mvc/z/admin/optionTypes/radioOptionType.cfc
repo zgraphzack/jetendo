@@ -282,8 +282,8 @@
 			<table style="border-spacing:0px;">
 			<tr>
 			<th>
-			Delimiter </th><td><input type="text" name="radio_delimiter" value="<cfif structkeyexists(form, 'radio_delimiter')>#htmleditformat(form.radio_delimiter)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_delimiter', false, '|'))#</cfif>" size="1" maxlength="1" /></td></tr>
-			<tr><td>Labels List: </td><td><input type="text" name="radio_labels" value="<cfif structkeyexists(form, 'radio_labels')>#htmleditformat(form.radio_labels)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_labels'))#</cfif>" /></td></tr>
+			Delimiter </th><td><input type="text" name="radio_delimiter"  value="<cfif structkeyexists(form, 'radio_delimiter')>#htmleditformat(form.radio_delimiter)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_delimiter', false, '|'))#</cfif>" size="1" maxlength="1" /></td></tr>
+			<tr><td>Labels List: </td><td><input type="text" name="radio_labels"  value="<cfif structkeyexists(form, 'radio_labels')>#htmleditformat(form.radio_labels)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_labels'))#</cfif>" /></td></tr>
 			<tr><td>Values List:</td><td> <input type="text" name="radio_values" value="<cfif structkeyexists(form, 'radio_values')>#htmleditformat(form.radio_values)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_values'))#</cfif>" /></td></tr>
 			</table>
 		</div>

@@ -1451,7 +1451,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 						$#numberformat(arguments.query.content_price)#
 					</cfif>
 				</h2>
-				<a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.currentHostName,arguments.query.content_url_only)#<cfelse>#request.zos.currentHostName#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="margin-right:3px; display:block;  font-weight:bold; float:left; padding:4px; line-height:20px; text-decoration:none; 	border-bottom:1px solid ##CCCCCC; ">Read More</a></td>
+				<a target="_parent" href="<cfif arguments.query.content_url_only NEQ ''>#application.zcore.functions.zForceAbsoluteUrl(request.zos.currentHostName,arguments.query.content_url_only)#<cfelse>#request.zos.currentHostName#<cfif arguments.query.content_unique_name NEQ ''>#arguments.query.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(arguments.query.content_name,'-')#-#application.zcore.app.getAppData("content").optionstruct.content_config_url_article_id#-#arguments.query.content_id#.html</cfif></cfif>" style="margin-right:3px; display:block;  font-weight:bold; float:left; padding:4px; line-height:20px; text-decoration:none; 	border-bottom:1px solid ##CCCCCC; " class="zcontent-readmore-link">Read More</a></td>
 		</tr>
 	</table>
 	<hr />
@@ -1550,7 +1550,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 						</cfif>
 					</cfif>
 				</h2>
-				<a href="#propertyLink#" target="_parent" style="margin-right:3px; display:block; font-weight:bold; float:left; padding:4px; line-height:20px; text-decoration:none; 	border-bottom:1px solid ##CCCCCC; " <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif>>Read More</a></td>
+				<a href="#propertyLink#" target="_parent" style="margin-right:3px; display:block; font-weight:bold; float:left; padding:4px; line-height:20px; text-decoration:none; 	border-bottom:1px solid ##CCCCCC; " <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif> class="zcontent-readmore-link">Read More</a></td>
 		</tr>
 	</table>
 	<hr />
