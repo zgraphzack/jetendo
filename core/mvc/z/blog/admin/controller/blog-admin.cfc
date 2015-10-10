@@ -1814,7 +1814,7 @@ rs2=application.zcore.imageLibraryCom.getImageSQL(ts);
 		<table style="width:100%; border-spacing:0px; margin-bottom:5px;border:1px solid ##CCCCCC;" class="table-list">
 			<tr>
 				<td>Search by ID, title or any other text: 
-				<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" size="20" maxchars="10" /> 
+				<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="min-width:80%; width:80%;" size="20" maxchars="10" /> 
 				<input type="submit" name="searchForm" value="Search" /> 
 				<cfif application.zcore.functions.zso(form, 'searchtext') NEQ ''> | 
 					<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/blog/admin/blog-admin/articleList?searchtext=';" />

@@ -1593,7 +1593,7 @@ displayGroupCom.ajaxInsert();
 					ts.query = qGroup2;
 					ts.queryLabelField = "user_group_name";
 					ts.queryValueField = "user_group_id";
-					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_group_user_group_id_list', true, 0));
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_group_user_group_id_list'));
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript></td>
 				</tr>

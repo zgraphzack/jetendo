@@ -365,7 +365,7 @@ if ( ($ERROR_EMAIL) && ($error) ) {
 	writeLog( "\nThere were errors!" );
 	writeLog( "Emailing error log to " . $ERROR_EMAIL . " .. " );
 	$body = "Please check the log in this folder for details: ".$BACKUP_TEMP." \n".file_get_contents($err_path)."\n";
-	$res=mymail($EMAIL_ADDR,$ERROR_SUBJECT, $body, "From: \"Coldfusion Error\" <coldfusion_error@farbeyondcode.com>\nX-Mailer: php" );
+	$res=mymail($EMAIL_ADDR,$ERROR_SUBJECT, $body, "From: \"Coldfusion Error\" <".$EMAIL_FROM.">\nX-Mailer: php" );
 	if($res!==TRUE) {
 		error( true, 'FAILED to email error log.' );
 	}
@@ -373,7 +373,7 @@ if ( ($ERROR_EMAIL) && ($error) ) {
 	$ERROR_SUBJECT="Mysql backup complete";
 	$hostname=`hostname`;
 	$body = "Mysql backup on {$hostname} completed successfully.\n";
-	$res=mymail($EMAIL_ADDR,$ERROR_SUBJECT, $body, "From: \"Coldfusion Error\" <coldfusion_error@farbeyondcode.com>\nX-Mailer: php" );
+	$res=mymail($EMAIL_ADDR,$ERROR_SUBJECT, $body, "From: \"Coldfusion Error\" <".$EMAIL_FROM.">\nX-Mailer: php" );
 }
 
 // close log files

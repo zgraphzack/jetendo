@@ -2309,8 +2309,9 @@ if(not rs.success){
 				}
 			}
 		}
-	}
+	}   
 
+	deleteOptionGroupSetIndex(arguments.site_x_option_group_set_id, request.zos.globals.id);
 	db.sql="DELETE FROM #db.table("site_x_option_group", request.zos.zcoreDatasource)#  
 	WHERE  site_x_option_group_set_id=#db.param(arguments.site_x_option_group_set_id)# and  
 	site_x_option_group_deleted = #db.param(0)# and 

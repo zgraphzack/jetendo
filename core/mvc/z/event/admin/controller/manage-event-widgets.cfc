@@ -80,7 +80,7 @@
 		ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
 		ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
 		ts.queryValueField = "event_category_id"; 
-		//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'categories', true, 0));
+		//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'categories'));
 		application.zcore.functions.zInputSelectBox(ts);
 		</cfscript>
 		

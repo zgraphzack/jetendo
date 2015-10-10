@@ -28,6 +28,7 @@ queueSortCom.init(inputStruct);
 	this.sortVarNameAjaxOriginal="zQueueSortAjaxOriginal";
 	this.ajaxTableId="";
 	this.ajaxURL="";
+	this.ajaxCallback="function(){}";
 	this.disableRedirect=false;
 	variables.rowIndex=0;
 	//this.groupBy="";
@@ -41,7 +42,7 @@ queueSortCom.init(inputStruct);
 	if(this.ajaxTableId NEQ "" and this.ajaxURL NEQ ""){
 		application.zcore.functions.zRequireJqueryUI();
 		application.zcore.skin.addDeferredScript("
-			zSetupAjaxTableSort('#this.ajaxTableId#', '#this.ajaxURL#', '#this.sortVarNameAjax#', '#this.sortVarNameAjaxOriginal#');
+			zSetupAjaxTableSort('#this.ajaxTableId#', '#this.ajaxURL#', '#this.sortVarNameAjax#', '#this.sortVarNameAjaxOriginal#', #this.ajaxCallback#);
 		");
 	}
 	if(len(this.tableName) EQ 0){

@@ -223,7 +223,7 @@
 					ts.queryParseLabelVars = false; // set to true if you want to have a custom formated label
 					ts.queryParseValueVars = false; // set to true if you want to have a custom formated value
 					ts.queryValueField = "event_calendar_id"; 
-					//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id', true, 0));
+					//application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_id'));
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript> *
 				</td>
@@ -264,7 +264,7 @@
 						form.event_category_list_views="List,Month";
 					}
 					ts.multiple = true; 
-					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_category_list_views', true, 0));
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_category_list_views'));
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript> *
 				</td>

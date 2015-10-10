@@ -242,7 +242,7 @@
 						form.event_calendar_list_views="List,Month";
 					}
 					ts.multiple = true; 
-					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_list_views', true, 0));
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_list_views'));
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript> *
 				</td>
@@ -292,7 +292,7 @@
 					ts.query = qGroup2;
 					ts.queryLabelField = "user_group_name";
 					ts.queryValueField = "user_group_id";
-					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_user_group_idlist', true, 0));
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'event_calendar_user_group_idlist'));
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript>
 					(Leave empty unless you want to disable public access to this calendar and all its categories and events.)

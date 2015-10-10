@@ -230,7 +230,7 @@ var zLastAjaxVarName=""; */
 			//zSetupAjaxTableSort(zLastAjaxTableId, zLastAjaxURL, zLastAjaxVarName);
 		}
 	}*/
-	function zSetupAjaxTableSort(tableId, ajaxURL, ajaxVarName, ajaxVarNameOriginal){
+	function zSetupAjaxTableSort(tableId, ajaxURL, ajaxVarName, ajaxVarNameOriginal, ajaxCallback){
 		/*zLastAjaxTableId=tableId;
 		zLastAjaxURL=ajaxURL;
 		zLastAjaxVarName=ajaxVarName;*/
@@ -274,7 +274,7 @@ var zLastAjaxVarName=""; */
 					for(var i=0;i<arrId.length;i++){
 						var v=$("#"+arrId[i]+" ."+tableId+"_handle").attr("data-ztable-sort-primary-key-id"); 
 						arrId2.push(v); 
-					}
+					} 
 					var sortOrderList=arrId2.join("|");
 					//console.log("sorted list:"+sortOrderList);
 					var tempObj={};
@@ -301,7 +301,10 @@ var zLastAjaxVarName=""; */
 								}
 							}); 
 							originalSortOrderList=arrSort.join("|");
-							$("#"+tableId+" tbody").attr("data-original-sort", originalSortOrderList);
+							$("#"+tableId+" tbody").attr("data-original-sort", originalSortOrderList); 
+							ajaxCallback(tempObj); 
+
+							
 						}
 					};
 					tempObj.errorCallback=function(){

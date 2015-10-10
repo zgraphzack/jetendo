@@ -473,11 +473,30 @@
 		if(row.directory NEQ "#curImportPath#temp/database" and row.name NEQ "." and row.name NEQ ".."){
 			database=replace(replace(row.directory,"\","/","all"), "#curImportPath#temp/database/", "");
 			curTable=left(row.name, len(row.name)-4);
+			db.sql="show fields from #db.table(curTable, database)# ";
+			qCheck=db.execute("qCheck");
+			hasSiteId=false;
+			hasDeleted=false;
+			for(row in qCheck){
+				if(row.field EQ "site_id"){
+					hasSiteId=true;
+				}else if(row.field EQ "#curTable#_deleted"){
+					hasDeleted=true;
+				}
+			}
 			db.sql="delete from #db.table(curTable, database)# 
-			where site_id = #db.param(globals.site_id)#  and 
-			`#curTable#_deleted`=#db.param(0)# ";
-			if(debug) writeoutput("delete from `#database#`.`#curTable#` where site_id = #globals.site_id#;<br />");
-			writeLogEntry("delete from `#database#`.`#curTable#` where site_id = #globals.site_id#;");
+			where #db.param(1)# = #db.param(1)# ";
+			sql="delete from `#database#`.`#curTable#` where 1 = 1 ";
+			if(hasSiteId){
+				sql&=" and site_id = #globals.site_id# ";
+				db.sql&=" and site_id = #db.param(globals.site_id)# ";
+			}
+			if(hasDeleted){
+				sql&=" and `#curTable#_deleted`=0 ";
+				db.sql&=" and `#curTable#_deleted`=#db.param(0)# ";
+			}
+			if(debug) writeoutput("#sql#;<br />");
+			writeLogEntry("#sql#;");
 			result=db.execute("qDelete");
 			writeLogEntry("Result: #result#");
 		}
