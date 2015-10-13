@@ -236,7 +236,7 @@
 				<cfscript>
 				ts = StructNew();
 				ts.name = "keyword";
-				ts.style="width:150px;";
+				ts.style="min-width:150px; width:150px;";
 				application.zcore.functions.zInput_Text(ts);
 				</cfscript></td>
 				<cfif request.zos.originalURL NEQ "/z/reservation/admin/reservation-admin/calendarView">

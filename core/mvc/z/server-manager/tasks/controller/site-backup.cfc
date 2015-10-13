@@ -326,8 +326,8 @@ TODO: figure out why site backup doesn't get compressed.
 	if(local.backupGlobal EQ 1){
 		application.zcore.functions.zDeleteDirectory("#request.zos.backupDirectory#database-global-backup/");
 		application.zcore.functions.zcreatedirectory("#request.zos.backupDirectory#database-global-backup/");
-		application.zcore.functions.zDeleteDirectory("#request.zos.backupDirectory#database-schema/");
 	}
+	application.zcore.functions.zDeleteDirectory("#request.zos.backupDirectory#database-schema/");
 	application.zcore.functions.zcreatedirectory("#request.zos.backupDirectory#database-schema/");
 	outfileOptions="FIELDS TERMINATED BY '\t' ENCLOSED BY '""' ESCAPED BY '\\' LINES TERMINATED BY '\n' ";
 	if(request.zos.istestserver){

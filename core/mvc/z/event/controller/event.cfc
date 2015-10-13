@@ -1713,7 +1713,7 @@ searchEvents(ts);
 		<th>Enable Add To Calendar:</th>
 		<td>');
 		echo(application.zcore.functions.zInput_Boolean("event_config_add_to_calendar_enabled"));
-		echo('</td>
+		echo('<br>Don''t enable this on any commercial web site.  It is only free for personal/non-profit use.</td>
 		</tr>
 		<tr>
 		<th>Disable Robot Recurring<br />Event Indexing:</th>
