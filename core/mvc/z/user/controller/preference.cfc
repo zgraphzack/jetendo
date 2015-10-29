@@ -49,7 +49,8 @@
 	if(form.e EQ '' and form.k EQ '' and  structkeyexists(request.zsession, "user") and structkeyexists(request.zos.userSession.groupAccess, "user")){
 		db.sql="select * FROM #db.table("user", request.zos.zcoreDatasource)# user
 		where user_id = #db.param(request.zsession.user.id)# and 
-		site_id=#db.param(request.zsession.user.site_id)# ";
+		site_id=#db.param(request.zsession.user.site_id)# and 
+		user_deleted=#db.param(0)# ";
 		variables.qcheckemail=db.execute("qcheckemail");
 
 		variables.secureLogin=true;

@@ -259,7 +259,9 @@ var zLastAjaxVarName=""; */
 			if(this.id == '' || ($("."+tableId+"_handle", this).length && $("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
 				validated=false;
 			}else{
-				arrSort.push($("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id'));
+				if($("."+tableId+"_handle", this).length){
+					arrSort.push($("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id'));
+				}
 			}
 		}); 
 		var originalSortOrderList=arrSort.join("|");

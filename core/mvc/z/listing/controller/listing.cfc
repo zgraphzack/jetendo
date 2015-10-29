@@ -606,8 +606,8 @@ WHERE mls_deleted = #db.param(0)#
 				<td><input type="checkbox" name="mls_id" value="#qmls.mls_id#" <cfif ","&application.zcore.functions.zso(form, 'mls_id')&"," CONTAINS ",#qmls.mls_id#,">checked="checked"</cfif>></td>
 				<td>#qmls.mls_id#</td>
 				<td>#qmls.mls_name#</td>
-				<td>Office Id: <input type="text" name="app_x_mls_office_id#qmls.mls_id#" value="<cfif application.zcore.functions.zso(form, 'app_x_mls_office_id#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'app_x_mls_office_id#qmls.mls_id#')#</cfif>"></td>
-				<td>Agent Id: <input type="text" name="app_x_mls_agent_id#qmls.mls_id#" value="<cfif application.zcore.functions.zso(form, 'app_x_mls_agent_id#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'app_x_mls_agent_id#qmls.mls_id#')#</cfif>"></td>
+				<td>Office Id: <input type="text" name="app_x_mls_office_id#qmls.mls_id#" style="min-width:200px; width:200px;" value="<cfif application.zcore.functions.zso(form, 'app_x_mls_office_id#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'app_x_mls_office_id#qmls.mls_id#')#</cfif>"></td>
+				<td>Agent Id: <input type="text" name="app_x_mls_agent_id#qmls.mls_id#" style="min-width:200px; width:200px;" value="<cfif application.zcore.functions.zso(form, 'app_x_mls_agent_id#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'app_x_mls_agent_id#qmls.mls_id#')#</cfif>"></td>
 				<td><cfif qmls.mls_status EQ 1>Yes<cfelse>No</cfif></td>
 				<td><input type="radio" name="app_x_mls_primary" value="#qmls.mls_id#" <cfif app_x_mls_primary EQ 1>checked="checked"</cfif>></td>
 				<td>
@@ -618,8 +618,8 @@ WHERE mls_deleted = #db.param(0)#
 				<td><input type="checkbox" name="mls_id" value="#qmls.mls_id#" <cfif qmls.app_x_mls_url_id NEQ "">checked="checked"</cfif>></td>
 				<td>#qmls.mls_id#</td>
 				<td>#qmls.mls_name#</td>
-				<td><input type="text" name="app_x_mls_office_id#qmls.mls_id#" value="#qmls.app_x_mls_office_id#"></td>
-				<td><input type="text" name="app_x_mls_agent_id#qmls.mls_id#" value="#qmls.app_x_mls_agent_id#"></td>
+				<td><input type="text" name="app_x_mls_office_id#qmls.mls_id#" style="min-width:200px; width:200px;" value="#qmls.app_x_mls_office_id#"></td>
+				<td><input type="text" name="app_x_mls_agent_id#qmls.mls_id#" style="min-width:200px; width:200px;" value="#qmls.app_x_mls_agent_id#"></td>
 				<td><cfif qmls.mls_status EQ 1>Yes<cfelse>No</cfif></td>
 				<td><input type="radio" name="app_x_mls_primary" value="#qmls.mls_id#" <cfif qmls.app_x_mls_primary EQ 1>checked="checked"</cfif>></td>
 				<td>

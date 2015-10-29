@@ -1104,6 +1104,7 @@ displayGroupCom.ajaxInsert();
 	<cfif isquery(qgroup)> | <a href="/z/admin/site-options/manageOptions?site_option_app_id=#form.site_option_app_id#&site_option_group_id=#qgroup.site_option_group_id#&site_option_group_parent_id=#qgroup.site_option_group_parent_id#">Manage Options</a></cfif></p>
 	<table style="border-spacing:0px;" class="table-list" >
 		<tr>
+			<th>ID</th>
 			<th>Group Name</th>
 			<th>Admin</th>
 		</tr>

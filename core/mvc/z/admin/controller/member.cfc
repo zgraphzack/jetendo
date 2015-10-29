@@ -733,57 +733,54 @@
 							}
 						}
 						</cfscript>
-						<table style="border-spacing:0px; padding:5px;">
-							<tr>
-								<td style="vertical-align:top; "><script type="text/javascript">/* <![CDATA[ */ 
-									zmlsagentidarray=new Array();
-									 /* ]]> */
-									 </script>
-									<table style="border-spacing:0px;">
-										<cfloop query="qmls">
-										<tr <cfif qmls.currentrow MOD 2 EQ 0>style="background-color:##EFEFEF;"</cfif>>
-											<td><script type="text/javascript">/* <![CDATA[ */ 
-												zmlsagentidarray[#qmls.mls_id#]="mlsagentid#qmls.mls_id#";
-												 /* ]]> */
-												 </script> 
-												#qmls.mls_name#:
-												<input type="hidden" name="mls_id" value="#qmls.mls_id#" /></td>
-											<td><input type="text" name="mlsagentid#qmls.mls_id#" id="mlsagentid#qmls.mls_id#" 
-											value="<cfif application.zcore.functions.zso(form, 'mlsagentid#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'mlsagentid#qmls.mls_id#')#<cfelseif structkeyexists(mAIstruct, qmls.mls_id)>#mAIstruct[qmls.mls_id]#</cfif>" /></td>
-										</tr>
-										</cfloop>
-									</table></td>
-								<td style="vertical-align:top; "><script type="text/javascript">
-								/* <![CDATA[ */ 
-								function lookupAgentIdCallback(r){
-									var myObj=eval('('+r+')');
-									if(myObj.success){
-										if(typeof(zmlsagentidarray[myObj.mlsproviderid])!="undefined"){
-											var c=document.getElementById(zmlsagentidarray[myObj.mlsproviderid]);
-											c.value=myObj.agentid;
-										}
-									}
-									alert(myObj.message);
+						<script type="text/javascript">/* <![CDATA[ */ 
+							zmlsagentidarray=new Array();
+							 /* ]]> */
+							 </script>
+							<table style="border-spacing:0px;">
+								<cfloop query="qmls">
+								<tr <cfif qmls.currentrow MOD 2 EQ 0>style="background-color:##EFEFEF;"</cfif>>
+									<td><script type="text/javascript">/* <![CDATA[ */ 
+										zmlsagentidarray[#qmls.mls_id#]="mlsagentid#qmls.mls_id#";
+										 /* ]]> */
+										 </script> 
+										#qmls.mls_name#:
+										<input type="hidden" name="mls_id" value="#qmls.mls_id#" /></td>
+									<td><input type="text" name="mlsagentid#qmls.mls_id#" id="mlsagentid#qmls.mls_id#" 
+									value="<cfif application.zcore.functions.zso(form, 'mlsagentid#qmls.mls_id#') NEQ ''>#application.zcore.functions.zso(form, 'mlsagentid#qmls.mls_id#')#<cfelseif structkeyexists(mAIstruct, qmls.mls_id)>#mAIstruct[qmls.mls_id]#</cfif>" /></td>
+								</tr>
+								</cfloop>
+							</table>
+							<br /><br /><script type="text/javascript">
+						/* <![CDATA[ */ 
+						function lookupAgentIdCallback(r){
+							var myObj=eval('('+r+')');
+							if(myObj.success){
+								if(typeof(zmlsagentidarray[myObj.mlsproviderid])!="undefined"){
+									var c=document.getElementById(zmlsagentidarray[myObj.mlsproviderid]);
+									c.value=myObj.agentid;
 								}
-								function lookupAgentId(){
-										
-									var tempObj={};
-									tempObj.id="zMapListing";
-									tempObj.url="/z/admin/member/lookupagentid?zmlsnum="+escape(document.getElementById("zmlsnum").value);
-									tempObj.callback=lookupAgentIdCallback;
-									tempObj.cache=false;
-									zAjax(tempObj);
-								}
-								 /* ]]> */
-								 </script>
-								<h3>Agent Id Lookup</h3>
-								<p>Enter the MLS ## for one of this agent's listings to find their agent id.  This also works if you have multiple MLS providers, but you must have one MLS ## from each mls provider.</p>
-								<p>
-									<input type="text" name="zmlsnum" id="zmlsnum" value="" />
-									<input type="button" name="b1111" value="Lookup" onclick="lookupAgentId();" />
-							</td>
-						</tr>
-					</table></td>
+							}
+							alert(myObj.message);
+						}
+						function lookupAgentId(){
+								
+							var tempObj={};
+							tempObj.id="zMapListing";
+							tempObj.url="/z/admin/member/lookupagentid?zmlsnum="+escape(document.getElementById("zmlsnum").value);
+							tempObj.callback=lookupAgentIdCallback;
+							tempObj.cache=false;
+							zAjax(tempObj);
+						}
+						 /* ]]> */
+						 </script>
+						<h3>Agent Id Lookup</h3>
+						<p>Enter the MLS ## for one of this agent's listings to find their agent id.  This also works if you have multiple MLS providers, but you must have one MLS ## from each mls provider.</p>
+						<p>
+							<input type="text" name="zmlsnum" id="zmlsnum" value="" />
+							<input type="button" name="b1111" value="Lookup" onclick="lookupAgentId();" />
+					
+					</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Auto-assign Listing Inquiries","member.member.edit user_autoassign_listing_inquiry")#</th>

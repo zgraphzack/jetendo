@@ -96,6 +96,7 @@
 	if(form.method EQ "insert" or form.method EQ "publicInsertEvent"){
 		form.event_id="";
 	}
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', true, 0);
 
 	errors=false;
 	if(form.method EQ "publicInsertEvent"){

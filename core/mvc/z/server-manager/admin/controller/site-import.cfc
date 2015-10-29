@@ -19,7 +19,9 @@
 			<tr>
 				<td colspan="2" style="padding-left:10px;">
 				<p>Choosing an existing site or click "Add Site" to create one.  The site id columns will be automatically updated as needed.</p>
-				<p><strong>WARNING: If the import process fails, there may be permanent data loss.</strong>  Make sure you have made backups before updating an existing site.</p></td>
+				<p><strong>WARNING: If the import process fails, there may be permanent data loss.</strong>  Make sure you have made backups before updating an existing site.</p>
+				<p>If you are adding a new site, it won't work immediately after import.  You'll need to click on globals and then click save to make the site active.</p>
+			</td>
 			</tr>
 			<tr>
 				<td class="table-list" style="vertical-align:top; width:140px;">Site Tar File:</td>

@@ -194,7 +194,6 @@ Jetendo.SPA=function(options){
 			callback();
 			return;
 		}
-		// error loading script:http://www.farbeyondcode.com.127.0.0.2.xip.io/jetendo-listing/client/hash1.js:undefined
 		var a=document.createElement('script');
 		a.async=1;
 		a.loadCallback=callback;
