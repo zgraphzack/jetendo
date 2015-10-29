@@ -143,6 +143,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	retryLimit=3;
 	retrySleep=500;
 	enableRetry=false; 
+	if(request.zos.istestserver){
+		storeLastSQL(arguments.configStruct, arguments.sql);
+	}
 	try{
 		if(paramCount){
 			query attributeCollection="#queryStruct#"{
@@ -631,5 +634,52 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		</cfscript>
 	</cffunction> 
 	
-	</cfoutput>
+	<cffunction name="storeLastSQL" localmode="modern" access="public">
+		<cfargument name="configStruct" type="struct" required="yes">
+		<cfargument name="sql" type="string" required="yes">
+		<cfscript>
+		configStruct=arguments.configStruct;
+		sql=arguments.sql;
+		arrSQL=[];
+		startIndex=1;
+		running=true;
+		paramCount=arraylen(configStruct.arrParam);
+		paramIndex=1; 
+		savecontent variable="sql2"{
+			if(paramCount){
+				while(running){
+					questionMarkPosition=find("?", sql, startIndex);
+					if(questionMarkPosition EQ 0){
+						if(paramCount and paramIndex-1 GT paramCount){
+							throw("dbQuery.execute() failed: There were more question marks then parameters in the current sql statement.  You must use dbQuery.param() to specify parameters.  A literal question mark is not allowed.<br /><br />SQL Statement:<br />"&sql, "database");
+						}
+						running=false;
+					}else{
+						tempSQL=mid(sql, startIndex, questionMarkPosition-startIndex);
+						echo(tempSQL);						
+						echo("'"&application.zcore.functions.zescape(configStruct.arrParam[paramIndex].value)&"'");
+						startIndex=questionMarkPosition+1;
+						paramIndex++;
+					}
+				}
+				tempSQL=mid(sql, startIndex, len(sql)-(startIndex-1));
+				echo(tempSQL); 
+			}else{
+				echo(sql); 
+			}
+		}
+		variables.lastFullSQL=sql2;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="getSQL" localmode="modern" access="public">
+		<cfscript>
+		if(structkeyexists(variables, 'lastFullSQL')){
+			return variables.lastFullSQL;
+		}else{
+			return '';
+		}
+		</cfscript>
+	</cffunction>
+</cfoutput>
 </cfcomponent>

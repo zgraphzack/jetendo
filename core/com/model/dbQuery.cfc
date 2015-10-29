@@ -117,10 +117,16 @@
 		var c=0;
 		if(variables.config.autoReset){
 			c=variables.db.getConfig();
-        		structappend(variables.config, c, true);
+        	structappend(variables.config, c, true);
 			variables.config.parseSQLFunctionStruct=duplicate(c.parseSQLFunctionStruct);
 		}
 		variables.config.arrParam=[];
+		</cfscript>
+    </cffunction>
+
+	<cffunction name="getSQL" localmode="modern" access="public">
+    	<cfscript>
+		return variables.db.getSQL();
 		</cfscript>
     </cffunction>
 </cfcomponent>
