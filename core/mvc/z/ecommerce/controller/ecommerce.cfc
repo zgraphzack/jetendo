@@ -824,20 +824,19 @@ SELECT *, MATCH(a5_text) AGAINST (':facet1:2| magic') AS relevance FROM a5;
 		return rCom;
 	}	
 	form.site_id=form.sid;
-	/*
 	ts=StructNew();
 	ts.arrId=arrayNew(1);
-	arrayappend(ts.arrId,trim(form.ecommerce_config_category_url_id));
-	ts.site_id=form.site_id;
 	ts.app_id=this.app_id;
-	rCom=application.zcore.app.reserveAppUrlId(ts);
+	ts.site_id=form.site_id;
+	// arrayappend(ts.arrId,trim(form.ecommerce_config_category_url_id)); 
+	arrayappend(ts.arrId,trim(form.ecommerce_config_paypal_custom_ipn_url_id));
+	rCom=application.zcore.app.reserveAppUrlId(ts); 
 	if(rCom.isOK() EQ false){
 		return rCom;
-		application.zcore.functions.zstatushandler(request.zsid);
+		/*application.zcore.functions.zstatushandler(request.zsid);
 		application.zcore.functions.zReturnRedirect(request.cgi_script_name&"?method=configForm&app_x_site_id=#this.app_x_site_id#&zsid=#request.zsid#");
-		application.zcore.functions.zabort();
+		application.zcore.functions.zabort();*/
 	}		
-	*/
 	form.ecommerce_config_updated_datetime=request.zos.mysqlnow;
 	ts.table="ecommerce_config";
 	ts.struct=form;
@@ -954,6 +953,12 @@ SELECT *, MATCH(a5_text) AGAINST (':facet1:2| magic') AS relevance FROM a5;
 		</tr>');
 		
 		
+		echo('<tr>
+		<th>Paypal IPN Custom App ID:</th>
+		<td>');
+		writeoutput(application.zcore.app.selectAppUrlId("ecommerce_config_paypal_custom_ipn_url_id", form.ecommerce_config_paypal_custom_ipn_url_id, 15));
+		echo('</td>
+		</tr>');
 		
 		/*
 		<tr>

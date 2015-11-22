@@ -143,8 +143,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 	retryLimit=3;
 	retrySleep=500;
 	enableRetry=false; 
-	if(request.zos.istestserver){
+	if(request.zos.istestserver and structkeyexists(request.zos, 'storeNextQuery')){
 		storeLastSQL(arguments.configStruct, arguments.sql);
+		structdelete(request.zos, 'storeNextQuery');
 	}
 	try{
 		if(paramCount){

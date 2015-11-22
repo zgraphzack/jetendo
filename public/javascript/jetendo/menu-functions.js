@@ -299,7 +299,7 @@ var arrOriginalMenuButtonWidth=[];
  
 		//console.log(currentMenu.marginSize);
 		//currentMenu.ul.detach(); 
-		console.log(containerDivId+":"+"containerWidth:"+$("#"+containerDivId).width());
+		//console.log(containerDivId+":"+"containerWidth:"+$("#"+containerDivId).width());
 		$("#"+containerDivId).width("100%");
 		currentMenu.containerWidth=$("#"+containerDivId).width()-1;
 		//console.log(currentMenu.containerWidth+":"+currentMenu.navWidth+":"+currentMenu.marginSize);

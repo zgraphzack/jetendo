@@ -129,4 +129,10 @@
 		return variables.db.getSQL();
 		</cfscript>
     </cffunction>
+	<cffunction name="saveSQL" localmode="modern" access="public">
+    	<cfscript>
+		request.zos.storeNextQuery=true;
+		</cfscript>
+    </cffunction>
+
 </cfcomponent>

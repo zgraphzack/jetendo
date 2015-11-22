@@ -1903,7 +1903,8 @@
 		db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE content_id = #db.param(form.content_parent_id)# and 
 		site_id = #db.param(request.zos.globals.id)# and 
-		site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# ";
+		site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
+		content_deleted=#db.param(0)#  ";
 		qcontentp=db.execute("qcontentp");
 		if(qcontentp.recordcount EQ 0){
 			application.zcore.functions.zredirect("/z/content/admin/content-admin/index");

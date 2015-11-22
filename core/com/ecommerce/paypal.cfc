@@ -261,367 +261,104 @@ application.zcore.paypal.displayButton(ts);
 	</form>
 </cffunction>
 
-<cffunction name="setDebugData" localmode="modern" access="public">
-	<cfargument name="struct" type="struct" required="yes">
-	<cfscript>
-	arguments.struct.option_selection1="One time payment";
-	arguments.struct.ipn_track_id="576f2e315ffd1";
-	arguments.struct.charset="windows-1252";
-	arguments.struct.receiver_id="DPCMATR4C2RE4";
-	arguments.struct.protection_eligibility="Ineligible";
-	arguments.struct.resend="true";
-	arguments.struct.payment_type="instant";
-	arguments.struct.payment_status="Completed";
-	arguments.struct.shipping="0.00";
-	arguments.struct.payer_status="verified";
-	arguments.struct.tax="0.00";
-	arguments.struct.payment_gross="150.00";
-	arguments.struct.handling_amount="0.00";
-	arguments.struct.receiver_email="receiver@yourcompany.com";
-	arguments.struct.first_name="First";
-	arguments.struct.last_name="Last";
-	arguments.struct.item_number="";
-	arguments.struct.verify_sign="Ai1PaghZh5FmBLCDCTQpwG8jB264AdJXSW248UAUciEPzCLnAhBdy4G.";
-	arguments.struct.quantity="1";
-	arguments.struct.residence_country="US";
-	arguments.struct.custom="";
-	arguments.struct.payment_date="09:01:26 Jul 21, 2014 PDT";
-	arguments.struct.payer_email="client@email.com";
-	arguments.struct.payer_id="RY9Q8EYMZXGSQ";
-	arguments.struct.payment_fee="4.65";
-	arguments.struct.notify_version="3.8";
-	arguments.struct.txn_type="web_accept";
-	arguments.struct.mc_currency="USD";
-	arguments.struct.payer_business_name="Client";
-	arguments.struct.txn_id="0WF11855YK1274414";
-	arguments.struct.option_name1="Payment Option";
-	arguments.struct.invoice="1146";
-	arguments.struct.mc_fee="4.65";
-	arguments.struct.mc_gross="150.00";
-	arguments.struct.item_name="Invoice ##1";
-	arguments.struct.transaction_subject="";
-	arguments.struct.business=request.zos.paypalSandboxMerchantID;
-	</cfscript>
-</cffunction>
 
-<cffunction name="verifyIPN" localmode="modern" access="public" returntype="struct">
-	<cfargument name="struct" type="struct" required="yes">
-	<cfargument name="sandboxEnabled" type="boolean" required="yes">
+
+<cffunction name="redirectToPaypalNVPExpressCheckout" localmode="modern" access="public">
+	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	ss=arguments.struct;
-	postURL="https://www.paypal.com/cgi-bin/webscr";
-	if(arguments.sandboxEnabled){
-		postURL="https://www.sandbox.paypal.com/cgi-bin/webscr";
-	}
-	http url="#postURL#" charset="#ss.charset#" port="443" method="POST" throwonerror="no" timeout="30"{
-		httpparam type="formfield" name="cmd" encoded="yes" value="_notify-validate";
-		for(i in ss){
-			httpparam type="formfield" name="#lcase(i)#" encoded="yes" value="#ss[i]#";
-		}
-	}
-	if(left(CFHTTP.statusCode,3) NEQ '200'){
-		// failed.
-		return { errorMessage:"Failed to verify IPN due to HTTP failure: ", success:false};
-	}else{
-		if(trim(cfhttp.FileContent) EQ "VERIFIED"){
-			return { errorMessage:"", success:true};
-		}else{
-			return { errorMessage:"Failed to verify IPN with result being: #cfhttp.FileContent#", success:true};
-		}
+	rs=callPaypalNVPAPI(arguments.ss);
+	paypalUrl="https://api-3t.paypal.com/nvp";
+	if(request.paypalTestMode){
+		paypalUrl="https://api-3t.sandbox.paypal.com/nvp";
 	} 
+
+	if(not rs.success or not structkeyexists(rs.struct, 'ack') or rs.struct.ack NEQ "SUCCESS"){ 
+
+		savecontent variable="out"{
+			echo('<h2>Paypal Checkout NVP API Call Failed</h2>
+			<p>API URL: #paypalUrl#</p>');
+			writedump(ss); 
+		}
+		ts={
+			type:"Custom",
+			errorHTML:out,
+			scriptName:'/create-listings/index',
+			url:request.zos.globals.domain&request.zos.originalURL,
+			exceptionMessage:"Paypal Checkout NVP API Call Failed",
+			// optional
+			lineNumber:'1'
+		}
+		application.zcore.functions.zLogError(ts);
+		return false;
+	}
+	/*
+	// uncomment to debug api responses
+	echo(cfhttp.filecontent);
+	writedump(ss);
+	writedump(form);
+	writedump(cfhttp);
+	abort;*/
+
+	//application.zcore.functions.zRedirect(cfhttp.filecontent);
+
+	checkoutLink="https://www.paypal.com/cgi-bin/webscr?cmd=_express-checkout&useraction=commit&token="&rs.struct.token;
+	if(request.paypalTestMode){
+		checkoutLink="https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&useraction=commit&token="&rs.struct.token;
+	}
+	// redirect with javascript to disable back button from working without the POST warning message
 	</cfscript>
+	<h2>Redirecting to PayPal.com Checkout</h2>  
+	<p>Please don't use the back button.</p>
+	<script type="text/javascript">
+	setTimeout(function(){
+		var a=window.location;
+		a.href='#checkoutLink#';
+	}, 2000);
+	</script> 
 </cffunction>
-	
-	
-<cffunction name="processIPN" localmode="modern" access="public">
-	<cfargument name="struct" type="struct" required="yes">
+
+
+<cffunction name="callPaypalNVPAPI" localmode="modern" access="public">
+	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	ss=arguments.struct; 
-	setting requesttimeout="60";
+	ss=arguments.ss;
 
-	if(structkeyexists(ss, 'debug1')){
-		/**/
-		echo('debug disabled32432');
-		abort;
+	paypalUrl="https://api-3t.paypal.com/nvp";
+	if(request.paypalTestMode){
+		paypalUrl="https://api-3t.sandbox.paypal.com/nvp";
+	} 
+
+	http url="#paypalURL#" method="post" timeout="15"{
+		for(i in ss.paypalData){
+			httpparam type="formfield" name="#i#" value="#ss.paypalData[i]#"{};
+		}
 	}
-	sandboxEnabled=false;
-	if(application.zcore.functions.zso(ss, 'test_ipn',false,0) EQ 1){
-		// force test if paypal post is a test.
-		sandboxEnabled=true;	
+	if(cfhttp.statuscode NEQ "200 OK"){
+		savecontent variable="out"{
+			echo('<h2>Paypal Checkout NVP API Call Failed</h2>
+			<p>API URL: #paypalUrl#</p>');
+			writedump(ss); 
+		}
+		ts={
+			type:"Custom",
+			errorHTML:out,
+			scriptName:request.zos.originalURL,
+			url:request.zos.globals.domain&request.zos.originalURL,
+			exceptionMessage:"Paypal Checkout NVP API Call Failed",
+			// optional
+			lineNumber:'1'
+		}
+		application.zcore.functions.zLogError(ts);
+		return {success:false};
 	}
 
-	// force off test mode so I can test database updates.
-	//sandboxEnabled=false;
-
-	structdelete(ss,"fieldnames");
-	ss.charset=application.zcore.functions.zso(ss, 'charset', false, 'utf-8');
-
-	ss.invoice=application.zcore.functions.zso(ss, 'invoice');
-	if(ss.invoice CONTAINS ","){
-		ss.invoice=listgetat(ss.invoice,1,",");	
-	}else if(ss.invoice CONTAINS "-"){
-		ss.invoice=listgetat(ss.invoice,1,"-");	
-	}
-	ts=structnew();
-	ts.datasource="intranet";
-	ts.table="paypal_ipn_log";
-	ts.struct=structnew();
-	ts.struct.invoice_id=ss.invoice;
-	if(failedIpn){
-		ts.struct.paypal_ipn_log_verified=0;
-	}else{
-		ts.struct.paypal_ipn_log_verified=1;
-	}
-	ts.struct.paypal_ipn_log_datetime=dateformat(now(),"yyyy-mm-dd")&" "&timeformat(now(),"HH:mm:ss");
-	ts.struct.paypal_ipn_log_updated_datetime=ts.struct.paypal_ipn_log_datetime;
-	ts.struct.paypal_ipn_log_data=serializeJson(ss);
-	paypal_ipn_log_id=application.zcore.functions.zInsert(ts);
+	ts={};
+	application.zcore.functions.zParseQueryStringToStruct(cfhttp.filecontent, ts);
+	return {success:true, struct:ts}; 
+	</cfscript>
 	
-	if(failedIpn EQ false){
-		echo('Not failed1<br />');
-		// mark invoice paid if the values match up with the complete transaction etc.
-		skipProcessing=false;
-		if(structkeyexists(ss, 'txn_type')){
-			if(ss.txn_type EQ "subscr_signup"){
-				qInvoice=zexecutesql("UPDATE invoice SET invoice_paypal_subscription_active='1' WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-				skipProcessing=true;
-			}else if(ss.txn_type EQ "subscr_eot"){
-				qInvoice=zexecutesql("UPDATE invoice SET invoice_paypal_subscription_active='0' WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-				skipProcessing=true;
-			}else if(ss.txn_type EQ "subscr_cancel"){
-				qInvoice=zexecutesql("UPDATE invoice SET invoice_paypal_subscription_active='0', invoice_status='1' WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-				skipProcessing=true;
-			}else if(ss.txn_type EQ "subscr_failed"){
-				qInvoice=zexecutesql("UPDATE invoice SET invoice_paypal_subscription_active='0' WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-				skipProcessing=true;
-			}else if(ss.txn_type EQ "subscr_modify"){
-				qInvoice=zexecutesql("select * FROM invoice WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-				statusMessage="Successfully verified IPN, but the txn_type was #ss.txn_type# and the following changes were made: ";
-				if(qInvoice.recordcount NEQ 0){
-					newAmount=0;
-					if(application.zcore.functions.zso(ss, 'amount1',true) NEQ 0){
-						newAmount=amount1;
-					}else if(application.zcore.functions.zso(ss, 'amount2',true) NEQ 0){
-						newAmount=amount2;
-					}else if(application.zcore.functions.zso(ss, 'amount3',true) NEQ 0){
-						newAmount=amount3;
-					}
-					if(newAmount NEQ 0){
-						statusMessage&=" | Amount was updated";
-						zexecutesql("UPDATE invoice SET invoice_cost='"&application.zcore.functions.zescape(newAmount)&"' WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-					}
-					if(application.zcore.functions.zso(ss, 'recur_times',true) NEQ 0){
-						recurCount=application.zcore.functions.zso(ss, 'recur_times')-1;
-						statusMessage&=" | Billing Cycles was updated";
-						newCount=qInvoice.invoice_recurring_paid_cycles+recurCount;
-						if(option_selection1 EQ "Annual payment (auto-pay)"){
-							newCount=qInvoice.invoice_recurring_paid_cycles+(recurCount*12);
-						}
-						zexecutesql("UPDATE invoice SET invoice_recurring_billing_cycles='"&application.zcore.functions.zescape(newCount)&"' WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-					}
-				}
-				//failedIpn=true;
-				skipProcessing=true;
-			}else if((ss.txn_type NEQ "subscr_payment" and ss.txn_type NEQ "web_accept") or application.zcore.functions.zso(ss, 'mc_gross',true) LT 0){
-				// 
-				statusMessage="Successfully verified IPN, but the txn_type was #ss.txn_type# and mc_gross was "&application.zcore.functions.zso(ss, 'mc_gross')&" which are not processed by my system. ";
-				failedIpn=true;
-			}
-		}else{
-			statusMessage="Payment status: "&application.zcore.functions.zso(ss, 'payment_status')&".";
-			skipProcessing=true;
-		}
-		if(failedIpn EQ false and skipProcessing EQ false){
-			echo('Not failed2<br />');
-			// only completed positive payments that are type: subscr_payment or web_accept are processed.
-			if(payment_status EQ "Completed"){// or payment_status EQ "Pending"){
-				if(ss.invoice EQ ""){
-					failedIpn=true;
-					statusMessage="Invoice id was missing - You must manually mark this payment paid.";
-				}
-				/*
-				txn_type "subscr_signup" This Instant Payment Notification is for a subscription sign-up. 
-				"subscr_cancel" This Instant Payment Notification is for a subscription cancellation. 
-				"subscr_modify" This Instant Payment Notification is for a subscription modification. 
-				"subscr_failed" This Instant Payment Notification is for a subscription payment failure. 
-				"subscr_payment" This Instant Payment Notification is for a subscription payment. 
-				"subscr_eot" This Instant Payment Notification is for a subscription's end of term. 
-				*/
-				// this invoice was paid!
-				// find invoice
-				qInvoice=zexecutesql("select * FROM invoice WHERE invoice_id = '"&application.zcore.functions.zescape(ss.invoice)&"'","intranet");
-				if(qInvoice.recordcount EQ 0){
-					statusMessage="Successfully verified IPN, but no invoice could be found. Must be spam or a bug.";
-					failedIpn=true;
-				}
-				if(qInvoice.invoice_status EQ 2){
-					statusMessage="Successfully verified IPN and found invoice, but invoice was cancelled.  Need to manually handle the transaction.";
-					failedIpn=true;
-				}
-				if(qInvoice.invoice_status EQ 1){
-					statusMessage="Successfully verified IPN and found invoice, but invoice was already paid in full. Check for recurring or possible double billing.";
-					failedIpn=true;
-				}
-				if(qInvoice.recordcount NEQ 0 and failedIpn EQ false){
-					echo('Not failed3<br />');
-					cycleCount=0;
-					if(option_selection1 EQ "Annual payment (auto-pay)"){
-						cycleCount=12;
-						recurringPaidCycles=qInvoice.invoice_recurring_paid_cycles+12;
-						if(qInvoice.invoice_cost*12 NEQ mc_gross){
-							statusMessage="Successfully verified IPN and found invoice, but invoice cost doesn't match gross paypal amount paid.";
-							failedIpn=true;
-						}
-					}else if(option_selection1 EQ "Pay remaining balance"){
-						if(qInvoice.invoice_recurring_billing_cycles EQ 0){
-							cycleCount=1;
-							recurringPaidCycles=qInvoice.invoice_recurring_paid_cycles+1;
-						}else{
-							cycleCount=qInvoice.invoice_recurring_billing_cycles;
-							recurringPaidCycles=qInvoice.invoice_recurring_billing_cycles;
-						}
-					}else{
-						cycleCount=1;
-						// monthly auto-pay or one time payments just increase the paid cycles
-						if(qInvoice.invoice_recurring EQ 1){
-							c393=round(mc_gross/qInvoice.invoice_cost);
-							recurringPaidCycles=qInvoice.invoice_recurring_paid_cycles+c393;
-						}else{
-							recurringPaidCycles=qInvoice.invoice_recurring_paid_cycles+1;
-						}
-						if(qInvoice.invoice_cost NEQ mc_gross){
-							statusMessage="Successfully verified IPN and found invoice, but invoice cost doesn't match gross paypal amount paid.";
-							failedIpn=true;
-						}
-					}
-					if(qInvoice.invoice_recurring EQ 1){
-						newInvoiceStatus=0;
-						if(qInvoice.invoice_recurring_billing_cycles NEQ 0){
-							if(recurringPaidCycles GT qInvoice.invoice_recurring_billing_cycles){
-								statusMessage="Successfully verified IPN and found invoice, but too many billing cycles have been paid for.  This payment was recorded, but need to check why the subscription didn't stop and maybe refund this transaction.";
-								failedIpn=true;
-								newInvoiceStatus=1;
-								// all payments have been made for this recurring invoice, mark as fully paid
-							}else if(recurringPaidCycles EQ qInvoice.invoice_recurring_billing_cycles){
-								// all payments have been made for this recurring invoice, mark as fully paid
-								newInvoiceStatus=1;
-							}
-						}
-						// create invoice_payment for recurring invoices.
-						ts=structnew();
-						ts.datasource="intranet";
-						ts.table="invoice_payment";
-						ts.struct=structnew();
-						ts.struct.invoice_id=qInvoice.invoice_id;
-						ts.struct.invoice_payment_cancelled=0;
-						ts.struct.invoice_payment_paypal_merchant_fee=application.zcore.functions.zso(ss, 'mc_fee',0);
-						if(payment_status EQ "Pending"){
-							ts.struct.invoice_payment_paypal_pending=1;
-						}else{
-							ts.struct.invoice_payment_paypal_pending=0;
-						}
-						ts.struct.invoice_payment_amount=ss.mc_gross;
-						ts.struct.invoice_payment_paid_cycles=cycleCount;
-						ts.struct.invoice_payment_datetime=dateformat(now(),"yyyy-mm-dd")&" "&timeformat(now(),"HH:mm:ss");
-						ts.struct.invoice_payment_paypal_email=ss.payer_email; 
-						ts.struct.invoice_payment_paypal_ipn_data=arraytolist(arrForm,chr(10));
-						if(sandboxEnabled EQ false){
-							invoice_payment_id=application.zcore.functions.zInsert(ts);
-							if(invoice_payment_id EQ false){
-								statusMessage="Successfully verified IPN and found invoice, but invoice_payment record failed to be inserted to database.";
-								failedIpn=true;
-							}
-						}
-						invoicePaymentStruct=ts;
-					}else{
-						newInvoiceStatus=1;
-					}
-					
-					echo('Not failed4<br />');
-					ts=structnew();
-					ts.datasource="intranet";
-					ts.table="invoice";
-					ts.struct=structnew();
-					if(structkeyexists(ss, 'debug1')){
-						ts.debug=true;
-					}
-					ts.forceWhereFields="invoice_id";
-					ts.struct.invoice_id=qInvoice.invoice_id;
-					ts.struct.invoice_status=newInvoiceStatus;
-					ts.struct.invoice_recurring_paid_cycles=recurringPaidCycles;
-					ts.struct.invoice_paypal_merchant_fee=application.zcore.functions.zso(ss, 'mc_fee', false, 0);
-					ts.struct.invoice_paid=ss.mc_gross;
-					ts.struct.invoice_paid_datetime=dateformat(now(),"yyyy-mm-dd")&" "&timeformat(now(),"HH:mm:ss");
-					if(option_selection1 NEQ "Pay Remaining Balance" and option_selection1 NEQ "Annual payment (auto-pay)" and qInvoice.invoice_cost-ss.mc_gross LT 0){
-						statusMessage="Successfully verified IPN and found and processed invoice, but customer overpaid on paypal by "&(ss.mc_gross-qInvoice.invoice_cost);
-						failedIpn=true;
-					}
-					ts.struct.invoice_paypal_email=ss.payer_email; 
-					ts.struct.invoice_paypal_ipn_data=arraytolist(arrForm,chr(10));
-					r="test";
-					if(sandboxEnabled EQ false){
-						r=application.zcore.functions.zUpdate(ts);
-						if(r EQ false){
-							statusMessage="Successfully verified IPN and found invoice, but invoice database update failed.";
-							failedIpn=true;
-						}
-					}
-					invoiceStruct=ts;
-					if(structkeyexists(ss, 'debug1')){
-						writedump(r);
-						writedump(request.zos.arrQueryLog);
-						writedump(invoiceStruct);
-					}
-				}
-			}else{
-				statusMessage="Successfully verified IPN, but payment_status was #ss.payment_status#.";
-				failedIpn=true;
-			}
-		}
-	}
-	if(structkeyexists(ss, 'debug1')){
-		verifyResult={success:true, errorMessage:""};
-	}else{
-		verifyResult=verifyIPN();
-		if(not verifyResult.success){
-			throw(verifyResult.errorMessage);
-		}
-	}
-	if(sandboxEnabled or failedIpn){
-		echo('Failed<br />');
-		savecontent variable="allVars"{
-			echo('#statusMessage#<br><br>');
-			if(isDefined('invoicePaymentStruct')){
-				echo('<h2>INVOICE PAYMENT STRUCT</h2>');
-				writedump(invoicePaymentStruct);
-				echo('<br>');
-			}
-			if(isDefined('invoiceStruct')){
-				echo('<h2>INVOICE STRUCT</h2>');
-				writedump(invoiceStruct);
-				echo('<br>');
-			}
-			writedump(ss);
-			echo('<br>');
-			writedump(cfhttp);
-			echo('<br>');
-			writedump(request.zos.cgi);
-		}
-		if(failedIpn){
-			mail spoolenable="no"  to="#request.zos.developerEmailTo#" from="#request.zos.developerEmailFrom#" subject="Paypal IPN Failue on #request.zos.currentHostName#" type="html" charset="windows-1252"{
-				echo('<html>
-					<head><title>Error</title></head><body>
-			There was a failed IPN<br>
-			 <a href="#request.zos.currentHostName#/z/ecommerce/admin/paypal/ipnView?paypal_ipn_log_id=#paypal_ipn_log_id#">View failed IPN</a><br><br>
-			 All Request/Response Data:<br><br>
-			 #allVars#
-			 
-			</body></html>');
-			}
-		}
-	}
-	abort;
-	</cfscript> 
 </cffunction>
+
+ 
 </cfoutput>
 </cfcomponent>

@@ -1054,6 +1054,12 @@ If the link does not work, please copy and paste the entire link in your browser
 	var theMeta=0;
 	var c2=0;
 	var local=structnew();
+
+	customURL=application.zcore.functions.zso(request.zos.globals, 'customCreateAccountURL');
+	if(customURL NEQ ""){
+		application.zcore.functions.z301redirect(application.zcore.functions.zURLAppend(customURL, "modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced', true)#&reloadOnNewAccount=#application.zcore.functions.zso(form, 'reloadOnNewAccount')#"));
+	}
+
 	this.init();
 	
 

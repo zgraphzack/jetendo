@@ -324,7 +324,7 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 						FROM #db.table("track_page", request.zos.zcoreDatasource)# track_page 
 						WHERE site_id =#db.param(request.zOS.globals.id)# and 
 						track_user_id =#db.param(track_user_id)# and 
-						track_page_deleted = #db.param(0)#
+						track_page_deleted = #db.param(0)# and 
 						track_page_qs LIKE #db.param('%gclid=%')#";
 						qPage=db.execute("qPage");
 						</cfscript>

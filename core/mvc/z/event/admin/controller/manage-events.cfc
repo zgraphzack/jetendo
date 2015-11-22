@@ -830,7 +830,7 @@
 					/* ]]> */
 					</script>
 
-					<input type="text" name="event_map_coordinates" id="event_map_coordinates" value="#htmleditformat(form.event_map_coordinates)#" /> 
+					<input type="text" name="event_map_coordinates" style="min-width:100px; width:100px;" id="event_map_coordinates" value="#htmleditformat(form.event_map_coordinates)#" /> 
 					<a href="##" class="mapLocationLink" rel="nofollow">Verify/Set Map Location</a></td>
 			</tr> 
 			<tr>

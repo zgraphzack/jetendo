@@ -1132,7 +1132,11 @@ notes: optionally delete an existing image that has a field in the specified dat
 	if(pos EQ 0){
 		return "";
 	}else{
-		return left(arguments.filePath, len(arguments.filepath)-pos);
+		if(len(arguments.filepath)-pos EQ 0){
+			return "";
+		}else{
+			return left(arguments.filePath, len(arguments.filepath)-pos);
+		}
 	}
 	</cfscript>
 </cffunction>

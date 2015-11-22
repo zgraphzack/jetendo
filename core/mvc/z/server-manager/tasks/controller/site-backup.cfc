@@ -100,6 +100,7 @@ TODO: figure out why site backup doesn't get compressed.
 		"rets26_activeagent": true,
 		"rets26_office": true,
 		"rets26_property": true,
+		"rets27_property":true,
 		"rets4_agent": true,
 		"rets4_office": true,
 		"rets4_property": true,

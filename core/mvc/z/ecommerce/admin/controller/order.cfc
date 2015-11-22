@@ -5,7 +5,7 @@
     application.zcore.adminSecurityFilter.requireFeatureAccess("Orders", false);
 	</cfscript>
 	<h2>Manage Orders</h2>
-	<p>Coming soon</p>
+	<!--- <p>Coming soon</p> --->
 </cffunction>
 	
 

@@ -2822,7 +2822,11 @@ Define this function in another CFC to override the default email format
 			if(not structkeyexists(arguments.struct, 'hideNavigation') or not arguments.struct.hideNavigation){
 				application.zcore.siteOptionCom.getSetParentLinks(q12.site_option_group_id, curParentId, curParentSetId, false);
 			}
+			if(qGroup.site_option_group_list_description NEQ ""){
+				echo(qGroup.site_option_group_list_description);
+			}
 		}
+
 		arrSearchSQL=[];
 		searchStruct={};
 		searchFieldEnabledStruct={};

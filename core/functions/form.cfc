@@ -878,7 +878,7 @@ writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
 		if(len(arguments.ss.labelList) NEQ 0){
 			label = listGetAt(arguments.ss.labelList, i, arguments.ss.delimiter, true);			
 		}
-		output = output&'<input ';
+		output = output&'<span class="zRadioGroupOptionSpan"><input ';
 		if(len(arguments.ss.statusbar) NEQ 0){
 			output = output&'onmouseover="window.status = ''#listGetAt(arguments.ss.statusbar,i, arguments.ss.delimiter, true)#'';" onmouseout="window.status = '''';" title="#listGetAt(arguments.ss.statusbar,i, true)#" ';
 		}
@@ -899,7 +899,7 @@ writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
 		}else{
 			output = output&' /> ';
 		}
-		output = output&'<label for="#arguments.ss.name#_#i#">'&label&"</label> ";
+		output = output&'<label for="#arguments.ss.name#_#i#">'&label&"</label></span> ";
 	}
 	if(arguments.ss.style NEQ ''){
 		output = output&'</span>';

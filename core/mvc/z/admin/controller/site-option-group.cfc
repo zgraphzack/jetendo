@@ -1494,6 +1494,18 @@ displayGroupCom.ajaxInsert();
 						</cfscript></td>
 				</tr>
 				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("List View Description:","member.site-option-group.edit site_option_group_list_description")#</th>
+					<td>
+						<cfscript>
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor.instanceName	= "site_option_group_list_description";
+						htmlEditor.value			= application.zcore.functions.zso(form, 'site_option_group_list_description');
+						htmlEditor.width			= "#request.zos.globals.maximagewidth#px";
+						htmlEditor.height		= 250;
+						htmlEditor.create();
+						</cfscript></td>
+				</tr>
+				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Parent Field","member.site-option-group.edit site_option_group_parent_field")#</th>
 					<td><input type="text" name="site_option_group_parent_field" id="site_option_group_parent_field" value="#htmleditformat(form.site_option_group_parent_field)#" /> (Optional, enables indented heirarchy on list view)</td>
 				</tr>

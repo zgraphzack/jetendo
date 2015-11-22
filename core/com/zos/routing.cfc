@@ -15,8 +15,10 @@
 		request.zos.routingDisableComponentInvoke=false;
 		request.zos.routingCfcMethodWasMissing=false;
 		if((request.zos.isdeveloper EQ false and request.zos.isserver EQ false) or structkeyexists(form,'zdebugurl2') EQ false){
-			form.zdebugurl2=false;
-			
+			zdebugurl2=false;
+		}else{
+			zdebugurl2=form.zdebugurl2;
+			structdelete(form, 'zdebugurl2');
 		}
 		
 		if(structkeyexists(form,request.zos.urlRoutingParameter)){
@@ -50,7 +52,7 @@
 						request.zos.routingCfcMethodWasMissing=true;
 					}
 					request.zos.routingDisableComponentInvoke=false;
-					if(form.zdebugurl2){
+					if(zdebugurl2){
 						writeoutput('url was a cfc :'&arguments.theURL&'<br />');
 					}
 				}
@@ -71,11 +73,11 @@
 					curURLPath=arrURL[1];
 					arraydeleteat(arrURL, 1);
 					
-						if(form.zdebugurl2){
+						if(zdebugurl2){
 								writeoutput('curdata:'&curURLData&'<br />');
 						}
 					if(structkeyexists(application.sitestruct[request.zos.globals.id].registeredControllerStruct, "/controller"&curURLData)){
-						if(form.zdebugurl2){
+						if(zdebugurl2){
 							writeoutput("Found controller in application scope: "&"/controller"&curURLData&".cfc<br />");
 						}
 						break;
@@ -88,11 +90,11 @@
 							routingISMVC=true;
 							request.zos.routingIsCFC=true;
 							request.zos.scriptNameTemplate=application.sitestruct[request.zos.globals.id].registeredControllerStruct[cfcLookupName];
-							if(form.zdebugurl2){
+							if(zdebugurl2){
 								writeoutput("Found controller in site struct: "&curURLData&"<br />");
 							}
 						}else{
-							if(form.zdebugurl2){
+							if(zdebugurl2){
 								writeoutput("Missing controller in application scope: "&curURLData&" | switching to global application struct<br />");
 							}
 							controllerFound=false;
@@ -111,13 +113,13 @@
 						arraydeleteat(arrURL, 1);
 						
 						if(structkeyexists(application.zcore.registeredControllerStruct, "/controller"&curURLData)){
-							if(form.zdebugurl2){
+							if(zdebugurl2){
 								writeoutput("Found controller in site struct: "&"/controller"&curURLData&".cfc<br />");
 							}
 							isUsingMVCAppScope=false;
 							break;
 						}else if(structkeyexists(application.zcore.registeredControllerStruct, curURLData) EQ false){
-							if(form.zdebugurl2){
+							if(zdebugurl2){
 								writeoutput("Missing path: "&curURLData&" | switching to global application struct<br />");
 							}
 							isUsingMVCAppScope=false;
@@ -131,7 +133,7 @@
 				cfcLookupName=lastURLData&"/controller/"&curURLPath;
 				cfcURLName=lastURLData&"/"&curURLPath;
 				
-				if(form.zdebugurl2){
+				if(zdebugurl2){
 					writeoutput('cfcLookupName:'&cfcLookupName&'<br />cfcURLName:'&cfcURLName&"<br />isUsingMVCAppScope:"&isUsingMVCAppScope&"<br />");
 					writeoutput('Application MVC Cache<br />');
 					writeoutput('application.zcore.registeredControllerPathStruct<br />');
@@ -160,13 +162,13 @@
 					//arraydeleteat(arrURL,1);
 					request.zos.routingCfcMethodWasMissing=true;
 					request.zos.routingDisableComponentInvoke=false;
-					if(form.zdebugurl2){
+					if(zdebugurl2){
 						writeoutput("Running MVC Component:"&request.zos.scriptNameTemplate&"<br />");
 					}
 					if(arraylen(arrURL) GTE 1 and trim(arrURL[1]) NEQ ""){
 						form.method=arrURL[1];
 						arraydeleteat(arrURL,1);
-						if(form.zdebugurl2){
+						if(zdebugurl2){
 							writeoutput("method:"&form.method&"<br />");
 							writedump("Remaining url string: "&arraytolist(arrURL, "/"));
 							writedump(arrURL);
@@ -174,13 +176,13 @@
 						if(arraylen(arrURL) EQ 1){
 							if(trim(arrURL[1]) EQ ""){
 								if(request.zos.cgi.query_string NEQ ""){
-									if(form.zdebugurl2){
+									if(zdebugurl2){
 										writeoutput("1 - redirecting to "&cfcURLName&"/"&form.method&"?"&request.zos.cgi.query_string); 
 										application.zcore.functions.zabort();
 									}
 									application.zcore.functions.z301redirect(cfcURLName&"/"&form.method&"?"&request.zos.cgi.query_string);
 								}else{
-									if(form.zdebugurl2){
+									if(zdebugurl2){
 										writeoutput("2 - redirecting to "&cfcURLName&"/"&form.method&""); 
 										application.zcore.functions.zabort();
 									}
@@ -190,13 +192,13 @@
 						}else if(arraylen(arrURL) GTE 1 and trim(arrURL[arraylen(arrURL)]) EQ ""){
 							arraydeleteat(arrURL,arraylen(arrURL));
 							if(request.zos.cgi.query_string NEQ ""){
-								if(form.zdebugurl2){
+								if(zdebugurl2){
 									writeoutput("3 - redirecting to "&cfcURLName&"/"&form.method&"/"&arraytolist(arrURL,"/")&"?"&request.zos.cgi.query_string); 
 									application.zcore.functions.zabort();
 								}
 								application.zcore.functions.z301redirect(cfcURLName&"/"&form.method&"/"&arraytolist(arrURL,"/")&"?"&request.zos.cgi.query_string);
 							}else{
-								if(form.zdebugurl2){
+								if(zdebugurl2){
 									writeoutput("4 - redirecting to "&cfcURLName&"/"&form.method&"/"&arraytolist(arrURL,"/")); 
 									application.zcore.functions.zabort();
 								}
@@ -206,13 +208,13 @@
 					}else{
 						form.method="index";
 						if(len(request.zos.cgi.query_string)){
-							if(form.zdebugurl2){
+							if(zdebugurl2){
 								writeoutput("5 - redirecting to "&cfcURLName&"/"&form.method&"?"&request.zos.cgi.query_string); 
 								application.zcore.functions.zabort();
 							}
 							application.zcore.functions.z301redirect(cfcURLName&"/"&form.method&"?"&request.zos.cgi.query_string);
 						}else{
-							if(form.zdebugurl2){
+							if(zdebugurl2){
 								writeoutput("6 - redirecting to "&cfcURLName&"/"&form.method); 
 								application.zcore.functions.zabort();
 							}
@@ -222,7 +224,7 @@
 					}
 					request.zos.routingArrArguments=arrURL;
 				}
-				if(form.zdebugurl2){
+				if(zdebugurl2){
 					application.zcore.functions.zabort();
 				}
 			}

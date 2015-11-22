@@ -1383,6 +1383,10 @@
 			<td style="vertical-align:top; width:140px;">Email Connection:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_ssl", "table-error","")#><input name="site_email_ssl" type="radio" value="1"  <cfif form.site_email_ssl EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Use SSL <input name="site_email_ssl" type="radio" value="2"  <cfif form.site_email_ssl EQ 2>checked="checked"</cfif> style="background:none; border:none;"> Use TLS  <input name="site_email_ssl" type="radio" value="0"  <cfif form.site_email_ssl EQ 0 or form.site_email_ssl EQ "">checked="checked"</cfif> style="background:none; border:none;"> Not Secure |  SMTP Port: <input name="site_email_port" type="text" size="6" maxlength="5" value="<cfif form.site_email_port EQ "">25<cfelse>#form.site_email_port#</cfif>"> | SMTP Authentication? <input name="site_email_smtp_authentication" type="checkbox" value="1"  <cfif form.site_email_smtp_authentication EQ 1>checked="checked"</cfif> style="background:none; border:none;"> </td>
 		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Custom Create Account URL:</td>
+			<td><input name="site_custom_create_account_url" type="text" size="70" maxlength="255" value="#htmleditformat(form.site_custom_create_account_url)#"></td>
+		</tr>
 		<!--- <tr >
 			<td style="vertical-align:top; width:140px;">Link Email Address:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_link_from", "table-error","")#><input name="site_email_link_from" type="text" size="70" maxlength="50" value="#form.site_email_link_from#"></td>

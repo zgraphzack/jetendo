@@ -5,14 +5,14 @@
     application.zcore.adminSecurityFilter.requireFeatureAccess("Ecommerce", false);
 	</cfscript>
 	<h2>Ecommerce Manager</h2>
-	<ul>
+	<!--- <ul>
 		<li><a href="/z/ecommerce/admin/order/index">Manage Orders</a></li>
 		<li>Coupons</li>
 		<li>Subscriptions</li>
 		<li>Products</li>
 		<li>Bundles</li>
 		<li>Customers</li>
-	</ul>
+	</ul> --->
 </cffunction>
 	
 <cffunction name="ipnLog" localmode="modern" access="remote" roles="member">

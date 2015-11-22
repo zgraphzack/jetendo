@@ -1393,11 +1393,11 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		application.zcore.functions.zRequireContentFlowSlideshow();
 		
 		if(arguments.ss.forceSize){
-			thumbnailWidth=round(arrT[1]/3);
-			thumbnailHeight=round((arrT[2]/3)*.6);
+			thumbnailWidth=round(arrT[1]/2);
+			thumbnailHeight=round((arrT[2]/2)*.6);
 		}else{
-			thumbnailWidth=round(request.zos.globals.maximagewidth/3);
-			thumbnailHeight=round((request.zos.globals.maximagewidth/3)*.6);
+			thumbnailWidth=round(request.zos.globals.maximagewidth/2);
+			thumbnailHeight=round((request.zos.globals.maximagewidth/2)*.6);
 		}
 		newSize=thumbnailWidth&"x"&thumbnailHeight;
 		application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, newSize, arguments.ss.crop);
