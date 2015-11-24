@@ -640,9 +640,9 @@ To view more info about this new user, click the following link:
 			result=false;
 		}
 		if(result EQ false){
-			if(request.zos.isDeveloper){ 
+			/*if(request.zos.isDeveloper){ 
 				application.zcore.functions.zError("user_admin.cfc update query failed."); 
-			}
+			}*/
 			return false;
 		}
 		if(str.sendConfirmOptIn){

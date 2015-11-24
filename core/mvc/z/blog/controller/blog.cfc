@@ -1805,11 +1805,17 @@ this.app_id=10;
 	if(not structkeyexists(form, 'blog_id')){
 		application.zcore.functions.z404("blog_id is required");	
 	}
+	form.preview=application.zcore.functions.zso(form, 'preview', true, 0);
+	previewEnabled=false;
 	if(application.zcore.user.checkGroupAccess("member")){
-		form.preview=true;
+		previewEnabled=true;
 	}else{
+		if(form.preview EQ 1){
+			previewEnabled=true;
+		}
 		structdelete(form, 'preview');
-	}
+	} 
+	//previewEnabled=false;
 	</cfscript>
 	<script type="text/javascript">
 	/* <![CDATA[ */ function textCounter(field,cntfield,maxlimit) {
@@ -1850,7 +1856,7 @@ this.app_id=10;
 	where blog.blog_id = #db.param(form.blog_id)# and 
 	blog.site_id=#db.param(request.zos.globals.id)# and
 	blog_deleted = #db.param(0)# 
-	<cfif structkeyexists(form, 'preview') EQ false> 
+	<cfif not previewEnabled> 
 		and (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&" "&timeformat(now(),'HH:mm:ss'))# or 
 		blog_event =#db.param(1)#) and 
 		blog_status <> #db.param(2)#
@@ -1860,20 +1866,43 @@ this.app_id=10;
 	</cfsavecontent>
 	<cfscript>
 	qArticle=db.execute("qArticle"); 
+ 
+	// login required to view blog preview url - added to allow sharing blog urls for approval.
+	if(qArticle.recordcount NEQ 0){
+		if(previewEnabled){
+			if(datecompare(dateformat(qArticle.blog_datetime, "yyyy-mm-dd")&" "&timeformat(qArticle.blog_datetime, "HH:mm:ss"), now()) GTE 0){
+				// active
+			}else if(qArticle.blog_event and qArticle.blog_status NEQ 2){
+				// active
+			}else if(application.zcore.user.checkGroupAccess("member")){
+				// active
+			}else{
+				application.zcore.user.requireLogin("member");
+			
+				// don't stay on preview URL if we don't need to
+				if(structkeyexists(form, 'preview')){
+					if(qArticle.blog_unique_name EQ ""){
+						curLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qarticle.blog_id,"html",qArticle.blog_title,qArticle.blog_datetime);
+						application.zcore.functions.z301Redirect(curLink);
+					}else{
+						application.zcore.functions.z301Redirect(qArticle.blog_unique_name);
+					} 
+				}
+			}
+		}
+	} 
+
 	form.blog_category_id=qArticle.blog_category_id;
    	if(qArticle.site_x_option_group_set_id NEQ 0){
    		form.site_x_option_group_set_id=qArticle.site_x_option_group_set_id;
-   	}
-
-	</cfscript>
-	<cfif isDefined('request.zos.supressBlogArticleDetails') EQ false or request.zos.supressBlogArticleDetails NEQ 1>
-		<cfif qArticle.recordcount eq 0>
-			<cfscript>
+   	} 
+	
+	if(isDefined('request.zos.supressBlogArticleDetails') EQ false or request.zos.supressBlogArticleDetails NEQ 1){
+		if(qArticle.recordcount eq 0){
 			application.zcore.functions.z404("articleTemplate() Blog article was missing.");
-			</cfscript>
-		</cfif>
-	</cfif>
-
+		}
+	}
+	</cfscript>
 	<cfsavecontent variable="db.sql">
 	select * from #db.table("blog_comment", request.zos.zcoreDatasource)# blog_comment where
 	blog_comment_approved=#db.param(1)#  and  
@@ -1891,7 +1920,7 @@ this.app_id=10;
 		if(qArticle.blog_unique_name EQ ""){
 			curLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qarticle.blog_id,"html",qArticle.blog_title,qArticle.blog_datetime);
 			actualLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,qarticle.blog_id,"html",form.zUrlName); 
-			if(compare(curLink,actualLink) neq 0){
+			if(compare(curLink, actualLink) neq 0){
 				application.zcore.functions.z301Redirect(curLink);
 			}
 		}else{
