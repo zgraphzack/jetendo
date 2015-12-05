@@ -2298,7 +2298,7 @@ this.app_id=10;
 	<cfargument name="displayCount" type="numeric" required="yes">
 	<cfargument name="futureEventsOnly" type="boolean" required="no" default="#false#" hint="Returns only future events including the current day.">
 	<cfargument name="blog_category_id" type="string" required="no" default="">
-	<cfargument name="exclude_blog_category_id" type="string" required="no" default="">
+	<cfargument name="exclude_blog_category_id" type="string" required="no" default=""> 
 	<cfscript>
 	var loadBlogArticleInclude='';
 	var content='';
@@ -2309,8 +2309,7 @@ this.app_id=10;
 	var shortSummary='';
 	var qList='';
 	loadBlogArticleInclude=false;
-	content = 'include';
-	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
+	content = 'include'; 
 	if(structcount(application.zcore.app.getAppData("blog")) NEQ 0){
 		loadBlogArticleInclude=true;
 	}
@@ -2362,8 +2361,8 @@ this.app_id=10;
 		user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("blog.user_id_siteIDType"))#
 		where blog.site_id=#db.param(request.zos.globals.id)# and 
 		blog_deleted = #db.param(0)# and ";
-		if(form.site_x_option_group_set_id NEQ 0){
-	        db.sql&=" (blog.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
+		if(arguments.displayStruct.site_x_option_group_set_id NEQ 0){
+	        db.sql&=" (blog.site_x_option_group_set_id = #db.param(arguments.displayStruct.site_x_option_group_set_id)# 
 	        	or blog.blog_show_all_sections=#db.param(1)# 
 				
 	        ) and ";

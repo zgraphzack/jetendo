@@ -1296,6 +1296,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var arrOutput=arraynew(1);
 	var ts=structnew();
 	ts.output=true;
+	ts.slideshowTimeout=4000;
 	ts.forceSize=false;
 	ts.layoutType="";
 	ts.top=false;
@@ -1403,18 +1404,40 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, newSize, arguments.ss.crop);
 		</cfscript>
 
-    <div id="contentFlow" class="ContentFlow">
-	<div class="loadIndicator"><div class="indicator"></div></div>
-	<div class="flow">
-	    <cfloop query="qImages">
-	    <div class="item">
-	    <img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
-	    <div class="caption">#htmleditformat(qImages.image_caption)#</div>
-	    </div>
-	    </cfloop>
-	</div>
-	<div class="globalCaption"></div>
-    </div>
+		<div id="contentFlow#qImages.image_library_id#" class="ContentFlow">
+			<div class="loadIndicator">
+				<div class="indicator"></div>
+			</div>
+			<div class="flow">
+				<cfloop query="qImages">
+					<div class="item">
+						<img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
+						<div class="caption">#htmleditformat(qImages.image_caption)#</div>
+					</div>
+				</cfloop>
+			</div>
+			<div class="globalCaption"></div>
+		</div>
+	    <script type="text/javascript"> 
+		var myContentFlow#qImages.image_library_id# = new ContentFlow('contentFlow#qImages.image_library_id#', {
+			circularFlow: true,
+			loadingTimeout: 60000
+		});
+		zArrDeferredFunctions.push(function() {
+			setTimeout(function(){
+				if($("##contentFlow#qImages.image_library_id#").length != 0){
+					function go_to_next_and_wait() {
+						setTimeout(function() {
+							myContentFlow#qImages.image_library_id#.moveTo('right');
+							go_to_next_and_wait();
+						}, #arguments.ss.slideshowTimeout#); // 5000ms = 5 seconds
+					}
+					go_to_next_and_wait();
+					myContentFlow#qImages.image_library_id#.moveTo('right');
+				}
+			}, #arguments.ss.slideshowTimeout#); 
+		});
+	    </script>
 
 	<cfelseif arguments.ss.layoutType EQ "thumbnails-and-lightbox">
 		<cfsavecontent variable="topMeta">
@@ -1600,7 +1623,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		
 		pause_on_hover: true,
 		transition_speed: 1000, 		//INT - duration of panel/frame transition (in milliseconds)
-		transition_interval: 4000, 		//INT - delay between panel/frame transitions (in milliseconds)
+		transition_interval: #arguments.ss.slideshowTimeout#, 		//INT - delay between panel/frame transitions (in milliseconds)
 		easing: 'swing', 				//STRING - easing method to use for animations (jQuery provides 'swing' or 'linear', more available with jQuery UI or Easing plugin)
 	
 	<cfif arguments.ss.forceSize>

@@ -1235,8 +1235,15 @@
 		<tr>
 			<td style="vertical-align:top; width:140px;">Site Option Group URL ID: </td>
 			<td>
-				<cfscript>
-				writeoutput(application.zcore.app.selectAppUrlId("site_option_group_url_id", form.site_option_group_url_id, 14));
+				<cfscript> 
+				// excluding 1 to 9 prevents conflicts with the "install default apps" feature so that blog and content apps are auto-installed correctly.
+				arrExclude=[];
+				for(i=1;i LTE 9;i++){
+					if(form.site_option_group_url_id NEQ i){
+						arrayAppend(arrExclude, i);
+					}
+				}
+				writeoutput(application.zcore.app.selectAppUrlId("site_option_group_url_id", form.site_option_group_url_id, 14, arrayToList(arrExclude, ",")));
 				</cfscript>
 			</td>
 		</tr>

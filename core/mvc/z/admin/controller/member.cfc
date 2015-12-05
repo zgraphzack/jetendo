@@ -54,7 +54,8 @@
 	db.sql="select * FROM #db.table("site", request.zos.zcoreDatasource)# site 
 	where site_id <> #db.param(request.zos.globals.id)# and 
 	site_deleted = #db.param(0)# and
-	site_parent_id = #db.param(request.zos.globals.id)#";
+	site_parent_id = #db.param(request.zos.globals.id)# 
+	ORDER BY site_short_domain";
 	variables.qPAll323=db.execute("qPAll323");
 	</cfscript>
 </cffunction>

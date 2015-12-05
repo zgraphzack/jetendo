@@ -428,16 +428,16 @@ background-color:#FFFFFF;
 }
 .zExpandingBox td{ background-color:#FFFFFF; }
 
-/*
-*/
 .zcontent-sublink-tab, .zcontent-sublink-tab:link, .zcontent-sublink-tab:visited, .zcontent-sublink-selected{display:block; padding:2px; color:#000;    }
 .zcontent-sublink-tab:hover{ background-color:#FFF; color:#000; }
 .zcontent-sublink-selected{ background-color:#FFF; color:#FF0000; text-decoration:none; }
 .zcontent-sublink-subtab, .zcontent-sublink-subtab:link, .zcontent-sublink-subtab:visited{display:block; padding:2px; }
 .zcontent-sublink-subtab:hover { background-color:#FFF; color:#666; }
 .zcontent-sublink-column{float:left !important; width:49%; padding-right:1%;}
-.zcontent-sublink-columncontainer{float:left; width:100%; clear:both; padding-bottom:10px; background-color:#EFEFEF; border:1px solid #CCC; font-size:90%; line-height:150%; margin-bottom:10px;}
-.zcontent-sublink-tableofcontents{float:left; width:100%; font-size:10px; line-height:10px; padding:5px;}
+.zcontent-sublink-columncontainer{float:left; width:100%; clear:both; padding-bottom:10px; background-color:#EFEFEF; border:1px solid #CCC; font-size:90%; line-height:150%; margin-bottom:10px;color:#000;}
+.zcontent-sublink-tableofcontents{float:left; width:100%; font-size:10px; line-height:10px; padding:5px; }
+.zcontent-sublink-columncontainer a:link, .zcontent-sublink-columncontainer a:visited{ color:#369; }
+.zcontent-sublink-columncontainer a:hover{ color:#F00;}
 .zcontent-sublink-container{float:left; padding:10px; padding-bottom:0px;}
 .zcontent-sublink-columncontainer li{clear:both; list-style:none;}
 .zcontent-sublink-link-selected{ display:block; float:left; padding:2px; }

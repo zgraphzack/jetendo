@@ -1511,6 +1511,7 @@ if(rCom.isOK() EQ false){
 	<cfargument name="name" type="string" required="yes">
 	<cfargument name="selectedValue" type="string" required="yes">
 	<cfargument name="app_id" type="string" required="yes">
+	<cfargument name="excludeList" type="string" required="no" default="">
 	<cfscript>
 	var qD="";
 	var local=structnew();
@@ -1557,6 +1558,15 @@ if(rCom.isOK() EQ false){
 			arrManualIds=listtoarray(application.zcore.functions.zvar("reservedUrlAppIds", form.sid));
 			for(i=1;i LTE arraylen(arrManualIds);i++){
 				writeoutput('arrId[#arrManualIds[i]#]=1;');
+			}
+			if(arguments.excludeList NEQ ""){
+				arrExclude=listtoarray(arguments.excludeList,",");
+				for(i=1;i LTE arraylen(arrExclude);i++){
+					arrExclude[i]=trim(arrExclude[i]);
+					if(arrExclude[i] NEQ ""){
+						writeoutput('arrId[#arrExclude[i]#]=1;');
+					}
+				}
 			}
 			</cfscript>
 			var arrT=['<select name="'+name+'" id="'+name+'" size="1" onchange="zapp_selectAppUrlIdC(this)"><option value="">-- Select --<\/option>'];
