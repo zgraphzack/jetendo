@@ -12,6 +12,10 @@
 	if(not application.zcore.user.checkGroupAccess("user")){
 		application.zcore.functions.zRedirect("/z/user/preference/index");
 	}
+	form.redirectOnLogin=application.zcore.functions.zso(form, 'redirectOnLogin');
+	if(form.redirectOnLogin NEQ "" and form.redirectOnLogin DOES NOT CONTAIN "redirectOnLogin"){
+		application.zcore.functions.zRedirect(form.redirectOnLogin);
+	}
 	application.zcore.template.setTag("title","User Dashboard");
 	application.zcore.template.setTag("pagetitle","User Dashboard");
 	application.zcore.functions.zStatusHandler(request.zsid);

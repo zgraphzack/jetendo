@@ -17,6 +17,7 @@
 	variables.nowDate = now();
 	request.zscriptname="/z/user/preference/index";
 	variables.emailfrom1=request.fromemail;
+	form.redirectOnLogin=application.zcore.functions.zso(form, 'redirectOnLogin',false);
 	form.reloadOnNewAccount=application.zcore.functions.zso(form, 'reloadOnNewAccount',false,0);
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',false,0);
 	if(form.modalpopforced EQ 1){
@@ -63,7 +64,7 @@
 				application.zcore.functions.zabort();		
 			}else{
 				application.zcore.status.setStatus(request.zsid, "The email address, #form.e#, can't be updated through this interface because you are a server administrator.",true);
-				application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+				application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 			}
 		}
 		if(structkeyexists(form, 'user_password') EQ false){
@@ -145,7 +146,7 @@
 			application.zcore.user.checkLogin(inputStruct); 
 			variables.secureLogin=true;
 			application.zcore.status.setStatus(request.zsid, "Password has been reset.");
-			application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 	}
 	if(variables.secureLogin and variables.qcheckemail.recordcount NEQ 0){
@@ -182,7 +183,7 @@
 			application.zcore.user.checkLogin(inputStruct); 
 			variables.secureLogin=true;
 			application.zcore.status.setStatus(request.zsid, "Your new email address, #variables.qcheckemail.user_email_new#, has been confirmed.");
-			application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(variables.qcheckemail.user_email_new)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(variables.qcheckemail.user_email_new)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 	}
 	</cfscript>
@@ -231,7 +232,7 @@
 			application.zcore.functions.zabort();		
 		}else{
 			application.zcore.status.setStatus(request.zsid, "Email Address is required.",false,true);
-			application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 		}
 	}
 	
@@ -258,7 +259,7 @@
 			if(structkeyexists(request.zos.userSession.groupAccess, "user")){
 				if(form.submitPref NEQ 'Update Communication Preferences'){
 					application.zcore.status.setStatus(request.zsid, "Login successful");
-					application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+					application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 				}
 				variables.secureLogin=true;
 			}
@@ -266,7 +267,7 @@
 		if(variables.secureLogin EQ false){
 			application.zcore.user.logOut(true);
 			application.zcore.status.setStatus(request.zsid, "This email address and password combination is not a valid login.  Please try again or click reset password.",true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 	}
 	if(form.submitPref EQ "Reset Password"){
@@ -276,7 +277,7 @@
 				application.zcore.functions.zabort();		
 			}else{
 				application.zcore.status.setStatus(request.zsid, "No user account exists for the email address provided.",false,true);
-				application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+				application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 			}
 		}else if(qcheckemail10.user_openid_required EQ 1){
 			if(structkeyexists(form, 'x_ajax_id')){
@@ -284,7 +285,7 @@
 				application.zcore.functions.zabort();		
 			}else{
 				application.zcore.status.setStatus(request.zsid, "This account requires OpenID authentication.  Password login has been disabled.",false,true);
-				application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+				application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 			}
 		}else{
 			this.resetPasswordUpdate();
@@ -307,7 +308,7 @@
 			application.zcore.functions.zabort();		
 		}else{
 			application.zcore.status.setStatus(request.zsid, "Please type your new password before clicking ""Reset Password"". Your password must be 8 or more characters.",form,true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 	}
 	form.user_password_new_salt=application.zcore.functions.zGenerateStrongPassword(256,256);
@@ -342,7 +343,7 @@
 			writeoutput('{success:false,errorMessage:"The new password is the same as the old password and no change has been made."}');
 			application.zcore.functions.zabort();		
 		}else{
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 	}
 	var user_key=hash(application.zcore.functions.zGenerateStrongPassword(80,200),'sha-256'); 
@@ -378,7 +379,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		application.zcore.functions.zabort();		
 	}else{
 		application.zcore.status.setStatus(request.zsid, "An email was sent to #form.e#.  Please check your email and click the link in that email in order to update your password.");
-		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#&e=#urlencodedformat(form.e)#");
+		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#&e=#urlencodedformat(form.e)#");
 	}
 	</cfscript>
 </cffunction>
@@ -399,7 +400,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	var qU=0;
 	if(variables.qcheckemail.recordcount NEQ 0 and variables.secureLogin EQ false){
 		application.zcore.status.setStatus(request.zsid,"The email/password combination was incorrect. Try again or reset your password to continue.");
-		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#&e=#application.zcore.functions.zso(form, 'user_email')#");
+		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#&e=#application.zcore.functions.zso(form, 'user_email')#");
 	}
 	if(structkeyexists(form,'e')){
 		form.user_email=form.e;	
@@ -458,7 +459,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	if(variables.qcheckemail.recordcount eq 0){
 		if(len(trim(application.zcore.functions.zso(form, 'user_password'))) LT 8){
 			application.zcore.status.setStatus(request.zsid, "Your password must be 8 or more characters.",form,true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 		form.user_confirm_count=1;
 		form.user_active=1;
@@ -486,7 +487,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		useraddednow=true;
 		if(form.user_id EQ false){
 			application.zcore.status.setStatus(request.zsid, "Failed to set your preferences, please try again",form,true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}			
 		form.zusername=form.user_email;
 		form.zpassword=form.user_password;
@@ -517,11 +518,11 @@ If the link does not work, please copy and paste the entire link in your browser
 	
 		if(structkeyexists(form, 'user_email') and application.zcore.functions.zEmailValidate(form.user_email) EQ false){
 			application.zcore.status.setStatus(request.zsid, "#form.user_email# is not a valid email address.  Please update and try again.",form,true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 		if(structkeyexists(form, 'user_password') and trim(form.user_password) NEQ '' and len(trim(application.zcore.functions.zso(form, 'user_password'))) LT 8){
 			application.zcore.status.setStatus(request.zsid, "Your password must be 8 or more characters.",form,true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 		form.user_password_version = request.zos.defaultPasswordVersion;
 		if(request.zos.globals.plainTextPassword EQ 0){
@@ -555,7 +556,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			qU=db.execute("qU"); 
 			if(qU.recordcount NEQ 0){
 				application.zcore.status.setStatus(request.zsid, "Your email address can't be changed to #form.user_email# because this email address is already used for a different account.",form,true);
-				application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+				application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 			}
 			// email changed - need to reset opt-in status until new address is confirmed.
 			form.user_email_new=form.user_email;
@@ -574,7 +575,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		}
 		if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			application.zcore.status.setStatus(request.zsid, "Failed to set your preferences, please try again",form,true);
-			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(variables.qcheckemail.user_key)#&zsid=#request.zsid#");
+			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(variables.qcheckemail.user_key)#&zsid=#request.zsid#");
 		}
 	}
 	if(useraddednow){
@@ -633,10 +634,10 @@ If the link does not work, please copy and paste the entire link in your browser
 	}
 	if(form.reloadOnNewAccount EQ 1){
 		application.zcore.status.setStatus(request.zsid, "Your preferences have been updated.");
-		application.zcore.functions.zRedirect("/z/user/preference/accountcreated?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/user/preference/accountcreated?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Your preferences have been updated.");
-		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 	}
         </cfscript>
 </cffunction>
@@ -689,7 +690,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())#";
 		qUpdateOut=db.execute("qUpdateOut");
 	}
-	application.zcore.functions.zRedirect("/z/user/preference/unsubscribed?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#");
+	application.zcore.functions.zRedirect("/z/user/preference/unsubscribed?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#");
 	</cfscript>
 </cffunction>
 
@@ -725,7 +726,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	<cfif structkeyexists(form, 'returnURL')>
 		<form name="zRepostForm" id="zRepostForm" method="get" action="#htmleditformat(form.returnURL)#">
 	<cfelse>
-		<form name="zRepostForm" id="zRepostForm" method="post" action="#htmleditformat("/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#")#">
+		<form name="zRepostForm" id="zRepostForm" method="post" action="#htmleditformat("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#")#">
 	</cfif>
 	</form>
 	<div style="width:100%; float:left; padding-bottom:10px;">
@@ -743,10 +744,10 @@ If the link does not work, please copy and paste the entire link in your browser
 	</div>
 	<div style="padding-bottom:15px;width:100%;border-top:1px solid ##999; padding-top:15px;" class="zmember-openid-buttons">
 		<h3>If you don't have an account:</h3>
-		<button type="submit" name="submitPref" value="Unsubscribe" onclick="window.location.href='/z/user/preference/register?modalpopforced=#form.modalpopforced#&amp;reloadOnNewAccount=#form.reloadOnNewAccount#'">Create A Free Account</button>
+		<button type="submit" name="submitPref" value="Unsubscribe" onclick="window.location.href='/z/user/preference/register?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#'">Create A Free Account</button>
 	</div>
 	<div style="float:left;width:100%; border-top:1px solid ##999; padding-top:15px;">
-		<form name="getEmailUnsubscribe" action="/z/user/preference/update?modalpopforced=#form.modalpopforced#&amp;reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
+		<form name="getEmailUnsubscribe" action="/z/user/preference/update?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
 			<h3>Unsubscribe From Our Mailing List</h3>
 			<div class="zmember-openid-buttons">Email Address:&nbsp;<br />
 				<input type="text" name="e" size="30" />
@@ -771,7 +772,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	
 	if(form.e NEQ '' and application.zcore.functions.zEmailValidate(form.e) EQ false){
 		application.zcore.status.setStatus(request.zsid, "#form.e# is not a valid email address.  Please check your spelling and try again (i.e. email@yourdomain.com)",form,true);
-		application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 	}
 	</cfscript>
 	<cfif structkeyexists(form, 'zSignupMessage')>
@@ -789,7 +790,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	<cfif application.zcore.user.checkGroupAccess("member")>
 		<span style="font-size:130%; ">Navigation Options: <a href="/member/">Site Manager</a> | <a href="/">Home Page</a></span><br /><br />
 	</cfif>
-	<form name="defineContact" action="/z/user/preference/update?e=#urlencodedformat(form.e)#&amp;k=#urlencodedformat(form.k)#&amp;modalpopforced=#form.modalpopforced#&amp;reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
+	<form name="defineContact" action="/z/user/preference/update?e=#urlencodedformat(form.e)#&amp;k=#urlencodedformat(form.k)#&amp;modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
 		<div style=" width:100%; float:left;">
 		<cfif structkeyexists(form, 'custommarketingmessage')>
 			<div style="width:100%;float:left;">#form.custommarketingmessage#</div>
@@ -1057,7 +1058,7 @@ If the link does not work, please copy and paste the entire link in your browser
 
 	customURL=application.zcore.functions.zso(request.zos.globals, 'customCreateAccountURL');
 	if(customURL NEQ ""){
-		application.zcore.functions.z301redirect(application.zcore.functions.zURLAppend(customURL, "modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced', true)#&reloadOnNewAccount=#application.zcore.functions.zso(form, 'reloadOnNewAccount')#"));
+		application.zcore.functions.z301redirect(application.zcore.functions.zURLAppend(customURL, "modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced', true)#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#application.zcore.functions.zso(form, 'reloadOnNewAccount')#"));
 	}
 
 	this.init();
@@ -1083,14 +1084,14 @@ If the link does not work, please copy and paste the entire link in your browser
 	
 	if(form.e NEQ '' and application.zcore.functions.zEmailValidate(form.e) EQ false){
 		application.zcore.status.setStatus(request.zsid, "#form.e# is not a valid email address.  Please check your spelling and try again (i.e. email@yourdomain.com)",form,true);
-		application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/user/preference/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 	}
 	</cfscript>
 	<cfif structkeyexists(form, 'zSignupMessage')>
 		<h2>#form.zSignupMessage#</h2>
 		<br />
 	</cfif>
-	<form name="defineContact" action="/z/user/preference/update?e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
+	<form name="defineContact" action="/z/user/preference/update?e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
 		<div style=" width:100%; float:left;">
 		<cfif structkeyexists(form, 'custommarketingmessage')>
 			<div style="width:100%;float:left;">#form.custommarketingmessage#</div>
@@ -1142,9 +1143,9 @@ If the link does not work, please copy and paste the entire link in your browser
 						writeoutput(local.openIdCom.verifyOpenIdLogin());
 						if(application.zcore.user.checkGroupAccess("user")){
 							if(local.openIdCom.userExisted()){
-								application.zcore.functions.zredirect('/z/user/home/index?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');
+								application.zcore.functions.zredirect('/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#');
 							}else{
-								application.zcore.functions.zredirect('/z/user/preference/newMemberWelcome?modalpopforced=#form.modalpopforced#&reloadOnNewAccount=#form.reloadOnNewAccount#');
+								application.zcore.functions.zredirect('/z/user/preference/newMemberWelcome?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#');
 							}
 						}
 					}

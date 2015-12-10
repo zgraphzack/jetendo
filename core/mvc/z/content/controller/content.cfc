@@ -415,11 +415,11 @@ this.app_id=12;
 	 content_unique_name <> #db.param('')# and  
 	 content_unique_name <> #db.param('/')# and 
 	 content_unique_name NOT LIKE #db.param('/z/%')# and 
-	 content_url_only = #db.param('')# and 
 	 content_for_sale<>#db.param(2)# and 
 	 content_deleted=#db.param(0)# 
-	ORDER BY content_deleted ASC, content_for_sale ASC, content_unique_name DESC ";
+	ORDER BY content_deleted ASC, content_for_sale ASC, content_unique_name DESC, content_url_only ASC ";
 	qContent=db.execute("qContent");
+	 // content_url_only = #db.param('')# and 
 	loop query="qConfig"{
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_article_id]=[];
 		arguments.sharedStruct.reservedAppUrlIdStruct[qConfig.content_config_url_section_id]=[];
@@ -2405,7 +2405,7 @@ configCom.includeContentByName(ts);
 		}
 		ts994824713=structnew();
 		application.zcore.functions.zQueryToStruct(qContent,ts994824713);
-		
+		 
 		application.zcore.siteOptionCom.setCurrentOptionAppId(ts994824713.content_site_option_app_id);
 		contentSearchMLS=ts994824713.content_search_mls;
 		
