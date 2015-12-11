@@ -196,7 +196,10 @@
 	matchString="";
 	booleanMode="";
 	
-	
+	// always search active if not selected
+	if(this.searchCriteria.search_liststatus EQ ""){
+		this.searchCriteria.search_liststatus="1";
+	}
 	/*
 	this.searchCriteria["search_remarks"]=trim(application.zcore.functions.zurlencode(this.searchCriteria["search_remarks"]," "));
 	writedump(this.searchCriteria["search_remarks"]);abort;
