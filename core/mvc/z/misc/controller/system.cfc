@@ -237,13 +237,19 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 </cffunction>
 
 <cffunction name="missing" localmode="modern" access="remote">
-	Please browse our site or go back and try a different link.<br />
-	<br />
+	
 	<cfscript>
 	application.zcore.template.setTag("title",'Sorry, this page no longer exists.');
 	application.zcore.template.setTag("pagetitle",'Sorry, this page no longer exists.');
 	//application.zcore.template.setTag("meta",tempMeta);
 	//application.zcore.template.setTag("pagenav",tempPageNav);
+
+	ts=structnew();
+	ts.content_unique_name='/z/misc/system/missing'; 
+	r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
+	if(not r1){
+		echo('Please browse our site or go back and try a different link.<br /><br />');
+	}
 	</cfscript>
 </cffunction>
 
