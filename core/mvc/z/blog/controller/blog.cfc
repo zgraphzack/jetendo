@@ -138,6 +138,7 @@ this.app_id=10;
 			arrayappend(arguments.arrUrl,t2);
 		}
 		
+		/*
 		// recent xml feed link
 		t2=StructNew();
 		t2.groupName="Blog";
@@ -150,7 +151,7 @@ this.app_id=10;
 		}
 		t2.title=ts.optionStruct.blog_config_recent_name;
 		arrayappend(arguments.arrUrl,t2);
-		
+		*/
 		// category feeds
 		t2=StructNew();
 		t2.groupName="Blog";
@@ -249,7 +250,7 @@ this.app_id=10;
 			}
 			</cfscript>
 		</cfloop>
-		<cfloop query="qcat">
+		<!--- <cfloop query="qcat">
 			<cfscript>
 			t2=StructNew();
 			t2.groupName="Blog Category XML Feeds";
@@ -257,7 +258,7 @@ this.app_id=10;
 			t2.title=qcat.blog_category_name;
 			arrayappend(arguments.arrUrl,t2);
 			</cfscript>
-		</cfloop>
+		</cfloop> --->
 
 
 		<cfsavecontent variable="db.sql">
