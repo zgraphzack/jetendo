@@ -123,6 +123,36 @@
 			}
 		}*/
 	}
+
+	// track all outbound links in google analytics events
+	$(document).on("click", "a", function(e){
+   		var d=window.location.href;
+   		var slash=d.indexOf("/", 9); 
+   		if(slash==-1){
+   			return true;
+   		}else{
+	   		d=d.substr(0, slash);  
+	   		var link="";
+	   		if(typeof this.href != "undefined"){
+	   			link=this.href;
+	   		} 
+	   		var clickDomain=this.href.substr(0, d.length);
+	   		if(clickDomain != d){  
+	   			if(typeof this.target != "undefined" && this.target=="_blank"){
+					zTrackEvent("outbound", link, "", "", link, true); 
+	   				return true;
+	   			}else{
+					zTrackEvent("outbound", link, "", "", link, false); 
+	   				return false;
+	   			}
+	   		}else{
+		   		return true;
+		   	}
+	   	}
+   	}); 
+
+   	
+
 	zArrLoadFunctions.push({functionName:zSetupClickTrackDisplay});
 	window.zSetupClickTrackDisplay=zSetupClickTrackDisplay;
 	window.zTrackEvent=zTrackEvent;

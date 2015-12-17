@@ -244,10 +244,14 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 	//application.zcore.template.setTag("meta",tempMeta);
 	//application.zcore.template.setTag("pagenav",tempPageNav);
 
-	ts=structnew();
-	ts.content_unique_name='/z/misc/system/missing'; 
-	r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
-	if(not r1){
+	if(application.zcore.app.siteHasApp("content")){
+		ts=structnew();
+		ts.content_unique_name='/z/misc/system/missing'; 
+		r1=application.zcore.app.getAppCFC("content").includePageContentByName(ts);
+		if(not r1){
+			echo('Please browse our site or go back and try a different link.<br /><br />');
+		}
+	}else{
 		echo('Please browse our site or go back and try a different link.<br /><br />');
 	}
 	</cfscript>
