@@ -506,5 +506,11 @@
 </cffunction>
 
 
+<cffunction name="getCreateTableColumnSQL" localmode="modern" access="public">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfscript>
+	return "`#arguments.fieldName#` text NOT NULL";
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

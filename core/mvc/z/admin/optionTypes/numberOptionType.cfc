@@ -220,5 +220,13 @@
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 
+
+
+<cffunction name="getCreateTableColumnSQL" localmode="modern" access="public">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfscript>
+	return "`#arguments.fieldName#` varchar(20) NOT NULL";
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

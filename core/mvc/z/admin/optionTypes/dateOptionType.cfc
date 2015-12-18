@@ -335,6 +335,13 @@
 	<div id="typeOptions5" style="display:none;padding-left:30px;"> </div>	
 	</cfsavecontent>
 	<cfreturn output>
+</cffunction>
+
+<cffunction name="getCreateTableColumnSQL" localmode="modern" access="public">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfscript>
+	return "`#arguments.fieldName#` date NOT NULL DEFAULT '0000-00-00'";
+	</cfscript>
 </cffunction> 
 </cfoutput>
 </cfcomponent>

@@ -49,7 +49,7 @@
 	<br />
 </cffunction>
 
-<cffunction name="generateGroupCode" access="remote" localmode="modern">
+<cffunction name="generateGroupCode" access="public" localmode="modern">
 	<cfargument name="groupId" type="numeric" required="yes"> 
 	<cfargument name="parentIndex" type="numeric" required="yes"> 
 	<cfargument name="parentGroupId" type="numeric" required="yes"> 
@@ -130,6 +130,91 @@
 </cffunction>
 
 
+<cffunction name="generateCreateTable" access="public" localmode="modern">
+	<cfargument name="groupId" type="numeric" required="yes">  
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	 
+	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData; 
+
+
+	groupStruct=t9.optionGroupLookup[arguments.groupId];
+ 
+	tableName=lcase(application.zcore.functions.zURLEncode(groupStruct.site_option_group_name, "_"));
+ 
+	echo("CREATE TABLE `#tableName#` (
+`#tableName#_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`site_x_option_group_set_set_id` int(11) unsigned NOT NULL DEFAULT '0',
+`site_option_group_id` int(11) unsigned NOT NULL DEFAULT '0',
+`site_x_option_group_set_sort` int(11) unsigned NOT NULL DEFAULT '0',
+`site_x_option_group_set_active` char(1) NOT NULL DEFAULT '0',
+`site_x_option_group_set_parent_id` int(11) NOT NULL DEFAULT '0',
+`site_x_option_group_set_image_library_id` int(11) NOT NULL DEFAULT '0',
+`site_x_option_group_set_override_url` varchar(255) NOT NULL,
+`site_x_option_group_set_approved` char(1) NOT NULL DEFAULT '0',
+`#tableName#_updated_datetime` datetime NOT NULL,
+`#tableName#_deleted` char(1) NOT NULL DEFAULT '0',"&chr(10));  
+	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+		optionStruct=t9.optionLookup[n];
+		savecontent variable="out"{
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type); 
+			fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
+			v=currentCFC.getCreateTableColumnSQL(fieldName);
+		}
+		echo(v&","&chr(10));
+		//echo("`#tableName#_#fieldName#` varchar(255) NOT NULL DEFAULT '',"&chr(10));
+		// TODO: make new function getCreateTableColumnSQL() in each optionType cfc
+	} 
+
+	echo('PRIMARY KEY (`#tableName#_id`),
+KEY `site_x_option_group_set_set_id` (`site_x_option_group_set_set_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;');  
+	</cfscript>
+</cffunction>
+ 
+<cffunction name="generateUpdateTable" access="public" localmode="modern">
+	<cfargument name="groupId" type="numeric" required="yes">  
+	<cfscript>
+
+	echo('Test Code');
+	return;
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	 
+	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData; 
+
+
+	groupStruct=t9.optionGroupLookup[arguments.groupId];
+ 
+	tableName=lcase(application.zcore.functions.zURLEncode(groupStruct.site_option_group_name, "_"));
+ 
+	echo("CREATE TABLE `#tableName#` (
+`#tableName#_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`site_x_option_group_set_set_id` int(11) unsigned NOT NULL DEFAULT '0',
+`site_option_group_id` int(11) unsigned NOT NULL DEFAULT '0',
+`site_x_option_group_set_sort` int(11) unsigned NOT NULL DEFAULT '0',
+`site_x_option_group_set_active` char(1) NOT NULL DEFAULT '0',
+`site_x_option_group_set_parent_id` int(11) NOT NULL DEFAULT '0',
+`site_x_option_group_set_image_library_id` int(11) NOT NULL DEFAULT '0',
+`site_x_option_group_set_override_url` varchar(255) NOT NULL,
+`site_x_option_group_set_approved` char(1) NOT NULL DEFAULT '0',
+`#tableName#_updated_datetime` datetime NOT NULL,
+`#tableName#_deleted` char(1) NOT NULL DEFAULT '0',"&chr(10));  
+	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+		optionStruct=t9.optionLookup[n];
+		savecontent variable="out"{
+			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type); 
+			fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
+			v=currentCFC.getCreateTableColumnSQL(fieldName);
+		}
+		echo(v&","&chr(10));
+		//echo("`#tableName#_#fieldName#` varchar(255) NOT NULL DEFAULT '',"&chr(10));
+		// TODO: make new function getCreateTableColumnSQL() in each optionType cfc
+	} 
+
+	echo('PRIMARY KEY (`#tableName#_id`),
+KEY `site_x_option_group_set_set_id` (`site_x_option_group_set_set_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;');  
+	</cfscript>
+</cffunction>
+
 <cffunction name="displayGroupCode" access="remote" localmode="modern" roles="member"> 
 	<cfscript>
 	application.zcore.functions.zSetPageHelpId("2.7.1.3");
@@ -147,7 +232,7 @@
 	savecontent variable="output"{
 		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0);
 		
-		
+		 
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
 		groupStruct=t9.optionGroupLookup[form.site_option_group_id];
 		groupNameArray=arrayToList(application.zcore.siteOptionCom.getOptionGroupNameArrayById(groupStruct.site_option_group_id), '","');
@@ -321,6 +406,22 @@ displayGroupCom.ajaxInsert();
 
 	echo('</div></div>');
 	
+
+	echo('<h2>Create Custom Table</h2>
+		<p>Using the "Change CFC Path" options, you can have a second table updated with the data, so you can create high performance queries against the data.</p>
+		<p>Start with the example code below, and further customize it, add column indexes, and different table column names, etc to build your custom application.</p>');
+	echo('<pre><blockquote>');
+	savecontent variable="out"{
+	generateCreateTable(form.site_option_group_id);
+	}
+	echo(trim(out));
+	echo('</blockquote></pre>');
+	echo('<h2>Example Functions For Updating the Custom Table</h2>'); 
+
+	savecontent variable="out"{
+		generateUpdateTable(form.site_option_group_id);
+	}
+	echo('<blockquote>'&htmlcodeformat(trim(out))&'</blockquote>');
 	</cfscript>
 </cffunction>
 
@@ -1559,6 +1660,16 @@ displayGroupCom.ajaxInsert();
 						htmlEditor.height		= 350;
 						htmlEditor.create();
 						</cfscript></td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Change CFC Path","member.site-option-group.edit site_option_group_change_cfc_path")#</th>
+					<td><input type="text" name="site_option_group_change_cfc_path" id="site_option_group_change_cfc_path" value="#htmleditformat(form.site_option_group_change_cfc_path)#" /><br /> (Should begin with zcorerootmapping, root or another root relative path.)<br /><br />
+
+					Update Method: <input type="text" name="site_option_group_change_cfc_update_method" id="site_option_group_change_cfc_update_method" value="#htmleditformat(form.site_option_group_change_cfc_update_method)#" /><br /><br />
+					Delete Method: <input type="text" name="site_option_group_change_cfc_delete_method" id="site_option_group_change_cfc_delete_method" value="#htmleditformat(form.site_option_group_change_cfc_delete_method)#" /><br /><br />
+					Sort Method: <input type="text" name="site_option_group_change_cfc_sort_method" id="site_option_group_change_cfc_sort_method" value="#htmleditformat(form.site_option_group_change_cfc_sort_method)#" /><br />
+					 (Each function should exist in the CFC with access="public")
+					</td>
 				</tr>
 		</table>
 		#tabCom.endFieldSet()#

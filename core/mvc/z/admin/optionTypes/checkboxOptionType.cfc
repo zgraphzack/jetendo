@@ -234,5 +234,13 @@
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 
+
+
+<cffunction name="getCreateTableColumnSQL" localmode="modern" access="public">
+	<cfargument name="fieldName" type="string" required="yes">
+	<cfscript>
+	return "`#arguments.fieldName#` char(1) NOT NULL DEFAULT '0'";
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>
