@@ -2020,6 +2020,33 @@
 			application.zcore.siteOptionCom.searchReindexSet(form.site_x_option_group_set_id, request.zos.globals.id, [qCheck.site_option_group_display_name]);
 		}
 	}
+
+	if(qCheck.site_option_group_change_cfc_path NEQ ""){ 
+		path=qCheck.site_option_group_change_cfc_path;
+		if(left(path, 5) EQ "root."){
+			path=request.zRootCFCPath&removeChars(path, 1, 5);
+		}
+		if(form.site_x_option_group_set_approved EQ 0){
+			changeCom=application.zcore.functions.zcreateObject("component", path); 
+			changeCom[qCheck.site_option_group_change_cfc_delete_method](form.site_x_option_group_set_id);
+		}else{
+			changeCom=application.zcore.functions.zcreateObject("component", path); 
+			arrGroupName=application.zcore.siteOptionCom.getOptionGroupNameArrayById(qCheck.site_option_group_id);
+			dataStruct=application.zcore.siteOptionCom.getOptionGroupSetById(arrGroupName, form.site_x_option_group_set_id);
+			coreStruct={
+				site_x_option_group_set_sort:dataStruct.__sort,
+				// NOT USED YET: site_x_option_group_set_active:dataStruct.__active,
+				site_option_group_id:dataStruct.__groupId,
+				site_x_option_group_set_approved:dataStruct.__approved,
+				site_x_option_group_set_override_url:application.zcore.functions.zso(dataStruct, '__url'),
+				site_x_option_group_set_parent_id:dataStruct.__parentId,
+				site_x_option_group_set_image_library_id:application.zcore.functions.zso(dataStruct, '__image_library_id'),
+				site_x_option_group_set_id:dataStruct.__setId
+			};
+			changeCom[qCheck.site_option_group_change_cfc_update_method](dataStruct, coreStruct);
+		}
+	}
+ 
 	
 	mapRecord=false;
 	if(not structkeyexists(form, 'disableSiteOptionGroupMap')){
@@ -2714,6 +2741,40 @@ Define this function in another CFC to override the default email format
 				// update cache
 				if(qGroup.site_option_group_enable_cache EQ 1){
 					application.zcore.siteOptionCom.resortOptionGroupSets(request.zos.globals.id, form.site_option_app_id, form.site_option_group_id, form.site_x_option_group_set_parent_id); 
+				}else{
+
+					t9=application.zcore.siteOptionCom.getTypeData(request.zos.globals.id);
+					var groupStruct=t9.optionGroupLookup[form.site_option_group_id];
+ 
+
+					if(groupStruct.site_option_group_change_cfc_path NEQ ""){
+						path=groupStruct.site_option_group_change_cfc_path;
+						if(left(path, 5) EQ "root."){
+							path=request.zRootCFCPath&removeChars(path, 1, 5);
+						}
+						changeCom=application.zcore.functions.zcreateObject("component", path); 
+						offset=0;
+						while(true){
+							db.sql="select site_x_option_group_set_id FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+							WHERE 
+							site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and  
+							site_option_group_id = #db.param(form.site_option_group_id)# and 
+							site_x_option_group_set_parent_id=#db.param(form.site_x_option_group_set_parent_id)# and 
+							site_id = #db.param(request.zos.globals.id)# and 
+							site_x_option_group_set_master_set_id = #db.param(0)# and 
+							site_x_option_group_set_deleted=#db.param(0)# 
+							ORDER BY site_x_option_group_set_sort ASC 
+							LIMIT #db.param(offset)#, #db.param(20)#";
+							qSorted=db.execute("qSorted");
+							if(qSorted.recordcount EQ 0){
+								break;
+							}
+							for(row in qSorted){
+								offset++;
+								changeCom[groupStruct.site_option_group_change_cfc_sort_method](row.site_x_option_group_set_id, offset); 
+							}
+						}
+					}
 				}
 				queueSortCom.returnJson();
 			}

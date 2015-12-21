@@ -1291,9 +1291,23 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 	var arrTemp=[];
 	sortStruct={};
 	i=1;
+
+	t9=getTypeData(arguments.site_id);
+	var groupStruct=t9.optionGroupLookup[arguments.site_option_group_id];
+
 	for(var row2 in qSort){
 		arrayAppend(arrTemp, row2.site_x_option_group_set_id);
 		sortStruct[row2.site_x_option_group_set_id]=i;
+
+
+		if(groupStruct.site_option_group_change_cfc_path NEQ ""){
+			path=groupStruct.site_option_group_change_cfc_path;
+			if(left(path, 5) EQ "root."){
+				path=request.zRootCFCPath&removeChars(path, 1, 5);
+			}
+			changeCom=application.zcore.functions.zcreateObject("component", path);
+			changeCom[groupStruct.site_option_group_change_cfc_sort_method](row2.site_x_option_group_set_id, i);
+		}
 		i++;
 	}
 	t9=getSiteData(arguments.site_id);
@@ -2323,6 +2337,17 @@ if(not rs.success){
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result");
 
+	
+	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
+	groupStruct=t9.optionGroupLookup[row.site_option_group_id]; 
+	if(groupStruct.site_option_group_change_cfc_path NEQ ""){
+		path=groupStruct.site_option_group_change_cfc_path;
+		if(left(path, 5) EQ "root."){
+			path=request.zRootCFCPath&removeChars(path, 1, 5);
+		}
+		changeCom=application.zcore.functions.zcreateObject("component", path); 
+		changeCom[groupStruct.site_option_group_change_cfc_delete_method](form.site_x_option_group_set_id);
+	}
 	</cfscript>
 </cffunction>
 	

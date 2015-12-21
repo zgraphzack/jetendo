@@ -912,11 +912,12 @@ used to do search for a list of values
 	var i=0;
 	dataStruct=getOptionGroupSetById(arguments.arrGroupName, arguments.setId, arguments.site_id);
 	var t9=getTypeData(arguments.site_id);
+	groupStruct=t9.optionGroupLookup[dataStruct.__groupId]; 
 	if(not structkeyexists(dataStruct, '__approved') or dataStruct.__approved NEQ 1){
 		deleteOptionGroupSetIndex(arguments.setId, arguments.site_id);
+
 		return;
 	}
-	groupStruct=t9.optionGroupLookup[dataStruct.__groupId]; 
 	if(groupStruct["#variables.type#_option_group_search_index_cfc_path"] EQ ""){
 		customSearchIndexEnabled=false;
 	}else{ 
@@ -953,6 +954,7 @@ used to do search for a list of values
 			ds.search_image=arrImage[1].link;
 		}
 	}
+
 	if(customSearchIndexEnabled){
 		local.tempCom=application.zcore.functions.zcreateobject("component", local.cfcpath); 
 		local.tempCom[groupStruct["#variables.type#_option_group_search_index_cfc_method"]](dataStruct, ds);

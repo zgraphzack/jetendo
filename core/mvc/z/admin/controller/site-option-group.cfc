@@ -143,7 +143,7 @@
  
 	echo("CREATE TABLE `#tableName#` (
 `#tableName#_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-`site_x_option_group_set_set_id` int(11) unsigned NOT NULL DEFAULT '0',
+`site_x_option_group_set_id` int(11) unsigned NOT NULL DEFAULT '0',
 `site_option_group_id` int(11) unsigned NOT NULL DEFAULT '0',
 `site_x_option_group_set_sort` int(11) unsigned NOT NULL DEFAULT '0',
 `site_x_option_group_set_active` char(1) NOT NULL DEFAULT '0',
@@ -161,12 +161,10 @@
 			v=currentCFC.getCreateTableColumnSQL(fieldName);
 		}
 		echo(v&","&chr(10));
-		//echo("`#tableName#_#fieldName#` varchar(255) NOT NULL DEFAULT '',"&chr(10));
-		// TODO: make new function getCreateTableColumnSQL() in each optionType cfc
 	} 
 
 	echo('PRIMARY KEY (`#tableName#_id`),
-KEY `site_x_option_group_set_set_id` (`site_x_option_group_set_set_id`)
+KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;');  
 	</cfscript>
 </cffunction>
@@ -174,9 +172,7 @@ KEY `site_x_option_group_set_set_id` (`site_x_option_group_set_set_id`)
 <cffunction name="generateUpdateTable" access="public" localmode="modern">
 	<cfargument name="groupId" type="numeric" required="yes">  
 	<cfscript>
-
-	echo('Test Code');
-	return;
+ 
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	 
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData; 
 
@@ -184,34 +180,15 @@ KEY `site_x_option_group_set_set_id` (`site_x_option_group_set_set_id`)
 	groupStruct=t9.optionGroupLookup[arguments.groupId];
  
 	tableName=lcase(application.zcore.functions.zURLEncode(groupStruct.site_option_group_name, "_"));
- 
-	echo("CREATE TABLE `#tableName#` (
-`#tableName#_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-`site_x_option_group_set_set_id` int(11) unsigned NOT NULL DEFAULT '0',
-`site_option_group_id` int(11) unsigned NOT NULL DEFAULT '0',
-`site_x_option_group_set_sort` int(11) unsigned NOT NULL DEFAULT '0',
-`site_x_option_group_set_active` char(1) NOT NULL DEFAULT '0',
-`site_x_option_group_set_parent_id` int(11) NOT NULL DEFAULT '0',
-`site_x_option_group_set_image_library_id` int(11) NOT NULL DEFAULT '0',
-`site_x_option_group_set_override_url` varchar(255) NOT NULL,
-`site_x_option_group_set_approved` char(1) NOT NULL DEFAULT '0',
-`#tableName#_updated_datetime` datetime NOT NULL,
-`#tableName#_deleted` char(1) NOT NULL DEFAULT '0',"&chr(10));  
+  
 	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
 		optionStruct=t9.optionLookup[n];
-		savecontent variable="out"{
-			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type); 
+		savecontent variable="out"{ 
 			fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
-			v=currentCFC.getCreateTableColumnSQL(fieldName);
 		}
-		echo(v&","&chr(10));
-		//echo("`#tableName#_#fieldName#` varchar(255) NOT NULL DEFAULT '',"&chr(10));
-		// TODO: make new function getCreateTableColumnSQL() in each optionType cfc
+		echo(fieldName&':ds["'&replace(optionStruct.site_option_name, "##", "####", "all")&'"],'&chr(10)); 
 	} 
 
-	echo('PRIMARY KEY (`#tableName#_id`),
-KEY `site_x_option_group_set_set_id` (`site_x_option_group_set_set_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;');  
 	</cfscript>
 </cffunction>
 
@@ -610,7 +587,7 @@ displayGroupCom.ajaxInsert();
 	optionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
 
 	doffset=0;
-	for(i=1;i LTE 100000;i++){
+	while(true){
 
 		// process x groups at a time.
 		xlimit=20;
@@ -942,6 +919,7 @@ displayGroupCom.ajaxInsert();
 	</cfscript>
 </cffunction>
 
+<!--- 
 <cffunction name="generateTableFromGroup" localmode="modern" access="remote" roles="member">
 	<cfargument name="site_option_group_id" type="string" required="yes">
 	<cfscript>
@@ -1131,7 +1109,7 @@ displayGroupCom.ajaxInsert();
 	ts.datasource=request.zos.zcoreTempDatasource;
 	return application.zcore.functions.zInsert(ts);
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>

@@ -136,6 +136,9 @@
 	   		if(typeof this.href != "undefined"){
 	   			link=this.href;
 	   		} 
+	   		if(link == "" || link.substr(0,1) == "#"){
+	   			return true;
+	   		}
 	   		var clickDomain=this.href.substr(0, d.length);
 	   		if(clickDomain != d){  
 	   			if(typeof this.target != "undefined" && this.target=="_blank"){
