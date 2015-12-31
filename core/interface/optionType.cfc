@@ -72,8 +72,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfargument name="dataStruct" type="struct" required="yes">  
 </cffunction>
 
 <cffunction name="getListValue" localmode="modern" access="public">
@@ -116,6 +115,8 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 </cffunction>
 		
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public">
+</cffunction>
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">

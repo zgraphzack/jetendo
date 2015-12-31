@@ -309,8 +309,11 @@
 			zModalIndex=0;
 		}
 	}
-	function zShowImageUploadWindow(imageLibraryId, imageLibraryFieldId){
+	
+	function zShowImageUploadWindow(imageLibraryId, imageLibraryFieldId, imageCountId){
 		var windowSize=zGetClientWindowSize();
+
+		window.zImageCountObj=document.getElementById(imageCountId);
 		var modalContent1='<iframe src="/z/_com/app/image-library?method=imageform&image_library_id='+imageLibraryId+'&fieldId='+encodeURIComponent(imageLibraryFieldId)+'&ztv='+Math.random()+'"  style="margin:0px;border:none; overflow:auto;" seamless="seamless" width="100%" height="95%"><\/iframe>';		
 		zShowModal(modalContent1,{'width':windowSize.width-100,'height':windowSize.height-100});
 	}

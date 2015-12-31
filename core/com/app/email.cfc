@@ -1559,7 +1559,8 @@ Privacy Policy:
 			<cfif arguments.ss.preview EQ false>
 				<cfsavecontent variable="db.sql">
 				UPDATE #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
-				SET mail_user_sent_datetime = #db.param(request.zos.mysqlnow)#
+				SET mail_user_sent_datetime = #db.param(request.zos.mysqlnow)#, 
+				mail_user_updated_datetime = #db.param(request.zos.mysqlnow)# 
 				<cfif qEmailTemplate.zemail_template_type_name EQ 'confirm opt-in'>,  mail_user_confirm_count=mail_user_confirm_count+#db.param(1)#</cfif>
 				WHERE mail_user_id = #db.param(arguments.ss.mail_user_id)# and 
 				mail_user_deleted = #db.param(0)# and 
@@ -1571,7 +1572,8 @@ Privacy Policy:
 			<cfif arguments.ss.preview EQ false>
 				<cfsavecontent variable="db.sql">
 				UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
-				SET user_sent_datetime = #db.param(request.zos.mysqlnow)#
+				SET user_sent_datetime = #db.param(request.zos.mysqlnow)#, 
+				user_updated_datetime = #db.param(request.zos.mysqlnow)# 
 				<cfif qEmailTemplate.zemail_template_type_name EQ 'confirm opt-in'>,  user_confirm_count=user_confirm_count+#db.param(1)#</cfif>
 				WHERE user_id = #db.param(arguments.ss.user_id)# and 
 				user_deleted = #db.param(0)# and 

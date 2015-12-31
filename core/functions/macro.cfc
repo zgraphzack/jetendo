@@ -533,11 +533,11 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
     user_deleted = #db.param(0)# and 
     <cfif arguments.user_id NEQ "">
 		user_id=#db.param(arguments.user_id)# and 
-		user.site_id = #db.param(request.zos.globals.id)# and 
 	<cfelse>
 		user_sent_datetime BETWEEN #db.param('2008-02-12 00:09:00')# and 
 		#db.param(previousDateFormatted)# and 
     </cfif>
+	user.site_id = #db.param(request.zos.globals.id)# and 
     user_confirm_count < #db.param(3)# and 
 	user_confirm = #db.param(0)# and 
 	site.site_id = user.site_id and 
@@ -655,11 +655,11 @@ application.zcore.functions.zCookie({ name:"name", value:"test", expires:"never"
 	mail_user_deleted = #db.param(0)# and 
 	mail_user_confirm = #db.param(0)# and 
 	site.site_id = mail_user.site_id and 
+	site.site_id = #db.param(request.zos.globals.id)#  and 
 	site_active=#db.param('1')# 
     <cfif arguments.mail_user_id NEQ "">
      and mail_user_id=#db.param(arguments.mail_user_id)#
 	<cfelse> 
-	 and site.site_id = #db.param(request.zos.globals.id)# 
 	 and mail_user_sent_datetime BETWEEN #db.param('2008-02-12 00:09:00')# and #db.param(previousDateFormatted)#
 	</cfif>
     </cfsavecontent>

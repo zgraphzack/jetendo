@@ -184,7 +184,7 @@ ts=structnew();
 ts.datasource=request.zos.zcoreDatasource;
 ts.table="paypal_ipn_log";
 ts.struct=structnew();
-ts.struct.paypal_ipn_log_invoice=form.invoice;
+ts.struct.paypal_ipn_log_invoice=application.zcore.functions.zso(form, 'invoice');
 if(failedIpn){
 	ts.struct.paypal_ipn_log_verified=0;
 }else{

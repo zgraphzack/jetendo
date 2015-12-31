@@ -1185,12 +1185,19 @@ displayGroupCom.ajaxInsert();
 		<tr>
 			<th>ID</th>
 			<th>Group Name</th>
+			<th>Disable Admin</th>
 			<th>Admin</th>
 		</tr>
 		<cfloop query="qProp">
 		<tr <cfif qProp.currentrow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 			<td>#qProp.site_option_group_id#</td>
 			<td>#qProp.site_option_group_name#</td>
+			<td><cfif qProp.site_option_group_disable_admin EQ 1>
+					Yes
+				<cfelse>
+					No
+				</cfif>
+			</td>
 			<td>
 				<cfif qProp.site_option_group_admin_app_only EQ "0">
 	

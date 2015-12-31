@@ -139,7 +139,6 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
 	<cfscript>
 	arrGroup=listToArray(application.zcore.functions.zso(arguments.optionStruct, 'user_group_id_list'), ',');
 	for(i=1;i LTE arraylen(arrGroup);i++){
@@ -263,10 +262,21 @@
 		user_multipleselection:application.zcore.functions.zso(form, 'user_multipleselection')
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
-	return { success:true};
+	return { success:true, optionStruct: ts};
 	</cfscript>
 </cffunction>
 		
+
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+	<cfscript>
+	ts={
+		user_group_id_list:"0",
+		user_displaytype:"",
+		user_multipleselection:"No"
+	};
+	return ts;
+	</cfscript>
+</cffunction> 
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">

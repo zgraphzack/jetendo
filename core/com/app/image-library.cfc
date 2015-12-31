@@ -494,8 +494,8 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 	request.imageLibraryFieldIndex++;
 	</cfscript>
 	<input type="hidden" name="#arguments.ss.name#" id="zImageLibraryFieldId#request.imageLibraryFieldIndex#" value="#image_library_id#" />
-	<strong style="font-size:120%;"><a href="##" onclick="zShowImageUploadWindow(document.getElementById('zImageLibraryFieldId#request.imageLibraryFieldIndex#').value, 'zImageLibraryFieldId#request.imageLibraryFieldIndex#'); return false;">Open Image Uploader</a></strong>
-	<div id="imageLibraryDivCount">#qImageCount.count# images in library</div>
+	<strong style="font-size:120%;"><a href="##" onclick="zShowImageUploadWindow(document.getElementById('zImageLibraryFieldId#request.imageLibraryFieldIndex#').value, 'zImageLibraryFieldId#request.imageLibraryFieldIndex#', 'imageLibraryDivCount#request.imageLibraryFieldIndex#'); return false;">Open Image Uploader</a></strong>
+	<div id="imageLibraryDivCount#request.imageLibraryFieldIndex#">#qImageCount.count# images in library</div>
 </cffunction>
 
 

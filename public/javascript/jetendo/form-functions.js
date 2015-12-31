@@ -36,7 +36,9 @@ var zLastAjaxVarName=""; */
 	"use strict";
 	function zUpdateImageLibraryCount(){
 		var d=document.getElementById("sortable");
-		$("#imageLibraryDivCount", window.parent.document).html($("li", d).length+" images in library");
+
+		$(window.parent.zImageCountObj).html($("li", d).length+" images in library");
+		//$("#imageLibraryDivCount", window.parent.document).html($("li", d).length+" images in library");
 	}
 	function ajaxSaveSorting(){
 		var arrId=$( "#sortable" ).sortable("toArray");

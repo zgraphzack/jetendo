@@ -154,8 +154,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfargument name="dataStruct" type="struct" required="yes">  
 	<cfscript>
 	var allowDelete=true;
 	if(arguments.row["#variables.type#_option_required"] EQ 1){
@@ -359,10 +358,21 @@
 		imagemaskpath:application.zcore.functions.zso(arguments.dataStruct, 'imagemaskpath')
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
-	return { success:true};
+	return { success:true, optionStruct: ts};
 	</cfscript>
 </cffunction>
 		
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+	<cfscript>
+	ts={
+		imagewidth:"",
+		imageheight:"",
+		imagecrop:"0",
+		imagemaskpath:""
+	};
+	return ts;
+	</cfscript>
+</cffunction> 
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">

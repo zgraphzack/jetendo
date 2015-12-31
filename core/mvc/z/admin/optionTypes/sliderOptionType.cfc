@@ -46,15 +46,7 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfargument name="onChangeJavascript" type="string" required="yes">
 	<cfscript>
-	var ts = StructNew();
-	ts.name = arguments.prefixString&arguments.row["#variables.type#_option_id"];
-	ts.labelList = arguments.optionStruct.radio_labels;
-	ts.valueList = arguments.optionStruct.radio_values;
-	ts.delimiter = arguments.optionStruct.radio_delimiter;
-	ts.struct=arguments.dataStruct; 
-	ts.onclick=arguments.onChangeJavascript;
-	ts.output=false;
-	return application.zcore.functions.zInput_RadioGroup(ts);    
+	return '<input type="number" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" min="#arguments.optionStruct.slider_from#" max="#arguments.optionStruct.slider_to#" step="#arguments.optionStruct.slider_step#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" style="width:95%; min-width:95%;" value="#htmleditformat(arguments.value)#" size="8" />';
 	</cfscript>
 </cffunction>
 
@@ -112,7 +104,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return { mapData: false, struct: variables.buildSelectMap(arguments.optionStruct, false)};
+	return { mapData: false, struct: {}};
 	</cfscript>
 </cffunction>
 
@@ -136,14 +128,8 @@
 	<cfargument name="prefixString" type="string" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">  
 	<cfscript> 
-	var ts = StructNew();
-	ts.name = arguments.prefixString&arguments.row["#variables.type#_option_id"];
-	ts.labelList = arguments.optionStruct.radio_labels;
-	ts.valueList = arguments.optionStruct.radio_values;
-	ts.delimiter = arguments.optionStruct.radio_delimiter;
-	ts.struct=arguments.dataStruct; 
-	ts.output=false;
-	return { label: true, hidden: false, value: application.zcore.functions.zInput_RadioGroup(ts)};   
+  	return { label: true, hidden: false, value: '<input type="range" name="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#" min="#arguments.optionStruct.slider_from#" max="#arguments.optionStruct.slider_to#" onchange="document.getElementById(''#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_valueInput'').innerHTML=this.value; " step="#arguments.optionStruct.slider_step#" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]))#"><br />
+  		Selected Value: <span id="#arguments.prefixString&arguments.row["#variables.type#_option_id"]#_valueInput">#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]))#</span>' };
 	</cfscript>
 </cffunction>
 
@@ -165,33 +151,11 @@
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
-	return variables.buildSelectMap(arguments.optionStruct, true);
+	return {};
 	</cfscript>
 </cffunction>
 
 
-<cffunction name="buildSelectMap" localmode="modern" access="private">
-	<cfargument name="typeOptions" type="struct" required="yes">
-	<cfargument name="indexById" type="boolean" required="yes">
-	<cfscript>
-	var ts2=arguments.typeOptions;
-	var arrSelectMap=structnew();
-	if(structkeyexists(ts2, 'radio_labels') and ts2.radio_labels NEQ ""){
-		// grab the label list and group data (if using a group)
-		var arrLabelTemp=listToArray(ts2.radio_labels, ts2.radio_delimiter, true);
-		var arrValueTemp=listToArray(ts2.radio_values, ts2.radio_delimiter, true);
-		// loop the label list
-		for(var f=1;f LTE arraylen(arrLabelTemp);f++){
-			if(arguments.indexById){
-				arrSelectMap[arrValueTemp[f]]=arrLabelTemp[f];
-			}else{
-				arrSelectMap[arrLabelTemp[f]]=arrValueTemp[f];
-			}
-		}
-	}
-	return arrSelectMap;
-	</cfscript>
-</cffunction>
 
 <cffunction name="validateFormField" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
@@ -226,7 +190,7 @@
 
 <cffunction name="getTypeName" localmode="modern" access="public">
 	<cfscript>
-	return 'Radio Group';
+	return 'Slider';
 	</cfscript>
 </cffunction>
 
@@ -234,30 +198,26 @@
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
 	var error=false;
-	if(len(arguments.dataStruct.radio_delimiter) NEQ 1){
-		application.zcore.status.setStatus(request.zsid, "Delimiter is required and must be 1 character.");
+	if(len(arguments.dataStruct.slider_from) EQ ""){
+		application.zcore.status.setStatus(request.zsid, "From is required.");
 		error=true;
 	} 
-	if(arguments.dataStruct.radio_labels EQ ""){
-		application.zcore.status.setStatus(request.zsid, "Label field is required.");
+	if(arguments.dataStruct.slider_to EQ ""){
+		application.zcore.status.setStatus(request.zsid, "To is required.");
 		error=true;
 	}
-	if(arguments.dataStruct.radio_values EQ ""){
-		application.zcore.status.setStatus(request.zsid, "Value field is required.");
+	if(arguments.dataStruct.slider_step EQ ""){
+		application.zcore.status.setStatus(request.zsid, "Step is required.");
 		error=true;
-	} 
-	if(listlen(arguments.dataStruct.radio_labels, arguments.dataStruct.radio_delimiter, true) NEQ listlen(arguments.dataStruct.radio_values, arguments.dataStruct.radio_delimiter, true)){
-		application.zcore.status.setStatus(request.zsid, "Labels and Values must have the same number of delimited values.");
-		error=true;
-	}
+	}  
 	if(error){
 		application.zcore.status.setStatus(Request.zsid, false,arguments.dataStruct,true);
 		return { success:false};
 	}
 	ts={
-		radio_delimiter:application.zcore.functions.zso(arguments.dataStruct, 'radio_delimiter'),
-		radio_labels:application.zcore.functions.zso(arguments.dataStruct, 'radio_labels'),
-		radio_values:application.zcore.functions.zso(arguments.dataStruct, 'radio_values')
+		slider_from:application.zcore.functions.zso(arguments.dataStruct, 'slider_from'),
+		slider_to:application.zcore.functions.zso(arguments.dataStruct, 'slider_to'),
+		slider_step:application.zcore.functions.zso(arguments.dataStruct, 'slider_step')
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true, optionStruct: ts};
@@ -267,9 +227,9 @@
 <cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
 	<cfscript>
 	ts={
-		radio_delimiter:"|",
-		radio_labels:"",
-		radio_values:""
+		slider_from:"",
+		slider_to:"",
+		slider_step:""
 	};
 	return ts;
 	</cfscript>
@@ -285,15 +245,22 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-		<input type="radio" name="#variables.type#_option_type_id" value="14" onClick="setType(14);" <cfif value EQ 14>checked="checked"</cfif>/>
-		Radio Group<br />
-		<div id="typeOptions14" style="display:none;padding-left:30px;"> 
+		<input type="radio" name="#variables.type#_option_type_id" value="22" onClick="setType(22);" <cfif value EQ 22>checked="checked"</cfif>/>
+		Slider<br />
+		<div id="typeOptions22" style="display:none;padding-left:30px;"> 
 			<table style="border-spacing:0px;">
 			<tr>
-			<th>
-			Delimiter </th><td><input type="text" name="radio_delimiter"  value="<cfif structkeyexists(form, 'radio_delimiter')>#htmleditformat(form.radio_delimiter)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_delimiter', false, '|'))#</cfif>" size="1" maxlength="1" /></td></tr>
-			<tr><td>Labels List: </td><td><input type="text" name="radio_labels"  value="<cfif structkeyexists(form, 'radio_labels')>#htmleditformat(form.radio_labels)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_labels'))#</cfif>" /></td></tr>
-			<tr><td>Values List:</td><td> <input type="text" name="radio_values" value="<cfif structkeyexists(form, 'radio_values')>#htmleditformat(form.radio_values)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'radio_values'))#</cfif>" /></td></tr>
+			<th>From:</th>
+			<td><input type="number" name="slider_from" value="<cfif structkeyexists(form, 'slider_from')>#htmleditformat(form.slider_from)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'slider_from', false, '|'))#</cfif>"></td>
+			</tr>
+			<tr>
+			<th>To:</th>
+			<td><input type="number" name="slider_to" value="<cfif structkeyexists(form, 'slider_to')>#htmleditformat(form.slider_to)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'slider_to', false, '|'))#</cfif>"></td>
+			</tr>
+			<tr>
+			<th>Step:</th>
+			<td><input type="number" name="slider_step" value="<cfif structkeyexists(form, 'slider_step')>#htmleditformat(form.slider_step)#<cfelse>#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'slider_step', false, '|'))#</cfif>"></td>
+			</tr> 
 			</table>
 		</div>
 	</cfsavecontent>
@@ -304,7 +271,7 @@
 <cffunction name="getCreateTableColumnSQL" localmode="modern" access="public">
 	<cfargument name="fieldName" type="string" required="yes">
 	<cfscript>
-	return "`#arguments.fieldName#` varchar(255) NOT NULL";
+	return "`#arguments.fieldName#` decimal(10,2) NOT NULL";
 	</cfscript>
 </cffunction>
 </cfoutput>

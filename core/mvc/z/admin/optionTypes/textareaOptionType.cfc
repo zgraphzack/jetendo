@@ -120,8 +120,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfargument name="dataStruct" type="struct" required="yes">  
 	<cfscript>
 	return { label: true, hidden: false, value:'<textarea cols="10" rows="5" style="width:#application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2',false,500)#px; height:#application.zcore.functions.zso(arguments.optionStruct, 'editorheight2',false,200)#px;" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#">#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])#</textarea>'};  
 	</cfscript> 
@@ -192,9 +191,19 @@
 		editorheight2:application.zcore.functions.zso(arguments.dataStruct, 'editorheight2')
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
-	return { success:true};
+	return { success:true, optionStruct: ts};
 	</cfscript>
 </cffunction>
+
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+	<cfscript>
+	ts={
+		editorwidth2:"",
+		editorheight2:""
+	};
+	return ts;
+	</cfscript>
+</cffunction> 
 
 <cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>

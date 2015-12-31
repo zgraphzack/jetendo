@@ -438,7 +438,7 @@ application.zcore.functions.zPublishCss(ts);
 						g=c.arrChildren[n];
 						echo('<li><a href="#g.url#"');
 						if(g.target EQ "_blank"){
-							echo(' rel="external" onclick="window.open(this.href); return false;"');
+							echo(' rel="external" target="_blank"');
 						}
 						echo('>#(g.text)#</a></li>');
 					}
@@ -451,7 +451,7 @@ application.zcore.functions.zPublishCss(ts);
 					echo('<ul data-role="listview" data-inset="false" data-theme="c" data-divider-theme="c">
 					<li data-icon="false"><a href="#c.url#"');
 					if(c.target EQ "_blank"){
-						echo(' rel="external" onclick="window.open(this.href); return false;"');
+						echo(' rel="external" target="_blank"');
 					}
 					echo('>#(c.text)#</a></li>');
 					echo('</ul>');
@@ -508,7 +508,7 @@ application.zcore.functions.zPublishCss(ts);
 				}
 				echo('" href="#c.url#" ');
 				if(c.target EQ "_blank"){
-					echo('rel="external" onclick="window.open(this.href); return false;"');
+					echo('rel="external" target="_blank"');
 				}
 				echo('>#(c.text)#</a>');
 				
@@ -519,7 +519,7 @@ application.zcore.functions.zPublishCss(ts);
 						g=c.arrChildren[n];
 						echo('<li><a href="#(g.url)#" ');
 						if(g.target EQ "_blank"){
-							echo(' rel="external" onclick="window.open(this.href); return false;"');
+							echo(' rel="external" target="_blank"');
 						}
 						echo('>#(g.text)#</a></li>#chr(10)#');
 					}

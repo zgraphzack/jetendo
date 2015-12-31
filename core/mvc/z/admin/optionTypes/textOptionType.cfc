@@ -132,8 +132,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfargument name="dataStruct" type="struct" required="yes">  
 	<cfscript>
 	return { label: true, hidden: false, value:'<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" style="width:95%;" value="#htmleditformat(application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row["#variables.type#_option_id"]#'))#" />'};  
 	</cfscript>
@@ -200,10 +199,17 @@
 		return { success:false};
 	}
 	arguments.dataStruct["#variables.type#_option_type_json"]="{}";
-	return { success:true};
+	return { success:true, optionStruct: {}};
 	</cfscript>
 </cffunction>
 		
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+	<cfscript>
+	ts={ 
+	};
+	return ts;
+	</cfscript>
+</cffunction> 
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">

@@ -123,8 +123,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfargument name="dataStruct" type="struct" required="yes">  
 	<cfsavecontent variable="local.output"> 
 		<!--- map picker needs to have ajax javascript in the getFormField that runs on the live data fields instead of requiring you to click on verify link. --->
 		<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" style="min-width:100px; width:100px;" id="latlongSiteOption#arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]])#" /> <a href="##" onclick="var address=mapPickerGetAddress#arguments.row["#variables.type#_option_id"]#(); zShowModalStandard('/z/misc/map/modalMarkerPicker/mapPickerCallback#arguments.row["#variables.type#_option_id"]#?address='+encodeURIComponent(address), zWindowSize.width-100, zWindowSize.height-100);return false;" rel="nofollow">Verify/Set Map Location</a>
@@ -253,10 +252,23 @@
 		countryfield:application.zcore.functions.zso(arguments.dataStruct, 'countryfield')
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
-	return { success:true};
+	return { success:true, optionStruct: ts};
 	</cfscript>
 </cffunction>
 		
+
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+	<cfscript>
+	ts={
+		addressfield:"",
+		cityfield:"",
+		statefield:"",
+		zipfield:"",
+		countryfield:""
+	};
+	return ts;
+	</cfscript>
+</cffunction> 
 
 <cffunction name="getTypeForm" localmode="modern" access="public">
 	<cfargument name="dataStruct" type="struct" required="yes">

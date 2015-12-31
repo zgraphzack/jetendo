@@ -143,8 +143,7 @@
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfargument name="prefixString" type="string" required="yes">
-	<cfargument name="dataStruct" type="struct" required="yes"> 
-	<cfargument name="labelStruct" type="struct" required="yes"> 
+	<cfargument name="dataStruct" type="struct" required="yes">  
 	<cfscript>
 	return { label: true, hidden: false, value:variables.createSelectMenu(arguments.row["#variables.type#_option_id"], arguments.row["#variables.type#_option_group_id"], arguments.optionStruct, false, '')};
 	</cfscript>
@@ -252,9 +251,27 @@
 		selectmenu_size:application.zcore.functions.zso(arguments.dataStruct, 'selectmenu_size')
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
-	return { success:true};
+	return { success:true, optionStruct: ts};
 	</cfscript>
 </cffunction>
+
+
+<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+	<cfscript>
+	ts={
+		selectmenu_delimiter:"|",
+		selectmenu_labels:"",
+		selectmenu_values:"",
+		selectmenu_groupid:"",
+		selectmenu_labelfield:"",
+		selectmenu_valuefield:"",
+		selectmenu_parentfield:"",
+		selectmenu_multipleselection:0,
+		selectmenu_size:1
+	};
+	return ts;
+	</cfscript>
+</cffunction> 
 
 <cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>

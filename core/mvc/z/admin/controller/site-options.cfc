@@ -793,7 +793,9 @@
 	<script type="text/javascript">
 	/* <![CDATA[ */
 	function setType(n){
-		for(var i=0;i<=20;i++){
+
+		var count=parseInt(document.getElementById('optionTypeCount').value);	
+		for(var i=0;i<=count;i++){
 			var t=document.getElementById('typeOptions'+i);	
 			if(t!=null){
 				if(i==n){
@@ -859,8 +861,10 @@
 					}
 					var typeStruct={};
 					var i=0;
+					var count=0;
 					typeCFCStruct=application.zcore.siteOptionCom.getTypeCFCStruct();
 					for(i in typeCFCStruct){
+						count++;
 						typeStruct[typeCFCStruct[i].getTypeName()]=i;
 					}
 					var arrTemp=structkeyarray(typeStruct);
@@ -870,6 +874,7 @@
 						writeoutput(currentCFC.getTypeForm(form, optionStruct, 'site_option_type_id'));
 					}
 					</cfscript> 
+					<input type="hidden" id="optionTypeCount" value="#count#">
 					<script type="text/javascript">
 					/* <![CDATA[ */
 					setType(#application.zcore.functions.zso(form, 'site_option_type_id',true)#);
@@ -3625,7 +3630,7 @@ Define this function in another CFC to override the default email format
 				currentRowIndex++;
 			
 				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
-				var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form, labelStruct);
+				var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form);
 				if(rs.hidden){
 					arrayAppend(arrEnd, '<input type="hidden" name="site_option_id" value="'&row.site_option_id&'" />');
 					arrayAppend(arrEnd, rs.value);
@@ -4148,7 +4153,7 @@ Define this function in another CFC to override the default email format
 					<input type="hidden" name="siteidtype" value="#application.zcore.functions.zGetSiteIdType(row.site_id)#" />
 					<br style="clear:both;" />');
 					var currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id); 
-					var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form, labelStruct);
+					var rs=currentCFC.getFormField(row, optionStruct[row.site_option_id], 'newvalue', form);
 					writeoutput(rs.value);
 					writeoutput('</td>
 				</tr>');
