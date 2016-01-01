@@ -164,7 +164,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="getTypeName" localmode="modern" access="public">
+<cffunction name="getTypeName" output="no" localmode="modern" access="public">
 	<cfscript>
 	return 'HTML Separator';
 	</cfscript>
@@ -190,7 +190,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+<cffunction name="getOptionFieldStruct" output="no" localmode="modern" access="public"> 
 	<cfscript>
 	ts={
 		htmlcontent:""

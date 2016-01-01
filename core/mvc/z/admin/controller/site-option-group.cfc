@@ -399,6 +399,49 @@ displayGroupCom.ajaxInsert();
 		generateUpdateTable(form.site_option_group_id);
 	}
 	echo('<blockquote>'&htmlcodeformat(trim(out))&'</blockquote>');
+
+
+	echo('<h2>Generate Widget Config Code</h2>
+		<p>This code can be used by the widget system so you can build forms for new widgets visually, and then convert them to code for further editing.</p>');
+	echo('<textarea name="widget_code" cols="100" rows="10" style="width:95%;">');
+	echo('cs={};'&chr(10));
+ 	echo('cs.dataFields=[');
+	count=0; 
+	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
+	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+		optionStruct=t9.optionLookup[n];
+		count++;
+		currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type);   
+		typeName=currentCFC.getTypeName();
+		options=currentCFC.getOptionFieldStruct();
+		currentOptions=duplicate(optionStruct.optionStruct);
+		structappend(currentOptions, options, false);
+		tabs=chr(9);
+		if(count NEQ 1){
+			echo(',');
+		}
+		echo(chr(10)&'{'&chr(10));
+		echo('#tabs#id:"#count#",'&chr(10));
+		echo('#tabs#label:"#replace(replace(optionStruct.site_option_name, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
+		echo('#tabs#type:"#typeName#",'&chr(10));
+		echo('#tabs#required:#optionStruct.site_option_required#,'&chr(10));
+		echo('#tabs#defaulValue:"#replace(replace(optionStruct.site_option_default_value, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
+		echo('#tabs#options:{');
+		first=true;
+		for(g in currentOptions){
+			if(not first){
+				echo(','&chr(10));
+			}else{
+				echo(chr(10));
+			}
+			first=false;
+			echo(chr(9)&chr(9)&'"#replace(replace(g, '##', '####', 'all'), '"', '""', "all")#":"#replace(replace(currentOptions[g], '##', '####', 'all'), '"', '""', "all")#"');
+		}
+		echo(chr(10)&'#tabs#}'&chr(10)); 
+		echo('}'); 
+	}
+	echo(chr(10)&'];');
+	echo('</textarea>');
 	</cfscript>
 </cffunction>
 

@@ -1,5 +1,10 @@
 <cfcomponent extends="zcorerootmapping.com.zos.controller"> 
 <cfoutput>
+<!--- 
+/z/admin/layout-widget/index
+/z/admin/layout-widget/addWidgetInstanceLayout?widget_id=1&widget_instance_id=
+/z/admin/layout-widget/loadWidgets
+ --->
 <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	widgetCom=createobject("component", "zcorerootmapping.com.widget.widget-example");
@@ -15,7 +20,7 @@
 			"Column Gap":20
 		}
 	};
-	widgetCom.initBase(ds); 
+	widgetCom.init(ds); 
 
 
 	htmlData={
@@ -34,7 +39,7 @@
 			"Column Gap":100
 		}
 	};
-	widgetCom.initBase(ds); 
+	widgetCom.init(ds); 
 
 	htmlData={
 		"Heading":"Example 2",
@@ -48,52 +53,32 @@
 </cffunction>
 
 
-<cffunction name="getWidgetConfig" localmode="modern" access="public"> 
-	<cfscript>
-	form.widget_id=1;
-	form.widget_instance_id="";
-
-	comPath="zcorerootmapping.com.widget.widget-example";
-	widgetCom=createobject("component", comPath);
-	configStruct=widgetCom.getConfig();
-
-	validateWidgetConfig(comPath, configStruct);
-
-
-	return configStruct;
- 
-	</cfscript>
-</cffunction>
 
 <cffunction name="addWidgetInstanceData" localmode="modern" access="remote" roles="member">
-	<cfscript>
-	configStruct=getWidgetConfig();
-	displayWidgetForm("data", configStruct);
+	<cfscript> 
+	displayWidgetForm("data");
 	</cfscript>
 </cffunction>
 
 <cffunction name="editWidgetInstanceData" localmode="modern" access="remote" roles="member">
-	<cfscript>
-	configStruct=getWidgetConfig();
-	displayWidgetForm("data", configStruct);
+	<cfscript> 
+	displayWidgetForm("data");
 	</cfscript>
 </cffunction>
 
 <cffunction name="addWidgetInstanceLayout" localmode="modern" access="remote" roles="serveradministrator">
-	<cfscript>
-	configStruct=getWidgetConfig();
-	displayWidgetForm("layout", configStruct);
+	<cfscript> 
+	displayWidgetForm("layout");
 	</cfscript>
 </cffunction>
 
 <cffunction name="editWidgetInstanceLayout" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
-	configStruct=getWidgetConfig();
-	displayWidgetForm("layout", configStruct);
+	displayWidgetForm("layout");
 	</cfscript>
 </cffunction>
 	
-<cffunction name="validateWidgetConfig" localmode="modern" access="remote" roles="serveradministrator">
+<cffunction name="validateWidgetConfig" localmode="modern" access="public">
 	<cfargument name="comPath" type="string" required="yes">
 	<cfargument name="configStruct" type="struct" required="yes">
 	<cfscript> 
@@ -145,9 +130,9 @@
 				fail=true;
 				continue;
 			}
-			field.value="";
-			field.typeCFC=typeStruct2.typeCFC;
+			field.value=""; 
 			field.options=rs.optionStruct;
+			field.typeId=typeStruct2.id;
 			defaultStruct={
 				readonly:0,
 				smallWidth:0,
@@ -169,15 +154,50 @@
 	</cfscript>
 </cffunction>
  
+ 
+<cffunction name="getWidgetCFC" localmode="modern" access="public">
+	<cfargument name="widget_id" type="string" required="yes">
+	<cfscript> 
+	if(not structkeyexists(application.zcore, 'widgetIndexStruct')){
+		indexCom=createObject("component", "zcorerootmapping.com.widget.widget-index");
+		indexCom.loadIndex();
+	} 
+	if(structkeyexists(application.zcore.widgetIndexStruct, arguments.widget_id)){ 
+		return {success:true, comPath: application.zcore.widgetIndexStruct[arguments.widget_id], cfc:createObject("component", application.zcore.widgetIndexStruct[arguments.widget_id])};
+	}else{
+		return {success:false, errorMessage:"Widget doesn't exist."};
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="displayWidgetForm" localmode="modern" access="public">
-	<cfargument name="type" type="string" required="yes" hint="layout or data are valid values">
-	<cfargument name="configStruct" type="struct" required="yes">
+	<cfargument name="type" type="string" required="yes" hint="layout or data are valid values"> 
 	<cfscript>
+	form.widget_instance_id=application.zcore.functions.zso(form, 'widget_instance_id');
+	form.widget_id=application.zcore.functions.zso(form, 'widget_id');
+
+	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', true);
 	methodbackup=form.method;
-	configStruct=arguments.configStruct;
-	fields=configStruct[arguments.type&"Fields"];
+
+	rs=getWidgetCFC(form.widget_id);
+	if(not rs.success){
+		application.zcore.status.setStatus(request.zsid, "Invalid widget id", form, true);
+		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+	}
+	widgetCom=rs.cfc;
+	comPath=rs.comPath;
 	arrEnd=[];
-	db=request.zos.queryObject;
+	db=request.zos.queryObject; 
+
+
+	ds={
+		widget_instance_id:form.widget_instance_id,
+		cssData:{}
+	};
+	widgetCom.init(ds);
+	configStruct=widgetCom.getBaseConfig();
+	fields=configStruct[arguments.type&"Fields"];
+
 	if(methodbackup EQ "editWidgetInstanceLayout" or methodbackup EQ "editWidgetInstanceData"){
 		db.sql="select * from #db.table("widget_instance", request.zos.zcoreDatasource)# WHERE 
 		site_id = #db.param(request.zos.globals.id)# and 
@@ -196,6 +216,9 @@
 				fields[i].value=jsonFields[fields[i].label];
 			}
 		}
+		form.widget_instance_name=qWidget.widget_instance_name;
+	}else{
+		form.widget_instance_name=application.zcore.functions.zso(form, 'widget_instance_name');
 	} 
 	currentRowIndex=0;
 	optionStruct={};
@@ -203,10 +226,6 @@
 	labelStruct={};
 	posted=false;
 
-	form.widget_instance_id=application.zcore.functions.zso(form, 'widget_instance_id');
-	form.widget_id=application.zcore.functions.zso(form, 'widget_id');
-
-	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced', true);
 	if(form.modalpopforced EQ 1){
 		application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
 		application.zcore.functions.zSetModalWindow();
@@ -243,7 +262,20 @@
 				<button type="button" name="cancel" onclick="window.location.href='#cancelLink#';">Cancel</button>
 			</cfif>
 		</td></tr> 
+		<tr>
+			<th>Instance Name</th>
+			<td><input type="text" name="widget_instance_name" value="#htmleditformat(form.widget_instance_name)#">
+			</td>
+		</tr>
 	<cfscript>
+	/*typeStruct={}; 
+	typeCFCStruct=application.zcore.siteOptionCom.getTypeCFCStruct();
+	for(i in typeCFCStruct){ 
+		typeCFC=application.zcore.siteOptionCom.getTypeCFC(i);
+		options=typeCFC.getOptionFieldStruct();
+		typeStruct[typeCFCStruct[i].getTypeName()]={id:i, typeCFC: typeCFC, options:options };		
+	}*/
+	validateWidgetConfig(comPath, configStruct);
 	for(i=1;i<=arraylen(fields);i++){
 		currentRowIndex++; 
 		field=fields[i];
@@ -253,7 +285,7 @@
 				posted=true;
 				form["newvalue"&id]=form[field.label];
 			}else{
-				if(field.value NEQ ""){
+				if(structkeyexists(field,'value') and field.value NEQ ""){
 					form["newvalue"&id]=field.value;
 				}else{
 					form["newvalue"&id]=field.defaultValue;
@@ -262,12 +294,13 @@
 		}else{
 			posted=true;
 		}
-		form[field.label]=form["newvalue"&id];   
-		dataStruct=field.typeCFC.onBeforeListView(field, field.options, form);
-		if((methodBackup EQ "addWidgetInstanceLayout" or methodBackup EQ "addWidgetInstanceData") and not posted and not field.typeCFC.isCopyable()){
+		form[field.label]=form["newvalue"&id];    
+		typeCFC=application.zcore.siteOptionCom.getTypeCFC(field.typeId);
+		dataStruct=typeCFC.onBeforeListView(field, field.options, form);
+		if((methodBackup EQ "addWidgetInstanceLayout" or methodBackup EQ "addWidgetInstanceData") and not posted and not typeCFC.isCopyable()){
 			form["newvalue"&id]='';
 		}
-		value=field.typeCFC.getListValue(dataStruct, field.options, form["newvalue"&id]);
+		value=typeCFC.getListValue(dataStruct, field.options, form["newvalue"&id]);
 		if(value EQ ""){
 			value=field.defaultValue;
 		}
@@ -279,7 +312,9 @@
 		field=fields[i];
 		id=fields[i].id;
 	 
-		rs=field.typeCFC.getFormField(field, field.options, 'newvalue', form);
+		typeCFC=application.zcore.siteOptionCom.getTypeCFC(field.typeId);
+		field.site_option_id=id;
+		rs=typeCFC.getFormField(field, field.options, 'newvalue', form);
 		if(rs.hidden){
 			arrayAppend(arrEnd, '<input type="hidden" name="site_option_id" value="'&id&'" />');
 			arrayAppend(arrEnd, rs.value);
@@ -350,39 +385,124 @@
 	</form>
 </cffunction>
 
-<cffunction name="deleteWidgetInstance" localmode="modern" access="remote">
+<cffunction name="deleteWidgetInstance" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	echo('delete');abort;
 	</cfscript>
 </cffunction>
 
-<cffunction name="insertWidgetInstanceLayout" localmode="modern" access="remote">
+<cffunction name="saved" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	updateWidgetInstanceLayout();
+	</cfscript>
+	Close modal now.
+</cffunction>
+
+<cffunction name="insertWidgetInstanceLayout" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	saveWidgetInstance();
+	</cfscript>
+</cffunction>
+ 
+<cffunction name="updateWidgetInstanceLayout" localmode="modern" access="remote" roles="member">
+	<cfscript> 
+	saveWidgetInstance();
+	</cfscript>
+</cffunction>
+
+<cffunction name="insertWidgetInstanceData" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	saveWidgetInstance();
 	</cfscript>
 </cffunction>
 
 
-
-<cffunction name="updateWidgetInstanceLayout" localmode="modern" access="remote">
+<cffunction name="updateWidgetInstanceData" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	writedump(form);
+	saveWidgetInstance();
+	</cfscript>
+</cffunction>
+
+<cffunction name="saveWidgetInstance" localmode="modern" access="public">
+	<cfscript>
+	db=request.zos.queryObject; 
+	writedump(form); 
+
+	widgetCom=createobject("component", "zcorerootmapping.com.widget.widget-example");
+
+	ts={
+		table:"widget_instance",
+		datasource:request.zos.zcoreDatasource,
+		struct:{}
+	};
+	if(form.method EQ "insertWidgetInstanceLayout" or form.method EQ "updateWidgetInstanceLayout"){
+		if(not application.zcore.user.checkServerAccess()){
+			application.zcore.status.setStatus(request.zsid, "Access denied - must be server administrator", form, true);
+			application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+		}
+	}
+	if(form.method EQ "insertWidgetInstanceLayout"){
+		failMethod="addWidgetInstanceLayout";
+		type="layout";
+	}else if(form.method EQ "updateWidgetInstanceLayout"){
+		failMethod="editWidgetInstanceLayout";
+		type="layout";
+	}else if(form.method EQ "insertWidgetInstanceData"){
+		failMethod="addWidgetInstanceData";
+		type="data";
+	}else if(form.method EQ "updateWidgetInstanceData"){
+		failMethod="editWidgetInstanceData";
+		type="data";
+	}
+	t9={};
+
+	// TODO: load widget and configstruct here
+
+	rs=getWidgetCFC(form.widget_id);
+	if(not rs.success){
+		application.zcore.status.setStatus(request.zsid, "Invalid widget id", form, true);
+		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
+	}
+	widgetCom=rs.cfc;
+	comPath=rs.comPath; 
+	ds={
+		widget_instance_id:form.widget_instance_id,
+		cssData:{}
+	};
+	widgetCom.init(ds);
+	configStruct=widgetCom.getBaseConfig();
+	fields=configStruct[type&"Fields"];
+
+	for(i=1;i<=arraylen(configStruct["#type#Fields"]);i++){
+		field=configStruct["#type#Fields"][i]; 
+		if(structkeyexists(form, 'newvalue'&field.id)){
+			t9[field.label]=form['newvalue'&field.id];
+		}
+	}
+	
+	ts.struct.widget_instance_deleted=0;
+	ts.struct.widget_instance_json_data=serializeJson(t9);
+	ts.struct.widget_instance_updated_datetime=request.zos.mysqlnow;
+	ts.struct.site_id=request.zos.globals.id;
+	ts.struct.widget_id=form.widget_id;
+	ts.struct.widget_instance_version=widgetCom.getWidgetVersion();
+	writedump(ts);
 	abort;
-	</cfscript>
-</cffunction>
+	if(form.method EQ "insertWidgetInstanceLayout" or form.method EQ "insertWidgetInstanceData"){
+		form.widget_instance_id=application.zcore.functions.zInsert(ts);
+		if(form.widget_instance_id EQ false){
+			application.zcore.status.setStatus(request.zsid, "Failed to save widget instance", form, true);
+			application.zcore.functions.zRedirect("/z/admin/layout-widget/#failMethod#?zsid=#request.zsid#");
+		}
+	}else{
+		ts.struct.widget_instance_id=form.widget_instance_id;
+		if(application.zcore.functions.zUpdate(ts) EQ false){
+			application.zcore.status.setStatus(request.zsid, "Failed to save widget instance", form, true);
+			application.zcore.functions.zRedirect("/z/admin/layout-widget/#failMethod#?zsid=#request.zsid#");
+		}
+	}
 
-<cffunction name="insertWidgetInstanceData" localmode="modern" access="remote">
-	<cfscript>
-	updateWidgetInstanceData();
-	</cfscript>
-</cffunction>
-
-
-
-<cffunction name="updateWidgetInstanceData" localmode="modern" access="remote">
-	<cfscript>
-	writedump(form);
-	abort;
+	application.zcore.status.setStatus(request.zsid, "Saved");
+	application.zcore.functions.zRedirect("/z/admin/layout-widget/saved?zsid=#request.zsid#");
 	</cfscript>
 </cffunction>
 
@@ -392,11 +512,47 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="loadWidgets" localmode="modern" access="public">
+
+
+<cffunction name="loadWidgets" localmode="modern" access="remote">
 	<cfscript>
 	// load all widgets in the widgets directory
 	// getWidgetId() to get their id.
 
+	ts={};
+	indexCom=createObject("component", "zcorerootmapping.com.widget.widget-index");
+	indexCom.loadIndex();
+
+	for(id in application.zcore.widgetIndexStruct){ 
+		comPath=application.zcore.widgetIndexStruct[id];
+		widgetCom=createObject("component", comPath);
+		widgetCom.init({});
+		configStruct=widgetCom.getBaseConfig();
+		validateWidgetConfig(comPath, configStruct);
+		ts[configStruct.id]=configStruct;
+	}
+
+	/*
+	maybe use this for site specific widgets someday
+	arrWidget=directoryList("#request.zos.installPath#core/com/widget/", true, 'path');
+	for(i=1;i<=arrayLen(arrWidget);i++){
+		comPath=arrWidget[i];
+		if(right(comPath, 4) NEQ ".cfc" or right(comPath, 14) EQ "baseWidget.cfc"){
+			continue;
+		}
+		comPath=replace(replace(comPath, '#request.zos.installPath#core/', 'zcorerootmapping/'), '/', '.', 'all');
+		comPath=left(comPath, len(comPath)-4); 
+		widgetCom=createObject("component", comPath); 
+		widgetCom.init({});
+		configStruct=widgetCom.getBaseConfig();
+		validateWidgetConfig(comPath, configStruct);
+		ts[configStruct.id]=configStruct;
+
+		writedump(ts);abort;
+	}
+	*/
+	application.zcore.widgetDataCache=ts;
+	echo('done');
 	</cfscript>
 </cffunction>
 

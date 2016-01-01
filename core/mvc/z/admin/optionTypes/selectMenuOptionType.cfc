@@ -201,7 +201,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="getTypeName" localmode="modern" access="public">
+<cffunction name="getTypeName" output="no" localmode="modern" access="public">
 	<cfscript>
 	return 'Select Menu';
 	</cfscript>
@@ -256,7 +256,7 @@
 </cffunction>
 
 
-<cffunction name="getOptionFieldStruct" localmode="modern" access="public"> 
+<cffunction name="getOptionFieldStruct" output="no" localmode="modern" access="public"> 
 	<cfscript>
 	ts={
 		selectmenu_delimiter:"|",

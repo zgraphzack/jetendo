@@ -1,13 +1,4 @@
-<cfinterface> 
-<cffunction name="init" localmode="modern" access="public" output="no">
-	<cfargument name="dataStruct" type="struct" required="yes">
-	<!--- 
-	Implementation Example:
-	<cfscript>
-	variables.widget_id=1; // must be unique number across all servers
-	variables.widget_name="widget-example"; 
-	</cfscript>	--->
-</cffunction>
+<cfinterface>  
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
 	<cfargument name="htmlData" type="struct" required="yes">
@@ -83,8 +74,11 @@
 <cffunction name="getConfig" localmode="modern" access="public" output="no">
 	<!--- 
 	<cfscript>
+	cs={};
 	// define all the html and css variable field names, types and options
-	return {};
+	cs.dataFields=[];
+	cs.layoutFields=[];
+	return cs;
 	</cfscript>
 
 	--->

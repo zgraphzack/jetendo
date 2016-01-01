@@ -27,7 +27,7 @@
 </cffunction>
 	
 
-<cffunction name="getTypeCFC" returntype="struct" localmode="modern" access="public">
+<cffunction name="getTypeCFC" returntype="struct" localmode="modern" access="public" output="no">
 	<cfargument name="typeId" type="string" required="yes" hint="site_id, theme_id or widget_id">
 	<cfscript>
 	return application.zcore[variables.typeStorageKey].optionTypeStruct[arguments.typeID];

@@ -1,6 +1,6 @@
 <cfcomponent implements="zcorerootmapping.interface.widget" extends="zcorerootmapping.com.widget.baseWidget"> 
 <cfoutput>
-<cffunction name="init" localmode="modern" access="public" output="no">
+<!--- <cffunction name="init" localmode="modern" access="public" output="no">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
 	variables.widget_id=1; // must be unique number across all servers
@@ -8,7 +8,7 @@
 	variables.widget_name="widget-example"; 
 	variables.arrStylesheet=["/z/a/widget/widget-example.css"];
 	</cfscript>	
-</cffunction>
+</cffunction> --->
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
 	<cfargument name="htmlData" type="struct" required="yes">
@@ -96,10 +96,16 @@
 </cffunction>
 
 
+	
 <cffunction name="getConfig" localmode="modern" access="public" output="no">
 	<cfscript>
 	cs={};
- 
+	cs.id="1";
+	cs.name="Widget Example";
+	cs.codeName="widget-example";
+	cs.version=1;
+	cs.arrStylesheet=["/z/a/widget/widget-example.css"];
+ 	// made there should be "previewValue" key below for dataFields
 	cs.dataFields=[
 		{
 			id:"1",
