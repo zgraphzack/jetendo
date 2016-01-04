@@ -22,7 +22,7 @@
 	variables.widget_name=cs.name;
 	variables.widget_code_name=cs.codeName; */
 	variables.configStruct=cs;
-	return cs;
+	return duplicate(cs);
 	</cfscript>
 </cffunction>
 
@@ -38,19 +38,25 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getWidgetName" localmode="modern" access="public">
+	<cfscript>
+	return variables.configStruct.name;	
+	</cfscript>
+</cffunction>
+
 <cffunction name="render" localmode="modern" access="remote">
-	<cfargument name="htmlData" type="struct" required="yes">
+	<cfargument name="dataFields" type="struct" required="yes">
 	<cfscript>
 	cs=variables.configStruct;
 	if(not request.zos.isTestServer){
 		application.zcore.functions.z404("Only works on test server");
 	}  
-	arguments.htmlData.widgetContainer="widgetInstance#variables.dataStruct.widget_instance_id#";
+	arguments.dataFields.widgetContainer="widgetInstance#variables.dataStruct.widget_instance_id#";
 
 	version=getVersion();  
-	htmlOut='<div id="widgetInstance#variables.dataStruct.widget_instance_id#" class="zWidgetContainer">'&getHTML(arguments.htmlData)&'</div>';//variables.configStruct, dataStruct);
+	htmlOut='<div id="widgetInstance#variables.dataStruct.widget_instance_id#" class="zWidgetContainer">'&getHTML(arguments.dataFields)&'</div>';//variables.configStruct, dataStruct);
 
-	jsOut=getJS(arguments.htmlData);
+	jsOut=getJS(arguments.dataFields);
 
 	a=cs.arrStylesheet;
 	for(i=1;i<=arraylen(a);i++){
@@ -100,7 +106,7 @@
 	}
 
 	if(forceCompile){
-		cd=variables.dataStruct.cssData;
+		cd=variables.dataStruct.layoutFields;
 		cd.widgetContainer="##widgetInstance#variables.dataStruct.widget_instance_id#";
 		cssOut=getCSS(cd);
 		hashCSS=hash(cssOut);

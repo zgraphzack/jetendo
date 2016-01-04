@@ -425,7 +425,7 @@ displayGroupCom.ajaxInsert();
 		echo('#tabs#label:"#replace(replace(optionStruct.site_option_name, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
 		echo('#tabs#type:"#typeName#",'&chr(10));
 		echo('#tabs#required:#optionStruct.site_option_required#,'&chr(10));
-		echo('#tabs#defaulValue:"#replace(replace(optionStruct.site_option_default_value, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
+		echo('#tabs#defaultValue:"#replace(replace(optionStruct.site_option_default_value, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
 		echo('#tabs#options:{');
 		first=true;
 		for(g in currentOptions){

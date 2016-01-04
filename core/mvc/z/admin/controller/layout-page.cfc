@@ -141,6 +141,9 @@ D:\desktop\layout.ai
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
+	if(form.layout_page_active EQ ""){
+		form.layout_page_active=1;
+	}
 	</cfscript>
 	<h2>
 		<cfif currentMethod EQ "add">
@@ -162,16 +165,12 @@ D:\desktop\layout.ai
 			<tr>
 				<th>Breakpoints</th>
 				<td><input type="text" name="layout_page_breakpoint_list" value="#htmleditformat(form.layout_page_breakpoint_list)#" /><br />Comma separated list. I.e. 320,960,1200</td>
+				<!--- TODO: make a way of changing breakpoint from old to new value later --->
+			</tr> 
+			<tr>
+				<th>Active</th>
+				<td>#application.zcore.functions.zInput_Boolean("layout_page_active", form.layout_page_active)#</td>
 			</tr>
-			<!--- <tr>
-				<th style="width:1%; white-space:nowrap;" class="table-white">Photos:</th>
-				<td colspan="2" class="table-white"><cfscript>
-				ts=structnew();
-				ts.name="layout_page_image_library_id";
-				ts.value=form.layout_page_image_library_id;
-				application.zcore.imageLibraryCom.getLibraryForm(ts);
-				</cfscript></td>
-			</tr>  --->
 			<tr>
 				<th style="width:1%;">&nbsp;</th>
 				<td><button type="submit" name="submitForm">Save Layout</button>
@@ -216,6 +215,7 @@ D:\desktop\layout.ai
 	<cfscript>
 	row=arguments.row;
 	echo('<td>#row.layout_page_id#</td> 
+	<td>Category</td>  
 	<td>#row.layout_page_name#</td>  
 	<td> 
 	<a href="/z/admin/layout-page/edit?layout_page_id=#row.layout_page_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
@@ -226,13 +226,9 @@ D:\desktop\layout.ai
 
 <cffunction name="nav" localmode="modern" access="public" roles="member">
 	<cfscript>
-	</cfscript>
-	<div style="width:100%; float:left; padding-bottom:20px;">
-		<h2 style="display:inline-block;">Layout Editor | </h2> 
-		<a href="/z/admin/layout-breakpoint/index">Breakpoints</a> | 
-		<a href="/z/admin/layout-page/index">Layout Pages</a> 
-		<!--- <a href="/z/admin/layout-preset/index">Layout Presets</a> |  --->
-	</div>
+	sectionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.section");
+	sectionCom.nav();
+	</cfscript> 
 
 </cffunction>
 	
@@ -252,8 +248,8 @@ D:\desktop\layout.ai
 	qLayout=db.execute("qLayout");  
 	application.zcore.functions.zStatusHandler(request.zsid); 
 
-	nav();
-	</cfscript>
+	nav(); 
+	</cfscript> 
 	<h2>Manage Custom Layout Pages</h2>
 	<p><a href="/z/admin/layout-page/add">Add Custom Layout Page</a></p>
 	<cfif qLayout.recordcount EQ 0>
@@ -263,6 +259,7 @@ D:\desktop\layout.ai
 			<thead>
 			<tr>
 				<th>ID</th>
+				<th>Category</th> 
 				<th>Name</th> 
 				<!--- <th>Sort</th> --->
 				<th>Admin</th>
@@ -275,12 +272,7 @@ D:\desktop\layout.ai
 					getLayoutRowHTML(row);
 					echo('</tr>');
 				}
-				</cfscript>
-				<!--- <cfloop query="qLayout">
-				<tr> #variables.queueSortCom.getRowHTML(qLayout.layout_page_id)# <cfif qLayout.currentRow MOD 2 EQ 0>class="row2"<cfelse>class="row1"</cfif>>
-					
-				</tr>
-				</cfloop> --->
+				</cfscript> 
 			</tbody>
 		</table>
 	</cfif>

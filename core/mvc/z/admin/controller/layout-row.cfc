@@ -150,15 +150,21 @@
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	</cfscript>
 	<h2>
-		<cfif currentMethod EQ "add">
-			Add
-			<cfscript>
-			application.zcore.functions.zCheckIfPageAlreadyLoadedOnce();
-			</cfscript>
-		<cfelse>
-			Edit
-		</cfif>
-		Row</h2>
+	<cfif currentMethod EQ "add">
+		Add
+		<cfscript>
+		application.zcore.functions.zCheckIfPageAlreadyLoadedOnce();
+		</cfscript>
+	<cfelse>
+		Edit
+	</cfif>
+	Row</h2>
+	<cfscript>
+	if(form.layout_row_active EQ ""){
+		form.layout_row_active=1;
+	}
+
+	</cfscript>
 	<form action="/z/admin/layout-row/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?layout_page_id=#form.layout_page_id#&amp;layout_row_id=#form.layout_row_id#" method="post">
 		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">
@@ -261,7 +267,8 @@
 	</cfscript>
 	<h2>Manage Rows for Custom Layout Page</h2>
 	<p><a href="/z/admin/layout-page/index?layout_page_id=#qPage.layout_page_id#">#qPage.layout_page_name#</a> /</h2>
-	<p><a href="/z/admin/layout-row/add?layout_page_id=#form.layout_page_id#">Add Row</a></p>
+	<!--- <p><a href="/z/admin/layout-row/add?layout_page_id=#form.layout_page_id#">Add Row</a></p> --->
+	<p><a href="##" onclick="if(window.confirm('Are you sure you want to add a row?')){ window.location.href='/z/admin/layout-row/insert?layout_row_active=1&amp;layout_page_id=#form.layout_page_id#'; } return false;">Add Row</a></p>
 	<cfif qLayout.recordcount EQ 0>
 		<p>No rows have been added.</p>
 	<cfelse>

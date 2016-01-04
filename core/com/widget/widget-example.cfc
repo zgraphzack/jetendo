@@ -11,9 +11,9 @@
 </cffunction> --->
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
-	<cfargument name="htmlData" type="struct" required="yes">
+	<cfargument name="dataFields" type="struct" required="yes">
 	<cfscript>
-	ds=arguments.htmlData;
+	ds=arguments.dataFields;
 	</cfscript>
 	<cfsavecontent variable="out">
 		<div class="test-example-1 zForceEqualHeights">
@@ -36,11 +36,11 @@
 </cffunction>
 	
 <cffunction name="getJS" localmode="modern" access="public" output="no">  
-	<cfargument name="htmlData" type="struct" required="yes">
+	<cfargument name="dataFields" type="struct" required="yes">
 	<script type="text/javascript">
 	<cfsavecontent variable="out">
 	zArrDeferredFunctions.push(function(){
-		var e="testWidgetJS - #arguments.htmlData.widgetContainer#";
+		var e="testWidgetJS - #arguments.dataFields.widgetContainer#";
 		console.log(e);
 	});
 	</cfsavecontent>
@@ -50,11 +50,10 @@
 	</cfscript>
 </cffunction>
 	
-<cffunction name="getCSS" localmode="modern" access="public" output="no">
-	<!--- <cfargument name="configStruct" type="struct" required="yes"> --->
-	<cfargument name="cssDataStruct" type="struct" required="yes">
+<cffunction name="getCSS" localmode="modern" access="public" output="no"> 
+	<cfargument name="layoutFields" type="struct" required="yes">
 	<cfscript>
-	cs=arguments.cssDataStruct;
+	cs=arguments.layoutFields;
 	c=cs.widgetContainer;
 	/*
 	// implement this:
@@ -106,20 +105,22 @@
 	cs.version=1;
 	cs.arrStylesheet=["/z/a/widget/widget-example.css"];
  	// made there should be "previewValue" key below for dataFields
+
+ 	// TODO: need to support nested forms for recursive data
 	cs.dataFields=[
 		{
 			id:"1",
 			label:"Heading",
 			type:"Text",
 			required:true,
-			defaulValue:"",
+			defaultValue:"",
 			options:{}
 		},
 		{
 			id:"2",
 			label:"Body Text",
 			type:"HTML Editor",
-			defaulValue:"",
+			defaultValue:"",
 			options:{
 				editorwidth:600,
 				editorheight:300
@@ -129,7 +130,7 @@
 			id:"3",
 			label:"Image",
 			type:"Image",
-			defaulValue:"",
+			defaultValue:"",
 			options:{
 				imagewidth:600,
 				imageheight:600,

@@ -218,10 +218,24 @@
 	<td>#row.section_name#</td>  
 	<td> 
 	<a href="/z/admin/section/edit?section_id=#row.section_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
+	<a href="/z/admin/landing-page/index?section_id=#row.section_id#&landing_page_parent_id=0">Manage Content</a> | 
 	<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/admin/section/delete?section_id=#row.section_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a></td>');
 	</cfscript>
 </cffunction>
 
+<cffunction name="nav" localmode="modern" access="public" roles="member">
+	<cfscript>
+	</cfscript>
+	<p> 
+		<a href="/z/admin/layout-breakpoint/index">Breakpoints</a> | 
+		<a href="/z/admin/layout-global/index">Global Layout Settings</a> | 
+		<a href="/z/admin/layout-page/index">Manage Layouts</a>  | 
+		<a href="/z/admin/layout-page/index">Manage Sections</a>  | 
+		<a href="/z/admin/landing-page/index">Manage Custom Landing Pages</a> 
+		<!--- <a href="/z/admin/layout-preset/index">Landing Presets</a> |  --->
+	</p>
+
+</cffunction>
 	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -241,6 +255,8 @@
 	ORDER BY section_name ASC ";
 	qSection=db.execute("qSection");  
 	application.zcore.functions.zStatusHandler(request.zsid); 
+
+	nav();
 	</cfscript>
 	<h2>Manage Sections</h2>
 	<p><a href="/z/admin/section/add">Add Section</a></p>

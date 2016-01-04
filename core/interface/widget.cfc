@@ -1,11 +1,11 @@
 <cfinterface>  
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
-	<cfargument name="htmlData" type="struct" required="yes">
+	<cfargument name="dataFields" type="struct" required="yes">
 	<!--- 
 	Implementation Example:
 	<cfscript>
-	ds=arguments.htmlData;
+	ds=arguments.dataFields;
 	</cfscript>
 	<cfsavecontent variable="out">
 		<div class="test-example-1">
@@ -29,10 +29,10 @@
 	
 
 <cffunction name="getCSS" localmode="modern" access="public" output="no">
-	<cfargument name="cssDataStruct" type="struct" required="yes">
+	<cfargument name="layoutFields" type="struct" required="yes">
 	<!--- 
 	<cfscript>
-	cs=arguments.cssDataStruct;
+	cs=arguments.layoutFields;
 	</cfscript>
 	Implementation Example 1:
 	<cfreturn application.zcore.functions.zReadFile("/path/to/css.css")>
@@ -51,11 +51,11 @@
 
 
 <cffunction name="getJS" localmode="modern" access="public" output="no">  
-	<cfargument name="htmlData" type="struct" required="yes">
+	<cfargument name="dataFields" type="struct" required="yes">
 	<!--- 
 	Implementation Example:
 	<cfscript>
-	ds=arguments.htmlData;
+	ds=arguments.dataFields;
 	</cfscript>
 	<script type="text/javascript">
 	<cfsavecontent variable="out">

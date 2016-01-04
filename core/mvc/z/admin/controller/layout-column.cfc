@@ -7,7 +7,7 @@
 	form.layout_row_id=application.zcore.functions.zso(form, 'layout_row_id', true, 0);
 
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
-	/*var queueSortStruct = StructNew(); 
+	var queueSortStruct = StructNew(); 
 	variables.queueSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.queueSort");
 	queueSortStruct.tableName = "layout_column";
 	queueSortStruct.datasource="#request.zos.zcoreDatasource#";
@@ -20,7 +20,7 @@
 	queueSortStruct.ajaxURL="/z/admin/layout-column/index?layout_page_id=#form.layout_page_id#&layout_row_id=#form.layout_row_id#";
 	queueSortStruct.ajaxTableId="sortRowTable";
 	variables.queueSortCom.init(queueSortStruct);
-	variables.queueSortCom.returnJson();*/
+	variables.queueSortCom.returnJson();
 	</cfscript>
 </cffunction>
 
@@ -47,7 +47,7 @@
 		site_id = #db.param(request.zos.globals.id)# ";
 		q=db.execute("q");
 
-		//variables.queueSortCom.sortAll();
+		variables.queueSortCom.sortAll();
 		if(form.returnJson EQ 1){
 			application.zcore.functions.zReturnJson({success:true});
 		}else{
@@ -101,7 +101,7 @@
 			application.zcore.functions.zRedirect('/z/admin/layout-column/add?layout_page_id=#form.layout_page_id#&layout_row_id=#form.layout_row_id#&zsid=#request.zsid#');
 		}else{
 			application.zcore.status.setStatus(request.zsid, 'Column saved.');
-			//variables.queueSortCom.sortAll();
+			variables.queueSortCom.sortAll();
 		}
 	}else{
 		if(application.zcore.functions.zUpdate(ts) EQ false){
@@ -216,6 +216,7 @@
 	row=arguments.row;
 	echo('<td>#row.layout_column_id#</td> 
 	<td>Preview Not Implemented</td> 
+	<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(row.layout_column_id)#</td>
 	<td> 
 	<a href="/z/admin/layout-column/edit?layout_page_id=#form.layout_page_id#&amp;layout_column_id=#row.layout_column_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | 
 	<a href="/z/admin/layout-widget/edit?layout_page_id=#form.layout_page_id#&amp;layout_column_id=#row.layout_column_id#&amp;modalpopforced=1">Manage Widgets</a> | 
@@ -246,14 +247,17 @@
 	db.sql="select * from #db.table("layout_column", request.zos.zcoreDatasource)# 
 	WHERE 
 	layout_page_id=#db.param(form.layout_page_id)# and 
+	layout_row_id=#db.param(form.layout_row_id)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
-	layout_column_deleted = #db.param(0)#   ";
+	layout_column_deleted = #db.param(0)#  
+	ORDER BY layout_column_sort ASC ";
 	qLayout=db.execute("qLayout");  
 	application.zcore.functions.zStatusHandler(request.zsid); 
 	</cfscript>
 	<h2>Manage Columns for Custom Layout Page Row</h2>
 	<p><a href="/z/admin/layout-page/index?layout_page_id=#qPage.layout_page_id#">#qPage.layout_page_name#</a> / <a href="/z/admin/layout-row/index?layout_row_id=#qRow.layout_row_id#&amp;layout_page_id=#qPage.layout_page_id#">Row ###qRow.layout_row_sort# (ID###qRow.layout_row_id#)</a> /</h2>
-	<p><a href="/z/admin/layout-column/add?layout_page_id=#form.layout_page_id#">Add Column</a></p>
+	<!--- <p><a href="/z/admin/layout-column/add?layout_page_id=#form.layout_page_id#">Add Column</a></p> --->
+	<p><a href="##" onclick="if(window.confirm('Are you sure you want to add a column?')){ window.location.href='/z/admin/layout-column/insert?layout_row_id=#qRow.layout_row_id#&amp;layout_page_id=#form.layout_page_id#'; } return false;">Add Column</a></p>
 	<cfif qLayout.recordcount EQ 0>
 		<p>No columns have been added.</p>
 	<cfelse>
@@ -262,13 +266,14 @@
 			<tr>
 				<th>ID</th>
 				<th>Preview</th>   
+				<th>Sort</th>
 				<th>Admin</th>
 			</tr>
 			</thead>
 			<tbody>
 				<cfscript>
 				for(row in qLayout){ 
-					echo('<tr  ');
+					echo('<tr #variables.queueSortCom.getRowHTML(row.layout_column_id)# ');
 					if(qLayout.currentRow MOD 2 EQ 0){
 						echo('class="row2"');
 					}else{
