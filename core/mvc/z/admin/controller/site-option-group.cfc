@@ -1511,10 +1511,10 @@ displayGroupCom.ajaxInsert();
 			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE 
 			site_id = #db.param(request.zos.globals.id)# and 
 			site_option_group_deleted = #db.param(0)# 
-			<cfif form.site_option_group_id NEQ 0 and form.site_option_group_id NEQ "">
+			<!--- <cfif form.site_option_group_id NEQ 0 and form.site_option_group_id NEQ "">
 				and site_option_group_id <> #db.param(form.site_option_group_id)# and 
 				site_option_group_parent_id <> #db.param(form.site_option_group_id)#
-			</cfif>
+			</cfif> --->
 			ORDER BY site_option_group_display_name </cfsavecontent>
 			<cfscript>
 			qG=db.execute("qG");
@@ -1522,13 +1522,34 @@ displayGroupCom.ajaxInsert();
 			<tr>
 				<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Parent Group","member.site-option-group.edit site_option_group_parent_id")#</th>
 				<td><cfscript>
+				arrData=[];
+				for(row in qG){
+					arrayAppend(arrData, { 
+						parent:row.site_option_group_parent_id, 
+						label:row.site_option_group_display_name, 
+						value:row.site_option_group_id
+					});
+				} 
+				rs=application.zcore.functions.zGetRecursiveLabelValueForSelectBox(arrData);
+				selectStruct=structnew();
+				selectStruct.name="site_option_group_parent_id"; 
+				selectStruct.onchange="doParentCheck();";
+				if(form.site_option_group_id NEQ ""){
+					selectStruct.onchange="if(this.options[this.selectedIndex].value=='#form.site_option_group_id#'){alert('You can\'t select the same group you are editing.');this.selectedIndex=0;}"&selectStruct.onchange;
+				}
+				selectStruct.listValuesDelimiter=chr(9);
+				selectStruct.listLabelsDelimiter=chr(9);
+				selectStruct.listLabels=arrayToList(rs.arrLabel, chr(9));
+				selectStruct.listValues=arrayToList(rs.arrValue, chr(9)); 
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				/*
 				selectStruct=structnew();
 				selectStruct.name="site_option_group_parent_id";
 				selectStruct.query = qG;
 				selectStruct.onchange="doParentCheck();";
 				selectStruct.queryLabelField = "site_option_group_display_name";
 				selectStruct.queryValueField = "site_option_group_id";
-				application.zcore.functions.zInputSelectBox(selectStruct);
+				application.zcore.functions.zInputSelectBox(selectStruct);*/
 				</cfscript></td>
 			</tr>
 			<tr>

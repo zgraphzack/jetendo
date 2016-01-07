@@ -546,7 +546,7 @@
 			action&="insert";
 		}else{
 			echo('Edit');
-			action&="update&amp;event_id=#form.event_id#";
+			action&="update?event_id=#form.event_id#";
 		}
 		echo(' Event</h2>');
 	}

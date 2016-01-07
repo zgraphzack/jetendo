@@ -18,6 +18,71 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="zInternalGetRecurseLabelValueStruct" localmode="modern" access="public">
+	<cfargument name="arrData" type="array" required="yes">
+	<cfargument name="parentStruct" type="struct" required="yes">
+	<cfargument name="arrParentLabel" type="array" required="yes">
+	<cfargument name="parentId" type="string" required="yes">
+	<cfscript>
+	a=arguments.parentStruct[arguments.parentId];
+	for(i=1;i<=arraylen(a);i++){
+		a[i].arrParentLabel=arguments.arrParentLabel; 
+		arrayAppend(arguments.arrData, a[i]);
+		if(arrayLen(arguments.arrData) GT 1000){
+			throw("Possible infinite loop for this data set.");
+		}
+		if(structkeyexists(arguments.parentStruct, a[i].value)){
+			a2=duplicate(a[i].arrParentLabel);
+			arrayAppend(a2, a[i].label); 
+			application.zcore.functions.zInternalGetRecurseLabelValueStruct(arguments.arrData, arguments.parentStruct, a2, a[i].value);
+		}
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="zGetRecursiveLabelValueStruct" localmode="modern" access="public">
+	<cfargument name="arrData" type="array" required="yes">
+	<cfscript>
+	parentStruct={};
+	for(i=1;i<=arraylen(arguments.arrData);i++){
+		ds=arguments.arrData[i];
+		ds.arrParentLabel=[];
+		if(not structkeyexists(parentStruct, ds.parent)){
+			parentStruct[ds.parent]=[];
+		}
+		arrayAppend(parentStruct[ds.parent], ds);
+	} 
+	parentId=0;
+	arrOut=[];
+	application.zcore.functions.zInternalGetRecurseLabelValueStruct(arrOut, parentStruct, [], parentId);
+	return arrOut;
+	</cfscript>
+</cffunction>
+
+<cffunction name="zGetRecursiveLabelValueForSelectBox" localmode="modern" access="public">
+	<cfargument name="arrData" type="array" required="yes">
+	<cfscript>
+	arrOut=application.zcore.functions.zGetRecursiveLabelValueStruct(arguments.arrData);
+	rs={};
+	rs.arrLabel=[];
+	rs.arrValue=[];
+	for(i=1;i<=arraylen(arrOut);i++){
+		c=arrOut[i];
+		if(arraylen(c.arrParentLabel)){
+			d=duplicate(c.arrParentLabel);
+			arrayAppend(d, c.label);
+			arrayAppend(rs.arrLabel, arrayToList(d, " -> "));
+			arrayAppend(rs.arrValue, c.value);
+		}else{
+			arrayAppend(rs.arrLabel, c.label);
+			arrayAppend(rs.arrValue, c.value);
+		}
+	} 
+	return rs;
+	</cfscript>
+</cffunction>
+
+
 <!--- application.zcore.functions.zVerifyRecaptcha() --->
 <cffunction name="zVerifyRecaptcha" localmode="modern" output="no" returntype="boolean">
 	<cfscript>

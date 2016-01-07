@@ -724,9 +724,8 @@
 		}
 		if(isEvent){
 			if(structkeyexists(excludeStruct, dateformat(curDate, "yyyymmdd"))){
-				continue;
-			}
-			if(dateformat(curDate, "yyyymmdd")>=dateformat(startDate, "yyyymmdd") && curDate<=lastDate){
+				// do nothing
+			}else if(dateformat(curDate, "yyyymmdd")>=dateformat(startDate, "yyyymmdd") && curDate<=lastDate){
 
 				if(debug) echo('added date: '&curDate&" | #i# of #futureDaysToProject#<br>");
 				arrayAppend(arrDate, curDate);
