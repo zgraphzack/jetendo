@@ -140,6 +140,7 @@
 		searchStruct.count = qFeedbackCount.count;
 		searchStruct.index = form.zIndex;
 		searchStruct.showString = "Results ";
+
 		searchStruct.url = "/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#";
 		searchStruct.indexName = "zIndex";
 		searchStruct.buttons = 5;
@@ -289,6 +290,9 @@
 	}
 	qSortCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.querySort");
 	form.zPageId = qSortCom.init("zPageId");
+	if(structkeyexists(form, 'submitForm')){
+		form.zIndex=1;
+	}
 	if(structkeyexists(form, 'zIndex')){
 		 application.zcore.status.setField(form.zPageId, "zIndex", form.zIndex);
 	}else{
@@ -363,7 +367,6 @@
 				form.inquiries_start_date = application.zcore.functions.zGetDateSelect("inquiries_start_date");
 			}
 		}
-		
 		if(form.inquiries_start_date EQ false or form.inquiries_end_date EQ false){
 			form.inquiries_start_date = dateformat(dateadd("d", -30, now()), "yyyy-mm-dd");
 			form.inquiries_end_date = dateFormat(now(), "yyyy-mm-dd");
@@ -464,6 +467,7 @@
 				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))#
 			</cfif>
 
+		
 		</cfif>
 		<cfif request.zsession.leadviewspam EQ "0">
 			and inquiries.inquiries_spam =#db.param(0)#
@@ -572,7 +576,7 @@
 			<table style="border-spacing:0px; width:100%;" class="table-list">
 				<tr>
 					<td>Name:
-						<input type="text" name="inquiries_name" value="#application.zcore.functions.zso(form, 'inquiries_name')#" /></td>
+						<input type="text" name="inquiries_name" style="min-width:200px; width:200px;" value="#application.zcore.functions.zso(form, 'inquiries_name')#" /></td>
 					<td>Type: 
 					<cfscript>
 					db.sql="SELECT *, 
@@ -711,7 +715,16 @@
 		searchStruct.count = qinquiriesActive.count;
 		searchStruct.index = form.zIndex;
 		searchStruct.showString = "Results ";
-		searchStruct.url = "/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&searchtext="&application.zcore.functions.zso(form, 'searchtext')&"&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#";
+		searchStruct.url="/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&
+		inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_type_id=#application.zcore.functions.zso(form, 'searchtype')#&searchtype=#application.zcore.functions.zso(form, 'searchtype')#";
+		if(structkeyexists(form, 'inquiries_end_date')){
+			searchStruct.url&="&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#";
+		}
+		if(structkeyexists(form, 'inquiries_start_date')){
+			searchStruct.url&="&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#";
+		};
+		//inquiries_name=bruce&inquiries_type_id=&inquiries_start_date_month=5&inquiries_start_date_day=31&inquiries_start_date_year=2009&inquiries_end_date_month=1&inquiries_end_date_day=8&inquiries_end_date_year=2016&searchtype=0&submitForm=
+	//	searchStruct.url = "/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&searchtext="&application.zcore.functions.zso(form, 'searchtext')&"&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#";
 		searchStruct.indexName = "zIndex";
 		searchStruct.buttons = 5;
 		if(structkeyexists(form, 'searchType')){		
