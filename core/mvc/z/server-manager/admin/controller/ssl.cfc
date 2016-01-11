@@ -209,6 +209,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 				form.ssl_expiration_datetime=createdatetime(d.year, d.month, d.day, d.hour, d.minute, d.second);
 				form.ssl_expiration_datetime=dateformat(form.ssl_expiration_datetime, "yyyy-mm-dd")&" "&timeformat(form.ssl_expiration_datetime, "HH:mm:ss");
 			}
+			form.ssl_active=1;
 			form.ssl_key_size=application.zcore.functions.zso(resultStruct,'ssl_key_size');
 			form.ssl_country=application.zcore.functions.zso(resultStruct.csrData, 'c');
 			form.ssl_state=application.zcore.functions.zso(resultStruct.csrData, 'st');
@@ -832,7 +833,7 @@ TODO: consider preventing installation of certificates due to duplicate IP addre
 					<td>#dateformat(qSSL.ssl_created_datetime, "m/d/yyyy")# #timeformat(qSSL.ssl_created_datetime, "h:mm tt")#</td>
 					<td>#dateformat(qSSL.ssl_expiration_datetime, "m/d/yyyy")# #timeformat(qSSL.ssl_expiration_datetime, "h:mm tt")#</td>
 					<td><cfscript>
-					if(qSSL.ssl_public_key NEQ ""){
+					if(qSSL.ssl_public_key NEQ "" and qSSL.ssl_active EQ 1){
 						if(isdate(qSSL.ssl_expiration_datetime) and datecompare(qSSL.ssl_expiration_datetime, now()) LTE 0){
 							echo("Expired");
 						}else{

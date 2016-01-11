@@ -29,7 +29,7 @@
 		<cfscript>
 			userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
 			user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
-			db.sql="SELECT user_id, user_first_name, user_last_name, site_id 
+			db.sql="SELECT user_id, user_first_name, user_last_name, site_id, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL('user.site_id'))# as siteIdType 
 			FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
 			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))#  
@@ -57,12 +57,14 @@
 		}
 		selectStruct = StructNew();
 		selectStruct.name = "user_id";
+		form.user_id=request.zsession.agentuserid&"|"&request.zsession.agentusersiteidtype; 
 		selectStruct.query = qAgents;
-		selectStruct.selectedValues=request.zsession.agentuserid;
+		selectStruct.selectedValues=form.user_id;
 		selectStruct.queryLabelField = "##user_first_name## ##user_last_name##";
 		selectStruct.queryParseLabelVars = true;
+		selectStruct.queryParseValueVars = true;
 		selectStruct.onChange="getAgentLeads(this.options[this.selectedIndex].value);";
-		selectStruct.queryValueField = 'user_id';
+		selectStruct.queryValueField = '##user_id##|##siteIdType##';
 		application.zcore.functions.zInputSelectBox(selectStruct);
 		</cfscript>
 	</cfif>
