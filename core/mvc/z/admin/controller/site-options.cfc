@@ -1505,6 +1505,13 @@
 	var r1=0;
 	var nowDate=request.zos.mysqlnow;
 	var methodBackup=form.method;
+ 
+	if(methodBackup NEQ "publicMapInsertGroup"){
+		// bug fix for multiple insert/updates in the same request where map to group is enabled.
+		structdelete(form, 'disableSiteOptionGroupMap');
+	}
+
+
 	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "insertGroup"){
 		form.site_x_option_group_set_id=0;
 	}
@@ -2055,6 +2062,9 @@
 	
 	mapRecord=false;
 	if(not structkeyexists(form, 'disableSiteOptionGroupMap')){
+		if(structkeyexists(request.zos, 'debugleadrouting')){
+			echo('disableSiteOptionGroupMap doesn''t exist | #qCheck.site_option_group_name# | qCheck.site_option_group_map_insert_type=#qCheck.site_option_group_map_insert_type# | methodBackup = #methodBackup#<br />');
+		}
 		form.disableSiteOptionGroupMap=true;
 		if(qCheck.site_option_group_map_insert_type EQ 1){
 			if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup"){
@@ -2065,6 +2075,11 @@
 				// only if this record was just approved
 				mapRecord=true;
 			}
+		}
+	}else{
+
+		if(structkeyexists(request.zos, 'debugleadrouting')){
+			echo('disableSiteOptionGroupMap exists<br />');
 		}
 	}
 	setIdBackup=form.site_x_option_group_set_id; 
@@ -2116,6 +2131,9 @@
 				disableSendEmail=true;
 			}
 		} 
+	}
+	if(structkeyexists(request.zos, 'debugleadrouting')){
+		echo('mapRecord:#mapRecord#<br />');
 	}
 	if(mapRecord){
 		if(qCheck.site_option_group_map_fields_type EQ 1){ 
