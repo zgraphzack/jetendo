@@ -231,16 +231,22 @@
 				str.sendConfirmOptIn=false;
 			}
 		}
+		if(not structkeyexists(str, 'user_email')){
+			str.user_email=str.user_username;
+		}
 		if(len(str.user_username) LT 5){
 			// username must be 5 or more characters
+			request.userAdminAddError="username must be 5 or more characters";
 			return false;
 		}
 		if(len(str.user_password) LT 8){
 			// password must be 8 or more characters
+			request.userAdminAddError="password must be 8 or more characters";
 			return false;
 		}
 		if(application.zcore.functions.zso(str,'user_email') NEQ '' and application.zcore.functions.zEmailValidate(str.user_email) EQ false){
 			// invalid email address
+			request.userAdminAddError="invalid email address";
 			return false;
 		}
 		if(str.user_access_site_children EQ 1){
@@ -253,6 +259,7 @@
 			site.site_parent_id = #db.param(str.site_id)# ";
 			qUser=db.execute("qUser");
 			if(qUser.recordcount NEQ 0){
+				request.userAdminAddError="user_username must not already be in the child sites of the site the user is added to.";
 				return false; // user_username must not already be in the child sites of the site the user is added to.
 			}
 		}
@@ -263,6 +270,7 @@
 			site_id = #db.param(application.zcore.functions.zVar('serverId'))# ";
 			qUser=db.execute("qUser");
 			if(qUser.recordcount NEQ 0){
+				request.userAdminAddError="user_username must be unique for entire server for all server administrator usernames.";
 				return false; // user_username must be unique for entire server for all server administrator usernames.
 			}
 		}else{
@@ -273,6 +281,7 @@
 			user_server_administrator=#db.param(1)#";
 			qUser=db.execute("qUser"); 
 			if(quser.recordcount neq 0){
+				request.userAdminAddError="user_username must not already be a server administrator.";
 				return false; // user_username must not already be a server administrator.
 			}
 		}
@@ -327,6 +336,7 @@
 					this.resetConfirmOptIn(ts);
 				}
 			}
+			request.userAdminAddError="user_username wasn't unique for current site_id (query failed) ";
 			return false; // user_username wasn't unique for current site_id (query failed) 
 		}
 		 db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 

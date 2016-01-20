@@ -579,16 +579,8 @@ When making a version the primary record, it will have option to preserve the or
 	<cfargument name="struct" type="struct" required="no" default="#{}#">
 	<cfscript>
 	application.zcore.functions.zStatusHandler(request.zsid);
-	defaultStruct={
-		copyURL:"/z/admin/site-option-group-deep-copy/index",
-		addURL:"/z/admin/site-options/addGroup",
-		editURL:"/z/admin/site-options/editGroup",
-		sectionURL:"/z/admin/site-options/sectionGroup",
-		deleteURL:"/z/admin/site-options/deleteGroup",
-		insertURL:"/z/admin/site-options/insertGroup",
-		updateURL:"/z/admin/site-options/updateGroup",
-		listURL:"/z/admin/site-options/manageGroup"
-	};
+	siteOptionCom=createObject("component", "zcorerootmapping.mvc.z.admin.controller.site-options");
+	defaultStruct=siteOptionCom.getDefaultStruct(); 
 	structappend(arguments.struct, defaultStruct, false);
 	qSet=getSet(); 
 	db=request.zos.queryObject;

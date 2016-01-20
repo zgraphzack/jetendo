@@ -9,6 +9,7 @@
 
 <cffunction name="index" access="remote" localmode="modern">
 	<cfscript>
+	db=request.zos.queryObject;
 	if(not application.zcore.user.checkGroupAccess("user")){
 		application.zcore.functions.zRedirect("/z/user/preference/index");
 	}
@@ -57,13 +58,17 @@
 			inquiryTextMissing=false;	
 		}
 	}
+	siteOptionCom=createobject("component", "zcorerootmapping.com.app.site-option");
+	siteOptionCom.userDashboardAdmin();
+
 	if(structkeyexists(application.siteStruct[request.zos.globals.id].zcoreCustomFunctions, 'memberDashboard')){
 		echo(application.siteStruct[request.zos.globals.id].zcoreCustomFunctions.memberDashboard());
 		echo('<hr />');
 	}
 		// TODO: add stuff for listing / rentals here someday like saved searches, inquiries, etc.
-	</cfscript>
 
+
+	</cfscript>
 		<cfscript> 
 		if(structkeyexists(ws, 'arrPublicButton')){
 			echo('<div style="width:100%; float:left;margin-top:20px;">');

@@ -1625,11 +1625,16 @@ displayGroupCom.ajaxInsert();
 				</cfscript>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Child Limit","member.site-option-group.edit site_option_group_limit")#</th>
-					<td><input type="text" name="site_option_group_limit" id="site_option_group_limit" value="#htmleditformat(form.site_option_group_limit)#" /></td>
+					<td><input type="number" name="site_option_group_limit" id="site_option_group_limit" value="#htmleditformat(form.site_option_group_limit)#" /></td>
 				</tr>
 				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("User Child Limit","member.site-option-group.edit site_option_group_user_child_limit")#</th>
+					<td><input type="number" name="site_option_group_user_child_limit" id="site_option_group_user_child_limit" value="#htmleditformat(form.site_option_group_user_child_limit)#" /></td>
+				</tr>
+				
+				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Admin Paging Limit</th>
-					<td><input name="site_option_group_admin_paging_limit" id="site_option_group_admin_paging_limit" type="text" value="#htmleditformat(form.site_option_group_admin_paging_limit)#"  /> (Number of records to display in admin until showing page navigation)</td>
+					<td><input name="site_option_group_admin_paging_limit" id="site_option_group_admin_paging_limit" type="number" value="#htmleditformat(form.site_option_group_admin_paging_limit)#"  /> (Number of records to display in admin until showing page navigation)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Form Description:","member.site-option-group.edit site_option_group_form_description")#</th>
@@ -1771,6 +1776,54 @@ displayGroupCom.ajaxInsert();
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript></td>
 				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Delete<br />For User Groups","member.site-option-group.edit site_option_group_allow_delete_usergrouplist")#</th>
+					<td>
+					<cfscript> 
+					ts = StructNew();
+					ts.name = "site_option_group_allow_delete_usergrouplist";
+					ts.friendlyName="";
+					// options for query data
+					ts.multiple=true;
+					ts.query = qGroup2;
+					ts.queryLabelField = "user_group_name";
+					ts.queryValueField = "user_group_id";
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_group_allow_delete_usergrouplist'));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript> (Enabling delete, will force enable delete of all child groups too)</td>
+				</tr>
+
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Changes Email Alert<br />For User Groups","member.site-option-group.edit site_option_group_change_email_usergrouplist")#</th>
+					<td>
+					<cfscript> 
+					ts = StructNew();
+					ts.name = "site_option_group_change_email_usergrouplist";
+					ts.friendlyName="";
+					// options for query data
+					ts.multiple=true;
+					ts.query = qGroup2;
+					ts.queryLabelField = "user_group_name";
+					ts.queryValueField = "user_group_id";
+					application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_group_change_email_usergrouplist'));
+					application.zcore.functions.zInputSelectBox(ts);
+					</cfscript> (Email will be sent when custom record data is changed by these user groups)</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable User Dashboard Admin","member.site-option-group.edit site_option_group_enable_user_dashboard_admin")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_user_dashboard_admin")# | If you select yes, you must specify the User Id Field below.</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("User Id Field","member.site-option-group.edit site_option_group_user_id_field")#</th>
+					<td>
+						<input name="site_option_group_user_id_field" id="site_option_group_user_id_field" size="50" type="text" value="#htmleditformat(form.site_option_group_user_id_field)#" maxlength="50" />
+					</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Alternate Admin Layout","member.site-option-group.edit site_option_group_subgroup_alternate_admin")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_subgroup_alternate_admin")#</td>
+				</tr>
+
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Require Approval#chr(10)#of Public Data?","member.site-option-group.edit site_option_group_enable_approval")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_approval")#</td>

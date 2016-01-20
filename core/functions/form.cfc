@@ -24,6 +24,9 @@
 	<cfargument name="arrParentLabel" type="array" required="yes">
 	<cfargument name="parentId" type="string" required="yes">
 	<cfscript>
+	if(not structkeyexists(arguments.parentStruct, arguments.parentId)){
+		return;
+	}
 	a=arguments.parentStruct[arguments.parentId];
 	for(i=1;i<=arraylen(a);i++){
 		a[i].arrParentLabel=arguments.arrParentLabel; 

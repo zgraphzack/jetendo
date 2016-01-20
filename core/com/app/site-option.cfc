@@ -1413,6 +1413,7 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 					tempUniqueStruct[row.site_x_option_group_set_parent_id&"_"&id]=true;
 				}
 			}else if(newRecord){
+				// if i get an undefined error here, it is probably because memory caching is disable on the parent site_option_group_id
 				var arrChild=t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
 				var found=false;
 				for(var i=1;i LTE arrayLen(arrChild);i++){
@@ -2428,6 +2429,54 @@ if(not rs.success){
 	site_option_group_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result"); 
+	</cfscript>
+</cffunction>
+
+
+<!--- 
+http://www.daytonachamber.com.127.0.0.2.nip.io/z/admin/site-options/manageGroup?site_option_app_id=0&site_option_group_id=36
+ --->
+<cffunction name="userDashboardAdmin" localmode="modern" access="public">
+	<cfscript>
+	db=request.zos.queryObject; 
+	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_enable_user_dashboard_admin=#db.param(1)# and 
+	site_option_group_deleted=#db.param(0)# 
+	ORDER BY site_option_group_parent_id ASC, site_option_group_display_name ASC";
+	qGroup=db.execute("qGroup");
+	for(row in qGroup){ 
+		if(row.site_option_group_parent_id NEQ 0){
+			continue;
+		}
+		if(row.site_option_group_subgroup_alternate_admin EQ 1){
+			if(row.site_option_group_user_child_limit EQ 1){
+				db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
+				WHERE site_id = #db.param(request.zos.globals.id)# and 
+				site_option_group_id=#db.param(row.site_option_group_id)# and  
+				site_x_option_group_set_deleted=#db.param(0)# 
+				ORDER BY site_x_option_group_set_sort ASC";
+				qSet=db.execute("qSet"); 
+				if(qSet.recordcount EQ 0){
+					echo('<h2><a href="/z/admin/site-options/userAddGroup?site_option_app_id=0&site_x_option_group_set_id=&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Add #row.site_option_group_display_name#</a></h2>');
+				}else{
+					echo('<h2><a href="/z/admin/site-options/userEditGroup?site_option_app_id=0&site_x_option_group_set_id=#qSet.site_x_option_group_set_id#&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Edit #row.site_option_group_display_name#</a></h2>');
+					echo('<ul>');
+					for(row2 in qGroup){
+						if(row2.site_option_group_parent_id EQ row.site_option_group_id){
+							echo('<li><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row2.site_option_group_id#&site_x_option_group_set_parent_id=#qSet.site_x_option_group_set_id#">Manage #row.site_option_group_display_name#(s)</a></li>');
+						}
+					}
+					echo('</ul>');
+				}
+			}else{
+				echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a></h2>');
+			//	echo('<li><a href="/z/admin/site-options/userAddGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Add #row.site_option_group_display_name#(s)</a></li>');
+			}
+		}else{
+			echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a></h2>');
+		}
+	} 
 	</cfscript>
 </cffunction>
 </cfoutput>
