@@ -337,7 +337,7 @@ infobar_opacity: 1<!--- 				//FLOAT - transparency for info bar --->
 <cfif form.listing_lot_square_feet neq '0' and form.listing_lot_square_feet neq ''><li>Lot SQFT: #form.listing_lot_square_feet# sqft (#htmleditformat(round(form.listing_lot_square_feet/10.7639))#m&##178;)</li></cfif>
 <cfif form.listing_year_built NEQ ""><li>Built in &nbsp;#form.listing_year_built#</li></cfif>
 <cfif form.listingStyle NEQ ""><li>Style: #form.listingStyle#</li></cfif>
-<cfif maintfees NEQ "" and maintfees NEQ 0><li>Maint Fees: $#numberformat(maintfees)#</li></cfif>
+<cfif form.maintfees NEQ "" and form.maintfees NEQ 0><li>Maint Fees: $#numberformat(form.maintfees)#</li></cfif>
 <cfscript>
 if(form.listing_sub_type_id NEQ "" and form.listing_sub_type_id NEQ 0){
 	var  arrD=listtoarray(form.listing_sub_type_id); 
