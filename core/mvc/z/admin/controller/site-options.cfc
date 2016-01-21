@@ -1573,6 +1573,20 @@
 	}else{
 		qCheck=curCache.qCheck;
 	}
+
+	if(methodBackup EQ "userInsertGroup" or methodBackup EQ "userUpdateGroup"){ 
+		arrUserGroup=listToArray(qCheck.site_option_group_user_group_id_list, ",");
+		hasAccess=false;
+		for(i=1;i LTE arraylen(arrUserGroup);i++){
+			if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+				hasAccess=true;
+				break;
+			}
+		}
+		if(not hasAccess){
+			application.zcore.functions.z404("site_option_group_id, #form.site_option_group_id#, doesn't allow public data entry.");
+		}
+	}
 	if(qCheck.site_option_group_enable_approval EQ 0){
 		form.site_x_option_group_set_approved=1;
 	}
@@ -2283,6 +2297,17 @@
 		urlformtoken="&"&qCheck.site_option_group_public_thankyou_token&"="&formtoken;
 	}
 
+	if(methodBackup EQ "userUpdateGroup" or methodBackup EQ "userInsertGroup"){
+		if(qCheck.site_option_group_change_email_usergrouplist NEQ ""){
+			newAction='created';
+			if(methodBackup CONTAINS 'update'){
+				newAction='updated';
+			}else if(methodBackup CONTAINS 'import'){
+				newAction='imported';
+			}
+			application.zcore.siteOptionCom.sendChangeEmail(setIdBackup, newAction);
+		}
+	}
 	request.zsession.zLastSiteXOptionGroupSetId=setIdBackup;
 	request.zsession.zLastInquiriesID=application.zcore.functions.zso(form, 'inquiries_id');
 	if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
@@ -2710,7 +2735,8 @@ Define this function in another CFC to override the default email format
 	<cfscript>
 	db=request.zos.queryObject;
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
-	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true);
+	currentSetId=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true);
+	currentParentId=application.zcore.functions.zso(form, 'site_x_option_group_set_parent_id', true);
 	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
 	site_option_group_deleted=#db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# and 
@@ -2724,34 +2750,53 @@ Define this function in another CFC to override the default email format
 	}
 	// only need to validate the topmost parent record.  the children should NOT be validated.
 	// i should remove the options from groups that are not parent_id = 0 in edit group
-
-	if(form.site_x_option_group_set_id NEQ 0){
-		currentSetId=0;
+	request.isUserPrimaryGroup=true;
+	if(currentParentId NEQ 0 and currentSetId EQ 0){
+		request.isUserPrimaryGroup=false;
+		currentSetId=currentParentId;
+	}
+	qCheckSet={recordcount:0};
+	if(currentSetId NEQ 0){ 
+		first=true;
+		i=0;
 		while(true){
+			if(not first){ 
+				request.isUserPrimaryGroup=false;
+			} 
+			first=false;
 			db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 			site_x_option_group_set_deleted=#db.param(0)# and 
 			site_id = #db.param(request.zos.globals.id)# and 
-			site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
-			site_option_group_id=#db.param(form.site_option_group_id)# ";
+			site_x_option_group_set_id=#db.param(currentSetId)# ";
 			qCheckSet=db.execute("qCheckSet");
+			if(qCheckSet.recordcount EQ 0){
+				application.zcore.functions.z404("Invalid record.  set id doesn't exist: #currentSetId#");
+			}
 			if(qCheckSet.site_x_option_group_set_parent_id EQ 0){
 				currentSetId=qCheckSet.site_x_option_group_set_id;
 				break;
+			}else{
+				currentSetId=qCheckSet.site_x_option_group_set_parent_id;
+			}
+			i++;
+			if(i > 255){
+				throw("infinite loop");
 			}
 		} 
 		if(currentSetId NEQ 0){
+			if(qCheckSet.recordcount NEQ 0){
+				db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+				site_option_group_deleted=#db.param(0)# and 
+				site_id = #db.param(request.zos.globals.id)# and 
+				site_option_group_id=#db.param(qCheckSet.site_option_group_id)# ";
+				qCheckGroup=db.execute("qCheckGroup");
+			}
 			if(qCheckGroup.site_option_group_user_id_field EQ ""){
 				application.zcore.functions.z404("This site_option_group requires site_option_group_user_id_field to be defined to enable user dashboard editing: #qCheckGroup.site_option_group_name#");
-			}
-			db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
-			site_x_option_group_set_deleted=#db.param(0)# and 
-			site_id = #db.param(request.zos.globals.id)# and 
-			site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
-			site_option_group_id=#db.param(form.site_option_group_id)# ";
-			qCheckSet=db.execute("qCheckSet");
+			} 
 	 
 			db.sql="select * from #db.table("site_option", request.zos.zcoreDatasource)# site_option 
-			where site_option_group_id = #db.param(form.site_option_group_id)# and 
+			where site_option_group_id = #db.param(qCheckSet.site_option_group_id)# and 
 			site_option_deleted = #db.param(0)# and
 			site_id =#db.param(request.zos.globals.id)# and 
 			site_option_name=#db.param(qCheckGroup.site_option_group_user_id_field)#";
@@ -2763,9 +2808,9 @@ Define this function in another CFC to override the default email format
 			site_option_id=#db.param(qOption.site_option_id)# and 
 			site_x_option_group_deleted=#db.param(0)# and 
 			site_id = #db.param(request.zos.globals.id)# and 
-			site_x_option_group_set_id=#db.param(form.site_x_option_group_set_id)# and 
-			site_option_group_id=#db.param(form.site_option_group_id)# ";
-			qCheckValue=db.execute("qCheckValue"); 
+			site_x_option_group_set_id=#db.param(currentSetId)# and 
+			site_option_group_id=#db.param(qCheckSet.site_option_group_id)# ";
+			qCheckValue=db.execute("qCheckValue");  
 			if(qCheckValue.recordcount NEQ 0){
 				siteIdType=application.zcore.functions.zGetSiteIdType(request.zsession.user.site_id); 
 				if(request.zsession.user.id&"|"&siteIdType NEQ qCheckValue.site_x_option_group_value){
@@ -2832,6 +2877,7 @@ Define this function in another CFC to override the default email format
 	var ts2=0;
 	var qS=0;
 	var q12=0;
+	request.isUserPrimaryGroup=application.zcore.functions.zso(request, 'isUserPrimaryGroup', false, false);
 	methodBackup=form.method;
 	savecontent variable="out"{
 		defaultStruct=getDefaultStruct();
@@ -2855,6 +2901,20 @@ Define this function in another CFC to override the default email format
 			application.zcore.functions.zredirect("/z/admin/site-options/index");
 		}
 
+		if(methodBackup EQ "userManageGroup"){ 
+			arrUserGroup=listToArray(qGroup.site_option_group_user_group_id_list, ",");
+			hasAccess=false;
+			for(i=1;i LTE arraylen(arrUserGroup);i++){
+				if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+					hasAccess=true;
+					break;
+				}
+			}
+			if(not hasAccess){
+				application.zcore.functions.z404("site_option_group_id, #form.site_option_group_id#, doesn't allow public data entry.");
+			}
+		}
+
 
 		db.sql="select *, count(s3.site_option_group_id) childCount 
 		from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
@@ -2875,6 +2935,24 @@ Define this function in another CFC to override the default email format
 		q1=db.execute("q1");
 		sortEnabled=true;
 		subgroupRecurseEnabled=false;
+		subgroupStruct={}; 
+		for(n in q1){
+			if(methodBackup EQ "userManageGroup"){ 
+				arrUserGroup=listToArray(n.site_option_group_user_group_id_list, ",");
+				hasAccess=false;
+				for(i=1;i LTE arraylen(arrUserGroup);i++){
+					if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+						hasAccess=true;
+						break;
+					}
+				}
+				if(hasAccess){
+					subgroupStruct[n.site_option_group_id]=true;
+				}
+			}else{
+				subgroupStruct[n.site_option_group_id]=true;
+			}
+		}
 		if(form.enableSorting EQ 0){
 			for(n in q1){
 				if(n.site_option_group_enable_list_recurse EQ "1"){
@@ -2908,7 +2986,7 @@ Define this function in another CFC to override the default email format
 			site_id = '#request.zos.globals.id#' and 
 			site_x_option_group_set_master_set_id = '0' and 
 			site_x_option_group_set_deleted='0' ";
-			if(methodBackup EQ "userManageGroup"){
+			if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
 				queueSortStruct.where &=" and site_x_option_group_set_user = '#application.zcore.functions.zescape(currentUserIdValue)#'";
 			}
 			
@@ -2950,7 +3028,7 @@ Define this function in another CFC to override the default email format
 							site_id = #db.param(request.zos.globals.id)# and 
 							site_x_option_group_set_master_set_id = #db.param(0)# and 
 							site_x_option_group_set_deleted=#db.param(0)# ";
-							if(methodBackup EQ "userManageGroup"){
+							if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
 								db.sql&=" and site_x_option_group_set_user = '#application.zcore.functions.zescape(currentUserIdValue)#'";
 							}
 							db.sql&=" ORDER BY site_x_option_group_set_sort ASC 
@@ -3065,6 +3143,9 @@ Define this function in another CFC to override the default email format
 		}
 
 		if(not structkeyexists(arguments.struct, 'recurse')){
+			if(methodBackup EQ "userManageGroup"){ 
+				application.zcore.template.setTag('pagenav', '<p><a href="/z/user/home/index">User Home Page</a></p>');
+			}
 			theTitle="Manage #htmleditformat(qGroup.site_option_group_display_name)#(s)";
 			application.zcore.template.setTag("title",theTitle);
 			application.zcore.template.setTag("pagetitle",theTitle);
@@ -3077,6 +3158,7 @@ Define this function in another CFC to override the default email format
 				echo(qGroup.site_option_group_list_description);
 			}
 		}
+
 
 		arrSearchSQL=[];
 		searchStruct={};
@@ -3248,7 +3330,7 @@ Define this function in another CFC to override the default email format
 			site_x_option_group_set_master_set_id = #db.param(0)# and 
 			site_option_group.site_id=site_x_option_group_set.site_id and 
 			site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
-			if(methodBackup EQ "userManageGroup"){
+			if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
 				db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
 			}
 			if(form.site_x_option_group_set_parent_id NEQ 0){
@@ -3290,7 +3372,7 @@ Define this function in another CFC to override the default email format
 			site_x_option_group_set_master_set_id = #db.param(0)# and 
 			site_option_group.site_id=site_x_option_group_set.site_id and 
 			site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
-			if(methodBackup EQ "userManageGroup"){
+			if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
 				db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
 			}
 			if(form.site_x_option_group_set_parent_id NEQ 0){
@@ -3335,7 +3417,7 @@ Define this function in another CFC to override the default email format
 		if(status NEQ ""){
 			db.sql&=" and site_x_option_group_set_approved = #db.param(status)# ";
 		}
-		if(methodBackup EQ "userManageGroup"){
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
 			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
 		}
 		if(form.site_x_option_group_set_parent_id NEQ 0){
@@ -3476,7 +3558,7 @@ Define this function in another CFC to override the default email format
 						echo('</td>');
 					}
 					echo('<td>'&application.zcore.functions.zGetLastUpdatedDescription(row.site_x_option_group_set_updated_datetime)&'</td>');
-					writeoutput('<td style="white-space:nowrap;white-space: nowrap;">');
+					writeoutput('<td style="white-space:nowrap;white-space: nowrap;">'); 
 					if(row.site_id NEQ 0 or variables.allowGlobal){
 						/*if(sortEnabled){
 							writeoutput(queueSortCom.getLinks(qS.recordcount, currentRowIndex, application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced')#"), "vertical-arrows"));
@@ -3485,8 +3567,10 @@ Define this function in another CFC to override the default email format
 							writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
 							<option value="">-- Edit Sub-group --</option>'); 
 							for(var n in q1){
-								writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
-								#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+								if(structkeyexists(subgroupStruct, q1.site_option_group_id)){
+									writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
+									#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+								}
 							}
 							writeoutput('</select>
 							| ');
@@ -3520,13 +3604,28 @@ Define this function in another CFC to override the default email format
 							editLink&="&amp;disableSorting=1";
 						}
 						
-						echo('<a href="#editLink#"  onclick="zTableRecordEdit(this);  return false;">Edit</a> | ');
+						echo('<a href="#editLink#"  onclick="zTableRecordEdit(this);  return false;">Edit</a> ');
 						if(row.site_option_group_enable_section EQ 1){
-							echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> | ');
+							echo(' | <a href="#application.zcore.functions.zURLAppend(arguments.struct.sectionURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#")#">Manage Section</a> ');
 						}
 						deleteLink=application.zcore.functions.zURLAppend(arguments.struct.deleteURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#row.site_option_group_id#&amp;site_x_option_group_set_id=#row.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_parent_id#&amp;returnJson=1&amp;confirm=1");
 						//zShowModalStandard(this.href, 2000,2000, true, true);
-						echo('<a href="##"  onclick="zDeleteTableRecordRow(this, ''#deleteLink#'');  return false;">Delete</a>');
+						allowDelete=true;
+						if(methodBackup EQ "userManageGroup" or methodBackup EQ "userGetRowHTML"){
+							if(qGroup.site_option_group_allow_delete_usergrouplist NEQ ""){
+								arrUserGroup=listToArray(qGroup.site_option_group_allow_delete_usergrouplist, ",");
+								allowDelete=false;
+								for(i=1;i LTE arraylen(arrUserGroup);i++){
+									if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+										allowDelete=true;
+										break;
+									}
+								}
+							}
+						}
+						if(allowDelete){
+							echo(' | <a href="##"  onclick="zDeleteTableRecordRow(this, ''#deleteLink#'');  return false;">Delete</a>');
+						}
 						if(row.site_x_option_group_set_copy_id NEQ 0){
 							echo(' | <a title="This record is a copy of another record">Copy of ###row.site_x_option_group_set_copy_id#</a>');
 						}
@@ -3724,6 +3823,21 @@ Define this function in another CFC to override the default email format
 	if(qS.recordcount EQ 0){
 		application.zcore.functions.z404("No site_options have been set to allow public form data entry.");	
 	}
+
+	if(methodBackup EQ "userAddGroup" or methodBackup EQ "userEditGroup"){ 
+		arrUserGroup=listToArray(qS.site_option_group_user_group_id_list, ",");
+		hasAccess=false;
+		for(i=1;i LTE arraylen(arrUserGroup);i++){
+			if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+				hasAccess=true;
+				break;
+			}
+		}
+		if(not hasAccess){
+			application.zcore.functions.z404("site_option_group_id, #form.site_option_group_id#, doesn't allow public data entry.");
+		}
+	}
+
 	curParentId=qS.site_option_group_parent_id;
 	curParentSetId=form.site_x_option_group_set_parent_id;
 	arrParent=arraynew(1);
@@ -4271,7 +4385,7 @@ Define this function in another CFC to override the default email format
 	site_x_option_group_set_id= #db.param(form.site_x_option_group_set_id)# and 
 	site_option_group.site_option_group_id= #db.param(form.site_option_group_id)# and 
 	site_x_option_group_set.site_id= #db.param(request.zos.globals.id)#";
-	if(form.method EQ "userDeleteGroup"){
+	if(form.method EQ "userDeleteGroup" and request.isUserPrimaryGroup){
 		currentUserIdValue=request.zsession.user.id&"|"&application.zcore.functions.zGetSiteIdType(request.zsession.user.site_id);
 		db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
 	}
@@ -4284,9 +4398,44 @@ Define this function in another CFC to override the default email format
 			application.zcore.functions.zRedirect(application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_app_id="&form.site_option_app_id&"&site_option_group_id="&form.site_option_group_id&"&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&zsid="&request.zsid));
 		}
 	} 
+
+	if(form.method EQ "userDeleteGroup"){ 
+		allowDelete=true;
+		if(qCheck.site_option_group_allow_delete_usergrouplist NEQ ""){
+			arrUserGroup=listToArray(qCheck.site_option_group_allow_delete_usergrouplist, ",");
+			allowDelete=false;
+			for(i=1;i LTE arraylen(arrUserGroup);i++){
+				if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+					allowDelete=true;
+					break;
+				}
+			}
+		} 
+		if(not allowDelete){
+			application.zcore.functions.z404("user delete is disabled for site_option_group_id, #form.site_option_group_id#.");
+		}
+		arrUserGroup=listToArray(qCheck.site_option_group_user_group_id_list, ",");
+		hasAccess=false;
+		for(i=1;i LTE arraylen(arrUserGroup);i++){
+			if(application.zcore.user.checkGroupIdAccess(arrUserGroup[i])){
+				hasAccess=true;
+				break;
+			}
+		}
+		if(not hasAccess){
+			application.zcore.functions.z404("site_option_group_id, #form.site_option_group_id#, doesn't allow public data entry.");
+		}
+	}
+
 	</cfscript>
 	<cfif structkeyexists(form, 'confirm')>
 		<cfscript>
+		if(form.method EQ "userDeleteGroup"){ 
+			if(qCheck.site_option_group_change_email_usergrouplist NEQ ""){
+				newAction='deleted'; 
+				application.zcore.siteOptionCom.sendChangeEmail(qCheck.site_x_option_group_set_id, newAction);
+			}
+		}
 		for(row in qCheck){
 			application.zcore.siteOptionCom.deleteGroupSetRecursively(row.site_x_option_group_set_id, row);
 		}

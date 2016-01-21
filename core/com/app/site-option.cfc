@@ -336,8 +336,7 @@
 	}
 	</cfscript>
 </cffunction>
-
-
+ 
 	
 <cffunction name="internalUpdateOptionOptionCache" access="public" localmode="modern">
 	<cfargument name="siteStruct" type="struct" required="yes">
@@ -947,12 +946,16 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 	curGroupId=arguments.site_option_group_id;
 	curParentId=arguments.site_option_group_parent_id;
 	curParentSetId=arguments.site_x_option_group_set_parent_id;
-	groupStruct=getOptionGroupById(curGroupId);
+	groupStruct=getOptionGroupById(curGroupId); 
 	if(arguments.linkCurrentPage){
 		if(form.method NEQ "sectionGroup"){
 			arrayAppend(arrParent, '<a href="/z/admin/site-options/sectionGroup?site_x_option_group_set_id=#form.site_x_option_group_set_id#">Manage Section</a> /');
 		}
-		arrayAppend(arrParent, '<a href="/z/admin/site-options/manageGroup?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#curParentSetId#">Manage #groupStruct.site_option_group_name#(s)</a> / ');
+		manageAction="manageGroup";
+		if(form.method EQ "userManageGroup"){
+			manageAction="userManageGroup";
+		}
+		arrayAppend(arrParent, '<a href="/z/admin/site-options/#manageAction#?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#curParentSetId#">Manage #groupStruct.site_option_group_name#(s)</a> / ');
 	}
 	if(curParentSetId NEQ 0){
 		loop from="1" to="25" index="i"{
@@ -970,11 +973,15 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 			LIMIT #db.param(0)#,#db.param(1)#";
 			q12=db.execute("q12");
 			loop query="q12"{
-				out='<a href="#application.zcore.functions.zURLAppend("/z/admin/site-options/manageGroup", "site_option_group_id=#q12.site_option_group_id#&amp;site_x_option_group_set_parent_id=#q12.d3#")#">#application.zcore.functions.zFirstLetterCaps(q12.site_option_group_display_name)#</a> / ';
+				manageAction="manageGroup";
+				if(form.method EQ "userManageGroup"){
+					manageAction="userManageGroup";
+				}
+				out='<a href="#application.zcore.functions.zURLAppend("/z/admin/site-options/#manageAction#", "site_option_group_id=#q12.site_option_group_id#&amp;site_x_option_group_set_parent_id=#q12.d3#")#">#application.zcore.functions.zFirstLetterCaps(q12.site_option_group_display_name)#</a> / ';
 				if(not arguments.linkCurrentPage and curGroupID EQ arguments.site_option_group_id){
 					out&=q12.site_x_option_group_set_title&' /';
 				}else{
-					out&='<a href="/z/admin/site-options/manageGroup?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#q12.d2#">#q12.site_x_option_group_set_title#</a> /';
+					out&='<a href="/z/admin/site-options/#manageAction#?site_option_group_id=#curGroupId#&amp;site_x_option_group_set_parent_id=#q12.d2#">#q12.site_x_option_group_set_title#</a> /';
 				}
 				arrayappend(arrParent, out);
 				curGroupId=q12.site_option_group_id;
@@ -2477,6 +2484,112 @@ http://www.daytonachamber.com.127.0.0.2.nip.io/z/admin/site-options/manageGroup?
 			echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a></h2>');
 		}
 	} 
+	</cfscript>
+</cffunction>
+
+<cffunction name="sendChangeEmail" localmode="modern" access="public">
+	<cfargument name="site_x_option_group_set_id" type="string" required="yes">
+	<cfargument name="action" type="string" required="yes" hint="values are created|updated|deleted ">
+	<cfscript>
+	if(application.zcore.functions.zso(form, 'method') CONTAINS "import" or request.zos.originalURL CONTAINS "import" or structkeyexists(request.zos, 'sendChangeEmailSiteOptionGroupExecuted')){
+		return;
+	}
+	request.zos.sendChangeEmailSiteOptionGroupExecuted=true;
+	db=request.zos.queryObject; 
+	if(application.zcore.user.checkGroupAccess("member")){
+		return;
+	}
+	currentSetId=arguments.site_x_option_group_set_id;
+	first=true;
+	while(true){
+		if(not first){ 
+			request.isUserPrimaryGroup=false;
+		} 
+		first=false;
+		db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
+		site_x_option_group_set_deleted=#db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_x_option_group_set_id=#db.param(currentSetId)# ";
+		qCheckSet=db.execute("qCheckSet");
+		if(qCheckSet.recordcount EQ 0){
+			application.zcore.functions.z404("Invalid record.  set id doesn't exist: #currentSetId#");
+		}
+		if(qCheckSet.site_x_option_group_set_parent_id EQ 0){
+			currentSetId=qCheckSet.site_x_option_group_set_id;
+			break;
+		}else{
+			currentSetId=qCheckSet.site_x_option_group_set_parent_id;
+		}
+		i++;
+		if(i > 255){
+			throw("infinite loop");
+		}
+	}  
+	if(qCheckSet.site_x_option_group_set_user NEQ ""){
+		arrUser=listToArray(qCheckSet.site_x_option_group_set_user, "|");
+		site_id=application.zcore.functions.zGetSiteIdFromSiteIdType(arrUser[2]);
+	}
+	user_id=qCheckSet.site_x_option_group_set_user
+	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
+	user_deleted=#db.param(0)# and 
+	site_id = #db.param(site_id)# and 
+	user_id=#db.param(arrUser[1])# ";
+	qUser=db.execute("qUser");
+	
+	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+	site_option_group_deleted=#db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_id=#db.param(qCheckSet.site_option_group_id)# ";
+	qGroup=db.execute("qGroup");
+	groupName=qGroup.site_option_group_display_name;
+	
+	ts={};
+	ts.from=request.fromemail;
+	ts.to=application.zcore.functions.zvarso("zofficeemail");
+	if(ts.to EQ ""){
+		ts.to=request.zos.developerEmailTo;
+	}
+	if(request.zos.isTestServer){
+		ts.to=request.zos.developerEmailTo;
+	}
+	ts.subject="#groupName# has been #arguments.action# on #request.zos.cgi.http_host#";
+	ts.html='<!DOCTYPE html>
+	<html>
+	<head><title>Alert</title></head>
+	<body>
+	<h3>The following #groupName# has been #arguments.action# on <a href="#request.zos.globals.domain#" target="_blank">#request.zos.globals.shortDomain#</a>.</h3>';
+	
+	if(qUser.recordcount){
+		ts.html&='<p>User: #qUser.user_first_name# #qUser.user_last_name# (#qUser.user_email#)</p>';
+	} 
+	ts.html&='<p>#qCheckSet.site_x_option_group_set_title#</p> 
+	<p>'; 
+	if(arguments.action NEQ "deleted"){
+		if(qGroup.site_option_group_enable_unique_url EQ 1){
+			if(qCheckSet.site_x_option_group_set_override_url NEQ ""){
+				link=qCheckSet.site_x_option_group_set_override_url;
+			}else{
+				var urlId=request.zos.globals.optionGroupUrlId;
+				if(urlId EQ "" or urlId EQ 0){
+					throw("site_option_group_url_id is not set for site_id, #site_id#.");
+				}
+				link="/#application.zcore.functions.zURLEncode(qCheckSet.site_x_option_group_set_title, '-')#-#urlId#-#qCheckSet.site_x_option_group_set_id#.html";
+			}
+			ts.html&='<a href="#request.zos.globals.domain##link#" target="_blank">View</a> | ';
+		}
+		ts.html&='<a href="#request.zos.globals.domain#/z/admin/site-options/editGroup?site_option_app_id=0&amp;site_option_group_id=#qCheckSet.site_option_group_id#&amp;site_x_option_group_set_id=#qCheckSet.site_x_option_group_set_id#&amp;site_x_option_group_set_parent_id=0" target="_blank">Edit</a>';
+	}
+	ts.html&=' | <a href="#request.zos.globals.domain#/z/admin/site-options/manageGroup?site_option_app_id=0&site_option_group_id=#qCheckSet.site_option_group_id#" target="_blank">Manage #groupName#(s)</a></p>
+	
+	<p>If you want to stop receiving these messages, please contact the web developer.</p>
+	</body></html>';
+	
+	rCom=application.zcore.email.send(ts);
+	if(rCom.isOK() EQ false){
+		rCom.setStatusErrors(request.zsid);
+		application.zcore.functions.zstatushandler(request.zsid);
+		application.zcore.functions.zabort();
+	}
 	</cfscript>
 </cffunction>
 </cfoutput>

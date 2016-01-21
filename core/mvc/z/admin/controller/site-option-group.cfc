@@ -1370,6 +1370,10 @@ displayGroupCom.ajaxInsert();
 	myForm.site_option_group_name.friendlyName="Code Name";
 	errors=application.zcore.functions.zValidateStruct(form, myForm,request.zsid, true);
 	
+	form.site_option_group_allow_delete_usergrouplist=application.zcore.functions.zso(form, 'site_option_group_allow_delete_usergrouplist');
+	form.site_option_group_user_group_id_list=application.zcore.functions.zso(form, 'site_option_group_user_group_id_list');
+	form.site_option_group_change_email_usergrouplist=application.zcore.functions.zso(form, 'site_option_group_change_email_usergrouplist');
+
 	if(form.method EQ "update"){
 		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
 		where site_option_group_id = #db.param(form.site_option_group_id)# and 
@@ -1809,20 +1813,23 @@ displayGroupCom.ajaxInsert();
 					application.zcore.functions.zInputSelectBox(ts);
 					</cfscript> (Email will be sent when custom record data is changed by these user groups)</td>
 				</tr>
+				<cfif application.zcore.functions.zso(form, 'site_option_group_parent_id', true) EQ 0>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable User Dashboard Admin","member.site-option-group.edit site_option_group_enable_user_dashboard_admin")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_user_dashboard_admin")# | If you select yes, you must specify the User Id Field below.</td>
 				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("User Id Field","member.site-option-group.edit site_option_group_user_id_field")#</th>
-					<td>
-						<input name="site_option_group_user_id_field" id="site_option_group_user_id_field" size="50" type="text" value="#htmleditformat(form.site_option_group_user_id_field)#" maxlength="50" />
-					</td>
-				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Alternate Admin Layout","member.site-option-group.edit site_option_group_subgroup_alternate_admin")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_subgroup_alternate_admin")#</td>
-				</tr>
+	
+					<tr>
+						<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("User Id Field","member.site-option-group.edit site_option_group_user_id_field")#</th>
+						<td>
+							<input name="site_option_group_user_id_field" id="site_option_group_user_id_field" size="50" type="text" value="#htmleditformat(form.site_option_group_user_id_field)#" maxlength="50" />
+						</td>
+					</tr>
+					<tr>
+						<th>#application.zcore.functions.zOutputHelpToolTip("Enable Alternate Admin Layout","member.site-option-group.edit site_option_group_subgroup_alternate_admin")#</th>
+						<td>#application.zcore.functions.zInput_Boolean("site_option_group_subgroup_alternate_admin")#</td>
+					</tr>
+				</cfif>
 
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Require Approval#chr(10)#of Public Data?","member.site-option-group.edit site_option_group_enable_approval")#</th>
