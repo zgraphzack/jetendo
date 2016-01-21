@@ -1050,10 +1050,21 @@ searchEvents(ts);
 		}
 		db.sql&=" ) ";
 	}
-	if(calendarIdList NEQ ""){
+	if(arraylen(arrCalendar)){
+		db.sql&=" and ( ";
+		searchOn=true;
+		for(i=1;i LTE arraylen(arrCalendar);i++){
+			if(i NEQ 1){
+				db.sql&=" or ";
+			}
+			db.sql&=" CONCAT(#db.param(',')#,event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&arrCalendar[i]&',%')# ";
+		}
+		db.sql&=" ) ";
+	}
+	/*if(calendarIdList NEQ ""){
 		searchOn=true;
 		db.sql&=" and event_calendar_id IN (#db.trustedSQL(calendarIdList)#) ";
-	}
+	}*/
 	db.sql&=" GROUP BY event_recur.event_recur_id
 	ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC
 	 LIMIT #db.param(ss.offset)#, #db.param(ss.perpage)# ";
@@ -1110,10 +1121,21 @@ searchEvents(ts);
 			}
 			db.sql&=" ) ";
 		}
-		if(calendarIdList NEQ ""){
+		if(arraylen(arrCalendar)){
+			db.sql&=" and ( ";
+			searchOn=true;
+			for(i=1;i LTE arraylen(arrCalendar);i++){
+				if(i NEQ 1){
+					db.sql&=" or ";
+				}
+				db.sql&=" CONCAT(#db.param(',')#,event_calendar_id, #db.param(',')#) LIKE #db.param('%,'&arrCalendar[i]&',%')# ";
+			}
+			db.sql&=" ) ";
+		}
+		/*if(calendarIdList NEQ ""){
 			searchOn=true;
 			db.sql&=" and event_calendar_id IN (#db.trustedSQL(calendarIdList)#) ";
-		}
+		}*/
 		qCount=db.execute("qCount"); 
 	}
 	arrData=[];
