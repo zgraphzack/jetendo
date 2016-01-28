@@ -2459,10 +2459,12 @@ http://www.daytonachamber.com.127.0.0.2.nip.io/z/admin/site-options/manageGroup?
 		}
 		if(row.site_option_group_subgroup_alternate_admin EQ 1){
 			if(row.site_option_group_user_child_limit EQ 1){
+				currentUserIdValue=request.zsession.user.id&"|"&application.zcore.functions.zGetSiteIdType(request.zsession.user.site_id);
 				db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
 				WHERE site_id = #db.param(request.zos.globals.id)# and 
 				site_option_group_id=#db.param(row.site_option_group_id)# and  
-				site_x_option_group_set_deleted=#db.param(0)# 
+				site_x_option_group_set_deleted=#db.param(0)# and 
+				site_x_option_group_set_user = #db.param(currentUserIdValue)# 
 				ORDER BY site_x_option_group_set_sort ASC";
 				qSet=db.execute("qSet"); 
 				if(qSet.recordcount EQ 0){
