@@ -48,8 +48,38 @@
 		form.method EQ "publicInsertGroup" or form.method EQ "publicUpdateGroup" or 
 		form.method EQ "publicAjaxInsertGroup"){
 
-	}else{
-		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
+	}else{ 
+		if(form.method EQ "manageGroup" or form.method EQ "addGroup" or form.method EQ "editGroup" or form.method EQ "deleteGroup" or form.method EQ "insertGroup" or form.method EQ "updateGroup" or form.method EQ "getRowHTML"){
+			if(not application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")){
+				// check if user has access to site_option_group_id only 
+				groupId=application.zcore.functions.zso(form, 'site_option_group_id', true);
+				i=0;
+				while(true){
+					i++;
+					db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+					site_id = #db.param(request.zos.globals.id)# and 
+					site_option_group_deleted=#db.param(0)# and 
+					site_option_group_id=#db.param(groupId)#";
+					qGroup=db.execute("qGroup");
+					if(qGroup.site_option_group_parent_id EQ 0){
+						break;
+					}else{
+						groupId=qGroup.site_option_group_parent_id;
+					}
+					if(i>255){
+						throw("Infinite loop looking for site_option_group_parent_id=0");
+					}
+				} 
+				if(form.method EQ "deleteGroup" or form.method EQ "insertGroup" or form.method EQ "updateGroup"){
+					writeEnabled=true;
+				}else{
+					writeEnabled=false;
+				} 
+				application.zcore.adminSecurityFilter.requireFeatureAccess("Custom: "&qGroup.site_option_group_name, writeEnabled);	 
+			} 
+		}else{
+			application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
+		}
 	}
 
 	if(structkeyexists(form, 'zQueueSortAjax')){
@@ -1544,7 +1574,8 @@
 		methodBackup EQ "publicUpdateGroup" or methodBackup EQ "userInsertGroup"){
 		application.zcore.adminSecurityFilter.auditFeatureAccess("Site Options", true);
 	}else{
-		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);
+		// handled in init instead
+		//application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);
 	}
 	errors=false;
 	var debug=false;
@@ -4372,7 +4403,8 @@ Define this function in another CFC to override the default email format
 	
 	variables.init();
 	if(form.method NEQ "autoDeleteGroup"){
-		application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
+		// handled in init instead
+		//application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options", true);	
 	}
 	form.site_option_group_id=application.zcore.functions.zso(form, 'site_option_group_id');
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id');

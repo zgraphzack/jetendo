@@ -385,7 +385,7 @@
 		}
 	}
 	arraysort(arrKey,"text","asc");
-	arrayAppend(arrKey, "Help");
+	arrayAppend(arrKey, "Help"); 
 	for(i=1;i LTE arraylen(arrKey);i++){
 		if(structkeyexists(arguments.sharedStruct[arrKey[i]], 'featureName')){
 			if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.sharedStruct[arrKey[i]].featureName)){

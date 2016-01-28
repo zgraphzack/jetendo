@@ -3,7 +3,7 @@
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
 	var theTitle=0;
-	variables.allowGlobal=false;
+	variables.allowGlobal=false; 
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
 	if(application.zcore.user.checkServerAccess()){
 		variables.allowGlobal=true;

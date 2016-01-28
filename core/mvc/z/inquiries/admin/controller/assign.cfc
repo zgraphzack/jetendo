@@ -137,7 +137,7 @@
     selectStruct.queryValueField = '##user_id##|##site_id##';
     application.zcore.functions.zInputSelectBox(selectStruct);
     </cfscript>
-    or Type Name: <input type="text" name="assign_name" value="#application.zcore.functions.zso(form, 'assign_name')#" /> and Email(s): <input type="text" name="assign_email" value="#application.zcore.functions.zso(form, 'assign_email')#" /> (Comma separated)
+    or Type Name: <input type="text" name="assign_name" style="min-width:150px; width:150px;" value="#application.zcore.functions.zso(form, 'assign_name')#" /> and Email(s): <input type="text" name="assign_email" style="min-width:150px; width:150px;" value="#application.zcore.functions.zso(form, 'assign_email')#" /> (Comma separated)
     <br />
     <div id="agentPhotoDiv"></div>
     </td>

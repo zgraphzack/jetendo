@@ -188,8 +188,8 @@
 	<cfargument name="requiresWriteAccess" type="boolean" required="no" default="#false#">
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
-	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, false, arguments.site_id)){ 
-		application.zcore.status.setStatus(request.zsid, "You don't have permission to use that feature.", form, true);
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess(arguments.featureName, false, arguments.site_id)){  
+		application.zcore.status.setStatus(request.zsid, "You don't have permission to use the feature: #arguments.featureName#.", form, true);
 		application.zcore.functions.zRedirect("/z/admin/admin-home/index?zsid=#request.zsid#");
 	}
 	// check for write access
@@ -231,7 +231,7 @@
 	<cfargument name="site_id" type="string" required="no" default="#request.zos.globals.id#">
 	<cfscript>
 	userSiteId='user';
-	if(arguments.site_id NEQ arguments.site_id){
+	if(arguments.site_id NEQ request.zos.globals.id){
 		userSiteId='user'&arguments.site_id;
 	} 
 	if(arguments.requiresWriteAccess){
@@ -246,7 +246,8 @@
 			arrFeature=listToArray(arguments.featureName, ",");
 			for(i=1;i LTE arraylen(arrFeature);i++){
 				if(not structkeyexists(application.siteStruct[arguments.site_id].adminFeatureMapStruct, arrFeature[i])){
-					throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
+					return false;
+					//throw(arrFeature[i]&" is not a valid admin feature name. Please review/modify the features in adminSecurityFilter.cfc.");
 				}
 				if(not structkeyexists(request.zsession[userSiteId].limitManagerFeatureStruct, arrFeature[i])){
 					currentFeature=application.siteStruct[arguments.site_id].adminFeatureMapStruct[arrFeature[i]];

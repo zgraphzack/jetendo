@@ -116,7 +116,7 @@ dataImportCom.init(ts);
 				StructInsert(ts, this.arrMappedColumns[i], '{no data}',true);
 			}
 		}
-	}
+	} 
 	this.cursor=this.cursor+1;
 	return ts;
 	</cfscript>
@@ -201,7 +201,7 @@ dataImportCom.init(ts);
 		line=filereadline(this.fileHandle);
 	}else{
 		line = this.arrLines[f];
-	}
+	} 
 	this.currentLine=line;
 	inQuote=false;
 	arrFields=ArrayNew(1);

@@ -1307,7 +1307,7 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 		sortStruct[row2.site_x_option_group_set_id]=i;
 
 
-		if(groupStruct.site_option_group_change_cfc_path NEQ ""){
+		if(structkeyexists(groupStruct, 'site_option_group_change_cfc_path') and groupStruct.site_option_group_change_cfc_path NEQ ""){
 			path=groupStruct.site_option_group_change_cfc_path;
 			if(left(path, 5) EQ "root."){
 				path=request.zRootCFCPath&removeChars(path, 1, 5);
@@ -2348,7 +2348,8 @@ if(not rs.success){
 	
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
 	groupStruct=t9.optionGroupLookup[row.site_option_group_id]; 
-	if(groupStruct.site_option_group_change_cfc_path NEQ ""){
+	
+	if(structkeyexists(groupStruct, 'site_option_group_change_cfc_path') and groupStruct.site_option_group_change_cfc_path NEQ ""){
 		path=groupStruct.site_option_group_change_cfc_path;
 		if(left(path, 5) EQ "root."){
 			path=request.zRootCFCPath&removeChars(path, 1, 5);
