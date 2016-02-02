@@ -1,4 +1,4 @@
-// used on curriproperties.net and windermerehomes.net new design
+
 (function($, window, document){
 	"use strict";
 	var arrListingTab=[];

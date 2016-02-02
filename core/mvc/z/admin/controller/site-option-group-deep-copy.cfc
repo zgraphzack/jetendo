@@ -100,6 +100,23 @@ When making a version the primary record, it will have option to preserve the or
 					}
 				}else if(typeId EQ 3){
 					path=tempPath&'zupload/site-options/';
+				}else if(typeId EQ 23){ 
+					row2.site_x_option_group_value=application.zcore.imageLibraryCom.copyImageLibrary(row2.site_x_option_group_value, row2.site_id);
+				}else if(typeId EQ 21){
+					db.sql="select * from #db.table("mls_saved_search", request.zos.zcoreDatasource)# WHERE 
+					site_id = #db.param(row2.site_id)# and 
+					mls_saved_search_id=#db.param(row2.site_x_option_group_value)# and 
+					mls_saved_search_deleted=#db.param(0)# ";
+					qV=db.execute("qV");
+					for(r2 in qV){
+						structdelete(r2, 'mls_saved_search_id');
+						r2.mls_saved_search_updated_datetime=request.zos.mysqlnow;
+						ts=structnew();
+						ts.struct=r2;
+						ts.datasource=request.zos.zcoreDatasource;
+						ts.table="mls_saved_search";
+						row2.site_x_option_group_value=application.zcore.functions.zInsert(ts);
+					}
 				}
 				if(typeId EQ 9 or typeId EQ 3){
 					newPath=application.zcore.functions.zcopyfile(path&row2.site_x_option_group_value);
