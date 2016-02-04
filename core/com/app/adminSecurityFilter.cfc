@@ -177,6 +177,7 @@
 		}
 		if(isdefined('request.zsession.user.id')){
 			ts.struct.user_id=request.zsession.user.id;
+			ts.struct.user_id_siteidtype=application.zcore.user.getSiteIdTypeFromLoggedOnUser();
 		}
 		application.zcore.functions.zInsert(ts);
 	}

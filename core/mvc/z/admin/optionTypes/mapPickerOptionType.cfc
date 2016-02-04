@@ -281,7 +281,8 @@
 	db.sql="select * from #db.table("#variables.type#_option", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
 	#variables.type#_option_deleted = #db.param(0)# and
-	#variables.type#_option_group_id = #db.param(arguments.dataStruct["#variables.type#_option_group_id"])# 	";
+	#variables.type#_option_group_id = #db.param(arguments.dataStruct["#variables.type#_option_group_id"])# 	
+	ORDER BY #variables.type#_option_name ASC";
 	qGroup=db.execute("qGroup");
 	</cfscript>
 	<cfsavecontent variable="output">
