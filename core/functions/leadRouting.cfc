@@ -43,6 +43,7 @@ ts=structnew();
 ts.inquiries_id=inquiries_id;
 ts.subject="New Lead";
 ts.disableDebugAbort=false;
+ts.arrAttachments=[];
 application.zcore.functions.zAssignAndEmailLead(ts);
  --->
 <cffunction name="zAssignAndEmailLead" localmode="modern" output="yes" returntype="any">
@@ -54,6 +55,9 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	var rs2=structnew();
 	var inquiries_id=arguments.ss.inquiries_id;
 	arrDebug=[];
+	if(not structkeyexists(arguments.ss, 'arrAttachments')){
+		arguments.ss.arrAttachments=[];
+	}
 	rs.inquiries_id=arguments.ss.inquiries_id; 
 	if(not structkeyexists(arguments.ss, 'disableDebugAbort')){
 		arguments.ss.disableDebugAbort=false;
@@ -170,6 +174,9 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 	form.inquiries_id=inquiries_id;
 	if(not structkeyexists(request.zos, 'debugleadrouting')){
 		mail spoolenable="no" to="#rs.assignEmail#" cc="#rs.cc#" bcc="#rs.bcc#" from="#request.fromemail#" replyto="#rs.leademail#" subject="#arguments.ss.subject#" type="html"{
+			for(n=1;n<=arrayLen(arguments.ss.arrAttachments);n++){
+				mailparam file="#arguments.ss.arrAttachments[n]#" disposition="attachment";
+			}
 			iemailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		    iemailCom.getEmailTemplate();
 		}

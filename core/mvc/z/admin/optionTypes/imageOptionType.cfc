@@ -122,6 +122,16 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="onInvalidFormField" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="prefixString" type="string" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes">
+	<cfscript> 
+	arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=""; 
+	</cfscript>
+</cffunction>
+
 <cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
 	return true;

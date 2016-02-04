@@ -1560,6 +1560,11 @@
 	defaultStruct=getDefaultStruct();
 
 
+
+	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup"){
+		// allow email to have attachments for public submissions
+		request.zos.arrForceEmailAttachment=[];
+	}
 	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "insertGroup" or methodBackup EQ "userInsertGroup"){
 		form.site_x_option_group_set_id=0;
 	}
@@ -1710,6 +1715,8 @@
 	hasPrimaryField=false;
 	hasUserField=false;
 	for(row in qD){
+		var optionStruct=deserializeJson(row.site_option_type_json);
+		optionStructCache[row.site_option_id]=optionStruct; 
 		if(row.site_option_search_summary_field EQ 1){
 			hasSummaryField=true;
 		}
@@ -1732,8 +1739,6 @@
 				continue;
 			}
 		}
-		var optionStruct=deserializeJson(row.site_option_type_json);
-		optionStructCache[row.site_option_id]=optionStruct; 
 		var rs=currentCFC.validateFormField(row, optionStruct, 'newvalue', form); 
 		if(not rs.success){
 			application.zcore.status.setFieldError(request.zsid, "newvalue"&row.site_option_id, true);
@@ -1745,8 +1750,14 @@
 	if(application.zcore.functions.zso(form,'site_x_option_group_set_override_url') NEQ "" and not application.zcore.functions.zValidateURL(application.zcore.functions.zso(form,'site_x_option_group_set_override_url'), true, true)){
 		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
 		errors=true;
-	}
+	}  
 	if(errors){
+		for(row in qD){
+			optionStruct=optionStructCache[row.site_option_id]; 
+			currentCFC=application.zcore.siteOptionCom.getTypeCFC(row.site_option_type_id);
+			currentCFC.onInvalidFormField(row, optionStruct, 'newvalue', form); 
+		} 
+
 		application.zcore.status.setStatus(request.zsid, false, form, true);
 		if(methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or 
 			methodBackup EQ "internalGroupUpdate" or methodBackup EQ "importInsertGroup"){
@@ -2435,6 +2446,8 @@ Define this function in another CFC to override the default email format
 		The form data below must be manually forwarded to the web site owner or resubmitted.');
 		return;
 	} 
+
+
 	form.emailLabelStruct={};
 	countStruct=structnew();
 	for(row in qMap){
@@ -2523,6 +2536,7 @@ Define this function in another CFC to override the default email format
 			echo('zAssignAndEmailLead<br />');
 		}
 		ts.disableDebugAbort=true;
+		ts.arrAttachments=request.zos.arrForceEmailAttachment; 
 		rs=application.zcore.functions.zAssignAndEmailLead(ts);
 		
 		if(rs.success EQ false){

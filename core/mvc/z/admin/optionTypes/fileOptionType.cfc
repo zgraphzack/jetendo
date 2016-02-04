@@ -122,6 +122,16 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="onInvalidFormField" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="prefixString" type="string" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes">
+	<cfscript> 
+	arguments.dataStruct[arguments.prefixString&arguments.row["#variables.type#_option_id"]]=""; 
+	</cfscript>
+</cffunction>
+
 <cffunction name="hasCustomDelete" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
 	return true;
@@ -190,10 +200,16 @@
 	<cfscript>
 	if(arguments.value NEQ ""){
 		uploadPath=getUploadPath(arguments.optionStruct);
+		appendValue="";
+		if(application.zcore.functions.zso(arguments.optionStruct, 'file_attachtoemail', true, 0) EQ 1 and structkeyexists(request.zos, 'arrForceEmailAttachment')){
+			arrayAppend(request.zos.arrForceEmailAttachment, request.zos.globals.privateHomeDir&uploadPath&"/site-options/"&arguments.value); 
+			appendValue=" | Also attached to lead email"; 
+		} 
+
 		if(uploadPath EQ "zuploadsecure"){
-			return '<a href="#request.zos.globals.domain#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.value)&'" target="_blank">Download File</a>';
+			return '<a href="#request.zos.globals.domain#/z/misc/download/index?fp='&urlencodedformat("/"&uploadPath&"/site-options/"&arguments.value)&'" target="_blank">Download File</a>'&appendValue;
 		}else{
-			return '<a href="#request.zos.globals.domain#/'&uploadPath&'/site-options/#arguments.value#" target="_blank">Download File</a>';
+			return '<a href="#request.zos.globals.domain#/'&uploadPath&'/site-options/#arguments.value#" target="_blank">Download File</a>'&appendValue;
 		}
 	}else{
 		return ('N/A');
@@ -291,7 +307,8 @@
 		return { success:false};
 	}
 	ts={
-		file_securepath:form.file_securepath
+		file_securepath:form.file_securepath,
+		file_attachtoemail:form.file_attachtoemail
 	};
 	arguments.dataStruct["#variables.type#_option_type_json"]=serializeJson(ts);
 	return { success:true, optionStruct: ts};
@@ -301,7 +318,8 @@
 <cffunction name="getOptionFieldStruct" output="no" localmode="modern" access="public"> 
 	<cfscript>
 	ts={
-		file_securepath:"No"
+		file_securepath:"No",
+		file_attachtoemail:"0"
 	};
 	return ts;
 	</cfscript>
@@ -324,6 +342,8 @@
 		<tr><td>Secure Path: </td><td>
 		<cfscript>
 		arguments.optionStruct.file_securepath=application.zcore.functions.zso(arguments.optionStruct, 'file_securepath', false, "No");
+		arguments.optionStruct.file_attachtoemail=application.zcore.functions.zso(arguments.optionStruct, 'file_attachtoemail', false, "0");
+		form.file_attachtoemail=arguments.optionStruct.file_attachtoemail;
 		if(arguments.optionStruct.file_securepath EQ ""){
 			arguments.optionStruct.file_securepath="No";
 		}
@@ -336,6 +356,9 @@
 		ts.struct=arguments.optionStruct;
 		writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
 		</cfscript>
+		</td></tr>
+		<tr><td>Attach To Lead Email: </td><td>
+			#application.zcore.functions.zInput_Boolean("file_attachtoemail", form.file_attachtoemail)#
 		</td></tr>
 		</table>
 	</div>

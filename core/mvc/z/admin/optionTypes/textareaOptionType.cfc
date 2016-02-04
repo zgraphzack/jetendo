@@ -116,6 +116,15 @@
 </cffunction>
 
 
+<cffunction name="onInvalidFormField" localmode="modern" access="public">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfargument name="prefixString" type="string" required="yes">
+	<cfargument name="dataStruct" type="struct" required="yes">
+	<cfscript> 
+	</cfscript>
+</cffunction>
+
 <cffunction name="getFormField" localmode="modern" access="public">
 	<cfargument name="row" type="struct" required="yes">
 	<cfargument name="optionStruct" type="struct" required="yes">
