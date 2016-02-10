@@ -2,7 +2,7 @@
 <cfoutput>
 	<cfscript>
     variables.idxExclude=structnew();
-variables.allfields=structnew();
+	variables.allfields=structnew();
     </cfscript>
 	<cffunction name="findFieldsInDatabaseNotBeingOutput" localmode="modern" access="remote" roles="member" output="yes" returntype="any">
     	<cfscript>
@@ -17,6 +17,7 @@ variables.allfields=structnew();
         qT=db.execute("qT");
         
         variables.allfields=structnew();
+		n=0;
         </cfscript>
         <cfloop query="qT">
 			<cfscript>
@@ -26,7 +27,8 @@ variables.allfields=structnew();
             }else{
             	f2=curField;
             }
-            variables.allfields[qT.field]=f2;
+			n++;
+			variables.allfields[n]={field:qT.field, label:f2};
             </cfscript>
         </cfloop>
 		<cfscript>
@@ -101,8 +103,8 @@ idxExclude["rets25_publicremarksnew"]="Public Remarks";
 			for(i in variables.allfields){
 				if(structkeyexists(idxExclude, i) EQ false){
 					uniqueStruct[i]={
-						field:i,
-						label:replace(application.zcore.functions.zfirstlettercaps(variables.allfields[i]),"##","####")
+						field:variables.allfields[i].field,
+						label:replace(application.zcore.functions.zfirstlettercaps(variables.allfields[i].label),"##","####")
 					}
 				}
 			}
@@ -329,7 +331,7 @@ idxTemp2["rets25_unitnumber"]="Unit Number";
 idxTemp2["rets25_units"]="Units";
 
 idxTemp2["rets25_yearbuilt"]="Year Built";
-if(arguments.idx.rets25_virtualtoururl2 NEQ ""){
+if(application.zcore.functions.zso(arguments.idx, 'rets25_virtualtoururl2') NEQ ""){
 	arrayAppend(arrR, '<a href="#arguments.idx.rets25_virtualtoururl2#" target="_blank">View Virtual Tour Link 2</a>');
 }
 		arrayappend(arrR, application.zcore.listingCom.getListingDetailRowOutput("Additional Information", arguments.idx, variables.idxExclude, idxTemp2, variables.allFields));

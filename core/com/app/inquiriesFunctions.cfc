@@ -162,8 +162,8 @@
 				Updated Information:#chr(10)#
 			</cfif>
 			<cfscript>
-			request.usestyleonly=true
-		        viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
+			request.usestyleonly=true;
+	        viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 			viewIncludeCom.getViewInclude(qinquiry);
 			</cfscript></td>
 		</tr>
