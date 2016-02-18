@@ -1272,6 +1272,7 @@
 	<table id="sortRowTable" class="table-list">
 		<thead>
 		<tr>
+			<th>ID</th>
 			<th>Name</th>
 			<th>Type</th>
 			<th>List View?</th>
@@ -1297,6 +1298,7 @@
 				writeoutput('class="row2"');
 			}
 			writeoutput('>
+				<td>#qS.site_option_id#</td>
 				<td>#qS.site_option_name#</td>
 				<td>');
 				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(qS.site_option_type_id);

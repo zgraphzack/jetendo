@@ -742,11 +742,11 @@ If the link does not work, please copy and paste the entire link in your browser
 		      </cfscript>
 		</div>
 	</div>
-	<div style="padding-bottom:15px;width:100%;border-top:1px solid ##999; padding-top:15px;" class="zmember-openid-buttons">
+	<div class="zUserLoginCreateAccount" style="padding-bottom:15px;width:100%;border-top:1px solid ##999; padding-top:15px;" class="zmember-openid-buttons">
 		<h3>If you don't have an account:</h3>
 		<button type="submit" name="submitPref" value="Unsubscribe" onclick="window.location.href='/z/user/preference/register?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#'">Create A Free Account</button>
 	</div>
-	<div style="float:left;width:100%; border-top:1px solid ##999; padding-top:15px;">
+	<div class="zUserLoginUnsubscribe" style="float:left;width:100%; border-top:1px solid ##999; padding-top:15px;">
 		<form name="getEmailUnsubscribe" action="/z/user/preference/update?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
 			<h3>Unsubscribe From Our Mailing List</h3>
 			<div class="zmember-openid-buttons">Email Address:&nbsp;<br />
