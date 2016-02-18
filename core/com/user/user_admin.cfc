@@ -604,6 +604,7 @@ To view more info about this new user, click the following link:
 			WHERE user_username = #db.param(str.user_username)# and 
 			user_deleted = #db.param(0)# and
 			user.site_id = site.site_id and 
+			site_deleted=#db.param(0)# and 
 			site.site_parent_id = #db.param(str.site_id)# ";
 			qUser=db.execute("qUser");
 			if(qUser.recordcount NEQ 0){

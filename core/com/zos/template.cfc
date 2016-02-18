@@ -793,7 +793,7 @@ for(local.row in local.qSite){
 		if(arraylen(request.zos.arrScriptInclude) neq 0){
 			local.lastScript=request.zos.arrScriptInclude[arraylen(request.zos.arrScriptInclude)];
 			local.jqueryIncludeLength=len("/z/javascript/jquery/jquery-1.10.2.min.js");
-			local.scriptIncludeStruct={"1":{},"2":{},"3":{},"4":{},"5":{}};
+			local.scriptIncludeStruct={"1":{},"2":{},"3":{},"4":{},"5":{},"6":{},"7":{},"8":{}, "9":{}, "10":{}, "11":{}, "12":{}, "13":{}, "14":{}, "15":{}, "16":{}, "17":{}, "18":{}, "19":{}, "20":{} };
 			for(local.i=1;local.i LTE arraylen(request.zos.arrScriptInclude);local.i++){
 				if(left(request.zos.arrScriptInclude[local.i], local.jqueryIncludeLength) NEQ "/z/javascript/jquery/jquery-1.10.2.min.js"){
 					local.scriptIncludeStruct[request.zos.arrScriptIncludeLevel[local.i]][request.zos.arrScriptInclude[local.i]]=true;
@@ -802,7 +802,7 @@ for(local.row in local.qSite){
 			local.scriptCount=structcount(local.scriptIncludeStruct); 
 			local.arrBeginFunction=[];
 			local.arrEndFunction=[];
-			for(local.i=1;local.i LTE 5;local.i++){
+			for(local.i=1;local.i LTE 20;local.i++){
 				if(structcount(local.scriptIncludeStruct[local.i])){
 					arrayappend(local.arrBeginFunction, ', function(a){ var t=new zLoader();t.loadScripts(["'&structkeylist(local.scriptIncludeStruct[local.i],'", "')&'"]');
 					arrayappend(local.arrEndFunction, ");}");

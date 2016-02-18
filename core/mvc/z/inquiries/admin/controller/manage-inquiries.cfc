@@ -462,7 +462,7 @@
 			<cfif application.zcore.functions.zso(form, 'inquiries_name') NEQ "">
 				and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#
 			</cfif>
-			<cfif application.zcore.functions.zso(form, 'inquiries_type_id') NEQ "">
+			<cfif application.zcore.functions.zso(form, 'inquiries_type_id') NEQ "" and form.inquiries_type_id CONTAINS "|">
 				and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
 				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))#
 			</cfif>
@@ -546,7 +546,7 @@
 			<cfif application.zcore.functions.zso(form, 'inquiries_name') NEQ "">
 				and concat(inquiries_first_name, #db.param(" ")#, inquiries_last_name) LIKE #db.param('%#form.inquiries_name#%')#
 			</cfif>
-			<cfif application.zcore.functions.zso(form, 'inquiries_type_id') NEQ "">
+			<cfif application.zcore.functions.zso(form, 'inquiries_type_id') NEQ "" and form.inquiries_type_id CONTAINS "|">
 				and inquiries.inquiries_type_id = #db.param(listgetat(form.inquiries_type_id, 1, "|"))# and 
 				inquiries_type_id_siteIDType = #db.param(listgetat(form.inquiries_type_id, 2, "|"))#
 			</cfif>
@@ -716,7 +716,7 @@
 		searchStruct.index = form.zIndex;
 		searchStruct.showString = "Results ";
 		searchStruct.url="/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&
-		inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_type_id=#application.zcore.functions.zso(form, 'searchtype')#&searchtype=#application.zcore.functions.zso(form, 'searchtype')#";
+		inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchtype=#application.zcore.functions.zso(form, 'searchtype')#";
 		if(structkeyexists(form, 'inquiries_end_date')){
 			searchStruct.url&="&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#";
 		}

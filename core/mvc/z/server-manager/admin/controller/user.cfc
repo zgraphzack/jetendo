@@ -479,6 +479,7 @@
 	site_id =#db.param(form.sid)# ";
 	qUser=db.execute("qUser");
 	tempStruct={};
+	form.company_id=0;
 	application.zcore.functions.zQueryToStruct(qUser, tempStruct);
 	structappend(form, tempStruct, false);
 

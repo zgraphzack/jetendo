@@ -666,6 +666,7 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 	rs.cc="";
 	rs.arrDebug=[];
 	rs.assignEmail="";
+
 	if(arguments.ss.routeIndex EQ 0 or arraylen(application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData) LT arguments.ss.routeIndex){
 		c=structnew();
 		c.data=structnew();
@@ -678,6 +679,10 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		
 	}else{
 		c=application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData[arguments.ss.routeIndex];	
+	}
+	if(structkeyexists(request.zos, 'debugleadrouting')){
+		echo('application leadRoutingStruct count: '&arraylen(application.sitestruct[request.zos.globals.id].leadRoutingStruct.arrData)&' LT routeIndex:'&arguments.ss.routeIndex&'<br>');
+		writedump(c);
 	}
 	
 	
@@ -735,8 +740,8 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		return rs;
 	}
 	
-	if(structkeyexists(request.zos, 'debugleadrouting')){
-		echo('inquiries_routing_type_id = #c.data.inquiries_routing_type_id#<br />');
+	if(structkeyexists(request.zos, 'debugleadrouting')){ 
+		echo('showing the type inquiries_routing_type_id = #c.data.inquiries_routing_type_id#<br />');
 	}
 	if(c.data.inquiries_routing_type_id EQ 0){
 		// assign to zofficeemail

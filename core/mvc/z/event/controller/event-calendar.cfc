@@ -195,7 +195,7 @@
 
 			<div class="zEventListContainer">
 				<cfif ss.hasPhotos>
-					<div class="zEventListPhoto">
+					<div class="zEventListPhoto" style="width:220px;">
 						<cfif arrayLen(arrImage)>
 							<img src="#arrImage[1].link#" alt="#htmleditformat(arrImage[1].caption)#"> 
 						</cfif>

@@ -165,7 +165,8 @@ enable round robin for users - need a new option to disable for staff.
 	}
 	db.sql="SELECT * FROM #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing 
 	WHERE site_id =#db.param(request.zOS.globals.id)# and 
-	inquiries_routing_id= #db.param(form.inquiries_routing_id)# ";
+	inquiries_routing_id= #db.param(form.inquiries_routing_id)# and 
+	inquiries_routing_deleted=#db.param(0)# ";
 	qRoute=db.execute("qRoute");
 	application.zcore.functions.zQueryToStruct(qRoute);
 	application.zcore.functions.zStatusHandler(request.zsid,true);

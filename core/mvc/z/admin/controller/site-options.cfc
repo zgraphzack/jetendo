@@ -1038,6 +1038,27 @@
 				<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
 			</tr>
 			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("Enable Data Entry<br />For User Groups","member.site-option-group.edit site_option_user_group_id_list")#</th>
+				<td>
+				<cfscript>
+				db.sql="SELECT *FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 
+				WHERE site_id = #db.param(request.zos.globals.id)# and 
+				user_group_deleted = #db.param(0)# 
+				ORDER BY user_group_name asc"; 
+				var qGroup2=db.execute("qGroup2"); 
+				ts = StructNew();
+				ts.name = "site_option_user_group_id_list";
+				ts.friendlyName="";
+				// options for query data
+				ts.multiple=true;
+				ts.query = qGroup2;
+				ts.queryLabelField = "user_group_name";
+				ts.queryValueField = "user_group_id";
+				application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_user_group_id_list'));
+				application.zcore.functions.zInputSelectBox(ts);
+				</cfscript></td>
+			</tr>
+			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Force Small Label Width","member.site-option-group.edit site_option_small_width")#</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_small_width")# (With yes selected, public forms will force the label column to be as small as possible.)</td>
 			</tr>
@@ -1930,7 +1951,7 @@
 		}
 	}
 	form.site_x_option_group_set_approved=application.zcore.functions.zso(form, 'site_x_option_group_set_approved', false, 1);
-	if(methodBackup EQ "publicUpdateGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup"){
+	if(methodBackup EQ "publicUpdateGroup" or methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicMapInsertGroup" or methodBackup EQ "importInsertGroup" or methodBackup EQ "userUpdateGroup" or methodBackup EQ "userInsertGroup"){
 		if((methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup" or methodBackup EQ "publicUpdateGroup") and (qCheck.recordcount EQ 0 or qCheck.site_option_group_allow_public NEQ 1)){
 			hasAccess=false;
 			if(qCheck.recordcount NEQ 0){
@@ -1947,7 +1968,7 @@
 			}
 		}
 		if(qCheck.site_option_group_enable_approval EQ 1){
-			if(methodBackup EQ "publicUpdateGroup"){
+			if(methodBackup EQ "publicUpdateGroup" or methodBackup EQ "userUpdateGroup"){
 				// must force approval status to stay the same on updates.
 				db.sql="select * from #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# WHERE 
 				site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# and 
@@ -2179,7 +2200,7 @@
 	mapRecord=false;
 	if(not structkeyexists(form, 'disableSiteOptionGroupMap')){
 		if(structkeyexists(request.zos, 'debugleadrouting')){
-			echo('disableSiteOptionGroupMap doesn''t exist | #qCheck.site_option_group_name# | qCheck.site_option_group_map_insert_type=#qCheck.site_option_group_map_insert_type# | methodBackup = #methodBackup#<br />');
+			echo('disableSiteOptionGroupMap doesn''t exist (not an error) | #qCheck.site_option_group_name# | qCheck.site_option_group_map_insert_type=#qCheck.site_option_group_map_insert_type# | methodBackup = #methodBackup#<br />');
 		}
 		form.disableSiteOptionGroupMap=true;
 		if(qCheck.site_option_group_map_insert_type EQ 1){
@@ -4202,7 +4223,7 @@ Define this function in another CFC to override the default email format
 			}
 			</cfscript>
 			<cfset tempIndex=qS.recordcount+1>
-			<cfif methodBackup NEQ "publicAddGroup" and methodBackup NEQ "publicEditGroup">
+			<cfif methodBackup NEQ "publicAddGroup" and methodBackup NEQ "publicEditGroup" and methodBackup NEQ "userAddGroup" and methodBackup NEQ "userEditGroup">
 				<cfif qCheck.site_option_group_enable_approval EQ 1>
 					<cfscript>
 					if(methodBackup EQ 'addGroup'){

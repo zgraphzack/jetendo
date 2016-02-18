@@ -192,8 +192,7 @@ DELETE FROM `#request.zos.zcoreDatasource#`.rets25_property where rets25_mlsnumb
 				local.listing_subdivision=ts["Complex Community Name NCCB"];
 			}
 		}
-
-		writedump(ts);abort;
+ 
 
 		if(ts["Property Type"] EQ "INC" and ts["Total Monthly Rent"] NEQ "" and ts["Total Monthly Rent"] NEQ "0"){
 			ts["list price"]=ts["Total Monthly Rent"];
