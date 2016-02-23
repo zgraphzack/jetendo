@@ -479,10 +479,10 @@
 	site_id =#db.param(form.sid)# ";
 	qUser=db.execute("qUser");
 	tempStruct={};
-	form.company_id=0;
 	application.zcore.functions.zQueryToStruct(qUser, tempStruct);
 	structappend(form, tempStruct, false);
 
+	form.company_id=application.zcore.functions.zso(form, 'company_id', true);
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	db.sql=" SELECT user_group.user_group_id, user_group.user_group_name, user_group.user_group_friendly_name 
 	FROM #db.table("user_group", request.zos.zcoreDatasource)# user_group 

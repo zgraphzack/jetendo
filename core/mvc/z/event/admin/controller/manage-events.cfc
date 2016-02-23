@@ -1281,6 +1281,7 @@
 	<table class="table-list">
 		<tr>
 			<th>ID</th>
+			<th>Calendar</th>
 			<th>Name</th>
 			<th>Start Date</th>
 			<th>End Date</th>
@@ -1290,9 +1291,18 @@
 			<th>Admin</th>
 		</tr>
 		<cfscript>
+
+		db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)# 
+		WHERE site_id =#db.param(request.zos.globals.id)# and 
+		event_calendar_deleted = #db.param(0)# ";
+		qEventCalendar=db.execute("qEventCalendar"); 
+		calendarStruct={};
+		for(row in qEventCalendar){
+			calendarStruct[row.event_calendar_id]=row;
+		}
 		for(row in qList){
 			echo('<tr>');
-			getEventRowHTML(row);
+			getEventRowHTML(row, calendarStruct);
 			echo('</tr>');
 			request.uniqueEvent[row.event_id]=true;
 		}
@@ -1311,8 +1321,17 @@
 
 <cffunction name="getReturnEventRowHTML" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	var db=request.zos.queryObject; 
-	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event 
+	var db=request.zos.queryObject;  
+	db.sql="SELECT * FROM #db.table("event_calendar", request.zos.zcoreDatasource)# 
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	event_calendar_deleted = #db.param(0)# ";
+	qEventCalendar=db.execute("qEventCalendar"); 
+	calendarStruct={};
+	for(row in qEventCalendar){
+		calendarStruct[row.event_calendar_id]=row;
+	}
+	
+	db.sql="SELECT * FROM #db.table("event", request.zos.zcoreDatasource)# event
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
 	event_deleted = #db.param(0)# and 
 	event_id=#db.param(form.event_id)#";
@@ -1323,7 +1342,7 @@
 	request.uniqueEvent={};
 	savecontent variable="rowOut"{
 		for(row in qEvent){
-			getEventRowHTML(row);
+			getEventRowHTML(row, calendarStruct);
 			request.uniqueEvent[row.event_id]=true;
 		}
 	}
@@ -1338,10 +1357,19 @@
 	
 <cffunction name="getEventRowHTML" localmode="modern" access="public" roles="member">
 	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="calendarStruct" type="struct" required="yes">
 	<cfscript>
 	row=arguments.row;
+	arrCalendar=listToArray(row.event_calendar_id, ",");
+	arrEventCalendarName=[];
+	for(i=1;i<=arraylen(arrCalendar);i++){
+		if(structkeyexists(arguments.calendarStruct, arrCalendar[i])){
+			arrayAppend(arrEventCalendarName, arguments.calendarStruct[arrCalendar[i]].event_calendar_name);
+		}
+	}
 	echo('
 		<td>#row.event_id#</td>
+		<td>#arrayToList(arrEventCalendarName, ", ")#</td>
 		<td>#row.event_name#</td>');
 	if(structkeyexists(row, 'event_recur_start_datetime')){
 		echo('<td>#dateformat(row.event_recur_start_datetime, 'm/d/yyyy')#</td>

@@ -2890,7 +2890,7 @@ Define this function in another CFC to override the default email format
 		}
 	} 
 	if(qCheckGroup.site_option_group_user_group_id_list EQ ""){
-		application.zcore.functions.z404("This site_option_group doesn't allow user dashboard editing: #qCheckGroup.site_option_group_name#");
+		application.zcore.functions.z404("This site_option_group doesn't allow user dashboard editing: #qCheckGroup.site_option_group_name# (site_option_group_user_group_id_list is blank)");
 	}
 	arrId=listToArray(qCheckGroup.site_option_group_user_group_id_list); 
 	for(i=1;i<=arraylen(arrId);i++){

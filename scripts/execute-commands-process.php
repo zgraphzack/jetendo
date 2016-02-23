@@ -940,7 +940,7 @@ function publishNginxSiteConfig($a){
 			"rewrite ^/(.*)$ ".$row["site_domain"]."/$1 permanent;\n".
 		"}\n".
 		"server {".
-			"listen ".$row["site_ip_address"].":443 ssl spdy;\n".
+			"listen ".$row["site_ip_address"].":443 ssl http2;\n".
 			"server_name ".implode(" ", $arrSSLSite).";\n".
 			$row["site_nginx_ssl_config"]."\n".
 			"ssl_certificate ".$nginxSSLPath.$sslRow["ssl_hash"]."/".$row["site_id"].".crt;\n".
