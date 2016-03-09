@@ -614,8 +614,12 @@ Please login in and view your lead by clicking the following link: #request.zos.
 					</tr>
 					<tr>
 						<td colspan="2">What is the status of this lead?<br />
-							<input type="radio" name="inquiries_status_id" value="3" class="input-plain" <cfif application.zcore.functions.zso(form, 'inquiries_status_id',false,3) EQ 3 or form.inquiries_status_id EQ 2 or form.inquiries_status_id EQ 1>checked="checked"</cfif>>
-							Active
+							<input type="radio" name="inquiries_status_id" value="1" class="input-plain" <cfif form.inquiries_status_id EQ 1>checked="checked"</cfif>>
+							New
+							<input type="radio" name="inquiries_status_id" value="2" class="input-plain" <cfif form.inquiries_status_id EQ 2>checked="checked"</cfif>>
+							Assigned
+							<input type="radio" name="inquiries_status_id" value="3" class="input-plain" <cfif application.zcore.functions.zso(form, 'inquiries_status_id',false,3) EQ 3>checked="checked"</cfif>>
+							Contacted
 							<input type="radio" name="inquiries_status_id" value="4" class="input-plain" <cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 4>checked="checked"</cfif>>
 							Closed with No Sale
 							<input type="radio" name="inquiries_status_id" value="5" class="input-plain"<cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 5>checked="checked"</cfif>>

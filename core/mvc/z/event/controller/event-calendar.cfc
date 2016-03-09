@@ -297,8 +297,8 @@
 			}*/
 
 			// this forces event to appear on the end date on the calendar, the time has to be most of the day to make it visible.
-			endTime="23:59:59";
-			ts.end=dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&endTime;//+0400';
+			endTime="00:00:00";//"23:59:59";
+			ts.end=dateformat(dateadd("d", 1, row.event_recur_end_datetime),"yyyy-mm-dd")&"T"&endTime;//+0400';
 			//ts.end='$.fullCalendar.moment.parseZone("'&dateformat(row.event_recur_end_datetime,"yyyy-mm-dd")&"T"&timeformat(row.event_recur_end_datetime, "HH:mm:ss")&'")'
 		}
 		arrayAppend(arrData, ts);

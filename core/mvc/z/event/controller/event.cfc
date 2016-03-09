@@ -1149,6 +1149,10 @@ searchEvents(ts);
 		}
 		row.event_start_datetime=row.event_recur_start_datetime;
 		row.event_end_datetime=row.event_recur_end_datetime;
+		/*
+		if(timeformat(row.event_end_datetime, 'h:mm tt') EQ '12:00 am'){
+			row.event_end_datetime=dateadd(row.event_end_datetime, 'yyyy-mm-dd')&' 23:59:59';
+		}*/
 		hasPhotos=true;
 		arrayAppend(arrData, row);
 	}

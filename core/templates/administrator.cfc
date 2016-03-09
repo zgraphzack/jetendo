@@ -57,7 +57,10 @@
 		userGroupId=request.zsession.user.group_id;
 	}else{
 		userGroupId=0;
-	}
+	} 
+	</cfscript>
+	<cfscript>
+	ws=application.zcore.app.getWhitelabelStruct();
 	</cfscript>
 	<cfif not structkeyexists(form, 'zEnablePreviewMode') and not request.zos.inServerManager and application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
 	structkeyexists(application.siteStruct[request.zos.site_id].administratorTemplateMenuCache, request.zsession.user.site_id&"_"&request.zsession.user.id)>
@@ -70,9 +73,6 @@
 				<p>You must upgrade to a newer browser.  <a href="http://www.google.com/chrome" target="_blank">Chrome</a> or 
 				<a href="http://www.google.com/chrome" target="_blank">Firefox</a> are recommended.</p>
 			</div>
-			<cfscript>
-			ws=application.zcore.app.getWhitelabelStruct();
-			</cfscript>
 			<style type="text/css">
 			.zDashboardContainerPad{width:97%; padding:1.5%; float:left;}
 			.zDashboardContainer{width:100%; }
@@ -119,6 +119,7 @@
 				echo(ws.whitelabel_css);
 			</cfscript>
 			</style>
+			#ws.whitelabel_dashboard_header_raw_html#
 			<cfif ws.whitelabel_dashboard_header_image_320 NEQ "">
 	
 				<div class="zdashboard-header-image320" style="background-color:###ws.whitelabel_dashboard_header_background_color#;"><img src="#ws.imagePath##ws.whitelabel_dashboard_header_image_320#" style="width:100%; " alt="Site Manager"></div>
@@ -278,6 +279,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 	  <h1>#tagStruct.pagetitle ?: ""#</h1>
 	  </cfif>
 	   #tagStruct.content ?: ""#
+
+		#ws.whitelabel_dashboard_footer_raw_html#
 	  <div class="zapp-shell-foot"><hr />Copyright&copy; #year(now())# <a href="/">#request.zos.globals.shortdomain#</a>. All Rights Reserved.
 	  </div>
 	  </div>

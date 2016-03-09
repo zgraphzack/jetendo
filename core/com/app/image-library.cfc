@@ -1368,16 +1368,16 @@ application.zcore.imageLibraryCom.displayImages(ts);
 			thumbnailCrop=request.zos.thumbnailSizeStruct.crop;
 		}else{
 			if(arguments.ss.forceSize){
-				thumbnailWidth=round(arrT[1]/3);
-				thumbnailHeight=round((arrT[2]/3)*.6);
+				thumbnailWidth=round(arrT[1]/2);
+				echo('1');
+				thumbnailHeight=round((arrT[2]/2)*.6);
 			}else{
-				thumbnailWidth=round(request.zos.globals.maximagewidth/3);
-				thumbnailHeight=round((request.zos.globals.maximagewidth/3)*.6);
+				thumbnailWidth=round(request.zos.globals.maximagewidth/2);
+				thumbnailHeight=round((request.zos.globals.maximagewidth/2)*.6);
 			}
 		}
 		thumbnailWidth*=2;
-		thumbnailHeight*=2;
-		
+		thumbnailHeight*=2; 
 		</cfscript>
 		<cfloop query="qImages" startrow="1" endrow="1">
 			<cfif arguments.ss.layoutType EQ "thumbnail-right-and-other-photos">

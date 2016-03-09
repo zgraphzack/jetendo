@@ -39,7 +39,7 @@
 	ws=application.zcore.app.getWhitelabelStruct();
 	</cfscript>
 	<div class="zDashboardContainerPad">
-		<div class="zDashboardContainer">
+		<div class="zDashboardContainer"> 
 			<cfif ws.whitelabel_dashboard_header_html NEQ "">
 				<div class="zDashboardHeader">
 					#ws.whitelabel_dashboard_header_html#
@@ -135,7 +135,7 @@
 				</cfscript>
 				</div>
 			</div>
-
+ 
 			<cfif ws.whitelabel_dashboard_footer_html NEQ "">
 				<div class="zDashboardFooter">
 					#ws.whitelabel_dashboard_footer_html#

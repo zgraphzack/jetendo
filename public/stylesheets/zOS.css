@@ -165,19 +165,19 @@ body{ min-height: auto !important;}
 .contentPropertySummaryDiv div{width:100%;}
 .rss-summary-thumbnail{float:left; padding-right:20px; padding-bottom:20px; padding-left:0px;}
 .rss-summary-ds-2{overflow:hidden;
-	display:block;  float:left;   padding:10px; padding-right:0px; font-size:14px;}
+	display:block;  float:left;   padding:10px; padding-right:0px;  }
 .rss-summary-ds {overflow:hidden;
-	display:block;width:95.8%; float:left;   padding:2%;padding-top:5px; padding-bottom:5px;  font-size:14px;
+	display:block;width:95.8%; float:left;   padding:2%;padding-top:5px; padding-bottom:5px;  
 }
 .rss-summary-title {
-	display:block; font-size:18px; font-weight:normal; line-height:24px; padding-top:0px;
+	display:block; font-size:120%; font-weight:normal; line-height:24px; padding-top:0px;
 }
 .rss-summary-date {
-	display:block; padding-bottom:5px; font-size:13px; font-weight:normal; color:#666666;
+	display:block; padding-bottom:5px; font-weight:normal; color:#666666;
 }
 .rss-summary-box { width:100%; float:left; font-size:90%; line-height:normal;border-top:1px solid #CCC; padding-top:5px; padding-bottom:3px; margin-top:5px;}
 .rss-summary-box33 {
-	width:100%;float:left; padding:10px; padding-top:5px; padding-bottom:5px; background-color:#EEEEEE; border-bottom:1px solid #CCCCCC; font-size:12px; font-weight:bold;
+	width:100%;float:left; padding:10px; padding-top:5px; padding-bottom:5px; background-color:#EEEEEE; border-bottom:1px solid #CCCCCC;  font-weight:bold;
 margin-bottom: -6px;padding-right:20px;
 margin-left: -14px; margin-top:10px;
 }
@@ -185,13 +185,13 @@ margin-left: -14px; margin-top:10px;
 	float:left; 
 }
 .rss-menu-box {
-	float:left; width:180px; border:1px solid #CCCCCC; color:#000000; background-color:#FFFFFF; font-weight:bold; font-size:13px;text-align:left;
+	float:left; width:180px; border:1px solid #CCCCCC; color:#000000; background-color:#FFFFFF; font-weight:bold; text-align:left;
 }
 .rss-menu-box-inner {
 	padding:5px; width:170px;
 }
 .rss-menu-box h3{
-	margin:0px; border-bottom:1px solid #999999; color:#999999; margin-bottom:10px; font-size:16px;
+	margin:0px; border-bottom:1px solid #999999; color:#999999; margin-bottom:10px;  
 }
 .rss-menu-spacer {
 	padding-bottom:10px;
@@ -203,7 +203,7 @@ margin-left: -14px; margin-top:10px;
 .rss-menu-box a:visited{
 	text-decoration:none;
 	color:#663399;
-
+ 
 }
 .rss-menu-box a:hover{
 	text-decoration:underline;
@@ -720,9 +720,23 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 
 .zMobileOnly{display:none;}
 .zDesktopOnly{display:block;}
+.zImageLibraryImageRight{float:right; margin-left:20px; margin-bottom:20px;}
+.zImageLibraryImageLeft{float:left; margin-right:20px; margin-bottom:20px;}
+.zImageLibraryImageLeft img{max-width:100%;}
+.zImageLibraryImageRight img{max-width:100%;}
+
 @media only screen and (max-width: 960px) {
+
+.zImageLibraryImageRight{width:50% !important;}
+.zImageLibraryImageLeft{width:50% !important;}
 	.zMobileOnly{display:block;}
 	.zDesktopOnly{display:none;}
+}
+
+
+@media only screen and (max-width: 768px) {
+	.zImageLibraryImageLeft{width:100% !important; margin-right:0px;margin-left:0px; }
+	.zImageLibraryImageRight{width:100% !important; margin-right:0px; margin-left:0px; float:left;} 
 }
 @media only screen and (max-width: 640px) {
 	.zRecurBoxColumn1{display:block;width:95%; max-width:95%; min-width:320px;float:left;}
@@ -792,15 +806,9 @@ div.time-picker{width:90px !important;}
 	.zEventWidget-circle-7:link, .zEventWidget-circle-7:visited{font-size:14px;}
 }
 
-.zImageLibraryImageRight{float:right; margin-left:20px; margin-bottom:20px;}
-.zImageLibraryImageLeft{float:left; margin-right:20px; margin-bottom:20px;}
-.zImageLibraryImageLeft img{max-width:100%;}
-.zImageLibraryImageRight img{max-width:100%;}
 
 @media only screen and (max-width:600px) {
 	.zRadioGroupOptionSpan{width:100%; float:left;}
-	.zImageLibraryImageLeft{width:100% !important; margin-right:0px;margin-left:0px; }
-	.zImageLibraryImageRight{width:100% !important; margin-right:0px; margin-left:0px; float:left;}
 	textarea { width:100% !important;}
 	.zEventView1-1{width:100%; display:block; float:left; }
 	.zEventView1-2{width:100%; display:block; float:left; margin-left:0px; }

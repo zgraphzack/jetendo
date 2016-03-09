@@ -441,26 +441,31 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 		</tr>
 		<tr>
 			<th style="#thstyle# text-align:left;" >Status:</th>
-			<td style="#tdstyle#"><cfif t.inquiries_assign_email NEQ ''>
-Assigned to
-					<cfif t.inquiries_assign_name neq ''>
-#t.inquiries_assign_name#,
-					</cfif>
-					<a href="mailto:#t.inquiries_assign_email#">#t.inquiries_assign_email#</a>
-					<cfif t.inquiries_status_id EQ 3>
-, Contacted
-					</cfif>
-					<cfelse>
-					<cfif t.user_id NEQ 0>
-						<cfif t.user_first_name NEQ "">
-							#replace(t.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#t.user_username#">#t.user_first_name# #t.user_last_name#</a>')#
-						<cfelse>
-							#replace(t.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#t.user_username#">#t.user_username#</a>')#
-						</cfif> 
-					<cfelse>
+			<td style="#tdstyle#">
 						#t.inquiries_status_name#
-					</cfif>
-				</cfif></td>
+			</td>
+		</tr>
+		<tr>
+			<th style="#thstyle# text-align:left;" >Assigned&nbsp;To:</th>
+			<td style="#tdstyle#"> 
+			 <cfif t.inquiries_assign_email NEQ ''> 
+				<cfif t.inquiries_assign_name neq ''>
+					<a href="mailto:#t.inquiries_assign_email#">#t.inquiries_assign_name#</a>
+				<cfelse>
+					<a href="mailto:#t.inquiries_assign_email#">#t.inquiries_assign_email#</a> 
+				</cfif>
+			<cfelse>
+				<cfif t.user_id NEQ 0>
+					<cfif t.user_first_name NEQ "">
+						<a href="mailto:#t.user_username#">#t.user_first_name# #t.user_last_name# 
+						<cfif t.member_company NEQ "">
+							(#t.member_company#)
+						</cfif></a>
+					<cfelse>
+						<a href="mailto:#t.user_username#">#t.user_username#</a>
+					</cfif> 
+				</cfif>
+			</cfif></td>
 		</tr>
 		<!-- endadmincomments -->
 		<cfif t.inquiries_spam EQ 1>

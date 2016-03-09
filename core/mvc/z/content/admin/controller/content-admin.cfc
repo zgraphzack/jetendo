@@ -2038,7 +2038,7 @@
 			<tr>
 				<td>Search by ID, title
 				<cfif application.zcore.app.siteHasApp("listing")>, address, MLS ##</cfif> or any other text: 
-				<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="min-width:100px; width:82%;" size="20" maxchars="10" />&nbsp;
+				<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="min-width:100px; width:300px;max-width:100%; min-width:auto;" size="20" maxchars="10" />&nbsp;
 				<input type="button" name="searchForm" value="Search" onclick="doContentSearch();" />  Exact Matches Only? Yes 
 				<input type="radio" name="searchexactonly" id="searchexactonly1" value="1" style="border:none; background:none;" <cfif searchexactonly EQ 1>checked="checked"</cfif> /> No 
 				<input type="radio" name="searchexactonly" id="searchexactonly2" value="0" <cfif searchexactonly EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> | 

@@ -537,8 +537,15 @@
 		</cfscript>
 		#tabCom.beginTabMenu()# 
 		#tabCom.beginFieldSet("Basic")#
-		<table style="width:100%; border-spacing:0px;" class="table-list">
-			
+		<table style="width:100%; border-spacing:0px;" class="table-list"> 
+			<tr>
+				<th class="table-white" style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Admin Raw Header HTML","member.whitelabel.edit whitelabel_dashboard_header_raw_html")#</th>
+				<td style="vertical-align:top; "><textarea name="whitelabel_dashboard_header_raw_html" rows="5" cols="5" style="width:95%;">#htmleditformat(form.whitelabel_dashboard_header_raw_html)#</textarea></td>
+			</tr> 
+			<tr>
+				<th class="table-white" style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Admin Raw Footer HTML","member.whitelabel.edit whitelabel_dashboard_footer_raw_html")#</th>
+				<td style="vertical-align:top; "><textarea name="whitelabel_dashboard_footer_raw_html" rows="5" cols="5" style="width:95%;">#htmleditformat(form.whitelabel_dashboard_footer_raw_html)#</textarea></td>
+			</tr> 
 			<tr>
 				<th class="table-white" style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Admin Dashboard Header HTML","member.whitelabel.edit whitelabel_dashboard_header_html")#</th>
 				<td style="vertical-align:top; "><cfscript>

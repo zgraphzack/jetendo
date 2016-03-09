@@ -1,5 +1,98 @@
 <cfcomponent>
 <cfoutput> 
+<cffunction name="userInit" localmode="modern" access="public">
+	<cfscript>
+	if(not structkeyexists(request, 'manageLeadUserGroupStruct')){
+		request.manageLeadUserGroupStruct={};
+	}
+	application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+	variables.isReservationSystem=false;
+	found=false;
+	for(i in request.manageLeadUserGroupStruct){
+		if(application.zcore.user.checkGroupAccess(i)){
+			found=true;
+			break;
+		}
+
+	}
+	if(application.zcore.functions.zso(form, 'inquiries_id', true) NEQ 0){
+		if(not userHasAccessToLead(form.inquiries_id)){
+			found=false;
+		}
+	}
+	if(not found){
+		application.zcore.user.requireLogin("dealer"); 
+	}
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="userExport" localmode="modern" access="remote">
+	<cfscript>
+	userInit();
+	exportCom=createobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.export");
+	exportCom.index();
+	</cfscript>
+	
+</cffunction>
+<cffunction name="userView" localmode="modern" access="remote">
+	<cfscript>
+	userInit();
+	feedbackCom=createobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.feedback");
+	feedbackCom.view();
+	</cfscript>
+	
+</cffunction>
+
+<cffunction name="userHasAccessToLead" localmode="modern" access="public">
+	<cfargument name="inquiries_id" type="string" required="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	db.sql="select * from #db.table("inquiries", request.zos.zcoreDatasource)# 
+	WHERE inquiries_deleted=#db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	inquiries_id = #db.param(arguments.inquiries_id)# and 
+	user_id=#db.param(request.zsession.user.id)# and 
+	user_id_siteIDType=#db.param(application.zcore.functions.zGetSiteIdType(request.zsession.user.site_id))# ";
+	qCheckLead=db.execute("qCheckLead");
+	if(qCheckLead.recordcount GT 0){
+		return true;
+	}else{
+		return false;
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="userChangeStatus" localmode="modern" access="remote">
+	<cfscript>
+	changeStatus();
+	</cfscript>
+</cffunction>
+<cffunction name="userDelete" localmode="modern" access="remote">
+	<cfscript>
+	delete();
+	</cfscript>
+	
+</cffunction>
+<cffunction name="userShowAllFeedback" localmode="modern" access="remote">
+	<cfscript>
+	showAllFeedback();
+	</cfscript>
+	
+</cffunction>
+<cffunction name="userView" localmode="modern" access="remote">
+	<cfscript>
+	view();
+	</cfscript>
+	
+</cffunction>
+<cffunction name="userIndex" localmode="modern" access="remote">
+	<cfscript>
+	index();
+	</cfscript>
+	
+</cffunction>
+
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript> 
 	var db=request.zos.queryObject;
@@ -18,7 +111,13 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qIn=0;
-	variables.init();
+	currentMethod=form.method;
+	if(currentMethod EQ "userChangeStatus"){
+		userInit();
+	}else{
+		init();
+	}
+	// TODO: need user security here
 	db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	SET inquiries_status_id= #db.param(form.inquiries_status_id)#,
 	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
@@ -35,7 +134,13 @@
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qCheck=0;
-	variables.init();
+	currentMethod=form.method;
+	if(currentMethod EQ "userDelete"){
+		application.zcore.functions.z404("User can't delete leads.");
+		userInit();
+	}else{
+		init();
+	}
 	db.sql="SELECT * from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE inquiries_id=#db.param(form.inquiries_id)# and 
 	site_id = #db.param(request.zos.globals.id)#";
@@ -69,10 +174,16 @@
 	var searchNav=0;
 	var searchStruct=0;
 	var qFeedbackCount=0;
-	variables.init();
-	if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
-		application.zcore.status.setStatus(request.zsid,"Access denied.");
-		application.zcore.functions.zRedirect("/member/?zsid=#request.zsid#");	
+	currentMethod=form.method;
+	if(currentMethod EQ "userShowAllFeedback"){
+		application.zcore.functions.z404("userShowAllFeedback is disabled for non-admin users");
+		userInit();
+	}else{
+		init();
+		if(structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false){
+			application.zcore.status.setStatus(request.zsid,"Access denied.");
+			application.zcore.functions.zRedirect("/member/?zsid=#request.zsid#");	
+		}
 	}
 	form.zPageId3=application.zcore.functions.zso(form, 'zPageId3');
 	form.zIndex = application.zcore.status.getField(form.zPageId3, "zIndex", 1, true);
@@ -193,7 +304,12 @@
 	var excpt=0;
 	var cfcatch=0;
 	var viewIncludeCom=0;
-	variables.init();
+	currentMethod=form.method;
+	if(currentMethod EQ "userView"){
+		userInit();
+	}else{
+		init();
+	}
 	</cfscript>
 	<cfsavecontent variable="db.sql"> 
 	SELECT * FROM (#db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
@@ -231,19 +347,26 @@
 		homeownerid=0;
 	}
 	</cfscript>
+	<cfif currentMethod EQ "userView">
+		<p><a href="/z/inquiries/admin/manage-inquiries/userIndex">Leads</a> /</p>
+	</cfif>
+	
 	<cfloop query="qinquiry">
 		<h2 style="display:inline;">Inquiry Information</h2>
-		<cfif qinquiry.inquiries_readonly EQ 1>
-			| Read-only | Edit is disabled
-		<cfelse>
-			| <a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
-		</cfif>
+		<cfif currentMethod EQ "view">
 	
-		<cfif request.zsession.user.group_id NEQ homeownerid>
-			| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Assign Lead</a>
-		</cfif>
-		<cfif qinquiry.inquiries_reservation EQ 1>
-			| <a href="/z/rental/admin/reservations/cancel?inquiries_id=#qinquiry.inquiries_id#">Cancel Reservation</a>
+			<cfif qinquiry.inquiries_readonly EQ 1>
+				| Read-only | Edit is disabled
+			<cfelse>
+				| <a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
+			</cfif>
+		
+			<cfif request.zsession.user.group_id NEQ homeownerid>
+				| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiry.inquiries_id#&amp;zPageId=#form.zPageId#">Assign Lead</a>
+			</cfif>
+			<cfif qinquiry.inquiries_reservation EQ 1>
+				| <a href="/z/rental/admin/reservations/cancel?inquiries_id=#qinquiry.inquiries_id#">Cancel Reservation</a>
+			</cfif>
 		</cfif>
 		<br />
 		<br />
@@ -270,9 +393,14 @@
 	var searchNav=0;
 	var qMember=0;
 	var arrId=0;
-	variables.init();
+	currentMethod=form.method;
+	if(currentMethod EQ "userIndex"){
+		userInit();
+	}else{
+		init();
+		application.zcore.functions.zSetPageHelpId("4.1");
+	}
 
-	application.zcore.functions.zSetPageHelpId("4.1");
 	if(structkeyexists(form, 'leadcontactfilter')){
 		request.zsession.leadcontactfilter=form.leadcontactfilter;		
 	}else if(isDefined('request.zsession.leadcontactfilter') EQ false){
@@ -435,7 +563,7 @@
 			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
 			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
-		<cfif structkeyexists(form, 'searchType') EQ false>
+		<cfif application.zcore.functions.zso(form, 'searchType') NEQ "">
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
@@ -473,7 +601,7 @@
 			and inquiries.inquiries_spam =#db.param(0)#
 		</cfif>
 		<cfif request.zsession.leadcontactfilter EQ 'new'>
-			and inquiries.inquiries_status_id ='1'
+			and inquiries.inquiries_status_id =#db.param('1')# 
 		<cfelseif request.zsession.leadcontactfilter EQ 'email'>
 			and inquiries_phone1 =#db.param('')# and inquiries_phone_time=#db.param('')#
 		<cfelseif request.zsession.leadcontactfilter EQ 'phone'>
@@ -489,9 +617,9 @@
 		<cfelse>
 			ORDER BY maxdatetime DESC
 		</cfif>
-		<cfif structkeyexists(form, 'searchType')>
+		<cfif application.zcore.functions.zso(form, 'searchType') NEQ "">
 			LIMIT #db.param(max(0,(form.zIndex-1))*10)#,#db.param(10)#
-			<cfelse>
+		<cfelse>
 			LIMIT #db.param(max(0,(form.zIndex-1))*30)#,#db.param(30)#
 		</cfif>
 		</cfsavecontent>
@@ -519,7 +647,7 @@
 			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
 			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
-		<cfif structkeyexists(form, 'searchType') EQ false>
+		<cfif application.zcore.functions.zso(form, 'searchType') EQ "">
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
@@ -572,54 +700,52 @@
 		qinquiriesActive=db.execute("qinquiriesActive");  
 		</cfscript>
 		<h2>Search Leads</h2>
-		<form action="/z/inquiries/admin/manage-inquiries/index" method="get"> 
-			<table style="border-spacing:0px; width:100%;" class="table-list">
-				<tr>
-					<td>Name:
-						<input type="text" name="inquiries_name" style="min-width:200px; width:200px;" value="#application.zcore.functions.zso(form, 'inquiries_name')#" /></td>
-					<td>Type: 
-					<cfscript>
-					db.sql="SELECT *, 
-					#db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("inquiries_type.site_id"))# as 
-					inquiries_type_id_siteIDType from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
-					WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
-					inquiries_type_deleted = #db.param(0)# ";
-					if(not application.zcore.app.siteHasApp("listing")){
-						db.sql&=" and inquiries_type_realestate = #db.param(0)# ";
-					}
-					if(not application.zcore.app.siteHasApp("rental")){
-						db.sql&=" and inquiries_type_rentals = #db.param(0)# ";
-					}
-					db.sql&="ORDER BY inquiries_type_sort ASC, inquiries_type_name ASC ";
-					qTypes=db.execute("qTypes");
-					selectStruct = StructNew();
-					selectStruct.name = "inquiries_type_id";
-					selectStruct.query = qTypes;
-					selectStruct.queryLabelField = "inquiries_type_name";
-					selectStruct.queryParseValueVars=true;
-					selectStruct.queryValueField = "##inquiries_type_id##|##inquiries_type_id_siteIDType##";
-					application.zcore.functions.zInputSelectBox(selectStruct);
-					</cfscript></td>
-					<td>Start:#application.zcore.functions.zDateSelect("inquiries_start_date", "inquiries_start_date", year(inquiryFirstDate), year(now()))#</td>
-					<td>End:#application.zcore.functions.zDateSelect("inquiries_end_date", "inquiries_end_date", year(inquiryFirstDate), year(now()))#
+		<form action="/z/inquiries/admin/manage-inquiries/#currentMethod#" method="get"> 
+			<div style="border-spacing:0px; width:100%;float:left; ">
+				<div style="float:left; padding-right:10px; padding-bottom:10px; ">Name:
+					<input type="text" name="inquiries_name" style="min-width:200px; width:200px;" value="#application.zcore.functions.zso(form, 'inquiries_name')#" /></div>
+				<div style="float:left; padding-right:10px; padding-bottom:10px; ">Type: 
+				<cfscript>
+				db.sql="SELECT *, 
+				#db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("inquiries_type.site_id"))# as 
+				inquiries_type_id_siteIDType from #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type 
+				WHERE  site_id IN (#db.param(0)#,#db.param(request.zos.globals.id)#) and 
+				inquiries_type_deleted = #db.param(0)# ";
+				if(not application.zcore.app.siteHasApp("listing")){
+					db.sql&=" and inquiries_type_realestate = #db.param(0)# ";
+				}
+				if(not application.zcore.app.siteHasApp("rental")){
+					db.sql&=" and inquiries_type_rentals = #db.param(0)# ";
+				}
+				db.sql&="ORDER BY inquiries_type_sort ASC, inquiries_type_name ASC ";
+				qTypes=db.execute("qTypes");
+				selectStruct = StructNew();
+				selectStruct.name = "inquiries_type_id";
+				selectStruct.query = qTypes;
+				selectStruct.queryLabelField = "inquiries_type_name";
+				selectStruct.queryParseValueVars=true;
+				selectStruct.queryValueField = "##inquiries_type_id##|##inquiries_type_id_siteIDType##";
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript></div>
+				<div style="float:left; padding-right:10px; padding-bottom:10px; ">Start:#application.zcore.functions.zDateSelect("inquiries_start_date", "inquiries_start_date", year(inquiryFirstDate), year(now()))#</div>
+				<div style="float:left; padding-right:10px; padding-bottom:10px; ">End:#application.zcore.functions.zDateSelect("inquiries_end_date", "inquiries_end_date", year(inquiryFirstDate), year(now()))#
 
-					<cfif not variables.isReservationSystem>
-						<input type="hidden" name="searchtype" value="0" />
-					</cfif></td>
-					<cfif variables.isReservationSystem>
-						<td><input type="radio" name="searchtype" value="0" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 0>checked="checked"</cfif> style="background:none; border:none;" />
-							Received Date<br  />
-							<input type="radio" name="searchtype" value="1" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 1>checked="checked"</cfif> style="background:none; border:none;" />
-							Proposed Occupancy.</td>
-					</cfif>
-					<td><button type="submit" name="submitForm">Search</button></td>
-				</tr>
-			</table>
+				<cfif not variables.isReservationSystem>
+					<input type="hidden" name="searchtype" value="0" />
+				</cfif></div>
+				<cfif variables.isReservationSystem>
+					<div style="float:left; padding-right:10px; padding-bottom:10px; "><input type="radio" name="searchtype" value="0" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 0>checked="checked"</cfif> style="background:none; border:none;" />
+						Received Date<br  />
+						<input type="radio" name="searchtype" value="1" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 1>checked="checked"</cfif> style="background:none; border:none;" />
+						Proposed Occupancy.</div>
+				</cfif>
+				<div style="float:left; padding-right:10px; padding-bottom:10px; "><button type="submit" name="submitForm">Search</button></div>
+			</div>
 		</form>
-		<hr />
-		<cfif structkeyexists(form, 'searchType')>
+		<!--- <hr /> --->
+		<cfif application.zcore.functions.zso(form, 'searchType') NEQ "">
 			<h2 style="display:inline; ">Search Results | </h2>
-			<a href="/z/inquiries/admin/manage-inquiries/index">Back to Active Leads</a><br />
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?zindex=1">Back to Active Leads</a><br />
 			<br />
 			<script type="text/javascript">
 			/* <![CDATA[ */
@@ -637,7 +763,7 @@
 				if(et.checked){
 					format="csv";	
 				}
-				window.open("/z/inquiries/admin/export?inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&format="+format+"&exporttype="+exporttype);
+				window.open("<cfif currentMethod EQ "index">/z/inquiries/admin/export/index<cfelse>/z/inquiries/admin/manage-inquiries/userExport</cfif>?inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&format="+format+"&exporttype="+exporttype);
 			}
 			/* ]]> */
 			</script>
@@ -659,63 +785,63 @@
 		</cfif>
 		Show:
 		<cfif request.zsession.leadcontactfilter NEQ 'all'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=all&amp;zPageId=#form.zPageId#">All Active</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?leadcontactfilter=all&amp;zPageId=#form.zPageId#">All Active</a>
 		<cfelse>
 			<strong>All Active</strong>
 		</cfif>
 		|
 		<cfif request.zsession.leadcontactfilter NEQ 'new'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=new&amp;zPageId=#form.zPageId#">New</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?leadcontactfilter=new&amp;zPageId=#form.zPageId#">New</a>
 		<cfelse>
 			<strong>New</strong>
 		</cfif>
 		|
 		<cfif request.zsession.leadcontactfilter NEQ 'email'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=email&amp;zPageId=#form.zPageId#">Email Only</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?leadcontactfilter=email&amp;zPageId=#form.zPageId#">Email Only</a>
 		<cfelse>
 			<strong>Email Only</strong>
 		</cfif>
 		|
 		<cfif request.zsession.leadcontactfilter NEQ 'phone'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=phone&amp;zPageId=#form.zPageId#">Phone + Email</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?leadcontactfilter=phone&amp;zPageId=#form.zPageId#">Phone + Email</a>
 		<cfelse>
 			<strong>Phone + Email</strong>
 		</cfif>
 		|
 		<cfif request.zsession.leadcontactfilter NEQ 'forced'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=forced&amp;zPageId=#form.zPageId#">Forced Leads</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?leadcontactfilter=forced&amp;zPageId=#form.zPageId#">Forced Leads</a>
 		<cfelse>
 			<strong>Forced Leads</strong>
 		</cfif>
 		|
 		<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?leadcontactfilter=allclosed&amp;zPageId=#form.zPageId#">All Closed</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?leadcontactfilter=allclosed&amp;zPageId=#form.zPageId#">All Closed</a>
 		<cfelse>
 			<strong>All Closed</strong>
 		</cfif>
 		| <strong>Group By Email:</strong>
 		<cfif request.zsession.leademailgrouping NEQ '1'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?grouping=1&amp;zPageId=#form.zPageId#">Enable</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?grouping=1&amp;zPageId=#form.zPageId#">Enable</a>
 		<cfelse>
-			<a href="/z/inquiries/admin/manage-inquiries/index?grouping=0&amp;zPageId=#form.zPageId#">Disable</a>
+			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?grouping=0&amp;zPageId=#form.zPageId#">Disable</a>
 		</cfif>
 		<cfif qsortcom.getorderby(false) NEQ ''>
-			| <a href="/z/inquiries/admin/manage-inquiries/index">Clear Sorting</a>
+			| <a href="/z/inquiries/admin/manage-inquiries/#currentMethod#">Clear Sorting</a>
 		</cfif>
-		 |  <strong>Spam:</strong> 
+		 |  
 		<cfif request.zsession.leadviewspam NEQ '1'>
-			<a href="/z/inquiries/admin/manage-inquiries/index?viewspam=1&amp;zPageId=#form.zPageId#">View</a>
+			<strong><a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?viewspam=1&amp;zPageId=#form.zPageId#">View Spam</a></strong>
 		 <cfelse>
-			<a href="/z/inquiries/admin/manage-inquiries/index?viewspam=0&amp;zPageId=#form.zPageId#">Hide</a>
+			<strong><a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?viewspam=0&amp;zPageId=#form.zPageId#">Hide Spam</a></strong>
 		 </cfif>
 		<br />
 		<br />
-		<cfscript>
+		<cfscript> 
 		searchStruct = StructNew();
 		searchStruct.count = qinquiriesActive.count;
 		searchStruct.index = form.zIndex;
 		searchStruct.showString = "Results ";
-		searchStruct.url="/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&
+		searchStruct.url="/z/inquiries/admin/manage-inquiries/#currentMethod#?zPageId=#form.zPageId#&
 		inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchtype=#application.zcore.functions.zso(form, 'searchtype')#";
 		if(structkeyexists(form, 'inquiries_end_date')){
 			searchStruct.url&="&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#";
@@ -724,10 +850,10 @@
 			searchStruct.url&="&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#";
 		};
 		//inquiries_name=bruce&inquiries_type_id=&inquiries_start_date_month=5&inquiries_start_date_day=31&inquiries_start_date_year=2009&inquiries_end_date_month=1&inquiries_end_date_day=8&inquiries_end_date_year=2016&searchtype=0&submitForm=
-	//	searchStruct.url = "/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&searchtext="&application.zcore.functions.zso(form, 'searchtext')&"&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#";
+	//	searchStruct.url = "/z/inquiries/admin/manage-inquiries/#currentMethod#?zPageId=#form.zPageId#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&searchtext="&application.zcore.functions.zso(form, 'searchtext')&"&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#";
 		searchStruct.indexName = "zIndex";
 		searchStruct.buttons = 5;
-		if(structkeyexists(form, 'searchType')){		
+		if(application.zcore.functions.zso(form, 'searchType') NEQ ""){		
 			searchStruct.perpage = 10;
 		}else{
 			searchStruct.perpage = 30;
@@ -742,12 +868,13 @@
 		#searchNav#
 		<table class="table-list" style="width:100%; border-spacing:0px;" >
 			<tr>
-				<th><a href="#qSortCom.getColumnURL("inquiries_first_name", "/z/inquiries/admin/manage-inquiries/index")#" style="text-decoration:underline;">First</a> 
+				<th><a href="#qSortCom.getColumnURL("inquiries_first_name", "/z/inquiries/admin/manage-inquiries/#currentMethod#")#" style="text-decoration:underline;">First</a> 
 				#qSortCom.getColumnIcon("inquiries_first_name")# / 
-				<a href="#qSortCom.getColumnURL("inquiries_last_name", "/z/inquiries/admin/manage-inquiries/index")#" style="text-decoration:underline;">Last</a> 
+				<a href="#qSortCom.getColumnURL("inquiries_last_name", "/z/inquiries/admin/manage-inquiries/#currentMethod#")#" style="text-decoration:underline;">Last</a> 
 				#qSortCom.getColumnIcon("inquiries_last_name")# Name</th>
 				<th>Phone</th>
-				<th style="width:310px;">Status</th>
+				<th style="min-width:200px;">Assigned To</th>
+				<th>Status</th>
 				<th>Received</th>
 				<cfif variables.isReservationSystem>
 					<th>Start</th>
@@ -757,14 +884,14 @@
 				</cfif>
 				<th>Admin</th>
 			</tr>
-			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
+			<!--- <cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
 			WHERE user_id = #db.param(request.zsession.user.id)# and 
 			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user"))# and 
 			user_server_administrator=#db.param('0')# and 
 			user_deleted = #db.param(0)# </cfsavecontent>
 			<cfscript>
 			qMember=db.execute("qMember");
-			</cfscript>
+			</cfscript> --->
 			<cfset arrId=ArrayNew(1)>
 			<cfloop query="qinquiries">
 				<cfscript>
@@ -774,29 +901,33 @@
 				<tr <cfif qinquiries.inquiries_status_id EQ 1 or qinquiries.inquiries_status_id EQ 2><cfif qinquiries.currentrow mod 2 EQ 0>class="row1"<cfelse>class="row2"</cfif><cfelse><cfif qinquiries.currentrow mod 2 EQ 0>class="row2"<cfelse>class="row1"</cfif></cfif>>
 					<td><a href="/z/inquiries/admin/feedback/view?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">#qinquiries.inquiries_first_name# #qinquiries.inquiries_last_name#</a></td>
 					<td>#qinquiries.inquiries_phone1#&nbsp;</td>
-					<td style="width:310px;">
-						<cfif qinquiries.inquiries_assign_email NEQ ''>
-							Assigned to
+					<td style="min-width:200px;">
+						<cfif qinquiries.inquiries_assign_email NEQ ''> 
+							<a href="mailto:#qinquiries.inquiries_assign_email#">
 							<cfif structkeyexists(qinquiries, 'inquiries_assign_name') and qinquiries.inquiries_assign_name neq ''>
-								#qinquiries.inquiries_assign_name#,
-							</cfif>
-							<a href="mailto:#qinquiries.inquiries_assign_email#">#qinquiries.inquiries_assign_email#</a>
-							<cfif qinquiries.inquiries_status_id EQ 3>
-								, Contacted
-							</cfif>
+								#qinquiries.inquiries_assign_name#
+							<cfelse>
+								#qinquiries.inquiries_assign_email#
+							</cfif></a> 
 						<cfelse>
 							<cfif qinquiries.user_id NEQ 0>
 								<cfif qinquiries.user_first_name NEQ "">
-									#replace(local.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#qinquiries.user_username#">#qinquiries.user_first_name# #qinquiries.user_last_name#</a>')#
+									<a href="mailto:#qinquiries.user_username#">#qinquiries.user_first_name# #qinquiries.user_last_name#
+										<cfif qinquiries.member_company NEQ "">
+											(#qinquiries.member_company#)
+										</cfif></a>
 								<cfelse>
-									#replace(local.inquiries_status_name, 'Assigned', 'Assigned to <a href="mailto:#qinquiries.user_username#">#qinquiries.user_username#</a>')#
+									<a href="mailto:#qinquiries.user_username#">#qinquiries.user_username#
+										<cfif qinquiries.member_company NEQ "">
+											(#qinquiries.member_company#)
+										</cfif></a>
 								</cfif>
 							<cfelse>
-								#local.inquiries_status_name#
-							</cfif>
+							</cfif> 
 						</cfif>
-						<cfif qinquiries.inquiries_spam EQ 1>, <strong>Marked as Spam</strong></cfif>
+						
 						</td>
+						<td>#local.inquiries_status_name#<cfif qinquiries.inquiries_spam EQ 1>, <strong>Marked as Spam</strong></cfif></td>
 					<td>#DateFormat(qinquiries.inquiries_datetime, "m/d/yy")# #TimeFormat(qinquiries.inquiries_datetime, "h:mm tt")#</td>
 					<cfif variables.isReservationSystem>
 						<td>#DateFormat(qinquiries.inquiries_start_date,'m/d/yy')# </td>
@@ -813,11 +944,14 @@
 							&nbsp;</td>
 					</cfif>
 					<td>
-							<a href="/z/inquiries/admin/feedback/view?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">View</a> | 
-						<cfif qinquiries.inquiries_readonly EQ 1>
-							Read-only | edit is disabled
-						<cfelse><a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
-						</cfif>
+						<cfif currentMethod EQ "index">
+							<a href="/z/inquiries/admin/feedback/view?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">View</a>
+		
+							 | <cfif qinquiries.inquiries_readonly EQ 1>
+								Edit Disabled
+							<cfelse>
+								<a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
+							</cfif> 
 							<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "homeowner") or structkeyexists(request.zos.userSession.groupAccess, "manager")>
 								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5>
 									| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">
@@ -827,7 +961,22 @@
 									Assign</a>
 								</cfif>
 							</cfif>
-						</td>
+
+						<cfelse>
+							<a href="/z/inquiries/admin/manage-inquiries/userView?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">View</a>
+			 
+							<!--- <cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "homeowner") or structkeyexists(request.zos.userSession.groupAccess, "manager")>
+								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5>
+									| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">
+									<cfif qinquiries.user_id NEQ 0 or qinquiries.inquiries_assign_email NEQ "">
+										Re-
+									</cfif>
+									Assign</a>
+								</cfif>
+							</cfif> --->
+						</cfif>
+		
+					</td>
 				</tr>
 			</cfloop>
 		</table>

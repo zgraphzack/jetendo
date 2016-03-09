@@ -1,5 +1,62 @@
 <cfcomponent>
 <cfoutput>
+<!--- 
+<cfscript>
+form.inquiries_type_id=1;
+form.inquiries_type_id_siteIdType=4;
+form.inquiries_email="test@test.com";
+form.inquiries_subject="New Inquiry on #request.zos.globals.shortdomain#";
+application.zcore.functions.zRecordLead();
+</cfscript>
+ --->
+<cffunction name="zRecordLead" localmode="modern" access="public">
+	<cfscript>
+	var db=request.zos.queryObject;
+	form.inquiries_type_id = application.zcore.functions.zso(form, 'inquiries_type_id',false,1);
+	form.inquiries_type_id_siteIdType = application.zcore.functions.zso(form, 'inquiries_type_id_siteIdType',false,4);
+	if(form.inquiries_type_id EQ "" or form.inquiries_type_id_siteIDType EQ ""){
+		form.inquiries_type_id = 1;
+		form.inquiries_type_id_siteIdType=4;
+	}
+	form.inquiries_status_id = 1; 
+	form.site_id = request.zOS.globals.id;
+	
+	form.inquiries_primary=1;
+	db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
+	SET inquiries_primary=#db.param(0)#,
+	inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
+	WHERE inquiries_email=#db.param(form.inquiries_email)# and 
+	inquiries_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	db.execute("q"); 
+	//	Insert Into Inquiry Database
+	inputStruct = StructNew();
+	inputStruct.table = "inquiries";
+	inputstruct.datasource=request.zos.zcoreDatasource;
+	inputStruct.struct=form;
+	form.inquiries_id = application.zcore.functions.zInsert(inputStruct); 
+	 
+	if(form.inquiries_id NEQ false){
+		application.zcore.tracking.setUserEmail(form.inquiries_email);
+		application.zcore.tracking.setConversion('inquiry',form.inquiries_id);
+		  
+		ts=structnew();
+		ts.inquiries_id=form.inquiries_id;
+		if(structkeyexists(form, 'inquiries_subject')){
+			ts.subject=form.inquiries_subject;
+		}else{
+			ts.subject="New Inquiry on #request.zos.globals.shortdomain#";
+		}
+		// send the lead
+		rs=application.zcore.functions.zAssignAndEmailLead(ts);
+		if(rs.success EQ false){
+			// failed to assign/email lead
+			//zdump(rs);
+		} 
+		form.mail_user_id=application.zcore.user.automaticAddUser(application.zcore.functions.zUserMapFormFields(structnew()));
+	}
+	</cfscript>
+</cffunction>
 
 <cffunction name="zGetInquiryById" localmode="modern" access="public">
 	<cfargument name="inquiries_id" type="string" required="yes">

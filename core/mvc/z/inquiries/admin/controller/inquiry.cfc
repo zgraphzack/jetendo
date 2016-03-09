@@ -170,7 +170,7 @@
 					application.zcore.functions.zInputSelectBox(selectStruct);
 					</cfscript>
 					or Other:
-					<input type="text" name="inquiries_type_other" value="#application.zcore.functions.zso(form,'inquiries_type_other')#" />
+					<input type="text" name="inquiries_type_other" style="min-width:auto; max-width:300px; " value="#application.zcore.functions.zso(form,'inquiries_type_other')#" />
 					<span class="highlight"> * Required</span></td>
 			</tr>
 			<tr>

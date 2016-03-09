@@ -952,7 +952,8 @@
 	user_deleted = #db.param(0)# and 
 	user.site_id = #db.param(request.zos.globals.id)#";
 	if(structkeyexists(form, 'searchtext') and trim(form.searchtext) NEQ ''){
-		db.sql&=" and concat(user.user_id,#db.param(' ')#,user_first_name,#db.param(' ')#,user_last_name,#db.param(' ')#,user_username) like #db.param('%#form.searchtext#%')#";
+		db.sql&=" and concat(user.user_id,#db.param(' ')#,#db.param(' ')#, member_company, #db.param(' ')#,
+		user_first_name,#db.param(' ')#,user_last_name,#db.param(' ')#,user_username) like #db.param('%#form.searchtext#%')#";
 	}
 	if(request.zsession.showallusers EQ false){
 		db.sql&=" and user_group_id <> #db.param(variables.userUserGroupId)#";
@@ -975,7 +976,8 @@
 		db.sql&=" and user.user_group_id <> #db.param(variables.userUserGroupId)#";
 	}
 	if(structkeyexists(form, 'searchtext') and trim(form.searchtext) NEQ ''){
-		db.sql&=" and concat(user.user_id,#db.param(' ')#,user_first_name,#db.param(' ')#,user_last_name,#db.param(' ')#,user_username) like #db.param("%#form.searchtext#%")#";
+		db.sql&=" and concat(user.user_id,#db.param(' ')#, #db.param(' ')#, member_company, #db.param(' ')#,
+		user_first_name,#db.param(' ')#,user_last_name,#db.param(' ')#,user_username) like #db.param("%#form.searchtext#%")#";
 	}
 	db.sql&=" ORDER BY member_sort asc, user_first_name, user_last_name 
 	LIMIT #db.param((form.zIndex-1)*30)#,#db.param(30)# ";
@@ -1008,8 +1010,8 @@
 	<form action="/z/admin/member/index" method="post" enctype="multipart/form-data">
 		<table style="width:100%;" class="table-list">
 			<tr>
-				<th style="vertical-align:middle;">Search Name or Email: 
-					<input type="text" name="searchtext" value="#application.zcore.functions.zso(form, 'searchtext')#" size="30" />
+				<th style="vertical-align:middle;">Search Company/Name/Email: 
+					<input type="text" name="searchtext" style="min-width:auto; width:250px;" value="#application.zcore.functions.zso(form, 'searchtext')#" size="30" />
 				</th>
 				<th style="vertical-align:middle;">
 					Access Rights:  
@@ -1053,6 +1055,7 @@
 		<tr>
 			<th>ID</th>
 			<th>Photo</th>
+			<th>Company</th>
 			<th>Name</th>
 			<th>Email</th>
 			<th>Phone</th>
@@ -1070,6 +1073,7 @@
 					<cfelse>
 						&nbsp;
 					</cfif></td>
+				<td>#qMember.member_company#&nbsp;</td>
 				<td><cfif qMember.member_first_name EQ ''>
 						#qMember.user_first_name# #qMember.user_last_name#
 					<cfelse>
