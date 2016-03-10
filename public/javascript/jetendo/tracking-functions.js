@@ -49,6 +49,7 @@
 			return false;
 		}
 	}
+
 	function zTrackEvent(eventCategory,eventAction, eventLabel, eventValue, gotoToURLAfterEvent, newWindow){
 		// detect when google analytics is disabled on purpose to avoid running this.
 		if(typeof zVisitorTrackingDisabled != "undefined"){
@@ -62,17 +63,21 @@
 			return; 
 		}
 			if(typeof window['GoogleAnalyticsObject'] != "undefined"){
-				var b=eval(window['GoogleAnalyticsObject']);
+				var b=window[window['GoogleAnalyticsObject']];
 				if(gotoToURLAfterEvent != ""){
 					if(eventLabel != ""){
+						console.log('track event 1:'+eventValue);
 						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
 					}else{
+						console.log('track event 2:'+eventAction);
 						b('send', 'event', eventCategory, eventAction, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
 					}
 				}else{
 					if(eventLabel != ""){
+						console.log('track event 3:'+eventValue);
 						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue);
 					}else{
+						console.log('track event 4:'+eventAction);
 						b('send', 'event', eventCategory, eventAction);
 					}
 				}

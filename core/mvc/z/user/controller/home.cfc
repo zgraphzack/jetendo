@@ -84,7 +84,7 @@
 		<cfif application.zcore.user.checkGroupAccess("member")>
 			<li><a href="/z/admin/admin-home/index">Site Manager</a></li>
 		</cfif>
-		<li><a href="/z/user/preference/form">Edit Profile</a></li>
+		<li class="zUserDashboardEditProfileLink"><a  href="/z/user/preference/form">Edit Profile</a></li>
 		<cfif application.zcore.app.siteHasApp("listing")>
 			<li><a href="/z/listing/property/your-saved-searches">Your Saved Searches</a></li>
 			<li><a href="/z/listing/sl/view">Your Saved Listings</a></li>

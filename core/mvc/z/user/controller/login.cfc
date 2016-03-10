@@ -113,7 +113,7 @@
 	<div class="zmember-openid-buttons" style="width:100%;"><input type="hidden" name="zIsMemberArea" id="zIsMemberArea" value="#form.zIsMemberArea#" />
 
 	  <button name="submitForm" id="submitForm" onclick="zLogin.autoLoginConfirm();zLogin.disableLoginButtons();return false;" type="submit">Login</button>
-      <button name="submitForm2" id="submitForm2" onclick="zLogin.disableLoginButtons();zLogin.zAjaxResetPassword();" type="button">Reset Password</button>
+      <button name="submitForm2" id="submitForm2" class="zResetPasswordButton" onclick="zLogin.disableLoginButtons();zLogin.zAjaxResetPassword();" type="button">Reset Password</button>
       </div>
     
     

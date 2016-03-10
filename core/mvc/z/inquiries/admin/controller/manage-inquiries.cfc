@@ -400,6 +400,7 @@
 		init();
 		application.zcore.functions.zSetPageHelpId("4.1");
 	}
+	form.searchType=application.zcore.functions.zso(form, 'searchType');
 
 	if(structkeyexists(form, 'leadcontactfilter')){
 		request.zsession.leadcontactfilter=form.leadcontactfilter;		
@@ -504,7 +505,7 @@
 		}
 		if(dateCompare(form.inquiries_start_date, form.inquiries_end_date) EQ 1){
 			form.inquiries_end_date = form.inquiries_start_date;
-		}
+		} 
 		</cfscript>
 		<cfsavecontent variable="db.sql"> 
 		SELECT count(inquiries_id) as count 
@@ -563,14 +564,14 @@
 			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
 			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
-		<cfif application.zcore.functions.zso(form, 'searchType') NEQ "">
+		<cfif form.searchType EQ "">
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
 				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#)
 			</cfif>
-			<cfelse>
-			<cfif application.zcore.functions.zso(form, 'searchType',true) EQ 0>
+		<cfelse>
+			<cfif form.searchType EQ 0>
 				<cfif form.inquiries_start_date EQ false>
 					and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
 					inquiries_datetime <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)
@@ -617,14 +618,14 @@
 		<cfelse>
 			ORDER BY maxdatetime DESC
 		</cfif>
-		<cfif application.zcore.functions.zso(form, 'searchType') NEQ "">
+		<cfif form.searchType NEQ "">
 			LIMIT #db.param(max(0,(form.zIndex-1))*10)#,#db.param(10)#
 		<cfelse>
 			LIMIT #db.param(max(0,(form.zIndex-1))*30)#,#db.param(30)#
 		</cfif>
 		</cfsavecontent>
 		<cfscript>
-		qinquiries=db.execute("qinquiries"); 
+		qinquiries=db.execute("qinquiries");   
 		</cfscript>
 		<cfsavecontent variable="db.sql"> SELECT count(
 		<cfif request.zsession.leademailgrouping EQ '1'>
@@ -647,28 +648,28 @@
 			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
 			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
 		</cfif>
-		<cfif application.zcore.functions.zso(form, 'searchType') EQ "">
+		<cfif form.searchType EQ "">
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
 				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
 			<cfelse>
 				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#)
 			</cfif>
 		<cfelse>
-			<cfif application.zcore.functions.zso(form, 'searchType',true) EQ 0>
+			<cfif form.searchType EQ 0>
 				<cfif form.inquiries_start_date EQ false>
-					and (DATE_FORMAT(inquiries_datetime,#db.param("%Y-%m-%d")#) >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
-					DATE_FORMAT(inquiries_datetime,#db.param("%Y-%m-%d")#) <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)
+					and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
+					inquiries_datetime <= #db.param(dateformat(now(), "yyyy-mm-dd")&' 23:59:59')#)
 				<cfelse>
-					and (DATE_FORMAT(inquiries_datetime,#db.param("%Y-%m-%d")#) >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd"))# and 
-					DATE_FORMAT(inquiries_datetime,#db.param("%Y-%m-%d")#) <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd"))#)
+					and (inquiries_datetime >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
+					inquiries_datetime <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)
 				</cfif>
 			<cfelse>
 				<cfif form.inquiries_start_date EQ false>
-					and (DATE_FORMAT(inquiries_start_date,#db.param("%Y-%m-%d")#) >= #db.param(dateformat(now(), "yyyy-mm-dd"))# and 
-					DATE_FORMAT(inquiries_end_date,#db.param("%Y-%m-%d")#) <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd"))#)
+					and (inquiries_start_date >= #db.param(dateformat(now(), "yyyy-mm-dd")&' 00:00:00')# and 
+					inquiries_end_date <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)
 				<cfelse>
-					and (DATE_FORMAT(inquiries_start_date,#db.param("%Y-%m-%d")#) >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd"))# and 
-					DATE_FORMAT(inquiries_end_date,#db.param("%Y-%m-%d")#) <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd"))#)
+					and (inquiries_start_date >= #db.param(dateformat(form.inquiries_start_date, "yyyy-mm-dd")&' 00:00:00')# and 
+					inquiries_end_date <= #db.param(dateformat(form.inquiries_end_date, "yyyy-mm-dd")&' 23:59:59')#)
 				</cfif>
 			</cfif>
 			<cfif application.zcore.functions.zso(form, 'inquiries_name') NEQ "">
@@ -696,8 +697,8 @@
 			and inquiries_primary = #db.param('1')#
 		</cfif>
 		</cfsavecontent>
-		<cfscript>
-		qinquiriesActive=db.execute("qinquiriesActive");  
+		<cfscript> 
+		qinquiriesActive=db.execute("qinquiriesActive"); 
 		</cfscript>
 		<h2>Search Leads</h2>
 		<form action="/z/inquiries/admin/manage-inquiries/#currentMethod#" method="get"> 
@@ -734,16 +735,16 @@
 					<input type="hidden" name="searchtype" value="0" />
 				</cfif></div>
 				<cfif variables.isReservationSystem>
-					<div style="float:left; padding-right:10px; padding-bottom:10px; "><input type="radio" name="searchtype" value="0" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 0>checked="checked"</cfif> style="background:none; border:none;" />
+					<div style="float:left; padding-right:10px; padding-bottom:10px; "><input type="radio" name="searchtype" value="0" <cfif form.searchType EQ 0>checked="checked"</cfif> style="background:none; border:none;" />
 						Received Date<br  />
-						<input type="radio" name="searchtype" value="1" <cfif application.zcore.functions.zso(form, 'searchtype',true) EQ 1>checked="checked"</cfif> style="background:none; border:none;" />
+						<input type="radio" name="searchtype" value="1" <cfif form.searchType EQ 1>checked="checked"</cfif> style="background:none; border:none;" />
 						Proposed Occupancy.</div>
 				</cfif>
 				<div style="float:left; padding-right:10px; padding-bottom:10px; "><button type="submit" name="submitForm">Search</button></div>
 			</div>
 		</form>
 		<!--- <hr /> --->
-		<cfif application.zcore.functions.zso(form, 'searchType') NEQ "">
+		<cfif form.searchType NEQ "">
 			<h2 style="display:inline; ">Search Results | </h2>
 			<a href="/z/inquiries/admin/manage-inquiries/#currentMethod#?zindex=1">Back to Active Leads</a><br />
 			<br />
@@ -763,7 +764,7 @@
 				if(et.checked){
 					format="csv";	
 				}
-				window.open("<cfif currentMethod EQ "index">/z/inquiries/admin/export/index<cfelse>/z/inquiries/admin/manage-inquiries/userExport</cfif>?inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&format="+format+"&exporttype="+exporttype);
+				window.open("<cfif currentMethod EQ "index">/z/inquiries/admin/export/index<cfelse>/z/inquiries/admin/manage-inquiries/userExport</cfif>?inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchType=#urlencodedformat(form.searchType)#&inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_start_date=#urlencodedformat(dateformat(form.inquiries_start_date,'yyyy-mm-dd'))#&inquiries_end_date=#urlencodedformat(dateformat(form.inquiries_end_date,'yyyy-mm-dd'))#&format="+format+"&exporttype="+exporttype);
 			}
 			/* ]]> */
 			</script>
@@ -842,18 +843,16 @@
 		searchStruct.index = form.zIndex;
 		searchStruct.showString = "Results ";
 		searchStruct.url="/z/inquiries/admin/manage-inquiries/#currentMethod#?zPageId=#form.zPageId#&
-		inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchtype=#application.zcore.functions.zso(form, 'searchtype')#";
+		inquiries_name=#urlencodedformat(application.zcore.functions.zso(form, 'inquiries_name'))#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#&searchtype=#form.searchType#";
 		if(structkeyexists(form, 'inquiries_end_date')){
 			searchStruct.url&="&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#";
 		}
 		if(structkeyexists(form, 'inquiries_start_date')){
 			searchStruct.url&="&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#";
-		};
-		//inquiries_name=bruce&inquiries_type_id=&inquiries_start_date_month=5&inquiries_start_date_day=31&inquiries_start_date_year=2009&inquiries_end_date_month=1&inquiries_end_date_day=8&inquiries_end_date_year=2016&searchtype=0&submitForm=
-	//	searchStruct.url = "/z/inquiries/admin/manage-inquiries/#currentMethod#?zPageId=#form.zPageId#&searchType=#urlencodedformat(application.zcore.functions.zso(form, 'searchType',true))#&searchtext="&application.zcore.functions.zso(form, 'searchtext')&"&inquiries_start_date=#dateformat(form.inquiries_start_date, 'yyyy-mm-dd')#&inquiries_end_date=#dateformat(form.inquiries_end_date, 'yyyy-mm-dd')#&inquiries_type_id=#application.zcore.functions.zso(form, 'inquiries_type_id')#";
+		}; 
 		searchStruct.indexName = "zIndex";
 		searchStruct.buttons = 5;
-		if(application.zcore.functions.zso(form, 'searchType') NEQ ""){		
+		if(form.searchType NEQ ""){		
 			searchStruct.perpage = 10;
 		}else{
 			searchStruct.perpage = 30;
