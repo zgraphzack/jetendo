@@ -1267,11 +1267,19 @@ function getImageMagickConvertResize($a){
 	if($cropWidth != 0){
 		$cmd.=' -crop '.$cropWidth.'x'.$cropHeight.'+'.$cropXOffset.'+'.$cropYOffset;
 	}
+	
+
+
+
 	$pngColorFix="";
-	if(strtolower(substr($destinationFilePath, -4)) == '.png'){
-		$pngColorFix="PNG32:";
+	$compress='';
+	$ext=strtolower(substr($destinationFilePath, -4));
+	if($ext == '.png'){
+		$pngColorFix="PNG32:"; 
+	}else{
+		$compress=' -strip -interlace Plane -sampling-factor 4:2:0 -quality 85% ';
 	}
-	$cmd.=' '.escapeshellarg($sourceFilePath).' '.$pngColorFix.escapeshellarg($destinationFilePath);
+	$cmd.=' '.$compress.' '.escapeshellarg($sourceFilePath).' '.$pngColorFix.escapeshellarg($destinationFilePath);
 	$r=`$cmd`;
 	echo $cmd."\n".$r."\n";
 	if(file_exists($destinationFilePath)){
