@@ -41,7 +41,7 @@
 
 <cffunction name="isSearchable" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
-	return false;
+	return true;
 	</cfscript>
 </cffunction>
 
@@ -53,7 +53,57 @@
 	<cfargument name="value" type="string" required="yes">
 	<cfargument name="onChangeJavascript" type="string" required="yes">
 	<cfscript>
-	return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.value)#" size="8" />';
+	arrGroup=listToArray(application.zcore.functions.zso(arguments.optionStruct, 'user_group_id_list'), ',');
+	for(i=1;i LTE arraylen(arrGroup);i++){
+		arrGroup[i]=application.zcore.functions.zescape(arrGroup[i]);
+	}
+	userGroupIdSQL="'"&arrayToList(arrGroup, "','")&"'";
+	db=request.zos.queryObject;
+	db.sql="SELECT *, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL("user.site_id"))# as siteIDType
+	FROM #db.table("user", request.zos.zcoreDatasource)# user 
+	WHERE site_id = #db.param(request.zos.globals.id)# and 
+	user_deleted = #db.param(0)# ";
+	if(arrayLen(arrGroup)){
+		db.sql&=" and user_group_id in ("&db.trustedSQL(userGroupIdSQL)&")";
+	}
+	db.sql&=" ORDER BY user_first_name, user_last_name, user_username";
+	qUser=db.execute("qUser");
+
+	savecontent variable="out"{
+		selectStruct = StructNew();
+		selectStruct.name = arguments.prefixString&arguments.row["#variables.type#_option_id"];
+		selectStruct.query = qUser;
+		selectStruct.selectedValues=application.zcore.functions.zso(arguments.dataStruct, '#arguments.prefixString##arguments.row["#variables.type#_option_id"]#');
+		selectStruct.queryParseLabelVars=true;
+		selectStruct.queryParseValueVars=true;
+		if(arguments.optionStruct.user_displaytype EQ 0){
+			selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
+		}else if(arguments.optionStruct.user_displaytype EQ 1){
+			selectStruct.queryLabelField = "##member_company## (##user_username##)";
+		}else if(arguments.optionStruct.user_displaytype EQ 2){
+			selectStruct.queryLabelField = "##user_username##";
+		}
+		selectStruct.inlineStyle="width:200px; max-width:100%;";
+		selectStruct.queryValueField = "##user_id##|##siteIdType##";
+		selectStruct.output=true;
+		/*if(application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection') EQ 'Yes'){
+			selectStruct.multiple=true;
+			selectStruct.size=5;
+			selectStruct.hideSelect=true;
+			application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
+		}else{*/
+			selectStruct.size=5;
+			application.zcore.skin.addDeferredScript("  $('###selectStruct.name#').filterByText($('###selectStruct.name#_InputField'), true); ");
+		//}
+
+		echo('<input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="min-width:auto;width:200px; max-width:100%; margin-bottom:5px;"><br />');
+		value=application.zcore.functions.zInputSelectBox(selectStruct);
+		//if(not selectStruct.multiple){
+
+		//}
+	}
+	return out;//{ label: true, hidden: false, value:value};  
+	//return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.value)#" size="8" />';
 	</cfscript>
 </cffunction>
 
@@ -184,8 +234,16 @@
 		selectStruct.size=5;
 		selectStruct.hideSelect=true;
 		application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
+	}else{
+		selectStruct.size=5;
+		application.zcore.skin.addDeferredScript("  $('###selectStruct.name#').filterByText($('###selectStruct.name#_InputField'), true); ");
 	}
+
 	value=application.zcore.functions.zInputSelectBox(selectStruct);
+	if(not selectStruct.multiple){
+
+		value='<input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="margin-bottom:5px;"><br />'&value;
+	}
 	return { label: true, hidden: false, value:value};  
 	</cfscript>
 </cffunction>

@@ -605,6 +605,24 @@ weatherHTML=zGetWeather(ts);
 	</script>--->
 </cffunction>
 
+
+<!--- 
+ts={};
+ts.name="blog";
+ts.url="http://www.blog.com/link.xml";
+ts.cacheSeconds=3600;
+// optional
+ts.filterCFC=request.zRootCFCPath&"mvc.controller.blog";
+ts.filterMethod="rssFilter";
+rs=application.zcore.functions.zGetRSSFeed(ts);
+if(rs.success){
+	for(x=1;x LTE arraylen(rs.arrData);x++){
+		c=arrData[x];
+		echo('<a href="#c.link#" target="_blank">'&echo(c.title)&'</a>');
+		echo(c.description);
+	}
+}
+ --->
 <cffunction name="zGetRSSFeed" localmode="modern" access="public">
 	<cfargument name="ss" type="struct" required="yes"> 
 	<cfscript>
