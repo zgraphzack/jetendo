@@ -92,7 +92,7 @@
 			selectStruct.hideSelect=true;
 			application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
 		}else{*/
-			selectStruct.size=5;
+			selectStruct.size=3;
 			application.zcore.skin.addDeferredScript("  $('###selectStruct.name#').filterByText($('###selectStruct.name#_InputField'), true); ");
 		//}
 

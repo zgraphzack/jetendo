@@ -2311,6 +2311,9 @@ this.app_id=10;
 	var qList='';
 	loadBlogArticleInclude=false;
 	content = 'include'; 
+	if(not structkeyexists(arguments.displayStruct, 'randomize')){
+		arguments.displayStruct.randomize=false;
+	}
 	if(structcount(application.zcore.app.getAppData("blog")) NEQ 0){
 		loadBlogArticleInclude=true;
 	}
@@ -2334,6 +2337,47 @@ this.app_id=10;
 	</cfscript>
 	<cfif loadBlogArticleInclude>
 		<cfscript>
+		if(arguments.displayStruct.randomize){ 
+			db.sql="select count(blog.blog_id) count
+			from #db.table("blog", request.zos.zcoreDatasource)# blog  
+			left join #db.table("blog_x_category", request.zos.zcoreDatasource)# blog_x_category on 
+			blog_x_category.blog_id = blog.blog_id and 
+			blog_x_category.site_id = blog.site_id and 
+			blog_x_category_deleted = #db.param(0)# 
+			where blog.site_id=#db.param(request.zos.globals.id)# and 
+			blog_deleted = #db.param(0)# and ";
+			if(arguments.displayStruct.site_x_option_group_set_id NEQ 0){
+		        db.sql&=" (blog.site_x_option_group_set_id = #db.param(arguments.displayStruct.site_x_option_group_set_id)# 
+		        	or blog.blog_show_all_sections=#db.param(1)# 
+					
+		        ) and ";
+		    }else if(structkeyexists(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_always_show_section_articles') and application.zcore.app.getAppData("blog").optionStruct.blog_config_always_show_section_articles EQ 0){
+				db.sql&=" blog.site_x_option_group_set_id = #db.param(0)#  and ";
+			}
+			db.sql&=" (blog_datetime<=#db.param(dateformat(now(),'yyyy-mm-dd')&' '&timeformat(now(), 'HH:mm:ss'))# or 
+			blog_event =#db.param(1)#) and ";
+			if(arguments.blog_category_id NEQ "" and arguments.blog_category_id NEQ "0"){
+				arrId=listToArray(arguments.blog_category_id, ",");
+				for(i=1;i LTE arraylen(arrId);i++){
+					arrId[i]="'"&application.zcore.functions.zescape(arrId[i])&"'";
+				}
+				db.sql&=" blog_x_category.blog_category_id IN (#db.trustedSQL(arrayToList(arrId, ","))#)  and ";
+			}
+			if(arguments.exclude_blog_category_id NEQ "" and arguments.exclude_blog_category_id NEQ "0"){
+				arrId=listToArray(arguments.exclude_blog_category_id, ",");
+				for(i=1;i LTE arraylen(arrId);i++){
+					arrId[i]="'"&application.zcore.functions.zescape(arrId[i])&"'";
+				}
+				db.sql&=" blog_x_category.blog_category_id NOT IN (#db.trustedSQL(arrayToList(arrId, ","))#) and ";
+			}
+			if(arguments.futureEventsOnly){
+				db.sql&="  blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
+				blog_event =#db.param(1)# and ";
+			}
+			db.sql&=" blog_status <> #db.param(2)#  
+			 ";
+			qCount=db.execute("qCount");
+		}
 		// you must have a group by in your query or it may miss rows
 		ts=structnew();
 		ts.image_library_id_field="blog.blog_image_library_id";
@@ -2390,12 +2434,18 @@ this.app_id=10;
 			db.sql&="  blog_end_datetime >= #db.param(dateformat(now(),'yyyy-mm-dd')&' 00:00:00')#  and 
 			blog_event =#db.param(1)# and ";
 		}
+		if(arguments.displayStruct.randomize){
+			startId=randrange(1, qCount.count-arguments.displayCount);
+			db.sql&=" blog.blog_id >=#db.param(startId)# and ";
+		}
 		db.sql&=" blog_status <> #db.param(2)#  
 		group by blog.blog_id ";
-		if(arguments.futureEventsOnly){
-			db.sql&=" order by blog_datetime asc";
-		}else{
-			db.sql&=" order by blog_sticky desc, blog_datetime desc";
+		if(not arguments.displayStruct.randomize){ 
+			if(arguments.futureEventsOnly){
+				db.sql&=" order by blog_datetime asc";
+			}else{
+				db.sql&=" order by blog_sticky desc, blog_datetime desc";
+			}
 		}
 		db.sql&=" LIMIT #db.param(0)#,#db.param(arguments.displayCount)#";
 		qList=db.execute("qList");
