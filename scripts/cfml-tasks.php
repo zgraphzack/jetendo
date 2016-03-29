@@ -40,6 +40,13 @@ function getTasks(){
 	array_push($arrTask, $t);
 
 	$t=new stdClass();
+	$t->logName="execute-http-queue.html";
+	$t->interval=600;
+	$t->startTimeOffsetSeconds=100;
+	$t->url=$adminDomain."/z/server-manager/tasks/execute-http-queue/index";
+	array_push($arrTask, $t);
+
+	$t=new stdClass();
 	$t->interval="daily";
 	$t->logName="publish-missing.html";
 	$t->startTimeOffsetSeconds=1000;

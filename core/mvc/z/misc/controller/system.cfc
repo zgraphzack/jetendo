@@ -123,7 +123,12 @@
 <cffunction name="processCopyrightAbuse" localmode="modern" access="remote">
 	<cfscript>
 	form.modalpopforced=application.zcore.functions.zso(form, 'modalpopforced',false,0);
-
+ 	if(application.zcore.functions.zso(form, 'zset9') NEQ "9989"){
+ 		application.zcore.functions.z404("Invalid request");
+ 	}
+	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){ 
+ 		application.zcore.functions.z404("Invalid request");
+	}
 	if(application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1){
 		if(not application.zcore.functions.zVerifyRecaptcha()){
 			application.zcore.status.setStatus(request.zsid, "The ReCaptcha security phrase wasn't entered correctly. Please try again.", form, true);

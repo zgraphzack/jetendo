@@ -2195,6 +2195,14 @@ this.app_id=10;
 			<input readonly="readonly" type="text" name="remLen2" size="3" maxlength="3" value="1000" /> characters left
 			</td>
 			</tr>
+
+			<cfif application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1>
+			
+				<tr>
+					<td style="vertical-align:top; ">&nbsp;</td>
+					<td>#application.zcore.functions.zDisplayRecaptcha()#</td>
+				</tr>
+			</cfif>
 			<tr>
 			<td style="white-space: nowrap;">&nbsp;<input type="hidden" name="blog_id" value="#htmleditformat(form.blog_id)#" /></td>
 			<td style="width:90%;"><input type="submit" value="Add Comment" /></td>
@@ -4546,6 +4554,17 @@ this.app_id=10;
 	var t='';
 	var db=request.zos.queryObject;
 
+	if(application.zcore.functions.zIsExternalCommentsEnabled()){
+		application.zcore.functions.z404("Invalid request");
+	}
+
+	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
+		application.zcore.functions.z404("Invalid request");
+	}
+	if(application.zcore.functions.zso(form, 'zset9') NEQ "9989"){
+		application.zcore.functions.z404("Invalid request");
+	}
+
 	form.site_x_option_group_set_id=application.zcore.functions.zso(form, 'site_x_option_group_set_id', true, 0);
 	if(structkeyexists(form,'blog_id') EQ false){
 	    application.zcore.functions.zRedirect('/');
@@ -4570,14 +4589,14 @@ this.app_id=10;
 		query.blog_title, 
 		query.blog_datetime)&"?zsid=#request.zsid###addC";
 	}
-	if(application.zcore.functions.zFakeFormFieldsNotEmpty()){
-		application.zcore.status.setStatus(Request.zsid, "Invalid Request",form,true);
-		application.zcore.functions.zRedirect(ulink);
-	}
-	if(application.zcore.functions.zso(form, 'zset9') NEQ "9989"){
-		application.zcore.functions.zredirect('/');
-	}
 	
+	if(application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1){
+		if(not application.zcore.functions.zVerifyRecaptcha()){
+			application.zcore.status.setStatus(request.zsid, "The ReCaptcha security phrase wasn't entered correctly. Please try again.", form, true);
+			application.zcore.functions.zRedirect(ulink);
+		}
+	}
+
 	if(structkeyexists(form, 'blog_comment_text') and (findnocase("[/url]", form.blog_comment_text) NEQ 0 or findnocase("http://", form.blog_comment_text) NEQ 0)){
 		application.zcore.status.setStatus(Request.zsid, "Invalid Request",form,true);
 		application.zcore.functions.zRedirect(ulink);

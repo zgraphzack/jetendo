@@ -149,6 +149,14 @@ agentCom.displayAgentInquiryForm(user_id, user_id_siteIdType);
 		application.zcore.status.setStatus(Request.zsid, "Invalid user.  Please try sending us a general inquiry instead.",form,true);
 		application.zcore.functions.zRedirect("/z/misc/inquiry/index?modalpopforced=#form.modalpopforced#&zsid=#Request.zsid#");
 	}
+
+	
+	if(application.zcore.functions.zso(request.zos.globals, 'requireCaptcha', true, 0) EQ 1){
+		if(not application.zcore.functions.zVerifyRecaptcha()){
+			application.zcore.status.setStatus(request.zsid, "The ReCaptcha security phrase wasn't entered correctly. Please try again.", form, true);
+			application.zcore.functions.zRedirect(ulink);
+		}
+	}
 	currentSiteId=application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
 	if(form.modalpopforced EQ 1){
 		if(application.zcore.functions.zso(form, 'js3811') NEQ "j219"){

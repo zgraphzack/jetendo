@@ -322,6 +322,7 @@
 			}
 			</cfscript>
 			</p>
+			<p><a href="/z/server-manager/tasks/execute-http-queue/index" target="_blank">Execute HTTP Queue</a> (<a href="/z/server-manager/tasks/execute-http-queue/viewErrors" target="_blank">View errors</a>)</p>
 			<p><a href="/z/server-manager/tasks/publish-missing/index" target="_blank">Publish 404 pages</a></p>
 			<p><a href="/z/server-manager/tasks/verify-conventions/index" target="_blank">Verify Conventions</a></p>
 			<p><a href="/z/server-manager/tasks/update-sitemap/index" target="_blank">Update Sitemaps</a></p>
