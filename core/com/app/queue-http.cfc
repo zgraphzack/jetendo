@@ -173,6 +173,28 @@ if(not r){
 	startTime=gettickcount();
 	count=0;
 	failCount=0;
+
+ 	if(not structkeyexists(application, 'zExecuteHTTPQueueAlertDate')){
+ 		application.zExecuteHTTPQueueAlertDate=1;
+ 	}
+ 	if(application.zExecuteHTTPQueueAlertDate NEQ dateformat(now(), "yyyy-mm-dd") and qHttp.recordcount NEQ 0){
+ 		application.zExecuteHTTPQueueAlertDate=dateformat(now(), "yyyy-mm-dd");
+		savecontent variable="e"{
+			echo('<h2>There are #qHttp.recordcount# http request queue errors</h2>');
+			echo('<p><a href="#request.zos.globals.serverDomain#/z/server-manager/tasks/execute-http-queue/viewErrors">View Errors</a></p>');
+		} 
+		ts={
+			type:"Custom",
+			errorHTML:e,
+			scriptName:'/z/server-manager/tasks/execute-http-queue/viewErrors',
+			url:request.zos.originalURL,
+			exceptionMessage:'#qHttp.recordcount# http request queue errors',
+			// optional
+			lineNumber:'180'
+		}
+		application.zcore.functions.zLogError(ts);
+	}
+
 	for(row in qHttp){
 		if(((gettickcount()-startTime)/1000)+row.queue_http_timeout GT 599){
 			break;
