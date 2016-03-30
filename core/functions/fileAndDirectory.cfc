@@ -1486,5 +1486,26 @@ application.zcore.functions.zSplitFile(path,kblength,line);
 	return true;
 	</cfscript>
 </cffunction>
+
+<!--- zCompressImage(source); --->
+<cffunction name="zCompressImage" localmode="modern" returntype="any" output="true">
+    <cfargument name="source" required="yes" type="string"> 
+    <cfscript>
+    ext=lcase(application.zcore.functions.zGetFileExt(arguments.source));
+    if(ext NEQ "jpg" and ext NEQ "jpeg"){
+    	return true; // ignore other file types
+    } 
+	secureCommand="getImageMagickConvertResize"&chr(9)&10000&chr(9)&10000&chr(9)&0&chr(9)&0&chr(9)&0&chr(9)&0&chr(9)&arguments.source&chr(9)&arguments.source;
+	output=application.zcore.functions.zSecureCommand(secureCommand, 30);
+	if(output NEQ "1"){
+		if(request.zos.isDeveloper){
+			throw("Failed to resize image with zSecureCommand: "&secureCommand&" | Output: "&output);
+		}
+		return false;
+	}else{
+		return true;
+	}
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

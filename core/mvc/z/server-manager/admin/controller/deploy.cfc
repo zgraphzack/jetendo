@@ -115,7 +115,8 @@
 	site_x_deploy_server_deleted = #db.param(0)# and 
 	deploy_server.deploy_server_deploy_enabled = #db.param(1)# and
 	site.site_active = #db.param(1)# and 
-	site_x_deploy_server.site_id = site.site_id and
+	site_x_deploy_server.site_id = site.site_id and 
+	site_deleted=#db.param(0)# and 
 	site.site_id <> #db.param(-1)# ";
 	if(structkeyexists(form, 'confirm')){
 		db.sql&=" GROUP BY site.site_id ";
@@ -677,7 +678,9 @@
 			&nbsp;&nbsp;&nbsp;
 			<a href="/z/server-manager/admin/deploy/deploySite?sid=#form.sid#&amp;preview=1" onclick="document.getElementById('deployButtonsId').style.display='none';document.getElementById('deployStatusId').style.display='block';">Preview Changes</a>
 			&nbsp;&nbsp;&nbsp;
-			<a href="/z/server-manager/tasks/verify-conventions/verifySiteConventions?sid=#form.sid#" target="_blank">Verify Conventions</a></p>
+			<a href="/z/server-manager/tasks/verify-conventions/verifySiteConventions?sid=#form.sid#" target="_blank">Verify Conventions</a>
+			&nbsp;&nbsp;&nbsp;
+			<a href="/z/server-manager/admin/compress-images/compressSiteHomedirImages?sid=#form.sid#" target="_blank">Compress Homedir Images</a></p>
 		</cfif>
 		<cfscript>
 		filePath=application.zcore.functions.zGetDomainWritableInstallPath(application.zcore.functions.zvar('shortDomain', form.sid))&"__zdeploy-changes.txt";
