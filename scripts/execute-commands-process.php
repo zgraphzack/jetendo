@@ -35,7 +35,7 @@ verifySitePaths
 
 function processContents($contents){
 	$a=explode("\t", $contents);
-	$contents=array_shift($a);
+	$contents=array_shift($a); 
 	if($contents == "getUserList"){
 		return getUserList();
 	}else if($contents == "compileHandlebarsPath"){
@@ -69,6 +69,7 @@ function processContents($contents){
 	}else if($contents =="getImageMagickIdentify"){
 		return getImageMagickIdentify($a);
 	}else if($contents =="getImageMagickConvertResize"){
+
 		return getImageMagickConvertResize($a);
 	}else if($contents =="getImageMagickConvertApplyMask"){
 		return getImageMagickConvertApplyMask($a);
@@ -1155,7 +1156,23 @@ function getImageMagickConvertApplyMask($a){
 		echo "absImageMaskPath must be in the jetendo install or backup paths. Path:".$absImageMaskPath."\n";
 		return "0";
 	}
-	$cmd="/usr/bin/convert ".escapeshellarg($absImageInputPath)." ".escapeshellarg($absImageMaskPath)." -alpha Off -compose CopyOpacity -composite ".escapeshellarg($absImageOutputPath);
+	$compressQuality=85;
+	$ext=strtolower(substr($absImageOutputPath, -4));
+	if($ext == '.jpg' || $ext == '.jpeg'){
+		$cmd2="/usr/bin/identify -format '%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
+		$r=`$cmd2`;
+		if(is_numeric($r)){
+			$compressQuality=min($compressQuality, intval($r));
+		}
+	}
+	$compress='';
+	$pngColorFix='';
+	if($ext == '.png'){
+		$pngColorFix="PNG32:"; 
+	}else{
+		$compress=' -strip -interlace Plane -sampling-factor 4:2:0 -quality '.$compressQuality.'% ';
+	}
+	$cmd="/usr/bin/convert ".$compress." ".escapeshellarg($absImageInputPath)." ".escapeshellarg($absImageMaskPath)." -alpha Off -compose CopyOpacity -composite ".$pngColorFix.escapeshellarg($absImageOutputPath);
 	$r=`$cmd`;
 	echo $cmd."\n".$r."\n";
 	if(file_exists($absImageOutputPath)){
@@ -1181,7 +1198,7 @@ function getImageMagickConvertApplyMask($a){
 }
 
 function getImageMagickConvertResize($a){
-	set_time_limit(100);
+	set_time_limit(100); 
 	if(count($a) != 8){
 		echo "Incorrect number of arguments to getImageMagickConvertResize.\n";
 		return "0";
@@ -1274,18 +1291,25 @@ function getImageMagickConvertResize($a){
 	$pngColorFix="";
 	$compress='';
 	$ext=strtolower(substr($destinationFilePath, -4));
+	$compressQuality=85;
+
+	if($ext == '.jpg' || $ext == '.jpeg'){
+		$cmd2="/usr/bin/identify -format '%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
+		$r=`$cmd2`; 
+		if(is_numeric($r)){
+			$compressQuality=min($compressQuality, intval($r));
+		} 
+	}
 	if($ext == '.png'){
 		$pngColorFix="PNG32:"; 
 	}else{
-		$compress=' -strip -interlace Plane -sampling-factor 4:2:0 -quality 85% ';
+		$compress=' -strip -interlace Plane -sampling-factor 4:2:0 -quality '.$compressQuality.'% ';
 	}
-	$cmd.=' '.$compress.' '.escapeshellarg($sourceFilePath).' '.$pngColorFix.escapeshellarg($destinationFilePath);
-	$r=`$cmd`;
-	echo $cmd."\n".$r."\n";
+	$cmd.=' '.$compress.' '.escapeshellarg($sourceFilePath).' '.$pngColorFix.escapeshellarg($destinationFilePath); 
+	$r=`$cmd`; 
 	if(file_exists($destinationFilePath)){
 
 		if(!zIsTestServer()){
-
 			$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($sourceFilePath);
 			echo $cmd."\n";
 			`$cmd`;
@@ -1690,7 +1714,15 @@ function microtimeFloat()
     return ((float)$usec + (float)$sec);
 }
 function runCommand($argv){
-	if(count($argv) != 2){
+	if(count($argv) == 3){
+		if($argv[2]!="debug"){
+			echo "Invalid argument count.";
+			exit;
+		}
+		$results=processContents($argv[1]);
+		echo "result:".$results."\n\n";
+		return;
+	}else if(count($argv) != 2){
 		echo "Invalid argument count.";
 		exit;
 	}	

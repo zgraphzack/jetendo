@@ -36,7 +36,8 @@ while(true){
 			}
 			$phpCmd=$script.escapeshellarg($entry).$background;
 			if($debug){
-			//	echo $phpCmd."\n";
+				$c=file_get_contents($startPath.$entry);
+				echo($script." $'".str_replace("\t", "\\t", $c)."' 'debug'\n\n");
 			}
 			echo `$phpCmd`;
 			$arrEntry[$entry]=true;
