@@ -1,6 +1,6 @@
 <cfcomponent>
 <cfoutput>
-<cffunction name="init" localmode="modern" access="private" roles="member">
+<cffunction name="init" localmode="modern" access="private">
 	<cfscript>
     application.zcore.adminSecurityFilter.requireFeatureAccess("Lead Templates");
 	var hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
@@ -8,7 +8,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="delete" localmode="modern" access="remote" roles="member">
+<cffunction name="delete" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qTypes=0;
@@ -48,13 +48,13 @@
 	</cfif>
 </cffunction>
 
-<cffunction name="insert" localmode="modern" access="remote" roles="member">
+<cffunction name="insert" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	this.update();
 	</cfscript>
 </cffunction>
 
-<cffunction name="update" localmode="modern" access="remote" roles="member">
+<cffunction name="update" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var myForm={};
@@ -120,13 +120,13 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="add" localmode="modern" access="remote" roles="member">
+<cffunction name="add" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	this.edit();
 	</cfscript>
 </cffunction>
 
-<cffunction name="edit" localmode="modern" access="remote" roles="member">
+<cffunction name="edit" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qTypes=0;
@@ -215,13 +215,13 @@
 	</table>
 </cffunction>
 
-<cffunction name="hide" localmode="modern" access="remote" roles="member">
+<cffunction name="hide" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	this.show();
 	</cfscript>
 </cffunction>
 
-<cffunction name="show" localmode="modern" access="remote" roles="member">
+<cffunction name="show" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var r=0;
@@ -246,7 +246,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="index" localmode="modern" access="remote" roles="member">
+<cffunction name="index" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var qTypes=0;

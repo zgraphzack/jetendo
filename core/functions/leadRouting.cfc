@@ -1095,7 +1095,7 @@ application.zcore.functions.zLeadRecordLog(ts);
 	// only future inquiries that aren't closed
 	db.sql="SELECT * FROM #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	WHERE site_id = #db.param(request.zos.globals.id)# and 
-	inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#) AND 
+	inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#,#db.param('7')#) AND 
 	user_id <> #db.param('0')# and 
 	inquiries_deleted = #db.param(0)# and
 	inquiries_datetime > #db.param('2010-02-08 14:00:00')# ";

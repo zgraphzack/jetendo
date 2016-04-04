@@ -1160,7 +1160,7 @@ function getImageMagickConvertApplyMask($a){
 	$ext=strtolower(substr($absImageOutputPath, -4));
 	if($ext == '.jpg' || $ext == '.jpeg'){
 		$cmd2="/usr/bin/identify -format '%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
-		$r=`$cmd2`;
+		$r=trim(`$cmd2`);
 		if(is_numeric($r)){
 			$compressQuality=min($compressQuality, intval($r));
 		}
@@ -1294,11 +1294,42 @@ function getImageMagickConvertResize($a){
 	$compressQuality=85;
 
 	if($ext == '.jpg' || $ext == '.jpeg'){
-		$cmd2="/usr/bin/identify -format '%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
+		$cmd2="/usr/bin/identify -format '%w,%h,%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
 		$r=`$cmd2`; 
-		if(is_numeric($r)){
-			$compressQuality=min($compressQuality, intval($r));
+		$arrR=explode(",", trim($r));
+		$currentWidth=$arrR[0];
+		$currentHeight=$arrR[1];
+		$qualityMustChange=false;
+		if(count($arrR) == 3 and is_numeric($arrR[2])){
+			$newQuality=intval($arrR[2]);
+			if($compressQuality<$newQuality){
+				$qualityMustChange=true;
+			}
+			$compressQuality=min($compressQuality, $newQuality); 
+
 		} 
+		if(!$qualityMustChange && $resizeWidth >= $currentWidth && $resizeHeight >= $currentHeight && $cropWidth == 0){
+			// quality, image size and cropping doesn't need to change. copy file and return
+			copy($sourceFilePath, $destinationFilePath);
+			if(file_exists($destinationFilePath)){
+
+				if(!zIsTestServer()){
+					$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($sourceFilePath);
+					echo $cmd."\n";
+					`$cmd`;
+					$cmd='/bin/chmod 660 '.escapeshellarg($sourceFilePath);
+					echo $cmd."\n";
+					`$cmd`;
+					$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($destinationFilePath);
+					echo $cmd."\n";
+					`$cmd`;
+					$cmd='/bin/chmod 660 '.escapeshellarg($destinationFilePath);
+					echo $cmd."\n";
+					`$cmd`;
+				}
+			}
+			return "1";
+		}
 	}
 	if($ext == '.png'){
 		$pngColorFix="PNG32:"; 
@@ -1344,7 +1375,7 @@ function getImageMagickIdentify($a){
 			$found=true;
 		}
 		if($found){
-			$cmd="/usr/bin/identify -format %w,%h,%[colorspace] ".escapeshellarg($path)." 2>&1";
+			$cmd="/usr/bin/identify -format '%w,%h,%[colorspace],%Q' ".escapeshellarg($path)." 2>&1";
 			$r=`$cmd`;
 
 			$a=explode(",", trim($r));

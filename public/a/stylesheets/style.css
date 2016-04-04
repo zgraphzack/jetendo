@@ -293,6 +293,8 @@ font-family: Open Sans, Arial, Verdana, Helvetica, sans-serif !important;}
 img{border:none;}
 
 
+.zCurrentInquiry td{border-bottom:1px solid #CCCCCC; background-color:#009999; color:#FFFFFF;}
+.zCurrentInquiry a:link, .zCurrentInquiry a:visited{color:#FFF;}
 
 .server-admin-data .normal-bold {
 	font-family: inherit;

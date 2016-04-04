@@ -184,6 +184,8 @@
 				form[local.i]=replace(replace(form[local.i], local.tempdomain&"/", '/', 'all'), local.tempsecuredomain&"/", '/', 'all');
 			}
 		} 
+
+
 		if(structkeyexists(application, request.zos.installPath&":displaySetupScreen")){
 			gs={
 				datasource: request.zos.zcoreDatasource

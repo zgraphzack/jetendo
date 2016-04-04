@@ -982,7 +982,7 @@ function setImage(){
 		if(not imageSize.success){
 			echo(imageSize.errorMessage);
 		}else{
-			echo('Resolution: '&imageSize.width&'x'&imageSize.height);
+			echo('Resolution: '&imageSize.width&'x'&imageSize.height&' Quality: '&imageSize.quality);
 		}
 		</cfscript>
 		<br />

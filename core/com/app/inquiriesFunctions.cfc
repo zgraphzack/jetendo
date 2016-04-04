@@ -798,9 +798,10 @@ Email Only
 		</cfif>
 		<cfif trim(application.zcore.functions.zso(t, 'inquiries_sqfoot')) NEQ ''>
 			<tr>
-				<th style="#thstyle# text-align:left;" ><cfif t.inquiries_type_id EQ 6>
-Home Sq/Ft
-						<cfelse>
+				<th style="#thstyle# text-align:left;" >
+					<cfif t.inquiries_type_id EQ 6>
+						Home Sq/Ft
+					<cfelse>
 						Square Foot
 					</cfif>
 					:</th>
@@ -864,9 +865,10 @@ Home Sq/Ft
 		<cfif trim(application.zcore.functions.zso(t, 'inquiries_own_home')) NEQ ''>
 			<tr>
 				<th style="#thstyle# text-align:left;" >&nbsp;</th>
-				<td style="#tdstyle#"><cfif t.inquiries_own_home EQ 1>
-Owns a home
-						<cfelseif t.inquiries_own_home EQ 0>
+				<td style="#tdstyle#">
+					<cfif t.inquiries_own_home EQ 1>
+						Owns a home
+					<cfelseif t.inquiries_own_home EQ 0>
 						Doesn't own a home
 					</cfif></td>
 			</tr>
@@ -900,7 +902,7 @@ Owns a home
 			<tr>
 				<th style="#thstyle# text-align:left;" colspan="2">Property Information</th>
 			</tr>
-#propInfo222#
+			#propInfo222#
 		</cfif>
 		<!--- </cfif> --->
 		<cfif isDefined('t.inquiries_loan_city') and trim(t.inquiries_loan_city&t.inquiries_loan_own&t.inquiries_loan_price) NEQ "">
@@ -932,174 +934,7 @@ Owns a home
 				<th style="#thstyle# text-align:left;" width="120">Loan Property Type</th>
 				<td style="#tdstyle#">#t.inquiries_loan_property_type#</td>
 			</tr>
-		</cfif>
-		<cfif application.zcore.functions.zso(t, 'inquiries_order_description') NEQ "">
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Order Description</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_order_description')#</td>
-			</tr>
-		</cfif>
-		<cfif application.zcore.functions.zso(t, 'inquiries_order') EQ 1>
-			<tr>
-				<th style="#thstyle# text-align:left;" colspan="2">Billing Information:</th>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Billing Name</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_name')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Billing Address</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_address')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Address 2</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_address2')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">City</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_city')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">US State</th>
-				<td style="#tdstyle#">#t.inquiries_c_state#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Zip</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_zip')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Country</th>
-				<td style="#tdstyle#">#t.inquiries_c_country#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Subtotal:</th>
-				<td style="#tdstyle#">#DollarFormat(t.inquiries_order_subtotal)#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Discount:</th>
-				<td style="#tdstyle#">-#DollarFormat(t.inquiries_order_discount)#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Tax:</th>
-				<td style="#tdstyle#">#DollarFormat(t.inquiries_order_tax)#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping:</th>
-				<td style="#tdstyle#">#DollarFormat(t.inquiries_order_shipping)#(#t.inquiries_order_shipping_service#)</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Total:</th>
-				<td style="#tdstyle#">#DollarFormat(t.inquiries_order_total)#</td>
-			</tr>
-		</cfif>
-		<cfif application.zcore.functions.zso(t, 'inquiries_ship_name') NEQ '' and application.zcore.functions.zso(t, 'inquiries_ship_zip') NEQ ''>
-			<tr>
-				<th style="#thstyle# text-align:left;" colspan="2">Shipping Information:</th>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping Name</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_name')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping Address</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_address')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Address 2</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_address2')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping City</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_city')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping US State</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_state')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping Zip</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_zip')#</td>
-			</tr>
-			<tr>
-				<th style="#thstyle# text-align:left;" width="120">Shipping Country</th>
-				<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_ship_country')#</td>
-			</tr>
-		</cfif>
-		<cfif application.zcore.functions.zso(t, 'inquiries_reservation') EQ 1>
-			<cfif isDefined('t.inquiries_nights_total')>
-				<tr>
-					<th style="#thstyle# text-align:left;" colspan="2">Billing Information:</th>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Cardholder Name</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t,'C_name')#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Billing Address</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t,'C_address')#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Address 2</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t,'C_address2')#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">City</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t,'C_city')#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">US State</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_state')#</td>
-				</tr>
-				<!--- <tr>
-	<th style="#thstyle# text-align:left;" width="120">State <span class="highlight">*</span></th>
-	<td style="#tdstyle#"><cfscript>writeoutput(application.zcore.functions.zStateSelect("C_state", application.zcore.functions.zso(t,'C_state')));</cfscript></td>
-	</tr> --->
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Zip</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t,'C_zip')#</td>
-				</tr>
-				<!--- 
-	<tr>
-	<th style="#thstyle# text-align:left;" width="120">Country</th>
-	<td style="#tdstyle#"><cfscript>writeoutput(application.zcore.functions.zCountrySelect("C_country", application.zcore.functions.zso(t,'C_country')));</cfscript></td>
-	</tr>
-	--->
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Country</th>
-					<td style="#tdstyle#">#application.zcore.functions.zso(t, 'inquiries_c_country')#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Nights Total:</th>
-					<td style="#tdstyle#">#DollarFormat(t.inquiries_nights_total)#</td>
-				</tr>
-				<cfif application.zcore.functions.zso(t, 'inquiries_pets',true) NEQ '0'>
-					<tr>
-						<th style="#thstyle# text-align:left;white-space:nowrap;">Total Pet Fees:</th>
-						<td style="#tdstyle#">#dollarformat(t.inquiries_pet_total_fee)#</td>
-					</tr>
-				</cfif>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Tax:</th>
-					<td style="#tdstyle#">#DollarFormat(t.inquiries_tax)#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Cleaning Fee:</th>
-					<td style="#tdstyle#">#DollarFormat(t.inquiries_cleaning)#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Total:</th>
-					<td style="#tdstyle#">#DollarFormat(application.zcore.functions.zso(t, 'inquiries_nights_total',true)+application.zcore.functions.zso(t, 'inquiries_tax',true)+application.zcore.functions.zso(t, 'inquiries_cleaning',true))#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Amount Deposited:</th>
-					<td style="#tdstyle#">#DollarFormat(t.inquiries_deposit)#</td>
-				</tr>
-				<tr>
-					<th style="#thstyle# text-align:left;" width="120">Balance Due:</th>
-					<td style="#tdstyle#">#DollarFormat(t.inquiries_balance_due)#</td>
-				</tr>
-			</cfif>
-		</cfif>
+		</cfif> 
 		<!-- startadmincomments -->
 		<cfif t.inquiries_admin_comments NEQ ''>
 			<tr>

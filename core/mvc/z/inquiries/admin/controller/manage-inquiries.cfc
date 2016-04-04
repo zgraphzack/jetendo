@@ -27,7 +27,7 @@
 </cffunction>
 
 
-<cffunction name="userExport" localmode="modern" access="remote">
+<cffunction name="userExport" localmode="modern" access="remote" roles="user">
 	<cfscript>
 	userInit();
 	exportCom=createobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.export");
@@ -35,7 +35,7 @@
 	</cfscript>
 	
 </cffunction>
-<cffunction name="userView" localmode="modern" access="remote">
+<cffunction name="userView" localmode="modern" access="remote" roles="user">
 	<cfscript>
 	userInit();
 	feedbackCom=createobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.feedback");
@@ -44,7 +44,7 @@
 	
 </cffunction>
 
-<cffunction name="userHasAccessToLead" localmode="modern" access="public">
+<cffunction name="userHasAccessToLead" localmode="modern" access="public" roles="user">
 	<cfargument name="inquiries_id" type="string" required="yes">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -63,30 +63,33 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="userChangeStatus" localmode="modern" access="remote">
+<cffunction name="userChangeStatus" localmode="modern" access="remote" roles="user">
 	<cfscript>
 	changeStatus();
 	</cfscript>
 </cffunction>
-<cffunction name="userDelete" localmode="modern" access="remote">
+<cffunction name="userDelete" localmode="modern" access="remote" roles="user">
 	<cfscript>
 	delete();
 	</cfscript>
 	
 </cffunction>
-<cffunction name="userShowAllFeedback" localmode="modern" access="remote">
+<cffunction name="userShowAllFeedback" localmode="modern" access="remote" roles="user">
 	<cfscript>
 	showAllFeedback();
 	</cfscript>
 	
 </cffunction>
-<cffunction name="userView" localmode="modern" access="remote">
+<cffunction name="userView" localmode="modern" access="remote" roles="user">
 	<cfscript>
-	view();
+	userInit();
+		viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.feedback");
+		viewIncludeCom.view();
+//	view();
 	</cfscript>
 	
 </cffunction>
-<cffunction name="userIndex" localmode="modern" access="remote">
+<cffunction name="userIndex" localmode="modern" access="remote" roles="user">
 	<cfscript>
 	index();
 	</cfscript>
@@ -295,6 +298,15 @@
 	</cfif>
 </cffunction>
 
+<cffunction name="userInsertStatus" localmode="modern" access="remote" roles="user">
+	<cfscript>
+	userInit();
+	feedbackCom=createobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.feedback");
+	feedbackCom.insert();
+	</cfscript>
+</cffunction>
+ 
+
 <cffunction name="view" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	var db=request.zos.queryObject;
@@ -367,10 +379,15 @@
 			<cfif qinquiry.inquiries_reservation EQ 1>
 				| <a href="/z/rental/admin/reservations/cancel?inquiries_id=#qinquiry.inquiries_id#">Cancel Reservation</a>
 			</cfif>
+ 
 		</cfif>
 		<br />
 		<br />
 		<cfscript>
+		//viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.feedback");
+		//viewIncludeCom.view();
+		/*
+		*/
 		viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 		viewIncludeCom.getViewInclude(qinquiry);
         </cfscript>
@@ -566,9 +583,9 @@
 		</cfif>
 		<cfif form.searchType EQ "">
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
-				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
+				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#,#db.param('7')#)
 			<cfelse>
-				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#)
+				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#,#db.param('7')#)
 			</cfif>
 		<cfelse>
 			<cfif form.searchType EQ 0>
@@ -650,9 +667,9 @@
 		</cfif>
 		<cfif form.searchType EQ "">
 			<cfif request.zsession.leadcontactfilter NEQ 'allclosed'>
-				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#)
+				and inquiries.inquiries_status_id NOT IN (#db.param('4')#,#db.param('5')#,#db.param('7')#)
 			<cfelse>
-				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#)
+				and inquiries.inquiries_status_id IN (#db.param('4')#,#db.param('5')#,#db.param('7')#)
 			</cfif>
 		<cfelse>
 			<cfif form.searchType EQ 0>
@@ -952,7 +969,7 @@
 								<a href="/z/inquiries/admin/inquiry/edit?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">Edit</a>
 							</cfif> 
 							<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "homeowner") or structkeyexists(request.zos.userSession.groupAccess, "manager")>
-								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5>
+								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5 and qinquiries.inquiries_status_id NEQ 7>
 									| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">
 									<cfif qinquiries.user_id NEQ 0 or qinquiries.inquiries_assign_email NEQ "">
 										Re-
@@ -965,7 +982,7 @@
 							<a href="/z/inquiries/admin/manage-inquiries/userView?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">View</a>
 			 
 							<!--- <cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "homeowner") or structkeyexists(request.zos.userSession.groupAccess, "manager")>
-								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5>
+								<cfif qinquiries.inquiries_status_id NEQ 4 and qinquiries.inquiries_status_id NEQ 5 and qinquiries.inquiries_status_id NEQ 7>
 									| <a href="/z/inquiries/admin/assign/select?inquiries_id=#qinquiries.inquiries_id#&amp;zPageId=#form.zPageId#">
 									<cfif qinquiries.user_id NEQ 0 or qinquiries.inquiries_assign_email NEQ "">
 										Re-
