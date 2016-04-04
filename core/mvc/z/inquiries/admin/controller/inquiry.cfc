@@ -91,6 +91,7 @@
 	</cfscript>
 </cffunction>
 
+
 <cffunction name="add" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	this.edit();
@@ -236,7 +237,7 @@
 				<th style="vertical-align:top; ">Comments:</th>
 				<td><textarea name="inquiries_comments" cols="50" rows="5">#form.inquiries_comments#</textarea></td>
 			</tr>
-			<cfif form.inquiries_status_id NEQ 4 and form.inquiries_status_id NEQ 5>
+			<!--- <cfif form.inquiries_status_id NEQ 4 and form.inquiries_status_id NEQ 5> --->
 				<tr>
 					<th>Change Status:</th>
 					<td>
@@ -252,9 +253,9 @@
 						selectStruct.queryValueField = 'inquiries_status_id';
 						application.zcore.functions.zInputSelectBox(selectStruct);
 						</cfscript>
-						(Use this to close leads) </td>
+					</td>
 				</tr>
-			</cfif>
+			<!--- </cfif> --->
 			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
 				<!--- <tr>
 					<th>Assign to:</th>

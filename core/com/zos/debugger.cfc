@@ -206,6 +206,9 @@
 			</cfscript>
               </cfif>
 	      ##zdebuggerTimeOutput##<br />
+	      	<cfif structkeyexists(request.zos, 'queryCount')>
+				queries: #request.zos.queryCount# | rows: #request.zos.queryRowCount#<br />
+			</cfif>
 	      <a href="/z/server-manager/admin/mobile-conversion/responsive?link=#urlencodedformat(request.zos.originalURL)#" target="_blank">Responsive Conversion</a></div>
           </div>
           </cfif>

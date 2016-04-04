@@ -747,16 +747,16 @@ notes: optionally delete an existing image that has a field in the specified dat
 	var output = 0;
 	secureCommand="getImageMagickIdentify"&chr(9)&arguments.source;
 	output=trim(application.zcore.functions.zSecureCommand(secureCommand, 10));
-	if(output CONTAINS "," and listlen(output,",") GTE 3){
+	if(output CONTAINS "," and listlen(output,",") GTE 4){
 		arrOut=listtoarray(output, ",");
 		ext=application.zcore.functions.zGetFileExt(arguments.source);
 		if(ext NEQ "gif" and ext NEQ "png" and lcase(arrOut[3]) NEQ "srgb"){
 			form.invalidImagePath=arguments.source;
 			return{ success: false, errorMessage:"The image must be converted to the sRGB color profile.  It is currently: "&arrOut[3] };
 		}
-		return { success:true, width:arrOut[1], height:arrOut[2] };
+		return { success:true, width:arrOut[1], height:arrOut[2], quality:arrOut[4] };
 	}else{
-		return{ success: false, errorMessage:"Unable to read image dimensions.  The image may be corrupted or an unsupported format.  Please try again with a RGB jpg, png or gif." };
+		return{ success: false, errorMessage:"Unable to read image dimensions. Output:""#output#"".  The image may be corrupted or an unsupported format.  Please try again with a RGB jpg, png or gif." };
 		//application.zcore.template.fail("resizeImage: failed to get source image dimensions with zSecureCommand: "&secureCommand&" | Output: "&output,true);
 	}
 	</cfscript>
@@ -834,7 +834,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 		throw(local.imageSize.errorMessage);
 	}
 	if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){ 
-		writeoutput("identify: #local.imageSize.width#x#local.imageSize.height#<br />"); 
+		writeoutput("identify: #local.imageSize.width#x#local.imageSize.height# | quality:#local.imageSize.quality#<br />"); 
 	} 
     
     if(right(arguments.source,4) EQ ".png"){
@@ -842,7 +842,7 @@ notes: optionally delete an existing image that has a field in the specified dat
     }
     
     backupWidth=local.imageSize.width;
-    backupHeight=local.imageSize.height;
+    backupHeight=local.imageSize.height; 
     // loop size array
     if(arguments.autoCropList NEQ ""){
         arrCrop=listtoarray(arguments.autoCropList);	
@@ -985,7 +985,7 @@ notes: optionally delete an existing image that has a field in the specified dat
 			writeoutput(resizeCMD&"<br />");
 		}
 		secureCommand="getImageMagickConvertResize"&chr(9)&cs.resizeWidth&chr(9)&cs.resizeHeight&chr(9)&cs.cropWidth&chr(9)&cs.cropHeight&chr(9)&cs.cropXOffset&chr(9)&cs.cropYOffset&chr(9)&cs.sourceFilePath&chr(9)&cs.destinationFilePath;
-		output=application.zcore.functions.zSecureCommand(secureCommand, 10);
+		output=application.zcore.functions.zSecureCommand(secureCommand, 10); 
 		if(output NEQ "1"){
 			if(request.zos.isDeveloper){
 				throw("Failed to resize image with zSecureCommand: "&secureCommand&" | Output: "&output);

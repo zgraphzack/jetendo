@@ -746,9 +746,9 @@
 			}
 		}
 		if(form.slideshow_slide_direction EQ "y"){
-    			form.slideshow_back_image_size=local.imageSize.height;
+    		form.slideshow_back_image_size=local.imageSize.height;
 		}else{
-    			form.slideshow_back_image_size=local.imageSize.width;
+    		form.slideshow_back_image_size=local.imageSize.width;
 		}
 	}
 	if(form.slideshow_tabistext EQ 0 and fileexists(imPath2)){
@@ -762,9 +762,9 @@
 			}
 		}
 		if(form.slideshow_slide_direction EQ "y"){
-    			form.slideshow_back_image_size=local.imageSize.height;
+    		form.slideshow_back_image_size=local.imageSize.height;
 		}else{
-    			form.slideshow_back_image_size=local.imageSize.width;
+    		form.slideshow_back_image_size=local.imageSize.width;
 		}
 	}
 	db.sql="select count(slideshow_id) count 

@@ -174,13 +174,18 @@ if(not r){
 	count=0;
 	failCount=0;
 
+	db.sql="select * from #db.table("queue_http", request.zos.zcoreDatasource)# WHERE 
+	queue_http_deleted=#db.param(0)# and 
+	site_id <> #db.param(-1)# and 
+	queue_http_fail_count >=#db.param(3)#";
+	qHttpError=db.execute("qHttpError");
  	if(not structkeyexists(application, 'zExecuteHTTPQueueAlertDate')){
  		application.zExecuteHTTPQueueAlertDate=1;
  	}
- 	if(application.zExecuteHTTPQueueAlertDate NEQ dateformat(now(), "yyyy-mm-dd") and qHttp.recordcount NEQ 0){
+ 	if(application.zExecuteHTTPQueueAlertDate NEQ dateformat(now(), "yyyy-mm-dd") and qHttpError.recordcount NEQ 0){
  		application.zExecuteHTTPQueueAlertDate=dateformat(now(), "yyyy-mm-dd");
 		savecontent variable="e"{
-			echo('<h2>There are #qHttp.recordcount# http request queue errors</h2>');
+			echo('<h2>There are #qHttpError.recordcount# http request queue errors</h2>');
 			echo('<p><a href="#request.zos.globals.serverDomain#/z/server-manager/tasks/execute-http-queue/viewErrors">View Errors</a></p>');
 		} 
 		ts={
@@ -188,7 +193,7 @@ if(not r){
 			errorHTML:e,
 			scriptName:'/z/server-manager/tasks/execute-http-queue/viewErrors',
 			url:request.zos.originalURL,
-			exceptionMessage:'#qHttp.recordcount# http request queue errors',
+			exceptionMessage:'#qHttpError.recordcount# http request queue errors',
 			// optional
 			lineNumber:'180'
 		}

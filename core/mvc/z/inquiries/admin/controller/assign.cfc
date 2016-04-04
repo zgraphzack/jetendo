@@ -30,7 +30,7 @@
     inquiries.inquiries_status_id = inquiries_status.inquiries_status_id and 
     inquiries_deleted = #db.param(0)# and 
     inquiries_status_deleted = #db.param(0)# and 
-    inquiries.inquiries_status_id NOT IN (#db.trustedSQL("4,5,0")#) and 
+    inquiries.inquiries_status_id NOT IN (#db.trustedSQL("4,5,0,7")#) and 
      inquiries_id = #db.param(form.inquiries_id)#  
     </cfsavecontent><cfscript>
 	qinquiry=db.execute("qinquiry");
@@ -125,20 +125,34 @@
     </cfloop>
 	/* ]]> */
     </script>
-    <cfscript>
-    form.user_id = form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIDType);
-    selectStruct = StructNew();
-    selectStruct.name = "user_id";
-    selectStruct.query = qAgents;
-    selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
-    selectStruct.onchange="showAgentPhoto(this.options[this.selectedIndex].value);";
-    selectStruct.queryParseLabelVars = true;
-    selectStruct.queryParseValueVars = true;
-    selectStruct.queryValueField = '##user_id##|##site_id##';
-    application.zcore.functions.zInputSelectBox(selectStruct);
-    </cfscript>
+    <!---  --->
+    <div style="width:100%; float:left;">
+        <div style="float:left; width:90px;">Search Users:</div>
+        <div style="float:left;"> 
+            <input type="text" name="assignInputField" id="assignInputField" value="" style="width:240px; min-width:auto; max-width:auto; margin-bottom:5px;">
+        </div>
+    </div>
+    <div style="width:100%; margin-bottom:20px;float:left;">
+        <div style="float:left; width:90px;">Select One:</div>
+        <div style="float:left;"> <cfscript>
+        form.user_id = form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIDType);
+        selectStruct = StructNew();
+        selectStruct.name = "user_id";
+        selectStruct.query = qAgents;
+        selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##) ##member_company##";
+        selectStruct.onchange="showAgentPhoto(this.options[this.selectedIndex].value);";
+        selectStruct.queryParseLabelVars = true;
+        selectStruct.queryParseValueVars = true;
+        selectStruct.size=5;
+        selectStruct.queryValueField = '##user_id##|##site_id##';
+        application.zcore.functions.zInputSelectBox(selectStruct);
+        application.zcore.skin.addDeferredScript("  $('##user_id').filterByText($('##assignInputField'), true); ");
+        </cfscript>
+        </div>
+    </div>
+    <div style="width:100%; margin-bottom:20px;float:left;">
     or Type Name: <input type="text" name="assign_name" style="min-width:150px; width:150px;" value="#application.zcore.functions.zso(form, 'assign_name')#" /> and Email(s): <input type="text" name="assign_email" style="min-width:150px; width:150px;" value="#application.zcore.functions.zso(form, 'assign_email')#" /> (Comma separated)
-    <br />
+    </div>
     <div id="agentPhotoDiv"></div>
     </td>
     </tr>

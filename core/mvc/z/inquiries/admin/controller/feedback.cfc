@@ -70,26 +70,31 @@
 	user.site_id = #db.trustedSQL(application.zcore.functions.zGetSiteIdTypeSQL("inquiries.user_id_siteIDType"))#
 	WHERE inquiries.inquiries_id = #db.param(form.inquiries_id)# and 
 	inquiries.site_id = #db.param(request.zos.globals.id)# ";
-	qCheck = db.execute("qCheck");
-	if(qCheck.recordcount EQ 0 or qCheck.inquiries_status_id EQ 4 or qCheck.inquiries_status_id EQ 5){
-		application.zcore.status.setStatus(Request.zsid, 'This inquiry can no longer be updated.',false,true);
-		application.zcore.functions.zRedirect("/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&zsid=#Request.zsid#");
+	qCheck = db.execute("qCheck"); 
+	if(form.method EQ "insert"){
+		errorReturnURL="/z/inquiries/admin/feedback/view?zPageId=#form.zPageId#&zsid=#Request.zsid#&inquiries_id=#form.inquiries_id#";
+	}else{
+		errorReturnURL="/z/inquiries/admin/manage-inquiries/userView?zPageId=#form.zPageId#&zsid=#Request.zsid#&inquiries_id=#form.inquiries_id#";
 	}
+
 	// form validation struct
 	myForm.inquiries_id.required = true;
 	myForm.inquiries_id.friendlyName = "Inquiry ID";
 	myForm.inquiries_feedback_datetime.createDateTime = true;
 	result = application.zcore.functions.zValidateStruct(form, myForm, request.zsid,true);
 	if(result){	
-		application.zcore.status.setStatus(Request.zsid, false,form,true);
-		application.zcore.functions.zRedirect("/z/inquiries/admin/feedback/view?zPageId=#form.zPageId#&zsid=#Request.zsid#&inquiries_id=#form.inquiries_id#");
+		application.zcore.status.setStatus(Request.zsid, false,form,true); 
+		application.zcore.functions.zRedirect(errorReturnURL); 
 	}
-	if(application.zcore.functions.zso(form, 'inquiries_feedback_comments') EQ '' and application.zcore.functions.zso(form, 'inquiries_feedback_subject') EQ ''){
-		application.zcore.status.setStatus(Request.zsid, 'Please type a subject or message in the Add Note form.',form,true);
-		application.zcore.functions.zRedirect("/z/inquiries/admin/feedback/view?zPageId=#form.zPageId#&zsid=#Request.zsid#&inquiries_id=#form.inquiries_id#");
+	if(form.inquiries_status_id EQ 4 or form.inquiries_status_id EQ 5 or form.inquiries_status_id EQ 7){		
+		// ignore validation
+	}else if(application.zcore.functions.zso(form, 'inquiries_feedback_comments') EQ '' and application.zcore.functions.zso(form, 'inquiries_feedback_subject') EQ ''){
+		application.zcore.status.setStatus(Request.zsid, 'Please type a subject or message in the Add Note form.',form,true); 
+		application.zcore.functions.zRedirect(errorReturnURL); 
 	
 	}
 	form.user_id = request.zsession.user.id;
+	form.user_id_siteIdType = application.zcore.functions.zGetSiteIdType(request.zsession.user.site_id);
 	form.site_id = request.zOS.globals.id;
 	
 	//	Insert Into Inquiry Database
@@ -100,10 +105,10 @@
 	form.inquiries_feedback_id = application.zcore.functions.zInsert(inputStruct); 
 	if(form.inquiries_feedback_id EQ false){
 		request.zsid = application.zcore.status.setStatus(Request.zsid, "Lead failed to be updated.", false,true);
-		application.zcore.functions.zRedirect("/z/inquiries/admin/feedback/view?zPageId=#form.zPageId#&zsid=#request.zsid#&inquiries_id=#form.inquiries_id#");
+		application.zcore.functions.zRedirect(errorReturnURL); 
 	}else{
 		request.zsid = application.zcore.status.setStatus(Request.zsid, "Lead updated.");
-		if(structkeyexists(form,'inquiries_status_id') and (form.inquiries_status_id EQ 4 or form.inquiries_status_id EQ 5)){								 
+		if(structkeyexists(form,'inquiries_status_id') and (form.inquiries_status_id EQ 4 or form.inquiries_status_id EQ 5 or form.inquiries_status_id EQ 7)){								 
 		}else if(qCheck.inquiries_status_id EQ 2){
 			form.inquiries_status_id=3;		
 		}else if(qCheck.inquiries_status_id EQ 1){
@@ -128,7 +133,11 @@ Please login in and view your lead by clicking the following link: #request.zos.
 			}
 		}
 	}
-	application.zcore.functions.zRedirect('/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&zsid='&request.zsid);
+	if(form.method EQ "insert"){
+		application.zcore.functions.zRedirect('/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&zsid='&request.zsid);
+	}else{
+		application.zcore.functions.zRedirect('/z/inquiries/admin/manage-inquiries/userIndex?zPageId=#form.zPageId#&zsid='&request.zsid);
+	}
 	</cfscript>
 </cffunction>
 
@@ -145,7 +154,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	WHERE inquiries_id = #db.param(form.inquiries_id)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	qCheck = db.execute("qCheck");
-	if(qCheck.recordcount EQ 0 or qCheck.inquiries_status_id EQ 4 or qCheck.inquiries_status_id EQ 5){
+	if(qCheck.recordcount EQ 0 or qCheck.inquiries_status_id EQ 4 or qCheck.inquiries_status_id EQ 5 or qCheck.inquiries_status_id EQ 7){
 		application.zcore.status.setStatus(Request.zsid, 'This inquiry can no longer be updated.',false,true);
 		application.zcore.functions.zRedirect("/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#&zsid=#Request.zsid#");
 	}
@@ -229,11 +238,11 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	var links=0;
 	var inquiryHTML=0;
 	variables.init();
-	application.zcore.functions.zSetPageHelpId("4.1.1");
+	application.zcore.functions.zSetPageHelpId("4.1.1"); 
 	if(application.zcore.functions.zso(form, 'inquiries_id') EQ ''){
 		application.zcore.functions.zRedirect("/z/inquiries/admin/manage-inquiries/index");
 	}
-	db.sql="SELECT *, if(inquiries.inquiries_status_id IN #db.trustedSQL("('4','5'),1,0")#) closed 
+	db.sql="SELECT *, if(inquiries.inquiries_status_id IN #db.trustedSQL("('4','5', '7'),1,0")#) closed 
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
 	LEFT JOIN #db.table("inquiries_type", request.zos.zcoreDatasource)# inquiries_type ON 
 	inquiries.inquiries_type_id = inquiries_type.inquiries_type_id and 
@@ -258,11 +267,11 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	application.zcore.functions.zQueryToStruct(qInquiry, form);
 	application.zcore.functions.zStatusHandler(request.zsid,true);
 	</cfscript>
-	<cfif form.closed EQ 0>
+	<!--- <cfif form.closed EQ 0> --->
 		<table style="width:100%; border-spacing:0px;">
 		<tr>
 		<td style="vertical-align:top; width:70%;padding-left:0px;">
-	</cfif>
+	<!--- </cfif> --->
 	<cfscript>
 	var hCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.inquiries.admin.controller.manage-inquiries");
 	hCom.view();
@@ -289,7 +298,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 		</cfscript>
 		<cfif qOther.recordcount GTE 2>
 			<h2>Other inquiries from this email address</h2>
-			<table style="border-spacing:0px; width:100%; font-size:11px; border:1px solid ##CCCCCC;">
+			<table class="table-list" style="border-spacing:0px; width:100%; font-size:11px; border:1px solid ##CCCCCC;">
 				<tr>
 					<td>Date</td>
 					<td>Comments</td>
@@ -318,11 +327,11 @@ Please login in and view your lead by clicking the following link: #request.zos.
 					}
 					</cfscript>
 				<cfif qOther.inquiries_id EQ form.inquiries_id>
-					<tr>
-						<td style="border-bottom:1px solid ##CCCCCC; background-color:##009999; color:##FFFFFF;width:80px;">#DateFormat(qOther.inquiries_datetime, "m/dd/yyyy")#</td>
-						<td style="border-bottom:1px solid ##CCCCCC; background-color:##009999; color:##FFFFFF;">Current Inquiry</td>
-						<td style="border-bottom:1px solid ##CCCCCC; background-color:##009999; color:##FFFFFF;">#local.assignedHTML#</td>
-						<td style="border-bottom:1px solid ##CCCCCC; background-color:##009999; color:##FFFFFF;">&nbsp;</td>
+					<tr class="zCurrentInquiry">
+						<td>#DateFormat(qOther.inquiries_datetime, "m/dd/yyyy")#</td>
+						<td>Current Inquiry</td>
+						<td>#local.assignedHTML#</td>
+						<td>&nbsp;</td>
 					</tr>
 				<cfelse>
 					<tr style="<cfif qOther.currentrow mod 2 EQ 0>background-color:##ECECEC;</cfif>">
@@ -348,292 +357,292 @@ Please login in and view your lead by clicking the following link: #request.zos.
 				</cfloop>
 			</table>
 		</cfif>
-	</cfif>
-	<cfif form.closed EQ 0>
-		</td>
-		<td style="vertical-align:top; width:30%;padding-left:10px; padding-right:0px;">
-			<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
-			WHERE user_id = #db.param(request.zsession.user.id)# and 
-			#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
-			user_server_administrator=#db.param('0')# and 
-			user_deleted = #db.param(0)# </cfsavecontent>
-			<cfscript>
-			qAgent=db.execute("qAgent");
-			</cfscript>
-			<cfsavecontent variable="db.sql"> 
-			SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
-			LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
-			inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
-			inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# and 
-			inquiries_lead_template_x_site_deleted = #db.param(0)#
-			WHERE inquiries_lead_template_x_site.site_id IS NULL and
-			inquiries_lead_template_deleted = #db.param(0)# and  
-			inquiries_lead_template_type = #db.param('2')# and 
-			inquiries_lead_template.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
-			<cfif application.zcore.app.siteHasApp("listing") EQ false>
-				and inquiries_lead_template_realestate = #db.param('0')#
-			</cfif>
-			ORDER BY inquiries_lead_template_sort ASC, inquiries_lead_template_name ASC </cfsavecontent>
-			<cfscript>
-			qTemplate=db.execute("qTemplate");
-			</cfscript>
-			<!--- <h2 style="display:inline;">
-			Send Email
-			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
-				|
-				</h2>
-				<a href="/z/inquiries/admin/lead-template/index">Edit Templates</a> | 
-				<a href="/z/inquiries/admin/lead-template/add?inquiries_lead_template_type=2&amp;siteIDType=1">Add Email Template</a>
+	</cfif> 
+	</td>
+	<td style="vertical-align:top; width:30%;padding-left:10px; padding-right:0px;">
+		<cfsavecontent variable="db.sql"> SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user 
+		WHERE user_id = #db.param(request.zsession.user.id)# and 
+		#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
+		user_server_administrator=#db.param('0')# and 
+		user_deleted = #db.param(0)# </cfsavecontent>
+		<cfscript>
+		qAgent=db.execute("qAgent");
+		</cfscript>
+		<cfsavecontent variable="db.sql"> 
+		SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
+		LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
+		inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
+		inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# and 
+		inquiries_lead_template_x_site_deleted = #db.param(0)#
+		WHERE inquiries_lead_template_x_site.site_id IS NULL and
+		inquiries_lead_template_deleted = #db.param(0)# and  
+		inquiries_lead_template_type = #db.param('2')# and 
+		inquiries_lead_template.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
+		<cfif application.zcore.app.siteHasApp("listing") EQ false>
+			and inquiries_lead_template_realestate = #db.param('0')#
+		</cfif>
+		ORDER BY inquiries_lead_template_sort ASC, inquiries_lead_template_name ASC </cfsavecontent>
+		<cfscript>
+		qTemplate=db.execute("qTemplate");
+		</cfscript>
+		<!--- <h2 style="display:inline;">
+		Send Email
+		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
+			|
+			</h2>
+			<a href="/z/inquiries/admin/lead-template/index">Edit Templates</a> | 
+			<a href="/z/inquiries/admin/lead-template/add?inquiries_lead_template_type=2&amp;siteIDType=1">Add Email Template</a>
+		<cfelse>
+			</h2>
+		</cfif>
+		<br />
+		<br />
+		<cfscript>
+		tags=StructNew();
+		</cfscript>
+		<cfif qAgent.recordcount NEQ 0>
+			<cfif qAgent.member_signature NEQ ''>
+				<cfset signature=qAgent.member_signature>
 			<cfelse>
-				</h2>
+				<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
 			</cfif>
-			<br />
-			<br />
+			<cfscript>
+			tags['{agent name}']=qAgent.member_first_name&' '&qAgent.member_last_name;
+			tags["{agent's company}"]=qAgent.member_company;
+			</cfscript>
+		<cfelse>
+			<cfset signature="">
+		</cfif>
+		<script type="text/javascript">
+		/* <![CDATA[ */
+		var arrEmailTemplate=[];
+		var greeting="#JSStringFormat('Hello '&trim(application.zcore.functions.zFirstLetterCaps(form.inquiries_first_name))&','&chr(10)&chr(10)&chr(9))#";
+		<cfloop query="qTemplate">
+			<cfscript>
+			tm=qTemplate.inquiries_lead_template_message;
+			for(i in tags){
+				tm=replaceNoCase(tm,i,tags[i],'ALL');
+			}
+			</cfscript>
+		arrEmailTemplate[#qTemplate.inquiries_lead_template_id#]={};
+		arrEmailTemplate[#qTemplate.inquiries_lead_template_id#].subject="#jsstringformat(qTemplate.inquiries_lead_template_subject)#";
+		arrEmailTemplate[#qTemplate.inquiries_lead_template_id#].message="#jsstringformat(tm)#";
+		</cfloop>
+		<cfscript>
+		originalMessage=inquiryHTML;
+		// remove admin comments
+		originalMessage=rereplace(originalMessage,"<!-- startadmincomments -->.*?<!-- endadmincomments -->","","ALL");
+		links="";
+		badTagList="style|link|head|script|embed|base|input|textarea|button|object|iframe|form";
+		originalMessage=rereplacenocase(originalMessage,"<(#badTagList#)[^>]*?>.*?</\1>", " ", 'ALL');			
+		//originalMessage=rereplacenocase(originalMessage,"<a.*?href=""(.*)?"".*?>.*?</a>", " \1 ", 'ALL');	
+		originalMessage=rereplacenocase(originalMessage,"<a.*?>(.*)?</a>", " \1 ", 'ALL');
+		originalMessage=replacenocase(originalMessage,"last 2 pages:", " ", 'ALL');
+		originalMessage=replacenocase(originalMessage,chr(10), " ", 'ALL');
+		originalMessage=replacenocase(originalMessage,chr(13), "", 'ALL');
+		originalMessage=replacenocase(originalMessage,chr(9), " ", 'ALL');
+		originalMessage=replacenocase(originalMessage,"</tr>",chr(10),"ALL");
+		originalMessage=rereplacenocase(originalMessage," +", " ", 'ALL');
+		originalMessage=replacenocase(originalMessage,"| |", " ", 'ALL');
+		
+		originalMessage=rereplacenocase(originalMessage,"<.*?>", " ", 'ALL');
+		originalMessage=rereplacenocase(originalMessage,"&[^\s]*?;", " ", 'ALL');
+		originalMessage=replacenocase(originalMessage,"&nbsp;"," ","ALL");
+		originalMessage=replacenocase(originalMessage,chr(10)&chr(10),chr(10),"ALL");
+		if(form.inquiries_referer NEQ "" or form.inquiries_referer2 NEQ ""){
+			originalMessage&=chr(10)&"Last 2 Pages Visited: "&chr(10)&form.inquiries_referer&chr(10)&chr(10)&form.inquiries_referer2;
+		}
+		arrM=listtoarray(originalMessage,chr(10),true);
+		for(i=1;i LTE arrayLen(arrM);i++){
+			arrM[i]=trim(arrM[i]);
+		}
+		originalMessage=arraytolist(arrM,chr(10));
+		// put the full original message here with 
+		originalMessage=chr(10)&chr(10)&"----------------------"&chr(10)&"This message was in response your original inquiry ###form.inquiries_id#:"&chr(10)&chr(10)&(originalMessage);
+		</cfscript>
+		var originalMessage="#jsstringformat(originalMessage)#";
+		var signature="#jsstringformat(chr(10)&chr(10)&'---------------------------------------'&chr(10)&trim(signature))#";
+		function updateEmailForm(v){
+			if(v!=""){
+				document.myForm2.lead_email_subject.value=arrEmailTemplate[v].subject;
+				document.myForm2.lead_email_message.value=greeting+arrEmailTemplate[v].message+signature+originalMessage;
+			}else{
+				document.myForm2.lead_email_subject.value="";
+				document.myForm2.lead_email_message.value=greeting+signature+originalMessage;
+			}
+		}
+		/* ]]> */
+		</script>
+		<table class="table-list" style="width:100%; border-left:2px solid ##999;border-right:1px solid ##999;">
+			<form name="myForm2" id="myForm2" action="/z/inquiries/admin/feedback/sendemail?inquiries_id=#form.inquiries_id#&amp;zPageId=#form.zPageId#" method="post">
+				<tr>
+					<th colspan="2"> Select a template or fill in the following fields:</th>
+				</tr>
+				<tr>
+					<td style="width:100px;">Template:</td>
+					<td><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "inquiries_lead_template_id";
+					selectStruct.query = qTemplate;
+					selectStruct.onChange="updateEmailForm(this.options[this.selectedIndex].value);";
+					selectStruct.queryLabelField = "inquiries_lead_template_name";
+					selectStruct.queryValueField = 'inquiries_lead_template_id';
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
+				</tr>
+				<tr>
+					<td>From:</td>
+					<td><input name="lead_email_from" id="lead_email_from" type="text" size="50" maxlength="50" value="<cfif application.zcore.functions.zso(form, 'lead_email_from') NEQ ''>#form.lead_email_from#<cfelseif qagent.recordcount NEQ 0>#qagent.member_email#</cfif>" /></td>
+				</tr>
+				<tr>
+					<td>To:</td>
+					<td><input name="lead_email_to" id="lead_email_to" type="text" size="50" maxlength="50" value="<cfif application.zcore.functions.zso(form, 'lead_email_to') NEQ ''>#form.lead_email_to#<cfelse>#form.inquiries_email#</cfif>" /></td>
+				</tr>
+				<tr>
+					<td>Bcc:</td>
+					<td><input name="lead_email_bcc" id="lead_email_bcc" type="text" size="50" maxlength="50" value="#application.zcore.functions.zso(form, 'lead_email_bcc')#" / /></td>
+				</tr>
+				<tr>
+					<td>Subject:</td>
+					<td><input name="lead_email_subject" id="lead_email_subject" type="text" size="50" maxlength="50" value="#application.zcore.functions.zso(form, 'lead_email_subject')#" /></td>
+				</tr>
+				<tr>
+					<td colspan="2">Message:<br />
+						<textarea name="lead_email_message" id="lead_email_message" style="width:98%; height:200px; ">#application.zcore.functions.zso(form, 'lead_email_message')#</textarea></td>
+				</tr>
+				<tr>
+					<td colspan="2"><button type="submit" name="submitForm">Send Email</button>
+						<button type="button" name="cancel" onclick="window.location.href = '/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#';">Cancel</button></td>
+				</tr>
+			</form>
+		</table>
+		<script type="text/javascript">
+		/* <![CDATA[ */<cfif application.zcore.functions.zso(form, 'leadEmailUseSubmission') EQ ''>
+		updateEmailForm('');
+		</cfif>/* ]]> */
+		</script> 
+		<br /> --->
+		<cfif qagent.recordcount NEQ 0>
+			<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
 			<cfscript>
 			tags=StructNew();
+			tags['{agent name}']=qAgent.member_first_name&' '&qAgent.member_last_name;
+			tags["{agent's company}"]=qAgent.member_company;
 			</cfscript>
-			<cfif qAgent.recordcount NEQ 0>
-				<cfif qAgent.member_signature NEQ ''>
-					<cfset signature=qAgent.member_signature>
-				<cfelse>
-					<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
-				</cfif>
-				<cfscript>
-				tags['{agent name}']=qAgent.member_first_name&' '&qAgent.member_last_name;
-				tags["{agent's company}"]=qAgent.member_company;
-				</cfscript>
-			<cfelse>
-				<cfset signature="">
-			</cfif>
-			<script type="text/javascript">
-			/* <![CDATA[ */
-			var arrEmailTemplate=[];
-			var greeting="#JSStringFormat('Hello '&trim(application.zcore.functions.zFirstLetterCaps(form.inquiries_first_name))&','&chr(10)&chr(10)&chr(9))#";
-			<cfloop query="qTemplate">
-				<cfscript>
-				tm=qTemplate.inquiries_lead_template_message;
-				for(i in tags){
-					tm=replaceNoCase(tm,i,tags[i],'ALL');
-				}
-				</cfscript>
-			arrEmailTemplate[#qTemplate.inquiries_lead_template_id#]={};
-			arrEmailTemplate[#qTemplate.inquiries_lead_template_id#].subject="#jsstringformat(qTemplate.inquiries_lead_template_subject)#";
-			arrEmailTemplate[#qTemplate.inquiries_lead_template_id#].message="#jsstringformat(tm)#";
-			</cfloop>
+		<cfelse>
+			<cfset tags=structnew()>
+			<cfset signature="">
+		</cfif>
+		<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
+		LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
+		inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
+		inquiries_lead_template_x_site_deleted = #db.param(0)# and 
+		inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# 
+		WHERE inquiries_lead_template_x_site.site_id IS NULL and 
+		inquiries_lead_template_deleted = #db.param(0)# and 
+		inquiries_lead_template_type = #db.param('1')# and 
+		inquiries_lead_template.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
+		<cfif application.zcore.app.siteHasApp("listing") EQ false>
+			and inquiries_lead_template_realestate = #db.param('0')#
+		</cfif>
+		ORDER BY inquiries_lead_template_sort ASC, inquiries_lead_template_name ASC </cfsavecontent>
+		<cfscript>
+		qTemplate=db.execute("qTemplate");
+		</cfscript>
+		<script type="text/javascript">
+		/* <![CDATA[ */
+		var arrNoteTemplate=[];
+		<cfloop query="qTemplate">
 			<cfscript>
-			originalMessage=inquiryHTML;
-			// remove admin comments
-			originalMessage=rereplace(originalMessage,"<!-- startadmincomments -->.*?<!-- endadmincomments -->","","ALL");
-			links="";
-			badTagList="style|link|head|script|embed|base|input|textarea|button|object|iframe|form";
-			originalMessage=rereplacenocase(originalMessage,"<(#badTagList#)[^>]*?>.*?</\1>", " ", 'ALL');			
-			//originalMessage=rereplacenocase(originalMessage,"<a.*?href=""(.*)?"".*?>.*?</a>", " \1 ", 'ALL');	
-			originalMessage=rereplacenocase(originalMessage,"<a.*?>(.*)?</a>", " \1 ", 'ALL');
-			originalMessage=replacenocase(originalMessage,"last 2 pages:", " ", 'ALL');
-			originalMessage=replacenocase(originalMessage,chr(10), " ", 'ALL');
-			originalMessage=replacenocase(originalMessage,chr(13), "", 'ALL');
-			originalMessage=replacenocase(originalMessage,chr(9), " ", 'ALL');
-			originalMessage=replacenocase(originalMessage,"</tr>",chr(10),"ALL");
-			originalMessage=rereplacenocase(originalMessage," +", " ", 'ALL');
-			originalMessage=replacenocase(originalMessage,"| |", " ", 'ALL');
-			
-			originalMessage=rereplacenocase(originalMessage,"<.*?>", " ", 'ALL');
-			originalMessage=rereplacenocase(originalMessage,"&[^\s]*?;", " ", 'ALL');
-			originalMessage=replacenocase(originalMessage,"&nbsp;"," ","ALL");
-			originalMessage=replacenocase(originalMessage,chr(10)&chr(10),chr(10),"ALL");
-			if(form.inquiries_referer NEQ "" or form.inquiries_referer2 NEQ ""){
-				originalMessage&=chr(10)&"Last 2 Pages Visited: "&chr(10)&form.inquiries_referer&chr(10)&chr(10)&form.inquiries_referer2;
+			tm=qTemplate.inquiries_lead_template_message;
+			for(i in tags){
+				tm=replaceNoCase(tm,i,tags[i],'ALL');
 			}
-			arrM=listtoarray(originalMessage,chr(10),true);
-			for(i=1;i LTE arrayLen(arrM);i++){
-				arrM[i]=trim(arrM[i]);
-			}
-			originalMessage=arraytolist(arrM,chr(10));
-			// put the full original message here with 
-			originalMessage=chr(10)&chr(10)&"----------------------"&chr(10)&"This message was in response your original inquiry ###form.inquiries_id#:"&chr(10)&chr(10)&(originalMessage);
 			</cfscript>
-			var originalMessage="#jsstringformat(originalMessage)#";
-			var signature="#jsstringformat(chr(10)&chr(10)&'---------------------------------------'&chr(10)&trim(signature))#";
-			function updateEmailForm(v){
-				if(v!=""){
-					document.myForm2.lead_email_subject.value=arrEmailTemplate[v].subject;
-					document.myForm2.lead_email_message.value=greeting+arrEmailTemplate[v].message+signature+originalMessage;
-				}else{
-					document.myForm2.lead_email_subject.value="";
-					document.myForm2.lead_email_message.value=greeting+signature+originalMessage;
-				}
+		arrNoteTemplate[#qTemplate.inquiries_lead_template_id#]={};
+		arrNoteTemplate[#qTemplate.inquiries_lead_template_id#].subject="#jsstringformat(qTemplate.inquiries_lead_template_subject)#";
+		arrNoteTemplate[#qTemplate.inquiries_lead_template_id#].message="#jsstringformat(tm)#";
+		</cfloop>
+		function updateNoteForm(v){
+			if(v!=""){
+				document.myForm.inquiries_feedback_subject.value=arrNoteTemplate[v].subject;
+				document.myForm.inquiries_feedback_comments.value=arrNoteTemplate[v].message;
+			}else{
+				document.myForm.inquiries_feedback_subject.value='';
+				document.myForm.inquiries_feedback_comments.value='';
 			}
-			/* ]]> */
-			</script>
-			<table class="table-list" style="width:100%; border-left:2px solid ##999;border-right:1px solid ##999;">
-				<form name="myForm2" id="myForm2" action="/z/inquiries/admin/feedback/sendemail?inquiries_id=#form.inquiries_id#&amp;zPageId=#form.zPageId#" method="post">
-					<tr>
-						<th colspan="2"> Select a template or fill in the following fields:</th>
-					</tr>
-					<tr>
-						<td style="width:100px;">Template:</td>
-						<td><cfscript>
-						selectStruct = StructNew();
-						selectStruct.name = "inquiries_lead_template_id";
-						selectStruct.query = qTemplate;
-						selectStruct.onChange="updateEmailForm(this.options[this.selectedIndex].value);";
-						selectStruct.queryLabelField = "inquiries_lead_template_name";
-						selectStruct.queryValueField = 'inquiries_lead_template_id';
-						application.zcore.functions.zInputSelectBox(selectStruct);
-						</cfscript></td>
-					</tr>
-					<tr>
-						<td>From:</td>
-						<td><input name="lead_email_from" id="lead_email_from" type="text" size="50" maxlength="50" value="<cfif application.zcore.functions.zso(form, 'lead_email_from') NEQ ''>#form.lead_email_from#<cfelseif qagent.recordcount NEQ 0>#qagent.member_email#</cfif>" /></td>
-					</tr>
-					<tr>
-						<td>To:</td>
-						<td><input name="lead_email_to" id="lead_email_to" type="text" size="50" maxlength="50" value="<cfif application.zcore.functions.zso(form, 'lead_email_to') NEQ ''>#form.lead_email_to#<cfelse>#form.inquiries_email#</cfif>" /></td>
-					</tr>
-					<tr>
-						<td>Bcc:</td>
-						<td><input name="lead_email_bcc" id="lead_email_bcc" type="text" size="50" maxlength="50" value="#application.zcore.functions.zso(form, 'lead_email_bcc')#" / /></td>
-					</tr>
-					<tr>
-						<td>Subject:</td>
-						<td><input name="lead_email_subject" id="lead_email_subject" type="text" size="50" maxlength="50" value="#application.zcore.functions.zso(form, 'lead_email_subject')#" /></td>
-					</tr>
-					<tr>
-						<td colspan="2">Message:<br />
-							<textarea name="lead_email_message" id="lead_email_message" style="width:98%; height:200px; ">#application.zcore.functions.zso(form, 'lead_email_message')#</textarea></td>
-					</tr>
-					<tr>
-						<td colspan="2"><button type="submit" name="submitForm">Send Email</button>
-							<button type="button" name="cancel" onclick="window.location.href = '/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#';">Cancel</button></td>
-					</tr>
-				</form>
-			</table>
-			<script type="text/javascript">
-			/* <![CDATA[ */<cfif application.zcore.functions.zso(form, 'leadEmailUseSubmission') EQ ''>
-			updateEmailForm('');
-			</cfif>/* ]]> */
-			</script> 
-			<br /> --->
-			<cfif qagent.recordcount NEQ 0>
-				<cfsavecontent variable="signature">#qAgent.member_first_name# #qAgent.member_last_name##chr(10)##qAgent.member_title##chr(10)##qAgent.member_phone##chr(10)##qAgent.member_website#</cfsavecontent>
-				<cfscript>
-				tags=StructNew();
-				tags['{agent name}']=qAgent.member_first_name&' '&qAgent.member_last_name;
-				tags["{agent's company}"]=qAgent.member_company;
-				</cfscript>
-			<cfelse>
-				<cfset tags=structnew()>
-				<cfset signature="">
-			</cfif>
-			<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_lead_template", request.zos.zcoreDatasource)# inquiries_lead_template
-			LEFT JOIN #db.table("inquiries_lead_template_x_site", request.zos.zcoreDatasource)# inquiries_lead_template_x_site ON 
-			inquiries_lead_template_x_site.inquiries_lead_template_id = inquiries_lead_template.inquiries_lead_template_id and 
-			inquiries_lead_template_x_site_deleted = #db.param(0)# and 
-			inquiries_lead_template_x_site.site_id = #db.param(request.zos.globals.id)# 
-			WHERE inquiries_lead_template_x_site.site_id IS NULL and 
-			inquiries_lead_template_deleted = #db.param(0)# and 
-			inquiries_lead_template_type = #db.param('1')# and 
-			inquiries_lead_template.site_id IN (#db.param('0')#,#db.param(request.zos.globals.id)#)
-			<cfif application.zcore.app.siteHasApp("listing") EQ false>
-				and inquiries_lead_template_realestate = #db.param('0')#
-			</cfif>
-			ORDER BY inquiries_lead_template_sort ASC, inquiries_lead_template_name ASC </cfsavecontent>
-			<cfscript>
-			qTemplate=db.execute("qTemplate");
-			</cfscript>
-			<script type="text/javascript">
-			/* <![CDATA[ */
-			var arrNoteTemplate=[];
-			<cfloop query="qTemplate">
-				<cfscript>
-				tm=qTemplate.inquiries_lead_template_message;
-				for(i in tags){
-					tm=replaceNoCase(tm,i,tags[i],'ALL');
-				}
-				</cfscript>
-			arrNoteTemplate[#qTemplate.inquiries_lead_template_id#]={};
-			arrNoteTemplate[#qTemplate.inquiries_lead_template_id#].subject="#jsstringformat(qTemplate.inquiries_lead_template_subject)#";
-			arrNoteTemplate[#qTemplate.inquiries_lead_template_id#].message="#jsstringformat(tm)#";
-			</cfloop>
-			function updateNoteForm(v){
-				if(v!=""){
-					document.myForm.inquiries_feedback_subject.value=arrNoteTemplate[v].subject;
-					document.myForm.inquiries_feedback_comments.value=arrNoteTemplate[v].message;
-				}else{
-					document.myForm.inquiries_feedback_subject.value='';
-					document.myForm.inquiries_feedback_comments.value='';
-				}
-			}
-			/* ]]> */
-			</script>
-			<h2 style="display:inline;">
-			Add Note
-			<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
-				|
-				</h2>
-				<a href="/z/inquiries/admin/lead-template/index">Edit Templates</a> | 
-				<a href="/z/inquiries/admin/lead-template/add?inquiries_lead_template_type=1&amp;siteIDType=1">Add Note Template</a>
-			<cfelse>
-				</h2>
-			</cfif>
-			<br />
-			<br />
-			<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback 
-			WHERE inquiries_id = #db.param(form.inquiries_id)# and 
-			inquiries_feedback_id = #db.param(application.zcore.functions.zso(form, 'inquiries_feedback_id',false,''))# and 
-			site_id = #db.param(request.zos.globals.id)# and 
-			inquiries_feedback_deleted=#db.param(0)#</cfsavecontent>
-			<cfscript>
-			qFeedback=db.execute("qFeedback");
-			application.zcore.functions.zQueryToStruct(qFeedback,form,'inquiries_id');
-			</cfscript>
-			<table class="table-list" style="width:100%;border-left:2px solid ##999;border-right:1px solid ##999;">
-				<form name="myForm" id="myForm" action="/z/inquiries/admin/feedback/insert?inquiries_id=#form.inquiries_id#&amp;zPageId=#form.zPageId#" method="post">
-					<tr>
-						<th colspan="2"> Select a template or fill in the following fields:</th>
-					</tr>
-					<tr>
-						<td style="width:100px;">Template:</td>
-						<td><cfscript>
-						selectStruct = StructNew();
-						selectStruct.name = "inquiries_lead_template_id";
-						selectStruct.query = qTemplate;
-						selectStruct.onChange="updateNoteForm(this.options[this.selectedIndex].value);";
-						selectStruct.queryLabelField = "inquiries_lead_template_name";
-						selectStruct.queryValueField = 'inquiries_lead_template_id';
-						application.zcore.functions.zInputSelectBox(selectStruct);
-						</cfscript></td>
-					</tr>
-					<tr>
-						<td>Subject:</td>
-						<td><input name="inquiries_feedback_subject" id="inquiries_feedback_subject" type="text" size="50" maxlength="50" value="" /></td>
-					</tr>
-					<tr>
-						<td colspan="2">Message:<br />
-							<textarea name="inquiries_feedback_comments" id="inquiries_feedback_comments" style="width:98%; height:120px; ">#form.inquiries_feedback_comments#</textarea></td>
-					</tr>
-					<tr>
-						<td colspan="2">What is the status of this lead?<br />
-							<input type="radio" name="inquiries_status_id" value="1" class="input-plain" <cfif form.inquiries_status_id EQ 1>checked="checked"</cfif>>
-							New
-							<input type="radio" name="inquiries_status_id" value="2" class="input-plain" <cfif form.inquiries_status_id EQ 2>checked="checked"</cfif>>
-							Assigned
-							<input type="radio" name="inquiries_status_id" value="3" class="input-plain" <cfif application.zcore.functions.zso(form, 'inquiries_status_id',false,3) EQ 3>checked="checked"</cfif>>
-							Contacted
-							<input type="radio" name="inquiries_status_id" value="4" class="input-plain" <cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 4>checked="checked"</cfif>>
-							Closed with No Sale
-							<input type="radio" name="inquiries_status_id" value="5" class="input-plain"<cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 5>checked="checked"</cfif>>
-							Closed with Sale </td>
-					</tr>
-					<tr>
-						<td colspan="2"><button type="submit" name="submitForm">Add Note</button>
-							<button type="button" name="cancel" onclick="window.location.href = '/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#';">Cancel</button></td>
-					</tr>
-				</form>
-			</table></td>
-		</tr>
-		</table>
-	</cfif>
+		}
+		/* ]]> */
+		</script>
+		<h2 style="display:inline;">
+		Add Note
+		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
+			|
+			</h2>
+			<a href="/z/inquiries/admin/lead-template/index">Edit Templates</a> | 
+			<a href="/z/inquiries/admin/lead-template/add?inquiries_lead_template_type=1&amp;siteIDType=1">Add Note Template</a>
+		<cfelse>
+			</h2>
+		</cfif>
+		<br />
+		<br />
+		<cfsavecontent variable="db.sql"> SELECT * from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback 
+		WHERE inquiries_id = #db.param(form.inquiries_id)# and 
+		inquiries_feedback_id = #db.param(application.zcore.functions.zso(form, 'inquiries_feedback_id',false,''))# and 
+		site_id = #db.param(request.zos.globals.id)# and 
+		inquiries_feedback_deleted=#db.param(0)#</cfsavecontent>
+		<cfscript>
+		qFeedback=db.execute("qFeedback");
+		application.zcore.functions.zQueryToStruct(qFeedback,form,'inquiries_id');
+		</cfscript>
+		<table class="table-list" style="width:100%;border-left:2px solid ##999;border-right:1px solid ##999;">
+			<form name="myForm" id="myForm" action="/z/inquiries/admin/<cfif form.method EQ "userView">manage-inquiries/userInsertStatus<cfelse>feedback/insert</cfif>?inquiries_id=#form.inquiries_id#&amp;zPageId=#form.zPageId#" method="post">
+				<tr>
+					<th colspan="2"> Select a template or fill in the following fields:</th>
+				</tr>
+				<tr>
+					<td style="width:100px;">Template:</td>
+					<td><cfscript>
+					selectStruct = StructNew();
+					selectStruct.name = "inquiries_lead_template_id";
+					selectStruct.query = qTemplate;
+					selectStruct.onChange="updateNoteForm(this.options[this.selectedIndex].value);";
+					selectStruct.queryLabelField = "inquiries_lead_template_name";
+					selectStruct.queryValueField = 'inquiries_lead_template_id';
+					application.zcore.functions.zInputSelectBox(selectStruct);
+					</cfscript></td>
+				</tr>
+				<tr>
+					<td>Subject:</td>
+					<td><input name="inquiries_feedback_subject" id="inquiries_feedback_subject" type="text" size="50" maxlength="50" value="" /></td>
+				</tr>
+				<tr>
+					<td colspan="2">Message:<br />
+						<textarea name="inquiries_feedback_comments" id="inquiries_feedback_comments" style="width:98%; height:120px; ">#form.inquiries_feedback_comments#</textarea></td>
+				</tr>
+				<tr>
+					<td colspan="2">Change lead status:<br />
+						<!--- <input type="radio" name="inquiries_status_id" value="1" class="input-plain" <cfif form.inquiries_status_id EQ 1>checked="checked"</cfif>>
+						New
+						<input type="radio" name="inquiries_status_id" value="2" class="input-plain" <!--- <cfif form.inquiries_status_id EQ 2>checked="checked"</cfif> --->>
+						Assigned --->
+						<input type="radio" name="inquiries_status_id" value="3" class="input-plain" <cfif form.inquiries_status_id EQ 2 or application.zcore.functions.zso(form, 'inquiries_status_id',false,3) EQ 3>checked="checked"</cfif>>
+						Contacted
+						<input type="radio" name="inquiries_status_id" value="4" class="input-plain" <cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 4>checked="checked"</cfif>>
+						Closed with No Sale
+						<input type="radio" name="inquiries_status_id" value="5" class="input-plain"<cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 5>checked="checked"</cfif>>
+						Closed with Sale 
+						<input type="radio" name="inquiries_status_id" value="7" class="input-plain"<cfif application.zcore.functions.zso(form, 'inquiries_status_id') EQ 7>checked="checked"</cfif>>
+						Spam/Fake </td>
+				</tr>
+				<tr>
+					<td colspan="2"><button type="submit" name="submitForm">Add Note</button>
+						<button type="button" name="cancel" onclick="window.location.href = '/z/inquiries/admin/manage-inquiries/index?zPageId=#form.zPageId#';">Cancel</button></td>
+				</tr>
+			</form>
+		</table></td>
+	</tr>
+	</table> 
 	<cfscript>
 	db.sql="SELECT * from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback
 	LEFT JOIN #db.table("user", request.zos.zcoreDatasource)# user ON 
@@ -650,7 +659,7 @@ Please login in and view your lead by clicking the following link: #request.zos.
 	<cfif qFeedBack.recordcount NEQ 0>
 		<hr />
 		<h2>Emails &amp; Notes</h2>
-		<table style="width:100%; border-spacing:0px;">
+		<table class="table-list">
 			<cfloop query="qFeedback">
 				<cfif qFeedback.inquiries_feedback_subject NEQ ''>
 					<tr>
@@ -664,8 +673,13 @@ Please login in and view your lead by clicking the following link: #request.zos.
 				</cfif>
 				<tr>
 					<td style="border:1px solid ##999999; border-top:0px; ">By <a href="mailto:#qFeedback.user_email#">#qFeedback.user_first_name# #qFeedback.user_last_name#</a> on 
-					#DateFormat(qFeedback.inquiries_feedback_datetime, 'm/d/yyyy')&' at '&TimeFormat(qFeedback.inquiries_feedback_datetime, 'h:mm tt')# | 
-					<a href="/z/inquiries/admin/feedback/deleteFeedback?inquiries_feedback_id=#qFeedback.inquiries_feedback_id#&amp;inquiries_id=#qFeedback.inquiries_id#">Delete</a></td>
+					#DateFormat(qFeedback.inquiries_feedback_datetime, 'm/d/yyyy')&' at '&TimeFormat(qFeedback.inquiries_feedback_datetime, 'h:mm tt')#
+					<cfif form.method EQ "view">
+	
+						 | 
+						<a href="/z/inquiries/admin/feedback/deleteFeedback?inquiries_feedback_id=#qFeedback.inquiries_feedback_id#&amp;inquiries_id=#qFeedback.inquiries_id#">Delete</a>
+					</cfif>
+					</td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>

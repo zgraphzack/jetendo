@@ -1686,7 +1686,7 @@ displayGroupCom.ajaxInsert();
 				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Versioning?","member.site-option-group.edit site_option_group_enable_versioning")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_versioning")#</td>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_versioning")# (This enables deep copy and changing between versions of a record. Changing versions doesn't support recursion.)</td>
 				</tr>
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Max ## of Versions","member.site-option-group.edit site_option_group_version_limit")#</th>

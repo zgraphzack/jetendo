@@ -274,7 +274,9 @@ request.zos.cgi=local.tempCGI;
     request.zOS.now=now();
     Request.zOS.modes.time.begin = request.zos.startTime;
     request.zOS.mysqlnow=DateFormat(request.zos.now,'yyyy-mm-dd')&' '&TimeFormat(request.zos.now,'HH:mm:ss');
-    
+     
+	request.zos.queryCount=0;
+	request.zos.queryRowCount=0; 
     variables.getApplicationConfig(); 
     </cfscript>
 </cffunction>

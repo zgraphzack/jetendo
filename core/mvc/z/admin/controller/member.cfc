@@ -578,6 +578,11 @@
 					</cfif></td>
 			</tr>
 			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("CC Email(s)","member.member.edit user_alternate_email")#</th>
+				<td><input type="text" name="user_alternate_email" maxlength="255" value="#htmleditformat(form.user_alternate_email)#"  />
+				<br />Note: Updates to assigned leads will be CC'd to this list of emails.  Comma separate multiple email addresses. You can't login as this user with alternate emails.</td>
+			</tr>
+			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Confirm Password","member.member.edit member_password_confirm")# (Required)</th>
 				<td><input type="password" name="member_password_confirm" id="member_password_confirm" value="" size="30" /></td>
 			</tr>
@@ -692,14 +697,10 @@
 				<th>#application.zcore.functions.zOutputHelpToolTip("LinkedIn URL","member.member.edit user_linkedin_url")#</th>
 				<td><input type="text" name="user_linkedin_url" value="#form.user_linkedin_url#" size="30" /></td>
 			</tr>
-			<tr>
-				<th>#application.zcore.functions.zOutputHelpToolTip("Alternate Email","member.member.edit user_alternate_email")#</th>
-				<td><input type="text" name="user_alternate_email" value="#htmleditformat(form.user_alternate_email)#" size="30" /></td>
-			</tr>
-			<tr>
+			<!--- <tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Alternate Contact Name","member.member.edit user_alternate_contact_name")#</th>
 				<td><input type="text" name="user_alternate_contact_name" value="#htmleditformat(form.user_alternate_contact_name)#" size="30" /></td>
-			</tr>
+			</tr> --->
 			<cfif application.zcore.app.siteHasApp("listing")>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Sort Listings","member.member.edit user_listing_sort")#</th>

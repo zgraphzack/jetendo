@@ -1394,6 +1394,36 @@
 			<td style="vertical-align:top; width:140px;">Custom Create Account URL:</td>
 			<td><input name="site_custom_create_account_url" type="text" size="70" maxlength="255" value="#htmleditformat(form.site_custom_create_account_url)#"></td>
 		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Enable Lead User Reminder:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_user_reminder")#</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Enable Lead Admin Reminder:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_admin_reminder")#</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Enable Lead Reminder For Users:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_reminder_disable_cc")#</td>
+		</tr>
+		<cfscript>
+		if(form.method EQ "add"){
+			form.site_lead_reminder_email1_delay_minutes=720;
+		}
+		</cfscript>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Lead Reminder 1 Delay:</td>
+			<td><input name="site_lead_reminder_email1_delay_minutes" type="number" value="#htmleditformat(form.site_lead_reminder_email1_delay_minutes)#"> minutes<br />Enter the delay between the assignment and first reminder.  0 disables the reminder.</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Lead Reminder 2 Delay:</td>
+			<td><input name="site_lead_reminder_email2_delay_minutes" type="number" value="#htmleditformat(form.site_lead_reminder_email2_delay_minutes)#"> minutes<br />Enter the delay between the first and second reminder.  0 disables the reminder.</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Lead Reminder 3 Delay:</td>
+			<td><input name="site_lead_reminder_email3_delay_minutes" type="number" value="#htmleditformat(form.site_lead_reminder_email3_delay_minutes)#"> minutes<br />Enter the delay between the second and third reminder.  0 disables the reminder.</td>
+		</tr>
+ 
 		<!--- <tr >
 			<td style="vertical-align:top; width:140px;">Link Email Address:</td>
 			<td #application.zcore.status.getErrorStyle(Request.zsid, "site_email_link_from", "table-error","")#><input name="site_email_link_from" type="text" size="70" maxlength="50" value="#form.site_email_link_from#"></td>

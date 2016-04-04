@@ -200,6 +200,7 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		}
 	}
 	request.zos.lastDBResult=cfquery;
+	request.zos.queryCount++;
 	if(structkeyexists(variables.config, 'queryLogFunction') and isCustomFunction(variables.config.queryLogFunction)){
 		try{
 			variables.config.queryLogFunction({ totalExecutionTime:((gettickcount('nano')-startTime)/1000000), sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });
@@ -211,6 +212,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		}
 	}
 	if(structkeyexists(db, arguments.name)){
+		if(structkeyexists(db[arguments.name], 'recordcount')){
+			request.zos.queryRowCount+=db[arguments.name].recordcount;
+		}
 		return db[arguments.name];
 	}else{
 		return true;
