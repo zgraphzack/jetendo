@@ -545,7 +545,7 @@
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Lead Email","member.rental.category.edit rental_category_email")#</th>
-				<td class="table-white"><input name="rental_category_email" size="50" type="text" value="#form.rental_category_email#" maxlength="100" />
+				<td class="table-white"><input name="rental_category_email" size="50" type="text" value="#form.rental_category_email#" maxlength="100" /><br />
 					(Leave blank to use default system routing)</td>
 			</tr>
 			<tr>
@@ -633,7 +633,7 @@
 			</tr>
 			<tr>
 				<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Searchable","member.rental.category.edit rental_category_searchable")#</th>
-				<td colspan="2" class="table-white"><input type="radio" name="rental_category_searchable" <cfif application.zcore.functions.zso(form, 'rental_category_searchable',false,1) EQ 1>checked="checked"</cfif> value="1" style="border:none; background:none;" />
+				<td colspan="2" ><input type="radio" name="rental_category_searchable" <cfif application.zcore.functions.zso(form, 'rental_category_searchable',false,1) EQ 1>checked="checked"</cfif> value="1" style="border:none; background:none;" />
 					Yes
 					<input type="radio" name="rental_category_searchable" <cfif application.zcore.functions.zso(form, 'rental_category_searchable',false,1) EQ 0>checked="checked"</cfif> value="0" style="border:none; background:none;" />
 					No </td>
