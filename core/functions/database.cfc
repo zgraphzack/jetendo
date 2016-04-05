@@ -1127,7 +1127,7 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		if(structkeyexists(request.zos, 'queryCount')){
 			request.zos.queryCount++;
 		}
-		if(structkeyexists(qQuery, 'recordcount')){
+		if(not isboolean(qQuery) and structkeyexists(qQuery, 'recordcount')){
 			request.zos.queryRowCount+=qQuery.recordcount;
 		}
 		return qQuery;
