@@ -173,10 +173,7 @@
 	<form action="/z/listing/inquiry-pop/send" method="post" id="name22" style="margin:0px; padding:0px;padding-top:5px;"  onsubmit="zSet9('zset9_#form.set9#');return checkit2();">
 	<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
 	 #application.zcore.functions.zFakeFormFields()#
-	<cfscript>application.zcore.template.appendTag("meta",'<style type="text/css">
-	/* <![CDATA[ */ select, input, textarea, .tinypop td{ font-size:11px; line-height:14px; } /* ]]> */
-	
-	</style>');
+	<cfscript>application.zcore.template.appendTag("meta",'<style type="text/css">	/* <![CDATA[ */ select, input, textarea, .tinypop td{ font-size:11px; line-height:14px; } /* ]]> */	</style>');
 	</cfscript>
   
 	<table style="border-spacing:4px;width:450px;" class="tinypop">
@@ -336,7 +333,7 @@
 	<tr><td colspan="4"><input type="submit" style="font-size:14px; padding:5px; line-height:14px;" name="search1" value="Submit" /> 
 	<cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_inquiry_pop_forced EQ 0>
 	<input type="button" name="cancel1" value="No Thanks" onclick="window.parent.zCloseModal();" /> </cfif> | 
-	<a href="/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;">Privacy Policy</a></td></tr>
+	<a href="/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;" class="zPrivacyPolicyLink">Privacy Policy</a></td></tr>
 	<tr><td colspan="4">
 	#application.zcore.functions.zvarso("Form Privacy Message")#</td></tr>
 	</table>

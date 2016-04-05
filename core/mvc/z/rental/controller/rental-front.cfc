@@ -1376,7 +1376,7 @@ application.zcore.template.appendTag("meta",tempMeta);
 	</tr>	  
 	<tr>
 	  <td>&nbsp;</td>
-		<td><button type="submit" name="submit">Send Inquiry</button>&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" target="_blank">Privacy Policy</a>
+		<td><button type="submit" name="submit">Send Inquiry</button>&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" target="_blank" class="zPrivacyPolicyLink">Privacy Policy</a>
 		<input type="hidden" name="rental_id" value="#application.zcore.functions.zso(form, 'rental_id')#" /></td>
 	</tr>
 	<tr><td colspan="2">By submitting this form, you agree to receive future mailings from us.</td></tr>

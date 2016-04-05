@@ -200,7 +200,9 @@ Copyright (c) 2013 Far Beyond Code LLC.
 		}
 	}
 	request.zos.lastDBResult=cfquery;
-	request.zos.queryCount++;
+	if(structkeyexists(request.zos, 'queryCount')){
+		request.zos.queryCount++;
+	}
 	if(structkeyexists(variables.config, 'queryLogFunction') and isCustomFunction(variables.config.queryLogFunction)){
 		try{
 			variables.config.queryLogFunction({ totalExecutionTime:((gettickcount('nano')-startTime)/1000000), sql:arguments.sql, configStruct:arguments.configStruct, result: request.zos.lastDBResult });

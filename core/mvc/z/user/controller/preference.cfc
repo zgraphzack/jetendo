@@ -1003,7 +1003,7 @@ If the link does not work, please copy and paste the entire link in your browser
 				Plain Text
 				<hr />
 				<p>We respect your privacy<br />
-					<a href="/z/user/privacy/index" onclick="window.open(this.href); return false;" title="View our privacy policy in a new window.">View Our Privacy Policy</a></p>
+					<a href="/z/user/privacy/index" onclick="window.open(this.href); return false;" title="View our privacy policy in a new window." class="zPrivacyPolicyLink">View Our Privacy Policy</a></p>
 			</div>
 		</cfif>
 		<cfif openIdEnabled and variables.qcheckemail.recordcount NEQ 0 and openIdCom.isAdminChangeAllowed()>
@@ -1206,7 +1206,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		</div>
 	</div>
 	</form>
-	<div style="width:100%; float:left;"> Use of this web site requires acceptance of our <a href="/z/user/privacy/index" onclick="window.open(this.href); return false;" title="View our privacy policy in a new window.">Privacy Policy</a>.</div>
+	<div style="width:100%; float:left;"> Use of this web site requires acceptance of our <a href="/z/user/privacy/index" onclick="window.open(this.href); return false;" title="View our privacy policy in a new window." class="zPrivacyPolicyLink">Privacy Policy</a>.</div>
 	</form>
 	<hr />
 	<h2>Already have an account? <a href="/z/user/preference/index" target="_top">Log in</a></h2>

@@ -4322,7 +4322,7 @@ Define this function in another CFC to override the default email format
 					<cfif structkeyexists(arguments.struct, 'cancelURL')>
 						<button type="button" name="cancel1" onclick="window.location.href='#htmleditformat(arguments.struct.cancelURL)#';">Cancel</button>
 					</cfif>
-					&nbsp;&nbsp; <a href="/z/user/privacy/index" target="_blank">Privacy Policy</a>
+					&nbsp;&nbsp; <a href="/z/user/privacy/index" target="_blank" class="zPrivacyPolicyLink">Privacy Policy</a>
 					    <cfif form.modalpopforced EQ 1>
 							<input type="hidden" name="js3811" id="js3811" value="" />
 							<input type="hidden" name="js3812" id="js3812" value="#application.zcore.functions.zGetFormHashValue()#" />

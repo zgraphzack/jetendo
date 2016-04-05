@@ -134,7 +134,7 @@
 			<td><input type="radio" name="saved_search_frequency" value="0" style="background:none; border:0px; " <cfif application.zcore.functions.zso(form, 'saved_search_frequency') EQ '0' or application.zcore.functions.zso(form, 'saved_search_frequency') EQ ''>checked="checked"</cfif> /> Every Day 
 				<input type="radio" name="saved_search_frequency" value="1" <cfif application.zcore.functions.zso(form, 'saved_search_frequency') EQ '1'>checked="checked"</cfif> style="background:none; border:0px; " /> Fridays</td>
 			</tr>
-			<tr><td>&nbsp;</td><td><button type="submit" name="submit1" value="Save Search">Save Search</button> <button type="button" name="cancel1" value="Cancel" onClick="window.parent.zCloseModal();">Cancel</button> | <a href="/z/user/privacy/index"  rel="external" onClick="window.open('/z/user/privacy/index');return false;">Privacy Policy</a></td></tr>
+			<tr><td>&nbsp;</td><td><button type="submit" name="submit1" value="Save Search">Save Search</button> <button type="button" name="cancel1" value="Cancel" onClick="window.parent.zCloseModal();">Cancel</button> | <a href="/z/user/privacy/index"  rel="external" onClick="window.open('/z/user/privacy/index');return false;" class="zPrivacyPolicyLink">Privacy Policy</a></td></tr>
 			<tr><td colspan="4">
 			#application.zcore.functions.zvarso("Form Privacy Message")#</td></tr>
 			</table>

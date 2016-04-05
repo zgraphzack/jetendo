@@ -590,7 +590,7 @@
 	</cfif>
 	<tr>
 	<th>&nbsp;</th>
-		<td><button type="submit" name="submit">Send Inquiry</button>&nbsp;&nbsp; <a href="/z/user/privacy/index" target="_blank">Privacy Policy</a><br /><br />
+		<td><button type="submit" name="submit">Send Inquiry</button>&nbsp;&nbsp; <a href="/z/user/privacy/index" class="zPrivacyPolicyLink" target="_blank">Privacy Policy</a><br /><br />
         
    #application.zcore.functions.zvarso("Form Privacy Message")#</td>
         </tr>

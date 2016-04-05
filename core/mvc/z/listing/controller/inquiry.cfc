@@ -417,7 +417,7 @@
 			<div class="tr">
 				<div class="th">&nbsp;</div>
 				<div class="td"><button type="submit" name="submit">Send Inquiry</button>
-					&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;">Privacy Policy</a>
+					&nbsp;&nbsp;<a href="#request.zos.currentHostName#/z/user/privacy/index" rel="external" onclick="window.open('/z/user/privacy/index');return false;" class="zPrivacyPolicyLink">Privacy Policy</a>
 					<input type="hidden" name="listing_id" value="#htmleditformat(form.listing_id)#" />
 					<cfif application.zcore.app.siteHasApp("listing")>
 						<input type="hidden" name="content_id" value="#htmleditformat(variables.contentIdList)#" />

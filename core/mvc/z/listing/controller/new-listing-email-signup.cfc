@@ -123,7 +123,7 @@
 	</div> 
 	
 	<div style="float:left; clear:both; width:100%;">
-	<input type="submit" name="submitQuick1" value="Submit Form" style="font-size:18px; line-height:24px; margin-right:15px;" /> <a href="/z/user/privacy/index">Privacy Policy</a>
+	<input type="submit" name="submitQuick1" value="Submit Form" style="font-size:18px; line-height:24px; margin-right:15px;" /> <a href="/z/user/privacy/index" class="zPrivacyPolicyLink">Privacy Policy</a>
 	    </div>
 	    <br style="clear:both;">
 	
