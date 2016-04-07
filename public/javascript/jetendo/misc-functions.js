@@ -599,16 +599,6 @@ function resize_iframe()
    
 
 
-function getAgentLeads(user_id){
-	var siteIdType=agentSiteIdTypeLookup[user_id];
-	var arrUser=user_id.split("|");
-	if(user_id !== ''){
-		window.location.href = '/z/inquiries/admin/manage-inquiries/index?agentuserid='+arrUser[0]+'&agentusersiteIdType='+arrUser[1];
-	}else{
-		window.location.href = '/z/inquiries/admin/manage-inquiries/index?agentuserid=&agentusersiteidtype=1';
-	}
-}
-
 function zURLAppend(theLink, appendString){
 	if(theLink.indexOf("?") !== -1){
 		return theLink+"&"+appendString;

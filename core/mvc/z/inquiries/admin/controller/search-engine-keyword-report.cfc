@@ -20,6 +20,17 @@
 	form.negativekeywordsearch=application.zcore.functions.zso(form, 'negativekeywordsearch');
 	form.search=application.zcore.functions.zso(form, 'search',false,false);
 	form.searchOn=application.zcore.functions.zso(form, 'searchOn',false,false);
+	form.inquiries_status_id=application.zcore.functions.zso(form, 'inquiries_status_id');
+	form.uid=application.zcore.functions.zso(form, 'uid');
+	arrU=listToArray(form.uid, '|');
+	form.selected_user_id=0;
+	if(arrayLen(arrU) EQ 2){
+		form.selected_user_id=arrU[1];
+		form.selected_user_id_siteIDType=arrU[2];
+	}
+
+	
+
 	if(structkeyexists(form, 'inquiries_end_date') EQ false){
 		form.inquiries_end_date = application.zcore.functions.zGetDateSelect("inquiries_end_date");
 	}
@@ -49,15 +60,19 @@
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	where site_id = #db.param(request.zOS.globals.id)# and 
 	inquiries_deleted = #db.param(0)# and 
-	inquiries.inquiries_status_id <> #db.param(0)# and 
+	<cfif form.inquiries_status_id EQ ""> 
+		inquiries.inquiries_status_id <> #db.param(0)# and 
+	<cfelse>
+		inquiries.inquiries_status_id = #db.param(form.inquiries_status_id)# and 
+	</cfif>
 	inquiries_parent_id = #db.param(0)#
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
 		AND user_id = #db.param(request.zsession.user.id)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
-	<cfif application.zcore.functions.zso(request.zsession,'agentuserid') NEQ ''>
-		and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-		user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
+	<cfif form.selected_user_id NEQ 0>
+		and inquiries.user_id = #db.param(form.selected_user_id)# and 
+		user_id_siteIDType = #db.param(form.selected_user_id_siteidtype)#
 	</cfif>
 	</cfsavecontent>
 	<cfscript>
@@ -73,15 +88,19 @@
 	from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
 	where site_id = #db.param(request.zOS.globals.id)# and 
 	inquiries_deleted = #db.param(0)# and
-	inquiries.inquiries_status_id <> #db.param(0)# and 
+	<cfif form.inquiries_status_id EQ ""> 
+		inquiries.inquiries_status_id <> #db.param(0)# and 
+	<cfelse>
+		inquiries.inquiries_status_id = #db.param(form.inquiries_status_id)# and 
+	</cfif>
 	inquiries_parent_id = #db.param(0)#
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
 		AND user_id = #db.param(request.zsession.user.id)# and 
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 	</cfif>
-	<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
-		and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-		user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
+	<cfif form.selected_user_id NEQ 0>
+		and inquiries.user_id = #db.param(form.selected_user_id)# and 
+		user_id_siteIDType = #db.param(form.selected_user_id_siteidtype)#
 	</cfif>
 	</cfsavecontent>
 	<cfscript>
@@ -128,14 +147,19 @@
 			and (track_user_keywords NOT LIKE #db.param('%#form.negativekeywordsearch#%')# and 
 			track_user_keywords NOT LIKE #db.param('%#application.zcore.functions.zurlencode(form.negativekeywordsearch,"%")#%')#)
 		</cfif>
-		and inquiries.inquiries_status_id <> #db.param(0)# and inquiries_parent_id = #db.param(0)#
+		<cfif form.inquiries_status_id EQ ""> 
+			and inquiries.inquiries_status_id <> #db.param(0)# 
+		<cfelse>
+			and inquiries.inquiries_status_id = #db.param(form.inquiries_status_id)# 
+		</cfif>
+		 and inquiries_parent_id = #db.param(0)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
 			AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 		</cfif>
-		<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
-			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
+		<cfif form.selected_user_id NEQ 0>
+			and inquiries.user_id = #db.param(form.selected_user_id)# and 
+			user_id_siteIDType = #db.param(form.selected_user_id_siteidtype)#
 		</cfif>
 		<cfif form.inquiries_start_date EQ false>
 			and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
@@ -163,14 +187,19 @@
 			and (track_user_keywords NOT LIKE #db.param('%#form.negativekeywordsearch#%')# and 
 			track_user_keywords NOT LIKE #db.param('%#application.zcore.functions.zurlencode(form.negativekeywordsearch,"%")#%')#)
 		</cfif>
-		and inquiries.inquiries_status_id <> #db.param(0)# and inquiries_parent_id = #db.param(0)#
+		<cfif form.inquiries_status_id EQ ""> 
+			and inquiries.inquiries_status_id <> #db.param(0)# 
+		<cfelse>
+			and inquiries.inquiries_status_id = #db.param(form.inquiries_status_id)# 
+		</cfif>
+		 and inquiries_parent_id = #db.param(0)#
 		<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator") EQ false and structkeyexists(request.zos.userSession.groupAccess, "homeowner") eq false and structkeyexists(request.zos.userSession.groupAccess, "manager") eq false>
 			AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#
 		</cfif>
-		<cfif application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''>
-			and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-			user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#
+		<cfif form.selected_user_id NEQ 0>
+			and inquiries.user_id = #db.param(form.selected_user_id)# and 
+			user_id_siteIDType = #db.param(form.selected_user_id_siteidtype)#
 		</cfif>
 		<cfif form.inquiries_start_date EQ false>
 			and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 

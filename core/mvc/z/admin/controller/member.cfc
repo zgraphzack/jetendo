@@ -578,13 +578,13 @@
 					</cfif></td>
 			</tr>
 			<tr>
+				<th>#application.zcore.functions.zOutputHelpToolTip("Confirm Password","member.member.edit member_password_confirm")# (Required)</th>
+				<td><input type="password" name="member_password_confirm" id="member_password_confirm" value="" size="30" /></td>
+			</tr>
+			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("CC Email(s)","member.member.edit user_alternate_email")#</th>
 				<td><input type="text" name="user_alternate_email" maxlength="255" value="#htmleditformat(form.user_alternate_email)#"  />
 				<br />Note: Updates to assigned leads will be CC'd to this list of emails.  Comma separate multiple email addresses. You can't login as this user with alternate emails.</td>
-			</tr>
-			<tr>
-				<th>#application.zcore.functions.zOutputHelpToolTip("Confirm Password","member.member.edit member_password_confirm")# (Required)</th>
-				<td><input type="password" name="member_password_confirm" id="member_password_confirm" value="" size="30" /></td>
 			</tr>
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Phone","member.member.edit member_phone")#</th>
