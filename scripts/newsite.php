@@ -100,6 +100,9 @@ for($i4=0;$i4 < 62;$i4++){
 	if($isTestServer && file_exists($sharePath."__zdeploy-core-executed.txt")){ 
 		unlink($sharePath."__zdeploy-core-executed.txt");
 		@unlink($sharePath."__zdeploy-core-failed.txt");
+
+
+
 		$isCompiled=compileAllPackages();
 		if(!$isCompiled){
 			$handle=fopen($sharePath."__zdeploy-core-failed.txt", "w");
@@ -128,10 +131,42 @@ for($i4=0;$i4 < 62;$i4++){
 				$sshCommand=zGetSSHConnectCommand($remoteHost, $privateKeyPath);
 				if($sshCommand===FALSE){
 					$handle=fopen($sharePath."__zdeploy-core-failed.txt", "w");
-					fwrite($handle, "1");
+					fwrite($handle, "zGetSSHConnectCommand failed.  The remote host and private key may not be defined yet.");
 					fclose($handle); 
 					$failed=true;
 					break;
+				}
+				if(is_dir($rootPath."core/.git")){
+					/*
+					// not important yet
+					// git status -uno to get status on local and remote server - output is nothing if they match.
+					$cmd="/usr/bin/git -C ".escapeshellarg($siteInstallPath)." status -uno";
+					$r=`$cmd`;
+					if($r!=""){
+
+					}
+					*/
+					// git check if there is * master
+					$cmd="/usr/bin/git -C ".escapeshellarg($rootPath."/core/")." branch";
+					$r=`$cmd`; 
+					if($r!=""){
+						$isMasterBranch=false;
+						$arrBranch=explode("\n", $r);
+						for($i=0;$i<=count($arrBranch);$i++){
+							$c=$arrBranch[$i];
+							if($c=="* master"){
+								$isMasterBranch=true;
+								break;
+							}
+						}
+						if(!$isMasterBranch){
+							$handle=fopen($sharePath."__zdeploy-core-failed.txt", "w");
+							fwrite($handle, "The current git branch is not master.  You can only deploy to production when git is on the master branch.");
+							fclose($handle);
+							$failed=true;
+							break;
+						}
+					}
 				}
 				$sourceOnlyList="";
 				$appendString="";
@@ -172,6 +207,7 @@ for($i4=0;$i4 < 62;$i4++){
 				unlink($siteWritableInstallPath."__zdeploy-executed.txt"); 
 				@unlink($siteWritableInstallPath."__zdeploy-complete.txt.temp"); 
 				@unlink($siteWritableInstallPath."__zdeploy-complete.txt"); 
+				@unlink($siteWritableInstallPath."__zdeploy-error.txt"); 
 				
 				$preview="0";
 				if(file_exists($siteWritableInstallPath."__zdeploy-preview.txt")){ 
@@ -196,8 +232,8 @@ for($i4=0;$i4 < 62;$i4++){
 					
 					$sshCommand=zGetSSHConnectCommand($remoteHost, $privateKeyPath);
 					if($sshCommand===FALSE){
-						$handle=fopen($sharePath."__zdeploy-core-failed.txt", "w");
-						fwrite($handle, "1");
+						$handle=fopen($siteWritableInstallPath."__zdeploy-error.txt", "w");
+						fwrite($handle, "zGetSSHConnectCommand failed.  The remote host and private key may not be defined yet.");
 						fclose($handle); 
 						$failed=true;
 						break;
@@ -238,6 +274,38 @@ for($i4=0;$i4 < 62;$i4++){
 					if($preview=="1"){
 						$sourceOnlyList.=" --itemize-changes --dry-run ";
 						$appendString=" 2>&1";
+					} 
+
+					if(is_dir($siteInstallPath.".git")){
+						/*
+						// not important yet
+						// git status -uno to get status on local and remote server - output is nothing if they match.
+						$cmd="/usr/bin/git -C ".escapeshellarg($siteInstallPath)." status -uno";
+						$r=`$cmd`;
+						if($r!=""){
+
+						}
+						*/
+						// git check if there is * master
+						$cmd="/usr/bin/git -C ".escapeshellarg($siteInstallPath)." branch";
+						$r=`$cmd`; 
+						if($r!=""){
+							$isMasterBranch=false;
+							$arrBranch=explode("\n", $r);
+							for($i=0;$i<=count($arrBranch);$i++){
+								$c=$arrBranch[$i];
+								if($c=="* master"){
+									$isMasterBranch=true;
+									break;
+								}
+							}
+							if(!$isMasterBranch){
+								$handle=fopen($siteWritableInstallPath."__zdeploy-error.txt", "w");
+								fwrite($handle, "The current git branch is not master.  You can only deploy to production when git is on the master branch.");
+								fclose($handle);
+								break;
+							}
+						}
 					}
 					// --chmod=Do=,Fo=,Du=rwx,Dg=rwx,Fu=rw,Fg=rw
 					$cmd='rsync -rtLvz '.$sourceOnlyList.$excludeString.' --exclude=\'.git\' --exclude=\'*/.git\' --exclude=\'.git*\' --exclude=\'*/.git*\' --exclude=\'WEB-INF\' --exclude=\'_notes\' --exclude=\'*/_notes\' --delay-updates --delete -e "'.$sshCommand.'" '.$siteInstallPath.' '.$remoteUsername.'@'.$remoteHost.':'.$remotePath.$appendString; 
