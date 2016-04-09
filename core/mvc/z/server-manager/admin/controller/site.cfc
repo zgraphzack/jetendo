@@ -1328,6 +1328,8 @@
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript> | Autosync child files: 
 			#application.zcore.functions.zInput_Boolean("site_child_sync")# 
+			<br /><br />
+			Warning: Selecting a theme or site WILL overwrite any files in the site directory the first time you do this if it already exists.
 			</td>
 		</tr> 
         </cfif>
