@@ -2363,6 +2363,7 @@ if(not rs.success){
 
 <cffunction name="deleteGroupRecursively" localmode="modern" access="public" roles="member">
 	<cfargument name="site_option_group_id" type="numeric" required="yes">
+	<cfargument name="rebuildSiteCache" type="boolean" required="no" default="#true#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var row=0;
@@ -2375,7 +2376,7 @@ if(not rs.success){
 	site_id = #db.param(request.zos.globals.id)# ";
 	qGroups=db.execute("qGroups");
 	for(row in qGroups){
-		deleteGroupRecursively(row.site_option_group_id);	
+		deleteGroupRecursively(row.site_option_group_id, false);	
 	}
 	 
 	db.sql="SELECT * FROM #db.table("site_x_option_group_set", request.zos.zcoreDatasource)# 
@@ -2437,6 +2438,11 @@ if(not rs.success){
 	site_option_group_deleted = #db.param(0)# and 
 	site_id = #db.param(request.zos.globals.id)# ";
 	result =db.execute("result"); 
+
+	if(arguments.rebuildSiteCache){
+		application.zcore.functions.zOS_cacheSiteAndUserGroups(request.zos.globals.id);
+	}
+
 	</cfscript>
 </cffunction>
 
