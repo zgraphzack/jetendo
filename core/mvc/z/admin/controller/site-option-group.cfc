@@ -86,9 +86,22 @@
 		}
 		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
 		if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+			c=t9.optionGroupFieldLookup[groupStruct.site_option_group_id];
+			fieldStruct={};
 			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
 				optionStruct=t9.optionLookup[n];
-				echo(indent&chr(9)&'##curStruct#ss.curIndex#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##<br />'&chr(10));
+				f=indent&chr(9)&'##curStruct#ss.curIndex#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##<br />'&chr(10);
+
+				ts={
+					html: f,
+					sort: optionStruct.site_option_sort
+				};
+				fieldStruct[n]=ts;
+			}
+			arrKey=structsort(fieldStruct, "numeric", "asc", "sort");
+			for(n2=1;n2<=arraylen(arrKey);n2++){
+				n=arrKey[n2];
+				echo(fieldStruct[n].html);
 			}
 			if(groupStruct.site_option_group_enable_unique_url EQ 1){
 				echo(indent&chr(9)&'<a href="##curStruct#ss.curIndex#.__url##">View</a><br />'&chr(10));
