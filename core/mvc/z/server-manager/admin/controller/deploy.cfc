@@ -686,6 +686,11 @@
 		site_x_deploy_server_deleted = #db.param(0)#";
 		var qDeploy=db.execute("qDeploy");
 		</cfscript>
+		<cfif request.zos.isTestServer>
+			<h2>Current Server: Test Server</h2>
+		<cfelse>
+			<h2>Current Server: Live Server</h2>
+		</cfif>
 		
 		<p>Configure excluded directories and files for this site on the <a href="/z/server-manager/admin/site/edit?sid=#form.sid#">globals</a> page.</p>
 		<cfif qDeploy.recordcount>

@@ -63,6 +63,11 @@
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	</cfscript>
 	<h2>Site Backup: #qsite.site_domain#</h2>
+	<cfif request.zos.isTestServer>
+		<h2>Current Server: Test Server</h2>
+	<cfelse>
+		<h2>Current Server: Live Server</h2>
+	</cfif>
 	<form name="editForm" action="/z/server-manager/admin/download-site-backup/download" method="get" target="_blank" style="margin:0px;">
 		<input type="hidden" name="sid" id="sidHiddenField" value="#form.sid#" />
 		<table style="width:100%; border-spacing:0px;" class="table-list"> 
