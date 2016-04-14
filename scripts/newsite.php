@@ -215,15 +215,15 @@ for($i4=0;$i4 < 62;$i4++){
 					unlink($siteWritableInstallPath."__zdeploy-preview.txt"); 
 				}
 				$siteId=$row["site_id"];
-				//$siteId=4000;
+				//$siteId=4000; 
 				$sql2="select * from site_x_deploy_server, deploy_server 
 				WHERE deploy_server.deploy_server_id = site_x_deploy_server.deploy_server_id and 
 				deploy_server_deploy_enabled='1'  and 
 				site_x_deploy_server.site_id = '".$siteId."' and 
 				deploy_server_deleted = 0 and 
 				site_x_deploy_server_deleted = 0 "; 
-				$r=$cmysql->query($sql2, MYSQLI_STORE_RESULT); 
-				while($row2=$r->fetch_assoc()){ 
+				$mysqlResult1=$cmysql->query($sql2, MYSQLI_STORE_RESULT); 
+				while($row2=$mysqlResult1->fetch_assoc()){ 
 					$privateKeyPath=$row2["deploy_server_private_key_path"];
 					$remoteUsername=$row2["deploy_server_ssh_username"];
 					$remoteHost=$row2["deploy_server_ssh_host"];
