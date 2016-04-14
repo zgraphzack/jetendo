@@ -49,38 +49,67 @@
 		}
 		structappend(form,ss.varstruct);
 		if(isDefined('request.zsession.user.id')){
+			form.inquiries_first_name=request.zsession.user.first_name;
+			form.inquiries_last_name=request.zsession.user.last_name; 
+		}
+		/*
+		if(isDefined('request.zsession.user.id')){
 			form.user_id=request.zsession.user.id;
 			form.user_id_siteIDType=application.zcore.user.getSiteIdTypeFromLoggedOnUser();
 		}else{
 			form.user_id=0;
 			form.user_id_siteIDType=4;
-		}
+		}*/
 		request.zsession.inquiries_email=form.saved_search_email;
 		form.saved_search_format=application.zcore.functions.zso(form, 'saved_search_format', true, 1);
 		form.saved_search_last_sent_date=request.zos.mysqlnow;
 		form.mls_saved_search_id=request.zos.listing.functions.zMLSSearchOptionsUpdate('update', 0, form.saved_search_email, form); 
 		form.inquiries_email=form.saved_search_email;
+
+		form.inquiries_type_id=14;
+		form.inquiries_type_id_siteidtype=4;
+		form.inquiries_status_id = 1;
+		form.inquiries_datetime=request.zos.mysqlnow;
+		form.property_id='';
+		form.inquiries_primary=1;
+
+		arrCriteria=request.zos.listing.functions.getSearchCriteriaDisplay(form);
+		savecontent variable="form.inquiries_comments"{
+			echo('This person has signed up for a new listing email alert with the following search criteria: #chr(10)#
+			#arraytolist(arrCriteria, ", ")#');
+		}
+		db.sql="UPDATE #db.table("inquiries", request.zos.zcoreDatasource)# inquiries 
+		SET inquiries_primary=#db.param(0)#, 
+		inquiries_updated_datetime=#db.param(request.zos.mysqlnow)#  
+		WHERE inquiries_email=#db.param(form.inquiries_email)# and 
+		site_id = #db.param(request.zos.globals.id)# and 
+		inquiries_deleted = #db.param(0)#";
+		db.execute("q"); 
+		inputStruct = StructNew();
+		inputStruct.struct=form;
+		inputStruct.table = "inquiries";
+		inputStruct.datasource=request.zos.zcoreDatasource;
+		form.inquiries_id = application.zcore.functions.zInsert(inputStruct); 
+		if(form.inquiries_id EQ false){
+			request.zsid = application.zcore.status.setStatus(Request.zsid, "Your inquiry has not been sent due to an error.", false,true);
+			application.zcore.functions.zRedirect("/z/listing/cma-inquiry/index?modalpopforced=#form.modalpopforced#&action=form&zsid="&request.zsid);
+		}else{
+			request.zsid = application.zcore.status.setStatus(Request.zsid, "Your inquiry has been sent.", false,true);
+		}	
 		application.zcore.tracking.setUserEmail(form.inquiries_email);
 		application.zcore.tracking.setConversion('saved search');
 		
 		local.tempEmail=application.zcore.functions.zvarso('zofficeemail');
-		
-		</cfscript>
-		<cfmail  to="#local.tempEmail#" from="#request.fromemail#" replyto="#form.inquiries_email#" subject="New Saved Search on #request.zos.globals.shortdomain#" type="html">
-		#application.zcore.functions.zHTMLDoctype()#
-		<head><title>Saved Search</title></head><body>
-		<p><span style="font-size:18px; font-weight:bold;">#request.zos.globals.shortdomain# saved search.</span></p>
-		<p style="font-size:14px; font-weight:normal;">
-		Email: <a href="mailto:#form.inquiries_email#">#form.inquiries_email#</a></p>
-		<p>This person signed up for a new listing email alert with the following criteria: <br />
-		#arraytolist(request.zos.listing.functions.getSearchCriteriaDisplay(form),", ")#
-		</p>
-		<p>You may want to contact the person as if they are a lead, but they didn't directly ask a question yet, so they may be unlikely to respond.</p>
-		<p><a href="#request.zos.currentHostName#/z/listing/admin/saved-searches/index">Login and view all saved searches</a></p>
-		</body></html>
-		</cfmail>
-		<cfscript>
-		form.mail_user_id=application.zcore.user.automaticAddUser(application.zcore.functions.zUserMapFormFields(structnew()));
+		 
+		ts=structnew();
+		ts.inquiries_id=form.inquiries_id;
+		ts.subject="New Saved Search on #request.zos.globals.shortdomain#";
+		// send the lead
+		rs=application.zcore.functions.zAssignAndEmailLead(ts);
+		if(rs.success EQ false){
+			// failed to assign/email lead
+			//zdump(rs);
+		} 
 		
 		if(structkeyexists(form, 'returnJson')){
 			rs={

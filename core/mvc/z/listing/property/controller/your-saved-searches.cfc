@@ -86,7 +86,8 @@
 	set  saved_search_last_sent_date=#db.param(dateformat(local.qSearch.saved_search_sent_date,'yyyy-mm-dd')&' '&timeformat(local.qSearch.saved_search_sent_date,'HH:mm:ss'))#,
 	mls_saved_search_updated_datetime=#db.param(request.zos.mysqlnow)# 
 	WHERE mls_saved_search_id = #db.param(local.qSearch.mls_saved_search_id)# and 
-	site_id = #db.param(request.zos.globals.id)#";
+	site_id = #db.param(request.zos.globals.id)# and 
+	mls_saved_search_deleted=#db.param(0)# ";
 	db.execute("qUpdate");
 	
         form.searchid=application.zcore.status.getNewId();
@@ -229,7 +230,8 @@
 		user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#) 
 	</cfif>)
 	<cfif variables.disableSavedSearchKey EQ false> and saved_search_key = #db.param(form.saved_search_key)# </cfif> and 
-	site_id = #db.param(request.zos.globals.id)#
+	site_id = #db.param(request.zos.globals.id)# and 
+	mls_saved_search_deleted=#db.param(0)# 
 	</cfsavecontent><cfscript>qDelete=db.execute("qDelete");</cfscript>
 	<cfsavecontent variable="db.sql">
 	SELECT * FROM #request.zos.queryObject.table("mls_saved_search", request.zos.zcoreDatasource)# mls_saved_search 
