@@ -119,6 +119,7 @@
         <p><strong>Email Address:</strong> <input type="text" name="searchemail" value="#application.zcore.functions.zso(form, 'searchemail')#" /> <input type="submit" name="searchButton" value="Search" style="text-align:center;" />
         <cfif structkeyexists(form, 'searchemail')> | <a href="/z/listing/admin/saved-searches/index">Show All</a></cfif></p>
         </form>
+        <p>Use the "Delete All Searches" link below to manually unsubscribe a user if they complain about these emails.</p>
         <cfif structkeyexists(form, 'searchemail') and qcount.count EQ 0>
         <p>No saved searches match your search.</p>
         <cfelse>
@@ -129,12 +130,12 @@
             	<cfscript>writeoutput(searchNav);</cfscript>
                 <table style="border-spacing:0px;" class="table-list">
                 <tr class="table-shadow">
-                <td>Email/Criteria</td>
-                <td>Searches</td>
+                <td>Email</td>
+                <td>Searches</td> 
                 <td>Date Created</td>
                 <td>Date Updated</td>
                 <td>Admin</td>
-                </tr>
+                </tr> 
                 <cfloop query="qCheck">
 					<cfscript>
                     // create input structure
@@ -154,6 +155,7 @@
                     </cfscript>
                     <tr #rollOverCode#>
                     <td><a href="mailto:#qCheck.saved_search_email#">#qCheck.saved_search_email#</a></td>
+                    <!--- <td>#ArrayToList(request.zos.listing.functions.getSearchCriteriaDisplay(searchStr),', ')#</td> --->
                     <td>#qCheck.count#</td>
                     <td>#DateFormat(qCheck.saved_search_created_date,'m/d/yy')&' '&TimeFormat(qCheck.saved_search_created_date,'h:mm:ss')#</td>
                     <td>#DateFormat(qCheck.saved_search_updated_date,'m/d/yy')&' '&TimeFormat(qCheck.saved_search_updated_date,'h:mm:ss')#</td>

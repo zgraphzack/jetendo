@@ -64,8 +64,9 @@
 		application.zcore.tracking.setConversion('saved search');
 		
 		local.tempEmail=application.zcore.functions.zvarso('zofficeemail');
+		
 		</cfscript>
-		<cfmail  to="#local.tempEmail#" from="#local.tempEmail#" replyto="#form.inquiries_email#" subject="New Saved Search on #request.zos.globals.shortdomain#" type="html">
+		<cfmail  to="#local.tempEmail#" from="#request.fromemail#" replyto="#form.inquiries_email#" subject="New Saved Search on #request.zos.globals.shortdomain#" type="html">
 		#application.zcore.functions.zHTMLDoctype()#
 		<head><title>Saved Search</title></head><body>
 		<p><span style="font-size:18px; font-weight:bold;">#request.zos.globals.shortdomain# saved search.</span></p>
