@@ -310,6 +310,10 @@ function z404(){
 	}
 }
 
+if(!isset($_COOKIE['zenable']) && !isset($_COOKIE['ZENABLE'])){
+	echo "<h1>404 Not Found</h1>";
+	exit;	
+}  
 date_default_timezone_set('America/New_York');
 function microtime_float()
 {
@@ -330,6 +334,8 @@ if(!isset($_GET['f']) || !isset($_GET['w']) || !isset($_GET['h']) || !isset($_GE
 	}
 	z404();
 }
+
+
 /*
 if(isset($_GET['m']) == "7"){
 	var_dump($_GET);

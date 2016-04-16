@@ -1,15 +1,5 @@
 <cfcomponent implements="zcorerootmapping.interface.widget" extends="zcorerootmapping.com.widget.baseWidget"> 
-<cfoutput>
-<!--- <cffunction name="init" localmode="modern" access="public" output="no">
-	<cfargument name="dataStruct" type="struct" required="yes">
-	<cfscript>
-	variables.widget_id=1; // must be unique number across all servers
-	variables.widget_version=1; // increment to force recompilation of all instances
-	variables.widget_name="widget-example"; 
-	variables.arrStylesheet=["/z/a/widget/widget-example.css"];
-	</cfscript>	
-</cffunction> --->
-
+<cfoutput>  
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
 	<cfargument name="dataFields" type="struct" required="yes">
 	<cfscript>
@@ -114,6 +104,7 @@
 			type:"Text",
 			required:true,
 			defaultValue:"",
+			previewValue:"Heading";
 			options:{}
 		},
 		{
@@ -121,6 +112,7 @@
 			label:"Body Text",
 			type:"HTML Editor",
 			defaultValue:"",
+			previewValue:"<p>Body Text</p>",
 			options:{
 				editorwidth:600,
 				editorheight:300
@@ -130,7 +122,7 @@
 			id:"3",
 			label:"Image",
 			type:"Image",
-			defaultValue:"",
+			defaultValue:application.zcore.functions.zGetImagePlaceholderURL(600, 600),
 			options:{
 				imagewidth:600,
 				imageheight:600,

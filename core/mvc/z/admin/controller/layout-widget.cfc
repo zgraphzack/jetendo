@@ -71,11 +71,22 @@
 
 <cffunction name="addWidgetLayout" localmode="modern" access="remote" roles="member">
 	<cfscript> 
-	displayWidgetForm("data");
+	displayWidgetForm("layout");
 	</cfscript>
 </cffunction>
 
 <cffunction name="editWidgetLayout" localmode="modern" access="remote" roles="member">
+	<cfscript> 
+	displayWidgetForm("layout");
+	</cfscript>
+</cffunction>
+
+<cffunction name="addWidgetData" localmode="modern" access="remote" roles="member">
+	<cfscript> 
+	displayWidgetForm("data");
+	</cfscript>
+</cffunction>
+<cffunction name="editWidgetData" localmode="modern" access="remote" roles="member">
 	<cfscript> 
 	displayWidgetForm("data");
 	</cfscript>
@@ -261,6 +272,10 @@
 		echo('insertWidgetInstanceData');
 	}else if(methodbackup EQ "editWidgetInstanceData"){
 		echo('updateWidgetInstanceData');
+	}else if(methodbackup EQ "editWidgetData"){
+		echo('updateWidgetData');
+	}else if(methodbackup EQ "editWidgetLayout"){
+		echo('updateWidgetLayout');
 	} 
 	echo('" method="post" enctype="multipart/form-data" >');
 	</cfscript>
@@ -439,6 +454,12 @@
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="updateWidgetData" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	saveWidgetInstance();
+	</cfscript>
+</cffunction>
 
 <cffunction name="updateWidgetInstanceData" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -880,6 +901,7 @@ getWidgetInstanceSQL(ts);
 <a href="/z/admin/layout-column/index?layout_column_id=#form.layout_column_id#&amp;layout_row_id=#qRow.layout_row_id#&amp;layout_page_id=#qPage.layout_page_id#">Column ###qColumn.layout_column_sort# (ID###qColumn.layout_column_id#)</a> /</h2>
 	<p><a href="/z/admin/layout-widget/addWidget?layout_column_id=#form.layout_column_id#&amp;layout_page_id=#form.layout_page_id#">Add Widget</a></p>
 
+	<p>Someday this page should let the developer define the default layout and data options for this widget.</p>
 	<cfif qLayout.recordcount EQ 0>
 		<p>No widgets have been added to this column.</p>
 	<cfelse>
@@ -951,9 +973,9 @@ getWidgetInstanceSQL(ts);
 	<td>Preview Not Implemented</td> 
 	<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(row.layout_column_x_widget_id)#</td>
 	<td> 
-	<a href="/z/admin/layout-widget/editWidgetLayout?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;layout_column_id=#row.layout_column_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit Layout</a> | 
-	<a href="/z/admin/layout-widget/editWidgetData?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;layout_column_id=#row.layout_column_id#&amp;modalpopforced=1">Edit Data</a> | 
 	<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/admin/layout-widget/deleteWidget?layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;layout_page_id=#form.layout_page_id#&amp;layout_column_id=#row.layout_column_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a></td>');
+	/*<a href="/z/admin/layout-widget/editWidgetLayout?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;layout_column_id=#row.layout_column_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit Layout</a> | 
+	<a href="/z/admin/layout-widget/editWidgetData?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;layout_column_id=#row.layout_column_id#&amp;modalpopforced=1">Edit Data</a> | */
 	</cfscript>
 </cffunction>
 
