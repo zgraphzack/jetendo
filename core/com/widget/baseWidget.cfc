@@ -44,7 +44,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="render" localmode="modern" access="remote">
+<cffunction name="render" localmode="modern" access="public">
 	<cfargument name="dataFields" type="struct" required="yes">
 	<cfscript>
 	cs=variables.configStruct;
@@ -75,7 +75,7 @@
 
 </cffunction>
 
-<cffunction name="getVersion" localmode="modern" access="remote">
+<cffunction name="getVersion" localmode="modern" access="public">
 	<cfscript> 
 	cs=variables.configStruct;
 	if(not structkeyexists(application.zcore, 'widgetVersionStruct')){

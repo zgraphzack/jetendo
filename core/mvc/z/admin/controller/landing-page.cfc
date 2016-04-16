@@ -170,7 +170,7 @@ D:\desktop\layout.ai
 			Edit
 		</cfif>
 		Custom Landing Page</h2>
-	<form action="/z/admin/landing-page/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?section_id=#form.section_id#&amp;landing_page_parent_id=#form.landing_page_parent_id#&amp;landing_page_id=#form.landing_page_id#" method="post">
+	<form action="/z/admin/landing-page/<cfif currentMethod EQ 'add'>insert<cfelse>update</cfif>?landing_page_parent_id=#form.landing_page_parent_id#&amp;landing_page_id=#form.landing_page_id#" method="post">
 		<input type="hidden" name="modalpopforced" value="#form.modalpopforced#" />
 		<table style="width:100%;" class="table-list">
 			<tr>
@@ -186,6 +186,11 @@ D:\desktop\layout.ai
 					selectStruct = StructNew();
 					selectStruct.name = "section_id";
 					selectStruct.query = qSection;
+
+					if(qSection.recordcount EQ 0){
+						application.zcore.status.setStatus(request.zsid, "You must add at least 1 section first.", form, true);
+						application.zcore.functions.zRedirect("/z/admin/section/index?zsid=#request.zsid#");
+					}
 					//selectStruct.queryParseLabelVars=true;
 					selectStruct.queryLabelField = "section_name";
 					selectStruct.queryValueField = "section_id";
@@ -303,15 +308,31 @@ D:\desktop\layout.ai
 	</cfscript>
 </cffunction>
 
+<cffunction name="getLandingPageURL" localmode="modern" access="public" roles="member">
+	<cfargument name="row" type="struct" required="yes">
+	<cfscript>
+	row=arguments.row;
+	if(row.landing_page_unique_url NEQ ""){
+		return row.landing_page_unique_url;
+	}else{
+		// TODO need to finish enabling layout as a new application in jetendo so the URL can be configured per site.
+		urlId=1
+		// urlId=layout_config_landing_page_url_id;
+		return "/"&application.zcore.functions.zURLEncode(row.landing_page_meta_title, '-')&'-#urlId#-'&row.landing_page_id&".html";
+	}
+	</cfscript>
+</cffunction>
 
 <cffunction name="getLandingRowHTML" localmode="modern" access="public" roles="member">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
 	row=arguments.row;
+	link=getLandingPageURL(row);
 	echo('<td>#row.landing_page_id#</td> 
 	<td>#row.landing_page_meta_title#</td>  
 	<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(row.landing_page_id)#</td>
 	<td> 
+	<a href="#link#" target="_blank">View</a> | 
 	<a href="/z/admin/landing-page/edit?section_id=#row.section_id#&amp;landing_page_id=#row.landing_page_id#&amp;modalpopforced=1" onclick="zTableRecordEdit(this);  return false;">Edit</a> | ');
 	if(row.section_content_type_id EQ 1){
 		echo('<a href="/z/admin/landing-page-row/index?landing_page_id=#row.landing_page_id#">Manage Rows</a> | ');
@@ -328,6 +349,7 @@ D:\desktop\layout.ai
 	db=request.zos.queryObject;
 	init();
 	//application.zcore.functions.zSetPageHelpId("5.4");
+	form.section_id=application.zcore.functions.zso(form, 'section_id', true, 0);
 	form.landing_page_parent_id=application.zcore.functions.zso(form, 'landing_page_parent_id', true, 0);
  
 //landing_page_parent_id = #db.param(form.landing_page_parent_id)# and 
@@ -339,10 +361,24 @@ D:\desktop\layout.ai
 	ORDER BY landing_page_sort ASC ";
 	qLanding=db.execute("qLanding");  
 	application.zcore.functions.zStatusHandler(request.zsid); 
+
+
+	db.sql="SELECT * FROM #db.table("section", request.zos.zcoreDatasource)# section 
+	WHERE site_id =#db.param(request.zos.globals.id)# and 
+	section_deleted = #db.param(0)# and 
+	section_id=#db.param(form.section_id)#";
+	qSection=db.execute("qSection");
  
 	</cfscript>
-	<p><a href="/z/admin/section/index">Sections</a> / </p>
-	<h2>Manage Custom Landing Pages</h2>
+	<p><a href="/z/admin/section/index">Sections</a> / 
+	<cfif qSection.recordcount>
+		#qSection.section_name# /
+	</cfif>
+	</p>
+	<h2>Manage Custom Landing Pages
+	<cfif qSection.recordcount>
+		<br />Section: #qSection.section_name#
+	</cfif></h2>
 	<p><a href="/z/admin/landing-page/add?section_id=#form.section_id#&amp;landing_page_parent_id=#form.landing_page_parent_id#">Add Custom Landing Page</a></p>
 	<cfif qLanding.recordcount EQ 0>
 		<p>No custom landing pages have been added.</p>

@@ -13,12 +13,15 @@
 		application.zcore.functions.z404("No cookie set, so generateImagePlaceholder is prevented");
 	}  
 	form.width=application.zcore.functions.zso(form, 'width', true);
-	form.height=application.zcore.functions.zso(form, 'height', true);
-	form.crop=application.zcore.functions.zso(form, 'crop', true, 0);
+	form.height=application.zcore.functions.zso(form, 'height', true); 
 	if(form.width EQ 0 or form.height EQ 0){
 		application.zcore.functions.z404("Invalid width/height.");
 	}
-	application.zcore.functions.zGetImagePlaceholderURL(form.width, form.height, form.crop);
+	i=ImageNew("#request.zos.installPath#public/images/widget/grey.png");
+	imageresize(i, form.width, form.height); 
+	header name="content-disposition" value="attachment; filename=placeholder.png";
+	content variable="#i#"  type="image/png" reset="true";
+	abort; 
 	</cfscript>
 </cffunction>
 

@@ -72,6 +72,8 @@
 
 <cffunction name="saveLayoutSettings" localmode="modern" access="remote" roles="member">
 	<cfscript>
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
@@ -117,7 +119,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="generateGlobalBreakpointCSS" localmode="modern" access="remote" roles="member">
+<cffunction name="generateGlobalBreakpointCSS" localmode="modern" access="public">
 	<cfargument name="breakpointConfig" type="struct" required="yes">
 	<cfscript>
 	arrFull=[];
@@ -260,6 +262,7 @@
 	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db=request.zos.queryObject;
 

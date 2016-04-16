@@ -1,11 +1,19 @@
 <cfcomponent extends="zcorerootmapping.com.zos.controller"> 
 <cfoutput>
+<cffunction name="init" localmode="modern" access="private" roles="member">
+	<cfscript>
+	form.landing_page_id=application.zcore.functions.zso(form, 'landing_page_id');
+
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
+	 
+	</cfscript>
+</cffunction>
+
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	db=request.zos.queryObject;
-	//init();
+	init();
+	db=request.zos.queryObject; 
 	//application.zcore.functions.zSetPageHelpId("5.4"); 
-	form.landing_page_id=application.zcore.functions.zso(form, 'landing_page_id');
 
 	db.sql="select * from #db.table("landing_page", request.zos.zcoreDatasource)# 
 	WHERE 
@@ -48,7 +56,7 @@
 	</p>
 	<h2>Manage Rows for Custom Layout Page</h2> 
 	<!--- <p><a href="/z/admin/layout-row/add?layout_page_id=#form.layout_page_id#">Add Row</a></p> --->
-	<p><a href="##" onclick="if(window.confirm('Are you sure you want to add a row?')){ window.location.href='/z/admin/layout-row/insert?layout_row_active=1&amp;layout_page_id=#form.layout_page_id#'; } return false;">Add Row</a></p>
+	<!--- <p><a href="##" onclick="if(window.confirm('Are you sure you want to add a row?')){ window.location.href='/z/admin/layout-row/insert?layout_row_active=1&amp;landing_page_id=#form.landing_page_id#&amp;layout_page_id=#form.layout_page_id#'; } return false;">Add Row</a></p> --->
 	<cfif qRow.recordcount EQ 0>
 		<p>No rows have been added.</p>
 	<cfelse>
@@ -85,6 +93,7 @@
 <cffunction name="getLayoutRowHTML" localmode="modern" access="public" roles="member">
 	<cfargument name="row" type="struct" required="yes">
 	<cfscript>
+	init();
 	row=arguments.row;
 	echo('<td>#row.layout_row_id#</td> 
 	<td>Preview Not Implemented</td> 

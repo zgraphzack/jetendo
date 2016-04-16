@@ -795,7 +795,7 @@
 
 	application.zcore.functions.zStatusHandler(request.zsid);
 
-	echo('<p><a href="/z/admin/landing-page-widget/addWidgetInstanceLayout?layout_column_x_widget_id=#form.layout_column_x_widget_id#&amp;landing_page_id=#form.landing_page_id#&amp;widget_id=#form.widget_id#&amp;layout_column_id=#form.layout_column_id#">Add Widget Instance</a></p>');
+	echo('<p><a href="/z/admin/landing-page-widget/addWidgetInstanceLayout?layout_column_x_widget_id=#form.layout_column_x_widget_id#&amp;landing_page_id=#form.landing_page_id#&amp;widget_id=#form.widget_id#&amp;layout_column_id=#form.layout_column_id#&amp;layout_row_id=#form.layout_row_id#">Add Widget Instance</a></p>');
 	echo('<table id="sortRowTable" class="table-list">
 		<thead>
 		<tr>
@@ -804,7 +804,8 @@
 			<th>Sort</th>
 			<th>Admin</th>
 		</tr>
-		</thead>');
+		</thead>
+		<tbody>');
 	for(row in qWidget){
 		echo('<tr #variables.queueSortCom.getRowHTML(row.widget_instance_id)#>
 			<td>#row.layout_column_x_widget_instance_id#</td>
@@ -815,7 +816,7 @@
 			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/admin/landing-page-widget/deleteLayoutColumnWidgetInstance?layout_column_id=#row.layout_column_id#&amp;widget_id=#row.widget_id#&amp;layout_column_x_widget_instance_id=#row.layout_column_x_widget_instance_id#&amp;widget_instance_id=#row.widget_instance_id#''); return false;">Delete</a></td>
 		</tr>');
 	}
-	echo('</table>');
+	echo('</tbody></table>');
 	if(qWidget.recordcount EQ 0){
 		echo('<p>No instances found.</p>');
 	}

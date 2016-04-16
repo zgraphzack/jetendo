@@ -61,8 +61,8 @@
 #c# .test-example-1{ 
 	padding:#round(cs["Container Padding"]*20)#px;
 }
-#c# .test-example-2{width:#round(cs["Left Column Size"]*100)#%; padding-right:#cs["Column Gap"]#px;} 
-#c# .test-example-5{width:#round((1-cs["Left Column Size"])*100)#%;}
+#c# .test-example-2{width:#round(cs["Left Column Width %"]*100)#%; padding-right:#cs["Column Gap"]#px;} 
+#c# .test-example-5{width:#round((1-cs["Left Column Width %"])*100)#%;}
 #c# .test-example-3{ font-size:#round(fs*36)#px; line-height:#round(fs*42)#px;}
 #c# .test-example-4{ font-size:#round(fs*18)#px; line-height:#round(fs*24)#px;}
 @media only screen and (max-width: 1200px) { 
@@ -104,7 +104,7 @@
 			type:"Text",
 			required:true,
 			defaultValue:"",
-			previewValue:"Heading";
+			previewValue:"Heading",
 			options:{}
 		},
 		{
@@ -122,7 +122,8 @@
 			id:"3",
 			label:"Image",
 			type:"Image",
-			defaultValue:application.zcore.functions.zGetImagePlaceholderURL(600, 600),
+			defaultValue:"",
+			previewValue:application.zcore.functions.zGetImagePlaceholderURL(600, 600),
 			options:{
 				imagewidth:600,
 				imageheight:600,
@@ -138,6 +139,7 @@
 			type:'Slider',
 			required:true,
 			defaultValue:1,
+			previewValue:1,
 			options:{
 				slider_from:0.5,
 				slider_to:3,
@@ -150,6 +152,7 @@
 			type:'Slider',
 			required:true,
 			defaultValue:1,
+			previewValue:1,
 			options:{
 				slider_from:0.5,
 				slider_to:3,
@@ -162,6 +165,7 @@
 			type:'Slider',
 			required:true,
 			defaultValue:0.5,
+			previewValue:0.5,
 			options:{
 				slider_from:0.1,
 				slider_to:1,
@@ -174,6 +178,7 @@
 			type:'Number',
 			required:true,
 			defaultValue:10,
+			previewValue:10,
 			options:{
 			}
 		}

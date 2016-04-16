@@ -1515,13 +1515,7 @@ application.zcore.functions.zSplitFile(path,kblength,line);
 	<cfargument name="width" type="string" required="yes">
 	<cfargument name="height" type="string" required="yes"> 
 	<cfscript>
-	i=ImageNew("#request.zos.installPath#public/images/widget/grey.png");
-	imageresize(i, arguments.width, arguments.height);
-
-	//i=ImageNew("", arguments.width, arguments.height, "rgb", "999999");
-	header name="content-disposition" value="attachment; filename=placeholder.png";
-	content variable="#i#"  type="image/png" reset="true";
-	abort; 
+	return "/z/misc/system/generateImagePlaceholder?width=#arguments.width#&height=#arguments.height#";
 	</cfscript> 
 </cffunction> 
 
