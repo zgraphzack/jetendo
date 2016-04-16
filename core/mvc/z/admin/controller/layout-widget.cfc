@@ -3,18 +3,17 @@
 <!--- 
 /z/admin/layout-widget/index
 /z/admin/layout-widget/addWidgetInstanceLayout?widget_id=1&widget_instance_id=
-/z/admin/layout-widget/loadWidgets
-/z/admin/layout-widget/listWidgets
+/z/admin/layout-widget/loadWidgets 
 /z/admin/layout-widget/listWidgetInstances?widget_id=1
  --->
-<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
+<!--- <cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
 	widgetCom=createobject("component", "zcorerootmapping.com.widget.widget-example");
 
 	widgetCom.baseUpgrade();
 
 	ds={
-		widget_instance_id=1,
+		widget_instance_id:1,
 		layoutFields:{
 			"Font Scale":1,
 			"Container Padding":1,
@@ -33,7 +32,7 @@
 	widgetCom.render(dataFields);
 
 	ds={
-		widget_instance_id=2,
+		widget_instance_id:2,
 		layoutFields:{
 			"Font Scale":.5,
 			"Container Padding":.5,
@@ -52,7 +51,7 @@
 
 
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 
 
@@ -128,6 +127,11 @@
 			field=configStruct[key][i3];
 			if(not structkeyexists(field, 'label')){
 				application.zcore.status.setStatus(request.zsid, "#key# | field ###i# is missing a label key in #comPath# -> getConfig().", form, true); 
+				fail=true;
+				continue;
+			}
+			if(not structkeyexists(field, 'previewValue')){
+				application.zcore.status.setStatus(request.zsid, "#key# | field ###i# is missing a previewValue key in #comPath# -> getConfig().", form, true); 
 				fail=true;
 				continue;
 			}
@@ -225,8 +229,6 @@
 	configStruct=widgetCom.getBaseConfig();
 	fields=configStruct[arguments.type&"Fields"];
 
-	application.zcore.functions.zStatusHandler(request.zsid, true);
-
 	if(methodbackup EQ "editWidgetInstanceLayout" or methodbackup EQ "editWidgetInstanceData"){
 		db.sql="select * from #db.table("widget_instance", request.zos.zcoreDatasource)# WHERE 
 		site_id = #db.param(request.zos.globals.id)# and 
@@ -238,6 +240,7 @@
 			application.zcore.status.setStatus(request.zsid, "Invalid widget instance id", form, true);
 			application.zcore.functions.zRedirect("/z/admin/layout-widget?widget_id=#form.widget_id#&zsid=#request.zsid#");
 		}
+		structappend(form, qWidget);
 		jsonStruct=deserializeJson(qWidget.widget_instance_json_data);
 		jsonFields=application.zcore.functions.zso(jsonStruct, arguments.type&'Fields', false, {});
 		for(i=1;i<=arraylen(fields);i++){
@@ -250,6 +253,7 @@
 	}else{
 		form.widget_instance_name=application.zcore.functions.zso(form, 'widget_instance_name');
 	} 
+	application.zcore.functions.zStatusHandler(request.zsid, true);
 	currentRowIndex=0;
 	optionStruct={};
 	dataStruct={};
@@ -279,7 +283,7 @@
 	} 
 	echo('" method="post" enctype="multipart/form-data" >');
 	</cfscript>
-	 
+	<input type="hidden" name="widget_instance_standalone" value="#application.zcore.functions.zso(form, 'widget_instance_standalone', true, 0)#">
 	<input type="hidden" name="widget_id" value="#htmleditformat(form.widget_id)#" />
 	<input type="hidden" name="widget_instance_id" value="#htmleditformat(form.widget_instance_id)#" /> 
 	<table style="border-spacing:0px;" class="table-list">
@@ -426,7 +430,25 @@
 
 <cffunction name="deleteWidgetInstance" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	echo('delete');abort;
+	db=request.zos.queryObject;
+	form.returnJson=1;
+	db.sql="select * FROM #db.table("widget_instance", request.zos.zcoreDatasource)#
+	WHERE widget_instance_deleted=#db.param(0)# and 
+	widget_instance_id=#db.param(form.widget_instance_id)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	qI=db.execute("qI");
+	if(qI.recordcount EQ 0){ 
+		application.zcore.functions.zReturnJson({success:false, errorMessage:'Widget instance no longer exists.'}); 
+	}
+	db.sql="delete FROM #db.table("widget_instance", request.zos.zcoreDatasource)#
+	WHERE widget_instance_deleted=#db.param(0)# and 
+	widget_instance_id=#db.param(form.widget_instance_id)# and 
+	site_id = #db.param(request.zos.globals.id)# ";
+	db.execute("qDelete");
+
+	// TODO: need to delete files/images/slideshows too
+  
+	application.zcore.functions.zReturnJson({success:true}); 
 	</cfscript>
 </cffunction>
 
@@ -454,12 +476,12 @@
 	</cfscript>
 </cffunction>
 
-
+<!--- 
 <cffunction name="updateWidgetData" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	saveWidgetInstance();
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="updateWidgetInstanceData" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -469,6 +491,7 @@
 
 <cffunction name="saveWidgetInstance" localmode="modern" access="public">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	db=request.zos.queryObject; 
 	//writedump(form); 
 
@@ -497,7 +520,7 @@
 	}else if(form.method EQ "updateWidgetInstanceData"){
 		failMethod="editWidgetInstanceData";
 		type="data";
-	}
+	} 
 	t9={
 		layoutFields:{},
 		dataFields:{}
@@ -597,6 +620,8 @@
 		application.zcore.status.setStatus(request.zsid, "Instance name is required", form, true);
 		application.zcore.functions.zRedirect("/z/admin/layout-widget/#failMethod#?widget_id=#form.widget_id#&widget_instance_id=#form.widget_instance_id#&zsid=#request.zsid#");
 	}
+	ts.struct.widget_instance_standalone=form.widget_instance_standalone;
+
 	ts.struct.widget_instance_name=form.widget_instance_name;
 	ts.struct.widget_instance_deleted=0;
 	ts.struct.widget_instance_json_data=serializeJson(t9);
@@ -620,53 +645,13 @@
 	}
 
 	application.zcore.status.setStatus(request.zsid, "Saved");
-	application.zcore.functions.zRedirect("/z/admin/layout-widget/listWidgetInstances?widget_id=#form.widget_id#&zsid=#request.zsid#");
+	if(ts.struct.widget_instance_standalone EQ 1){
+		application.zcore.functions.zRedirect("/z/admin/widget/listWidgetInstances?widget_id=#form.widget_id#&zsid=#request.zsid#");
+	}else{
+		application.zcore.functions.zRedirect("/z/admin/layout-widget/listWidgetInstances?widget_id=#form.widget_id#&zsid=#request.zsid#");
+	}
 	</cfscript>
 </cffunction>
-
-
-<cffunction name="listWidgets" localmode="modern" access="remote">
-	<cfscript> 
-	db=request.zos.queryObject;  
-	ts={};
-	indexCom=createObject("component", "zcorerootmapping.com.widget.widget-index");
-	indexCom.loadIndex();
-
-	for(id in application.zcore.widgetIndexStruct){ 
-		comPath=application.zcore.widgetIndexStruct[id];
-		widgetCom=createObject("component", comPath);
-		widgetCom.init({});
-		configStruct=widgetCom.getConfig();
-
-		ts[id]={
-			id:configStruct.id,
-			name:configStruct.name,
-			version:configStruct.version,
-		}
-	}
-	arrKey=structsort(ts, "text", "asc", "name"); 
-	echo('<h2>Manage Widgets</h2>');
-	echo('<table class="table-list">
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>Version</th>
-			<th>Admin</th>
-		</tr>');
-	for(i=1;i<=arraylen(arrKey);i++){
-		row=ts[arrKey[i]];
-		echo('<tr>
-			<td>#row.id#</td>
-			<td>#row.name#</td>
-			<td>#row.version#</td>
-			<td><a href="/z/admin/layout-widget/listWidgetInstances?widget_id=#row.id#">Manage Instances</a></td>
-		</tr>');
-	}
-	echo('</table>');
-	</cfscript>
-	
-</cffunction>
-
 
 <cffunction name="initInstance" localmode="modern" access="private" roles="member">
 	<cfscript>
@@ -764,11 +749,11 @@ getWidgetInstanceSQL(ts);
 	configStruct=widgetCom.getConfig(); 
 
 	// TODO: show breadcrumb for the layout column instead of this
-	echo('<p><a href="/z/admin/layout-widget/listWidgets">Manage Widgets</a> /</p>');
-	echo('<h2>Manage Layout Page Column Widget Instances Of ""#configStruct.name#""</h2>');
+	echo('<p><a href="/z/admin/widget/index">Manage Widgets</a> /</p>'); 
+	echo('<h2>Manage Layout Page Column Widget Instances Of "#configStruct.name#"</h2>'); 
 
 	ts=structnew();
-	ts.widget_instance_id_field="layout_column_x_widget.widget_instance_id"; 
+	ts.widget_instance_id_field="c.widget_instance_id"; 
 	ts.count=1;
 	rs=getWidgetInstanceSQL(ts);
 	db.sql="select c.*
@@ -778,7 +763,7 @@ getWidgetInstanceSQL(ts);
 	WHERE  
 	layout_column_x_widget_instance_deleted=#db.param(0)# and 
 	c.site_id = #db.param(request.zos.globals.id)# 
-	GROUP BY layout_column_x_widget_instance.layout_column_x_widget_instance_id 
+	GROUP BY c.layout_column_x_widget_instance_id 
 	ORDER BY layout_column_x_widget_instance_sort ASC ";
 	qWidget=db.execute("qWidget");
 
@@ -799,7 +784,7 @@ getWidgetInstanceSQL(ts);
 			<td style="vertical-align:top; ">#variables.queueSortCom.getAjaxHandleButton(row.layout_column_x_widget_id)#</td>
 			<td><a href="/z/admin/layout-widget/editWidgetInstanceData?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;widget_instance_id=#row.widget_instance_id#">Edit Data</a> | 
 			<a href="/z/admin/layout-widget/editWidgetInstanceLayout?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;widget_instance_id=#row.widget_instance_id#">Edit Layout</a> | 
-			<a href="/z/admin/layout-widget/deleteWidgetInstance?widget_id=#row.widget_id#&amp;layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;widget_instance_id=#row.widget_instance_id#">Delete</a></td>
+			<a href="##" onclick="zDeleteTableRecordRow(this, ''/z/admin/layout-widget/deleteWidgetInstance?layout_column_x_widget_id=#row.layout_column_x_widget_id#&amp;widget_id=#row.widget_id#&amp;widget_instance_id=#row.widget_instance_id#&amp;returnJson=1&amp;confirm=1''); return false;">Delete</a></td>
 		</tr>');
 	}
 	echo('</table>');
@@ -809,16 +794,24 @@ getWidgetInstanceSQL(ts);
 	</cfscript>
 </cffunction>
 	
-<cffunction name="compileAllWidgets" localmode="modern" access="remote">
+<cffunction name="compileAllWidgets" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	if(request.zos.isTestServer){
+		throw("This should only run on a production server");
+	}
+	if(not request.zos.isDeveloper and not request.zos.isServer){
+		application.zcore.functions.z404("Only developer/server can access this url.");
+	}
 	// force compile all widget instances (has to be done on live server only because the data is site specific and editable by user)
 	</cfscript>
 </cffunction>
 
 
 
-<cffunction name="loadWidgets" localmode="modern" access="remote">
+<cffunction name="loadWidgets" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	// this function not in use yet.
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	// load all widgets in the widgets directory
 	// getWidgetId() to get their id.
 
@@ -982,6 +975,7 @@ getWidgetInstanceSQL(ts);
 
 <cffunction name="deleteWidget" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts",true);	
 	init();
 	db=request.zos.queryObject;
 	form.layout_page_id=application.zcore.functions.zso(form, 'layout_page_id');
@@ -1002,6 +996,7 @@ getWidgetInstanceSQL(ts);
 
 <cffunction name="addWidget" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	db=request.zos.queryObject;  
 	form.layout_page_id=application.zcore.functions.zso(form, 'layout_page_id');
 	form.layout_column_id=application.zcore.functions.zso(form, 'layout_column_id');
@@ -1042,13 +1037,14 @@ getWidgetInstanceSQL(ts);
 			<td>#row.version#</td>
 			<td>
 				<a href="##" onclick="window.location.href=''/z/admin/layout-widget/insertWidget?widget_id=#row.id#&amp;layout_page_id=#form.layout_page_id#&amp;layout_column_id=#form.layout_column_id#&amp;layout_column_x_widget_repeat_limit=''+document.getElementById(''repeatLimit'').value; return false;">Add</a> | 
-				<a href="/z/admin/layout-widget/previewWidget?widget_id=#row.id#" target="_blank">Preview</a>
+				<a href="/z/admin/widget/previewWidget?widget_id=#row.id#" target="_blank">Preview</a>
 			</td>
 		</tr>');
 	}
 	echo('</table>');
 	</cfscript>
 </cffunction>
+
 
 <cffunction name="init" localmode="modern" access="private" roles="member">
 	<cfscript>
@@ -1075,6 +1071,7 @@ getWidgetInstanceSQL(ts);
 
 <cffunction name="insertWidget" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts", true);	
 	init();
 	form.widget_id=application.zcore.functions.zso(form, 'widget_id'); 
 	ts={
@@ -1100,11 +1097,5 @@ getWidgetInstanceSQL(ts);
 	</cfscript>
 </cffunction>
 
-<cffunction name="previewWidget" localmode="modern" access="remote" roles="member">
-	<cfscript>
-	echo('Preview not implemented');
-	</cfscript>
-</cffunction>
-	
 </cfoutput>
 </cfcomponent>
