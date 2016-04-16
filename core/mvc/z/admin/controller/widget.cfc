@@ -72,12 +72,17 @@
 	
 </cffunction>
 
-<cffunction name="previewWidget" localmode="modern" roles="administrator" access="remote">
+<cffunction name="previewWidget" localmode="modern" access="remote" roles="serveradministrator">
 	<cfscript>
+	if(not structkeyexists(application.zcore, 'widgetIndexStruct')){
+		indexCom=createObject("component", "zcorerootmapping.com.widget.widget-index");
+		indexCom.loadIndex();
+	} 
 	id=application.zcore.functions.zso(form, 'widget_id', true);
 	if(not structkeyexists(application.zcore.widgetIndexStruct, id)){
 		application.zcore.functions.z404("Invalid widget id");
 	}
+	application.zcore.template.setPlainTemplate();
 	comPath=application.zcore.widgetIndexStruct[id];
 	widgetCom=createObject("component", comPath);
 	widgetCom.init({});
@@ -85,8 +90,8 @@
 
 	layoutWidgetCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.layout-widget");
 	layoutWidgetCom.validateWidgetConfig(comPath, configStruct);
- 	echo('<p><a href="/z/admin/layout-page/index">Manage Layouts</a> / <a href="/z/admin/widget/index">Manage Widgets</a> /</p>');
-	echo('<h2>Previewing Widget: '&configStruct.name&'</h2>');
+ 	//echo('<p><a href="/z/admin/layout-page/index">Manage Layouts</a> / <a href="/z/admin/widget/index">Manage Widgets</a> /</p>');
+	//echo('<h2>Previewing Widget: '&configStruct.name&'</h2>');
 
 
 	ds={

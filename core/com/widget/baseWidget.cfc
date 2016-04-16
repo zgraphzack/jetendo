@@ -159,4 +159,14 @@
 	return true;
 	</cfscript>
 </cffunction>
+
+<cffunction name="index" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript> 
+	widgetCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.widget");
+	cs=getConfig();
+	form.widget_id=cs.id;
+	widgetCom.previewWidget();
+	</cfscript>
+</cffunction>
+ 
 </cfcomponent>
