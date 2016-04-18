@@ -1005,9 +1005,15 @@
 				<tr>
 					<th>Sort (admin):</th>
 					<td>
-					<input name="site_option_admin_sort_field" id="site_option_admin_sort_field1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Ascending
-					<input name="site_option_admin_sort_field" id="site_option_admin_sort_field2" style="border:none; background:none;" type="radio" value="2" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 2>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Descending
-					<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 0>checked="checked"</cfif> /> Disabled</td>
+						<cfif qOptionGroup.site_option_group_enable_sorting EQ 1>
+						
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" value="0" type="hidden"> Can't be used when group sorting is enabled.
+						<cfelse>
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Ascending
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field2" style="border:none; background:none;" type="radio" value="2" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 2>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Descending
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 0>checked="checked"</cfif> /> Disabled
+					</cfif>
+				</td>
 				</tr>
 				
 				<tr>
