@@ -1328,6 +1328,8 @@
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript> | Autosync child files: 
 			#application.zcore.functions.zInput_Boolean("site_child_sync")# 
+			<br /><br />
+			Warning: Selecting a theme or site WILL overwrite any files in the site directory the first time you do this if it already exists.
 			</td>
 		</tr> 
         </cfif>
@@ -1393,6 +1395,11 @@
 		<tr>
 			<td style="vertical-align:top; width:140px;">Custom Create Account URL:</td>
 			<td><input name="site_custom_create_account_url" type="text" size="70" maxlength="255" value="#htmleditformat(form.site_custom_create_account_url)#"></td>
+		</tr>
+
+		<tr>
+			<td style="vertical-align:top; width:140px;">Disable New User Email?:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_disable_new_user_email")#</td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Enable Lead User Reminder:</td>

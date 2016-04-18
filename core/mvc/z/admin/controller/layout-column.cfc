@@ -255,7 +255,7 @@
 	application.zcore.functions.zStatusHandler(request.zsid); 
 	</cfscript>
 	<h2>Manage Columns for Custom Layout Page Row</h2>
-	<p><a href="/z/admin/layout-page/index?layout_page_id=#qPage.layout_page_id#">#qPage.layout_page_name#</a> / <a href="/z/admin/layout-row/index?layout_row_id=#qRow.layout_row_id#&amp;layout_page_id=#qPage.layout_page_id#">Row ###qRow.layout_row_sort# (ID###qRow.layout_row_id#)</a> /</h2>
+	<p><a href="/z/admin/layout-page/index?layout_page_id=#qPage.layout_page_id#">#qPage.layout_page_name#</a> / <a href="/z/admin/layout-row/index?layout_row_id=#qRow.layout_row_id#&amp;layout_page_id=#qPage.layout_page_id#">Row ###qRow.layout_row_sort# (ID###qRow.layout_row_id#)</a> /</p>
 	<!--- <p><a href="/z/admin/layout-column/add?layout_page_id=#form.layout_page_id#">Add Column</a></p> --->
 	<p><a href="##" onclick="if(window.confirm('Are you sure you want to add a column?')){ window.location.href='/z/admin/layout-column/insert?layout_row_id=#qRow.layout_row_id#&amp;layout_page_id=#form.layout_page_id#'; } return false;">Add Column</a></p>
 	<cfif qLayout.recordcount EQ 0>

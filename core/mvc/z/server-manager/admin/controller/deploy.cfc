@@ -58,6 +58,7 @@
 		site_x_deploy_server_deleted=#db.param(0)# ";
 		db.execute("qUpdate");
 	}
+	application.zcore.functions.zdeletefile(application.zcore.functions.zvar("privatehomedir", form.sid)&'__zdeploy-error.txt');
 	application.zcore.functions.zdeletefile(application.zcore.functions.zvar("privatehomedir", form.sid)&'__zdeploy-complete.txt');
 	if(structkeyexists(form, 'preview')){
 		application.zcore.functions.zwritefile(application.zcore.functions.zvar("privatehomedir", form.sid)&'__zdeploy-preview.txt', '1');
@@ -73,6 +74,16 @@
 				application.zcore.status.setStatus(request.zsid, "Deployment took longer then 120 seconds, and may still be running at #timeformat(now(), "h:mm:ss tt")#. Please verify that the site is working correct on the remote server(s) and clear any cached data that may need to be cleared.", form, true);
 				application.zcore.functions.zRedirect("/z/server-manager/admin/deploy/index?sid=#form.sid#&zsid=#request.zsid#");
 			}
+		}
+		if(fileexists(application.zcore.functions.zvar("privatehomedir", form.sid)&'__zdeploy-error.txt')){
+			e=application.zcore.functions.zReadFile(application.zcore.functions.zvar("privatehomedir", form.sid)&'__zdeploy-error.txt');
+			if(structkeyexists(form, 'disableRedirect')){
+				return false;
+			}else{
+				application.zcore.status.setStatus(request.zsid, "Deployment failed: "&e, form, true);
+				application.zcore.functions.zRedirect("/z/server-manager/admin/deploy/index?sid=#form.sid#&zsid=#request.zsid#");
+			}
+
 		}
 		if(fileexists(application.zcore.functions.zvar("privatehomedir", form.sid)&'__zdeploy-complete.txt')){
 			if(structkeyexists(form, 'preview') and form.method NEQ "deploySite"){
@@ -537,6 +548,10 @@
 			application.zcore.functions.zdeletefile(request.zos.sharedPath&'__zdeploy-core-complete.txt');
 			break;
 		}else if(fileexists(request.zos.sharedPath&'__zdeploy-core-failed.txt')){
+			e=application.zcore.functions.zReadFile(request.zos.sharedPath&'__zdeploy-core-failed.txt');
+			application.zcore.status.setStatus(request.zsid, "Deployment failed: "&e, form, true);
+			application.zcore.functions.zRedirect("/z/server-manager/admin/deploy/deployCore?zsid=#request.zsid#");
+
 			application.zcore.functions.zdeletefile(request.zos.sharedPath&'__zdeploy-core-failed.txt');
 			failed=true;
 			break;
@@ -671,6 +686,11 @@
 		site_x_deploy_server_deleted = #db.param(0)#";
 		var qDeploy=db.execute("qDeploy");
 		</cfscript>
+		<cfif request.zos.isTestServer>
+			<h2>Current Server: Test Server</h2>
+		<cfelse>
+			<h2>Current Server: Live Server</h2>
+		</cfif>
 		
 		<p>Configure excluded directories and files for this site on the <a href="/z/server-manager/admin/site/edit?sid=#form.sid#">globals</a> page.</p>
 		<cfif qDeploy.recordcount>

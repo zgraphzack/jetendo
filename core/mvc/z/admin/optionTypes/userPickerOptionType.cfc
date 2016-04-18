@@ -85,25 +85,14 @@
 		}
 		selectStruct.inlineStyle="width:200px; max-width:100%;";
 		selectStruct.queryValueField = "##user_id##|##siteIdType##";
-		selectStruct.output=true;
-		/*if(application.zcore.functions.zso(arguments.optionStruct, 'user_multipleselection') EQ 'Yes'){
-			selectStruct.multiple=true;
-			selectStruct.size=5;
-			selectStruct.hideSelect=true;
-			application.zcore.functions.zSetupMultipleSelect(selectStruct.name, selectStruct.selectedValues);
-		}else{*/
+		selectStruct.output=true; 
 			selectStruct.size=3;
-			application.zcore.skin.addDeferredScript("  $('###selectStruct.name#').filterByText($('###selectStruct.name#_InputField'), true); ");
-		//}
+			application.zcore.skin.addDeferredScript("  $('###selectStruct.name#').filterByText($('###selectStruct.name#_InputField'), true); "); 
 
 		echo('<input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="min-width:auto;width:200px; max-width:100%; margin-bottom:5px;"><br />');
-		value=application.zcore.functions.zInputSelectBox(selectStruct);
-		//if(not selectStruct.multiple){
-
-		//}
+		value=application.zcore.functions.zInputSelectBox(selectStruct); 
 	}
-	return out;//{ label: true, hidden: false, value:value};  
-	//return '<input type="text" name="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" onkeyup="#arguments.onChangeJavascript#" onpaste="#arguments.onChangeJavascript#" id="#arguments.prefixString##arguments.row["#variables.type#_option_id"]#" value="#htmleditformat(arguments.value)#" size="8" />';
+	return out; 
 	</cfscript>
 </cffunction>
 

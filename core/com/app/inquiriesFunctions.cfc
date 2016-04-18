@@ -25,49 +25,6 @@
 		<a href="/z/inquiries/admin/lead-template/index">Templates</a>
 	</cfif>
 	| <a href="/z/inquiries/admin/manage-inquiries/index">Leads</a>
-	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>
-		<cfscript>
-			userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
-			user_group_id = userGroupCom.getGroupId('agent',request.zos.globals.id);
-			db.sql="SELECT user_id, user_first_name, user_last_name, site_id, #db.trustedSQL(application.zcore.functions.zGetSiteIdSQL('user.site_id'))# as siteIdType 
-			FROM #db.table("user", request.zos.zcoreDatasource)# user 
-			WHERE #db.trustedSQL(application.zcore.user.getUserSiteWhereSQL())# and 
-			user_group_id <> #db.param(userGroupCom.getGroupId('user',request.zos.globals.id))#  
-			 and (user_server_administrator=#db.param(0)# ) and 
-			 user_deleted = #db.param(0)#
-			ORDER BY member_first_name ASC, member_last_name ASC";
-			qAgents=db.execute("qAgents");
-			</cfscript>
-			<script type="text/javascript">
-			/* <![CDATA[ */
-			var agentSiteIdTypeLookup=[];
-			<cfloop query="qAgents">
-			agentSiteIdTypeLookup.push("<cfif qAgents.site_id EQ request.zos.globals.id>1<cfelse>2</cfif>");
-			</cfloop>
-			/* ]]> */
-			</script>
-		| 	Filter By User:
-		<cfscript>
-		if(structkeyexists(form, 'agentuserid')){
-			request.zsession.agentuserid=form.agentuserid;
-			request.zsession.agentusersiteidtype=application.zcore.functions.zso(form, 'agentusersiteidtype');
-		}else if(isDefined('request.zsession.agentuserid') EQ false){
-			request.zsession.agentuserid='';
-			request.zsession.agentusersiteidtype='';
-		}
-		selectStruct = StructNew();
-		selectStruct.name = "user_id";
-		form.user_id=request.zsession.agentuserid&"|"&request.zsession.agentusersiteidtype; 
-		selectStruct.query = qAgents;
-		selectStruct.selectedValues=form.user_id;
-		selectStruct.queryLabelField = "##user_first_name## ##user_last_name##";
-		selectStruct.queryParseLabelVars = true;
-		selectStruct.queryParseValueVars = true;
-		selectStruct.onChange="getAgentLeads(this.options[this.selectedIndex].value);";
-		selectStruct.queryValueField = '##user_id##|##siteIdType##';
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript>
-	</cfif>
 	<br />
 	<hr />
 </cffunction>

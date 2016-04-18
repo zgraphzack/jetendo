@@ -636,8 +636,10 @@ if(table_id EQ false){
 		}
 		transaction action="commit";
 	}
-	request.zos.queryCount++;
-	request.zos.queryRowCount++;
+	if(structkeyexists(request.zos, 'queryCount')){
+		request.zos.queryCount++;
+		request.zos.queryRowCount++;
+	}
 	return newId;
 	</cfscript>
 </cffunction>
@@ -824,8 +826,10 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 			</cfcatch>
 		</cftry>
 		<cfscript> 
-		request.zos.queryCount++;
-		request.zos.queryRowCount++; 
+		if(structkeyexists(request.zos, 'queryCount')){
+			request.zos.queryCount++;
+			request.zos.queryRowCount++; 
+		}
 		return true;
 		</cfscript> 
 	</cfif>
@@ -1120,8 +1124,10 @@ if(application.zcore.functions.zUpdate(inputStruct) EQ false){
 		if(cacheEnabled and isSelect){
 			application.zcore.queryCache[hashCode]={date:curDate, result:qQuery};
 		}
-		request.zos.queryCount++;
-		if(structkeyexists(qQuery, 'recordcount')){
+		if(structkeyexists(request.zos, 'queryCount')){
+			request.zos.queryCount++;
+		}
+		if(not isboolean(qQuery) and structkeyexists(qQuery, 'recordcount')){
 			request.zos.queryRowCount+=qQuery.recordcount;
 		}
 		return qQuery;

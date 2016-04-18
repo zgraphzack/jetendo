@@ -1076,7 +1076,7 @@
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; width:1%;">#application.zcore.functions.zOutputHelpToolTip("Internal Address","member.rental.editRental rental_internal_address")#</th>
-				<td style="white-space:nowrap;"><input name="rental_internal_address" type="text" value="#htmleditformat(form.rental_internal_address)#" size="50"> (Hidden from public)</td>
+				<td style="white-space:nowrap;"><input name="rental_internal_address" type="text" value="#htmleditformat(form.rental_internal_address)#" size="50"><br /> (Hidden from public)</td>
 			</tr>
 			<tr>
 				<th style="white-space:nowrap; width:1%;">#application.zcore.functions.zOutputHelpToolTip("Photos","member.rental.editRental rental_image_library_id")#</th>
@@ -1261,19 +1261,19 @@
 					<tr>
 						<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Regular Rate","member.rental.editRental rental_rate")#</th>
 						<td colspan="1" style="white-space:nowrap;"> $
-							<input name="rental_rate" type="text" value="#application.zcore.functions.zso(form, 'rental_rate',true)#" size="8">
+							<input name="rental_rate" type="text" value="#application.zcore.functions.zso(form, 'rental_rate',true)#" size="8"><br />
 							<span class="highlight">Required</span></td>
 					</tr>
 					<tr>
 						<th style="width:100px;">#application.zcore.functions.zOutputHelpToolTip("Holiday Rate","member.rental.editRental rental_rate_holiday")#</th>
 						<td colspan="2" style="white-space:nowrap;">$
-							<input name="rental_rate_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_rate_holiday',true)#" size="8">
+							<input name="rental_rate_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_rate_holiday',true)#" size="8"><br />
 							<span class="highlight">Required</span></td>
 					</tr>
 					<tr>
 						<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Highest Regular Rate","member.rental.editRental rental_display_regular")#</th>
 						<td colspan="2" style="white-space:nowrap;">$
-							<input name="rental_display_regular" type="text" value="#application.zcore.functions.zso(form, 'rental_display_regular',true)#" size="8">
+							<input name="rental_display_regular" type="text" value="#application.zcore.functions.zso(form, 'rental_display_regular',true)#" size="8"><br />
 							(For display purposes only to show a discount)</td>
 					</tr>
 					</tr>
@@ -1281,7 +1281,7 @@
 					<tr>
 						<th style="width:100px;">#application.zcore.functions.zOutputHelpToolTip("Highest Holiday Rate","member.rental.editRental rental_display_holiday")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_display_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_display_holiday',true)#" size="8">
+							<input name="rental_display_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_display_holiday',true)#" size="8"><br />
 							(For display purposes only to show a discount)</td>
 					</tr>
 					<tr>
@@ -1292,13 +1292,13 @@
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Addl Guest Rate","member.rental.editRental rental_rate_addl_guests")#</th>
 						<td>$
-							<input type="text" name="rental_rate_addl_guests" value="#form.rental_rate_addl_guests#" class="small" size="10">
+							<input type="text" name="rental_rate_addl_guests" value="#form.rental_rate_addl_guests#" class="small" size="10"><br />
 							per person</td>
 					</tr>
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Addl Guest<br />Cleaning Rate","member.rental.editRental rental_rate_cleaning_addl_guests")#</th>
 						<td>$
-							<input type="text" name="rental_rate_cleaning_addl_guests" value="#form.rental_rate_cleaning_addl_guests#" class="small" size="10">
+							<input type="text" name="rental_rate_cleaning_addl_guests" value="#form.rental_rate_cleaning_addl_guests#" class="small" size="10"><br />
 							per person (Additional cleaning charge per guest beyond the max guest limit)</td>
 					</tr>
 				</table></td>
@@ -1311,19 +1311,19 @@
 					<tr>
 						<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Regular Rate","member.rental.editRental rental_weekly_rate")#</th>
 						<td colspan="1"  style="white-space:nowrap;"> $
-							<input name="rental_weekly_rate" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_rate',true)#" size="8">
+							<input name="rental_weekly_rate" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_rate',true)#" size="8"><br />
 							<span class="highlight">Required</span></td>
 					</tr>
 					<tr>
 						<th style="width:100px;">#application.zcore.functions.zOutputHelpToolTip("Holiday Rate","member.rental.editRental rental_weekly_rate_holiday")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_weekly_rate_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_rate_holiday',true)#" size="8">
+							<input name="rental_weekly_rate_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_rate_holiday',true)#" size="8"><br />
 							<span class="highlight">Required</span></td>
 					</tr>
 					<tr>
 						<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Highest Regular Rate","member.rental.editRental rental_weekly_display_regular")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_weekly_display_regular" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_display_regular',true)#" size="8">
+							<input name="rental_weekly_display_regular" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_display_regular',true)#" size="8"><br />
 							(For display purposes only to show a discount)</td>
 					</tr>
 					</tr>
@@ -1331,7 +1331,7 @@
 					<tr>
 						<th style="width:100px;">#application.zcore.functions.zOutputHelpToolTip("Highest Holiday Rate","member.rental.editRental rental_weekly_display_holiday")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_weekly_display_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_display_holiday',true)#" size="8">
+							<input name="rental_weekly_display_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_weekly_display_holiday',true)#" size="8"><br />
 							(For display purposes only to show a discount)</td>
 					</tr>
 					<tr>
@@ -1342,13 +1342,13 @@
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Addl Guest Rate","member.rental.editRental rental_weekly_rate_addl_guests")#</th>
 						<td>$
-							<input type="text" name="rental_weekly_rate_addl_guests" value="#form.rental_weekly_rate_addl_guests#" class="small" size="10">
+							<input type="text" name="rental_weekly_rate_addl_guests" value="#form.rental_weekly_rate_addl_guests#" class="small" size="10"><br />
 							per person</td>
 					</tr>
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Addl Guest<br />Cleaning Rate","member.rental.editRental rental_weekly_rate_cleaning_addl_guests")#</th>
 						<td>$
-							<input type="text" name="rental_weekly_rate_cleaning_addl_guests" value="#form.rental_weekly_rate_cleaning_addl_guests#" class="small" size="10">
+							<input type="text" name="rental_weekly_rate_cleaning_addl_guests" value="#form.rental_weekly_rate_cleaning_addl_guests#" class="small" size="10"><br />
 							per person (Additional cleaning charge per guest beyond the max guest limit)</td>
 					</tr>
 				</table></td>
@@ -1361,19 +1361,19 @@
 					<tr>
 						<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Regular Rate","member.rental.editRental rental_monthly_rate")#</th>
 						<td colspan="1"  style="white-space:nowrap;"> $
-							<input name="rental_monthly_rate" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_rate',true)#" size="8" />
+							<input name="rental_monthly_rate" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_rate',true)#" size="8" /><br />
 							<span class="highlight">Required</span></td>
 					</tr>
 					<tr>
 						<th style="width:100px;">#application.zcore.functions.zOutputHelpToolTip("Holiday Rate","member.rental.editRental rental_monthly_rate_holiday")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_monthly_rate_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_rate_holiday',true)#" size="8" />
+							<input name="rental_monthly_rate_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_rate_holiday',true)#" size="8" /><br />
 							<span class="highlight">Required</span></td>
 					</tr>
 					<tr>
 						<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Highest Regular Rate","member.rental.editRental rental_monthly_display_regular")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_monthly_display_regular" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_display_regular',true)#" size="8" />
+							<input name="rental_monthly_display_regular" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_display_regular',true)#" size="8" /><br />
 							(For display purposes only to show a discount)</td>
 					</tr>
 					</tr>
@@ -1381,7 +1381,7 @@
 					<tr>
 						<th style="width:100px;">#application.zcore.functions.zOutputHelpToolTip("Highest Holiday Rate","member.rental.editRental rental_monthly_display_holiday")#</th>
 						<td colspan="2"  style="white-space:nowrap;">$
-							<input name="rental_monthly_display_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_display_holiday',true)#" size="8" />
+							<input name="rental_monthly_display_holiday" type="text" value="#application.zcore.functions.zso(form, 'rental_monthly_display_holiday',true)#" size="8" /><br />
 							(For display purposes only to show a discount)</td>
 					</tr>
 					<tr>
@@ -1392,13 +1392,13 @@
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Addl Guest Rate","member.rental.editRental rental_monthly_rate_addl_guests")#</th>
 						<td>$
-							<input type="text" name="rental_monthly_rate_addl_guests" value="#form.rental_monthly_rate_addl_guests#" class="small" size="10" />
+							<input type="text" name="rental_monthly_rate_addl_guests" value="#form.rental_monthly_rate_addl_guests#" class="small" size="10" /><br />
 							per person</td>
 					</tr>
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Addl Guest<br />Cleaning Rate","member.rental.editRental rental_monthly_rate_cleaning_addl_guests")#</th>
 						<td>$
-							<input type="text" name="rental_monthly_rate_cleaning_addl_guests" value="#form.rental_monthly_rate_cleaning_addl_guests#" class="small" size="10" />
+							<input type="text" name="rental_monthly_rate_cleaning_addl_guests" value="#form.rental_monthly_rate_cleaning_addl_guests#" class="small" size="10" /><br />
 							per person (Additional cleaning charge per guest beyond the max guest limit)</td>
 					</tr>
 				</table></td>
@@ -1429,7 +1429,7 @@
 		<table style="width:100%; border-spacing:0px;" class="table-list">
 			<tr>
 				<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Special Message","member.rental.editRental rental_special")#</th>
-				<td colspan="2" style="white-space:nowrap;"><input name="rental_special" type="text" value="#htmleditformat(form.rental_special)#" size="50" />
+				<td colspan="2" style="white-space:nowrap;"><input name="rental_special" type="text" value="#htmleditformat(form.rental_special)#" size="50" /><br />
 					(This is a highlighted message to be more visible)</td>
 			</tr>
 			<tr>
@@ -1471,7 +1471,7 @@
 					selectStruct.listValues = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25";
 					selectStruct.listValuesDelimiter = ",";	
 					application.zcore.functions.zInputSelectBox(selectStruct);
-					</cfscript>
+					</cfscript><br />
 					(This allows you to charge extra for each additional guest beyond the max guest limit.)</td>
 			</tr>
 			<tr>
@@ -1507,7 +1507,7 @@
 					selectStruct.listValues = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25";
 					selectStruct.listValuesDelimiter = ",";	
 					application.zcore.functions.zInputSelectBox(selectStruct);
-					 </cfscript>
+					 </cfscript><br />
 					Days (No shorter booking will be allowed.)</td>
 			</tr>
 			<tr>
@@ -1520,7 +1520,7 @@
 					selectStruct.listValues = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25";
 					selectStruct.listValuesDelimiter = ",";	
 					application.zcore.functions.zInputSelectBox(selectStruct);
-					 </cfscript>
+					 </cfscript><br />
 					Days (There must be this number of unreserved days before a booking.)</td>
 			</tr>
 			<tr>
@@ -1533,7 +1533,7 @@
 					selectStruct.listValues = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25";
 					selectStruct.listValuesDelimiter = ",";	
 					application.zcore.functions.zInputSelectBox(selectStruct);
-					 </cfscript>
+					 </cfscript><br />
 					Days (There must be this number of unreserved days after a booking.)</td>
 			</tr>
 			<tr>

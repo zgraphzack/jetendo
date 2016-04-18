@@ -13,6 +13,14 @@
 	
 	form.inquiries_start_date=application.zcore.functions.zso(form,'inquiries_start_date',false,createdatetime(2009,4,10,1,1,1));
 	form.inquiries_end_date=application.zcore.functions.zso(form,'inquiries_end_date',false,now());
+	form.inquiries_status_id=application.zcore.functions.zso(form, 'inquiries_status_id');
+	form.uid=application.zcore.functions.zso(form, 'uid');
+	arrU=listToArray(form.uid, '|');
+	form.selected_user_id=0;
+	if(arrayLen(arrU) EQ 2){
+		form.selected_user_id=arrU[1];
+		form.selected_user_id_siteIDType=arrU[2];
+	}
 	form.exporttype=application.zcore.functions.zso(form,'exporttype',false,'0');
 	if(form.format EQ 'csv'){
 		header name="Content-Type" value="text/plain" charset="utf-8";
@@ -141,9 +149,9 @@
 						writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 						user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
 					}
-					if(application.zcore.functions.zso(request.zsession, 'agentuserid') NEQ ''){
-						writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-						user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)#');
+					if(form.selected_user_id NEQ 0){
+						writeoutput(' and inquiries.user_id = #db.param(form.selected_user_id)# and 
+						user_id_siteIDType = #db.param(form.selected_user_id_siteidtype)#');
 					}
 					if(form.inquiries_start_date EQ false){
 						writeoutput(' and (inquiries_datetime >= #db.param(dateformat(dateadd("d", -14, now()), "yyyy-mm-dd")&' 00:00:00')# and 
@@ -175,9 +183,9 @@
 						writeoutput(' AND inquiries.user_id = #db.param(request.zsession.user.id)# and 
 						user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#');
 					}
-					if(application.zcore.functions.zso(request.zsession,'agentuserid') NEQ ''){
-						writeoutput(' and inquiries.user_id = #db.param(request.zsession.agentuserid)# and 
-						user_id_siteIDType = #db.param(request.zsession.agentusersiteidtype)# ');
+					if(form.selected_user_id NEQ 0){
+						writeoutput(' and inquiries.user_id = #db.param(form.selected_user_id)# and 
+						user_id_siteIDType = #db.param(form.selected_user_id_siteidtype)# ');
 					}
 					if(application.zcore.functions.zso(form,'searchType',true) EQ 0){
 						if(form.inquiries_start_date EQ false){

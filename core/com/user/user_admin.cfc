@@ -355,7 +355,7 @@
 		}
 		</cfscript>
 		<!--- notify site owner that a new user was added. --->
-		<cfif structkeyexists(request, 'fromemail') and structkeyexists(request, 'officeemail') and structkeyexists(request, 'zDisableNewMemberEmail') EQ false>
+		<cfif application.zcore.functions.zso(request.zos.globals, 'disableNewUserEmail', true, 0) NEQ 1 and structkeyexists(request, 'fromemail') and structkeyexists(request, 'officeemail') and structkeyexists(request, 'zDisableNewMemberEmail') EQ false>
         <cftry>
 <cfmail   charset="utf-8" from="#trim(request.fromemail)#" to="#trim(request.officeEmail)#" subject="New User on #request.zos.globals.shortdomain#">
 New User on #request.zos.globals.shortdomain#

@@ -123,8 +123,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="edit" localmode="modern" access="remote" roles="member">
-	
+<cffunction name="edit" localmode="modern" access="remote" roles="member"> 
 	<cfscript> 
 	db=request.zos.queryObject; 
 	currentMethod=form.method; 
@@ -249,7 +248,6 @@
 	db=request.zos.queryObject;
 	init();
 	//application.zcore.functions.zSetPageHelpId("5.4"); 
-  
 	db.sql="select * from #db.table("layout_page", request.zos.zcoreDatasource)# 
 	WHERE 
 	layout_page_id=#db.param(form.layout_page_id)# and 

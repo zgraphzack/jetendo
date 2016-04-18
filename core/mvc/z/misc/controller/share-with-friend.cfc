@@ -226,7 +226,7 @@ if(left(form.link, 4) NEQ "http"){
     
 	<tr>
 		<td>&nbsp;</td>
-		<td><a href="/z/user/privacy/index" target="_blank">Privacy Policy</a></td>
+		<td><a href="/z/user/privacy/index" target="_blank" class="zPrivacyPolicyLink">Privacy Policy</a></td>
 	</tr>
 	<tr>
 		<td>&nbsp;</td>

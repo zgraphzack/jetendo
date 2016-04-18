@@ -1507,5 +1507,17 @@ application.zcore.functions.zSplitFile(path,kblength,line);
 	}
 	</cfscript>
 </cffunction>
+
+
+
+
+<cffunction name="zGetImagePlaceholderURL" returntype="string" localmode="modern">
+	<cfargument name="width" type="string" required="yes">
+	<cfargument name="height" type="string" required="yes"> 
+	<cfscript>
+	return "/z/misc/system/generateImagePlaceholder?width=#arguments.width#&height=#arguments.height#";
+	</cfscript> 
+</cffunction> 
+
 </cfoutput>
 </cfcomponent>

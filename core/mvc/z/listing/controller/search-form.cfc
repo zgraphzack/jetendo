@@ -707,13 +707,13 @@ if(application.zcore.functions.zso(form, 'search_result_layout') EQ ""){
 </cfscript>
 <!--- <cfthread action="run" name="zThreadListingSearchForm"> --->
  <cfsavecontent variable="searchFormHTML">
- 
+  
  <cfsavecontent variable="startFormTagHTML">
 
 <cfif structkeyexists(request,'theSearchFormTemplate') EQ false>
  <div id="searchFormTopDiv" style="<!--- height:<cfif isDefined('request.contentEditor')>90<cfelse>130</cfif>px; --->float:left;  width:100%; clear:both;"></div><br style="clear:both;" /></cfif><cfif structkeyexists(form, 'searchId') and form.searchFormEnabledDropDownMenus EQ false><div class="zls-saveSearchFormButton"><br /><a href="##" onclick="zModalSaveSearch(#form.searchId#);return false;" class="zls-saveThisSearchLink"></a><br style="clear:both;" /></div>
  <cfif request.zos.listing.functions.hasSavedSearches()>
- 	<div class="zSearchFormText"><a href="/z/listing/property/your-saved-searches">View Saved Searches</a></div><br />
+ 	<div class="zSearchFormText"><a href="/z/listing/property/your-saved-searches" class="zls-viewSavedSearchesLink">View Saved Searches</a></div><br />
  </cfif><br />
  
  </cfif>

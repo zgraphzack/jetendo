@@ -236,6 +236,10 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	if(not request.zos.isDeveloper){
 		zDebug=false;
 	}
+
+	if(not structkeyexists(cookie, 'zenable')){
+		application.zcore.functions.z404("No cookie set, so generateImage is prevented to avoid hotlinks to dynamic image requests.");
+	}  
 	if(arguments.crop NEQ 1 and arguments.crop NEQ 0){
 		application.zcore.template.fail("Error: zcorerootmapping.com.app.image-library.cfc - getImageLink() failed because arguments.crop must be a 1 or 0 and it is: #arguments.crop#.");
 	}

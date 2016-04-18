@@ -57,9 +57,7 @@
 		userGroupId=request.zsession.user.group_id;
 	}else{
 		userGroupId=0;
-	} 
-	</cfscript>
-	<cfscript>
+	}  
 	ws=application.zcore.app.getWhitelabelStruct();
 	</cfscript>
 	<cfif not structkeyexists(form, 'zEnablePreviewMode') and not request.zos.inServerManager and application.zcore.functions.zso(form, 'zreset') NEQ 'template' and 
@@ -147,13 +145,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 							Site Manager | <a href="/" target="_blank" style="color:##FFF;">View Home Page</a>
 							<cfif request.zos.istestserver>
 	
-								| Mode: 
+								| <a title="Changing to preview will make it easier to test changes to admin template.">Mode</a>: 
 								<cfif application.zcore.functions.zso(request.zsession, 'enablePreviewMode', true, 0) EQ 0>
 									Live | <a href="#application.zcore.functions.zURLAppend(request.zos.originalURL, 'zEnablePreviewMode=1')#" style=" color:##FFFFFF;">Preview</a>
 								<cfelse>
 									<a href="#application.zcore.functions.zURLAppend(request.zos.originalURL, 'zEnablePreviewMode=0')#" style="color:##FFFFFF;">Live</a> | Preview
 								</cfif>
 							</cfif>
+								| Server: <cfif request.zos.isTestServer>Test<cfelse>Live</cfif>
 						</div>
 					
 					 </cfif>

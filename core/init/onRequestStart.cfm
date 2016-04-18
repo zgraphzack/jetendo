@@ -65,6 +65,12 @@
 
 <cffunction name="OnRequestStart" localmode="modern" access="public" returntype="any" output="true" hint="Fires at first part of page processing.">
   <cfargument name="TargetPage" type="string" required="true" /><cfscript>   
+  	// output a cookie to enable hotlink protection 
+	ts={};
+	ts.name="zenable";
+	ts.value=1;
+	ts.expires=60*request.zos.sessionExpirationInMinutes;
+	application.zcore.functions.zCookie(ts);
 
 	if(structkeyexists(application, 'zcoreLoadAgain') or (not structkeyexists(application, 'zcoreIsInit') and (request.zos.isserver or request.zos.isdeveloper or request.zos.istestserver))){
 		structdelete(application, 'zcoreLoadAgain');

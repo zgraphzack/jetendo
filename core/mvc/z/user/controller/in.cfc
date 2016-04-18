@@ -16,7 +16,7 @@
 	
 	<p>In the future, you may change your communication preferences here: 
 	<a href="#request.zos.currentHostName#/z/user/preference/index?e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&action=form">#request.zos.currentHostName#/z/user/preference/index</a></p>
-	<p><a href="#request.zos.currentHostName#/z/user/privacy/index">View our privacy policy</a></p>
+	<p><a href="#request.zos.currentHostName#/z/user/privacy/index" class="zPrivacyPolicyLink">View our privacy policy</a></p>
  
 </cffunction>
 

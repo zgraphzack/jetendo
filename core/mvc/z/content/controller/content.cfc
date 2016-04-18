@@ -292,6 +292,14 @@ this.app_id=12;
 			ts.link="/z/admin/slideshow/index";
 			arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
 		}   
+		if(request.zos.isdeveloper){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Custom Groups") EQ false){
+				ts=structnew();
+				ts.featureName="Groups";
+				ts.link="/z/admin/site-option-group/index?site_option_app_id=0";
+				arguments.linkStruct["Content Manager"].children["Manage Custom Groups"]=ts;
+			}    
+		}
 		/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Add Slideshow") EQ false){
 			ts=structnew();
 			ts.featureName="Slideshows";

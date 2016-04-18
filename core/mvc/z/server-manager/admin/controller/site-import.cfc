@@ -10,7 +10,7 @@
 	application.zcore.functions.zStatusHandler(request.zsid);
 	</cfscript>
 	
-	<form action="/z/server-manager/admin/site-import/process" method="post" enctype="multipart/form-data">
+	<form id="siteImportForm" action="/z/server-manager/admin/site-import/process" method="post" enctype="multipart/form-data">
 		<table style="width:100%; border-spacing:0px;" class="table-white">
 			<tr>
 				<td colspan="2" style="padding:10px; padding-bottom:0px;"><span class="large"><h2>Site Import</h2></span>
@@ -18,6 +18,12 @@
 			</tr>
 			<tr>
 				<td colspan="2" style="padding-left:10px;">
+
+				<cfif request.zos.isTestServer>
+					<h2>Current Server: Test Server</h2>
+				<cfelse>
+					<h2>Current Server: Live Server</h2>
+				</cfif>
 				<p>Choosing an existing site or click "Add Site" to create one.  The site id columns will be automatically updated as needed.</p>
 				<p><strong>WARNING: If the import process fails, there may be permanent data loss.</strong>  Make sure you have made backups before updating an existing site.</p>
 				<p>If you are adding a new site, it won't work immediately after import.  You'll need to click on globals and then click save to make the site active.</p>
@@ -121,7 +127,7 @@
 			<tr>
 				<td class="table-list" style="vertical-align:top; width:140px;">&nbsp;</td>
 				<td class="table-white">
-				<input type="submit" name="submit1" value="Import Site" />
+				<input type="button" name="submit1" value="Import Site" onclick="var r=window.confirm('Double check the form. This operation will replace the source code and database for the selected site. Do you want to continue with the import?'); if(r){ document.getElementById('siteImportForm').submit(); }  " />
 				</td>
 			</tr>
 		</table>

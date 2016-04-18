@@ -84,4 +84,6 @@
 	--->
 </cffunction>
 	
+<cffunction name="index" localmode="modern" roles="serveradministrator">
+</cffunction> 
 </cfinterface>

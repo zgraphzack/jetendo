@@ -188,6 +188,7 @@ D:\desktop\layout.ai
 
 <cffunction name="getReturnLayoutRowHTML" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	var db=request.zos.queryObject; 
 	db.sql="SELECT * FROM #db.table("layout_page", request.zos.zcoreDatasource)# event 
 	WHERE site_id =#db.param(request.zos.globals.id)# and 
@@ -251,6 +252,7 @@ D:\desktop\layout.ai
 	nav(); 
 	</cfscript> 
 	<h2>Manage Custom Layout Pages</h2>
+	<h2>WARNING: this feature is incomplete.</h2>
 	<p><a href="/z/admin/layout-page/add">Add Custom Layout Page</a></p>
 	<cfif qLayout.recordcount EQ 0>
 		<p>No custom layout pages have been added.</p>

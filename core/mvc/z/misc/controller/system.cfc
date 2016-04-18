@@ -7,6 +7,24 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="generateImagePlaceholder" returntype="string" access="remote" localmode="modern">
+	<cfscript>
+	if(not structkeyexists(cookie, 'zenable')){
+		application.zcore.functions.z404("No cookie set, so generateImagePlaceholder is prevented");
+	}  
+	form.width=application.zcore.functions.zso(form, 'width', true);
+	form.height=application.zcore.functions.zso(form, 'height', true); 
+	if(form.width EQ 0 or form.height EQ 0){
+		application.zcore.functions.z404("Invalid width/height.");
+	}
+	i=ImageNew("#request.zos.installPath#public/images/widget/grey.png");
+	imageresize(i, form.width, form.height); 
+	header name="content-disposition" value="attachment; filename=placeholder.png";
+	content variable="#i#"  type="image/png" reset="true";
+	abort; 
+	</cfscript>
+</cffunction>
+
 <cffunction name="closeModal" localmode="modern" access="remote">
 	<script type="text/javascript">window.parent.zCloseModal();</script><cfabort>
 </cffunction>
@@ -37,7 +55,7 @@
 	<cfif textMissing>
 		<h2>Public User Disclaimers</h2>
 		<ul>
-			<li><a href="/z/user/privacy/index">Privacy Policy</a></li>
+			<li><a href="/z/user/privacy/index" class="zPrivacyPolicyLink">Privacy Policy</a></li>
 			<li><a href="/z/user/terms-of-use/index">Terms of Use</a></li>
 		</ul>
 

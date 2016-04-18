@@ -2408,7 +2408,15 @@ User's IP: #request.zos.cgi.remote_addr#
 	/* ]]> */
     </script>
 	<table style="width:100%; border-spacing:0px;margin-top:-10px; background-color:##DDD;" class="table-list">
-		<tr><th style="background-color:##000 !important;color:##FFF; font-weight:bold; font-size:120%;padding:10px;">Server Manager</th></tr>
+		<tr><th style="background-color:##000 !important;color:##FFF; font-weight:bold; font-size:120%;padding:10px;">Server Manager
+
+
+			<cfif request.zos.isTestServer>
+				| Current Server: Test
+			<cfelse>
+				| Current Server: Live
+			</cfif>
+		</th></tr>
 	<tr>
 	<td style="padding:10px;"><a href="/z/server-manager/admin/server-home/index">Dashboard</a>
 	<cfif structkeyexists(request.zos.userSession.groupAccess, "administrator")>

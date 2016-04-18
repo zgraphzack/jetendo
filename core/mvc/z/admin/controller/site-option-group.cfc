@@ -85,9 +85,23 @@
 			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
 		}
 		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
+		if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+			c=t9.optionGroupFieldLookup[groupStruct.site_option_group_id];
+			fieldStruct={};
 			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
 				optionStruct=t9.optionLookup[n];
-				echo(indent&chr(9)&'##curStruct#ss.curIndex#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##<br />'&chr(10));
+				f=indent&chr(9)&'##curStruct#ss.curIndex#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##<br />'&chr(10);
+
+				ts={
+					html: f,
+					sort: optionStruct.site_option_sort
+				};
+				fieldStruct[n]=ts;
+			}
+			arrKey=structsort(fieldStruct, "numeric", "asc", "sort");
+			for(n2=1;n2<=arraylen(arrKey);n2++){
+				n=arrKey[n2];
+				echo(fieldStruct[n].html);
 			}
 			if(groupStruct.site_option_group_enable_unique_url EQ 1){
 				echo(indent&chr(9)&'<a href="##curStruct#ss.curIndex#.__url##">View</a><br />'&chr(10));
@@ -123,6 +137,7 @@
 			if(len(childOutput)){
 				echo(indent&chr(9)&'<h3>Child Groups:</h3>'&chr(10)&indent&chr(9)&chr(9)&childOutput&chr(10));
 			}
+		}
 		echo(indent&'</cfloop><hr />'&chr(10));
 		ss.curIndex++;
 	}
@@ -153,16 +168,17 @@
 `site_x_option_group_set_approved` char(1) NOT NULL DEFAULT '0',
 `#tableName#_updated_datetime` datetime NOT NULL,
 `#tableName#_deleted` char(1) NOT NULL DEFAULT '0',"&chr(10));  
-	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
-		optionStruct=t9.optionLookup[n];
-		savecontent variable="out"{
-			var currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type); 
-			fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
-			v=currentCFC.getCreateTableColumnSQL(fieldName);
-		}
-		echo(v&","&chr(10));
-	} 
-
+	if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+		for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+			optionStruct=t9.optionLookup[n];
+			savecontent variable="out"{
+				var currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type); 
+				fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
+				v=currentCFC.getCreateTableColumnSQL(fieldName);
+			}
+			echo(v&","&chr(10));
+		} 
+	}
 	echo('PRIMARY KEY (`#tableName#_id`),
 KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;');  
@@ -181,14 +197,15 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
  
 	tableName=lcase(application.zcore.functions.zURLEncode(groupStruct.site_option_group_name, "_"));
   
-	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
-		optionStruct=t9.optionLookup[n];
-		savecontent variable="out"{ 
-			fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
-		}
-		echo(fieldName&':ds["'&replace(optionStruct.site_option_name, "##", "####", "all")&'"],'&chr(10)); 
-	} 
-
+	if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+		for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+			optionStruct=t9.optionLookup[n];
+			savecontent variable="out"{ 
+				fieldName="#tableName#_"&lcase(application.zcore.functions.zURLEncode(optionStruct.site_option_name, "_"));
+			}
+			echo(fieldName&':ds["'&replace(optionStruct.site_option_name, "##", "####", "all")&'"],'&chr(10)); 
+		} 
+	}
 	</cfscript>
 </cffunction>
 
@@ -211,6 +228,9 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 		
 		 
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
+	if(not structkeyexists(t9.optionGroupLookup, form.site_option_group_id)){
+		application.zcore.functions.z404("#form.site_option_group_id# is not a valid site_option_group_id");
+	}
 		groupStruct=t9.optionGroupLookup[form.site_option_group_id];
 		groupNameArray=arrayToList(application.zcore.siteOptionCom.getOptionGroupNameArrayById(groupStruct.site_option_group_id), '","');
 		if(groupStruct.site_option_group_enable_unique_url EQ 1){
@@ -408,37 +428,39 @@ displayGroupCom.ajaxInsert();
  	echo('cs.dataFields=[');
 	count=0; 
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
-	for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
-		optionStruct=t9.optionLookup[n];
-		count++;
-		currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type);   
-		typeName=currentCFC.getTypeName();
-		options=currentCFC.getOptionFieldStruct();
-		currentOptions=duplicate(optionStruct.optionStruct);
-		structappend(currentOptions, options, false);
-		tabs=chr(9);
-		if(count NEQ 1){
-			echo(',');
-		}
-		echo(chr(10)&'{'&chr(10));
-		echo('#tabs#id:"#count#",'&chr(10));
-		echo('#tabs#label:"#replace(replace(optionStruct.site_option_name, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
-		echo('#tabs#type:"#typeName#",'&chr(10));
-		echo('#tabs#required:#optionStruct.site_option_required#,'&chr(10));
-		echo('#tabs#defaultValue:"#replace(replace(optionStruct.site_option_default_value, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
-		echo('#tabs#options:{');
-		first=true;
-		for(g in currentOptions){
-			if(not first){
-				echo(','&chr(10));
-			}else{
-				echo(chr(10));
+	if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+		for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+			optionStruct=t9.optionLookup[n];
+			count++;
+			currentCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.type);   
+			typeName=currentCFC.getTypeName();
+			options=currentCFC.getOptionFieldStruct();
+			currentOptions=duplicate(optionStruct.optionStruct);
+			structappend(currentOptions, options, false);
+			tabs=chr(9);
+			if(count NEQ 1){
+				echo(',');
 			}
-			first=false;
-			echo(chr(9)&chr(9)&'"#replace(replace(g, '##', '####', 'all'), '"', '""', "all")#":"#replace(replace(currentOptions[g], '##', '####', 'all'), '"', '""', "all")#"');
+			echo(chr(10)&'{'&chr(10));
+			echo('#tabs#id:"#count#",'&chr(10));
+			echo('#tabs#label:"#replace(replace(optionStruct.site_option_name, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
+			echo('#tabs#type:"#typeName#",'&chr(10));
+			echo('#tabs#required:#optionStruct.site_option_required#,'&chr(10));
+			echo('#tabs#defaultValue:"#replace(replace(optionStruct.site_option_default_value, '##', '####', 'all'), '"', '""', "all")#",'&chr(10));
+			echo('#tabs#options:{');
+			first=true;
+			for(g in currentOptions){
+				if(not first){
+					echo(','&chr(10));
+				}else{
+					echo(chr(10));
+				}
+				first=false;
+				echo(chr(9)&chr(9)&'"#replace(replace(g, '##', '####', 'all'), '"', '""', "all")#":"#replace(replace(currentOptions[g], '##', '####', 'all'), '"', '""', "all")#"');
+			}
+			echo(chr(10)&'#tabs#}'&chr(10)); 
+			echo('}'); 
 		}
-		echo(chr(10)&'#tabs#}'&chr(10)); 
-		echo('}'); 
 	}
 	echo(chr(10)&'];');
 	echo('</textarea>');
@@ -1319,7 +1341,8 @@ displayGroupCom.ajaxInsert();
 	</cfscript>
 	<cfif structkeyexists(form,'confirm')>
 		<cfscript>
-		application.zcore.siteOptionCom.deleteGroupRecursively(form.site_option_group_id);
+		// TODO: fix group delete that has no options - it leaves a remnant in memory that breaks the application
+		application.zcore.siteOptionCom.deleteGroupRecursively(form.site_option_group_id, true);
 		application.zcore.status.setStatus(request.zsid, "Group deleted successfully.");
 		application.zcore.siteOptionCom.updateOptionGroupCacheByGroupId(qCheck.site_option_group_id);
 
