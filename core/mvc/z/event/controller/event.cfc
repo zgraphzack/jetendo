@@ -119,7 +119,7 @@ timezone does nothing...
 	db.sql&="
 	GROUP BY event.event_id 
 	ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC";
-	qF=db.execute("qF"); 
+	qF=db.execute("qF");  
 	//GROUP BY event.event_id  
 	uniqueEvent={};
 	for(row in qF){
@@ -1066,7 +1066,7 @@ searchEvents(ts);
 		db.sql&=" and event_calendar_id IN (#db.trustedSQL(calendarIdList)#) ";
 	}*/
 	db.sql&=" GROUP BY event_recur.event_recur_id
-	ORDER BY event_recur_start_datetime ASC, event_recur_end_datetime ASC
+	ORDER BY event_featured desc, event_recur_start_datetime ASC, event_recur_end_datetime ASC
 	 LIMIT #db.param(ss.offset)#, #db.param(ss.perpage)# ";
 	qList=db.execute("qList");
 	if(request.zos.isdeveloper and structkeyexists(form, 'zdebug')){
