@@ -748,6 +748,9 @@ $crontabs.="#every 5 minutes
 # every day at 12:15am
 15 0 * * * /usr/bin/perl ".$scriptsPath."rsync_backup.pl >/dev/null 2>&1
 
+# every day at 1:15am
+15 1 * * * /usr/bin/php ".$scriptsPath."spf-validation.php >/dev/null 2>&1
+
 # every day at 1:30am
 30 1 * * * /usr/bin/php ".$scriptsPath."mysql-backup/backup_dbs.php >/dev/null 2>&1
 
