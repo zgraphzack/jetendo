@@ -653,10 +653,10 @@ var zLastAjaxVarName=""; */
 						if(req.status === 200 || req.status===301 || req.status===302){
 							if(zAjaxData[id].cache){
 								zAjaxData[id].cacheData[zAjaxData[id].url]=new Object();
-								zAjaxData[id].cacheData[zAjaxData[id].url].responseText=req.responseText;
+								zAjaxData[id].cacheData[zAjaxData[id].url].responseText=req.responseText.trim();
 								zAjaxData[id].cacheData[zAjaxData[id].url].success=true;
 							}
-							zAjaxData[id].callback(req.responseText);
+							zAjaxData[id].callback(req.responseText.trim());
 						/*}else{ 
 							if(zAjaxData[id].debug){
 								document.write('AJAX SERVER ERROR - (Click back and refresh to continue):<br />'+req.responseText);
@@ -699,6 +699,8 @@ var zLastAjaxVarName=""; */
 			req.send(postData);  
 		}
 	}
+
+	
 	function zFormSubmit(formName,validationOnly,onChange,debug, returnObject){	
 		// validation for all fields...
 		if(typeof zFormData[formName] === "undefined" || typeof zFormData[formName].arrFields === "undefined"){
