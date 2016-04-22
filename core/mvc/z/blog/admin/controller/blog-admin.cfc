@@ -2465,48 +2465,7 @@ tabCom.enableSaveButtons();
 				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
 				<td>
 		<cfscript>
-		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
-		memberGroupId = userGroupCom.getGroupId('member',request.zos.globals.id);
-		memberParentGroupId = userGroupCom.getGroupId('member',request.zos.globals.parentId);
-		parentSiteId=application.zcore.functions.zvar('parentid',request.zos.globals.id,0);
-		if(parentSiteId NEQ 0){
-			db.sql="SELECT * FROM  #db.table("user_group_x_group", request.zos.zcoreDatasource)#  
-			WHERE user_group_child_id = #db.param(memberParentGroupId)# and 
-			user_group_x_group_deleted = #db.param(0)# and 
-			site_id = #db.param(parentSiteId)# 
-			GROUP BY user_group_id ";
-			qParentGroup=db.execute("qParentGroup"); 
-		}
-		db.sql="SELECT * FROM  #db.table("user_group_x_group", request.zos.zcoreDatasource)# 
-		WHERE user_group_child_id = #db.param(memberGroupId)# and 
-		user_group_x_group_deleted = #db.param(0)# and ";
-		if(parentSiteId NEQ 0){
-			db.sql&=" site_id in (#db.param(request.zos.globals.id)#, #db.param(request.zos.globals.parentId)#) ";
-		}else{
-			db.sql&=" site_id in (#db.param(request.zos.globals.id)#) ";
-		}
-		db.sql&=" GROUP BY user_group_id ";
-		qGroup=db.execute("qGroup"); 
-		arrGroup=[];
-		for(row in qGroup){
-			arrayAppend(arrGroup, row.user_group_id);
-		}
-		db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)#  
-		WHERE 
-		((user_group_id IN (#db.trustedSQL("'"&arrayToList(arrGroup, ",")&"'")#) and 
-		site_id = #db.param(request.zos.globals.id)#) ";
-		if(parentSiteId NEQ 0){
-			arrGroup=[];
-			for(row in qParentGroup){
-				arrayAppend(arrGroup, row.user_group_id);
-			}
-			db.sql&=" or (user_group_id IN (#db.trustedSQL("'"&arrayToList(arrGroup, ",")&"'")#) and 
-			site_id = #db.param(request.zos.globals.parentId)#) ";
-		}
-	 	db.sql&=") and 
-		user_deleted = #db.param(0)# and   
-		user_server_administrator=#db.param(0)#";
-		qUser=db.execute("qUser"); 
+		qUser=application.zcore.user.getUsersWithGroupAccess("member");
 		if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
 		if(form.user_id_siteIdType EQ 0){
 			form.user_id_siteIdType=1;
