@@ -110,16 +110,22 @@ while($row=$r->fetch_assoc()){
 		array_push($arrError, "dig txt/spf failed for domain: ".$domain." | there are no mail vendors or custom phrases defined in the server manager for this domain yet.");
 		continue;
 	} 
+	// dig spf domain.com
+	$cmd="/usr/bin/dig spf +short $dnsServer $domain";
+	$output1=trim(`$cmd`); 
+	if($output1 != ""){
+		if($row["spf_domain_valid"]=="1"){
+			$cmysql->query("UPDATE spf_domain SET spf_domain_dns_record='', spf_domain_valid='0', spf_domain_updated_datetime='".date('Y-m-d H:i:s')."' WHERE spf_domain_id='".$row["spf_domain_id"]."'", MYSQLI_STORE_RESULT);  
+		}
+		array_push($arrError, "dig txt/spf failed for domain: ".$domain." | the domain has an \"SPF\" type dns record, which is not valid and must be changed to \"TXT\" type for SPF to work across all ISPs.  If both records exist, delete the SPF type dns record to fix this error.");
+		continue;
+	}
+	// sleep 1 second to avoid abusive dns checks/limits
+	sleep(1); 
+
 	// dig txt domain.com
 	$cmd="/usr/bin/dig txt +short $dnsServer $domain";
-	$output1=trim(`$cmd`); 
-	if($output1 == ""){
-		// sleep 1 second to avoid abusive dns checks/limits
-		sleep(1); 
-		// dig spf domain.com
-		$cmd="/usr/bin/dig spf +short $dnsServer $domain";
-		$output1=trim(`$cmd`); 
-	}
+	$output1=trim(`$cmd`);   
 	if($output1 == ""){
 		if($row["spf_domain_valid"]=="1"){
 			$cmysql->query("UPDATE spf_domain SET spf_domain_dns_record='', spf_domain_valid='0', spf_domain_updated_datetime='".date('Y-m-d H:i:s')."' WHERE spf_domain_id='".$row["spf_domain_id"]."'", MYSQLI_STORE_RESULT);  

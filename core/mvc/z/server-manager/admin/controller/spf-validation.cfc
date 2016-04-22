@@ -195,6 +195,7 @@
 	v=spf1 mx ptr include:sendgrid.net include:_spf.mail.yahoo.com ?all<br /> 
 	v=spf1 mx ptr include:sendgrid.net include:spf.protection.outlook.com ?all
 	<br /><br /> 
+	Be sure not to use the SPF dns record type.  It is not valid with many ISPs<br /><br />
 	<cfif qSPF.recordcount EQ 0>
 		<p>No SPF Domains added yet.</p>
 

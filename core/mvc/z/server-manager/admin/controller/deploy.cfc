@@ -198,9 +198,9 @@
 		if(not structkeyexists(form, 'deploy_server_id'&index)){
 			break;
 		}
-		if(application.zcore.functions.zso(form, "site_x_deploy_server_remote_site_id#index#", true, 0) EQ 0){
+		/*if(application.zcore.functions.zso(form, "site_x_deploy_server_remote_site_id#index#", true, 0) EQ 0){
 			continue;
-		}
+		}*/
 		db.sql=" replace into #db.table("site_x_deploy_server", request.zos.zcoreDatasource)# set 
 		site_id=#db.param(form.sid)#, 
 		site_x_deploy_server_deleted=#db.param(0)#,
