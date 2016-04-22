@@ -1653,14 +1653,14 @@ formString = userCom.loginForm(inputStruct);
 	}
 	db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)#  
 	WHERE 
-	((user_group_id IN (#db.trustedSQL("'"&arrayToList(arrGroup, ",")&"'")#) and 
+	((user_group_id IN (#db.trustedSQL("'"&arrayToList(arrGroup, "','")&"'")#) and 
 	site_id = #db.param(request.zos.globals.id)#) ";
 	if(parentSiteId NEQ 0){
 		arrGroup=[];
 		for(row in qParentGroup){
 			arrayAppend(arrGroup, row.user_group_id);
 		}
-		db.sql&=" or (user_group_id IN (#db.trustedSQL("'"&arrayToList(arrGroup, ",")&"'")#) and 
+		db.sql&=" or (user_group_id IN (#db.trustedSQL("'"&arrayToList(arrGroup, "','")&"'")#) and 
 		site_id = #db.param(request.zos.globals.parentId)#) ";
 	}
  	db.sql&=") and 

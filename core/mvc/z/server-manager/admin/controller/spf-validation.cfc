@@ -20,8 +20,12 @@
 
 		form.spf_domain_deleted=0;
 		application.zcore.functions.zDeleteRecord("spf_domain", "spf_domain_id,spf_domain_deleted", request.zos.zcoreDatasource);
-		application.zcore.status.setStatus(Request.zsid, 'SPF Domain deleted'); 
-		application.zcore.functions.zRedirect('/z/server-manager/admin/spf-validation/index?zsid=#request.zsid#');
+		if(application.zcore.functions.zso(form, 'returnJson', true, 0) EQ 1){
+			application.zcore.functions.zReturnJson({success:true});
+		}else{
+			application.zcore.status.setStatus(Request.zsid, 'SPF Domain deleted'); 
+			application.zcore.functions.zRedirect('/z/server-manager/admin/spf-validation/index?zsid=#request.zsid#');
+		}
 		</cfscript>
 	<cfelse>
 		<div style="font-size:14px; font-weight:bold; text-align:center; "> Are you sure you want to delete this SPF Domain?<br />
@@ -72,7 +76,7 @@
 	if(form.method EQ "insert"){
 		form.spf_domain_id=application.zcore.functions.zInsert(ts);
 		if(not form.spf_domain_id){ 
-			application.zcore.status.setStatus(request.zsid, 'Failed to save SPF Domain due to duplicate certificate.',form,true);
+			application.zcore.status.setStatus(request.zsid, 'Failed to save SPF Domain.  This domain already exists.',form,true);
 			application.zcore.functions.zRedirect("/z/server-manager/admin/spf-validation/add?spf_domain_id=#form.spf_domain_id#&zsid=#request.zsid#");
 		}
 		application.zcore.status.setStatus(request.zsid, 'SPF Domain Saved.');
@@ -204,6 +208,7 @@
 			<tr>
 				<th>SPF Domain</th>
 				<th>Current SPF Record</th> 
+				<th>MX Record</th>
 				<th>Valid</th> 
 				<th>Admin</th>
 			</tr>
@@ -211,6 +216,7 @@
 				<tr>
 					<td>#qSPF.spf_domain_name#</td>
 					<td>#qSPF.spf_domain_dns_record#</td>
+					<td>#paragraphformat(qSPF.spf_domain_mx_dns_record)#</td>
 					<td><cfif qSPF.spf_domain_valid EQ 1>
 						Yes
 					<cfelse>
@@ -219,7 +225,7 @@
 					</td>
 					<td>
 						<a href="/z/server-manager/admin/spf-validation/edit?spf_domain_id=#qSPF.spf_domain_id#">Edit</a> | 
-						<a href="/z/server-manager/admin/spf-validation/delete?spf_domain_id=#qSPF.spf_domain_id#">Delete</a>
+						<a href="##" onclick="zDeleteTableRecordRow(this, '/z/server-manager/admin/spf-validation/delete?spf_domain_id=#qSPF.spf_domain_id#&amp;confirm=1&amp;returnJson=1'); return false;">Delete</a>
 					</td>
 				</tr>
 			</cfloop>
