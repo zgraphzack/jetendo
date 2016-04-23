@@ -72,7 +72,7 @@ function checkDNSForSPFPhrases($dnsString, $arrSPFPhrase){
 	if($phraseCount == count($arrSPFPhrase)){
 		return array("success"=>true, "spfRecord"=>$line);
 	}else{
-		return array("success"=>false, "spfRecord"=>$line, "errorMessage"=>(count($arrSPFPhrase)-count($arrError))." phrases not found. Details:".implode(", ", $arrError));
+		return array("success"=>false, "spfRecord"=>$line, "errorMessage"=>count($arrError)." errors. Details:".implode(", ", $arrError));
 	} 
 }
 
@@ -89,7 +89,13 @@ $arrError=array();
 
 // get all domains to validate from cfml db
 $cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource());
-$sql="select * FROM spf_domain WHERE spf_domain_deleted='0' "; 
+$sql="select * FROM spf_domain WHERE spf_domain_deleted='0' ";
+for($i=0;$i<count($argv);$i++){
+	if($argv[$i] == 'onlyinvalid=1'){
+		$sql.=" and spf_domain_valid='0' ";
+	}
+}
+$sql.=" ORDER BY spf_domain_name asc "; 
 $r=$cmysql->query($sql, MYSQLI_STORE_RESULT); 
 // loop the domains  
 while($row=$r->fetch_assoc()){ 

@@ -141,7 +141,8 @@ USER WAS PERMANENTLY BLOCKED.');
 				}
 			}
 			
-			request.zos.trackingDisabled=true;
+			//request.zos.trackingDisabled=true;
+			return;
 		}
 		if(structkeyexists(request.zos,'trackingDisabled')) return;
 		

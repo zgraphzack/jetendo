@@ -183,7 +183,7 @@
 	application.zcore.functions.zStatusHandler(Request.zsid,true);
 	db.sql="SELECT * FROM #db.table("spf_domain", request.zos.zcoreDatasource)#   
 	WHERE spf_domain_deleted = #db.param(0)# 
-	ORDER BY spf_domain_name ASC ";
+	ORDER BY spf_domain_valid ASc, spf_domain_name ASC ";
 	qSPF=db.execute("qSPF");
  
 	</cfscript> 
@@ -191,7 +191,10 @@
 	| <a href="/z/server-manager/admin/spf-validation/add">Add SPF Domain</a> 
 	<br /><br /> 
 	This list of domains should include all domains for the entire company which are used to send email regardless of whether we host their web site on this system or not.  All domains should have an SPF record defined according to email compliance standards established by all major ISPs.  These domains are validated once per day and the current DNS SPF record is cached at that time.  <br /><br />If you need to run validation manually, use this shell command:<br />
-	php #request.zos.installPath#scripts/spf-validation.php
+	php #request.zos.installPath#scripts/spf-validation.php<br /><br />
+	To validate only the invalid records:<br />
+	php #request.zos.installPath#scripts/spf-validation.php onlyinvalid=1
+
 	<br /><br />  Examples of valid SPF TXT records include: <br /><br /> 
 
 	v=spf1 mx ptr include:sendgrid.net include:_spf.google.com ?all<br /> 
@@ -214,7 +217,7 @@
 			</tr>
 			<cfloop query="qSPF">
 				<tr>
-					<td>#qSPF.spf_domain_name#</td>
+					<td><a href="http://#qSPF.spf_domain_name#" target="_blank" <cfif qSPF.spf_domain_valid NEQ 1>style="color:##F00;"</cfif>>#qSPF.spf_domain_name#</a></td>
 					<td>#qSPF.spf_domain_dns_record#</td>
 					<td>#paragraphformat(qSPF.spf_domain_mx_dns_record)#</td>
 					<td><cfif qSPF.spf_domain_valid EQ 1>
