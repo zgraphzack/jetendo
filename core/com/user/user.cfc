@@ -366,7 +366,7 @@ userCom.checkLogin(inputStruct);
 			if(structkeyexists(form, 'zdebug')){
 				arrayAppend(rs.arrDebugLog, "Found user_id: #qUserCheck.user_id#");
 			}
-			if(qUserCheck.user_password EQ "" and qUserCheck.user_password_new EQ ""){
+			if(qUserCheck.user_password EQ ""){// and qUserCheck.user_password_new EQ ""){
 				if(structkeyexists(form, 'zdebug')){
 					arrayAppend(rs.arrDebugLog, "Password missing in database");
 				}

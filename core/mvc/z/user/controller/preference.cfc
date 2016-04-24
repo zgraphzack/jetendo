@@ -79,7 +79,8 @@
 			set user_key =#db.param(form.user_key)#,
 			user_updated_datetime=#db.param(request.zos.mysqlnow)# 
 			WHERE user_id = #db.param(variables.qcheckemail.user_id)# and 
-			site_id=#db.param(variables.qcheckemail.site_id)#";
+			site_id=#db.param(variables.qcheckemail.site_id)# and 
+			user_deleted=#db.param(0)# ";
 			addKey=db.execute("addKey");
 		}
 		if(structkeyexists(request.zsession, "user") and structkeyexists(request.zos.userSession.groupAccess, "user")){
@@ -115,7 +116,7 @@
 	if(structkeyexists(request.zsession, 'secureLogin') and request.zsession.secureLogin EQ false){
 		variables.secureLogin=false;
 	}
-	if(variables.qcheckemail.recordcount NEQ 0){
+	/*if(variables.qcheckemail.recordcount NEQ 0){
 		if(structkeyexists(form, 'npw') and trim(variables.qcheckemail.user_password_new) NEQ ''){
 			form.user_updated_datetime = request.zos.mysqlnow;
 			db.sql="UPDATE #db.table("user", request.zos.zcoreDatasource)# user 
@@ -148,7 +149,7 @@
 			application.zcore.status.setStatus(request.zsid, "Password has been reset.");
 			application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
-	}
+	}*/
 	if(variables.secureLogin and variables.qcheckemail.recordcount NEQ 0){
 		if(structkeyexists(form, 'nea') and trim(variables.qcheckemail.user_email_new) NEQ ''){
 			form.user_updated_datetime = request.zos.mysqlnow;
@@ -270,7 +271,7 @@
 			application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
 		}
 	}
-	if(form.submitPref EQ "Reset Password"){
+	/*if(form.submitPref EQ "Reset Password"){
 		if(qcheckemail10.recordcount EQ 0){
 			if(structkeyexists(form, 'x_ajax_id')){
 				writeoutput('{success:false,errorMessage:"No user account exists for the email address provided."}');
@@ -290,14 +291,15 @@
 		}else{
 			this.resetPasswordUpdate();
 		}
-	}else if(form.submitPref EQ "Update Communication Preferences"){ 
+	}else */
+	if(form.submitPref EQ "Update Communication Preferences"){ 
 		this.updatePreferences();
 	}else if(form.submitPref EQ "Unsubscribe"){
 		this.unsubscribeUpdate();
 	}
 	</cfscript>
 </cffunction>
-
+<!--- 
 <cffunction name="resetPasswordUpdate" localmode="modern" access="private">
 	<cfscript>
 	var qP=0;
@@ -382,7 +384,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#&e=#urlencodedformat(form.e)#");
 	}
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="updatePreferences" localmode="modern" access="private">
 	<cfscript>
@@ -873,7 +875,7 @@ If the link does not work, please copy and paste the entire link in your browser
 				<cfelse>
 					<button type="submit" name="submitPref" value="Login" style="font-size:120%; padding:5px; margin-bottom:5px;">Login</button>
 					<br />
-					<button type="button" name="submitPref" onclick="window.location.href='/z/user/reset-password/index?email=#urlencodedformat(form.e)#';" value="Reset Password" style="font-size:120%; padding:5px; margin-bottom:5px;">Reset Password</button>
+					<button type="button" name="submitPref" onclick="window.location.href='/z/user/reset-password/index?email=#urlencodedformat(form.e)#';" value="Reset Password" style="font-size:120%; padding:5px; margin-bottom:5px;">Forgot your password?</button>
 				</cfif>
 			</div>
 			</div>

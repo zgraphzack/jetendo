@@ -71,7 +71,7 @@
 		user_email_new=#db.param('')#, 
 		member_email = #db.param(qcheckemail.user_email_new)#, 
         </cfif>
-        <cfif qcheckemail.user_password_new NEQ ''>
+        <!--- <cfif qcheckemail.user_password_new NEQ ''>
 		user_password_version = #db.param(qcheckemail.user_password_new_version)#,
 		user_password = #db.param(qcheckemail.user_password_new)#,
 		user_salt = #db.param(qcheckemail.user_password_new_salt)#, 
@@ -79,7 +79,7 @@
 		user_password_new_version=#db.param('')#,
 		user_password_new_salt=#db.param('')#,
 		member_password = #db.param(qcheckemail.user_password_new)#, 
-        </cfif>
+        </cfif> --->
 	user_confirm =#db.param(1)#,  
 	user_pref_list=#db.param(1)#, 
 	user_confirm_datetime=#db.param(datetime)#, 
