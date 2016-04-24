@@ -403,8 +403,6 @@ function forceCustomFontLoading(inst){
 
 
 
-
-
 function zGetCurrentRootRelativeURL(theURL){
 	var a=theURL.split("/");
 	var a2="";

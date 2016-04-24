@@ -11,14 +11,38 @@ var zArrScrollFunctions=new Array();
 var zImageOnError=function(){};
 var zFunctionLoadStarted=false;
 var zArrResizeFunctions=new Array();
+var zJetendoLoadedRan=false;
+var zArrDeferredFunctions=[];
+var zArrLoadFunctions=[];
 var zMSIEVersion=-1; 
 var zMSIEBrowser=window.navigator.userAgent.indexOf("MSIE"); 
 if(zMSIEBrowser != -1){	
 	zMSIEVersion= (window.navigator.userAgent.substring (zMSIEBrowser+5, window.navigator.userAgent.indexOf (".", zMSIEBrowser ))); 
 }
-var zJetendoLoadedRan=false;
-var zArrDeferredFunctions=[];
-var zArrLoadFunctions=[];
+
+var forcedUpgradeMessage=false; 
+if(!forcedUpgradeMessage){
+	if(zMSIEBrowser != -1 && zMSIEVersion <= 8){	
+		forcedUpgradeMessage=true;
+	}
+	if(navigator.userAgent.toLowerCase().indexOf("android 2.") != -1){
+		forcedUpgradeMessage=true;
+	}
+	if(forcedUpgradeMessage){
+		var h=document.cookie.indexOf('hideBrowserUpgrade=');
+		if(h==-1){
+			zArrLoadFunctions.push(function(){
+				$('body').append('<div id="zBrowserUpgradeDiv" style="position:absolute; z-index:20000; background-color:#FFF !important; color:#000 !important; top:10px; right:10px; width:280px; padding:10px; font-size:18px; border:1px solid #999; line-height:24px; "><strong>This web site is not compatible with your browser.</strong> Please upgrade to access all features.<br /><a href="http://www.whatbrowser.org/" target="_blank">Learn More</a> | <a href="##" onclick="zHideBrowserUpgrade();">Hide Message</a></div>');
+			});
+		}
+	}
+
+} 
+function zHideBrowserUpgrade(){
+	document.getElementById("zBrowserUpgradeDiv").style.display='none';
+	zSetCookie({key:"hideBrowserUpgrade",value:1,futureSeconds:60 * 60 * 24 * 7,enableSubdomains:false}); 
+
+}
 zJetendoLoaded=function(){}; 
 function zOverEditDiv(){};
 function zImageMouseMove(){};
@@ -130,7 +154,10 @@ function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
 		//throw(e);
 	}
 }
-window.onerror=zGlobalErrorHandler;
+
+if(!forcedUpgradeMessage){
+	window.onerror=zGlobalErrorHandler;
+}
 var zLoader=function(){
 	this.loaded=0;
 	this.scriptLoaded=function(){
