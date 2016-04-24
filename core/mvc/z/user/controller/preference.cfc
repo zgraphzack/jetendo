@@ -438,6 +438,25 @@ If the link does not work, please copy and paste the entire link in your browser
 	form.member_affiliate_opt_in=application.zcore.functions.zso(form, 'user_pref_sharing');
 	form.member_first_name = application.zcore.functions.zso(form, 'user_first_name');
 	form.member_last_name = application.zcore.functions.zso(form, 'user_last_name');
+
+	arrEmail=listToArray(application.zcore.functions.zso(form, 'user_alternate_email'), ",");
+	arrEmail2=[];
+	fail=false;
+	for(i=1;i<=arraylen(arrEmail);i++){
+		e=trim(arrEmail[i]);
+		if(e NEQ ""){
+			if(not application.zcore.functions.zEmailValidate(e)){
+				fail=true;
+				application.zcore.status.setStatus(Request.zsid, e&" is not a valid email",form,true);
+			}else{
+				arrayAppend(arrEmail2, e);
+			}
+		}
+	}
+	if(fail){
+		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&e=#urlencodedformat(form.e)#&k=#urlencodedformat(form.k)#&zsid=#request.zsid#");
+	}
+	form.user_alternate_email=arrayToList(arrEmail2, ",");
 	
 	db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 	where mail_user_email=#db.param(form.user_email)# and 
@@ -455,6 +474,7 @@ If the link does not work, please copy and paste the entire link in your browser
 	}
 	
 	form.user_salt=application.zcore.functions.zGenerateStrongPassword(256,256);
+
 	
 	if(variables.qcheckemail.recordcount eq 0){
 		if(len(trim(application.zcore.functions.zso(form, 'user_password'))) LT 8){
@@ -873,6 +893,10 @@ If the link does not work, please copy and paste the entire link in your browser
 					<td><span style=" font-weight:bold;">Password</span>&nbsp;</td>
 					<td><input type="password" style=" width:100%;" onclick="tempValue=this.value;this.value='';" onblur="if(this.value == ''){ this.value='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';}" name="user_password" value="<cfif len(form.user_password) NEQ 0>#(replace(ljustify('',8),' ','&nbsp;','ALL'))#</cfif>" /></td>
 				</tr>
+				<tr>
+					<td><span style=" font-weight:bold;">Alternative Email(s)</span></td>
+					<td><input type="text" name="user_alternate_email" style=" width:100%;" value="#htmleditformat(form.user_alternate_email)#" /><br />Note: you can separate multiple emails with commas.</td>
+				</tr> 
 				<tr>
 					<td>First Name</td>
 					<td><input type="text" name="user_first_name" value="#htmleditformat(form.user_first_name)#" style=" width:100%;" /></td>

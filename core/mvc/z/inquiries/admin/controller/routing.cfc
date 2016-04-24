@@ -49,7 +49,8 @@ enable round robin for users - need a new option to disable for staff.
 	variables.init();
 	db.sql="SELECT * from #db.table("inquiries_routing", request.zos.zcoreDatasource)# inquiries_routing
 	WHERE inquiries_routing_id = #db.param(form.inquiries_routing_id)# and 
-	site_id = #db.param(request.zOS.globals.id)# ";
+	site_id = #db.param(request.zOS.globals.id)# and 
+	inquiries_routing_deleted=#db.param(0)# ";
 	qCheck=db.execute("qCheck");
 	if(qCheck.recordcount EQ 0){
 		application.zcore.status.setStatus(Request.zsid, 'Lead route no longer exists', false,true);
@@ -63,7 +64,8 @@ enable round robin for users - need a new option to disable for staff.
 		} 
 		db.sql="DELETE from #db.table("inquiries_routing", request.zos.zcoreDatasource)#  
 		WHERE inquiries_routing_id = #db.param(form.inquiries_routing_id)# and 
-		site_id = #db.param(request.zOS.globals.id)# ";
+		site_id = #db.param(request.zOS.globals.id)# and 
+		inquiries_routing_deleted=#db.param(0)#  ";
 		q=db.execute("q");
 		variables.queueSortCom.sortAll();
 		application.sitestruct[request.zos.globals.id].leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();	
@@ -330,21 +332,28 @@ enable round robin for users - need a new option to disable for staff.
 						</tr> --->
 						<tr>
 							<td><input type="radio" name="inquiries_routing_type_id" id="inquiries_routing_type_id2" value="2" <cfif form.inquiries_routing_type_id EQ 2>checked="checked"</cfif> />
-								Assign To User&nbsp;
-								<cfscript>
-								form.inquiries_routing_assign_to_user_id=form.inquiries_routing_assign_to_user_id&"|"&form.user_id_siteIDType;
-								selectStruct = StructNew();
-								selectStruct.name = "inquiries_routing_assign_to_user_id";
-								selectStruct.query = qAgents;
-								selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
-								selectStruct.onchange="showAgentPhoto(this.options[this.selectedIndex].value);";
-								selectStruct.queryParseLabelVars = true;
-								selectStruct.queryParseValueVars = true;
-								selectStruct.queryValueField = '##user_id##|##siteIdType##';
-								application.zcore.functions.zInputSelectBox(selectStruct);
-								</cfscript>
-								<br />
-								<div id="agentPhotoDiv"></div></td>
+								Assign To User&nbsp;<br />
+								<div style="float:left; padding-left:5%;padding-top:10px;">
+						           <div style="float:left; width:90px;">Search Users:</div> <input type="text" name="assignInputField" id="assignInputField" value="" style="width:240px; min-width:auto; max-width:auto; margin-bottom:5px;"><br />
+									<div style="float:left; width:90px;">Select One:</div><br />
+									<cfscript>
+									form.inquiries_routing_assign_to_user_id=form.inquiries_routing_assign_to_user_id&"|"&form.user_id_siteIDType;
+									selectStruct = StructNew();
+									selectStruct.name = "inquiries_routing_assign_to_user_id";
+									selectStruct.query = qAgents;
+									selectStruct.size=5;
+									selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
+									selectStruct.onchange="showAgentPhoto(this.options[this.selectedIndex].value);";
+									selectStruct.queryParseLabelVars = true;
+									selectStruct.queryParseValueVars = true;
+									selectStruct.queryValueField = '##user_id##|##siteIdType##';
+									application.zcore.functions.zInputSelectBox(selectStruct);
+	       							application.zcore.skin.addDeferredScript("  $('##inquiries_routing_assign_to_user_id').filterByText($('##assignInputField'), true); ");
+									</cfscript>
+									<br />
+									<div id="agentPhotoDiv"></div>
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<td><input type="radio" name="inquiries_routing_type_id" id="inquiries_routing_type_id3" value="3" <cfif form.inquiries_routing_type_id EQ 3>checked="checked"</cfif> />

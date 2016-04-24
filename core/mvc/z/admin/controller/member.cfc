@@ -205,6 +205,7 @@
 	if(form.member_website EQ "/"){
 		form.member_website=request.zos.currentHostName&"/";	
 	}
+
 	form.member_password=trim(form.member_password);
 	form.member_password_confirm=trim(form.member_password_confirm);
 	if(form.method EQ "insert"){
@@ -269,8 +270,23 @@
 	ts=StructNew();
 	ts.member_email.required= true;
 	ts.member_email.email=true;
-	result = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
-	if(result){	
+	fail = application.zcore.functions.zValidateStruct(form, ts, Request.zsid,true);
+
+	arrEmail=listToArray(application.zcore.functions.zso(form, 'user_alternate_email'), ",");
+	arrEmail2=[];
+	for(i=1;i<=arraylen(arrEmail);i++){
+		e=trim(arrEmail[i]);
+		if(e NEQ ""){
+			if(not application.zcore.functions.zEmailValidate(e)){
+				fail=true;
+				application.zcore.status.setStatus(Request.zsid, e&" is not a valid email",form,true);
+			}else{
+				arrayAppend(arrEmail2, e);
+			}
+		}
+	}
+	form.user_alternate_email=arrayToList(arrEmail2, ",");
+	if(fail){	
 		application.zcore.status.setStatus(Request.zsid, false,form,true);
 		if(form.method EQ 'insert'){
 			application.zcore.functions.zRedirect('/z/admin/member/add?zsid=#request.zsid#&zIndex=#form.zIndex#&searchtext=#URLEncodedFormat(form.searchtext)#');
