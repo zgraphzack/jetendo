@@ -3,6 +3,7 @@
 	var local=structnew();
 	var template=0;
 	var e=0; 
+	var cfcatch=0;
 	/*
 	// used to debug request start-up performance by running it many times.
 	for(local.i=1;local.i LTE 200;local.i++){

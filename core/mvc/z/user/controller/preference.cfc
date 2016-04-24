@@ -873,7 +873,7 @@ If the link does not work, please copy and paste the entire link in your browser
 				<cfelse>
 					<button type="submit" name="submitPref" value="Login" style="font-size:120%; padding:5px; margin-bottom:5px;">Login</button>
 					<br />
-					<button type="submit" name="submitPref" value="Reset Password" style="font-size:120%; padding:5px; margin-bottom:5px;">Reset Password</button>
+					<button type="button" name="submitPref" onclick="window.location.href='/z/user/reset-password/index?email=#urlencodedformat(form.e)#';" value="Reset Password" style="font-size:120%; padding:5px; margin-bottom:5px;">Reset Password</button>
 				</cfif>
 			</div>
 			</div>
@@ -1211,7 +1211,7 @@ If the link does not work, please copy and paste the entire link in your browser
 					</div>
 				</div>
 			</div>
-			<div style="float:left; padding-top:149px;width:285px;">
+			<div style="float:left; padding-top:20px;width:285px;">
 				<div style="width:100%; float:left; margin-bottom:0px; padding-bottom:5px;"><strong>Password Stength</strong></div>
 				<div style="width:100%; float:left;">
 					<div id="scorebarBorder">
