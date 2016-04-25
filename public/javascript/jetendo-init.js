@@ -95,6 +95,17 @@ function zLoadStackTrace(callback){
 	a.src="/z/javascript/javascript-stacktrace/stacktrace.js"; 
 	document.getElementsByTagName('head')[0].appendChild(a);
 }
+function zGetDomainFromURL(url){ 
+    var domain;
+    if (url.indexOf("://") > -1) {
+        domain = url.split('/')[2];
+    }
+    else {
+        domain = url.split('/')[0];
+    }
+    domain = domain.split(':')[0];
+    return domain;
+}
 function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) { 
 	try{
 		if(message.substr(0, 17) === "Unspecified error" || message.substr(0, 12) === "Script error" || message.substr(0, 12) === "Syntax error" || message.substr(0, 18) ===  "Not enough storage"){
@@ -102,7 +113,10 @@ function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
 		}
 		if(zJavascriptErrorLogged || (zThisIsDeveloper && window.location.href.indexOf("zdebug=") === -1)){
 			return false;
-		}
+		} 
+		if(zGetDomainFromURL(window.location.href) != zGetDomainFromURL(url)){
+			return false; // ignore external domains
+		 }
 		zJavascriptErrorLogged=true; // only log 1 error per page view
 		zLoadStackTrace(function(){ 
 			arrStack=printStackTrace();  
