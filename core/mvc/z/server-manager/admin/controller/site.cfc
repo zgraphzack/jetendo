@@ -525,7 +525,7 @@
 		application.zcore.status.setStatus(Request.zsid, "A domain must be lower case and only contain a-z, 0-9 and hyphens ""-"".",form,true);
 		application.zcore.status.setFieldError(Request.zsid, "site_short_domain");
 	}
-	
+	/*
 	if(request.zos.istestserver EQ false){
 		if(form.site_password EQ "" or len(form.site_password) LT 20){
 			application.zcore.status.setStatus(Request.zsid, "The password must be over 20 characters long.",form,true);
@@ -535,7 +535,7 @@
 			application.zcore.status.setStatus(Request.zsid, "The username must start with a-z or _.  It can contain letters, numbers or _.  It must be 32 characters or less.",form,true);
 			application.zcore.status.setFieldError(Request.zsid, "site_username");
 		}
-	}
+	}*/
 	sdomain2=application.zcore.functions.zGetDomainWritableInstallPath(sdomain);
 	sdomain=application.zcore.functions.zGetDomainInstallPath(sdomain);
 	form.site_homedir=sdomain;
