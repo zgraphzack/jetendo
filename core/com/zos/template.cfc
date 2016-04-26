@@ -8,6 +8,7 @@
 	</cfscript>
 	<cfsavecontent variable="output">
 	<meta name="format-detection" content="telephone=no">
+	<script type="text/javascript">/* <![CDATA[ */var zSiteDomain="#request.zos.globals.domain#";/* ]]> */</script>
 	<script src="/z/javascript/jetendo-init.js" type="text/javascript"></script>
 	<script type="text/javascript">/* <![CDATA[ */
 	#arguments.dynamicContent#

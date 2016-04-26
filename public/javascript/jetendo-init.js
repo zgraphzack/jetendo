@@ -117,6 +117,10 @@ function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
 		if(zGetDomainFromURL(window.location.href) != zGetDomainFromURL(url)){
 			return false; // ignore external domains
 		 }
+		if(window.location.href.indexOf(zSiteDomain) === -1){
+			console.log('zGlobalErrorHandler cancelled');
+			return false;
+		}
 		zJavascriptErrorLogged=true; // only log 1 error per page view
 		zLoadStackTrace(function(){ 
 			arrStack=printStackTrace();  
@@ -150,7 +154,7 @@ function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
 			}else if (window.ActiveXObject){ 
 				var xhr = new ActiveXObject('Microsoft.XMLHTTP');  
 			} 
-			xhr.open("POST", "/z/misc/system/logClientError", true);
+			xhr.open("POST", "/z/misc/system/logJavascriptError", true);
 			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			var postData="";
 			for(var i in postObj){
