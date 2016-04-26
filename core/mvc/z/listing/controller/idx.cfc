@@ -733,43 +733,20 @@
 </cffunction>
     
 <cffunction name="cleanInactive" localmode="modern" access="remote" output="yes" returntype="any">
-	<cfscript>
-	var f=0;
-	var qId=0;
-	var qid2=0;
-	var mpcom=0;
-	var arrSQL=0;
-	var i=0;
-	var foundCount=0;
-	var db=request.zos.queryObject;
-	var found1=false;
-	var qd=0;
-	var qmls=0;
-	var n2=0;
-	var arrFilelist=0;
-	var qmls2=0;
-	var arrTable=0;
-	var newTickTime=getTickCount();
-	var arrFound=0;
-	var arrFound2=0;
-	var arrTick=arraynew(1);
+	<cfscript> 
+	var db=request.zos.queryObject; 
+	var newTickTime=getTickCount(); 
+	var arrTick=[];
 	var nowTime=gettickcount();
 	var oneMonthAgo=dateadd("m",-2,now());
-	var oneDayAgo=dateadd("h",-55,now());
+	var oneDayAgo=dateadd("h",-24,now());
 	var todayDate=dateformat(now(),'yyyy-mm-dd')&' 00:00:00';
-	var arrMLSOnly=arraynew(1);
-	var arrMLSIdOnly=arraynew(1);
-	var mlsPSQL=0;
-	var arrErr2=0;
-	var mlsIdPSQL=0;
-	var qDeadListings=0;
-	var n=0;
-	var qtwodaysago=0;
+	var arrMLSOnly=[];
+	var arrMLSIdOnly=[]; 
 	var db2=request.zos.noVerifyQueryObject;
 	oneDayAgo=dateformat(oneDayAgo,'yyyy-mm-dd')&' '&timeformat(oneDayAgo,'HH:mm:ss');
 	
-	setting requesttimeout="1000";
-	//return;
+	setting requesttimeout="1000"; 
 	application.zcore.idxImportStatus="cleanInactive executed";
 
 	/*
@@ -808,6 +785,8 @@
 	mls_deleted = #db.param(0)#";
 	qMLS2=db.execute("qMLS2");  
 	local.arrMLSClean=[];
+
+	rebuildTable=false;
 	</cfscript>
     <cfloop from="1" to="#qmls2.recordcount#" index="n">
     	<cfscript>
@@ -850,7 +829,7 @@
 			listing_track_processed_datetime < #db2.param(oneDayAgo)#  and 
 			listing_id LIKE #db2.param('#mlsID#-%')# 
 			ORDER BY listing_track_id ASC";
-			db2.execute("qInsert");
+			db2.execute("qInsert"); 
 			db.sql="SELECT count(listing_delete_id) count 
 			FROM #db.table("listing_delete", request.zos.zcoreDatasource)# 
 			where listing_delete_deleted=#db.param('0')# and 
@@ -865,13 +844,16 @@
 				listing_id LIKE #db.param('#mlsID#-%')# 
 				LIMIT #db.param(0)#, #db.param(5)# ";
 				qIdList=db.execute("qIdList");
+
 				if(qIdList.recordcount EQ 0){
 					break;
 				}
 				arrId=[];
 				for(row in qIdList){
+					echo("Delete listing_id:"&row.listing_id&"<br>")
 					arrayAppend(arrId, "'"&row.listing_id&"'");
 				}
+				rebuildTable=true;
 				idlist=arraytolist(arrId, ",");
 				deleteCount+=qIdList.recordcount;
 
@@ -960,12 +942,13 @@
 		</cfif>
 	</cfloop> 
 	<cfscript>
-	ts={};
-	ts.table="listing";
-	ts.force=true;
-	ts.allowFulltext=true;
-	application.zcore.listingCom.zCreateMemoryTable(ts);
-
+	if(rebuildTable){
+		ts={};
+		ts.table="listing";
+		ts.force=true;
+		ts.allowFulltext=true;
+		application.zcore.listingCom.zCreateMemoryTable(ts);
+	}
 
 	db.sql="select * from #db.table("mls", request.zos.zcoreDatasource)# mls 
 	where mls_status=#db.param('1')# and 
