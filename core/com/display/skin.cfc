@@ -1094,8 +1094,8 @@ todo: open source projects
 		application.zcore.functions.zError("application.zcore.skin.includeCSS() Failed: file_path, ""#arguments.file_path#"" is not a stylesheet file ending with .css.  Correct your spelling.");
 	}
 	randomVersion="";
-	if(request.zos.isTestServer){
-	//	randomVersion=gettickcount();
+	if(not request.zos.enableSiteTemplateCache){
+		randomVersion=gettickcount();
 	}
 	if(sa and structkeyexists(zS, checkPath)){
 		s='<link rel="stylesheet" type="text/css" href="#request.zos.staticFileDomain##arguments.file_path#?zversion=#zS[checkPath].file_id#-#zS[checkPath].file_version_number##randomVersion#" />';
@@ -1142,8 +1142,8 @@ todo: open source projects
 		joinString="&";
 	}
 	randomVersion="";
-	if(request.zos.isTestServer){
-		//randomVersion=gettickcount();
+	if(not request.zos.enableSiteTemplateCache){
+		randomVersion=gettickcount();
 	}
 	if(sa and structkeyexists(application.zcore.skinObj.fileStruct,checkPath)){
 		arrayappend(request.zos.arrScriptInclude, request.zos.staticFileDomain&arguments.file_path&"#joinString#zversion="&application.zcore.skinObj.fileStruct[checkPath].file_id&"-"&application.zcore.skinObj.fileStruct[checkPath].file_version_number&randomVersion);

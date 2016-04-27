@@ -621,7 +621,7 @@ for(local.row in local.qSite){
 			}else{
 				tempIO=createTemplateObject("component", cfcCreatePath);
 			}
-		}else{
+		}else{ 
 			// legacy cfm templates
 			if(left(request.zos.templateData.template,19) EQ "/zcorecachemapping/"){
 				sp=request.zos.globals.serverprivateHomeDir&"_cache/scripts/templates";
@@ -641,11 +641,15 @@ for(local.row in local.qSite){
 			}
 			if(structkeyexists(application.zcore.compiledTemplatePathCache, sp&'/'&cfcName&".cfc")){
 				application.zcore.compiledTemplatePathCache[sp&'/'&cfcName&".cfc"]=true;
-			}
-			if(request.zos.zreset EQ "template" or not structkeyexists(application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id], sp&'/'&cfcName&".cfc")){   
+			}  
+			if(not request.zos.enableSiteTemplateCache){ 
+				this.compileTemplateCFC(); 
+				tempIO=createTemplateObject("component",cfcCreatePath,true);
+				application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id][sp&'/'&cfcName&".cfc"]=true;
+			}else if(request.zos.zreset EQ "template" or not structkeyexists(application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id], sp&'/'&cfcName&".cfc")){   
 				structclear(application.zcore.templateCFCCache[request.zos.globals.id]);
 				if(fileexists(request.zos.templateData.templatePath)){
-					this.compileTemplateCFC();
+					this.compileTemplateCFC(); 
 					tempIO=createTemplateObject("component",cfcCreatePath,true);
 					application.zcore.compiledSiteTemplatePathCache[request.zos.globals.id][sp&'/'&cfcName&".cfc"]=true;
 				}else{
@@ -671,7 +675,7 @@ for(local.row in local.qSite){
 				}else{
 					runTemplate=false;
 				}
-			}
+			} 
 		}
 	}else{
 		// don't compile this the same?  or just put the entire template as the struct key maybe.
@@ -680,10 +684,13 @@ for(local.row in local.qSite){
 	if(structkeyexists(request, 'zValueOffset') and request.zValueOffset NEQ 0){
 		application.zcore.template.appendTag('meta','<script type="text/javascript">/* <![CDATA[ */zArrDeferredFunctions.push(function(){zInitZValues(#request.zValueOffset#);});/* ]]> */</script>');
 	} 
-	if(Request.zOS.isdeveloper and application.zcore.user.checkAllCompanyAccess() and structkeyexists(form, 'zab') EQ false){
-		application.zcore.debugger.init();
-	} 
-	
+	if(not structkeyexists(form, 'zab')){
+		if(Request.zOS.isdeveloper){
+			if(request.zos.istestserver or application.zcore.user.checkAllCompanyAccess()){
+				application.zcore.debugger.init();
+			}
+		} 
+	}
 	local.retrytemplatecompile=false;
 	if(runCFCTemplate){
 		if(structkeyexists(tempIO, 'init')){

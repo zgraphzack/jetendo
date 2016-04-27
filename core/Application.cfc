@@ -79,6 +79,9 @@ this.scopeCascading = "standard";
 
 	configCom=createobject("component", "zcorerootmapping.config");
 	ts=configCom.getConfig(arguments.tempCGI, false);
+    if(not structkeyexists(ts.zos,'enableSiteTemplateCache')){
+    	ts.zos.enableSiteTemplateCache=true;
+    }
 	if(structkeyexists(ts, 'timezone')){
 		this.timezone=ts.timezone;
 	}
@@ -164,8 +167,12 @@ request.zos.cgi=local.tempCGI;
         }else{
             request.zos.isDeveloper=false;
             request.zos.isServer=true;	
-        }
+        } 
     }
+	if(request.zos.isTestServer and request.zos.cgi.HTTP_USER_AGENT CONTAINS 'Mozilla/' and request.zos.cgi.HTTP_USER_AGENT DOES NOT CONTAIN 'Jetendo'){
+        request.zos.isDeveloper=true;
+        request.zos.isServer=false;	
+	} 
     structappend(form, url, false);
     if(structkeyexists(form,'zreset') EQ false){
         request.zos.zreset="";
@@ -269,7 +276,6 @@ request.zos.cgi=local.tempCGI;
             form[local.i]=trim(form[local.i]);  
         }
     }
-    
     request.zos.lastTime=request.zos.startTime;
     request.zOS.now=now();
     Request.zOS.modes.time.begin = request.zos.startTime;
