@@ -294,9 +294,10 @@
         </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");</cfscript> 
         <cfset form.groupEmail=false>
         <cfscript>
-        toEmail=qMember.user_username;
+        toEmail=qMember.user_username; 
         </cfscript>
-        <cfmail  to="#toEmail#" from="#request.fromemail#" replyto="#qGetInquiry.inquiries_email#" subject="A new lead assigned to you" type="html">
+
+        <cfmail  to="#toEmail#" cc="#qMember.user_alternate_email#" from="#request.fromemail#" replyto="#qGetInquiry.inquiries_email#" subject="A new lead assigned to you" type="html">
             <cfscript>
 			iemailCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
             iemailCom.getEmailTemplate();

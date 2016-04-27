@@ -122,7 +122,7 @@
 			return;	
 		}
 		request.zos.migrationMode=false;
-		if(not structkeyexists(request.zsession, 'user') or not structkeyexists(request.zsession.user, 'company_id') or request.zsession.user.company_id NEQ 0){
+		if(not request.zos.isDeveloper and (not structkeyexists(request.zsession, 'user') or not structkeyexists(request.zsession.user, 'company_id') or request.zsession.user.company_id NEQ 0)){
 			request.zos.zreset="";
 		}else{
 			if(request.zos.isServer){
@@ -285,6 +285,15 @@
 		}else{
 			request.zos.zreset="";
 			form.zdebugurl=false;
+		}
+		if(not request.zos.enableSiteTemplateCache and request.zos.zreset EQ ""){
+			application.zcore.functions.zUpdateSiteMVCData(application.sitestruct[request.zos.globals.id]);
+			if(structkeyexists(application.zcore, 'compiledSiteTemplatePathCache')){
+				structdelete(application.zcore.compiledSiteTemplatePathCache, request.zos.globals.id);
+			}
+			if(structkeyexists(application.zcore, 'templateCFCCache')){
+				structdelete(application.zcore.templateCFCCache, request.zos.globals.id);
+			}
 		}
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0simple stuff<br />');	local.s=gettickcount('nano');
 		//writeoutput(((gettickcount('nano')-local.s)/1000000000)&' seconds0<br />');	local.s=gettickcount('nano');

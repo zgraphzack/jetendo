@@ -189,7 +189,7 @@ if(structkeyexists(form, 'zforceapplicationurlrewriteupdate')){
 </cfscript>Done.<cfscript>application.zcore.functions.zabort();</cfscript>
 </cffunction>
 
-<cffunction name="logClientError" localmode="modern" access="remote">
+<cffunction name="logJavascriptError" localmode="modern" access="remote">
     <cfscript>
 	form.errorStacktrace=application.zcore.functions.zso(form, 'errorStacktrace');
 	form.errorMessage=application.zcore.functions.zso(form, 'errorMessage');

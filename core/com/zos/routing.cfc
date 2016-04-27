@@ -469,14 +469,16 @@
 		var urlType=0;
 		var db=request.zos.queryObject;
 		var mailUserType=false;
+
 		//request.zos.znoredirect=true; // uncomment to debug redirects
+		key=mid(form.__zcoreinternalroutingpath,3,2);
 		if(mid(form.__zcoreinternalroutingpath,5,1) EQ 'm'){
 			mailUserType=true;
 			var t=mid(form.__zcoreinternalroutingpath,6,len(form.__zcoreinternalroutingpath)-5);
 			arrpath=listtoarray(t,'.');
 			if(arraylen(arrpath) GTE 2){
 				form.mail_user_id=arrpath[1];
-				urlType=mid(form.__zcoreinternalroutingpath,3,2);
+				urlType=key;
 				if(urlType EQ 'ck' or urlType EQ 'in'){
 					form.mail_user_key=arrpath[2];
 				}else{
@@ -500,7 +502,7 @@
 			}else{
 				application.zcore.functions.zredirect('/');
 			}
-			if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'in'){
+			if(key EQ 'in'){
 				db.sql="update #db.table("user", request.zos.zcoreDatasource)# user 
 				set user_confirm=#db.param(1)#, 
 				user_pref_email=#db.param(1)#, 
@@ -523,7 +525,7 @@
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/in.cfc';
 				form.method="simple_confirmed";
 				request.zos.routingIsCFC=true;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ou'){
+			}else if(key EQ 'ou'){
 				db.sql="update #db.table("user", request.zos.zcoreDatasource)# user 
 				set user_pref_email=#db.param(0)#, 
 				user_confirm=#db.param(1)#, 
@@ -548,58 +550,74 @@
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 				form.method="unsubscribed";
 				request.zos.routingIsCFC=true;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'vm'){
+			}else if(key EQ 'vm'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/view.cfc';
 				form.method="simple";
 				//request.zEmailViewOnline=true;
 				request.zos.routingIsCFC=true;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ck'){
+			}else if(key EQ 'ck'){
 				request.zEmailClickThrough=true;
 			}
 		}else{
-			if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'in'){
+			loginEnabled=true;
+			if(key EQ 'up'){
+				loginEnabled=false;
+				form.__zcoreinternalroutingpath=mid(form.__zcoreinternalroutingpath,5,len(form.__zcoreinternalroutingpath)-4);
+				arrpath=listtoarray(form.__zcoreinternalroutingpath,'.');
+				if(arraylen(arrpath) GTE 2){
+					form.user_id=arrpath[1];
+					form.user_reset_key=arrpath[2];
+
+					form.__zcoreinternalroutingpath_new='mvc/z/user/controller/reset-password.cfc';
+					form.method="setNewPassword";
+					request.zos.routingIsCFC=true;
+
+				}else{
+					application.zcore.functions.z404("Invalid update password request.");
+				}
+			}else if(key EQ 'in'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/in.cfc';
 				form.method="index";
 				request.zos.routingIsCFC=true;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ou'){
+			}else if(key EQ 'ou'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/out.cfc';
 				form.method="index";
 				request.zos.routingIsCFC=true;
 				request.zEmailUnsubscribe=true;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'rp'){
+			}else if(key EQ 'rp'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 				form.method="index";
 				request.zos.routingIsCFC=true;
 				form.npw=1;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ce'){
+			}else if(key EQ 'ce'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 				form.method="index";
 				request.zos.routingIsCFC=true;
 				form.nea=1;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'pr'){
+			}else if(key EQ 'pr'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 				request.zos.routingIsCFC=true;
 				form.method="form";
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'vm'){
+			}else if(key EQ 'vm'){
 				form.__zcoreinternalroutingpath_new='mvc/z/user/controller/view.cfc';
 				form.method="index";
 				request.zEmailViewOnline=true;
 				request.zos.routingIsCFC=true;
-			}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ck'){
+			}else if(key EQ 'ck'){
 				request.zEmailClickThrough=true;
 			}else{
 				form.__zcoreinternalroutingpath_new='e/pref.cfm';
 			}
-			if(isDefined('request.zEmailViewOnline') or isDefined('request.zEmailUnsubscribe')){
+			if(structkeyexists(request, 'zEmailViewOnline') or structkeyexists(request, 'zEmailUnsubscribe')){
 				form.__zcoreinternalroutingpath=mid(form.__zcoreinternalroutingpath,5,len(form.__zcoreinternalroutingpath)-4);
 				arrpath=listtoarray(form.__zcoreinternalroutingpath,'.');
 				if(arraylen(arrpath) GTE 2){
 					form.user_id=arrpath[1];
 					form.zemail_campaign_id=arrpath[2];
-					if(isDefined('request.zEmailViewOnline') and arraylen(arrpath) EQ 2){
+					if(structkeyexists(request, 'zEmailViewOnline') and arraylen(arrpath) EQ 2){
 						application.zcore.functions.zredirect('/');
 					}else{
-						if(arraylen(arrpath) GTE 3 or isDefined('request.zEmailViewOnline')){
+						if(arraylen(arrpath) GTE 3 or structkeyexists(request, 'zEmailViewOnline')){
 							form.user_key=arrpath[3];
 						}else{
 							form.user_key=false;	
@@ -667,7 +685,7 @@
 					}
 					form.e=qE.user_username;
 				}
-			}else{
+			}else if(loginEnabled){
 				if(structkeyexists(form,'user_id') EQ false or structkeyexists(form,'user_key') EQ false){
 					// /z/_eck1.3423923.3.1.cfm
 					form.__zcoreinternalroutingpath=mid(form.__zcoreinternalroutingpath,5,len(form.__zcoreinternalroutingpath)-4);
@@ -805,29 +823,30 @@
 		application.zcore.functions.z301redirect('/');
 	}
 	if(left(form.__zcoreinternalroutingpath,2) EQ '-e'){
-		if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'in'){
+		key=mid(form.__zcoreinternalroutingpath,3,2);
+		if(key EQ 'in'){
 			form.__zcoreinternalroutingpath_new='mvc/z/user/controller/in.cfc';
 			form.method="index";
-		}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ou'){
+		}else if(key EQ 'ou'){
 			form.__zcoreinternalroutingpath_new='mvc/z/user/controller/out.cfc';
 			form.method="index";
 			request.zEmailUnsubscribe=true;
-		}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'rp'){
+		}else if(key EQ 'rp'){
 			form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 			form.method="index";
 			form.npw=1;
-		}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ce'){
+		}else if(key EQ 'ce'){
 			form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 			form.method="index";
 			form.nea=1;
-		}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'pr'){
+		}else if(key EQ 'pr'){
 			form.__zcoreinternalroutingpath_new='mvc/z/user/controller/preference.cfc';
 			form.method="form";
-		}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'vm'){
+		}else if(key EQ 'vm'){
 			form.__zcoreinternalroutingpath_new='mvc/z/user/controller/view.cfc';
 			form.method="index";
 			request.zEmailViewOnline=true;
-		}else if(mid(form.__zcoreinternalroutingpath,3,2) EQ 'ck'){
+		}else if(key EQ 'ck'){
 			application.zcore.functions.zEndOfRunningScript();
 			// url format
 			// zemail.openImageUrl="#zemail.domain#/zcorerootmapping/_eck#user_id#.#user_key#.#arguments.ss.zemail_campaign_id#.1.0.cfm?zr="&URLEncodedFormat("/zcorerootmapping/a/images/s2.gif");

@@ -55,6 +55,7 @@
 		ts.zos.isImplicitScopeCheckEnabled=true;
 		ts.zos.isExecuteEnabled=false;
 		ts.zOS.thisistestserver=true;
+    	ts.zos.enableSiteTemplateCache=false; // enable when doing performance testing, always enable in production
 		ts.zos.directoryMode=777;
 		ts.zos.fileMode=777;
 		ts.zos.sambaInstallPath="C:/serverData/jetendo/";
@@ -101,6 +102,7 @@
 		ts.zos.isJavaEnabled=false;
 		ts.zos.isExecuteEnabled=false;
 		ts.zOS.thisistestserver=false;
+    	ts.zos.enableSiteTemplateCache=true; // enable when doing performance testing, always enable in production
 		ts.zos.directoryMode=770;
 		ts.zos.fileMode=660;
 		ts.zos.sambaInstallPath="/var/jetendo-server/jetendo/";

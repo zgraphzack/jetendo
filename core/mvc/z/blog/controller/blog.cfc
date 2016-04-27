@@ -4272,7 +4272,8 @@ this.app_id=10;
 	db.sql="select * 
 	from #db.table("blog_tag", request.zos.zcoreDatasource)# blog_tag 
 	where blog_tag.blog_tag_id = #db.param(form.blog_tag_id)# and 
-	blog_tag.site_id=#db.param(request.zos.globals.id)#  ";
+	blog_tag.site_id=#db.param(request.zos.globals.id)# and 
+	blog_tag_deleted=#db.param(0)#  ";
 	qtagdata=db.execute("qtagdata");
 	if(qtagdata.recordcount eq 0){
 		application.zcore.functions.z404("qtagdata record was missing in tagTemplate().");

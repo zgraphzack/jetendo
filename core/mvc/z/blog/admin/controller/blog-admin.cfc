@@ -2465,14 +2465,7 @@ tabCom.enableSaveButtons();
 				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
 				<td>
 		<cfscript>
-		userGroupCom = application.zcore.functions.zcreateobject("component","zcorerootmapping.com.user.user_group_admin");
-		local.useruser_group_id = userGroupCom.getGroupId('user',request.zos.globals.id);
-		db.sql="SELECT * FROM  #db.table("user", request.zos.zcoreDatasource)# user 
-		WHERE user_group_id <> #db.param(local.useruser_group_id)# and 
-		user_deleted = #db.param(0)# and
-		#db.trustedSQL(application.zcore.user.getUserSiteWhereSQL("user", request.zos.globals.id))# and 
-		user_server_administrator=#db.param(0)#";
-		qUser=db.execute("qUser"); 
+		qUser=application.zcore.user.getUsersWithGroupAccess("member");
 		if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
 		if(form.user_id_siteIdType EQ 0){
 			form.user_id_siteIdType=1;

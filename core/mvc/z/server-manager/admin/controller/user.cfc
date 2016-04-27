@@ -45,11 +45,11 @@
 				<a href="/z/server-manager/admin/user/addUserGroup?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#">Add User Group</a> |
 				<a href="/z/server-manager/admin/user/addUser?zid=#form.zid#&amp;sid=#request.zos.globals.serverId#&amp;returnId=#form.returnId#&amp;user_server_administrator=1">Add Server Administrator</a> | 
 				<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#request.zos.globals.serverId#">Manage Server Administrators</a> | 
-					<cfif isDefined('request.zsession.zsaUsersOnly')>
-						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=0">Hide Server Manager Users.</a>
-					<cfelse>
-						<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=1">Show Server Manager Users.</a>
-					</cfif>
+				<cfif isDefined('request.zsession.zsaUsersOnly')>
+					<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=0">Hide Server Manager Users.</a>
+				<cfelse>
+					<a href="/z/server-manager/admin/user/index?zid=#form.zid#&amp;sid=#form.sid#&amp;zsaUsersOnly=1">Show Server Manager Users.</a>
+				</cfif>
 				</td>
 			</tr>
 		</table>
@@ -640,29 +640,41 @@
 						(Required to see errors directly in browser)</td>
 				</tr>
 			</cfif>
-			<script type="text/javascript">
-			/* <![CDATA[ */ 
-			function checkUser(num){
-				if(document.userForm.user_server_administrator.checked){
-					document.getElementById("serverAdminDiv").style.display='block';
-				}else{
-					document.getElementById("serverAdminDiv").style.display='none';
-				}
 			<cfif currentMethod EQ "editUser" and request.zsession.user.id EQ qUser.user_id and request.zsession.user.site_id EQ qUser.site_id>
-				if(num == 1){
-					if(document.userForm.user_site_administrator.checked == false){
-						document.userForm.user_server_administrator.checked = false;
-					}
-				}else{
-					if(document.userForm.user_server_administrator.checked || document.userForm.user_access_site_children.checked){
-						document.userForm.user_site_administrator.checked = true;
+				<script type="text/javascript">
+				/* <![CDATA[ */ 
+				function checkUser(num){
+					if(document.userForm.user_server_administrator.checked){
+						document.getElementById("serverAdminDiv").style.display='block';
 					}else{
-						document.userForm.user_site_administrator.checked = false;
+						document.getElementById("serverAdminDiv").style.display='none';
 					}
-				}
-				</cfif>
-			} /* ]]> */
-			</script>
+					if(num == 1){
+						if(document.userForm.user_site_administrator.checked == false){
+							document.userForm.user_server_administrator.checked = false;
+						}
+					}else{
+						if(document.userForm.user_server_administrator.checked || document.userForm.user_access_site_children.checked){
+							document.userForm.user_site_administrator.checked = true;
+						}else{
+							document.userForm.user_site_administrator.checked = false;
+						}
+					}
+				} /* ]]> */
+				</script>
+			<cfelse>
+				<script type="text/javascript">
+				/* <![CDATA[ */ 
+				function checkUser(num){
+					if(document.userForm.user_server_administrator.checked){
+						document.getElementById("serverAdminDiv").style.display='block';
+					}else{
+						document.getElementById("serverAdminDiv").style.display='none';
+					}
+				} /* ]]> */
+				</script>
+			</cfif>
+	
 			<cfif currentMethod EQ "editUser">
 				<tr>
 					<td style="vertical-align:top; width:140px;">Sign In With:</td>
@@ -813,17 +825,17 @@
 					</cfif></td>
 				<td ><cfif isDefined('request.zsession.user.id') and request.zsession.user.id NEQ qUserList.user_id>
 						<cfif qUserList.user_active EQ 1>
-							<a href="/z/server-manager/admin/user/deactivate?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Deactivate</a>
+							<a href="/z/server-manager/admin/user/deactivate?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#&amp;user_id=#qUserList.user_id#">Deactivate</a>
 						<cfelse>
-							<a href="/z/server-manager/admin/user/activate?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Activate</a>
+							<a href="/z/server-manager/admin/user/activate?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#&amp;user_id=#qUserList.user_id#">Activate</a>
 						</cfif>
 						|
 					</cfif>
-					<a href="/z/server-manager/admin/user/editUser?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Edit</a> |
+					<a href="/z/server-manager/admin/user/editUser?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#&amp;user_id=#qUserList.user_id#">Edit</a> |
 					<cfif isDefined('request.zsession.user.id') and request.zsession.user.id EQ qUserList.user_id and request.zsession.user.site_id EQ qUserList.site_id>
 						<span class="highlight">Required</span>
 					<cfelse>
-						<a href="/z/server-manager/admin/user/deleteUser?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_id=#qUserList.user_id#">Delete</a>
+						<a href="/z/server-manager/admin/user/deleteUser?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#&amp;user_id=#qUserList.user_id#">Delete</a>
 					</cfif></td>
 			</tr>
 		</cfloop>
@@ -876,9 +888,12 @@
 			<tr #rollOverCode#>
 				<td>#qUserList.user_group_name#&nbsp;</td>
 				<td >#qUserList.user_group_friendly_name#&nbsp;</td>
-				<td ><a href="/z/server-manager/admin/user/listGroup?zid=#form.zid#&sid=#form.sid#&user_group_id=#qUserList.user_group_id#">View Users</a> | <a href="/z/server-manager/admin/user/editUserGroup?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&user_group_id=#qUserList.user_group_id#">Edit</a> |
+				<td ><a href="/z/server-manager/admin/user/listGroup?zid=#form.zid#&amp;sid=#form.sid#&amp;user_group_id=#qUserList.user_group_id#">View Users</a> | 
+
+				<a href="/z/server-manager/admin/user/sendUserGroupPasswordResetEmail?zid=#form.zid#&amp;sid=#form.sid#&amp;user_group_id=#qUserList.user_group_id#">Send Password Reset To Group</a> | 
+				<a href="/z/server-manager/admin/user/editUserGroup?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#&amp;user_group_id=#qUserList.user_group_id#">Edit</a> |
 					<cfif isDefined('request.zsession.user.group_id') and request.zsession.user.group_id NEQ qUserList.user_group_id>
-						<a href="/z/server-manager/admin/user/deleteUserGroup?zid=#form.zid#&sid=#form.sid#&returnId=#form.returnId#&amp;user_group_id=#qUserList.user_group_id#">Delete</a>
+						<a href="/z/server-manager/admin/user/deleteUserGroup?zid=#form.zid#&amp;sid=#form.sid#&amp;returnId=#form.returnId#&amp;user_group_id=#qUserList.user_group_id#">Delete</a>
 					<cfelse>
 						<span class="highlight">Required</span>
 					</cfif>
@@ -886,6 +901,58 @@
 			</tr>
 		</cfloop>
 	</table>
+</cffunction>
+
+
+
+<cffunction name="sendUserGroupPasswordResetEmail" localmode="modern" access="remote" roles="serveradministrator">
+	<cfscript>
+	variables.init();
+	var db=request.zos.queryObject;
+	if(request.zos.isTestServer){
+		//application.zcore.functions.z404("This should only be run on the production server.");
+	}
+	form.confirm=application.zcore.functions.zso(form, 'confirm', true, 0);
+	form.user_group_id=application.zcore.functions.zso(form, 'user_group_id', true);
+	form.sid=application.zcore.functions.zso(form, 'sid', true);
+
+	db.sql="SELECT * FROM #db.table("user_group", request.zos.zcoreDatasource)# 
+	WHERE user_group_id=#db.param(form.user_group_id)# and 
+	site_id = #db.param(form.sid)# and
+	user_group_deleted = #db.param(0)#";
+	qGroup=db.execute("qGroup");   
+	if(qGroup.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "Invalid user group id", form, true);
+		application.zcore.functions.zRedirect("/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#&zsid=#request.zsid#");
+	}
+	db.sql="SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# 
+	WHERE user_group_id=#db.param(form.user_group_id)# and 
+	site_id = #db.param(form.sid)# and
+	user_deleted = #db.param(0)# and 
+	user_active=#db.param(1)# ";
+	qUser=db.execute("qUser");  
+	if(form.confirm EQ 1){
+ 
+		rpCom=createobject("component", "zcorerootmapping.mvc.z.user.controller.reset-password");
+		count=0;
+		for(row in qUser){ 
+			rs=rpCom.sendPasswordResetEmail(row.user_username, row.site_id);
+			if(not rs.success){
+				application.zcore.status.setStatus(request.zsid, "Error occurred for #qUser.user_username#: "&rs.errorMessage, form, true);
+			}else{
+				count++;
+			}
+		}
+
+		application.zcore.status.setStatus(request.zsid, "#count# password reset emails sent to all users in the group: #qGroup.user_group_name#");
+		application.zcore.functions.zRedirect("/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#&zsid=#request.zsid#");
+	}else{
+		echo('<h2>Are you sure you want to send a password reset email to all users in this group?<br /><br />
+			Group: #qGroup.user_group_name#<br /><br />
+			#qUser.recordcount# users<br /><br />
+			<a href="/z/server-manager/admin/user/sendUserGroupPasswordResetEmail?confirm=1&user_group_id=#form.user_group_id#&zid=#form.zid#&sid=#form.sid#">Yes</a>&nbsp;&nbsp;&nbsp;<a href="/z/server-manager/admin/user/index?zid=#form.zid#&sid=#form.sid#">No</a></h2>');
+	}
+	</cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

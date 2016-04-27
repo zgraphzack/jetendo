@@ -1205,10 +1205,7 @@ this.isPropertyDisplayCom=true;
 									<cfelse>
 									<div class="zls2-7">
 										<cfif arguments.idx.listing_photocount NEQ 0>
-											ROLLOVER TO VIEW #arguments.idx.listing_photocount# PHOTO
-											<cfif arguments.idx.listing_photocount GT 1>
-												S
-											</cfif>
+											ROLLOVER TO VIEW #arguments.idx.listing_photocount# PHOTO<cfif arguments.idx.listing_photocount GT 1>S</cfif>
 										</cfif>
 									</div>
 								</cfif>

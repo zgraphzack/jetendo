@@ -160,13 +160,15 @@ var zScrollbarWidth=0;
 	var parentIdIndex=0;
 	var arrEqualHeightInterval=[];
 	function zForceEqualHeights(className){ 
-		if(typeof arrEqualHeightInterval[className] == "undefined"){
+		/*if(typeof arrEqualHeightInterval[className] == "undefined"){
 			arrEqualHeightInterval[className]=setInterval(function(){
 				zForceEqualHeights(className);
 			}, 1000);
-		}
+		}*/
+
+
 		// only the elements with the same parent should be made the same height
-		var arrParent=[]; 
+		var arrParent=[];  
 		$(className).height("auto");
 		$(className).each(function(){
 			if(this.parentNode.id == ""){
@@ -193,17 +195,15 @@ var zScrollbarWidth=0;
 
 
 	
-	function forceEqualHeights(){
-		zForceEqualHeights('.ways-to-give-box');
-	}
 	function forceAutoHeightFix(){ 
 		zForceEqualHeights(".zForceEqualHeights"); 
 		if($(".zForceEqualHeight").length > 0){
 			console.log("The class name should be zForceEqualHeights, not zForceEqualHeight");
 		}
 	}
-	zArrLoadFunctions.push({functionName:forceAutoHeightFix });
+	//zArrLoadFunctions.push({functionName:forceAutoHeightFix });
 	zArrResizeFunctions.push({functionName:forceAutoHeightFix });
+
 
 	window.zForceEqualHeights=zForceEqualHeights;
 	window.zFindPosition=zFindPosition;

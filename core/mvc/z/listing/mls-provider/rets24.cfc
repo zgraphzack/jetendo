@@ -71,8 +71,11 @@ variables.tableLookup["I"]="I";
 	var a9=arraynew(1);
 	var db=request.zos.queryObject;
 	if(structcount(this.emptyStruct) EQ 0){
+		tf=request.zos.listing.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].tableFields;
 		for(i=1;i LTE arraylen(this.arrColumns);i++){
-			this.emptyStruct[request.zos.listing.mlsStruct[this.mls_id].sharedStruct.metaStruct["property"].tableFields[this.arrColumns[i]].longname]="";
+			if(structkeyexists(tf, this.arrColumns[i])){
+				this.emptyStruct[tf[this.arrColumns[i]].longname]="";
+			}
 		}
 	}
 	

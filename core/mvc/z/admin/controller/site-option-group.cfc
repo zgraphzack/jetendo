@@ -1577,7 +1577,9 @@ displayGroupCom.ajaxInsert();
 				selectStruct.queryLabelField = "site_option_group_display_name";
 				selectStruct.queryValueField = "site_option_group_id";
 				application.zcore.functions.zInputSelectBox(selectStruct);*/
-				</cfscript></td>
+				</cfscript><br />
+				<strong>Warning:</strong> If user data exists for this record, you should not change the Parent Group, because the user data's parent group field will not be automatically updated.  You'd have to update the database and cache manually if you want to do this anyway. 
+				</td>
 			</tr>
 			<tr>
 				<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Code Name","member.site-option-group.edit site_option_group_name")#</th>

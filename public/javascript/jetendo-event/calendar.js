@@ -58,13 +58,14 @@
 		}
 		var p=new zPagination(options);
 	}
-	function listViewCallback(r){
-		var rs=eval("("+r+")");
+	function listViewCallback(r){ 
+		var rs=JSON.parse(r);
 		if(rs.success){
 			$("#zCalendarTab_List").html(rs.html);
 			setupPagination(rs);
 		}
 	}
+
 	function setupListView(){
 
 		var tempObj={};
@@ -113,11 +114,8 @@
 			$("#zCalendarHomeTabs .ui-tabs-nav").show();
 		}
 	}
-
-
-
-	function zEventSearchCallback(r){
-		var r2=eval('(' + r + ')');
+	function zEventSearchCallback(r){ 
+		var r2=JSON.parse(r);
 		if(r2.success){
 			$("#zCalendarTab_List").html(r2.html);
 

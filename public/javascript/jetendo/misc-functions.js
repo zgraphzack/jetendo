@@ -400,11 +400,6 @@ function forceCustomFontLoading(inst){
 		setTimeout('forceCustomFontDesignModeOn("'+inst.editorId+'");',2000);
 	}
 }
-
-
-
-
-
 function zGetCurrentRootRelativeURL(theURL){
 	var a=theURL.split("/");
 	var a2="";
@@ -428,6 +423,9 @@ function zIsDeveloper(){
 		return false;
 	}
 }
+
+
+
 var zAddThisLoaded=false;
 function zLoadAddThisJsDeferred(){
 	setTimeout(zLoadAddThisJs, 300);
@@ -438,9 +436,9 @@ function zLoadAddThisJs(){
 	var found=false;
 	for(var i=1;i<=5;i++){
 		d1=document.getElementById("zaddthisbox"+i);
-		if(!$("#zaddthisbox"+i).is(":visible")){
+		if(d1==null || typeof d1 == "undefined" || d1.style.display == 'none'){
 			continue;
-		}
+		} 
 		if(d1){
 			found=true;
 			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><a class="twitter-share-button" href="https://twitter.com/share">Tweet</a></div>';
@@ -458,11 +456,7 @@ function zLoadAddThisJs(){
 	}
 }
 zArrLoadFunctions.push({functionName:zLoadAddThisJsDeferred});
-
-
-
-
-	
+ 
 function zeeo(m,n,o,w,l,r,h,b,v,z,z2){
 	var k='ai',g='lto',f='m',e=':';
 	if(z){return o+n+w+m;}else{ if(l){var cr3=('<a href="'+f+k+g+e+o+n+w+m+'">');

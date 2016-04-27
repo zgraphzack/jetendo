@@ -419,13 +419,7 @@ if(not rs.success){
 
 <cffunction name="zIsDeveloper" localmode="modern" returntype="boolean" output="no">
 	<cfscript>
-	if(structkeyexists(request.zos.adminIpStruct,request.zos.cgi.remote_addr) and request.zos.adminIpStruct[request.zos.cgi.remote_addr] EQ false){
-		request.zos.isDeveloper=true;
-		return true;
-	}else{
-		request.zos.isDeveloper=false;
-		return false;
-	}
+	return request.zos.isDeveloper;
     </cfscript>
 </cffunction>
 

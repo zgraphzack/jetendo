@@ -120,6 +120,7 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		arguments.ss.disableDebugAbort=false;
 	} 
 	if(structkeyexists(arguments.ss, 'forceAssign') and arguments.ss.forceAssign){
+		rs.cc=""; 
 		if(structkeyexists(arguments.ss, 'assignEmail')){
 			rs.assignEmail=arguments.ss.assignEmail;
 			rs.user_id=0;
@@ -148,6 +149,9 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 					echo(m);
 				}
 			}else{
+				if(qAssignUser.user_alternate_email NEQ ""){
+					rs.cc=qAssignUser.user_alternate_email;
+				}
 				// assign to default user instead
 				rs.assignEmail=qAssignUser.user_username; 
 				m='process assigned lead to zofficeemail user_id: #qAssignUser.user_id# site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />';
@@ -164,7 +168,6 @@ application.zcore.functions.zAssignAndEmailLead(ts);
 		}else{
 			rs.leadEmail="";
 		}
-		rs.cc=""; 
 		rs.bcc="";
 		m='force assign to #rs.assignEmail#<br />';
 		arrayAppend(arrDebug, m);
@@ -445,6 +448,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 										}
 									}else{
 										rs.autoAssignMember=true;
+										if(qMember.user_alternate_email NEQ ""){
+											rs.cc=qMember.user_alternate_email;
+										}
 										rs.assignEmail=qMember.user_username;
 										rs.assignUserId=qMember.user_id; // this will fail until implemented.
 										rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qMember.site_id);
@@ -821,6 +827,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 		}else{
 			// assign to default user instead
 			rs.assignEmail=qAssignUser.user_username;
+			if(qAssignUser.user_alternate_email NEQ ""){
+				rs.cc=qAssignUser.user_alternate_email;
+			}
 			rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 			rs.user_id=qAssignUser.user_id;
 			m='process assigned lead to zofficeemail user_id: #qAssignUser.user_id# site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />';
@@ -867,6 +876,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				}else{
 					// assign to default user instead
 					rs.assignEmail=qAssignUser.user_username;
+					if(qAssignUser.user_alternate_email NEQ ""){
+						rs.cc=qAssignUser.user_alternate_email;
+					}
 					rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 					rs.user_id=qAssignUser.user_id;
 					m='process assigned lead to default user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />';
@@ -877,6 +889,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				}
 			}else{
 				rs.assignEmail=qAssignUser.user_username;
+				if(qAssignUser.user_alternate_email NEQ ""){
+					rs.cc=qAssignUser.user_alternate_email;
+				}
 				rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 				rs.user_id=qAssignUser.user_id;
 				m='process assigned lead to next user in rotation: user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | #rs.assignEmail#<br />';
@@ -887,6 +902,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			}
 		}else{
 			rs.assignEmail=qAssignUser.user_username;
+			if(qAssignUser.user_alternate_email NEQ ""){
+				rs.cc=qAssignUser.user_alternate_email;
+			}
 			rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 			rs.user_id=qAssignUser.user_id;
 		}
@@ -935,6 +953,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 				}
 			}else{
 				rs.assignEmail=qAssignUser.user_username;
+				if(qAssignUser.user_alternate_email NEQ ""){
+					rs.cc=qAssignUser.user_alternate_email;
+				}
 				rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 				rs.user_id=qAssignUser.user_id;
 				m='process assigned lead to default user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />';
@@ -945,6 +966,9 @@ rs=application.zcore.functions.zGetNewMemberLeadRouteStruct(ts);
 			}
 		}else{
 			rs.assignEmail=qAssignUser.user_username;
+			if(qAssignUser.user_alternate_email NEQ ""){
+				rs.cc=qAssignUser.user_alternate_email;
+			}
 			rs.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(qAssignUser.site_id);
 			rs.user_id=qAssignUser.user_id;
 			m='process assigned lead to next user in rotation: user_id: #rs.user_id# | site_id: #qAssignUser.site_id# | assignEmail: #rs.assignEmail#<br />';
@@ -1178,6 +1202,9 @@ application.zcore.functions.zLeadRecordLog(ts);
 						}else{
 							// assign to default user instead
 							rs.user_id=qAssignUser.user_id;
+							if(qAssignUser.user_alternate_email NEQ ""){
+								rs.cc=qAssignUser.user_alternate_email;
+							}
 						}
 					}else if(c.inquiries_routing_reassignment_type_id EQ 1){
 						// round robin from member table
@@ -1204,6 +1231,9 @@ application.zcore.functions.zLeadRecordLog(ts);
 							}else{
 								// assign to default user instead
 								rs.user_id=qAssignUser.user_id;
+								if(qAssignUser.user_alternate_email NEQ ""){
+									rs.cc=qAssignUser.user_alternate_email;
+								}
 							}
 						}else{
 							// assign to the round robin user
@@ -1249,9 +1279,15 @@ application.zcore.functions.zLeadRecordLog(ts);
 								rs.assignEmail=application.zcore.functions.zvarso('zofficeemail');
 							}else{
 								rs.user_id=qAssignUser.user_id;
+								if(qAssignUser.user_alternate_email NEQ ""){
+									rs.cc=qAssignUser.user_alternate_email;
+								}
 							}
 						}else{
 							rs.user_id=qAssignUser.user_id;
+							if(qAssignUser.user_alternate_email NEQ ""){
+								rs.cc=qAssignUser.user_alternate_email;
+							}
 						}
 						
 					}else if(c.inquiries_routing_reassignment_type_id EQ 3){
@@ -1285,6 +1321,9 @@ application.zcore.functions.zLeadRecordLog(ts);
 					qAssignUser=db.execute("qAssignUser");
 					if(qAssignUser.recordcount NEQ 0){
 						rs.to=qAssignUser.user_username;
+						if(qAssignUser.user_alternate_email NEQ ""){
+							rs.cc=qAssignUser.user_alternate_email;
+						}
 						rs.subjectPrefix=reminderprefix;
 					}else{
 						rs.subjectPrefix="Inactive User. You must manually reassign lead: ";
