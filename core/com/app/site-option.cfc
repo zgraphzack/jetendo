@@ -1537,10 +1537,13 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 				}else{
 					resort=true;
 				} 
-				if(resort){
-					var arrChild2=t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
-					var arrTemp=[]; 
+				if(resort){ 
+					if(not structkeyexists(t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"], row.site_option_group_id)){
+						t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id]=[];
+					}
 					try{
+						var arrChild2=t9.optionGroupSetId[row.site_x_option_group_set_parent_id&"_childGroup"][row.site_option_group_id];
+						var arrTemp=[]; 
 						for(var i=1;i LTE arraylen(arrChild2);i++){
 							arrayAppend(arrTemp, t9.optionGroupSet[arrChild2[i]]);
 						}
