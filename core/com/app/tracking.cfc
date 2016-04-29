@@ -388,6 +388,7 @@ USER WAS PERMANENTLY BLOCKED.');
     track_user_keywords=#db.param(request.zsession.tracking.track_user_keywords)#, 
     track_user_updated_datetime=#db.param(request.zos.mysqlnow)#,
 	track_user_source=#db.param(local.tempSource)#, 
+	track_user_deleted=#db.param(0)#, 
     zemail_campaign_id=#db.param(request.zsession.tracking.zemail_campaign_id)#, 
     site_id=#db.param(request.zos.globals.id)#
      ";
@@ -409,6 +410,7 @@ USER WAS PERMANENTLY BLOCKED.');
 	for(i=1;i LTE arraylen(request.zsession.trackingArrPages);i++){
 		db.sql="INSERT INTO #db.table("track_page", request.zos.zcoreDatasource)#  SET 
 		track_page_script=#db.param(request.zsession.trackingArrPages[i].track_page_script)#,
+		track_page_deleted=#db.param(0)#, 
 		track_page_qs=#db.param(request.zsession.trackingArrPages[i].track_page_qs)#,
 		track_page_datetime=#db.param(dateformat(request.zsession.trackingArrPages[i].track_page_datetime,'yyyy-mm-dd')&' '&timeformat(request.zsession.trackingArrPages[i].track_page_datetime, 'HH:mm:ss'))#,
 		track_user_id=#db.param(request.zsession.tracking.track_user_id)#,
@@ -443,7 +445,8 @@ USER WAS PERMANENTLY BLOCKED.');
 	track_page_id = #db.param(track_page_id)#,
 	track_convert_id = #db.param(track_convert_id)#,
 	track_user_x_convert_datetime = #db.param(request.zos.mysqlnow)#, 
-	track_user_x_convert_updated_datetime=#db.param(request.zos.mysqlnow)# ,
+	track_user_x_convert_updated_datetime=#db.param(request.zos.mysqlnow)#,
+	track_user_x_convert_deleted=#db.param(0)#, 
 	site_id = #db.param(request.zos.globals.id)#";
 	db.execute("qUser");
 	db.sql="UPDATE #db.table("track_user", request.zos.zcoreDatasource)# track_user 

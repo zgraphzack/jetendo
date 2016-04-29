@@ -659,7 +659,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		application.zcore.functions.zRedirect("/z/user/preference/accountcreated?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Your preferences have been updated.");
-		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 	}
         </cfscript>
 </cffunction>
@@ -906,6 +906,10 @@ If the link does not work, please copy and paste the entire link in your browser
 				<tr>
 					<td>Last Name</td>
 					<td><input type="text" name="user_last_name" value="#htmleditformat(form.user_last_name)#" style=" width:100%;" /></td>
+				</tr>
+				<tr>
+					<td>Company</td>
+					<td><input type="text" name="member_company" value="#htmleditformat(form.member_company)#" style=" width:100%;" /></td>
 				</tr>
 				<tr>
 					<td>Phone</td>
