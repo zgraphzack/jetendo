@@ -394,13 +394,13 @@ if($ext != ".jpeg"){
 	}
 	z404();	
 }
-	$newpath=get_cfg_var("jetendo_share_path").'mls-images-temp/'.date("Y").'-'.date("m")."-".date("d").'/'.$newwidth.'x'.$newheight.'/'.$autocrop.'';
+	$newpath=get_cfg_var("jetendo_share_path").'mls-images-temp/'.date("Y").'-'.date("m")."-".date("d").'/'.$newwidth.'x'.$newheight.'/'.$autocrop.'/';
 	
 	if(!is_dir($serverRootPath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1))){
 		@mkdir($serverRootPath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1), 0777, true);
 	}
-	if(!is_dir($newpath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1))){
-		@mkdir($newpath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1), 0777, true);
+	if(!is_dir($newpath.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1))){
+		@mkdir($newpath.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1), 0777, true);
 	}
 	$displaypath="/z/index.php?method=size&w=".urlencode($_GET['w'])."&h=".urlencode($_GET['h'])."&p=".urlencode($_GET['p'])."&m=".$_GET['m']."&f=".urlencode($_GET['f'])."&a=".urlencode($_GET['a']);
 	$outputpath=$newpath.$filenamenoext.'.jpeg';
@@ -524,12 +524,18 @@ try {
 						z404();	
 					}
 				}else{
-					$imageFound2=processImage($serverRootPath.$filename.$temp, $serverRootPath.$filename);
+					processImage($serverRootPath.$filename.$temp, $serverRootPath.$filename);
 					//$outputpath=$serverRootPath.$filename;
-					$imageFound=true;
-					if($imageFound2){
+					//$imageFound=true;
+
+					if(file_exists($serverRootPath.$filename.$temp)){
 						@unlink($serverRootPath.$filename.$temp);
 					}
+					/*$imageFound2=
+					if($imageFound2){
+						@unlink($serverRootPath.$filename.$temp);
+						$imageFound2=false;
+					}*/
 					//rename($serverRootPath.$filename.$temp, $serverRootPath.$filename);
 					//$imageFound2=true;
 				}
@@ -539,7 +545,7 @@ try {
 	}
 	if($debug) echo "current timestamp:".time()."<br>";
  
-	if(false && $imageFound2 && $imageFound){
+	if($imageFound2 && $imageFound){
 		/*$outputmtime=filemtime($outputpath);
 		if((filemtime($serverRootPath.$filename)) > $outputmtime || $outputmtime < 1349312011){
 			if($debug){
