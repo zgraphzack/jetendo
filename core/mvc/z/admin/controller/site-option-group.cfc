@@ -796,9 +796,36 @@ displayGroupCom.ajaxInsert();
 		// force some default values for new table
 		local.tempColumns=duplicate(application.zcore.tableColumns["#request.zos.zcoreDatasource#.inquiries"]);
 		//writedump(local.tempColumns);
-		local.arrTemp=structkeyarray(local.tempColumns);
-		arraySort(local.arrTemp, "text", "asc");
-		local.labels="inquiries_custom_json"&chr(9)&arrayToList(local.arrTemp, chr(9));
+		arrTemp=structkeyarray(local.tempColumns);
+		arraySort(arrTemp, "text", "asc");
+		arrNew=[];
+		ignoreStruct={
+			inquiries_assign_name:true,
+			inquiries_assign_email:true,
+			content_id:true,
+			inquiries_key:true,
+			inquiries_parent_id:true,
+			inquiries_referer:true,
+			inquiries_referer2:true,
+			inquiries_status_id:true,
+			inquiries_type_id:true,
+			inquiries_type_id_siteIDType:true,
+			inquiries_type_other:true,
+			inquiries_updated_datetime:true,
+			ip_id:true,
+			user_id:true,
+			user_id_siteIdType:true,
+			site_id:true
+		}
+		for(i=1;i<=arrayLen(arrTemp);i++){
+			n=arrTemp[i];
+			if(structkeyexists(ignoreStruct, n)){
+				continue;
+			}
+			arrayAppend(arrNew, arrTemp[i]);
+		}
+		arrTemp=arrNew;
+		local.labels="inquiries_custom_json"&chr(9)&arrayToList(arrTemp, chr(9));
 		local.values=local.labels;
 		
 	}else{

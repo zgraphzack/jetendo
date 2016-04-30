@@ -495,7 +495,13 @@
 	db=request.zos.queryObject; 
 	//writedump(form); 
 
-	widgetCom=createobject("component", "zcorerootmapping.com.widget.widget-example");
+	// get widget cfc path using widget_id
+	if(not structkeyexists(application.zcore.widgetIndexStruct, form.widget_id)){
+		application.zcore.status.setStatus(request.zsid, "Invalid widget id", form, true);
+		application.zcore.functions.zRedirect("/z/admin/widget/index?zsid=#request.zsid#");
+	}
+
+	widgetCom=createobject("component", application.zcore.widgetIndexStruct[form.widget_id]);
 
 	ts={
 		table:"widget_instance",

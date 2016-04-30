@@ -242,9 +242,9 @@
 	Textarea<br />
 	<div id="typeOptions1" style="display:none;padding-left:30px;"> 
 		<p>Editor Width:
-		<input type="text" name="editorwidth2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2'))#" /></p>
+		<input type="text" name="editorwidth2" id="editorwidth2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2'))#" /></p>
 		<p>Editor Height:
-		<input type="text" name="editorheight2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight2'))#" /></p>
+		<input type="text" name="editorheight2" id="editorheight2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight2'))#" /></p>
 	</div>
 	</cfsavecontent>
 	<cfreturn output>
