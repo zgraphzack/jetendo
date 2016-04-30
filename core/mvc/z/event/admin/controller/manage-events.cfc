@@ -533,7 +533,7 @@
 		form.event_unique_url="";
 		application.zcore.functions.zCheckIfPageAlreadyLoadedOnce();
 	}
-	application.zcore.functions.zStatusHandler(request.zsid,true);
+	application.zcore.functions.zStatusHandler(request.zsid,true); 
 	if(currentMethod EQ "publicAddEvent"){
 		application.zcore.template.setTag("title", "Suggest An Event");
 		application.zcore.template.setTag("pagetitle", "Suggest An Event");
@@ -707,8 +707,19 @@
 					</cfscript>   
 				</td>
 			</tr> 
-			<cfscript>
-
+			<cfscript> 
+			eventStartDate=form.event_start_datetime;
+			eventStartTime=form.event_start_datetime;
+			if(eventStartDate EQ ""){
+				eventStartDate=application.zcore.functions.zso(form, 'event_start_datetime_date');
+				eventStartTime=application.zcore.functions.zso(form, 'event_start_datetime_time');
+			}
+			eventEndDate=form.event_end_datetime;
+			eventEndTime=form.event_end_datetime;
+			if(eventEndDate EQ ""){
+				eventEndDate=application.zcore.functions.zso(form, 'event_end_datetime_date');
+				eventEndTime=application.zcore.functions.zso(form, 'event_end_datetime_time');
+			}
 			onChangeJavascript='';
 			application.zcore.functions.zRequireTimePicker();  
 			application.zcore.skin.addDeferredScript('  
@@ -727,15 +738,15 @@
 			<tr>
 				<th>Start Date</th>
 				<td>
-					<input type="text" name="event_start_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(form.event_start_datetime, 'm/dd/yyyy'))#" size="10" />
-					<input type="text" name="event_start_datetime_time" style="max-width:80px;min-width:80px;" id="event_start_datetime_time" value="<cfif timeformat(form.event_start_datetime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(form.event_start_datetime, 'h:mm tt'))#</cfif>" size="9" />
+					<input type="text" name="event_start_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(eventStartDate, 'm/dd/yyyy'))#" size="10" />
+					<input type="text" name="event_start_datetime_time" style="max-width:80px;min-width:80px;" id="event_start_datetime_time" value="<cfif timeformat(form.event_start_datetime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(eventStartTime, 'h:mm tt'))#</cfif>" size="9" />
 					 * </td>
 			</tr> 
 
 			<tr>
 				<th>End Date</th>
-				<td><input type="text" name="event_end_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(form.event_end_datetime, 'm/dd/yyyy'))#" size="10" />
-					<input type="text" name="event_end_datetime_time" style="max-width:80px;min-width:80px;" id="event_end_datetime_time" value="<cfif timeformat(form.event_start_datetime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(form.event_end_datetime, 'h:mm tt'))#</cfif>" size="9" /> *
+				<td><input type="text" name="event_end_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(eventEndDate, 'm/dd/yyyy'))#" size="10" />
+					<input type="text" name="event_end_datetime_time" style="max-width:80px;min-width:80px;" id="event_end_datetime_time" value="<cfif timeformat(form.event_start_datetime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(eventEndTime, 'h:mm tt'))#</cfif>" size="9" /> *
 				</td>
 			</tr>  
 			<tr>

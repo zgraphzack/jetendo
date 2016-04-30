@@ -1770,35 +1770,8 @@ this.app_id=10;
 
 
 <cffunction name="articleTemplate" localmode="modern" access="remote" output="yes" returntype="any">
-	<cfscript>
-	var content='';
-	var blog_title='';
-	var blog_datetime='';
-	var noComments='';
-	var theLink='';
-	var curLink='';
-	var actualLink='';
-	var tempCurrentBlogUrl='';
-	var viewdata='';
-	var curDate='';
-	var tempText='';
-	var qComments=0;
-	var theHTML='';
-	
-	var set9='';
-	var query='';
-	var ts=0;
-	var rs2=0;
-	var nextMonth='';
-	var qArticle='';
-	var qupdate='';
-	var qRelated='';
-	var qPopular='';
-	var temp='';
-	var tempMeta='';
-	var db=request.zos.queryObject;
-	var tempMenu='';
-	var tempPagenav='';
+	<cfscript> 
+	var db=request.zos.queryObject; 
 	variables.init();
 	if(structkeyexists(form, 'rss_id')){
 		application.zcore.functions.z404("rss_id is not supposed to be defined for articleTemplate()");	
@@ -1951,14 +1924,34 @@ this.app_id=10;
 		<cfsavecontent variable="tempPageNav">
 		<a href="#application.zcore.app.getAppData("blog").optionStruct.blog_config_home_url#">#htmleditformat(application.zcore.functions.zvar("homelinktext"))#</a> / <cfif application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url EQ "{default}"><a class="#application.zcore.functions.zGetLinkClasses()#" href="/#application.zcore.functions.zURLEncode(application.zcore.app.getAppData("blog").optionStruct.blog_config_title,"-")#-#application.zcore.app.getAppData("blog").optionStruct.blog_config_url_misc_id#-3.html" class="#application.zcore.functions.zGetLinkClasses()#">#htmleditformat(application.zcore.app.getAppData("blog").optionStruct.blog_config_title)#</a><cfelse><a href="#application.zcore.app.getAppData("blog").optionStruct.blog_config_root_url#">#htmleditformat(application.zcore.app.getAppData("blog").optionStruct.blog_config_title)#</a></cfif> / <a class="#application.zcore.functions.zGetLinkClasses()#" href="<cfif qArticle.blog_category_unique_name NEQ ''>#qArticle.blog_category_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,qArticle.blog_category_id,"html",qArticle.blog_category_name)#</cfif>">#htmleditformat(qArticle.blog_category_name)#</a> / 
 		</cfsavecontent>
-		<cfsavecontent variable="tempMenu">
-			<cfset content = '#content#'>
-			<cfset blog_title = '#qArticle.blog_title#'>
-			<cfset blog_datetime = '#qArticle.blog_datetime#'>
+		<cfsavecontent variable="tempMenu"> 
 		</cfsavecontent>
+			<cfscript>
+			blog_title = '#qArticle.blog_title#';
+			blog_datetime = '#qArticle.blog_datetime#';
+			description=qArticle.blog_summary;
+			if(description EQ ""){
+				description=qArticle.blog_metadesc;
+			}	
+			ts =structnew();
+			ts.image_library_id=qArticle.blog_image_library_id;
+			ts.size="1200x630";
+			ts.crop=0; 
+			ts.offset=0; 
+			ts.output=false; 
+			ts.limit=1; 
+			ts.layoutType='';
+			arrImage=application.zcore.imageLibraryCom.displayImages(ts); 
+			</cfscript>
 		<cfsavecontent variable="tempMeta">
 			<cfif qArticle.blog_metakey NEQ ""><meta name="Keywords" content="#htmleditformat(qArticle.blog_metakey)#" /></cfif>
 			<meta name="Description" content="<cfif qArticle.blog_metadesc NEQ "">#htmleditformat(qArticle.blog_metadesc)#<cfelse>#htmleditformat(application.zcore.functions.zLimitStringLength(application.zcore.functions.zStripHTMLTags(qArticle.blog_story), 100))#</cfif>" />
+			<meta property="og:title" content="#htmleditformat(qArticle.blog_title)#"/>
+			<cfif arrayLen(arrImage)> 
+				<meta property="og:image" content="#request.zos.globals.domain&arrImage[1].link#"/>
+			</cfif>
+			<meta property="og:url" content="#request.zos.globals.domain&request.zos.originalURL#"/>
+			<meta property="og:description" content="#htmleditformat(description)#"/>
 		</cfsavecontent>
 		<cfif qArticle.blog_slideshow_id NEQ 0>
 		<cfscript>application.zcore.functions.zEmbedSlideShow(qarticle.blog_slideshow_id);</cfscript>
