@@ -86,12 +86,12 @@ tinymce.init({
   height: 500,*/
   theme: 'modern',
   plugins: [
-    'advlist autolink lists link image zsaimage charmap print preview hr anchor pagebreak',
+    'advlist autolink lists link zsaimage zsafile charmap print preview hr anchor pagebreak',
     'searchreplace wordcount visualblocks visualchars code fullscreen',
     'insertdatetime media nonbreaking save table contextmenu directionality',
     'emoticons paste textcolor colorpicker textpattern imagetools'
   ], // template
-  toolbar1: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image zsaimage',
+  toolbar1: 'insertfile undo redo | fontselect styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link zsaimage zsafile',
   toolbar2: 'print preview media | forecolor backcolor emoticons',
   image_advtab: true, 
   content_css: [ 
