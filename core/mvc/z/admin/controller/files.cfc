@@ -140,7 +140,7 @@
 	if(isDefined('request.zos.fileImage.forceRootFolder')){
 		arrayDeleteAt(arrLinks,1);
 	}
-	writeoutput('<table style="border-spacing:0px; width:100%;" class="table-list"><tr><td>');
+	writeoutput('<table style="border-spacing:0px; width:100%;"><tr><td>');
 	writeoutput('Current Folder: '&ArrayToList(arrLinks,' / '));
 	writeoutput('</td></tr></table>');
 	if(form.method NEQ 'index'){
@@ -931,15 +931,9 @@ d.index();
 	<tr>
 	<td>
 	<script type="text/javascript">
-/* <![CDATA[ */if(window.parent.ZSAImageDialog){
-    var tinyMceEditor=window.parent.ZSAImageDialog;
-}else if(window.parent.InnerDialogLoaded){
-    var oEditor		= window.parent.InnerDialogLoaded() ;
-    var FCK			= oEditor.FCK ;
-    var FCKLang		= oEditor.FCKLang ;
-    var FCKConfig	= oEditor.FCKConfig ;
-    var FCKDebug	= oEditor.FCKDebug ;
-}else{
+/* <![CDATA[ */
+
+if(!window.parent.zInsertGalleryImage){
     alert('HTML Editor is missing');
 }
 function setImage(){
@@ -960,15 +954,9 @@ function setImage(){
     }else if(a==1){ // center
 	theHTML='<div style="width:100%; float:none; text-align:center;"><img src="#variables.siteRootDir##urlencodedformat(form.f)#"></div>';
     }
-    if(tinyMceEditor != null){
-	tinyMceEditor.update(theHTML);
-    }else if(oEditor != null){
-	oEditor.FCK.InsertHtml(theHTML);
-	window.parent.CloseDialog();
-    }else{
-	alert('HTML Editor is missing');
-	window.close();
-    }
+
+	window.parent.zInsertGalleryImage(theHTML); 
+	 
 }/* ]]> */
 </script>
 
@@ -1058,7 +1046,7 @@ if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true)
 }
 </cfscript>
 <cfif not isDefined('request.zos.fileImage.editDisabled') or not request.zos.fileImage.editDisabled>
-    <table style="border-spacing:0px; width:100%;" class="table-list">
+    <table style="border-spacing:0px; width:100%; border-bottom:1px solid ##CCC; padding-bottom:5px; margin-bottom:5px;">
 		<tr>
 		<td style="font-weight:700;">
 			<cfif form.galleryMode EQ false>
@@ -1087,7 +1075,7 @@ if(application.zcore.functions.zso(request.zsession, 'fileManagerSortDate',true)
 		</tr>
 		</table>
 </cfif>
-<table style="border-spacing:0px; width:100%;" class="table-list">
+<table style="border-spacing:0px; width:100%;">
 <cfdirectory directory="#variables.currentDir#" name="qDir" action="list" sort="#dirSortString#">
 
 <cfif qDir.recordcount EQ 0>
