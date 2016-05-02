@@ -283,6 +283,7 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 		}
 		link=application.zcore.functions.zURLAppend(link, 'modalpopforced=1');
 		echo('<h2>Iframe Embed Code</h2><pre>'&htmlcodeformat('<iframe src="'&link&'" frameborder="0"  style=" margin:0px; border:none; overflow:auto;" seamless="seamless" width="100%" height="500" />')&'</pre>');
+		echo('<h2>Modal Window</h2><pre>'&htmlcodeformat('<a href="##" onclick="zShowModalStandard(''#link#'', 540, 400); return false;">Show Form</a>')&'</pre>');
 		echo('<h2>CFML Embed Form Code</h2><pre>'&htmlcodeformat('
 application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
 // Note: if this group is a child group, you must update the array below to have the parent groups as well.
