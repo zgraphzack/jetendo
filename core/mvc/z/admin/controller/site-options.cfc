@@ -2785,6 +2785,13 @@ Define this function in another CFC to override the default email format
 	ts.datasource=request.zos.zcoreDatasource;
 	form.inquiries_type_id=qGroup.inquiries_type_id;
 	form.inquiries_type_id_siteIDType=qGroup.inquiries_type_id_siteIDType; 
+
+	if(application.zcore.functions.zso(form, 'zRefererURL') NEQ ""){
+		if(left(form.zRefererURL, 1) EQ "/"){
+			form.zRefererURL=request.zos.globals.domain&form.zRefererURL;
+		}
+		form.inquiries_referer=form.zRefererURL;
+	}
 	if(form.inquiries_type_id EQ 0 or form.inquiries_type_id EQ ""){
 		form.inquiries_type_id=1;
 		form.inquiries_type_id_siteIDType=4;
@@ -4347,6 +4354,9 @@ Define this function in another CFC to override the default email format
 	}
 	echo('>');
 	</cfscript>
+		<cfif application.zcore.functions.zso(form, 'zRefererURL') NEQ "">
+			<input type="hidden" name="zRefererURL" id="zRefererURL" value="#htmleditformat(form.zRefererURL)#" />
+		</cfif>
 		<cfif methodBackup EQ "publicAddGroup" or methodBackup EQ "publicEditGroup">
 			<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
 			#application.zcore.functions.zFakeFormFields()#
