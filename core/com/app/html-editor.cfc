@@ -88,7 +88,7 @@ tinymce.init({
   plugins: [
     'advlist autolink lists link zsaimage zsafile charmap print preview hr anchor pagebreak',
     'searchreplace wordcount visualblocks visualchars code fullscreen',
-    'insertdatetime media nonbreaking save table contextmenu directionality',
+    'insertdatetime media nonbreaking save table directionality', // contextmenu
     'emoticons paste textcolor colorpicker textpattern imagetools'
   ], // template
   toolbar1: 'insertfile undo redo | fontselect styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link zsaimage zsafile',
