@@ -102,6 +102,7 @@ this.customStruct = StructNew();
 		ts.struct.mail_user_phone=application.zcore.functions.zso(arguments.ss, 'user_phone');
 		ts.struct.mail_user_datetime=request.zos.mysqlnow;
 		ts.struct.mail_user_sent_datetime=request.zos.mysqlnow;
+		ts.struct.mail_user_updated_datetime=request.zos.mysqlnow;
 		ts.struct.mail_user_key=hash(application.zcore.functions.zGenerateStrongPassword(80,200),'sha-256'); 
 		ts.struct.mail_user_opt_in=1;
 		ts.struct.mail_user_confirm=0;
