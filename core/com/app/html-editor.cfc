@@ -90,8 +90,9 @@ tinymce.init({
     'searchreplace wordcount visualblocks visualchars code fullscreen',
     'insertdatetime media nonbreaking save table directionality', // contextmenu
     'emoticons paste textcolor colorpicker textpattern imagetools'
-  ], // template
-  toolbar1: 'insertfile undo redo | fontselect styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link zsaimage zsafile',
+  ], // template 
+  fontsize_formats: '12px 14px 18px 24px 36px 42px 48px',
+  toolbar1: 'insertfile undo redo | fontselect fontsizeselect styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link zsaimage zsafile',
   toolbar2: 'print preview media | forecolor backcolor emoticons',
   image_advtab: true, 
   content_css: [ 

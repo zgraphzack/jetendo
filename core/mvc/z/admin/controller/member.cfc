@@ -20,7 +20,19 @@
 	}
 	form.site_id=request.zos.globals.id;
 	form.user_group_id2 = userGroupCom.getGroupId('agent',request.zos.globals.id);
-	
+	memberUserGroupId= userGroupCom.getGroupId('member',request.zos.globals.id);
+	variables.userUserGroupIdCopy = userGroupCom.getGroupId('user',request.zos.globals.id);
+	db.sql="SELECT * FROM 
+#db.table("user_group_x_group", request.zos.zcoreDatasource)# 
+WHERE user_group_id = #db.param(form.ugid)# and 
+user_group_child_id=#db.param(memberUserGroupId)# and 
+user_group_x_group_deleted=#db.param(0)# and 
+site_id = #db.param(request.zos.globals.id)# ";
+	qGroupCheck=db.execute("qGroupCheck");
+
+	if(form.ugid NEQ "" and qGroupCheck.recordcount EQ 0){
+		form.showallusers=1;
+	}
 	if(isDefined('request.zsession.showallusers') EQ false){
 		request.zsession.showallusers=false;
 	}
@@ -31,7 +43,6 @@
 			request.zsession.showallusers=false;
 		}
 	}
-	variables.userUserGroupIdCopy = userGroupCom.getGroupId('user',request.zos.globals.id);
 	if(request.zsession.showallusers){
 		variables.userUserGroupId=0;
 	}else{
