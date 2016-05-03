@@ -875,6 +875,7 @@ If you just want to add an file, <a href="/z/admin/files/addFile?d=#URLEncodedFo
 	form.fileGalleryMode=true; 
 	Request.zOS.debuggerEnabled=false;
 	application.zcore.functions.zSetPageHelpId("2.5.5");
+	form.f=application.zcore.functions.zso(form, 'f');
 	p=reverse(form.f);
 	pos=find("/",p);
 	if(pos NEQ 0){
@@ -906,6 +907,7 @@ If you just want to add an file, <a href="/z/admin/files/addFile?d=#URLEncodedFo
 		var fileLink=$("##fileLink").val();
 		if(fileLabel.trim() == ""){
 			alert("Link Text is required.");
+			return false;
 		}
 	    var theHTML='<a href="'+fileLink+'">'+fileLabel+'</a>';
 	    
