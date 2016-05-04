@@ -72,10 +72,7 @@
 	<title>Inquiry</title>
 	</head>
 	
-	<body>
-	<table width="640" style="width:640px;">
-		<tr>
-			<td style="font-family:Verdana, Arial, Geneva, sans-serif; font-size:11px;">
+	<body> 
 			<cfscript>
 			db.sql="SELECT * FROM (#db.table("inquiries", request.zos.zcoreDatasource)# inquiries, 
 			#db.table("inquiries_status", request.zos.zcoreDatasource)# inquiries_status) 
@@ -122,9 +119,7 @@
 			request.usestyleonly=true;
 	        viewIncludeCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.inquiriesFunctions");
 			viewIncludeCom.getViewInclude(qinquiry);
-			</cfscript></td>
-		</tr>
-	</table>
+			</cfscript> 
 	</body>
 	</html>
 	</cfsavecontent>
@@ -223,7 +218,7 @@
 	application.zcore.functions.zquerytostruct(arguments.qinquiry, t);
 	tablestyle=' style="border-spacing:0px; width:100%;" ';
 	if(isDefined('request.usestyleonly')){
-		tdstyle = 'white-space:nowrap; font-size:12px; text-align:left;  padding:3px; width: 520px;';
+		tdstyle = ' font-size:12px; text-align:left;  padding:3px; width: 520px;';
 		thstyle = 'white-space:nowrap; font-size:12px; text-align:left; font-weight:bold; padding:3px; background-color:##EFEFEF; width:120px;';
 		tablestyle=' width="640" style="font-family:Verdana, Arial, Geneva, sans-serif; font-size:12px; width:640px;" ';
 	}

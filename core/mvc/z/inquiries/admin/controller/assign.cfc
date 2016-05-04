@@ -262,18 +262,21 @@
         <cfsavecontent variable="db.sql">
         SELECT inquiries_email from #db.table("inquiries", request.zos.zcoreDatasource)# inquiries
         WHERE inquiries_id = #db.param(form.inquiries_id)#  and 
-        site_id = #db.param(request.zos.globals.id)# 
+        site_id = #db.param(request.zos.globals.id)# and 
+        inquiries_deleted=#db.param(0)# 
         </cfsavecontent><cfscript>qGetInquiry=db.execute("qGetInquiry");</cfscript> 
         <cfsavecontent variable="db.sql">
         SELECT * FROM #db.table("user", request.zos.zcoreDatasource)# user
         WHERE site_id =#db.param(local.assignSiteId)# and 
-        user_id = #db.param(local.assignUserId)# 
+        user_id = #db.param(local.assignUserId)#  and 
+        user_deleted=#db.param(0)# 
         </cfsavecontent><cfscript>qMember=db.execute("qMember");</cfscript>
         <cfsavecontent variable="db.sql">
         SELECT count(inquiries_feedback_id) count 
         from #db.table("inquiries_feedback", request.zos.zcoreDatasource)# inquiries_feedback 
         WHERE inquiries_id = #db.param(form.inquiries_id)#  and 
-        site_id = #db.param(request.zos.globals.id)# 
+        site_id = #db.param(request.zos.globals.id)#  and 
+        inquiries_feedback_deleted=#db.param(0)# 
         </cfsavecontent><cfscript>qFeedback=db.execute("qFeedback");
         if(qMember.recordcount EQ 0){
             request.zsid = application.zcore.status.setStatus(Request.zsid, "Agent doesn't exist.",form,true);
@@ -290,6 +293,7 @@
          <cfif qFeedback.count NEQ 0>inquiries_status_id = #db.param(3)#<cfelse>inquiries_status_id = #db.param(2)#</cfif> 
          WHERE inquiries_id = #db.param(form.inquiries_id)#  and
          site_id = #db.param(request.zos.globals.id)# and 
+        inquiries_deleted=#db.param(0)#  and 
          inquiries_deleted=#db.param(0)#
         </cfsavecontent><cfscript>qInquiry=db.execute("qInquiry");</cfscript> 
         <cfset form.groupEmail=false>
