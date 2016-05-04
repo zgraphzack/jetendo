@@ -2489,11 +2489,13 @@ http://www.daytonachamber.com.127.0.0.2.nip.io/z/admin/site-options/manageGroup?
 					echo('</ul>');
 				}
 			}else{
-				echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a></h2>');
+				echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a> | 
+					<a href="/z/admin/site-options/userAddGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Add #row.site_option_group_display_name#</a></h2>');
 			//	echo('<li><a href="/z/admin/site-options/userAddGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Add #row.site_option_group_display_name#(s)</a></li>');
 			}
 		}else{
-			echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a></h2>');
+			echo('<h2><a href="/z/admin/site-options/userManageGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Manage #row.site_option_group_display_name#(s)</a> | 
+			<a href="/z/admin/site-options/userAddGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">Add #row.site_option_group_display_name#</a></h2>');
 		}
 	} 
 	</cfscript>

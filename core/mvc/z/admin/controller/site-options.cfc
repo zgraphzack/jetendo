@@ -3608,6 +3608,9 @@ Define this function in another CFC to override the default email format
 		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
 		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id "; 
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
+			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
+		}
 		if(form.site_x_option_group_set_parent_id NEQ 0){
 			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
 		}
@@ -3623,8 +3626,7 @@ Define this function in another CFC to override the default email format
 		db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
 		site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
 		site_option_group.site_option_group_type=#db.param('1')# ";
-		qCountAll=db.execute("qCountAll");
-
+		qCountAll=db.execute("qCountAll"); 
 		db.sql="SELECT count(site_option_group.site_option_group_id) count
 		FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
 		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set)  "; 
@@ -3635,6 +3637,9 @@ Define this function in another CFC to override the default email format
 		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
 		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id "; 
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
+			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
+		}
 		if(form.site_x_option_group_set_parent_id NEQ 0){
 			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
 		} 
@@ -3808,8 +3813,10 @@ Define this function in another CFC to override the default email format
 					echo('<p><a href="/z/admin/site-options/#methodBackup#?site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#">Disable sorting</a></p>');
 				}
 			}
+		} 
+		if(qCountAllLimit.recordcount NEQ 0 and qCountAllLimit.count > 0){
+			echo(arraytolist(arrSearch, ""));
 		}
-		writeoutput(arraytolist(arrSearch, ""));
 		if(qS.recordcount){
 			columnCount=0;
 			if(sortEnabled){
