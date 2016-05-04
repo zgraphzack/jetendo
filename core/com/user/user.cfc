@@ -1610,6 +1610,26 @@ formString = userCom.loginForm(inputStruct);
 	</cfscript>
 </cffunction>
 
+<cffunction name="getUserByEmail" localmode="modern" access="public">
+	<cfargument name="email" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
+	user_username = #db.param(arguments.email)# and 
+	user_deleted = #db.param(0)# and
+	site_id = #db.param(arguments.site_id)#";
+	qUser=db.execute("qUser");
+	row={};
+	if(qUser.recordcount){
+		for(row2 in qUser){
+			row=row2;
+		}
+	}
+	return row;
+	</cfscript>
+</cffunction>
+
 <cffunction name="requireLogin" localmode="modern" access="public">
 	<cfargument name="user_group_name" type="string" required="no" default="user">
 	<cfscript>
