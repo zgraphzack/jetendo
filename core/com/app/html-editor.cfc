@@ -89,7 +89,7 @@ tinymce.init({
     'advlist autolink lists link zsaimage zsafile charmap print preview hr anchor pagebreak',
     'searchreplace wordcount visualblocks visualchars code fullscreen',
     'insertdatetime media nonbreaking save table directionality', // contextmenu
-    'emoticons paste textcolor colorpicker textpattern imagetools'
+    'emoticons paste textcolor colorpicker textpattern' // imagetools
   ], // template 
   fontsize_formats: '12px 14px 18px 24px 36px 42px 48px',
   toolbar1: 'insertfile undo redo | fontselect fontsizeselect styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link zsaimage zsafile',
