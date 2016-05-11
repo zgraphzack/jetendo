@@ -334,9 +334,11 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 			type="image/png";
 		}else if(ext EQ "gif"){
 			type="image/gif";
-		}
+		} 
 		if(qImage.image_approved EQ 0){
-			content type="#type#" file="#request.zos.globals.privatehomedir&destination&newFileName#";
+			application.zcore.functions.zheader("Content-Type", type);
+			//content type="#type#" file="#request.zos.globals.privatehomedir&destination&newFileName#";
+			application.zcore.functions.zXSendFile("#request.zos.globals.privatehomedir&destination&newFileName#");
 			application.zcore.functions.zabort();
 		}else{
 			application.zcore.functions.zheader("Content-Type","image/jpeg");
@@ -379,8 +381,10 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 			if(qImage.image_approved EQ 0){
 				tempPath=request.zos.globals.privatehomedir&destination&newFileName;
 				application.sitestruct[request.zos.globals.id].fileExistsCache[tempPath]=true;
-				content type="#type#" file="#tempPath#";
-				application.zcore.functions.zabort();
+				application.zcore.functions.zheader("Content-Type", type);
+				application.zcore.functions.zXSendFile(tempPath);
+				//content type="#type#" file="#tempPath#";
+				//application.zcore.functions.zabort();
 			}else{
 				application.zcore.functions.zheader("Content-Type", type);
 				if(cgi.SERVER_SOFTWARE EQ "" or cgi.SERVER_SOFTWARE CONTAINS "nginx"){

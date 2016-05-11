@@ -313,7 +313,10 @@ site_id = #db.param(request.zos.globals.id)# ";
 		site_id = #db.param(request.zos.globals.id)#";
 		qU2=db.execute("qU2");
 	}
+	form.member_phone=application.zcore.functions.zso(form, 'member_phone');
 	structappend(ts,form);
+
+	ts.user_phone=form.member_phone;
 	ts.user_openid_required=application.zcore.functions.zso(form,'user_openid_required',false,0);
 	ts.user_sync_site_id_list=application.zcore.functions.zso(form,'user_sync_site_id_list');
 	ts.user_first_name = application.zcore.functions.zso(form,'member_first_name');
@@ -589,7 +592,7 @@ site_id = #db.param(request.zos.globals.id)# ";
 				<th>#application.zcore.functions.zOutputHelpToolTip("Password","member.member.edit member_password")# (Required)</th>
 				<td><input type="password" name="member_password" id="member_password" value="" size="30" />
 					<cfif currentMethod EQ "edit">
-						Leave empty unless you wish to change the password.
+						<br />Leave empty unless you wish to change the password.
 					</cfif></td>
 			</tr>
 			<tr>
@@ -608,7 +611,7 @@ site_id = #db.param(request.zos.globals.id)# ";
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Web Site","member.member.edit member_website")#</th>
 				<td><input type="text" name="member_website" value="#form.member_website#" size="30" />
-					(URLs Must begin with http:// or https://)</td>
+					<br />(URLs Must begin with http:// or https://)</td>
 			</tr>
 			<cfif application.zcore.app.getAppData("content").optionStruct.content_config_url_listing_user_id NEQ 0 and application.zcore.app.getAppData("content").optionStruct.content_config_url_listing_user_id NEQ "">
 				<tr>

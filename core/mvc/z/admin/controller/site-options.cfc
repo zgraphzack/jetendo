@@ -3800,9 +3800,14 @@ Define this function in another CFC to override the default email format
 					addEnabled=false;
 				}
 			}
+			echo('<p>');
 			if(addEnabled){
-				writeoutput('<p><a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Add #htmleditformat(application.zcore.functions.zFirstLetterCaps(qGroup.site_option_group_display_name))#</a></p>');
+				writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Add #htmleditformat(application.zcore.functions.zFirstLetterCaps(qGroup.site_option_group_display_name))#</a>');
+			} 
+			if(methodBackup EQ "manageGroup"){
+				echo(' | <a href="/z/admin/site-option-group/export?site_option_group_id=#qGroup.site_option_group_id#" target="_blank">Export CSV</a>');
 			}
+			echo('</p>');
 		} 
 		if(not structkeyexists(arguments.struct, 'recurse')){
 			if(qGroup.site_option_group_enable_sorting EQ 1 and subgroupRecurseEnabled){

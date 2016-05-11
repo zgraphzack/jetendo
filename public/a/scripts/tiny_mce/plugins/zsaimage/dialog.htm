@@ -4,7 +4,8 @@
 <script type="text/javascript">
 // Get someArg value inside iframe dialog
 function zInsertGalleryImage(content){
-	var editor=top.tinymce.activeEditor;
+	var editor=parent.tinymce.activeEditor;
+	
 	//var someArg = editor.windowManager.getParams().someArg;
 	//editor.insertContent(win.getContentWindow().document.getElementById('content').value);
 	editor.insertContent(content);
