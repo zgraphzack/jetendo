@@ -60,7 +60,7 @@
 		// data stuff that affect javascript could be done in the html elements as data attributes instead. 
 
 		a=cs.arrStylesheet;
-		for(in in a){
+		for(i in a){
 			application.zcore.skin.includeCSS(i);
 		}
 

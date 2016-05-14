@@ -2056,7 +2056,7 @@ this.app_id=10;
 	<span style="font-weight:normal; font-style:italic;"><cfif qArticle.blog_event EQ 1> Event Date:  </cfif> #dateformat(qArticle.blog_datetime, 'ddd, mmm dd, yyyy')#
 	<cfif qArticle.blog_hide_time EQ 0> at #timeformat(qArticle.blog_datetime, 'h:mmtt')# </cfif>
 	<cfif qArticle.blog_end_datetime NEQ "" and qArticle.blog_end_datetime NEQ qArticle.blog_datetime>
-		<cfif dateformat(qArticle.blog_end_datetime,'yyyymmdd') NEQ dateformat(qArticle.blog_datetime,'yyyymmdd')>
+		<cfif qArticle.blog_event EQ 1 and dateformat(qArticle.blog_end_datetime,'yyyymmdd') NEQ dateformat(qArticle.blog_datetime,'yyyymmdd')>
 		to #dateformat(qArticle.blog_end_datetime, 'ddd, mmm dd, yyyy')# 
 			<cfif qArticle.blog_hide_time EQ 0 and qArticle.blog_event EQ 1> at #timeformat(qArticle.blog_end_datetime, "h:mmtt")# </cfif>
 		<cfelse>
@@ -4791,7 +4791,7 @@ this.app_id=10;
     #dateformat(arguments.query.blog_datetime, 'ddd, mmm dd, yyyy')# 
 				<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> at #timeformat(arguments.query.blog_datetime, "h:mmtt")#  </cfif>
 				<cfif arguments.query.blog_end_datetime NEQ "" and arguments.query.blog_end_datetime NEQ arguments.query.blog_datetime> 
-					<cfif dateformat(arguments.query.blog_end_datetime,'yyyymmdd') NEQ dateformat(arguments.query.blog_datetime,'yyyymmdd')>
+					<cfif arguments.query.blog_event EQ 1 and dateformat(arguments.query.blog_end_datetime,'yyyymmdd') NEQ dateformat(arguments.query.blog_datetime,'yyyymmdd')>
 						to #dateformat(arguments.query.blog_end_datetime, 'ddd, mmm dd, yyyy')# 
 					<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> at #timeformat(arguments.query.blog_end_datetime, "h:mmtt")# </cfif>
 					<cfelse>

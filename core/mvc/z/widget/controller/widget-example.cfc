@@ -100,16 +100,16 @@ Try to organize all of the static resources for a widget in a single directory t
 	You should define any static CSS that doesn't need any per widget instance processing in external css files and define all the stylesheets this widget needs in the arrStylesheet array in the getConfig function instead of putting that code here.
 
 	*/
-
- 	fs=cs["Font Scale"];
+	csd=cs["default"];
+ 	fs=csd["Font Scale"];
 	</cfscript> 
 <style type="text/css">
 <cfsavecontent variable="out">
 #c# .test-example-1{ 
-	padding:#round(cs["Container Padding"]*20)#px;
+	padding:#round(csd["Container Padding"]*20)#px;
 }
-#c# .test-example-2{width:#round(cs["Left Column Width %"]*100)#%; padding-right:#cs["Column Gap"]#px;} 
-#c# .test-example-5{width:#round((1-cs["Left Column Width %"])*100)#%;}
+#c# .test-example-2{width:#round(csd["Left Column Width %"]*100)#%; padding-right:#csd["Column Gap"]#px;} 
+#c# .test-example-5{width:#round((1-csd["Left Column Width %"])*100)#%;}
 #c# .test-example-3{ font-size:#round(fs*36)#px; line-height:#round(fs*42)#px;}
 #c# .test-example-4{ font-size:#round(fs*18)#px; line-height:#round(fs*24)#px;}
 @media only screen and (max-width: 1200px) { 
@@ -121,7 +121,7 @@ Try to organize all of the static resources for a widget in a single directory t
 @media only screen and (max-width: 980px) { 
 #c# .test-example-4{ font-size:#round(fs*14)#px; line-height:#round(fs*18)#px;} 
 #c# .test-example-3{ font-size:#round(fs*24)#px; line-height:#round(fs*30)#px;}
-#c# .test-example-2{padding-bottom:#cs["Column Gap"]#px;}
+#c# .test-example-2{padding-bottom:#csd["Column Gap"]#px;}
 #c# .test-example-5{width:100%;}
 }
 </cfsavecontent>

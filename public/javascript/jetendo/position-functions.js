@@ -159,14 +159,7 @@ var zScrollbarWidth=0;
 
 	var parentIdIndex=0;
 	var arrEqualHeightInterval=[];
-	function zForceEqualHeights(className){ 
-		/*if(typeof arrEqualHeightInterval[className] == "undefined"){
-			arrEqualHeightInterval[className]=setInterval(function(){
-				zForceEqualHeights(className);
-			}, 1000);
-		}*/
-
-
+	function zForceEqualHeights(className){  
 		// only the elements with the same parent should be made the same height
 		var arrParent=[];  
 		$(className).height("auto");
@@ -187,24 +180,115 @@ var zScrollbarWidth=0;
 		});
 
 		$(className).each(function(){
+			if(arrParent[this.parentNode.id] == 0){
+				arrParent[this.parentNode.id]="auto";
+			}
 			$(this).height(arrParent[this.parentNode.id]);
 		});
  
 	}
-
-
-
-	
+ 
 	function forceAutoHeightFix(){ 
+		var images=$(".zForceEqualHeights img");
+		var imagesCount=images.length;
+		var imagesLoaded=0; 
+		images.each(function(){
+			if(this.complete){
+				imagesLoaded++;
+			}
+		}); 
+		if(imagesLoaded != imagesCount){
+			images.bind("load", function(e){
+				imagesLoaded++; 
+				if(imagesLoaded>imagesCount){
+					zForceEqualHeights(".zForceEqualHeights"); 
+				}
+			});
+		}
 		zForceEqualHeights(".zForceEqualHeights"); 
 		if($(".zForceEqualHeight").length > 0){
 			console.log("The class name should be zForceEqualHeights, not zForceEqualHeight");
 		}
-	}
-	//zArrLoadFunctions.push({functionName:forceAutoHeightFix });
+	} 
 	zArrResizeFunctions.push({functionName:forceAutoHeightFix });
 
+	// add class="zForceChildEqualHeights" data-column-count="2" to any element and all the children will have heights made equal for each row.
+	function zForceChildEqualHeights(children){  
+		var lastHeight=0; 
+		$(children).height("auto");
+		$(children).each(function(){ 
+			var position=zGetAbsPosition(this);
+			var height=position.height;   
+			if(height>lastHeight){
+				lastHeight=height;
+			}
+		});
+		if(lastHeight == 0){
+			lastHeight="auto";
+		} 
+		$(children).height(lastHeight); 
+	} 
+	function forceChildAutoHeightFix(){  
+		var containers=$(".zForceChildEqualHeights");
+		// if data-column-count is not specified, then we force all children to have the same height
+		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
+		containers.each(function(){
+			var columnCount=$(this).attr("data-column-count");
+			if(columnCount==null || columnCount == ""){
+				columnCount=0;
+			}
+			columnCount=parseInt(columnCount);
 
+			var children=$(this).children();
+			var columnChildren=[];
+			var columnChildrenImages=[];
+			if(columnCount==0){
+				columnChildren[0]=children;
+			}else{
+				var count=0;
+				var currentOffset=0;
+				for(var i=0;i<children.length;i++){
+					if(count==0){
+						columnChildren[currentOffset]={
+							children:[],
+							images:[],
+							imagesLoaded:0
+						} 
+					}
+					columnChildren[currentOffset].children.push(children[i]);
+					$("img", children[i]).each(function(){
+						columnChildren[currentOffset].images.push(this);
+						if(this.complete){
+							columnChildren[currentOffset].imagesLoaded++;
+						}
+					});
+					count++;
+					if(count>=columnCount){
+						count=0;
+						currentOffset++;
+					}
+				}  
+			} 
+			for(var i=0;i<columnChildren.length;i++){
+				var c=columnChildren[i]; 
+				var images=$(c.images);   
+				if(c.imagesLoaded != images.length){
+					images.bind("load", function(e){
+						c.imagesLoaded++;
+						if(c.imagesLoaded>images.length){ 
+							zForceChildEqualHeights(c.children);  
+						}
+					});
+				}
+				zForceChildEqualHeights(c.children); 
+			}
+		}); 
+		if($(".zForceChildEqualHeight").length > 0){
+			console.log("The class name should be zForceChildEqualHeights, not zForceChildEqualHeight");
+		}
+	}
+	zArrResizeFunctions.push({functionName:forceChildAutoHeightFix });
+ 
 	window.zForceEqualHeights=zForceEqualHeights;
 	window.zFindPosition=zFindPosition;
 	window.zGetAbsPosition=zGetAbsPosition;
