@@ -3,7 +3,7 @@
 <cffunction name="spellCheck" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	</cfscript>
-	<div style="max-width:960px;float:left; font-size:18px; line-height:30px;"> 
+	<div style="max-width:980px;float:left; font-size:18px; line-height:30px;"> 
 	<h1>Add advanced spell checking &amp; grammar support</h1>
 	<p>Your web site is often the first impression your visitors have with your company.  Not all of us are blessed with perfect spelling and grammar as we work throughout the day.  That's why using tools to help support you is important.</p>
 	<p>The text fields throughout the web site manager now support your browser's native spell checking if it is available & enabled.  However, if you want something more robust, we have found a better solution.</p>

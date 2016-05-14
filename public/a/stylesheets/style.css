@@ -288,7 +288,7 @@ font-family: Open Sans, Arial, Verdana, Helvetica, sans-serif !important;}
 
 .zmember-tabs-buttons-bottom button{ float:left !important;}
 .zmember-tabs-buttons button:hover, .zmember-tabs-buttons-bottom button:hover{ background-color:#EEE !important; color:#369 !important;}  
-.zmember-tabs-buttons-bottom {margin-top:3px !important; float:left !important; width:99% !important; min-width:960px !important; *width:960px !important; padding:3px !important; background:none !important; background-color:#369 !important;border: 1px solid #ccc !important; float:left !important; border-radius:4px !important;}
+.zmember-tabs-buttons-bottom {margin-top:3px !important; float:left !important; width:99% !important; min-width:980px !important; *width:980px !important; padding:3px !important; background:none !important; background-color:#369 !important;border: 1px solid #ccc !important; float:left !important; border-radius:4px !important;}
 
 img{border:none;}
 

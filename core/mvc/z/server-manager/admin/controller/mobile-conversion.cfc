@@ -100,7 +100,7 @@ Primary Stylesheet URL: #application.zcore.functions.zInput_Text({name:"primaryS
 <h2>Output CSS - generated unique class names</h2>
  <textarea cols="100" rows="20" style="height:150px !important;" id="cssOutput"></textarea>
 
-	<div id="parentContainer1" style="width:960px;display:none;">
+	<div id="parentContainer1" style="width:980px;display:none;">
 </div>
  
 <style id="newStyle1"></style>

@@ -56,7 +56,7 @@ Try to organize all of the static resources for a widget in a single directory t
 </cffunction>
 	
 <cffunction name="getJS" localmode="modern" access="public" output="no">  
-	<cfargument name="dataFields" type="struct" required="yes">
+	<cfargument name="widgetContainer" type="string" required="yes">
 	<cfscript>
 	/*
 	This function is called during the rendering of a single instance of a widget.
@@ -77,7 +77,7 @@ Try to organize all of the static resources for a widget in a single directory t
 	<script type="text/javascript">
 	<cfsavecontent variable="out">
 	zArrDeferredFunctions.push(function(){
-		var e="testWidgetJS - #arguments.dataFields.widgetContainer#";
+		var e="testWidgetJS - #arguments.widgetContainer#";
 		console.log(e);
 	});
 	</cfsavecontent>
@@ -118,7 +118,7 @@ Try to organize all of the static resources for a widget in a single directory t
 
 
 }
-@media only screen and (max-width: 960px) { 
+@media only screen and (max-width: 980px) { 
 #c# .test-example-4{ font-size:#round(fs*14)#px; line-height:#round(fs*18)#px;} 
 #c# .test-example-3{ font-size:#round(fs*24)#px; line-height:#round(fs*30)#px;}
 #c# .test-example-2{padding-bottom:#cs["Column Gap"]#px;}

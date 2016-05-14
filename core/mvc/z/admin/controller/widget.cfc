@@ -109,10 +109,11 @@
 	}
 	widgetCom.init(ds); 
 
-	widgetCom.render(dataFields);
+	widgetCom.render([dataFields]);
  
 	</cfscript>	
 </cffunction>
+
 
 
 <cffunction name="listWidgetInstances" localmode="modern" access="remote" roles="member">

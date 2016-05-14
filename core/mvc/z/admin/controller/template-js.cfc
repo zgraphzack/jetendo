@@ -317,8 +317,8 @@ zArrDeferredFunctions.push(function(){zSkinApp.onLoad();});
 <cfsavecontent variable="theCSS">
 			<style type="text/css">
 			#entirepage{width:1000px; height:500px; background-color:#666;}
-			#header{width:960px; margin:0 auto; height:100px; background-color:#AAA;}
-			#maincontent{width:960px; margin:0 auto; height:200px;  background-color:#999;}
+			#header{width:980px; margin:0 auto; height:100px; background-color:#AAA;}
+			#maincontent{width:980px; margin:0 auto; height:200px;  background-color:#999;}
 			#specificdiv{width:300px; float:left; height:100px; background-color:#CCC;}
 			</style>
             </cfsavecontent>

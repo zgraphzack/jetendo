@@ -29,7 +29,7 @@
 		"Body Text":"Body Text",
 		"Image":"/z/a/images/broker_reciprocity.jpg"
 	};
-	widgetCom.render(dataFields);
+	widgetCom.render([dataFields]);
 
 	ds={
 		widget_instance_id:2,
@@ -47,7 +47,7 @@
 		"Body Text":"Example Text 2",
 		"Image":"/z/a/images/redarrow.jpg"
 	};
-	widgetCom.render(dataFields);
+	widgetCom.render([dataFields]);
 
 
 	</cfscript>
