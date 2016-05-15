@@ -27,7 +27,7 @@
 		"Thumbnail Crop": "Yes"
 	}
 	// optionally specify different values at different breakpoints
-	ts.layoutFields["1200"]={ 
+	ts.layoutFields["1280"]={ 
 		"Thumbnail Width": "250",
 		"Thumbnail Height": "130",
 	};

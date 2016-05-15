@@ -259,7 +259,7 @@ D:\desktop\layout.ai
 			<!--- select menu for user_group_id --->
 			<!--- <tr>
 				<th>Breakpoints</th>
-				<td><input type="text" name="landing_page_breakpoint_list" value="#htmleditformat(form.landing_page_breakpoint_list)#" /><br />Comma separated list. I.e. 320,960,1200</td> 
+				<td><input type="text" name="landing_page_breakpoint_list" value="#htmleditformat(form.landing_page_breakpoint_list)#" /><br />Comma separated list. I.e. 320,960,1280</td> 
 			</tr>  --->
 			<!--- <tr>
 				<th>Active</th>
