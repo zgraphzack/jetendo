@@ -29,7 +29,7 @@
 		"Body Text":"Body Text",
 		"Image":"/z/a/images/broker_reciprocity.jpg"
 	};
-	widgetCom.render(dataFields);
+	widgetCom.render([dataFields]);
 
 	ds={
 		widget_instance_id:2,
@@ -47,7 +47,7 @@
 		"Body Text":"Example Text 2",
 		"Image":"/z/a/images/redarrow.jpg"
 	};
-	widgetCom.render(dataFields);
+	widgetCom.render([dataFields]);
 
 
 	</cfscript>
@@ -495,7 +495,13 @@
 	db=request.zos.queryObject; 
 	//writedump(form); 
 
-	widgetCom=createobject("component", "zcorerootmapping.com.widget.widget-example");
+	// get widget cfc path using widget_id
+	if(not structkeyexists(application.zcore.widgetIndexStruct, form.widget_id)){
+		application.zcore.status.setStatus(request.zsid, "Invalid widget id", form, true);
+		application.zcore.functions.zRedirect("/z/admin/widget/index?zsid=#request.zsid#");
+	}
+
+	widgetCom=createobject("component", application.zcore.widgetIndexStruct[form.widget_id]);
 
 	ts={
 		table:"widget_instance",

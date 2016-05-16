@@ -659,7 +659,7 @@ If the link does not work, please copy and paste the entire link in your browser
 		application.zcore.functions.zRedirect("/z/user/preference/accountcreated?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 	}else{
 		application.zcore.status.setStatus(request.zsid, "Your preferences have been updated.");
-		application.zcore.functions.zRedirect("/z/user/preference/form?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
+		application.zcore.functions.zRedirect("/z/user/home/index?modalpopforced=#form.modalpopforced#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#&zsid=#request.zsid#");
 	}
         </cfscript>
 </cffunction>
@@ -841,7 +841,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			</cfsavecontent>
 		</cfif>
 		<cfif variables.qcheckemail.recordcount eq 0 and form.user_password EQ ''>
-			<div style="float:left; padding-right:20px;width:285px;">
+			<div style="float:left; padding-right:20px;width:50%;">
 			<p style="font-size:130%; font-weight:bold;">Your Personal Information</p>
 			<cfset local.hideAllPrefFields=false>
 		<cfelseif openIdCom.isAdminChangeAllowed() EQ false>
@@ -849,7 +849,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			<div style="float:left; padding-right:0px;width:100%;">
 			<cfset local.hideAllPrefFields=true>
 		<cfelse>
-			<div style="float:left; padding-right:20px;width:285px;">
+			<div style="float:left; padding-right:20px;width:50%;">
 			<p style="font-size:130%; font-weight:bold;">Your Personal Information</p>
 			<cfset local.hideAllPrefFields=false>
 		</cfif>
@@ -908,6 +908,10 @@ If the link does not work, please copy and paste the entire link in your browser
 					<td><input type="text" name="user_last_name" value="#htmleditformat(form.user_last_name)#" style=" width:100%;" /></td>
 				</tr>
 				<tr>
+					<td>Company</td>
+					<td><input type="text" name="member_company" value="#htmleditformat(form.member_company)#" style=" width:100%;" /></td>
+				</tr>
+				<tr>
 					<td>Phone</td>
 					<td><input type="text" name="user_phone" style=" width:100%;" value="#htmleditformat(form.user_phone)#" /></td>
 				</tr>
@@ -953,7 +957,7 @@ If the link does not work, please copy and paste the entire link in your browser
 				    </cfscript>
 			</cfif>
 			</div>
-			<div style="float:left; width:285px;">
+			<div style="float:left; width:50%;">
 				<p style="font-size:130%; font-weight:bold;">How may we reach you?</p>
 				<table style="border-spacing:0px; width:98%;" class="zinquiry-form-table">
 					<tr>
@@ -1084,7 +1088,7 @@ If the link does not work, please copy and paste the entire link in your browser
 
 	customURL=application.zcore.functions.zso(request.zos.globals, 'customCreateAccountURL');
 	if(customURL NEQ ""){
-		application.zcore.functions.z301redirect(application.zcore.functions.zURLAppend(customURL, "modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced', true)#&redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#application.zcore.functions.zso(form, 'reloadOnNewAccount')#"));
+		application.zcore.functions.z301redirect(application.zcore.functions.zURLAppend(customURL, "modalpopforced=#application.zcore.functions.zso(form, 'modalpopforced', true)#&redirectOnLogin=#urlencodedformat(application.zcore.functions.zso(form, 'redirectOnLogin'))#&reloadOnNewAccount=#application.zcore.functions.zso(form, 'reloadOnNewAccount')#"));
 	}
 
 	this.init();
@@ -1155,7 +1159,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			<h2>Sign in with OpenID</h2>
 			<p>Click the button to register with an existing account.</p>
 			<div style="width:100%; float:left;">
-				<div style="float:left; padding-right:20px;width:285px;">
+				<div style="float:left; padding-right:20px;width:50%;">
 					<cfscript>
 					local.openIdCom=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.user.openid");
 					local.openIdCom.disableDeveloperLoginLinks();
@@ -1177,7 +1181,7 @@ If the link does not work, please copy and paste the entire link in your browser
 					}
 					</cfscript>
 				</div>
-				<div style="float:left;width:285px;">
+				<div style="float:left;width:50%;">
 					<h3>About OpenID</h3>
 					<ul>
 						<li>Faster and can be more secure</li>
@@ -1191,7 +1195,7 @@ If the link does not work, please copy and paste the entire link in your browser
 			</div>
 		</cfif>
 		<div style="width:100%;clear:both; float:left;border-top:1px dotted ##999; padding-top:10px;">
-			<div style="float:left; padding-right:20px;width:285px;">
+			<div style="float:left; padding-right:20px;width:50%;">
 				<cfif request.zos.globals.disableOpenID EQ 0 or (request.zos.globals.parentID NEQ 0 and application.zcore.functions.zvar('disableOpenId', request.zos.globals.parentID) EQ 0)>
 					<div style="width:100%; float:left;">If you don't have one of the above accounts:</div>
 				</cfif>
@@ -1213,7 +1217,7 @@ If the link does not work, please copy and paste the entire link in your browser
 					</div>
 				</div>
 			</div>
-			<div style="float:left; padding-top:20px;width:285px;">
+			<div style="float:left; padding-top:20px;width:50%;">
 				<div style="width:100%; float:left; margin-bottom:0px; padding-bottom:5px;"><strong>Password Stength</strong></div>
 				<div style="width:100%; float:left;">
 					<div id="scorebarBorder">

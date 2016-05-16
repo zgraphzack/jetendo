@@ -102,6 +102,7 @@ this.customStruct = StructNew();
 		ts.struct.mail_user_phone=application.zcore.functions.zso(arguments.ss, 'user_phone');
 		ts.struct.mail_user_datetime=request.zos.mysqlnow;
 		ts.struct.mail_user_sent_datetime=request.zos.mysqlnow;
+		ts.struct.mail_user_updated_datetime=request.zos.mysqlnow;
 		ts.struct.mail_user_key=hash(application.zcore.functions.zGenerateStrongPassword(80,200),'sha-256'); 
 		ts.struct.mail_user_opt_in=1;
 		ts.struct.mail_user_confirm=0;
@@ -1596,6 +1597,26 @@ formString = userCom.loginForm(inputStruct);
 	db=request.zos.queryObject;
 	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
 	user_id = #db.param(arguments.user_id)# and 
+	user_deleted = #db.param(0)# and
+	site_id = #db.param(arguments.site_id)#";
+	qUser=db.execute("qUser");
+	row={};
+	if(qUser.recordcount){
+		for(row2 in qUser){
+			row=row2;
+		}
+	}
+	return row;
+	</cfscript>
+</cffunction>
+
+<cffunction name="getUserByEmail" localmode="modern" access="public">
+	<cfargument name="email" type="string" required="yes">
+	<cfargument name="site_id" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
+	user_username = #db.param(arguments.email)# and 
 	user_deleted = #db.param(0)# and
 	site_id = #db.param(arguments.site_id)#";
 	qUser=db.execute("qUser");

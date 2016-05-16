@@ -364,8 +364,10 @@ function forceCustomFontDesignModeOn(id){
 		}
 	});
 }
-function forceCustomFontLoading(inst){
-	doc=tinyMCE.get(inst.editorId).getDoc();
+
+
+function forceCustomFontLoading(editor){
+	doc=editor.getDoc();
 	if(navigator.userAgent.indexOf("MSIE ") === -1){
 		doc.designMode="off";
 	} 
@@ -396,8 +398,8 @@ function forceCustomFontLoading(inst){
 		script.src='/z/javascript/zTypeKitOnLoad.js';
 		head.appendChild(script);
 	}
-	if(navigator.userAgent.indexOf("MSIE ") === -1 && document.getElementById(inst.editorId)){
-		setTimeout('forceCustomFontDesignModeOn("'+inst.editorId+'");',2000);
+	if(navigator.userAgent.indexOf("MSIE ") === -1 && document.getElementById(editor.editorId)){
+		setTimeout('forceCustomFontDesignModeOn("'+editor.editorId+'");',2000);
 	}
 }
 function zGetCurrentRootRelativeURL(theURL){

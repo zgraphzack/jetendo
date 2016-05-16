@@ -23,7 +23,7 @@ var zResponsiveHTML=function(options){
 	options.primaryStylesheet=zso(options, 'primaryStylesheet', false, true);
 	options.classPrefix=zso(options, 'classPrefix', false, "sh-");
 	options.type=zso(options, 'type', false, "tablet");
-	options.originalWidth=zso(options, 'originalWidth', false, 1200);
+	options.originalWidth=zso(options, 'originalWidth', false, 1280);
 	options.newWidth=zso(options, 'newWidth', false, 960);
 	options.boxObj=zso(options, 'boxObj', false,{
 		maxVerticalPadding:25,
@@ -338,7 +338,7 @@ function getStyleByNode(node) {
 
 		var ratio=nw/ow; 
 
-		// to reduce 1200 to 960
+		// to reduce 1280 to 960
 			// find all background image and img, and reduce their dimensions by 80%.
 			// reduce all width/height dimensions by 80% on all classes - ignore ones that are 100%.
 			// reduce font-size by 20%, with minimum font-size X

@@ -279,9 +279,9 @@
 	HTML Editor<br />
 	<div id="typeOptions2" style="display:none;padding-left:30px;"> 
 		<p>Editor Width:
-		<input type="text" name="editorwidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth'))#" /></p>
+		<input type="text" name="editorwidth" id="editorwidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth'))#" /></p>
 		<p>Editor Height:
-		<input type="text" name="editorheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight'))#" /></p>
+		<input type="text" name="editorheight" id="editorheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight'))#" /></p>
 	</div>	
 	</cfsavecontent>
 	<cfreturn output>

@@ -711,6 +711,18 @@ this.app_id=12;
 		</tr>
 		
 		<tr>
+		<th>Child Display Limit</th>
+		<td>');
+		form.content_config_child_display_limit=application.zcore.functions.zso(form, 'content_config_child_display_limit', true, 20);
+		if(form.content_config_child_display_limit EQ 0){
+			form.content_config_child_display_limit=20;
+		}
+		ts = StructNew();
+		ts.name = "content_config_child_display_limit";
+		application.zcore.functions.zInput_Text(ts);
+		echo('</td>
+		</tr>
+		<tr>
 		<th>Contact Links?</th>
 		<td>');
 		form.content_config_contact_links=application.zcore.functions.zso(form, 'content_config_contact_links',true,0);
@@ -2565,10 +2577,13 @@ configCom.includeContentByName(ts);
 			if(ts994824713.content_metacode NEQ ""){
 				application.zcore.template.appendTag("meta", ts994824713.content_metacode);
 			}
-
+			defaultLimit=application.zcore.functions.zso(application.zcore.app.getAppData("content").optionStruct,'content_config_child_display_limit', true, 20);
+			if(defaultLimit EQ 0){
+				defaultLimit=20;
+			}
 			form.offset=application.zcore.functions.zso(form, 'offset', true, 0);
-			form.count=application.zcore.functions.zso(form, 'count', true, 20);
-
+			form.count=application.zcore.functions.zso(form, 'count', true, defaultLimit);
+			
 			request.zos.requestLogEntry('content.cfc viewPage 4');
 			childContentStruct=displayChildContent(ts994824713, contentConfig, ct1948, form.offset, form.count);
 			if(form.offset LT 0 or (form.offset NEQ 0 and childContentStruct.qContentChild.recordcount EQ 0)){

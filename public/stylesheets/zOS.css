@@ -15,19 +15,27 @@ box-sizing: content-box;
 }
 div.time-picker li{ height:16px !important;}
 
-
-div.-railo-dump  td span {font-weight:bold !important;}
-div.-railo-dump table{ background-color:#FFF !important;font-family:Arial, Helvetica, sans-serif  !important; color:#000 !important; font-size:12px !important; empty-cells:show !important; color:#000 !important;border-spacing:0px !important; border:none !important;}
-div.-railo-dump td.r99f {background-color:#FFF !important; color:#000 !important; border-right:1px solid #CCC !important; border-bottom:1px solid #CCC !important; padding:3px !important;}
-div.-railo-dump td.rc9c {background-color:#FFF !important; color:#000 !important; border-right:1px solid #CCC !important; border-bottom:1px solid #CCC !important; padding:3px !important;} 
-div.-railo-dump td.r99f:nth-child(even) {background-color:#F2F2F2 !important;  }
-div.-railo-dump td.rc9c:nth-child(even) {background-color:#F2F2F2 !important;  }
-div.-railo-dump td {background-color:transparent !important; padding:3px !important; border:none !important; border-right:1px solid #CCC !important;border-bottom:1px solid #CCC !important;}
-div.-railo-dump tr:nth-child(even) {background: #F2F2F2  !important;}
-div.-railo-dump tr tr:nth-child(even) {background: #F2F2F2  !important;}
-div.-railo-dump tr:hover{ background-color:#e6faeb !important;} 
-
+.zMenuWrapper{visibility:hidden;}
 #cboxLoadedContent{border:none !important; margin-top:5px !important;}
+
+.z-clear{clear:both;}
+.z-container{  display:block; float:left; width:100%; }
+ 
+.zAnimateOnVisible{visibility:hidden;}
+.zOnVisibleSlide {
+	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
+	animation: zOnVisibleSlide 0.8s ease forwards;
+}
+@-webkit-keyframes zOnVisibleSlide {
+  to { transform: translateX(0) translateY(0);   }
+}
+@keyframes zOnVisibleSlide {
+  to { transform: translateX(0) translateY(0);  }
+}
+.zAnimateVisible {
+  transform: translateX(0) translateY(0) !important;
+  animation: none;
+}
 
 .zGearButton:link, .zGearButton:visited{
 	font-size:30px;line-height:36px; color:#000;
@@ -649,23 +657,6 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 
 
 
-
-.zAnimateOnVisible{visibility:hidden;}
-.zOnVisibleSlide {
-	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
-	animation: zOnVisibleSlide 0.8s ease forwards;
-}
-@-webkit-keyframes zOnVisibleSlide {
-  to { transform: translateX(0) translateY(0);   }
-}
-@keyframes zOnVisibleSlide {
-  to { transform: translateX(0) translateY(0);  }
-}
-.zAnimateVisible {
-  transform: translateX(0) translateY(0) !important;
-  animation: none;
-}
-
 .zEventInfoButton:link, .zEventInfoButton:visited{padding:5px; padding-left:10px; padding-right:10px; float:left; display:block; clear:both; margin-top:10px;font-size:120%; line-height:auto; background-color:#999; color:#FFF; border-radius:5px;}
 .zEventListContainer{ padding:10px;display:table;}
 #zCalendarTab_List{clear:both;width:100%; float:left;}
@@ -725,7 +716,7 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .zImageLibraryImageLeft img{max-width:100%;}
 .zImageLibraryImageRight img{max-width:100%;}
 
-@media only screen and (max-width: 960px) {
+@media only screen and (max-width: 980px) {
 
 .zImageLibraryImageRight{width:50% !important;}
 .zImageLibraryImageLeft{width:50% !important;}

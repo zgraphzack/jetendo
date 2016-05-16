@@ -116,7 +116,7 @@ var arrOriginalMenuButtonWidth=[];
 		//return;
 		var i,k,g,lg,r=/\s*zMenuHvr/,nn='',c,bv='zMenuDiv';
 		 lg=document.getElementsByTagName("LI"); 
-		var $wrapper=$(".zMenuWrapper").show();
+		var $wrapper=$(".zMenuWrapper").css("visibility", "visible").show();
 
 		var arrButtons=$(".trigger", $wrapper);
 		arrButtons.each(function(){

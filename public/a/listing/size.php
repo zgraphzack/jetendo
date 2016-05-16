@@ -394,18 +394,27 @@ if($ext != ".jpeg"){
 	}
 	z404();	
 }
-	$newpath=get_cfg_var("jetendo_share_path").'mls-images-temp/'.date("Y").'-'.date("m")."-".date("d").'/'.$newwidth.'x'.$newheight.'/'.$autocrop.'';
+	$newpath=get_cfg_var("jetendo_share_path").'mls-images-temp/'.date("Y").'-'.date("m")."-".date("d").'/'.$newwidth.'x'.$newheight.'/'.$autocrop.'/';
 	
 	if(!is_dir($serverRootPath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1))){
 		@mkdir($serverRootPath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1), 0777, true);
 	}
-	if(!is_dir($newpath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1))){
-		@mkdir($newpath.'/'.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1), 0777, true);
+	if(!is_dir($newpath.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1))){
+		@mkdir($newpath.$_GET['m']."/".substr($h,0,2)."/".substr($h, 2, 1), 0777, true);
 	}
 	$displaypath="/z/index.php?method=size&w=".urlencode($_GET['w'])."&h=".urlencode($_GET['h'])."&p=".urlencode($_GET['p'])."&m=".$_GET['m']."&f=".urlencode($_GET['f'])."&a=".urlencode($_GET['a']);
 	$outputpath=$newpath.$filenamenoext.'.jpeg';
 	if($debug) echo "displaypath:".$displaypath."<br>";
 	if($debug) echo "outputpath:".$outputpath."<br>";
+	if($debug) echo("first outputpath:".$outputpath."<br>");
+$imageFound2=false;
+if(file_exists($outputpath)){
+	$imageFound2=true;
+	if(filesize($outputpath) == 0){
+		@unlink($outputpath);	
+		$imageFound2=false;
+	}
+}
 	if($_GET['w']=='10000' && $_GET['h']=='10000'){
 		$outputpath=$serverRootPath.$filename;
 	}
@@ -413,6 +422,7 @@ if($ext != ".jpeg"){
 	//exit;
 	// set it up here
 //}
+	if($debug) echo("second outputpath:".$outputpath."<br>");
 
 $imageFound=true;
 if(!file_exists($serverRootPath.$filename)){
@@ -428,14 +438,6 @@ if(!file_exists($serverRootPath.$filename)){
 	if(filesize($serverRootPath.$filename) == 0){
 		//@unlink($serverRootPath.$filename);	
 		$imageFound=false;
-	}
-}
-$imageFound2=false;
-if(file_exists($outputpath)){
-	$imageFound2=true;
-	if(filesize($outputpath) == 0){
-		@unlink($outputpath);	
-		$imageFound2=false;
 	}
 }
 //$imageFound=false;
@@ -522,12 +524,18 @@ try {
 						z404();	
 					}
 				}else{
-					$imageFound2=processImage($serverRootPath.$filename.$temp, $serverRootPath.$filename);
-					$outputpath=$serverRootPath.$filename;
-					$imageFound=true;
-					if($imageFound2){
+					processImage($serverRootPath.$filename.$temp, $serverRootPath.$filename);
+					//$outputpath=$serverRootPath.$filename;
+					//$imageFound=true;
+
+					if(file_exists($serverRootPath.$filename.$temp)){
 						@unlink($serverRootPath.$filename.$temp);
 					}
+					/*$imageFound2=
+					if($imageFound2){
+						@unlink($serverRootPath.$filename.$temp);
+						$imageFound2=false;
+					}*/
 					//rename($serverRootPath.$filename.$temp, $serverRootPath.$filename);
 					//$imageFound2=true;
 				}
@@ -536,6 +544,7 @@ try {
 		}
 	}
 	if($debug) echo "current timestamp:".time()."<br>";
+ 
 	if($imageFound2 && $imageFound){
 		/*$outputmtime=filemtime($outputpath);
 		if((filemtime($serverRootPath.$filename)) > $outputmtime || $outputmtime < 1349312011){
@@ -620,7 +629,7 @@ try {
 	if($width < $newwidth && $height < $newheight){
 		if($debug){
 			echo 'file timestamp:'.filemtime($serverRootPath.$filename)."<br />";
-			 echo '<h2>Original Photo</h2><p><img src="/zretsphotos'.$filename.'" style="border:2px solid #000;" /></p>';
+			 echo '<h2>Original Photo</h2><p><img src="/zretsphotos/'.$filename.'" style="border:2px solid #000;" /></p>';
 			 echo '<h2>Cropped Photo</h2><p><img src="'.$displaypath.'" style="border:2px solid #000;" /></p>';
 			$time_end = microtime_float();
 			$time = $time_end - $time_start;
@@ -760,10 +769,11 @@ function imagecreatefrombmp($filename)
 
  return $res;
 }
-
 if($debug) echo "original resize:".$newwidth."x".$newheight."<br />";
 
 if($autocrop != 1){
+	if($debug) echo 'autocrop disabled<br />';
+
 	$ratio=$cwidth/$newwidth;
 	$newwidth1=$newwidth;
 	$newheight1=round($newheight*$ratio);	
@@ -783,11 +793,11 @@ if($autocrop != 1){
 	
 	
 }else{
-	if($debug) echo 'autocrop<br />';
+	if($debug) echo 'autocrop enabled<br />';
 	// the offset and width / height must be modified to be a smaller box within that when resized fix the newwidth / newheight perfectly
 	if($width < $newwidth && $height < $newheight){
 		//$newwidth=$width;
-		if($debug) echo 'cannot<br />';
+		if($debug) echo 'cannot resize<br />';
 		//$height=$newheight;
 		//$width=$newwidth;
 		$xoffset=round(($originalwidth-$width)/2);
@@ -890,7 +900,7 @@ if(!$testserver){
 }
 if($debug){
 	echo 'file timestamp:'.filemtime($outputpath)."<br />";
-	 echo '<h2>Original Photo</h2><p><img src="/zretsphotos'.$filename.'" style="border:2px solid #000;" /></p>';
+	 echo '<h2>Original Photo</h2><p><img src="/zretsphotos/'.$filename.'" style="border:2px solid #000;" /></p>';
 	 echo '<h2>Cropped Photo</h2><p><img src="'.$displaypath.'" style="border:2px solid #000;" /></p>';
 	$time_end = microtime_float();
 	$time = $time_end - $time_start;

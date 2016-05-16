@@ -96,12 +96,14 @@
 
 	ds={
 		widget_instance_id:0,
-		layoutFields:{}
+		layoutFields:{
+			default:{}
+		}
 	};
 	dataFields={};
 	for(i=1;i<=arrayLen(configStruct.layoutFields);i++){
 		f=configStruct.layoutFields[i];
-		ds.layoutFields[f.label]=f.previewValue;
+		ds.layoutFields["default"][f.label]=f.previewValue;
 	}
 	for(i=1;i<=arrayLen(configStruct.dataFields);i++){
 		f=configStruct.dataFields[i];
@@ -109,10 +111,11 @@
 	}
 	widgetCom.init(ds); 
 
-	widgetCom.render(dataFields);
+	echo(widgetCom.loadAndGetHTML(dataFields));
  
 	</cfscript>	
 </cffunction>
+
 
 
 <cffunction name="listWidgetInstances" localmode="modern" access="remote" roles="member">

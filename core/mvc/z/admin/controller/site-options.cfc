@@ -763,6 +763,54 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="autocompleteTips" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	application.zcore.template.setTag("pagetitle", "Option Autocomplete Tips");
+	</cfscript>
+	<p>The following phrases will automatically map to the corresponding field type until you override it when adding a new option. You can include any number of other words and it will still work.</p>
+<table class="table-list">
+<tr><th>Words</th>
+<th>Field Type</th>
+</tr>
+<tr><td>"section" and "text"</td><td>html editor</td></tr>
+<tr><td>html</td><td>html editor</td></tr>
+<tr><td>heading</td><td>text</td></tr>
+<tr><td>textarea</td><td>textarea</td></tr>
+<tr><td>summary</td><td>html editor</td></tr>
+<tr><td>title</td><td>text</td></tr>
+<tr><td>subheading</td><td>text</td></tr>
+<tr><td>sub-heading</td><td>text</td></tr>
+<tr><td>email</td><td>email</td></tr>
+<tr><td>map</td><td>map picker</td></tr>
+<tr><td>location</td><td>map picker</td></tr>
+<tr><td>state</td><td>state</td></tr>
+<tr><td>country</td><td>country</td></tr>
+<tr><td>color</td><td>color picker</td></tr>
+<tr><td>email</td><td>email</td></tr>
+<tr><td>url</td><td>url</td></tr>
+<tr><td>image</td><td>image</td></tr>
+<tr><td>photo</td><td>image</td></tr>
+<tr><td>graphic</td><td>image</td></tr>
+<tr><td>paragraph</td><td>html editor</td></tr>
+<tr><td>"body" and "text"</td><td>html editor</td></tr>
+<tr><td>date</td><td>date</td></tr>
+<tr><td>file</td><td>file</td></tr>
+<tr><td>time</td><td>time</td></tr>
+<tr><td>user</td><td>user</td></tr>
+</table>	
+<br /> 
+<h2>Other Autocomplete Features</h2>
+	<p>You can make any field automatically become required by adding "*" to the end of the "Code Name" field. The "*" will be automatically removed once typed. Example:</p>
+	<ul><li>Title*</li></ul>
+	<p>Image, HTML Editor and Textarea support pasting in the dimensions to the "Code Name" field. Example:</p>
+	<ul><li>Body Text 400x200</li>
+	<li>Section 1 Text 400x300</li>
+	</ul>
+	<p>Image also lets you enable cropping by adding a third number set to 1. Example:</p>
+	<ul><li>Image 250x150x1</li></ul>
+	<p>The moment you paste the text, it will automatically remove the numbers from the "Code Name" field.</p>
+</cffunction>
+
 <cffunction name="add" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	this.edit();
@@ -864,7 +912,216 @@
 				<th>Code Name:</th>
 				<td>
 				<cfif currentMethod EQ "add">
-					<input type="text" size="50" name="site_option_name" id="site_option_name" value="#htmleditformat(form.site_option_name)#" onkeyup="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;}" onblur="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;}">
+					<input type="text" size="50" name="site_option_name" id="site_option_name" value="#htmleditformat(form.site_option_name)#" onkeyup="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;} autofillFieldType(this.value.toLowerCase());" onblur="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;}"><br />
+					Note: <a href="/z/admin/site-options/autocompleteTips" target="_blank">Autocomplete tips</a>
+					<script type="text/javascript">
+					var optionsSetByUser=false;
+					function autofillFieldType(v){
+						if(typeSelectedByUser){
+							console.log('typeSelectedByUser was true, cancelling autofill.');
+							return;
+						}
+						var arrWord=zStringReplaceAll(zStringReplaceAll(v.toLowerCase(), "\t", " "), "  ", " ").split(" ");
+						var arrMap=[
+							{arrWord:['section', 'text'], type:"html editor"},
+							{arrWord:['html'], type:"html editor"},
+							{arrWord:['heading'], type:"text"},
+							{arrWord:['textarea'], type:"textarea"},
+							{arrWord:['summary'], type:"html editor"},
+							{arrWord:['title'], type:"text"},
+							{arrWord:['subheading'], type:"text"},
+							{arrWord:['sub-heading'], type:"text"},
+							{arrWord:['email'], type:"email"},
+							{arrWord:['map'], type:"map picker"},
+							{arrWord:['location'], type:"map picker"},
+							{arrWord:['state'], type:"state"},
+							{arrWord:['country'], type:"country"},
+							{arrWord:['color'], type:"color picker"},
+							{arrWord:['email'], type:"email"},
+							{arrWord:['url'], type:"url"},
+							{arrWord:['image'], type:"image"},
+							{arrWord:['photo'], type:"image"},
+							{arrWord:['graphic'], type:"image"},
+							{arrWord:['paragraph'], type:"html editor"},
+							{arrWord:['body', 'text'], type:"html editor"},
+							{arrWord:['date'], type:"date"},
+							{arrWord:['file'], type:"file"},
+							{arrWord:['time'], type:"time"},
+							{arrWord:['user'], type:"user"} 
+						];
+						if(v.substr(v.length-1, 1) == "*"){
+							// mark it required and remove *
+							$("##site_option_required1")[0].checked=true;
+							v=v.substr(0, v.length-1);
+							$("##site_option_name").val(v);
+						}
+						var type="text";
+						var options={}; 
+						var arrWordMatch={};
+						var arrWordMatchWord={};
+						var removeWordIndex=-1;
+						for(var n=0;n<arrMap.length;n++){
+							arrWordMatch[n]=0;
+							arrWordMatchWord[n]={};
+						} 
+						for(var i=0;i<arrWord.length;i++){
+							w=arrWord[i];
+							for(var n=0;n<arrMap.length;n++){
+								words=arrMap[n].arrWord;
+								for(var g=0;g<words.length;g++){
+									var word=words[g];
+									if(w == word){ 
+										if(typeof arrWordMatchWord[n][word]=="undefined"){
+											arrWordMatchWord[n][word]=true;
+											arrWordMatch[n]++;
+										}
+									}
+								} 
+								if(arrWordMatch[n]==words.length){  
+									options={};
+									type=arrMap[n].type;
+									if(type == "image"){
+										for(var g=0;g<arrWord.length;g++){
+											var word=arrWord[g];
+											if(word.indexOf("x")!=-1){
+												var arrSize=word.split("x");
+												if(arrSize.length==2){
+													// widthxheight
+													if(!isNaN(parseInt(arrSize[0])) && !isNaN(parseInt(arrSize[1]))){
+														options.imagewidth=arrSize[0];
+														options.imageheight=arrSize[1];
+														removeWordIndex=g;
+													}
+
+												}else if(arrSize.length==3){
+													// widthxheightxcrop
+													if(!isNaN(parseInt(arrSize[0])) && !isNaN(parseInt(arrSize[1])) && !isNaN(parseInt(arrSize[2]))){
+														options.imagewidth=arrSize[0];
+														options.imageheight=arrSize[1];
+														if(arrSize[2] == "1"){
+															options.imagecrop=1;
+														}else if(arrSize[2] == "0"){
+															options.imagecrop=0;
+														}
+														removeWordIndex=g;
+													}
+												}
+											}
+										}
+										break;
+									}else if(type == "html editor"){
+										for(var g=0;g<arrWord.length;g++){
+											var word=arrWord[g];
+											if(word.indexOf("x")!=-1){ 
+												var arrSize=word.split("x");
+												if(arrSize.length==2){
+													// widthxheight
+													if(!isNaN(parseInt(arrSize[0])) && !isNaN(parseInt(arrSize[1]))){
+														options.editorwidth=arrSize[0];
+														options.editorheight=arrSize[1];
+														removeWordIndex=g;
+													}
+												}
+											}
+										}
+										break;
+									}else if(type == "textarea"){
+										for(var g=0;g<arrWord.length;g++){
+											var word=arrWord[g];
+											if(word.indexOf("x")!=-1){
+												var arrSize=word.split("x");
+												if(arrSize.length==2){
+													// widthxheight
+													if(!isNaN(parseInt(arrSize[0])) && !isNaN(parseInt(arrSize[1]))){
+														options.editorwidth2=arrSize[0];
+														options.editorheight2=arrSize[1];
+														removeWordIndex=g;
+													}
+												}
+											}
+										}
+										break;
+									}
+								}
+							}
+						}
+						if(removeWordIndex != -1){
+							optionsSetByUser=true;
+							var arrNewWord=[];
+							for(var i=0;i<arrWord.length;i++){
+								if(removeWordIndex != i){
+									arrNewWord.push(arrWord[i]);
+								}
+							}
+							var v=arrNewWord.join(" ");
+							$("##site_option_name").val(v);
+						}
+						if(type !=""){
+							setFieldType(type, options);
+						}
+					} 
+					function setFieldType(type, options){
+						var arrMap={
+							"text":"0",
+							"textarea":"1",
+							"email":"10",
+							"map picker":"13",
+							"state":"19",
+							"country":"20",
+							"color picker":"18",
+							"email":"10",
+							"url":"15",
+							"image":"3",
+							"file":"9",
+							"date":"5",
+							"time":"6",
+							"user":"16",
+							"html editor":"2"
+						};  
+						if(!optionsSetByUser){
+							if(type == "html editor"){
+								if(typeof options.editorwidth == "undefined"){ 
+									options.editorwidth=600;
+									options.editorheight=300;	
+								}
+							}else if(type == "textarea"){
+								if(typeof options.editorwidth2 == "undefined"){
+									options.editorwidth2=300;
+									options.editorheight2=150;	
+								}
+							}
+						}
+						var fields=$("input[name='site_option_type_id']");
+						if(typeof arrMap[type] != "undefined"){
+							var fieldId=arrMap[type];
+							for(var i=0;i<fields.length;i++){
+								var field=fields[i];
+								if(field.value == fieldId){
+									setType(parseInt(fieldId));
+									field.checked=true; 
+									break;
+								}
+							} 
+							for(var i in options){ 
+								if(i=="imagecrop"){
+									if(options[i]=="1"){
+										$("##imagecrop1")[0].checked=true;
+									}else{
+										$("##imagecrop0")[0].checked=false;
+									}
+								}else{
+									$("##"+i).val(options[i]);
+								}
+							}
+						} 
+					}
+					var typeSelectedByUser=false;
+					zArrDeferredFunctions.push(function(){
+						$("input[name='site_option_type_id']").bind("click", function(){
+							typeSelectedByUser=true;
+						});
+					});
+					</script>
 				<cfelse>
 					#form.site_option_name#<br />
 					<input name="site_option_name" id="site_option_name" type="hidden" value="#htmleditformat(form.site_option_name)#"  />
@@ -2528,6 +2785,13 @@ Define this function in another CFC to override the default email format
 	ts.datasource=request.zos.zcoreDatasource;
 	form.inquiries_type_id=qGroup.inquiries_type_id;
 	form.inquiries_type_id_siteIDType=qGroup.inquiries_type_id_siteIDType; 
+
+	if(application.zcore.functions.zso(form, 'zRefererURL') NEQ ""){
+		if(left(form.zRefererURL, 1) EQ "/"){
+			form.zRefererURL=request.zos.globals.domain&form.zRefererURL;
+		}
+		form.inquiries_referer=form.zRefererURL;
+	}
 	if(form.inquiries_type_id EQ 0 or form.inquiries_type_id EQ ""){
 		form.inquiries_type_id=1;
 		form.inquiries_type_id_siteIDType=4;
@@ -3344,6 +3608,9 @@ Define this function in another CFC to override the default email format
 		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
 		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id "; 
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
+			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
+		}
 		if(form.site_x_option_group_set_parent_id NEQ 0){
 			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
 		}
@@ -3359,8 +3626,7 @@ Define this function in another CFC to override the default email format
 		db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
 		site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
 		site_option_group.site_option_group_type=#db.param('1')# ";
-		qCountAll=db.execute("qCountAll");
-
+		qCountAll=db.execute("qCountAll"); 
 		db.sql="SELECT count(site_option_group.site_option_group_id) count
 		FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
 		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set)  "; 
@@ -3371,6 +3637,9 @@ Define this function in another CFC to override the default email format
 		site_x_option_group_set_master_set_id = #db.param(0)# and 
 		site_option_group.site_id=site_x_option_group_set.site_id and 
 		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id "; 
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
+			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
+		}
 		if(form.site_x_option_group_set_parent_id NEQ 0){
 			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
 		} 
@@ -3531,9 +3800,14 @@ Define this function in another CFC to override the default email format
 					addEnabled=false;
 				}
 			}
+			echo('<p>');
 			if(addEnabled){
-				writeoutput('<p><a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Add #htmleditformat(application.zcore.functions.zFirstLetterCaps(qGroup.site_option_group_display_name))#</a></p>');
+				writeoutput('<a href="#application.zcore.functions.zURLAppend(arguments.struct.addURL, "site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#")#">Add #htmleditformat(application.zcore.functions.zFirstLetterCaps(qGroup.site_option_group_display_name))#</a>');
+			} 
+			if(methodBackup EQ "manageGroup"){
+				echo(' | <a href="/z/admin/site-option-group/export?site_option_group_id=#qGroup.site_option_group_id#" target="_blank">Export CSV</a>');
 			}
+			echo('</p>');
 		} 
 		if(not structkeyexists(arguments.struct, 'recurse')){
 			if(qGroup.site_option_group_enable_sorting EQ 1 and subgroupRecurseEnabled){
@@ -3544,8 +3818,10 @@ Define this function in another CFC to override the default email format
 					echo('<p><a href="/z/admin/site-options/#methodBackup#?site_option_group_id=#form.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#">Disable sorting</a></p>');
 				}
 			}
+		} 
+		if(qCountAllLimit.recordcount NEQ 0 and qCountAllLimit.count > 0){
+			echo(arraytolist(arrSearch, ""));
 		}
-		writeoutput(arraytolist(arrSearch, ""));
 		if(qS.recordcount){
 			columnCount=0;
 			if(sortEnabled){
@@ -4090,6 +4366,9 @@ Define this function in another CFC to override the default email format
 	}
 	echo('>');
 	</cfscript>
+		<cfif application.zcore.functions.zso(form, 'zRefererURL') NEQ "">
+			<input type="hidden" name="zRefererURL" id="zRefererURL" value="#htmleditformat(form.zRefererURL)#" />
+		</cfif>
 		<cfif methodBackup EQ "publicAddGroup" or methodBackup EQ "publicEditGroup">
 			<input type="hidden" name="zset9" id="zset9_#form.set9#" value="" />
 			#application.zcore.functions.zFakeFormFields()#

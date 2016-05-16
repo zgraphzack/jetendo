@@ -157,55 +157,6 @@ var zScrollbarWidth=0;
 	}
 
 
-	var parentIdIndex=0;
-	var arrEqualHeightInterval=[];
-	function zForceEqualHeights(className){ 
-		/*if(typeof arrEqualHeightInterval[className] == "undefined"){
-			arrEqualHeightInterval[className]=setInterval(function(){
-				zForceEqualHeights(className);
-			}, 1000);
-		}*/
-
-
-		// only the elements with the same parent should be made the same height
-		var arrParent=[];  
-		$(className).height("auto");
-		$(className).each(function(){
-			if(this.parentNode.id == ""){
-				// force parent to have unique id
-				this.parentNode.id="zEqualHeightsParent"+parentIdIndex;
-				parentIdIndex++;
-			}
-			if(typeof arrParent[this.parentNode.id] == "undefined"){
-				arrParent[this.parentNode.id]=0;
-			}
-			var pos=zGetAbsPosition(this);
-			var height=pos.height;  
-			if(height>arrParent[this.parentNode.id]){
-				arrParent[this.parentNode.id]=height;
-			}
-		});
-
-		$(className).each(function(){
-			$(this).height(arrParent[this.parentNode.id]);
-		});
- 
-	}
-
-
-
-	
-	function forceAutoHeightFix(){ 
-		zForceEqualHeights(".zForceEqualHeights"); 
-		if($(".zForceEqualHeight").length > 0){
-			console.log("The class name should be zForceEqualHeights, not zForceEqualHeight");
-		}
-	}
-	//zArrLoadFunctions.push({functionName:forceAutoHeightFix });
-	zArrResizeFunctions.push({functionName:forceAutoHeightFix });
-
-
-	window.zForceEqualHeights=zForceEqualHeights;
 	window.zFindPosition=zFindPosition;
 	window.zGetAbsPosition=zGetAbsPosition;
 	window.zScrollTop=zScrollTop;

@@ -27,8 +27,10 @@ variables.typeStruct["text"]="text";
 		if(arraylen(this.arrTypeLoop) NEQ 0){
 			if(structkeyexists(ms.fieldNameLookup, arguments.field&"_"&arguments.class)){
 				return ms.fieldNameLookup[arguments.field&"_"&arguments.class];
-			}else{
+			}else if(structkeyexists(ms.fieldNameLookup, arguments.field)){
 				return ms.fieldNameLookup[arguments.field];
+			}else{
+				return arguments.field;
 			}
 		}else{
 			return ms.fieldNameLookup[arguments.field];

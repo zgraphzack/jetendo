@@ -36,7 +36,7 @@
 
 <cffunction name="isCopyable" localmode="modern" access="public" returntype="boolean" output="no">
 	<cfscript>
-	return true;
+	return false;
 	</cfscript>
 </cffunction>
 

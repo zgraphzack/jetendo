@@ -13,9 +13,9 @@ Try to organize all of the static resources for a widget in a single directory t
   --->
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
-	<cfargument name="dataFields" type="struct" required="yes">
+	<cfargument name="ds" type="struct" required="yes">
 	<cfscript>
-	ds=arguments.dataFields;
+	df=arguments.ds.fields;
 	/*
 	This function is called during the rendering of a single instance of a widget.
 
@@ -37,14 +37,14 @@ Try to organize all of the static resources for a widget in a single directory t
 	<cfsavecontent variable="out">
 		<div class="test-example-1 zForceEqualHeights">
 			<div class="test-example-2">
-				<div class="test-example-3">#ds.Heading#</div>
+				<div class="test-example-3">#df.Heading#</div>
 				<div class="test-example-4">
-					#ds["Body Text"]#
+					#df["Body Text"]#
 				</div>
 			</div>
 			<div class="test-example-5">
-				<cfif ds["Image"] NEQ ""> 
-					<img class="test-example-6" src="#ds["Image"]#" alt="Broker">
+				<cfif df["Image"] NEQ ""> 
+					<img class="test-example-6" src="#df["Image"]#" alt="Broker">
 				</cfif>
 			</div>
 		</div>
@@ -56,7 +56,7 @@ Try to organize all of the static resources for a widget in a single directory t
 </cffunction>
 	
 <cffunction name="getJS" localmode="modern" access="public" output="no">  
-	<cfargument name="dataFields" type="struct" required="yes">
+	<cfargument name="widgetContainer" type="string" required="yes">
 	<cfscript>
 	/*
 	This function is called during the rendering of a single instance of a widget.
@@ -77,7 +77,7 @@ Try to organize all of the static resources for a widget in a single directory t
 	<script type="text/javascript">
 	<cfsavecontent variable="out">
 	zArrDeferredFunctions.push(function(){
-		var e="testWidgetJS - #arguments.dataFields.widgetContainer#";
+		var e="testWidgetJS - #arguments.widgetContainer#";
 		console.log(e);
 	});
 	</cfsavecontent>
@@ -100,28 +100,28 @@ Try to organize all of the static resources for a widget in a single directory t
 	You should define any static CSS that doesn't need any per widget instance processing in external css files and define all the stylesheets this widget needs in the arrStylesheet array in the getConfig function instead of putting that code here.
 
 	*/
-
- 	fs=cs["Font Scale"];
+	csd=cs["default"];
+ 	fs=csd["Font Scale"];
 	</cfscript> 
 <style type="text/css">
 <cfsavecontent variable="out">
 #c# .test-example-1{ 
-	padding:#round(cs["Container Padding"]*20)#px;
+	padding:#round(csd["Container Padding"]*20)#px;
 }
-#c# .test-example-2{width:#round(cs["Left Column Width %"]*100)#%; padding-right:#cs["Column Gap"]#px;} 
-#c# .test-example-5{width:#round((1-cs["Left Column Width %"])*100)#%;}
+#c# .test-example-2{width:#round(csd["Left Column Width %"]*100)#%; padding-right:#csd["Column Gap"]#px;} 
+#c# .test-example-5{width:#round((1-csd["Left Column Width %"])*100)#%;}
 #c# .test-example-3{ font-size:#round(fs*36)#px; line-height:#round(fs*42)#px;}
 #c# .test-example-4{ font-size:#round(fs*18)#px; line-height:#round(fs*24)#px;}
-@media only screen and (max-width: 1200px) { 
+@media only screen and (max-width: 1280px) { 
 #c# .test-example-3{ font-size:#round(fs*30)#px; line-height:#round(fs*36)#px; }
 #c# .test-example-4{ font-size:#round(fs*16)#px; line-height:#round(fs*21)#px;}
 
 
 }
-@media only screen and (max-width: 960px) { 
+@media only screen and (max-width: 980px) { 
 #c# .test-example-4{ font-size:#round(fs*14)#px; line-height:#round(fs*18)#px;} 
 #c# .test-example-3{ font-size:#round(fs*24)#px; line-height:#round(fs*30)#px;}
-#c# .test-example-2{padding-bottom:#cs["Column Gap"]#px;}
+#c# .test-example-2{padding-bottom:#csd["Column Gap"]#px;}
 #c# .test-example-5{width:100%;}
 }
 </cfsavecontent>

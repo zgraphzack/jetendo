@@ -1,0 +1,14 @@
+To support multiple background images, we add this code before $("<img />").bind("load", function() {   and then close the brace at the end.
+	if($self.hasClass("zLazyLoadBackgroundImage")){
+		// event is not supported for multiple background images
+		var a = $self.attr("data-lazy-original"); 
+		self.style.background=a;
+		if (settings.load) {
+			var elements_left = elements.length;
+			settings.load.call(self, elements_left, settings);
+		}
+	}else{
+
+See this function in the jetendo core for usage: "zDisplayLazyResponsiveBackgroundImage"
+
+The minified

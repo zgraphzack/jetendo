@@ -44,33 +44,41 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="render" localmode="modern" access="public">
-	<cfargument name="dataFields" type="struct" required="yes">
+<cffunction name="loadAndGetHTML" localmode="modern" access="public">
+	<cfargument name="ds" type="struct" required="yes">
 	<cfscript>
 	cs=variables.configStruct;
 	if(not request.zos.isTestServer){
 		application.zcore.functions.z404("Only works on test server");
 	}  
-	arguments.dataFields.widgetContainer="widgetInstance#variables.dataStruct.widget_instance_id#";
+	id=variables.dataStruct.widget_instance_id;
+	widgetContainer="widgetInstance#id#";
+	if(not structkeyexists(request.zos.widgetInstanceLoadCache, variables.configStruct.codeName&"|"&id)){
+		request.zos.widgetInstanceLoadCache[variables.configStruct.codeName&"|"&id]=true; 
+		version=getVersion();  
+		// TODO: if i only send the unique class name to the javascript, i can guarantee that the developer always programs with the $(".widgetInstance0-1 .link").bind("click", function(e){ e.preventDefault(); console.log('click'); });
+		// data stuff that affect javascript could be done in the html elements as data attributes instead. 
 
-	version=getVersion();  
-	htmlOut='<div id="widgetInstance#variables.dataStruct.widget_instance_id#" class="zWidgetContainer">'&getHTML(arguments.dataFields)&'</div>';//variables.configStruct, dataStruct);
+		a=cs.arrStylesheet;
+		for(i in a){
+			application.zcore.skin.includeCSS(i);
+		}
 
-	jsOut=getJS(arguments.dataFields);
-
-	a=cs.arrStylesheet;
-	for(i=1;i<=arraylen(a);i++){
-		application.zcore.skin.includeCSS(a[i]);
+		stylesheetCompiled="/zupload/#cs.codeName#-#variables.dataStruct.widget_instance_id#.css?zv=#version#";
+		application.zcore.template.appendTag("stylesheets", '<link rel="stylesheet" href="#stylesheetCompiled#" type="text/css" />');
+		//application.zcore.skin.includeCSS(stylesheetCompiled);
+	 
+		// TODO: later I might want to compile these to single file / minify
+		application.zcore.template.appendTag('scripts', '<script type="text/javascript">'&getJS("."&widgetContainer)&'</script>');
 	}
-
-	stylesheetCompiled="/zupload/#cs.codeName#-#variables.dataStruct.widget_instance_id#.css?zv=#version#";
-	application.zcore.template.appendTag("stylesheets", '<link rel="stylesheet" href="#stylesheetCompiled#" type="text/css" />');
-	//application.zcore.skin.includeCSS(stylesheetCompiled);
-
-	echo(htmlOut);
-
-	// TODO: later I might want to compile these to single file / minify
-	application.zcore.template.appendTag('scripts', '<script type="text/javascript">'&jsOut&'</script>');
+	//arguments.dataFields.widgetContainer="widgetInstance#id#";
+ 	/*
+ 	we don't need to deal with defaultValues here.  it is wasteful on frontend to repeat this.  the form processing will do this instead.
+ 	as a result, the frontend code must specify ALL of the fields (including any children) or the widget will throw undefined errors. 
+	*/
+	request.zos.widgetInstanceOffset++;
+	return '<div id="widgetInstance#id#_#request.zos.widgetInstanceOffset#" class="widgetInstance#id# zWidgetContainer">'&getHTML(arguments.ds)&'</div>';
+ 
 	</cfscript>
 
 </cffunction>
@@ -107,7 +115,16 @@
 
 	if(forceCompile){
 		cd=variables.dataStruct.layoutFields;
-		cd.widgetContainer="##widgetInstance#variables.dataStruct.widget_instance_id#";
+
+		defaultStruct={};
+		for(field in variables.configStruct.layoutFields){
+			defaultStruct[field.label]=field.defaultValue;
+		}
+		for(i in cd){
+			structappend(cd[i], defaultStruct, false);
+		}
+
+		cd.widgetContainer=".widgetInstance#variables.dataStruct.widget_instance_id#";
 		cssOut=getCSS(cd);
 		hashCSS=hash(cssOut);
 		application.zcore.widgetVersionStruct[cs.id].instanceStruct[variables.dataStruct.widget_instance_id]=hashCSS;

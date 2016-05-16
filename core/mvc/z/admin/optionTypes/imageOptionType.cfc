@@ -398,14 +398,14 @@
 	Image<br />
 	<div id="typeOptions3" style="display:none;padding-left:30px;"> 
 		<p>Image Max Width:
-		<input type="text" name="imagewidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagewidth'))#" /></p>
+		<input type="text" name="imagewidth" id="imagewidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagewidth'))#" /></p>
 
 		<p>Image Max Height:
-		<input type="text" name="imageheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imageheight'))#" /></p>
+		<input type="text" name="imageheight" id="imageheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imageheight'))#" /></p>
 		<p>Crop:
-		<input type="radio" name="imagecrop" value="1" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 1 and application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') NEQ "">checked="checked"</cfif>/>
+		<input type="radio" name="imagecrop" id="imagecrop1" value="1" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 1 and application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') NEQ "">checked="checked"</cfif>/>
 		Yes
-		<input type="radio" name="imagecrop" value="0" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ "" or application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 0>checked="checked"</cfif>/>
+		<input type="radio" name="imagecrop" id="imagecrop0" value="0" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ "" or application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 0>checked="checked"</cfif>/>
 		No</p>
 		<p>Image Mask URL: 
 		<input type="text" name="imagemaskpath" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagemaskpath'))#" /><br />Note: White pixels in the mask will result in the pixel having full opacity. Shades of grey are used to reduce opacity. Black will make the pixel have zero opacity.</p>

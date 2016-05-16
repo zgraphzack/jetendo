@@ -1,7 +1,7 @@
-/*
+/*!
  * Lazy Load - jQuery plugin for lazy loading images
  *
- * Copyright (c) 2007-2013 Mika Tuupola
+ * Copyright (c) 2007-2015 Mika Tuupola
  *
  * Licensed under the MIT license:
  *   http://www.opensource.org/licenses/mit-license.php
@@ -9,7 +9,7 @@
  * Project home:
  *   http://www.appelsiini.net/projects/lazyload
  *
- * Version:  1.9.1
+ * Version:  1.9.7
  *
  */
 
@@ -26,7 +26,7 @@
             effect          : "show",
             container       : window,
             data_attribute  : "original",
-            skip_invisible  : true,
+            skip_invisible  : false,
             appear          : null,
             load            : null,
             placeholder     : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"
@@ -102,32 +102,42 @@
                         var elements_left = elements.length;
                         settings.appear.call(self, elements_left, settings);
                     }
-                    $("<img />")
-                        .bind("load", function() {
+					if($self.hasClass("zLazyLoadBackgroundImage")){
+						// event is not supported for multiple background images
+						var a = $self.attr("data-lazy-original"); 
+						self.style.background=a;
+						if (settings.load) {
+							var elements_left = elements.length;
+							settings.load.call(self, elements_left, settings);
+						}
+					}else{
+						$("<img />")
+							.bind("load", function() { 
 
-                            var original = $self.attr("data-" + settings.data_attribute);
-                            $self.hide();
-                            if ($self.is("img")) {
-                                $self.attr("src", original);
-                            } else {
-                                $self.css("background-image", "url('" + original + "')");
-                            }
-                            $self[settings.effect](settings.effect_speed);
+								var original = $self.attr("data-" + settings.data_attribute);
+								$self.hide();
+								if ($self.is("img")) {
+									$self.attr("src", original);
+								} else {
+									$self.css("background-image", 'url('+original+')');
+								}
+								$self[settings.effect](settings.effect_speed);
 
-                            self.loaded = true;
+								self.loaded = true;
 
-                            /* Remove image from array so it is not looped next time. */
-                            var temp = $.grep(elements, function(element) {
-                                return !element.loaded;
-                            });
-                            elements = $(temp);
+								/* Remove image from array so it is not looped next time. */
+								var temp = $.grep(elements, function(element) {
+									return !element.loaded;
+								});
+								elements = $(temp);
 
-                            if (settings.load) {
-                                var elements_left = elements.length;
-                                settings.load.call(self, elements_left, settings);
-                            }
-                        })
-                        .attr("src", $self.attr("data-" + settings.data_attribute));
+								if (settings.load) {
+									var elements_left = elements.length;
+									settings.load.call(self, elements_left, settings);
+								}
+							})
+							.attr("src", $self.attr("data-" + settings.data_attribute));
+					}
                 }
             });
 

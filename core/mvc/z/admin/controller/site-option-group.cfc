@@ -283,6 +283,9 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 		}
 		link=application.zcore.functions.zURLAppend(link, 'modalpopforced=1');
 		echo('<h2>Iframe Embed Code</h2><pre>'&htmlcodeformat('<iframe src="'&link&'" frameborder="0"  style=" margin:0px; border:none; overflow:auto;" seamless="seamless" width="100%" height="500" />')&'</pre>');
+		echo('<h2>Modal Window</h2><pre>'&htmlcodeformat('<a href="##" onclick="zShowModalStandard(''#link#?zRefererURL=''+escape(window.location.href), 540, 400); return false;">Show Form</a>')&'</pre>');
+		echo('<p>Note "zRefererURL" can be passed to the form, or defined in the script to force the referring page url to be stored. In cfml, you can use form.zReferer=request.zos.globals.domain&request.zos.originalURL;  In JavaScript, "?zRefererURL="+escape(window.location.href);</p>');
+
 		echo('<h2>CFML Embed Form Code</h2><pre>'&htmlcodeformat('
 application.zcore.functions.zheader("x_ajax_id", application.zcore.functions.zso(form, "x_ajax_id"));
 // Note: if this group is a child group, you must update the array below to have the parent groups as well.
@@ -535,7 +538,7 @@ displayGroupCom.ajaxInsert();
 	</cfscript>
 </cffunction>
 
-<cffunction name="export" localmode="modern" access="remote" roles="serveradministrator">
+<cffunction name="export" localmode="modern" access="remote" roles="administrator">
 	<cfscript>
 
 	content type="text/plain";
@@ -564,7 +567,10 @@ displayGroupCom.ajaxInsert();
 	arrOption=[];
 	arrRowDefault=[];
 	optionStruct={};
+	optionStructType={};
 	first=true;
+
+	hasUser=false;
 	for(row in qOption){
 		arrayAppend(arrRowDefault, "");
 		arrayAppend(arrOption, row.site_option_name);
@@ -572,14 +578,73 @@ displayGroupCom.ajaxInsert();
 		if(not first){
 			echo(", ");
 		}
+		if(row.site_option_type_id EQ 16){
+			hasUser=true;
+		}
 		first=false;
 		echo('"'&v&'"');
 		optionStruct[row.site_option_id]=arraylen(arrOption);
+		optionStructType[row.site_option_id]=row.site_option_type_id;
 	}
+	if(hasUser){
+		userStruct={};
+		db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		user_deleted=#db.param(0)# and 
+		user_active=#db.param(1)# ";
+		qUser=db.execute("qUser");
+		arrUser=listToArray(qUser.columnlist, ",");
+		userFieldStruct={
+			member_address:"Address",
+			member_address2:"Address 2",
+			member_city:"City",
+			member_state:"State",
+			member_zip:"Zip/Postal Code",
+			member_country:"Country",
+			member_phone:"Phone",
+			member_company:"Company",
+			member_fax:"Fax",
+			user_pref_list:"Opt In",
+			member_first_name:"First Name",
+			member_last_name:"Last Name", 
+			user_username:"Email"
+		};
+		arrEmptyUser=[];
+		firstRow=true;
+		for(row in qUser){
+			arrOut=[];
+			for(i=1;i<=arraylen(arrUser);i++){
+				if(structkeyexists(userFieldStruct, arrUser[i])){
+					v=row[arrUser[i]];
+					if(arrUser[i] EQ "user_pref_list"){
+						if(v EQ 1){
+							v="Yes";
+						}else{
+							v="No";
+						}
+					}
+					if(firstRow){ 
+						arrayAppend(arrEmptyUser, '""');
+						echo(',"'&userFieldStruct[arrUser[i]]&'"');
+					}
+					row[arrUser[i]]=rereplace(replace(replace(replace(replace(replace(v, chr(10), ' ', 'all'), chr(13), '', 'all'), chr(9), ' ', 'all'), '\', '\\', 'all'), '"', '\"', "all"), '<.*?>', '', 'all');
+					arrayAppend(arrOut, ',"'&v&'"');
+				}
+			} 
+			if(firstRow){
+				firstRow=false;
+			}
+			userStruct[row.user_id&"|"&application.zcore.functions.zGetSiteIdType(row.site_id)]=arrayToList(arrOut, "");
+		}
+	} 
 	echo(chr(13)&chr(10));
-
+	/*
+	writedump(userFieldStruct);
+	writedump(userStruct);
+	abort;
+*/
 	doffset=0;
-	for(i=1;i LTE 100000;i++){
+	while(true){
 
 		// process x groups at a time.
 		xlimit=20;
@@ -608,19 +673,27 @@ displayGroupCom.ajaxInsert();
  
 
 			arrRow=duplicate(arrRowDefault);
+			userStructRow={};
+			arrAddUser=[];
 			for(value in qValues){
 				if(structkeyexists(optionStruct, value.site_option_id)){
-					offset=optionStruct[value.site_option_id];
+					offset=optionStruct[value.site_option_id]; 
+					if(optionStructType[value.site_option_id] EQ 16){ 
+						if(structkeyexists(userStruct, value.site_x_option_group_value)){
+							arrayAppend(arrAddUser, userStruct[value.site_x_option_group_value]); 
+						} 
+					}
 					arrRow[offset]=value.site_x_option_group_value;
 				}
 			}
 			for(i2=1;i2 LTE arraylen(arrRow);i2++){
 				if(i2 NEQ 1){
 					echo(', ');
-				}
+				} 
 				v=rereplace(replace(replace(replace(replace(replace(arrRow[i2], chr(10), ' ', 'all'), chr(13), '', 'all'), chr(9), ' ', 'all'), '\', '\\', 'all'), '"', '\"', "all"), '<.*?>', '', 'all');
-				echo('"'&v&'"');
+				echo('"'&v&'"');  
 			}
+			echo(arrayToList(arrAddUser, ","));
 			echo(chr(13)&chr(10));
 		}
 	}
@@ -796,9 +869,36 @@ displayGroupCom.ajaxInsert();
 		// force some default values for new table
 		local.tempColumns=duplicate(application.zcore.tableColumns["#request.zos.zcoreDatasource#.inquiries"]);
 		//writedump(local.tempColumns);
-		local.arrTemp=structkeyarray(local.tempColumns);
-		arraySort(local.arrTemp, "text", "asc");
-		local.labels="inquiries_custom_json"&chr(9)&arrayToList(local.arrTemp, chr(9));
+		arrTemp=structkeyarray(local.tempColumns);
+		arraySort(arrTemp, "text", "asc");
+		arrNew=[];
+		ignoreStruct={
+			inquiries_assign_name:true,
+			inquiries_assign_email:true,
+			content_id:true,
+			inquiries_key:true,
+			inquiries_parent_id:true,
+			inquiries_referer:true,
+			inquiries_referer2:true,
+			inquiries_status_id:true,
+			inquiries_type_id:true,
+			inquiries_type_id_siteIDType:true,
+			inquiries_type_other:true,
+			inquiries_updated_datetime:true,
+			ip_id:true,
+			user_id:true,
+			user_id_siteIdType:true,
+			site_id:true
+		}
+		for(i=1;i<=arrayLen(arrTemp);i++){
+			n=arrTemp[i];
+			if(structkeyexists(ignoreStruct, n)){
+				continue;
+			}
+			arrayAppend(arrNew, arrTemp[i]);
+		}
+		arrTemp=arrNew;
+		local.labels="inquiries_custom_json"&chr(9)&arrayToList(arrTemp, chr(9));
 		local.values=local.labels;
 		
 	}else{
@@ -1281,7 +1381,7 @@ displayGroupCom.ajaxInsert();
 						</cfif>
 					</cfif>
 					<cfif application.zcore.user.checkServerAccess()>
-						<a href="/z/admin/site-option-group/export?site_option_group_id=#qProp.site_option_group_id#" target="_blank">Export</a> | 
+						<a href="/z/admin/site-option-group/export?site_option_group_id=#qProp.site_option_group_id#" target="_blank">Export CSV</a> | 
 						<a href="/z/admin/site-option-group/reindex?site_option_group_id=#qProp.site_option_group_id#" title="Will update site option group table for all records.  Useful after a config change.">Reprocess</a> | 
 					</cfif>
 	

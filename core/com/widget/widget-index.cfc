@@ -9,6 +9,15 @@
 	if(structkeyexists(application, 'widgetIndexStruct')){
 		structappend(ts, application.widgetIndexStruct, true);
 	}
+	ts2={};
+	for(i in ts){
+		widgetCom=createobject("component", ts[i]);
+		widgetCom.init({});
+		configStruct=widgetCom.getConfig();
+		ts2[configStruct.codeName]=i;
+
+	}
+	application.zcore.widgetNameStruct=ts2;
 	application.zcore.widgetIndexStruct=ts;
 	return ts;
 	</cfscript>

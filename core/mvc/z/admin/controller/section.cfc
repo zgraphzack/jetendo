@@ -232,7 +232,9 @@
 		<a href="/z/admin/layout-page/index">Manage Layouts</a>  | 
 		<a href="/z/admin/layout-page/index">Manage Sections</a>  | 
 		<a href="/z/admin/landing-page/index">Manage Custom Landing Pages</a> | 
-		<a href="/z/admin/widget/index">Manage Widgets</a> 
+		<a href="/z/admin/widget/index">Manage Widgets</a> |
+		<a href="https://www.jetendo.com/layout-editor/row-editor" target="_blank">Row Editor</a> |
+		<a href="https://www.jetendo.com/layout-editor/index" target="_blank">Editor Notes</a>
 		<!--- <a href="/z/admin/layout-preset/index">Landing Presets</a> |  --->
 	</p>
 

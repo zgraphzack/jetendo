@@ -120,6 +120,8 @@ this.scopeCascading = "standard";
 	ts.zos.arrQueryLog=arraynew(1);
 	ts.zos.tempRequestCom=structnew();
 	ts.zos.importMlsStruct={};
+	ts.zos.widgetInstanceOffset=0;
+	ts.zos.widgetInstanceLoadCache={};
 	
 	structappend(request, duplicate(ts));
     structappend(this, configCom.getDatasources(arguments.tempCGI));

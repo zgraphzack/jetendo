@@ -17,7 +17,7 @@
 	header name="Content-Type" value="text/plain" charset="utf-8";
 	header name="Content-Disposition" value="attachment; filename=#dateformat(now(), 'yyyy-mm-dd')#-mailing-list-export.csv" charset="utf-8";
 
-	echo('"Email","First Name","Last Name","Phone","Opt In","Opt In Confirmed"'&chr(10));
+	echo('"Email","Company","First Name","Last Name","Phone","Opt In","Opt In Confirmed","Created Datetime"'&chr(10));
 	db.sql="select * from #db.table("user", request.zos.zcoreDatasource)# user 
 	WHERE user_active=#db.param('1')# and 
 	user_deleted = #db.param(0)# and 
@@ -25,7 +25,7 @@
 	#db.trustedSQL(filterSQL1)#";
 	qU=db.execute("qU");
 	loop query="qU"{
-		echo('"'&qU.user_username&'","'&qU.user_first_name&'","'&qU.user_last_name&'","'&qU.user_phone&'","'&qU.user_pref_email&'","'&qU.user_confirm&'"'&chr(10));
+		echo('"'&qU.user_username&'","'&replace(qU.member_company,'"', "'", 'all')&'","'&qU.user_first_name&'","'&qU.user_last_name&'","'&qU.user_phone&'","'&qU.user_pref_email&'","'&qU.user_confirm&'","'&dateformat(qU.user_created_datetime, 'm/d/yyyy')&" "&timeformat(qU.user_created_datetime, 'h:mm tt')&'"'&chr(10));
 	}
 	db.sql="select * from #db.table("mail_user", request.zos.zcoreDatasource)# mail_user 
 	WHERE site_id=#db.param(request.zos.globals.id)# and 
@@ -33,7 +33,7 @@
 	#db.trustedSQL(filterSQL2)#";
 	qM=db.execute("qM");
 	loop query="qM"{
-		echo('"'&qM.mail_user_email&'","'&qM.mail_user_first_name&'","'&qM.mail_user_last_name&'","'&qM.mail_user_phone&'","'&qM.mail_user_opt_in&'","'&qM.mail_user_confirm&'"'&chr(10));
+		echo('"'&qM.mail_user_email&'","","'&qM.mail_user_first_name&'","'&qM.mail_user_last_name&'","'&qM.mail_user_phone&'","'&qM.mail_user_opt_in&'","'&qM.mail_user_confirm&'","'&dateformat(qM.mail_user_datetime, 'm/d/yyyy')&" "&timeformat(qM.mail_user_datetime, 'h:mm tt')&'"'&chr(10));
 	}
 	abort;
 	</cfscript>
