@@ -278,7 +278,7 @@
 					}
 					disableFirstLast=false;
 					if(limit EQ 4){
-					writedump("acolumnWidth:"&columnWidth&" limit:"&limit&" breakStruct.minimum_column_width:"&breakStruct.minimum_column_width);
+						//writedump("acolumnWidth:"&columnWidth&" limit:"&limit&" breakStruct.minimum_column_width:"&breakStruct.minimum_column_width);
 					}
 					// if the columns will be less then the minimum column width, force them all to 100% at this breakpoint
 					if(n==arrayLen(breakStruct.arrBreak)){
@@ -300,9 +300,9 @@
 								}
 							}
 							if(limit EQ 4){
-								writedump("breakStruct.arrBreak[n+1]:"&breakStruct.arrBreak[n+1]);
-								writedump("tempPercent:"&tempPercent);
-								writedump("columnWidth:"&columnWidth);
+							//	writedump("breakStruct.arrBreak[n+1]:"&breakStruct.arrBreak[n+1]);
+								//writedump("tempPercent:"&tempPercent);
+								//writedump("columnWidth:"&columnWidth);
 								//abort;
 							}
 							if(columnWidth < breakStruct.minimum_column_width){
@@ -310,7 +310,7 @@
 								disableFirstLast=true;
 							}else{
 						if(limit EQ 4){
-						writedump('didi');
+						//writedump('didi');
 						}
 								percent=tempPercent;
 								currentLimit=i3;
@@ -320,7 +320,7 @@
 					for(n2=1;n2<=limit;n2++){
 						width=percent*n2;
 						if(limit EQ 4){
-							writedump(width);
+					//		writedump(width);
 						}
 						// this code depends on z-first and z-last classes removing margins from first and last elements in a row.
 
@@ -342,7 +342,7 @@
 							// why is 2of3 1.5% wrong
 							//width=int(width*100)/100; 
 							if(limit EQ 3){
-								writedump("n2:"&(n2)&" breakpoint:"&breakpoint&" margin:"&margin&" | width:"&width&" columnCount:"&columnCount);
+							//	writedump("n2:"&(n2)&" breakpoint:"&breakpoint&" margin:"&margin&" | width:"&width&" columnCount:"&columnCount);
 							}
 						}else if(breakpoint EQ 980){
 							if(percent < 33.34){
@@ -410,7 +410,7 @@
 									arrayAppend(arrCSS, v);
 								}  
 							}
-							v='.z-#n2#of#limit#{ background-color:##EEE; max-width:#maxWidth#%;  width:#numberformat(width, '_.___')#%; #padding# float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%;  margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%;}';
+							v='.z-#n2#of#limit#{ background-color:##EEE; min-width:#breakStruct.minimum_column_width#px; max-width:#maxWidth#%;  width:#numberformat(width, '_.___')#%; #padding# float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%;  margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%;}';
 						
 							if(not structkeyexists(uniqueStruct, v)){
 								uniqueStruct[v]=true;

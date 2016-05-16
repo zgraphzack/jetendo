@@ -1519,5 +1519,268 @@ application.zcore.functions.zSplitFile(path,kblength,line);
 	</cfscript> 
 </cffunction> 
 
+
+<!--- 
+ts={ 
+	lazy:true, // true - will use javascript to load images, false = will load all images with img tag, css will change which ones appear
+	src:{
+		"default":"/images/resize-image-test.png", // any larger width, required
+		"980":"/images/resize-image-test-mobile.png",
+		"480":"" // specifying no path will set display:none; on the img tag
+	},
+	class:"zForceNegativeMarginRight", // Optionally force image to touch left (zForceNegativeMarginLeft) or right (zForceNegativeMarginRight) of screen
+	alt:"",
+	style:"",
+	href:"",
+	target=""
+};
+application.zcore.functions.zDisplayLazyResponsiveImage(ts);
+ ---> 
+<cffunction name="zDisplayLazyResponsiveImage" localmode="modern" access="public">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.ss;
+	application.zcore.skin.includeJS("/z/javascript/jquery/jquery-lazyload/jquery.lazyload.min.js"); 
+	ts={
+		lazy:true,
+		src:{},
+		class:"",
+		alt:"image",
+		style:"",
+		href:"",
+		target="_self"
+	}
+	structappend(ss, ts, false);
+	arrSrc=[];
+	defaultImage="";
+	arrBreak=[];
+	for(i in ss.src){
+		arrayAppend(arrSrc, i);
+		arrayAppend(arrSrc, ss.src[i]);
+		if(i EQ "default"){
+			defaultImage=ss.src[i];
+		}else{
+			arrayAppend(arrBreak, i);
+		}
+	}
+	if(defaultImage EQ ""){
+		throw("There must be a default image defined in the arguments.ss.src struct.");
+	}
+	if(ss.lazy){
+		img='<img src="/z/a/images/s.gif" data-lazy-src="#arrayToList(arrSrc, ":")#" class="#ss.class# zLazyLoadImage" style="#ss.style#" alt="#htmleditformat(ss.alt)#" />';
+		if(ss.href != ""){
+			echo('<a href="#ss.href#" target="#ss.target#">#img#</a>');
+		}else{
+			echo(img);
+		}
+		echo('<noscript><img src="#defaultImage#"  class="#ss.class#" style="#ss.style#" alt="Image" /></noscript>');
+	}else{
+		arraySort(arrBreak, "numeric", "desc");
+		arrayPrepend(arrBreak, 'default');
+		if(not structkeyexists(request.zos, 'zResponsiveIndex')){
+			request.zos.zResponsiveIndex=1;
+		}else{
+			request.zos.zResponsiveIndex++;
+		}
+		savecontent variable="out"{
+			echo('<style type="text/css">'&chr(10));
+			for(i in arrBreak){
+				if(i NEQ 'default'){
+					echo('@media only screen and (max-width: #i#px) { '&chr(10));
+				} 
+				for(n in arrBreak){
+					echo('.zResponsiveImage#request.zos.zResponsiveIndex#-#n#{');
+					if(n EQ i){
+						echo('display:block !important;');
+					}else{
+						echo('display:none !important;');
+					}
+					echo('}'&chr(10));
+				}
+				if(i NEQ 'default'){
+					echo('} '&chr(10));
+				}
+			} 
+			echo('</style>');
+		}
+		application.zcore.template.prependTag("stylesheets", out);
+		for(i in ss.src){
+			//echo('<div class="zResponsiveImage#request.zos.zResponsiveIndex#-#i#">');
+			img='<img src="#ss.src[i]#" class="#ss.class# zResponsiveImage#request.zos.zResponsiveIndex#-#i#"" style="#ss.style#" alt="#htmleditformat(ss.alt)#" />';
+			if(ss.href != ""){
+				echo('<a href="#ss.href#" target="#ss.target#">#img#</a>');
+			}else{
+				echo(img);
+			}
+			//echo('</div>');
+		}
+	}
+	</cfscript> 
+</cffunction>
+
+<!--- 
+consider adding support for background-clip or background-origin if needed someday | values: border-box (default) | padding-box | content-box
+<cfscript>
+ts={ 
+	lazy:true, // true|false.  true = images load with css, false = images load with javascript 
+	// When using multiple background images at a single breakpoint, they will appear top to bottom when displayed.
+	// struct of breakpoints - default breakpoint is required
+	backgrounds:{ 
+		// array of background(s)
+		"default":[{ 
+			/*
+			size can be one of these value:
+				auto // default
+				contain // image will scale to touch edges of container without cropping
+				cover // image will scale/crop to fill entire container
+				500px auto; // width will be 500 and height will preserve ratio
+				500px 300px; // setting both width and height doesn't preserve ratio
+			*/
+			size: "auto", 
+			url: "/images/topImage.png", 
+			color: "", // rgba(255,255,255,0.8) or #FFFFFF
+			position: "right center", // left|right|center and/or top|center|bottom, i.e. center top or width/height values: 100px 50px
+			repeat: "no-repeat", // repeat (default) | repeat-x | repeat-y | no-repeat
+			attachment: "scroll" // scroll (default) | fixed (background stays still when main window scrolls) | local (background moves with overflow:scroll content)
+		},{
+			size:"cover",
+			url:"/images/bottomImage.jpg",
+			repeat:"repeat",
+			attachment: "fixed" 
+		}],
+		// optional second breakpoint
+		"980":[{
+			size:"auto",
+			url:"/images/resize-image-test-mobile.jpg",
+			color:"##666",
+			position:"center top",
+			repeat:"repeat"
+		}]
+		// optionally specify more breakpoints
+	}
+};
+rs=application.zcore.functions.zDisplayLazyResponsiveBackgroundImage(ts);
+</cfscript>
+<div class="#rs.class#" #rs.attributes# style="#rs.style# width:100%; float:left; height:400px;">
+	
+</div>
+ ---> 
+<cffunction name="zDisplayLazyResponsiveBackgroundImage" localmode="modern" access="public">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ss=arguments.ss;
+	application.zcore.skin.includeJS("/z/javascript/jquery/jquery-lazyload/jquery.lazyload.min.js"); 
+	ts={ 
+		size:"auto",
+		url:"",
+		color:"transparent",
+		position:"0% 0%",
+		repeat:"repeat",
+		attachment:"scroll"
+	} 
+	arrSrc=[];
+	hasDefault=false;
+	bg={};
+	for(i in ss.backgrounds){
+		c=ss.backgrounds[i];
+		arrBg=[];
+		t={
+			arrUrl:[],
+			arrPosition:[],
+			arrSize:[],
+			arrAttach:[],
+			arrRepeat:[],
+			arrColor:[]
+		};
+		for(n in c){
+			for(g in n){
+				if(n[g] EQ ""){
+					structdelete(n, g);
+				}
+			}
+			structappend(n, ts, false);  
+			if(n.url NEQ ""){ 
+				arrayAppend(t.arrUrl, 'url("'&n.url&'")'); 
+			}else{
+				arrayAppend(t.arrUrl, '');
+			} 
+			arrayAppend(t.arrPosition, n.position);
+			arrayAppend(t.arrSize, n.size);
+			arrayAppend(t.arrAttach, n.attachment);
+			arrayAppend(t.arrRepeat, n.repeat);
+			arrayAppend(t.arrColor, n.color); 
+
+		} 
+		bg[i]={
+			"background-image": arrayToList(t.arrUrl, ", "),
+			"background-position": arrayToList(t.arrPosition, ", "),
+			"background-repeat": arrayToList(t.arrRepeat, ", "),
+			"background-attachment": arrayToList(t.arrAttach, ", "),
+			"background-size": arrayToList(t.arrSize, ", "),
+			"background-color": arrayToList(t.arrColor, ", ")
+		}; 
+		if(i EQ "default"){
+			hasDefault=true;
+		}
+	}
+	if(not hasDefault){
+		throw("There must be a default background defined in the arguments.ss.backgrounds struct.");
+	}
+	if(ss.lazy){
+		json=serializeJson(bg); 
+		rs={
+			class:" zLazyLoadBackgroundImage ",
+			attributes:' data-lazy-json="'&htmleditformat(json)&'" ', 
+			style:" "
+		}
+	}else{
+		if(not structkeyexists(request.zos, 'zResponsiveBackgroundImageIndex')){
+			request.zos.zResponsiveBackgroundImageIndex=1;
+		}else{
+			request.zos.zResponsiveBackgroundImageIndex++;
+		}
+		arrBreak=[];
+		for(i in bg){
+			if(i NEQ "default"){
+				arrayAppend(arrBreak, i);
+			}
+		}
+		arraySort(arrBreak, "numeric", "desc");
+		arrayPrepend(arrBreak, 'default');
+		savecontent variable="out"{
+			echo('<style type="text/css">'&chr(10));
+			for(i in bg){
+				if(i NEQ 'default'){
+					echo('@media only screen and (max-width: #i#px) { '&chr(10));
+				}
+				echo('.zResponsiveBackgroundImage#request.zos.zResponsiveBackgroundImageIndex#{'&chr(10));
+				for(n in bg[i]){
+					v=bg[i][n];
+					if(v EQ ""){
+						echo(n&":none;"&chr(10));
+					}else if(n EQ "background-image"){
+						echo(n&":"&v&";"&chr(10));
+					}else if(v neq ts[replace(n, "background-", "")]){
+						echo(n&":"&v&";"&chr(10));
+					}
+				}
+				echo('}'&chr(10));
+				if(i NEQ 'default'){
+					echo('} '&chr(10));
+				}
+			}
+			echo('</style>');
+		}
+		application.zcore.template.prependTag("stylesheets", out);
+		rs={
+			class:" zResponsiveBackgroundImage#request.zos.zResponsiveBackgroundImageIndex# ",
+			attributes:' ', 
+			style:" "
+		}
+
+	}
+	return rs;
+	</cfscript> 
+</cffunction> 
 </cfoutput>
 </cfcomponent>

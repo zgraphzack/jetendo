@@ -1,7 +1,7 @@
 <cfinterface>  
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
-	<cfargument name="dataFields" type="struct" required="yes">
+	<cfargument name="ds" type="struct" required="yes">
 	<!--- 
 	Implementation Example:
 	<cfscript>

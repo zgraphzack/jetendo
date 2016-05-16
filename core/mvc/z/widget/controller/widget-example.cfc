@@ -13,9 +13,9 @@ Try to organize all of the static resources for a widget in a single directory t
   --->
 
 <cffunction name="getHTML" localmode="modern" access="public" output="no"> 
-	<cfargument name="dataFields" type="struct" required="yes">
+	<cfargument name="ds" type="struct" required="yes">
 	<cfscript>
-	ds=arguments.dataFields;
+	df=arguments.ds.fields;
 	/*
 	This function is called during the rendering of a single instance of a widget.
 
@@ -37,14 +37,14 @@ Try to organize all of the static resources for a widget in a single directory t
 	<cfsavecontent variable="out">
 		<div class="test-example-1 zForceEqualHeights">
 			<div class="test-example-2">
-				<div class="test-example-3">#ds.Heading#</div>
+				<div class="test-example-3">#df.Heading#</div>
 				<div class="test-example-4">
-					#ds["Body Text"]#
+					#df["Body Text"]#
 				</div>
 			</div>
 			<div class="test-example-5">
-				<cfif ds["Image"] NEQ ""> 
-					<img class="test-example-6" src="#ds["Image"]#" alt="Broker">
+				<cfif df["Image"] NEQ ""> 
+					<img class="test-example-6" src="#df["Image"]#" alt="Broker">
 				</cfif>
 			</div>
 		</div>

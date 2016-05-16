@@ -45,7 +45,7 @@
 </cffunction>
 
 <cffunction name="loadAndGetHTML" localmode="modern" access="public">
-	<cfargument name="dataFields" type="struct" required="yes">
+	<cfargument name="ds" type="struct" required="yes">
 	<cfscript>
 	cs=variables.configStruct;
 	if(not request.zos.isTestServer){
@@ -72,14 +72,12 @@
 		application.zcore.template.appendTag('scripts', '<script type="text/javascript">'&getJS("."&widgetContainer)&'</script>');
 	}
 	//arguments.dataFields.widgetContainer="widgetInstance#id#";
- 
-	defaultStruct={};
-	for(field in variables.configStruct.dataFields){
-		defaultStruct[field.label]=field.defaultValue;
-	}
-	structappend(arguments.dataFields, defaultStruct, false);
+ 	/*
+ 	we don't need to deal with defaultValues here.  it is wasteful on frontend to repeat this.  the form processing will do this instead.
+ 	as a result, the frontend code must specify ALL of the fields (including any children) or the widget will throw undefined errors. 
+	*/
 	request.zos.widgetInstanceOffset++;
-	return '<div id="widgetInstance#id#_#request.zos.widgetInstanceOffset#" class="widgetInstance#id# zWidgetContainer">'&getHTML(arguments.dataFields)&'</div>';
+	return '<div id="widgetInstance#id#_#request.zos.widgetInstanceOffset#" class="widgetInstance#id# zWidgetContainer">'&getHTML(arguments.ds)&'</div>';
  
 	</cfscript>
 
