@@ -16,9 +16,8 @@ if(strpos($host, get_cfg_var("jetendo_test_domain")) !== FALSE){
 }else{
 	$testserver=false;
 }
-mysql_connect(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"),get_cfg_var("jetendo_mysql_default_password"));
 
-mysql_select_db(zGetDatasource());
+$cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource()); 
 			
 $logDir=get_cfg_var("jetendo_log_path");
 if($logDir !== FALSE && $logDir != ""){
@@ -38,30 +37,30 @@ for($i101=0;$i101<70;$i101++){
 
 	// get a running queue entry
 	$sql="select * from queue where queue_status = '1' and queue_deleted = '0' ";
-	$r=mysql_query($sql);
-	$c=mysql_num_rows($r);
+	$r=$cmysql->query($sql, MYSQLI_STORE_RESULT);
+	$c=$r->num_rows;
 	if($c==0){
 		// none running, find a new one to run	
 		$sql="select * from queue where  queue_status='0' and queue_deleted = '0'  order by queue_id asc limit 0,1";
-		$r=mysql_query($sql);
-		$c=mysql_num_rows($r);
+		$r=$cmysql->query($sql, MYSQLI_STORE_RESULT);
+		$c=$r->num_rows;
 	}
 	if($c==0){
 		// all done, do nothing
 		sleep(1);
 		continue;
 	}else{
-		$row=mysql_fetch_object($r);
+		$row=$r->fetch_object();
 		$sql="select * from site where site_active = '1' and site_id = '".$row->site_id."'";
-		$qSite=mysql_query($sql);
-		$count=mysql_num_rows($qSite);
+		$qSite=$cmysql->query($sql, MYSQLI_STORE_RESULT);
+		$count=$qSite->num_rows;
 		if($count == 0){
 			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='site_id is not an active site.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
-			mysql_query($sql);
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fclose($fp);
 			continue;
 		}
-		$siteRow=mysql_fetch_object($qSite);
+		$siteRow=$qSite->fetch_object();
 		$thedomainpath=str_replace("www.", "", str_replace(".".$testDomain, "", $siteRow->site_short_domain));
 		$siteInstallPath=$sitesWritablePath.str_replace(".","_",$thedomainpath)."/";
 		
@@ -69,15 +68,15 @@ for($i101=0;$i101<70;$i101++){
 		
 		if(substr($originalPath, 0, strlen($siteInstallPath."zupload/video/")) != $siteInstallPath."zupload/video/"){
 			fwrite($fp, "Error: queue_original_file must be in ".$siteInstallPath."zupload/video/ - security breach attempt.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file must be in ".mysql_real_escape_string($siteInstallPath)."zupload/video/ - security breach attempt' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
-			mysql_query($sql);
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file must be in ".$cmysql->real_escape_string($siteInstallPath)."zupload/video/ - security breach attempt' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fclose($fp);
 			continue;
 		}
 		if(strpos(substr($originalPath, strlen($siteInstallPath."zupload/video/")), "/") !== FALSE){
 			fwrite($fp, "Error: queue_original_file must be in ".$siteInstallPath."zupload/video/, not in a subfolder - security breach attempt.\n");
-			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file must be in ".mysql_real_escape_string($siteInstallPath)."zupload/video/, not in a subfolder - security breach attempt' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
-			mysql_query($sql);
+			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file must be in ".$cmysql->real_escape_string($siteInstallPath)."zupload/video/, not in a subfolder - security breach attempt' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fclose($fp);
 			continue; 
 		}
@@ -89,14 +88,14 @@ for($i101=0;$i101<70;$i101++){
 		if(!file_exists($originalPath)){ 
 			fwrite($fp, "queue_original_file doesn't exist.\n");
 			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_original_file doesn\'t exist.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
-			mysql_query($sql);
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fclose($fp);
 			continue;
 		}
 		if($row->queue_file==""){
 			fwrite($fp, "Queue_file can't be empty and it must be a unique filename.\n");
 			$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_file can\'t be empty and it must be a unique filename' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
-			mysql_query($sql);
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fclose($fp);
 			continue;
 		}
@@ -112,13 +111,13 @@ for($i101=0;$i101<70;$i101++){
 		if(!is_numeric($row->queue_width) || !is_numeric($row->queue_height) || $row->queue_width < 100 || $row->queue_height < 100){
 			fwrite($fp, "Error: queue_width and queue_height must be a valid number greater or equal to 100 x 100.\n");
 			$sql="update queue set queue_progress='0',queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='queue_width and queue_height must be a valid number greater or equal to 100 x 100.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted='0'";
-			mysql_query($sql);
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fclose($fp);
 			continue;
 		}
 		fwrite($fp, "Running queue id #".$row->queue_id."\n");
 		$sql="update queue set queue_progress='0',queue_status='1', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_run_datetime='".date('Y-m-d H:i:s')."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
-		mysql_query($sql);
+		$cmysql->query($sql, MYSQLI_STORE_RESULT);
 		// do the long command
 		// -B is audio biterate
 		
@@ -131,22 +130,22 @@ for($i101=0;$i101<70;$i101++){
 		$r=`$encodeCmd`;
 		fwrite($fp, $r."\n");
 		$sql2="select * from queue where site_id ='".$row->site_id."' and queue_id ='".$row->queue_id."' and queue_deleted = '0' ";
-		$r2=mysql_query($sql2);
-		$c2=mysql_num_rows($r2);
+		$r2=$cmysql->query($sql2, MYSQLI_STORE_RESULT);
+		$c2=$r2->num_rows;
 		if($c2 == 0){
 			continue;
 		}else if(preg_replace("/Rip done!/","",$r) != $r){
 			// failed with error	
 			fwrite($fp, "Error: \"rip done\" not found after running HandBrakeCLI video encoding command line. \n");
-			$sql="update queue set queue_status='2', queue_error='\"rip done\" not found after running HandBrakeCLI video encoding command line.  Result:".mysql_real_escape_string($r)."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
-			mysql_query($sql);
+			$sql="update queue set queue_status='2', queue_error='\"rip done\" not found after running HandBrakeCLI video encoding command line.  Result:".$cmysql->real_escape_string($r)."' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 		}else{
 			$r2=explode("/",get_cfg_var("jetendo_root_path").$row->queue_original_file);
 			
 			if(file_exists($outputPath) === FALSE){
 				fwrite($fp, "Error: The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.\n");
 				$sql="update queue set queue_status='2', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='The encoder was run, but failed without publishing a file.  The uploaded video may be an unsupported format.' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
-				mysql_query($sql);
+				$cmysql->query($sql, MYSQLI_STORE_RESULT);
 				fclose($fp);
 				continue;
 			}
@@ -279,7 +278,7 @@ for($i101=0;$i101<70;$i101++){
 			fwrite($fp, $r."\n"); 
 			//queue_width='".$queue_width."', queue_height='".$queue_height."', 
 			$sql="update queue set queue_thumb_count='".$queue_thumb_count."', queue_seconds_length='".$queue_seconds_length."', queue_progress='100', queue_status='3', queue_updated_datetime='".date('Y-m-d H:i:s')."', queue_error='' where site_id ='".$row->site_id."' and queue_id='".$row->queue_id."' and queue_deleted = '0' ";
-			mysql_query($sql);
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 			fwrite($fp, "Video encoding completed\n");
 			fclose($fp);
 		}
