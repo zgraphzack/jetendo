@@ -46,6 +46,7 @@
 		app_x_site_deleted = #db.param(0)# and 
 		app_x_site.app_id = #db.param(11)# and 
 		site.site_active=#db.param(1)# AND 
+		app_x_site_status=#db.param(1)# and 
 		site.site_id = app_x_mls.site_id 
 		GROUP BY app_x_mls.site_id";
 		qM=db.execute("qM"); 
@@ -60,6 +61,7 @@
 		app_x_mls_deleted = #db.param(0)# and 
 		app_x_site_deleted = #db.param(0)# and
 		app_x_site.app_id = #db.param(11)# and 
+		app_x_site_status=#db.param(1)# and 
 		site.site_active=#db.param(1)# AND 
 		site.site_id = app_x_mls.site_id and 
 		app_x_mls.site_id = #db.param(request.zos.globals.id)#
