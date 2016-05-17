@@ -23,38 +23,36 @@ $handle2 = opendir($mp);
 if($handle2 !== FALSE) {
     while (false !== ($entry = readdir($handle2))) {
 		$curPath=$mp.$entry;
-		if($entry =="." || $entry ==".." || is_dir($curPath)){
-			if(!is_dir($curPath."/.git")){
-				continue;
-			} 
-			chdir($curPath);
-			echo $entry."\n";
-			// -C ".escapeshellarg($curPath)."
-			$cmd="/usr/bin/git status -s";
-			$s=`$cmd`;
-			$filesChanged=false;
-			$synced=false;
-			if($s!=''){
-				$filesChanged=true;
-			}else{
-				// -C ".escapeshellarg($curPath)."
-				$cmd="/usr/bin/git push --dry-run origin master";
-				$sshCMD="/usr/bin/ssh-agent bash -c '/usr/bin/ssh-add $sshKey; ".$cmd."'";
-				$s2=`$sshCMD`; 
-				if($s2=="Everything is up to date"){
-					$synced=true;
-				}
-			}
-			if($filesChanged){
-				array_push($arrSites, $entry.' has modifications.');
-			}else if(!$synced){
-				array_push($arrSites, $entry.' changes have been commited, but not synced.');
-			}
-			if($debug && $g >=3){
-				break;
-			}
-			$g++;
+		if($entry =="." || $entry ==".." || !is_dir($curPath) || !is_dir($curPath."/.git")){
+			continue;
 		}
+		chdir($curPath);
+		echo $entry."\n";
+		// -C ".escapeshellarg($curPath)."
+		$cmd="/usr/bin/git status -s";
+		$s=`$cmd`;
+		$filesChanged=false;
+		$synced=false;
+		if($s!=''){
+			$filesChanged=true;
+		}else{
+			// -C ".escapeshellarg($curPath)."
+			$cmd="/usr/bin/git push --dry-run origin master";
+			$sshCMD="/usr/bin/ssh-agent bash -c '/usr/bin/ssh-add $sshKey; ".$cmd."'";
+			$s2=`$sshCMD`; 
+			if($s2=="Everything is up to date"){
+				$synced=true;
+			}
+		}
+		if($filesChanged){
+			array_push($arrSites, $entry.' has modifications.');
+		}else if(!$synced){
+			array_push($arrSites, $entry.' changes have been commited, but not synced.');
+		}
+		if($debug && $g >=3){
+			break;
+		}
+		$g++;
 	}
 }
 $domain=get_cfg_var("jetendo_admin_domain");

@@ -60,6 +60,7 @@
 					ipStruct2[ipStruct.arrIp[i]]=true;
 				}
 				arrIp=structkeyarray(ipStruct2);
+				arraySort(arrIp, "text", "asc");
 				selectStruct = StructNew();
 				selectStruct.name = "ipAddress";
 				selectStruct.listvalues=arraytolist(arrIp,",");
