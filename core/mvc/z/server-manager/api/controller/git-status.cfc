@@ -24,7 +24,7 @@
 	application.zcore.user.requireAllCompanyAccess();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Server Manager");
 	echo('<h2>Developer Git Status Report</h2>');
-	echo('<p>Updated hourly when developer virtual machine is running and connected to the internet.</p>');
+	echo('<p>Updated hourly when developer virtual machine is running and connected to the internet. Projects are not listed if they are up to date and synced.</p>');
 	ts=application.zcore.functions.zso(application, 'gitStatusCache');
 	for(i in ts){
 		c=ts[i];
