@@ -39,8 +39,8 @@ if($handle2 !== FALSE) {
 			// -C ".escapeshellarg($curPath)."
 			$cmd="/usr/bin/git push --dry-run origin master";
 			$sshCMD="/usr/bin/ssh-agent bash -c '/usr/bin/ssh-add $sshKey; ".$cmd."'";
-			$s2=`$sshCMD`; 
-			if($s2=="Everything is up to date"){
+			$s2=`$sshCMD 2>&1`; 
+			if(strstr(trim($s2), "Everything up-to-date") !== FALSE){
 				$synced=true;
 			}
 		}
