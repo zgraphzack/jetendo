@@ -28,6 +28,7 @@ problem: zOS.css and other stylesheets outside javascript can't be built because
 	I should make the build copy EVERYTHING in public to public-build - exclude that from sublime, exclude public from rsync, and rsync deploy from public-build instead of public in the future
 	add these afterwards to Dependencies.js
 		//"\/z\/stylesheets\/zOS.css",
+		//"\/z\/stylesheets\/css-framework.css",
 		//"\/z\/a\/listing\/stylesheets\/global.css",
 		//"\/z\/a\/listing\/stylesheets\/listing_template.css",
 /z/zcache/autoload/ files need to be published to javascript-compiled2/ so that rsync works.   This is not possible currently due to lucee readonly access.  Need to translate some of this file to php or use zSecureCommand to do it.

@@ -2392,10 +2392,10 @@ ts.output=false;
 if(form.searchFormEnabledDropDownMenus){
 	ts.output=true;
 	if(form.searchFormLabelOnInput){
-		ts.selectLabel="View";
+		ts.selectLabel="Water/View";
 		ts.inlineStyle="width:#form.searchFormSelectWidth#;";
 	}else{
-		ts.label="View:";
+		ts.label="Water/View:";
 	}
 	ts.labelStyle="display:block; float:left;width:80px; padding-right:5px; text-align:right;";
 	application.zcore.functions.zInputSelectBox(ts);

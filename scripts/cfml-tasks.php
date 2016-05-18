@@ -22,7 +22,7 @@ function getTasks(){
 	$t->interval=60;
 	$t->startTimeOffsetSeconds=0;
 	$t->url=$adminDomain."/z/server-manager/tasks/sync-sessions/index";
-	array_push($arrTask, $t);
+	array_push($arrTask, $t); 
 
 	$t=new stdClass();
 	$t->logName="listing-generatedata.html";

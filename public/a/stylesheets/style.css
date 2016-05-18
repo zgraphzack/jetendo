@@ -1,6 +1,7 @@
 html{
 	margin:0px;
 } 
+*{-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing:border-box;}
 .zDeletedRow{ background-color:#CCC !important; color:#999 !important; font-weight:bold; text-align:center;}
 .zEditCellContainer{display:table;width:100%; }
 .zEditCellField, .zEditCellSave{width:95%; display:table-cell; margin:0px; padding:3px; font-size:13px; margin-left:-3px; height:15px; margin-top:-2px;  line-height:18px; background-color:#FFF; border:1px solid #CCC;}
@@ -239,8 +240,9 @@ button{
 	padding:3px;
 }
 .zapp-shell-container { 
-	float:left; margin-left:5px; margin-right:5px; padding-top:5px; width:99%; 
+	float:left; padding-left:5px; padding-right:5px; padding-top:5px; width:100%; 
 }
+
 .zapp-shell-foot { float:left; width:100%; padding-top:10px; padding-bottom:10px; font-size:10px; color:#999999;}
 .zapp-shell-foot a:link, .zapp-shell-foot a:visited { color:#999999; }
 .zapp-shell-logout{

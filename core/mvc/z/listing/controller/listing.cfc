@@ -3002,6 +3002,28 @@ zCreateMemoryTable(ts);
 
 
 
+<!--- 
+arrCity=['Ponce Inlet', 'Ormond Beach', 'Daytona Beach', 'Port Orange', 'Holly Hill', 'Wilbur by the Sea', 'Ormond by the sea', 'New Smyrna Beach', 'Daytona Beach Shores'];
+application.zcore.app.getAppCFC('listing').getCitiesByName(arrCity, 'FL');
+ --->
+<cffunction name="getCitiesByName" localmode="modern" output="no" returntype="query">
+	<cfargument name="cities" type="array" required="yes">
+	<cfargument name="stateAbbr" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	arrCity=[];
+	for(i in arguments.cities){
+		arrayAppend(arrCity, application.zcore.functions.zEscape(i));
+	}
+	db.sql="SELECT * FROM #db.table("city", request.zos.zcoreDatasource)# WHERE 
+	state_abbr=#db.param(arguments.stateAbbr)# AND 
+	city_name IN (#db.trustedSQL("'"&arrayToList(arrCity, "','")&"'")#) AND 
+	city_deleted=#db.param(0)#";
+	qCity=db.execute("qCity");
+	return qCity;
+	</cfscript>
+</cffunction>
+
 
 
 

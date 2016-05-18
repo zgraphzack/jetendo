@@ -12,9 +12,7 @@ if(strpos($host, get_cfg_var("jetendo_test_domain")) !== FALSE){
 }else{
 	$testserver=false;
 }
-mysql_connect(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"),get_cfg_var("jetendo_mysql_default_password"));
-
-mysql_select_db(zGetDatasource());
+$cmysql=new mysqli(get_cfg_var("jetendo_mysql_default_host"),get_cfg_var("jetendo_mysql_default_user"), get_cfg_var("jetendo_mysql_default_password"), zGetDatasource()); 
 
 $sitesWritablePath=get_cfg_var("jetendo_sites_writable_path");
 /*
@@ -29,32 +27,32 @@ for($i101=0;$i101<70;$i101++){
 
 	// get a running queue entry
 	$sql="select * from queue where queue_status = '1' and queue_deleted = '0' ";//queue_id='".$queue_id."' and
-	$r=mysql_query($sql);
-	$c=mysql_num_rows($r);
+	$r=$cmysql->query($sql, MYSQLI_STORE_RESULT);
+	$c=$r->num_rows;
 	if($c==0){
 		sleep(1);
 		// wait 1 second and check again
 		continue;
 	}
 	// one is running now, check progress
-	$row=mysql_fetch_object($r);
+	$row=$r->fetch_object();
 	echo $row->queue_id." is running\n";
 	if($row->queue_cancelled=="1"){
 		// kill linux process matching name HandBrakeCLI or Nice maybe...
 		echo "cancelling\n";
 		$sql2="update queue set queue_deleted='1', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_deleted='0' and site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
-		mysql_query($sql2);
+		$cmysql->query($sql2, MYSQLI_STORE_RESULT);
 		$r=`pidof HandBrakeCLI`;
 		if($r != ""){
 			`kill -9 $r`;	
 		}
 		$sql="select * from site where site_active = '1' and site_id = '".$row->site_id."'";
-		$qSite=mysql_query($sql);
-		$count=mysql_num_rows($qSite);
+		$qSite=$cmysql->query($sql, MYSQLI_STORE_RESULT);
+		$count=$qSite->num_rows;
 		if($count == 0){
 			continue;
 		}
-		$siteRow=mysql_fetch_object($qSite);
+		$siteRow=$qSite->fetch_object();
 		$thedomainpath=str_replace("www.", "", str_replace(".".$testDomain, "", $siteRow->site_short_domain));
 		$siteInstallPath=$sitesWritablePath.str_replace(".","_",$thedomainpath)."/";
 		
@@ -89,7 +87,7 @@ for($i101=0;$i101<70;$i101++){
 			mail($to, $subject, $message, $headers);
 			$sql="update queue set queue_progress='0', queue_status='0', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_deleted='0' and 
 			 site_id ='".$row->site_id."' and queue_id='".$row->queue_id."'";
-			mysql_query($sql);
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
 		}
 	}
 	$logDir=get_cfg_var("jetendo_log_path").'zqueue/';
@@ -135,8 +133,8 @@ for($i101=0;$i101<70;$i101++){
 			$sql="update queue set queue_progress='".$percent."', queue_updated_datetime='".date('Y-m-d H:i:s')."' where queue_deleted='0' and 
 			queue_id='".$row->queue_id."'";
 
-			mysql_query($sql);
-			echo mysql_error();
+			$cmysql->query($sql, MYSQLI_STORE_RESULT);
+			echo $cmysql->error;
 		}
 	}
 

@@ -358,18 +358,18 @@ Copyright (c) 2013 Far Beyond Code LLC.
             }
             if(arguments.silent EQ false){
                 if(ArrayLen(statusStruct.arrMessages) GT 0 or ArrayLen(arrErrors) GT 0){
-                    writeoutput('<div style="float:left;width:100%;"><div style=" width:100%; overflow:hidden; display:block; clear:both; border-bottom:1px solid ##660000; margin-bottom:10px;">');
+                    writeoutput('<div style="float:left;width:100%;"><div style=" width:100%; overflow:hidden; display:block; clear:both;  margin-bottom:10px;">');
                 }
                 if(ArrayLen(statusStruct.arrMessages) GT 0){
                     writeoutput('<div style="display:block; clear:both;float:left; color:##FFFFFF; width:98%; padding:1%; background-color:##990000; font-weight:bold;">Status:</div>');
-                    writeoutput('<div style="display:block; clear:both;float:left; color:##000000;width:98%; padding:1%; background-color:##FFFFFF;"><p style="padding-bottom:0px;">'&ArrayToList(statusStruct.arrMessages, '</p><hr /><p style="padding-bottom:0px;">')&'</p></div>');
+                    writeoutput('<div style="display:block; clear:both;float:left; color:##000000;width:98%; padding:1%;border-bottom:1px solid ##660000; background-color:##FFFFFF;"><p style="padding-bottom:0px;">'&ArrayToList(statusStruct.arrMessages, '</p><hr /><p style="padding-bottom:0px;">')&'</p></div>');
                     if(ArrayLen(arrErrors) GT 0){
                         writeoutput('');
                     }
                 }
                 if(ArrayLen(arrErrors) GT 0){
                     writeoutput('<div style="display:block; clear:both;float:left; color:##FFFFFF; width:98%; padding:1%; font-weight:bold; background-color:##993333;">The following errors occurred:</div>');
-                    writeoutput('<div style="display:block; clear:both;float:left; color:##000000; width:98%; padding:1%; background-color:##FFFFFF;"><p style="padding-bottom:0px;">'&ArrayToList(arrErrors, '</p><hr /><p style="padding-bottom:0px;">')&'</p></div>');
+                    writeoutput('<div style="display:block; clear:both;float:left; color:##000000; width:98%; padding:1%;border-bottom:1px solid ##660000; background-color:##FFFFFF;"><p style="padding-bottom:0px;">'&ArrayToList(arrErrors, '</p><hr /><p style="padding-bottom:0px;">')&'</p></div>');
                 }
                 if(ArrayLen(statusStruct.arrMessages) GT 0 or ArrayLen(arrErrors) GT 0){
                     writeoutput('</div></div><br style="clear:both;" />');
