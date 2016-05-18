@@ -8,6 +8,8 @@ $sshKey=get_cfg_var("jetendo_git_ssh_key_path");
 $postObj=array(); 
 $postObj["zusername"]=get_cfg_var("jetendo_admin_username");
 $postObj["zpassword"]=get_cfg_var("jetendo_admin_password");
+
+// this is admin username so that developers can have more then one computer posting data
 $email=get_cfg_var("jetendo_admin_username");
 $postObj["email"]=$email;
 
@@ -85,7 +87,10 @@ curl_setopt($ch,CURLOPT_POSTFIELDS, implode("&", $arrFields));
 curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
 //execute post
 $result = curl_exec($ch);
-  
+if(trim($result) != "1"){
+	echo("Server manager login didn't work or API has changed.\n");
+	exit;
+}
 //close connection
 curl_close($ch);
 
