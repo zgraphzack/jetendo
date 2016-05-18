@@ -263,26 +263,42 @@ variables.tableLookup["G"]="G";
 	}
 	local.listing_style=arraytolist(arrT3);
 	
-
+// Waterfront
+/*
+GF20141226230324959029000000
+GF20141227192849848869000000
+GF20141227193425333350000000
+GF20150107140558302722000000
+*/
 	pt={
+		// GFLU20141226230324959029000000
 		"A":{
-			key:"rets26_GF20141226230324959029000000",
+			key:"rets26_GF20141226230324959029000000", // correct
 			view:{
-				"183HX183HXGONWJF3H06C27H":true,  
+				"183HXGQA1QFW":true,
+				"183HXGONWJF3":true
 			},
 			frontage:{
-				"183HXGO6UWGG":true,  
-				"183HXGN6D62A":true,  
-				"183HXGOYQ32F":true,  
-				"183HXGQKO1P3":true,  
-				"183HXGRXSZBI":true,  
-				"183HXGWE5KIR":true,  
-				"183HXGYAAN31":true,  
-				"183HXGY252X5":true,  
+				"183HXGN6D62A":true,
+				"183HXGO6UWGG":true,
+				"183HXGOYQ32F":true,
+				"183HXGPW2MI3":true,
+				"183HXGQKO1P3":true,
+				"183HXGRXSZBI":true,
+				"183HXGWE5KIR":true,
+				"183HXGWS46MC":true,
+				"183HXGX51WDB":true,
+				"183HXGY252X5":true,
+				"183HXGYAAN31":true,
+				"183HXGYK5FU8":true,
+				"183HXGYUZ0UT":true,
+				"1AN2TT88XDQ1":true
+
 			} 
 		}, 
+		// GFLU20141227192849848869000000
 		"B":{
-            key:"rets26_GF20141227192849848869000000",
+            key:"rets26_GF20141227192849848869000000", // correct
             view:{
                   "183I9PW45521":true,  
                   "183I9PW48ZV0":true,  
@@ -295,39 +311,52 @@ variables.tableLookup["G"]="G";
 				"183I9PW4A4V4":true,
 				"183I9PW4BJCO":true,
 				"183I9PW4CXZE":true,
-				"183I9PW4HUZF":true,
+				"183I9PW4EBV0":true,
+				"183I9PW4FNQH":true,
 				"183I9PW4GRUH":true,
+				"183I9PW4HUZF":true,
+				"183I9PW4IZAZ":true,
+				"183I9PW4KCK6":true,
+				"1AN2TTB91PSR":true
             }
         },
+        // GFLU20141227193425333350000000
         "C":{
-        	key:"rets26_GF20141227193425333350000000",
+        	key:"rets26_GF20141227193425333350000000", // correct
             view:{
-                  "183I9Q5MYY7N":true,  
-                  "183I9Q5N0D7U":true,  
+				"183I9Q5MYY7N":true,
+				"183I9Q5N0D7U":true
             },
             frontage:{
+				"183I9Q5MRF2Z":true,
+				"183I9Q5MSIAC":true,
 				"183I9Q5MUN9P":true,
 				"183I9Q5MVP4I":true,
 				"183I9Q5MWS2I":true,
 				"183I9Q5MXUOX":true,
 				"183I9Q5N1IOP":true,
 				"183I9Q5N2NXI":true,
-				"183I9Q5N4S1Q":true, 
+				"183I9Q5N4S1Q":true,
 			}
         },
+        // GFLU20150107140558302722000000
+        // GF20150107140558302722000000
         "F":{
-        	key:"rets26_GF20150107140558302722000000",
+        	key:"rets26_GF20150107140558302722000000", // correct
             view:{
                   "1AIXY5JWI0SA":true,  
-                  "1AIXY5JWNTVB":true,  
+                  "1AIXY5JWNTVB":true,   
             },
             frontage:{
+				"1AIXY5JW8S1B":true,
 				"1AIXY5JWADBL":true,
 				"1AIXY5JWGNNS":true,
 				"1AIXY5JWJISR":true,
 				"1AIXY5JWMIXY":true,
 				"1AIXY5JWQRPV":true,
 				"1AIXY5JWSNFI":true,
+				"1DBDJQWRNPFH":true,
+				"1DBDJQZ2G936":true
 			}
         }
 	};  

@@ -136,9 +136,11 @@ application.zcore.functions.zForm(ts);
 		<button type="submit" name="submitPage1" value="submitPage1">Update Search Filter</button><br />
 <br />
         <h2>Specify criteria and choose to include or exclude listings that match.</h2>
-        
-        
+
 <cfscript>
+form.zdisablesearchfilter=1;
+</cfscript>
+<!--- <cfscript>
 propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 ts = StructNew();
 ts.offset = 0;
@@ -160,7 +162,7 @@ structdelete(ts, 'searchCriteria');
 returnStruct2 = propertyDataCom.getProperties(ts);
 </cfscript>
 
-<h2>There are currently #numberformat(returnStruct2.count-returnStruct.count)# of #numberformat(returnStruct2.count)# listings that are being filtered with the settings below.</h2>
+<h2>There are currently #numberformat(returnStruct2.count-returnStruct.count)# of #numberformat(returnStruct2.count)# listings that are being filtered with the settings below.</h2> --->
 
 	<cfset form.action="form">
 	<cfset request.contentEditor=true>

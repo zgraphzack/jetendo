@@ -2550,7 +2550,7 @@ if(this.searchCriteria.search_listdate NEQ "" and this.searchCriteria.search_lis
         
         
     
-    <cfscript>
+    <cfscript> 
 	rs.whereOptionsSQL=replace(replace(whereOptionsSQL,"'% %'","'~~~~~&*^(%)^~~~~~'","ALL"),"'%, ,%'","'~~~~~&*^(%)^~~~~~'","ALL");
 	rs.whereSQL=replace(replace(whereSQL,"'% %'","'~~~~~&*^(%)^~~~~~'","ALL"),"'%, ,%'","'~~~~~&*^(%)^~~~~~'","ALL");
 	arguments.sharedStruct.filterStruct=rs;
