@@ -34,5 +34,5 @@ if($handle !== FALSE) {
 	closedir($handle);
 }
 
-echo "auto commit completed on all sites."
+echo "auto commit completed on all sites.\n"
 ?>

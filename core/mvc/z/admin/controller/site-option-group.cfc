@@ -1365,10 +1365,12 @@ displayGroupCom.ajaxInsert();
 			</td>
 			<td>
 				<cfif qProp.site_option_group_admin_app_only EQ "0">
+					<cfif qProp.site_option_group_parent_id EQ 0>
 	
-					<a href="/z/admin/site-options/manageGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">List/Edit</a> | 
-					<a href="/z/admin/site-options/import?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Import</a> | 
-					<a href="/z/admin/site-options/addGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Add</a> | 
+						<a href="/z/admin/site-options/manageGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">List/Edit</a> | 
+						<a href="/z/admin/site-options/import?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Import</a> | 
+						<a href="/z/admin/site-options/addGroup?site_option_app_id=0&site_option_group_id=#qProp.site_option_group_id#">Add</a> | 
+					</cfif>
 				</cfif>
 			<cfif qProp.site_id NEQ 0 or variables.allowGlobal>
 					<a href="/z/admin/site-option-group/add?site_option_group_parent_id=#qProp.site_option_group_id#">Add Sub-Group</a> | 
