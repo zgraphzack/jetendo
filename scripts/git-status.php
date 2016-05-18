@@ -16,6 +16,9 @@ if($postObj["zusername"] =='' || $sshKey == '' || !is_file($sshKey) || $postObj[
 	exit;
 }
 
+$cmd=`/bin/ping -c 1 yahoo.com`;
+if($cmd
+
 $arrSites=array();
 $g=0;
 $mp=get_cfg_var("jetendo_sites_path");
@@ -23,34 +26,38 @@ $handle2 = opendir($mp);
 if($handle2 !== FALSE) {
     while (false !== ($entry = readdir($handle2))) {
 		$curPath=$mp.$entry;
-		if($entry =="." || $entry ==".." || !is_dir($curPath) || !is_dir($curPath."/.git")){
+		if($entry =="." || $entry ==".." || !is_dir($curPath)){
 			continue;
 		}
-		chdir($curPath);
-		echo $entry."\n";
-		// -C ".escapeshellarg($curPath)."
-		$cmd="/usr/bin/git status -s";
-		$s=`$cmd`;
-		$filesChanged=false;
-		$synced=false;
-		if($s!=''){
-			$filesChanged=true;
+		if(!is_dir($curPath."/.git")){
+			array_push($arrSites, $entry.' has no .git directory yet.');
 		}else{
+			chdir($curPath);
+			echo $entry."\n";
 			// -C ".escapeshellarg($curPath)."
-			$cmd="/usr/bin/git push --dry-run origin master";
-			$sshCMD="/usr/bin/ssh-agent bash -c '/usr/bin/ssh-add $sshKey; ".$cmd."'";
-			$s2=`$sshCMD 2>&1`; 
-			if(strstr(trim($s2), "Everything up-to-date") !== FALSE){
-				$synced=true;
+			$cmd="/usr/bin/git status -s";
+			$s=`$cmd`;
+			$filesChanged=false;
+			$synced=false;
+			if($s!=''){
+				$filesChanged=true;
+			}else{
+				// -C ".escapeshellarg($curPath)."
+				$cmd="/usr/bin/git push --dry-run origin master";
+				$sshCMD="/usr/bin/ssh-agent bash -c '/usr/bin/ssh-add $sshKey; ".$cmd."'";
+				$s2=`$sshCMD 2>&1`; 
+				if(strstr(trim($s2), "Everything up-to-date") !== FALSE){
+					$synced=true;
+				}
 			}
-		}
-		if($filesChanged){
-			array_push($arrSites, $entry.' has modifications.');
-		}else if(!$synced){
-			array_push($arrSites, $entry.' changes have been commited, but not synced.');
-		}
-		if($debug && $g >=3){
-			break;
+			if($filesChanged){
+				array_push($arrSites, $entry.' has modifications.');
+			}else if(!$synced){
+				array_push($arrSites, $entry.' changes have been commited, but not synced.');
+			}
+			if($debug && $g >=3){
+				break;
+			}
 		}
 		$g++;
 	}
