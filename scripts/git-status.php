@@ -16,9 +16,12 @@ if($postObj["zusername"] =='' || $sshKey == '' || !is_file($sshKey) || $postObj[
 	exit;
 }
 
-$cmd=`/bin/ping -c 1 yahoo.com`;
-if($cmd
-
+echo "Checking for internet connection (ping yahoo)\n";
+$cmd=`/bin/ping -c 1 yahoo.com 2>&1`;
+if(strstr(trim($cmd), "0 received") !== FALSE){
+	echo "Internet not available.\n";
+	exit;
+}
 $arrSites=array();
 $g=0;
 $mp=get_cfg_var("jetendo_sites_path");
