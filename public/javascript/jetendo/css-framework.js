@@ -254,59 +254,6 @@
 	}
 	zArrResizeFunctions.push({functionName:zSetupLazyLoadImages});
 
-	var parentIdIndex=0;
-	function zForceEqualHeights(className){  
-		// only the elements with the same parent should be made the same height
-		var arrParent=[];  
-		$(className).height("auto");
-		$(className).each(function(){
-			if(this.parentNode.id == ""){
-				// force parent to have unique id
-				this.parentNode.id="zEqualHeightsParent"+parentIdIndex;
-				parentIdIndex++;
-			}
-			if(typeof arrParent[this.parentNode.id] == "undefined"){
-				arrParent[this.parentNode.id]=0;
-			}
-			var pos=zGetAbsPosition(this);
-			var height=pos.height;  
-			if(height>arrParent[this.parentNode.id]){
-				arrParent[this.parentNode.id]=height;
-			}
-		});
-
-		$(className).each(function(){
-			if(arrParent[this.parentNode.id] == 0){
-				arrParent[this.parentNode.id]="auto";
-			}
-			$(this).height(arrParent[this.parentNode.id]);
-		});
- 
-	}
- 
-	function forceAutoHeightFix(){ 
-		var images=$(".zForceEqualHeights img");
-		var imagesCount=images.length;
-		var imagesLoaded=0; 
-		images.each(function(){
-			if(this.complete){
-				imagesLoaded++;
-			}
-		}); 
-		if(imagesLoaded != imagesCount){
-			images.bind("load", function(e){
-				imagesLoaded++; 
-				if(imagesLoaded>imagesCount){
-					zForceEqualHeights(".zForceEqualHeights"); 
-				}
-			});
-		}
-		zForceEqualHeights(".zForceEqualHeights"); 
-		if($(".zForceEqualHeight").length > 0){
-			console.log("The class name should be zForceEqualHeights, not zForceEqualHeight");
-		}
-	} 
-	zArrResizeFunctions.push({functionName:forceAutoHeightFix });
 
 	// add class="zForceChildEqualHeights" data-column-count="2" to any element and all the children will have heights made equal for each row. You can change 480 to something else with this optional attribute: data-single-column-width="768"
 	function zForceChildEqualHeights(children){  
@@ -325,7 +272,7 @@
 		$(children).height(lastHeight); 
 	} 
 	function forceChildAutoHeightFix(){  
-		var containers=$(".zForceChildEqualHeights");
+		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
 		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
 		containers.each(function(){
@@ -347,10 +294,21 @@
 			var columnChildren=[];
 			var columnChildrenImages=[];
 			if(columnCount==0){
-				columnChildren[0]=children;
+				columnChildren[0]={
+					children:children,
+					images:[],
+					imagesLoaded:0
+				}
+				$("img", children).each(function(){
+					columnChildren[currentOffset].images.push(this);
+					if(this.complete){
+						columnChildren[currentOffset].imagesLoaded++;
+					}
+				});
 			}else{
 				var count=0;
 				var currentOffset=0;
+				console.log(children);
 				for(var i=0;i<children.length;i++){
 					if(count==0){
 						columnChildren[currentOffset]={
@@ -375,23 +333,24 @@
 			} 
 			for(var i=0;i<columnChildren.length;i++){
 				var c=columnChildren[i]; 
-				var images=$(c.images);   
-				if(c.imagesLoaded != images.length){
-					images.bind("load", function(e){
-						c.imagesLoaded++;
-						if(c.imagesLoaded>images.length){ 
-							zForceChildEqualHeights(c.children);  
-						}
-					});
+				if(c.images.length){  
+					var images=$(c.images); 
+					if(c.imagesLoaded != images.length){
+						images.bind("load", function(e){
+							c.imagesLoaded++;
+							if(c.imagesLoaded>images.length){ 
+								zForceChildEqualHeights(c.children);  
+							}
+						});
+					}
 				}
 				zForceChildEqualHeights(c.children); 
 			}
 		}); 
-		if($(".zForceChildEqualHeight").length > 0){
-			console.log("The class name should be zForceChildEqualHeights, not zForceChildEqualHeight");
+		if($(".z-equal-height").length > 0){
+			console.log("The class name should be z-equal-heights, not z-equal-height");
 		}
 	}
 	zArrResizeFunctions.push({functionName:forceChildAutoHeightFix });
  
-	window.zForceEqualHeights=zForceEqualHeights;
 })(jQuery, window, document, "undefined"); 

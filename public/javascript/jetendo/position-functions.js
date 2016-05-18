@@ -156,6 +156,59 @@ var zScrollbarWidth=0;
 		return zWindowSize;
 	}
 
+	var parentIdIndex=0;
+	function zForceEqualHeights(className){  
+		// only the elements with the same parent should be made the same height
+		var arrParent=[];  
+		$(className).height("auto");
+		$(className).each(function(){
+			if(this.parentNode.id == ""){
+				// force parent to have unique id
+				this.parentNode.id="zEqualHeightsParent"+parentIdIndex;
+				parentIdIndex++;
+			}
+			if(typeof arrParent[this.parentNode.id] == "undefined"){
+				arrParent[this.parentNode.id]=0;
+			}
+			var pos=zGetAbsPosition(this);
+			var height=pos.height;  
+			if(height>arrParent[this.parentNode.id]){
+				arrParent[this.parentNode.id]=height;
+			}
+		});
+
+		$(className).each(function(){
+			if(arrParent[this.parentNode.id] == 0){
+				arrParent[this.parentNode.id]="auto";
+			}
+			$(this).height(arrParent[this.parentNode.id]);
+		});
+ 
+	}
+ 
+	function forceAutoHeightFix(){ 
+		var images=$(".zForceEqualHeights img");
+		var imagesCount=images.length;
+		var imagesLoaded=0; 
+		images.each(function(){
+			if(this.complete){
+				imagesLoaded++;
+			}
+		}); 
+		if(imagesLoaded != imagesCount){
+			images.bind("load", function(e){
+				imagesLoaded++; 
+				if(imagesLoaded>imagesCount){
+					zForceEqualHeights(".zForceEqualHeights"); 
+				}
+			});
+		}
+		zForceEqualHeights(".zForceEqualHeights"); 
+		if($(".zForceEqualHeight").length > 0){
+			console.log("The class name should be zForceEqualHeights, not zForceEqualHeight");
+		}
+	} 
+	zArrResizeFunctions.push({functionName:forceAutoHeightFix });
 
 	window.zFindPosition=zFindPosition;
 	window.zGetAbsPosition=zGetAbsPosition;

@@ -47,7 +47,7 @@
 			</cfif>
 			
 			<div class="zDashboardMainContainer">
-				<div class="zDashboardMain">
+				<div class="zDashboardMain z-equal-heights">
 					<cfscript> 
 					if(structkeyexists(ws, 'arrAdminButton')){
 						for(i=1;i LTE arraylen(ws.arrAdminButton);i++){
@@ -57,7 +57,7 @@
 							}else{
 								link=bs.whitelabel_button_builtin;
 							}
-							echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zDashboardButton zForceEqualHeights">');
+							echo('<a href="#link#" target="#bs.whitelabel_button_target#" class="zDashboardButton">');
 							if(bs.whitelabel_button_image64 NEQ ""){
 								echo('<span class="zDashboardButtonImage"><img src="#ws.imagePath&bs.whitelabel_button_image64#" alt="#htmleditformat(bs.whitelabel_button_label)#" /></span>');
 							}

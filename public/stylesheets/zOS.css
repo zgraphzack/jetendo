@@ -18,25 +18,6 @@ div.time-picker li{ height:16px !important;}
 .zMenuWrapper{visibility:hidden;}
 #cboxLoadedContent{border:none !important; margin-top:5px !important;}
 
-.z-clear{clear:both;}
-.z-container{  display:block; float:left; width:100%; }
- 
-.zAnimateOnVisible{visibility:hidden;}
-.zOnVisibleSlide {
-	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
-	animation: zOnVisibleSlide 0.8s ease forwards;
-}
-@-webkit-keyframes zOnVisibleSlide {
-  to { transform: translateX(0) translateY(0);   }
-}
-@keyframes zOnVisibleSlide {
-  to { transform: translateX(0) translateY(0);  }
-}
-.zAnimateVisible {
-  transform: translateX(0) translateY(0) !important;
-  animation: none;
-}
-
 .zGearButton:link, .zGearButton:visited{
 	font-size:30px;line-height:36px; color:#000;
 }

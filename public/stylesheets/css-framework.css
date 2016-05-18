@@ -1,0 +1,118 @@
+/* this file is for a standalone jetendo css framework */
+
+.z-container *{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing:border-box;
+}
+.z-container{  display:block; float:left; width:100%; }
+.z-clear{clear:both;}
+.z-center-children{ text-align:center; font-size:0px;} 
+.z-center-children > div{ display:inline-block; text-align:left; vertical-align:top; float:none; }
+.z-container .z-center{margin:0 auto; width:1260px;}
+
+ 
+.z-table-center{ padding:0px; text-align:center; display:table-cell; vertical-align:middle;}
+.z-table-top-center{ padding:0px; text-align:center; display:table-cell; vertical-align:top;}
+.z-table-bottom-center{ text-align:center; display:table-cell; vertical-align:bottom;}
+.z-table-top-left{ text-align:left; display:table-cell; vertical-align:top;}
+.z-table-top-right{ text-align:right; display:table-cell; vertical-align:top; padding-right:10px;}
+.z-table-center-left{ text-align:left; display:table-cell; vertical-align:middle; padding-left:10px;}
+.z-table-center-right{ text-align:right; display:table-cell; vertical-align:middle; padding-left:10px;}
+.z-table-bottom-left{ text-align:left; display:table-cell; vertical-align:bottom;}
+.z-table-bottom-right{ text-align:right; display:table-cell; vertical-align:bottom; padding-right:10px;}
+.z-table-bottom-left{ text-align:left; display:table-cell; vertical-align:bottom; padding-left:10px;}
+.z-table{
+	display:table;
+	
+}
+.z-reverse-order{ direction: rtl; }
+.z-normal-order{ direction: ltr; }
+.z-table-fill{ 
+	display:table-cell;
+	vertical-align: top;  
+    padding: 20px;  
+    z-index:1; 
+    direction: ltr; 
+}
+.z-table-left-sidebar{
+	display:table-cell;
+	vertical-align: top; 
+	float:none !important;
+    padding: 20px;   
+	direction: ltr;
+}
+.z-table-right-sidebar{
+	display:table-cell;
+	vertical-align: top;
+    padding: 20px;    
+	float:none !important;
+	direction: ltr;
+}
+
+.zForceNegativeMarginLeft, .zForceNegativeMarginRight{display:none;}
+ 
+ 
+.zAnimateOnVisible{visibility:hidden;}
+.zOnVisibleSlide {
+	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
+	animation: zOnVisibleSlide 0.8s ease forwards;
+}
+@-webkit-keyframes zOnVisibleSlide {
+  to { transform: translateX(0) translateY(0);   }
+}
+@keyframes zOnVisibleSlide {
+  to { transform: translateX(0) translateY(0);  }
+}
+.zAnimateVisible {
+  transform: translateX(0) translateY(0) !important;
+  animation: none;
+}
+
+
+@media screen and (max-width: 1280px) { 
+	.z-container .z-center{margin:0 auto; width:960px;}
+	.z-fluid-at-1280{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+
+}
+@media screen and (max-width: 980px) { 
+	.z-container .z-center{margin:0 auto; width:100%;}  
+
+	.z-table{display:block;}
+	.z-table-fill{ 
+	display:block; width:100%;
+	 margin-left:0px !important; margin-right:0px !important; 
+	 max-width:100% !important;
+	float:left !important;
+	}
+
+	.z-table-left-sidebar{
+		display:block;
+		width:100%;
+		float:left !important;
+		max-width:100%;
+		margin:0px;
+		margin-left:0px !important; margin-right:0px !important; 
+	}
+	.z-table-right-sidebar{
+		display:block;
+		width:100%;
+		max-width:100%;
+		float:left !important;
+		margin:0px;
+		margin-left:0px !important; margin-right:0px !important; 
+	}
+	.z-fluid-at-980{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+}
+
+
+@media screen and (max-width: 768px) {
+
+	.z-column{ margin-left:0px; margin-right:0px; } 
+	.z-fluid-at-768{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+}
+
+@media screen and (max-width: 480px) {
+	.z-fluid-at-480{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+}
+.z-container .z-center .z-center{ width:100%; float:left;}

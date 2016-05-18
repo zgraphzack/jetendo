@@ -8,8 +8,8 @@
 		boxPaddingTopPercent:1.5,
 		boxPaddingSidePercent:1.5,
 		boxPaddingBottomPercent:1.5,
-		columnGapSidePercent:3,
-		columnGapBottomPercent:3,
+		columnGapSidePercent:2,
+		columnGapBottomPercent:2,
 		minimumPadding:10,
 		headingMinimumFontSize:12,
 		textMinimumFontSize:12,
@@ -100,7 +100,11 @@
 				dataStruct[n]=form[id];
 			}
 		}
-		dataStruct["enabled"]=application.zcore.functions.zso(form, "enabled_"&breakpoint, true, 0); 
+		if(structkeyexists(form, 'setToDefault')){
+			dataStruct["enabled"]=1;
+		}else{
+			dataStruct["enabled"]=application.zcore.functions.zso(form, "enabled_"&breakpoint, true, 0); 
+		}
 		if(dataStruct["enabled"] EQ 1){
 			arrayAppend(breakstructNew.arrBreak, breakStruct.arrBreak[i]);
 			breakStructNew.data[breakpoint]=breakStruct.data[breakpoint];
@@ -162,7 +166,11 @@
 				dataStruct[n]=form[id];
 			}
 		}
-		dataStruct["enabled"]=application.zcore.functions.zso(form, "enabled_"&breakpoint, true, 0); 
+		if(structkeyexists(form, 'setToDefault')){
+			dataStruct["enabled"]=1;
+		}else{
+			dataStruct["enabled"]=application.zcore.functions.zso(form, "enabled_"&breakpoint, true, 0); 
+		}
 		if(dataStruct["enabled"] EQ 1){
 			arrayAppend(breakstructNew.arrBreak, breakStruct.arrBreak[i]);
 			breakStructNew.data[breakpoint]=breakStruct.data[breakpoint];
@@ -202,11 +210,11 @@
 <cffunction name="generateGlobalBreakpointCSS" localmode="modern" access="public">
 	<cfargument name="breakpointConfig" type="struct" required="yes">
 	<cfscript>
-	arrFull=[];
+	/*arrFull=[];
 	arr1280=[];
 	arr980=[];
 	arr768=[];
-	arr480=[]; 
+	arr480=[]; */
 	breakStruct=arguments.breakpointConfig;
 	startFontSize=12; 
 	uniqueStruct={};
@@ -262,7 +270,7 @@
 				} 
 				limit=2; 
 
-				for(i2=2;i2<=7;i2++){
+				for(i2=2;i2<=16;i2++){
 					percent=100/limit;
 					currentLimit=limit;
 					currentIndex=i2;
@@ -322,7 +330,6 @@
 						if(limit EQ 4){
 					//		writedump(width);
 						}
-						// this code depends on z-first and z-last classes removing margins from first and last elements in a row.
 
 						// need to calculate the total margin based on number of columns.  i.e. 3 column with 3% column gap is (3-1)*3
 						if(breakpoint > 980){
@@ -382,35 +389,17 @@
 						}
 						padding=' padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%;';
 						if(isSingleColumn){//isNumeric(breakpoint) and breakpoint LTE 980){
-							v='.z-#n2#of#limit#{ background-color:##EEE; max-width:100%; width:100%; display:block; float:left;  padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; margin-left:0px; margin-right:0px; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%; } ';
-							if(not structkeyexists(uniqueStruct, v)){
-								uniqueStruct[v]=true;
-								arrayAppend(arrCSS, v);
-							}   
-							v='.z-#n2#of#limit#.z-first{ margin-left:0px; } ';
-							if(not structkeyexists(uniqueStruct, v)){
-								uniqueStruct[v]=true;
-								arrayAppend(arrCSS, v);
-							}  
-							v='.z-#n2#of#limit#.z-last{ margin-right:0px; } ';
+							v='.z-#n2#of#limit#{  max-width:100%; width:100%; display:block; float:left;  padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; margin-left:0px; margin-right:0px; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%; } ';
 							if(not structkeyexists(uniqueStruct, v)){
 								uniqueStruct[v]=true;
 								arrayAppend(arrCSS, v);
 							}   
 						}else{   
-							if(disableFirstLast){
-								v='.z-#n2#of#limit#.z-first{ margin-left:#numberformat(margin, '_.__')#%; } ';
-								if(not structkeyexists(uniqueStruct, v)){
-									uniqueStruct[v]=true;
-									arrayAppend(arrCSS, v);
-								}  
-								v='.z-#n2#of#limit#.z-last{ margin-right:#numberformat(margin, '_.__')#%; } ';
-								if(not structkeyexists(uniqueStruct, v)){
-									uniqueStruct[v]=true;
-									arrayAppend(arrCSS, v);
-								}  
+							v='.z-#n2#of#limit#{ ';
+							if(breakpoint LTE 980){
+								v&=" min-width:#breakStruct.minimum_column_width#px;";
 							}
-							v='.z-#n2#of#limit#{ background-color:##EEE; min-width:#breakStruct.minimum_column_width#px; max-width:#maxWidth#%;  width:#numberformat(width, '_.___')#%; #padding# float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%;  margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%;}';
+							v&=' max-width:#maxWidth#%;  width:#numberformat(width, '_.___')#%; #padding# float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%;  margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%;}';
 						
 							if(not structkeyexists(uniqueStruct, v)){
 								uniqueStruct[v]=true;
@@ -425,6 +414,23 @@
 	}
 				//	abort;
 	savecontent variable="out"{  
+	echo('
+ 	.z-center-children > *{ font-size:#dataStruct.textScale*16# }
+ 	.z-column{ margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }
+
+
+ 	');
+ 	/*
+	.z-section-10{padding-top:#dataStruct.boxPaddingTopPercent*0.8#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*0.8#%;}
+	.z-section-20{padding-top:#dataStruct.boxPaddingTopPercent*1.5#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*1.5#%;}
+	.z-section-medium{padding-top:#dataStruct.boxPaddingTopPercent*3#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*3#%;}
+	.z-section-large{padding-top:#dataStruct.boxPaddingTopPercent*6#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*6#%;}
+	*/
+	multiplier=0.4;
+ 	for(i=1;i<=15;i++){
+		echo('.z-section-#i*10#{padding-top:#numberformat(dataStruct.boxPaddingTopPercent*multiplier, '_.__')#%; padding-bottom:#numberformat(dataStruct.boxPaddingBottomPercent*multiplier, '_.__')#%;}'&chr(10));
+		multiplier+=0.35;
+	}
 	for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
 		breakpoint=breakStruct.arrBreak[i]; 
 		if(breakpoint NEQ 'Default'){
@@ -435,38 +441,22 @@
 			echo(arrayToList(breakStruct.css[breakpoint], chr(10))&chr(10)); 
 		}
 	}
-	echo('
+	/*
 	#arrayToList(arrFull, chr(10))#
-
-	.z-container *{
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		box-sizing:border-box;
-	}
-	.z-center-children{ text-align:center; font-size:0px;} 
- 	.z-center-children > div{ display:inline-block; text-align:left; vertical-align:top; float:none; font-size:#dataStruct.textScale*16# }
- 	.z-column{ margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }
-
-	.z-container .z-center{margin:0 auto; width:1280px;}
 	@media screen and (max-width: 1280px) {
 	#arrayToList(arr1280, chr(10))#
-	.z-container .z-center{margin:0 auto; width:980px;}
- 
 	}
 	@media screen and (max-width: 980px) {
 	#arrayToList(arr980, chr(10))# 
-	.z-container .z-center{margin:0 auto; width:100%;}  
 	}
 	@media screen and (max-width: 768px) {
-
- 	.z-column{ margin-left:0px; margin-right:0px; }
 	#arrayToList(arr768, chr(10))#
 	}
 
 	@media screen and (max-width: 480px) {
 	#arrayToList(arr480, chr(10))#
 
-	}');
+	}');*/
 	} 
 	application.zcore.functions.zWriteFile(request.zos.globals.privateHomeDir&"zupload/layout-global.css", out);
 	</cfscript>
@@ -505,6 +495,7 @@ displaySettingsForm(breakStruct);
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
+	echo('<div style="width:100%; float:left; padding-left:5px; padding-right:5px;">');
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db=request.zos.queryObject;
 
@@ -525,7 +516,7 @@ if(qGlobal.recordcount NEQ 0){
 	breakStruct.minimum_column_width=oldBreakStruct.minimum_column_width;
 }
 echo('<h2>Global Layout Settings</h2>');
-
+echo('</div>');
 displaySettingsForm(breakStruct);
 </cfscript>
 </cffunction>
@@ -559,7 +550,7 @@ if(form.method EQ "index"){
 	action="/z/admin/layout-global/saveLayoutInstanceSettings";
 }
 // display form
-echo('
+echo('<div style="width:100%; float:left; padding-left:5px; padding-right:5px;">
 	<form action="#action#" method="post">
 	<table class="table-list">
 	<tr>
@@ -584,7 +575,10 @@ for(n=1;n<=arraylen(breakStruct.arrBreak);n++){
 	echo(' /></td>');
 }
 echo('</tr>');
-for(i in defaultBreakPoint){
+arrKey=structkeyarray(defaultBreakPoint);
+arraySort(arrKey, "text", "asc");
+for(i in arrKey){
+	//i=defaultBreakPoint[arrKey[i]];
 	echo('<tr>');
 	echo('<th>'&labelStruct[i]&'</th>');
 	for(n=1;n<=arraylen(breakStruct.arrBreak);n++){
@@ -608,10 +602,11 @@ echo('<tr>
 	<th>&nbsp;</th>
 	<td colspan="#structcount(defaultBreakPoint)#">
 	<input type="submit" name="save1" value="Save"> 
-	<input type="button" name="save2" value="Restore Defaults" onclick="window.location.href=''/z/admin/layout-global/saveLayoutSettings''; "> 
+	<input type="button" name="save2" value="Restore Defaults" onclick="window.location.href=''/z/admin/layout-global/saveLayoutSettings?setToDefault=1''; "> 
 	</td>');
 echo('</table>
-	</form>');  
+	</form>
+	</div>');  
 	showExample();
 	</cfscript>
 </cffunction>
@@ -621,197 +616,150 @@ echo('</table>
 	<cfscript>
 	 
 	echo('<h2>Layout Example</h2>');
-	application.zcore.skin.includeCSS("/zupload/layout-global.css");
-	application.zcore.skin.includeCSS("/z/stylesheets/zframework.css");
-	</cfscript> 
-	<p>This code depends on z-first and z-last classes removing margins from first and last elements in a row.</p>
-<!--- 
-on container
-    width: 1280px; - the hardcoded width is what fixes it
-    overflow: hidden;
-    margin: 0 auto;
- on inner container:
-    margin: 0 auto;
-    width: 103%;
-    margin-right: -1.5%;
-    margin-left: -1.5%;
- --->
-<div class="z-container">
-<div class="z-center z-center-children"> 
-<div class="z-1of4 z-first " >
-<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-<div class="z-heading-30">1of4</div>
-<div class="z-text-16">Text</div>
-</div>
-</div>
-<div class="z-2of4 " >
-<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-<div class="z-heading-30">2of4</div>
-<div class="z-text-16">Text</div>
-</div>
-</div>
-<div class="z-1of4 z-last" >
-<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-<div class="z-heading-30">1of4</div>
-<div class="z-text-16">Text</div>
-</div>
-</div>
-</div>
-	<div class="z-center z-center-children"> 
-		<div class="z-1of3 z-first" >
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-30">1of3</div>
-				<div class="z-text-16">Text</div>
+	application.zcore.skin.includeCSS("/zupload/layout-global.css"); 
+	</cfscript>  
+	<style type="text/css">
+	.zapp-shell-container{padding-left:0px; padding-right:0px;}
+	.z-container:nth-child(even){ background-color:##555;}
+	.z-container:nth-child(odd){ background-color:##666;}
+	.z-container div{ background-color:##aaa;}
+	.z-container .z-center{ background-color:##aaa;}
+	.z-container .z-center div { background-color:##EEE;}
+	</style>
+<div class="wrapper">
+	<div class="z-container">
+		<div class="z-center z-section-20"> 
+			<div class="z-column">
+				For visualizing space adjustments, background colors have been applied. Dark = z-container, medium = z-center, lightest = z-column
 			</div>
 		</div>
-		<div class="z-2of3 z-last">
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-30">2of3</div>
-				<div class="z-text-16">Text</div>
+	</div> 
+	<div class="z-container z-section-10">
+		<div class="z-center"> 
+			<div class="z-column " > 
+				Each grid system can have columns that span 1 or more of the columns. Examples:
+			</div>
+		</div>
+	</div>
+	<div class="z-container z-section-10">
+		<div class="z-center z-center-children"> 
+			<div class="z-1of4 " > 
+				<div class="z-heading-24">z-1of4</div>
+				<div class="z-text-12">Text</div> 
+			</div>
+			<div class="z-2of4 " > 
+				<div class="z-heading-24">z-2of4</div>
+				<div class="z-text-12">Text</div>
+			</div> 
+			<div class="z-1of4" > 
+				<div class="z-heading-24">z-1of4</div>
+				<div class="z-text-12">Text</div>
 			</div>
 		</div> 
 	</div>
-	<div class="z-center z-center-children"> 
-		<div class="z-4of4 z-first z-last" >
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-30">4of4</div>
-				<div class="z-text-16">Text</div>
+	<div class="z-container z-section-10">
+		<div class="z-center z-center-children"> 
+			<div class="z-1of3" > 
+				<div class="z-heading-24">z-1of3</div>
+				<div class="z-text-12">Text</div>
+			</div>
+			<div class="z-2of3"> 
+				<div class="z-heading-24">z-2of3</div>
+				<div class="z-text-12">Text</div> 
+			</div> 
+		</div>
+	</div>
+	<div class="z-container z-section-10">
+		<div class="z-center z-center-children"> 
+			<div class="z-4of4" > 
+				<div class="z-heading-24">z-4of4</div>
+				<div class="z-text-12">Text</div> 
 			</div>
 		</div>
 	</div>
-	<h2>Other Examples</h2>
-	<cfloop from="2" to="7" index="i">
-		<div class="z-center z-center-children"> 
-			<cfscript>
-			columnsLeft=i;
-			</cfscript>
-			<cfloop from="1" to="#i#" index="n">
-				<cfscript>
-				if(columnsLeft EQ 0){
-					break;
-				}
-				columns=min(3,randRange(1, columnsLeft));
-				columnsLeft-=columns;
-				</cfscript>
-				<div class="z-#columns#of#i#<cfif n EQ 1> z-first</cfif> <cfif columnsLeft EQ 0> z-last</cfif>" >
-					<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-						<div class="z-heading-30">#columns#of#i#</div>
-						<div class="z-text-16">Text</div>
-					</div>
-				</div>
-			</cfloop>
-		</div>
-	</cfloop>
-	<cfloop from="2" to="7" index="i">
-		<div class="z-center z-center-children"> 
-			<cfloop from="1" to="#i#" index="n">
-				<div class="z-1of#i#<cfif n EQ 1> z-first<cfelseif n EQ i> z-last</cfif>" >
-					<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-						<div class="z-heading-30">1of#i#</div>
-						<div class="z-text-16">1of#i#</div>
-					</div>
-				</div>
-			</cfloop>
-		</div>
-	</cfloop>
-	<!--- <div class="z-center z-center-children"> 
-		<div class="z-1of3 z-first" >
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-36">1of3</div>
-				<div class="z-text-18">1of3</div>
-			</div>
-		</div>
-		<div class="z-1of3">
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-36">1of3</div>
-				<div class="z-text-18">1of3</div>
-			</div>
-		</div>
-		<div class="z-1of3 z-last" >
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-36">1of3</div>
-				<div class="z-text-18">1of3</div>
-			</div>
-		</div>
-	</div>
-	<div class="z-center z-center-children"> 
-		<div class="z-1of3 z-first" >
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-36">1of3</div>
-				<div class="z-text-18">1of3</div>
-			</div>
-		</div>
-		<div class="z-1of3">
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-36">1of3</div>
-				<div class="z-text-18">1of3</div>
-			</div>
-		</div>
-		<div class="z-1of3 z-last" >
-			<div style="background-color:##CCC; padding:10px; width:100%; float:left;">
-				<div class="z-heading-36">1of3</div>
-				<div class="z-text-18">1of3</div>
-			</div>
-		</div>
-	</div> --->
 
-	<!--- <div class="z-center z-center-children"> 
-		<div class="z-1of3" >1of3
-		</div>
-		<div class="z-2of3">2of3
-		</div> 
-	</div>
-	<div class="z-center z-center-children"> 
-		<div class="z-1of4" >1of4
-		</div>
-		<div class="z-2of4">2of4
-		</div> 
-		<div class="z-1of4" >1of4
+	<div class="z-container z-section-10">
+		<div class="z-center z-center-children"> 
+			<div class="z-column" > 
+				<h2>All Grid Systems</h2>
+			</div>
 		</div>
 	</div>
-	<div class="z-center z-center-children">   
-		<div class="z-1of5">1of5
+	<!--- <cfloop from="2" to="4" index="i">
+		<div class="z-container z-section-#10*i#">
+			<div class="z-center z-center-children"> 
+				<cfscript>
+				columnsLeft=i;
+				</cfscript>
+				<cfloop from="1" to="#i#" index="n">
+					<cfscript>
+					if(columnsLeft EQ 0){
+						break;
+					}
+					columns=min(3,randRange(1, columnsLeft));
+					columnsLeft-=columns;
+					</cfscript>
+					<div class="z-#columns#of#i#" >
+						<div class="z-heading-12">#columns#</div>
+					</div>
+				</cfloop>
+			</div>
 		</div>
-		<div class="z-1of5">1of5
+	</cfloop> --->
+	<cfloop from="2" to="16" index="i">
+		<div class="z-container z-section-10">
+			<div class="z-center z-section-10"> 
+				<div class="z-column z-heading-18">#i# column grid system ( class="z1of#i#" )</div>
+			</div>
+			<div class="z-center z-center-children"> 
+				<cfloop from="1" to="#i#" index="n">
+					<div class="z-1of#i#" > 
+						<div class="z-heading-12">#n#</div>
+					</div>
+				</cfloop>
+			</div>
 		</div>
-		<div class="z-3of5">3of5
+	</cfloop> 
+	<div class="z-container z-section-10">
+		 <div class="z-center z-equal-heights"> 
+		 	<div class="z-1of3">
+				<div class="z-heading-36">
+					Heading1
+				</div>  
+				<div class="z-heading-30">
+					Heading2
+				</div>  
+				<div class="z-heading-24">
+					Heading3
+				</div> 
+				<div class="z-heading-18">
+					Heading4
+				</div>  
+				<div class="z-heading-14">
+					Heading5
+				</div>  
+			</div>
+			<div class="z-1of3">
+				<h1>Heading1</h1>
+				<h2>Heading2</h2>
+				<h3>Heading3</h3> 
+				<h4>Heading4</h4>
+				<h5>Heading5</h5>
+			</div>
+			<div class="z-1of3">
+				<div class=" z-text-36">
+				Text36
+				</div> 
+				<div class=" z-text-24">
+				Text24
+				</div> 
+				<div class=" z-text-18">
+				Text18
+				</div>  
+			</div>
 		</div>
-	</div> --->
+	</div>  
 </div>
-<div class="z-container">
-	 <div class="z-center"> 
-			<div class="z-heading-36">
-				Heading1
-			</div>  
-			<div class="z-heading-30">
-				Heading2
-			</div>  
-			<div class="z-heading-24">
-				Heading3
-			</div> 
-			<div class="z-heading-18">
-				Heading4
-			</div>  
-			<div class="z-heading-14">
-				Heading5
-			</div>  
-			<h1>Heading1</h1>
-			<h2>Heading2</h2>
-			<h3>Heading3</h3> 
-			<h4>Heading4</h4>
-			<h5>Heading5</h5>
-			<div class=" z-text-36">
-			Text36
-			</div> 
-			<div class=" z-text-24">
-			Text24
-			</div> 
-			<div class=" z-text-18">
-			Text18
-			</div> 
-		</div>
-	</div>
-</div>  
 </cffunction>
 	
 </cfoutput>

@@ -35,7 +35,7 @@ Try to organize all of the static resources for a widget in a single directory t
 	*/
 	</cfscript>
 	<cfsavecontent variable="out">
-		<div class="test-example-1 zForceEqualHeights">
+		<div class="test-example-1">
 			<div class="test-example-2">
 				<div class="test-example-3">#df.Heading#</div>
 				<div class="test-example-4">

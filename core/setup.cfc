@@ -10,6 +10,7 @@
 	<meta charset="utf-8" />
 	<title>Server Manager</title>
 	<link rel="stylesheet" type="text/css" href="/z/stylesheets/zOS.css" />
+	<link rel="stylesheet" type="text/css" href="/z/stylesheets/css-framework.css" />
 	<link rel="stylesheet" type="text/css" href="/z/a/stylesheets/style.css" />
 	</head>
 	<body>
