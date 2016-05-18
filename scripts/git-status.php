@@ -8,7 +8,7 @@ $sshKey=get_cfg_var("jetendo_git_ssh_key_path");
 $postObj=array(); 
 $postObj["zusername"]=get_cfg_var("jetendo_admin_username");
 $postObj["zpassword"]=get_cfg_var("jetendo_admin_password");
-$email=get_cfg_var("jetendo_developer_email_to");
+$email=get_cfg_var("jetendo_admin_username");
 $postObj["email"]=$email;
 
 if($postObj["zusername"] =='' || $sshKey == '' || !is_file($sshKey) || $postObj["zpassword"] ==''){
