@@ -2989,7 +2989,7 @@ this.app_id=10;
 	}
 	db.sql&=" LIMIT #db.param(start)#, #db.param(searchStruct.perpage)#";
 	qArticles=db.execute("qArticles"); 
-	if(form.method EQ "categoryTemplate"){
+	if(form.method EQ "categoryTemplate" and start EQ 0){
 		if(structkeyexists(form, 'zUrlName')){
 			if(qcategory.blog_category_unique_name EQ ""){
 				curLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id, form.blog_category_id,"html",qCategory.blog_category_name);
