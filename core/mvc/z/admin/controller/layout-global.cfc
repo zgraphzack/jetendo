@@ -516,6 +516,7 @@ if(qGlobal.recordcount NEQ 0){
 	breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
 }
 echo('<h2>Global Layout Settings</h2>');
+echo('<p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p>');
 echo('</div>');
 displaySettingsForm(breakStruct);
 </cfscript>
