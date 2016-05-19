@@ -37,6 +37,8 @@ display:table-cell; padding:3px;
  
 
 
+
+
 .addthisevent{visibility:hidden;}
 .zGalleryViewSlideshowContainer{width:100%; float:left; margin-bottom:20px;}
 .zGearPopupInnerMenu{padding:2px; background-color:#333; float:left; border-radius:5px; }
@@ -353,11 +355,16 @@ _margin-left: -83px ;
 .zHelpToolTipLabel{float:left; padding-right:5px; padding-bottom:10px;}
 .zHelpToolTip,.zHelpToolTip:link, .zHelpToolTip:visited{
 	cursor:pointer;
-	width:13px; height:13px; display:block; float:left;
+	width:13px; height:13px; display:none; float:left;
 	background-image:url(/z/a/images/help_off.png);
 	_background-image:none;
 _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/z/a/images/help_off.png', sizingMethod='scale');
 }
+
+
+
+
+
 .zHelpToolTip:hover{
 	background-image:url(/z/a/images/help_on.png);
 	_background-image:none;

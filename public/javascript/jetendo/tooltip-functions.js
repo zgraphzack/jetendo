@@ -50,10 +50,10 @@ var zHelpTooltip=new Object();
 		zHelpTooltip.helpInnerDiv=document.getElementById("zHelpToolTipInnerDiv");
 		var a=zGetElementsByClassName("zHelpToolTip");
 		for(var i=0;i<a.length;i++){
-			if(a[i].title === ""){
-				a[i].style.display="none";
+			if(a[i].title == ""){
 				continue;
 			}
+			a[i].style.display="block"; 
 			zHelpTooltip.arrTrack[a[i].id]={hovering:false,title:a[i].title};
 			a[i].title="";
 			a[i].onmouseover=zHelpTooltip.hover;
@@ -62,4 +62,11 @@ var zHelpTooltip=new Object();
 			a[i].onclick=zHelpTooltip.showTooltip;
 		}
 	};
+	zArrDeferredFunctions.push(function(){
+		if($("#zHelpToolTipDiv").length==0){
+			$(document.body).append('<div id="zHelpToolTipDiv"><div id="zHelpToolTipInnerDiv"></div></div>');
+		}
+		zHelpTooltip.setupHelpTooltip();
+	});
+
 })(jQuery, window, document, "undefined"); 
