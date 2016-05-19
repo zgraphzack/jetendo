@@ -513,7 +513,7 @@ if(qGlobal.recordcount NEQ 0){
 			structappend(breakStruct.data[i], oldBreakStruct.data[i], true);
 		}
 	}
-	breakStruct.minimum_column_width=oldBreakStruct.minimum_column_width;
+	breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
 }
 echo('<h2>Global Layout Settings</h2>');
 echo('</div>');
