@@ -293,24 +293,23 @@
 			}
 			var columnChildren=[];
 			var columnChildrenImages=[];
-			if(columnCount==0){
+			if(typeof columnChildren[0] == "undefined"){
 				columnChildren[0]={
 					children:children,
 					images:[],
 					imagesLoaded:0
 				}
 				$("img", children).each(function(){
-					columnChildren[currentOffset].images.push(this);
+					columnChildren[0].images.push(this);
 					if(this.complete){
-						columnChildren[currentOffset].imagesLoaded++;
+						columnChildren[0].imagesLoaded++;
 					}
 				});
 			}else{
 				var count=0;
-				var currentOffset=0;
-				console.log(children);
+				var currentOffset=0; 
 				for(var i=0;i<children.length;i++){
-					if(count==0){
+					if(typeof columnChildren[currentOffset] == "undefined"){
 						columnChildren[currentOffset]={
 							children:[],
 							images:[],
@@ -353,4 +352,7 @@
 	}
 	zArrResizeFunctions.push({functionName:forceChildAutoHeightFix });
  
+
+
+
 })(jQuery, window, document, "undefined"); 
