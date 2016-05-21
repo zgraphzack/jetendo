@@ -255,7 +255,8 @@
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='.z-container h1,.z-container h2,.z-container h3,.z-container h4,.z-container h5,.z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+		v='h1,h2,h3,h4,h5,h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+		//v='.z-container h1,.z-container h2,.z-container h3,.z-container h4,.z-container h5,.z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
@@ -437,12 +438,24 @@
 		for(i=startFontSize;i<=70;i++){ 
 			tempScaleHeading=max(round(i*dataStruct.headingScale), dataStruct.headingMinimumFontSize);
 			tempScaleText=max(round(i*dataStruct.textScale), dataStruct.textMinimumFontSize); 
-			v='.z-heading-#i#{font-size:#tempScaleHeading#px;  padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
+			if(n EQ 1){
+				v='.z-fh-#i#{font-size:#i#px;  padding-bottom:#round(max(dataStruct.minimumPadding, i*0.45))#px;}';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS, v);
+				}
+				v='.z-ft-#i#{font-size:#i#px; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS, v);
+				} 
+			}
+			v='.z-h-#i#{font-size:#tempScaleHeading#px;  padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
 			if(not structkeyexists(uniqueStruct, v)){
 				uniqueStruct[v]=true;
 				arrayAppend(arrCSS, v);
 			}
-			v='.z-text-#i#{font-size:#tempScaleText#px; }';
+			v='.z-t-#i#{font-size:#tempScaleText#px; }';
 			if(not structkeyexists(uniqueStruct, v)){
 				uniqueStruct[v]=true;
 				arrayAppend(arrCSS, v);
@@ -460,7 +473,7 @@
 				headingEnabled=5;
 			}
 			if(headingEnabled NEQ 0){
-				v='.z-container h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
+				v='h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
@@ -479,6 +492,91 @@
 				echo(arrayToList(breakStruct.css[breakpoint], chr(10))&chr(10)); 
 			}
 		}  
+		arrCSS2=[];
+		for(g=0;g<=8;g++){
+			c=g*10; 
+			v='.z-fp-#c#{ padding-left:#c#px; padding-right:#c#px; padding-top:#c#px; padding-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v); 
+			} 
+			v='.z-fpt-#c#{ padding-top:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpr-#c#{ padding-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpb-#c#{ padding-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpl-#c#{ padding-left:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpv-#c#{ padding-top:#c#px; padding-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fph-#c#{ padding-left:#c#px; padding-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fm-#c#{ margin-left:#c#px; margin-right:#c#px; margin-top:#c#px; margin-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmt-#c#{ margin-top:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmr-#c#{ margin-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmb-#c#{ margin-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fml-#c#{ margin-left:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmv-#c#{ margin-top:#c#px; margin-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmh-#c#{ margin-left:#c#px; margin-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmv-#c#-auto{ margin-top:#c#px; margin-bottom:#c#px; margin-left:auto; margin-right:auto; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmh-#c#-auto{ margin-left:#c#px; margin-right:#c#px; margin-top:auto; margin-bottom:auto; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+		}
+		echo(arrayToList(arrCSS2, chr(10)));
 		uniqueStruct={};
 		for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
 			breakpoint=breakStruct.arrBreak[i];   
@@ -614,7 +712,7 @@ if(qGlobal.recordcount NEQ 0){
 		}
 	}
 }
-echo('<h2>Instance Layout Settings</h2>');
+echo('<h2 class="z-fh-30">Instance Layout Settings</h2>');
 
 displaySettingsForm(breakStruct);
 </cfscript>
@@ -644,7 +742,7 @@ if(qGlobal.recordcount NEQ 0){
 	}
 	breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
 }
-echo('<h2>Global Layout Settings</h2>');
+echo('<h2 class="z-fh-30">Global Layout Settings</h2>');
 echo('<p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p>');
 echo('</div>');
 displaySettingsForm(breakStruct);
@@ -749,7 +847,7 @@ echo('</table>
 <cffunction name="showExample" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	 
-	echo('<h2>Layout Example</h2>');
+	echo('<h2 class="z-fh-30">Layout Example</h2>');
 	application.zcore.skin.includeCSS("/zupload/layout-global.css"); 
 	</cfscript>  
 	<style type="text/css">
@@ -781,16 +879,16 @@ echo('</table>
 	<section class="z-pv-10">
 		<div class="z-container z-center-children"> 
 			<div class="z-1of4 " > 
-				<div class="z-heading-24">z-1of4</div>
-				<div class="z-text-12">Text</div> 
+				<div class="z-h-24">z-1of4</div>
+				<div class="z-t-12">Text</div> 
 			</div>
 			<div class="z-2of4 " > 
-				<div class="z-heading-24">z-2of4</div>
-				<div class="z-text-12">Text</div>
+				<div class="z-h-24">z-2of4</div>
+				<div class="z-t-12">Text</div>
 			</div> 
 			<div class="z-1of4" > 
-				<div class="z-heading-24">z-1of4</div>
-				<div class="z-text-12">Text</div>
+				<div class="z-h-24">z-1of4</div>
+				<div class="z-t-12">Text</div>
 			</div> 
 		</div>
 	</section>
@@ -798,12 +896,12 @@ echo('</table>
 	<section class="z-pv-10">
 		<div class="z-container z-center-children"> 
 				<div class="z-1of3" > 
-					<div class="z-heading-24">z-1of3</div>
-					<div class="z-text-12">Text</div>
+					<div class="z-h-24">z-1of3</div>
+					<div class="z-t-12">Text</div>
 				</div>
 				<div class="z-2of3"> 
-					<div class="z-heading-24">z-2of3</div>
-					<div class="z-text-12">Text</div> 
+					<div class="z-h-24">z-2of3</div>
+					<div class="z-t-12">Text</div> 
 				</div> 
 			</div>
 		</div>
@@ -812,8 +910,8 @@ echo('</table>
 	<section class="z-pv-10">
 		<div class="z-container z-center-children"> 
 				<div class="z-4of4" > 
-					<div class="z-heading-24">z-4of4</div>
-					<div class="z-text-12">Text</div> 
+					<div class="z-h-24">z-4of4</div>
+					<div class="z-t-12">Text</div> 
 				</div>
 			</div>
 		</div>
@@ -836,11 +934,11 @@ echo('</table>
 
 		<section class="z-pv-10">
 			<div class="z-container z-center-children"> 
-				<div class="z-column z-heading-18">#i# column grid system ( class="z-1of#i#" )</div> 
+				<div class="z-column z-h-18">#i# column grid system ( class="z-1of#i#" )</div> 
 				<section class="z-center-children z-pv-10"> 
 					<cfloop from="1" to="#i#" index="n">
 						<div class="z-1of#i#" > 
-							<div class="z-heading-12">#n#</div>
+							<div class="z-h-12">#n#</div>
 						</div>
 					</cfloop>
 				</section>
@@ -850,7 +948,7 @@ echo('</table>
 
 	<section class="z-pv-10">
 		<div class="z-container">
-			<div class="z-column z-heading-18">Right sidebar with automatic fill width column</div> 
+			<div class="z-column z-h-18">Right sidebar with automatic fill width column</div> 
 		</div>
 		<div class="z-container z-mv-10"> 
 			<div class="z-column z-p-0">
@@ -866,7 +964,7 @@ echo('</table>
 
 	<section class="z-pv-10">
 		<div class="z-container">
-			<div class="z-column z-heading-18">Left sidebar with automatic fill width column and reverse order html</div> 
+			<div class="z-column z-h-18">Left sidebar with automatic fill width column and reverse order html</div> 
 		</div>
 		<div class="z-container z-reverse-order z-mv-10"> 
 			<div class="z-column z-p-0">
@@ -881,22 +979,22 @@ echo('</table>
 	</section>
 
 	<section class="z-pv-10">
-		<div class="z-container z-center-children z-equal-heights"> 
+		<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
 		 	<div class="z-1of3">
-				<div class="z-heading-36">
-					Heading1
+				<div class="z-h-36">
+					z-h-36
 				</div>  
-				<div class="z-heading-30">
-					Heading2
+				<div class="z-h-30">
+					z-h-30
 				</div>  
-				<div class="z-heading-24">
-					Heading3
+				<div class="z-h-24">
+					z-h-24
 				</div> 
-				<div class="z-heading-18">
-					Heading4
+				<div class="z-h-18">
+					z-h-18
 				</div>  
-				<div class="z-heading-14">
-					Heading5
+				<div class="z-h-14">
+					z-h-14
 				</div>  
 			</div>
 			<div class="z-1of3">
@@ -907,14 +1005,49 @@ echo('</table>
 				<h5>Heading5</h5>
 			</div>
 			<div class="z-1of3">
-				<div class=" z-text-36">
-				Text36
+				<div class=" z-t-36">
+				z-t-36
 				</div> 
-				<div class=" z-text-24">
-				Text24
+				<div class=" z-t-24">
+				z-t-24
 				</div> 
-				<div class=" z-text-18">
-				Text18
+				<div class=" z-t-18">
+				z-t-18
+				</div>  
+			</div>
+		 	<div class="z-1of3">
+				<div class="z-fh-36">
+					z-fh-36
+				</div>  
+				<div class="z-fh-30">
+					z-fh-30
+				</div>  
+				<div class="z-fh-24">
+					z-fh-24
+				</div> 
+				<div class="z-fh-18">
+					z-fh-18
+				</div>  
+				<div class="z-fh-14">
+					z-fh-14
+				</div>  
+			</div>
+			<div class="z-1of3">
+				<h1 class="z-fh-36">Heading1</h1>
+				<h2 class="z-fh-30">Heading2</h2>
+				<h3 class="z-fh-24">Heading3</h3> 
+				<h4 class="z-fh-18">Heading4</h4>
+				<h5 class="z-fh-14">Heading5</h5>
+			</div>
+			<div class="z-1of3">
+				<div class=" z-ft-36">
+				z-ft-36
+				</div> 
+				<div class=" z-ft-24">
+				z-ft-24
+				</div> 
+				<div class=" z-ft-18">
+				z-ft-18
 				</div>  
 			</div>
 		</div>

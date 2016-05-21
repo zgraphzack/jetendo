@@ -256,12 +256,12 @@
 
 
 	// add class="zForceChildEqualHeights" data-column-count="2" to any element and all the children will have heights made equal for each row. You can change 480 to something else with this optional attribute: data-single-column-width="768"
+	// if data-children-class is specified, the equal heights will be performed on the elements matching the class instead of the children of the container.
 	function zForceChildEqualHeights(children){  
 		var lastHeight=0; 
 		$(children).height("auto");
-		$(children).each(function(){ 
-			var position=zGetAbsPosition(this);
-			var height=position.height;   
+		$(children).each(function(){  
+			var height=$(this).height(); 
 			if(height>lastHeight){
 				lastHeight=height;
 			}
@@ -275,7 +275,6 @@
 		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
 		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
-		// if data-children-class is specified, the equal heights will be performed on the elements matching the class instead of the children of the container.
 		containers.each(function(){
 			var childrenClass=$(this).attr("data-children-class");
 			if(childrenClass==null || childrenClass == ""){
@@ -290,7 +289,6 @@
 				columnCount=0;
 			}
 			columnCount=parseInt(columnCount);
-
 			if(childrenClass!=""){
 				var children=$(childrenClass, this);
 			}else{
@@ -302,7 +300,7 @@
 			}
 			var columnChildren=[];
 			var columnChildrenImages=[];
-			if(typeof columnChildren[0] == "undefined"){
+			if(columnCount==0){
 				columnChildren[0]={
 					children:children,
 					images:[],
