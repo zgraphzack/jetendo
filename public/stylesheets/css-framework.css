@@ -1,51 +1,99 @@
 /* this file is for a standalone jetendo css framework */
 
-.z-container *{
+
+
+body{ margin:0px; line-height:1.3;  }
+form{ margin:0px; padding:0px;}
+img{border-style:none;}
+
+*{
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing:border-box;
 }
-.z-container{  display:block; float:left; width:100%; }
-.z-clear{clear:both;}
-.z-center-children{ text-align:center; font-size:0px;} 
-.z-center-children > div{ display:inline-block; text-align:left; vertical-align:top; float:none; }
-.z-container .z-center{margin:0 auto; width:1260px;}
+header,
+nav,
+section,
+aside,
+article,
+footer, .z-section, .z-row{
+	width:100%; float:left; min-height:1px;
+}
 
+.z-center-children{ text-align:center; font-size:0px;} 
+.z-center-children > div, .z-center-children > a{ display:inline-block; text-align:left; vertical-align:top; float:none; }
+.z-container{margin:0 auto;width:1260px;}
+
+.z-clear {
+	clear: both;
+	display: block;
+	overflow: hidden;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
+/* for responsive image */
+.z-fluid {
+	width: auto !important;
+	height: auto !important;
+	max-width: 100%;
+}
+.z-container iframe { max-width:100%;}
+
+.z-button, input[type="submit"], input[type="button"], button {
+	display: inline-block; 
+	padding: 0.2em 2em;
+	color: #FFFFFF;
+	background: rgba(60,60,60, 0.7);
+	text-align: center;
+	cursor: pointer;
+	outline: 0;
+	border: none;
+	transition:background 0.5s;
+	text-decoration: none;
+}
+.z-button:hover, input[type="submit"]:hover, input[type="button"]:hover, button:hover {
+	background: rgba(60,60,60, 1.0);
+}
+.z-radius-5{ border-radius:5px;}
+.z-radius-10{ border-radius:10px;}
+.z-radius-15{ border-radius:15px;}
+
+.z-text-left {
+	text-align: left !important;
+}
+.z-text-center {
+	text-align: center !important;
+}
+.z-text-right {
+	text-align: right !important;
+}
  
-.z-table-center{ padding:0px; text-align:center; display:table-cell; vertical-align:middle;}
-.z-table-top-center{ padding:0px; text-align:center; display:table-cell; vertical-align:top;}
+.z-table-center{ text-align:center; display:table-cell; vertical-align:middle;}
+.z-table-top-center{ text-align:center; display:table-cell; vertical-align:top;}
 .z-table-bottom-center{ text-align:center; display:table-cell; vertical-align:bottom;}
 .z-table-top-left{ text-align:left; display:table-cell; vertical-align:top;}
-.z-table-top-right{ text-align:right; display:table-cell; vertical-align:top; padding-right:10px;}
-.z-table-center-left{ text-align:left; display:table-cell; vertical-align:middle; padding-left:10px;}
-.z-table-center-right{ text-align:right; display:table-cell; vertical-align:middle; padding-left:10px;}
+.z-table-top-right{ text-align:right; display:table-cell; vertical-align:top; }
+.z-table-center-left{ text-align:left; display:table-cell; vertical-align:middle; }
+.z-table-center-right{ text-align:right; display:table-cell; vertical-align:middle; }
 .z-table-bottom-left{ text-align:left; display:table-cell; vertical-align:bottom;}
-.z-table-bottom-right{ text-align:right; display:table-cell; vertical-align:bottom; padding-right:10px;}
-.z-table-bottom-left{ text-align:left; display:table-cell; vertical-align:bottom; padding-left:10px;}
+.z-table-bottom-right{ text-align:right; display:table-cell; vertical-align:bottom;}
+.z-table-bottom-left{ text-align:left; display:table-cell; vertical-align:bottom;}
 .z-table{
 	display:table;
 	
 }
 .z-reverse-order{ direction: rtl; }
 .z-normal-order{ direction: ltr; }
-.z-table-fill{ 
-	display:table-cell;
-	vertical-align: top;  
-    padding: 20px;  
-    z-index:1; 
-    direction: ltr; 
-}
-.z-table-left-sidebar{
+.z-left-sidebar{
 	display:table-cell;
 	vertical-align: top; 
 	float:none !important;
-    padding: 20px;   
 	direction: ltr;
 }
-.z-table-right-sidebar{
+.z-right-sidebar{
 	display:table-cell;
 	vertical-align: top;
-    padding: 20px;    
 	float:none !important;
 	direction: ltr;
 }
@@ -70,49 +118,44 @@
 }
 
 
+
 @media screen and (max-width: 1280px) { 
-	.z-container .z-center{margin:0 auto; width:960px;}
+	.z-container{margin:0 auto; width:960px;}
 	.z-fluid-at-1280{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
 
 }
 @media screen and (max-width: 980px) { 
-	.z-container .z-center{margin:0 auto; width:100%;}  
+	.z-container{margin:0 auto; width:100%;}  
 
 	.z-table{display:block;}
-	.z-table-fill{ 
-	display:block; width:100%;
-	 margin-left:0px !important; margin-right:0px !important; 
-	 max-width:100% !important;
-	float:left !important;
-	}
 
-	.z-table-left-sidebar{
+	.z-left-sidebar{
 		display:block;
-		width:100%;
+		width:100% !important;
 		float:left !important;
-		max-width:100%;
+		max-width:100% !important;
 		margin:0px;
 		margin-left:0px !important; margin-right:0px !important; 
 	}
-	.z-table-right-sidebar{
+	.z-right-sidebar{
 		display:block;
-		width:100%;
-		max-width:100%;
+		width:100% !important;
+		max-width:100% !important;
 		float:left !important;
 		margin:0px;
 		margin-left:0px !important; margin-right:0px !important; 
 	}
-	.z-fluid-at-980{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+	.z-fluid-at-980{ width:auto !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
 }
 
 
 @media screen and (max-width: 768px) {
 
 	.z-column{ margin-left:0px; margin-right:0px; } 
-	.z-fluid-at-768{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+	.z-fluid-at-768{ width:auto !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
 }
 
 @media screen and (max-width: 480px) {
-	.z-fluid-at-480{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+	.z-fluid-at-480{ width:auto !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
 }
-.z-container .z-center .z-center{ width:100%; float:left;}
+.z-container .z-container{ width:100%; float:left;}

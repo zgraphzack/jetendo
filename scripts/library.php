@@ -742,7 +742,9 @@ $crontabs="#every minute
 0 * * * * /usr/bin/php ".$scriptsPath."verify-sites.php >/dev/null 2>&1
 ";
 if(!$isTestServer){
-$crontabs.="#every 5 minutes
+$crontabs.="
+
+#every 5 minutes
 0-59/20 * * * * /usr/bin/php ".$scriptsPath."move-mls-images.php > /dev/null 2>&1
 
 # every day at 12:15am
@@ -757,8 +759,11 @@ $crontabs.="#every 5 minutes
 # every day at 12:20am
 20 0 * * * /usr/bin/php ".$scriptsPath."listing-image-cleanup.php > /dev/null 2>&1";
 }else{
-$crontabs.="#every hour
-5 * * * * /usr/bin/php ".$scriptsPath."git-status.php > /dev/null 2>&1";
+$crontabs.="
+
+#every hour
+5 * * * * /usr/bin/php ".$scriptsPath."git-status.php > /dev/null 2>&1
+";
 }
 	$contents="";
 	if(file_exists($rootCronPath)){
