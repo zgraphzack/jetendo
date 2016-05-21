@@ -27,41 +27,40 @@
 	<cfscript>
 	defaultBreakPoint=getDefaultBreakpointConfig();
 	breakStruct={
-		arrBreak=["Default","1800","1550","1280","980","768","480"],
-		//arrBreak=["480","768", "980", "1280", "1550", "1800", "Default"],
+		arrBreak=["Default","1800","1550","1382","992","768","480"],
 		data:{
 			"Default":{
-				headingScale:1.3,
-				textScale:1.3,
+				headingScale:1,
+				textScale:1,
 				minimumPadding:10,
 				textMinimumFontSize:10,
 				headingMinimumFontSize:10,
-				indentScale:1.3
-			},
-			"1800":{
-				headingScale:1.25,
-				textScale:1.25,
-				indentScale:1.3
-			},
-			"1550":{
-				headingScale:1.25,
-				textScale:1.25,
-				indentScale:1.3
-			}, 
-			"1280":{
-				headingScale:1.2,
-				textScale:1.2,
 				indentScale:1.2
 			},
-			"980":{
+			"1800":{
 				headingScale:1,
 				textScale:1,
-				indentScale:1
+				indentScale:1.15
 			},
-			"768":{
+			"1550":{
+				headingScale:1,
+				textScale:1,
+				indentScale:1.1
+			}, 
+			"1382":{
 				headingScale:0.836,
 				textScale:0.836,
-				indentScale:0.836
+				indentScale:1
+			},
+			"992":{
+				headingScale:0.806,
+				textScale:0.806,
+				indentScale:0.806
+			},
+			"768":{
+				headingScale:0.786,
+				textScale:0.786,
+				indentScale:0.786
 			},
 			"480":{
 				headingScale:0.736,
@@ -69,7 +68,7 @@
 				indentScale:0.736
 			}
 		},
-		minimum_column_width:150,
+		minimum_column_width:200,
 		css:{}
 	}
 	lastBreak={};
@@ -179,7 +178,7 @@
 				dataStruct[n]=form[id];
 			}
 		}
-		if(structkeyexists(form, 'setToDefault')){
+		if(structkeyexists(form, 'setToDefault') and breakpoint NEQ 1800 and breakpoint NEQ 1550){
 			dataStruct["enabled"]=1;
 		}else{
 			dataStruct["enabled"]=application.zcore.functions.zso(form, "enabled_"&breakpoint, true, 0); 
@@ -222,12 +221,7 @@
 
 <cffunction name="generateGlobalBreakpointCSS" localmode="modern" access="public">
 	<cfargument name="breakpointConfig" type="struct" required="yes">
-	<cfscript>
-	/*arrFull=[];
-	arr1280=[];
-	arr980=[];
-	arr768=[];
-	arr480=[]; */
+	<cfscript> 
 	breakStruct=arguments.breakpointConfig;
 	startFontSize=12; 
 	uniqueStruct={};
@@ -250,7 +244,7 @@
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='ul,ol,blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.__')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
+		v='ul,ol,blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.___')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
@@ -271,7 +265,7 @@
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		}
-		v='.z-center-children > div, .z-center-children a{ font-size:#max(dataStruct.textMinimumFontSize, round(dataStruct.textScale*16))#px; }';
+		v='.z-center-children > div, .z-center-children > a{ font-size:#max(dataStruct.textMinimumFontSize, round(dataStruct.textScale*16))#px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
@@ -279,7 +273,7 @@
 		if(n EQ arrayLen(breakStruct.arrBreak)){
 	 		v='.z-column{ min-height:1px; width:100%; margin-left:0%;  margin-right:0%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
 		}else{
-	 		v='.z-column{ min-height:1px; width:#numberformat(100-dataStruct.columnGapSidePercent, '_.__')#%; margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
+	 		v='.z-column{ min-height:1px; width:#numberformat(100-dataStruct.columnGapSidePercent, '_.___')#%; margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
 	 	}
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
@@ -313,7 +307,7 @@
 			if(n==arrayLen(breakStruct.arrBreak)){
 				isSingleColumn=true;
 				disableFirstLast=true;
-			}else if(breakpoint <= 980 and columnWidth < breakStruct.minimum_column_width){
+			}else if(breakpoint <= 992 and columnWidth < breakStruct.minimum_column_width){
 				// find the previous columnWidth that allows more then one column (if any)  
 				for(i3=i2;i3>=2;i3--){
 					tempPercent=100/i3;
@@ -341,7 +335,7 @@
 
 
 				// need to calculate the total margin based on number of columns.  i.e. 3 column with 3% column gap is (3-1)*3
-				if(breakpoint > 980){
+				if(breakpoint > 992){
 					columnCount=round(100/percent);
 					columnCount=n2;
 					margin=dataStruct.columnGapSidePercent/2;  
@@ -352,7 +346,7 @@
 					}
 					width-=dataStruct.columnGapSidePercent;
 					maxWidth=100;  
-				}else if(breakpoint EQ 980){
+				}else if(breakpoint EQ 992){
 					if(percent <= 33.34){
 						percent=33.33;
 						columnCount=1;
@@ -390,7 +384,7 @@
 				} 
 				padding=' padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%;';
 
-				v='.z-#n2#of#limit#{ float:left; margin-left:#numberformat(margin, '_.__')#%; margin-right:#numberformat(margin, '_.__')#%; #padding# margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%;}';
+				v='.z-#n2#of#limit#{ float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%; #padding# margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.___')#%;}';
 			
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
@@ -403,10 +397,10 @@
 						arrayAppend(arrCSS, v);
 					}   
 				}else{    
-					if(breakpoint LTE 980){
-						v=".z-#n2#of#limit#{ min-width:#breakStruct.minimum_column_width#px; max-width:#maxWidth#%; width:#numberformat(width, '_.__')#%; }";
+					if(breakpoint LTE 992){
+						v=".z-#n2#of#limit#{ min-width:#breakStruct.minimum_column_width#px; max-width:#maxWidth#%; width:#numberformat(width, '_.___')#%; }";
 					}else{
-						v=".z-#n2#of#limit#{ max-width:#maxWidth#%; width:#numberformat(width, '_.__')#%; }";
+						v=".z-#n2#of#limit#{ max-width:#maxWidth#%; width:#numberformat(width, '_.___')#%; }";
 					} 
 					if(not structkeyexists(uniqueStruct, v)){
 						uniqueStruct[v]=true;
@@ -421,10 +415,10 @@
 				if(isSingleColumn){
 					v='.z-offset-#n2#of#limit#{ margin-left:0px; }';
 				}else{
-					if(breakpoint > 980){ 
-						v='.z-offset-#n2#of#limit#{ margin-left:#numberformat(margin+width, '_.__')#%; }';
+					if(breakpoint > 992){ 
+						v='.z-offset-#n2#of#limit#{ margin-left:#numberformat(margin+width, '_.___')#%; }';
 					}else{
-						v='.z-offset-#n2#of#limit#{ margin-left:#numberformat(margin, '_.__')#%; }';
+						v='.z-offset-#n2#of#limit#{ margin-left:#numberformat(margin, '_.___')#%; }';
 					}
 				}
 				arrayAppend(arrOffsetCSS, v);
@@ -439,12 +433,12 @@
 			tempScaleHeading=max(round(i*dataStruct.headingScale), dataStruct.headingMinimumFontSize);
 			tempScaleText=max(round(i*dataStruct.textScale), dataStruct.textMinimumFontSize); 
 			if(n EQ 1){
-				v='.z-fh-#i#{font-size:#i#px;  padding-bottom:#round(max(dataStruct.minimumPadding, i*0.45))#px;}';
+				v='.z-fh-#i#{font-size:#i#px !important;  padding-bottom:#round(max(dataStruct.minimumPadding, i*0.45))#px !important;}';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
 				}
-				v='.z-ft-#i#{font-size:#i#px; }';
+				v='.z-ft-#i#{font-size:#i#px !important; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
@@ -493,7 +487,7 @@
 			}
 		}  
 		arrCSS2=[];
-		for(g=0;g<=8;g++){
+		for(g=0;g<=15;g++){
 			c=g*10; 
 			v='.z-fp-#c#{ padding-left:#c#px; padding-right:#c#px; padding-top:#c#px; padding-bottom:#c#px; }';
 			if(not structkeyexists(uniqueStruct, v)){
@@ -583,9 +577,9 @@
 			dataStruct=breakStruct.data[breakpoint];
 			multiplier=0;
 			arrCSS2=[];
-		 	for(g=0;g<=8;g++){
+		 	for(g=0;g<=15;g++){
 		 		if(g EQ 1){
-		 			multiplier=0.4;
+		 			multiplier=0.8;
 		 		}
 		 		pt=dataStruct.boxPaddingTopPercent*multiplier;
 		 		pb=dataStruct.boxPaddingBottomPercent*multiplier;
@@ -673,8 +667,8 @@
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
+				multiplier+=0.8; 
 			}
-			multiplier+=0.35; 
 			if(breakpoint NEQ 'Default'){
 				echo('@media screen and (max-width: #breakpoint#px) {'&chr(10)); 
 				echo(arrayToList(arrCSS2, chr(10))&chr(10)); 
@@ -782,7 +776,7 @@ if(form.method EQ "index"){
 	action="/z/admin/layout-global/saveLayoutInstanceSettings";
 }
 // display form
-echo('<div style="width:100%; font-size:14px !important; float:left; padding-left:5px; padding-right:5px;">
+echo('<div style="width:100%; overflow:auto; font-size:14px !important; float:left; padding-left:5px; padding-right:5px;">
 	<form action="#action#" method="post">
 	<table class="table-list">
 	<tr>
@@ -826,7 +820,7 @@ minimum_column_width=application.zcore.functions.zso(breakStruct, 'minimum_colum
 echo('<tr>
 	<th>&nbsp;</th>
 	<td colspan="#structcount(defaultBreakPoint)#">
-	Column width that triggers single column below 980: <input type="text" name="minimum_column_width" style="font-size:14px; max-width:100px; min-width:100px;" value="#htmleditformat(minimum_column_width)#"><br />
+	Column width that triggers single column below 992: <input type="text" name="minimum_column_width" style="font-size:14px; max-width:100px; min-width:100px;" value="#htmleditformat(minimum_column_width)#"><br />
 	Enable z-breakpoint: Checkbox
 	</td>
 	</tr>');
@@ -880,15 +874,15 @@ echo('</table>
 		<div class="z-container z-center-children"> 
 			<div class="z-1of4 " > 
 				<div class="z-h-24">z-1of4</div>
-				<div class="z-t-12">Text</div> 
+				<div class="z-t-16">Text</div> 
 			</div>
 			<div class="z-2of4 " > 
 				<div class="z-h-24">z-2of4</div>
-				<div class="z-t-12">Text</div>
+				<div class="z-t-16">Text</div>
 			</div> 
 			<div class="z-1of4" > 
 				<div class="z-h-24">z-1of4</div>
-				<div class="z-t-12">Text</div>
+				<div class="z-t-16">Text</div>
 			</div> 
 		</div>
 	</section>
@@ -897,11 +891,11 @@ echo('</table>
 		<div class="z-container z-center-children"> 
 				<div class="z-1of3" > 
 					<div class="z-h-24">z-1of3</div>
-					<div class="z-t-12">Text</div>
+					<div class="z-t-16">Text</div>
 				</div>
 				<div class="z-2of3"> 
 					<div class="z-h-24">z-2of3</div>
-					<div class="z-t-12">Text</div> 
+					<div class="z-t-16">Text</div> 
 				</div> 
 			</div>
 		</div>
@@ -911,7 +905,7 @@ echo('</table>
 		<div class="z-container z-center-children"> 
 				<div class="z-4of4" > 
 					<div class="z-h-24">z-4of4</div>
-					<div class="z-t-12">Text</div> 
+					<div class="z-t-16">Text</div> 
 				</div>
 			</div>
 		</div>
@@ -938,7 +932,7 @@ echo('</table>
 				<section class="z-center-children z-pv-10"> 
 					<cfloop from="1" to="#i#" index="n">
 						<div class="z-1of#i#" > 
-							<div class="z-h-12">#n#</div>
+							<div class="z-h-16">#n#</div>
 						</div>
 					</cfloop>
 				</section>
@@ -979,6 +973,9 @@ echo('</table>
 	</section>
 
 	<section class="z-pv-10">
+		<div class="z-container z-mv-10">
+			<div class="z-column z-h-18">Responsive Heading and Text Classes</div> 
+		</div>
 		<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
 		 	<div class="z-1of3">
 				<div class="z-h-36">
@@ -1015,6 +1012,12 @@ echo('</table>
 				z-t-18
 				</div>  
 			</div>
+		</div>
+		<div class="z-container z-mv-10">
+			<div class="z-column z-h-18">Fixed Size Heading and Text Classes</div> 
+		</div>
+
+		<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
 		 	<div class="z-1of3">
 				<div class="z-fh-36">
 					z-fh-36

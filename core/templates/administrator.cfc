@@ -97,7 +97,7 @@
 			.zDashboardButtonTitle{width:100%; float:left;margin-bottom:5px; font-size:115%; display:block;font-weight:bold;}
 			.zDashboardButtonSummary{width:100%; float:left;}
 
-			@media only screen and (max-width: 980px) { 
+			@media only screen and (max-width: 992px) { 
 				.zDashboardContainer{width:100%;} 
 			}
 

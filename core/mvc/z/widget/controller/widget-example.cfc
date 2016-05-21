@@ -112,13 +112,13 @@ Try to organize all of the static resources for a widget in a single directory t
 #c# .test-example-5{width:#round((1-csd["Left Column Width %"])*100)#%;}
 #c# .test-example-3{ font-size:#round(fs*36)#px; line-height:#round(fs*42)#px;}
 #c# .test-example-4{ font-size:#round(fs*18)#px; line-height:#round(fs*24)#px;}
-@media only screen and (max-width: 1280px) { 
+@media only screen and (max-width: 1382px) { 
 #c# .test-example-3{ font-size:#round(fs*30)#px; line-height:#round(fs*36)#px; }
 #c# .test-example-4{ font-size:#round(fs*16)#px; line-height:#round(fs*21)#px;}
 
 
 }
-@media only screen and (max-width: 980px) { 
+@media only screen and (max-width: 992px) { 
 #c# .test-example-4{ font-size:#round(fs*14)#px; line-height:#round(fs*18)#px;} 
 #c# .test-example-3{ font-size:#round(fs*24)#px; line-height:#round(fs*30)#px;}
 #c# .test-example-2{padding-bottom:#csd["Column Gap"]#px;}

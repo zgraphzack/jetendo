@@ -3,12 +3,12 @@
     .zapp-admin-nav-text2{display:none;}
 }
 .zhelp-manager-div{ 
-width:100%; max-width:980px; font-size:130%; line-height:150%; float:left;
+width:100%; max-width:992px; font-size:130%; line-height:150%; float:left;
 }
 .zhelp-manager-div h2{ font-size:150%; line-height:150%;}
 .zhelp-manager-div h3{ font-size:130%; line-height:150%; font-weight:normal;}
 .zhelp-manager-div ul, .zhelp-manager-div ol{ margin-top:0px;}
-.zdoc-container{width:100%; /*width:980px\9;*/ color:#000; float:left; }
+.zdoc-container{width:100%; /*width:992px\9;*/ color:#000; float:left; }
 .zdoc-container p,.zdoc-container ol,.zdoc-container ul,.zdoc-container h1,.zdoc-container h2,.zdoc-container h3,.zdoc-container h4{padding:0px; margin:0px; padding-bottom:15px;}
 /*.zdoc-container h1 #zContentTransitionTitleSpan{display:block; padding-top:35px;}*/
 
