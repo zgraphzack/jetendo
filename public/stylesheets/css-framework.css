@@ -133,16 +133,15 @@ footer, .z-section, .z-row{
 .z-show-at-1382{display:none;}
 .z-show-at-992{display:none;}
 .z-show-at-767{display:none;}
-.z-show-at-480{display:none;}
+.z-show-at-479{display:none;}
 
 .z-mobileMenuButton {display:none;}
 .z-mobileMenuDiv {display:none;}
 
 .z-transition-all{-webkit-transition: all ease 0.3s; transition: all ease 0.3s;}
 
-
 @media screen and (max-width: 1382px) { 
-	.z-container{margin:0 auto; width:960px;}
+	.z-container{margin:0 auto; width:974px;}
 	.z-fluid-at-1382{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
 	.z-hide-at-1382{display:none !important;}
 	.z-show-at-1382{display:block !important;}
@@ -258,9 +257,9 @@ footer, .z-section, .z-row{
 	}
 }
 
-@media screen and (max-width: 480px) {
-	.z-fluid-at-480{ width:100% !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
-	.z-hide-at-480{display:none !important;}
-	.z-show-at-480{display:block !important;}
+@media screen and (max-width: 479px) {
+	.z-fluid-at-479{ width:100% !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+	.z-hide-at-479{display:none !important;}
+	.z-show-at-479{display:block !important;}
 }
 .z-container .z-container{ width:100%; float:left;}
