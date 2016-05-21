@@ -38,7 +38,7 @@
 		"Thumbnail Width": "200",
 		"Thumbnail Height": "100",
 	};
-	ts.layoutFields["480"]={ 
+	ts.layoutFields["479"]={ 
 	}; 
 	widget=application.zcore.widget.getWidget(ts);
 	// the fields edited by client/user.  arrData is an array of dataFields structures.

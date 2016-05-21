@@ -1526,7 +1526,7 @@ ts={
 	src:{
 		"default":"/images/resize-image-test.png", // any larger width, required
 		"992":"/images/resize-image-test-mobile.png",
-		"480":"" // specifying no path will set display:none; on the img tag
+		"479":"" // specifying no path will set display:none; on the img tag
 	},
 	class:"zForceNegativeMarginRight", // Optionally force image to touch left (zForceNegativeMarginLeft) or right (zForceNegativeMarginRight) of screen
 	alt:"",

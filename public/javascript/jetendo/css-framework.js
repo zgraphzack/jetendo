@@ -282,7 +282,7 @@
 			}
 			var singleColumnWidth=$(this).attr("data-single-column-width");
 			if(singleColumnWidth==null || singleColumnWidth == ""){
-				singleColumnWidth=480;
+				singleColumnWidth=479;
 			}
 			var columnCount=$(this).attr("data-column-count");
 			if(columnCount==null || columnCount == ""){
