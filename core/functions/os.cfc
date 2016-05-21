@@ -762,6 +762,15 @@ if(not rs.success){
 	<cfscript>
 	var local=structnew();
 	tout=""; 
+	if(structkeyexists(request.zos, 'includeManagerStylesheet') or request.zos.inMemberArea){ 
+		ts={
+			type:"zIncludeZOSFORMS",
+			url:"/z/a/stylesheets/style.css",
+			package:"",
+			forcePosition:""
+		};
+		arrayprepend(request.zos.arrCSSIncludes, ts);
+	}
 	
 	jsLength=arraylen(request.zos.arrJSIncludes);
 	cssLength=arraylen(request.zos.arrCSSIncludes);

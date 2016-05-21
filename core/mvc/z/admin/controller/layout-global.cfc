@@ -240,7 +240,7 @@
 		tempScaleText=max(round(16*dataStruct.textScale), dataStruct.textMinimumFontSize); 
 
 
-		v='body { font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#; } ';
+		v='body { line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#; } ';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
@@ -255,12 +255,12 @@
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='h1,h2,h3,h4,h5,h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+		v='.z-container h1,.z-container h2,.z-container h3,.z-container h4,.z-container h5,.z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='textarea, select, button, input{ font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; }';
+		v='.z-container textarea, .z-container select, .z-container button, .z-container input{ font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
@@ -460,7 +460,7 @@
 				headingEnabled=5;
 			}
 			if(headingEnabled NEQ 0){
-				v='h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
+				v='.z-container h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
@@ -766,7 +766,7 @@ echo('</table>
 	<section>
 		<div class="z-container"> 
 			<div class="z-column">
-				For visualizing space adjustments, background colors have been applied. Dark = z-container, medium = z-center, lightest = z-column
+				For visualizing space adjustments, background colors have been applied. Dark = section, medium = z-container, lightest = z-column
 			</div> 
 		</div> 
 	</section>

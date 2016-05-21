@@ -44,7 +44,7 @@ footer, .z-section, .z-row{
 .z-index-2{position:relative; z-index:2;}
 .z-index-3{position:relative; z-index:3;}
 
-.z-button, input[type="submit"], input[type="button"], button {
+.z-button, .z-container input[type="submit"], .z-container input[type="button"], .z-container button {
 	display: inline-block; 
 	padding: 0.2em 2em;
 	color: #FFFFFF;
@@ -56,8 +56,9 @@ footer, .z-section, .z-row{
 	transition:background 0.5s;
 	text-decoration: none;
 }
-.z-button:hover, input[type="submit"]:hover, input[type="button"]:hover, button:hover {
+.z-button:hover, .z-container input[type="submit"]:hover, .z-container input[type="button"]:hover, .z-container button:hover {
 	background: rgba(60,60,60, 1.0);
+	color:#FFF;
 }
 .z-radius-5{ border-radius:5px;}
 .z-radius-10{ border-radius:10px;}
