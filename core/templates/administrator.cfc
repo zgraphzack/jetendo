@@ -3,7 +3,7 @@
 <cffunction name="init" access="public" returntype="string" localmode="modern">
 	<cfscript>
 	application.zcore.skin.includeCSS("/z/font-awesome/css/font-awesome.min.css");
-	application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+	application.zcore.template.prependTag("stylesheets", '<link href="/z/a/stylesheets/style.css" rel="stylesheet" type="text/css" />', true);
 	application.zcore.skin.includeCSS("/z/fonts/stylesheet.css");
 	application.zcore.functions.zDisableContentTransition();
 	</cfscript>

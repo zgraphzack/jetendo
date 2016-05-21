@@ -40,6 +40,10 @@ footer, .z-section, .z-row{
 }
 .z-container iframe { max-width:100%;}
 
+.z-index-1{position:relative; z-index:1;}
+.z-index-2{position:relative; z-index:2;}
+.z-index-3{position:relative; z-index:3;}
+
 .z-button, input[type="submit"], input[type="button"], button {
 	display: inline-block; 
 	padding: 0.2em 2em;

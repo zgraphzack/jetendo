@@ -240,32 +240,27 @@
 		tempScaleText=max(round(16*dataStruct.textScale), dataStruct.textMinimumFontSize); 
 
 
-		v='body { font-size:#tempScaleText#px; } ';
+		v='body { font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#; } ';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='.z-container { line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; } ';
+		v='p{margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px;}';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='.z-container p{margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px;}';
+		v='ul,ol,blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.__')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='.z-container ul,.z-container ol, .z-container blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.__')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
+		v='h1,h2,h3,h4,h5,h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
 		} 
-		v='.z-container h1, .z-container h2, .z-container h3, .z-container h4, .z-container h5, .z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
-		if(not structkeyexists(uniqueStruct, v)){
-			uniqueStruct[v]=true;
-			arrayAppend(arrCSS, v);
-		} 
-		v='.z-container textarea, .z-container select, .z-container button, .z-container input{ font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; }';
+		v='textarea, select, button, input{ font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
@@ -274,13 +269,7 @@
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
 			arrayAppend(arrCSS, v);
-		} 
-		/*
-		v='.z-container .z-row{ margin-left:-#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%; margin-right:-#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%;}';
-		if(not structkeyexists(uniqueStruct, v)){
-			uniqueStruct[v]=true;
-			arrayAppend(arrCSS, v);
-		} */
+		}
 		v='.z-center-children > div, .z-center-children a{ font-size:#max(dataStruct.textMinimumFontSize, round(dataStruct.textScale*16))#px; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
@@ -471,7 +460,7 @@
 				headingEnabled=5;
 			}
 			if(headingEnabled NEQ 0){
-				v='.z-container h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
+				v='h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
@@ -695,7 +684,7 @@ if(form.method EQ "index"){
 	action="/z/admin/layout-global/saveLayoutInstanceSettings";
 }
 // display form
-echo('<div style="width:100%; float:left; padding-left:5px; padding-right:5px;">
+echo('<div style="width:100%; font-size:14px !important; float:left; padding-left:5px; padding-right:5px;">
 	<form action="#action#" method="post">
 	<table class="table-list">
 	<tr>
@@ -730,7 +719,7 @@ for(i in arrKey){
 		breakpoint=breakStruct.arrBreak[n]; 
 		dataStruct=breakStruct.data[breakpoint]; 
 		id=application.zcore.functions.zescape(i, "_")&"_"&breakpoint;
-		echo('<td><input type="number" from="0.1" to="100.00" step="0.1" name="#id#" value="'&dataStruct[i]&'" style="width:50px;min-width:50px;" /></td>');
+		echo('<td><input type="text" name="#id#" value="'&dataStruct[i]&'" style="font-size:14px; width:70px;min-width:70px;" /></td>');
 	}
 	echo('</tr>');
 }
@@ -739,7 +728,7 @@ minimum_column_width=application.zcore.functions.zso(breakStruct, 'minimum_colum
 echo('<tr>
 	<th>&nbsp;</th>
 	<td colspan="#structcount(defaultBreakPoint)#">
-	Column width that triggers single column below 980: <input type="text" name="minimum_column_width" style="max-width:100px; min-width:100px;" value="#htmleditformat(minimum_column_width)#"><br />
+	Column width that triggers single column below 980: <input type="text" name="minimum_column_width" style="font-size:14px; max-width:100px; min-width:100px;" value="#htmleditformat(minimum_column_width)#"><br />
 	Enable z-breakpoint: Checkbox
 	</td>
 	</tr>');
