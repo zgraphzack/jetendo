@@ -2621,6 +2621,16 @@ this.app_id=10;
 		ts2.size=thumbnailStruct.width&"x"&thumbnailStruct.height;
 		ts2.crop=thumbnailStruct.crop;
 		ts2.count = 1;  
+		if(qList.imageUpdatedDateList NEQ ""){
+			d=listGetAt(qList.imageUpdatedDateList, 1, chr(9));
+			if(d NEQ ""){
+				ts.imageDate=parsedatetime(d);
+			}else{
+				ts.imageDate=now();
+			}
+		}else{
+			ts.imageDate=now();
+		} 
 		arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts2);
 		ts.image=request.zos.currentHostName&"/z/a/images/s.gif";
 		ts.hasImage=false;

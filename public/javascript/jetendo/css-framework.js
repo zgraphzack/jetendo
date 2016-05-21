@@ -275,7 +275,12 @@
 		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
 		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
+		// if data-children-class is specified, the equal heights will be performed on the elements matching the class instead of the children of the container.
 		containers.each(function(){
+			var childrenClass=$(this).attr("data-children-class");
+			if(childrenClass==null || childrenClass == ""){
+				childrenClass="";
+			}
 			var singleColumnWidth=$(this).attr("data-single-column-width");
 			if(singleColumnWidth==null || singleColumnWidth == ""){
 				singleColumnWidth=480;
@@ -286,7 +291,11 @@
 			}
 			columnCount=parseInt(columnCount);
 
-			var children=$(this).children();
+			if(childrenClass!=""){
+				var children=$(childrenClass, this);
+			}else{
+				var children=$(this).children();
+			} 
 			if($(this).width()<=singleColumnWidth){
 				$(children).height("auto");
 				return;
