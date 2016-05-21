@@ -107,15 +107,23 @@ footer, .z-section, .z-row{
  
  
 .zAnimateOnVisible{visibility:hidden;}
-.zOnVisibleSlide {
+.zOnVisibleSlide { 
 	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
 	animation: zOnVisibleSlide 0.8s ease forwards;
 }
 @-webkit-keyframes zOnVisibleSlide {
-  to { transform: translateX(0) translateY(0);   }
+  to { 
+		-ms-transform:translateX(0) translateY(0); 
+		-webkit-transform: translateX(0) translateY(0); 
+		transform: translateX(0) translateY(0);  
+	}
 }
 @keyframes zOnVisibleSlide {
-  to { transform: translateX(0) translateY(0);  }
+  to { 
+		-ms-transform:translateX(0) translateY(0); 
+		-webkit-transform: translateX(0) translateY(0); 
+		transform: translateX(0) translateY(0);  
+	}
 }
 .zAnimateVisible {
   transform: translateX(0) translateY(0) !important;
@@ -130,7 +138,7 @@ footer, .z-section, .z-row{
 .z-mobileMenuButton {display:none;}
 .z-mobileMenuDiv {display:none;}
 
-.z-transition-all{-webkit-transition: all ease 0.3s; transition: all ease 0.3;}
+.z-transition-all{-webkit-transition: all ease 0.3s; transition: all ease 0.3s;}
 
 @media screen and (max-width: 1382px) { 
 	.z-container{margin:0 auto; width:960px;}
@@ -193,6 +201,7 @@ footer, .z-section, .z-row{
 		 position:absolute; 
 		 top:0px;
 		 width:auto;
+		-ms-transform: translateX(-130%) translateY(0); 
 		-webkit-transform: translateX(-130%) translateY(0); 
 		transform: translateX(-130%) translateY(0); 
 		display:block !important;
@@ -204,6 +213,7 @@ footer, .z-section, .z-row{
 		 position:absolute; 
 		 top:0px;
 		 width:auto;
+		-ms-transform:translateX(0) translateY(130%); 
 		-webkit-transform: translateX(0) translateY(-130%); 
 		transform: translateX(0) translateY(-130%); 
 		display:block !important;
@@ -216,7 +226,7 @@ footer, .z-section, .z-row{
 		 position:absolute; 
 		 top:0px;
 		 width:auto;
-		
+		-ms-transform:translateX(130%) translateY(0); 
 		-webkit-transform: translateX(130%) translateY(0); 
 		transform: translateX(130%) translateY(0); 
 		display:block !important;
@@ -228,6 +238,7 @@ footer, .z-section, .z-row{
 		 position:absolute; 
 		 top:0px;
 		 width:auto;
+		-ms-transform:translateX(0) translateY(-130%); 
 		-webkit-transform: translateX(0) translateY(-130%); 
 		transform: translateX(0) translateY(-130%); 
 		display:block !important;
@@ -235,6 +246,8 @@ footer, .z-section, .z-row{
 		border:2px solid rgba(255,255,255, 0.5); 
 	}
 	.z-mobileMenuTranslateX, .z-mobileMenuTranslateY{ 
+		-ms-transform:translateX(0) translateY(0); 
+		-webkit-transform: translateX(0) translateY(0); 
 		transform: translateX(0) translateY(0); 
 		padding:5%;
 	}
