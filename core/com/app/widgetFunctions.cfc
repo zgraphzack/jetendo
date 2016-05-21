@@ -33,7 +33,7 @@
 	};
 	ts.layoutFields["992"]={ 
 	};
-	ts.layoutFields["768"]={ 
+	ts.layoutFields["767"]={ 
 		"Use Mobile Image": true,
 		"Thumbnail Width": "200",
 		"Thumbnail Height": "100",

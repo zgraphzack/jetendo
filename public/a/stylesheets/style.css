@@ -410,7 +410,7 @@ img{border:none;}
 .table-list input{min-width:500px;}
 .table-list .table-list input{min-width:auto;}
 }
-@media only screen and (max-width: 768px) { 
+@media only screen and (max-width: 767px) { 
 .table-list input, .table-list textarea{min-width:100%;}
 }
 .table-list .zSearchFormTable input { min-width: inherit;}

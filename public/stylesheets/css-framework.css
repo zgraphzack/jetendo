@@ -179,9 +179,7 @@ footer, .z-section, .z-row{
 	.z-mobileMenuDiv a{ display:block; padding:10px 20px; font-size:16px !important;   color:#FFF; text-decoration:none;}
 	.z-mobileMenuDiv nav{visibility:hidden;}
 }
-
-
-@media screen and (max-width: 768px) {
+@media screen and (max-width:767px) {
 
 	.z-column{ margin-left:0px; margin-right:0px; } 
 	.z-fluid-at-768{ width:100% !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
