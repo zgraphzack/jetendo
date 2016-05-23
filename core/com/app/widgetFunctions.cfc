@@ -27,18 +27,18 @@
 		"Thumbnail Crop": "Yes"
 	}
 	// optionally specify different values at different breakpoints
-	ts.layoutFields["1280"]={ 
+	ts.layoutFields["1382"]={ 
 		"Thumbnail Width": "250",
 		"Thumbnail Height": "130",
 	};
-	ts.layoutFields["980"]={ 
+	ts.layoutFields["992"]={ 
 	};
-	ts.layoutFields["768"]={ 
+	ts.layoutFields["767"]={ 
 		"Use Mobile Image": true,
 		"Thumbnail Width": "200",
 		"Thumbnail Height": "100",
 	};
-	ts.layoutFields["480"]={ 
+	ts.layoutFields["479"]={ 
 	}; 
 	widget=application.zcore.widget.getWidget(ts);
 	// the fields edited by client/user.  arrData is an array of dataFields structures.

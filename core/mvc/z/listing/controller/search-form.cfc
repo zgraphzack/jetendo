@@ -2827,7 +2827,7 @@ WHERE
     listing_frontage not in (#db.param('')#) 
     <cfif application.zcore.app.getAppData("listing").sharedStruct.optionStruct.mls_option_rentals_only EQ 1> and listing_status LIKE #db.param('%,7,%')# </cfif>
         <cfif structkeyexists(form, 'zdisablesearchfilter') EQ false and structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.filterStruct, 'whereOptionsSQL')> #db.trustedSQL(application.zcore.app.getAppData("listing").sharedStruct.filterStruct.whereOptionsSQL)# </cfif>
-    </cfsavecontent><cfscript>qType=db.execute("qType");
+    </cfsavecontent><cfscript>qType=db.execute("qType"); 
     arrD=listtoarray(qType.idlist);
     arrL=[];
     arrV=[];

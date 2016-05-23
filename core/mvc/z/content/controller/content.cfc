@@ -332,30 +332,33 @@ this.app_id=12;
 			ts.link="/z/admin/site-report/index";
 			arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 		}
-		if(request.zos.istestserver){
-			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
-				ts=structnew();
-				ts.featureName="Manage Sections";
-				ts.link="/z/admin/section/index";
-				arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
-			}
+		if(request.zos.isdeveloper){
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Layouts") EQ false){
 				ts=structnew();
 				ts.featureName="Manage Layouts";
 				ts.link="/z/admin/layout-page/index";
 				arguments.linkStruct["Content Manager"].children["Manage Layouts"]=ts;
 			}
-			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
-				ts=structnew();
-				ts.featureName="Theme Options";
-				ts.link="/z/admin/theme-options/index";
-				arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
-			}
-			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
-				ts=structnew();
-				ts.featureName="Manage Design & Layout";
-				ts.link="/z/admin/template/index";
-				arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
+			if(request.zos.istestserver){
+				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
+					ts=structnew();
+					ts.featureName="Manage Sections";
+					ts.link="/z/admin/section/index";
+					arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
+				}
+				/*
+				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
+					ts=structnew();
+					ts.featureName="Theme Options";
+					ts.link="/z/admin/theme-options/index";
+					arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
+				}*/
+				/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
+					ts=structnew();
+					ts.featureName="Manage Design & Layout";
+					ts.link="/z/admin/template/index";
+					arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
+				}*/
 			}
 		}
 	}

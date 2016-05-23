@@ -912,7 +912,7 @@
 				<th>Code Name:</th>
 				<td>
 				<cfif currentMethod EQ "add">
-					<input type="text" size="50" name="site_option_name" id="site_option_name" value="#htmleditformat(form.site_option_name)#" onkeyup="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;} autofillFieldType(this.value.toLowerCase());" onblur="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;}"><br />
+					<input type="text" size="50" name="site_option_name" id="site_option_name" value="#htmleditformat(form.site_option_name)#" onkeyup="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;} autofillFieldType(this.value);" onblur="var d1=document.getElementById('site_option_display_name');if(displayDefault){d1.value=this.value;}"><br />
 					Note: <a href="/z/admin/site-options/autocompleteTips" target="_blank">Autocomplete tips</a>
 					<script type="text/javascript">
 					var optionsSetByUser=false;
@@ -922,6 +922,7 @@
 							return;
 						}
 						var arrWord=zStringReplaceAll(zStringReplaceAll(v.toLowerCase(), "\t", " "), "  ", " ").split(" ");
+						var arrWordOriginal=zStringReplaceAll(zStringReplaceAll(v, "\t", " "), "  ", " ").split(" ");
 						var arrMap=[
 							{arrWord:['section', 'text'], type:"html editor"},
 							{arrWord:['html'], type:"html editor"},
@@ -1050,7 +1051,7 @@
 							var arrNewWord=[];
 							for(var i=0;i<arrWord.length;i++){
 								if(removeWordIndex != i){
-									arrNewWord.push(arrWord[i]);
+									arrNewWord.push(arrWordOriginal[i]);
 								}
 							}
 							var v=arrNewWord.join(" ");

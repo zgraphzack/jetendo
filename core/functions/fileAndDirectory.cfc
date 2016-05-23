@@ -1525,8 +1525,8 @@ ts={
 	lazy:true, // true - will use javascript to load images, false = will load all images with img tag, css will change which ones appear
 	src:{
 		"default":"/images/resize-image-test.png", // any larger width, required
-		"980":"/images/resize-image-test-mobile.png",
-		"480":"" // specifying no path will set display:none; on the img tag
+		"992":"/images/resize-image-test-mobile.png",
+		"479":"" // specifying no path will set display:none; on the img tag
 	},
 	class:"zForceNegativeMarginRight", // Optionally force image to touch left (zForceNegativeMarginLeft) or right (zForceNegativeMarginRight) of screen
 	alt:"",
@@ -1649,7 +1649,7 @@ ts={
 			attachment: "fixed" 
 		}],
 		// optional second breakpoint
-		"980":[{
+		"992":[{
 			size:"auto",
 			url:"/images/resize-image-test-mobile.jpg",
 			color:"##666",

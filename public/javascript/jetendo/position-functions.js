@@ -26,13 +26,21 @@ var zScrollbarWidth=0;
 		return [curleft,curtop,curwidth,curheight];
 	}
 	
-	function zGetAbsPosition(object) {
+	function zGetAbsPosition(object) { 
+		var $obj=$(object);
+		var p = $obj.offset(); 
+		return {
+			x: p.left,
+			y: p.top,
+			width: $obj.width(),
+			height: $obj.height()
+		};
+		/*
 		var position = new Object();
 		position.x = 0;
 		position.y = 0;
-		position.cx =0;
-		position.cy =0;
-
+		//position.cx =0;
+		//position.cy =0;
 		if( object ) {
 			position.x = object.offsetLeft;
 			position.y = object.offsetTop;
@@ -48,6 +56,7 @@ var zScrollbarWidth=0;
 		position.width=position.cx;
 		position.height=position.cy;
 		return position;
+		*/
 	}
 
 	function zScrollTop(elem, y, forceAnimate){
@@ -170,8 +179,9 @@ var zScrollbarWidth=0;
 			if(typeof arrParent[this.parentNode.id] == "undefined"){
 				arrParent[this.parentNode.id]=0;
 			}
-			var pos=zGetAbsPosition(this);
-			var height=pos.height;  
+			//var pos=zGetAbsPosition(this);
+			//var height=pos.height;  
+			var height=$(this).height();
 			if(height>arrParent[this.parentNode.id]){
 				arrParent[this.parentNode.id]=height;
 			}

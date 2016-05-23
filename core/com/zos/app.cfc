@@ -1533,24 +1533,8 @@ if(rCom.isOK() EQ false){
 		<cfscript>
 		request.zos.selectAppUrlIdOutputScript=true;
 		request.zos.selectAppUrlIdCount=0;
-		request.zos.selectAppUrlIdNameStruct=structnew();
-		</cfscript>
-		<script type="text/javascript">/* <![CDATA[ */
-		var zapp_selectAppUrlIdCount=0;
-		var zapp_selectAppUrlIdF=new Array();
-		var zapp_selectAppUrlIdFI=new Array();
-		zapp_selectAppUrlIdC2=new Array();
-		function zapp_selectAppUrlIdC(o){
-			if(o != undefined){
-				zapp_selectAppUrlIdC2[o.name]=parseInt(o.options[o.selectedIndex].value);
-			}
-			for(var i=0;i<zapp_selectAppUrlIdF.length;i++){
-				zapp_selectAppUrlId(zapp_selectAppUrlIdF[i],zapp_selectAppUrlIdFI[i]);
-			}
-		}
-		function zapp_selectAppUrlId(name, id){
-			var arrId=new Array();
-			<cfscript>
+		request.zos.selectAppUrlIdNameStruct=structnew(); 
+		savecontent variable="out2"{
 			arrId=listtoarray(qD.idlist);
 			for(i=1;i LTE arraylen(arrId);i++){
 				writeoutput('arrId[#arrId[i]#]=1;');
@@ -1568,7 +1552,24 @@ if(rCom.isOK() EQ false){
 					}
 				}
 			}
-			</cfscript>
+		}
+		</cfscript>
+		<script type="text/javascript">/* <![CDATA[ */
+		var zapp_selectAppUrlIdCount=0;
+		var zapp_selectAppUrlIdF=new Array();
+		var zapp_selectAppUrlIdFI=new Array();
+		zapp_selectAppUrlIdC2=new Array();
+		function zapp_selectAppUrlIdC(o){
+			if(o != undefined){
+				zapp_selectAppUrlIdC2[o.name]=parseInt(o.options[o.selectedIndex].value);
+			}
+			for(var i=0;i<zapp_selectAppUrlIdF.length;i++){
+				zapp_selectAppUrlId(zapp_selectAppUrlIdF[i],zapp_selectAppUrlIdFI[i]);
+			}
+		}
+		function zapp_selectAppUrlId(name, id){
+			var arrId=new Array();
+			#out2#
 			var arrT=['<select name="'+name+'" id="'+name+'" size="1" onchange="zapp_selectAppUrlIdC(this)"><option value="">-- Select --<\/option>'];
 			var arrSkip=new Array();
 			var arrSkip2=new Array();
@@ -1592,7 +1593,7 @@ if(rCom.isOK() EQ false){
 			hd.innerHTML=arrT.join("");
 		}/* ]]> */
 		</script>
-				<cfscript>
+		<cfscript>
 		jsFunctionCallCode='<script type="text/javascript">/* <![CDATA[ */zapp_selectAppUrlIdC();/* ]]> */</script>';
 		application.zcore.template.appendTag("content", jsfunctionCallCode);
 		</cfscript>
@@ -1698,7 +1699,7 @@ if(rCom.isOK() EQ false){
 	for(i=1;i LTE arraylen(application.zcore.arrJsFiles);i++){
 		arrayappend(arguments.ss.js, application.zcore.arrJsFiles[i]);
 	}
-	arrayappend(arguments.ss.css, "/z/stylesheets/zOS.css");
+	arrayappend(arguments.ss.css, "/z/stylesheets/zOS.css"); 
 	arrayappend(arguments.ss.css, "/z/stylesheets/css-framework.css");
 	if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, request.zos.globals.privatehomedir&"zcache/zsystem.css")){
 		application.sitestruct[request.zos.globals.id].fileExistsCache[request.zos.globals.privatehomedir&"zcache/zsystem.css"]=fileexists(request.zos.globals.privatehomedir&"zcache/zsystem.css");

@@ -81,14 +81,22 @@
 			return {returnString:"", returnString2:""};
 		}
 		Request.zOS.modes.time.end = GetTickCount();
+
+		link="";
+		if(structkeyexists(form,  request.zos.urlRoutingParameter)){
+			link=form[request.zos.urlRoutingParameter];
+		}else{
+			link=request.zos.cgi.script_name;
+		}
+		returnStruct = application.zcore.functions.zGetRepostStruct();
+		if(returnStruct.urlString NEQ ""){
+			link&="?#htmleditformat(replacenocase(returnStruct.urlString,'zdisablesystemcaching=','ztv=','all'))#";
+		}
 		</cfscript>
   <cfsavecontent variable="returnString">
 	<cfif request.zos.isdeveloper>
-	<br style="clear:both;" />
-	<cfscript>
-	returnStruct = application.zcore.functions.zGetRepostStruct();
-	</cfscript> 
-    <form name="zOS_mode_form" id="zOS_mode_form" onsubmit="return zOS_mode_check();" action="<cfif structkeyexists(form,  request.zos.urlRoutingParameter)>#form[request.zos.urlRoutingParameter]#<cfelse>#request.zos.cgi.script_name#</cfif><cfif returnStruct.urlString NEQ "">?#htmleditformat(replacenocase(returnStruct.urlString,'zdisablesystemcaching=','ztv=','all'))#</cfif>" method="post">
+	<br style="clear:both;" /> 
+    <form name="zOS_mode_form" id="zOS_mode_form" onsubmit="return zOS_mode_check();" action="#link#" method="post">
       <input type="hidden" name="zOS_mode" id="zOS_mode" value="debug" />
       <input type="hidden" name="zOS_modeValue" id="zOS_modeValue" value="true" />
 	#returnStruct.formString#  
@@ -141,6 +149,7 @@
 			<cfelse>
 				Deploy: <a href="#request.zos.zcoreTestAdminDomain#/z/server-manager/admin/deploy/index" target="_blank">Go to Test Server Deploy</a>
 			</cfif>
+              | <a href="#application.zcore.functions.zURLAppend(link, "zdebugurl=1")#">Debug URL</a> 
               | Debug Lead Routing: 
             	<cfif isDefined('request.zsession.debugleadrouting') and request.zsession.debugleadrouting>
                  <a href="##" onclick="zOS_mode_submit('debugleadrouting','false');return false;">On</a>

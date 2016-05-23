@@ -1164,7 +1164,7 @@ formString = userCom.loginForm(inputStruct);
 			.zloginFooter{width:98%; padding:1%;  float:left;}
 			
 
-			@media only screen and (max-width: 980px) { 
+			@media only screen and (max-width: 992px) { 
 				.zloginContainer{width:100%;} 
 			}
 

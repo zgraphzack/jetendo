@@ -5,9 +5,13 @@
 	ts={
 		headingScale:1.5,
 		textScale:1.5,
+		indentScale:1,
 		boxPaddingTopPercent:1.5,
 		boxPaddingSidePercent:1.5,
 		boxPaddingBottomPercent:1.5,
+		boxMarginTopPercent:1.5,
+		boxMarginSidePercent:1.5,
+		boxMarginBottomPercent:1.5,
 		columnGapSidePercent:2,
 		columnGapBottomPercent:2,
 		minimumPadding:10,
@@ -23,40 +27,48 @@
 	<cfscript>
 	defaultBreakPoint=getDefaultBreakpointConfig();
 	breakStruct={
-		arrBreak=["Default","1800","1550","1280","980","768","480"],
+		arrBreak=["Default","1800","1550","1382","992","767","479"],
 		data:{
 			"Default":{
-				headingScale:1.5,
-				textScale:1.5,
+				headingScale:1,
+				textScale:1,
 				minimumPadding:10,
-				minimumFontSize:10
+				textMinimumFontSize:10,
+				headingMinimumFontSize:10,
+				indentScale:1.2
 			},
 			"1800":{
-				headingScale:1.4,
-				textScale:1.4
+				headingScale:1,
+				textScale:1,
+				indentScale:1.15
 			},
 			"1550":{
-				headingScale:1.3,
-				textScale:1.3
-			}, 
-			"1280":{
-				headingScale:1.2,
-				textScale:1.2
-			},
-			"980":{
 				headingScale:1,
-				textScale:1
-			},
-			"768":{
+				textScale:1,
+				indentScale:1.1
+			}, 
+			"1382":{
 				headingScale:0.836,
-				textScale:0.836
+				textScale:0.836,
+				indentScale:1
 			},
-			"480":{
+			"992":{
+				headingScale:0.806,
+				textScale:0.806,
+				indentScale:0.806
+			},
+			"767":{
+				headingScale:0.786,
+				textScale:0.786,
+				indentScale:0.786
+			},
+			"479":{
 				headingScale:0.736,
-				textScale:0.736
+				textScale:0.736,
+				indentScale:0.736
 			}
 		},
-		minimum_column_width:150,
+		minimum_column_width:200,
 		css:{}
 	}
 	lastBreak={};
@@ -166,7 +178,7 @@
 				dataStruct[n]=form[id];
 			}
 		}
-		if(structkeyexists(form, 'setToDefault')){
+		if(structkeyexists(form, 'setToDefault') and breakpoint NEQ 1800 and breakpoint NEQ 1550){
 			dataStruct["enabled"]=1;
 		}else{
 			dataStruct["enabled"]=application.zcore.functions.zso(form, "enabled_"&breakpoint, true, 0); 
@@ -209,40 +221,240 @@
 
 <cffunction name="generateGlobalBreakpointCSS" localmode="modern" access="public">
 	<cfargument name="breakpointConfig" type="struct" required="yes">
-	<cfscript>
-	/*arrFull=[];
-	arr1280=[];
-	arr980=[];
-	arr768=[];
-	arr480=[]; */
+	<cfscript> 
 	breakStruct=arguments.breakpointConfig;
 	startFontSize=12; 
 	uniqueStruct={};
-	for(i=startFontSize;i<=70;i++){
-		for(n=1;n<=arraylen(breakStruct.arrBreak);n++){
-			breakpoint=breakStruct.arrBreak[n]; 
-			dataStruct=breakStruct.data[breakpoint];
-			arrCSS=breakStruct.css[breakpoint];
+
+	for(n=1;n<=arraylen(breakStruct.arrBreak);n++){
+		breakpoint=breakStruct.arrBreak[n]; 
+		dataStruct=breakStruct.data[breakpoint];
+		//uniqueStruct={};
+		arrCSS=breakStruct.css[breakpoint];
+		tempScaleText=max(round(16*dataStruct.textScale), dataStruct.textMinimumFontSize); 
+
+
+		v='body { line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#; } ';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		v='p{margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px;}';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		v='ul,ol,blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.___')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		v='h1,h2,h3,h4,h5,h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+		//v='.z-container h1,.z-container h2,.z-container h3,.z-container h4,.z-container h5,.z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		v='.z-container textarea, .z-container select, .z-container button, .z-container input{ font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; }';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		v='.z-center-children > div, .z-center-children > a{text-align:left;vertical-align:top; font-size:#max(dataStruct.textMinimumFontSize, round(16*dataStruct.textScale))#px;}';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		}
+		v='.z-center-children > div, .z-center-children > a{ font-size:#max(dataStruct.textMinimumFontSize, round(dataStruct.textScale*16))#px; }';
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		if(n EQ arrayLen(breakStruct.arrBreak)){
+	 		v='.z-column{ min-height:1px; width:100%; margin-left:0%;  margin-right:0%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
+		}else{
+	 		v='.z-column{ min-height:1px; width:#numberformat(100-dataStruct.columnGapSidePercent, '_.___')#%; margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
+	 	}
+		if(not structkeyexists(uniqueStruct, v)){
+			uniqueStruct[v]=true;
+			arrayAppend(arrCSS, v);
+		} 
+		limit=2; 
+
+		arrOffsetCSS=[];
+		for(i2=2;i2<=16;i2++){
+			if(limit GT 7 and limit NEQ 12 and limit NEQ 16){
+				limit++;
+				continue;
+			}
+			percent=100/limit;
+			currentLimit=limit;
+			currentIndex=i2;
+			isSingleColumn=false;
+			nextBreakpoint=breakpoint;
+			if(n+1 <= arraylen(breakStruct.arrBreak)){
+				nextBreakpoint=breakStruct.arrBreak[n+1];
+			}
+			if(breakpoint EQ "default"){
+				columnWidth=1280*(percent/100);
+			}else if(nextBreakpoint EQ "default"){
+				columnWidth=1280*(percent/100);
+			}else{
+				columnWidth=min(1280, nextBreakpoint)*(percent/100);
+			}
+			disableFirstLast=false; 
+			// if the columns will be less then the minimum column width, force them all to 100% at this breakpoint
+			if(n==arrayLen(breakStruct.arrBreak)){
+				isSingleColumn=true;
+				disableFirstLast=true;
+			}else if(breakpoint <= 992 and columnWidth < breakStruct.minimum_column_width){
+				// find the previous columnWidth that allows more then one column (if any)  
+				for(i3=i2;i3>=2;i3--){
+					tempPercent=100/i3;
+					disableFirstLast=true;
+					if(breakpoint EQ "default"){
+						columnWidth=980*(tempPercent/100);
+					}else{
+						columnWidth=min(980, nextBreakpoint)*(tempPercent/100);
+					}
+					if(columnWidth >= breakStruct.minimum_column_width){
+						break;
+					}
+				} 
+				if(columnWidth < breakStruct.minimum_column_width){
+					isSingleColumn=true;
+					disableFirstLast=true;
+				}else{ 
+					percent=tempPercent;
+					currentLimit=i3;
+					currentIndex=i3;
+				}  
+			} 
+			for(n2=1;n2<=limit;n2++){
+				width=percent*n2; 
+
+
+				// need to calculate the total margin based on number of columns.  i.e. 3 column with 3% column gap is (3-1)*3
+				if(breakpoint > 992){
+					columnCount=round(100/percent);
+					columnCount=n2;
+					margin=dataStruct.columnGapSidePercent/2;  
+					marginTemp=dataStruct.columnGapSidePercent;
+					if(n2==currentLimit){
+						margin=0;  
+						marginTemp=dataStruct.columnGapSidePercent;   
+					}
+					width-=dataStruct.columnGapSidePercent;
+					maxWidth=100;  
+				}else if(breakpoint EQ 992){
+					if(percent <= 33.34){
+						percent=33.33;
+						columnCount=1;
+					}else if(percent > 66.67){
+						percent=100;
+						columnCount=3;
+					}else{
+						percent=66.66;
+						columnCount=2;
+					}
+					disableFirstLast=true;
+					width=n2*percent;
+					margin=dataStruct.columnGapSidePercent/2; 
+					totalMargin=dataStruct.columnGapSidePercent*columnCount;
+					maxWidth=100-totalMargin;
+					percentMargin=(percent/100)*totalMargin;
+					width-=percentMargin; 
+					width=min(maxWidth, int(width*100)/100);  
+				}else{
+					if(percent <= 50){
+						percent=50;
+						columnCount=1;
+					}else{
+						percent=100;
+						columnCount=2;
+					}
+					disableFirstLast=true;
+					width=n2*percent;
+					margin=dataStruct.columnGapSidePercent/2; 
+					totalMargin=dataStruct.columnGapSidePercent*columnCount;
+					maxWidth=100-totalMargin;
+					percentMargin=(percent/100)*totalMargin;
+					width-=percentMargin; 
+					width=min(maxWidth, int(width*100)/100);  
+				} 
+				padding=' padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%;';
+
+				v='.z-#n2#of#limit#{ float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%; #padding# margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.___')#%;}';
+			
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS, v);
+				}  
+				if(isSingleColumn){
+					v='.z-#n2#of#limit#{ min-height:1px; max-width:100%; width:100%; margin-left:0px; margin-right:0px; display:block; }';
+					if(not structkeyexists(uniqueStruct, v)){
+						uniqueStruct[v]=true;
+						arrayAppend(arrCSS, v);
+					}   
+				}else{    
+					if(breakpoint LTE 992){
+						v=".z-#n2#of#limit#{ min-width:#breakStruct.minimum_column_width#px; max-width:#maxWidth#%; width:#numberformat(width, '_.___')#%; }";
+					}else{
+						v=".z-#n2#of#limit#{ max-width:#maxWidth#%; width:#numberformat(width, '_.___')#%; }";
+					} 
+					if(not structkeyexists(uniqueStruct, v)){
+						uniqueStruct[v]=true;
+						arrayAppend(arrCSS, v);
+					}  
+				}
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS, v);
+				}  
+				// offset classes
+				if(isSingleColumn){
+					v='.z-offset-#n2#of#limit#{ margin-left:0px; }';
+				}else{
+					if(breakpoint > 992){ 
+						v='.z-offset-#n2#of#limit#{ margin-left:#numberformat(margin+width, '_.___')#%; }';
+					}else{
+						v='.z-offset-#n2#of#limit#{ margin-left:#numberformat(margin, '_.___')#%; }';
+					}
+				}
+				arrayAppend(arrOffsetCSS, v);
+			} 
+			limit++;
+		}
+		for(i=1;i<=arraylen(arrOffsetCSS);i++){
+			arrayAppend(arrCSS, arrOffsetCSS[i]);
+		}
+
+		for(i=startFontSize;i<=70;i++){ 
 			tempScaleHeading=max(round(i*dataStruct.headingScale), dataStruct.headingMinimumFontSize);
 			tempScaleText=max(round(i*dataStruct.textScale), dataStruct.textMinimumFontSize); 
-			v='.z-heading-#i#{font-size:#tempScaleHeading#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
-			if(not structkeyexists(uniqueStruct, v)){
-				uniqueStruct[v]=true;
-				arrayAppend(arrCSS, v);
-			}
-			v='.z-text-#i#{font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#;}';
-			if(not structkeyexists(uniqueStruct, v)){
-				uniqueStruct[v]=true;
-				arrayAppend(arrCSS, v);
-			} 
-			headingEnabled=0;
-			if(i EQ "16"){
-				v='.z-container p{margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px;}';
+			if(n EQ 1){
+				v='.z-fh-#i#{font-size:#i#px !important;  padding-bottom:#round(max(dataStruct.minimumPadding, i*0.45))#px !important;}';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS, v);
+				}
+				v='.z-ft-#i#{font-size:#i#px !important; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
 				} 
 			}
+			v='.z-h-#i#{font-size:#tempScaleHeading#px;  padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS, v);
+			}
+			v='.z-t-#i#{font-size:#tempScaleText#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS, v);
+			} 
+			headingEnabled=0; 
 			if(i EQ "36"){
 				headingEnabled=1;
 			}else if(i EQ "30"){
@@ -255,209 +467,218 @@
 				headingEnabled=5;
 			}
 			if(headingEnabled NEQ 0){
-				v='.z-container h#headingEnabled#{font-size:#tempScaleHeading#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
+				v='h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS, v);
-				}
-			}
-	 
-			if(i EQ startFontSize){
-				v='.z-center-children > *{text-align:left;vertical-align:top; font-size:#round(16*dataStruct.textScale)#px;}';
-				if(not structkeyexists(uniqueStruct, v)){
-					uniqueStruct[v]=true;
-					arrayAppend(arrCSS, v);
-				} 
-				limit=2; 
-
-				for(i2=2;i2<=16;i2++){
-					percent=100/limit;
-					currentLimit=limit;
-					currentIndex=i2;
-					isSingleColumn=false;
-					nextBreakpoint=breakpoint;
-					if(n+1 <= arraylen(breakStruct.arrBreak)){
-						nextBreakpoint=breakStruct.arrBreak[n+1];
-					}
-					if(breakpoint EQ "default"){
-						columnWidth=1280*(percent/100);
-					}else{
-						columnWidth=min(1280, nextBreakpoint)*(percent/100);
-					}
-					disableFirstLast=false;
-					if(limit EQ 4){
-						//writedump("acolumnWidth:"&columnWidth&" limit:"&limit&" breakStruct.minimum_column_width:"&breakStruct.minimum_column_width);
-					}
-					// if the columns will be less then the minimum column width, force them all to 100% at this breakpoint
-					if(n==arrayLen(breakStruct.arrBreak)){
-						isSingleColumn=true;
-						disableFirstLast=true;
-					}else if(breakpoint <= 980 and columnWidth < breakStruct.minimum_column_width){
-						// find the previous columnWidth that allows more then one column (if any) 
-							// breakStruct.arrBreak[n]
-							for(i3=i2;i3>=2;i3--){
-								tempPercent=100/i3;
-								disableFirstLast=true;
-								if(breakpoint EQ "default"){
-									columnWidth=980*(tempPercent/100);
-								}else{
-									columnWidth=min(980, nextBreakpoint)*(tempPercent/100);
-								}
-								if(columnWidth >= breakStruct.minimum_column_width){
-									break;
-								}
-							}
-							if(limit EQ 4){
-							//	writedump("breakStruct.arrBreak[n+1]:"&breakStruct.arrBreak[n+1]);
-								//writedump("tempPercent:"&tempPercent);
-								//writedump("columnWidth:"&columnWidth);
-								//abort;
-							}
-							if(columnWidth < breakStruct.minimum_column_width){
-								isSingleColumn=true;
-								disableFirstLast=true;
-							}else{
-						if(limit EQ 4){
-						//writedump('didi');
-						}
-								percent=tempPercent;
-								currentLimit=i3;
-								currentIndex=i3;
-							}  
-					} 
-					for(n2=1;n2<=limit;n2++){
-						width=percent*n2;
-						if(limit EQ 4){
-					//		writedump(width);
-						}
-
-						// need to calculate the total margin based on number of columns.  i.e. 3 column with 3% column gap is (3-1)*3
-						if(breakpoint > 980){
-							columnCount=round(100/percent);
-							columnCount=n2;
-							margin=dataStruct.columnGapSidePercent/2;  
-							marginTemp=dataStruct.columnGapSidePercent;
-							if(n2==currentLimit){
-								margin=0;  
-								marginTemp=dataStruct.columnGapSidePercent;
-							}else{
-							//	width-=((n2)*dataStruct.columnGapSidePercent);//+(dataStruct.columnGapSidePercent*(columnCount));//margin*(n2);  
-							}
-								width-=dataStruct.columnGapSidePercent;
-							maxWidth=100; 
-
-							// why is 2of3 1.5% wrong
-							//width=int(width*100)/100; 
-							if(limit EQ 3){
-							//	writedump("n2:"&(n2)&" breakpoint:"&breakpoint&" margin:"&margin&" | width:"&width&" columnCount:"&columnCount);
-							}
-						}else if(breakpoint EQ 980){
-							if(percent < 33.34){
-								percent=33.33;
-								columnCount=1;
-							}else if(percent > 66.67){
-								percent=100;
-								columnCount=3;
-							}else{
-								percent=66.66;
-								columnCount=2;
-							}
-							disableFirstLast=true;
-							width=n2*percent;
-							margin=dataStruct.columnGapSidePercent/2; 
-							totalMargin=dataStruct.columnGapSidePercent*columnCount;//(currentIndex+1);  
-							maxWidth=100-totalMargin;
-							percentMargin=(percent/100)*totalMargin;
-							width-=percentMargin; 
-							width=int(width*100)/100;  
-						}else{
-							if(percent < 50){
-								percent=50;
-								columnCount=1;
-							}else{
-								percent=100;
-								columnCount=2;
-							}
-							disableFirstLast=true;
-							width=n2*percent;
-							margin=dataStruct.columnGapSidePercent/2; 
-							totalMargin=dataStruct.columnGapSidePercent*columnCount;//(currentIndex+1);  
-							maxWidth=100-totalMargin;
-							percentMargin=(percent/100)*totalMargin;
-							width-=percentMargin; 
-							width=int(width*100)/100;  
-						}
-						padding=' padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%;';
-						if(isSingleColumn){//isNumeric(breakpoint) and breakpoint LTE 980){
-							v='.z-#n2#of#limit#{  max-width:100%; width:100%; display:block; float:left;  padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; margin-left:0px; margin-right:0px; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%; } ';
-							if(not structkeyexists(uniqueStruct, v)){
-								uniqueStruct[v]=true;
-								arrayAppend(arrCSS, v);
-							}   
-						}else{   
-							v='.z-#n2#of#limit#{ ';
-							if(breakpoint LTE 980){
-								v&=" min-width:#breakStruct.minimum_column_width#px;";
-							}
-							v&=' max-width:#maxWidth#%;  width:#numberformat(width, '_.___')#%; #padding# float:left; margin-left:#numberformat(margin, '_.___')#%; margin-right:#numberformat(margin, '_.___')#%;  margin-bottom:#numberformat(dataStruct.columnGapBottomPercent, '_.__')#%;}';
-						
-							if(not structkeyexists(uniqueStruct, v)){
-								uniqueStruct[v]=true;
-								arrayAppend(arrCSS, v);
-							}  
-						}
-					}
-					limit++;
 				}
 			} 
 		}
-	}
-				//	abort;
-	savecontent variable="out"{  
-	echo('
- 	.z-center-children > *{ font-size:#dataStruct.textScale*16# }
- 	.z-column{ margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.__')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }
-
-
- 	');
- 	/*
-	.z-section-10{padding-top:#dataStruct.boxPaddingTopPercent*0.8#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*0.8#%;}
-	.z-section-20{padding-top:#dataStruct.boxPaddingTopPercent*1.5#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*1.5#%;}
-	.z-section-medium{padding-top:#dataStruct.boxPaddingTopPercent*3#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*3#%;}
-	.z-section-large{padding-top:#dataStruct.boxPaddingTopPercent*6#%; padding-bottom:#dataStruct.boxPaddingBottomPercent*6#%;}
-	*/
-	multiplier=0.4;
- 	for(i=1;i<=15;i++){
-		echo('.z-section-#i*10#{padding-top:#numberformat(dataStruct.boxPaddingTopPercent*multiplier, '_.__')#%; padding-bottom:#numberformat(dataStruct.boxPaddingBottomPercent*multiplier, '_.__')#%;}'&chr(10));
-		multiplier+=0.35;
-	}
-	for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
-		breakpoint=breakStruct.arrBreak[i]; 
-		if(breakpoint NEQ 'Default'){
-			echo('@media screen and (max-width: #breakpoint#px) {'&chr(10)); 
-			echo(chr(9)&arrayToList(breakStruct.css[breakpoint], chr(10)&chr(9))&chr(10)); 
-			echo('}'&chr(10));
-		}else{
-			echo(arrayToList(breakStruct.css[breakpoint], chr(10))&chr(10)); 
+	}   
+	savecontent variable="out"{
+		for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
+			breakpoint=breakStruct.arrBreak[i];  
+			if(breakpoint NEQ 'Default'){
+				echo('@media screen and (max-width: #breakpoint#px) {'&chr(10)); 
+				echo(arrayToList(breakStruct.css[breakpoint], chr(10))&chr(10)); 
+				echo('}'&chr(10));
+			}else{
+				echo(arrayToList(breakStruct.css[breakpoint], chr(10))&chr(10)); 
+			}
+		}  
+		arrCSS2=[];
+		for(g=0;g<=15;g++){
+			c=g*10; 
+			v='.z-fp-#c#{ padding-left:#c#px; padding-right:#c#px; padding-top:#c#px; padding-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v); 
+			} 
+			v='.z-fpt-#c#{ padding-top:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpr-#c#{ padding-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpb-#c#{ padding-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpl-#c#{ padding-left:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fpv-#c#{ padding-top:#c#px; padding-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fph-#c#{ padding-left:#c#px; padding-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fm-#c#{ margin-left:#c#px; margin-right:#c#px; margin-top:#c#px; margin-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmt-#c#{ margin-top:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmr-#c#{ margin-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmb-#c#{ margin-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fml-#c#{ margin-left:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmv-#c#{ margin-top:#c#px; margin-bottom:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmh-#c#{ margin-left:#c#px; margin-right:#c#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmv-#c#-auto{ margin-top:#c#px; margin-bottom:#c#px; margin-left:auto; margin-right:auto; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
+			v='.z-fmh-#c#-auto{ margin-left:#c#px; margin-right:#c#px; margin-top:auto; margin-bottom:auto; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS2, v);
+			} 
 		}
+		echo(arrayToList(arrCSS2, chr(10)));
+		uniqueStruct={};
+		for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
+			breakpoint=breakStruct.arrBreak[i];   
+			dataStruct=breakStruct.data[breakpoint];
+			multiplier=0;
+			arrCSS2=[];
+		 	for(g=0;g<=15;g++){
+		 		if(g EQ 1){
+		 			multiplier=0.8;
+		 		}
+		 		pt=dataStruct.boxPaddingTopPercent*multiplier;
+		 		pb=dataStruct.boxPaddingBottomPercent*multiplier;
+		 		ph=dataStruct.boxPaddingSidePercent*multiplier;
+		 		mt=dataStruct.boxMarginTopPercent*multiplier;
+		 		mb=dataStruct.boxMarginBottomPercent*multiplier;
+		 		mh=dataStruct.boxMarginSidePercent*multiplier;
+		 		v='.z-p-#g*10#{ padding-left:#ph#%; padding-right:#ph#%; padding-top:#pt#%; padding-bottom:#pb#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v); 
+				} 
+				v='.z-pt-#g*10#{ padding-top:#pt#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-pr-#g*10#{ padding-right:#ph#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-pb-#g*10#{ padding-bottom:#pb#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-pl-#g*10#{ padding-left:#ph#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-pv-#g*10#{ padding-top:#pt#%; padding-bottom:#pb#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-ph-#g*10#{ padding-left:#ph#%; padding-right:#ph#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-m-#g*10#{ margin-left:#ph#%; margin-right:#ph#%; margin-top:#pt#%; margin-bottom:#pb#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mt-#g*10#{ margin-top:#pt#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mr-#g*10#{ margin-right:#ph#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mb-#g*10#{ margin-bottom:#pb#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-ml-#g*10#{ margin-left:#ph#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mv-#g*10#{ margin-top:#pt#%; margin-bottom:#pb#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mh-#g*10#{ margin-left:#ph#%; margin-right:#ph#%; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mv-#g*10#-auto{ margin-top:#pt#%; margin-bottom:#pb#%; margin-left:auto; margin-right:auto; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				v='.z-mh-#g*10#-auto{ margin-left:#ph#%; margin-right:#ph#%; margin-top:auto; margin-bottom:auto; }';
+				if(not structkeyexists(uniqueStruct, v)){
+					uniqueStruct[v]=true;
+					arrayAppend(arrCSS2, v);
+				} 
+				multiplier+=0.8; 
+			}
+			if(breakpoint NEQ 'Default'){
+				echo('@media screen and (max-width: #breakpoint#px) {'&chr(10)); 
+				echo(arrayToList(arrCSS2, chr(10))&chr(10)); 
+				echo('}'&chr(10));
+			}else{
+				echo(arrayToList(arrCSS2, chr(10))&chr(10)); 
+			}
+		}  
+		echo('.z-width-fill, .z-fill-width{display:table-cell; direction:ltr; width:10000px; float:none;}');
 	}
-	/*
-	#arrayToList(arrFull, chr(10))#
-	@media screen and (max-width: 1280px) {
-	#arrayToList(arr1280, chr(10))#
-	}
-	@media screen and (max-width: 980px) {
-	#arrayToList(arr980, chr(10))# 
-	}
-	@media screen and (max-width: 768px) {
-	#arrayToList(arr768, chr(10))#
-	}
-
-	@media screen and (max-width: 480px) {
-	#arrayToList(arr480, chr(10))#
-
-	}');*/
-	} 
 	application.zcore.functions.zWriteFile(request.zos.globals.privateHomeDir&"zupload/layout-global.css", out);
 	</cfscript>
 
@@ -485,7 +706,7 @@ if(qGlobal.recordcount NEQ 0){
 		}
 	}
 }
-echo('<h2>Instance Layout Settings</h2>');
+echo('<h2 class="z-fh-30">Instance Layout Settings</h2>');
 
 displaySettingsForm(breakStruct);
 </cfscript>
@@ -513,9 +734,10 @@ if(qGlobal.recordcount NEQ 0){
 			structappend(breakStruct.data[i], oldBreakStruct.data[i], true);
 		}
 	}
-	breakStruct.minimum_column_width=oldBreakStruct.minimum_column_width;
+	breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
 }
-echo('<h2>Global Layout Settings</h2>');
+echo('<h2 class="z-fh-30">Global Layout Settings</h2>');
+echo('<p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p>');
 echo('</div>');
 displaySettingsForm(breakStruct);
 </cfscript>
@@ -532,9 +754,13 @@ defaultBreakPoint=getDefaultBreakpointConfig();
 labelStruct={
 	headingScale:"Heading Scale",
 	textScale:"Text Scale",
+	indentScale:"Indent Scale",
 	boxPaddingTopPercent:"Box Padding Top %",
 	boxPaddingSidePercent:"Box Padding Side %",
 	boxPaddingBottomPercent:"Box Padding Bottom %",
+	boxMarginTopPercent:"Box Margin Top %",
+	boxMarginSidePercent:"Box Margin Side %",
+	boxMarginBottomPercent:"Box Margin Bottom %",
 	columnGapSidePercent:"Column Gap Side %",
 	columnGapBottomPercent:"Column Gap Bottom %",
 	minimumPadding:"Minimum Padding",
@@ -550,7 +776,7 @@ if(form.method EQ "index"){
 	action="/z/admin/layout-global/saveLayoutInstanceSettings";
 }
 // display form
-echo('<div style="width:100%; float:left; padding-left:5px; padding-right:5px;">
+echo('<div style="width:100%; overflow:auto; font-size:14px !important; float:left; padding-left:5px; padding-right:5px;">
 	<form action="#action#" method="post">
 	<table class="table-list">
 	<tr>
@@ -585,7 +811,7 @@ for(i in arrKey){
 		breakpoint=breakStruct.arrBreak[n]; 
 		dataStruct=breakStruct.data[breakpoint]; 
 		id=application.zcore.functions.zescape(i, "_")&"_"&breakpoint;
-		echo('<td><input type="number" from="0.1" to="100.00" step="0.1" name="#id#" value="'&dataStruct[i]&'" style="width:50px;min-width:50px;" /></td>');
+		echo('<td><input type="text" name="#id#" value="'&dataStruct[i]&'" style="font-size:14px; width:70px;min-width:70px;" /></td>');
 	}
 	echo('</tr>');
 }
@@ -594,7 +820,7 @@ minimum_column_width=application.zcore.functions.zso(breakStruct, 'minimum_colum
 echo('<tr>
 	<th>&nbsp;</th>
 	<td colspan="#structcount(defaultBreakPoint)#">
-	Column width that triggers single column below 980: <input type="text" name="minimum_column_width" style="max-width:100px; min-width:100px;" value="#htmleditformat(minimum_column_width)#"><br />
+	Column width that triggers single column below 992: <input type="text" name="minimum_column_width" style="font-size:14px; max-width:100px; min-width:100px;" value="#htmleditformat(minimum_column_width)#"><br />
 	Enable z-breakpoint: Checkbox
 	</td>
 	</tr>');
@@ -615,128 +841,157 @@ echo('</table>
 <cffunction name="showExample" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	 
-	echo('<h2>Layout Example</h2>');
+	echo('<h2 class="z-fh-30">Layout Example</h2>');
 	application.zcore.skin.includeCSS("/zupload/layout-global.css"); 
 	</cfscript>  
 	<style type="text/css">
 	.zapp-shell-container{padding-left:0px; padding-right:0px;}
-	.z-container:nth-child(even){ background-color:##555;}
-	.z-container:nth-child(odd){ background-color:##666;}
-	.z-container div{ background-color:##aaa;}
-	.z-container .z-center{ background-color:##aaa;}
-	.z-container .z-center div { background-color:##EEE;}
+	section:nth-child(even){ background-color:##555;}
+	section:nth-child(odd){ background-color:##666;}
+	section section{background:none;}
+	.z-container{ background-color:##aaa;}
+	.z-fill-width, .z-container div, .z-column { background-color:##EEE !important;}
+	.z-left-sidebar, .z-right-sidebar{ background-color:##ccc !important;}
+
 	</style>
 <div class="wrapper">
-	<div class="z-container">
-		<div class="z-center z-section-20"> 
+	<section>
+		<div class="z-container"> 
 			<div class="z-column">
-				For visualizing space adjustments, background colors have been applied. Dark = z-container, medium = z-center, lightest = z-column
-			</div>
-		</div>
-	</div> 
-	<div class="z-container z-section-10">
-		<div class="z-center"> 
+				For visualizing space adjustments, background colors have been applied. Dark = section, medium = z-container, lightest = z-column
+			</div> 
+		</div> 
+	</section>
+	<section>
+		<div class="z-container z-pv-10">
 			<div class="z-column " > 
 				Each grid system can have columns that span 1 or more of the columns. Examples:
 			</div>
 		</div>
-	</div>
-	<div class="z-container z-section-10">
-		<div class="z-center z-center-children"> 
+	</section>
+
+	<section class="z-pv-10">
+		<div class="z-container z-center-children"> 
 			<div class="z-1of4 " > 
-				<div class="z-heading-24">z-1of4</div>
-				<div class="z-text-12">Text</div> 
+				<div class="z-h-24">z-1of4</div>
+				<div class="z-t-16">Text</div> 
 			</div>
 			<div class="z-2of4 " > 
-				<div class="z-heading-24">z-2of4</div>
-				<div class="z-text-12">Text</div>
+				<div class="z-h-24">z-2of4</div>
+				<div class="z-t-16">Text</div>
 			</div> 
 			<div class="z-1of4" > 
-				<div class="z-heading-24">z-1of4</div>
-				<div class="z-text-12">Text</div>
-			</div>
-		</div> 
-	</div>
-	<div class="z-container z-section-10">
-		<div class="z-center z-center-children"> 
-			<div class="z-1of3" > 
-				<div class="z-heading-24">z-1of3</div>
-				<div class="z-text-12">Text</div>
-			</div>
-			<div class="z-2of3"> 
-				<div class="z-heading-24">z-2of3</div>
-				<div class="z-text-12">Text</div> 
+				<div class="z-h-24">z-1of4</div>
+				<div class="z-t-16">Text</div>
 			</div> 
 		</div>
-	</div>
-	<div class="z-container z-section-10">
-		<div class="z-center z-center-children"> 
-			<div class="z-4of4" > 
-				<div class="z-heading-24">z-4of4</div>
-				<div class="z-text-12">Text</div> 
-			</div>
-		</div>
-	</div>
+	</section>
 
-	<div class="z-container z-section-10">
-		<div class="z-center z-center-children"> 
-			<div class="z-column" > 
-				<h2>All Grid Systems</h2>
-			</div>
-		</div>
-	</div>
-	<!--- <cfloop from="2" to="4" index="i">
-		<div class="z-container z-section-#10*i#">
-			<div class="z-center z-center-children"> 
-				<cfscript>
-				columnsLeft=i;
-				</cfscript>
-				<cfloop from="1" to="#i#" index="n">
-					<cfscript>
-					if(columnsLeft EQ 0){
-						break;
-					}
-					columns=min(3,randRange(1, columnsLeft));
-					columnsLeft-=columns;
-					</cfscript>
-					<div class="z-#columns#of#i#" >
-						<div class="z-heading-12">#columns#</div>
-					</div>
-				</cfloop>
-			</div>
-		</div>
-	</cfloop> --->
-	<cfloop from="2" to="16" index="i">
-		<div class="z-container z-section-10">
-			<div class="z-center z-section-10"> 
-				<div class="z-column z-heading-18">#i# column grid system ( class="z1of#i#" )</div>
-			</div>
-			<div class="z-center z-center-children"> 
-				<cfloop from="1" to="#i#" index="n">
-					<div class="z-1of#i#" > 
-						<div class="z-heading-12">#n#</div>
-					</div>
-				</cfloop>
-			</div>
-		</div>
-	</cfloop> 
-	<div class="z-container z-section-10">
-		 <div class="z-center z-equal-heights"> 
-		 	<div class="z-1of3">
-				<div class="z-heading-36">
-					Heading1
-				</div>  
-				<div class="z-heading-30">
-					Heading2
-				</div>  
-				<div class="z-heading-24">
-					Heading3
+	<section class="z-pv-10">
+		<div class="z-container z-center-children"> 
+				<div class="z-1of3" > 
+					<div class="z-h-24">z-1of3</div>
+					<div class="z-t-16">Text</div>
+				</div>
+				<div class="z-2of3"> 
+					<div class="z-h-24">z-2of3</div>
+					<div class="z-t-16">Text</div> 
 				</div> 
-				<div class="z-heading-18">
-					Heading4
+			</div>
+		</div>
+	</section>
+
+	<section class="z-pv-10">
+		<div class="z-container z-center-children"> 
+				<div class="z-4of4" > 
+					<div class="z-h-24">z-4of4</div>
+					<div class="z-t-16">Text</div> 
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="z-pv-10">
+		<div class="z-container z-center-children"> 
+				<div class="z-column" > 
+					<h2>All Grid Systems</h2>
+				</div>
+			</div>
+		</div>
+	</section>
+	<cfloop from="2" to="16" index="i">
+		<cfscript>
+		if(i gt 7 and i NEQ 12 and i NEQ 16){
+			continue;
+		}
+		</cfscript>
+
+		<section class="z-pv-10">
+			<div class="z-container z-center-children"> 
+				<div class="z-column z-h-18">#i# column grid system ( class="z-1of#i#" )</div> 
+				<section class="z-center-children z-pv-10"> 
+					<cfloop from="1" to="#i#" index="n">
+						<div class="z-1of#i#" > 
+							<div class="z-h-16">#n#</div>
+						</div>
+					</cfloop>
+				</section>
+			</div>
+		</section>
+	</cfloop> 
+
+	<section class="z-pv-10">
+		<div class="z-container">
+			<div class="z-column z-h-18">Right sidebar with automatic fill width column</div> 
+		</div>
+		<div class="z-container z-mv-10"> 
+			<div class="z-column z-p-0">
+				<aside class="z-column z-fill-width">
+					z-column and z-fill-width
+				</aside>
+				<section class="z-1of4 z-right-sidebar">
+					z-1of4 and z-right-sidebar
+				</section>
+			</div> 
+		</div>
+	</section>
+
+	<section class="z-pv-10">
+		<div class="z-container">
+			<div class="z-column z-h-18">Left sidebar with automatic fill width column and reverse order html</div> 
+		</div>
+		<div class="z-container z-reverse-order z-mv-10"> 
+			<div class="z-column z-p-0">
+				<section class="z-column z-fill-width">
+					z-column and z-fill-width
+				</section>
+				<aside class="z-1of4 z-left-sidebar">
+					z-1of4 and z-left-sidebar
+				</aside> 
+			</div>
+		</div>
+	</section>
+
+	<section class="z-pv-10">
+		<div class="z-container z-mv-10">
+			<div class="z-column z-h-18">Responsive Heading and Text Classes</div> 
+		</div>
+		<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
+		 	<div class="z-1of3">
+				<div class="z-h-36">
+					z-h-36
 				</div>  
-				<div class="z-heading-14">
-					Heading5
+				<div class="z-h-30">
+					z-h-30
+				</div>  
+				<div class="z-h-24">
+					z-h-24
+				</div> 
+				<div class="z-h-18">
+					z-h-18
+				</div>  
+				<div class="z-h-14">
+					z-h-14
 				</div>  
 			</div>
 			<div class="z-1of3">
@@ -747,18 +1002,59 @@ echo('</table>
 				<h5>Heading5</h5>
 			</div>
 			<div class="z-1of3">
-				<div class=" z-text-36">
-				Text36
+				<div class=" z-t-36">
+				z-t-36
 				</div> 
-				<div class=" z-text-24">
-				Text24
+				<div class=" z-t-24">
+				z-t-24
 				</div> 
-				<div class=" z-text-18">
-				Text18
+				<div class=" z-t-18">
+				z-t-18
 				</div>  
 			</div>
 		</div>
-	</div>  
+		<div class="z-container z-mv-10">
+			<div class="z-column z-h-18">Fixed Size Heading and Text Classes</div> 
+		</div>
+
+		<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
+		 	<div class="z-1of3">
+				<div class="z-fh-36">
+					z-fh-36
+				</div>  
+				<div class="z-fh-30">
+					z-fh-30
+				</div>  
+				<div class="z-fh-24">
+					z-fh-24
+				</div> 
+				<div class="z-fh-18">
+					z-fh-18
+				</div>  
+				<div class="z-fh-14">
+					z-fh-14
+				</div>  
+			</div>
+			<div class="z-1of3">
+				<h1 class="z-fh-36">Heading1</h1>
+				<h2 class="z-fh-30">Heading2</h2>
+				<h3 class="z-fh-24">Heading3</h3> 
+				<h4 class="z-fh-18">Heading4</h4>
+				<h5 class="z-fh-14">Heading5</h5>
+			</div>
+			<div class="z-1of3">
+				<div class=" z-ft-36">
+				z-ft-36
+				</div> 
+				<div class=" z-ft-24">
+				z-ft-24
+				</div> 
+				<div class=" z-ft-18">
+				z-ft-18
+				</div>  
+			</div>
+		</div>
+	</section>  
 </div>
 </cffunction>
 	

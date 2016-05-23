@@ -3,7 +3,8 @@
 <cffunction name="init" access="public" returntype="string" localmode="modern">
 	<cfscript>
 	application.zcore.skin.includeCSS("/z/font-awesome/css/font-awesome.min.css");
-	application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+	request.zos.includeManagerStylesheet=true;
+	application.zcore.functions.zIncludeZOSFORMS();
 	application.zcore.skin.includeCSS("/z/fonts/stylesheet.css");
 	application.zcore.functions.zDisableContentTransition();
 	</cfscript>
@@ -96,7 +97,7 @@
 			.zDashboardButtonTitle{width:100%; float:left;margin-bottom:5px; font-size:115%; display:block;font-weight:bold;}
 			.zDashboardButtonSummary{width:100%; float:left;}
 
-			@media only screen and (max-width: 980px) { 
+			@media only screen and (max-width: 992px) { 
 				.zDashboardContainer{width:100%;} 
 			}
 

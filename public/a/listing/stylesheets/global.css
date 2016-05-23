@@ -530,7 +530,7 @@ div .property-title h2{
 
 .zls-grid-price{font-weight:700; width:100%; line-height:150%; font-size:110%;}
 
-@media only screen and (max-width: 980px) {
+@media only screen and (max-width: 992px) {
 	.zls-view-larger-div{display:none;}
 	#zls-inquiry-listing-qualify{display:none;}
 	.zls-detail-leftbox{width:100% !important; height:auto !important;}

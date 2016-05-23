@@ -2621,6 +2621,16 @@ this.app_id=10;
 		ts2.size=thumbnailStruct.width&"x"&thumbnailStruct.height;
 		ts2.crop=thumbnailStruct.crop;
 		ts2.count = 1;  
+		if(qList.imageUpdatedDateList NEQ ""){
+			d=listGetAt(qList.imageUpdatedDateList, 1, chr(9));
+			if(d NEQ ""){
+				ts.imageDate=parsedatetime(d);
+			}else{
+				ts.imageDate=now();
+			}
+		}else{
+			ts.imageDate=now();
+		} 
 		arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts2);
 		ts.image=request.zos.currentHostName&"/z/a/images/s.gif";
 		ts.hasImage=false;
@@ -2989,7 +2999,7 @@ this.app_id=10;
 	}
 	db.sql&=" LIMIT #db.param(start)#, #db.param(searchStruct.perpage)#";
 	qArticles=db.execute("qArticles"); 
-	if(form.method EQ "categoryTemplate"){
+	if(form.method EQ "categoryTemplate" and start EQ 0){
 		if(structkeyexists(form, 'zUrlName')){
 			if(qcategory.blog_category_unique_name EQ ""){
 				curLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id, form.blog_category_id,"html",qCategory.blog_category_name);

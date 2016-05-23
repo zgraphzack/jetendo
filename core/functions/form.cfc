@@ -194,12 +194,9 @@
 <cffunction name="zOutputToolTip" localmode="modern" returntype="any" output="no">
 	<cfargument name="label" type="string" required="yes">
 	<cfargument name="helpHTML" type="string" required="yes">
-	<cfscript>
+	<cfscript> 
 	if(structkeyexists(request.zos.tempObj,"zOutputHelpToolTipIndex") EQ false){
-		request.zos.tempObj.zOutputHelpToolTipIndex=0;
-		application.zcore.functions.zIncludeZOSFORMS();
-		application.zcore.template.prependtag("content",'<div id="zHelpToolTipDiv"><div id="zHelpToolTipInnerDiv"></div></div>');
-		application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */ zArrDeferredFunctions.push(function(){zHelpTooltip.setupHelpTooltip();}); /* ]]> */</script>');
+		request.zos.tempObj.zOutputHelpToolTipIndex=0;  
 	} 
 	request.zos.tempObj.zOutputHelpToolTipIndex++;
 	return '<span class="zHelpToolTipContainer"><span class="zHelpToolTipLabel">'&arguments.label&'</span> <span title="'&htmleditformat(arguments.helpHTML)&'" id="zHelpToolTip'&request.zos.tempObj.zOutputHelpToolTipIndex&'" class="zHelpToolTip"></span></span>';
@@ -224,14 +221,11 @@
 	if(not structkeyexists(application.zcore.helpStruct,'tooltip')){
 		application.zcore.helpStruct.tooltip={};
 	}
+	if(structkeyexists(request.zos.tempObj,"zOutputHelpToolTipIndex") EQ false){
+		request.zos.tempObj.zOutputHelpToolTipIndex=0; 
+	}
 	if(not structkeyexists(application.zcore.helpStruct.tooltip, arguments.helpId)){
 		return arguments.defaultLabel;
-	}
-	if(structkeyexists(request.zos.tempObj,"zOutputHelpToolTipIndex") EQ false){
-		request.zos.tempObj.zOutputHelpToolTipIndex=0;
-		application.zcore.functions.zIncludeZOSFORMS();
-		application.zcore.template.prependtag("content",'<div id="zHelpToolTipDiv"><div id="zHelpToolTipInnerDiv"></div></div>');
-		application.zcore.template.appendTag("meta",'<script type="text/javascript">/* <![CDATA[ */zArrDeferredFunctions.push(function(){zHelpTooltip.setupHelpTooltip();}); /* ]]> */</script>');
 	}
 	request.zos.tempObj.zOutputHelpToolTipIndex++;
 	if(application.zcore.helpStruct.tooltip[arguments.helpId].html EQ ""){

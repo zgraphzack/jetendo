@@ -12,11 +12,11 @@
 .test-example-5{width:50%; float:left;}
 .test-example-6{max-width:100%; float:left;}
 
-@media only screen and (max-width: 1280px) { 
+@media only screen and (max-width: 1382px) { 
 .test-example-3{ font-size:30px; line-height:36px;padding-bottom:15px;}
 .test-example-4{ font-size:16px; line-height:21px;}
 }
-@media only screen and (max-width: 980px) { 
+@media only screen and (max-width: 992px) { 
 
 .test-example-4{ font-size:14px; line-height:18px;}
 .test-example-2{width:100%;padding-right:0px; padding-bottom:20px;}

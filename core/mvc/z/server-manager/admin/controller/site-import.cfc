@@ -91,8 +91,10 @@
 			<tr>
 				<td class="table-list" style="vertical-align:top; width:140px;">Import Type:</td>
 				<td class="table-white">
-				<input type="radio" name="importType" value="update" /> Update Existing Site 
-				<input type="radio" name="importType" value="insert" /> Add New Site
+				<input type="radio" name="importType" value="update" checked="checked" /> Update Existing Site 
+				<!--- 
+				disabled because it is easier for things to go wrong with add site.
+				<input type="radio" name="importType" value="insert" /> Add New Site --->
 				</td>
 			</tr>
 			<tr>
