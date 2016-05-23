@@ -636,4 +636,48 @@
 		
 	});
 
+
+	function zIsVisibleOnScreen(obj){ 
+		// obj must be an element with display=block for this to work right.
+		if(typeof obj == "string"){
+			obj=document.getElementById(obj);
+		}
+		var p=zGetAbsPosition(obj);
+		if(p.y+p.height < zScrollPosition.top || p.y > zWindowSize.height+zScrollPosition.top){
+			return false;
+		}
+		if(p.x+p.width < zScrollPosition.left || p.x > zWindowSize.width+zScrollPosition.left){
+			return false;
+		}
+		return true;
+	}
+	function zAnimateVisibleElements(){
+		var section=document.getElementById('yelpSectionDiv');
+		$(".zAnimateOnVisible").each(function(){
+			if(zIsVisibleOnScreen(this)){ 
+				var d=$(this).attr("data-visible-callback"); 
+				if(d != "" && typeof window[d] != "undefined"){
+					var callback=window[d]; 
+					callback(this);
+				}
+				$(this).hide().css({ visibility:"visible" }).fadeIn('fast');
+				var c=$(this).attr("data-visible-class"); 
+				$(this).removeClass("zAnimateOnVisible");
+				if(c != "" && !$(this).hasClass(c)){
+					$(this).addClass(c);
+				}
+			}
+		});
+	}
+	zArrDeferredFunctions.push(function(){
+		$(".zAnimateOnVisible").each(function(){
+			if(!zIsVisibleOnScreen(this)){ 
+				$(this).hide().css({ visibility:"hidden" });
+			}  
+		});
+		zArrScrollFunctions.push(zAnimateVisibleElements);
+		setTimeout(zAnimateVisibleElements, 100);
+	});
+
+	window.zIsVisibleOnScreen=zIsVisibleOnScreen;
 })(jQuery, window, document, "undefined"); 

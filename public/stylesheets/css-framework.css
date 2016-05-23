@@ -108,7 +108,7 @@ footer, .z-section, .z-row{
 .zForceNegativeMarginLeft, .zForceNegativeMarginRight{display:none;}
  
  
-.zAnimateOnVisible{visibility:hidden;}
+.zAnimateOnVisible{ }
 .zOnVisibleSlide { 
 	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
 	animation: zOnVisibleSlide 0.8s ease forwards;
@@ -172,6 +172,10 @@ footer, .z-section, .z-row{
 	.z-fluid-at-992{ width:100% !important; height:auto !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
 	.z-hide-at-992{display:none !important;}
 	.z-show-at-992{display:block !important;}
+
+	.z-center-children-at-992{ text-align:center; font-size:0px;} 
+	.z-center-children-at-992 > div, .z-center-children-at-992 > a{ display:inline-block; text-align:left; vertical-align:top; float:none; }
+
 
 	.zMenuBarDiv { width:100% !important;} 
 	.z-mobileMenuDiv ul{ padding-left:0px;}
