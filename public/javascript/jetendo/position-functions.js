@@ -32,8 +32,10 @@ var zScrollbarWidth=0;
 		return {
 			x: p.left,
 			y: p.top,
-			width: $obj.width(),
-			height: $obj.height()
+			width: $obj.outerWidth(),
+			height: $obj.outerHeight(),
+			innerWidth: $obj.innerWidth(),
+			innerHeight: $obj.innerHeight()
 		};
 		/*
 		var position = new Object();
