@@ -3681,8 +3681,7 @@ if(structkeyexists(request,'theSearchFormTemplate')){
 		}
 	} 
 	for(i in form){
-		if(structkeyexists(form,i) EQ false){
-			//structdelete(form, i);
+		if(structkeyexists(form,i) EQ false){ 
 		}else if(isSimpleValue(form[i])){
 			form[i]=urldecode(form[i]);
 		}
@@ -3692,52 +3691,54 @@ propertyDataCom.setSearchCriteria(form);
 <cfif isDefined('request.contentEditor')> <div id="mlsResults" style="padding-left:10px;vertical-align:top;"></cfif>
 <cfif application.zcore.functions.zso(form, 'outputSearchForm',false,false) EQ false>
 <cfif isDefined('request.contentEditor') EQ false and isDefined('request.hideMLSResults') EQ false> 
-        <div style="font-size:130%; width:100%; float:left;" id="zls-searchformusemessage">Use the form on the sidebar to search.</div>
+    <div style="font-size:130%; width:100%; float:left;" id="zls-searchformusemessage">Use the form on the sidebar to search.</div>
 <div id="mlsResults" style="width:100%; float:left; margin-bottom:20px;">
 
 	<div id="zls-search-form-top-map-text">
 		<div style="width:50%; margin-bottom:20px; float:left;">
-		<div id="zls-searchformhelpdiv">
-		<a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a>
-		</div> 
-		<cfscript>
-		if(isDefined('request.zsession.zListingHideMap') EQ false){
-			request.zsession.zListingHideMap=false;
-		}
-		if(structkeyexists(form, 'zListingHideMap')){
-			if(form.zListingHideMap EQ 1){
-				request.zsession.zListingHideMap=true;	
-			}else{
-				request.zsession.zListingHideMap=false;
-			}
-		}
-		if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_hide_map_until_search') EQ 1){
-			tempHideMap=true;	
-		}else{
-			tempHideMap=false;
-		}
+			<div id="zls-searchformhelpdiv">
+				<a href="##" onclick="zToggleDisplay('zListingHelpDiv');return false;">Need help using search?</a>
+				</div> 
+				<cfscript>
+				if(isDefined('request.zsession.zListingHideMap') EQ false){
+					request.zsession.zListingHideMap=false;
+				}
+				if(structkeyexists(form, 'zListingHideMap')){
+					if(form.zListingHideMap EQ 1){
+						request.zsession.zListingHideMap=true;	
+					}else{
+						request.zsession.zListingHideMap=false;
+					}
+				}
+				if(structkeyexists(form, 'searchId') EQ false and application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct,'mls_option_hide_map_until_search') EQ 1){
+					tempHideMap=true;	
+				}else{
+					tempHideMap=false;
+				}
 
-		</cfscript>
+				</cfscript>
 
-		</div><div style="width:50%; margin-bottom:20px; float:left;  text-align:right; font-size:110%; font-weight:bold;">&nbsp;
-		<cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
-			<cfif (isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false>
-				<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
-				<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
-			<cfelse>
-				<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
-			</cfif>
-		</cfif>
-		</div> 
-	</div>
+			</div>
+			<div style="width:50%; margin-bottom:20px; float:left;  text-align:right; font-size:110%; font-weight:bold;">&nbsp;
+				<cfif application.zcore.functions.zso(application.sitestruct[request.zos.globals.id],'zListingMapCheck',false,false) and tempHideMap EQ false>
+					<cfif (isDefined('request.zsession.zListingHideMap') EQ false or request.zsession.zListingHideMap EQ false) and tempHideMap EQ false>
+						<a href="##" onclick="zlsOpenResultsMap(); return false;">Fullscreen Map</a> | 
+						<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=1">Hide Map Search</a>
+					<cfelse>
+						<a id="zHideMapSearchButton" href="/z/listing/search-form/index?searchId=#form.searchId#&amp;zIndex=#form.zIndex#&amp;zListingHideMap=0">Show Map</a>
+					</cfif>
+				</cfif>
+			</div> 
+		</div>
+	</div> 
 	<div id="zListingHelpDiv" style="display:none; margin-bottom:10px;border:1px solid ##990000; padding:10px; padding-top:10px;">
-	<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
-	<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Show Results" and the results will load on the right. </p>
-	<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>
-	<p>After typing an entry, click "Update Results" to update your search. </p>
-	<p>You can select or type as many options as you want.</p>
-	<p>Your search will automatically show the ## of matching listings as you update each search field.</p>
-	<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
+		<p style="font-size:14px; font-weight:bold;">Search Directions:</p>
+		<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Show Results" and the results will load on the right. </p>
+		<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>
+		<p>After typing an entry, click "Update Results" to update your search. </p>
+		<p>You can select or type as many options as you want.</p>
+		<p>Your search will automatically show the ## of matching listings as you update each search field.</p>
+		<p>After searching, only the available options will appear.  To reveal more options again, try unselecting or extending the range for your next search.</p>
 	</div>
 	<cfscript> 
 		ts = StructNew();
@@ -3809,15 +3810,7 @@ propertyDataCom.setSearchCriteria(form);
         <cfscript>
 		ms={
 			mapQuery=mapQuery,
-			propertyDataCom=propertyDataCom
-			/*,
-			mapStageStruct=mapStageStruct,
-			listing_latitude=listing_latitude,
-			listing_longitude=listing_longitude,
-			listing_data_address=listing_data_address,
-			listing_data_zip=listing_data_zip,
-			cityName=cityName,
-			hideMapControls=hideMapControls	*/
+			propertyDataCom=propertyDataCom 
 		}
 		mapCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.mvc.z.listing.controller.map");
 		mapCom.index(ms);
@@ -3826,47 +3819,46 @@ propertyDataCom.setSearchCriteria(form);
 		<cfif returnStruct.count NEQ 0>
             <cfif isnumeric(application.zcore.functions.zso(form, 'searchId')) or structkeyexists(form,'searchaction')>
 
- <input type="hidden" name="zlsHoverBoxDisplayType" id="zlsHoverBoxDisplayType" value="<cfif application.zcore.functions.zso(form, 'search_result_layout') NEQ ""><cfif form.search_result_layout EQ 0>detail<cfelseif form.search_result_layout EQ 1>list<cfelseif form.search_result_layout EQ 2>grid<cfelse>detail</cfif><cfelse>detail</cfif>" />
-            <div id="zls-matchinglistingsdiv" style="width:100%;">
+ 	<input type="hidden" name="zlsHoverBoxDisplayType" id="zlsHoverBoxDisplayType" value="<cfif application.zcore.functions.zso(form, 'search_result_layout') NEQ ""><cfif form.search_result_layout EQ 0>detail<cfelseif form.search_result_layout EQ 1>list<cfelseif form.search_result_layout EQ 2>grid<cfelse>detail</cfif><cfelse>detail</cfif>" />
+        <div id="zls-matchinglistingsdiv" style="width:100%;">
             <div class="zls-hover-box1">
-            <a href="##" id="zls-hover-box-map-button" style="float:right; display:none;">MAP</a>
-            <a href="##" id="zls-hover-box-detail-button" style="float:right;">DETAIL</a>
-            <a href="##" id="zls-hover-box-list-button" style="float:right;">LIST</a>
-            <a href="##" id="zls-hover-box-grid-button" style="float:right;">GRID</a></div>
-            <h2>Matching Listings</h2></div>
-			<cfscript>
-				writeoutput(res);
-			</cfscript>
-            </cfif>
-			<h2><a href="##searchFormTopDiv">Revise Search</a></h2>
-		</cfif>
-        
-        <cfif structkeyexists(form, 'searchId') EQ false>
-        <div style="width:100%; height:500px;">&nbsp;</div>
+	            <a href="##" id="zls-hover-box-map-button" style="float:right; display:none;">MAP</a>
+	            <a href="##" id="zls-hover-box-detail-button" style="float:right;">DETAIL</a>
+	            <a href="##" id="zls-hover-box-list-button" style="float:right;">LIST</a>
+	            <a href="##" id="zls-hover-box-grid-button" style="float:right;">GRID</a>
+	        </div>
+            <h2>Matching Listings</h2>
+    	</div>
+		<cfscript>
+			writeoutput(res);
+		</cfscript>
         </cfif>
-</div>
+		<h2><a href="##searchFormTopDiv">Revise Search</a></h2>
+	</cfif>
+    
+    <cfif structkeyexists(form, 'searchId') EQ false>
+    <div style="width:100%; height:500px;">&nbsp;</div>
+    </cfif>
+</div> 
 
-<cfscript>
-if(request.cgi_script_name EQ "/z/listing/search-form/index" OR isDefined('request.contentEditor')){
-	if(isDefined('request.zMLSHideCount') EQ false){
-		if(sidebarOutput){
-			if(structkeyexists(request.zos.tempObj,'getMLSCountOutput') EQ false){
-				request.zos.tempObj.getMLSCountOutput=true;
-					application.zcore.template.appendTag("sidebar",'<script type="text/javascript">/* <![CDATA[ */    zArrDeferredFunctions.push(function(){getMLSCount(''zMLSSearchForm'')});  /* ]]> */</script>');	
-			}
-		}else{
-			if(structkeyexists(request.zos.tempObj,'getMLSCountOutput') EQ false){
-				request.zos.tempObj.getMLSCountOutput=true;
-				writeoutput('<script type="text/javascript">/* <![CDATA[ */zArrDeferredFunctions.push(function(){getMLSCount(''zMLSSearchForm'')});   /* ]]> */</script>');
+	<cfscript>
+	if(request.cgi_script_name EQ "/z/listing/search-form/index" OR isDefined('request.contentEditor')){
+		if(isDefined('request.zMLSHideCount') EQ false){
+			if(sidebarOutput){
+				if(structkeyexists(request.zos.tempObj,'getMLSCountOutput') EQ false){
+					request.zos.tempObj.getMLSCountOutput=true;
+						application.zcore.template.appendTag("sidebar",'<script type="text/javascript">/* <![CDATA[ */    zArrDeferredFunctions.push(function(){getMLSCount(''zMLSSearchForm'')});  /* ]]> */</script>');	
+				}
+			}else{
+				if(structkeyexists(request.zos.tempObj,'getMLSCountOutput') EQ false){
+					request.zos.tempObj.getMLSCountOutput=true;
+					writeoutput('<script type="text/javascript">/* <![CDATA[ */zArrDeferredFunctions.push(function(){getMLSCount(''zMLSSearchForm'')});   /* ]]> */</script>');
+				}
 			}
 		}
-	}
-}
-if(application.zcore.functions.zso(form,'searchgotolistings') EQ 1){
-//	writeoutput('<script type="text/javascript">/* <![CDATA[ */zJumpToId("zls-matchinglistingsdiv");/* ]]> */</script>');
-}
-		</cfscript>
-        <cfelse>
+	} 
+	</cfscript>
+<cfelse>
         
 <cfif isDefined('request.contentEditor') EQ false>
     	<cfscript>

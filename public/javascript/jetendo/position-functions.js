@@ -26,23 +26,10 @@ var zScrollbarWidth=0;
 		return [curleft,curtop,curwidth,curheight];
 	}
 	
-	function zGetAbsPosition(object) { 
-		var $obj=$(object);
-		var p = $obj.offset(); 
-		return {
-			x: p.left,
-			y: p.top,
-			width: $obj.outerWidth(),
-			height: $obj.outerHeight(),
-			innerWidth: $obj.innerWidth(),
-			innerHeight: $obj.innerHeight()
-		};
-		/*
+	function zGetAbsPosition(object) {  
 		var position = new Object();
 		position.x = 0;
-		position.y = 0;
-		//position.cx =0;
-		//position.cy =0;
+		position.y = 0; 
 		if( object ) {
 			position.x = object.offsetLeft;
 			position.y = object.offsetTop;
@@ -57,8 +44,10 @@ var zScrollbarWidth=0;
 		}
 		position.width=position.cx;
 		position.height=position.cy;
+		var $obj=$(object);
+		position.innerWidth=$obj.innerWidth(),
+		position.innerHeight=$obj.innerHeight()
 		return position;
-		*/
 	}
 
 	function zScrollTop(elem, y, forceAnimate){
