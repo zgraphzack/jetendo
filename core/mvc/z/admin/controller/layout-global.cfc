@@ -984,8 +984,8 @@ echo('</table>
 		<div class="z-container">
 			<div class="z-column z-h-18">Left sidebar with automatic fill width column and reverse order html</div> 
 		</div>
-		<div class="z-container z-reverse-order z-mv-10"> 
-			<div class="z-column z-p-0">
+		<div class="z-container z-mv-10"> 
+			<div class="z-column z-reverse-order z-p-0">
 				<section class="z-column z-fill-width">
 					z-column and z-fill-width
 				</section>
