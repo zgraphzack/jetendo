@@ -1700,7 +1700,10 @@ if(rCom.isOK() EQ false){
 		arrayappend(arguments.ss.js, application.zcore.arrJsFiles[i]);
 	}
 	arrayappend(arguments.ss.css, "/z/stylesheets/zOS.css"); 
-	arrayappend(arguments.ss.css, "/z/stylesheets/css-framework.css");
+	if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
+		arrayappend(arguments.ss.css, "/z/stylesheets/css-framework.css");
+		arrayappend(arguments.ss.css, "/zupload/layout-global.css");
+	}
 	if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, request.zos.globals.privatehomedir&"zcache/zsystem.css")){
 		application.sitestruct[request.zos.globals.id].fileExistsCache[request.zos.globals.privatehomedir&"zcache/zsystem.css"]=fileexists(request.zos.globals.privatehomedir&"zcache/zsystem.css");
 	}

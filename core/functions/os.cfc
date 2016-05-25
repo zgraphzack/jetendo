@@ -1185,14 +1185,23 @@ application.zcore.functions.zLogError(ts);
 			forcePosition:""
 		};
 		arrayappend(request.zos.arrCSSIncludes, ts);
-		ts={
-			type:"zIncludeZOSFORMS",
-			url:"/z/stylesheets/css-framework.css",
-			package:arguments.package,
-			forcePosition:""
-		};
-		arrayappend(request.zos.arrCSSIncludes, ts);
-		
+
+		if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
+			ts={
+				type:"zIncludeZOSFORMS",
+				url:"/z/stylesheets/css-framework.css",
+				package:arguments.package,
+				forcePosition:""
+			};
+			arrayappend(request.zos.arrCSSIncludes, ts);
+			ts={
+				type:"zIncludeZOSFORMS",
+				url:"/zupload/layout-global.css",
+				package:arguments.package,
+				forcePosition:""
+			};
+			arrayappend(request.zos.arrCSSIncludes, ts); 
+		}
 		tempFile=request.zos.globals.privatehomedir&"zcache/zsystem.css";
 		if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempFile) EQ false){
 			application.sitestruct[request.zos.globals.id].fileExistsCache[tempFile]=fileexists(tempFile);

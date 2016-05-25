@@ -1270,6 +1270,10 @@
 			<td style="vertical-align:top; width:140px;">&nbsp;</td>
 			<td><input name="site_lock_theme" type="checkbox" value="1" <cfif form.site_lock_theme EQ 1 or form.site_lock_theme EQ "">checked="checked"</cfif> style="background:none; border:none;"> Lock Theme? (This will prevent site manager users from changing the design of a custom built web site.)</td>
 		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Enable CSS Framework?</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_css_framework")#</td>
+		</tr>
         <cfscript>
 		noGroupsOrApps=false;
 		if(currentMethod EQ "edit"){
