@@ -405,7 +405,8 @@
 					}
 				}
 			}
-		});
+		}); 
+
 		function fixMenu(){
 			var w=zWindowSize.width+zScrollbarWidth;
 			if(w>992){
@@ -429,6 +430,7 @@
 	zArrDeferredFunctions.push(setupMobileMenu);
  
 
+ 
 	zArrDeferredFunctions.push(function(){
 		var arrOriginalMenuButtonWidth=[];
 		function setEqualWidthMobileMenuButtons(containerDivId, marginSize){ 
