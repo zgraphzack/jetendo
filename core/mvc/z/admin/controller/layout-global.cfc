@@ -27,7 +27,7 @@
 	<cfscript>
 	defaultBreakPoint=getDefaultBreakpointConfig();
 	breakStruct={
-		arrBreak=["Default","1800","1550","1382","992","767","479"],
+		arrBreak=["Default","1800","1550","1362","992","767","479"],
 		data:{
 			"Default":{
 				headingScale:1,
@@ -47,7 +47,7 @@
 				textScale:1,
 				indentScale:1.1
 			}, 
-			"1382":{
+			"1362":{
 				headingScale:0.836,
 				textScale:0.836,
 				indentScale:1,

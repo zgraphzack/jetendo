@@ -132,7 +132,7 @@ footer, .z-section, .z-row{
   animation: none;
 }
 
-.z-show-at-1382{display:none;}
+.z-show-at-1362{display:none;}
 .z-show-at-992{display:none;}
 .z-show-at-767{display:none;}
 .z-show-at-479{display:none;}
@@ -142,11 +142,11 @@ footer, .z-section, .z-row{
 
 .z-transition-all{-webkit-transition: all ease 0.3s; transition: all ease 0.3s;}
 
-@media screen and (max-width: 1382px) { 
+@media screen and (max-width: 1362px) { 
 	.z-container{margin:0 auto; width:974px;}
-	.z-fluid-at-1382{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
-	.z-hide-at-1382{display:none !important;}
-	.z-show-at-1382{display:block !important;}
+	.z-fluid-at-1362{ width:100% !important; margin-left:0px !important; margin-right:0px !important; max-width:100% !important;}
+	.z-hide-at-1362{display:none !important;}
+	.z-show-at-1362{display:block !important;}
 }
 @media screen and (max-width: 992px) { 
 	.z-container{margin:0 auto; width:100%;}  
