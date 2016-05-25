@@ -758,12 +758,6 @@ $crontabs.="
 
 # every day at 12:20am
 20 0 * * * /usr/bin/php ".$scriptsPath."listing-image-cleanup.php > /dev/null 2>&1";
-}else{
-$crontabs.="
-
-#every hour
-5 * * * * /usr/bin/php ".$scriptsPath."git-status.php > /dev/null 2>&1
-";
 }
 	$contents="";
 	if(file_exists($rootCronPath)){
