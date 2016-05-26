@@ -1278,6 +1278,7 @@ application.zcore.imageLibraryCom.getLayoutTypeForm(ts); --->
 <!--- 
 ts=structnew();
 ts.output=true;
+ts.defaultAltText="Image";
 ts.image_library_id=image_library_id;
 ts.layoutType=""; // thumbnail-left-and-other-photos,thumbnail-right-and-other-photos,contentflow,thumbnails-and-lightbox,galleryview-1.1
 ts.image_id = 0; // only use this if you want a specific image.
@@ -1303,6 +1304,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	var thumbnailCrop=0;
 	var arrOutput=arraynew(1);
 	var ts=structnew();
+	ts.defaultAltText="Image";
 	ts.output=true;
 	ts.slideshowTimeout=4000;
 	ts.forceSize=false;
@@ -1393,8 +1395,13 @@ application.zcore.imageLibraryCom.displayImages(ts);
 			<cfelse>
 				<div class="zImageLibraryImageLeft" style="width:#thumbnailWidth/2#px;">
 			</cfif>
-			
-				<img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
+				<cfscript>
+				caption=qImages.image_caption;
+				if(caption EQ ""){
+					caption=arguments.ss.defaultAltText;
+				}
+				</cfscript>
+				<img class="content" alt="#htmleditformat(caption)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
 			</div>
 		</cfloop>
 	<cfelseif arguments.ss.layoutType EQ "contentflow">
@@ -1418,8 +1425,14 @@ application.zcore.imageLibraryCom.displayImages(ts);
 			</div>
 			<div class="flow">
 				<cfloop query="qImages">
+					<cfscript>
+					caption=qImages.image_caption;
+					if(caption EQ ""){
+						caption=arguments.ss.defaultAltText;
+					}
+					</cfscript>
 					<div class="item">
-						<img class="content" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
+						<img class="content" alt="#htmleditformat(caption)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" />
 						<div class="caption">#htmleditformat(qImages.image_caption)#</div>
 					</div>
 				</cfloop>
@@ -1574,10 +1587,19 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	
 			<div id="zThumbnailLightgallery">
 			    <ul>
-				<cfloop query="qImages"><li><a class="zNoContentTransition"
+				<cfloop query="qImages">
+
+					<cfscript>
+					caption=qImages.image_caption;
+					if(caption EQ ""){
+						caption=arguments.ss.defaultAltText;
+					}
+					</cfscript>
+					<li><a class="zNoContentTransition"
 				 href="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#"
 				 
-				  <cfif qImages.image_caption NEQ "">title="#htmleditformat(qImages.image_caption)#"<cfelse>title="Image ###qImages.currentrow#"</cfif>><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, 1, true, qImages.image_caption, qImages.image_file)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#"</cfif> /></a></li></cfloop>
+				  title="#htmleditformat(caption)#"><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, thumbnailWidth&"x"&thumbnailHeight, 1, true, qImages.image_caption, qImages.image_file)#" alt="#htmleditformat(caption)#" /></a></li>
+				</cfloop>
 				  <!---  data-2x-image="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize2, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#"  --->
 			    </ul>
 			</div>
@@ -1610,25 +1632,18 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<div class="zGalleryViewSlideshowContainer">
 		<ul id="zGalleryViewSlideshow#request.zGalleryViewSlideShowIndex#" class="zGalleryViewSlideshow">
 		<cfloop query="qImages">
-			<li><img  data-frame="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, '160x80', 1, true, qImages.image_caption, qImages.image_file)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ ""><cfset hasCaptions=true>alt="#htmleditformat(qImages.image_caption)#" title="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.currentrow#" title=""</cfif> data-description="" /></li>
+			<cfscript>
+			caption=qImages.image_caption;
+			if(caption EQ ""){
+				caption=arguments.ss.defaultAltText;
+			}
+			</cfscript>
+			<li><img  data-frame="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, '160x80', 1, true, qImages.image_caption, qImages.image_file)#" src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, newSize, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ ""><cfset hasCaptions=true>alt="#htmleditformat(caption)#" title="#htmleditformat(caption)#"<cfelse>alt="#caption#" title=""</cfif> data-description="" /></li>
 		</cfloop>
 		</ul> 
 	</div>
 	<cfsavecontent variable="theJS">
-		{
-		<!--- panel_width: #request.zos.globals.maximagewidth#,
-		panel_height: #round(request.zos.globals.maximagewidth*.6)+45#,
-		frame_width: 160,
-		frame_height: 80,
-		overlay_height: 50,	
-		overlay_opacity: 1.0,
-		overlay_color: '##FFF',
-		background_color: 'none',
-		border: '0px solid ##284c0a',
-		transition_interval: 5000,
-		transition_speed: 700,
-		pause_on_hover: true --->
-		
+		{ 
 		pause_on_hover: true,
 		transition_speed: 1000, 		//INT - duration of panel/frame transition (in milliseconds)
 		transition_interval: #arguments.ss.slideshowTimeout#, 		//INT - delay between panel/frame transitions (in milliseconds)
@@ -1640,8 +1655,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfelse>
 		panel_width: #request.zos.globals.maximagewidth#, 				//INT - width of gallery panel (in pixels)
 		panel_height: #round(request.zos.globals.maximagewidth*.6)+45#, 				//INT - height of gallery panel (in pixels)
-	</cfif>
-	<!--- show_panel_nav:false, --->
+	</cfif> 
 	panel_animation: 'crossfade', 		//STRING - animation method for panel transitions (crossfade,fade,slide,none)
 	panel_scale: 'fit', 			//STRING - cropping option for panel images (crop = scale image and fit to aspect ratio determined by panel_width and panel_height, fit = scale image and preserve original aspect ratio)
 	overlay_position: 'bottom', 	//STRING - position of panel overlay (bottom, top)
@@ -1682,19 +1696,34 @@ application.zcore.imageLibraryCom.displayImages(ts);
     <cfscript>
 	application.zcore.imageLibraryCom.registerSize(arguments.ss.image_library_id, arguments.ss.size, arguments.ss.crop);
 	</cfscript>
-	<cfloop query="qImages"><img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" <cfif qImages.image_caption NEQ "">alt="#htmleditformat(qImages.image_caption)#"<cfelse>alt="Image ###qImages.image_id#"</cfif> style="border:none;" />
-	<cfif qImages.image_caption NEQ ""><br /><div style="padding-top:5px;">#qImages.image_caption#</div></cfif><hr class="zdisplayimageshr" /><br />
+	<cfloop query="qImages">
+
+		<cfscript>
+		caption=qImages.image_caption;
+		if(caption EQ ""){
+			caption=arguments.ss.defaultAltText;
+		}
+		</cfscript>
+		<img src="#application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime)#" alt="#htmleditformat(caption)#" style="border:none;" />
+		<cfif qImages.image_caption NEQ ""><br /><div style="padding-top:5px;">#qImages.image_caption#</div></cfif><hr class="zdisplayimageshr" /><br />
 	</cfloop>
     </cfif>
-<cfelse><cfloop query="qImages"><cfscript>
+<cfelse>
+	<cfloop query="qImages">
+		<cfscript>
 		ts=structnew();
-		ts.link=application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime);
+		ts.link=application.zcore.imageLibraryCom.getImageLink(qImages.image_library_id, qImages.image_id, arguments.ss.size, arguments.ss.crop, true, qImages.image_caption, qImages.image_file, qImages.image_updated_datetime); 
 		ts.caption=qImages.image_caption;
+		if(ts.caption EQ ""){
+			ts.caption=arguments.ss.defaultAltText;
+		} 
 		ts.id=qImages.image_id;
 		ts.file=qImages.image_file;
 		ts.updatedDatetime=qImages.image_updated_datetime;
 		arrayappend(arrOutput,ts);
-		</cfscript></cfloop><cfscript>return arrOutput;</cfscript>
+		</cfscript>
+	</cfloop>
+	<cfscript>return arrOutput;</cfscript>
 </cfif>
 </cffunction>
 
