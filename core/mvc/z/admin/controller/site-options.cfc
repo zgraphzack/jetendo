@@ -1847,7 +1847,6 @@
 	defaultStruct=getDefaultStruct();
 
 
-
 	if(methodBackup EQ "publicInsertGroup" or methodBackup EQ "publicAjaxInsertGroup"){
 		// allow email to have attachments for public submissions
 		request.zos.arrForceEmailAttachment=[];
@@ -2662,8 +2661,17 @@
 		application.zcore.functions.zRedirect("/z/admin/site-options/#newAction#?zsid=#request.zsid#&site_x_option_group_set_id=#setIdBackup#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#form.modalpopforced#&disableSorting=#application.zcore.functions.zso(form, 'disableSorting', true, 0)#");
 		//application.zcore.functions.zRedirect("/z/misc/system/closeModal");
 	}else{
-		application.zcore.status.setStatus(request.zsid,"Saved successfully.");
-		application.zcore.functions.zRedirect(defaultStruct.listURL&"?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#form.modalpopforced#");
+
+
+		if(structkeyexists(request.zsession, 'siteOptionGroupReturnURL')){
+			link=request.zsession.siteOptionGroupReturnURL;
+			structdelete(request.zsession, 'siteOptionGroupReturnURL');
+			application.zcore.functions.zRedirect(link);
+		}else{
+			application.zcore.status.setStatus(request.zsid,"Saved successfully.");
+			application.zcore.functions.zRedirect(defaultStruct.listURL&"?zsid=#request.zsid#&site_option_app_id=#form.site_option_app_id#&site_option_group_id=#form.site_option_group_id#&site_x_option_group_set_parent_id=#form.site_x_option_group_set_parent_id#&modalpopforced=#form.modalpopforced#");
+
+		}
 	}
 	</cfscript>
 </cffunction>
@@ -4129,6 +4137,10 @@ Define this function in another CFC to override the default email format
 		}else{
 			application.zcore.functions.z301redirect("/");
 		}
+	}
+	if(structkeyexists(form, 'returnURL')){
+		request.zsession.siteOptionGroupReturnURL=form.returnURL;
+		arguments.struct.returnURL=form.returnURL;
 	}
 	if(not structkeyexists(arguments.struct, 'returnURL')){
 		arguments.struct.returnURL='/z/misc/display-site-option-group/add?site_option_group_id=#form.site_option_group_id#';	

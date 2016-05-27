@@ -59,13 +59,13 @@
 	if(not structkeyexists(form, 'zpreview')){
 		db.sql&=" and site_x_option_group_set.site_x_option_group_set_approved=#db.param(1)#";
 	}
-	qSet=db.execute("qSite");
+	qSet=db.execute("qSet");
 	if(qSet.recordcount EQ 0){
 		application.zcore.functions.z404("form.site_x_option_group_set_id, #form.site_x_option_group_set_id#, doesn't exist.");
 	}else{
 		//writeoutput('query output'&qSite.site_id);
-	}
-
+	} 
+	echo('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/admin/site-options/editGroup?site_option_app_id=#qSet.site_option_app_id#&site_option_group_id=#qSet.site_option_group_id#&site_x_option_group_set_id=#qSet.site_x_option_group_set_id#&site_x_option_group_set_parent_id=#qSet.site_x_option_group_set_parent_id#&returnURL=#urlencodedformat(request.zos.originalURL)#">');
 	if(qSet.site_option_group_enable_meta EQ "1"){
 		application.zcore.template.setTag("title", qSet.site_x_option_group_set_metatitle);
 		application.zcore.template.prependTag('meta', '<meta name="keywords" content="#htmleditformat(qSet.site_x_option_group_set_metakey)#" /><meta name="description" content="#htmleditformat(qSet.site_x_option_group_set_metadesc)#" />');
@@ -93,6 +93,7 @@
 	}else{
 		application.zcore.functions.z404("site_option_group_view_cfc_path and site_option_group_view_cfc_method must be set when editing the site option group to allow rendering of the group.");
 	}
+	echo('</div>');
 	
 	</cfscript>
 </cffunction>

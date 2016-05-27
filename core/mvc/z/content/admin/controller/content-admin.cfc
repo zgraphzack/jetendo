@@ -2296,7 +2296,7 @@
 				<h2>Manage Custom Landing Pages</h2>
 				<p>Your web site has additional custom made landing pages that can only be edited at the following locations:</p>
 				<cfloop query="qGroup">
-					<h3><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_name#<cfif right(qGroup.site_option_group_name, 1) NEQ "s">(s)</cfif></a></h3>
+					<h3><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_display_name#<cfif right(qGroup.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></h3>
 				</cfloop>
 			</div>
 		</cfif>
