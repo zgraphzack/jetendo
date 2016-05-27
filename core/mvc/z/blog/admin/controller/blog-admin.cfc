@@ -2867,27 +2867,31 @@ tabCom.enableSaveButtons();
 			 <input type="radio" name="blog_hide_time" value="0" <cfif form.blog_hide_time EQ 0 or form.blog_hide_time EQ "">checked="checked"</cfif>  style="background:none; border:none;"> Yes <input type="radio" name="blog_hide_time" value="1" style="background:none; border:none;" <cfif form.blog_hide_time EQ 1>checked="checked"</cfif>> No
 			</td></tr>
 			
-		<cfsavecontent variable="db.sql">
-		SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		slideshow_deleted = #db.param(0)#
-		ORDER BY slideshow_name ASC
-		</cfsavecontent><cfscript>qslide=db.execute("qslide");</cfscript>
-		<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.blog.edit blog_slideshow_id")#</th>
-		  <td style="vertical-align:top; ">
-		<cfscript>
-		selectStruct = StructNew();
-		selectStruct.name = "blog_slideshow_id";
-		selectStruct.selectedValues=form.blog_slideshow_id;
-		selectStruct.query = qslide;
-		selectStruct.selectLabel="-- Select --";
-		selectStruct.queryLabelField = "slideshow_name";
-		selectStruct.queryValueField = "slideshow_id";
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript> | <a href="/z/admin/slideshow/add" target="_blank">Create a slideshow</a>
-		</td>
-		</tr>
+
+		<cfif application.zcore.functions.zso(request.zos.globals, 'enableManageSlideshow', true, 0) EQ 1>
+		
+			<cfsavecontent variable="db.sql">
+			SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			slideshow_deleted = #db.param(0)#
+			ORDER BY slideshow_name ASC
+			</cfsavecontent><cfscript>qslide=db.execute("qslide");</cfscript>
+			<tr> 
+			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.blog.edit blog_slideshow_id")#</th>
+			  <td style="vertical-align:top; ">
+			<cfscript>
+			selectStruct = StructNew();
+			selectStruct.name = "blog_slideshow_id";
+			selectStruct.selectedValues=form.blog_slideshow_id;
+			selectStruct.query = qslide;
+			selectStruct.selectLabel="-- Select --";
+			selectStruct.queryLabelField = "slideshow_name";
+			selectStruct.queryValueField = "slideshow_id";
+			application.zcore.functions.zInputSelectBox(selectStruct);
+			</cfscript> | <a href="/z/admin/slideshow/add" target="_blank">Create a slideshow</a>
+			</td>
+			</tr>
+		</cfif>
 			<tr>
 				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.blog.edit blog_metakey")#</th>
 				<td>

@@ -1439,28 +1439,31 @@
 			Note: External Link is a way to link to another page without duplicating content.  All other fields will not be displayed if you use this field.
 		</td>
 	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.content.edit content_slideshow_id")#</th>
-		<td style="vertical-align:top; ">
-			<cfscript>
-			db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-			WHERE site_id = #db.param(request.zos.globals.id)# and 
-			slideshow_deleted = #db.param(0)#
-			ORDER BY slideshow_name ASC";
-			qslide=db.execute("qslide");
-			selectStruct = StructNew();
-			selectStruct.name = "content_slideshow_id";
-			selectStruct.selectedValues=form.content_slideshow_id;
-			selectStruct.query = qslide;
-			selectStruct.selectLabel="-- Select --";
-			selectStruct.queryLabelField = "slideshow_name";
-			selectStruct.queryValueField = "slideshow_id";
-			application.zcore.functions.zInputSelectBox(selectStruct);
-			</cfscript> | 
-			<a href="##" onclick="if(document.getElementById('content_slideshow_id').selectedIndex != 0){ window.open('/z/admin/slideshow/edit?slideshow_id='+document.getElementById('content_slideshow_id').options[document.getElementById('content_slideshow_id').selectedIndex].value); } return false; " rel="external">Edit selected slideshow</a> | 
-			<a href="/z/admin/slideshow/add" rel="external" onclick="window.open(this.href); return false;">Create a slideshow</a>
-		</td>
-	</tr>
+	<cfif application.zcore.functions.zso(request.zos.globals, 'enableManageSlideshow', true, 0) EQ 1>
+		
+		<tr> 
+			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.content.edit content_slideshow_id")#</th>
+			<td style="vertical-align:top; ">
+				<cfscript>
+				db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
+				WHERE site_id = #db.param(request.zos.globals.id)# and 
+				slideshow_deleted = #db.param(0)#
+				ORDER BY slideshow_name ASC";
+				qslide=db.execute("qslide");
+				selectStruct = StructNew();
+				selectStruct.name = "content_slideshow_id";
+				selectStruct.selectedValues=form.content_slideshow_id;
+				selectStruct.query = qslide;
+				selectStruct.selectLabel="-- Select --";
+				selectStruct.queryLabelField = "slideshow_name";
+				selectStruct.queryValueField = "slideshow_id";
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript> | 
+				<a href="##" onclick="if(document.getElementById('content_slideshow_id').selectedIndex != 0){ window.open('/z/admin/slideshow/edit?slideshow_id='+document.getElementById('content_slideshow_id').options[document.getElementById('content_slideshow_id').selectedIndex].value); } return false; " rel="external">Edit selected slideshow</a> | 
+				<a href="/z/admin/slideshow/add" rel="external" onclick="window.open(this.href); return false;">Create a slideshow</a>
+			</td>
+		</tr>
+	</cfif>
 	<tr> 
 	<th style="vertical-align:top; ">
 		#application.zcore.functions.zOutputHelpToolTip("Included Page IDs","member.content.edit content_include_listings")#</th>

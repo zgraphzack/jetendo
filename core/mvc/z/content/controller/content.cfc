@@ -286,11 +286,13 @@ this.app_id=12;
 			ts.link="/z/admin/site-options/index";
 			arguments.linkStruct["Content Manager"].children["Site Options"]=ts;
 		}  
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
-			ts=structnew();
-			ts.featureName="Slideshows";
-			ts.link="/z/admin/slideshow/index";
-			arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
+		if(application.zcore.functions.zso(request.zos.globals, 'enableManageSlideshow', true, 0) EQ 1){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
+				ts=structnew();
+				ts.featureName="Slideshows";
+				ts.link="/z/admin/slideshow/index";
+				arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
+			}
 		}   
 		if(request.zos.isdeveloper){
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Custom Groups") EQ false){
@@ -306,12 +308,14 @@ this.app_id=12;
 			ts.link="/z/admin/slideshow/add";
 			arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
 		}	*/
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
-			ts=structnew();
-			ts.featureName="Menus";
-			ts.link="/z/admin/menu/index";
-			arguments.linkStruct["Content Manager"].children["Manage Menus"]=ts;
-		}   
+		if(application.zcore.functions.zso(request.zos.globals, 'enableManageMenu', true, 0) EQ 1){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
+				ts=structnew();
+				ts.featureName="Menus";
+				ts.link="/z/admin/menu/index";
+				arguments.linkStruct["Content Manager"].children["Manage Menus"]=ts;
+			}   
+		}
 		if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Themes") EQ false){
 				ts=structnew();
@@ -326,11 +330,13 @@ this.app_id=12;
 			ts.link="/z/admin/menu/add";
 			arguments.linkStruct["Content Manager"].children["Add Menu"]=ts;
 		}*/
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
-			ts=structnew();
-			ts.featureName="Problem Link Report";
-			ts.link="/z/admin/site-report/index";
-			arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
+		if(application.zcore.functions.zso(request.zos.globals, 'enableProblemLinkReport', true, 0) EQ 1){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
+				ts=structnew();
+				ts.featureName="Problem Link Report";
+				ts.link="/z/admin/site-report/index";
+				arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
+			}
 		}
 		if(request.zos.isdeveloper){
 			if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
