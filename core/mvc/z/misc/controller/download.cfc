@@ -3,6 +3,9 @@
 <cffunction name="index" localmode="modern" access="remote" output="yes">
 	<cfscript>
 	form.fp=application.zcore.functions.zso(form, 'fp');
+	if(not isSimpleValue(form.fp)){
+		application.zcore.functions.z404("Invalid request");
+	}
 	if(left(form.fp, 15) EQ "/zuploadsecure/" and not application.zcore.user.checkGroupAccess("administrator")){
 		application.zcore.user.requireLogin("administrator");
 	} 

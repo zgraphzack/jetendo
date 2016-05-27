@@ -1801,38 +1801,7 @@
 
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	var db=request.zos.queryObject;
-	var parentChildSorting=0;
-	var arrNav=0;
-	var searchColumn=0;
-	var parentparentid=0; 
-	var g=0;
-	var parentChildGroupId=0;
-	var searchTextReg=0;
-	var rs2=0;
-	var searchexactonly=0;
-	var qSite=0;
-	var arrImages=0;
-	var searchTextOReg=0;
-	var searchtext=0;
-	var ts=0;
-	var qsortcom=0;
-	var qpar=0;
-	var arrSearch=0;
-	var prev=0;
-	var qcontentp=0;
-	var pos=0;
-	var ofs=0;
-	var cT=0;
-	var prevDots=0;
-	var qPType=0;
-	var next=0;
-	var arrName=0;
-	var qCheckExclusiveListingPage=0;
-	var cpi=0;
-	var i=0;
-	var searchTextOriginal=0;
-	var contentphoto99=0;
+	var db=request.zos.queryObject; 
 
 	savecontent variable="navOut"{
 		linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
@@ -1867,7 +1836,6 @@
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 
 
 	searchText=trim(application.zcore.functions.zso(form, 'searchText'));
-	searchexactonly=application.zcore.functions.zso(form, 'searchexactonly',false,1);
 	searchTextOriginal=replace(searchText, '"', '', "all");
 	searchText=application.zcore.functions.zCleanSearchText(searchText, true);
 	if(searchText NEQ "" and isNumeric(searchText) EQ false and len(searchText) LTE 2){
@@ -1879,7 +1847,7 @@
 	qSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.querySort");
 	form.zPageId = qSortCom.init("zPageId");
 	form.zLogIndex = application.zcore.status.getField(form.zPageId, "zLogIndex", 1, true);
-	Request.zScriptName2 = "/z/content/admin/content-admin/index?searchtext=#urlencodedformat(application.zcore.functions.zso(form, 'searchtext'))#&searchexactonly=#searchexactonly#&content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#";
+	Request.zScriptName2 = "/z/content/admin/content-admin/index?searchtext=#urlencodedformat(application.zcore.functions.zso(form, 'searchtext'))#&content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#";
 	if(structkeyexists(form, 'showinactive')){
 		request.zsession.showinactive=form.showinactive;
 	}else if(isDefined('request.zsession.showinactive') EQ false){
@@ -1944,34 +1912,30 @@
 	
 	WHERE 
 	content.site_id = #db.param(request.zos.globals.id)#
-	<cfif searchtext NEQ ''>
-		<cfif searchexactonly EQ 1>
-			and (#db.trustedSQL("concat(content.content_id,' ',cast(content.content_price as char(11)),' ',content.content_address,' ',content.content_mls_number")#) like #db.param('%#searchTextOriginal#%')# or 
-			content.content_text like #db.param('%#searchTextOriginal#%')# )
+	<cfif searchtext NEQ ''> 
+		and 
+		
+		(#db.trustedSQL("concat(content.content_id,' ',cast(content.content_price as char(11)),' ',content.content_address,' ',content.content_mls_number)")# like 
+		#db.param('%#searchTextOriginal#%')#  or 
+		content.content_text like #db.param('%#searchTextOriginal#%')# or 
+		(
+		((
+		<cfif application.zcore.enableFullTextIndex>
+			MATCH(content.content_search) AGAINST (#db.param(searchText)#) or 
+			MATCH(content.content_search) AGAINST (#db.param('+#replace(searchText,' ','* +','ALL')#*')# IN BOOLEAN MODE) 
 		<cfelse>
-			and 
-			
-			(#db.trustedSQL("concat(content.content_id,' ',cast(content.content_price as char(11)),' ',content.content_address,' ',content.content_mls_number)")# like 
-			#db.param('%#searchTextOriginal#%')# or 
-			(
-			((
-			<cfif application.zcore.enableFullTextIndex>
-				MATCH(content.content_search) AGAINST (#db.param(searchText)#) or 
-				MATCH(content.content_search) AGAINST (#db.param('+#replace(searchText,' ','* +','ALL')#*')# IN BOOLEAN MODE) 
-			<cfelse>
-				content.content_search like #db.param('%#replace(searchText,' ','%','ALL')#%')#
-			</cfif>
-			) or (
-			
-			<cfif application.zcore.enableFullTextIndex>
-				MATCH(content.content_search) AGAINST (#db.param(searchTextOriginal)#) or 
-				MATCH(content.content_search) AGAINST (#db.param('+#replace(searchTextOriginal,' ','* +','ALL')#*')# IN BOOLEAN MODE)
-			<cfelse>
-				content.content_search like #db.param('%#replace(searchTextOriginal,' ','%','ALL')#%')#
-			</cfif>
-			)) 
-			))
+			content.content_search like #db.param('%#replace(searchText,' ','%','ALL')#%')#
 		</cfif>
+		) or (
+		
+		<cfif application.zcore.enableFullTextIndex>
+			MATCH(content.content_search) AGAINST (#db.param(searchTextOriginal)#) or 
+			MATCH(content.content_search) AGAINST (#db.param('+#replace(searchTextOriginal,' ','* +','ALL')#*')# IN BOOLEAN MODE)
+		<cfelse>
+			content.content_search like #db.param('%#replace(searchTextOriginal,' ','%','ALL')#%')#
+		</cfif>
+		)) 
+		)) 
 	<cfelse> 
 		<cfif structkeyexists(form, 'content_parent_id')> 
 			and content.content_parent_id = #db.param(form.content_parent_id)#
@@ -2008,19 +1972,8 @@
 	</cfsavecontent><cfscript>
 	qSite=db.execute("qSite");
 	searchText=searchTextOriginal;
-	</cfscript>
-	<script type="text/javascript">
-	/* <![CDATA[ */
-	function doContentSearch(){
-		var st=1;
-		if(document.getElementById('searchexactonly2').checked){
-			st=0; 
-		}
-		window.location.href='/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#&searchtext='+escape(document.getElementById('searchtext').value)+'&searchexactonly='+st;
-	}
-	/* ]]> */
-	</script>
-	<cfif application.zcore.app.siteHasApp("listing")>
+	</cfscript> 
+	<!--- <cfif application.zcore.app.siteHasApp("listing")>
 		<cfscript>
 		db.sql="SELECT (content_id) idlist FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
@@ -2031,17 +1984,16 @@
 		<cfif qCheckExclusiveListingPage.recordcount NEQ 0>
 			<p style="font-size:14px;"><strong style=" color:##F00;">NEW:</strong> Listings are now added with the above menu option: Real Estate -&gt; Add New Listing.</p>
 		</cfif>
-	</cfif>
+	</cfif> --->
 	<form name="myForm22" action="/z/content/admin/content-admin/index" method="GET" style="margin:0px;"> 
+		<input type="hidden" name="site_x_option_group_set_id" value="#form.site_x_option_group_set_id#">
 		#application.zcore.siteOptionCom.setIdHiddenField()#
 		<table style="width:100%; border-spacing:0px; border:1px solid ##CCCCCC;" class="table-list">
 			<tr>
 				<td>Search by ID, title
 				<cfif application.zcore.app.siteHasApp("listing")>, address, MLS ##</cfif> or any other text: 
 				<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="min-width:100px; width:300px;max-width:100%; min-width:auto;" size="20" maxchars="10" />&nbsp;
-				<input type="button" name="searchForm" value="Search" onclick="doContentSearch();" />  Exact Matches Only? Yes 
-				<input type="radio" name="searchexactonly" id="searchexactonly1" value="1" style="border:none; background:none;" <cfif searchexactonly EQ 1>checked="checked"</cfif> /> No 
-				<input type="radio" name="searchexactonly" id="searchexactonly2" value="0" <cfif searchexactonly EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> | 
+				<input type="submit" name="searchForm" value="Search" /> 
 				<cfif application.zcore.functions.zso(form, 'searchtext') NEQ ''>
 					<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#';" />
 				</cfif>

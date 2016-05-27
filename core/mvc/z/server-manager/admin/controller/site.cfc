@@ -1417,6 +1417,18 @@
 			<td style="vertical-align:top; width:140px;">Enable Lead Reminder For Users:</td>
 			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_reminder_disable_cc")#</td>
 		</tr>
+		<tr> 
+			<td style="vertical-align:top; width:140px;">Enable Manage Menu:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_manage_menu")#</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Enable Manage Slideshow:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_manage_slideshow")#</td>
+		</tr>
+		<tr>
+			<td style="vertical-align:top; width:140px;">Enable Problem Link Report:</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_problem_link_report")#</td>
+		</tr>
 		<cfscript>
 		if(form.method EQ "add"){
 			form.site_lead_reminder_email1_delay_minutes=720;

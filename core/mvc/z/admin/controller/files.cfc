@@ -84,7 +84,10 @@
 		ArrayAppend(request.imageSizes, ts);
 	}
 	if(not form.fileGalleryMode and form.galleryMode EQ false and structkeyexists(request.zos, 'fileImage') and application.zcore.functions.zso(request.zos.fileImage, 'hideTitle',false,false) EQ false){
-		writeoutput('<h1>Files &amp; Images</h1>');
+		writeoutput('<h2>Files &amp; Images</h2>');
+	}
+	if(form.fileGalleryMode or form.galleryMode or form.method EQ "fileGalleryViewFile" or form.method EQ "fileGalleryAddFolder" or form.method EQ "fileGalleryAdd" or form.method EQ "galleryAdd" or form.method EQ "galleryAddFolder" or form.method EQ "galleryAddFile"){
+		request.zPageDebugDisabled=true;
 	}
 	if(isDefined('request.zos.fileImage.forceRootFolder')){ 
 		if(application.zcore.functions.zso(form, 'd') EQ ''){
@@ -712,8 +715,7 @@ if(structkeyexists(form, 'f') EQ false){
 }
 application.zcore.functions.zStatusHandler(request.zsid,true);
 </cfscript>
-<h1>Upload Image</h1>
-<cfif currentMethod NEQ 'edit'><strong style="color:##FF0000;">NEW:</strong> Now supports ZIP archives to allow uploading & resizing of multiple photos in one step.<br /><br /></cfif>
+<h2>Upload Image</h2> 
 <cfif currentMethod EQ 'edit'>
     <strong style="color:##FF0000;">You are about to replace this image.</strong><br />
     All references to it on the site will be updated to the new image.<br />
@@ -751,7 +753,7 @@ application.zcore.functions.zStatusHandler(request.zsid,true);
 <p>Select File: <input type="file" name="image_file"></p>
 
 
-Resize Image: <br />
+Resize Image:  
 <script type="text/javascript">
 /* <![CDATA[ */var arrWidth=new Array();
 var arrHeight=new Array();

@@ -887,8 +887,8 @@
 	</table>
 	</cfsavecontent>
 	
-	<cfscript>
-	if(rCom.isOK()){
+	<cfscript>  
+	if(rCom.isOK()){ 
 		if(form.configmethod eq 'configSave'){
 			db.sql="UPDATE #db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
 			SET app_x_site_status = #db.param(form.app_x_site_status)#,
@@ -916,8 +916,9 @@
 	}else{
 		structdelete(form, 'config');
 		structdelete(form, 'configMethod');
+		form.configMethod="configForm";
 		application.zcore.status.setStatus(request.zsid,false,form);
-		rCom.setStatusErrors(request.zsid);
+		rCom.setStatusErrors(request.zsid); 
 		application.zcore.functions.zRedirect(request.cgi_script_name&"?method=config&configMethod=configForm&zsid=#request.zsid#&app_id=#local.app_id#&sid=#local.sid#&app_x_site_id=#local.app_x_site_id#");
 	}
 	</cfscript>
