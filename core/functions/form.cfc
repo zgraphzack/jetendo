@@ -523,8 +523,8 @@ USAGE
 	}else{
 		no = no&' checked';
 	}
-	yes=yes&' /> Yes ';
-	no=no&' /> No ';
+	yes=yes&' /> <label for="#arguments.fieldName#1">Yes</label> ';
+	no=no&' /> <label for="#arguments.fieldName#0">No</label> ';
 	return yes&no;
 	</cfscript>
 </cffunction>
