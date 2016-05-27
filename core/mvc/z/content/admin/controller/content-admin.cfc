@@ -2280,6 +2280,27 @@
 			</tbody>
 		</table>
 	</cfif>
+
+	<cfif application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")>
+	
+		<cfscript> 
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_enable_unique_url=#db.param(1)# and 
+		site_option_group_deleted=#db.param(0)# ";
+		qGroup=db.execute("qGroup");
+		</cfscript>
+		<cfif qGroup.recordcount>
+			<div style="float:left; width:100%; padding-top:20px;">
+				<h2>Manage Custom Landing Pages</h2>
+				<p>Your web site has additional custom made landing pages that can only be edited at the following locations:</p>
+				<cfloop query="qGroup">
+					<h3><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_name#<cfif right(qGroup.site_option_group_name, 1) NEQ "s">(s)</cfif></a></h3>
+				</cfloop>
+			</div>
+		</cfif>
+	</cfif>
 </cffunction>
 </cfoutput>
 </cfcomponent>
