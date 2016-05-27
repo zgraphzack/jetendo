@@ -1439,6 +1439,15 @@ this.app_id=10;
 		<td style="vertical-align:top;"><input type="radio" name="blog_config_disable_comments" value="1" <cfif form.blog_config_disable_comments EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes <input type="radio" name="blog_config_disable_comments" value="0" <cfif form.blog_config_disable_comments EQ 0 or form.blog_config_disable_comments EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> No 
 		</td>
 		</tr>
+
+		<tr> 
+			<td style="vertical-align:top; width:140px;">Disable Blog Author?</td>
+			<td >#application.zcore.functions.zInput_Boolean("blog_config_disable_author")#</td>
+		</tr>
+		<tr> 
+			<td style="vertical-align:top; width:140px;">Hide Article Date?</td>
+			<td >#application.zcore.functions.zInput_Boolean("blog_config_hide_date")#</td>
+		</tr>
 		<tr> 
 		<th style="vertical-align:top;">&nbsp;</th>
 		<td style="vertical-align:top;">Always show section articles on main blog pages?<br />
@@ -2034,37 +2043,47 @@ this.app_id=10;
 		authorLabel=qArticle.user_username;
 	}
 	</cfscript>
-	<div class="zblog-author" style="font-size:100%; font-weight:700; clear:both; ">Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
-	<cfset curFeedLink=application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url')> 
-	<cfif qArticle.user_googleplus_url NEQ "" or qArticle.user_twitter_url NEQ "" or qArticle.user_facebook_url NEQ "">
-		&nbsp; Follow me: 
-	</cfif>
-	<cfif curFeedLink NEQ "">
-	<a href="#curFeedLink#" target="_blank" title="Follow us by email subscription"><img src="/z/images/icons/rss.png" alt="Follow #qArticle.user_first_name&" "&qArticle.user_last_name# by email subscription" width="16" height="16" /></a>
-	</cfif>
-	<cfif qArticle.user_googleplus_url NEQ ""><a href="#qArticle.user_googleplus_url#?rel=author" rel="author" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Google+"><img src="/z/images/icons/googleplusv2.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Google+" width="16" height="16" /></a></cfif> 
-	<cfif qArticle.user_twitter_url NEQ ""><a href="#qArticle.user_twitter_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Twitter"><img src="/z/images/icons/twitter.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Twitter" width="16" height="16" /></a></cfif>
-	<cfif qArticle.user_facebook_url NEQ ""><a href="#qArticle.user_facebook_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Facebook"><img src="/z/images/icons/facebook.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Facebook" width="16" height="16" /></a></cfif>
 
-	<cfif qArticle.user_instagram_url NEQ ''>
-		<a href="#qArticle.user_instagram_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Instagram"><img src="/z/images/icons/instagram.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Instagram" width="16" height="16" /></a>
-	</cfif>
-	<cfif qArticle.user_linkedin_url NEQ ''>
-		<a href="#qArticle.user_linkedin_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on LinkedIn"><img src="/z/images/icons/linkedin.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on LinkedIn" width="16" height="16" /></a>
-	</cfif>
-	<br />
-	<span style="font-weight:normal; font-style:italic;"><cfif qArticle.blog_event EQ 1> Event Date:  </cfif> #dateformat(qArticle.blog_datetime, 'ddd, mmm dd, yyyy')#
-	<cfif qArticle.blog_hide_time EQ 0> at #timeformat(qArticle.blog_datetime, 'h:mmtt')# </cfif>
-	<cfif qArticle.blog_end_datetime NEQ "" and qArticle.blog_end_datetime NEQ qArticle.blog_datetime>
-		<cfif qArticle.blog_event EQ 1 and dateformat(qArticle.blog_end_datetime,'yyyymmdd') NEQ dateformat(qArticle.blog_datetime,'yyyymmdd')>
-		to #dateformat(qArticle.blog_end_datetime, 'ddd, mmm dd, yyyy')# 
-			<cfif qArticle.blog_hide_time EQ 0 and qArticle.blog_event EQ 1> at #timeformat(qArticle.blog_end_datetime, "h:mmtt")# </cfif>
-		<cfelse>
-			<cfif qArticle.blog_hide_time EQ 0 and qArticle.blog_event EQ 1> to #timeformat(qArticle.blog_end_datetime, "h:mmtt")# </cfif>
+	<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0>
+		<div class="zblog-author" style="font-size:100%; font-weight:700; clear:both; ">
+
+			Author: #application.zcore.functions.zEncodeEmail(qArticle.user_username,true, authorLabel,true,false)# 
+		<cfset curFeedLink=application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_feedburner_url')> 
+		<cfif qArticle.user_googleplus_url NEQ "" or qArticle.user_twitter_url NEQ "" or qArticle.user_facebook_url NEQ "">
+			&nbsp; Follow me: 
 		</cfif>
+		<cfif curFeedLink NEQ "">
+		<a href="#curFeedLink#" target="_blank" title="Follow us by email subscription"><img src="/z/images/icons/rss.png" alt="Follow #qArticle.user_first_name&" "&qArticle.user_last_name# by email subscription" width="16" height="16" /></a>
+		</cfif>
+		<cfif qArticle.user_googleplus_url NEQ ""><a href="#qArticle.user_googleplus_url#?rel=author" rel="author" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Google+"><img src="/z/images/icons/googleplusv2.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Google+" width="16" height="16" /></a></cfif> 
+		<cfif qArticle.user_twitter_url NEQ ""><a href="#qArticle.user_twitter_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Twitter"><img src="/z/images/icons/twitter.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Twitter" width="16" height="16" /></a></cfif>
+		<cfif qArticle.user_facebook_url NEQ ""><a href="#qArticle.user_facebook_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Facebook"><img src="/z/images/icons/facebook.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Facebook" width="16" height="16" /></a></cfif>
+
+		<cfif qArticle.user_instagram_url NEQ ''>
+			<a href="#qArticle.user_instagram_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on Instagram"><img src="/z/images/icons/instagram.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on Instagram" width="16" height="16" /></a>
+		</cfif>
+		<cfif qArticle.user_linkedin_url NEQ ''>
+			<a href="#qArticle.user_linkedin_url#" target="_blank" title="#qArticle.user_first_name&" "&qArticle.user_last_name# on LinkedIn"><img src="/z/images/icons/linkedin.png" alt="#qArticle.user_first_name&" "&qArticle.user_last_name# on LinkedIn" width="16" height="16" /></a>
+		</cfif>
+		</div>
 	</cfif>
-	</span><br />
-	<hr /></div>
+	<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_hide_date', true, 0) EQ 0>
+		<div class="zblog-date" style="width:100%; float:left;">
+			<span style="font-weight:normal; font-style:italic;"><cfif qArticle.blog_event EQ 1> Event Date:  </cfif> #dateformat(qArticle.blog_datetime, 'ddd, mmm dd, yyyy')#
+			<cfif qArticle.blog_hide_time EQ 0> at #timeformat(qArticle.blog_datetime, 'h:mmtt')# </cfif>
+			<cfif qArticle.blog_end_datetime NEQ "" and qArticle.blog_end_datetime NEQ qArticle.blog_datetime>
+				<cfif qArticle.blog_event EQ 1 and dateformat(qArticle.blog_end_datetime,'yyyymmdd') NEQ dateformat(qArticle.blog_datetime,'yyyymmdd')>
+				to #dateformat(qArticle.blog_end_datetime, 'ddd, mmm dd, yyyy')# 
+					<cfif qArticle.blog_hide_time EQ 0 and qArticle.blog_event EQ 1> at #timeformat(qArticle.blog_end_datetime, "h:mmtt")# </cfif>
+				<cfelse>
+					<cfif qArticle.blog_hide_time EQ 0 and qArticle.blog_event EQ 1> to #timeformat(qArticle.blog_end_datetime, "h:mmtt")# </cfif>
+				</cfif>
+			</cfif>
+			</span><br />
+			<hr />
+		</div>
+	</cfif>
+	
 	
 	<cfsavecontent variable="theImageOutputHTML">
 	<cfscript> 
@@ -2603,14 +2622,25 @@ this.app_id=10;
 		}else{
 			ts.categoryLink=application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_category_id,qList.blog_category_id,"html",qList.blog_category_name);
 		}
-		ts.author=qList.user_first_name&" "&qList.user_last_name;
-		ts.authorEmail=qList.user_username;
-		ts.datetime=qList.blog_datetime;
-		if(qList.blog_end_datetime NEQ "0000-00-00 00:00:00" and qList.blog_end_datetime NEQ ""){
-			ts.endDatetime=qList.blog_end_datetime;
+		if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0){
+			ts.author=qList.user_first_name&" "&qList.user_last_name;
+			ts.authorEmail=qList.user_username;
 		}else{
-			ts.endDatetime=qList.blog_datetime;
+			ts.author="";
+			ts.authorEmail="";
 		}
+		if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_hide_date', true, 0) EQ 0){
+			ts.datetime=qList.blog_datetime;
+			if(qList.blog_end_datetime NEQ "0000-00-00 00:00:00" and qList.blog_end_datetime NEQ ""){
+				ts.endDatetime=qList.blog_end_datetime;
+			}else{
+				ts.endDatetime=qList.blog_datetime;
+			}
+		}else{
+			ts.datetime="";
+			ts.endDatetime="";
+		}
+		
 		
 		
 		ts2=structnew();
@@ -3555,7 +3585,11 @@ this.app_id=10;
 		<cfif q_blog_feed.blog_id[count] NEQ ''>
 			<cfscript>	
 			blog_title = application.zcore.functions.zXMLFormat(q_blog_feed.blog_title[count]);
-			blog_author = application.zcore.functions.zXMLFormat(q_blog_feed.user_first_name[count]&" "&q_blog_feed.user_last_name[count]);
+			if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0){ 
+				blog_author = application.zcore.functions.zXMLFormat(q_blog_feed.user_first_name[count]&" "&q_blog_feed.user_last_name[count]);
+			}else{
+				blog_author="";
+			}
 			blog_summary = q_blog_feed.blog_summary[count];
 			blog_story = q_blog_feed.blog_story[count];
 			blog_sources = application.zcore.functions.zXMLFormat(q_blog_feed.blog_sources[count]);
@@ -4759,10 +4793,6 @@ this.app_id=10;
 	var n2=0;
 	var ts2=0;
 	var pos=0;
-	//if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
-		writeoutput('<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#">');
-	//}
-	
 	thumbnailStruct=variables.getThumbnailSizeStruct();
 	ts2=structnew();
 	ts2.image_library_id=arguments.query.blog_image_library_id;
@@ -4773,7 +4803,7 @@ this.app_id=10;
 	ts2.crop=thumbnailStruct.crop;
 	ts2.count = 1;  
 	arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts2);
-	image="";//request.zos.currentHostName&"/z/a/images/s.gif";
+	image="";
 	if(arraylen(arrImages) NEQ 0){
 		image=request.zos.currentHostName&arrImages[1].link;
 	} 
@@ -4789,56 +4819,57 @@ this.app_id=10;
 		arrayappend(request.arrSearchSiteLinks,'<a href="#currentLink#">#htmleditformat(n2)#</a>');
 	} 
 	</cfscript>
-	<div class="rss-summary-d" style="max-width:#request.zos.globals.maximagewidth#px;">
-		<cfif image NEQ "">
-			<div class="rss-summary-thumbnail" style="width:#thumbnailStruct.width#px; <!--- height:#thumbnailStruct.height#px; --->"><span><a href="#currentLink#"><img src="#image#" alt="#htmleditformat(arguments.query.blog_title)#" /></a></span></div>
-			<div class="rss-summary-ds rss-summary-ds-2"  style="max-width:#request.zos.globals.maximagewidth-62-thumbnailStruct.width#px;">
-		<cfelse>
-			<div class="rss-summary-ds">
-		</cfif>
-		<a href="#currentLink#" class="rss-summary-title #application.zcore.functions.zGetLinkClasses()#">#htmleditformat(arguments.query.blog_title)#</a>
-			<span class="rss-summary-date"><cfif arguments.query.blog_event EQ 1> Event Date: </cfif>
-    #dateformat(arguments.query.blog_datetime, 'ddd, mmm dd, yyyy')# 
-				<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> at #timeformat(arguments.query.blog_datetime, "h:mmtt")#  </cfif>
-				<cfif arguments.query.blog_end_datetime NEQ "" and arguments.query.blog_end_datetime NEQ arguments.query.blog_datetime> 
-					<cfif arguments.query.blog_event EQ 1 and dateformat(arguments.query.blog_end_datetime,'yyyymmdd') NEQ dateformat(arguments.query.blog_datetime,'yyyymmdd')>
-						to #dateformat(arguments.query.blog_end_datetime, 'ddd, mmm dd, yyyy')# 
-					<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> at #timeformat(arguments.query.blog_end_datetime, "h:mmtt")# </cfif>
-					<cfelse>
-						<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> to #timeformat(arguments.query.blog_end_datetime, "h:mmtt")# </cfif>
-					</cfif>
-				</cfif></span>
-			<cfscript> 
-			if(arguments.query.blog_summary EQ ''){
-				tempText = arguments.query.blog_story;
-			}else{
-				tempText = arguments.query.blog_summary;
-			}
-			tempText = rereplaceNoCase(tempText,"<.*?>","","ALL");
-			</cfscript>
-			#left(tempText, 250)#<cfif len(tempText) GT 250>...</cfif><br />
-		
-		<div class="rss-summary-box">
-			<div>
-				<cfif arguments.query.user_first_name NEQ "" and arguments.query.user_last_name NEQ "">
-					Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_first_name&" "&arguments.query.user_last_name,true,false)# in 
-				<cfelse>
-					Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_username,true,false)# in 
+	<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#">
+		<div class="rss-summary-d" style="margin-bottom:20px; ">
+			<cfif image NEQ "">
+				<div class="rss-summary-thumbnail" style="width:#thumbnailStruct.width#px; <!--- height:#thumbnailStruct.height#px; --->"><span><a href="#currentLink#"><img src="#image#" alt="#htmleditformat(arguments.query.blog_title)#" /></a></span></div>
+				<div class="rss-summary-ds rss-summary-ds-2"  style="max-width:#request.zos.globals.maximagewidth-62-thumbnailStruct.width#px;">
+			<cfelse>
+				<div class="rss-summary-ds">
+			</cfif>
+				<a href="#currentLink#" class="rss-summary-title #application.zcore.functions.zGetLinkClasses()#">#htmleditformat(arguments.query.blog_title)#</a>
+
+				<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_hide_date', true, 0) EQ 0>
+					<span class="rss-summary-date"><cfif arguments.query.blog_event EQ 1> Event Date: </cfif>
+		    			#dateformat(arguments.query.blog_datetime, 'ddd, mmm dd, yyyy')# 
+						<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> at #timeformat(arguments.query.blog_datetime, "h:mmtt")#  </cfif>
+						<cfif arguments.query.blog_end_datetime NEQ "" and arguments.query.blog_end_datetime NEQ arguments.query.blog_datetime> 
+							<cfif arguments.query.blog_event EQ 1 and dateformat(arguments.query.blog_end_datetime,'yyyymmdd') NEQ dateformat(arguments.query.blog_datetime,'yyyymmdd')>
+								to #dateformat(arguments.query.blog_end_datetime, 'ddd, mmm dd, yyyy')# 
+							<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> at #timeformat(arguments.query.blog_end_datetime, "h:mmtt")# </cfif>
+							<cfelse>
+								<cfif arguments.query.blog_hide_time EQ 0 and arguments.query.blog_event EQ 1> to #timeformat(arguments.query.blog_end_datetime, "h:mmtt")# </cfif>
+							</cfif>
+						</cfif>
+					</span>
 				</cfif>
-				<a href="#currentLink#" class="#application.zcore.functions.zGetLinkClasses()#">#htmleditformat(arguments.query.blog_category_name)#</a> <!--- | <a href="<cfif arguments.query.blog_unique_name NEQ ''>#arguments.query.blog_unique_name#<cfelse>#application.zcore.app.getAppCFC("blog").getBlogLink(application.zcore.app.getAppData("blog").optionStruct.blog_config_url_article_id,arguments.query.blog_id,"html",arguments.query.blog_title,arguments.query.blog_datetime)#</cfif>##comment" class="#application.zcore.functions.zGetLinkClasses()#">Comments (#commentCount#)</a> --->
-			</div>		
-		</div>
-		<!--- <cfif image NEQ "">
-			</div>
-		</cfif> --->
+			
+				<cfscript> 
+				if(arguments.query.blog_summary EQ ''){
+					tempText = arguments.query.blog_story;
+				}else{
+					tempText = arguments.query.blog_summary;
+				}
+				tempText = rereplaceNoCase(tempText,"<.*?>","","ALL");
+				</cfscript>
+				#left(tempText, 250)#<cfif len(tempText) GT 250>...</cfif><br />
+			
+				<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0>
+			
+					<div class="rss-summary-box">
+						<div>
+							<cfif arguments.query.user_first_name NEQ "" and arguments.query.user_last_name NEQ "">
+								Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_first_name&" "&arguments.query.user_last_name,true,false)# in 
+							<cfelse>
+								Author: #application.zcore.functions.zEncodeEmail(arguments.query.user_username,true,arguments.query.user_username,true,false)# in 
+							</cfif>
+							<a href="#currentLink#" class="#application.zcore.functions.zGetLinkClasses()#">#htmleditformat(arguments.query.blog_category_name)#</a>  
+						</div>		
+					</div>
+				</cfif> 
 			</div> <br style="clear:both;" />
-	</div>
-	<br style="clear:both;" /><br />
-	<cfscript>
-	//if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager"))){
-		writeoutput('</div>');
-	//}
-	</cfscript>
+		</div>
+	</div> 
 </cffunction>
 
 <cffunction name="displayBlogSummaries" localmode="modern" output="yes" returntype="any">
