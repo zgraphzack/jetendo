@@ -1359,8 +1359,12 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	blogform = StructNew();
 	blogform.blog_story.html = true;
-	blogform.uid.required=true;
-	blogform.uid.friendlyname="Author";
+
+
+	if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0){
+		blogform.uid.required=true;
+		blogform.uid.friendlyname="Author";
+	}
 	blogform.blog_title.required=true;
 	blogform.ccid.required=true;
 	blogform.ccid.friendlyname="Category";
@@ -1388,14 +1392,20 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
 		error=true;
 	}
-	form.user_id=application.zcore.functions.zso(form, 'uid');
-arrUser=listToArray(form.user_id, "|");
-if(arraylen(arrUser) EQ 1){
-	arrayAppend(arrUser, 0);
-}else if(arrayLen(arrUser) EQ 2){
-	form.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(arrUser[2]);
-	form.user_id=arrUser[1];
-}
+
+	if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0){
+		form.user_id=application.zcore.functions.zso(form, 'uid');
+		arrUser=listToArray(form.user_id, "|");
+		if(arraylen(arrUser) EQ 1){
+			arrayAppend(arrUser, 0);
+		}else if(arrayLen(arrUser) EQ 2){
+			form.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(arrUser[2]);
+			form.user_id=arrUser[1];
+		}
+	}else{
+		form.user_id_siteIDType="1";
+		form.user_id="0";
+	}
 
 	if(error){
 		application.zcore.status.setStatus(request.zsid, false,form,true);
@@ -2461,33 +2471,35 @@ tabCom.enableSaveButtons();
 					<input type="text" name="blog_title" value="#htmleditformat(form.blog_title)#" style="width:100%;">
 				</td>
 			</tr>
-			<tr>
-				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
-				<td>
-		<cfscript>
-		qUser=application.zcore.user.getUsersWithGroupAccess("member");
-		if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
-		if(form.user_id_siteIdType EQ 0){
-			form.user_id_siteIdType=1;
-		}
-			form.uid=form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
-		}else if(application.zcore.functions.zso(form, 'uid') EQ ''){
-		   	form.uid=request.zsession.user.id&'|'&request.zsession.user.site_id;
-		} 
-		selectStruct = StructNew();
-		selectStruct.name = "uid";
-		selectStruct.selectedValues=form.uid;
-		selectStruct.query = qUser;
-		//selectStruct.style="monoMenu";
-		selectStruct.queryParseLabelVars =true;
-		selectStruct.queryParseValueVars =true;
-		selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
-		selectStruct.queryValueField = "##user_id##|##site_id##";
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript>
-				</td>
-			</tr>
-			
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0>
+				<tr>
+					<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
+					<td>
+			<cfscript>
+			qUser=application.zcore.user.getUsersWithGroupAccess("member");
+			if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
+			if(form.user_id_siteIdType EQ 0){
+				form.user_id_siteIdType=1;
+			}
+				form.uid=form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
+			}else if(application.zcore.functions.zso(form, 'uid') EQ ''){
+			   	form.uid=request.zsession.user.id&'|'&request.zsession.user.site_id;
+			} 
+			selectStruct = StructNew();
+			selectStruct.name = "uid";
+			selectStruct.selectedValues=form.uid;
+			selectStruct.query = qUser;
+			//selectStruct.style="monoMenu";
+			selectStruct.queryParseLabelVars =true;
+			selectStruct.queryParseValueVars =true;
+			selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
+			selectStruct.queryValueField = "##user_id##|##site_id##";
+			application.zcore.functions.zInputSelectBox(selectStruct);
+			</cfscript>
+					</td>
+				</tr>
+			</cfif>
+	 
 			<tr>
 				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Summary Text","member.blog.edit blog_summary")#</th>
 				<td>
@@ -2753,23 +2765,27 @@ tabCom.enableSaveButtons();
 				</script>
 				</td>
 			</tr>
-			<tr>
-				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Office","member.blog.edit office_id")#</th>
-				<td><cfscript>
-					db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
-					WHERE site_id = #db.param(request.zos.globals.id)# and 
-					office_deleted = #db.param(0)#
-					ORDER BY office_name";
-					qOffice=db.execute("qOffice");
-					selectStruct = StructNew();
-					selectStruct.name = "office_id";
-					selectStruct.query = qOffice;
-					selectStruct.queryParseLabelVars=true;
-					selectStruct.queryLabelField = "##office_name## (##office_address##)";
-					selectStruct.queryValueField = "office_id";
-					application.zcore.functions.zInputSelectBox(selectStruct);
-					</cfscript></td>
-			</tr>
+			<cfscript>
+			db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			office_deleted = #db.param(0)#
+			ORDER BY office_name";
+			qOffice=db.execute("qOffice");
+			</cfscript>
+			<cfif qOffice.recordcount>
+				<tr>
+					<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Office","member.blog.edit office_id")#</th>
+					<td><cfscript>
+						selectStruct = StructNew();
+						selectStruct.name = "office_id";
+						selectStruct.query = qOffice;
+						selectStruct.queryParseLabelVars=true;
+						selectStruct.queryLabelField = "##office_name## (##office_address##)";
+						selectStruct.queryValueField = "office_id";
+						application.zcore.functions.zInputSelectBox(selectStruct);
+						</cfscript></td>
+				</tr>
+			</cfif>
 			<cfscript>
 			if(isnull(form.blog_datetime) or form.blog_datetime EQ '0000-00-00 00:00:00' or isdate(form.blog_datetime) EQ false){
 				form.blog_datetime=dateadd("d",-7,now());
