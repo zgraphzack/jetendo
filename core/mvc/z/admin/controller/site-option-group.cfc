@@ -1998,6 +1998,12 @@ displayGroupCom.ajaxInsert();
 				</cfif></td>
 				</tr>
 				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">Home Page?</th>
+					<td> 
+					#application.zcore.functions.zInput_Boolean("site_option_group_is_home_page")# | Yes, will force the URL to be "/".
+					</td>
+				</tr>
+				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Meta Tags?","member.site-option-group.edit site_option_group_enable_meta")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_meta")#</td>
 				</tr>
