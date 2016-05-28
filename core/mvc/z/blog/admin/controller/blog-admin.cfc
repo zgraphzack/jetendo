@@ -2773,17 +2773,16 @@ tabCom.enableSaveButtons();
 			<cfscript>
 			if(isnull(form.blog_datetime) or form.blog_datetime EQ '0000-00-00 00:00:00' or isdate(form.blog_datetime) EQ false){
 				form.blog_datetime=dateadd("d",-7,now());
-			}
-			/*
-			if(blog_status NEQ 2 and datecompare(now(),blog_datetime) EQ 1){
-				blog_status=0;
-			}*/
+			} 
 			</cfscript>
-			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.blog.edit blog_event")#</th>
-			<td>
-			<input type="radio" name="blog_event" id="blog_event1" value="1" style="background:none; border:none;" onclick="document.getElementById('eventDateBox').style.display='block';" <cfif isAnEvent or form.blog_event EQ 1>checked="checked"</cfif>> Yes (Always show) 
-			<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif not isAnEvent and application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
-			</td></tr>
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 1>
+	
+				<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.blog.edit blog_event")#</th>
+				<td>
+				<input type="radio" name="blog_event" id="blog_event1" value="1" style="background:none; border:none;" onclick="document.getElementById('eventDateBox').style.display='block';" <cfif isAnEvent or form.blog_event EQ 1>checked="checked"</cfif>> Yes (Always show) 
+				<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif not isAnEvent and application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
+				</td></tr>
+			</cfif>
 			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Date","member.blog.edit blog_status")#</th>
 			<td><input type="radio" name="blog_status" id="blog_status1" value="2" <cfif form.blog_status EQ 2>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Draft 
 
@@ -2792,21 +2791,32 @@ tabCom.enableSaveButtons();
 			<input type="radio" name="blog_status" id="blog_status3" value="1" onclick="document.getElementById('dateBox').style.display='block';" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0) or form.blog_status EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Manual Date<br /><br />
 			If a blog article's date is set to the future, it will be invisible to the public unless you click "Yes" for the "Event" field above.<br /><br />
 			<div id="dateBox">
-			<cfscript>
-			writeoutput("Specify Date:"&application.zcore.functions.zDateSelect("blog_datetime","blog_datetime",2000,year(now())+1,""));
-			writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_datetime","blog_datetime",1,5));
-			</cfscript><br />
-			<div id="eventDateBox" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0)><cfelse>style="display:none;"</cfif>>
-			<cfscript>
-			if(form.blog_end_datetime EQ "" or isdate(form.blog_end_datetime) EQ false){
-				form.blog_end_datetime=form.blog_datetime;
-			}
-			writeoutput("Event End Date:"&application.zcore.functions.zDateSelect("blog_end_datetime","blog_end_datetime", 2000, year(now())+1,""));
-			writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_end_datetime","blog_end_datetime",1,5));
-			</cfscript>
-			
+				<cfscript>
+				writeoutput("Specify Date:"&application.zcore.functions.zDateSelect("blog_datetime","blog_datetime",2000,year(now())+1,""));
+				writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_datetime","blog_datetime",1,5));
+				</cfscript>
+
+
+				<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 1>
+					<br />
+					<div id="eventDateBox" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0)><cfelse>style="display:none;"</cfif>>
+						<cfscript>
+						if(form.blog_end_datetime EQ "" or isdate(form.blog_end_datetime) EQ false){
+							form.blog_end_datetime=form.blog_datetime;
+						}
+						writeoutput("Event End Date:"&application.zcore.functions.zDateSelect("blog_end_datetime","blog_end_datetime", 2000, year(now())+1,""));
+						writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_end_datetime","blog_end_datetime",1,5));
+						</cfscript>
+					</div>
+				</cfif>
+		
 			</div>
-			</div>
+
+
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 0>
+				<input type="hidden" name="blog_event" id="blog_event" value="0" />
+			</cfif>
+	
 			<script type="text/javascript">
 			/* <![CDATA[ */
 			function checkDateBlock(){
@@ -3271,13 +3281,17 @@ tabCom.enableSaveButtons();
 			</cfscript>
 			</td>
 		</tr>
-		<tr>
-			<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Event Category","member.blog.formcat blog_category_enable_events")#</th>
-			<td>
-			#application.zcore.functions.zInput_Boolean("blog_category_enable_events")#
-			</td>
-		</tr>
+			</div>
 
+		<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 1>
+			<tr>
+				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Event Category","member.blog.formcat blog_category_enable_events")#</th>
+				<td>
+				#application.zcore.functions.zInput_Boolean("blog_category_enable_events")#
+				</td>
+			</tr>
+		</cfif>
+	
 		<tr>
 			<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.blog.formcat blog_category_metakey")#</th>
 			<td>

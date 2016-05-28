@@ -1449,6 +1449,10 @@ this.app_id=10;
 			<td >#application.zcore.functions.zInput_Boolean("blog_config_hide_date")#</td>
 		</tr>
 		<tr> 
+			<td style="vertical-align:top; width:140px;">Enable Blog Events?</td>
+			<td >#application.zcore.functions.zInput_Boolean("blog_config_enable_event")#</td>
+		</tr>
+		<tr> 
 		<th style="vertical-align:top;">&nbsp;</th>
 		<td style="vertical-align:top;">Always show section articles on main blog pages?<br />
 		<input type="radio" name="blog_config_always_show_section_articles" value="1" <cfif form.blog_config_always_show_section_articles EQ 1 or form.blog_config_always_show_section_articles EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> Yes 
