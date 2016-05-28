@@ -309,13 +309,14 @@
 		<input type="radio" name="#variables.type#_option_type_id" value="7" onClick="setType(7);" <cfif value EQ 7>checked="checked"</cfif>/>
 		Select Menu<br />
 		<div id="typeOptions7" style="display:none;padding-left:30px;"> 
-			<table style="border-spacing:0px;">
+			<p>You must set a datasource whether it is delimited Labels/Values List, or a Group or both.</p>
+			<table style="border-spacing:0px; width:100%;">
 			<tr><td>Multiple Selections: </td><td>
 			<cfscript>
 			form.selectmenu_multipleselection=application.zcore.functions.zso(arguments.optionStruct, "selectmenu_multipleselection", true, 0);
 			echo(application.zcore.functions.zInput_Boolean("selectmenu_multipleselection"));
 			</cfscript></td></tr>
-			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" style="max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> (Makes more options visible for easier multiple selection)</td></tr>
+			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" style="max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> <br />(Makes more options visible for easier multiple selection)</td></tr>
 			<tr><td colspan="2">Configure a manually entered list of values: </td></tr>
 			<tr>
 			<th>
@@ -348,6 +349,8 @@
 			
 			
 			
+			<!--- 
+			This has not been implemented yet.
 			<tr><td colspan="2">Configure a database table as a datasource: </td></tr>
 			<tr><td>Table name: </td>
 			<td><input type="text" name="selectmenu_table" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_table'))#" /></td></tr>
@@ -356,7 +359,7 @@
 			<tr><td>Value Field: </td><td><input type="text" name="selectmenu_tablevaluefield" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tablevaluefield'))#" style="min-width:150px;" /></td></tr>
 			<tr><td>Parent Field: </td><td>
 			<input type="text" name="selectmenu_tableparentfield" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_tableparentfield'))#" /> (Optional, only use when this table has a parent_id field to allow recursive heirarchy)</td></tr>
-			
+			 --->
 			
 			</table>
 		

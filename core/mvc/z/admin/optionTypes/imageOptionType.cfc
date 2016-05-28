@@ -394,22 +394,34 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="#variables.type#_option_type_id" value="3" onClick="setType(3);" <cfif value EQ 3>checked="checked"</cfif>/>
-	Image<br />
-	<div id="typeOptions3" style="display:none;padding-left:30px;"> 
-		<p>Image Max Width:
-		<input type="text" name="imagewidth" id="imagewidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagewidth'))#" /></p>
+		<script type="text/javascript">
+		function validateOptionType3(postObj, arrError){ 
+			var imagewidth=parseInt(postObj.imagewidth);
+			var imageheight=parseInt(postObj.imageheight);
+			if(isNaN(imagewidth) || imagewidth <=10){
+				arrError.push('Image Max Width is required and must be greater then 10.');
+			}
+			if(isNaN(imageheight) || imageheight <=10){
+				arrError.push('Image Max Height is required and must be greater then 10.');
+			} 
+		}
+		</script>
+		<input type="radio" name="#variables.type#_option_type_id" value="3" onClick="setType(3);" <cfif value EQ 3>checked="checked"</cfif>/>
+		Image<br />
+		<div id="typeOptions3" style="display:none;padding-left:30px;"> 
+			<p>Image Max Width:
+			<input type="text" name="imagewidth" id="imagewidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagewidth'))#" /></p>
 
-		<p>Image Max Height:
-		<input type="text" name="imageheight" id="imageheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imageheight'))#" /></p>
-		<p>Crop:
-		<input type="radio" name="imagecrop" id="imagecrop1" value="1" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 1 and application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') NEQ "">checked="checked"</cfif>/>
-		Yes
-		<input type="radio" name="imagecrop" id="imagecrop0" value="0" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ "" or application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 0>checked="checked"</cfif>/>
-		No</p>
-		<p>Image Mask URL: 
-		<input type="text" name="imagemaskpath" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagemaskpath'))#" /><br />Note: White pixels in the mask will result in the pixel having full opacity. Shades of grey are used to reduce opacity. Black will make the pixel have zero opacity.</p>
-	</div>
+			<p>Image Max Height:
+			<input type="text" name="imageheight" id="imageheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imageheight'))#" /></p>
+			<p>Crop:
+			<input type="radio" name="imagecrop" id="imagecrop1" value="1" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 1 and application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') NEQ "">checked="checked"</cfif>/>
+			Yes
+			<input type="radio" name="imagecrop" id="imagecrop0" value="0" <cfif application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ "" or application.zcore.functions.zso(arguments.optionStruct, 'imagecrop') EQ 0>checked="checked"</cfif>/>
+			No</p>
+			<p>Image Mask URL: 
+			<input type="text" name="imagemaskpath" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'imagemaskpath'))#" /><br />Note: White pixels in the mask will result in the pixel having full opacity. Shades of grey are used to reduce opacity. Black will make the pixel have zero opacity.</p>
+		</div>
 							
 	</cfsavecontent>
 	<cfreturn output>

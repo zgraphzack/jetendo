@@ -345,6 +345,13 @@
 	
 	</cfscript>
 	<cfsavecontent variable="output">
+		<script type="text/javascript">
+		function validateOptionType16(postObj, arrError){   
+			if(postObj.user_group_id_list == ''){
+				arrError.push('You must select at least one user group in the Limit User Groups field.');
+			}
+		}
+		</script>
 	<input type="radio" name="#variables.type#_option_type_id" value="16" onClick="setType(16);" <cfif value EQ "16">checked="checked"</cfif>/>
 	User Picker<br />
 		<div id="typeOptions16" style="display:none;padding-left:30px;"> 

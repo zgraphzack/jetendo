@@ -885,9 +885,24 @@
 		}
 	}
 	var displayDefault=<cfif currentMethod EQ 'edit'>false<cfelse>true</cfif>;
+	function validateOptionType(){
+		var postObj=zGetFormDataByFormId("siteOptionTypeForm");
+		var typeId=postObj.site_option_type_id;
+		var arrError=[];  
+		if(typeof window["validateOptionType"+typeId] == "undefined"){
+			return true;
+		}
+		window["validateOptionType"+typeId](postObj, arrError);
+		if(arrError.length){
+			alert(arrError.join("\n"));
+			return false;
+		}
+		return true;
+	}
 	/* ]]> */
 	</script>
-	<form name="myForm2" action="/z/admin/site-options/<cfif currentMethod EQ "add">insert<cfelse>update</cfif>?site_option_app_id=#form.site_option_app_id#&amp;site_option_id=#form.site_option_id#<cfif structkeyexists(form, 'globalvar')>&amp;globalvar=1</cfif>" method="post">
+
+	<form name="siteOptionTypeForm" id="siteOptionTypeForm" onsubmit="return validateOptionType();" action="/z/admin/site-options/<cfif currentMethod EQ "add">insert<cfelse>update</cfif>?site_option_app_id=#form.site_option_app_id#&amp;site_option_id=#form.site_option_id#<cfif structkeyexists(form, 'globalvar')>&amp;globalvar=1</cfif>" method="post">
 		<table style="border-spacing:0px;" class="table-list">
 			<cfscript>
 			db.sql="SELECT *  FROM #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group WHERE

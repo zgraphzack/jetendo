@@ -275,14 +275,26 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="#variables.type#_option_type_id" value="2" onClick="setType(2);" <cfif value EQ 2>checked="checked"</cfif>/>
-	HTML Editor<br />
-	<div id="typeOptions2" style="display:none;padding-left:30px;"> 
-		<p>Editor Width:
-		<input type="text" name="editorwidth" id="editorwidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth'))#" /></p>
-		<p>Editor Height:
-		<input type="text" name="editorheight" id="editorheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight'))#" /></p>
-	</div>	
+		<script type="text/javascript">
+		function validateOptionType2(postObj, arrError){ 
+			var width=parseInt(postObj.editorwidth);
+			var height=parseInt(postObj.editorheight);
+			if(isNaN(width) || width <=50){
+				arrError.push('Editor Width is required and must be greater then 50.');
+			}
+			if(isNaN(height) || height <=50){
+				arrError.push('Editor Height is required and must be greater then 50.');
+			} 
+		}
+		</script>
+		<input type="radio" name="#variables.type#_option_type_id" value="2" onClick="setType(2);" <cfif value EQ 2>checked="checked"</cfif>/>
+		HTML Editor<br />
+		<div id="typeOptions2" style="display:none;padding-left:30px;"> 
+			<p>Editor Width:
+			<input type="text" name="editorwidth" id="editorwidth" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth'))#" /></p>
+			<p>Editor Height:
+			<input type="text" name="editorheight" id="editorheight" style="min-width:150px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight'))#" /></p>
+		</div>	
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 

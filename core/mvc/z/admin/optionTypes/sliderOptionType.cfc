@@ -254,6 +254,19 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
+		<script type="text/javascript">
+		function validateOptionType22(postObj, arrError){   
+			if(postObj.slider_from == ''){
+				arrError.push('Slider From is required.');
+			}
+			if(postObj.slider_to == ''){
+				arrError.push('Slider To is required.');
+			}
+			if(postObj.slider_step == ''){
+				arrError.push('Slider Step is required.');
+			}
+		}
+		</script>
 		<input type="radio" name="#variables.type#_option_type_id" value="22" onClick="setType(22);" <cfif value EQ 22>checked="checked"</cfif>/>
 		Slider<br />
 		<div id="typeOptions22" style="display:none;padding-left:30px;"> 
