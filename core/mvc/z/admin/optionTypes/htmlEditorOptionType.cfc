@@ -144,7 +144,7 @@
 		htmlEditor.value			= application.zcore.functions.zso(arguments.dataStruct, arguments.prefixString&arguments.row["#variables.type#_option_id"]);
 		htmlEditor.width			= application.zcore.functions.zso(arguments.optionStruct, 'editorwidth',false,"100%");
 		htmlEditor.height		= application.zcore.functions.zso(arguments.optionStruct, 'editorheight',false,400);
-		htmlEditor.config.EnterMode= "br";
+		htmlEditor.config.EnterMode= "br"; 
 		htmlEditor.create();
 		</cfscript>
 		<br />

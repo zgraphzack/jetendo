@@ -1859,10 +1859,50 @@
 		request.zsession.showinactive=1;
 	}
 
+	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")){
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_enable_unique_url=#db.param(1)# and 
+		site_option_group_deleted=#db.param(0)# 
+		ORDER BY site_option_group_display_name ASC";
+		qGroup=db.execute("qGroup");
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_allow_public=#db.param(1)# and 
+		site_option_group_deleted=#db.param(0)# 
+		ORDER BY site_option_group_display_name ASC";
+		qGroupPublic=db.execute("qGroupPublic");
+	
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_enable_unique_url=#db.param(0)# and  
+		site_option_group_allow_public=#db.param(0)# and 
+		site_option_group_deleted=#db.param(0)# 
+		ORDER BY site_option_group_display_name ASC";
+		qGroupCustom=db.execute("qGroupCustom");
 
+		echo('
+			<div style="float:left; width:100%;">
+			<h2>Outline</h2>
+			<ul style="margin-top:0px;">
+			<li><a href="##pages_regular">Regular Pages</a></li>');
 
+		if(qGroup.recordcount){
+			echo('<li><a href="##pages_custom">Custom Landing Pages</a></li> ');
+		}
+		if(qGroupCustom.recordcount){
+			echo('<li><a href="##pages_customtypes">Custom Content Types</a></li> ');
+		}
 
-	writeoutput('<h2>Manage Pages</h2>');
+		echo('<li><a href="##pages_publicforms">Public Forms</a></li> 
+			<li><a href="##pages_builtin">Built-in Landing Pages</a></li> 
+		</ul></div>'); 
+	}
+
+	writeoutput('<h2 id="pages_regular">Manage Pages</h2>');
 	if(application.zcore.user.checkGroupAccess("administrator")){
 		writeoutput('<a href="/z/content/admin/content-admin/index">Manage Pages</a> | 
 		<a href="/z/content/admin/permissions/index">Manage Permissions</a>  | 
@@ -1952,7 +1992,12 @@
 		and content.content_for_sale<>#db.param('2')#
 	</cfif>
 	and content.content_deleted = #db.param('0')# and 
-	content.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
+	content.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
+
+	<cfif not application.zcore.user.checkServerAccess()>
+		and content.content_hide_edit = #db.param(0)# 
+	</cfif>
+	
 	GROUP BY content.content_id 
 	ORDER BY 
 	<cfif qSortCom.getOrderBy(false) NEQ ''>
@@ -2268,6 +2313,15 @@
 			</cfif> 
 			<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Subpages (#qSite.children#)</a> | </cfif>
 			<a href="/z/content/admin/content-admin/edit?content_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a>
+
+			<cfif application.zcore.user.checkServerAccess()>
+				<cfif qSite.content_hide_edit EQ 1>
+					| <a href="/z/content/admin/content-admin/changeEdit?show=0&amp;return=1&amp;content_id=#qSite.content_id#">Show</a>
+				<cfelse>
+					| <a href="/z/content/admin/content-admin/changeEdit?show=1&amp;return=1&amp;content_id=#qSite.content_id#">Hide</a>
+				</cfif>
+
+			</cfif>
 			<cfif qSite.content_locked EQ 0 or application.zcore.user.checkSiteAccess()>
 				 | 
 				<cfif qSite.children EQ 0>
@@ -2283,26 +2337,117 @@
 		</table>
 	</cfif>
 
-	<cfif application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")>
-	
-		<cfscript> 
-		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
-		site_id = #db.param(request.zos.globals.id)# and 
-		site_option_group_parent_id=#db.param(0)# and 
-		site_option_group_enable_unique_url=#db.param(1)# and 
-		site_option_group_deleted=#db.param(0)# ";
-		qGroup=db.execute("qGroup");
-		</cfscript>
-		<cfif qGroup.recordcount>
-			<div style="float:left; width:100%; padding-top:20px;">
-				<h2>Manage Custom Landing Pages</h2>
+	<div style="float:left; width:100%; line-height:1.7; font-size:16px; padding-top:20px;">
+		<cfif application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")>
+		 
+			<cfif qGroup.recordcount>
+				<h2 id="pages_custom">Manage Custom Landing Pages</h2>
 				<p>Your web site has additional custom made landing pages that can only be edited at the following locations:</p>
+				<ul>
 				<cfloop query="qGroup">
-					<h3><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_display_name#<cfif right(qGroup.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></h3>
+					<li><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_display_name#<cfif right(qGroup.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></li>
 				</cfloop>
-			</div>
+				</ul>
+			</cfif>
+ 
+			<cfif qGroupCustom.recordcount>
+				<h2 id="pages_customtypes">Manage Custom Content Types</h2>
+				<p>Your web site has additional custom content types that can be edited at the following locations:</p>
+				<ul>
+				<cfloop query="qGroupCustom">
+					<li><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroupCustom.site_option_group_id#">Manage #qGroupCustom.site_option_group_display_name#<cfif right(qGroupCustom.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></li>
+				</cfloop>
+				</ul>
+			</cfif>
+	
 		</cfif>
-	</cfif>
+
+		<h2 id="pages_publicforms">Public Forms</h2>
+		<cfscript>
+		echo('<ul>');
+		for(row in qGroupPublic){
+			link=row.site_option_group_public_form_url;
+			if(link EQ ""){
+				link="/z/misc/display-site-option-group/add?site_option_group_id="&row.site_option_group_id;
+			}	
+			echo('<li><a href="'&link&'" target="_blank">'&row.site_option_group_display_name&'</a></li>');
+		}
+
+		echo('<li><a href="/z/misc/inquiry/index" target="_blank">Inquiry Form</a></li>
+		<li><a href="/z/misc/mailing-list/index" target="_blank">Mailing List Signup Form</a></li>
+		<li><a href="/z/misc/loan-calculator/index" target="_blank">Loan Calculator Form</a></li>
+		<li><a href="/z/misc/mortgage-quote/index" target="_blank">Mortgage Quote Form</a></li>');
+		if(request.zos.globals.sendConfirmOptIn EQ 1){
+			echo('<li><a href="/z/misc/share-with-friend/index?link=#request.zos.globals.domain#" target="_blank">Share With Friend Form</a></li>');
+		}
+		if(application.zcore.app.siteHasApp("rental")){
+			link=application.zcore.app.getAppCFC("rental").getRentalInquiryLink();
+			echo('<li><a href="#link#" target="_blank">Rental - Inquiry Form</a></li>');
+		}
+
+
+		if(application.zcore.app.siteHasApp("listing")){
+			echo('
+			<li><a href="/z/misc/mortgage-calculator/index" target="_blank">Real Estate - Mortgage Calculator</a></li> 
+			<li><a href="/z/listing/cma-inquiry/index" target="_blank">Real Estate - CMA Inquiry Form</a></li>
+			<li><a href="/z/listing/new-listing-email-signup/index" target="_blank">Real Estate - New Listings By Email Signup Form</a></li>');
+		}
+		echo('</ul>');
+		</cfscript>
+
+		<h2 id="pages_builtin">Built-in Landing Pages</h2>
+		<cfscript>
+		echo('<ul>');
+		echo('
+		<li><a href="/z/misc/system/missing" target="_blank">404 Not Found Page</a></li>
+		<li><a href="/z/misc/system/legal" target="_blank">Legal Notices</a></li>
+		<li><a href="/z/misc/members/index" target="_blank">Our Team - Public User Profiles</a></li> 
+		<li><a href="/z/user/privacy/index" target="_blank">Privacy Policy</a></li>
+		<li><a href="/z/user/preference/register" target="_blank">Public User Create Account</a> (You have to logout to view this)</li>
+		<li><a href="/z/user/home/index" target="_blank">Public User Home Page</a></li>
+		<li><a href="/z/user/preference/index" target="_blank">Public User Login</a> (You have to logout to view this)</li>
+		<li><a href="/z/user/out/index" target="_blank">Public User Opt Out Form</a></li> 
+		<li><a href="/z/user/preference/form" target="_blank">Public User Preferences</a></li>
+		<li><a href="/z/user/reset-password/index" target="_blank">Public User Reset Password</a></li>
+		<li><a href="/z/misc/search-site/search" target="_blank">Search Site</a></li> 
+		<li><a href="/z/misc/site-map/index" target="_blank">Site Map</a></li>
+		<li><a href="/z/user/terms-of-use/index" target="_blank">Terms of Use</a></li>');
+		if(application.zcore.app.siteHasApp("listing")){
+			echo('<li><a href="/z/listing/map-fullscreen/index" target="_blank">Real Estate - Fullscreen Map Search</a></li>
+			<li><a href="/z/listing/search-form/index" target="_blank">Real Estate - Search Results</a></li>
+			<li><a href="/z/listing/advanced-search/index" target="_blank">Real Estate - Advanced Search</a></li>
+			<li><a href="/z/listing/property/your-saved-searches/index" target="_blank">Real Estate - Your Saved Searches</a></li>
+			<li><a href="/z/listing/sl/view" target="_blank">Real Estate - Your Saved Listings</a></li>
+
+			');
+		}
+		if(application.zcore.app.siteHasApp("rental")){
+			link=application.zcore.app.getAppCFC("rental").getRentalHomeLink();
+			echo('<li><a href="#link#" target="_blank">Rental - Home Page</a></li>');
+
+		}
+		echo('</ul>');
+		</cfscript>
+	</div>
+</cffunction>
+
+
+<cffunction name="changeEdit" localmode="modern" roles="serveradministrator" access="remote">
+	<cfscript>
+	db=request.zos.queryObject;
+	form.show=application.zcore.functions.zso(form, 'show', true, 0);
+	form.content_id=application.zcore.functions.zso(form, 'content_id', true, 0);
+	db.sql="update #db.table("content", request.zos.zcoreDatasource)# 
+	SET content_hide_edit=#db.param(form.show)# 
+	WHERE content_id =#db.param(form.content_id)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	content_deleted=#db.param(0)#";
+	db.execute("qUpdate");
+	
+	link=request.zos.cgi.HTTP_REFERER;
+	application.zcore.functions.zredirect(link);
+	
+	</cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

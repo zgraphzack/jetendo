@@ -55,6 +55,12 @@
 	}
 	
 	application.zcore.template.setTemplate("zcorerootmapping.templates.simple",true,true); 
+
+	if(structkeyexists(form, 'forceFlash')){
+		forceFlash=" || 1 ==1";
+	}else{
+		forceFlash="";
+	}
 	</cfscript>
 	<cfsavecontent variable="theMeta">
 	<style type="text/css">
@@ -105,7 +111,8 @@
 	zArrDeferredFunctions.push(function(){
 		var hasVideoTagSupport=!!document.createElement('video').canPlayType;
 		var videoDiv=$("##embedVideoDiv").show();
-		if(!hasVideoTagSupport <cfif structkeyexists(form, 'forceFlash')> || 1 ==1</cfif>){
+
+		if(!hasVideoTagSupport #forceFlash#){
 			loadFlashPlayer();
 		}else{ 
 			if(document.getElementById("embedVideoTag")){

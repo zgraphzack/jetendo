@@ -277,7 +277,7 @@
     
     
    
-   <!--- application.zcore.app.getAppCFC("rental").getRentalHomeLink() --->
+   <!--- application.zcore.app.getAppCFC("rental").getRentalInquiryLink() --->
  <cffunction name="getRentalInquiryLink" localmode="modern" output="no" returntype="any">
  	<cfscript>
 	return "/Rental-Inquiry-"&application.zcore.app.getAppData("rental").optionstruct.rental_config_misc_url_id&"-4.html";

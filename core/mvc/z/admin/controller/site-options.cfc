@@ -4494,7 +4494,7 @@ Define this function in another CFC to override the default email format
 						}
 						writeoutput('<th style="vertical-align:top;#tdOutput#"><div style="padding-bottom:0px;float:left;">'&application.zcore.functions.zOutputToolTip(row.site_option_display_name, row.site_option_tooltip)&'<a id="soid_#row.site_option_id#" style="display:block; float:left;"></a>
 						</div></th>
-						<td style="vertical-align:top;white-space: nowrap;"><input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
+						<td style="vertical-align:top; "><input type="hidden" name="site_option_id" value="#htmleditformat(row.site_option_id)#" />');
 					}else{
 						if(row.site_option_type_id EQ 11){
 							writeoutput('<td style="vertical-align:top; padding-top:15px; padding-bottom:0px;" colspan="2">');
@@ -4549,7 +4549,7 @@ Define this function in another CFC to override the default email format
 					</cfscript>
 					<tr class="siteOptionFormField#qS.site_option_id# <cfif tempIndex MOD 2 EQ 0>row1<cfelse>row2</cfif>">
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Approved?</div></th>
-					<td style="vertical-align:top;white-space: nowrap;">
+					<td style="vertical-align:top; ">
 						<cfscript>
 						ts = StructNew();
 						ts.name = "site_x_option_group_set_approved";
@@ -4587,7 +4587,7 @@ Define this function in another CFC to override the default email format
 				<cfif qS.site_option_group_enable_unique_url EQ 1 and methodBackup NEQ "userAddGroup" and methodBackup NEQ "userEditGroup">
 					<tr <cfif tempIndex MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 					<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Override URL:</div></th>
-					<td style="vertical-align:top; white-space: nowrap;"><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_override_url" value="#application.zcore.functions.zso(form, 'site_x_option_group_set_override_url')#" /> <br />It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.
+					<td style="vertical-align:top; "><input type="text" style="width:95%;" maxlength="255" name="site_x_option_group_set_override_url" value="#application.zcore.functions.zso(form, 'site_x_option_group_set_override_url')#" /> <br />It is not recommended to use this feature unless you know what you are doing regarding SEO and broken links.  It is used to change the URL of this record within the site.
 					</td>
 					</tr>
 					<cfset tempIndex++>
@@ -4596,7 +4596,7 @@ Define this function in another CFC to override the default email format
 			<cfif qS.site_option_group_enable_image_library EQ 1>
 				<tr class="siteOptionFormField#qS.site_option_id# <cfif tempIndex MOD 2 EQ 0>row1<cfelse>row2</cfif>">
 				<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">Image Library:</div></th>
-				<td style="vertical-align:top;white-space: nowrap;">
+				<td style="vertical-align:top;">
 					<cfscript>
 					ts=structnew();
 					ts.name="site_x_option_group_set_image_library_id";
@@ -4612,7 +4612,7 @@ Define this function in another CFC to override the default email format
 			<cfif qS.site_option_group_enable_public_captcha EQ 1 and (methodBackup EQ "publicAddGroup" or methodBackup EQ "publicEditGroup")>
 				<tr class="siteOptionFormField#qS.site_option_id# <cfif tempIndex MOD 2 EQ 0>row1<cfelse>row2</cfif>">
 				<th style="vertical-align:top;"><div style="padding-bottom:0px;float:left;">&nbsp;</div></th>
-				<td style="vertical-align:top;white-space: nowrap;">
+				<td style="vertical-align:top; ">
 				#application.zcore.functions.zDisplayRecaptcha()#
 				</td>
 				</tr>
