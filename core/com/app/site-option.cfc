@@ -532,7 +532,11 @@
 				children:{}
 			};
 		}
-		arguments.linkStruct[local.curMenu].children["Manage "&qoptionGroup.site_option_group_display_name[local.i]&"(s)"]=ts;
+		plural="(s)";
+		if(qOptionGroup.site_option_group_limit[local.i] EQ 1 or right(qOptionGroup.site_option_group_display_name[local.i], 1) EQ "s"){
+			plural="";
+		}
+		arguments.linkStruct[local.curMenu].children["Manage "&qoptionGroup.site_option_group_display_name[local.i]&plural]=ts;
 	}
 	return arguments.linkStruct;
 	</cfscript>
