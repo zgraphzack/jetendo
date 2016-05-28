@@ -2038,19 +2038,7 @@
 	</cfsavecontent><cfscript>
 	qSite=db.execute("qSite");
 	searchText=searchTextOriginal;
-	</cfscript> 
-	<!--- <cfif application.zcore.app.siteHasApp("listing")>
-		<cfscript>
-		db.sql="SELECT (content_id) idlist FROM #db.table("content", request.zos.zcoreDatasource)# content 
-		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		content_featured_listing_parent_page=#db.param('1')# and 
-		content_deleted = #db.param(0)#";
-		qCheckExclusiveListingPage=db.execute("qCheckExclusiveListingPage");
-		</cfscript>
-		<cfif qCheckExclusiveListingPage.recordcount NEQ 0>
-			<p style="font-size:14px;"><strong style=" color:##F00;">NEW:</strong> Listings are now added with the above menu option: Real Estate -&gt; Add New Listing.</p>
-		</cfif>
-	</cfif> --->
+	</cfscript>  
 
 	<p>Mode: 
 		<cfif form.mode EQ "sorting">
@@ -2062,6 +2050,7 @@
 			Site Map
 		<cfelse>
 			<a href="/z/content/admin/content-admin/index?mode=sitemap">Site Map</a>
+			 | <strong>NEW:</strong> Change mode to site map to view all the pages at once with indentation.
 		</cfif>
 	</p>
 	<form name="myForm22" action="/z/content/admin/content-admin/index" method="GET" style="margin:0px;"> 
