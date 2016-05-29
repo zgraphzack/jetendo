@@ -176,8 +176,7 @@ application.zcore.functions.zEnableContentTransition(); --->
 	}
 	request.zos.tempObj.zEnableContentTransitionLoaded=true;
     application.zcore.functions.zRequireJquery();
-	
-    application.zcore.functions.zIncludeZOSFORMS();
+	 
 	if(structkeyexists(arguments.ss, 'arrIgnoreURLs')){
 		for(i=1;i LTE arraylen(arguments.ss.arrIgnoreURLs);i++){
 			metaAppend&='zContentTransition.arrIgnoreURLs.push("'&arguments.ss.arrIgnoreURLs[i]&'");';
@@ -281,8 +280,7 @@ zSlideShow(ts);
 	var ts=structnew();
 	ts.site_id = request.zos.globals.id;
 	var i=0;
-	structappend(arguments.ss,ts,false);
-	application.zcore.functions.zIncludeZOSFORMS(); 
+	structappend(arguments.ss,ts,false); 
 	 application.zcore.functions.zRequireSlideshowJS();
 	if(structkeyexists(application.sitestruct, arguments.ss.site_id)){
 		if(structkeyexists(arguments.ss,'slideshow_codename')){

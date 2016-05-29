@@ -603,7 +603,7 @@ object{border:none;}
 .zmember-openid-buttons input, .zmember-openid-buttons button, .zmember-openid-buttons a:link, .zmember-openid-buttons a:visited{font-size:14px;margin:0px; padding:0px; cursor:pointer; margin-right:5px; margin-bottom:4px; margin-top:4px; text-decoration:none;display:block; float:left; padding:4px; height:30px; width:170px; border:1px solid #999; background-color:#FFF;color:#000; border-radius:4px; }
 .zmember-openid-buttons a:link, .zmember-openid-buttons a:visited{width:auto !important;}
 .zmember-openid-buttons button:hover, .zmember-openid-buttons a:hover{background-color:#CFC; color:#000; }
-.zmember-openid-buttons button{ width:180px; height:35px;}
+.zmember-openid-buttons button{ padding-left:0px !important; padding-right:0px !important; width:180px; height:35px;}
 .zmember-openid-buttons input{cursor:text; background-color:#F9F9F9;}
 .zmember-openid-buttons input:focus{background-color:#FFF;}
 #openidurl{height:25px; width:95%; max-width:355px;}
@@ -621,8 +621,6 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .z-search-link-summary{width:100%; float:left; }
 .z-search-link-date{width:100%;  font-style:italic; float:left; }
 .z-search-nav{width:100%; float:left; }
-
-
 
 .zImageLeft{margin-right:10px; margin-bottom:10px; float:left; }
 .zImageDefault{ margin-bottom:10px; }
