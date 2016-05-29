@@ -622,7 +622,23 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .z-search-link-date{width:100%;  font-style:italic; float:left; }
 .z-search-nav{width:100%; float:left; }
 
+
+.zOverEdit img, .zImageLeft{margin-right:10px; margin-bottom:10px; float:left; }
+.zOverEdit img, .zImageDefault{ margin-bottom:10px; }
+.zOverEdit img, .zImageRight{margin-left:10px; margin-bottom:10px; float:right; }
+.zOverEdit iframe{ max-width:100% !important;}
+
+@media (max-width:992px){
+	.zOverEdit img, .zImageLeft{ height:auto !important; width:auto !important; max-width:50%; }
+	.zOverEdit img, .zImageDefault{height:auto !important; width:auto !important; max-width:100%; }
+	.zOverEdit img, .zImageRight{height:auto !important; width:auto !important; max-width:50%; }
+
+}
 @media (max-width:767px){
+	.zOverEdit img, .zImageLeft{ margin-right:0px;  height:auto !important; width:auto !important; max-width:100%; float:none !important; }
+	.zOverEdit img, .zImageDefault{float:none !important;}
+	.zOverEdit img, .zImageRight{ margin-left:0px; height:auto !important; width:auto !important; max-width:100%; float:none !important; }
+
 	.zinquiry-form-table input, .zinquiry-form-table select, .zinquiry-form-table textarea{max-width:150px;}
 }
 @media (max-width: 680px){
