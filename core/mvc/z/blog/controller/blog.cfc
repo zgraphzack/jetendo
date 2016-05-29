@@ -2001,7 +2001,7 @@ this.app_id=10;
 	// or define the available fields right here.
 	
 	viewdata.article.story="";
-	viewdata.article.story&=('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
+	viewdata.article.story&=('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
 	application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#form.blog_id#&amp;return=1">');
 	application.zcore.template.appendTag('pagetitle','</span>');
 	if(isDefined('request.zos.supressBlogArticleDetails')){
@@ -3093,7 +3093,7 @@ this.app_id=10;
 	application.zcore.template.setTag("menu",tempMenu);
 	application.zcore.template.setTag("meta",tempMeta);
      
-	writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+	writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 	application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 	application.zcore.template.appendTag('pagetitle','</span>'); 
 	</cfscript>
@@ -3374,7 +3374,7 @@ this.app_id=10;
 	application.zcore.template.setTag("meta",tempMeta);
     
 	//if(structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")){
-		writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
+		writeoutput('<div id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.prependTag('pagetitle','<span id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/categoryEdit?blog_category_id=#form.blog_category_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
 	//}
@@ -4423,7 +4423,7 @@ this.app_id=10;
 	application.zcore.template.setTag("meta",tempMeta);
 		
 	//if((structkeyexists(request.zos.userSession.groupAccess, "administrator") or structkeyexists(request.zos.userSession.groupAccess, "content_manager")) ){
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
+		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
 		application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/tagEdit?blog_tag_id=#form.blog_tag_id#&amp;return=1">');
 		application.zcore.template.appendTag('pagetitle','</span>');
 	//}
@@ -4823,7 +4823,7 @@ this.app_id=10;
 		arrayappend(request.arrSearchSiteLinks,'<a href="#currentLink#">#htmleditformat(n2)#</a>');
 	} 
 	</cfscript>
-	<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#">
+	<div style="display:inline;width:100%;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/blog/admin/blog-admin/articleEdit?blog_id=#arguments.query.blog_id#&amp;return=1&amp;site_x_option_group_set_id=#arguments.query.site_x_option_group_set_id#">
 		<div class="rss-summary-d" style="margin-bottom:20px; ">
 			<cfif image NEQ "">
 				<div class="rss-summary-thumbnail" style="width:#thumbnailStruct.width#px; <!--- height:#thumbnailStruct.height#px; --->"><span><a href="#currentLink#"><img src="#image#" alt="#htmleditformat(arguments.query.blog_title)#" /></a></span></div>

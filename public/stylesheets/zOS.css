@@ -622,21 +622,23 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .z-search-link-date{width:100%;  font-style:italic; float:left; }
 .z-search-nav{width:100%; float:left; }
 
+
+
 .zImageLeft{margin-right:10px; margin-bottom:10px; float:left; }
 .zImageDefault{ margin-bottom:10px; }
 .zImageRight{margin-left:10px; margin-bottom:10px; float:right; }
-.zOverEdit iframe{ max-width:100% !important;}
-
+.zEditorHTML iframe{ max-width:100% !important;}
+.zEditorHTML img{ margin-right:10px; margin-left:10px; margin-bottom:10px; }
 
 @media (max-width:992px){
-	.zOverEdit img{ height:auto !important; width:auto !important; max-width:50%; min-width:280px; }
+	.zEditorHTML img{ height:auto !important; width:auto !important; max-width:50%; min-width:280px; }
 	.zImageLeft{ height:auto !important; width:auto !important; max-width:50%; }
 	.zImageDefault{height:auto !important; width:auto !important; max-width:100%; }
 	.zImageRight{height:auto !important; width:auto !important; max-width:50%; }
 }
 
 @media (max-width:767px){
-	.zOverEdit img{margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%;  float:none !important; min-width:auto;}
+	.zEditorHTML img{margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%;  float:none !important; min-width:auto;}
 	.zImageLeft{ margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%; float:none !important; }
 	.zImageDefault{float:none !important;}
 	.zImageRight{ margin-left:0px; height:auto !important; width:auto !important; max-width:100%; float:none !important; }

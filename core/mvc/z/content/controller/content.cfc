@@ -2775,7 +2775,7 @@ configCom.includeContentByName(ts);
 	<cfscript>
 	if(arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 	//structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
+		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 		if(arguments.primary){
 			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 			application.zcore.template.appendTag('pagetitle','</span>');

@@ -209,7 +209,9 @@
 				id=row.site_x_option_group_set_id;
 				if(structkeyexists(sog.optionLookup, row.groupSetOptionId)){
 					var typeId=sog.optionLookup[row.groupSetOptionId].type;
-					if(typeId EQ 3 or typeId EQ 9){
+					if(typeId EQ 2){
+						local.tempValue='<div class="zEditorHTML">'&row.groupSetValue&'</div>';
+					}else if(typeId EQ 3 or typeId EQ 9){
 						if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
 							optionStruct=sog.optionLookup[row.groupSetOptionId].optionStruct;
 							if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
@@ -224,7 +226,9 @@
 						local.tempValue=row.groupSetValue;
 					}
 					sog.optionGroupSetId[id&"_f"&row.groupSetOptionId]=local.tempValue; 
-					if(typeId EQ 3){
+					if(typeId EQ 2){
+						sog.optionGroupSetId[id&"_f"&row.groupSetOptionId]='<div class="zEditorHTML">'&local.tempValue&'</div>';
+					}else if(typeId EQ 3){
 						if(row.groupSetOriginal NEQ ""){
 							sog.optionGroupSetId["__original "&id&"_f"&row.groupSetOptionId]="/zupload/site-options/"&row.groupSetOriginal;
 						}else{
@@ -1180,7 +1184,9 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 	var t9=getTypeData(arguments.row.site_id);
 	if(arguments.row.site_option_id NEQ ""){
 		typeId=t9.optionLookup[arguments.row.site_option_id].type;
-		if(typeId EQ 3 or typeId EQ 9){
+		if(typeId EQ 2){
+			tempValue='<div class="zEditorHTML">'&arguments.row.site_x_option_group_value&'</div>';;
+		}else if(typeId EQ 3 or typeId EQ 9){
 			if(arguments.row.site_x_option_group_value NEQ "" and arguments.row.site_x_option_group_value NEQ "0"){
 				if(application.zcore.functions.zso(t9.optionLookup[arguments.row.site_option_id].optionStruct, 'file_securepath') EQ "Yes"){
 					tempValue="/zuploadsecure/site-options/"&arguments.row.site_x_option_group_value;
@@ -1438,7 +1444,9 @@ arr1=application.zcore.siteOptionCom.optionGroupSetFromDatabaseBySearch(ts, requ
 				}
 			}
 		}
-		if(row.typeId EQ 3 or row.typeId EQ 9){
+		if(row.typeId EQ 2){
+			tempValue='<div class="zEditorHTML">'&row.groupSetValue&'</div>';
+		}else if(row.typeId EQ 3 or row.typeId EQ 9){
 			if(row.groupSetValue NEQ "" and row.groupSetValue NEQ "0"){
 				optionStruct=typeStruct.optionLookup[row.groupSetOptionId].optionStruct;
 				if(application.zcore.functions.zso(optionStruct, 'file_securepath') EQ "Yes"){
