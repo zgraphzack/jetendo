@@ -718,6 +718,7 @@
 breakStruct={}; 
 
 breakStruct=getBreakpointConfig();
+defaultBreakstruct=duplicate(breakStruct);
 db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
 site_id = #db.param(request.zos.globals.id)# and 
 layout_global_deleted =#db.param(0)# ";
@@ -732,7 +733,7 @@ if(qGlobal.recordcount NEQ 0){
 }
 echo('<h2 class="z-fh-30">Instance Layout Settings</h2>');
 
-displaySettingsForm(breakStruct);
+displaySettingsForm(defaultBreakstruct, breakStruct);
 </cfscript>
 </cffunction>
 
@@ -747,6 +748,7 @@ displaySettingsForm(breakStruct);
 breakStruct={}; 
 
 breakStruct=getBreakpointConfig();
+defaultBreakStruct=duplicate(breakStruct);
 db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
 site_id = #db.param(request.zos.globals.id)# and 
 layout_global_deleted =#db.param(0)# ";
@@ -762,15 +764,18 @@ if(qGlobal.recordcount NEQ 0){
 }
 echo('<h2 class="z-fh-30">Global Layout Settings</h2>');
 echo('<p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p>');
+echo('<p>Values with a <span class="settingChanged" style="padding:5px;">pink background</span> don''t match the default value.  You can hover your mouse over that field to see a tooltip that has the default value listed.</p>');
 echo('</div>');
-displaySettingsForm(breakStruct);
+displaySettingsForm(defaultBreakStruct, breakStruct);
 </cfscript>
 </cffunction>
 
 <cffunction name="displaySettingsForm" localmode="modern" access="public">
+	<cfargument name="defaultBreakStruct" type="struct" required="yes">
 	<cfargument name="breakStruct" type="struct" required="yes">
 	<cfscript>
 	breakStruct=arguments.breakStruct;
+	defaultBreakStruct=arguments.defaultBreakStruct;
 defaultBreakPoint=getDefaultBreakpointConfig();
 // uncomment to more easily debug css generation
 //generateGlobalBreakpointCSS(breakStruct);
@@ -835,7 +840,12 @@ for(i in arrKey){
 		breakpoint=breakStruct.arrBreak[n]; 
 		dataStruct=breakStruct.data[breakpoint]; 
 		id=application.zcore.functions.zescape(i, "_")&"_"&breakpoint;
-		echo('<td><input type="text" name="#id#" value="'&dataStruct[i]&'" style="font-size:14px; width:70px;min-width:70px;" /></td>');
+		echo('<td ');
+		defaultValue=defaultBreakStruct.data[breakpoint][i];
+		if(defaultValue NEQ dataStruct[i]){
+			echo(' class="settingChanged" title="Default at #breakpoint# is: #htmleditformat(defaultValue)#" ');
+		}
+		echo('><input type="text" name="#id#" value="'&dataStruct[i]&'" style="font-size:14px; width:70px;min-width:70px;" /></td>');
 	}
 	echo('</tr>');
 }
@@ -852,7 +862,7 @@ echo('<tr>
 	<th>&nbsp;</th>
 	<td colspan="#structcount(defaultBreakPoint)#">
 	<input type="submit" name="save1" value="Save"> 
-	<input type="button" name="save2" value="Restore Defaults" onclick="window.location.href=''/z/admin/layout-global/saveLayoutSettings?setToDefault=1''; "> 
+	<input type="button" name="save2" value="Restore Defaults" onclick="if(window.confirm(''Are you sure you want to restore defaults? You should make a backup of the current settings in case they are important.'')){ window.location.href=''/z/admin/layout-global/saveLayoutSettings?setToDefault=1''; } "> 
 	</td>');
 echo('</table>
 	</form>
@@ -877,6 +887,7 @@ echo('</table>
 	.z-fill-width, .z-container div, .z-column { background-color:##EEE !important;}
 	.z-left-sidebar, .z-right-sidebar{ background-color:##ccc !important;}
 
+	.settingChanged{background-color:##FCC;}
 	</style>
 <div class="wrapper">
 	<section>
