@@ -499,7 +499,7 @@ USAGE
 	<cfif structkeyexists(form, arguments.field) and form[arguments.field] NEQ '' and fileexists(arguments.abspath&form[arguments.field])>
         <img src="#arguments.path##form[arguments.field]#" alt="Uploaded Image" <cfif arguments.maxwidth NEQ 0>style="max-width:#arguments.maxWidth#px;"</cfif> /><br />
 		<cfif arguments.allowDelete>
-			<input type="checkbox" name="#arguments.field#_delete" value="1" style="background:none; border:none;height:15px; " /> Check to delete image and then submit form.<br />
+			<input type="checkbox" name="#arguments.field#_delete" id="#arguments.field#_delete" value="1" style="background:none; border:none;height:15px; " /> <label for="#arguments.field#_delete">Check to delete image and then submit form.</label><br />
 		</cfif>
 	</cfif>	
 	<input type="file" name="#arguments.field#" style="width:95%;" />	
@@ -1544,11 +1544,13 @@ zInput_file(ts); --->
 	}
 	out&='"';
 	
-	if(value NEQ "" and arguments.ss.allowDelete){
+	if(value NEQ ""){
 		if(structkeyexists(arguments.ss, 'downloadPath')){
 			echo('<p><a href="/z/misc/download/index?fp=#arguments.ss.downloadPath##value#" target="_blank">Download File</a></p>');
 		}
-		echo('<p><input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> Check to delete and then submit form</p>');
+		if(arguments.ss.allowDelete){
+			echo('<p><input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> <label for="#arguments.ss.name#_delete">Check to delete and then submit form</label></p>');
+		}
 	}
 	if(application.zcore.functions.zso(request.zos, "zFormCurrentName") NEQ ""){
 		writeoutput('<script type="text/javascript">/* <![CDATA[ */

@@ -26,6 +26,7 @@
 		local.dateDisabled=false;
 	}
 	local.kitHTML="";
+
 	</cfscript>
 
 	<cfif structkeyexists(request.zos,'zFontsComIncluded') EQ false>
@@ -85,6 +86,11 @@
 		local.ts44&="var zThisIsDeveloper=false;";
 	}
 
+	ss=application.siteStruct[request.zos.globals.id];
+	iconMeta="";
+	if(application.zcore.functions.zso(ss, 'iconLogoExists', false, false)){
+		iconMeta=getIconMetaTags();
+	}
 	request.zos.templateData={
 		dateDisabled:local.dateDisabled,
 		notemplate:false,
@@ -102,7 +108,7 @@
 		templateForced:false,
 		contentStruct : StructNew(),
 		tagContent : StructNew(),
-		prependTagContent : { meta:{ arrContent:[variables.javascriptHeadCode(local.ts44)&local.kitHTML]} },
+		prependTagContent : { meta:{ arrContent:[variables.javascriptHeadCode(local.ts44)&local.kitHTML&iconMeta]} },
 		appendTagContent : { } ,
 		tagAssoc : StructNew(),
 		tags : ArrayNew(1),
@@ -1099,6 +1105,22 @@ for(local.row in local.qSite){
 	<cfargument name="name" type="string" required="yes">
 	<cfscript>
 	return HTMLEditFormat("<z_"&arguments.name&">");
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="getIconMetaTags" access="private" localmode="modern">
+	<cfsavecontent variable="out">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" href="/zupload/settings/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="57x57" href="/zupload/settings/apple-touch-icon-57x57-precomposed.png" />
+	<link rel="apple-touch-icon" sizes="72x72" href="/zupload/settings/apple-touch-icon-72x72-precomposed.png" />
+	<link rel="apple-touch-icon" sizes="114x114" href="/zupload/settings/apple-touch-icon-114x114-precomposed.png" />
+	<link rel="apple-touch-icon" sizes="144x144" href="/zupload/settings/apple-touch-icon-144x144-precomposed.png" />
+	<link rel="apple-touch-icon-precomposed" href="/zupload/settings/apple-touch-icon-precomposed.png" />
+	</cfsavecontent>
+	<cfscript>
+	return out;
 	</cfscript>
 </cffunction>
 </cfoutput>

@@ -572,6 +572,10 @@ if(not rs.success){
 	ts.leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();
 
 
+	if(fileexists(request.zos.globals.privateHomeDir&"zupload/settings/icon-logo-original.png")){
+		ts.iconLogoExists=true;
+	}
+
 	if(structkeyexists(application.zcore, 'templateCFCCache') and structkeyexists(application.zcore.templateCFCCache, request.zos.globals.id)){
 		structclear(application.zcore.templateCFCCache[request.zos.globals.id]);
 	}

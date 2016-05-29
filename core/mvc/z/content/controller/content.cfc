@@ -295,6 +295,12 @@ this.app_id=12;
 			}
 		}   
 		if(request.zos.isdeveloper){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children, "Settings") EQ false){
+				ts=structnew();
+				ts.featureName="Settings";
+				ts.link="/z/admin/settings/index";  
+				arguments.linkStruct["Content Manager"].children["Settings"]=ts;
+			} 
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Custom Groups") EQ false){
 				ts=structnew();
 				ts.featureName="Groups";
