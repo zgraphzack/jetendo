@@ -1048,17 +1048,17 @@ function setImage(){
     var radioGrp = document.iaform.image_align;
     var a="";
     for (var i = 0; i< radioGrp.length; i++) {
-	if (radioGrp[i].checked) {
-	    a=radioGrp [i].value;
-	}
+		if (radioGrp[i].checked) {
+		    a=radioGrp [i].value;
+		}
     }
     var theHTML="";
     if(a==0){// left
-	theHTML='<img src="#variables.siteRootDir##urlencodedformat(form.f)#" style="margin-right:10px; margin-bottom:10px; float:left; ">';
+	theHTML='<img src="#variables.siteRootDir##urlencodedformat(form.f)#" class="zImageLeft">';
     }else if(a==3){ // default - none
-	theHTML='<img src="#variables.siteRootDir##urlencodedformat(form.f)#">';
+	theHTML='<img src="#variables.siteRootDir##urlencodedformat(form.f)#" class="zImageDefault">';
     }else if(a==2){ // right
-	theHTML='<img src="#variables.siteRootDir##urlencodedformat(form.f)#" style=" margin-left:10px; margin-bottom:10px; float:right; ">';
+	theHTML='<img src="#variables.siteRootDir##urlencodedformat(form.f)#" class="zImageRight">';
     }else if(a==1){ // center
 	theHTML='<div style="width:100%; float:none; text-align:center;"><img src="#variables.siteRootDir##urlencodedformat(form.f)#"></div>';
     }

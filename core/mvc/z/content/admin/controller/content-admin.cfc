@@ -2425,7 +2425,7 @@
 		 
 			<cfif qGroup.recordcount>
 				<h2 id="pages_custom">Manage Custom Landing Pages</h2>
-				<p>Your web site has additional custom made landing pages that can only be edited at the following locations:</p>
+				<p>Your web site has additional custom made landing pages that can be edited at the following locations:</p>
 				<ul>
 				<cfloop query="qGroup">
 					<li><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_display_name#<cfif qGroup.site_option_group_limit NEQ 1 and right(qGroup.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></li>
