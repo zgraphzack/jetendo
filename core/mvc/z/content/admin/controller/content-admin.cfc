@@ -2050,7 +2050,7 @@
 			Site Map
 		<cfelse>
 			<a href="/z/content/admin/content-admin/index?mode=sitemap">Site Map</a>
-			 | <strong>NEW:</strong> Change mode to site map to view all the pages at once with indentation.
+			 | <strong>NEW:</strong> Change mode to Site Map to view all the pages at once with indentation.
 		</cfif>
 	</p>
 	<form name="myForm22" action="/z/content/admin/content-admin/index" method="GET" style="margin:0px;"> 
