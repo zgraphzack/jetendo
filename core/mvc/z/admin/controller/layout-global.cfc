@@ -107,7 +107,7 @@
 	</cfscript>
 </cffunction>
 
-
+<!--- 
 <cffunction name="saveLayoutInstanceSettings" localmode="modern" access="remote" roles="member">
 	<cfscript>
 
@@ -174,7 +174,7 @@
 	application.zcore.status.setStatus(request.zsid, "Saved");
 	application.zcore.functions.zRedirect("/z/admin/layout-global/index?zsid=#request.zsid#");
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="saveLayoutSettings" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -708,7 +708,7 @@
 
 </cffunction>
 
-	
+	<!--- 
 <cffunction name="settingsInstance" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
@@ -735,7 +735,7 @@ echo('<h2 class="z-fh-30">Instance Layout Settings</h2>');
 
 displaySettingsForm(defaultBreakstruct, breakStruct);
 </cfscript>
-</cffunction>
+</cffunction> --->
 
 	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
