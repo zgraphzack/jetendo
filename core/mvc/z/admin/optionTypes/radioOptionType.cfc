@@ -9,6 +9,17 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	if(arguments.optionStruct.optionStruct.radio_values NEQ ""){
+		return listgetat(arguments.optionStruct.optionStruct.radio_values, 1, arguments.optionStruct.optionStruct.radio_delimiter);
+	}else{
+		return "You need to set this value manually";
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">

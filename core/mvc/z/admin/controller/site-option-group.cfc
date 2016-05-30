@@ -49,7 +49,7 @@
 	<br />
 </cffunction>
 
-<cffunction name="generateGroupCode" access="public" localmode="modern">
+<cffunction name="generateDebugGroupCode" access="public" localmode="modern">
 	<cfargument name="groupId" type="numeric" required="yes"> 
 	<cfargument name="parentIndex" type="numeric" required="yes"> 
 	<cfargument name="parentGroupId" type="numeric" required="yes"> 
@@ -76,21 +76,138 @@
 		}
 		if(arguments.parentGroupID NEQ groupStruct.site_option_group_parent_id){ 	
 			continue;
+		}  
+		if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+			c=t9.optionGroupFieldLookup[groupStruct.site_option_group_id]; 
+			jsonStruct={};
+			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+				optionStruct=t9.optionLookup[n];
+
+				typeCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.site_option_type_id);
+				debugValue=typeCFC.getDebugValue(optionStruct);
+				jsonStruct[optionStruct.site_option_name]=debugValue; 
+			} 
+			if(groupStruct.site_option_group_enable_unique_url EQ 1){
+				jsonStruct.__url='##';
+			}
+			if(groupStruct.site_option_group_enable_approval EQ 1){
+				jsonStruct.__approved=1;
+			}
+			if(groupStruct.site_option_group_enable_image_library EQ 1){
+				jsonStruct.__image_library_id=0;
+			}
+			echo('<cfscript>arr#ss.curIndex#='&serializeJson(jsonStruct)&';</cfscript>'&chr(10));
+			/*echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
+			savecontent variable="childOutput"{
+				generateDebugGroupCode(0, ss.curIndex, groupStruct.site_option_group_id, arguments.sharedStruct, arguments.depth+2);
+			}
+			childOutput=trim(childOutput);
+			if(len(childOutput)){
+				echo(chr(10)&indent&chr(9)&chr(9)&childOutput&chr(10));
+			}
+			echo(indent&'</cfloop><hr />'&chr(10));*/
 		}
-		echo(chr(10)&indent&"<h2>Group: "&groupStruct.site_option_group_display_name&'</h2>'&chr(10));
-		if(groupStruct.site_option_group_parent_id NEQ 0){
-			parentGroupStruct=t9.optionGroupLookup[groupStruct.site_option_group_parent_id];
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, curStruct#arguments.parentIndex#);</cfscript>'&chr(10));
-		}else{
-			echo(indent&'<cfscript>arr#ss.curIndex#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
+		ss.curIndex++;
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="generateGroupCode" access="public" localmode="modern">
+	<cfargument name="groupId" type="numeric" required="yes"> 
+	<cfargument name="parentIndex" type="numeric" required="yes"> 
+	<cfargument name="parentGroupId" type="numeric" required="yes"> 
+	<cfargument name="sharedStruct" type="struct" required="yes"> 
+	<cfargument name="depth" type="numeric" required="yes"> 
+	<cfargument name="disableLoop" type="boolean" required="yes"> 
+	<cfargument name="debugMode" type="boolean" required="yes"> 
+	<cfargument name="disableDebugOutput" type="boolean" required="yes">
+	<cfscript>
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Site Options");	
+	ss=arguments.sharedStruct;
+	if(not structkeyexists(ss, 'curIndex')){
+		ss.curIndex=arguments.parentIndex;
+	}else{
+		ss.curIndex++;
+	}
+	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
+	indent="";
+	for(i=1;i LTE arguments.depth;i++){
+		indent&=chr(9);
+	}
+
+
+	for(i in t9.optionGroupLookup){
+		groupStruct=t9.optionGroupLookup[i];
+		groupName=application.zcore.functions.zURLEncode(replace(application.zcore.functions.zFirstLetterCaps(groupStruct.site_option_group_name), " ", "", "all"), "");
+		if(isNumeric(left(groupName, 1))){
+			groupName="Group"&groupName;
 		}
-		echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
+		groupNameInstance=lcase(left(groupName, 1))&removeChars(groupName,1,1);
+		if(arguments.groupID NEQ 0 and arguments.groupID NEQ groupStruct.site_option_group_id){
+			continue;
+		}
+		if(arguments.parentGroupID NEQ groupStruct.site_option_group_parent_id){ 	
+			continue;
+		}
+		//echo(chr(10)&indent&"<h2>Group: "&groupStruct.site_option_group_display_name&'</h2>'&chr(10));
+		echo(indent&'<cfscript>#chr(10)#');
+		if(not arguments.disableLoop and not arguments.debugMode){
+			if(not arguments.disableDebugOutput){
+				echo(indent&'// comment out when debugging#chr(10)#');
+			}
+			if(groupStruct.site_option_group_parent_id NEQ 0){
+				parentGroupStruct=t9.optionGroupLookup[groupStruct.site_option_group_parent_id];
+				parentGroupName=application.zcore.functions.zURLEncode(replace(application.zcore.functions.zFirstLetterCaps(parentGroupStruct.site_option_group_name), " ", "", "all"), "");
+				if(isNumeric(left(parentGroupName, 1))){
+					parentGroupName="Group"&parentGroupName;
+				}
+				parentGroupNameInstance=lcase(left(parentGroupName, 1))&removeChars(parentGroupName,1,1);
+				echo(indent&'arr#groupName#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, #parentGroupNameInstance#);</cfscript>'&chr(10));
+			}else{
+				echo(indent&'arr#groupName#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
+			} 
+		}
+		if(not arguments.disableDebugOutput and structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
+			jsonStruct={};
+			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
+				optionStruct=t9.optionLookup[n];
+
+				typeCFC=application.zcore.siteOptionCom.getTypeCFC(optionStruct.site_option_type_id);
+				debugValue=typeCFC.getDebugValue(optionStruct);
+				jsonStruct[optionStruct.site_option_name]=debugValue; 
+			} 
+			if(groupStruct.site_option_group_enable_unique_url EQ 1){
+				jsonStruct.__url='##';
+			}
+			if(groupStruct.site_option_group_enable_approval EQ 1){
+				jsonStruct.__approved=1;
+			}
+			if(groupStruct.site_option_group_enable_image_library EQ 1){
+				jsonStruct.__image_library_id=0;
+			}
+			if(arguments.disableLoop){
+				j=serializeJson(jsonStruct);
+			}else{
+				j=serializeJson([jsonStruct]);
+			}
+			j=replace(replace(replace(j, '{', '{'&chr(10)&indent&chr(9)), '}', chr(10)&indent&'}'), '","', '",#chr(10)&indent&chr(9)#"', 'all');
+			if(arguments.disableLoop){
+				echo(indent&chr(9)&'/* #groupNameInstance#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
+			}else if(arguments.debugMode){
+				echo(indent&chr(9)&'/* arr#groupName#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
+			}else{
+				echo(indent&'// uncomment to debug group without live data#chr(10)&indent#/* arr#groupName#='&j&'; */#chr(10)&indent#</cfscript>'&chr(10));
+			}
+		}
+		if(not arguments.disableLoop){
+			echo(indent&'<cfloop from="1" to="##arrayLen(arr#groupName#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>#groupNameInstance#=arr#groupName#[i#ss.curIndex#];</cfscript>#chr(10)#');
+		}
 		if(structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
 			c=t9.optionGroupFieldLookup[groupStruct.site_option_group_id];
 			fieldStruct={};
 			for(n in t9.optionGroupFieldLookup[groupStruct.site_option_group_id]){
 				optionStruct=t9.optionLookup[n];
-				f=indent&chr(9)&'##curStruct#ss.curIndex#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##<br />'&chr(10);
+				f=indent&chr(9)&'###groupNameInstance#["'&replace(replace(optionStruct.site_option_name, "##", "####", "all"), '"', '""', 'all')&'"]##'&chr(10);
 
 				ts={
 					html: f,
@@ -104,19 +221,19 @@
 				echo(fieldStruct[n].html);
 			}
 			if(groupStruct.site_option_group_enable_unique_url EQ 1){
-				echo(indent&chr(9)&'<a href="##curStruct#ss.curIndex#.__url##">View</a><br />'&chr(10));
+				echo(indent&chr(9)&'<a href="###groupNameInstance#.__url##">View</a>'&chr(10));
 			}
 			if(groupStruct.site_option_group_enable_approval EQ 1){
-				echo(indent&chr(9)&'<cfif curStruct#ss.curIndex#.__approved>Approved<cfelse>Not Approved</cfif><br />'&chr(10));
+				echo(indent&chr(9)&'<cfif #groupNameInstance#.__approved>Approved<cfelse>Not Approved</cfif>'&chr(10));
 			}
 			if(groupStruct.site_option_group_enable_image_library EQ 1){
 				echo(indent&chr(9)&'<cfscript>'&chr(10));
-				echo(indent&chr(9)&'if(structkeyexists(curStruct#ss.curIndex#, ''__image_library_id'')){'&chr(10));
+				echo(indent&chr(9)&'if(structkeyexists(#groupNameInstance#, ''__image_library_id'')){'&chr(10));
 				echo(indent&chr(9)&chr(9)&'ts={};'&chr(10));
 				echo(indent&chr(9)&chr(9)&'ts.output=false;'&chr(10));
 				echo(indent&chr(9)&chr(9)&'ts.size="640x400";'&chr(10));
 				echo(indent&chr(9)&chr(9)&'ts.layoutType="";'&chr(10)); 
-				echo(indent&chr(9)&chr(9)&'ts.image_library_id=curStruct#ss.curIndex#.__image_library_id;'&chr(10));
+				echo(indent&chr(9)&chr(9)&'ts.image_library_id=#groupNameInstance#.__image_library_id;'&chr(10));
 				echo(indent&chr(9)&chr(9)&'ts.forceSize=true;'&chr(10)); 
 				echo(indent&chr(9)&chr(9)&'ts.crop=0;'&chr(10));
 				echo(indent&chr(9)&chr(9)&'ts.offset=0;'&chr(10));
@@ -126,19 +243,21 @@
 				echo(indent&chr(9)&chr(9)&'arrImage=[];'&chr(10));
 				echo(indent&chr(9)&'}'&chr(10));
 				echo(indent&chr(9)&'for(i=1;i LTE arrayLen(arrImage);i++){'&chr(10));
-				echo(indent&chr(9)&chr(9)&'echo(''<img src="##arrImage[i].link##" alt="##htmleditformat(arrImage[i].caption)##" /><br />'');'&chr(10));
+				echo(indent&chr(9)&chr(9)&'echo(''<img src="##arrImage[i].link##" alt="##htmleditformat(arrImage[i].caption)##" />'');'&chr(10));
 				echo(indent&chr(9)&'}'&chr(10));
 				echo(indent&chr(9)&'</cfscript>'&chr(10));
 			}
 			savecontent variable="childOutput"{
-				generateGroupCode(0, ss.curIndex, groupStruct.site_option_group_id, arguments.sharedStruct, arguments.depth+2);
+				generateGroupCode(0, ss.curIndex, groupStruct.site_option_group_id, arguments.sharedStruct, arguments.depth+2, false, arguments.debugMode, arguments.disableDebugOutput);
 			}
 			childOutput=trim(childOutput);
 			if(len(childOutput)){
-				echo(indent&chr(9)&'<h3>Child Groups:</h3>'&chr(10)&indent&chr(9)&chr(9)&childOutput&chr(10));
+				echo(chr(9)&chr(9)&childOutput&chr(10));
 			}
 		}
-		echo(indent&'</cfloop><hr />'&chr(10));
+		if(not arguments.disableLoop){
+			echo(indent&'</cfloop>'&chr(10));
+		}
 		ss.curIndex++;
 	}
 	</cfscript>
@@ -222,9 +341,20 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 	echo('<h2>Source code generated below.</h2>
 	<p>Note: searchOptionGroup retrieves all the records.  If "Enable Memory Caching" is disabled for the group, it will perform a query to select all the data.  This can be very slow if you are working with hundreds or thousands of records and it may cause nested queries to run if the sub-groups also have "Enable Memory Caching" disabled.   Conversely, for small datasets, this feature is much faster then running a query.</p>
 	');
-	echo('<textarea name="a222" cols="100" rows="30" style="width:100%;">');
+	echo('
+		<h2>Jetendo Array Output</h2>
+		<textarea name="a222" cols="100" rows="10" style="width:70%;">');
+
+	savecontent variable="cfcOutput"{
+		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0, true, false, true);
+	}
+	cfcOutput=trim(cfcOutput);
+	savecontent variable="cfcDebugOutput"{
+		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0, true, true, false);
+	}
+	cfcDebugOutput=trim(cfcDebugOutput);
 	savecontent variable="output"{
-		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0);
+		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0, false, false, false);
 		
 		 
 	t9=application.zcore.siteGlobals[request.zos.globals.id].soGroupData;
@@ -232,22 +362,39 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 		application.zcore.functions.z404("#form.site_option_group_id# is not a valid site_option_group_id");
 	}
 		groupStruct=t9.optionGroupLookup[form.site_option_group_id];
+
+		groupName=application.zcore.functions.zURLEncode(replace(application.zcore.functions.zFirstLetterCaps(groupStruct.site_option_group_name), " ", "", "all"), "");
+		if(isNumeric(left(groupName, 1))){
+			groupName="Group"&groupName;
+		}
+		groupNameInstance=lcase(left(groupName, 1))&removeChars(groupName,1,1);
+
 		groupNameArray=arrayToList(application.zcore.siteOptionCom.getOptionGroupNameArrayById(groupStruct.site_option_group_id), '","');
-		if(groupStruct.site_option_group_enable_unique_url EQ 1){
+		
+	}
+	echo(trim(output));
+	echo('</textarea>');
+	if(groupStruct.site_option_group_enable_unique_url EQ 1){
+		savecontent variable="output"{
 		echo('Below is an example of a CFC that is used for making a custom page, search result, and search index for a site_x_option_group_set record.
 <cfcomponent>
 <cfoutput>
 <cffunction name="index" access="public" localmode="modern">
 	<cfargument name="query" type="query" required="yes">
 	<cfscript>
-	struct=application.zcore.siteOptionCom.getOptionGroupSetById(["#groupNameArray#"], arguments.query.site_x_option_group_set_id);
-	curStruct1=(struct);
-	
-	application.zcore.template.setTag("title", struct.__title);
-	application.zcore.template.setTag("pagetitle", struct.__title);
-	</cfscript>
+	#groupNameInstance#=application.zcore.siteOptionCom.getOptionGroupSetById(["#groupNameArray#"], arguments.query.site_x_option_group_set_id);  
+	</cfscript> 
+	#cfcOutput#
 </cffunction>
 
+<!-- To debug without live data, uncomment this index function and comment out the other index function: --->
+<!---
+<cffunction name="index" access="remote" localmode="modern">
+	#cfcDebugOutput#
+</cffunction>
+---> 
+
+<!--- Optional functions used to integrate with search site feature --->
 <cffunction name="searchResult" access="public" roles="member" localmode="modern">
 	<cfargument name="dataStruct" type="struct" required="yes">
 	<cfscript>
@@ -264,11 +411,53 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 </cffunction>
 </cfoutput>
 </cfcomponent>');
+
+		}
+		echo('<h2>Jetendo Custom Landing Page CFC Code</h2>
+		<textarea name="a2222" cols="100" rows="10" style="width:70%;">'&output&'</textarea>');
+		savecontent variable="output"{
+		echo('<!--- If you are using the standalone framework, you should use this CFC instead --->
+<cfcomponent extends="layout">
+<cfoutput>
+<cffunction name="index" localmode="modern" access="remote">
+	<cfscript>
+	init();
+	request.title="Home";
+	arrayAppend(request.stylesheets, ''<link rel="stylesheet" href="##request.currentPath##/stylesheets/subpage.css" type="text/css" />'');
+	// arrayAppend(request.scripts, ''<script type="text/javascript" src="##request.currentPath##/js/custom-example.js"></script>'');
+	header();
+	</cfscript>
+	#cfcDebugOutput#
+
+<section class="page-title">
+	<div class="z-container z-center-children">
+		<h1>Title</h1>
+	</div>
+</section>
+
+<section class="z-pv-40">
+	<div class="z-container"> 
+		<div class="z-1of3">Column 1</div>
+		<div class="z-1of3">Column 2</div>
+		<div class="z-1of3">Column 3</div>
+	</div>
+</section>
+
+<!-- add more sections -->
+
+	<cfscript>
+	footer();
+	</cfscript>
+</cffunction>
+</cfoutput>
+</cfcomponent>');
 		}
 	}
-	echo(trim(output));
-	echo('</textarea>
-	<div style="width:100%; float:left; padding-top:10px;">
+
+	echo('
+		<h2>Standalone Framework Custom Landing Page CFC Code</h2>
+		<textarea name="a2222" cols="100" rows="10" style="width:70%;">'&output&'</textarea>');
+	echo('<div style="width:100%; float:left; padding-top:10px;">
 	<h2>Miscellaneous Code</h2>
 	<p>To select a single group set, use one of the following:</p>
 	<ul>
@@ -324,7 +513,8 @@ displayGroupCom.add();')&'</pre>');
 			// show next button
 		}
 	}
-	</pre>');
+	</pre>'); 
+
 
 	if(groupStruct.site_option_group_allow_public NEQ 0){
 		echo('<h2>Public Form Examples</h2>

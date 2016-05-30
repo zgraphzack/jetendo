@@ -4,6 +4,11 @@
 	<cfargument name="siteType" type="string" required="yes">
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+</cffunction>
+
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">

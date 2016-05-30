@@ -9,6 +9,15 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	width=application.zcore.functions.zso(arguments.optionStruct.optionStruct, 'imagewidth',false,'1000');
+	height=application.zcore.functions.zso(arguments.optionStruct.optionStruct, 'imageHeight',false,'1000');
+	return application.zcore.functions.zGetImagePlaceholderURL(width, height);
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
