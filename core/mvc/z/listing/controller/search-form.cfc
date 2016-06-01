@@ -3819,7 +3819,7 @@ propertyDataCom.setSearchCriteria(form);
 		<cfif returnStruct.count NEQ 0>
             <cfif isnumeric(application.zcore.functions.zso(form, 'searchId')) or structkeyexists(form,'searchaction')>
 
- 	<input type="hidden" name="zlsHoverBoxDisplayType" id="zlsHoverBoxDisplayType" value="<cfif application.zcore.functions.zso(form, 'search_result_layout') NEQ ""><cfif form.search_result_layout EQ 0>detail<cfelseif form.search_result_layout EQ 1>list<cfelseif form.search_result_layout EQ 2>grid<cfelse>detail</cfif><cfelse>detail</cfif>" />
+ 		<input type="hidden" name="zlsHoverBoxDisplayType" id="zlsHoverBoxDisplayType" value="<cfif application.zcore.functions.zso(form, 'search_result_layout') NEQ ""><cfif form.search_result_layout EQ 0>detail<cfelseif form.search_result_layout EQ 1>list<cfelseif form.search_result_layout EQ 2>grid<cfelse>detail</cfif><cfelse>detail</cfif>" />
         <div id="zls-matchinglistingsdiv" style="width:100%;">
             <div class="zls-hover-box1">
 	            <a href="##" id="zls-hover-box-map-button" style="float:right; display:none;">MAP</a>
@@ -3838,8 +3838,7 @@ propertyDataCom.setSearchCriteria(form);
     
     <cfif structkeyexists(form, 'searchId') EQ false>
     <div style="width:100%; height:500px;">&nbsp;</div>
-    </cfif>
-</div> 
+    </cfif> 
 
 	<cfscript>
 	if(request.cgi_script_name EQ "/z/listing/search-form/index" OR isDefined('request.contentEditor')){
