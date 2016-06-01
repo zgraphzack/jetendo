@@ -1276,6 +1276,14 @@
 			</cfscript> <br />(Note: If you select the "Find/replace" options, please insert %child_links% in the body text field 
 		WHERE you want the links to appear.)</td>
 		</tr>
+		<tr>
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("Disable child page links?","member.content.edit content_child_disable_links")#</th>
+		<td style="vertical-align:top; ">
+			#application.zcore.functions.zInput_Boolean("content_child_disable_links")# (Yes will disable the links, but still display the subpages.)
+			</td>
+		</tr>
+
 		<cfif application.zcore.app.siteHasApp("listing")>
 			<tr>
 			<th style="vertical-align:top; ">

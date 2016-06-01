@@ -1866,10 +1866,15 @@ configCom.includeContentByName(ts);
 	<cfargument name="query" type="any" required="no" default="#false#">
 	<cfargument name="arrOutputStruct" type="array" required="no" default="#[]#">
 	<cfargument name="limit" type="numeric" required="no" default="#0#">
+	<cfargument name="disableChildLinks" type="boolean" required="no" default="#false#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
 	includeLoopCount=0;
+	if(arguments.disableChildLinks){
+		contentConfig.contentDisableLinks=true;
+	}
+
 	if(not structkeyexists(request.zos, 'thumbnailSizeStruct')){
 		this.setRequestThumbnailSize(0,0,0); 
 		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
@@ -3221,7 +3226,13 @@ configCom.includeContentByName(ts);
 				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 					echo('<p>Outputting children for page: #arguments.qContent.content_id#</p>');
 				}
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit);
+
+				// need to disable child links somehow, using 
+				disableChildLinks=false;
+				if(qContent.content_child_disable_links EQ 1){
+					disableChildLinks=true;
+				}
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 		}
