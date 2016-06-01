@@ -1248,6 +1248,7 @@ blog.authorlink="Test link";
 
 
 </cfif>
-</cffunction>
+</cffunction> 
+
 </cfoutput>
 </cfcomponent>

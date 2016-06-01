@@ -9,6 +9,13 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	return arguments.optionStruct.optionStruct.htmlcontent;
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
@@ -232,6 +239,14 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
+		<script type="text/javascript">
+		function validateOptionType11(postObj, arrError){ 
+			var htmlcontent=tinymce.get("htmlcontent").getContent();
+			if(htmlcontent == ''){
+				arrError.push('HTML Separator is required.');
+			}
+		}
+		</script>
 	<input type="radio" name="#variables.type#_option_type_id" value="11" onClick="setType(11);" <cfif value EQ 11>checked="checked"</cfif>/>
 	HTML Separator<br />
 	<div id="typeOptions11" style="display:none;padding-left:30px;"> HTML:

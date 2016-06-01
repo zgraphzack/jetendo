@@ -2,8 +2,7 @@
 <cfoutput>
 <cffunction name="onSiteRequestStart" localmode="modern" output="no" returntype="any">
 	<cfscript>
-	application.zcore.functions.zEnableNewMetaTags();
-	application.zcore.functions.zIncludeZOSForms(); 
+	application.zcore.functions.zEnableNewMetaTags(); 
 	
 	application.zcore.template.setTemplate("root.templates.default",true,true);
 	</cfscript>

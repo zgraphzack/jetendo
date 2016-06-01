@@ -291,8 +291,7 @@ USAGE
 	var v=0;
 	var ts =StructNew();	
 	var arrLabel=arraynew(1);
-	var arrValue=arraynew(1);
-	application.zcore.functions.zIncludeZOSFORMS();
+	var arrValue=arraynew(1); 
 	// set defaults
 	ts.size = 1;
 	ts.label="";
@@ -443,8 +442,7 @@ USAGE
 	var output="";
 	var ssn1='';
 	var ssn2='';
-	var ssn3='';
-	application.zcore.functions.zIncludeZOSFORMS();
+	var ssn3=''; 
 	if(structkeyexists(form, fieldName)){
 		ssn1=left(form[arguments.fieldName],3);
 		ssn2=mid(form[arguments.fieldName],3,2);
@@ -492,14 +490,13 @@ USAGE
 	var currentWidth='';
 	var currentHeight='';
 	var tempImage="";
-	var tempText="";
-	application.zcore.functions.zIncludeZOSFORMS();
+	var tempText=""; 
 	</cfscript>
 	<cfsavecontent variable="tempText">
 	<cfif structkeyexists(form, arguments.field) and form[arguments.field] NEQ '' and fileexists(arguments.abspath&form[arguments.field])>
         <img src="#arguments.path##form[arguments.field]#" alt="Uploaded Image" <cfif arguments.maxwidth NEQ 0>style="max-width:#arguments.maxWidth#px;"</cfif> /><br />
 		<cfif arguments.allowDelete>
-			<input type="checkbox" name="#arguments.field#_delete" value="1" style="background:none; border:none;height:15px; " /> Check to delete image and then submit form.<br />
+			<input type="checkbox" name="#arguments.field#_delete" id="#arguments.field#_delete" value="1" style="background:none; border:none;height:15px; " /> <label for="#arguments.field#_delete">Check to delete image and then submit form.</label><br />
 		</cfif>
 	</cfif>	
 	<input type="file" name="#arguments.field#" style="width:95%;" />	
@@ -516,15 +513,14 @@ USAGE
 	<cfargument name="fieldName" type="string" required="yes">
 	<cfscript>
 	var yes = '<input name="#arguments.fieldName#" id="#arguments.fieldName#1" style="border:none; background:none;" type="radio" value="1"';
-	var no = '<input name="#arguments.fieldName#" id="#arguments.fieldName#0" style="border:none; background:none;" type="radio" value="0"';
-	application.zcore.functions.zIncludeZOSFORMS();
+	var no = '<input name="#arguments.fieldName#" id="#arguments.fieldName#0" style="border:none; background:none;" type="radio" value="0"'; 
 	if(structkeyexists(form, arguments.fieldName) and form[arguments.fieldName] NEQ "" and form[arguments.fieldName]){
 		yes = yes&' checked';
 	}else{
 		no = no&' checked';
 	}
-	yes=yes&' /> Yes ';
-	no=no&' /> No ';
+	yes=yes&' /> <label for="#arguments.fieldName#1">Yes</label> ';
+	no=no&' /> <label for="#arguments.fieldName#0">No</label> ';
 	return yes&no;
 	</cfscript>
 </cffunction>
@@ -549,8 +545,7 @@ writeoutput(application.zcore.functions.zInput_Chmod(inputStruct));
 	var js = "";
 	var output = "";
 	var ss = arguments.inputStruct;
-	var tempStruct = StructNew();
-	application.zcore.functions.zIncludeZOSFORMS();
+	var tempStruct = StructNew(); 
 	tempStruct.readOnly = false;
 	tempStruct.style_outer_table = "table-highlight";
 	tempStruct.style_inner_table = "table-highlight tiny";
@@ -881,8 +876,7 @@ writeoutput(application.zcore.functions.zInput_RadioGroup(ts));
 	var label = "";
 	var i = "";
 	var output = '';
-	var selected = "";
-	application.zcore.functions.zIncludeZOSFORMS();
+	var selected = ""; 
 	ts.friendlyName="";
 	ts.labelList = "";
 	ts.style = "";
@@ -1029,8 +1023,7 @@ writeoutput(application.zcore.functions.zInput_Checkbox(ts));
 	var zExpOptionValue=0;
 	var selected = "";
 	local.tempRS=application.zcore.functions.zFormJSNewZValue(1);
-	zExpOptionValue=local.tempRS.zValue;
-	application.zcore.functions.zIncludeZOSFORMS();
+	zExpOptionValue=local.tempRS.zValue; 
 	ts.friendlyName="";
 	ts.radio=false;
 	ts.labelList = "";// options for query data
@@ -1214,8 +1207,7 @@ zInput_submit(ts);
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	var ts=StructNew();
-	var out='<input type="submit"';
-	application.zcore.functions.zIncludeZOSFORMS();
+	var out='<input type="submit"'; 
 	ts.name="";
 	ts.imageInput=false;
 	ts.imageUrl="";
@@ -1302,8 +1294,7 @@ zInput_Text(ts);
 	var ds=0;
 	var ts=StructNew();
 	var labelStyles="";
-	var out='<input type="text"';
-	application.zcore.functions.zIncludeZOSFORMS();
+	var out='<input type="text"'; 
 	ts.label="";
 	ts.name="";
 	ts.friendlyName="";
@@ -1428,8 +1419,7 @@ zInput_hidden(ts);
 	var ts=StructNew();
 	var ds=0;
 	var labelStyles="";
-	var out='<input type="hidden"';
-	application.zcore.functions.zIncludeZOSFORMS();
+	var out='<input type="hidden"'; 
 	ts.name="";
 	ts.friendlyName="";
 	ts.defaultValue="";
@@ -1506,8 +1496,7 @@ zInput_file(ts); --->
 	var ds=0;
 	var value=0;
 	var ts=StructNew();
-	var out='<input type="file"';
-	application.zcore.functions.zIncludeZOSFORMS();
+	var out='<input type="file"'; 
 	ts.name="";
 	ts.friendlyName="";
 	ts.style="";
@@ -1544,11 +1533,13 @@ zInput_file(ts); --->
 	}
 	out&='"';
 	
-	if(value NEQ "" and arguments.ss.allowDelete){
+	if(value NEQ ""){
 		if(structkeyexists(arguments.ss, 'downloadPath')){
 			echo('<p><a href="/z/misc/download/index?fp=#arguments.ss.downloadPath##value#" target="_blank">Download File</a></p>');
 		}
-		echo('<p><input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> Check to delete and then submit form</p>');
+		if(arguments.ss.allowDelete){
+			echo('<p><input name="#arguments.ss.name#_delete" id="#arguments.ss.name#_delete" style="border:none; background:none; height:15px;" type="checkbox" value="true"> <label for="#arguments.ss.name#_delete">Check to delete and then submit form</label></p>');
+		}
 	}
 	if(application.zcore.functions.zso(request.zos, "zFormCurrentName") NEQ ""){
 		writeoutput('<script type="text/javascript">/* <![CDATA[ */
@@ -1638,8 +1629,7 @@ zInput_file(ts); --->
 	var inputStruct = 0;
 	
 	// set defaults
-	var tempStruct = StructNew();
-	application.zcore.functions.zIncludeZOSFORMS();
+	var tempStruct = StructNew(); 
 	tempStruct.name="";
 	tempStruct.friendlyName="";
 	tempStruct.required=false;
@@ -1674,10 +1664,7 @@ zInput_file(ts); --->
 	<cfsavecontent variable="selectBox">
         <cfif isDefined('request.zos.zInputExpandingBoxScript') EQ false>
             <cfset request.zos.zInputExpandingBoxScript=true>
-            <cfset request.zInputExpandingBoxCount=0>
-            <cfscript>
-			application.zcore.functions.zIncludeZOSFORMS();
-			</cfscript>
+            <cfset request.zInputExpandingBoxCount=0> 
         </cfif>
         	<script type="text/javascript">/* <![CDATA[ */
 			zExpArrMenuBox.push("#arguments.ss.name#");
@@ -1954,8 +1941,7 @@ zForm(ts);
 		<cfscript>
 		request.zos.zForm=structnew();
 		request.zos.zForm.globalInit=true;
-        request.zos.zForm.formStruct=structnew();
-		application.zcore.functions.zIncludeZOSFORMS();
+        request.zos.zForm.formStruct=structnew(); 
         </cfscript>
     </cfif>
     
@@ -2095,8 +2081,7 @@ this is not accurate
 	var dss4="";
 	var escape="";
 	var t9=structnew();
-	var link="";
-	application.zcore.functions.zIncludeZOSFORMS();
+	var link=""; 
 	ts.output=true;
 	ts.listLabelsDelimiter=chr(9);
 	ts.listValuesDelimiter=chr(9);
@@ -2319,18 +2304,13 @@ zInputSetSelectedOptions(false,#zOffset#);
 
 
 
-
-
-<!--- 
-
- --->
+ 
 <cffunction name="zMotion" localmode="modern" output="yes" returntype="any">
 	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
 	var topC="";
 	var arrO=0;
-	var ts=StructNew();	
-	application.zcore.functions.zIncludeZOSFORMS();
+	var ts=StructNew();	 
 	// set defaults
 	// ts.labelId="";
 	// ts.id = "formName";
@@ -2403,8 +2383,7 @@ zExpOption(ts);
 	<cfargument name="ss" type="struct" required="yes">
     <cfscript>
 	var ns=0;
-	var ts=structnew();
-	application.zcore.functions.zIncludeZOSFORMS();
+	var ts=structnew(); 
 	ts.zMotionEnabled=false;
 	ts.zMotionOpen=false;
 	ts.disableOverflow=false;
@@ -2487,7 +2466,6 @@ zInputSlider(ts);
 	var pixels=0;
 	var i = 0;
 	var ts =StructNew();	
-	application.zcore.functions.zIncludeZOSFORMS();
 	// set defaults
 	ts.width=150;
 	ts.leftLabel="";

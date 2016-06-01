@@ -764,9 +764,9 @@ If the link does not work, please copy and paste the entire link in your browser
 		      </cfscript>
 		</div>
 	</div>
-	<div class="zUserLoginCreateAccount" style="float:left; width:100%; padding-bottom:15px;width:100%;border-top:1px solid ##999; padding-top:15px;" class="zmember-openid-buttons">
+	<div class="zUserLoginCreateAccount zmember-openid-buttons" style="float:left; width:100%; padding-bottom:15px;width:100%;border-top:1px solid ##999; padding-top:15px;">
 		<h3>If you don't have an account:</h3>
-		<button type="submit" name="submitPref" value="Unsubscribe" onclick="window.location.href='/z/user/preference/register?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#'">Create A Free Account</button>
+		<button type="submit" name="submitPref" value="Unsubscribe" onclick="window.location.href='/z/user/preference/register?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#'">Create Free Account</button>
 	</div>
 	<div class="zUserLoginUnsubscribe" style="float:left;width:100%; border-top:1px solid ##999; padding-top:15px;">
 		<form name="getEmailUnsubscribe" action="/z/user/preference/update?modalpopforced=#form.modalpopforced#&amp;redirectOnLogin=#urlencodedformat(form.redirectOnLogin)#&reloadOnNewAccount=#form.reloadOnNewAccount#" method="post">
@@ -875,7 +875,7 @@ If the link does not work, please copy and paste the entire link in your browser
 				<cfelse>
 					<button type="submit" name="submitPref" value="Login" style="font-size:120%; padding:5px; margin-bottom:5px;">Login</button>
 					<br />
-					<button type="button" name="submitPref" onclick="window.location.href='/z/user/reset-password/index?email=#urlencodedformat(form.e)#';" value="Reset Password" style="font-size:120%; padding:5px; margin-bottom:5px;">Forgot your password?</button>
+					<button type="button" name="submitPref" onclick="window.location.href='/z/user/reset-password/index?email=#urlencodedformat(form.e)#';" value="Reset Password" style="font-size:120%; padding:5px; margin-bottom:5px;">Forgot password?</button>
 				</cfif>
 			</div>
 			</div>

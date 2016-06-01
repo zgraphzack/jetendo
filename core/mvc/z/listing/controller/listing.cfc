@@ -248,7 +248,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 			ts.children=structnew();
 			arguments.linkStruct["Real Estate"]=ts;
 		}
-		db.sql="SELECT content_id cid FROM #db.table("content", request.zos.zcoreDatasource)# content 
+		/*db.sql="SELECT content_id cid FROM #db.table("content", request.zos.zcoreDatasource)# content 
 		WHERE site_id = #db.param(request.zos.globals.id)# and 
 		content_featured_listing_parent_page=#db.param('1')# and 
 		content_deleted = #db.param(0)#";
@@ -261,7 +261,7 @@ if(compare(arguments.photourl, local.c) NEQ 0){
 			ts=structnew();
 			ts.link='/z/content/admin/content-admin/index?content_parent_id='&qCheckExclusiveListingPage.cid;
 			arguments.linkStruct["Real Estate"].children["Manage Listings"]=ts;
-    }
+  		}*/
 		if(structkeyexists(arguments.linkStruct["Real Estate"].children,"Saved Listing Searches") EQ false){
 			ts=structnew();
 			ts.featureName="Saved Listing Searches";

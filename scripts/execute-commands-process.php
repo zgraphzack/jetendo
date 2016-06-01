@@ -31,6 +31,7 @@ tarZipFilePath#chr(9)#tarAbsoluteFilePath#chr(9)#changeToAbsoluteDirectory#chr(9
 tarZipSitePath#chr(9)#siteDomain#chr(9)#curDate
 tarZipSiteUploadPath#chr(9)#siteDomain#chr(9)#curDate
 verifySitePaths
+saveFaviconSet#chr(9)#sourceFilePath#chr(9)#destinationPath
 */
 
 function processContents($contents){
@@ -97,6 +98,8 @@ function processContents($contents){
 		return notifyBindZone($a);
 	}else if($contents =="publishNginxSiteConfig"){
 		return publishNginxSiteConfig($a);
+	}else if($contents =="saveFaviconSet"){
+		return saveFaviconSet($a);
 	}else if($contents =="sslInstallCertificate"){
 		return sslInstallCertificate($a);
 	}else if($contents =="sslGenerateKeyAndCSR"){
@@ -1359,6 +1362,84 @@ function getImageMagickConvertResize($a){
 	return "0";
 }
 
+function saveFaviconSet($a){ 
+	if(count($a) != 2){
+		echo "Incorrect number of arguments to saveFaviconSet.\n";
+		return "0";
+	}
+	set_time_limit(100);
+	$sourceFilePath=$a[0];
+	$destinationPath=getAbsolutePath($a[1]);
+	if(!is_dir($destinationPath)){
+		echo "Invalid destinationPath: ".$destinationPath."\n";
+		return "0";
+	}
+	if(!file_exists($sourceFilePath)){
+		echo "File doesn't exist sourceFilePath: ".$sourceFilePath."\n";
+		return "0";
+	}
+	$sourceFilePath=getAbsolutePath($sourceFilePath);
+	$p=get_cfg_var("jetendo_root_path");
+	$p2=get_cfg_var("jetendo_scripts_path");
+	$found=false;
+	if(substr($sourceFilePath, 0, strlen($p)) == $p){
+		$found=true;
+	} 
+	if($found){
+		$cmd="/usr/bin/identify -format '%w,%h,%[colorspace],%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
+		$r=`$cmd`;
+
+		$a=explode(",", trim($r));
+		if(strtolower(trim($a[2]))=="cmyk"){
+			$cmd2="/usr/bin/convert ".escapeshellarg($sourceFilePath)." -profile ".$p2."icc-profiles/USWebCoatedSWOP.icc -profile ".$p2."icc-profiles/sRGB_IEC61966-2-1_black_scaled.icc ".escapeshellarg($sourceFilePath)." 2>&1";
+			$r2=`$cmd2`; 
+		} 
+	}
+	@unlink($destinationPath.'/favicon.ico');
+	@unlink($destinationPath.'/apple-icon-precomposed.png');
+	@unlink($destinationPath.'/apple-touch-icon-144x144-precomposed.png');
+	@unlink($destinationPath.'/apple-touch-icon-114x114-precomposed.png');
+	@unlink($destinationPath.'/apple-touch-icon-72x72-precomposed.png');
+	@unlink($destinationPath.'/apple-touch-icon-57x57-precomposed.png');
+	@unlink($destinationPath.'/apple-touch-icon.png');
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -alpha off -resize 48x48 -define icon:auto-resize="48,32,16" '.escapeshellarg($destinationPath.'/favicon.ico'); //256,128,96,64,48,
+	//echo $cmd."\n";
+	$r=`$cmd`; 
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -resize 192x192 '.escapeshellarg($destinationPath.'/apple-icon-precomposed.png'); 
+	//echo $cmd."\n";
+	$r=`$cmd`; 
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -resize 144x144 '.escapeshellarg($destinationPath.'/apple-touch-icon-144x144-precomposed.png'); 
+	//echo $cmd."\n";
+	$r=`$cmd`; 
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -resize 114x114 '.escapeshellarg($destinationPath.'/apple-touch-icon-114x114-precomposed.png'); 
+	//echo $cmd."\n";
+	$r=`$cmd`; 
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -resize 72x72 '.escapeshellarg($destinationPath.'/apple-touch-icon-72x72-precomposed.png'); 
+	//echo $cmd."\n";
+	$r=`$cmd`; 
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -resize 57x57 '.escapeshellarg($destinationPath.'/apple-touch-icon-57x57-precomposed.png'); 
+	//echo $cmd."\n";
+	$r=`$cmd`; 
+	$cmd='/usr/bin/convert '.escapeshellarg($sourceFilePath).' -resize 192x192 '.escapeshellarg($destinationPath.'/apple-touch-icon.png'); 
+	//echo $cmd."\n";
+	$r=`$cmd`;   
+	if(!zIsTestServer()){
+		$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($sourceFilePath);
+		echo $cmd."\n";
+		`$cmd`;
+		$cmd='/bin/chmod 660 '.escapeshellarg($sourceFilePath);
+		echo $cmd."\n";
+		`$cmd`;
+		$cmd='/bin/chown -R '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($destinationPath."/*");
+		echo $cmd."\n";
+		`$cmd`;
+		$cmd='/bin/chmod -R 660 '.escapeshellarg($destinationPath."/*");
+		echo $cmd."\n";
+		`$cmd`;
+	}
+	//echo "Success\n\n";
+	return "1"; 
+}
 function getImageMagickIdentify($a){
 	set_time_limit(100);
 	$path=implode("", $a);

@@ -66,6 +66,15 @@ function compileJS($arrFiles, $outputFileName){
 				file_put_contents($compilePath.$outputFileName, $data="//# sourceMappingURL=".$outputFileName.".map\n".file_get_contents($compilePath.$outputFileName));
 				file_put_contents($compilePath.$outputFileName.".map", str_replace($rootPath."public/", "/z/", file_get_contents($compilePath.$outputFileName.".map")));
 			}
+
+			$arrOutput=array();
+			for($i=0;$i<count($arrCompile);$i++){
+				$c=substr($arrCompile[$i], 1, strlen($arrCompile[$i])-2);
+				$n=file_get_contents($c);
+				array_push($arrOutput, "\n/* ".$c." */\n".$n);
+			}
+			$uncompressedPath=$compilePath.str_replace(".js", ".combined.js", $outputFileName);
+			file_put_contents($uncompressedPath, implode("\n", $arrOutput));
 		}
 	}
 	$fp=fopen(get_cfg_var("jetendo_log_path")."deploy/compile-js-css-log.txt", "a");

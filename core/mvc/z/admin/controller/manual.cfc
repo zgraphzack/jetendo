@@ -240,6 +240,9 @@ zdoc css style documentation
 	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Video Library")){
 		arrayAppend(arrS, { id:"__2.8", url:"/video-library.html", title:"Video Library"});
 	} 
+	if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Settings")){
+		arrayAppend(arrS, { id:"__2.9", url:"/settings.html", title:"Settings"});
+	} 
 	/*if(showAll or application.zcore.adminSecurityFilter.checkFeatureAccess("Themes")){
 		arrayAppend(arrS, { id:"__2.10", url:"/themes.html", title:"Themes"});
 	}*/

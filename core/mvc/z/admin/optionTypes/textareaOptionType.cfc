@@ -9,6 +9,13 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	return "Example Textarea#chr(10)#With Line Break";
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
@@ -238,14 +245,26 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
-	<input type="radio" name="#variables.type#_option_type_id" value="1" onClick="setType(1);" <cfif value EQ 1>checked="checked"</cfif>/>
-	Textarea<br />
-	<div id="typeOptions1" style="display:none;padding-left:30px;"> 
-		<p>Editor Width:
-		<input type="text" name="editorwidth2" id="editorwidth2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2'))#" /></p>
-		<p>Editor Height:
-		<input type="text" name="editorheight2" id="editorheight2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight2'))#" /></p>
-	</div>
+		<script type="text/javascript">
+		function validateOptionType1(postObj, arrError){ 
+			var width=parseInt(postObj.editorwidth2);
+			var height=parseInt(postObj.editorheight2);
+			if(isNaN(width) || width <=50){
+				arrError.push('Editor Width is required and must be greater then 50.');
+			}
+			if(isNaN(height) || height <=50){
+				arrError.push('Editor Height is required and must be greater then 50.');
+			} 
+		}
+		</script>
+		<input type="radio" name="#variables.type#_option_type_id" value="1" onClick="setType(1);" <cfif value EQ 1>checked="checked"</cfif>/>
+		Textarea<br />
+		<div id="typeOptions1" style="display:none;padding-left:30px;"> 
+			<p>Editor Width:
+			<input type="text" name="editorwidth2" id="editorwidth2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorwidth2'))#" /></p>
+			<p>Editor Height:
+			<input type="text" name="editorheight2" id="editorheight2" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'editorheight2'))#" /></p>
+		</div>
 	</cfsavecontent>
 	<cfreturn output>
 </cffunction> 

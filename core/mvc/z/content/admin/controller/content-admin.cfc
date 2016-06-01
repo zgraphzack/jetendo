@@ -110,10 +110,17 @@
 		content_deleted = #db.param(0)# and 
 		site_id = #db.param(request.zos.globals.id)#";
 		qChildren=db.execute("qChildren");
-		if(qchildren.recordcount EQ 0){
-			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qparent.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
+		if(isDefined('request.zsession.content_return'&form.content_id)){ 
+			tempURL = request.zsession['content_return'&form.content_id];
+			StructDelete(request.zsession, 'content_return'&form.content_id);
+			tempUrl=application.zcore.functions.zURLAppend(replacenocase(tempURL,"zsid=","ztv1=","ALL"),"zsid=#request.zsid#");
+			application.zcore.functions.zRedirect(tempURL, true);
 		}else{
-			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
+			if(qchildren.recordcount EQ 0){
+				application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qparent.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
+			}else{
+				application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?content_parent_id=#qcheck.content_parent_id#&zsid=#request.zsid#&site_x_option_group_set_id=#form.site_x_option_group_set_id#');
+			}
 		}	
 	}else{
 		local.link="/z/content/admin/content-admin/delete?confirm=1&amp;content_id=#form.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#";
@@ -1269,6 +1276,14 @@
 			</cfscript> <br />(Note: If you select the "Find/replace" options, please insert %child_links% in the body text field 
 		WHERE you want the links to appear.)</td>
 		</tr>
+		<tr>
+		<th style="vertical-align:top; ">
+			#application.zcore.functions.zOutputHelpToolTip("Disable child page links?","member.content.edit content_child_disable_links")#</th>
+		<td style="vertical-align:top; ">
+			#application.zcore.functions.zInput_Boolean("content_child_disable_links")# (Yes will disable the links, but still display the subpages.)
+			</td>
+		</tr>
+
 		<cfif application.zcore.app.siteHasApp("listing")>
 			<tr>
 			<th style="vertical-align:top; ">
@@ -1439,28 +1454,31 @@
 			Note: External Link is a way to link to another page without duplicating content.  All other fields will not be displayed if you use this field.
 		</td>
 	</tr>
-	<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.content.edit content_slideshow_id")#</th>
-		<td style="vertical-align:top; ">
-			<cfscript>
-			db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-			WHERE site_id = #db.param(request.zos.globals.id)# and 
-			slideshow_deleted = #db.param(0)#
-			ORDER BY slideshow_name ASC";
-			qslide=db.execute("qslide");
-			selectStruct = StructNew();
-			selectStruct.name = "content_slideshow_id";
-			selectStruct.selectedValues=form.content_slideshow_id;
-			selectStruct.query = qslide;
-			selectStruct.selectLabel="-- Select --";
-			selectStruct.queryLabelField = "slideshow_name";
-			selectStruct.queryValueField = "slideshow_id";
-			application.zcore.functions.zInputSelectBox(selectStruct);
-			</cfscript> | 
-			<a href="##" onclick="if(document.getElementById('content_slideshow_id').selectedIndex != 0){ window.open('/z/admin/slideshow/edit?slideshow_id='+document.getElementById('content_slideshow_id').options[document.getElementById('content_slideshow_id').selectedIndex].value); } return false; " rel="external">Edit selected slideshow</a> | 
-			<a href="/z/admin/slideshow/add" rel="external" onclick="window.open(this.href); return false;">Create a slideshow</a>
-		</td>
-	</tr>
+	<cfif application.zcore.functions.zso(request.zos.globals, 'enableManageSlideshow', true, 0) EQ 1>
+		
+		<tr> 
+			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.content.edit content_slideshow_id")#</th>
+			<td style="vertical-align:top; ">
+				<cfscript>
+				db.sql="SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
+				WHERE site_id = #db.param(request.zos.globals.id)# and 
+				slideshow_deleted = #db.param(0)#
+				ORDER BY slideshow_name ASC";
+				qslide=db.execute("qslide");
+				selectStruct = StructNew();
+				selectStruct.name = "content_slideshow_id";
+				selectStruct.selectedValues=form.content_slideshow_id;
+				selectStruct.query = qslide;
+				selectStruct.selectLabel="-- Select --";
+				selectStruct.queryLabelField = "slideshow_name";
+				selectStruct.queryValueField = "slideshow_id";
+				application.zcore.functions.zInputSelectBox(selectStruct);
+				</cfscript> | 
+				<a href="##" onclick="if(document.getElementById('content_slideshow_id').selectedIndex != 0){ window.open('/z/admin/slideshow/edit?slideshow_id='+document.getElementById('content_slideshow_id').options[document.getElementById('content_slideshow_id').selectedIndex].value); } return false; " rel="external">Edit selected slideshow</a> | 
+				<a href="/z/admin/slideshow/add" rel="external" onclick="window.open(this.href); return false;">Create a slideshow</a>
+			</td>
+		</tr>
+	</cfif>
 	<tr> 
 	<th style="vertical-align:top; ">
 		#application.zcore.functions.zOutputHelpToolTip("Included Page IDs","member.content.edit content_include_listings")#</th>
@@ -1801,38 +1819,9 @@
 
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
-	var db=request.zos.queryObject;
-	var parentChildSorting=0;
-	var arrNav=0;
-	var searchColumn=0;
-	var parentparentid=0; 
-	var g=0;
-	var parentChildGroupId=0;
-	var searchTextReg=0;
-	var rs2=0;
-	var searchexactonly=0;
-	var qSite=0;
-	var arrImages=0;
-	var searchTextOReg=0;
-	var searchtext=0;
-	var ts=0;
-	var qsortcom=0;
-	var qpar=0;
-	var arrSearch=0;
-	var prev=0;
-	var qcontentp=0;
-	var pos=0;
-	var ofs=0;
-	var cT=0;
-	var prevDots=0;
-	var qPType=0;
-	var next=0;
-	var arrName=0;
-	var qCheckExclusiveListingPage=0;
-	var cpi=0;
-	var i=0;
-	var searchTextOriginal=0;
-	var contentphoto99=0;
+	var db=request.zos.queryObject; 
+
+	application.zcore.template.setTag("title", "Manage Pages");
 
 	savecontent variable="navOut"{
 		linkStruct=application.zcore.app.getAppCFC("content").getAdminLinks({});
@@ -1866,8 +1855,8 @@
 	//application.zcore.siteOptionCom.displaySectionNav();
 	application.zcore.functions.zStatusHandler(request.zsid,true, false, form); 
 
-	searchText=trim(application.zcore.functions.zso(form, 'searchText'));
-	searchexactonly=application.zcore.functions.zso(form, 'searchexactonly',false,1);
+	form.mode=application.zcore.functions.zso(form, 'mode', false, 'sorting');
+	searchText=application.zcore.functions.zso(form, 'searchText');
 	searchTextOriginal=replace(searchText, '"', '', "all");
 	searchText=application.zcore.functions.zCleanSearchText(searchText, true);
 	if(searchText NEQ "" and isNumeric(searchText) EQ false and len(searchText) LTE 2){
@@ -1879,17 +1868,57 @@
 	qSortCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.display.querySort");
 	form.zPageId = qSortCom.init("zPageId");
 	form.zLogIndex = application.zcore.status.getField(form.zPageId, "zLogIndex", 1, true);
-	Request.zScriptName2 = "/z/content/admin/content-admin/index?searchtext=#urlencodedformat(application.zcore.functions.zso(form, 'searchtext'))#&searchexactonly=#searchexactonly#&content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#";
+	Request.zScriptName2 = "/z/content/admin/content-admin/index?searchtext=#urlencodedformat(application.zcore.functions.zso(form, 'searchtext'))#&content_parent_id=#application.zcore.functions.zso(form, 'content_parent_id')#";
 	if(structkeyexists(form, 'showinactive')){
 		request.zsession.showinactive=form.showinactive;
 	}else if(isDefined('request.zsession.showinactive') EQ false){
 		request.zsession.showinactive=1;
 	}
 
+	if(application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")){
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_enable_unique_url=#db.param(1)# and 
+		site_option_group_deleted=#db.param(0)# 
+		ORDER BY site_option_group_display_name ASC";
+		qGroup=db.execute("qGroup");
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_allow_public=#db.param(1)# and 
+		site_option_group_deleted=#db.param(0)# 
+		ORDER BY site_option_group_display_name ASC";
+		qGroupPublic=db.execute("qGroupPublic");
+	
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_parent_id=#db.param(0)# and 
+		site_option_group_enable_unique_url=#db.param(0)# and  
+		site_option_group_allow_public=#db.param(0)# and 
+		site_option_group_deleted=#db.param(0)# 
+		ORDER BY site_option_group_display_name ASC";
+		qGroupCustom=db.execute("qGroupCustom");
 
+		echo('
+			<div style="float:left; width:100%;">
+			<h2>Outline</h2>
+			<ul style="margin-top:0px;">
+			<li><a href="##pages_regular">Regular Pages</a></li>');
 
+		if(qGroup.recordcount){
+			echo('<li><a href="##pages_custom">Custom Landing Pages</a></li> ');
+		}
+		if(qGroupCustom.recordcount){
+			echo('<li><a href="##pages_customtypes">Custom Content Types</a></li> ');
+		}
 
-	writeoutput('<h2>Manage Pages</h2>');
+		echo('<li><a href="##pages_publicforms">Public Forms</a></li> 
+			<li><a href="##pages_builtin">Built-in Landing Pages</a></li> 
+		</ul></div>'); 
+	}
+
+	writeoutput('<h2 id="pages_regular">Manage Pages</h2>');
 	if(application.zcore.user.checkGroupAccess("administrator")){
 		writeoutput('<a href="/z/content/admin/content-admin/index">Manage Pages</a> | 
 		<a href="/z/content/admin/permissions/index">Manage Permissions</a>  | 
@@ -1944,104 +1973,103 @@
 	
 	WHERE 
 	content.site_id = #db.param(request.zos.globals.id)#
-	<cfif searchtext NEQ ''>
-		<cfif searchexactonly EQ 1>
-			and (#db.trustedSQL("concat(content.content_id,' ',cast(content.content_price as char(11)),' ',content.content_address,' ',content.content_mls_number")#) like #db.param('%#searchTextOriginal#%')# or 
-			content.content_text like #db.param('%#searchTextOriginal#%')# )
+	<cfif searchtext NEQ ''> 
+		and 
+		
+		(#db.trustedSQL("concat(content.content_id,' ',cast(content.content_price as char(11)),' ',content.content_address,' ',content.content_mls_number)")# like 
+		#db.param('%#searchTextOriginal#%')#  or 
+		content.content_text like #db.param('%#searchTextOriginal#%')# or 
+		(
+		((
+		<cfif application.zcore.enableFullTextIndex>
+			MATCH(content.content_search) AGAINST (#db.param(searchText)#) or 
+			MATCH(content.content_search) AGAINST (#db.param('+#replace(searchText,' ','* +','ALL')#*')# IN BOOLEAN MODE) 
 		<cfelse>
-			and 
-			
-			(#db.trustedSQL("concat(content.content_id,' ',cast(content.content_price as char(11)),' ',content.content_address,' ',content.content_mls_number)")# like 
-			#db.param('%#searchTextOriginal#%')# or 
-			(
-			((
-			<cfif application.zcore.enableFullTextIndex>
-				MATCH(content.content_search) AGAINST (#db.param(searchText)#) or 
-				MATCH(content.content_search) AGAINST (#db.param('+#replace(searchText,' ','* +','ALL')#*')# IN BOOLEAN MODE) 
-			<cfelse>
-				content.content_search like #db.param('%#replace(searchText,' ','%','ALL')#%')#
-			</cfif>
-			) or (
-			
-			<cfif application.zcore.enableFullTextIndex>
-				MATCH(content.content_search) AGAINST (#db.param(searchTextOriginal)#) or 
-				MATCH(content.content_search) AGAINST (#db.param('+#replace(searchTextOriginal,' ','* +','ALL')#*')# IN BOOLEAN MODE)
-			<cfelse>
-				content.content_search like #db.param('%#replace(searchTextOriginal,' ','%','ALL')#%')#
-			</cfif>
-			)) 
-			))
+			content.content_search like #db.param('%#replace(searchText,' ','%','ALL')#%')#
 		</cfif>
-	<cfelse> 
-		<cfif structkeyexists(form, 'content_parent_id')> 
-			and content.content_parent_id = #db.param(form.content_parent_id)#
+		) or (
+		
+		<cfif application.zcore.enableFullTextIndex>
+			MATCH(content.content_search) AGAINST (#db.param(searchTextOriginal)#) or 
+			MATCH(content.content_search) AGAINST (#db.param('+#replace(searchTextOriginal,' ','* +','ALL')#*')# IN BOOLEAN MODE)
 		<cfelse>
-			and content.content_parent_id = #db.param('0')#
-		</cfif> 
+			content.content_search like #db.param('%#replace(searchTextOriginal,' ','%','ALL')#%')#
+		</cfif>
+		)) 
+		)) 
+	<cfelse> 
+		<cfif form.mode EQ "sorting">
+	
+			<cfif structkeyexists(form, 'content_parent_id')> 
+				and content.content_parent_id = #db.param(form.content_parent_id)#
+			<cfelse>
+				and content.content_parent_id = #db.param('0')#
+			</cfif> 
+		</cfif>
 	</cfif> 
 	<cfif request.zsession.showinactive EQ 0> 
 		and content.content_for_sale<>#db.param('2')#
 	</cfif>
 	and content.content_deleted = #db.param('0')# and 
-	content.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)#
+	content.site_x_option_group_set_id = #db.param(form.site_x_option_group_set_id)# 
+
+	<cfif not application.zcore.user.checkServerAccess()>
+		and content.content_hide_edit = #db.param(0)# 
+	</cfif>
+	
 	GROUP BY content.content_id 
 	ORDER BY 
-	<cfif qSortCom.getOrderBy(false) NEQ ''>
-		#qSortCom.getOrderBy(false)# content.content_sort
+	<cfif form.mode EQ "sorting">
+		<cfif qSortCom.getOrderBy(false) NEQ ''>
+			#qSortCom.getOrderBy(false)# content.content_sort
+		<cfelse>
+			<cfif searchtext NEQ ''>
+				matchPriceAddress DESC ,matchingId DESC 
+				<cfif application.zcore.enableFullTextIndex>
+					 ,score2 DESC, score DESC  
+				</cfif>, 
+			</cfif>
+			<cfif parentChildSorting EQ 1>
+			content.content_price DESC
+			<cfelseif parentChildSorting EQ 2>
+			content.content_price ASC
+			<cfelseif parentChildSorting EQ 3>
+			content.content_name ASC
+			<cfelseif parentChildSorting EQ 0>
+			content.content_parent_id ASC, content.content_sort ASC, content.content_datetime DESC, content.content_created_datetime DESC
+			</cfif>
+		</cfif> 
 	<cfelse>
-		<cfif searchtext NEQ ''>
-			matchPriceAddress DESC ,matchingId DESC 
-			<cfif application.zcore.enableFullTextIndex>
-				 ,score2 DESC, score DESC  
-			</cfif>, 
-		</cfif>
-		<cfif parentChildSorting EQ 1>
-		content.content_price DESC
-		<cfelseif parentChildSorting EQ 2>
-		content.content_price ASC
-		<cfelseif parentChildSorting EQ 3>
-		content.content_name ASC
-		<cfelseif parentChildSorting EQ 0>
 		content.content_parent_id ASC, content.content_sort ASC, content.content_datetime DESC, content.content_created_datetime DESC
-		</cfif>
-	</cfif> 
+	</cfif>
+	
 	</cfsavecontent><cfscript>
 	qSite=db.execute("qSite");
 	searchText=searchTextOriginal;
-	</cfscript>
-	<script type="text/javascript">
-	/* <![CDATA[ */
-	function doContentSearch(){
-		var st=1;
-		if(document.getElementById('searchexactonly2').checked){
-			st=0; 
-		}
-		window.location.href='/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#&searchtext='+escape(document.getElementById('searchtext').value)+'&searchexactonly='+st;
-	}
-	/* ]]> */
-	</script>
-	<cfif application.zcore.app.siteHasApp("listing")>
-		<cfscript>
-		db.sql="SELECT (content_id) idlist FROM #db.table("content", request.zos.zcoreDatasource)# content 
-		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		content_featured_listing_parent_page=#db.param('1')# and 
-		content_deleted = #db.param(0)#";
-		qCheckExclusiveListingPage=db.execute("qCheckExclusiveListingPage");
-		</cfscript>
-		<cfif qCheckExclusiveListingPage.recordcount NEQ 0>
-			<p style="font-size:14px;"><strong style=" color:##F00;">NEW:</strong> Listings are now added with the above menu option: Real Estate -&gt; Add New Listing.</p>
+	</cfscript>  
+
+	<p>Mode: 
+		<cfif form.mode EQ "sorting">
+			Sorting
+		<cfelse>
+			<a href="/z/content/admin/content-admin/index?mode=sorting">Sorting</a>
+		</cfif> | 
+		<cfif form.mode EQ "sitemap">
+			Site Map
+		<cfelse>
+			<a href="/z/content/admin/content-admin/index?mode=sitemap">Site Map</a>
+			 | <strong>NEW:</strong> Change mode to Site Map to view all the pages at once with indentation.
 		</cfif>
-	</cfif>
+	</p>
 	<form name="myForm22" action="/z/content/admin/content-admin/index" method="GET" style="margin:0px;"> 
+		<input type="hidden" name="site_x_option_group_set_id" value="#form.site_x_option_group_set_id#">
 		#application.zcore.siteOptionCom.setIdHiddenField()#
 		<table style="width:100%; border-spacing:0px; border:1px solid ##CCCCCC;" class="table-list">
 			<tr>
 				<td>Search by ID, title
 				<cfif application.zcore.app.siteHasApp("listing")>, address, MLS ##</cfif> or any other text: 
 				<input type="text" name="searchtext" id="searchtext" value="#htmleditformat(application.zcore.functions.zso(form, 'searchtext'))#" style="min-width:100px; width:300px;max-width:100%; min-width:auto;" size="20" maxchars="10" />&nbsp;
-				<input type="button" name="searchForm" value="Search" onclick="doContentSearch();" />  Exact Matches Only? Yes 
-				<input type="radio" name="searchexactonly" id="searchexactonly1" value="1" style="border:none; background:none;" <cfif searchexactonly EQ 1>checked="checked"</cfif> /> No 
-				<input type="radio" name="searchexactonly" id="searchexactonly2" value="0" <cfif searchexactonly EQ 0>checked="checked"</cfif> style="border:none; background:none;" /> | 
+				<input type="submit" name="searchForm" value="Search" /> 
 				<cfif application.zcore.functions.zso(form, 'searchtext') NEQ ''>
 					<input type="button" name="searchForm2" value="Clear Search" onclick="window.location.href='/z/content/admin/content-admin/index?site_x_option_group_set_id=#form.site_x_option_group_set_id#';" />
 				</cfif>
@@ -2162,7 +2190,7 @@
 			<div style="float:left;">Sorting method: <cfif parentChildSorting EQ 1>Price Descending<cfelseif parentChildSorting EQ 2>Price Ascending<cfelseif parentChildSorting EQ 3>Alphabetic<cfelse>Manual (Click black arrows)</cfif> | </div>
 			<div style="float:left; width:150px;"><a href="/z/content/admin/content-admin/edit?content_id=#application.zcore.functions.zso(form, 'content_parent_id')#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Change Sorting Method","member.content.list changeSortingMethod")#</a></div><br />
 		</cfif><br />
-		<table id="sortRowTable" style="border-spacing:0px; width:100%;" class="table-list">
+		<table <cfif form.mode EQ "sorting">id="sortRowTable"</cfif> style="border-spacing:0px; width:100%;" class="table-list">
 			<thead>
 			<tr>
 				<th><a href="#qSortCom.getColumnURL("content.content_id", Request.zScriptName2)#">ID</a> #qSortCom.getColumnIcon("content.content_id")#</th>
@@ -2177,66 +2205,117 @@
 						 <a href="#qSortCom.getColumnURL("content_price2", Request.zScriptName2)#">Price</a> #qSortCom.getColumnIcon("content_price2")#
 					 </cfif>
 				 </th>
-			
-				<th style="width:60px;">
+				 <th>Status</th>
+				<th>Last Updated</th>
+				<cfif form.mode EQ "sorting">
 					<cfif parentChildSorting EQ 0 and application.zcore.functions.zso(form, 'searchtext') EQ '' and qsortcom.getorderby(false) EQ ''>
-						Sort
-					</cfif></th>
+						<th style="width:60px;">
+							Sort 
+						</th>
+					</cfif>
+				</cfif>
 				<th>Admin</th>
 			</tr>
 			</thead>
 			<tbody>
-			<cfloop query="qSite">
+			<cfscript>
+			contentLookupStruct={}; 
+			parentLookupStruct={}; 
+			arrOrder=[];
+			currentRow=0;
+ 
+			if(form.mode EQ "sorting"){
+				for(row in qSite){
+					arrayAppend(arrOrder, row);
+				} 
+			}else{
+				for(row in qSite){ 
+					if(not structkeyexists(contentLookupStruct, row.content_parent_id)){
+						contentLookupStruct[row.content_parent_id]=[];
+					}
+					arrayAppend(contentLookupStruct[row.content_parent_id], row); 
+					parentLookupStruct[row.content_id]=row.content_parent_id;
+				} 
+				getContentSiteMapOrder(arrOrder, 0, contentLookupStruct);  
+			}
+			</cfscript>
+			<cfloop from="1" to="#arraylen(arrOrder)#" index="i12">
+	
+			<!--- <cfloop query="qSite"> --->
 				<cfscript>
+				row=arrOrder[i12];
+				currentRow++;
+				indentCount=0;
+				parentId=row.content_parent_id;
+				loopCount=0;
+				indentChars="";
+				while(true){
+					if(parentId NEQ 0 and structkeyexists(parentLookupStruct, parentId)){
+						parentId=parentLookupStruct[parentId];
+						indentCount++;
+						indentChars&="&nbsp;&nbsp;&nbsp;&nbsp;";
+					}else{
+						break;
+					}
+					loopCount++;
+					if(loopCount > 50){
+						throw("Infinite loop detected. content_id:#row.content_id#");
+					}
+				} 
+
+
 				ts=structnew();
-				ts.image_library_id=qSite.content_image_library_id;
+				ts.image_library_id=row.content_image_library_id;
 				ts.output=false;
-				ts.query=qsite;
-				ts.row=qsite.currentrow;
+				ts.struct=row;
 				ts.size="100x70";
 				ts.crop=1;
 				ts.count = 1;
-				arrImages=application.zcore.imageLibraryCom.displayImageFromSQL(ts);
+				arrImages=application.zcore.imageLibraryCom.displayImageFromStruct(ts);
 				contentphoto99=""; 
 				if(arraylen(arrImages) NEQ 0){
 					contentphoto99=(arrImages[1].link);
 				}
 				</cfscript>
-				<tr #variables.queueSortCom.getRowHTML(qSite.content_id)# <cfif qsite.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
-				<td style="vertical-align:top; width:30px; ">#qSite.content_id#</td>
+				<tr <cfif form.mode EQ "sorting">#variables.queueSortCom.getRowHTML(row.content_id)#</cfif> <cfif currentrow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
+				<td style="vertical-align:top; width:30px; ">#row.content_id#</td>
 				<td style="vertical-align:top; width:100px; ">
 					<cfif contentphoto99 NEQ "">
 						<img alt="Image" src="#request.zos.currentHostName&contentphoto99#" width="100" height="70" /></a>
 					<cfelse>
 						&nbsp;
 					</cfif></td>
-				<td style="vertical-align:top; ">
-					<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#"></cfif>
-						#qSite.content_name#
-					<cfif application.zcore.app.siteHasApp("listing")><br />
-						<cfif qSite.content_address NEQ ''>#qSite.content_address# | </cfif>
-						<cfif qSite.content_mls_number CONTAINS '-'>MLS ##:#listgetat(qSite.content_mls_number,2,"-")# | </cfif>
-						<cfif qSite.content_price NEQ 0>#DollarFormat(qSite.content_price)#</cfif>
-						<cfif qSite.children NEQ 0></a></cfif>
+				<td style="vertical-align:top; padding-left:#indentCount*20#px;">
+					<!--- #indentChars# --->
+
+					<cfsavecontent variable="title">
+						#row.content_name#
+						<cfif application.zcore.app.siteHasApp("listing")><br />
+							<cfif row.content_address NEQ ''>#row.content_address# | </cfif>
+							<cfif row.content_mls_number CONTAINS '-'>MLS ##:#listgetat(row.content_mls_number,2,"-")# | </cfif>
+							<cfif row.content_price NEQ 0>#DollarFormat(row.content_price)#</cfif>
+						</cfif>
+					</cfsavecontent>
+					<cfif form.mode EQ "sorting">
+
+						<cfif row.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#row.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#"></cfif>
+							#title#	
+						<cfif row.children NEQ 0></a></cfif>
+					<cfelse>
+						#title#
 					</cfif>
-					<br /><span style="color:##999; font-size:11px;">
-					<cfif qSite.content_for_sale EQ "1">Active
-					<cfelseif qSite.content_for_sale EQ "2"><strong>Inactive</strong>
-					<cfelseif qSite.content_for_sale EQ '3'><strong>SOLD</strong>
-					<cfelseif qSite.content_for_sale EQ '4'><strong>UNDER CONTRACT</strong>
-					</cfif>
+					<!--- <br /><span style="color:##999; font-size:11px;">
 			
-					<cfif qSite.content_property_type_id NEQ "0">
+					<cfif row.content_property_type_id NEQ "0">
 						<cfsavecontent variable="db.sql">
 						SELECT * FROM #db.table("content_property_type", request.zos.zcoreDatasource)# content_property_type 
-						WHERE content_property_type_id= #db.param(qSite.content_property_type_id)#
+						WHERE content_property_type_id= #db.param(row.content_property_type_id)#
 						
 						</cfsavecontent><cfscript>qPType=db.execute("qPType");</cfscript><cfif qPType.recordcount NEQ 0> | #qPType.content_property_type_name#</cfif></cfif>  
-						| Updated #dateformat(qSite.content_updated_datetime,"m/d/yy")&" at "&timeformat(qSite.content_updated_datetime,"h:mm tt")# 
 					
-					</span>
-					<cfif qSite.content_unique_name NEQ ""><br /><span style="font-size:10px; color:##999999;">#qSite.content_unique_name#
-						<cfif qSite.content_unique_name EQ "/">
+					</span> --->
+					<cfif row.content_unique_name NEQ ""><br /><span style="font-size:10px; color:##999999;">#row.content_unique_name#
+						<cfif row.content_unique_name EQ "/">
 							(Home Page)
 						</cfif>
 						</span>
@@ -2244,10 +2323,10 @@
 					<cfif searchtext NEQ "">
 						<cfscript>
 						cT="";
-						if(qSite.content_summary neq ''){
-							cT=rereplacenocase(qSite.content_summary,"<.*?>", " ", 'ALL');
-						}else if(qSite.content_text NEQ ""){
-							cT=rereplacenocase(qSite.content_text,"<.*?>", " ", 'ALL');
+						if(row.content_summary neq ''){
+							cT=rereplacenocase(row.content_summary,"<.*?>", " ", 'ALL');
+						}else if(row.content_text NEQ ""){
+							cT=rereplacenocase(row.content_text,"<.*?>", " ", 'ALL');
 						}
 						pos=findnocase(arrSearch[1], cT);
 						ofs=200;
@@ -2296,25 +2375,49 @@
 					</cfif>
 			
 			</td>
-			<td style="vertical-align:top; white-space:nowrap;" >
-			<cfif parentChildSorting EQ 0 and application.zcore.functions.zso(form, 'searchtext') EQ '' and qsortcom.getorderby(false) EQ ''> 
-				#variables.queueSortCom.getAjaxHandleButton(qSite.content_id)#
-				<!--- #variables.queueSortCom.getLinks(qSite.recordcount, qSite.currentrow, "/z/content/admin/content-admin/"&form.method&"?content_id="&qSite.content_id&"&content_parent_id="&qSite.content_parent_id, "vertical-arrows")# --->
-			</cfif></td><td style="vertical-align:top; ">
-				<cfif (structkeyexists(form, 'qcontentp') EQ false or qcontentp.content_featured_listing_parent_page NEQ 1)>
-				<a href="/z/content/admin/content-admin/add?content_parent_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Add Child Page","member.content.list addChildPage")#</a> | 
+			<td>
+				<cfif row.content_for_sale EQ "1">Active
+				<cfelseif row.content_for_sale EQ "2"><strong>Inactive</strong>
+				<cfelseif row.content_for_sale EQ '3'><strong>SOLD</strong>
+				<cfelseif row.content_for_sale EQ '4'><strong>UNDER CONTRACT</strong>
 				</cfif>
-				<a href="<cfif qSite.content_url_only NEQ ''>#qSite.content_url_only#<cfelse><cfif qSite.content_unique_name NEQ ''>#qSite.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(qSite.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qSite.content_id#.html</cfif></cfif><cfif qSite.content_for_sale EQ 2>?preview=1</cfif>" target="_blank"><cfif qSite.content_for_sale EQ 2>(Inactive, Click to Preview)<cfelse>View</cfif></a> | 
-				<cfif application.zcore.app.siteHasApp("listing") and qSite.content_search_mls EQ 1><a href="#request.zos.globals.domain##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_cid=#qSite.content_id#")#" target="_blank">Search Results Only</a> | </cfif>
+			</td>
+			<td>#dateformat(row.content_updated_datetime,"m/d/yy")&" at "&timeformat(row.content_updated_datetime,"h:mm tt")#</td>
+			<cfif form.mode EQ "sorting">
+				<cfif parentChildSorting EQ 0 and application.zcore.functions.zso(form, 'searchtext') EQ '' and qsortcom.getorderby(false) EQ ''> 
+					<td style="vertical-align:top; white-space:nowrap;" >
+					#variables.queueSortCom.getAjaxHandleButton(row.content_id)#
+					
+					</td>
+				</cfif>
+			</cfif>
+			<td style="vertical-align:top; ">
+				<cfif (structkeyexists(form, 'qcontentp') EQ false or qcontentp.content_featured_listing_parent_page NEQ 1)>
+				<a href="/z/content/admin/content-admin/add?content_parent_id=#row.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">#application.zcore.functions.zOutputHelpToolTip("Add Child Page","member.content.list addChildPage")#</a> | 
+				</cfif>
+				<a href="<cfif row.content_url_only NEQ ''>#row.content_url_only#<cfelse><cfif row.content_unique_name NEQ ''>#row.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html</cfif></cfif><cfif row.content_for_sale EQ 2>?preview=1</cfif>" target="_blank"><cfif row.content_for_sale EQ 2>Preview<cfelse>View</cfif></a> | 
+				<cfif application.zcore.app.siteHasApp("listing") and row.content_search_mls EQ 1><a href="#request.zos.globals.domain##application.zcore.functions.zURLAppend(request.zos.listing.functions.getSearchFormLink(), "zsearch_cid=#row.content_id#")#" target="_blank">Search Results Only</a> | </cfif>
 			<cfif application.zcore.app.siteHasApp("listing")>
-			<a href="<cfif qSite.content_url_only NEQ ''>#qSite.content_url_only#<cfelse><cfif qSite.content_unique_name NEQ ''>#qSite.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(qSite.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#qSite.content_id#.html</cfif></cfif>?<cfif qSite.content_for_sale EQ 2>preview=1&amp;</cfif>hidemls=1" target="_blank">View (w/o MLS)</a> | 
+			<a href="<cfif row.content_url_only NEQ ''>#row.content_url_only#<cfelse><cfif row.content_unique_name NEQ ''>#row.content_unique_name#<cfelse>/#application.zcore.functions.zURLEncode(row.content_name,'-')#-#application.zcore.app.getAppData("content").optionStruct.content_config_url_article_id#-#row.content_id#.html</cfif></cfif>?<cfif row.content_for_sale EQ 2>preview=1&amp;</cfif>hidemls=1" target="_blank">View (w/o MLS)</a> | 
 			</cfif> 
-			<cfif qSite.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#qSite.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Subpages (#qSite.children#)</a> | </cfif>
-			<a href="/z/content/admin/content-admin/edit?content_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a>
-			<cfif qSite.content_locked EQ 0 or application.zcore.user.checkSiteAccess()>
+			<cfif form.mode EQ "sorting">
+				<cfif row.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#row.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Subpages (#row.children#)</a> | </cfif>
+			</cfif>
+	
+			<a href="/z/content/admin/content-admin/edit?content_id=#row.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a>
+
+			<cfif application.zcore.user.checkServerAccess()>
+				<cfif row.content_hide_edit EQ 1>
+					| <a href="/z/content/admin/content-admin/changeEdit?show=0&amp;return=1&amp;content_id=#row.content_id#">Show</a>
+				<cfelse>
+					| <a href="/z/content/admin/content-admin/changeEdit?show=1&amp;return=1&amp;content_id=#row.content_id#">Hide</a>
+				</cfif>
+
+			</cfif>
+			<cfif row.content_locked EQ 0 or application.zcore.user.checkSiteAccess()>
+				<cfif row.children EQ 0>
 				 | 
-				<cfif qSite.children EQ 0>
-				<a href="/z/content/admin/content-admin/delete?content_id=#qSite.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a>
+				<a href="/z/content/admin/content-admin/delete?content_id=#row.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Delete</a>
 				</cfif>
 			<cfelse> 
 				<span style="color:##999999;">Delete Disabled</span>
@@ -2324,7 +2427,138 @@
 		</cfloop>
 			</tbody>
 		</table>
-	</cfif>
+	</cfif> 
+	<div style="float:left; width:100%; line-height:1.7; font-size:16px; padding-top:20px;">
+		<cfif application.zcore.adminSecurityFilter.checkFeatureAccess("Site Options")>
+		 
+			<cfif qGroup.recordcount>
+				<h2 id="pages_custom">Manage Custom Landing Pages</h2>
+				<p>Your web site has additional custom made landing pages that can be edited at the following locations:</p>
+				<ul>
+				<cfloop query="qGroup">
+					<li><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroup.site_option_group_id#">Manage #qGroup.site_option_group_display_name#<cfif qGroup.site_option_group_limit NEQ 1 and right(qGroup.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></li>
+				</cfloop>
+				</ul>
+			</cfif>
+ 
+			<cfif qGroupCustom.recordcount>
+				<h2 id="pages_customtypes">Manage Custom Content Types</h2>
+				<p>Your web site has additional custom content types that can be edited at the following locations:</p>
+				<ul>
+				<cfloop query="qGroupCustom">
+					<li><a href="/z/admin/site-options/manageGroup?site_option_group_id=#qGroupCustom.site_option_group_id#">Manage #qGroupCustom.site_option_group_display_name#<cfif qGroupCustom.site_option_group_limit NEQ 1 and right(qGroupCustom.site_option_group_display_name, 1) NEQ "s">(s)</cfif></a></li>
+				</cfloop>
+				</ul>
+			</cfif>
+	
+		</cfif>
+
+		<h2 id="pages_publicforms">Public Forms</h2>
+		<cfscript>
+		echo('<ul>');
+		for(row in qGroupPublic){
+			link=row.site_option_group_public_form_url;
+			if(link EQ ""){
+				link="/z/misc/display-site-option-group/add?site_option_group_id="&row.site_option_group_id;
+			}	
+			echo('<li><a href="'&link&'" target="_blank">'&row.site_option_group_display_name&'</a></li>');
+		}
+
+		echo('<li><a href="/z/misc/inquiry/index" target="_blank">Inquiry Form</a></li>
+		<li><a href="/z/misc/mailing-list/index" target="_blank">Mailing List Signup Form</a></li>
+		<li><a href="/z/misc/loan-calculator/index" target="_blank">Loan Calculator Form</a></li>
+		<li><a href="/z/misc/mortgage-quote/index" target="_blank">Mortgage Quote Form</a></li>');
+		if(request.zos.globals.sendConfirmOptIn EQ 1){
+			echo('<li><a href="/z/misc/share-with-friend/index?link=#request.zos.globals.domain#" target="_blank">Share With Friend Form</a></li>');
+		}
+		if(application.zcore.app.siteHasApp("rental")){
+			link=application.zcore.app.getAppCFC("rental").getRentalInquiryLink();
+			echo('<li><a href="#link#" target="_blank">Rental - Inquiry Form</a></li>');
+		}
+
+
+		if(application.zcore.app.siteHasApp("listing")){
+			echo('
+			<li><a href="/z/misc/mortgage-calculator/index" target="_blank">Real Estate - Mortgage Calculator</a></li> 
+			<li><a href="/z/listing/cma-inquiry/index" target="_blank">Real Estate - CMA Inquiry Form</a></li>
+			<li><a href="/z/listing/new-listing-email-signup/index" target="_blank">Real Estate - New Listings By Email Signup Form</a></li>');
+		}
+		echo('</ul>');
+		</cfscript>
+
+		<h2 id="pages_builtin">Built-in Landing Pages</h2>
+		<cfscript>
+		echo('<ul>');
+		echo('
+		<li><a href="/z/misc/system/missing" target="_blank">404 Not Found Page</a></li>
+		<li><a href="/z/misc/system/legal" target="_blank">Legal Notices</a></li>
+		<li><a href="/z/misc/members/index" target="_blank">Our Team - Public User Profiles</a></li> 
+		<li><a href="/z/user/privacy/index" target="_blank">Privacy Policy</a></li>
+		<li><a href="/z/user/preference/register" target="_blank">Public User Create Account</a> (You have to logout to view this)</li>
+		<li><a href="/z/user/home/index" target="_blank">Public User Home Page</a></li>
+		<li><a href="/z/user/preference/index" target="_blank">Public User Login</a> (You have to logout to view this)</li>
+		<li><a href="/z/user/out/index" target="_blank">Public User Opt Out Form</a></li> 
+		<li><a href="/z/user/preference/form" target="_blank">Public User Preferences</a></li>
+		<li><a href="/z/user/reset-password/index" target="_blank">Public User Reset Password</a></li>
+		<li><a href="/z/misc/search-site/search" target="_blank">Search Site</a></li> 
+		<li><a href="/z/misc/site-map/index" target="_blank">Site Map</a></li>
+		<li><a href="/z/user/terms-of-use/index" target="_blank">Terms of Use</a></li>');
+		if(application.zcore.app.siteHasApp("listing")){
+			echo('<li><a href="/z/listing/map-fullscreen/index" target="_blank">Real Estate - Fullscreen Map Search</a></li>
+			<li><a href="/z/listing/search-form/index" target="_blank">Real Estate - Search Results</a></li>
+			<li><a href="/z/listing/advanced-search/index" target="_blank">Real Estate - Advanced Search</a></li>
+			<li><a href="/z/listing/property/your-saved-searches/index" target="_blank">Real Estate - Your Saved Searches</a></li>
+			<li><a href="/z/listing/sl/view" target="_blank">Real Estate - Your Saved Listings</a></li>
+
+			');
+		}
+		if(application.zcore.app.siteHasApp("rental")){
+			link=application.zcore.app.getAppCFC("rental").getRentalHomeLink();
+			echo('<li><a href="#link#" target="_blank">Rental - Home Page</a></li>');
+
+		}
+		echo('</ul>');
+		</cfscript>
+	</div>
+</cffunction>
+
+<cffunction name="getContentSiteMapOrder" localmode="modern" access="public">
+	<cfargument name="arrOrder" type="array" required="yes">
+	<cfargument name="parentId" type="string" required="yes"> 
+	<cfargument name="contentLookupStruct" type="struct" required="yes">
+	<cfscript>
+	arrChildren=arguments.contentLookupStruct[arguments.parentId];
+/*
+	if(arguments.parentId NEQ 0){
+writedump(arrChildren);abort;
+		//writedump(arguments);abort;
+	}*/
+	for(row in arrChildren){
+		arrayAppend(arguments.arrOrder, row);
+		//arrayAppend(arguments.arrOrder, row.content_id&" | "&row.content_sort&" | "&row.content_name);
+		if(structkeyexists(arguments.contentLookupStruct, row.content_id)){
+			getContentSiteMapOrder(arguments.arrOrder, row.content_id, arguments.contentLookupStruct);
+		}
+	}
+	</cfscript>
+</cffunction>
+
+<cffunction name="changeEdit" localmode="modern" roles="serveradministrator" access="remote">
+	<cfscript>
+	db=request.zos.queryObject;
+	form.show=application.zcore.functions.zso(form, 'show', true, 0);
+	form.content_id=application.zcore.functions.zso(form, 'content_id', true, 0);
+	db.sql="update #db.table("content", request.zos.zcoreDatasource)# 
+	SET content_hide_edit=#db.param(form.show)# 
+	WHERE content_id =#db.param(form.content_id)# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	content_deleted=#db.param(0)#";
+	db.execute("qUpdate");
+	
+	link=request.zos.cgi.HTTP_REFERER;
+	application.zcore.functions.zredirect(link);
+	
+	</cfscript>
 </cffunction>
 </cfoutput>
 </cfcomponent>

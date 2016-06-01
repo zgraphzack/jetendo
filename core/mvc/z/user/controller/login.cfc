@@ -114,7 +114,7 @@
 
 	  <button name="submitForm" id="submitForm" onclick="zLogin.autoLoginConfirm();zLogin.disableLoginButtons();return false;" type="submit">Login</button>
 	  
-      <button name="submitForm2" id="submitForm2" class="zResetPasswordButton" onclick="window.location.href='/z/user/reset-password/index?email='+escape($('##z_tmpusername2').val());" type="button">Forgot your password?</button>
+      <button name="submitForm2" id="submitForm2" class="zResetPasswordButton" onclick="window.location.href='/z/user/reset-password/index?email='+escape($('##z_tmpusername2').val());" type="button">Forgot password?</button>
       </div>
     
     

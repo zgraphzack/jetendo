@@ -33,6 +33,7 @@ body { margin:0px; font-size:13px; font-family:Open Sans, Arial, Verdana, Helvet
 	font-size:14px;
 	font-weight: bold; text-decoration:none;
 }
+ul,ol{margin:0px; padding:0px; padding-bottom:15px; padding-left:35px;} 
   p {
    margin:0px; padding-top:0px; padding-bottom:15px;
   }
@@ -402,7 +403,7 @@ img{border:none;}
 .table-list input{min-width:800px; width:95%;}
 .table-list .table-list input{min-width:auto; width:auto;}
 .table-list input[type="image"], .table-list input[type="button"], .table-list input[type="submit"], .table-list input[type="radio"], .table-list input[type="checkbox"]{width:auto; min-width:auto;}
-@media only screen and (max-width: 1382px) { 
+@media only screen and (max-width: 1362px) { 
 .table-list input{min-width:600px;}
 .table-list .table-list input{min-width:auto;}
 }

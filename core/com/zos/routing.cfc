@@ -272,7 +272,7 @@
 			request.zos.requestLogEntry('routing.cfc after checkCFCSecurity');
 			request.zos.currentController=request.zos.scriptNameTemplate;
 			//writeoutput('in isCFC'&request.zos.routingDisableComponentInvoke);
-			if(request.zos.routingDisableComponentInvoke EQ false){
+			if(request.zos.routingDisableComponentInvoke EQ false){  
 				request.zos.routingCurrentComponentObject[form.method](argumentcollection=request.zos.routingArgumentsStruct);
 				request.zos.onrequestcompleted=true;
 				if(request.zos.routingCfcMethodWasMissing){

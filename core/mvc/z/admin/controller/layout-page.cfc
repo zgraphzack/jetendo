@@ -164,7 +164,7 @@ D:\desktop\layout.ai
 			</tr>
 			<tr>
 				<th>Breakpoints</th>
-				<td><input type="text" name="layout_page_breakpoint_list" value="#htmleditformat(form.layout_page_breakpoint_list)#" /><br />Comma separated list. I.e. 320,992,1382</td>
+				<td><input type="text" name="layout_page_breakpoint_list" value="#htmleditformat(form.layout_page_breakpoint_list)#" /><br />Comma separated list. I.e. 320,992,1362</td>
 				<!--- TODO: make a way of changing breakpoint from old to new value later --->
 			</tr> 
 			<tr>

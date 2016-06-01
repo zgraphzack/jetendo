@@ -9,6 +9,17 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	if(arguments.optionStruct.optionStruct.radio_values NEQ ""){
+		return listgetat(arguments.optionStruct.optionStruct.radio_values, 1, arguments.optionStruct.optionStruct.radio_delimiter);
+	}else{
+		return "You need to set this value manually";
+	}
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
@@ -294,6 +305,19 @@
 	var value=application.zcore.functions.zso(arguments.dataStruct, arguments.fieldName);
 	</cfscript>
 	<cfsavecontent variable="output">
+		<script type="text/javascript">
+		function validateOptionType1(postObj, arrError){  
+			if(postObj.radio_delimiter == ''){
+				arrError.push('Delimiter is required');
+			}
+			if(postObj.radio_labels == ''){
+				arrError.push('Labels List is required');
+			} 
+			if(postObj.radio_values == ''){
+				arrError.push('Values List is required');
+			}
+		}
+		</script>
 		<input type="radio" name="#variables.type#_option_type_id" value="14" onClick="setType(14);" <cfif value EQ 14>checked="checked"</cfif>/>
 		Radio Group<br />
 		<div id="typeOptions14" style="display:none;padding-left:30px;"> 

@@ -29,6 +29,9 @@ htmlEditor.create();
 	<cfparam name="this.config" type="struct" default="#structNew()#" />
 
 	<cfscript>
+	if(right(this.width, 2) EQ "px"){
+		this.width=left(this.width, len(this.width)-2);
+	}
 	var theScript=0;
 	var theMeta="";
 	var theReturn="";
@@ -81,6 +84,14 @@ tinymce.init({
 	paste_remove_spans: 1,
 	remove_script_host : 0,
 	relative_urls : 0,
+	<cfscript>
+	if(this.width NEQ "" and this.width DOES NOT CONTAIN "%"){
+	    echo(' width: #max(200, this.width)#, '&chr(10));
+	}
+	if(this.height NEQ "" and this.height DOES NOT CONTAIN "%"){
+	    echo(' height: #max(100, this.height)#, '&chr(10));
+	}
+	</cfscript>
 	#arrayToList(arrExtraCode, " ")#
   /*selector: 'textarea', 
   height: 500,*/
@@ -110,7 +121,11 @@ if(structkeyexists(request,'zTinyMceIncludedCount') EQ false){
 request.zTinyMceIncludedCount++;
 </cfscript>
 </cfif>
-	<cfsavecontent variable="theReturn"><textarea id="#this.instanceName#" name="#this.instanceName#" cols="10" rows="10" style="width:#this.width#<cfif this.width DOES NOT CONTAIN "%" and this.width DOES NOT CONTAIN "px">px</cfif>; height:#this.height#<cfif this.height DOES NOT CONTAIN "%" and this.height DOES NOT CONTAIN "px">px</cfif>;">#htmleditformat(this.value)#</textarea></cfsavecontent>
+	<cfsavecontent variable="theReturn"><textarea id="#this.instanceName#" name="#this.instanceName#" cols="10" rows="10" style="width:#this.width#<cfif this.width DOES NOT CONTAIN "%" and this.width DOES NOT CONTAIN "px">px</cfif>; height:#this.height#<cfif this.height DOES NOT CONTAIN "%" and this.height DOES NOT CONTAIN "px">px</cfif>;">#htmleditformat(this.value)#</textarea>
+	<style type="text/css">
+	##newvalue23_ifr{max-width:100% !important;}
+	</style>
+</cfsavecontent>
 	
 	<cfsavecontent variable="theScript"><script type="text/javascript">zArrDeferredFunctions.push(function(){tinymce.EditorManager.execCommand('mceAddEditor', true, "#this.instanceName#");});
 	</script></cfsavecontent>

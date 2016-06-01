@@ -33,6 +33,7 @@
 		ms["Themes"]={ parent:'Content Manager', label:chr(9)&"Themes"};
 	}*/
 	ms["Video Library"]={ parent:'Content Manager', label:chr(9)&"Video Library"};
+	ms["Settings"]={ parent:'Content Manager', label:chr(9)&"Settings"};
 
 
 	application.zcore.siteOptionCom.setFeatureMap(ms);

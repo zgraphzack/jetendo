@@ -100,13 +100,16 @@ application.zcore.template.setTag("pagenav",tempPageNav);
 		  </tr>
 		<tr><td>&nbsp;
 		</td>
-		<td>Please type the city/state of the new property's location:<br /> <input type="text" name="inquiries_loan_city" style="width:100%" value="#htmleditformat(form.inquiries_loan_city)#" />
+		<td>
+			<p>Please type the city/state of the new property's location:</p> 
+			<p><input type="text" name="inquiries_loan_city" style="width:100%" value="#htmleditformat(form.inquiries_loan_city)#" /></p>
 		</td>
 		</tr>
 		<tr><td>&nbsp;
 		</td>
 		<td>
-		Do you current own or rent your home? <input type="radio" name="inquiries_loan_own" value="own" style="border:none; background:none;" /> Own <input type="radio" name="inquiries_loan_own" value="rent" style="border:none; background:none;" /> Rent</td>
+		<p>Do you currently own or rent your home?</p>
+		<p><input type="radio" name="inquiries_loan_own" value="own" style="border:none; background:none;" /> Own <input type="radio" name="inquiries_loan_own" value="rent" style="border:none; background:none;" /> Rent</p></td>
 		
 		  </tr>
 		  <tr><td>

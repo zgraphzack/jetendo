@@ -65,6 +65,9 @@ var zIArrMOffset=new Array();
   //var zIImageClickLoad=false;
   var zILastLoaded="";
 function zImageMouseMove(id,mev,forceResize){
+
+	zLoadImageEnlargerDiv();
+
 	var d=document.getElementById(id);
 	if(d===null) return;
 	var dpos=zGetAbsPosition(d);
@@ -219,7 +222,6 @@ function zImageForceCloseEnlarger(){
 		d99.style.display="none";
 	}
 }
-zArrLoadFunctions.push({functionName:zImageForceCloseEnlarger});
 
 
 var zImageEnlargerLoaded=false;

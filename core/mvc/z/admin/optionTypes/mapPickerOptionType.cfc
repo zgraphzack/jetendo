@@ -9,6 +9,13 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
+	<cfargument name="optionStruct" type="struct" required="yes">
+	<cfscript>
+	return "28.512,-81.299178";
+	</cfscript>
+</cffunction>
+
 <cffunction name="getSearchFieldName" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="setTableName" type="string" required="yes">
 	<cfargument name="groupTableName" type="string" required="yes">
@@ -295,6 +302,13 @@
 	qGroup=db.execute("qGroup");
 	</cfscript>
 	<cfsavecontent variable="output">
+		<script type="text/javascript">
+		function validateOptionType13(postObj, arrError){ 
+			if(postObj.addressfield == '' || postObj.cityfield=='' || postObj.statefield=='' || postObj.zipfield==''){
+				arrError.push('Address, City, State and Zip are required fields.');
+			}
+		}
+		</script>
 	<input type="radio" name="#variables.type#_option_type_id" value="13" onClick="setType(13);" <cfif value EQ 13>checked="checked"</cfif>/>
 	#this.getTypeName()#<br />
 	<div id="typeOptions13" style="display:none;padding-left:30px;"> 

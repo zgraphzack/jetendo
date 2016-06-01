@@ -572,6 +572,10 @@ if(not rs.success){
 	ts.leadRoutingStruct=application.zcore.functions.zGetLeadRoutesStruct();
 
 
+	if(fileexists(request.zos.globals.privateHomeDir&"zupload/settings/icon-logo-original.png")){
+		ts.iconLogoExists=true;
+	}
+
 	if(structkeyexists(application.zcore, 'templateCFCCache') and structkeyexists(application.zcore.templateCFCCache, request.zos.globals.id)){
 		structclear(application.zcore.templateCFCCache[request.zos.globals.id]);
 	}
@@ -1186,22 +1190,6 @@ application.zcore.functions.zLogError(ts);
 		};
 		arrayappend(request.zos.arrCSSIncludes, ts);
 
-		if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
-			ts={
-				type:"zIncludeZOSFORMS",
-				url:"/z/stylesheets/css-framework.css",
-				package:arguments.package,
-				forcePosition:""
-			};
-			arrayappend(request.zos.arrCSSIncludes, ts);
-			ts={
-				type:"zIncludeZOSFORMS",
-				url:"/zupload/layout-global.css",
-				package:arguments.package,
-				forcePosition:""
-			};
-			arrayappend(request.zos.arrCSSIncludes, ts); 
-		}
 		tempFile=request.zos.globals.privatehomedir&"zcache/zsystem.css";
 		if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempFile) EQ false){
 			application.sitestruct[request.zos.globals.id].fileExistsCache[tempFile]=fileexists(tempFile);
@@ -1218,6 +1206,28 @@ application.zcore.functions.zLogError(ts);
 	</cfscript>
 </cffunction>
 
+<cffunction name="zRequireCSSFramework" localmode="modern" output="no" returntype="any">
+	<cfscript> 
+	if(not structkeyexists(request.zos, 'includeManagerStylesheet') and not request.zos.inMemberArea){ 
+		if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
+			ts={
+				type:"zCSSFramework",
+				url:"/z/stylesheets/css-framework.css",
+				package:"",
+				forcePosition:""
+			};
+			arrayappend(request.zos.arrCSSIncludes, ts);
+			ts={
+				type:"zCSSFramework",
+				url:"/zupload/layout-global.css",
+				package:"",
+				forcePosition:""
+			};
+			arrayappend(request.zos.arrCSSIncludes, ts); 
+		}
+	}
+	</cfscript>
+</cffunction>
 
 <!--- application.zcore.functions.zRequireSWFObject(); --->
 <cffunction name="zRequireSWFObject" localmode="modern" output="no" returntype="any">

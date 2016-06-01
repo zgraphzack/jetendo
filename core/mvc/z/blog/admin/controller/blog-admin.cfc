@@ -1359,8 +1359,12 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 	application.zcore.siteOptionCom.requireSectionEnabledSetId([""]);
 	blogform = StructNew();
 	blogform.blog_story.html = true;
-	blogform.uid.required=true;
-	blogform.uid.friendlyname="Author";
+
+
+	if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0){
+		blogform.uid.required=true;
+		blogform.uid.friendlyname="Author";
+	}
 	blogform.blog_title.required=true;
 	blogform.ccid.required=true;
 	blogform.ccid.friendlyname="Category";
@@ -1388,14 +1392,20 @@ columns[i][search][regex]	booleanJS	Flag to indicate if the search term for this
 		application.zcore.status.setStatus(request.zsid, "Override URL must be a valid URL, such as ""/z/misc/inquiry/index"" or ""##namedAnchor"". No special characters allowed except for this list of characters: a-z 0-9 . _ - and /.", form, true);
 		error=true;
 	}
-	form.user_id=application.zcore.functions.zso(form, 'uid');
-arrUser=listToArray(form.user_id, "|");
-if(arraylen(arrUser) EQ 1){
-	arrayAppend(arrUser, 0);
-}else if(arrayLen(arrUser) EQ 2){
-	form.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(arrUser[2]);
-	form.user_id=arrUser[1];
-}
+
+	if(application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0){
+		form.user_id=application.zcore.functions.zso(form, 'uid');
+		arrUser=listToArray(form.user_id, "|");
+		if(arraylen(arrUser) EQ 1){
+			arrayAppend(arrUser, 0);
+		}else if(arrayLen(arrUser) EQ 2){
+			form.user_id_siteIDType=application.zcore.functions.zGetSiteIdType(arrUser[2]);
+			form.user_id=arrUser[1];
+		}
+	}else{
+		form.user_id_siteIDType="1";
+		form.user_id="0";
+	}
 
 	if(error){
 		application.zcore.status.setStatus(request.zsid, false,form,true);
@@ -2461,33 +2471,35 @@ tabCom.enableSaveButtons();
 					<input type="text" name="blog_title" value="#htmleditformat(form.blog_title)#" style="width:100%;">
 				</td>
 			</tr>
-			<tr>
-				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
-				<td>
-		<cfscript>
-		qUser=application.zcore.user.getUsersWithGroupAccess("member");
-		if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
-		if(form.user_id_siteIdType EQ 0){
-			form.user_id_siteIdType=1;
-		}
-			form.uid=form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
-		}else if(application.zcore.functions.zso(form, 'uid') EQ ''){
-		   	form.uid=request.zsession.user.id&'|'&request.zsession.user.site_id;
-		} 
-		selectStruct = StructNew();
-		selectStruct.name = "uid";
-		selectStruct.selectedValues=form.uid;
-		selectStruct.query = qUser;
-		//selectStruct.style="monoMenu";
-		selectStruct.queryParseLabelVars =true;
-		selectStruct.queryParseValueVars =true;
-		selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
-		selectStruct.queryValueField = "##user_id##|##site_id##";
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript>
-				</td>
-			</tr>
-			
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_disable_author', true, 0) EQ 0>
+				<tr>
+					<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Author","member.blog.edit uid")# (Required)</th>
+					<td>
+			<cfscript>
+			qUser=application.zcore.user.getUsersWithGroupAccess("member");
+			if(application.zcore.functions.zso(form, 'user_id',true) NEQ 0){
+			if(form.user_id_siteIdType EQ 0){
+				form.user_id_siteIdType=1;
+			}
+				form.uid=form.user_id&"|"&application.zcore.functions.zGetSiteIdFromSiteIdType(form.user_id_siteIdType);
+			}else if(application.zcore.functions.zso(form, 'uid') EQ ''){
+			   	form.uid=request.zsession.user.id&'|'&request.zsession.user.site_id;
+			} 
+			selectStruct = StructNew();
+			selectStruct.name = "uid";
+			selectStruct.selectedValues=form.uid;
+			selectStruct.query = qUser;
+			//selectStruct.style="monoMenu";
+			selectStruct.queryParseLabelVars =true;
+			selectStruct.queryParseValueVars =true;
+			selectStruct.queryLabelField = "##user_first_name## ##user_last_name## (##user_username##)";
+			selectStruct.queryValueField = "##user_id##|##site_id##";
+			application.zcore.functions.zInputSelectBox(selectStruct);
+			</cfscript>
+					</td>
+				</tr>
+			</cfif>
+	 
 			<tr>
 				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Summary Text","member.blog.edit blog_summary")#</th>
 				<td>
@@ -2753,37 +2765,40 @@ tabCom.enableSaveButtons();
 				</script>
 				</td>
 			</tr>
-			<tr>
-				<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Office","member.blog.edit office_id")#</th>
-				<td><cfscript>
-					db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
-					WHERE site_id = #db.param(request.zos.globals.id)# and 
-					office_deleted = #db.param(0)#
-					ORDER BY office_name";
-					qOffice=db.execute("qOffice");
-					selectStruct = StructNew();
-					selectStruct.name = "office_id";
-					selectStruct.query = qOffice;
-					selectStruct.queryParseLabelVars=true;
-					selectStruct.queryLabelField = "##office_name## (##office_address##)";
-					selectStruct.queryValueField = "office_id";
-					application.zcore.functions.zInputSelectBox(selectStruct);
-					</cfscript></td>
-			</tr>
+			<cfscript>
+			db.sql="SELECT * FROM #db.table("office", request.zos.zcoreDatasource)# office 
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			office_deleted = #db.param(0)#
+			ORDER BY office_name";
+			qOffice=db.execute("qOffice");
+			</cfscript>
+			<cfif qOffice.recordcount>
+				<tr>
+					<th style="width:120px;">#application.zcore.functions.zOutputHelpToolTip("Office","member.blog.edit office_id")#</th>
+					<td><cfscript>
+						selectStruct = StructNew();
+						selectStruct.name = "office_id";
+						selectStruct.query = qOffice;
+						selectStruct.queryParseLabelVars=true;
+						selectStruct.queryLabelField = "##office_name## (##office_address##)";
+						selectStruct.queryValueField = "office_id";
+						application.zcore.functions.zInputSelectBox(selectStruct);
+						</cfscript></td>
+				</tr>
+			</cfif>
 			<cfscript>
 			if(isnull(form.blog_datetime) or form.blog_datetime EQ '0000-00-00 00:00:00' or isdate(form.blog_datetime) EQ false){
 				form.blog_datetime=dateadd("d",-7,now());
-			}
-			/*
-			if(blog_status NEQ 2 and datecompare(now(),blog_datetime) EQ 1){
-				blog_status=0;
-			}*/
+			} 
 			</cfscript>
-			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.blog.edit blog_event")#</th>
-			<td>
-			<input type="radio" name="blog_event" id="blog_event1" value="1" style="background:none; border:none;" onclick="document.getElementById('eventDateBox').style.display='block';" <cfif isAnEvent or form.blog_event EQ 1>checked="checked"</cfif>> Yes (Always show) 
-			<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif not isAnEvent and application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
-			</td></tr>
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 1>
+	
+				<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Event","member.blog.edit blog_event")#</th>
+				<td>
+				<input type="radio" name="blog_event" id="blog_event1" value="1" style="background:none; border:none;" onclick="document.getElementById('eventDateBox').style.display='block';" <cfif isAnEvent or form.blog_event EQ 1>checked="checked"</cfif>> Yes (Always show) 
+				<input type="radio" name="blog_event" id="blog_event0" value="0" <cfif not isAnEvent and application.zcore.functions.zso(form, 'blog_event', true, 0) EQ 0>checked="checked"</cfif> onclick="document.getElementById('eventDateBox').style.display='none';" style="background:none; border:none;"> No
+				</td></tr>
+			</cfif>
 			<tr><th style="width:120px;vertical-align:top;">#application.zcore.functions.zOutputHelpToolTip("Date","member.blog.edit blog_status")#</th>
 			<td><input type="radio" name="blog_status" id="blog_status1" value="2" <cfif form.blog_status EQ 2>checked="checked"</cfif> onclick="document.getElementById('dateBox').style.display='none';" style="background:none; border:none;"> Draft 
 
@@ -2792,21 +2807,32 @@ tabCom.enableSaveButtons();
 			<input type="radio" name="blog_status" id="blog_status3" value="1" onclick="document.getElementById('dateBox').style.display='block';" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0) or form.blog_status EQ 1>checked="checked"</cfif> style="background:none; border:none;"> Manual Date<br /><br />
 			If a blog article's date is set to the future, it will be invisible to the public unless you click "Yes" for the "Event" field above.<br /><br />
 			<div id="dateBox">
-			<cfscript>
-			writeoutput("Specify Date:"&application.zcore.functions.zDateSelect("blog_datetime","blog_datetime",2000,year(now())+1,""));
-			writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_datetime","blog_datetime",1,5));
-			</cfscript><br />
-			<div id="eventDateBox" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0)><cfelse>style="display:none;"</cfif>>
-			<cfscript>
-			if(form.blog_end_datetime EQ "" or isdate(form.blog_end_datetime) EQ false){
-				form.blog_end_datetime=form.blog_datetime;
-			}
-			writeoutput("Event End Date:"&application.zcore.functions.zDateSelect("blog_end_datetime","blog_end_datetime", 2000, year(now())+1,""));
-			writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_end_datetime","blog_end_datetime",1,5));
-			</cfscript>
-			
+				<cfscript>
+				writeoutput("Specify Date:"&application.zcore.functions.zDateSelect("blog_datetime","blog_datetime",2000,year(now())+1,""));
+				writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_datetime","blog_datetime",1,5));
+				</cfscript>
+
+
+				<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 1>
+					<br />
+					<div id="eventDateBox" <cfif application.zcore.functions.zso(form, 'blog_event', true, 0)><cfelse>style="display:none;"</cfif>>
+						<cfscript>
+						if(form.blog_end_datetime EQ "" or isdate(form.blog_end_datetime) EQ false){
+							form.blog_end_datetime=form.blog_datetime;
+						}
+						writeoutput("Event End Date:"&application.zcore.functions.zDateSelect("blog_end_datetime","blog_end_datetime", 2000, year(now())+1,""));
+						writeoutput(" and Time:"&application.zcore.functions.zTimeSelect("blog_end_datetime","blog_end_datetime",1,5));
+						</cfscript>
+					</div>
+				</cfif>
+		
 			</div>
-			</div>
+
+
+			<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 0>
+				<input type="hidden" name="blog_event" id="blog_event" value="0" />
+			</cfif>
+	
 			<script type="text/javascript">
 			/* <![CDATA[ */
 			function checkDateBlock(){
@@ -2867,27 +2893,31 @@ tabCom.enableSaveButtons();
 			 <input type="radio" name="blog_hide_time" value="0" <cfif form.blog_hide_time EQ 0 or form.blog_hide_time EQ "">checked="checked"</cfif>  style="background:none; border:none;"> Yes <input type="radio" name="blog_hide_time" value="1" style="background:none; border:none;" <cfif form.blog_hide_time EQ 1>checked="checked"</cfif>> No
 			</td></tr>
 			
-		<cfsavecontent variable="db.sql">
-		SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
-		WHERE site_id = #db.param(request.zos.globals.id)# and 
-		slideshow_deleted = #db.param(0)#
-		ORDER BY slideshow_name ASC
-		</cfsavecontent><cfscript>qslide=db.execute("qslide");</cfscript>
-		<tr> 
-		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.blog.edit blog_slideshow_id")#</th>
-		  <td style="vertical-align:top; ">
-		<cfscript>
-		selectStruct = StructNew();
-		selectStruct.name = "blog_slideshow_id";
-		selectStruct.selectedValues=form.blog_slideshow_id;
-		selectStruct.query = qslide;
-		selectStruct.selectLabel="-- Select --";
-		selectStruct.queryLabelField = "slideshow_name";
-		selectStruct.queryValueField = "slideshow_id";
-		application.zcore.functions.zInputSelectBox(selectStruct);
-		</cfscript> | <a href="/z/admin/slideshow/add" target="_blank">Create a slideshow</a>
-		</td>
-		</tr>
+
+		<cfif application.zcore.functions.zso(request.zos.globals, 'enableManageSlideshow', true, 0) EQ 1>
+		
+			<cfsavecontent variable="db.sql">
+			SELECT * FROM #db.table("slideshow", request.zos.zcoreDatasource)# slideshow 
+			WHERE site_id = #db.param(request.zos.globals.id)# and 
+			slideshow_deleted = #db.param(0)#
+			ORDER BY slideshow_name ASC
+			</cfsavecontent><cfscript>qslide=db.execute("qslide");</cfscript>
+			<tr> 
+			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Slideshow","member.blog.edit blog_slideshow_id")#</th>
+			  <td style="vertical-align:top; ">
+			<cfscript>
+			selectStruct = StructNew();
+			selectStruct.name = "blog_slideshow_id";
+			selectStruct.selectedValues=form.blog_slideshow_id;
+			selectStruct.query = qslide;
+			selectStruct.selectLabel="-- Select --";
+			selectStruct.queryLabelField = "slideshow_name";
+			selectStruct.queryValueField = "slideshow_id";
+			application.zcore.functions.zInputSelectBox(selectStruct);
+			</cfscript> | <a href="/z/admin/slideshow/add" target="_blank">Create a slideshow</a>
+			</td>
+			</tr>
+		</cfif>
 			<tr>
 				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.blog.edit blog_metakey")#</th>
 				<td>
@@ -3267,13 +3297,17 @@ tabCom.enableSaveButtons();
 			</cfscript>
 			</td>
 		</tr>
-		<tr>
-			<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Event Category","member.blog.formcat blog_category_enable_events")#</th>
-			<td>
-			#application.zcore.functions.zInput_Boolean("blog_category_enable_events")#
-			</td>
-		</tr>
+			</div>
 
+		<cfif application.zcore.functions.zso(application.zcore.app.getAppData("blog").optionStruct, 'blog_config_enable_event', false, 0) EQ 1>
+			<tr>
+				<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Event Category","member.blog.formcat blog_category_enable_events")#</th>
+				<td>
+				#application.zcore.functions.zInput_Boolean("blog_category_enable_events")#
+				</td>
+			</tr>
+		</cfif>
+	
 		<tr>
 			<th style="vertical-align:top; width:120px; ">#application.zcore.functions.zOutputHelpToolTip("Meta Keywords","member.blog.formcat blog_category_metakey")#</th>
 			<td>

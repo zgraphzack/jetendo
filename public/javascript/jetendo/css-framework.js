@@ -63,8 +63,9 @@
 		if(direction=='right'){
 			if(zWindowSize.width < parentPosition.x+width){
 				var extraWidth=(parentPosition.x+width)-zWindowSize.width;
-				width-=extraWidth+zScrollbarWidth+2; 
+				width-=extraWidth;//+2+zScrollbarWidth
 			}
+			
 		}else{
 			if(width>parentPosition.x+parentWidth){
 				var extraWidth=width-(parentPosition.x+parentWidth); 
@@ -405,7 +406,8 @@
 					}
 				}
 			}
-		});
+		}); 
+
 		function fixMenu(){
 			var w=zWindowSize.width+zScrollbarWidth;
 			if(w>992){
@@ -429,6 +431,7 @@
 	zArrDeferredFunctions.push(setupMobileMenu);
  
 
+ 
 	zArrDeferredFunctions.push(function(){
 		var arrOriginalMenuButtonWidth=[];
 		function setEqualWidthMobileMenuButtons(containerDivId, marginSize){ 

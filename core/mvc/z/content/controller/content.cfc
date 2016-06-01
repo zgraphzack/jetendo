@@ -286,13 +286,21 @@ this.app_id=12;
 			ts.link="/z/admin/site-options/index";
 			arguments.linkStruct["Content Manager"].children["Site Options"]=ts;
 		}  
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
-			ts=structnew();
-			ts.featureName="Slideshows";
-			ts.link="/z/admin/slideshow/index";
-			arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
+		if(application.zcore.functions.zso(request.zos.globals, 'enableManageSlideshow', true, 0) EQ 1){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Slideshows") EQ false){
+				ts=structnew();
+				ts.featureName="Slideshows";
+				ts.link="/z/admin/slideshow/index";
+				arguments.linkStruct["Content Manager"].children["Manage Slideshows"]=ts;
+			}
 		}   
 		if(request.zos.isdeveloper){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children, "Settings") EQ false){
+				ts=structnew();
+				ts.featureName="Settings";
+				ts.link="/z/admin/settings/index";  
+				arguments.linkStruct["Content Manager"].children["Settings"]=ts;
+			} 
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Custom Groups") EQ false){
 				ts=structnew();
 				ts.featureName="Groups";
@@ -306,12 +314,14 @@ this.app_id=12;
 			ts.link="/z/admin/slideshow/add";
 			arguments.linkStruct["Content Manager"].children["Add Slideshow"]=ts;
 		}	*/
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
-			ts=structnew();
-			ts.featureName="Menus";
-			ts.link="/z/admin/menu/index";
-			arguments.linkStruct["Content Manager"].children["Manage Menus"]=ts;
-		}   
+		if(application.zcore.functions.zso(request.zos.globals, 'enableManageMenu', true, 0) EQ 1){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Menus") EQ false){
+				ts=structnew();
+				ts.featureName="Menus";
+				ts.link="/z/admin/menu/index";
+				arguments.linkStruct["Content Manager"].children["Manage Menus"]=ts;
+			}   
+		}
 		if(application.zcore.functions.zso(request.zos.globals, 'lockTheme', true, 1) EQ 0){
 			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Themes") EQ false){
 				ts=structnew();
@@ -326,11 +336,13 @@ this.app_id=12;
 			ts.link="/z/admin/menu/add";
 			arguments.linkStruct["Content Manager"].children["Add Menu"]=ts;
 		}*/
-		if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
-			ts=structnew();
-			ts.featureName="Problem Link Report";
-			ts.link="/z/admin/site-report/index";
-			arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
+		if(application.zcore.functions.zso(request.zos.globals, 'enableProblemLinkReport', true, 0) EQ 1){
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Problem Link Report") EQ false){
+				ts=structnew();
+				ts.featureName="Problem Link Report";
+				ts.link="/z/admin/site-report/index";
+				arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
+			}
 		}
 		if(request.zos.isdeveloper){
 			if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
@@ -1854,10 +1866,15 @@ configCom.includeContentByName(ts);
 	<cfargument name="query" type="any" required="no" default="#false#">
 	<cfargument name="arrOutputStruct" type="array" required="no" default="#[]#">
 	<cfargument name="limit" type="numeric" required="no" default="#0#">
+	<cfargument name="disableChildLinks" type="boolean" required="no" default="#false#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
 	includeLoopCount=0;
+	if(arguments.disableChildLinks){
+		contentConfig.contentDisableLinks=true;
+	}
+
 	if(not structkeyexists(request.zos, 'thumbnailSizeStruct')){
 		this.setRequestThumbnailSize(0,0,0); 
 		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
@@ -2763,7 +2780,7 @@ configCom.includeContentByName(ts);
 	<cfscript>
 	if(arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 	//structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
+		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 		if(arguments.primary){
 			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 			application.zcore.template.appendTag('pagetitle','</span>');
@@ -3209,7 +3226,13 @@ configCom.includeContentByName(ts);
 				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 					echo('<p>Outputting children for page: #arguments.qContent.content_id#</p>');
 				}
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit);
+
+				// need to disable child links somehow, using 
+				disableChildLinks=false;
+				if(qContent.content_child_disable_links EQ 1){
+					disableChildLinks=true;
+				}
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 		}
