@@ -14,7 +14,11 @@
 	<cfscript>
 	width=application.zcore.functions.zso(arguments.optionStruct.optionStruct, 'imagewidth',false,'1000');
 	height=application.zcore.functions.zso(arguments.optionStruct.optionStruct, 'imageHeight',false,'1000');
-	return application.zcore.functions.zGetImagePlaceholderURL(width, height);
+	if(structkeyexists(request.zos, 'forceAbsoluteImagePlaceholderURL')){
+		return request.zos.mlsImagesDomain&application.zcore.functions.zGetImagePlaceholderURL(width, height);
+	}else{
+		return application.zcore.functions.zGetImagePlaceholderURL(width, height);
+	}
 	</cfscript>
 </cffunction>
 
