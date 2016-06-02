@@ -174,12 +174,11 @@ var zHumanMovement=false;
 			target.onmousedown=function(){return false;};
 		}
 	}
-	function zMouseHitTest(object, marginInPixels){
+	function zMouseHitTest(object, marginInPixels){ 
 		var p=zGetAbsPosition(object);
 		if(typeof marginInPixels == "undefined"){
 			marginInPixels=0;
-		}
-		//console.log(p.x+":"+p.y+":"+p.width+":"+p.height+":"+zMousePosition.x+":"+zMousePosition.y);
+		} 
 		if(p.x-marginInPixels <= zMousePosition.x){
 			if(p.x+p.width+marginInPixels >= zMousePosition.x){
 				if(p.y-marginInPixels <= zMousePosition.y){
@@ -188,7 +187,7 @@ var zHumanMovement=false;
 					}
 				}
 			}
-		}
+		} 
 		return false;
 	}
 

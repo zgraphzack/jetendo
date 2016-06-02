@@ -192,11 +192,11 @@
 			}
 			j=replace(replace(replace(j, '{', '{'&chr(10)&indent&chr(9)), '}', chr(10)&indent&'}'), '","', '",#chr(10)&indent&chr(9)#"', 'all');
 			if(arguments.disableLoop){
-				echo(indent&chr(9)&'/* #groupNameInstance#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
+				echo(indent&chr(9)&'<cfscript>#chr(10)&indent#/* #groupNameInstance#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
 			}else if(arguments.debugMode){
-				echo(indent&chr(9)&'/* arr#groupName#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
+				echo(indent&chr(9)&'<cfscript>#chr(10)&indent#/* arr#groupName#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
 			}else{
-				echo(indent&'// uncomment to debug group without live data#chr(10)&indent#/* arr#groupName#='&j&'; */#chr(10)&indent#</cfscript>'&chr(10));
+				echo(indent&'<cfscript>#chr(10)&indent#// uncomment to debug group without live data#chr(10)&indent#/* arr#groupName#='&j&'; */#chr(10)&indent#</cfscript>'&chr(10));
 			}
 		}
 		if(not arguments.disableLoop){
