@@ -12,7 +12,7 @@
 <cffunction name="getDebugValue" localmode="modern" access="public" returntype="string" output="no">
 	<cfargument name="optionStruct" type="struct" required="yes">
 	<cfscript>
-	return "<p>HTML <strong>Example</strong</p>";
+	return "<p>HTML <strong>Example</strong></p>";
 	</cfscript>
 </cffunction>
 

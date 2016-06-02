@@ -48,7 +48,7 @@
 	</table>
 	<br />
 </cffunction>
-
+<!--- 
 <cffunction name="generateDebugGroupCode" access="public" localmode="modern">
 	<cfargument name="groupId" type="numeric" required="yes"> 
 	<cfargument name="parentIndex" type="numeric" required="yes"> 
@@ -96,7 +96,7 @@
 			if(groupStruct.site_option_group_enable_image_library EQ 1){
 				jsonStruct.__image_library_id=0;
 			}
-			echo('<cfscript>arr#ss.curIndex#='&serializeJson(jsonStruct)&';</cfscript>'&chr(10));
+			echo('<cfscript>arr#ss.curIndex#='&replace(serializeJson(jsonStruct), '##', '####', 'all')&';</cfscript>'&chr(10));
 			/*echo(indent&'<cfloop from="1" to="##arrayLen(arr#ss.curIndex#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>curStruct#ss.curIndex#=arr#ss.curIndex#[i#ss.curIndex#];</cfscript>#chr(10)#');
 			savecontent variable="childOutput"{
 				generateDebugGroupCode(0, ss.curIndex, groupStruct.site_option_group_id, arguments.sharedStruct, arguments.depth+2);
@@ -110,7 +110,7 @@
 		ss.curIndex++;
 	}
 	</cfscript>
-</cffunction>
+</cffunction> --->
 
 <cffunction name="generateGroupCode" access="public" localmode="modern">
 	<cfargument name="groupId" type="numeric" required="yes"> 
@@ -162,9 +162,9 @@
 					parentGroupName="Group"&parentGroupName;
 				}
 				parentGroupNameInstance=lcase(left(parentGroupName, 1))&removeChars(parentGroupName,1,1);
-				echo(indent&'arr#groupName#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, #parentGroupNameInstance#);</cfscript>'&chr(10));
+				echo(indent&'arr#groupName#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#", 0, request.zos.globals.id, #parentGroupNameInstance#);'&chr(10));
 			}else{
-				echo(indent&'arr#groupName#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#");</cfscript>'&chr(10));
+				echo(indent&'arr#groupName#=application.zcore.siteOptionCom.optionGroupStruct("#groupStruct.site_option_group_name#");'&chr(10));
 			} 
 		}
 		if(not arguments.disableDebugOutput and structkeyexists(t9.optionGroupFieldLookup, groupStruct.site_option_group_id)){
@@ -186,19 +186,24 @@
 				jsonStruct.__image_library_id=0;
 			}
 			if(arguments.disableLoop){
-				j=serializeJson(jsonStruct);
+				j=replace(serializeJson(jsonStruct), '##', '####', 'all');
 			}else{
-				j=serializeJson([jsonStruct]);
+				j=replace(serializeJson([jsonStruct]), '##', '####', 'all');
 			}
 			j=replace(replace(replace(j, '{', '{'&chr(10)&indent&chr(9)), '}', chr(10)&indent&'}'), '","', '",#chr(10)&indent&chr(9)#"', 'all');
 			if(arguments.disableLoop){
-				echo(indent&chr(9)&'<cfscript>#chr(10)&indent#/* #groupNameInstance#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
+				if(arguments.debugMode){
+					echo(indent&chr(9)&'#chr(10)&indent##groupNameInstance#='&j&';'&chr(10));
+				}else{
+					echo(indent&chr(9)&'#chr(10)&indent#/* #groupNameInstance#='&j&'; */'&chr(10));
+				}
 			}else if(arguments.debugMode){
-				echo(indent&chr(9)&'<cfscript>#chr(10)&indent#/* arr#groupName#='&j&'; */#chr(10)&indent&chr(9)#</cfscript>'&chr(10));
+				echo(indent&chr(9)&'arr#groupName#='&j&';'&chr(10));
 			}else{
-				echo(indent&'<cfscript>#chr(10)&indent#// uncomment to debug group without live data#chr(10)&indent#/* arr#groupName#='&j&'; */#chr(10)&indent#</cfscript>'&chr(10));
+				echo(indent&'// uncomment to debug group without live data#chr(10)&indent#/* arr#groupName#='&j&'; */'&chr(10));
 			}
 		}
+		echo(indent&'</cfscript>#chr(10)#');
 		if(not arguments.disableLoop){
 			echo(indent&'<cfloop from="1" to="##arrayLen(arr#groupName#)##" index="i#ss.curIndex#">#chr(10)&indent&chr(9)#<cfscript>#groupNameInstance#=arr#groupName#[i#ss.curIndex#];</cfscript>#chr(10)#');
 		}
@@ -349,9 +354,12 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0, true, false, true);
 	}
 	cfcOutput=trim(cfcOutput);
+
+	request.zos.forceAbsoluteImagePlaceholderURL=true;
 	savecontent variable="cfcDebugOutput"{
 		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0, true, true, false);
 	}
+	structdelete(request.zos, 'forceAbsoluteImagePlaceholderURL');
 	cfcDebugOutput=trim(cfcDebugOutput);
 	savecontent variable="output"{
 		generateGroupCode(form.site_option_group_id, 1, form.site_option_group_parent_id, {}, 0, false, false, false);
@@ -456,7 +464,7 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 
 	echo('
 		<h2>Standalone Framework Custom Landing Page CFC Code</h2>
-		<textarea name="a2222" cols="100" rows="10" style="width:70%;">'&output&'</textarea>');
+		<textarea name="a2222" cols="100" rows="30" style="width:70%;">'&output&'</textarea>');
 	echo('<div style="width:100%; float:left; padding-top:10px;">
 	<h2>Miscellaneous Code</h2>
 	<p>To select a single group set, use one of the following:</p>
