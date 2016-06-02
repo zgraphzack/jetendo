@@ -430,7 +430,7 @@ KEY `site_x_option_group_set_id` (`site_x_option_group_set_id`)
 <cffunction name="index" localmode="modern" access="remote">
 	<cfscript>
 	init();
-	request.title="Home";
+	request.title="#groupName#";
 	arrayAppend(request.stylesheets, ''<link rel="stylesheet" href="##request.currentPath##/stylesheets/subpage.css" type="text/css" />'');
 	// arrayAppend(request.scripts, ''<script type="text/javascript" src="##request.currentPath##/js/custom-example.js"></script>'');
 	header();
