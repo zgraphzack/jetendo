@@ -2846,7 +2846,7 @@ Define this function in another CFC to override the default email format
 		}else{
 			tempTitle=qGroup.site_option_group_public_form_title;
 		}
-		ts.subject="#tempTitle# form submitted on #request.zos.globals.shortdomain#";
+		ts.subject="#tempTitle# form submitted on #request.zos.currentHostName#";
 		// send the lead
 
 		if(structkeyexists(request.zos, 'debugleadrouting')){
