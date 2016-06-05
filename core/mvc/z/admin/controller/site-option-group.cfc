@@ -1821,6 +1821,11 @@ displayGroupCom.ajaxInsert();
 	application.zcore.template.setTag("title",theTitle);
 	application.zcore.template.setTag("pagetitle",theTitle);
 	</cfscript>
+				<cfscript>
+				if(form.site_id EQ 0){
+					form.optionGroupglobal='1';
+				}
+				</cfscript> 
 	<form name="myForm" id="myForm" action="/z/admin/site-option-group/<cfif currentMethod EQ "edit">update<cfelse>insert</cfif>?site_option_app_id=#form.site_option_app_id#&amp;site_option_group_id=#form.site_option_group_id#" method="post">
 
 		<cfscript>
@@ -1898,55 +1903,22 @@ displayGroupCom.ajaxInsert();
 				<td><input name="site_option_group_display_name" id="site_option_group_display_name" size="50" type="text" value="#htmleditformat(form.site_option_group_display_name)#" maxlength="100" />
 				</td>
 			</tr>
-			<cfscript>
-			if(form.site_id EQ 0){
-				form.optionGroupglobal='1';
-			}
-			</cfscript> 
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Associate With Apps","member.site-option-group.edit site_option_group_appidlist")#</th>
-					<td><cfscript>
-					db.sql="select app.* from #db.table("app", request.zos.zcoreDatasource)# app, 
-					#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
-					WHERE app_x_site.site_id = #db.param(request.zos.globals.id)# and 
-	 				app.app_built_in=#db.param(0)# and 
-					app_x_site.app_id = app.app_id and 
-					app_x_site_deleted = #db.param(0)# and 
-					app_deleted = #db.param(0)# 
-					order by app_name ";
-					qApp=db.execute("qApp");
-					
-					selectStruct=structnew();
-					selectStruct.name="site_option_group_appidlist";
-					selectStruct.query = qApp;
-					selectStruct.onchange="";
-					selectStruct.queryLabelField = "app_name";
-					selectStruct.queryValueField = "app_id";
-					application.zcore.functions.zInput_Checkbox(selectStruct);
-					</cfscript></td>
-				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Section?","member.site-option-group.edit site_option_group_enable_section")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_section")# (Requires Enable Unique URL to be set to Yes)</td>
-				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Only Show App Admin?","member.site-option-group.edit site_option_group_admin_app_only")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_admin_app_only")#</td>
-				</tr>
 				
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Menu Name","member.site-option-group.edit site_option_group_menu_name")#</th>
 					<td><div  id="groupMenuNameId">
-							<input name="site_option_group_menu_name" id="site_option_group_menu_name" size="50" type="text" value="#htmleditformat(form.site_option_group_menu_name)#" maxlength="100" />
-							(Put this group in a manager menu)</div>
+							<input name="site_option_group_menu_name" id="site_option_group_menu_name" size="50" type="text" value="#htmleditformat(form.site_option_group_menu_name)#" maxlength="100" /><br />
+							(Put this group in a different manager menu - default is Custom)</div>
 						<div  id="groupMenuNameId2" style="display:none;">Disabled - Only allowed on the root groups.</div></td>
 				</tr>
+				<!---
+				TODO:  optionGroupglobal is not fully implemented
 				<cfif variables.allowGlobal>
 					<tr>
 						<th>#application.zcore.functions.zOutputHelpToolTip("Global","member.site-option-group.edit optionGroupglobal")#</th>
 						<td>#application.zcore.functions.zInput_Boolean("optionGroupglobal")#</td>
 					</tr>
-				</cfif>
+				</cfif> --->
 				<cfscript>
 				if(form.site_option_group_admin_paging_limit EQ ""){
 					form.site_option_group_admin_paging_limit=0;
@@ -1959,6 +1931,18 @@ displayGroupCom.ajaxInsert();
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("User Child Limit","member.site-option-group.edit site_option_group_user_child_limit")#</th>
 					<td><input type="number" name="site_option_group_user_child_limit" id="site_option_group_user_child_limit" value="#htmleditformat(form.site_option_group_user_child_limit)#" /></td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Sorting","member.site-option-group.edit site_option_group_enable_sorting")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Image Library?","member.site-option-group.edit site_option_group_enable_image_library")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_image_library")#</td>
+				</tr>
+				<tr>
+					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Admin?","member.site-option-group.edit site_option_group_disable_admin")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_admin")#</td>
 				</tr>
 				
 				<tr>
@@ -1992,18 +1976,6 @@ displayGroupCom.ajaxInsert();
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Parent Field","member.site-option-group.edit site_option_group_parent_field")#</th>
 					<td><input type="text" name="site_option_group_parent_field" id="site_option_group_parent_field" value="#htmleditformat(form.site_option_group_parent_field)#" /> (Optional, enables indented heirarchy on list view)</td>
-				</tr>
-				<tr>
-					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Sorting","member.site-option-group.edit site_option_group_enable_sorting")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
-				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Image Library?","member.site-option-group.edit site_option_group_enable_image_library")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_image_library")#</td>
-				</tr>
-				<tr>
-					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Admin?","member.site-option-group.edit site_option_group_disable_admin")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_admin")#</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable List Recurse","member.site-option-group.edit site_option_group_enable_list_recurse")#</th>
@@ -2053,6 +2025,36 @@ displayGroupCom.ajaxInsert();
 					Sort Method: <input type="text" name="site_option_group_change_cfc_sort_method" id="site_option_group_change_cfc_sort_method" value="#htmleditformat(form.site_option_group_change_cfc_sort_method)#" /><br />
 					 (Each function should exist in the CFC with access="public")
 					</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Only Show App Admin?","member.site-option-group.edit site_option_group_admin_app_only")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_admin_app_only")# (Disables list/add links on developer's manage groups page)</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Associate With Apps","member.site-option-group.edit site_option_group_appidlist")#</th>
+					<td><cfscript>
+					db.sql="select app.* from #db.table("app", request.zos.zcoreDatasource)# app, 
+					#db.table("app_x_site", request.zos.zcoreDatasource)# app_x_site 
+					WHERE app_x_site.site_id = #db.param(request.zos.globals.id)# and 
+	 				app.app_built_in=#db.param(0)# and 
+					app_x_site.app_id = app.app_id and 
+					app_x_site_deleted = #db.param(0)# and 
+					app_deleted = #db.param(0)# 
+					order by app_name ";
+					qApp=db.execute("qApp");
+					
+					selectStruct=structnew();
+					selectStruct.name="site_option_group_appidlist";
+					selectStruct.query = qApp;
+					selectStruct.onchange="";
+					selectStruct.queryLabelField = "app_name";
+					selectStruct.queryValueField = "app_id";
+					application.zcore.functions.zInput_Checkbox(selectStruct);
+					</cfscript> (Deprecated - DO NOT USE)</td>
+				</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Section?","member.site-option-group.edit site_option_group_enable_section")#</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_section")# Deprecated DO NOT USE (Requires Enable Unique URL to be set to Yes)</td>
 				</tr>
 		</table>
 		#tabCom.endFieldSet()#
@@ -2175,12 +2177,12 @@ displayGroupCom.ajaxInsert();
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Session Form Token","member.site-option-group.edit site_option_group_public_thankyou_token")#</th>
 					<td>
-							<input name="site_option_group_public_thankyou_token" id="site_option_group_public_thankyou_token" size="50" type="text" value="#htmleditformat(form.site_option_group_public_thankyou_token)#" maxlength="100" /> (The thank you url will have this token added to it with a unique value that will also be added to the user's session memory.  Comparing these 2 values on the server side will allow you to show content to only users that have submitted the form.  I.e. allow them to download a file, etc.)
+							<input name="site_option_group_public_thankyou_token" id="site_option_group_public_thankyou_token" size="50" type="text" value="#htmleditformat(form.site_option_group_public_thankyou_token)#" maxlength="100" /> <br />(The thank you url will have this token added to it with a unique value that will also be added to the user's session memory.  Comparing these 2 values on the server side will allow you to show content to only users that have submitted the form.  I.e. allow them to download a file, etc.)
 					</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Ajax?","member.site-option-group.edit site_option_group_ajax_enabled")#</th>
-					<td>#application.zcore.functions.zInput_Boolean("site_option_group_ajax_enabled")# (Yes will make public form insertions use ajax instead, but not for updating existing records.)</td>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_group_ajax_enabled")# <br />(Yes will make public form insertions use ajax instead, but not for updating existing records.)</td>
 				</tr>
 		</table>
 		#tabCom.endFieldSet()#
@@ -2217,11 +2219,11 @@ displayGroupCom.ajaxInsert();
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("View CFC Path","member.site-option-group.edit site_option_group_view_cfc_path")#</th>
-					<td><input type="text" name="site_option_group_view_cfc_path" id="site_option_group_view_cfc_path" value="#htmleditformat(form.site_option_group_view_cfc_path)#" /> (Should begin with zcorerootmapping, root or another root relative path.)</td>
+					<td><input type="text" name="site_option_group_view_cfc_path" id="site_option_group_view_cfc_path" value="#htmleditformat(form.site_option_group_view_cfc_path)#" /> <br />(Should begin with zcorerootmapping, root or another root relative path.)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("View CFC Method","member.site-option-group.edit site_option_group_view_cfc_method")#</th>
-					<td><input type="text" name="site_option_group_view_cfc_method" id="site_option_group_view_cfc_method" value="#htmleditformat(form.site_option_group_view_cfc_method)#" /> (A function name in the CFC with access="remote")</td>
+					<td><input type="text" name="site_option_group_view_cfc_method" id="site_option_group_view_cfc_method" value="#htmleditformat(form.site_option_group_view_cfc_method)#" /><br />(A function name in the CFC with access="remote")</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Site Map?","member.site-option-group.edit site_option_group_disable_site_map")#</th>
@@ -2235,19 +2237,20 @@ displayGroupCom.ajaxInsert();
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Search Index CFC Path","member.site-option-group.edit site_option_group_search_index_cfc_path")#</th>
-					<td><input type="text" name="site_option_group_search_index_cfc_path" id="site_option_group_search_index_cfc_path" value="#htmleditformat(form.site_option_group_search_index_cfc_path)#" /> (Should begin with zcorerootmapping, root or another root relative path.)</td>
+					<td><input type="text" name="site_option_group_search_index_cfc_path" id="site_option_group_search_index_cfc_path" value="#htmleditformat(form.site_option_group_search_index_cfc_path)#" /><br />
+					(Should begin with zcorerootmapping, root or another root relative path.)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Search Index CFC Method","member.site-option-group.edit site_option_group_search_index_cfc_method")#</th>
-					<td><input type="text" name="site_option_group_search_index_cfc_method" id="site_option_group_search_index_cfc_method" value="#htmleditformat(form.site_option_group_search_index_cfc_method)#" /> (A function name in the CFC with access="public")</td>
+					<td><input type="text" name="site_option_group_search_index_cfc_method" id="site_option_group_search_index_cfc_method" value="#htmleditformat(form.site_option_group_search_index_cfc_method)#" /><br /> (A function name in the CFC with access="public")</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Search Result CFC Path","member.site-option-group.edit site_option_group_search_result_cfc_path")#</th>
-					<td><input type="text" name="site_option_group_search_result_cfc_path" id="site_option_group_search_result_cfc_path" value="#htmleditformat(form.site_option_group_search_result_cfc_path)#" /> (Should begin with zcorerootmapping, root or another root relative path.)</td>
+					<td><input type="text" name="site_option_group_search_result_cfc_path" id="site_option_group_search_result_cfc_path" value="#htmleditformat(form.site_option_group_search_result_cfc_path)#" /><br /> (Should begin with zcorerootmapping, root or another root relative path.)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Search Result CFC Method","member.site-option-group.edit site_option_group_search_result_cfc_method")#</th>
-					<td><input type="text" name="site_option_group_search_result_cfc_method" id="site_option_group_search_result_cfc_method" value="#htmleditformat(form.site_option_group_search_result_cfc_method)#" /> (A function name in the CFC with access="public")</td>
+					<td><input type="text" name="site_option_group_search_result_cfc_method" id="site_option_group_search_result_cfc_method" value="#htmleditformat(form.site_option_group_search_result_cfc_method)#" /> <br />(A function name in the CFC with access="public")</td>
 				</tr>
 		</table>
 		#tabCom.endFieldSet()#
@@ -2329,11 +2332,11 @@ displayGroupCom.ajaxInsert();
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Email CFC Path","member.site-option-group.edit site_option_group_email_cfc_path")#</th>
-					<td><input type="text" name="site_option_group_email_cfc_path" id="site_option_group_email_cfc_path" value="#htmleditformat(form.site_option_group_email_cfc_path)#" /> (Should begin with zcorerootmapping, root or another root relative path.)</td>
+					<td><input type="text" name="site_option_group_email_cfc_path" id="site_option_group_email_cfc_path" value="#htmleditformat(form.site_option_group_email_cfc_path)#" /><br /> (Should begin with zcorerootmapping, root or another root relative path.)</td>
 				</tr>
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Email CFC Method","member.site-option-group.edit site_option_group_email_cfc_method")#</th>
-					<td><input type="text" name="site_option_group_email_cfc_method" id="site_option_group_email_cfc_method" value="#htmleditformat(form.site_option_group_email_cfc_method)#" /> (A function name in the CFC with access="public")</td>
+					<td><input type="text" name="site_option_group_email_cfc_method" id="site_option_group_email_cfc_method" value="#htmleditformat(form.site_option_group_email_cfc_method)#" /><br /> (A function name in the CFC with access="public")</td>
 				</tr>
 				<tr>
 					<th>Custom Email<br />Options</th>
