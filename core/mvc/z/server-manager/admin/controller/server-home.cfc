@@ -302,7 +302,8 @@
 			<p><a href="/z/server-manager/admin/mobile-conversion/index">Mobile Conversion</a></p>
 		  	<h3>Maintenance Scripts</h3>
 			<p><a href="/z/server-manager/api/git-status/index" target="_blank">Developer git status report</a></p>
-		  	<p><a href="/z/server-manager/tasks/cache-robot/index">Cache Robot</a></p>
+		  	<p><a href="/z/server-manager/tasks/cache-robot/index" target="_blank">Cache Robot</a></p>
+		  	<p><a href="/z/server-manager/tasks/validate-site-option-groups/index" target="_blank">Validate Site Option Groups</a></p>
 		  	<p><a href="/z/server-manager/admin/server-home/viewSharedMemory">View Shared Memory</a></p>
 			<p><a href="/z/server-manager/tasks/publish-system-css/index" target="_blank">Re-publish System CSS</a></p>
 			<p><a href="/z/server-manager/admin/site-import/index" target="_blank">Site Import</a></p>
