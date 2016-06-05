@@ -21,9 +21,10 @@ function zLoadListingSavedSearches(){
 		tempObj.id="zListingSavedSearchAjax"+ssid;
 		tempObj.cache=false;
 		tempObj.method="get"; 
+		
 		tempObj.callback=function(d){   
 			try{
-				var r=eval("("+d+")");
+				var r=JSON.parse(d); 
 				if(r.success){ 
 					$(currentDiv).html(r.listingOutput);
 					if(ssid in arrMap){
@@ -70,7 +71,7 @@ function zListingLoadSavedCart(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d);
 			if(r.success){ 
 				if($("#sl894nsdh783").length==0){
 					$("#zTopContent").append('<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>');
@@ -91,6 +92,7 @@ function zListingLoadSavedCart(){
 	}
 }
 
+
 zArrDeferredFunctions.push(zListingLoadSavedCart);
 
 function zSetupListingCartButtons(){
@@ -102,7 +104,7 @@ function zSetupListingCartButtons(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d); 
 			if(r.success){ 
 				zListingLoadSavedCart();
 			}else{
@@ -123,7 +125,7 @@ function zSetupListingCartButtons(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d); 
 			if(r.success){ 
 				zListingLoadSavedCart();
 			} 
@@ -140,7 +142,7 @@ function zSetupListingCartButtons(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d);
 			if(r.success){ 
 				zListingLoadSavedCart();
 			} 
