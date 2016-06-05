@@ -765,7 +765,8 @@ userCom.checkLogin(inputStruct);
 	
 	
 	structdelete(cookie, "zLoggedIn");
-	structdelete(cookie, "zIsAdmin");
+	// don't delete so that expiration page can link correctly
+	//structdelete(cookie, "zIsAdmin");
 	structdelete(cookie, "zSessionExpireDate");
 	structdelete(cookie, "zparentlogincheck");
 	structdelete(cookie, "zautologin");
