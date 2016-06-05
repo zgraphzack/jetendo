@@ -3,8 +3,11 @@
 <cffunction name="index" localmode="modern" access="remote">
 	<cfscript>
 	application.zcore.template.setPlainTemplate();
+	form.layout_setting_instance_id=application.zcore.functions.zso(form, 'layout_setting_instance_id', true, 0);
+	if(form.layout_setting_instance_id NEQ 0){
+		application.zcore.skin.includeCSS("/zupload/layout-setting-instance-#form.layout_setting_instance_id#.css");
+	}
 	echo('<h2 class="z-fh-30">Layout Example</h2>');
-	//application.zcore.skin.includeCSS("/zupload/layout-global.css"); 
 	</cfscript>  
 	<style type="text/css">
 	.zapp-shell-container{padding-left:0px; padding-right:0px;}

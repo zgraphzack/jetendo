@@ -232,6 +232,7 @@
 	<p> 
 		<a href="/z/admin/layout-breakpoint/index">Breakpoints</a> | 
 		<a href="/z/admin/layout-global/index">Global Layout Settings</a> | 
+		<a href="/z/admin/layout-global/instanceList">Manage Settings Instances</a> | 
 		<a href="/z/admin/layout-page/index">Manage Layouts</a>  | 
 		<a href="/z/admin/layout-page/index">Manage Sections</a>  | 
 		<a href="/z/admin/landing-page/index">Manage Custom Landing Pages</a> | 
