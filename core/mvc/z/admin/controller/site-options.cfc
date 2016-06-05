@@ -3806,6 +3806,54 @@ Define this function in another CFC to override the default email format
 			db.sql&=" LIMIT #db.param((form.zIndex-1)*qGroup.site_option_group_admin_paging_limit)#, #db.param(qGroup.site_option_group_admin_paging_limit)# ";
 		}
 		qS=db.execute("qS");
+		db.sql="SELECT site_option_group.*,  site_x_option_group_set.*";
+		for(i=1;i LTE arraylen(arrVal);i++){
+			db.sql&=" , s#i#.site_x_option_group_value sVal#i# ";
+		}
+		db.sql&=" FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
+		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set) ";
+		for(i=1;i LTE arraylen(arrVal);i++){
+			db.sql&="LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s#i# on 
+			s#i#.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
+			s#i#.site_option_id = #db.param(arrVal[i])# and 
+			s#i#.site_option_group_id = site_option_group.site_option_group_id and 
+			s#i#.site_id = site_option_group.site_id and 
+			s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
+			s#i#.site_x_option_group_deleted = #db.param(0)# ";
+		}
+		db.sql&="
+		WHERE  
+		site_option_group_deleted = #db.param(0)# and
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
+		site_option_group.site_id=site_x_option_group_set.site_id and 
+		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
+		if(arraylen(arrSearchSQL)){
+			db.sql&=(" and "&arrayToList(arrSearchSQL, ' and '));
+		}
+		if(status NEQ ""){
+			db.sql&=" and site_x_option_group_set_approved = #db.param(status)# ";
+		}
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
+			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
+		}
+		if(form.site_x_option_group_set_parent_id NEQ 0){
+			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
+		} 
+		db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
+		site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
+		site_option_group.site_option_group_type=#db.param('1')# ";
+		//GROUP BY site_x_option_group_set.site_x_option_group_set_id
+		if(arraylen(arrSortSQL)){
+			db.sql&= "ORDER BY "&arraytolist(arrSortSQL, ", ");
+		}else{
+			db.sql&=" ORDER BY site_x_option_group_set_sort asc ";
+		}
+		if(qGroup.site_option_group_admin_paging_limit NEQ 0){
+			db.sql&=" LIMIT #db.param((form.zIndex-1)*qGroup.site_option_group_admin_paging_limit)#, #db.param(qGroup.site_option_group_admin_paging_limit)# ";
+		}
+		qSCount=db.execute("qSCount");
 		//writedump(qS);abort;
 		// sort and indent 
 		if(parentIndex NEQ 0){
@@ -3941,9 +3989,9 @@ Define this function in another CFC to override the default email format
 							writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
 							<option value="">-- Edit Sub-group --</option>'); 
 							for(var n in q1){
-								if(structkeyexists(subgroupStruct, q1.site_option_group_id)){
+								if(structkeyexists(subgroupStruct, n.site_option_group_id)){
 									writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
-									#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+									#htmleditformat(application.zcore.functions.zFirstLetterCaps(n.site_option_group_display_name))#</option>');// (#n.childCount#)
 								}
 							}
 							writeoutput('</select>
@@ -3964,7 +4012,7 @@ Define this function in another CFC to override the default email format
 							}
 						}
 						if(methodBackup NEQ "userManageGroup" and methodBackup NEQ "userGetRowHTML"){
-							if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
+							if(qGroup.site_option_group_limit EQ 0 or qSCount.recordcount LT qGroup.site_option_group_limit){
 								if(qGroup.site_option_group_enable_versioning EQ 1 and row.site_x_option_group_set_parent_id EQ 0){
 									echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.copyURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Copy</a> | '); 
 									echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.versionURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Versions</a> | ');
@@ -4364,6 +4412,54 @@ Define this function in another CFC to override the default email format
 		 | <a href="/z/admin/site-option-group/help?site_option_group_id=#form.site_option_group_id#" target="_blank">View help in new window.</a>
 	</cfif>
 	</p>
+
+	<cfif methodBackup EQ "editGroup"> 
+		<cfscript> 
+		db.sql="select * 
+		from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
+		 WHERE 
+		site_option_group_deleted = #db.param(0)# and
+		site_option_group.site_option_group_parent_id = #db.param(form.site_option_group_id)# and 
+		site_option_group.site_id = #db.param(request.zos.globals.id)#";
+		q1=db.execute("q1");
+		sortEnabled=true;
+		subgroupRecurseEnabled=false;
+		subgroupStruct={}; 
+		for(n in q1){
+			subgroupStruct[n.site_option_group_id]=n;
+		}
+		 
+
+		if(q1.recordcount NEQ 0){
+			echo('<h2>Edit Sub-groups</h2>');
+			echo('<p>This record has additional records attached to it. Click the following link(s) to view/edit them.</p>');
+			echo('<ul>');
+			for(var n in q1){
+				if(structkeyexists(subgroupStruct, n.site_option_group_id)){
+					echo('<li><a href="#application.zcore.functions.zURLAppend(defaultStruct.listURL, "site_option_group_id=#n.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_id#")#">#subgroupStruct[n.site_option_group_id].site_option_group_display_name#</a></li>');
+				}
+			}
+			echo('</ul>');
+
+			echo('<h2>or Edit Current Record Below</h2>');
+			/*
+			writeoutput('<select name="editGroupSelect" id="editGroupSelect" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(defaultStruct.listURL, "site_option_group_id")#=''+d;}">
+			<option value="">-- Edit Sub-group --</option>'); 
+			for(var n in q1){
+				if(structkeyexists(subgroupStruct, q1.site_option_group_id)){
+					writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_id#">
+					#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+				}
+			}
+			writeoutput('</select>
+			| ');
+			*/
+		}
+		</cfscript>
+	</cfif>
+
+
+
 	<cfscript>
 	echo('<form id="siteOptionGroupForm#qCheck.site_option_group_id#" action="');
 	if(methodBackup EQ "publicAddGroup" or methodBackup EQ "publicEditGroup"){

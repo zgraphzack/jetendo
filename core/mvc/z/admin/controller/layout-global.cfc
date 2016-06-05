@@ -605,88 +605,89 @@
 		 		if(g EQ 1){
 		 			multiplier=0.8;
 		 		}
+		 		multiplier=g*10;
 		 		pt=dataStruct.boxPaddingTopPercent*multiplier;
 		 		pb=dataStruct.boxPaddingBottomPercent*multiplier;
 		 		ph=dataStruct.boxPaddingSidePercent*multiplier;
 		 		mt=dataStruct.boxMarginTopPercent*multiplier;
 		 		mb=dataStruct.boxMarginBottomPercent*multiplier;
 		 		mh=dataStruct.boxMarginSidePercent*multiplier;
-		 		v='.z-p-#g*10#{ padding-left:#ph#%; padding-right:#ph#%; padding-top:#pt#%; padding-bottom:#pb#%; }';
+		 		v='.z-p-#g*10#{ padding-left:#ph#px; padding-right:#ph#px; padding-top:#pt#px; padding-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v); 
 				} 
-				v='.z-pt-#g*10#{ padding-top:#pt#%; }';
+				v='.z-pt-#g*10#{ padding-top:#pt#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pr-#g*10#{ padding-right:#ph#%; }';
+				v='.z-pr-#g*10#{ padding-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pb-#g*10#{ padding-bottom:#pb#%; }';
+				v='.z-pb-#g*10#{ padding-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pl-#g*10#{ padding-left:#ph#%; }';
+				v='.z-pl-#g*10#{ padding-left:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pv-#g*10#{ padding-top:#pt#%; padding-bottom:#pb#%; }';
+				v='.z-pv-#g*10#{ padding-top:#pt#px; padding-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-ph-#g*10#{ padding-left:#ph#%; padding-right:#ph#%; }';
+				v='.z-ph-#g*10#{ padding-left:#ph#px; padding-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-m-#g*10#{ margin-left:#ph#%; margin-right:#ph#%; margin-top:#pt#%; margin-bottom:#pb#%; }';
+				v='.z-m-#g*10#{ margin-left:#ph#px; margin-right:#ph#px; margin-top:#pt#px; margin-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mt-#g*10#{ margin-top:#pt#%; }';
+				v='.z-mt-#g*10#{ margin-top:#pt#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mr-#g*10#{ margin-right:#ph#%; }';
+				v='.z-mr-#g*10#{ margin-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mb-#g*10#{ margin-bottom:#pb#%; }';
+				v='.z-mb-#g*10#{ margin-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-ml-#g*10#{ margin-left:#ph#%; }';
+				v='.z-ml-#g*10#{ margin-left:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mv-#g*10#{ margin-top:#pt#%; margin-bottom:#pb#%; }';
+				v='.z-mv-#g*10#{ margin-top:#pt#px; margin-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mh-#g*10#{ margin-left:#ph#%; margin-right:#ph#%; }';
+				v='.z-mh-#g*10#{ margin-left:#ph#px; margin-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mv-#g*10#-auto{ margin-top:#pt#%; margin-bottom:#pb#%; margin-left:auto; margin-right:auto; }';
+				v='.z-mv-#g*10#-auto{ margin-top:#pt#px; margin-bottom:#pb#px; margin-left:auto; margin-right:auto; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mh-#g*10#-auto{ margin-left:#ph#%; margin-right:#ph#%; margin-top:auto; margin-bottom:auto; }';
+				v='.z-mh-#g*10#-auto{ margin-left:#ph#px; margin-right:#ph#px; margin-top:auto; margin-bottom:auto; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
