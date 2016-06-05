@@ -1189,17 +1189,6 @@
 				<th>Default Value:</th>
 				<td><textarea cols="40" rows="5" name="site_option_default_value">#htmleditformat(form.site_option_default_value)#</textarea></td>
 			</tr>
-			<tr>
-				<th>Tooltip Help Box:</th>
-				<td><cfscript>
-				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-				htmlEditor.instanceName	= "site_option_tooltip";
-				htmlEditor.value			= form.site_option_tooltip;
-				htmlEditor.width			= "100%";
-				htmlEditor.height		= 200;
-				htmlEditor.create();
-				</cfscript></td>
-			</tr>
 			<cfscript>
 			if(form.site_id EQ 0){
 				siteglobal=1;
@@ -1244,6 +1233,10 @@
 				<th>Required:</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_required")#</td>
 			</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">Allow Public?</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
+				</tr>
 			<!--- <cfif form.site_option_group_id NEQ '' and form.site_option_group_id NEQ 0> --->
 				<cfif qOptionGroup.site_option_group_enable_unique_url EQ 1>
 					<tr>
@@ -1260,6 +1253,19 @@
 					</tr>
 				</cfif>
 				<tr>
+					<th>Sort (admin):</th>
+					<td>
+						<cfif qOptionGroup.site_option_group_enable_sorting EQ 1>
+						
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" value="0" type="hidden"> Can't be used when group sorting is enabled.
+						<cfelse>
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Ascending
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field2" style="border:none; background:none;" type="radio" value="2" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 2>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Descending
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 0>checked="checked"</cfif> /> Disabled
+					</cfif>
+				</td>
+				</tr>
+				<tr>
 					<th>Read-only:</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_readonly")#</td>
 				</tr>
@@ -1275,24 +1281,13 @@
 					<input name="site_option_admin_searchable" id="site_option_admin_searchable1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_searchable', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;" /> Yes
 					<input name="site_option_admin_searchable" id="site_option_admin_searchable0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_searchable', true, 0) EQ 0>checked="checked"</cfif> /> No</td>
 				</tr>
-				<tr>
-					<th>Sort (admin):</th>
-					<td>
-						<cfif qOptionGroup.site_option_group_enable_sorting EQ 1>
-						
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" value="0" type="hidden"> Can't be used when group sorting is enabled.
-						<cfelse>
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Ascending
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field2" style="border:none; background:none;" type="radio" value="2" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 2>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Descending
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 0>checked="checked"</cfif> /> Disabled
-					</cfif>
-				</td>
-				</tr>
 				
-				<tr>
+				<!---
+				not in use anywhere:
+				 <tr>
 					<th>Search Default (admin):</th>
 					<td><input type="text" name="site_option_admin_search_default" value="#htmleditformat(form.site_option_admin_search_default)#" /></td>
-				</tr>
+				</tr> 
 				<tr>
 					<th>Validator CFC:</th>
 					<td><cfscript>
@@ -1300,7 +1295,8 @@
 					ts.name="site_option_validator_cfc";
 					ts.size=50;
 					application.zcore.functions.zInput_Text(ts);
-					</cfscript> (Must begin with zcorerootmapping or request.zRootCFCPath)</td>
+					</cfscript><br />
+					(Must begin with zcorerootmapping or request.zRootCFCPath)</td>
 				</tr>
 				<tr>
 					<th>Validator CFC Method:</th>
@@ -1310,12 +1306,11 @@
 					ts.size=50;
 					application.zcore.functions.zInput_Text(ts);
 					</cfscript></td>
-				</tr>
+				</tr>--->
 			<!--- </cfif> --->
-			<tr>
-				<th style="vertical-align:top; white-space:nowrap;">Allow Public?</th>
-				<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
-			</tr>
+
+			<!--- 
+			TODO: site_option_user_group_id_list | this feature is not fully implemented yet
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Enable Data Entry<br />For User Groups","member.site-option-group.edit site_option_user_group_id_list")#</th>
 				<td>
@@ -1336,7 +1331,7 @@
 				application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_user_group_id_list'));
 				application.zcore.functions.zInputSelectBox(ts);
 				</cfscript></td>
-			</tr>
+			</tr> --->
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Force Small Label Width","member.site-option-group.edit site_option_small_width")#</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_small_width")# (With yes selected, public forms will force the label column to be as small as possible.)</td>
@@ -1347,7 +1342,7 @@
 			</tr>
 			<tr>
 				<th>Add Line Breaks:</th>
-				<td>#application.zcore.functions.zInput_Boolean("site_option_line_breaks")#</td>
+				<td>#application.zcore.functions.zInput_Boolean("site_option_line_breaks")# (Useful for textarea field type to force newlines to &lt;br&gt;)</td>
 			</tr>
 			<cfif variables.allowGlobal>
 				<tr>
@@ -1366,9 +1361,24 @@
 					<td>#application.zcore.functions.zInput_Boolean("siteglobal")#</td>
 				</tr>
 			</cfif>
+
+			<cfif form.site_option_group_id EQ 0>
+	
+				<tr>
+					<th>Edit Enabled:</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_edit_enabled")# (Make sure you select no for options that are not visible.)</td>
+				</tr>
+			</cfif>
 			<tr>
-				<th>Edit Enabled:</th>
-				<td>#application.zcore.functions.zInput_Boolean("site_option_edit_enabled")# (Make sure you select no for options that are not visible.)</td>
+				<th>Tooltip Help Box:</th>
+				<td><cfscript>
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor.instanceName	= "site_option_tooltip";
+				htmlEditor.value			= form.site_option_tooltip;
+				htmlEditor.width			= "100%";
+				htmlEditor.height		= 100;
+				htmlEditor.create();
+				</cfscript></td>
 			</tr>
 			<tr>
 				<th>&nbsp;</th>
