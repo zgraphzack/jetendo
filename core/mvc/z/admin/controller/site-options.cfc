@@ -1362,7 +1362,7 @@
 				</tr>
 			</cfif>
 
-			<cfif form.site_option_group_id EQ 0>
+			<cfif form.site_option_group_id EQ "" or form.site_option_group_id EQ 0>
 	
 				<tr>
 					<th>Edit Enabled:</th>
