@@ -738,12 +738,14 @@
 	if(qList.recordcount){
 		echo('<table class="table-list">
 			<tr>
+			<th>ID</th>
 			<th>Name</th>
 			<th>Admin</th>
 		</tr>');
 		for(row in qList){
 			echo('<tr>');
 			echo('
+				<td>#row.layout_setting_instance_id#</td>
 				<td>#row.layout_setting_instance_name#</td>
 				<td><a href="/z/admin/layout-global/settingsInstance?layout_setting_instance_id=#row.layout_setting_instance_id#">View/Edit</a> | 
 				<a href="##" onclick="if(window.confirm(''Are you sure you want to delete this settings instance?'')){ window.location.href=''/z/admin/layout-global/deleteInstance?layout_setting_instance_id=#row.layout_setting_instance_id#''; } ">Delete</a>
@@ -763,6 +765,8 @@
 	db=request.zos.queryObject;
 	form.layout_setting_instance_id=application.zcore.functions.zso(form, 'layout_setting_instance_id');
 	breakStruct={}; 
+
+	application.zcore.functions.zDeleteFile(request.zos.globals.privateHomeDir&"zupload/layout-setting-instance-#form.layout_setting_instance_id#.css");
 
 	breakStruct=getBreakpointConfig();
 	defaultBreakstruct=duplicate(breakStruct);
