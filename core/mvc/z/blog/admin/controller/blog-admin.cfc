@@ -2930,18 +2930,28 @@ tabCom.enableSaveButtons();
 					<textarea name="blog_metadesc" style="width:100%; height:60px; ">#form.blog_metadesc#</textarea>
 				</td>
 			</tr>
-		<tr>
-		<th style="width:120px; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Custom Fields","member.blog.edit blog_site_option_app_id")#</th>
-		<td colspan="2">
 		<cfscript>
-		ts=structnew();
-		ts.name="blog_site_option_app_id";
-		ts.app_id=application.zcore.app.getAppCFC("blog").app_id;
-		ts.value=form.blog_site_option_app_id;
-		application.zcore.siteOptionCom.getOptionForm(ts);
+		db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
+		WHERE site_option_group_appidlist like #db.param('%,10,%')# and 
+		site_id = #db.param(request.zos.globals.id)# and 
+		site_option_group_deleted=#db.param(0)#";
+		qGroupCheck=db.execute("qGroupCheck");
 		</cfscript>
-		</td>
-		</tr>
+		<cfif qGroupCheck.recordcount>
+			<tr>
+			<th style="width:120px; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Custom Fields","member.blog.edit blog_site_option_app_id")#</th>
+			<td colspan="2">
+			<cfscript>
+			ts=structnew();
+			ts.name="blog_site_option_app_id";
+			ts.app_id=application.zcore.app.getAppCFC("blog").app_id;
+			ts.value=form.blog_site_option_app_id;
+			application.zcore.siteOptionCom.getOptionForm(ts);
+			</cfscript>
+			</td>
+			</tr>
+		</cfif>
+	
 		<tr> 
 		<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Unique URL","member.blog.edit blog_unique_name")#</th>
 		<td style="vertical-align:top; "><input type="text" name="blog_unique_name" value="#form.blog_unique_name#" size="100" /><br />

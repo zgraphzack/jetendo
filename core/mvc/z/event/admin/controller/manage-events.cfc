@@ -270,8 +270,7 @@
 			application.zcore.functions.zInsert(ts);
 		}
 	}
-
-	application.zcore.siteOptionCom.activateOptionAppId(application.zcore.functions.zso(form, 'site_option_app_id'));
+ 
 	application.zcore.imageLibraryCom.activateLibraryId(application.zcore.functions.zso(form, 'event_image_library_id'));
 
 	updateRecurRecords=false;
@@ -663,50 +662,6 @@
 					</cfscript> 
 				</td>
 			</tr>    
-			<tr>
-				<th>Summary</th>
-				<td>
-					<cfscript>
-					if(notPublic){
-						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-						htmlEditor.instanceName	= "event_summary";
-						htmlEditor.value			= form.event_summary;
-						htmlEditor.width			= "100%";
-						htmlEditor.height		= 150;
-						htmlEditor.create();
-					}else{
-
-						ts=StructNew();
-						ts.name="event_summary";
-						ts.style="width:95%; height:100px;";
-						ts.multiline=true;
-						application.zcore.functions.zInput_Text(ts);
-					}
-					</cfscript>   
-				</td>
-			</tr> 
-			<tr>
-				<th>Body Text</th>
-				<td>
-					<cfscript>
-					if(notPublic){
-						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-						htmlEditor.instanceName	= "event_description";
-						htmlEditor.value			= form.event_description;
-						htmlEditor.width			= "100%";
-						htmlEditor.height		= 350;
-						htmlEditor.create();
-					}else{
-
-						ts=StructNew();
-						ts.name="event_description";
-						ts.style="width:95%; height:200px;";
-						ts.multiline=true;
-						application.zcore.functions.zInput_Text(ts);
-					}
-					</cfscript>   
-				</td>
-			</tr> 
 			<cfscript> 
 			eventStartDate=form.event_start_datetime;
 			eventStartTime=form.event_start_datetime;
@@ -751,6 +706,72 @@
 			<tr>
 				<th>All Day Event?</th>
 				<td>#application.zcore.functions.zInput_Boolean("event_allday")# (Yes, will hide the start/end times)</td>
+			</tr> 
+			<tr>
+				<th>Recurring Event</th>
+				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
+					<cfif form.event_recur_ical_rules NEQ "">Yes | 
+						<cfscript>
+						ical=application.zcore.app.getAppCFC("event").getIcalCFC();
+						echo(ical.getIcalRuleAsPlainEnglish(form.event_recur_ical_rules));
+						</cfscript>
+					<cfelse>
+						No
+					</cfif>
+				</span></strong>
+				 </span>
+				<input type="hidden" name="event_recur_ical_rules" id="event_recur_ical_rules" value="#htmleditformat(form.event_recur_ical_rules)#" />
+				<input type="hidden" name="event_excluded_date_list" id="event_excluded_date_list" value="#htmleditformat(form.event_excluded_date_list)#" />
+				<input type="hidden" name="event_recur_until_datetime" id="event_recur_until_datetime" value="#htmleditformat(form.event_recur_until_datetime)#" />
+				<input type="hidden" name="event_recur_count" id="event_recur_count" value="#htmleditformat(form.event_recur_count)#" />
+				<input type="hidden" name="event_recur_interval" id="event_recur_interval" value="#htmleditformat(form.event_recur_interval)#" />
+				<input type="hidden" name="event_recur_frequency" id="event_recur_frequency" value="#htmleditformat(form.event_recur_frequency)#" />
+
+				</td>
+			</tr>   
+			<tr>
+				<th>Summary</th>
+				<td>
+					<cfscript>
+					if(notPublic){
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor.instanceName	= "event_summary";
+						htmlEditor.value			= form.event_summary;
+						htmlEditor.width			= "100%";
+						htmlEditor.height		= 150;
+						htmlEditor.create();
+					}else{
+
+						ts=StructNew();
+						ts.name="event_summary";
+						ts.style="width:95%; height:100px;";
+						ts.multiline=true;
+						application.zcore.functions.zInput_Text(ts);
+					}
+					</cfscript>   
+				</td>
+			</tr> 
+			<tr>
+				<th>Body Text</th>
+				<td>
+					<cfscript>
+					if(notPublic){
+						htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+						htmlEditor.instanceName	= "event_description";
+						htmlEditor.value			= form.event_description;
+						htmlEditor.width			= "100%";
+						htmlEditor.height		= 350;
+						htmlEditor.create();
+					}else{
+
+						ts=StructNew();
+						ts.name="event_description";
+						ts.style="width:95%; height:200px;";
+						ts.multiline=true;
+						application.zcore.functions.zInput_Text(ts);
+					}
+					</cfscript>   
+				</td>
 			</tr> 
 
 			<tr>
@@ -887,28 +908,6 @@
 					<td>#application.zcore.functions.zInput_Boolean("event_featured", application.zcore.functions.zso(form, 'event_featured'))#</td>
 				</tr>  
 			</cfif>
-			<tr>
-				<th>Recurring Event</th>
-				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
-					<cfif form.event_recur_ical_rules NEQ "">Yes | 
-						<cfscript>
-						ical=application.zcore.app.getAppCFC("event").getIcalCFC();
-						echo(ical.getIcalRuleAsPlainEnglish(form.event_recur_ical_rules));
-						</cfscript>
-					<cfelse>
-						No
-					</cfif>
-				</span></strong>
-				 </span>
-				<input type="hidden" name="event_recur_ical_rules" id="event_recur_ical_rules" value="#htmleditformat(form.event_recur_ical_rules)#" />
-				<input type="hidden" name="event_excluded_date_list" id="event_excluded_date_list" value="#htmleditformat(form.event_excluded_date_list)#" />
-				<input type="hidden" name="event_recur_until_datetime" id="event_recur_until_datetime" value="#htmleditformat(form.event_recur_until_datetime)#" />
-				<input type="hidden" name="event_recur_count" id="event_recur_count" value="#htmleditformat(form.event_recur_count)#" />
-				<input type="hidden" name="event_recur_interval" id="event_recur_interval" value="#htmleditformat(form.event_recur_interval)#" />
-				<input type="hidden" name="event_recur_frequency" id="event_recur_frequency" value="#htmleditformat(form.event_recur_frequency)#" />
-
-				</td>
-			</tr>   
 			<script type="text/javascript">
 			function openRecurringEventOptions(){
 				var startDate=$("##event_start_datetime_date").val();
