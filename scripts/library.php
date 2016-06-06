@@ -1,4 +1,74 @@
 <?php
+// force variable to exist, with optional forcing of number data type and default value.
+// you'd have to call it like zo(@$fakeVar) to avoid undefined error
+function zo($varName, $isNumber=false, $defaultValue=''){
+	$tempVar = "";
+	if($isNumber){
+		if(isset($varName)){
+			$tempVar = $varName;
+			if(!is_numeric($tempVar)){
+				return $tempVar;
+			}else{
+				if($defaultValue !== ""){
+					return $defaultValue;
+				}else{
+					return 0;
+				}
+			}
+		}else{
+			if($defaultValue !== ""){
+				return $defaultValue;
+			}else{
+				return 0;
+			}
+		}
+	}else{
+		if($varName){
+			return $varName;
+		}else{
+			return $defaultValue;
+		}
+	}
+}
+/*
+$realVar='te2st';
+$v=zo(@$realVar, false, 'test');
+echo $v."<br>";
+$v=zo(@$fakeVar, true, '1');
+echo $v."<br>";
+exit;
+*/
+
+// force variable to exist, with optional forcing of number data type and default value.
+function zso($obj, $varName, $isNumber=false, $defaultValue=''){
+	$tempVar = "";
+	if($isNumber){
+		if(isset($obj[$varName])){
+			$tempVar = $obj[$varName];
+			if(!is_numeric($tempVar)){
+				return $tempVar;
+			}else{
+				if($defaultValue !== ""){
+					return $defaultValue;
+				}else{
+					return 0;
+				}
+			}
+		}else{
+			if($defaultValue !== ""){
+				return $defaultValue;
+			}else{
+				return 0;
+			}
+		}
+	}else{
+		if(isset($obj, $varName)){
+			return $obj[$varName];
+		}else{
+			return $defaultValue;
+		}
+	}
+}
 
 function zEmailErrorAndExit($subject, $message){
 	$host=`hostname`;

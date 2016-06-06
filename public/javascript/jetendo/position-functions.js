@@ -170,9 +170,10 @@ var zScrollbarWidth=0;
 			if(typeof arrParent[this.parentNode.id] == "undefined"){
 				arrParent[this.parentNode.id]=0;
 			}
-			//var pos=zGetAbsPosition(this);
-			//var height=pos.height;  
-			var height=$(this).height();
+			var pos=zGetAbsPosition(this);
+			var height=pos.height;  
+			var height2=$(this).height();
+			height=Math.max(height,height2);
 			if(height>arrParent[this.parentNode.id]){
 				arrParent[this.parentNode.id]=height;
 			}

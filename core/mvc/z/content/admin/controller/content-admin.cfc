@@ -205,7 +205,7 @@
 			application.zcore.functions.zRedirect('/z/content/admin/content-admin/index?zsid=#request.zsid#');
 		}
 		oldURL=qCheck.content_unique_name;
-		if(application.zcore.user.checkSiteAccess() EQ false and qCheck.content_locked EQ 1){
+		if(application.zcore.user.checkServerAccess() EQ false and qCheck.content_locked EQ 1){
 			form.content_locked=qCheck.content_locked;
 		}else{
 			if(structkeyexists(form, 'content_unique_name') and qcheck.content_unique_name NEQ form.content_unique_name){
@@ -1443,7 +1443,7 @@
 		<th style="vertical-align:top; ">
 			#application.zcore.functions.zOutputHelpToolTip("Menu Title","member.content.edit content_menu_title")#</th>
 		<td style="vertical-align:top; ">
-			<input type="text" name="content_menu_title" value="#HTMLEditFormat(form.content_menu_title)#" maxlength="50" size="50" /> (Overrides title in some menus)
+			<input type="text" name="content_menu_title" value="#HTMLEditFormat(form.content_menu_title)#" maxlength="50" size="50" /><br /> (Overrides title in some menus)
 		</td>
 	</tr>
 	<tr> 
@@ -1483,7 +1483,7 @@
 	<th style="vertical-align:top; ">
 		#application.zcore.functions.zOutputHelpToolTip("Included Page IDs","member.content.edit content_include_listings")#</th>
 	<td style="vertical-align:top; ">
-		<input type="text" name="content_include_listings" value="#HTMLEditFormat(form.content_include_listings)#" size="15" /> Comma separated list of other listings
+		<input type="text" name="content_include_listings" value="#HTMLEditFormat(form.content_include_listings)#" size="15" /><br /> Comma separated list of other listings
 	</td>
 	</tr>
 	<tr>
@@ -1526,32 +1526,37 @@
 	</td>
 	</tr>
 	
-	<cfif application.zcore.user.checkSiteAccess()>
+	<cfif application.zcore.user.checkServerAccess()>
 		<tr> 
 			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Lock content?","member.content.edit content_locked")#</th>
 			<td style="vertical-align:top; ">
 				<input type="radio" name="content_locked" value="1" <cfif form.content_locked EQ 1>checked="checked"</cfif> style="border:none; background:none;" /> Yes <input type="radio" name="content_locked" value="0" <cfif form.content_locked EQ 0 or form.content_locked EQ ''>checked="checked"</cfif> style="border:none; background:none;" /> No
 			</td>
-		</tr>
+		</tr> 
+	</cfif>
+
+	<cfscript>
+	db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# 
+	WHERE site_option_group_appidlist like #db.param('%,12,%')# and 
+	site_id = #db.param(request.zos.globals.id)# and 
+	site_option_group_deleted=#db.param(0)#";
+	qGroupCheck=db.execute("qGroupCheck");
+	</cfscript>
+	<cfif qGroupCheck.recordcount>
+	
 		<tr>
-			<th style="vertical-align:top; ">#application.zcore.functions.zOutputHelpToolTip("Hide Global Text","member.content.edit content_hide_global")#</th>
-			<td style="vertical-align:top; ">
-				<input type="radio" name="content_hide_global" value="1" <cfif application.zcore.functions.zso(form, 'content_hide_global') EQ 1>checked="checked"</cfif> style="background:none; border:none;"  /> Yes <input type="radio" name="content_hide_global" value="0" <cfif application.zcore.functions.zso(form, 'content_hide_global') EQ 0 or application.zcore.functions.zso(form, 'content_hide_global') EQ ''>checked="checked"</cfif> style="background:none; border:none;"  /> No 
+			<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Custom Fields","member.content.edit content_site_option_app_id")#</th>
+			<td>
+				<cfscript>
+				ts=structnew();
+				ts.name="content_site_option_app_id";
+				ts.app_id=application.zcore.app.getAppCFC("content").app_id;
+				ts.value=form.content_site_option_app_id;
+				application.zcore.siteOptionCom.getOptionForm(ts);
+				</cfscript>
 			</td>
 		</tr>
 	</cfif>
-	<tr>
-		<th style="width:1%; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Custom Fields","member.content.edit content_site_option_app_id")#</th>
-		<td>
-			<cfscript>
-			ts=structnew();
-			ts.name="content_site_option_app_id";
-			ts.app_id=application.zcore.app.getAppCFC("content").app_id;
-			ts.value=form.content_site_option_app_id;
-			application.zcore.siteOptionCom.getOptionForm(ts);
-			</cfscript>
-		</td>
-	</tr>
 	</table>
 
 
@@ -1771,8 +1776,7 @@
 		`content_search_mls` = #db.param(0)#,
 		`content_search` = #db.param(arrTitle[i])#,
 		`content_child_sorting` = #db.param(0)#,
-		`content_mix_sold` = #db.param(0)#,
-		`content_hide_global` = #db.param(0)#,
+		`content_mix_sold` = #db.param(0)#, 
 		`content_property_enable_rates` = #db.param(0)#,
 		`content_property_enable_calendar` = #db.param(0)#,
 		`content_property_enable_reservation` = #db.param(0)#,

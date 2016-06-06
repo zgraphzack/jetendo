@@ -106,17 +106,21 @@
 	return breakStruct;
 	</cfscript>
 </cffunction>
-
-<!--- 
+ 
 <cffunction name="saveLayoutInstanceSettings" localmode="modern" access="remote" roles="member">
 	<cfscript>
 
+	form.layout_setting_instance_id=application.zcore.functions.zso(form, 'layout_setting_instance_id', true, 0);
+	form.layout_setting_instance_name=application.zcore.functions.zso(form, 'layout_setting_instance_name');
+
+
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	db=request.zos.queryObject;
-	db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
+	db.sql="select * from #db.table("layout_setting_instance", request.zos.zcoreDatasource)# WHERE 
 	site_id = #db.param(request.zos.globals.id)# and 
-	layout_global_deleted =#db.param(0)#";
-	qGlobal=db.execute("qGlobal");
+	layout_setting_instance_id=#db.param(form.layout_setting_instance_id)# and 
+	layout_setting_instance_deleted =#db.param(0)#";
+	qData=db.execute("qData");
 	breakStruct=getBreakpointConfig();
 
 	breakStructNew={
@@ -148,33 +152,37 @@
 		}
 	} 
 	ts={
-		table:"layout_global",
+		table:"layout_setting_instance",
 		datasource:request.zos.zcoreDatasource,
 		struct:{
-			layout_global_json_data:serializeJson(breakStruct),
-			layout_global_updated_datetime:request.zos.mysqlnow,
-			layout_global_deleted:0
+			layout_setting_instance_json_data:serializeJson(breakStruct),
+			layout_setting_instance_updated_datetime:request.zos.mysqlnow,
+			layout_setting_instance_deleted:0,
+			layout_setting_instance_name:form.layout_setting_instance_name
 		}
 	};
-	if(qGlobal.recordcount EQ 0){
-		form.layout_global_id=application.zcore.functions.zInsert(ts);
-		if(form.layout_global_id EQ false){
-			application.zcore.status.setStatus(request.zsid, "Failed to save settings");
-			application.zcore.functions.zRedirect("/z/admin/layout-global/index?zsid=#request.zsid#");
+	if(qData.recordcount EQ 0){
+		form.layout_setting_instance_id=application.zcore.functions.zInsert(ts);
+		if(form.layout_setting_instance_id EQ false){
+			echo('<h2>Validation Error: The Instance Name must be unique per site.</h2>
+			<p>Please go back and try a different instance name.</p>');
+			return;
 		}
 	}else{
-		ts.struct.layout_global_id=qGlobal.layout_global_id; 
+		ts.struct.layout_setting_instance_id=qData.layout_setting_instance_id; 
 		if(application.zcore.functions.zUpdate(ts) EQ false){
-			application.zcore.status.setStatus(request.zsid, "Failed to save settings");
-			application.zcore.functions.zRedirect("/z/admin/layout-global/index?zsid=#request.zsid#");
+			echo('<h2>Failed to save settings.</h2>
+			<p>Please go back and try again.</p>');
+			return;
 		}
 	}
+	breakStructNew.layout_setting_instance_id=form.layout_setting_instance_id;
 	generateGlobalBreakpointCSS(breakStructNew);
 
 	application.zcore.status.setStatus(request.zsid, "Saved");
-	application.zcore.functions.zRedirect("/z/admin/layout-global/index?zsid=#request.zsid#");
+	application.zcore.functions.zRedirect("/z/admin/layout-global/instanceList?zsid=#request.zsid#");
 	</cfscript>
-</cffunction> --->
+</cffunction>  
 
 <cffunction name="saveLayoutSettings" localmode="modern" access="remote" roles="member">
 	<cfscript>
@@ -236,6 +244,7 @@
 			application.zcore.functions.zRedirect("/z/admin/layout-global/index?zsid=#request.zsid#");
 		}
 	}
+	breakStructNew.layout_setting_instance_id=0;
 	generateGlobalBreakpointCSS(breakStructNew);
 
 	application.zcore.status.setStatus(request.zsid, "Saved");
@@ -605,88 +614,89 @@
 		 		if(g EQ 1){
 		 			multiplier=0.8;
 		 		}
+		 		multiplier=g*10;
 		 		pt=dataStruct.boxPaddingTopPercent*multiplier;
 		 		pb=dataStruct.boxPaddingBottomPercent*multiplier;
 		 		ph=dataStruct.boxPaddingSidePercent*multiplier;
 		 		mt=dataStruct.boxMarginTopPercent*multiplier;
 		 		mb=dataStruct.boxMarginBottomPercent*multiplier;
 		 		mh=dataStruct.boxMarginSidePercent*multiplier;
-		 		v='.z-p-#g*10#{ padding-left:#ph#%; padding-right:#ph#%; padding-top:#pt#%; padding-bottom:#pb#%; }';
+		 		v='.z-p-#g*10#{ padding-left:#ph#px; padding-right:#ph#px; padding-top:#pt#px; padding-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v); 
 				} 
-				v='.z-pt-#g*10#{ padding-top:#pt#%; }';
+				v='.z-pt-#g*10#{ padding-top:#pt#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pr-#g*10#{ padding-right:#ph#%; }';
+				v='.z-pr-#g*10#{ padding-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pb-#g*10#{ padding-bottom:#pb#%; }';
+				v='.z-pb-#g*10#{ padding-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pl-#g*10#{ padding-left:#ph#%; }';
+				v='.z-pl-#g*10#{ padding-left:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-pv-#g*10#{ padding-top:#pt#%; padding-bottom:#pb#%; }';
+				v='.z-pv-#g*10#{ padding-top:#pt#px; padding-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-ph-#g*10#{ padding-left:#ph#%; padding-right:#ph#%; }';
+				v='.z-ph-#g*10#{ padding-left:#ph#px; padding-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-m-#g*10#{ margin-left:#ph#%; margin-right:#ph#%; margin-top:#pt#%; margin-bottom:#pb#%; }';
+				v='.z-m-#g*10#{ margin-left:#ph#px; margin-right:#ph#px; margin-top:#pt#px; margin-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mt-#g*10#{ margin-top:#pt#%; }';
+				v='.z-mt-#g*10#{ margin-top:#pt#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mr-#g*10#{ margin-right:#ph#%; }';
+				v='.z-mr-#g*10#{ margin-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mb-#g*10#{ margin-bottom:#pb#%; }';
+				v='.z-mb-#g*10#{ margin-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-ml-#g*10#{ margin-left:#ph#%; }';
+				v='.z-ml-#g*10#{ margin-left:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mv-#g*10#{ margin-top:#pt#%; margin-bottom:#pb#%; }';
+				v='.z-mv-#g*10#{ margin-top:#pt#px; margin-bottom:#pb#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mh-#g*10#{ margin-left:#ph#%; margin-right:#ph#%; }';
+				v='.z-mh-#g*10#{ margin-left:#ph#px; margin-right:#ph#px; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mv-#g*10#-auto{ margin-top:#pt#%; margin-bottom:#pb#%; margin-left:auto; margin-right:auto; }';
+				v='.z-mv-#g*10#-auto{ margin-top:#pt#px; margin-bottom:#pb#px; margin-left:auto; margin-right:auto; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
 				} 
-				v='.z-mh-#g*10#-auto{ margin-left:#ph#%; margin-right:#ph#%; margin-top:auto; margin-bottom:auto; }';
+				v='.z-mh-#g*10#-auto{ margin-left:#ph#px; margin-right:#ph#px; margin-top:auto; margin-bottom:auto; }';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
 					arrayAppend(arrCSS2, v);
@@ -703,71 +713,148 @@
 		}  
 		echo('.z-width-fill, .z-fill-width{display:table-cell; direction:ltr; width:10000px; float:none;}');
 	}
-	application.zcore.functions.zWriteFile(request.zos.globals.privateHomeDir&"zupload/layout-global.css", out);
+	if(breakStruct.layout_setting_instance_id NEQ 0){
+		application.zcore.functions.zWriteFile(request.zos.globals.privateHomeDir&"zupload/layout-setting-instance-#breakStruct.layout_setting_instance_id#.css", out);
+	}else{
+		application.zcore.functions.zWriteFile(request.zos.globals.privateHomeDir&"zupload/layout-global.css", out);
+	}
 	</cfscript>
 
 </cffunction>
+ 
+<cffunction name="instanceList" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	sectionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.section");
+	sectionCom.nav();
+	db=request.zos.queryObject;
+	application.zcore.functions.zStatusHandler(request.zsid);
+	db.sql="select * from #db.table("layout_setting_instance", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and  
+	layout_setting_instance_deleted =#db.param(0)# ";
+	qList=db.execute("qList");
+	echo('<h2>Manage Layout Settings Instances</h2>');
+	echo('<p><a href="/z/admin/layout-global/settingsInstance?layout_setting_instance_id=">Add Settings Instance</a></p>');
 
-	<!--- 
-<cffunction name="settingsInstance" localmode="modern" access="remote" roles="member">
+	if(qList.recordcount){
+		echo('<table class="table-list">
+			<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Admin</th>
+		</tr>');
+		for(row in qList){
+			echo('<tr>');
+			echo('
+				<td>#row.layout_setting_instance_id#</td>
+				<td>#row.layout_setting_instance_name#</td>
+				<td><a href="/z/admin/layout-global/settingsInstance?layout_setting_instance_id=#row.layout_setting_instance_id#">View/Edit</a> | 
+				<a href="##" onclick="if(window.confirm(''Are you sure you want to delete this settings instance?'')){ window.location.href=''/z/admin/layout-global/deleteInstance?layout_setting_instance_id=#row.layout_setting_instance_id#''; } ">Delete</a>
+				</td>');
+			echo('</tr>');
+		}
+		echo('</table>');
+	}
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="deleteInstance" localmode="modern" access="remote" roles="member">
 	<cfscript>
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db=request.zos.queryObject;
+	form.layout_setting_instance_id=application.zcore.functions.zso(form, 'layout_setting_instance_id');
+	breakStruct={}; 
 
-breakStruct={}; 
+	application.zcore.functions.zDeleteFile(request.zos.globals.privateHomeDir&"zupload/layout-setting-instance-#form.layout_setting_instance_id#.css");
 
-breakStruct=getBreakpointConfig();
-defaultBreakstruct=duplicate(breakStruct);
-db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
-site_id = #db.param(request.zos.globals.id)# and 
-layout_global_deleted =#db.param(0)# ";
-qGlobal=db.execute("qGlobal");
-if(qGlobal.recordcount NEQ 0){
-	oldBreakStruct=deserializeJson(qGlobal.layout_global_json_data);
-	for(i in oldBreakStruct.data){
-		if(structkeyexists(breakStruct.data, i)){
-			structappend(breakStruct.data[i], oldBreakStruct.data[i], true);
+	breakStruct=getBreakpointConfig();
+	defaultBreakstruct=duplicate(breakStruct);
+	db.sql="delete from #db.table("layout_setting_instance", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	layout_setting_instance_id=#db.param(form.layout_setting_instance_id)# and 
+	layout_setting_instance_deleted =#db.param(0)# ";
+	db.execute("qDelete");
+
+	application.zcore.status.setStatus(request.zsid, "Instance deleted");
+	application.zcore.functions.zRedirect("/z/admin/layout-global/instanceList?zsid=#request.zsid#");
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="settingsInstance" localmode="modern" access="remote" roles="member">
+	<cfscript>
+	sectionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.section");
+	sectionCom.nav();
+	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
+	application.zcore.functions.zStatusHandler(request.zsid);
+	db=request.zos.queryObject;
+	form.layout_setting_instance_id=application.zcore.functions.zso(form, 'layout_setting_instance_id');
+	form.layout_setting_instance_name=application.zcore.functions.zso(form, 'layout_setting_instance_name');
+	breakStruct={}; 
+
+	breakStruct=getBreakpointConfig();
+	defaultBreakstruct=duplicate(breakStruct);
+	db.sql="select * from #db.table("layout_setting_instance", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	layout_setting_instance_id=#db.param(form.layout_setting_instance_id)# and 
+	layout_setting_instance_deleted =#db.param(0)# ";
+	qData=db.execute("qData");
+	if(qData.recordcount NEQ 0){
+		oldBreakStruct=deserializeJson(qData.layout_setting_instance_json_data);
+		for(i in oldBreakStruct.data){
+			if(structkeyexists(breakStruct.data, i)){
+				structappend(breakStruct.data[i], oldBreakStruct.data[i], true);
+			}
 		}
+		breakStruct.layout_setting_instance_name=qData.layout_setting_instance_name;
+		form.layout_setting_instance_name=qData.layout_setting_instance_name;
+		breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
+	}else{
+		breakStruct.layout_setting_instance_name="";
+		breakStruct.minimum_column_width=150;
 	}
-}
-echo('<h2 class="z-fh-30">Instance Layout Settings</h2>');
+	echo('<h2 class="z-fh-30">Instance Layout Settings</h2>');
 
-displaySettingsForm(defaultBreakstruct, breakStruct);
-</cfscript>
-</cffunction> --->
+	displaySettingsForm(defaultBreakstruct, breakStruct);
+	</cfscript>
+</cffunction>
 
 	
 <cffunction name="index" localmode="modern" access="remote" roles="member">
 	<cfscript>
+	sectionCom=createobject("component", "zcorerootmapping.mvc.z.admin.controller.section");
+	sectionCom.nav();
 	application.zcore.adminSecurityFilter.requireFeatureAccess("Layouts");	
 	echo('<div style="width:100%; float:left; padding-left:5px; padding-right:5px;">');
 	application.zcore.functions.zStatusHandler(request.zsid);
 	db=request.zos.queryObject;
 
-breakStruct={}; 
+	breakStruct={}; 
 
-breakStruct=getBreakpointConfig();
-defaultBreakStruct=duplicate(breakStruct);
-db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
-site_id = #db.param(request.zos.globals.id)# and 
-layout_global_deleted =#db.param(0)# ";
-qGlobal=db.execute("qGlobal");
-if(qGlobal.recordcount NEQ 0){
-	oldBreakStruct=deserializeJson(qGlobal.layout_global_json_data);
-	for(i in oldBreakStruct.data){
-		if(structkeyexists(breakStruct.data, i)){
-			structappend(breakStruct.data[i], oldBreakStruct.data[i], true);
+	breakStruct=getBreakpointConfig();
+	defaultBreakStruct=duplicate(breakStruct);
+	db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	layout_global_deleted =#db.param(0)# ";
+	qGlobal=db.execute("qGlobal");
+	if(qGlobal.recordcount NEQ 0){
+		oldBreakStruct=deserializeJson(qGlobal.layout_global_json_data);
+		for(i in oldBreakStruct.data){
+			if(structkeyexists(breakStruct.data, i)){
+				structappend(breakStruct.data[i], oldBreakStruct.data[i], true);
+			}
 		}
+		breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
 	}
-	breakStruct.minimum_column_width=application.zcore.functions.zso(oldBreakStruct, 'minimum_column_width', true, 150);
-}
-echo('<h2 class="z-fh-30">Global Layout Settings</h2>');
-echo('<p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p>');
-echo('<p>Values with a <span class="settingChanged" style="padding:5px;">pink background</span> don''t match the default value.  You can hover your mouse over that field to see a tooltip that has the default value listed.</p>');
-echo('</div>');
-displaySettingsForm(defaultBreakStruct, breakStruct);
-</cfscript>
+	echo('<p><a href="/z/admin/layout-global/instanceList">Manage Settings Instances</a></p>');
+
+	echo('<h2 class="z-fh-30">Global Layout Settings</h2>');
+	echo('<p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p>');
+	echo('<p>Values with a <span class="settingChanged" style="padding:5px;">pink background</span> don''t match the default value.  You can hover your mouse over that field to see a tooltip that has the default value listed.</p>');
+	echo('</div>');
+	displaySettingsForm(defaultBreakStruct, breakStruct);
+	</cfscript>
 </cffunction>
 
 <cffunction name="displaySettingsForm" localmode="modern" access="public">
@@ -811,8 +898,12 @@ echo('
 	.settingChanged{background-color:##FCC;}
 	</style> 
 	<div style="width:100%; overflow:auto; font-size:14px !important; float:left; padding-left:5px; padding-right:5px;">
-	<form action="#action#" method="post">
-	<table class="table-list">
+	<form action="#action#" method="post">');
+if(form.method EQ "settingsInstance"){
+	echo('<p>Instance Name: <input type="text" name="layout_setting_instance_name" value="#htmleditformat(form.layout_setting_instance_name)#" /></p>');
+	echo('<input type="hidden" name="layout_setting_instance_id" value="#form.layout_setting_instance_id#">');
+}
+	echo('<table class="table-list">
 	<tr>
 	<th>&nbsp;</th>');
 for(n=1;n<=arraylen(breakStruct.arrBreak);n++){
@@ -863,22 +954,34 @@ echo('<tr>
 	Enable z-breakpoint: Checkbox
 	</td>
 	</tr>');
+
+link='/z/admin/layout-global/saveLayoutSettings?setToDefault=1';
+if(form.method EQ "settingsInstance"){
+	link='/z/admin/layout-global/saveLayoutInstanceSettings?layout_setting_instance_name=#urlencodedformat(form.layout_setting_instance_name)#&layout_setting_instance_id=#form.layout_setting_instance_id#&setToDefault=1';
+}
+
 echo('<tr>
 	<th>&nbsp;</th>
 	<td colspan="#structcount(defaultBreakPoint)#">
 	<input type="submit" name="save1" value="Save"> 
-	<input type="button" name="save2" value="Restore Defaults" onclick="if(window.confirm(''Are you sure you want to restore defaults? You should make a backup of the current settings in case they are important.'')){ window.location.href=''/z/admin/layout-global/saveLayoutSettings?setToDefault=1''; } "> 
-	</td>');
+	<input type="button" name="save2" value="Restore Defaults" onclick="if(window.confirm(''Are you sure you want to restore defaults? You should make a backup of the current settings in case they are important.'')){ window.location.href=''#link#''; } "> ');
+
+if(form.method EQ "settingsInstance"){
+	echo('<input type="button" name="cancel1" value="Cancel" onclick="window.location.href=''/z/admin/layout-global/instanceList'';">'); 
+}
+	echo('</td>');
 echo('</table>
 	</form>
-	</div>');  
-	showExample();
-	</cfscript>
-</cffunction>
-	
+	</div>');   
 
-<cffunction name="showExample" localmode="modern" access="remote" roles="member"> 
-	<iframe id="cssExampleIframe" src="/z/misc/grid-example/index" width="100%" height="300"></iframe> 
+	form.layout_setting_instance_id=application.zcore.functions.zso(form, 'layout_setting_instance_id', true, 0);
+	if(form.layout_setting_instance_id NEQ 0){
+		echo('<div style="width:100%; float:left; padding-top:20px;"><h2>Embed Instance Stylesheet</h2>');
+		echo('<p>Use this stylesheet URL in your application to activate this instance on specific pages.</p>');
+		echo('<textarea name="c1" cols="100" rows="2" style="width:95%;">#request.zos.globals.domain#/zupload/layout-setting-instance-#form.layout_setting_instance_id#.css</textarea></div>');
+	}
+	</cfscript> 
+	<iframe id="cssExampleIframe" src="/z/misc/grid-example/index?layout_setting_instance_id=#form.layout_setting_instance_id#" width="100%" height="300"></iframe> 
 	<script type="text/javascript">
 	function resizeExampleIframe(){
 		$("##cssExampleIframe").height(zWindowSize.height-30);

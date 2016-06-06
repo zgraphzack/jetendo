@@ -114,7 +114,7 @@
 	if(form.inquiries_spam EQ 0){
 		ts=structnew();
 		ts.inquiries_id=form.inquiries_id;
-		ts.subject="Pop-up lead capture form submitted on #request.zos.globals.shortdomain#";
+		ts.subject="Pop-up lead capture form submitted on #request.zos.currentHostName#";
 		// send the lead
 		rs=application.zcore.functions.zAssignAndEmailLead(ts);
 		if(rs.success EQ false){

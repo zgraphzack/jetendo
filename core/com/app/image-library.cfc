@@ -1845,12 +1845,12 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<cfscript>application.zcore.template.appendTag("stylesheets",'<style type="text/css">
 	/* <![CDATA[ */
 	##sortable { list-style-type: none; margin: 0; padding: 0; }
-	##sortable li, .sortableli { margin-right:10px; margin-bottom:10px; padding: 5px; height:158px; float: left; }
+	##sortable li, .sortableli { margin-right:10px; margin-bottom:10px; padding: 5px; height:168px; float: left; }
 	##sortable .captionbar{padding-top:8px; text-align:left;}
-	##sortable .captionClass{width:135px; height:14px;padding:3px; font-size:10px; float:left; }
+	##sortable .captionClass{width:141px; height:20px;padding:3px; font-size:10px; float:left; }
 	##sortable .imagedivclass{margin-top:-25px; width:200px; height:128px; text-align:center; z-index:2;}
 	##sortable .ui-state-default{cursor:move;}
-	##sortable .imageclosebutton{ text-align:center; position:relative; cursor:pointer; top:0px; left:175px; z-index:3; height:15px; width:15px; padding:5px; background-color:##000; color:##FFF;}
+	##sortable .imageclosebutton{ text-align:center; position:relative; cursor:pointer; top:0px; left:175px; z-index:3; height:25px; width:25px; padding:5px; background-color:##000; color:##FFF;}
 	##sortable .imagecaptionupdate{display:none; cursor:pointer;float:left;border:1px solid ##CCC; font-size:10px; margin-left:5px; font-weight:bold; padding:3px; line-height:14px;}
 	/* ]]> */
 	</style>');</cfscript>
@@ -1874,7 +1874,7 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	<tr><td style="vertical-align:top; width:1%; white-space:nowrap;">
 	<form id="form1" action="#request.cgi_script_name#?method=imageform&amp;image_library_id=#form.image_library_id#" enctype="multipart/form-data" method="post">
 		<div id="htmlFileUpload" style="padding-right:10px;"> 
-		<input type="file" name="imagefiles" id="imagefiles" <cfif server[request.zos.cfmlServerKey].version EQ request.zos.customCFMLVersion> multiple="multiple" </cfif> /><br /><br />
+		<input type="file" name="imagefiles" id="imagefiles" multiple="multiple" /><br /><br />
 		<div id="submitDiv1">
 		<input type="submit" name="submit222" value="Upload" onclick="$('##submitDiv1').hide();$('##waitDiv1').show();" />
 		</div>

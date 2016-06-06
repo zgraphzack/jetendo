@@ -1189,17 +1189,6 @@
 				<th>Default Value:</th>
 				<td><textarea cols="40" rows="5" name="site_option_default_value">#htmleditformat(form.site_option_default_value)#</textarea></td>
 			</tr>
-			<tr>
-				<th>Tooltip Help Box:</th>
-				<td><cfscript>
-				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
-				htmlEditor.instanceName	= "site_option_tooltip";
-				htmlEditor.value			= form.site_option_tooltip;
-				htmlEditor.width			= "100%";
-				htmlEditor.height		= 200;
-				htmlEditor.create();
-				</cfscript></td>
-			</tr>
 			<cfscript>
 			if(form.site_id EQ 0){
 				siteglobal=1;
@@ -1244,6 +1233,10 @@
 				<th>Required:</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_required")#</td>
 			</tr>
+				<tr>
+					<th style="vertical-align:top; white-space:nowrap;">Allow Public?</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
+				</tr>
 			<!--- <cfif form.site_option_group_id NEQ '' and form.site_option_group_id NEQ 0> --->
 				<cfif qOptionGroup.site_option_group_enable_unique_url EQ 1>
 					<tr>
@@ -1260,6 +1253,19 @@
 					</tr>
 				</cfif>
 				<tr>
+					<th>Sort (admin):</th>
+					<td>
+						<cfif qOptionGroup.site_option_group_enable_sorting EQ 1>
+						
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" value="0" type="hidden"> Can't be used when group sorting is enabled.
+						<cfelse>
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Ascending
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field2" style="border:none; background:none;" type="radio" value="2" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 2>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Descending
+							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 0>checked="checked"</cfif> /> Disabled
+					</cfif>
+				</td>
+				</tr>
+				<tr>
 					<th>Read-only:</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_readonly")#</td>
 				</tr>
@@ -1275,24 +1281,13 @@
 					<input name="site_option_admin_searchable" id="site_option_admin_searchable1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_searchable', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;" /> Yes
 					<input name="site_option_admin_searchable" id="site_option_admin_searchable0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_searchable', true, 0) EQ 0>checked="checked"</cfif> /> No</td>
 				</tr>
-				<tr>
-					<th>Sort (admin):</th>
-					<td>
-						<cfif qOptionGroup.site_option_group_enable_sorting EQ 1>
-						
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" value="0" type="hidden"> Can't be used when group sorting is enabled.
-						<cfelse>
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field1" style="border:none; background:none;" type="radio" value="1" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 1>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Ascending
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field2" style="border:none; background:none;" type="radio" value="2" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 2>checked="checked"</cfif>  onclick="document.getElementById('site_option_primary_field1').checked=true;"  />  Descending
-							<input name="site_option_admin_sort_field" id="site_option_admin_sort_field0" style="border:none; background:none;" type="radio" value="0" <cfif application.zcore.functions.zso(form, 'site_option_admin_sort_field', true, 0) EQ 0>checked="checked"</cfif> /> Disabled
-					</cfif>
-				</td>
-				</tr>
 				
-				<tr>
+				<!---
+				not in use anywhere:
+				 <tr>
 					<th>Search Default (admin):</th>
 					<td><input type="text" name="site_option_admin_search_default" value="#htmleditformat(form.site_option_admin_search_default)#" /></td>
-				</tr>
+				</tr> 
 				<tr>
 					<th>Validator CFC:</th>
 					<td><cfscript>
@@ -1300,7 +1295,8 @@
 					ts.name="site_option_validator_cfc";
 					ts.size=50;
 					application.zcore.functions.zInput_Text(ts);
-					</cfscript> (Must begin with zcorerootmapping or request.zRootCFCPath)</td>
+					</cfscript><br />
+					(Must begin with zcorerootmapping or request.zRootCFCPath)</td>
 				</tr>
 				<tr>
 					<th>Validator CFC Method:</th>
@@ -1310,12 +1306,11 @@
 					ts.size=50;
 					application.zcore.functions.zInput_Text(ts);
 					</cfscript></td>
-				</tr>
+				</tr>--->
 			<!--- </cfif> --->
-			<tr>
-				<th style="vertical-align:top; white-space:nowrap;">Allow Public?</th>
-				<td>#application.zcore.functions.zInput_Boolean("site_option_allow_public")#</td>
-			</tr>
+
+			<!--- 
+			TODO: site_option_user_group_id_list | this feature is not fully implemented yet
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Enable Data Entry<br />For User Groups","member.site-option-group.edit site_option_user_group_id_list")#</th>
 				<td>
@@ -1336,7 +1331,7 @@
 				application.zcore.functions.zSetupMultipleSelect(ts.name, application.zcore.functions.zso(form, 'site_option_user_group_id_list'));
 				application.zcore.functions.zInputSelectBox(ts);
 				</cfscript></td>
-			</tr>
+			</tr> --->
 			<tr>
 				<th>#application.zcore.functions.zOutputHelpToolTip("Force Small Label Width","member.site-option-group.edit site_option_small_width")#</th>
 				<td>#application.zcore.functions.zInput_Boolean("site_option_small_width")# (With yes selected, public forms will force the label column to be as small as possible.)</td>
@@ -1347,7 +1342,7 @@
 			</tr>
 			<tr>
 				<th>Add Line Breaks:</th>
-				<td>#application.zcore.functions.zInput_Boolean("site_option_line_breaks")#</td>
+				<td>#application.zcore.functions.zInput_Boolean("site_option_line_breaks")# (Useful for textarea field type to force newlines to &lt;br&gt;)</td>
 			</tr>
 			<cfif variables.allowGlobal>
 				<tr>
@@ -1366,9 +1361,24 @@
 					<td>#application.zcore.functions.zInput_Boolean("siteglobal")#</td>
 				</tr>
 			</cfif>
+
+			<cfif form.site_option_group_id EQ "" or form.site_option_group_id EQ 0>
+	
+				<tr>
+					<th>Edit Enabled:</th>
+					<td>#application.zcore.functions.zInput_Boolean("site_option_edit_enabled")# (Make sure you select no for options that are not visible.)</td>
+				</tr>
+			</cfif>
 			<tr>
-				<th>Edit Enabled:</th>
-				<td>#application.zcore.functions.zInput_Boolean("site_option_edit_enabled")# (Make sure you select no for options that are not visible.)</td>
+				<th>Tooltip Help Box:</th>
+				<td><cfscript>
+				htmlEditor = application.zcore.functions.zcreateobject("component", "/zcorerootmapping/com/app/html-editor");
+				htmlEditor.instanceName	= "site_option_tooltip";
+				htmlEditor.value			= form.site_option_tooltip;
+				htmlEditor.width			= "100%";
+				htmlEditor.height		= 100;
+				htmlEditor.create();
+				</cfscript></td>
 			</tr>
 			<tr>
 				<th>&nbsp;</th>
@@ -2846,7 +2856,7 @@ Define this function in another CFC to override the default email format
 		}else{
 			tempTitle=qGroup.site_option_group_public_form_title;
 		}
-		ts.subject="#tempTitle# form submitted on #request.zos.globals.shortdomain#";
+		ts.subject="#tempTitle# form submitted on #request.zos.currentHostName#";
 		// send the lead
 
 		if(structkeyexists(request.zos, 'debugleadrouting')){
@@ -3806,6 +3816,54 @@ Define this function in another CFC to override the default email format
 			db.sql&=" LIMIT #db.param((form.zIndex-1)*qGroup.site_option_group_admin_paging_limit)#, #db.param(qGroup.site_option_group_admin_paging_limit)# ";
 		}
 		qS=db.execute("qS");
+		db.sql="SELECT site_option_group.*,  site_x_option_group_set.*";
+		for(i=1;i LTE arraylen(arrVal);i++){
+			db.sql&=" , s#i#.site_x_option_group_value sVal#i# ";
+		}
+		db.sql&=" FROM (#db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group, 
+		#db.table("site_x_option_group_set", request.zos.zcoreDatasource)# site_x_option_group_set) ";
+		for(i=1;i LTE arraylen(arrVal);i++){
+			db.sql&="LEFT JOIN #db.table("site_x_option_group", request.zos.zcoreDatasource)# s#i# on 
+			s#i#.site_x_option_group_set_id = site_x_option_group_set.site_x_option_group_set_id and 
+			s#i#.site_option_id = #db.param(arrVal[i])# and 
+			s#i#.site_option_group_id = site_option_group.site_option_group_id and 
+			s#i#.site_id = site_option_group.site_id and 
+			s#i#.site_option_app_id = #db.param(form.site_option_app_id)# and 
+			s#i#.site_x_option_group_deleted = #db.param(0)# ";
+		}
+		db.sql&="
+		WHERE  
+		site_option_group_deleted = #db.param(0)# and
+		site_x_option_group_set_master_set_id = #db.param(0)# and 
+		site_x_option_group_set_deleted = #db.param(0)# and 
+		site_x_option_group_set.site_option_app_id = #db.param(form.site_option_app_id)# and 
+		site_option_group.site_id=site_x_option_group_set.site_id and 
+		site_option_group.site_option_group_id=site_x_option_group_set.site_option_group_id ";
+		if(arraylen(arrSearchSQL)){
+			db.sql&=(" and "&arrayToList(arrSearchSQL, ' and '));
+		}
+		if(status NEQ ""){
+			db.sql&=" and site_x_option_group_set_approved = #db.param(status)# ";
+		}
+		if(methodBackup EQ "userManageGroup" and request.isUserPrimaryGroup){
+			db.sql&=" and site_x_option_group_set_user = #db.param(currentUserIdValue)# ";
+		}
+		if(form.site_x_option_group_set_parent_id NEQ 0){
+			db.sql&=" and site_x_option_group_set.site_x_option_group_set_parent_id = #db.param(form.site_x_option_group_set_parent_id)#";
+		} 
+		db.sql&=" and site_option_group.site_id =#db.param(request.zos.globals.id)# and 
+		site_option_group.site_option_group_id = #db.param(form.site_option_group_id)# and 
+		site_option_group.site_option_group_type=#db.param('1')# ";
+		//GROUP BY site_x_option_group_set.site_x_option_group_set_id
+		if(arraylen(arrSortSQL)){
+			db.sql&= "ORDER BY "&arraytolist(arrSortSQL, ", ");
+		}else{
+			db.sql&=" ORDER BY site_x_option_group_set_sort asc ";
+		}
+		if(qGroup.site_option_group_admin_paging_limit NEQ 0){
+			db.sql&=" LIMIT #db.param((form.zIndex-1)*qGroup.site_option_group_admin_paging_limit)#, #db.param(qGroup.site_option_group_admin_paging_limit)# ";
+		}
+		qSCount=db.execute("qSCount");
 		//writedump(qS);abort;
 		// sort and indent 
 		if(parentIndex NEQ 0){
@@ -3941,9 +3999,9 @@ Define this function in another CFC to override the default email format
 							writeoutput('<select name="editGroupSelect#currentRowIndex#" id="editGroupSelect#currentRowIndex#" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(arguments.struct.listURL, "site_option_group_id")#=''+d;}">
 							<option value="">-- Edit Sub-group --</option>'); 
 							for(var n in q1){
-								if(structkeyexists(subgroupStruct, q1.site_option_group_id)){
+								if(structkeyexists(subgroupStruct, n.site_option_group_id)){
 									writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#row.site_x_option_group_set_id#">
-									#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+									#htmleditformat(application.zcore.functions.zFirstLetterCaps(n.site_option_group_display_name))#</option>');// (#n.childCount#)
 								}
 							}
 							writeoutput('</select>
@@ -3964,7 +4022,7 @@ Define this function in another CFC to override the default email format
 							}
 						}
 						if(methodBackup NEQ "userManageGroup" and methodBackup NEQ "userGetRowHTML"){
-							if(qGroup.site_option_group_limit EQ 0 or qS.recordcount LT qGroup.site_option_group_limit){
+							if(qGroup.site_option_group_limit EQ 0 or qSCount.recordcount LT qGroup.site_option_group_limit){
 								if(qGroup.site_option_group_enable_versioning EQ 1 and row.site_x_option_group_set_parent_id EQ 0){
 									echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.copyURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Copy</a> | '); 
 									echo('<a href="#application.zcore.functions.zURLAppend(arguments.struct.versionURL, "site_x_option_group_set_id=#row.site_x_option_group_set_id#")#">Versions</a> | ');
@@ -4364,6 +4422,54 @@ Define this function in another CFC to override the default email format
 		 | <a href="/z/admin/site-option-group/help?site_option_group_id=#form.site_option_group_id#" target="_blank">View help in new window.</a>
 	</cfif>
 	</p>
+
+	<cfif methodBackup EQ "editGroup"> 
+		<cfscript> 
+		db.sql="select * 
+		from #db.table("site_option_group", request.zos.zcoreDatasource)# site_option_group 
+		 WHERE 
+		site_option_group_deleted = #db.param(0)# and
+		site_option_group.site_option_group_parent_id = #db.param(form.site_option_group_id)# and 
+		site_option_group.site_id = #db.param(request.zos.globals.id)#";
+		q1=db.execute("q1");
+		sortEnabled=true;
+		subgroupRecurseEnabled=false;
+		subgroupStruct={}; 
+		for(n in q1){
+			subgroupStruct[n.site_option_group_id]=n;
+		}
+		 
+
+		if(q1.recordcount NEQ 0){
+			echo('<h2>Edit Sub-groups</h2>');
+			echo('<p>This record has additional records attached to it. Click the following link(s) to view/edit them.</p>');
+			echo('<ul>');
+			for(var n in q1){
+				if(structkeyexists(subgroupStruct, n.site_option_group_id)){
+					echo('<li><a href="#application.zcore.functions.zURLAppend(defaultStruct.listURL, "site_option_group_id=#n.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_id#")#">#subgroupStruct[n.site_option_group_id].site_option_group_display_name#</a></li>');
+				}
+			}
+			echo('</ul>');
+
+			echo('<h2>or Edit Current Record Below</h2>');
+			/*
+			writeoutput('<select name="editGroupSelect" id="editGroupSelect" size="1" onchange="if(this.selectedIndex!=0){ var d=this.options[this.selectedIndex].value; this.selectedIndex=0;window.location.href=''#application.zcore.functions.zURLAppend(defaultStruct.listURL, "site_option_group_id")#=''+d;}">
+			<option value="">-- Edit Sub-group --</option>'); 
+			for(var n in q1){
+				if(structkeyexists(subgroupStruct, q1.site_option_group_id)){
+					writeoutput('<option value="#q1.site_option_group_id#&amp;site_x_option_group_set_parent_id=#form.site_x_option_group_set_id#">
+					#htmleditformat(application.zcore.functions.zFirstLetterCaps(q1.site_option_group_display_name))#</option>');// (#q1.childCount#)
+				}
+			}
+			writeoutput('</select>
+			| ');
+			*/
+		}
+		</cfscript>
+	</cfif>
+
+
+
 	<cfscript>
 	echo('<form id="siteOptionGroupForm#qCheck.site_option_group_id#" action="');
 	if(methodBackup EQ "publicAddGroup" or methodBackup EQ "publicEditGroup"){

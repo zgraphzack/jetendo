@@ -2475,10 +2475,7 @@ configCom.includeContentByName(ts);
 		}
 		if(ts994824713.content_hide_modal EQ 1){
 			application.zcore.functions.zModalCancel();	
-		}
-		if(ts994824713.content_hide_global EQ 1){
-			request.hideGlobalText=true;
-		}
+		} 
 		if(trim(ts994824713.content_engine_name) NEQ ''){
 			request.engineName=ts994824713.content_engine_name;
 		}

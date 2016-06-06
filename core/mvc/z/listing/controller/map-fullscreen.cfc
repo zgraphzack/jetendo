@@ -9,7 +9,9 @@ application.zcore.functions.zFullScreenMobileApp();
 /*
 
 */
-
+if(not application.zcore.app.siteHasApp("listing")){
+	application.zcore.functions.z404("Listing application is not enabled for this site.");
+}
 propertyHTML="";
 propertyDataCom = application.zcore.functions.zcreateobject("component", "zcorerootmapping.mvc.z.listing.controller.propertyData");
 ts = StructNew();

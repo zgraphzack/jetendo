@@ -2975,8 +2975,8 @@ zCreateMemoryTable(ts);
 
 
 <cffunction name="updateUserSavedListings" localmode="modern" output="no" returntype="any">
-<cfscript>
-	var db=request.zos.queryObject;
+	<cfscript>
+	db=request.zos.queryObject;
 	if(isDefined('request.zsession.user.id')){
 		if((isDefined('request.zsession.listing.savedListingStruct') EQ false and structcount(request.zsession.listing.savedListingStruct) EQ 0)){
 			db.sql="DELETE FROM #db.table("saved_listing", request.zos.zcoreDatasource)#  
@@ -2985,19 +2985,40 @@ zCreateMemoryTable(ts);
 			user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
 			db.execute("q"); 
 		}else{
-			 db.sql="REPLACE INTO #db.table("saved_listing", request.zos.zcoreDatasource)#  
-			 SET saved_listing_count=#db.param(structcount(request.zsession.listing.savedListingStruct))#,
-			  saved_listing_idlist=#db.param(structkeylist(request.zsession.listing.savedListingStruct))#,  
-			  saved_listing_datetime=#db.param(request.zos.mysqlnow)#,  
-			  site_id=#db.param(request.zos.globals.id)#, 
-			  user_id=#db.param(request.zsession.user.id)#, 
-			  saved_listing_deleted=#db.param(0)#,
-			  saved_listing_updated_datetime=#db.param(request.zos.mysqlnow)#,
+			db.sql="SELECT saved_listing_id FROM #db.table("saved_listing", request.zos.zcoreDatasource)#  
+			 WHERE 
+			  site_id=#db.param(request.zos.globals.id)# and 
+			  user_id=#db.param(request.zsession.user.id)# and 
+			  saved_listing_deleted=#db.param(0)# and 
 			  user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
-			 db.execute("q");
+			qId=db.execute("qId");
+			if(qId.recordcount NEQ 0){
+			 	db.sql="UPDATE #db.table("saved_listing", request.zos.zcoreDatasource)#  
+				SET 
+				saved_listing_count=#db.param(structcount(request.zsession.listing.savedListingStruct))#,
+				saved_listing_idlist=#db.param(structkeylist(request.zsession.listing.savedListingStruct))#,  
+				saved_listing_datetime=#db.param(request.zos.mysqlnow)#,  
+				saved_listing_updated_datetime=#db.param(request.zos.mysqlnow)#
+				WHERE 
+				site_id=#db.param(request.zos.globals.id)# and 
+				saved_listing_id=#db.param(qId.saved_listing_id)# and  
+				saved_listing_deleted=#db.param(0)# ";
+				db.execute("qUpdate");
+			}else{
+				db.sql="INSERT INTO #db.table("saved_listing", request.zos.zcoreDatasource)#  
+				SET saved_listing_count=#db.param(structcount(request.zsession.listing.savedListingStruct))#,
+				saved_listing_idlist=#db.param(structkeylist(request.zsession.listing.savedListingStruct))#,  
+				saved_listing_datetime=#db.param(request.zos.mysqlnow)#,  
+				site_id=#db.param(request.zos.globals.id)#, 
+				user_id=#db.param(request.zsession.user.id)#, 
+				saved_listing_deleted=#db.param(0)#,
+				saved_listing_updated_datetime=#db.param(request.zos.mysqlnow)#,
+				user_id_siteIDType=#db.param(application.zcore.user.getSiteIdTypeFromLoggedOnUser())#";
+				db.execute("qInsert");
+			}
 		}
 	}
-</cfscript>
+	</cfscript>
 </cffunction>
 
 
