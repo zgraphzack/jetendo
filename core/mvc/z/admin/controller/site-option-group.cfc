@@ -2200,7 +2200,7 @@ displayGroupCom.ajaxInsert();
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Home Page?</th>
 					<td> 
-					#application.zcore.functions.zInput_Boolean("site_option_group_is_home_page")# | Yes, will force the URL to be "/".
+					#application.zcore.functions.zInput_Boolean("site_option_group_is_home_page")# | Yes, will force the URL to be "/".   Note: you may have trouble getting this to work with root.index, you can move index.cfc to mvc/controller/index.cfc to fix the problem.  The routing system gives higher precedence to root.index, so you have to remove it.
 					</td>
 				</tr>
 				<tr>
