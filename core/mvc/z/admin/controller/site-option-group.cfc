@@ -2370,20 +2370,26 @@ displayGroupCom.ajaxInsert();
 			}
 			if(firstLoad11){
 				firstLoad11=false;
-				$(d1).bind("change",function(){ doParentCheck(); });
-				$(d0).bind("change",function(){ doParentCheck(); });
+				if(d1 != null){
+					$(d1).bind("change",function(){ doParentCheck(); });
+					$(d0).bind("change",function(){ doParentCheck(); });
+				}
+				
 			}
 			var a=document.getElementById("site_option_group_parent_id");
 			if(a.selectedIndex != 0){
 				groupMenuNameField.value='';
 				groupMenuName.style.display="none";
 				groupMenuName2.style.display="block";
-				if(arrD[a.selectedIndex-1] == 0){
-					d1.checked=true;
-					d0.checked=false;	
-				}else{
-					d1.checked=false;
-					d0.checked=true;	
+
+				if(d1 != null){
+					if(arrD[a.selectedIndex-1] == 0){
+						d1.checked=true;
+						d0.checked=false;	
+					}else{
+						d1.checked=false;
+						d0.checked=true;	
+					}
 				}
 			}else{
 				groupMenuName.style.display="block";
