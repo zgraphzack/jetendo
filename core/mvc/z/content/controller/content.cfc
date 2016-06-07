@@ -3225,7 +3225,7 @@ configCom.includeContentByName(ts);
 
 				// need to disable child links somehow, using 
 				disableChildLinks=false;
-				if(qContent.content_child_disable_links EQ 1){
+				if(arguments.qContent.content_child_disable_links EQ 1){
 					disableChildLinks=true;
 				}
 				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks);
