@@ -152,7 +152,7 @@
 			<td><cfif isDefined('request.zsession.user.id')>Logged in as #request.zsession.user.email#<br />
 			Want to use a different account? <a href="#request.cgi_script_name#?zlogout=1&searchId=#urlencodedformat(form.searchid)#">Click Here to Logout</a>
 			<input type="hidden" name="saved_search_email" value="#request.zsession.user.email#" />
-			<cfelse><input type="text" name="saved_search_email" style="width:400px;" value="<cfif isDefined('request.zsession.saved_search_email')>#request.zsession.saved_search_email#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" /></cfif> </td>
+			<cfelse><input type="text" name="saved_search_email" style="width:400px;" value="<cfif isDefined('request.zsession.saved_search_email')>#request.zsession.saved_search_email#<cfelseif not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" /></cfif> </td>
 			</tr>
 			<tr>
 			<td>Format:</td>

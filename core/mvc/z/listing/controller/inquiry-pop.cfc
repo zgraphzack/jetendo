@@ -308,7 +308,7 @@
 	<td> Name: 
 	</td>
 	<td>
-	<input name="name" type="text" class="formtxt" id="name" value="<cfif application.zcore.functions.zso(form, 'name') NEQ "">#form.name#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')# #application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#</cfif>" />
+	<input name="name" type="text" class="formtxt" id="name" value="<cfif application.zcore.functions.zso(form, 'name') NEQ "">#form.name#<cfelseif not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')# #application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#</cfif>" />
 	</td>
 	<td style="vertical-align:top;" colspan="2" rowspan="3">Additional Features/Comments:
 	<label for="comments"></label>
@@ -319,7 +319,7 @@
 	<td> Phone: 
 	</td>
 	<td>
-	<input name="Phone" id="Phone" type="text" class="formtxt" value="<cfif application.zcore.functions.zso(form, 'phone') NEQ "">#form.phone#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#</cfif>" />
+	<input name="Phone" id="Phone" type="text" class="formtxt" value="<cfif application.zcore.functions.zso(form, 'phone') NEQ "">#form.phone#<cfelseif not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#</cfif>" />
 	</td>
 	</tr>
 	<tr>
@@ -327,7 +327,7 @@
 	
 	</td>
 	<td>
-	<input name="Email" type="text" class="formtxt" id="Email" value="<cfif application.zcore.functions.zso(form, 'email') NEQ "">#form.email#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" />
+	<input name="Email" type="text" class="formtxt" id="Email" value="<cfif application.zcore.functions.zso(form, 'email') NEQ "">#form.email#<cfelseif not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" />
 	</td>
 	</tr>
 	<tr><td colspan="4"><input type="submit" style="font-size:14px; padding:5px; line-height:14px;" name="search1" value="Submit" /> 
