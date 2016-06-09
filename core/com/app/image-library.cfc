@@ -1886,10 +1886,8 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	Please note any files inside the zip that are not jpg, gif or png will be ignored.<br />
 	Type in image captions below. Drag the images to put them in your preferred sorting order.<br />
 	Changes are saved instantly. Click "Close Image Uploader" when done.</p>
-	<h2><a href="##" onclick="window.parent.zCloseModal(); return false;">Close Image Uploader</a></h2>
-	<cfif request.zos.istestserver>
-		<p><a href="/z/_com/app/image-library?method=downloadOriginalImages&amp;image_library_id=#form.image_library_id#" target="_blank">Download Original Images</a></p>
-	</cfif>
+	<h2><a href="##" onclick="window.parent.zCloseModal(); return false;">Close Image Uploader</a></h2> 
+	<p><a href="/z/_com/app/image-library?method=downloadOriginalImages&amp;image_library_id=#form.image_library_id#" target="_blank">Download Original Images</a></p> 
 	</td></tr>
 	</table>
 	
