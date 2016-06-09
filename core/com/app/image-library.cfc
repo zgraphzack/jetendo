@@ -1885,8 +1885,11 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	You may also upload a compressed zip file with these image formats inside.<br />
 	Please note any files inside the zip that are not jpg, gif or png will be ignored.<br />
 	Type in image captions below. Drag the images to put them in your preferred sorting order.<br />
-	Changes are saved instantly. Click "Close Image Manager" when done.</p>
-	<h2><a href="##" onclick="window.parent.zCloseModal(); return false;">Close Image Manager</a></h2>
+	Changes are saved instantly. Click "Close Image Uploader" when done.</p>
+	<h2><a href="##" onclick="window.parent.zCloseModal(); return false;">Close Image Uploader</a></h2>
+	<cfif request.zos.istestserver>
+		<p><a href="/z/_com/app/image-library?method=downloadOriginalImages&amp;image_library_id=#form.image_library_id#" target="_blank">Download Original Images</a></p>
+	</cfif>
 	</td></tr>
 	</table>
 	
@@ -1905,6 +1908,64 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	}
 	/* ]]> */
 	</script>
+</cffunction>
+
+
+<!--- /z/_com/app/image-library?method=downloadOriginalImages --->
+<cffunction name="downloadOriginalImages" localmode="modern" access="remote" returntype="any" output="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var local=structnew();
+	var qImages=0;
+	var r=0;
+	var theMeta=0;
+	setting requesttimeout="3600";  
+	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
+	tempId=form.image_library_id;
+
+	var qLibrary=this.getLibraryById(form.image_library_id); 
+	form.image_library_id=qLibrary.image_library_id; 
+	
+	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
+		application.zcore.functions.z404("No access to image_library_id");	
+	}  
+	db.sql="SELECT * FROM #db.table("image", request.zos.zcoreDatasource)# image 
+	WHERE image_library_id = #db.param(form.image_library_id)# and 
+	image_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# 
+	ORDER BY image_sort, image_caption, image_id";
+	qImages=db.execute("qImages"); 
+	if(qImages.recordcount EQ 0){
+		echo('<h2>There are no images in this library yet.</h2>');
+
+	} 
+	arrFile=[];
+	for(row in qImages){ 
+		p=request.zos.globals.privateHomedir&"zupload/library/#row.image_library_id#/#row.image_file#";
+		if(fileexists(p)){
+			arrayAppend(arrFile, p); 
+		}
+
+	} 
+	if(arraylen(arrFile) EQ 0){
+		echo('<h2>The images for this library are missing.</h2>');
+
+	} 
+
+	tempZipPath=request.zos.globals.privateHomedir&"image-library-#form.image_library_id#.zip";
+			// add file to zip
+	zip action="zip" file="#tempZipPath#"{
+		for(file in arrFile){
+			zipparam source="#file#" recurse="yes";
+		}
+	}
+	fileName=getFileFromPath(tempZipPath);
+
+	header name="Content-disposition"  value="attachment;filename=#Replace(fileName, " ",  "_", "all")#";
+	content deleteFile="yes" file="#tempZipPath#" type="application/x-zip-compressed";
+
+	abort;
+	</cfscript>   
 </cffunction>
 
 <!--- /z/_com/app/image-library?method=saveSortingPositions&image_library_id=&image_id_list= --->
