@@ -2035,7 +2035,7 @@ application.zcore.imageLibraryCom.getViewOriginalImagesURL(image_library_id, ima
 	} 
 	echo('<h2>Image Library Original Images</h2>');
 	for(file in arrFile){
-		echo('<p><img src="#file.file#" alt="image" /></p>');
+		echo('<p><img src="#file.file#" alt="image" style="max-width:100%;" /></p>');
 		if(file.caption NEQ ""){
 			echo("<h3>"&file.caption&"</h3>");
 		}
