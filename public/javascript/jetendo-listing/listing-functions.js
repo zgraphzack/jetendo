@@ -75,12 +75,9 @@ function zInactiveCheckLoginStatus(f){
 }
 
 
-
-
-
 function getMLSTemplate(obj,row){
 	var arrR=new Array();
-	arrR.push('<table><tr><td valign="top" wid'+'th="110" style="font-size:10px; font-style:italic;"><div class="listing-l-img"><a href="#URL#"><img src="#PHOTO1#" alt="#TITLE#" width="100" height="78" class="listing-d-im'+'g"></a></div>ID##MLS_ID#-#LISTING_ID#</td><td valign="top"><h2><a href="#URL#" style="text-decoration:none; ">#TITLE#</a></h2><span>#DESCRIPTION#</span><span class="listing-l-l'+'inks" style="padding-bottom:0px; "><a href="#URL#" class="zcontent-readmore-link">Read More</a><a href="/z/listing/inquiry/index?acti'+'on=form&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Send An Inquiry</a><a href="/z/listing/sl/index?save'+'Act=check&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Save Listing</a>');
+	arrR.push('<table><tr><td valign="top" wid'+'th="110" style="font-size:10px; font-style:italic;"><div class="listing-l-img"><a href="#URL#"><img src="#PHOTO1#" alt="#TITLE#" style="max-width:100%;" class="listing-d-im'+'g"></a></div>ID##MLS_ID#-#LISTING_ID#</td><td valign="top"><h2><a href="#URL#" style="text-decoration:none; ">#TITLE#</a></h2><span>#DESCRIPTION#</span><span class="listing-l-l'+'inks" style="padding-bottom:0px; "><a href="#URL#" class="zcontent-readmore-link">Read More</a><a href="/z/listing/inquiry/index?acti'+'on=form&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Send An Inquiry</a><a href="/z/listing/sl/index?save'+'Act=check&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Save Listing</a>');
 	if(obj["VIRTUAL_TOUR"][row] !== ""){
 		arrR.push('<a href="#VIRTUAL_TOUR#" target="_blank" rel="nofollow">View Virtual Tour</a>');
 	}
