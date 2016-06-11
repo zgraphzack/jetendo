@@ -1189,6 +1189,13 @@ application.zcore.functions.zLogError(ts);
 			forcePosition:""
 		};
 		arrayappend(request.zos.arrCSSIncludes, ts);
+		ts={
+			type:"zCSSFramework",
+			url:"/z/stylesheets/css-framework.css",
+			package:"",
+			forcePosition:""
+		};
+		arrayappend(request.zos.arrCSSIncludes, ts);
 
 		tempFile=request.zos.globals.privatehomedir&"zcache/zsystem.css";
 		if(structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, tempFile) EQ false){
@@ -1208,23 +1215,14 @@ application.zcore.functions.zLogError(ts);
 
 <cffunction name="zRequireCSSFramework" localmode="modern" output="no" returntype="any">
 	<cfscript> 
-	if(not structkeyexists(request.zos, 'includeManagerStylesheet') and not request.zos.inMemberArea){ 
-		if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
-			ts={
-				type:"zCSSFramework",
-				url:"/z/stylesheets/css-framework.css",
-				package:"",
-				forcePosition:""
-			};
-			arrayappend(request.zos.arrCSSIncludes, ts);
-			ts={
-				type:"zCSSFramework",
-				url:"/zupload/layout-global.css",
-				package:"",
-				forcePosition:""
-			};
-			arrayappend(request.zos.arrCSSIncludes, ts); 
-		}
+	if(not structkeyexists(request.zos, 'includeManagerStylesheet') and not request.zos.inMemberArea){  
+		ts={
+			type:"zCSSFramework",
+			url:"/zupload/layout-global.css",
+			package:"",
+			forcePosition:""
+		};
+		arrayappend(request.zos.arrCSSIncludes, ts);  
 	}
 	</cfscript>
 </cffunction>

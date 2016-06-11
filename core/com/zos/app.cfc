@@ -1688,11 +1688,11 @@ if(rCom.isOK() EQ false){
 		arrayappend(arguments.ss.js, "/z/javascript/jquery/Slides/source/slides.jquery-new.js");
 	}
 	
+	arrayappend(arguments.ss.css, "/z/stylesheets/css-framework.css");
 	arrayappend(arguments.ss.css, "/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.css");
 	arrayappend(arguments.ss.js, "/z/javascript/jquery/jquery.easing.1.3.js");
 	arrayappend(arguments.ss.js, "/z/javascript/jquery/galleryview-1.1/jquery.galleryview-3.0-dev.js");
-	arrayappend(arguments.ss.js, "/z/javascript/jquery/galleryview-1.1/jquery.timers-1.2.js");
-	 
+	arrayappend(arguments.ss.js, "/z/javascript/jquery/galleryview-1.1/jquery.timers-1.2.js"); 
 	
 	for(i in application.sitestruct[request.zos.globals.id].app.appCache){
 		configCom=application.zcore.functions.zcreateobject("component", application.zcore.appComPathStruct[i].cfcPath, true);
@@ -1704,10 +1704,10 @@ if(rCom.isOK() EQ false){
 	}
 	arrayappend(arguments.ss.css, "/z/stylesheets/zOS.css"); 
 	if(not structkeyexists(request.zos, 'includeManagerStylesheet') and not request.zos.inMemberArea){ 
-		if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
-			arrayappend(arguments.ss.css, "/z/stylesheets/css-framework.css");
-			arrayappend(arguments.ss.css, "/zupload/layout-global.css");
-		}
+		/*if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
+			arrayappend(arguments.ss.css, "/z/stylesheets/enable-css-framework.css");
+		}*/
+		arrayappend(arguments.ss.css, "/zupload/layout-global.css");
 	}
 	if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, request.zos.globals.privatehomedir&"zcache/zsystem.css")){
 		application.sitestruct[request.zos.globals.id].fileExistsCache[request.zos.globals.privatehomedir&"zcache/zsystem.css"]=fileexists(request.zos.globals.privatehomedir&"zcache/zsystem.css");

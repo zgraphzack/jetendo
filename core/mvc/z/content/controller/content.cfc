@@ -344,36 +344,34 @@ this.app_id=12;
 				arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 			}
 		}
-		if(request.zos.isdeveloper){
-			if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
-				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Layouts") EQ false){
-					ts=structnew();
-					ts.featureName="Manage Layouts";
-					ts.link="/z/admin/layout-page/index";
-					arguments.linkStruct["Content Manager"].children["Manage Layouts"]=ts;
-				}
-				if(request.zos.istestserver){
-					if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
-						ts=structnew();
-						ts.featureName="Manage Sections";
-						ts.link="/z/admin/section/index";
-						arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
-					}
-					/*
-					if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
-						ts=structnew();
-						ts.featureName="Theme Options";
-						ts.link="/z/admin/theme-options/index";
-						arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
-					}*/
-					/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
-						ts=structnew();
-						ts.featureName="Manage Design & Layout";
-						ts.link="/z/admin/template/index";
-						arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
-					}*/
-				}
+		if(request.zos.isdeveloper){ 
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Layouts") EQ false){
+				ts=structnew();
+				ts.featureName="Manage Layouts";
+				ts.link="/z/admin/layout-page/index";
+				arguments.linkStruct["Content Manager"].children["Manage Layouts"]=ts;
 			}
+			if(request.zos.istestserver){
+				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
+					ts=structnew();
+					ts.featureName="Manage Sections";
+					ts.link="/z/admin/section/index";
+					arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
+				}
+				/*
+				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
+					ts=structnew();
+					ts.featureName="Theme Options";
+					ts.link="/z/admin/theme-options/index";
+					arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
+				}*/
+				/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
+					ts=structnew();
+					ts.featureName="Manage Design & Layout";
+					ts.link="/z/admin/template/index";
+					arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
+				}*/
+			} 
 		}
 	}
 	return arguments.linkStruct;
@@ -875,9 +873,9 @@ this.app_id=12;
 		form.content_config_thumbnail_width=application.zcore.functions.zso(form, 'content_config_thumbnail_width',true,250);
 		form.content_config_thumbnail_height=application.zcore.functions.zso(form, 'content_config_thumbnail_height',true,200);
 		form.content_config_thumbnail_crop=application.zcore.functions.zso(form, 'content_config_thumbnail_crop',true,0);
-		echo(' Width: <input type="text" name="content_config_thumbnail_width" value="#htmleditformat(form.content_config_thumbnail_width)#" /> 
-		Height: <input type="text" name="content_config_thumbnail_height" value="#htmleditformat(form.content_config_thumbnail_height)#" /> 
-		Crop: ');
+		echo(' <p>Width: <input type="text" name="content_config_thumbnail_width" value="#htmleditformat(form.content_config_thumbnail_width)#" /></p>
+		<p>Height: <input type="text" name="content_config_thumbnail_height" value="#htmleditformat(form.content_config_thumbnail_height)#" /></p>
+		<p>Crop: ');
 		ts = StructNew();
 		ts.name = "content_config_thumbnail_crop";
 		ts.radio=true;
@@ -887,7 +885,7 @@ this.app_id=12;
 		ts.listLabels="Yes|No";
 		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
-		echo('(Default is 250x250, uncropped).</td>
+		echo('(Default is 250x250, uncropped).</p></td>
 		</tr>
 		</table>');
 	}
@@ -1715,15 +1713,16 @@ configCom.includeContentByName(ts);
 	row=arguments.row;
 	cityName=arguments.cityName;
 	propertyLink=arguments.propertyLink;
-	echo('<table ');
+	echo('<div ');
 	if(len(contentConfig.tablestyle)){
 		echo(contentConfig.tablestyle);
 	}else{
-		echo(' style="width:100%;"');
+	
+		echo(' class="zcontent-subpage-div" ');
 	}
-	echo('><tr>');
+	echo('>');
 	if(contentPhoto99 NEQ ""){
-		echo('<td class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;  vertical-align:top;padding-right:20px;">');
+		echo('<div class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;">');
 		if(contentConfig.contentDisableLinks EQ false){
 			echo('<a href="#propertyLink#">');
 		}
@@ -1731,13 +1730,14 @@ configCom.includeContentByName(ts);
 		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
 			echo('width="120"');
 		}
-		echo(' style="border:none;" />');
+		echo(' style="border:none; max-width:100%;" />');
 		if(contentConfig.contentDisableLinks EQ false){
 			echo('</a>');
 		}
-		echo('</td>');
+		echo('</div>');
 	}
-	echo('<td style="vertical-align:top; ">');
+	
+	echo('<div class="z-content-text-div" style="">');
 	if(application.zcore.functions.zso(form, 'content_id') NEQ row.content_id or contentConfig.contentForceOutput){
 		if(application.zcore.functions.zso(form, 'contentHideTitle',false,false) EQ false){
 			echo('<h2>');
@@ -1753,9 +1753,8 @@ configCom.includeContentByName(ts);
 	}
 	if(contentConfig.disableChildContentSummary EQ false){
 		if(row.content_is_listing EQ 1){
-			echo('<table style="width:100%;">
-			<tr>
-			  <td>');
+			echo('<div style="width:100%; float:left;">
+			<div>');
 			if(row.content_property_bedrooms NEQ 0){
 				echo('#row.content_property_bedrooms# Bedroom');
 			}
@@ -1768,14 +1767,14 @@ configCom.includeContentByName(ts);
 					echo('<br />#qCp3i2.content_property_type_name#');
 				}
 			}
-			echo('</td><td style="white-space:nowrap;">');
+			echo('</div><div style="white-space:nowrap;">');
 			if(row.content_property_bathrooms NEQ 0 or row.content_property_half_baths NEQ 0){
 				echo('#row.content_property_bathrooms# Bath ');
 				if(row.content_property_half_baths NEQ 0){
 					echo('<br />#row.content_property_half_baths# half&nbsp;baths');
 				}
 			}
-			echo('</td><td style="white-space:nowrap;">');
+			echo('</div><div style="white-space:nowrap;">');
 			if(row.content_property_sqfoot NEQ "" and row.content_property_sqfoot NEQ 0){
 				echo('#row.content_property_sqfoot# SQFT<br />');
 			}
@@ -1798,7 +1797,7 @@ configCom.includeContentByName(ts);
 			if(row.content_property_country NEQ "" and row.content_property_country NEQ "US"){ 
 				writeoutput(" "&row.content_property_country);
 			}
-			echo('</td></tr></table>');
+			echo('</div></div>');
 
 			if(row.content_price NEQ 0 and row.content_for_sale EQ 1){
 				echo('<span style="font-size:14px; font-weight:bold;">Priced at #dollarformat(row.content_price)#</span>');
@@ -1853,10 +1852,60 @@ configCom.includeContentByName(ts);
 			echo('<p class="zcontent-readmore-link"><strong><a href="#propertyLink#">Read More</a></strong></p>');
 		}
 	}
-	echo('</td></tr></table>');
+	echo('</div></div>');
 	if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
 		echo('<hr />');
 	}
+	</cfscript>
+</cffunction>
+
+
+<cffunction name="getContentInclude2ColumnHorizontal" localmode="modern">
+	<cfargument name="contentConfig" type="struct" required="yes">
+	<cfargument name="contentPhoto99" type="string" required="yes">
+	<cfargument name="row" type="struct" required="yes">
+	<cfargument name="cityName" type="string" required="yes">
+	<cfargument name="propertyLink" type="string" required="yes">
+	<cfscript>
+	db=request.zos.queryObject;
+	contentConfig=arguments.contentConfig;
+	contentPhoto99=arguments.contentPhoto99;
+	row=arguments.row;
+	cityName=arguments.cityName;
+	propertyLink=arguments.propertyLink;
+	echo('<div class="zcontent-subpage-div">');
+	if(contentPhoto99 NEQ ""){
+		echo('<div class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;">');
+		if(contentConfig.contentDisableLinks EQ false){
+			echo('<a href="#propertyLink#">');
+		}
+		echo('<img src="#request.zos.currentHostName&contentPhoto99#" alt="#htmleditformat(row.content_name)#" ');
+		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
+			echo('width="120"');
+		}
+		echo(' style="border:none; max-width:100%;" />');
+		if(contentConfig.contentDisableLinks EQ false){
+			echo('</a>');
+		}
+		echo('</div>');
+	}
+	
+	echo('<div class="z-content-text-div" style="">'); 
+	echo('<h2>');
+	if(contentConfig.contentDisableLinks EQ false){
+		echo('<a href="#propertyLink#">');
+	}
+	echo(htmleditformat(row.content_name));
+	if(contentConfig.contentDisableLinks EQ false){
+		echo('</a>');
+	}
+	echo('</h2>');     
+	writeoutput(row.content_summary); 
+	if(contentConfig.contentDisableLinks EQ false and shortSummary NEQ ""){
+		echo('<p class="zcontent-subpage-button"><strong><a href="#propertyLink#">Read More</a></strong></p>');
+	} 
+	echo('</div></div>'); 
+	echo('<hr />'); 
 	</cfscript>
 </cffunction>
 
@@ -1866,6 +1915,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="arrOutputStruct" type="array" required="no" default="#[]#">
 	<cfargument name="limit" type="numeric" required="no" default="#0#">
 	<cfargument name="disableChildLinks" type="boolean" required="no" default="#false#">
+	<cfargument name="layoutType" type="numeric" required="no" default="#0#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
@@ -1960,7 +2010,18 @@ configCom.includeContentByName(ts);
 				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 					echo("<p>Child page layout: regular: #row.content_id#</p>");
 				}
-				getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
+				if(arguments.layoutType EQ 0 or arguments.layoutType EQ 1){
+					getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
+				}else if(arguments.layoutType EQ 14){
+					/*
+	  
+					14 = 2 column horizontal image/text panels
+					15 = 3 column horizontal image/text panels
+					16 = 2 column vertical image/text panels
+					17 = 3 column vertical image/text panels 
+					*/
+					getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
+				}
 			}
 			endEditLink(contentConfig);
 		}
@@ -2776,7 +2837,7 @@ configCom.includeContentByName(ts);
 	<cfscript>
 	if(arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 	//structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
+		writeoutput('<div style="display:block; float:left; width:100%;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 		if(arguments.primary){
 			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 			application.zcore.template.appendTag('pagetitle','</span>');
@@ -3213,7 +3274,7 @@ configCom.includeContentByName(ts);
 			}else{
 				application.zcore.template.prependtag("content",out99);
 			}
-			if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0){
+			if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0 or subpageLinkLayoutBackup EQ 14 or subpageLinkLayoutBackup EQ 15 or subpageLinkLayoutBackup EQ 16 or subpageLinkLayoutBackup EQ 17){
 				if(subpageLinkLayoutBackup EQ 1){
 					ts43=structnew();
 					ts43.disableChildContentSummary=true;
@@ -3228,7 +3289,8 @@ configCom.includeContentByName(ts);
 				if(arguments.qContent.content_child_disable_links EQ 1){
 					disableChildLinks=true;
 				}
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks);
+
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks, subpageLinkLayoutBackup);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 		}

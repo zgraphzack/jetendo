@@ -252,12 +252,73 @@
 	</cfscript>
 </cffunction>
 
+
+<cffunction name="updateGlobalBreakpointCSS" localmode="modern" access="public">
+	<cfscript>
+	// TODO not complete
+	db=request.zos.queryObject;
+	db.sql="select * from #db.table("layout_global", request.zos.zcoreDatasource)# WHERE 
+	site_id = #db.param(request.zos.globals.id)# and 
+	layout_global_deleted =#db.param(0)#";
+	qGlobal=db.execute("qGlobal");
+	breakStruct=getBreakpointConfig();
+	if(qGlobal.recordcount){
+		breakStructNew=deserializeJson(qGlobal.layout_global_json_data);
+		form.minimum_column_width=application.zcore.functions.zso(breakStructNew, 'minimum_column_width', true, 150);
+		for(i=1;i<=arraylen(breakStructNew.arrBreak);i++){
+			breakpoint=breakStructNew.arrBreak[i]; 
+			dataStruct=breakStructNew.data[breakpoint];
+			for(n in dataStruct){
+				id=application.zcore.functions.zescape(n, "_")&"_"&breakpoint;
+				form[id]=dataStruct[n];
+			}
+		} 
+	}else{
+		form.setToDefault=1;
+		breakStructNew={};
+
+	}
+
+	defaultBreakStructNew={
+		arrBreak:[],
+		data:{},
+		css:{},
+		minimum_column_width:application.zcore.functions.zso(form, 'minimum_column_width', true, 150)
+	}; 
+
+	structappend(breakStructNew, defaultBreakStructNew, false);
+	for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
+		breakpoint=breakStruct.arrBreak[i]; 
+		dataStruct=breakStruct.data[breakpoint];
+		for(n in dataStruct){
+			id=application.zcore.functions.zescape(n, "_")&"_"&breakpoint;
+			if(structkeyexists(form, id)){
+				dataStruct[n]=form[id];
+			}
+		}
+		if(structkeyexists(form, 'setToDefault') and breakpoint NEQ 1800 and breakpoint NEQ 1550){ 
+			arrayAppend(breakstructNew.arrBreak, breakStruct.arrBreak[i]);
+			breakStructNew.data[breakpoint]=breakStruct.data[breakpoint];
+			breakStructNew.css[breakpoint]=breakStruct.css[breakpoint];
+		}
+	}   
+	// TODO: publish all instance layouts too
+	breakStructNew.layout_setting_instance_id=0;
+	generateGlobalBreakpointCSS(breakStructNew);
+	</cfscript>
+</cffunction>
+
 <cffunction name="generateGlobalBreakpointCSS" localmode="modern" access="public">
 	<cfargument name="breakpointConfig" type="struct" required="yes">
 	<cfscript> 
 	breakStruct=arguments.breakpointConfig;
 	startFontSize=12; 
 	uniqueStruct={};
+
+	frameworkEnabled=false;
+	if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
+		frameworkEnabled=true;
+	} 
 
 	for(n=1;n<=arraylen(breakStruct.arrBreak);n++){
 		breakpoint=breakStruct.arrBreak[n]; 
@@ -266,28 +327,41 @@
 		arrCSS=breakStruct.css[breakpoint];
 		tempScaleText=max(round(16*dataStruct.textScale), dataStruct.textMinimumFontSize); 
 
+		if(frameworkEnabled){
+			if(breakpoint EQ "default"){
+				arrayAppend(arrCSS, 'body{ margin:0px; line-height:1.3;  }'&chr(10)&
+				'form{ margin:0px; padding:0px;}'&chr(10)&
+				'img{border-style:none;}'&chr(10)&
+				'*, img{ -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing:border-box; }'&chr(10)&
+				'header, nav, section, aside, article, footer, .z-section, .z-row{ width:100%; float:left; min-height:1px; }'&chr(10));
+			}
 
-		v='body { line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#; } ';
-		if(not structkeyexists(uniqueStruct, v)){
-			uniqueStruct[v]=true;
-			arrayAppend(arrCSS, v);
-		} 
-		v='p{margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px;}';
-		if(not structkeyexists(uniqueStruct, v)){
-			uniqueStruct[v]=true;
-			arrayAppend(arrCSS, v);
-		} 
-		v='ul,ol,blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.___')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
-		if(not structkeyexists(uniqueStruct, v)){
-			uniqueStruct[v]=true;
-			arrayAppend(arrCSS, v);
-		} 
-		v='h1,h2,h3,h4,h5,h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
-		//v='.z-container h1,.z-container h2,.z-container h3,.z-container h4,.z-container h5,.z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
-		if(not structkeyexists(uniqueStruct, v)){
-			uniqueStruct[v]=true;
-			arrayAppend(arrCSS, v);
-		} 
+			v='body { line-height:#numberformat(dataStruct.textLineHeightScale*1.3, '_._')#; } ';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS, v);
+			} 
+			v='p{margin:0px; padding:0px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px;}';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS, v);
+			} 
+			v='ul,ol,blockquote{ margin:0px; padding:0px; padding-left:#numberformat(dataStruct.indentScale*4, '_.___')#%; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleText*0.45))#px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS, v);
+			} 
+			v='h1,h2,h3,h4,h5,h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+			//v='.z-container h1,.z-container h2,.z-container h3,.z-container h4,.z-container h5,.z-container h6{ line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; margin:0px; padding:0px; }';
+			if(not structkeyexists(uniqueStruct, v)){
+				uniqueStruct[v]=true;
+				arrayAppend(arrCSS, v);
+			} 
+		}else{
+			if(breakpoint EQ "default"){
+				arrayAppend(arrCSS, 'section, z-container, header, section *, z-container *, header *{ line-height:1.3; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing:border-box; }'&chr(10));
+			}
+		}
 		v='.z-container textarea, .z-container select, .z-container button, .z-container input{ font-size:#tempScaleText#px; line-height:#numberformat(dataStruct.headingLineHeightScale*1.3, '_._')#; }';
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
@@ -499,7 +573,8 @@
 			}else if(i EQ "14"){
 				headingEnabled=5;
 			}
-			if(headingEnabled NEQ 0){
+
+			if(frameworkEnabled and headingEnabled NEQ 0){
 				v='h#headingEnabled#{font-size:#tempScaleHeading#px; padding-bottom:#round(max(dataStruct.minimumPadding, tempScaleHeading*0.45))#px;}';
 				if(not structkeyexists(uniqueStruct, v)){
 					uniqueStruct[v]=true;
@@ -603,7 +678,7 @@
 				arrayAppend(arrCSS2, v);
 			} 
 		}
-		echo(arrayToList(arrCSS2, chr(10)));
+		echo(arrayToList(arrCSS2, chr(10))&chr(10));
 		uniqueStruct={};
 		for(i=1;i<=arraylen(breakStruct.arrBreak);i++){
 			breakpoint=breakStruct.arrBreak[i];   
