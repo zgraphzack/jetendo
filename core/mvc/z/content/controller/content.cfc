@@ -1858,55 +1858,343 @@ configCom.includeContentByName(ts);
 	}
 	</cfscript>
 </cffunction>
-
-
+ 
 <cffunction name="getContentInclude2ColumnHorizontal" localmode="modern">
-	<cfargument name="contentConfig" type="struct" required="yes">
-	<cfargument name="contentPhoto99" type="string" required="yes">
-	<cfargument name="row" type="struct" required="yes">
-	<cfargument name="cityName" type="string" required="yes">
-	<cfargument name="propertyLink" type="string" required="yes">
+	<cfargument name="ss" type="struct" required="yes">
 	<cfscript>
-	db=request.zos.queryObject;
-	contentConfig=arguments.contentConfig;
-	contentPhoto99=arguments.contentPhoto99;
-	row=arguments.row;
-	cityName=arguments.cityName;
-	propertyLink=arguments.propertyLink;
-	echo('<div class="zcontent-subpage-div">');
-	if(contentPhoto99 NEQ ""){
-		echo('<div class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;">');
-		if(contentConfig.contentDisableLinks EQ false){
-			echo('<a href="#propertyLink#">');
-		}
-		echo('<img src="#request.zos.currentHostName&contentPhoto99#" alt="#htmleditformat(row.content_name)#" ');
-		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
-			echo('width="120"');
-		}
-		echo(' style="border:none; max-width:100%;" />');
-		if(contentConfig.contentDisableLinks EQ false){
-			echo('</a>');
-		}
-		echo('</div>');
-	}
-	
-	echo('<div class="z-content-text-div" style="">'); 
-	echo('<h2>');
-	if(contentConfig.contentDisableLinks EQ false){
-		echo('<a href="#propertyLink#">');
-	}
-	echo(htmleditformat(row.content_name));
-	if(contentConfig.contentDisableLinks EQ false){
-		echo('</a>');
-	}
-	echo('</h2>');     
-	writeoutput(row.content_summary); 
-	if(contentConfig.contentDisableLinks EQ false and shortSummary NEQ ""){
-		echo('<p class="zcontent-subpage-button"><strong><a href="#propertyLink#">Read More</a></strong></p>');
-	} 
-	echo('</div></div>'); 
-	echo('<hr />'); 
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
 	</cfscript>
+	<cfif arguments.ss.hasImages> 
+		<section class="section-1 z-pv-40">
+			<div class="z-row">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-hide-at-992 z-1of2">
+							<div class=" z-row z-table">
+								<div class="z-1of2  z-left-sidebar z-m-0 z-p-0">
+									<cfif d.image NEQ ""> 
+										<cfif enableLinks>
+											<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+										<cfelse>
+											<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+										</cfif>
+									<cfelse>
+										&nbsp;
+									</cfif>
+								</div>
+								<div class="z-column   z-ml-0 ">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+				<div class="z-show-at-992 z-pv-10 z-equal-heights" data-children-class=".childEqualHeights">
+					
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-column z-p-0 z-mb-20" style="display:table;">
+							<div class="z-1of3 z-m-0 z-p-0 z-fluid-at-767">
+								<cfif d.image NEQ ""> 
+									<cfif enableLinks>
+										<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+									<cfelse>
+										<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+									</cfif>
+								<cfelse>
+									&nbsp;
+								</cfif>
+	
+							</div>
+							<div class="z-2of3 z-m-0 "  >
+								<div class="z-float-left z-fp-20">
+									<div class="z-h-24">
+										<cfif enableLinks>
+											<a href="#d.link#">#d.heading#</a>
+										<cfelse>
+											#d.heading#
+										</cfif>
+									</div>
+									<div class="z-t-16">#d.summary#</div>
+									<cfif enableLinks>
+										<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+									</cfif>
+								</div>
+							</div>
+						</div>
+					</cfloop>
+				</div>
+			</div> 
+		</section>
+	<cfelse>
+
+		<section class="section-1 z-pv-40">
+			<div class="z-container">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-1of2">
+							<div class=" z-container z-bg-white"> 
+								<div class="z-column">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+			</div> 
+		</section>
+	</cfif>
+
+</cffunction>
+
+
+<cffunction name="getContentInclude3ColumnHorizontal" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript>
+	<cfif arguments.ss.hasImages> 
+		<section class="section-1 z-pv-40">
+			<div class="z-row">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-hide-at-992 z-1of3">
+							<div class=" z-row z-table">
+								<div class="z-1of3  z-left-sidebar z-m-0 z-p-0">
+									<cfif d.image NEQ ""> 
+										<cfif enableLinks>
+											<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+										<cfelse>
+											<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+										</cfif>
+									<cfelse>
+										&nbsp;
+									</cfif>
+								</div>
+								<div class="z-column   z-ml-0 ">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+				<div class="z-show-at-992 z-pv-10 z-equal-heights" data-children-class=".childEqualHeights">
+					
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-column z-p-0 z-mb-20" style="display:table;">
+							<div class="z-1of3 z-m-0 z-p-0 z-fluid-at-767">
+								<cfif d.image NEQ ""> 
+									<cfif enableLinks>
+										<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+									<cfelse>
+										<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+									</cfif>
+								<cfelse>
+									&nbsp;
+								</cfif>
+	
+							</div>
+							<div class="z-2of3 z-m-0 "  >
+								<div class="z-float-left z-fp-20">
+									<div class="z-h-24">
+										<cfif enableLinks>
+											<a href="#d.link#">#d.heading#</a>
+										<cfelse>
+											#d.heading#
+										</cfif>
+									</div>
+									<div class="z-t-16">#d.summary#</div>
+									<cfif enableLinks>
+										<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+									</cfif>
+								</div>
+							</div>
+						</div>
+					</cfloop>
+				</div>
+			</div> 
+		</section>
+	<cfelse>
+
+		<section class="section-1 z-pv-40">
+			<div class="z-container">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-1of3">
+							<div class=" z-container z-bg-white"> 
+								<div class="z-column">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+			</div> 
+		</section>
+	</cfif>
+
+</cffunction>
+ 
+<cffunction name="getContentInclude2ColumnVertical" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript> 
+	<section class="section-1 z-pv-40">
+		<div class="z-row">
+			<div class="z-pv-20 z-equal-heights"> 
+				<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+					<cfscript>
+					d=arrData[i];
+					</cfscript>
+					<div class="z-1of2">
+						<div class=" z-float"> 
+							<cfif arguments.ss.hasImages and d.image NEQ ""> 
+								<cfif enableLinks>
+									<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+								<cfelse>
+									<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+								</cfif> 
+							</cfif>
+
+						</div>
+						<div class=" z-float"> 
+							<div class=" z-p-20">
+								<div class="z-h-24">
+									<cfif enableLinks>
+										<a href="#d.link#">#d.heading#</a>
+									<cfelse>
+										#d.heading#
+									</cfif>
+								</div>
+								<div class="z-t-16">#d.summary#</div>
+								<cfif enableLinks>
+									<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+								</cfif>
+							</div>
+						</div>
+					</div>
+				</cfloop> 
+			</div> 
+		</div> 
+	</section> 
+
+</cffunction>
+
+ 
+<cffunction name="getContentInclude3ColumnVertical" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript> 
+	<section class="section-1 z-pv-40">
+		<div class="z-row">
+			<div class="z-pv-20 z-equal-heights"> 
+				<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+					<cfscript>
+					d=arrData[i];
+					</cfscript>
+					<div class="z-1of3">
+						<div class=" z-float"> 
+							<cfif arguments.ss.hasImages and d.image NEQ ""> 
+								<cfif enableLinks>
+									<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+								<cfelse>
+									<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+								</cfif> 
+							</cfif>
+
+						</div>
+						<div class=" z-float"> 
+							<div class=" z-p-20">
+								<div class="z-h-24">
+									<cfif enableLinks>
+										<a href="#d.link#">#d.heading#</a>
+									<cfelse>
+										#d.heading#
+									</cfif>
+								</div>
+								<div class="z-t-16">#d.summary#</div>
+								<cfif enableLinks>
+									<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+								</cfif>
+							</div>
+						</div>
+					</div>
+				</cfloop> 
+			</div> 
+		</div> 
+	</section> 
+
 </cffunction>
 
 <cffunction name="getPropertyInclude" localmode="modern" output="yes" returntype="boolean">
@@ -1954,6 +2242,10 @@ configCom.includeContentByName(ts);
 	}
 	index=0;
 
+	hasImages=false;
+	arrData=[];
+
+
 	for(row in tempQueryName){
 		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 			echo('<p>Outputting child page: #row.content_id#</p>');
@@ -1974,10 +2266,10 @@ configCom.includeContentByName(ts);
 		contentPhoto99=""; 
 		if(arraylen(arrImages) NEQ 0){
 			contentPhoto99=(arrImages[1].link);
+			hasImages=true;
 		}
 		savecontent variable="output"{
 
-			beginEditLink(contentConfig, row.content_id, false);
 			if(structkeyexists(request.zos, 'propertyIncludeIndex') EQ false){
 				request.zos.propertyIncludeIndex=0;
 			}
@@ -2011,19 +2303,20 @@ configCom.includeContentByName(ts);
 					echo("<p>Child page layout: regular: #row.content_id#</p>");
 				}
 				if(arguments.layoutType EQ 0 or arguments.layoutType EQ 1){
+					beginEditLink(contentConfig, row.content_id, false);
 					getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
-				}else if(arguments.layoutType EQ 14){
-					/*
-	  
-					14 = 2 column horizontal image/text panels
-					15 = 3 column horizontal image/text panels
-					16 = 2 column vertical image/text panels
-					17 = 3 column vertical image/text panels 
-					*/
-					getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
+					endEditLink(contentConfig);
+				}else if(arguments.layoutType GTE 14 and arguments.layoutType LTE 17){
+					ts={
+						heading:row.content_name,  
+						summary:row.content_summary,
+						link:propertyLink,
+						image:contentPhoto99
+					};
+					arrayAppend(arrData, ts);
+					contentConfig.contentForceOutput=true;
 				}
 			}
-			endEditLink(contentConfig);
 		}
 		if(contentConfig.contentForceOutput EQ false){
 			ts=StructNew();
@@ -2045,6 +2338,41 @@ configCom.includeContentByName(ts);
 			writeoutput(output);	
 		}
 		includeLoopCount++;	
+	}
+	/* 
+	14 = 2 column horizontal image/text panels
+	15 = 3 column horizontal image/text panels
+	16 = 2 column vertical image/text panels
+	17 = 3 column vertical image/text panels  
+	*/  
+	if(arguments.layoutType EQ 14){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude2ColumnHorizontal(ts);
+	}else if(arguments.layoutType EQ 15){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude3ColumnHorizontal(ts);
+	}else if(arguments.layoutType EQ 16){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude2ColumnVertical(ts);
+	}else if(arguments.layoutType EQ 17){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude3ColumnVertical(ts);
 	}
 	return includeLoopCount;
 	</cfscript>

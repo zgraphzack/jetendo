@@ -635,7 +635,7 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 
 .z-content-subpage-button, .z-content-subpage-button:link, .z-content-subpage-button:visited {
 	display: inline-block; 
-	padding:7px 25px;
+	padding:5px;
 	color: #FFFFFF;
 	background: rgba(60,60,60, 0.7);
 	text-align: center;
