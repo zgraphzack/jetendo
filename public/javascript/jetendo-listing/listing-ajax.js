@@ -93,11 +93,12 @@ function zListingLoadSavedCart(){
 }
 
 
+
 zArrDeferredFunctions.push(zListingLoadSavedCart);
 
 function zSetupListingCartButtons(){
 
-	$(document).on("click", ".zls-saveListingButton", function(e){
+	$(document).bind("click", ".zls-saveListingButton", function(e){
 		e.preventDefault();
 		var tempObj={};
 		tempObj.id="zListingLoadSavedCart";
@@ -118,7 +119,7 @@ function zSetupListingCartButtons(){
 		zAjax(tempObj);   
 	}); 
 
-	$(document).on("click", ".zls-removeListingButton", function(e){
+	$(document).bind("click", ".zls-removeListingButton", function(e){
 		e.preventDefault();
 		var tempObj={};
 		tempObj.id="zListingLoadSavedCart";
@@ -135,7 +136,7 @@ function zSetupListingCartButtons(){
 		tempObj.url="/z/listing/sl/delete?listing_id="+id;  
 		zAjax(tempObj);   
 	});
-	$(document).on("click", ".zls-removeAllListingButton", function(e){
+	$(document).bind("click", ".zls-removeAllListingButton", function(e){
 		e.preventDefault();
 		var tempObj={};
 		tempObj.id="zListingLoadSavedCart";

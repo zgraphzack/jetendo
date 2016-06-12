@@ -1223,6 +1223,19 @@ application.zcore.functions.zLogError(ts);
 			forcePosition:""
 		};
 		arrayappend(request.zos.arrCSSIncludes, ts);  
+	}else{
+		if(request.zos.isTestServer){
+			link=request.zos.zcoreTestAdminDomain&"/zupload/layout-global.css";
+		}else{
+			link=request.zos.zcoreAdminDomain&"/zupload/layout-global.css";
+		}
+		ts={
+			type:"zCSSFramework",
+			url:link,
+			package:"",
+			forcePosition:""
+		};
+		arrayappend(request.zos.arrCSSIncludes, ts);  
 	}
 	</cfscript>
 </cffunction>

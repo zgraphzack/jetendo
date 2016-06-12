@@ -1708,6 +1708,13 @@ if(rCom.isOK() EQ false){
 			arrayappend(arguments.ss.css, "/z/stylesheets/enable-css-framework.css");
 		}*/
 		arrayappend(arguments.ss.css, "/zupload/layout-global.css");
+	}else{
+		if(request.zos.isTestServer){
+			link=request.zos.zcoreTestAdminDomain&"/zupload/layout-global.css";
+		}else{
+			link=request.zos.zcoreAdminDomain&"/zupload/layout-global.css";
+		}
+		arrayappend(arguments.ss.css, link);
 	}
 	if(not structkeyexists(application.sitestruct[request.zos.globals.id].fileExistsCache, request.zos.globals.privatehomedir&"zcache/zsystem.css")){
 		application.sitestruct[request.zos.globals.id].fileExistsCache[request.zos.globals.privatehomedir&"zcache/zsystem.css"]=fileexists(request.zos.globals.privatehomedir&"zcache/zsystem.css");
