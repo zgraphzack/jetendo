@@ -1,0 +1,2 @@
+project url:
+https://github.com/Zoic/jQuery-Content-Slider/

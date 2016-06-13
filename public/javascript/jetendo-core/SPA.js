@@ -250,7 +250,7 @@ Jetendo.SPA=function(options){
 			}
 		}
 	}
-	$(document).on("click", "a", function(){  
+	$(document).bind("click", "a", function(){  
 		checkForModalLink(this);
 		enableReloadingSameHashbangURL(this);
 	});

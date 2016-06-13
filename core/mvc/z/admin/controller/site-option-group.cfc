@@ -1715,6 +1715,9 @@ displayGroupCom.ajaxInsert();
 			errors=true;
 		}
 	}
+	if(form.site_option_group_parent_id NEQ "" and form.site_option_group_parent_id NEQ 0){
+		form.site_option_group_enable_new_button=0;
+	}
 	
 	form.site_option_group_appidlist=","&application.zcore.functions.zso(form,'site_option_group_appidlist')&",";
 	 if(application.zcore.functions.zso(form,'optionGroupglobal',false,0) EQ 1 and variables.allowGlobal){
@@ -1936,6 +1939,7 @@ displayGroupCom.ajaxInsert();
 					<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable Sorting","member.site-option-group.edit site_option_group_enable_sorting")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_sorting")#</td>
 				</tr>
+
 				<tr>
 					<th>#application.zcore.functions.zOutputHelpToolTip("Enable Image Library?","member.site-option-group.edit site_option_group_enable_image_library")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_image_library")#</td>
@@ -1944,6 +1948,12 @@ displayGroupCom.ajaxInsert();
 					<th>#application.zcore.functions.zOutputHelpToolTip("Disable Admin?","member.site-option-group.edit site_option_group_disable_admin")#</th>
 					<td>#application.zcore.functions.zInput_Boolean("site_option_group_disable_admin")#</td>
 				</tr>
+				<cfif form.site_option_group_parent_id EQ 0> 
+					<tr>
+						<th style="vertical-align:top; white-space:nowrap;">#application.zcore.functions.zOutputHelpToolTip("Enable New Button","member.site-option-group.edit site_option_group_enable_new_button")#</th>
+						<td>#application.zcore.functions.zInput_Boolean("site_option_group_enable_new_button")# (Places this group in the Create New button in manager header)</td>
+					</tr>
+				</cfif>
 				
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Admin Paging Limit</th>
@@ -2200,7 +2210,7 @@ displayGroupCom.ajaxInsert();
 				<tr>
 					<th style="vertical-align:top; white-space:nowrap;">Home Page?</th>
 					<td> 
-					#application.zcore.functions.zInput_Boolean("site_option_group_is_home_page")# | Yes, will force the URL to be "/".
+					#application.zcore.functions.zInput_Boolean("site_option_group_is_home_page")# | Yes, will force the URL to be "/".   Note: you may have trouble getting this to work with root.index, you can move index.cfc to mvc/controller/index.cfc to fix the problem.  The routing system gives higher precedence to root.index, so you have to remove it.
 					</td>
 				</tr>
 				<tr>
@@ -2370,20 +2380,26 @@ displayGroupCom.ajaxInsert();
 			}
 			if(firstLoad11){
 				firstLoad11=false;
-				$(d1).bind("change",function(){ doParentCheck(); });
-				$(d0).bind("change",function(){ doParentCheck(); });
+				if(d1 != null){
+					$(d1).bind("change",function(){ doParentCheck(); });
+					$(d0).bind("change",function(){ doParentCheck(); });
+				}
+				
 			}
 			var a=document.getElementById("site_option_group_parent_id");
 			if(a.selectedIndex != 0){
 				groupMenuNameField.value='';
 				groupMenuName.style.display="none";
 				groupMenuName2.style.display="block";
-				if(arrD[a.selectedIndex-1] == 0){
-					d1.checked=true;
-					d0.checked=false;	
-				}else{
-					d1.checked=false;
-					d0.checked=true;	
+
+				if(d1 != null){
+					if(arrD[a.selectedIndex-1] == 0){
+						d1.checked=true;
+						d0.checked=false;	
+					}else{
+						d1.checked=false;
+						d0.checked=true;	
+					}
 				}
 			}else{
 				groupMenuName.style.display="block";

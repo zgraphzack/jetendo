@@ -1,0 +1,120 @@
+/**
+ * Copyright (c) 2016 Jake Sutherland, http://zoic.me <zoic@zoic.me>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+.content-slider {
+	position: relative;
+	margin-bottom: 40px;
+}
+
+.content-slider .content-slides-container {
+	position: relative;
+	overflow: hidden;
+}
+
+.content-slider .content-slide {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+}
+.content-slider .content-slide.active {
+	z-index: 101;
+}
+
+.content-slider .slider-previous-button {
+	position: absolute;
+	top: 50%;
+	transform: translateY( -50% );
+	right: 100%;
+	z-index: 102;
+	width: 20px;
+	height: 80px;
+	background: #333333;
+	color: #FFFFFF;
+	line-height: 80px;
+	cursor: pointer;
+	font-size: 20px;
+	text-align: center;
+}
+.content-slider .slider-next-button {
+	position: absolute;
+	top: 50%;
+	transform: translateY( -50% );
+	left: 100%;
+	z-index: 102;
+	width: 20px;
+	height: 80px;
+	background: #333333;
+	color: #FFFFFF;
+	line-height: 80px;
+	cursor: pointer;
+	font-size: 20px;
+	text-align: center;
+}
+
+.content-slider .slider-pager {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -40px;
+	width: 100%;
+	text-align: center;
+	z-index: 102;
+	line-height: 40px;
+}
+.content-slider .slider-pager span {
+	display: inline-block;
+	background: #CCCCCC;
+	cursor: pointer;
+	-webkit-transition: background 0.5s ease;
+	-o-transition: background 0.5s ease;
+	transition: background 0.5s ease;
+}
+.content-slider .slider-pager span.active {
+	background: #333333;
+}
+
+/* SQUARES */
+.content-slider .slider-pager.squares span {
+	width: 16px;
+	height: 16px;
+	margin: 0 2px;
+}
+/**/
+
+/* CIRCLES */
+.content-slider .slider-pager.circles span {
+	width: 16px;
+	height: 16px;
+	border-radius: 8px;
+	margin: 0 2px;
+}
+/**/
+
+/* LINES */
+.content-slider .slider-pager.lines span {
+	width: 24px;
+	height: 4px;
+	margin: 0 3px;
+}
+/**/

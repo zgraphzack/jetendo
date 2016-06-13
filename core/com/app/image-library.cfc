@@ -39,6 +39,7 @@ SCHEDULE DAILY TASK: /z/_com/app/image-library?method=deleteInactiveImageLibrari
 	ts.struct=structnew();
 	ts.struct.site_id=request.zos.globals.id;
 	ts.struct.image_library_active=0;
+	ts.struct.image_library_hash=hash(application.zcore.functions.zGenerateStrongPassword(80,200), 'sha-256'); 
 	ts.struct.image_library_approved=1;
 	//ts.debug=true;
 	ts.struct.image_library_datetime=request.zos.mysqlnow;
@@ -708,6 +709,7 @@ application.zcore.imageLibraryCom.getLibraryForm(ts); --->
 		structdelete(row, 'image_library_id');
 		ts=structnew();
 		ts.struct=row;
+		ts.struct.image_library_hash=hash(application.zcore.functions.zGenerateStrongPassword(80,200), 'sha-256'); 
 		ts.datasource=request.zos.zcoreDatasource;
 		ts.table="image_library";
 		newLibraryId=application.zcore.functions.zInsert(ts);
@@ -1885,8 +1887,11 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	You may also upload a compressed zip file with these image formats inside.<br />
 	Please note any files inside the zip that are not jpg, gif or png will be ignored.<br />
 	Type in image captions below. Drag the images to put them in your preferred sorting order.<br />
-	Changes are saved instantly. Click "Close Image Manager" when done.</p>
-	<h2><a href="##" onclick="window.parent.zCloseModal(); return false;">Close Image Manager</a></h2>
+	Changes are saved instantly. Click "Close Image Uploader" when done.</p>
+	<h2><a href="##" onclick="window.parent.zCloseModal(); return false;">Close Image Uploader</a></h2> 
+	<h3>Originals: <a href="#application.zcore.imageLibraryCom.getViewOriginalImagesURL(form.image_library_id, qLibrary.image_library_hash)#" target="_blank">View All</a> | <a href="/z/_com/app/image-library?method=downloadOriginalImages&amp;image_library_id=#form.image_library_id#" target="_blank">Download Zip</a></p>
+
+
 	</td></tr>
 	</table>
 	
@@ -1906,6 +1911,141 @@ application.zcore.imageLibraryCom.displayImages(ts);
 	/* ]]> */
 	</script>
 </cffunction>
+
+<!--- 
+// image_library_hash is optional
+application.zcore.imageLibraryCom.getViewOriginalImagesURL(image_library_id, image_library_hash); 
+--->
+<cffunction name="getViewOriginalImagesURL" localmode="modern" access="public">
+	<cfargument name="image_library_id" type="string" required="yes">
+	<cfargument name="image_library_hash" type="string" required="no" default="">
+	<cfscript>
+	if(arguments.image_library_hash NEQ ""){
+		return "/z/_com/app/image-library?method=viewOriginalImages&id=#arguments.image_library_id#&key=#arguments.image_library_hash#";
+	}else{
+		var qLibrary=this.getLibraryById(arguments.image_library_id); 
+		if(isBoolean(qLibrary) and qLibrary EQ false){
+			return "##";
+		}else{
+			return "/z/_com/app/image-library?method=viewOriginalImages&id=#arguments.image_library_id#&key=#qLibrary.image_library_hash#";
+		}
+	}
+	</cfscript>
+</cffunction>
+
+
+<!--- /z/_com/app/image-library?method=downloadOriginalImages&image_library_id=#form.image_library_id#  --->
+<cffunction name="downloadOriginalImages" localmode="modern" access="remote" returntype="any" output="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var local=structnew();
+	var qImages=0;
+	var r=0;
+	var theMeta=0;
+	setting requesttimeout="3600";  
+	form.image_library_id=application.zcore.functions.zso(form, 'image_library_id');
+	tempId=form.image_library_id;
+
+	var qLibrary=this.getLibraryById(form.image_library_id); 
+	if(isBoolean(qLibrary) or qLibrary.recordcount EQ 0){
+		application.zcore.functions.z404("Invalid image_library_id");	
+	}
+	form.image_library_id=qLibrary.image_library_id; 
+	
+	if(not variables.hasAccessToImageLibraryId(form.image_library_id)){
+		application.zcore.functions.z404("No access to image_library_id");	
+	}  
+	db.sql="SELECT * FROM #db.table("image", request.zos.zcoreDatasource)# image 
+	WHERE image_library_id = #db.param(form.image_library_id)# and 
+	image_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)# 
+	ORDER BY image_sort, image_caption, image_id";
+	qImages=db.execute("qImages"); 
+	if(qImages.recordcount EQ 0){
+		echo('<h2>There are no images in this library yet.</h2>');
+
+	} 
+	arrFile=[];
+	for(row in qImages){ 
+		p=request.zos.globals.privateHomedir&"zupload/library/#row.image_library_id#/#row.image_file#";
+		if(fileexists(p)){
+			arrayAppend(arrFile, p); 
+		}
+
+	} 
+	if(arraylen(arrFile) EQ 0){
+		echo('<h2>The images for this library are missing.</h2>');
+
+	} 
+
+	tempZipPath=request.zos.globals.privateHomedir&"image-library-#form.image_library_id#.zip";
+			// add file to zip
+	zip action="zip" file="#tempZipPath#"{
+		for(file in arrFile){
+			zipparam source="#file#" recurse="yes";
+		}
+	}
+	fileName=getFileFromPath(tempZipPath);
+
+	header name="Content-disposition"  value="attachment;filename=#Replace(fileName, " ",  "_", "all")#";
+	content deleteFile="yes" file="#tempZipPath#" type="application/x-zip-compressed";
+
+	abort;
+	</cfscript>   
+</cffunction>
+
+
+<!--- /z/_com/app/image-library?method=viewOriginalImages&id=#form.image_library_id#&key=1234 --->
+<cffunction name="viewOriginalImages" localmode="modern" access="remote" returntype="any" output="yes">
+	<cfscript>
+	var db=request.zos.queryObject;
+	var local=structnew();
+	var qImages=0;
+	var r=0;
+	var theMeta=0;
+	setting requesttimeout="3600";  
+	form.image_library_id=application.zcore.functions.zso(form, 'id');
+	form.image_library_hash=application.zcore.functions.zso(form, 'key');
+	tempId=form.image_library_id;
+
+	var qLibrary=this.getLibraryById(form.image_library_id); 
+	if(isBoolean(qLibrary) or qLibrary.recordcount EQ 0 or qLibrary.image_library_hash NEQ form.image_library_hash){
+		application.zcore.functions.z404("Invalid image library id or key.");
+	}
+	form.image_library_id=qLibrary.image_library_id; 
+
+	db.sql="SELECT * FROM #db.table("image", request.zos.zcoreDatasource)# image 
+	WHERE image_library_id = #db.param(form.image_library_id)# and 
+	image_deleted = #db.param(0)# and 
+	site_id = #db.param(request.zos.globals.id)#  
+	ORDER BY image_sort, image_caption, image_id";
+	qImages=db.execute("qImages");  
+	arrFile=[];
+	for(row in qImages){ 
+		p=request.zos.globals.privateHomedir&"zupload/library/#row.image_library_id#/#row.image_file#";
+		p2="/zupload/library/#row.image_library_id#/#row.image_file#";
+		if(fileexists(p)){
+			arrayAppend(arrFile, { file:p2, caption: row.image_caption}); 
+		}
+
+	} 
+	if(arraylen(arrFile) EQ 0){
+		echo('<h2>The images for this library are missing.</h2>');
+
+	} 
+	echo('<h2>Image Library Original Images</h2>');
+	for(file in arrFile){
+		echo('<p><img src="#file.file#" alt="image" style="max-width:100%;" /></p>');
+		if(file.caption NEQ ""){
+			echo("<h3>"&file.caption&"</h3>");
+		}
+		echo("<hr />");
+	} 
+ 	
+ 	application.zcore.template.setPlainTemplate();
+	</cfscript>   
+</cffunction>
+
 
 <!--- /z/_com/app/image-library?method=saveSortingPositions&image_library_id=&image_id_list= --->
 <cffunction name="saveSortingPositions" localmode="modern" access="remote" returntype="any" output="yes">

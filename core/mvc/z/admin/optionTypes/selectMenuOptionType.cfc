@@ -327,11 +327,11 @@
 			form.selectmenu_multipleselection=application.zcore.functions.zso(arguments.optionStruct, "selectmenu_multipleselection", true, 0);
 			echo(application.zcore.functions.zInput_Boolean("selectmenu_multipleselection"));
 			</cfscript></td></tr>
-			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" style="max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> <br />(Makes more options visible for easier multiple selection)</td></tr>
+			<tr><td>Size: </td><td><input type="text" name="selectmenu_size" style="min-width:20px; max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_size', true, 1))#" /> <br />(Makes more options visible for easier multiple selection)</td></tr>
 			<tr><td colspan="2">Configure a manually entered list of values: </td></tr>
 			<tr>
 			<th>
-			Delimiter </th><td><input type="text" name="selectmenu_delimiter" style="max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_delimiter', false, '|'))#" size="1" maxlength="1" /></td></tr>
+			Delimiter </th><td><input type="text" name="selectmenu_delimiter" style="min-width:20px; max-width:20px;" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_delimiter', false, '|'))#" size="1" maxlength="1" /></td></tr>
 			<tr><td>Labels List: </td><td><input type="text" style="min-width:150px;" name="selectmenu_labels" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_labels'))#" /></td></tr>
 			<tr><td>Values List:</td><td> <input type="text" style="min-width:150px;" name="selectmenu_values" value="#htmleditformat(application.zcore.functions.zso(arguments.optionStruct, 'selectmenu_values'))#" /></td></tr>
 			<tr><td colspan="2">Configure a group as a datasource: </td></tr>

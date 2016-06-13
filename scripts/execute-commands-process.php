@@ -1297,19 +1297,25 @@ function getImageMagickConvertResize($a){
 	$compressQuality=85;
 
 	if($ext == '.jpg' || $ext == '.jpeg'){
-		$cmd2="/usr/bin/identify -format '%w,%h,%Q' ".escapeshellarg($sourceFilePath)." 2>&1";
+		$cmd2="/usr/bin/identify -format '%w,%h,%Q,%[exif:orientation]' ".escapeshellarg($sourceFilePath)." 2>&1";
 		$r=`$cmd2`; 
 		$arrR=explode(",", trim($r));
 		$currentWidth=$arrR[0];
 		$currentHeight=$arrR[1];
 		$qualityMustChange=false;
-		if(count($arrR) == 3 and is_numeric($arrR[2])){
+		if(count($arrR) == 4 and is_numeric($arrR[2])){
 			$newQuality=intval($arrR[2]);
 			if($compressQuality<$newQuality){
 				$qualityMustChange=true;
 			}
 			$compressQuality=min($compressQuality, $newQuality); 
-
+			/*
+			TODO: finish implementing auto-rotate
+			if($arrR[3] == "6"){
+				$widthBackup=$currentHeight;
+				$currentHeight=$currentWidth;
+				$currentWidth=$widthBackup;
+			}*/
 		} 
 		if(!$qualityMustChange && $resizeWidth >= $currentWidth && $resizeHeight >= $currentHeight && $cropWidth == 0){
 			// quality, image size and cropping doesn't need to change. copy file and return
@@ -1317,18 +1323,18 @@ function getImageMagickConvertResize($a){
 			if(file_exists($destinationFilePath)){
 
 				if(!zIsTestServer()){
-					$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($sourceFilePath);
-					echo $cmd."\n";
-					`$cmd`;
-					$cmd='/bin/chmod 660 '.escapeshellarg($sourceFilePath);
-					echo $cmd."\n";
-					`$cmd`;
-					$cmd='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($destinationFilePath);
-					echo $cmd."\n";
-					`$cmd`;
-					$cmd='/bin/chmod 660 '.escapeshellarg($destinationFilePath);
-					echo $cmd."\n";
-					`$cmd`;
+					$cmd1='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($sourceFilePath);
+					echo $cmd1."\n";
+					`$cmd1`;
+					$cmd1='/bin/chmod 660 '.escapeshellarg($sourceFilePath);
+					echo $cmd1."\n";
+					`$cmd1`;
+					$cmd1='/bin/chown '.get_cfg_var("jetendo_www_user").":".get_cfg_var("jetendo_www_user")." ".escapeshellarg($destinationFilePath);
+					echo $cmd1."\n";
+					`$cmd1`;
+					$cmd1='/bin/chmod 660 '.escapeshellarg($destinationFilePath);
+					echo $cmd1."\n";
+					`$cmd1`;
 				}
 			}
 			return "1";
@@ -1339,7 +1345,8 @@ function getImageMagickConvertResize($a){
 	}else{
 		$compress=' -strip -interlace Plane -sampling-factor 4:2:0 -quality '.$compressQuality.'% ';
 	}
-	$cmd.=' '.$compress.' '.escapeshellarg($sourceFilePath).' '.$pngColorFix.escapeshellarg($destinationFilePath); 
+	// TODO - auto-orient or manual rotations to fix -auto-orient
+	$cmd.=' '.escapeshellarg($sourceFilePath).' '.$compress.' '.$pngColorFix.escapeshellarg($destinationFilePath); 
 	$r=`$cmd`; 
 	if(file_exists($destinationFilePath)){
 
@@ -1391,7 +1398,7 @@ function saveFaviconSet($a){
 
 		$a=explode(",", trim($r));
 		if(strtolower(trim($a[2]))=="cmyk"){
-			$cmd2="/usr/bin/convert ".escapeshellarg($sourceFilePath)." -profile ".$p2."icc-profiles/USWebCoatedSWOP.icc -profile ".$p2."icc-profiles/sRGB_IEC61966-2-1_black_scaled.icc ".escapeshellarg($sourceFilePath)." 2>&1";
+			$cmd2="/usr/bin/convert ".escapeshellarg($sourceFilePath)." -orient -profile ".$p2."icc-profiles/USWebCoatedSWOP.icc -profile ".$p2."icc-profiles/sRGB_IEC61966-2-1_black_scaled.icc ".escapeshellarg($sourceFilePath)." 2>&1";
 			$r2=`$cmd2`; 
 		} 
 	}
@@ -1456,16 +1463,27 @@ function getImageMagickIdentify($a){
 			$found=true;
 		}
 		if($found){
-			$cmd="/usr/bin/identify -format '%w,%h,%[colorspace],%Q' ".escapeshellarg($path)." 2>&1";
+			$cmd="/usr/bin/identify -format '%w,%h,%[colorspace],%Q,%[exif:orientation]' ".escapeshellarg($path)." 2>&1";
 			$r=`$cmd`;
 
 			$a=explode(",", trim($r));
+			/*
+			// TODO: finish implementing auto-rotate
+			if($a[4]=="6"){ 
+				$widthBackup=$a[1];
+				$a[1]=$a[0];
+				$a[0]=$widthBackup;
+				$r=implode(",", $a);
+			}
+			*/
 			if(strtolower(trim($a[2]))=="cmyk"){
 				$cmd2="/usr/bin/convert ".escapeshellarg($path)." -profile ".$p2."icc-profiles/USWebCoatedSWOP.icc -profile ".$p2."icc-profiles/sRGB_IEC61966-2-1_black_scaled.icc ".escapeshellarg($path)." 2>&1";
 				$r2=`$cmd2`;
 				$a[2]="srgb";
 				$r=implode(",", $a);
 			}
+
+
 			echo $cmd."\n".$r."\n";
 			return $r;
 		}

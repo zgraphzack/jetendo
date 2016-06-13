@@ -1270,8 +1270,9 @@
 			selectStruct.name = "content_subpage_link_layout";
 			selectStruct.selectedValues=form.content_subpage_link_layout;
 			selectStruct.hideSelect=true;
-			selectStruct.listLabels="Invisible,Bottom with summary (default),Bottom without summary,Bottom with numbered columns,Bottom with columns,Bottom as thumbnails,Top with numbered columns,Top with columns,Top on one line,Find/replace keyword with line breaks,Find/replace keyword with bullets,Custom";
-			selectStruct.listValues = "7,0,1,8,9,10,2,3,4,11,12,13";
+			selectStruct.listLabels="Invisible,Bottom with summary (default),Bottom without summary,Bottom with numbered columns,Bottom with columns,Bottom as thumbnails,Top with numbered columns,Top with columns,Top on one line,Find/replace keyword with line breaks,Find/replace keyword with bullets,2 column horizontal image/text panels,3 column horizontal image/text panels,2 column vertical image/text panels,3 column vertical image/text panels,Custom";
+			selectStruct.listValues = "7,0,1,8,9,10,2,3,4,11,12,14,15,16,17,13";
+ 
 			application.zcore.functions.zInputSelectBox(selectStruct);
 			</cfscript> <br />(Note: If you select the "Find/replace" options, please insert %child_links% in the body text field 
 		WHERE you want the links to appear.)</td>
@@ -1322,10 +1323,10 @@
         <tr>
         <th>Thumbnail Image Size:</th>
         <td>
-	Leave as zero to inherit default size<br />
-		Width: <input type="text" name="content_thumbnail_width" value="#htmleditformat(form.content_thumbnail_width)#" /> 
-		Height: <input type="text" name="content_thumbnail_height" value="#htmleditformat(form.content_thumbnail_height)#" /> 
-		Crop: 
+		<p>Leave as zero to inherit default size</p>
+		<p>Width: <input type="text" name="content_thumbnail_width" value="#htmleditformat(form.content_thumbnail_width)#" /> </p>
+		<p>Height: <input type="text" name="content_thumbnail_height" value="#htmleditformat(form.content_thumbnail_height)#" /> </p>
+		<p>Crop: 
 		<cfscript>
 		ts = StructNew();
 		ts.name = "content_thumbnail_crop";
@@ -1336,7 +1337,8 @@
 		ts.listLabels="Yes|No";
 		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
-		</cfscript> (Default is 250x250, uncropped).</td>
+		</cfscript> (Default is 250x250, uncropped).</p>
+		</td>
         </tr>
 	<cfif application.zcore.app.getAppData("content").optionStruct.content_config_contact_links EQ 1>
 		<tr> 
@@ -2285,7 +2287,7 @@
 				<td style="vertical-align:top; width:30px; ">#row.content_id#</td>
 				<td style="vertical-align:top; width:100px; ">
 					<cfif contentphoto99 NEQ "">
-						<img alt="Image" src="#request.zos.currentHostName&contentphoto99#" width="100" height="70" /></a>
+						<img alt="Image" src="#request.zos.currentHostName&contentphoto99#" style="max-width:100%;" /></a>
 					<cfelse>
 						&nbsp;
 					</cfif></td>

@@ -197,7 +197,7 @@ still need to add all the meta data fields and photo display
 					<tr <cfif qsite.currentRow MOD 2 EQ 0>class="row1"<cfelse>class="row2"</cfif>>
 						<td style="vertical-align:top; width:30px; ">#qSite.manual_listing_unique_id#</td>
 						<td style="vertical-align:top; width:100px; "><cfif manual_listingphoto99 NEQ "">
-								<img alt="Image" src="#request.zos.currentHostName&manual_listingphoto99#" width="100" height="70" /></a>
+								<img alt="Image" src="#request.zos.currentHostName&manual_listingphoto99#" style="max-width:100%;" /></a>
 								<cfelse>
 								&nbsp;
 							</cfif></td>

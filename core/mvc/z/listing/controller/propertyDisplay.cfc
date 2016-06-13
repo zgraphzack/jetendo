@@ -1689,7 +1689,7 @@ structkeyexists(application.zcore.app.getAppData("listing").sharedStruct.mlsStru
 	</cfscript>
 	<td style="text-align:center; border-right:1px solid ##999;">
 	<cfif image neq false>
-		<a href="#propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif> target="_top" title="#htmleditformat(left(arguments.idx.listing_data_remarks,100))#"><img src="#application.zcore.listingCom.getThumbnail(image, request.lastPhotoId, 1, 100, 78, 1)#" width="100" height="78" class="listing-d-img" id="zlistingdimg#arguments.idx.listing_id#" alt="Listing Photo" /></a>
+		<a href="#propertyLink#" <cfif application.zcore.functions.zso(application.zcore.app.getAppData("listing").sharedStruct.optionStruct, 'mls_option_disable_detail_indexing',true,0) EQ 1>rel="nofollow"</cfif> target="_top" title="#htmleditformat(left(arguments.idx.listing_data_remarks,100))#"><img src="#application.zcore.listingCom.getThumbnail(image, request.lastPhotoId, 1, 100, 78, 1)#" style="max-width:100%;" class="listing-d-img" id="zlistingdimg#arguments.idx.listing_id#" alt="Listing Photo" /></a>
 	<cfelse>
 		Image N/A
 	</cfif>

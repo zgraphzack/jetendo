@@ -344,36 +344,34 @@ this.app_id=12;
 				arguments.linkStruct["Content Manager"].children["Problem Link Report"]=ts;
 			}
 		}
-		if(request.zos.isdeveloper){
-			if(structkeyexists(request.zos.globals, 'enableCSSFramework') and request.zos.globals.enableCSSFramework EQ 1){
-				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Layouts") EQ false){
-					ts=structnew();
-					ts.featureName="Manage Layouts";
-					ts.link="/z/admin/layout-page/index";
-					arguments.linkStruct["Content Manager"].children["Manage Layouts"]=ts;
-				}
-				if(request.zos.istestserver){
-					if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
-						ts=structnew();
-						ts.featureName="Manage Sections";
-						ts.link="/z/admin/section/index";
-						arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
-					}
-					/*
-					if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
-						ts=structnew();
-						ts.featureName="Theme Options";
-						ts.link="/z/admin/theme-options/index";
-						arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
-					}*/
-					/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
-						ts=structnew();
-						ts.featureName="Manage Design & Layout";
-						ts.link="/z/admin/template/index";
-						arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
-					}*/
-				}
+		if(request.zos.isdeveloper){ 
+			if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Layouts") EQ false){
+				ts=structnew();
+				ts.featureName="Manage Layouts";
+				ts.link="/z/admin/layout-page/index";
+				arguments.linkStruct["Content Manager"].children["Manage Layouts"]=ts;
 			}
+			if(request.zos.istestserver){
+				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Sections") EQ false){
+					ts=structnew();
+					ts.featureName="Manage Sections";
+					ts.link="/z/admin/section/index";
+					arguments.linkStruct["Content Manager"].children["Manage Sections"]=ts;
+				}
+				/*
+				if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Theme Options") EQ false){
+					ts=structnew();
+					ts.featureName="Theme Options";
+					ts.link="/z/admin/theme-options/index";
+					arguments.linkStruct["Content Manager"].children["Theme Options"]=ts;
+				}*/
+				/*if(structkeyexists(arguments.linkStruct["Content Manager"].children,"Manage Design &amp; Layout") EQ false){
+					ts=structnew();
+					ts.featureName="Manage Design & Layout";
+					ts.link="/z/admin/template/index";
+					arguments.linkStruct["Content Manager"].children["Manage Design &amp; Layout"]=ts;
+				}*/
+			} 
 		}
 	}
 	return arguments.linkStruct;
@@ -875,9 +873,9 @@ this.app_id=12;
 		form.content_config_thumbnail_width=application.zcore.functions.zso(form, 'content_config_thumbnail_width',true,250);
 		form.content_config_thumbnail_height=application.zcore.functions.zso(form, 'content_config_thumbnail_height',true,200);
 		form.content_config_thumbnail_crop=application.zcore.functions.zso(form, 'content_config_thumbnail_crop',true,0);
-		echo(' Width: <input type="text" name="content_config_thumbnail_width" value="#htmleditformat(form.content_config_thumbnail_width)#" /> 
-		Height: <input type="text" name="content_config_thumbnail_height" value="#htmleditformat(form.content_config_thumbnail_height)#" /> 
-		Crop: ');
+		echo(' <p>Width: <input type="text" name="content_config_thumbnail_width" value="#htmleditformat(form.content_config_thumbnail_width)#" /></p>
+		<p>Height: <input type="text" name="content_config_thumbnail_height" value="#htmleditformat(form.content_config_thumbnail_height)#" /></p>
+		<p>Crop: ');
 		ts = StructNew();
 		ts.name = "content_config_thumbnail_crop";
 		ts.radio=true;
@@ -887,7 +885,7 @@ this.app_id=12;
 		ts.listLabels="Yes|No";
 		ts.listValues="1|0";
 		application.zcore.functions.zInput_Checkbox(ts);
-		echo('(Default is 250x250, uncropped).</td>
+		echo('(Default is 250x250, uncropped).</p></td>
 		</tr>
 		</table>');
 	}
@@ -1715,15 +1713,16 @@ configCom.includeContentByName(ts);
 	row=arguments.row;
 	cityName=arguments.cityName;
 	propertyLink=arguments.propertyLink;
-	echo('<table ');
+	echo('<div ');
 	if(len(contentConfig.tablestyle)){
 		echo(contentConfig.tablestyle);
 	}else{
-		echo(' style="width:100%;"');
+	
+		echo(' class="zcontent-subpage-div" ');
 	}
-	echo('><tr>');
+	echo('>');
 	if(contentPhoto99 NEQ ""){
-		echo('<td class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;  vertical-align:top;padding-right:20px;">');
+		echo('<div class="zcontent-imagethumbwidth" style="width:#request.zos.thumbnailSizeStruct.width#px;">');
 		if(contentConfig.contentDisableLinks EQ false){
 			echo('<a href="#propertyLink#">');
 		}
@@ -1731,13 +1730,14 @@ configCom.includeContentByName(ts);
 		if(contentConfig.contentEmailFormat or application.zcore.functions.zso(request, 'contentUseSmallThumbnails',false,false) NEQ false){
 			echo('width="120"');
 		}
-		echo(' style="border:none;" />');
+		echo(' style="border:none; max-width:100%;" />');
 		if(contentConfig.contentDisableLinks EQ false){
 			echo('</a>');
 		}
-		echo('</td>');
+		echo('</div>');
 	}
-	echo('<td style="vertical-align:top; ">');
+	
+	echo('<div class="z-content-text-div" style="">');
 	if(application.zcore.functions.zso(form, 'content_id') NEQ row.content_id or contentConfig.contentForceOutput){
 		if(application.zcore.functions.zso(form, 'contentHideTitle',false,false) EQ false){
 			echo('<h2>');
@@ -1753,9 +1753,8 @@ configCom.includeContentByName(ts);
 	}
 	if(contentConfig.disableChildContentSummary EQ false){
 		if(row.content_is_listing EQ 1){
-			echo('<table style="width:100%;">
-			<tr>
-			  <td>');
+			echo('<div style="width:100%; float:left;">
+			<div>');
 			if(row.content_property_bedrooms NEQ 0){
 				echo('#row.content_property_bedrooms# Bedroom');
 			}
@@ -1768,14 +1767,14 @@ configCom.includeContentByName(ts);
 					echo('<br />#qCp3i2.content_property_type_name#');
 				}
 			}
-			echo('</td><td style="white-space:nowrap;">');
+			echo('</div><div style="white-space:nowrap;">');
 			if(row.content_property_bathrooms NEQ 0 or row.content_property_half_baths NEQ 0){
 				echo('#row.content_property_bathrooms# Bath ');
 				if(row.content_property_half_baths NEQ 0){
 					echo('<br />#row.content_property_half_baths# half&nbsp;baths');
 				}
 			}
-			echo('</td><td style="white-space:nowrap;">');
+			echo('</div><div style="white-space:nowrap;">');
 			if(row.content_property_sqfoot NEQ "" and row.content_property_sqfoot NEQ 0){
 				echo('#row.content_property_sqfoot# SQFT<br />');
 			}
@@ -1798,7 +1797,7 @@ configCom.includeContentByName(ts);
 			if(row.content_property_country NEQ "" and row.content_property_country NEQ "US"){ 
 				writeoutput(" "&row.content_property_country);
 			}
-			echo('</td></tr></table>');
+			echo('</div></div>');
 
 			if(row.content_price NEQ 0 and row.content_for_sale EQ 1){
 				echo('<span style="font-size:14px; font-weight:bold;">Priced at #dollarformat(row.content_price)#</span>');
@@ -1853,11 +1852,349 @@ configCom.includeContentByName(ts);
 			echo('<p class="zcontent-readmore-link"><strong><a href="#propertyLink#">Read More</a></strong></p>');
 		}
 	}
-	echo('</td></tr></table>');
+	echo('</div></div>');
 	if(row.content_id NEQ application.zcore.functions.zso(form, 'content_id')){
 		echo('<hr />');
 	}
 	</cfscript>
+</cffunction>
+ 
+<cffunction name="getContentInclude2ColumnHorizontal" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript>
+	<cfif arguments.ss.hasImages> 
+		<section class="section-1 z-pv-40">
+			<div class="z-row">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-hide-at-992 z-1of2">
+							<div class=" z-row z-table">
+								<div class="z-1of2  z-left-sidebar z-m-0 z-p-0">
+									<cfif d.image NEQ ""> 
+										<cfif enableLinks>
+											<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+										<cfelse>
+											<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+										</cfif>
+									<cfelse>
+										&nbsp;
+									</cfif>
+								</div>
+								<div class="z-column   z-ml-0 ">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+				<div class="z-show-at-992 z-pv-10 z-equal-heights" data-children-class=".childEqualHeights">
+					
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-column z-p-0 z-mb-20" style="display:table;">
+							<div class="z-1of3 z-m-0 z-p-0 z-fluid-at-767">
+								<cfif d.image NEQ ""> 
+									<cfif enableLinks>
+										<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+									<cfelse>
+										<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+									</cfif>
+								<cfelse>
+									&nbsp;
+								</cfif>
+	
+							</div>
+							<div class="z-2of3 z-m-0 "  >
+								<div class="z-float-left z-fp-20">
+									<div class="z-h-24">
+										<cfif enableLinks>
+											<a href="#d.link#">#d.heading#</a>
+										<cfelse>
+											#d.heading#
+										</cfif>
+									</div>
+									<div class="z-t-16">#d.summary#</div>
+									<cfif enableLinks>
+										<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+									</cfif>
+								</div>
+							</div>
+						</div>
+					</cfloop>
+				</div>
+			</div> 
+		</section>
+	<cfelse>
+
+		<section class="section-1 z-pv-40">
+			<div class="z-container">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-1of2">
+							<div class=" z-container z-bg-white"> 
+								<div class="z-column">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+			</div> 
+		</section>
+	</cfif>
+
+</cffunction>
+
+
+<cffunction name="getContentInclude3ColumnHorizontal" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript>
+	<cfif arguments.ss.hasImages> 
+		<section class="section-1 z-pv-40">
+			<div class="z-row">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-hide-at-992 z-1of3">
+							<div class=" z-row z-table">
+								<div class="z-1of3  z-left-sidebar z-m-0 z-p-0">
+									<cfif d.image NEQ ""> 
+										<cfif enableLinks>
+											<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+										<cfelse>
+											<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+										</cfif>
+									<cfelse>
+										&nbsp;
+									</cfif>
+								</div>
+								<div class="z-column   z-ml-0 ">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+				<div class="z-show-at-992 z-pv-10 z-equal-heights" data-children-class=".childEqualHeights">
+					
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-column z-p-0 z-mb-20" style="display:table;">
+							<div class="z-1of3 z-m-0 z-p-0 z-fluid-at-767">
+								<cfif d.image NEQ ""> 
+									<cfif enableLinks>
+										<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+									<cfelse>
+										<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+									</cfif>
+								<cfelse>
+									&nbsp;
+								</cfif>
+	
+							</div>
+							<div class="z-2of3 z-m-0 "  >
+								<div class="z-float-left z-fp-20">
+									<div class="z-h-24">
+										<cfif enableLinks>
+											<a href="#d.link#">#d.heading#</a>
+										<cfelse>
+											#d.heading#
+										</cfif>
+									</div>
+									<div class="z-t-16">#d.summary#</div>
+									<cfif enableLinks>
+										<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+									</cfif>
+								</div>
+							</div>
+						</div>
+					</cfloop>
+				</div>
+			</div> 
+		</section>
+	<cfelse>
+
+		<section class="section-1 z-pv-40">
+			<div class="z-container">
+				<div class="z-pv-20 z-equal-heights"> 
+					<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+						<cfscript>
+						d=arrData[i];
+						</cfscript>
+						<div class="z-1of3">
+							<div class=" z-container z-bg-white"> 
+								<div class="z-column">
+									<div class=" z-fp-20">
+										<div class="z-h-24">
+											<cfif enableLinks>
+												<a href="#d.link#">#d.heading#</a>
+											<cfelse>
+												#d.heading#
+											</cfif>
+										</div>
+										<div class="z-t-16">#d.summary#</div>
+										<cfif enableLinks>
+											<a href="#d.link#" class="z-float-left z-pt-40 z-fpb-20">Read More</a>
+										</cfif>
+									</div>
+								</div>
+							</div>
+						</div>
+					</cfloop> 
+				</div>
+			</div> 
+		</section>
+	</cfif>
+
+</cffunction>
+ 
+<cffunction name="getContentInclude2ColumnVertical" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript> 
+	<section class="section-1 z-pv-40">
+		<div class="z-row">
+			<div class="z-pv-20 z-equal-heights"> 
+				<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+					<cfscript>
+					d=arrData[i];
+					</cfscript>
+					<div class="z-1of2">
+						<div class=" z-float"> 
+							<cfif arguments.ss.hasImages and d.image NEQ ""> 
+								<cfif enableLinks>
+									<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+								<cfelse>
+									<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+								</cfif> 
+							</cfif>
+
+						</div>
+						<div class=" z-float"> 
+							<div class=" z-p-20">
+								<div class="z-h-24">
+									<cfif enableLinks>
+										<a href="#d.link#">#d.heading#</a>
+									<cfelse>
+										#d.heading#
+									</cfif>
+								</div>
+								<div class="z-t-16">#d.summary#</div>
+								<cfif enableLinks>
+									<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+								</cfif>
+							</div>
+						</div>
+					</div>
+				</cfloop> 
+			</div> 
+		</div> 
+	</section> 
+
+</cffunction>
+
+ 
+<cffunction name="getContentInclude3ColumnVertical" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	enableLinks=arguments.ss.enableLinks;
+	arrData=arguments.ss.arrData;
+	</cfscript> 
+	<section class="section-1 z-pv-40">
+		<div class="z-row">
+			<div class="z-pv-20 z-equal-heights"> 
+				<cfloop from="1" to="#arraylen(arrData)#" index="i"> 
+					<cfscript>
+					d=arrData[i];
+					</cfscript>
+					<div class="z-1of3">
+						<div class=" z-float"> 
+							<cfif arguments.ss.hasImages and d.image NEQ ""> 
+								<cfif enableLinks>
+									<a href="#d.link#"><img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" /></a>
+								<cfelse>
+									<img src="#d.image#" alt="#htmleditformat(d.heading)#" class="z-fluid z-float-left" />
+								</cfif> 
+							</cfif>
+
+						</div>
+						<div class=" z-float"> 
+							<div class=" z-p-20">
+								<div class="z-h-24">
+									<cfif enableLinks>
+										<a href="#d.link#">#d.heading#</a>
+									<cfelse>
+										#d.heading#
+									</cfif>
+								</div>
+								<div class="z-t-16">#d.summary#</div>
+								<cfif enableLinks>
+									<a href="#d.link#" class="z-content-subpage-button z-float-left z-pt-40 z-fpb-20">Read More</a>
+								</cfif>
+							</div>
+						</div>
+					</div>
+				</cfloop> 
+			</div> 
+		</div> 
+	</section> 
+
 </cffunction>
 
 <cffunction name="getPropertyInclude" localmode="modern" output="yes" returntype="boolean">
@@ -1866,6 +2203,7 @@ configCom.includeContentByName(ts);
 	<cfargument name="arrOutputStruct" type="array" required="no" default="#[]#">
 	<cfargument name="limit" type="numeric" required="no" default="#0#">
 	<cfargument name="disableChildLinks" type="boolean" required="no" default="#false#">
+	<cfargument name="layoutType" type="numeric" required="no" default="#0#">
 	<cfscript>
 	var db=request.zos.queryObject;
 	var contentConfig=application.zcore.app.getAppCFC("content").getContentIncludeConfig();
@@ -1904,6 +2242,10 @@ configCom.includeContentByName(ts);
 	}
 	index=0;
 
+	hasImages=false;
+	arrData=[];
+
+
 	for(row in tempQueryName){
 		if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 			echo('<p>Outputting child page: #row.content_id#</p>');
@@ -1924,10 +2266,10 @@ configCom.includeContentByName(ts);
 		contentPhoto99=""; 
 		if(arraylen(arrImages) NEQ 0){
 			contentPhoto99=(arrImages[1].link);
+			hasImages=true;
 		}
 		savecontent variable="output"{
 
-			beginEditLink(contentConfig, row.content_id, false);
 			if(structkeyexists(request.zos, 'propertyIncludeIndex') EQ false){
 				request.zos.propertyIncludeIndex=0;
 			}
@@ -1960,9 +2302,21 @@ configCom.includeContentByName(ts);
 				if(request.zos.isDeveloper and structkeyexists(form, 'zdebug')){
 					echo("<p>Child page layout: regular: #row.content_id#</p>");
 				}
-				getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
+				if(arguments.layoutType EQ 0 or arguments.layoutType EQ 1){
+					beginEditLink(contentConfig, row.content_id, false);
+					getPropertyIncludeHTML(contentConfig, contentPhoto99, row, cityName, propertyLink);
+					endEditLink(contentConfig);
+				}else if(arguments.layoutType GTE 14 and arguments.layoutType LTE 17){
+					ts={
+						heading:row.content_name,  
+						summary:row.content_summary,
+						link:propertyLink,
+						image:contentPhoto99
+					};
+					arrayAppend(arrData, ts);
+					contentConfig.contentForceOutput=true;
+				}
 			}
-			endEditLink(contentConfig);
 		}
 		if(contentConfig.contentForceOutput EQ false){
 			ts=StructNew();
@@ -1984,6 +2338,41 @@ configCom.includeContentByName(ts);
 			writeoutput(output);	
 		}
 		includeLoopCount++;	
+	}
+	/* 
+	14 = 2 column horizontal image/text panels
+	15 = 3 column horizontal image/text panels
+	16 = 2 column vertical image/text panels
+	17 = 3 column vertical image/text panels  
+	*/  
+	if(arguments.layoutType EQ 14){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude2ColumnHorizontal(ts);
+	}else if(arguments.layoutType EQ 15){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude3ColumnHorizontal(ts);
+	}else if(arguments.layoutType EQ 16){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude2ColumnVertical(ts);
+	}else if(arguments.layoutType EQ 17){
+		ts={
+			hasImages:hasImages,
+			arrData:arrData,
+			enableLinks:!contentConfig.contentDisableLinks
+		};
+		getContentInclude3ColumnVertical(ts);
 	}
 	return includeLoopCount;
 	</cfscript>
@@ -2776,7 +3165,7 @@ configCom.includeContentByName(ts);
 	<cfscript>
 	if(arguments.contentConfig.contentEmailFormat EQ false and arguments.contentConfig.editLinksEnabled){
 	//structkeyexists(request.zos.userSession.groupAccess, "administrator") and 
-		writeoutput('<div style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
+		writeoutput('<div style="display:block; float:left; width:100%;"  id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit zEditorHTML" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 		if(arguments.primary){
 			application.zcore.template.prependTag('pagetitle','<span style="display:inline;" id="zcidspan#application.zcore.functions.zGetUniqueNumber()#" class="zOverEdit" data-editurl="/z/content/admin/content-admin/edit?content_id=#arguments.content_id#&amp;return=1">');
 			application.zcore.template.appendTag('pagetitle','</span>');
@@ -3213,7 +3602,7 @@ configCom.includeContentByName(ts);
 			}else{
 				application.zcore.template.prependtag("content",out99);
 			}
-			if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0){
+			if(subpageLinkLayoutBackup EQ 1 or subpageLinkLayoutBackup EQ 0 or subpageLinkLayoutBackup EQ 14 or subpageLinkLayoutBackup EQ 15 or subpageLinkLayoutBackup EQ 16 or subpageLinkLayoutBackup EQ 17){
 				if(subpageLinkLayoutBackup EQ 1){
 					ts43=structnew();
 					ts43.disableChildContentSummary=true;
@@ -3225,10 +3614,11 @@ configCom.includeContentByName(ts);
 
 				// need to disable child links somehow, using 
 				disableChildLinks=false;
-				if(qContent.content_child_disable_links EQ 1){
+				if(arguments.qContent.content_child_disable_links EQ 1){
 					disableChildLinks=true;
 				}
-				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks);
+
+				application.zcore.app.getAppCFC("content").getPropertyInclude(arguments.qContent.content_id, arguments.qContentChild, arguments.arrOutputStruct, arguments.limit, disableChildLinks, subpageLinkLayoutBackup);
 			}
 			structdelete(request.zos,'contentPropertyIncludeQueryName');
 		}

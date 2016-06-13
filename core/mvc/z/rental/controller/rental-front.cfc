@@ -1321,19 +1321,19 @@ application.zcore.template.appendTag("meta",tempMeta);
 	<table style="border-spacing:5px; width:100%;">
 	<tr>
 		<td>First Name:</td>
-		<td><input name="inquiries_first_name" type="text" size="30" maxlength="50" value="<cfif form.inquiries_first_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" /><span class="highlight"> * Required</span></td>
+		<td><input name="inquiries_first_name" type="text" size="30" maxlength="50" value="<cfif form.inquiries_first_name EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#form.inquiries_first_name#</cfif>" /><span class="highlight"> * Required</span></td>
 	</tr>
 	<tr>
 		<td>Last Name:</td>
-		<td><input name="inquiries_last_name" type="text" size="30" maxlength="50" value="<cfif form.inquiries_last_name EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /><span class="highlight"> * Required</span></td>
+		<td><input name="inquiries_last_name" type="text" size="30" maxlength="50" value="<cfif form.inquiries_last_name EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#form.inquiries_last_name#</cfif>" /><span class="highlight"> * Required</span></td>
 	</tr>
 	<tr>
 		<td>Email:</td>
-		<td><input name="inquiries_email" type="text" size="30" maxlength="50" value="<cfif form.inquiries_email EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /> <cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_email_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_email_required EQ 1><span class="highlight"> * Required</span> </cfif></td>
+		<td><input name="inquiries_email" type="text" size="30" maxlength="50" value="<cfif form.inquiries_email EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#<cfelse>#form.inquiries_email#</cfif>" /> <cfif structkeyexists(application.zcore.app.getAppData("content").optionStruct,'content_config_email_required') EQ false or application.zcore.app.getAppData("content").optionStruct.content_config_email_required EQ 1><span class="highlight"> * Required</span> </cfif></td>
 	</tr>
 	<tr>
 		<td>Phone:</td>
-		<td><input name="inquiries_phone1" type="text" size="30" maxlength="50" value="<cfif form.inquiries_phone1 EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /><cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1><span class="highlight"> * Required</span></cfif></td>
+		<td><input name="inquiries_phone1" type="text" size="30" maxlength="50" value="<cfif form.inquiries_phone1 EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#form.inquiries_phone1#</cfif>" /><cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1><span class="highlight"> * Required</span></cfif></td>
 	</tr>
 	<tr>
 		<td>Check-In Date:</td>

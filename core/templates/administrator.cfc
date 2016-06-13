@@ -160,6 +160,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 				</div>
 				<div style="min-width:200px; width:50%; padding:0.5%; text-align:right;float:right;">
 
+
 					<div style="width:70px; float:right;" class="zapp-shell-logout">
 					<a href="/z/admin/admin-home/index?zlogout=1">Log Off</a>
 					</div>
@@ -206,7 +207,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 						selectStruct = StructNew();
 						selectStruct.name = "changeSiteID";
 						selectStruct.query = qSite;
-						selectStruct.inlineStyle="width:120px;";
+						selectStruct.inlineStyle="width:120px; border-radius:5px;border:none;padding:5px;";
 						selectStruct.selectLabel="-- Change Site --";
 						selectStruct.onchange="var d1=this.options[this.selectedIndex].value;if(d1 !=''){window.location.href=d1+'/member/';}";
 						selectStruct.queryLabelField = "shortDomain";
@@ -215,6 +216,41 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='##1e5799', en
 					}
 					</cfscript>
 					</div>
+
+					<section class="zCreateNewContainer" style="">
+						<a href="##" class="z-button zCreateNewButton">Create New</a>
+						<div class="zCreateDropMenu z-text-left">
+							<cfif application.zcore.app.siteHasApp("content")>
+								<a href="/z/content/admin/content-admin/add">Page</a>
+							</cfif>
+							<cfif application.zcore.app.siteHasApp("blog")>
+							<a href="/z/blog/admin/blog-admin/articleAdd">Blog Article</a>
+							</cfif>
+							<cfif application.zcore.app.siteHasApp("event")>
+							<a href="/z/event/admin/manage-events/add">Event</a>
+							</cfif>
+							<a href="/z/admin/member/add">User</a>
+							<a href="/z/inquiries/admin/inquiry/add">Lead</a>
+							<hr />
+							<cfscript>
+							db.sql="select * from #db.table("site_option_group", request.zos.zcoreDatasource)# WHERE 
+							site_id = #db.param(request.zos.globals.id)# and 
+							site_option_group_enable_new_button=#db.param(1)# and 
+							site_option_group.site_option_group_disable_admin=#db.param(0)# and 
+							site_option_group_admin_app_only= #db.param(0)# and
+							site_option_group_deleted=#db.param(0)# 
+							ORDER BY site_option_group_display_name ASC"; 
+							qGroup=db.execute("qGroup");
+							for(row in qGroup){
+								featureName="Custom: "&row.site_option_group_display_name;	
+								if(not application.zcore.adminSecurityFilter.checkFeatureAccess(featureName)){
+									continue;
+								}
+								echo('<a href="/z/admin/site-options/addGroup?site_option_app_id=0&site_option_group_id=#row.site_option_group_id#&site_x_option_group_set_parent_id=0">#row.site_option_group_display_name#</a>');
+							}
+							</cfscript>
+						</div>
+					</section>
 				</div>
 			</div>
 		<cfif not request.zos.inServerManager>

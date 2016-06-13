@@ -93,7 +93,9 @@ function zListingLoadSavedCart(){
 }
 
 
+
 zArrDeferredFunctions.push(zListingLoadSavedCart);
+
 
 function zSetupListingCartButtons(){
 
@@ -117,6 +119,7 @@ function zSetupListingCartButtons(){
 		tempObj.url="/z/listing/sl/add?listing_id="+id;  
 		zAjax(tempObj);   
 	}); 
+
 
 	$(document).on("click", ".zls-removeListingButton", function(e){
 		e.preventDefault();

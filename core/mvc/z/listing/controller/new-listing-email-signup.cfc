@@ -50,19 +50,19 @@
 	<cfelse>
             <tr>
                 <th>First Name: *</th>
-                <td><input name="inquiries_first_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_first_name') EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#application.zcore.functions.zso(form,'inquiries_first_name')#</cfif>" /></td>
+                <td><input name="inquiries_first_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_first_name') EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_first_name')#<cfelse>#application.zcore.functions.zso(form,'inquiries_first_name')#</cfif>" /></td>
             </tr>
             <tr>
                 <th>Last Name: *</th>
-                <td><input name="inquiries_last_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_last_name') EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_last_name')#</cfif>" /></td>
+                <td><input name="inquiries_last_name" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_last_name') EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_last_name')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_last_name')#</cfif>" /></td>
             </tr>
 		<tr><td style="vertical-align:top;">Email Address: *</td>
-		<td><input type="text" name="saved_search_email" style="max-width:300px;" value="<cfif isDefined('request.zsession.saved_search_email')>#request.zsession.saved_search_email#<cfelse>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" />
+		<td><input type="text" name="saved_search_email" style="max-width:300px;" value="<cfif isDefined('request.zsession.saved_search_email')>#request.zsession.saved_search_email#<cfelseif not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_email')#</cfif>" />
 		</td>
 		</tr>
             <tr>
                 <th>Phone: <cfif application.zcore.app.getAppData("content").optionStruct.content_config_phone_required EQ 1>*</cfif></th>
-                <td><input name="inquiries_phone1" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_phone1') EQ ''>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_phone1')#</cfif>" /></td>
+                <td><input name="inquiries_phone1" type="text" style="max-width:300px;" maxlength="50" value="<cfif application.zcore.functions.zso(form,'inquiries_phone1') EQ '' and not application.zcore.user.checkGroupAccess("administrator")>#application.zcore.functions.zso(request.zsession, 'inquiries_phone1')#<cfelse>#application.zcore.functions.zso(form, 'inquiries_phone1')#</cfif>" /></td>
             </tr>
 	</cfif> 
 	<tr>

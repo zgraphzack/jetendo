@@ -1782,5 +1782,71 @@ rs=application.zcore.functions.zDisplayLazyResponsiveBackgroundImage(ts);
 	return rs;
 	</cfscript> 
 </cffunction> 
+
+
+<!--- 
+<cfscript>
+// note, you may need to increase request timeout, if the transfer can take longer then 20 seconds.  
+// i.e.  <cfsetting requesttimeout="300"> or <cfscript>setting requesttimeout="300"; </cfscript> to make it 5 minutes
+ts={
+	server:"", // ftp host
+	username:"", // ftp username
+	password:"", // ftp password
+	passive:"yes",  // "yes" or "no"
+	transfermode: "ASCII", // "auto", "ASCII" or "binary"
+	timeout:20, // number of seconds before failing
+	localAbsoluteFilePath: "", // i.e. request.zos.globals.privateHomeDir&"localFile.txt"
+	remoteFilePath: "" // i.e. /files/remoteFile.txt
+
+}
+rs=application.zcore.functions.zGetFtpFile(ts);
+if(rs.success){
+	echo('File downloaded to '&ts.localAbsoluteFilePath);
+}else{
+	echo('FTP download failed with the following error:');
+	writedump(rs.errorMessage);
+	abort;
+}
+</cfscript>
+--->
+<cffunction name="zGetFTPFile" access="public" localmode="modern">
+	<cfargument name="ss" type="struct" required="yes">
+	<cfscript>
+	ts={
+		passive:"yes",  // "yes" or "no"
+		transfermode: "ASCII", // "auto", "ASCII" or "binary"
+		timeout:20 // number of seconds before failing
+	}
+	ss=arguments.ss;
+	structappend(ss, ts, false);
+	tempPath=ss.localAbsoluteFilePath&".tmp"&gettickcount(); 
+	application.zcore.functions.zdeletefile(tempPath);
+	
+	try{
+		ftp action="GETFILE" username="#ss.username#" password="#ss.password#" server="#ss.server#"  localfile="#tempPath#" remotefile="#ss.remoteFilePath#" connection="conn" transfermode="#ss.transfermode#" failifexists="No" timeout="#ss.timeout#" passive="#ss.passive#" stoponerror="No"; 
+	}catch(Any e){
+		application.zcore.functions.zdeletefile(tempPath);
+		savecontent variable="out"{
+			writedump(e);
+		}
+		return { success:false, errorMessage:out};
+	}
+	
+	try{ 
+		application.zcore.functions.zdeletefile(ss.localAbsoluteFilePath);
+		application.zcore.functions.zrenamefile(tempPath, ss.localAbsoluteFilePath);
+	}catch(Any e){
+		application.zcore.functions.zdeletefile(tempPath);
+		savecontent variable="out"{
+			echo("File didn't exist or rename failed.");
+		}
+		return { success:false, errorMessage:out};
+	}
+	if(not fileexists(ss.localAbsoluteFilePath)){
+		return { success:false, errorMessage:"File didn't exist after transfer succeeded."};
+	}
+	return {success:true};
+	</cfscript>
+</cffunction>
 </cfoutput>
 </cfcomponent>

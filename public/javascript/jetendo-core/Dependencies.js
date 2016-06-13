@@ -28,8 +28,8 @@ Jetendo.Dependencies={
 		"\/z\/javascript\/jetendo\/video-library-functions.js",
 		"\/z\/javascript\/jetendo\/zAjaxCycle.js",
 		"\/z\/javascript\/jetendo\/zCart.js",
-		"\/z\/javascript\/jetendo\/zRecurringEvent.js"
-		"\/z\/javascript\/jetendo\/css-framework.js",
+		"\/z\/javascript\/jetendo\/zRecurringEvent.js",
+		"\/z\/javascript\/jetendo\/css-framework.js"
 	]
 ],
 "jetendo-listing":[[ 

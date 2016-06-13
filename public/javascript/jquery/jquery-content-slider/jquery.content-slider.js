@@ -49,7 +49,11 @@
 		// Loop through all instances of our slider and set them up individually.
 		return this.each( function() {
 			var slider = $( this );
-			var slides = slider.children( settings.childSelector );
+
+			slider.html( '<div class="content-slides-container">' + slider.html() + '</div>' );
+			var slidesContainer = $( '.content-slides-container', slider );
+
+			var slides = slidesContainer.children( settings.childSelector );
 
 			var lastSlideIndex   = 0;
 			var activeSlideIndex = 0;
@@ -63,7 +67,7 @@
 
 			slider.addClass( 'content-slider' );
 			slides.addClass( 'content-slide' ).hide();
-			$( settings.childSelector + ':first-child', slider ).addClass( 'active' ).show();
+			$( settings.childSelector + ':first-child', slidesContainer ).addClass( 'active' ).show();
 
 			if ( totalSlides <= 1 ) {
 				return;
@@ -73,7 +77,7 @@
 				calculateHeights: function() {
 					// Loop through all slides, get tallest slide, set container height.
 					var containerHeight = 0;
-					var sliderHeight    = slider.outerHeight();
+					var sliderHeight    = slidesContainer.outerHeight();
 
 					slides.each( function( slideIndex ) {
 						var slideHeight = $( slides[ slideIndex ] ).outerHeight();
@@ -83,7 +87,7 @@
 						}
 					} );
 
-					slider.css( { "height": ( containerHeight + sliderHeight ) + "px" } );
+					slidesContainer.css( { "height": ( containerHeight + sliderHeight ) + "px" } );
 				},
 				animateSlide: function( slideIndex, lastSlideIndex, forceDirection ) {
 					var forceDirection = forceDirection || 0;
@@ -347,7 +351,7 @@
 
 				the_window.resize( function() {
 					// Re-calculate heights when window size changes.
-					slider.css( { 'height': 'auto' } );
+					slidesContainer.css( { 'height': 'auto' } );
 					slider.calculateHeights()
 				} );
 			}

@@ -223,12 +223,7 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="nav" localmode="modern" access="public" roles="member">
-	<cfscript>
-	if(not structkeyexists(request.zos.globals, 'enableCSSFramework') or request.zos.globals.enableCSSFramework EQ 0){
-		throw("Enable CSS Framework is required to use this feature.");
-	}
-	</cfscript>
+<cffunction name="nav" localmode="modern" access="public" roles="member"> 
 	<p> 
 		<a href="/z/admin/layout-breakpoint/index">Breakpoints</a> | 
 		<a href="/z/admin/layout-global/index">Global Layout Settings</a> | 
