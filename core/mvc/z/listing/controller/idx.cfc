@@ -238,118 +238,127 @@
 		writeoutput(request.zos.sharedPath&this.optionstruct.filePath&'<br />');
 		
 		
-		variables.csvParser=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.csvParser");
-		variables.csvParser.pathToOstermillerCSVParserJar=application.zcore.cfmlwebinfpath&"lib/ostermillerutils.jar";
-		variables.csvParser.enableJava=request.zos.isJavaEnabled;
-		variables.csvParser.arrColumn=this.optionstruct.arrColumns;
-		variables.csvParser.separator=this.optionStruct.delimiter;
-		variables.csvParser.textQualifier=this.optionstruct.csvquote;
-		variables.csvParser.init();
-		if(this.optionstruct.skipBytes NEQ 0){
-			// skip the partially read line
-			line2=fileReadLine(request.zos.idxFileHandle);
-		}else if(this.optionstruct.first_line_columns EQ 1){
-			line2=fileReadLine(request.zos.idxFileHandle); // ignore columns since they were already read
+		if(fileIsEOF(request.zos.idxFileHandle)){
+			fileComplete=true;
 		}else{
-			line2="ignore";	
+			variables.csvParser=application.zcore.functions.zcreateobject("component", "zcorerootmapping.com.app.csvParser");
+			variables.csvParser.pathToOstermillerCSVParserJar=application.zcore.cfmlwebinfpath&"lib/ostermillerutils.jar";
+			variables.csvParser.enableJava=request.zos.isJavaEnabled;
+			variables.csvParser.arrColumn=this.optionstruct.arrColumns;
+			variables.csvParser.separator=this.optionStruct.delimiter;
+			variables.csvParser.textQualifier=this.optionstruct.csvquote;
+			variables.csvParser.init();
+			if(this.optionstruct.skipBytes NEQ 0){
+				// skip the partially read line
+				line2=fileReadLine(request.zos.idxFileHandle);
+			}else if(this.optionstruct.first_line_columns EQ 1){
+				line2=fileReadLine(request.zos.idxFileHandle); // ignore columns since they were already read
+			}else{
+				line2="ignore";	
+			}
+			fileComplete=false; 
+			if(fileIsEOF(request.zos.idxFileHandle)){
+				fileComplete=true;
+			}
+			currentOffset=0;
+			loopcount=0;
+			stillParsing=true;
+			addRowFailCount=0;
+
+			application.idxImportTimerStruct={
+				parseLine:0,
+				addRow:0,
+				checkDuplicates:0,
+				parseRow1:0,
+				loops:0,
+				parseRow2:0, 
+				"import-update-track-only":0,
+				"import-listing":0,
+				"import-listing_data":0,
+				"import-listing_track":0,
+				"import-listing_memory":0,
+				"import-update-listing":0,
+				"import-update-listing_data":0,
+				"import-update-listing_track":0,
+				"import-update-listing_memory":0
+			};
+			structdelete(application.zcore, 'abortIdxImport');
 		}
-		fileComplete=false; 
-		currentOffset=0;
-		loopcount=0;
-		stillParsing=true;
-		addRowFailCount=0;
+		if(not fileComplete){
+			while(gettickcount()-startTimeTemp LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
+				processedRow=false;
+				stopProcessing=false;
+				for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
+					application.idxImportTimerStruct.loops++;
+					startTime=gettickcount('nano');
 
-		application.idxImportTimerStruct={
-			parseLine:0,
-			addRow:0,
-			checkDuplicates:0,
-			parseRow1:0,
-			loops:0,
-			parseRow2:0, 
-			"import-update-track-only":0,
-			"import-listing":0,
-			"import-listing_data":0,
-			"import-listing_track":0,
-			"import-listing_memory":0,
-			"import-update-listing":0,
-			"import-update-listing_data":0,
-			"import-update-listing_track":0,
-			"import-update-listing_memory":0
-		};
-		structdelete(application.zcore, 'abortIdxImport');
-		while(gettickcount()-startTimeTemp LTE this.optionstruct.timeLimitInSeconds*1000){// and stillParsing){
-			processedRow=false;
-			stopProcessing=false;
-			for(i2=1;i2 LTE this.optionstruct.loopRowCount;i2++){
-				application.idxImportTimerStruct.loops++;
-				startTime=gettickcount('nano');
+					if(structkeyexists(application.zcore, 'abortIdxImport')){
+						throw("Aborting IDX Import due to manual cancellation");
+					}
+					application.zcore.idxImportStatus="Bytes read: "&this.optionStruct.skipBytes&" of "&request.zos.sharedPath&this.optionstruct.filepath;
+					loopcount++;
+					if(fileIsEOF(request.zos.idxFileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
+						fileComplete=true; 
+						break;	
+					}
+					line=fileReadLine(request.zos.idxFileHandle);
+					this.optionstruct.skipBytes+=len(line)+1;
+					line=variables.csvParser.parseLineIntoArray(line);  
 
-				if(structkeyexists(application.zcore, 'abortIdxImport')){
-					throw("Aborting IDX Import due to manual cancellation");
-				}
-				application.zcore.idxImportStatus="Bytes read: "&this.optionStruct.skipBytes&" of "&request.zos.sharedPath&this.optionstruct.filepath;
-				loopcount++;
-				if(fileIsEOF(request.zos.idxFileHandle) or (this.optionstruct.limitTestServer and request.zos.istestserver and loopcount GT 500)){
-					fileComplete=true; 
-					break;	
-				}
-				line=fileReadLine(request.zos.idxFileHandle);
-				this.optionstruct.skipBytes+=len(line)+1;
-				line=variables.csvParser.parseLineIntoArray(line);  
+					processedRow=true;
 
-				processedRow=true;
+					tempTime=gettickcount('nano');
+					application.idxImportTimerStruct.parseLine+=(tempTime-startTime);
+					startTime=tempTime;
 
-				tempTime=gettickcount('nano');
-				application.idxImportTimerStruct.parseLine+=(tempTime-startTime);
-				startTime=tempTime;
+					request.curline=line;
+					r1=this.addRow(line);
 
-				request.curline=line;
-				r1=this.addRow(line);
-
-				tempTime=gettickcount('nano');
-				application.idxImportTimerStruct.addRow+=(tempTime-startTime);
-				startTime=tempTime;
- 
-				if(r1 EQ false){
-					addRowFailCount++;
-					if(addRowFailCount GTE 10){
-						fileClose(request.zos.idxFileHandle);
-						application.zcore.functions.zRenameFile(request.zos.sharedPath&this.optionstruct.filepath, request.zos.sharedPath&this.optionstruct.filepath&"-corrupt-"&dateformat(now(),'yyyy-mm-dd')&'-'&timeformat(now(),'HH-mm-ss'));	
-						if(fileexists(request.zos.sharedPath&this.optionstruct.filepath&"-imported")){
-							application.zcore.functions.zCopyFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported", request.zos.sharedPath&this.optionstruct.filepath);	
+					tempTime=gettickcount('nano');
+					application.idxImportTimerStruct.addRow+=(tempTime-startTime);
+					startTime=tempTime;
+	 
+					if(r1 EQ false){
+						addRowFailCount++;
+						if(addRowFailCount GTE 10){
+							fileClose(request.zos.idxFileHandle);
+							application.zcore.functions.zRenameFile(request.zos.sharedPath&this.optionstruct.filepath, request.zos.sharedPath&this.optionstruct.filepath&"-corrupt-"&dateformat(now(),'yyyy-mm-dd')&'-'&timeformat(now(),'HH-mm-ss'));	
+							if(fileexists(request.zos.sharedPath&this.optionstruct.filepath&"-imported")){
+								application.zcore.functions.zCopyFile(request.zos.sharedPath&this.optionstruct.filepath&"-imported", request.zos.sharedPath&this.optionstruct.filepath);	
+							}
+							throw(request.addRowErrorMessage);
 						}
-						throw(request.addRowErrorMessage);
+					}
+					if(gettickcount()-request.totalRunTime GT 170000){
+						echo('Aborted due to nearing time limit');
+						stopProcessing=true;
+						//fileClose(request.zos.idxFileHandle);
+						//structdelete(application.zcore, 'importMLSRunning');
+						break;
+					}
+					if(this.optionstruct.delaybetweenloops NEQ 0){
+						sleep(this.optionstruct.delaybetweenloops);
 					}
 				}
-				if(gettickcount()-request.totalRunTime GT 170000){
-					echo('Aborted due to nearing time limit');
-					stopProcessing=true;
-					//fileClose(request.zos.idxFileHandle);
-					//structdelete(application.zcore, 'importMLSRunning');
+				startTime=gettickcount('nano');
+				this.checkDuplicates();
+
+				tempTime=gettickcount('nano');
+				application.idxImportTimerStruct.checkDuplicates+=(tempTime-startTime);
+				startTime=tempTime;
+
+				r22=this.import();
+	 
+
+				if(r22 EQ false){
+					break;	
+				}
+				if(fileComplete){
 					break;
 				}
-				if(this.optionstruct.delaybetweenloops NEQ 0){
-					sleep(this.optionstruct.delaybetweenloops);
+				if(not processedRow or stopProcessing){
+					break;
 				}
-			}
-			startTime=gettickcount('nano');
-			this.checkDuplicates();
-
-			tempTime=gettickcount('nano');
-			application.idxImportTimerStruct.checkDuplicates+=(tempTime-startTime);
-			startTime=tempTime;
-
-			r22=this.import();
- 
-
-			if(r22 EQ false){
-				break;	
-			}
-			if(fileComplete){
-				break;
-			}
-			if(not processedRow or stopProcessing){
-				break;
 			}
 		}
 		

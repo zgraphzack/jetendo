@@ -361,6 +361,9 @@
 			form.site_theme_sync_site_id=0;
 		}
 	}
+	if(form.site_lead_reminder_start_date NEQ "" and isdate(form.site_lead_reminder_start_date)){
+		form.site_lead_reminder_start_date=dateformat(form.site_lead_reminder_start_date, 'yyyy-mm-dd');
+	}
 	if(structkeyexists(form, 'site_enable_nginx_proxy_cache') EQ false){
 		form.site_enable_nginx_proxy_cache=0;
 	}
@@ -1407,16 +1410,34 @@
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Enable Lead User Reminder:</td>
-			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_user_reminder")#</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_user_reminder")# (Users with access to leads that don't have access to the site manager)</td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Enable Lead Admin Reminder:</td>
-			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_admin_reminder")#</td>
+			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_admin_reminder")# (Users with site manager access) </td>
 		</tr>
 		<tr>
-			<td style="vertical-align:top; width:140px;">Enable Lead Reminder For Users:</td>
+			<td style="vertical-align:top; width:140px;">Lead Reminder Disable CC:</td>
 			<td >#application.zcore.functions.zInput_Boolean("site_enable_lead_reminder_disable_cc")#</td>
+		</tr> 
+		<tr>
+			<td style="vertical-align:top; width:140px;">Lead Reminder Start Date:</td>
+			<td ><cfscript>
+			if(isdate(form.site_lead_reminder_start_date)){
+				form.site_lead_reminder_start_date=dateformat(form.site_lead_reminder_start_date, "m/d/yyyy");
+			}
+			ts={};
+			ts.name="site_lead_reminder_start_date"; 
+			application.zcore.functions.zInput_Text(ts);
+			</cfscript> (Reminders will not be sent for leads that were received before this date)</td>
 		</tr>
+		<cfscript>
+		application.zcore.functions.zRequireJqueryUI();
+		application.zcore.skin.addDeferredScript('   
+			$( "##site_lead_reminder_start_date" ).datepicker();
+		'); 
+		</cfscript>
+
 		<tr> 
 			<td style="vertical-align:top; width:140px;">Enable Manage Menu:</td>
 			<td >#application.zcore.functions.zInput_Boolean("site_enable_manage_menu")#</td>
@@ -1436,15 +1457,15 @@
 		</cfscript>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Lead Reminder 1 Delay:</td>
-			<td><input name="site_lead_reminder_email1_delay_minutes" type="number" value="#htmleditformat(form.site_lead_reminder_email1_delay_minutes)#"> minutes<br />Enter the delay between the assignment and first reminder.  0 disables the reminder.</td>
+			<td><input name="site_lead_reminder_email1_delay_minutes" type="number" style="min-width:50px; max-width:50px;" value="#htmleditformat(form.site_lead_reminder_email1_delay_minutes)#"> minutes<br />Enter the delay between the assignment and first reminder.  0 disables the reminder.</td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Lead Reminder 2 Delay:</td>
-			<td><input name="site_lead_reminder_email2_delay_minutes" type="number" value="#htmleditformat(form.site_lead_reminder_email2_delay_minutes)#"> minutes<br />Enter the delay between the first and second reminder.  0 disables the reminder.</td>
+			<td><input name="site_lead_reminder_email2_delay_minutes" type="number" style="min-width:50px; max-width:50px;" value="#htmleditformat(form.site_lead_reminder_email2_delay_minutes)#"> minutes<br />Enter the delay between the first and second reminder.  0 disables the reminder.</td>
 		</tr>
 		<tr>
 			<td style="vertical-align:top; width:140px;">Lead Reminder 3 Delay:</td>
-			<td><input name="site_lead_reminder_email3_delay_minutes" type="number" value="#htmleditformat(form.site_lead_reminder_email3_delay_minutes)#"> minutes<br />Enter the delay between the second and third reminder.  0 disables the reminder.</td>
+			<td><input name="site_lead_reminder_email3_delay_minutes" type="number" style="min-width:50px; max-width:50px;" value="#htmleditformat(form.site_lead_reminder_email3_delay_minutes)#"> minutes<br />Enter the delay between the second and third reminder.  0 disables the reminder.</td>
 		</tr>
  
 		<!--- <tr >

@@ -140,7 +140,13 @@ doesn't work anymore
 	$t->startTimeOffsetSeconds=0;
 	$t->url=$adminDomain."/z/listing/tasks/sendListingAlerts/index";
 	array_push($arrTask, $t);
-
+ 
+	$t=new stdClass();
+	$t->logName="send-lead-reminders.html";
+	$t->interval="daily";
+	$t->startTimeOffsetSeconds=1500;
+	$t->url=$adminDomain."/z/server-manager/tasks/send-lead-reminders/index";
+	array_push($arrTask, $t);
 
 	$t=new stdClass();
 	$t->logName="send-listing-email-alerts.html";
