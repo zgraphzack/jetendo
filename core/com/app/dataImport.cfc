@@ -18,6 +18,7 @@ this.currentLine="";
 <!--- 
 <!--- Data Import Component USAGE:	 --->
 <cfscript>
+
 dataImportCom = CreateObject("component", "zcorerootmapping.com.app.dataImport");
 csvData = "string with csv data";
 dataImportCom.parseCSV(csvData);
@@ -49,6 +50,7 @@ ts.escapedBy='"';
 ts.textQualifier='"';
 ts.seperator=",";
 ts.lineDelimiter=chr(10);
+ts.bufferedReadEnabled=true; // warning - if the file has rows with line breaks between text qualifiers, then you must set bufferedReadEnabled to false.
 dataImportCom.init(ts);
  --->
 <cffunction name="init" localmode="modern" output="true" returntype="any">		
@@ -176,7 +178,88 @@ dataImportCom.init(ts);
 <cffunction name="parseCSV" localmode="modern" output="true" returntype="any">
 	<cfargument name="data" type="string" required="yes">
 	<cfscript>
-	this.arrLines = ListToArray(arguments.data, this.config.lineDelimiter);
+	//this.arrLines = ListToArray(arguments.data, this.config.lineDelimiter);
+	chars=len(arguments.data);  
+	arrList = ArrayNew(1);
+	currentGroupId=0;  
+	inQuote=false;
+	arrFields=ArrayNew(1);
+	this.arrLines=[];
+	fStart=1; 
+	lastFieldEndPosition=0;
+	if(this.config.lineDelimiter EQ chr(10)){
+		returnChar=chr(13);
+	}
+	if(this.config.lineDelimiter EQ chr(13)){
+		returnChar=chr(10);
+	}
+	line=arguments.data;
+	for(i=1;i LTE chars;i++){
+		letter=line[i];
+		if(inQuote){
+			if(letter EQ this.config.textQualifier and (fStart EQ i or (mid(line,i-1,1) NEQ this.config.escapedBy))){
+				//if(mid(line,i+1,1) EQ this.config.seperator){// or i+1 GTE len(line)){
+					inQuote=false;
+					field = mid(line,fStart,(i-fStart));
+					// unescape double quotes
+					if(this.config.escapedBy NEQ ''){
+						field = replace(field,this.config.escapedBy&this.config.textQualifier,this.config.textQualifier,"ALL");
+					}
+					ArrayAppend(arrFields,field);
+					lastFieldEndPosition=i;
+					fStart=i+1;
+				//}
+			}
+		}else{
+			if(letter EQ this.config.lineDelimiter){ 
+				storeField=true;
+				if(i GT 1 and line[i-1] EQ this.config.seperator){
+					storeField=false;
+				}else if(i GT 1 and line[i-2] EQ this.config.textQualifier){
+					storeField=false;
+				}else if(i GT 2 and line[i-2] EQ this.config.seperator and line[i-1] EQ returnChar){
+					storeField=false;
+				}else if(i GT 2 and line[i-2] EQ this.config.textQualifier and line[i-1] EQ returnChar){
+					storeField=false;
+				}
+				if(storeField){
+					field = trim(mid(line,fStart,(i-fStart-1))); 
+					ArrayAppend(arrFields, field); 
+				}
+				arrayAppend(this.arrLines, arrFields);
+				arrFields=[];
+				fStart=i+1;
+			}else if(letter EQ this.config.textQualifier and fStart EQ i){
+				inQuote=true;
+				fStart=i+1;
+			}else if(letter EQ this.config.seperator){
+				// if first time, or the separator is repeated
+				if(i EQ 1 or mid(line,i-1,1) EQ this.config.seperator){
+					ArrayAppend(arrFields,'');
+					lastFieldEndPosition=i;
+				}else if(fStart NEQ i){
+					field = mid(line,fStart,(i-fStart));
+					ArrayAppend(arrFields, trim(field));
+					lastFieldEndPosition=i;
+				}
+				if(i+1 EQ len(line)){
+					ArrayAppend(arrFields,'');
+					lastFieldEndPosition=i;
+				}
+				fStart=i+1;
+			}else if(i EQ len(line) and fStart NEQ i){
+				field = mid(line,fStart,(i-fStart)+1);
+				ArrayAppend(arrFields, trim(field));
+				lastFieldEndPosition=i;
+			}
+		}
+	}
+	if(right(trim(line),1) EQ this.config.seperator){
+		ArrayAppend(arrFields,'');
+	} 
+	if(arrayLen(arrFields)){
+		arrayAppend(this.arrLines, arrFields);
+	} 
 	</cfscript>
 </cffunction>
 
@@ -199,8 +282,10 @@ dataImportCom.init(ts);
 			return false;
 		}
 		line=filereadline(this.fileHandle);
+		// TODO: enable buffered csv parse not based on filereadline
 	}else{
-		line = this.arrLines[f];
+		return this.arrLines[f];
+		// line = this.arrLines[f];
 	} 
 	this.currentLine=line;
 	inQuote=false;
