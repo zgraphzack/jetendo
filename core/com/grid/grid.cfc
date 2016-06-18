@@ -88,12 +88,12 @@ application.zcore.gridCom.getGridForm(ts); --->
 	groupFields={};
 	boxFields={};
 	for(row in qGroupFields){
-		if(row.field NEQ "site_id"){
+		if(row.field NEQ "site_id" and row.field NEQ "grid_group_deleted" and row.field NEQ "grid_group_updated_datetime"){
 			groupFields[row.field]=true;
 		}
 	}
 	for(row in qBoxFields){
-		if(row.field NEQ "site_id"){
+		if(row.field NEQ "site_id" and row.field NEQ "grid_box_deleted" and row.field NEQ "grid_box_updated_datetime"){
 			boxFields[row.field]=true;
 		}
 	}
@@ -107,7 +107,6 @@ application.zcore.gridCom.getGridForm(ts); --->
 		gridStruct.settings.grid_id=row.grid_id;
 		gridStruct.settings.grid_active=row.grid_active;
 		gridStruct.settings.grid_visible=row.grid_visible;
-		gridStruct.settings.grid_deleted=row.grid_deleted;
 		if(row.grid_group_id NEQ ""){
 			if(not structkeyexists(uniqueGroup, row.grid_group_id)){ 
 				ts={
@@ -121,9 +120,11 @@ application.zcore.gridCom.getGridForm(ts); --->
 				uniqueGroup[row.grid_group_id]=arrayLen(gridStruct.groups);
 			}
 
-			ts={};
+			ts={
+				data:{}
+			};
 			for(field in boxFields){
-				ts[field]=row[field];
+				ts.data[field]=row[field];
 			}
 			arrayAppend(gridStruct.groups[uniqueGroup[row.grid_group_id]].boxes, ts);
 		}
@@ -176,6 +177,7 @@ application.zcore.gridCom.getGridForm(ts); --->
 
 	for(group in ds.groups){
 		group.settings.site_id=request.zos.globals.id;
+		group.settings.grid_deleted=0;
 		group.settings.grid_group_updated_datetime=request.zos.mysqlnow;
 		ts={
 			table:"grid_group",
@@ -194,23 +196,24 @@ application.zcore.gridCom.getGridForm(ts); --->
 			application.zcore.functions.zUpdate(ts);
 		}
 		for(box in group.boxes){
-			box.grid_box_updated_datetime=request.zos.mysqlnow;
-			box.grid_group_id=group.settings.grid_group_id;
-			box.site_id=request.zos.globals.id;
+			box.data.grid_box_updated_datetime=request.zos.mysqlnow;
+			box.data.grid_box_deleted=0;
+			box.data.grid_group_id=group.settings.grid_group_id;
+			box.data.site_id=request.zos.globals.id;
 			ts={
 				table:"grid_box",
 				struct:box,
 				datasource:request.zos.zcoreDatasource
 			};
-			if(box.grid_box_id EQ 0){
-				box.grid_box_id=application.zcore.functions.zInsert(ts);
-				arrayAppend(arrR, 'insert box #box.grid_box_id#<br>');
-				if(not box.grid_box_id){
+			if(box.data.grid_box_id EQ 0){
+				box.data.grid_box_id=application.zcore.functions.zInsert(ts);
+				arrayAppend(arrR, 'insert box #box.data.grid_box_id#<br>');
+				if(not box.data.grid_box_id){
 					rs={success:false, 'Save failed. Box insert failed'};
 					application.zcore.functions.zReturnJson(rs);
 				}
 			}else{
-				arrayAppend(arrR, 'update box #box.grid_box_id#<br>');
+				arrayAppend(arrR, 'update box #box.data.grid_box_id#<br>');
 				application.zcore.functions.zUpdate(ts);
 			}
 		}
@@ -497,6 +500,7 @@ application.zcore.gridCom.getGridForm(ts); --->
 	application.zcore.functions.zRequireJqueryUI();
 
 
+	application.zcore.skin.includeJS("/z/javascript/jetendo-grid/grid-manager.js");
 	//application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
 	</cfscript>
 	<section>
@@ -514,6 +518,8 @@ application.zcore.gridCom.getGridForm(ts); --->
 					</div>
 				</div>
 				<div class="z-2of5">
+					<p><a href="##" class="groupFormButton" data-id="1">Edit Group</a></p>
+					<p><a href="##" class="boxFormButton" data-id="1">Edit Box</a></p>
 					<textarea id="gridDebugId" cols="50" rows="5" style="font-size:12px; height:400px;  width:100% !important; "></textarea>
 				</div>
 			</div>
@@ -558,6 +564,10 @@ application.zcore.gridCom.getGridForm(ts); --->
 		$("##gridDebugId").val(JSON.stringify(gridData, null, 4));
 		//arrHTML.push("grid_id:"+gridData.grid.grid_id);
 		$("##gridEditorContent").show().html(arrHTML.join("\n"));
+
+		renderGridHTML();
+		// gridDiv
+		// 
 	}
 
 	zArrDeferredFunctions.push(function(){

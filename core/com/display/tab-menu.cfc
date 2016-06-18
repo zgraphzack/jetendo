@@ -88,7 +88,10 @@
 				expires: 3000,
 				name: "zmember-tabs#variables.tabMenuIndex#-#variables.menuName#"
 			}
-		})<cfif variables.verticalMenu>.addClass( "zmember-tabs-vertical ui-helper-clearfix" )</cfif>;
+		})
+		/*<cfif variables.verticalMenu>*/
+		user_tabs.addClass( "zmember-tabs-vertical ui-helper-clearfix" );
+		/*</cfif>*/
 	});
 	/* ]]> */
 	</script>
@@ -111,10 +114,10 @@
 					<li class="zmember-tabs-buttons">
 					<cfif variables.hasWriteAccess>
 
-						<button type="button" style="display:none;" name="tabSubmitForm#variables.tabMenuIndex#-1-2" id="tabSubmitForm#variables.tabMenuIndex#-1-2">Please Wait</button>
-						<button type="submit" onclick="this.style.display='none';document.getElementById('tabSubmitForm#variables.tabMenuIndex#-1-2').style.display='block'" name="tabSubmitForm#variables.tabMenuIndex#-1">Save</button>
+						<button type="button" class="tabWaitButton" style="display:none;" name="tabSubmitForm#variables.tabMenuIndex#-1-2" id="tabSubmitForm#variables.tabMenuIndex#-1-2">Please Wait</button>
+						<button type="submit" class="tabSaveButton" onclick="this.style.display='none';document.getElementById('tabSubmitForm#variables.tabMenuIndex#-1-2').style.display='block'" name="tabSubmitForm#variables.tabMenuIndex#-1">Save</button>
 					</cfif>
-					<button type="button" onclick="window.location.href='#jsstringformat(variables.cancelURL)#';" name="tabSubmitForm#variables.tabMenuIndex#-1">Cancel</button>
+					<button type="button" class="tabCancelButton" <cfif variables.cancelURL NEQ "">onclick="window.location.href='#jsstringformat(variables.cancelURL)#';"</cfif> name="tabSubmitForm#variables.tabMenuIndex#-1">Cancel</button>
 					</li>
 				</cfif>
 				</ul>
@@ -164,7 +167,7 @@
 	}
 	variables.tabMenuOpen=false;
 	variables.fieldSetOpen=false;
-	returnValue='<fieldset id="zmember-tabs'&variables.tabMenuIndex&'-'&(arraylen(variables.arrTab)+1)&'"></fieldset>';
+	returnValue='';//<fieldset id="zmember-tabs'&variables.tabMenuIndex&'-'&(arraylen(variables.arrTab)+1)&'"></fieldset>';
 	if(variables.saveButtons){
 		returnValue&='<fieldset class="zmember-tabs-buttons-bottom">';
 		if(variables.hasWriteAccess){

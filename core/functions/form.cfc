@@ -512,8 +512,8 @@ USAGE
 <cffunction name="zInput_Boolean" localmode="modern" returntype="any" output="false">
 	<cfargument name="fieldName" type="string" required="yes">
 	<cfscript>
-	var yes = '<input name="#arguments.fieldName#" id="#arguments.fieldName#1" style="border:none; background:none;" type="radio" value="1"';
-	var no = '<input name="#arguments.fieldName#" id="#arguments.fieldName#0" style="border:none; background:none;" type="radio" value="0"'; 
+	var yes = '<input name="#arguments.fieldName#" class="zBooleanRadio" id="#arguments.fieldName#1" style="border:none; background:none;" type="radio" value="1"';
+	var no = '<input name="#arguments.fieldName#" class="zBooleanRadio" id="#arguments.fieldName#0" style="border:none; background:none;" type="radio" value="0"'; 
 	if(structkeyexists(form, arguments.fieldName) and form[arguments.fieldName] NEQ "" and form[arguments.fieldName]){
 		yes = yes&' checked';
 	}else{
