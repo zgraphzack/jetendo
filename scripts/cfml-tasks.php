@@ -75,6 +75,14 @@ function getTasks(){
 	$t->url=$adminDomain."/z/_com/app/image-library?method=deleteInactiveImageLibraries";
 	array_push($arrTask, $t);
 
+
+	$t=new stdClass();
+	$t->logName="delete-inactive-grid.html";
+	$t->interval=3600;
+	$t->startTimeOffsetSeconds=2820;
+	$t->url=$adminDomain."/z/_com/grid/grid?method=deleteInactiveGrid";
+	array_push($arrTask, $t);
+
 	$t=new stdClass();
 	$t->logName="importMLSData.html";
 	$t->interval=180;

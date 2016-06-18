@@ -445,6 +445,7 @@
 	ts.componentObjectCache.db=createobject("component","zcorerootmapping.com.model.db"); 
 	ts.componentObjectCache.paypal=createobject("component","zcorerootmapping.com.ecommerce.paypal");
 	ts.componentObjectCache.adminSecurityFilter=createobject("component","zcorerootmapping.com.app.adminSecurityFilter");
+	ts.componentObjectCache.grid=createobject("component","zcorerootmapping.com.grid.grid");
 
 	ts.componentObjectCache.siteOptionCom.init("site", "site");
 
