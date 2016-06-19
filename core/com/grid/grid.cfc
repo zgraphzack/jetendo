@@ -107,7 +107,7 @@ application.zcore.gridCom.getGridForm(ts); --->
 		gridStruct.settings.grid_id=row.grid_id;
 		gridStruct.settings.grid_active=row.grid_active;
 		gridStruct.settings.grid_visible=row.grid_visible;
-		if(row.grid_group_id NEQ ""){
+		if(row.grid_group_id NEQ "" and row.grid_group_id NEQ "0"){
 			if(not structkeyexists(uniqueGroup, row.grid_group_id)){ 
 				ts={
 					boxes:[],
@@ -120,13 +120,15 @@ application.zcore.gridCom.getGridForm(ts); --->
 				uniqueGroup[row.grid_group_id]=arrayLen(gridStruct.groups);
 			}
 
-			ts={
-				data:{}
-			};
-			for(field in boxFields){
-				ts.data[field]=row[field];
+			if(row.grid_box_id NEQ "" and row.grid_box_id NEQ "0"){
+				ts={
+					data:{}
+				};
+				for(field in boxFields){
+					ts.data[field]=row[field];
+				}
+				arrayAppend(gridStruct.groups[uniqueGroup[row.grid_group_id]].boxes, ts);
 			}
-			arrayAppend(gridStruct.groups[uniqueGroup[row.grid_group_id]].boxes, ts);
 		}
 	}
 
@@ -493,12 +495,28 @@ application.zcore.gridCom.getGridForm(ts); --->
 	form.grid_id=rs.qGrid.grid_id;
 	application.zcore.functions.zStatusHandler(request.zsid);
 	
-	application.zcore.functions.zSetModalWindow();
-	application.zcore.template.setTemplate("zcorerootmapping.templates.blank",true,true);
+	request.zos.debuggerEnabled=false;
+	application.zcore.functions.zModalCancel();
+	application.zcore.template.appendTag("stylesheets", '<style type="text/css">
+    *{-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing:border-box;} 
+
+	.z-grid-group{
+	cursor:pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	}
+    </style>');
+	application.zcore.template.appendTag("scripts", '<script type="text/javascript">var zIsModalWindow=true;</script>');
+	application.zcore.template.setTemplate("zcorerootmapping.templates.plain-no-body-style",true,true);
 	
 	application.zcore.functions.zRequireJquery();
 	application.zcore.functions.zRequireJqueryUI();
 
+	gridGroupCom=createObject("component", "zcorerootmapping.com.grid.gridGroup");
+	gridGroupCom.displayGroupForm();
+	gridBoxCom=createObject("component", "zcorerootmapping.com.grid.gridBox");
+	gridBoxCom.displayBoxForm();
 
 	application.zcore.skin.includeJS("/z/javascript/jetendo-grid/grid-manager.js");
 	//application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
@@ -514,12 +532,10 @@ application.zcore.gridCom.getGridForm(ts); --->
 		<section>
 			<div class="z-container">
 				<div class="z-3of5">
-					<div class="gridEditorContent" style="width:100%; float:left; display:none;">
+					<div id="gridEditorContent" style="width:100%; float:left; display:none;">
 					</div>
 				</div>
-				<div class="z-2of5">
-					<p><a href="##" class="groupFormButton" data-id="1">Edit Group</a></p>
-					<p><a href="##" class="boxFormButton" data-id="1">Edit Box</a></p>
+				<div class="z-2of5"> 
 					<textarea id="gridDebugId" cols="50" rows="5" style="font-size:12px; height:400px;  width:100% !important; "></textarea>
 				</div>
 			</div>
@@ -535,61 +551,6 @@ application.zcore.gridCom.getGridForm(ts); --->
 	</form>
 
 	<script type="text/javascript">
-	var gridData={};
-	function saveGrid(){
-
-		var tempObj={};
-		tempObj.id="zGridSaveJson";
-		tempObj.postObj={
-			grid:JSON.stringify(gridData)
-		};
-		tempObj.url="/z/_com/grid/grid?method=saveGrid&grid_id="+document.getElementById("gridId").value;
-		tempObj.method="post";
-		tempObj.callback=function(r){
-			var r=JSON.parse(r);
-			if(!r.success){
-				alert("Failed to save/parse the grid data.");
-				return;
-			}
-			$(".debugResponseDiv").html(JSON.stringify(r)); 
-			console.log('saved:'+Math.random());
-		};
-		tempObj.cache=false;
-		zAjax(tempObj); 
-	}
-
-	function renderGrid(){
-		var arrHTML=[];
-		arrHTML.push("testing"); 
-		$("##gridDebugId").val(JSON.stringify(gridData, null, 4));
-		//arrHTML.push("grid_id:"+gridData.grid.grid_id);
-		$("##gridEditorContent").show().html(arrHTML.join("\n"));
-
-		renderGridHTML();
-		// gridDiv
-		// 
-	}
-
-	zArrDeferredFunctions.push(function(){
- 		$(".gridSaveButton").bind("click", saveGrid);
-
-		var tempObj={};
-		tempObj.id="zGridLoadJson";
-		//tempObj.postObj=zGetFormDataByFormId("loadForm"); 
-		tempObj.url="/z/_com/grid/grid?method=loadGrid&grid_id="+document.getElementById("gridId").value;
-		tempObj.method="get";
-		tempObj.callback=function(r){
-			var r=JSON.parse(r);
-			if(!r.success){
-				alert("Failed to load/parse the grid data.");
-				return;
-			}
-			gridData=r.grid;
-			renderGrid();
-		};
-		tempObj.cache=false;
-		zAjax(tempObj); 
-	});
 	</script>
 </cffunction>
 

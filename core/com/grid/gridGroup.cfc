@@ -1,10 +1,8 @@
 <cfcomponent> 
 <cfoutput>
-<!--- /z/_com/grid/gridGroup?method=groupSettings --->
-<cffunction name="groupSettings" localmode="modern" access="remote" roles="administrator">
-	<cfscript>
-	application.zcore.skin.includeJS("/z/javascript/jetendo-grid/grid-manager.js");
-	var groupSettings={
+<cffunction name="displayGroupForm" localmode="modern" access="public">
+	<cfscript> 
+	/*var groupSettings={
 		"grid_group_box_border_radius": 0, 
 		"grid_group_visible": "1",
 		"grid_group_heading": "Heading",
@@ -23,28 +21,12 @@
 		"grid_group_box_layout": 0,
 		"grid_group_id": 1,
 		"grid_group_section_center": "0"
-	}; 
+	}; */
 	</cfscript>
-	<script type="text/javascript">
+	<!--- <script type="text/javascript">
 	var groupSettings=#serializeJSON(groupSettings)#;
 
-	</script>
-<!--- 
-<pre>
-	<table class="table-list">
-		<cfscript>
-		for(i in groupSettings){
-			echo('<tr>
-				<th>#application.zcore.functions.zFirstLetterCaps(replace(replace(i, "grid_", ""), "_", " ", "all"))#</th>
-				<td><input type="text" name="#i#" id="#i#" value="" /></td>
-			</tr>');
-		}
-		</cfscript>
-	
-	
-	</table> 
-
-</pre> --->
+	</script> 
 <section class="z-grid-group-section">
 	<div class="z-container">
 		<div class="z-column">
@@ -61,19 +43,19 @@
 			</div>
 		</section>
 	</div>
-</section>
-
-<form id="gridGroupForm" action="" method="get">
+</section> --->
+<div id="gridGroupFormContainer" style="display:none;">
+<form id="gridGroupForm"  action="" method="get">
 	<cfscript> 
 	tabCom=application.zcore.functions.zcreateobject("component","zcorerootmapping.com.display.tab-menu");
 	tabCom.init();
-	tabCom.setTabs(["Basic","Group Layout", "Box Layout"]);
+	tabCom.setTabs(["Group Settings","Group Layout", "Box Layout"]);
 	tabCom.setMenuName("grid-group-edit");
 	tabCom.setCancelURL("");
 	tabCom.enableSaveButtons();
 	</cfscript>
 	#tabCom.beginTabMenu()#
-	#tabCom.beginFieldSet("Basic")# 
+	#tabCom.beginFieldSet("Group Settings")# 
 	<table style="width:100%; border-spacing:0px;" class="table-list">
 		<tr>
 			<th style="width:100px;">Heading</th>
@@ -91,7 +73,7 @@
 				htmlEditor.instanceName	= "grid_group_text";
 				htmlEditor.value= "";
 				htmlEditor.width= "100%";
-				htmlEditor.height= 350;
+				htmlEditor.height= 200;
 				htmlEditor.create();
 				</cfscript>    
 			</td>
@@ -225,6 +207,13 @@
 	<input type="hidden" name="grid_group_id" id="grid_group_id" value="" />
 	<input type="hidden" name="grid_group_sort" id="grid_group_sort" value="" />
 </form>
+</div>
+<cfsavecontent variable="out">
+</cfsavecontent>  
+<script type="text/javascript">
+//var gridGroupFormTemplate="#jsstringformat(out)#";
+var gridGroupTabIndex=#tabCom.getIndex()#;
+</script>
 </cffunction>
 </cfoutput>
 </cfcomponent>
