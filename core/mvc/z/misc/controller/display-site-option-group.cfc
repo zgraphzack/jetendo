@@ -89,7 +89,7 @@
 		}else{
 			local.cfcpath=qSet.site_option_group_view_cfc_path;
 		}
-		if(form.zreset EQ "site" or request.zos.isTestServer){
+		if(application.zcore.functions.zso(form, 'zreset') EQ "site" or request.zos.isTestServer){
 			forceNew=true;
 		}else{
 			forceNew=false;
