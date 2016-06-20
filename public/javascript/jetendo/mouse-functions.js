@@ -243,7 +243,7 @@ var zHumanMovement=false;
 			$('body').append('<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:#FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; "><a id="zOverEditATag" href="##" class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>');
 			
 			$("#zOverEditATag").bind("click", function(){
-				if(zIsAdminLoggedIn()){
+				if(typeof zIsAdminLoggedIn != "undefined" && zIsAdminLoggedIn()){
 					zLoadOverEditButton();
 					zOverEditClick();
 					return false;
@@ -252,7 +252,7 @@ var zHumanMovement=false;
 		}
 	}
 	$(".zOverEdit").bind("mouseover", function(){
-		if(zIsAdminLoggedIn()){
+		if(typeof zIsAdminLoggedIn != "undefined" && zIsAdminLoggedIn()){
 			zLoadOverEditButton();
 			var u=$(this).attr("data-editurl");
 			if(u != ""){

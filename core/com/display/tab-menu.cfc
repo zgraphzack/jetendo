@@ -52,6 +52,12 @@
   </cfscript>
 </cffunction>
 
+<cffunction name="getIndex" localmode="modern" output="no">
+  <cfscript>
+  return variables.tabMenuIndex;
+  </cfscript>
+</cffunction>
+
 <cffunction name="beginTabMenu" localmode="modern" output="no" returntype="string">
 	<cfscript>
 	var local=structnew();
@@ -66,7 +72,7 @@
 	<cfsavecontent variable="local.theScript">
 	<script type="text/javascript">
 	/* <![CDATA[ */
-	zArrDeferredFunctions.push(function(){
+	function zSetupTabMenu#variables.tabMenuIndex#(){
 		$(".zmember-tabs#variables.tabMenuIndex#-1").show();
 		var user_tabs = $("##zmember-tabs#variables.tabMenuIndex#").tabs({
 			activate: function(event, ui) {
@@ -88,7 +94,14 @@
 				expires: 3000,
 				name: "zmember-tabs#variables.tabMenuIndex#-#variables.menuName#"
 			}
-		})<cfif variables.verticalMenu>.addClass( "zmember-tabs-vertical ui-helper-clearfix" )</cfif>;
+		})
+		/*<cfif variables.verticalMenu>*/
+		user_tabs.addClass( "zmember-tabs-vertical ui-helper-clearfix" );
+		/*</cfif>*/
+
+	}
+	zArrDeferredFunctions.push(function(){
+		window["zSetupTabMenu#variables.tabMenuIndex#"]();
 	});
 	/* ]]> */
 	</script>
@@ -111,10 +124,10 @@
 					<li class="zmember-tabs-buttons">
 					<cfif variables.hasWriteAccess>
 
-						<button type="button" style="display:none;" name="tabSubmitForm#variables.tabMenuIndex#-1-2" id="tabSubmitForm#variables.tabMenuIndex#-1-2">Please Wait</button>
-						<button type="submit" onclick="this.style.display='none';document.getElementById('tabSubmitForm#variables.tabMenuIndex#-1-2').style.display='block'" name="tabSubmitForm#variables.tabMenuIndex#-1">Save</button>
+						<button type="button" class="tabWaitButton" style="display:none;" name="tabSubmitForm#variables.tabMenuIndex#-1-2" id="tabSubmitForm#variables.tabMenuIndex#-1-2">Please Wait</button>
+						<button type="submit" class="tabSaveButton" onclick="this.style.display='none';document.getElementById('tabSubmitForm#variables.tabMenuIndex#-1-2').style.display='block'" name="tabSubmitForm#variables.tabMenuIndex#-1">Save</button>
 					</cfif>
-					<button type="button" onclick="window.location.href='#jsstringformat(variables.cancelURL)#';" name="tabSubmitForm#variables.tabMenuIndex#-1">Cancel</button>
+					<button type="button" class="tabCancelButton" <cfif variables.cancelURL NEQ "">onclick="window.location.href='#jsstringformat(variables.cancelURL)#';"</cfif> name="tabSubmitForm#variables.tabMenuIndex#-1">Cancel</button>
 					</li>
 				</cfif>
 				</ul>
@@ -164,14 +177,18 @@
 	}
 	variables.tabMenuOpen=false;
 	variables.fieldSetOpen=false;
-	returnValue='<fieldset id="zmember-tabs'&variables.tabMenuIndex&'-'&(arraylen(variables.arrTab)+1)&'"></fieldset>';
+	returnValue='';//<fieldset id="zmember-tabs'&variables.tabMenuIndex&'-'&(arraylen(variables.arrTab)+1)&'"></fieldset>';
 	if(variables.saveButtons){
 		returnValue&='<fieldset class="zmember-tabs-buttons-bottom">';
 		if(variables.hasWriteAccess){
-			 returnValue&='<button type="button" style="display:none;" name="tabSubmitForm#variables.tabMenuIndex#-1-2" id="tabSubmitForm#variables.tabMenuIndex#-2-2">Please Wait</button>
-			 <button type="submit" onclick="this.style.display=''none'';document.getElementById(''tabSubmitForm#variables.tabMenuIndex#-2-2'').style.display=''block''" name="tabSubmitForm#variables.tabMenuIndex#-2">Save</button>';
+			 returnValue&='<button type="button" class="tabWaitButton" style="display:none;" name="tabSubmitForm#variables.tabMenuIndex#-1-2" id="tabSubmitForm#variables.tabMenuIndex#-2-2">Please Wait</button>
+			 <button type="submit" class="tabSaveButton" onclick="this.style.display=''none'';document.getElementById(''tabSubmitForm#variables.tabMenuIndex#-2-2'').style.display=''block''" name="tabSubmitForm#variables.tabMenuIndex#-2">Save</button>';
 		}
-		returnValue&='<button type="button" onclick="window.location.href='''&jsstringformat(variables.cancelURL)&''';" name="tabSubmitForm'&variables.tabMenuIndex&'-2">Cancel</button>
+		returnValue&='<button type="button" class="tabCancelButton" ';
+		if(variables.cancelURL NEQ ""){
+			returnValue&=' onclick="window.location.href='''&jsstringformat(variables.cancelURL)&''';" ';
+		}
+		returnValue&=' name="tabSubmitForm'&variables.tabMenuIndex&'-2">Cancel</button>
 		</fieldset>';
 	}
 	return returnValue&'</div>';

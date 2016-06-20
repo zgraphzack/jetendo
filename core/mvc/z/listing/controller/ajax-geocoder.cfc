@@ -56,13 +56,15 @@
 				SET listing_latitude=#db.param(arrF[3])#,
 				listing_longitude=#db.param(arrF[4])# 
 				WHERE listing_id=#db.param(form.listing_id)# and 
-				listing_latitude=#db.param('0')# ";
+				listing_latitude=#db.param('0')# and 
+				listing_deleted=#db.param(0)# ";
 				db.execute("q"); 
 				db.sql="UPDATE #db.table("listing_memory", request.zos.zcoreDatasource)# listing 
 				SET listing_latitude=#db.param(arrF[3])#,
 				listing_longitude=#db.param(arrF[4])# 
 				WHERE listing_id=#db.param(form.listing_id)# and 
-				listing_latitude=#db.param('0')#";
+				listing_latitude=#db.param('0')# and 
+				listing_deleted=#db.param(0)#";
 				db.execute("q"); 
 			}
 			if(structkeyexists(form, 'debugajaxgeocoder')){

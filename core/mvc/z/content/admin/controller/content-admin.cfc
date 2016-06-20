@@ -76,6 +76,11 @@
 		}
 	}
 	if(structkeyexists(form, 'confirm')){
+
+		if(request.zos.istestserver){
+			application.zcore.grid.deleteGridId(qCheck.content_grid_id, request.zos.globals.id);
+		}
+
 		application.zcore.imageLibraryCom.deleteImageLibraryId(qCheck.content_image_library_id);
 		if(application.zcore.app.siteHasApp("listing")){
 			request.zos.listing.functions.zMLSSearchOptionsUpdate('delete',qcheck.content_saved_search_id);
@@ -2410,7 +2415,17 @@
 				<cfif row.children NEQ 0><a href="/z/content/admin/content-admin/index?content_parent_id=#row.content_id#&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Subpages (#row.children#)</a> | </cfif>
 			</cfif>
 	
-			<a href="/z/content/admin/content-admin/edit?content_id=#row.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a>
+			<a href="/z/content/admin/content-admin/edit?content_id=#row.content_id#&amp;return=1&amp;site_x_option_group_set_id=#form.site_x_option_group_set_id#">Edit</a> 
+
+			<cfif request.zos.isTestServer>
+				| 
+				<cfscript>
+				ts=structnew();
+				ts.saveIdURL="/z/content/admin/content-admin/saveGridId?content_id=#row.content_id#";
+				ts.grid_id=row.content_grid_id;
+				application.zcore.grid.getGridForm(ts); 
+				</cfscript>
+			</cfif>
 
 			<cfif application.zcore.user.checkServerAccess()>
 				<cfif row.content_hide_edit EQ 1>
@@ -2564,6 +2579,54 @@ writedump(arrChildren);abort;
 	link=request.zos.cgi.HTTP_REFERER;
 	application.zcore.functions.zredirect(link);
 	
+	</cfscript>
+</cffunction>
+
+<cffunction name="saveGridId" access="remote" localmode="modern">
+	<cfscript>
+	db=request.zos.queryObject;
+	form.content_id=application.zcore.functions.zso(form, 'content_id');
+
+	// verify user has access to id
+	if(not application.zcore.adminSecurityFilter.checkFeatureAccess("Pages")){
+		return;
+	}
+	db.sql="SELECT * FROM #db.table("content", request.zos.zcoreDatasource)# 
+	LEFT JOIN #db.table("grid", request.zos.zcoreDatasource)# ON 
+	grid.site_id = content.site_id and 
+	grid.grid_deleted=#db.param(0)#  
+	WHERE content_id = #db.param(form.content_id)# and 
+	content_deleted=#db.param(0)# and 
+	content.site_id = #db.param(request.zos.globals.id)# ";
+	qContent=db.execute("qContent");
+	if(qContent.recordcount EQ 0){
+		application.zcore.status.setStatus(request.zsid, "Invalid id", form, true);
+		application.zcore.functions.zRedirect("/z/content/admin/content-admin/index?zsid=#request.zsid#");
+	}
+	if(qContent.grid_id NEQ "" and qContent.grid_id NEQ 0){
+
+		// get new grid_id
+		rs=application.zcore.grid.getGridById(0, true);
+
+		// set the grid_id in the parent record
+		db.sql="UPDATE #db.table("content", request.zos.zcoreDatasource)# SET 
+		content_grid_id=#db.param(rs.qGrid.grid_id)#, 
+		content_updated_datetime=#db.param(request.zos.mysqlnow)# 
+		WHERE 
+		content_id=#db.param(form.content_id)# and 
+		content_deleted=#db.param(0)# and 
+		site_id = #db.param(request.zos.globals.id)# ";
+		if(not db.execute("qUpdate")){
+			throw("Failed to save grid id");
+		}
+
+		// redirect to editor
+		application.zcore.grid.redirectToEditor(rs.qGrid.grid_id);
+	}else{
+
+		// redirect to editor
+		application.zcore.grid.redirectToEditor(qContent.grid_id);
+	}
 	</cfscript>
 </cffunction>
 </cfoutput>

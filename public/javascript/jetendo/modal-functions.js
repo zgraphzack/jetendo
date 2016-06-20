@@ -309,6 +309,12 @@
 			zModalIndex=0;
 		}
 	}
+
+	function zShowGridEditorWindow(link){
+		var windowSize=zGetClientWindowSize();
+		var modalContent1='<iframe src="'+link+'"  style="margin:0px;border:none; overflow:auto;" seamless="seamless" width="100%" height="95%"><\/iframe>';		
+		zShowModal(modalContent1,{'width':windowSize.width-100,'height':windowSize.height-100});
+	}
 	
 	function zShowImageUploadWindow(imageLibraryId, imageLibraryFieldId, imageCountId){
 		var windowSize=zGetClientWindowSize();
@@ -342,6 +348,7 @@
 	if(typeof window.zModalCancelFirst == "undefined"){
 		window.zModalCancelFirst=false;
 	}
+	window.zShowGridEditorWindow=zShowGridEditorWindow;
 	window.zModalLockPosition=zModalLockPosition;
 	window.zShowModalStandard=zShowModalStandard;
 	window.zFixModalPos=zFixModalPos;

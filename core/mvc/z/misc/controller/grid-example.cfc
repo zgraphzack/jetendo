@@ -13,8 +13,7 @@
 	.zapp-shell-container{padding-left:0px; padding-right:0px;}
 	section:nth-child(even){ background-color:##555;}
 	section:nth-child(odd){ background-color:##666;}
-	section section{background:none;}
-	.z-container{ background-color:##aaa;}
+	section section{background:none !important;} 
 	.z-fill-width, .z-container div, .z-column { background-color:##EEE !important;}
 	.z-left-sidebar, .z-right-sidebar{ background-color:##ccc !important;} 
 	</style> 
@@ -22,7 +21,7 @@
 	<section>
 		<div class="z-container"> 
 			<div class="z-column">
-				For visualizing space adjustments, background colors have been applied. Dark = section, medium = z-container, lightest = z-column
+				For visualizing space adjustments, background colors have been applied. Dark = section, light = z-column
 			</div> 
 		</div> 
 	</section>

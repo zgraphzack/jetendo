@@ -378,9 +378,9 @@
 			arrayAppend(arrCSS, v);
 		} 
 		if(n EQ arrayLen(breakStruct.arrBreak)){
-	 		v='.z-column{ min-height:1px; width:100%; margin-left:0%;  margin-right:0%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
+	 		v='.z-column, .z-1of1{ float:left; min-height:1px; width:100%; margin-left:0%;  margin-right:0%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
 		}else{
-	 		v='.z-column{ min-height:1px; width:#numberformat(100-dataStruct.columnGapSidePercent, '_.___')#%; margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
+	 		v='.z-column, .z-1of1{ float:left; min-height:1px; width:#numberformat(100-dataStruct.columnGapSidePercent, '_.___')#%; margin-left:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%;  margin-right:#numberformat(dataStruct.columnGapSidePercent/2, '_.___')#%; padding-left:#dataStruct.boxPaddingSidePercent#%; padding-right:#dataStruct.boxPaddingSidePercent#%; padding-top:#dataStruct.boxPaddingTopPercent#%; padding-bottom:#dataStruct.boxPaddingBottomPercent#%; }';
 	 	}
 		if(not structkeyexists(uniqueStruct, v)){
 			uniqueStruct[v]=true;
@@ -447,10 +447,10 @@
 					columnCount=n2;
 					margin=dataStruct.columnGapSidePercent/2;  
 					marginTemp=dataStruct.columnGapSidePercent;
-					if(n2==currentLimit){
+					/*if(n2==currentLimit){
 						margin=0;  
 						marginTemp=dataStruct.columnGapSidePercent;   
-					}
+					}*/
 					width-=dataStruct.columnGapSidePercent;
 					maxWidth=100;  
 				}else if(breakpoint EQ 992){
