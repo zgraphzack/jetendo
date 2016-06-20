@@ -253,12 +253,14 @@
 		
 		}); 
 	}
+
+
+	
 	zArrResizeFunctions.push({functionName:zSetupLazyLoadImages});
 
-
-	// add class="zForceChildEqualHeights" data-column-count="2" to any element and all the children will have heights made equal for each row. You can change 480 to something else with this optional attribute: data-single-column-width="768"
+	// add class="z-equal-heights" data-column-count="2" to any element and all the children will have heights made equal for each row. You can change 480 to something else with this optional attribute: data-single-column-width="768"
 	// if data-children-class is specified, the equal heights will be performed on the elements matching the class instead of the children of the container.
-	function zForceChildEqualHeights(children){  
+	function forceChildEqualHeights(children){  
 		var lastHeight=0; 
 		$(children).height("auto");
 		$(children).each(function(){  
@@ -272,7 +274,7 @@
 		} 
 		$(children).height(lastHeight); 
 	} 
-	function zForceChildHeights(){  
+	function zForceChildEqualHeights(){  
 		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
 		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
@@ -346,19 +348,19 @@
 						images.bind("load", function(e){
 							c.imagesLoaded++;
 							if(c.imagesLoaded>images.length){ 
-								zForceChildEqualHeights(c.children);  
+								forceChildEqualHeights(c.children);  
 							}
 						});
 					}
 				}
-				zForceChildEqualHeights(c.children); 
+				forceChildEqualHeights(c.children); 
 			}
 		}); 
 		if($(".z-equal-height").length > 0){
 			console.log("The class name should be z-equal-heights, not z-equal-height");
 		}
 	}
-	zArrResizeFunctions.push({functionName:zForceChildHeights });
+	zArrResizeFunctions.push({functionName:zForceChildEqualHeights });
 
 	function setupMobileMenu() {
 		if($(".z-mobileMenuButton").length==0){
@@ -684,6 +686,6 @@
 		setTimeout(zAnimateVisibleElements, 100);
 	});
 
- 	window.zForceChildHeights=zForceChildHeights;
+ 	window.zForceChildEqualHeights=zForceChildEqualHeights;
 	window.zIsVisibleOnScreen=zIsVisibleOnScreen;
 })(jQuery, window, document, "undefined"); 
