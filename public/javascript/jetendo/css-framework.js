@@ -272,7 +272,7 @@
 		} 
 		$(children).height(lastHeight); 
 	} 
-	function forceChildAutoHeightFix(){  
+	function zForceChildHeights(){  
 		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
 		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
@@ -358,8 +358,7 @@
 			console.log("The class name should be z-equal-heights, not z-equal-height");
 		}
 	}
-	zArrResizeFunctions.push({functionName:forceChildAutoHeightFix });
- 
+	zArrResizeFunctions.push({functionName:zForceChildHeights });
 
 	function setupMobileMenu() {
 		if($(".z-mobileMenuButton").length==0){
@@ -685,5 +684,6 @@
 		setTimeout(zAnimateVisibleElements, 100);
 	});
 
+ 	window.zForceChildHeights=zForceChildHeights;
 	window.zIsVisibleOnScreen=zIsVisibleOnScreen;
 })(jQuery, window, document, "undefined"); 
