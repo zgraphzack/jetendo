@@ -89,7 +89,12 @@
 		}else{
 			local.cfcpath=qSet.site_option_group_view_cfc_path;
 		}
-		local.groupCom=application.zcore.functions.zcreateobject("component", local.cfcpath);
+		if(form.zreset EQ "site" or request.zos.isTestServer){
+			forceNew=true;
+		}else{
+			forceNew=false;
+		}
+		local.groupCom=application.zcore.functions.zcreateobject("component", local.cfcpath, forceNew); 
 		local.groupCom[qSet.site_option_group_view_cfc_method](qSet);
 	}else{
 		application.zcore.functions.z404("site_option_group_view_cfc_path and site_option_group_view_cfc_method must be set when editing the site option group to allow rendering of the group.");
