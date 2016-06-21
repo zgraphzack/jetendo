@@ -32,6 +32,7 @@ tarZipSitePath#chr(9)#siteDomain#chr(9)#curDate
 tarZipSiteUploadPath#chr(9)#siteDomain#chr(9)#curDate
 verifySitePaths
 saveFaviconSet#chr(9)#sourceFilePath#chr(9)#destinationPath
+convertFileCharsetISO88591toUTF8#chr(9)#sourceFilePath
 */
 
 function processContents($contents){
@@ -100,6 +101,8 @@ function processContents($contents){
 		return publishNginxSiteConfig($a);
 	}else if($contents =="saveFaviconSet"){
 		return saveFaviconSet($a);
+	}else if($contents =="convertFileCharsetISO88591toUTF8"){
+		return convertFileCharsetISO88591toUTF8($a);
 	}else if($contents =="sslInstallCertificate"){
 		return sslInstallCertificate($a);
 	}else if($contents =="sslGenerateKeyAndCSR"){
@@ -1446,6 +1449,30 @@ function saveFaviconSet($a){
 	}
 	//echo "Success\n\n";
 	return "1"; 
+}
+function convertFileCharsetISO88591toUTF8($a){ 
+	if(count($a) != 1){
+		echo "Incorrect number of arguments to convertFileCharsetISO88591toUTF8.\n";
+		return "0";
+	}
+	set_time_limit(100);
+	$sourceFilePath=$a[0];  
+	if(!file_exists($sourceFilePath)){
+		echo "File doesn't exist sourceFilePath: ".$sourceFilePath."\n";
+		return "0";
+	}
+	$sourceFilePath=getAbsolutePath($sourceFilePath);
+	$p=get_cfg_var("jetendo_root_path"); 
+	$found=false;
+	if(substr($sourceFilePath, 0, strlen($p)) == $p){
+		$found=true;
+	} 
+	if($found){
+		$cmd="/usr/bin/iconv -f ISO-8859-1 ".escapeshellarg($sourceFilePath)." -t UTF-8 -o ".escapeshellarg($sourceFilePath)." 2>&1";
+		$r=`$cmd`; 
+		return "1";
+	} 
+	return "0"; 
 }
 function getImageMagickIdentify($a){
 	set_time_limit(100);
