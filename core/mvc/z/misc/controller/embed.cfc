@@ -47,7 +47,8 @@
 	db.sql="select * from #request.zos.queryObject.table("video", request.zos.zcoreDatasource)# video 
 	WHERE video_id = #db.param(local.video_id)# and 
 	video_hash = #db.param(local.video_hash)# and 
-	site_id =#db.param(request.zos.globals.id)#";
+	site_id =#db.param(request.zos.globals.id)# and 
+	video_deleted=#db.param(0)#";
 	qV=db.execute("qV");
 	if(qV.recordcount EQ 0){
 		writeoutput("Video no longer available.");
@@ -116,6 +117,10 @@
 			loadFlashPlayer();
 		}else{ 
 			if(document.getElementById("embedVideoTag")){
+				videoDiv.bind("click", function(e){
+					e.preventDefault();
+					$(this).trigger("play");
+				}); 
 				zArrResizeFunctions.push(function(){
 					$("##embedVideoTag").height($(window).height());
 					$("##embedVideoTag").width($(window).width());
