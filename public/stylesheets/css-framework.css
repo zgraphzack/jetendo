@@ -355,9 +355,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', e
 	.z-mobileMenuDiv li{list-style:none;}
 	.z-mobileMenuDiv{display:block; background-color:#093e6a; width:100%; float:left;}
 
-	.z-mobileMenuDiv a{ display:block; padding:10px 20px; font-size:16px !important;   color:#FFF; text-decoration:none;}
+	.z-mobileMenuDiv a{ display:block; white-space:nowrap; padding:10px 20px; font-size:16px !important;   color:#FFF; text-decoration:none;}
 	.z-mobileMenuDiv nav{visibility:hidden;}
 }
+
 @media screen and (max-width:767px) {
 
 	.z-column{ margin-left:0px; margin-right:0px; } 

@@ -96,7 +96,7 @@
 			selectStruct.size=3;
 			application.zcore.skin.addDeferredScript("  $('###selectStruct.name#').filterByText($('###selectStruct.name#_InputField'), true); "); 
 
-		echo('<input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="min-width:auto;width:200px; max-width:100%; margin-bottom:5px;"><br />');
+		echo('Search: <input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="min-width:auto;width:200px; max-width:100%; margin-bottom:5px;"><br />Select:<br />');
 		value=application.zcore.functions.zInputSelectBox(selectStruct); 
 	}
 	return out; 
@@ -238,7 +238,7 @@
 	value=application.zcore.functions.zInputSelectBox(selectStruct);
 	if(not selectStruct.multiple){
 
-		value='<input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="margin-bottom:5px;"><br />'&value;
+		value='Search: <input type="text" name="#selectStruct.name#_InputField" id="#selectStruct.name#_InputField" value="" style="width:200px; min-width:auto; margin-bottom:5px;"><br />Select:<br />'&value;
 	}
 	return { label: true, hidden: false, value:value};  
 	</cfscript>

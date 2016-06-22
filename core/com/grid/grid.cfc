@@ -9,6 +9,17 @@ box settings form
 
 background configuration and image uploader
 
+I guess equal heights should be an option on row settings.
+
+maybe row settings needs default heading / summary / button font size options
+
+need "add box" to show options before appearing in the preview.
+
+consider additional buttons for "add image", "add heading/text box" or maybe a rollover instead of single button.
+
+need delete row
+
+need visual versions of the layouts
 
 integrate with other jetendo apps:
 	

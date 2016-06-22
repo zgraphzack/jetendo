@@ -23,7 +23,7 @@
 	<cfscript>
 	var result=0;
 	var arrP=0;
-	// fileexists ensures the path is within sandbox before cfexecute is run, because cfexecute can't be sandboxed
+	// fileexists ensures the path is within sandbox
 	if(fileexists(arguments.path)){
 		result=application.zcore.functions.zSecureCommand("getFileMD5Sum"&chr(9)&arguments.path, 10);
 		if(result EQ false){
@@ -41,7 +41,7 @@
 	<cfscript>
 	var result=0;
 	var arrP=0;
-	// fileexists ensures the path is within sandbox before cfexecute is run, because cfexecute can't be sandboxed
+	// fileexists ensures the path is within sandbox
 	if(fileexists(arguments.path)){
 		result=application.zcore.functions.zSecureCommand("getFileMD5Sum"&chr(9)&arguments.path, 10);
 		if(result EQ false){
@@ -1846,6 +1846,30 @@ if(rs.success){
 		return { success:false, errorMessage:"File didn't exist after transfer succeeded."};
 	}
 	return {success:true};
+	</cfscript>
+</cffunction>
+
+
+<!--- result=application.zcore.functions.zConvertFileCharsetISO88591toUTF8(filePath); --->
+<cffunction name="zConvertFileCharsetISO88591toUTF8" localmode="modern" output="yes" returntype="any">
+	<cfargument name="filePath" required="yes" type="string">
+	<cfscript>
+	// fileexists ensures the path is within sandbox
+	try{
+		lock name="#request.zos.installPath#|file|#arguments.filePath#" timeout="100" throwontimeout="yes" type="exclusive"{
+			if(fileexists(arguments.filePath)){
+				result=application.zcore.functions.zSecureCommand("convertFileCharsetISO88591toUTF8"&chr(9)&arguments.filePath, 10);
+				if(result EQ false){
+					return false;
+				}
+				return true;
+			}else{
+				return false;
+			} 
+		}
+	}catch(Any e){ 
+		return false;
+	}
 	</cfscript>
 </cffunction>
 </cfoutput>
