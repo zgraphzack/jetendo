@@ -329,7 +329,7 @@ Link 2 disabled since this may cause a duplicate google adwords PPC click						<
 							echo('Clicks: #qTrack.track_user_hits#<br />');
 						}
 						if(qTrack.track_user_first_page NEQ ""){
-							echo('Landing Page: <a href="#qTrack.track_user_first_page#" target="_blank">Click here</a> to view the first page they visited on the web site.');
+							echo('Landing Page: <a href="#request.zos.globals.domain##qTrack.track_user_first_page#" target="_blank">Click here</a> to view the first page they visited on the web site.');
 						}
 					/*
 					// this code was inefficient.  The new cookie "Enable User Stats Cookies" feature is able to be enabled per site instead to reduce server load for tracking.

@@ -347,13 +347,18 @@
 					if(c.imagesLoaded != images.length){
 						images.bind("load", function(e){
 							c.imagesLoaded++;
-							if(c.imagesLoaded>images.length){ 
-								forceChildEqualHeights(c.children);  
+							if(c.imagesLoaded>=images.length){ 
+								setTimeout(function(){
+									forceChildEqualHeights(c.children);  
+								}, 10);
 							}
 						});
 					}
 				}
 				forceChildEqualHeights(c.children); 
+				setTimeout(function(){ 
+					forceChildEqualHeights(c.children);  
+				}, 10);
 			}
 		}); 
 		if($(".z-equal-height").length > 0){
@@ -602,7 +607,7 @@
 	 			curWidth=(Math.round(curWidth*100000)/1000)-0.001; 
 				if(false && sLen-1 == i){
 					// this doesn't work
-					
+
 					newWidth=(currentMenu.containerWidth-totalWidth2);
 		 			addWidth=newWidth;
 		 			newWidth=newWidth/currentMenu.containerWidth;
