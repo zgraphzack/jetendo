@@ -625,6 +625,11 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .zImageLeft{margin-right:10px; margin-bottom:10px; float:left; }
 .zImageDefault{ margin-bottom:10px; }
 .zImageRight{margin-left:10px; margin-bottom:10px; float:right; }
+
+#tinymce .zImageLeft{margin-right:10px !important; margin-bottom:10px !important; float:left !important; }
+#tinymce .zImageDefault{ margin-bottom:10px !important; }
+#tinymce .zImageRight{margin-left:10px !important; margin-bottom:10px !important; float:right !important; }
+
 .zEditorHTML iframe{ max-width:100% !important;}
 .zEditorHTML img{ margin-right:10px; margin-left:10px; margin-bottom:10px; }
 
