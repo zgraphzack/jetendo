@@ -24,6 +24,10 @@
 			<td><input type="text" name="grid_box_heading" id="grid_box_heading" value="" /></td>
 		</tr>
 		<tr>
+			<th>Heading 2</th>
+			<td><input type="text" name="grid_box_heading2" id="grid_box_heading2" value="" /></td>
+		</tr>
+		<tr>
 			<th>Summary</th>
 			<td>
 				<cfscript>
