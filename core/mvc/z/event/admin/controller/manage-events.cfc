@@ -694,13 +694,13 @@
 				<th>Start Date</th>
 				<td>
 					<input type="text" name="event_start_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_start_datetime_date" value="#htmleditformat(dateformat(eventStartDate, 'm/dd/yyyy'))#" size="10" />
-					<input type="text" name="event_start_datetime_time" style="max-width:80px;min-width:80px;" id="event_start_datetime_time" value="<cfif isdate(form.event_start_datetime) and timeformat(form.event_start_datetime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(eventStartTime, 'h:mm tt'))#</cfif>" size="9" />
+					<input type="text" name="event_start_datetime_time" style="max-width:80px;min-width:80px;" id="event_start_datetime_time" value="<cfif isdate(eventStartTime) and timeformat(eventStartTime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(eventStartTime, 'h:mm tt'))#</cfif>" size="9" />
 					 * </td>
 			</tr>  
 			<tr>
 				<th>End Date</th>
 				<td><input type="text" name="event_end_datetime_date" style="max-width:80px;min-width:80px;" onchange="#onChangeJavascript#" onkeyup="#onChangeJavascript#" onpaste="#onChangeJavascript#" id="event_end_datetime_date" value="#htmleditformat(dateformat(eventEndDate, 'm/dd/yyyy'))#" size="10" />
-					<input type="text" name="event_end_datetime_time" style="max-width:80px;min-width:80px;" id="event_end_datetime_time" value="<cfif isdate(form.event_start_datetime) and timeformat(form.event_start_datetime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(eventEndTime, 'h:mm tt'))#</cfif>" size="9" /> *
+					<input type="text" name="event_end_datetime_time" style="max-width:80px;min-width:80px;" id="event_end_datetime_time" value="<cfif isdate(eventEndTime) and timeformat(eventEndTime, 'h:mm tt') NEQ "12:00 am">#htmleditformat(timeformat(eventEndTime, 'h:mm tt'))#</cfif>" size="9" /> *
 				</td>
 			</tr>  
 			<tr>
@@ -709,7 +709,7 @@
 			</tr> 
 			<tr>
 				<th>Recurring Event</th>
-				<td><strong style="font-size:120%;"><span><a href="##" onclick="openRecurringEventOptions(); return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
+				<td><strong style="font-size:120%;"><span><a href="##" onclick="if($('##event_start_datetime_date').val()==''){ alert('Please enter a start date before using this feature.'); }else{ openRecurringEventOptions(); } return false;">Edit</a> | Recurrence: <span id="recurringConfig1">
 					<cfif form.event_recur_ical_rules NEQ "">Yes | 
 						<cfscript>
 						ical=application.zcore.app.getAppCFC("event").getIcalCFC();
