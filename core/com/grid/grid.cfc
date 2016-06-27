@@ -529,8 +529,16 @@ application.zcore.gridCom.getGridForm(ts); --->
 	gridBoxCom=createObject("component", "zcorerootmapping.com.grid.gridBox");
 	gridBoxCom.displayBoxForm();
 
+	application.zcore.skin.includeCSS("/z/font-awesome/css/font-awesome.min.css");
+	application.zcore.skin.includeCSS("/z/stylesheets/grid-manager.css");
 	application.zcore.skin.includeJS("/z/javascript/jetendo-grid/grid-manager.js");
 	//application.zcore.skin.includeCSS("/z/a/stylesheets/style.css");
+
+	form.fluid=application.zcore.functions.zso(form, 'fluid', false, 0);
+	gridWidth=request.zos.globals.maximagewidth;
+	if(form.fluid EQ 1){
+		gridWidth=1200;
+	}
 	</cfscript>
 	<section>
 		<div class="z-container">
@@ -540,6 +548,52 @@ application.zcore.gridCom.getGridForm(ts); --->
 		</div>
 	</section>
 	<form id="form1" action="/z/_com/grid/grid?method=gridform&amp;grid_id=#form.grid_id#" enctype="multipart/form-data" method="post">
+	<section id="grid-editor-interface">
+		<div id="grid-groups">
+
+			<!--- <cfloop from="1" to="2" index="i">
+
+				<section id="grid-group-#i#" data-group-id="#i#" class="grid-group z-center-children" style=" background-color: ##F5F5F5;"> 
+					<div class="grid-boxes" style="width:#gridWidth#px;">
+						<section>
+							<div class=" grid-boxes-sortable z-equal-heights">
+								<div id="grid-box-1" class="z-1of4 grid-box" style="background-color: ##CCCCCC;">
+									<div class="z-t-16">box</div>
+								</div>
+								<div id="grid-box-2" class="z-1of4 grid-box" style="background-color: ##CCCCCC;">
+									<div class="z-t-16">
+										Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+										tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+										quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+										consequat.
+									</div>
+								</div>
+								<div id="grid-box-3" class="z-1of4 grid-box" style="background-color: ##CCCCCC;">
+									<img src="#application.zcore.functions.zGetImagePlaceholderURL(350,150)#" class="z-fluid" />
+								</div>
+								<div id="grid-box-4" class="z-1of4 grid-box" style="background-color: ##CCCCCC;">
+									<div class="z-t-16">box</div>
+								</div>
+							</div>
+						</section>
+					</div>
+					<div class="grid-group-buttons-right z-p-10">
+						<a href="##" class="grid-group-settings z-button">Settings</a>
+						<a href="##" class="grid-delete-group z-button">Delete Group</a>
+						<a href="##" class="grid-add-box z-button">Add Box</a>
+						<a href="##" class="z-t-14 grid-group-move-handle icon-left"><i class="fa fa-bars"></i>Move</a>
+					</div>
+				</section>
+			</cfloop> --->
+
+		</div>
+
+		<div id="grid-add-group" class="z-center-children">
+			<a href="##" class="z-button" style=" padding: 20px;">Add Box Group</a>
+		</div> 
+
+	</section> 
+<!--- 
 		<section>
 			<div class="z-container">
 				<div class="z-3of5">
@@ -547,10 +601,10 @@ application.zcore.gridCom.getGridForm(ts); --->
 					</div>
 				</div>
 				<div class="z-2of5"> 
-					<textarea id="gridDebugId" cols="50" rows="5" style="font-size:12px; height:400px;  width:100% !important; "></textarea>
 				</div>
 			</div>
-		</section>
+		</section> --->
+					<textarea id="gridDebugId" cols="50" rows="5" style="font-size:12px; height:400px;  width:100% !important; "></textarea>
 		<section>
 			<div class="z-container">
 				<div class="z-column">
@@ -559,10 +613,41 @@ application.zcore.gridCom.getGridForm(ts); --->
 				</div>
 			</div>
 		</section>
-	</form>
+	</form> 
 
+	<cfsavecontent variable="gridOverlayTemplate"> 
+		<div class="grid-box-overlay">
+			<div class="grid-box-buttons z-t-12">
+				<a href="##" class="z-button icon-left grid-box-move-handle"><i class="fa fa-arrows"></i>Move</a>
+				<a href="##" class="z-button icon-left grid-box-edit"><i class="fa fa-edit"></i>Edit</a>
+				<a href="##" class="z-button icon-left grid-box-copy"><i class="fa fa-copy"></i>Copy</a>
+				<a href="##" class="z-button icon-left grid-box-delete"><i class="fa fa-trash-o"></i>Delete</a>
+			</div>
+		</div>
+	</cfsavecontent>
+	<cfsavecontent variable="gridGroupTemplate">
+		<section id="grid-group-{{grid_group_id}}" data-group-id="{{grid_group_id}}" class="grid-group z-center-children" style="background-color: ##F5F5F5;">
+			
+			<div class=" grid-boxes" style="width:#gridWidth#px;">
+				<section>
+					<div class=" grid-boxes-sortable">
+						 
+					</div>
+				</section>
+			</div>
+			<div class="grid-group-buttons-right z-1of7 z-mv-0 z-t-12">
+				<a href="##" class="grid-group-settings z-button">Settings</a>
+				<a href="##" class="grid-delete-group z-button">Delete Group</a>
+				<a href="##" class="grid-add-box z-button">Add Box</a>
+				<a href="##" class="z-t-14 grid-group-move-handle icon-left"><i class="fa fa-bars"></i>Move</a>
+			</div>
+		</section> 
+	</cfsavecontent>
 	<script type="text/javascript">
-	</script>
+	var gridOverlayTemplate="#jsstringformat(gridOverlayTemplate)#";
+	var gridGroupTemplate="#jsstringformat(gridGroupTemplate)#"; 
+	</script> 
+ 
 </cffunction>
 
 

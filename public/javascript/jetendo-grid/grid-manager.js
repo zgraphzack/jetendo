@@ -11,36 +11,37 @@ var gridData={};
 	var boxSettings={
 		"grid_box_image_intermediate": "",
 		"grid_box_sort": 0,
-		"grid_box_column_size": 2,
+		"grid_box_column_size": 1,
 		"grid_id": 57,
-		"grid_box_button_text": "",
+		"grid_box_button_text": "Read More",
 		"grid_box_heading": "Heading",
-		"grid_box_visible": "1",
-		"grid_box_summary": "",
-		"grid_box_image": "0", 
-		"grid_box_button_url": "",
-		"grid_box_id": 1,
-		"grid_group_id": 1
+		"grid_box_heading2": "Heading 2",
+		"grid_box_visible": 1,
+		"grid_box_summary": "<p>Summary</p>",
+		"grid_box_image": "", 
+		"grid_box_button_url": "#",
+		"grid_box_id": 0,
+		"grid_group_id": 0
 	};
 	var groupSettings={
 		"grid_group_box_border_radius": 0, 
-		"grid_group_visible": "1",
+		"grid_group_visible": 1,
 		"grid_group_heading": "Heading",
 		"grid_group_background_type": 0,
-		"grid_group_children_center": "0",
+		"grid_group_children_center": 0,
 		"grid_group_box_border": "",
 		"grid_group_background_value": "",
 		"grid_group_padding": "",
 		"grid_group_box_background_value": "",
 		"grid_id": 57,
 		"grid_group_box_background_type": 0,
-		"grid_group_text": "",
+		"grid_group_text": "<p>Summary</p>",
 		"grid_group_column_count": 5,
-		"grid_group_heading2": "Heading2",
-		"grid_group_sort": 1,
+		"grid_group_heading2": "Heading 2",
+		"grid_group_sort":0,
 		"grid_group_box_layout": 0,
-		"grid_group_id": 1,
-		"grid_group_section_center": "0"
+		"grid_group_id": 0,
+		"grid_group_section_center": 0
 	}; 
 	
 	var boxLayout={
@@ -144,7 +145,7 @@ function renderGrid(){
 	}
 
 
-	$("#gridEditorContent").show().html(a.join("\n"));
+	$("#grid-groups").show().html(a.join("\n"));
 }
 /*
 var boxSettings={
@@ -154,6 +155,7 @@ var boxSettings={
 	"grid_id": 57,
 	"grid_box_button_text": "",
 	"grid_box_heading": "Heading",
+	"grid_box_heading2": "Heading 2",
 	"grid_box_visible": "1",
 	"grid_box_summary": "",
 	"grid_box_image": "0", 
@@ -182,7 +184,7 @@ var	groupSettings={
 	"grid_group_section_center": "0"
 }; */
 var tab="\n";
-function renderGroupStart(group){
+function renderGroupStart(group, isAdmin){
 	var bg=getBackgroundCode(group.settings.grid_group_id, group.settings.grid_group_background_type, group.settings.grid_group_background_value);
 	var arrHTML=[];
 	if(bg.css!=""){
@@ -212,14 +214,14 @@ function renderGroupStart(group){
 	}
 	return arrHTML.join("\n");
 }
-function renderGroupEnd(group){
+function renderGroupEnd(group, isAdmin){
 	var arrHTML=[];
 	arrHTML.push(tab+tab+'</section>');
 	arrHTML.push(tab+'</div>');
 	arrHTML.push('</section>');
 	return arrHTML.join("\n");
 }
-function renderBox(group, box){ 
+function renderBox(group, box, isAdmin){ 
 	var bg=getBackgroundCode(group.settings.grid_group_id, group.settings.grid_group_box_background_type, group.settings.grid_group_box_background_value);
 	var arrHTML=[tab+tab+tab];
 	if(bg.css!=""){
@@ -231,8 +233,8 @@ function renderBox(group, box){
 
 	if(group.settings.grid_group_box_layout==1){
 		renderBoxLayout1(arrHTML, group, box);
-	}else if(group.settings.grid_group_box_layout==2){
-		renderBoxLayout2(arrHTML, group, box);
+	/*}else if(group.settings.grid_group_box_layout==2){
+		renderBoxLayout2(arrHTML, group, box);*/
 	}else if(group.settings.grid_group_box_layout==3){
 		renderBoxLayout3(arrHTML, group, box);
 	}else if(group.settings.grid_group_box_layout==4){
@@ -253,9 +255,9 @@ function renderBoxLayout1(arrHTML, group, box){
 	if(box.data.grid_box_image_intermediate!=""){
 		arrHTML.push(tab+'<div class="z-grid-image">');
 		if(box.data.grid_box_button_url!=""){ 
-			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" /></a>');
+			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" /></a>');
 		}else{ 
-			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" />');
+			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" />');
 		}
 		arrHTML.push('</div>');
 	}
@@ -265,6 +267,52 @@ function renderBoxLayout1(arrHTML, group, box){
 			arrHTML.push('<a href="'+box.data.grid_box_button_url+'">'+box.data.grid_box_heading+'</a>');
 		}else{
 			arrHTML.push(box.data.grid_box_heading);
+		}
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_heading2!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-heading2">'); 
+		arrHTML.push(box.data.grid_box_heading2); 
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_summary!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-summary">'+box.data.grid_box_summary+'</div>');
+	}
+	if(box.data.grid_box_button_url!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-button">');
+		arrHTML.push('<a href="'+box.data.grid_box_button_url+'" class="z-grid-button-link z-button">'+box.data.grid_box_button_text+'</a>');
+		arrHTML.push('</div>');
+	}
+	return arrHTML;
+}
+/*
+function renderBoxLayout2(arrHTML, group, box){
+	// Vertical - Heading / Image / Heading 2 / Summary / Button
+	return arrHTML;
+}*/
+
+function renderBoxLayout3(arrHTML, group, box){
+	// Vertical - Heading / Heading 2 / Image / Summary / Button
+	if(box.data.grid_box_heading!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-heading">');
+		if(box.data.grid_box_button_url!=""){
+			arrHTML.push('<a href="'+box.data.grid_box_button_url+'">'+box.data.grid_box_heading+'</a>');
+		}else{
+			arrHTML.push(box.data.grid_box_heading);
+		}
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_heading2!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-heading2">'); 
+		arrHTML.push(box.data.grid_box_heading2); 
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_image_intermediate!=""){
+		arrHTML.push(tab+'<div class="z-grid-image">');
+		if(box.data.grid_box_button_url!=""){ 
+			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" /></a>');
+		}else{ 
+			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" />');
 		}
 		arrHTML.push('</div>');
 	}
@@ -279,33 +327,126 @@ function renderBoxLayout1(arrHTML, group, box){
 	return arrHTML;
 }
 
-function renderBoxLayout2(arrHTML, group, box){
-	// Vertical - Heading / Image / Heading 2 / Summary / Button
-	return arrHTML;
-}
-
-function renderBoxLayout3(arrHTML, group, box){
-	// Vertical - Heading / Heading 2 / Image / Summary / Button
-	return arrHTML;
-}
-
 function renderBoxLayout4(arrHTML, group, box){
 	// Left: Image | Right: Heading / Heading 2 / Summary / Button
+	//arrHTML.push('<div id="grid-box-{{grid_column_id}}" class="z-{{column_width}} grid-box" style="background-color: ##CCCCCC;">');
+	arrHTML.push('<div class="z-1of3">');
+	if(box.data.grid_box_image_intermediate!=""){
+		arrHTML.push(tab+'<div class="z-grid-image">');
+		if(box.data.grid_box_button_url!=""){ 
+			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" /></a>');
+		}else{ 
+			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" />');
+		}
+		arrHTML.push(tab+'</div>');
+	} 
+	arrHTML.push('</div>');
+	arrHTML.push('<div class="z-2of3">');
+				
+	if(box.data.grid_box_heading!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-heading z-h-40 z-pb-0">'); 
+		arrHTML.push(box.data.grid_box_heading); 
+		arrHTML.push('</div>');
+	}
+
+	if(box.data.grid_box_heading2!=""){
+		arrHTML.push('<div class="z-grid-heading2 z-h-30 z-normal">'); 
+		arrHTML.push(box.data.grid_box_heading2); 
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_summary!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-summary z-t-18">'+box.data.grid_box_summary+'</div>');
+	}
+	if(box.data.grid_box_button_url!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-button">');
+		arrHTML.push('<a href="'+box.data.grid_box_button_url+'" class="z-grid-button-link z-button z-t-20 z-mt-10">'+box.data.grid_box_button_text+'</a>');
+		arrHTML.push('</div>');
+	}
+	arrHTML.push('</div>');
 	return arrHTML;
 }
 
 function renderBoxLayout5(arrHTML, group, box){
-	// Left: Heading / Heading 2 / Summary / Button | Right: Image
+	// Left: Heading / Heading 2 / Summary / Button | Right: Image 
+	arrHTML.push('<div class="z-2of3">');
+	if(box.data.grid_box_heading!=""){
+		arrHTML.push(tab+'<div class="z-grid-heading z-h-40 z-pb-0">'); 
+		arrHTML.push(box.data.grid_box_heading); 
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_heading2!=""){
+		arrHTML.push(tab+'<div class="z-grid-heading2 z-h-30 z-normal">'); 
+		arrHTML.push(box.data.grid_box_heading2); 
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_summary!=""){
+		arrHTML.push(tab+'<div class="z-grid-summary z-t-18">'); 
+		arrHTML.push(box.data.grid_box_summary); 
+		arrHTML.push('</div>');
+	}
+	if(box.data.grid_box_button_url!=""){
+		arrHTML.push(tab+tab+'<div class="z-grid-button">');
+		arrHTML.push('<a href="'+box.data.grid_box_button_url+'" class="z-grid-button-link z-button z-t-20 z-mt-10">'+box.data.grid_box_button_text+'</a>');
+		arrHTML.push('</div>');
+	}
+	arrHTML.push('</div>');
+	arrHTML.push('<div class="z-1of3">'); 
+	if(box.data.grid_box_image_intermediate!=""){
+		arrHTML.push(tab+'<div class="z-grid-image">');
+		if(box.data.grid_box_button_url!=""){ 
+			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" /></a>');
+		}else{ 
+			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" />');
+		}
+		arrHTML.push(tab+'</div>');
+	} 
+	arrHTML.push('</div>');
 	return arrHTML;
 }
 
 function renderBoxLayout6(arrHTML, group, box){
 	// Image with White Heading on Black Overlay
+	arrHTML.push('<div class="z-index-1">');
+	if(box.data.grid_box_image_intermediate!=""){
+		arrHTML.push(tab+'<div class="z-grid-image">');
+		if(box.data.grid_box_button_url!=""){ 
+			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" /></a>');
+		}else{ 
+			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" />');
+		}
+		arrHTML.push(tab+'</div>');
+	}  
+	arrHTML.push('</div>');
+	arrHTML.push('<div class="z-overlay-bottom z-bg-black-transparent z-index-2 z-p-10">');
+	if(box.data.grid_box_heading!=""){
+		arrHTML.push(tab+'<div class="z-grid-heading z-h-20 z-pb-0">'); 
+		arrHTML.push(box.data.grid_box_heading); 
+		arrHTML.push('</div>');
+	}
+	arrHTML.push('</div>'); 
 	return arrHTML;
 }
 
 function renderBoxLayout7(arrHTML, group, box){
 	// Image with Black Heading on White Overlay
+	arrHTML.push('<div class="z-index-1">');
+	if(box.data.grid_box_image_intermediate!=""){
+		arrHTML.push(tab+'<div class="z-grid-image">');
+		if(box.data.grid_box_button_url!=""){ 
+			arrHTML.push('<a href="'+box.data.grid_box_image+'"><img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" /></a>');
+		}else{ 
+			arrHTML.push('<img src="'+box.data.grid_box_image_intermediate+'" alt="'+zStringReplaceAll(box.data.grid_box_heading, '&', '&amp;')+'" class="z-grid-image z-fluid" />');
+		}
+		arrHTML.push(tab+'</div>');
+	}  
+	arrHTML.push('</div>');
+	arrHTML.push('<div class="z-overlay-bottom z-bg-white-transparent z-index-2 z-p-10">');
+	if(box.data.grid_box_heading!=""){
+		arrHTML.push(tab+'<div class="z-grid-heading z-h-20 z-pb-0">'); 
+		arrHTML.push(box.data.grid_box_heading); 
+		arrHTML.push('</div>');
+	}
+	arrHTML.push('</div>'); 
 	return arrHTML;
 }
 
@@ -595,7 +736,330 @@ function saveGrid(){
 	zAjax(tempObj); 
 } 
 
-zArrDeferredFunctions.push(function(){
+
+
+ 
+
+function escapeRegExp( str ) {
+	return str.replace( /([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1" );
+}
+ /*
+function getTemplate( name ) {
+	var template = $( 'script#' + name );
+
+	if ( template.length > 0 ) {
+		return template.html().trim();
+	}
+
+	return;
+}
+*/
+function replaceTemplateVars( template_html, variables ) {
+	for (var variable in variables ) {
+		var search = '{{' + variable + '}}';
+
+		template_html = template_html.replace( new RegExp( escapeRegExp( search ), 'g' ), variables[ variable ] );
+	}
+
+	return template_html;
+}
+
+
+function getGridGroupID( grid_group ) {
+	return parseInt(grid_group.attr( 'data-group-id' ));
+}
+
+function getClosestGridGroup( element ) {
+	return element.closest( '.grid-group' );
+}
+
+function getClosestGridBox( element ) {
+	return element.closest( '.grid-box' );
+}
+
+
+function sortGridGroups() {
+	$( '#grid-groups' ).sortable( {
+		axis: 'y',
+		placeholder: 'grid-group-placeholder',
+		forcePlaceholderSize: true,
+		handle: '.grid-group-move-handle',
+		start: function( event, ui ) {
+			$( ui.placeholder ).css( {
+				'height': $( ui.item ).outerHeight() + 'px'
+			} );
+
+			$( ui.item ).css( { 'max-width': 'none' } );
+		},
+		stop: function( event, ui ) {
+			$( ui.item ).css( { 'max-width': '100%' } );
+
+			zForceChildEqualHeights();
+		}
+	} );
+}
+
+function sortGridBoxes() {
+	$( '.grid-boxes-sortable' ).sortable( {
+		// axis: 'x',
+		connectWith: '.grid-boxes-sortable',
+		placeholder: 'grid-box-placeholder',
+		handle: '.grid-box-move-handle',
+		distance: 40,
+		helper: 'clone',
+		start: function( event, ui ) {
+			$( ui.placeholder ).css( {
+				'width': getWidthAsFloat( $( ui.helper ) ) + '%',
+				'height': getHeightAsFloat( $( ui.helper ) ) + 'px'
+			} );
+
+			$( ui.item ).css( { 'max-width': 'none' } );
+			$( ui.helper ).css( {
+				'overflow': 'hidden'
+			} );
+		},
+		stop: function( event, ui ) {
+			$( ui.item ).css( { 'max-width': '100%' } );
+
+			zForceChildEqualHeights();
+		}
+	} );
+}
+
+function getWidthAsFloat( element ) {
+	var width = element.outerWidth();
+
+	var parent       = element.parent();
+	var parent_width = parent.get( 0 ).getBoundingClientRect().width;
+
+	var percent_width = parseFloat( ( width / parent_width ) * 99.7608 );
+	percent_width = percent_width.toFixed( 4 );
+
+	return percent_width;
+}
+
+function getHeightAsFloat( element ) {
+	var height = element.outerHeight();
+
+	return height;
+}
+  
+var $document = $( document );
+
+function registerEvents(){
+
+	$document.on( 'mouseenter', '.grid-box', function() {
+		var box = $( this );
+
+		var overlay_html =gridOverlayTemplate;
+
+		overlay_html = replaceTemplateVars( overlay_html, {
+
+		} );
+
+		box.append( overlay_html );
+	} ).on( 'mouseleave', '.grid-box', function() {
+		$( '.grid-box-overlay', this ).remove();
+	} ); 
+
+	$document.on( 'click', '.grid-group-settings', function( event ) {
+		event.preventDefault();
+
+		var grid_group    = getClosestGridGroup( $( this ) );
+		var grid_group_id = getGridGroupID( grid_group );
+ 		
+ 		alert('show group form:'+grid_group_id);
+
+		return false;
+	} );
+ 
+	$document.on( 'click', '.grid-box-overlay', function( event ) {
+		event.preventDefault();
+
+		console.log( $( this ).parent() );
+
+		return false;
+	} );
+ 
+	function createBox(group){
+
+		var box={
+			data:jQuery.extend(true, {}, boxSettings),
+			clientSettings:{
+				id:getUniqueId()
+			}
+		};
+
+		box.data.grid_box_id=0;
+		box.data.grid_group_id=group.settings.grid_group_id;
+		box.data.grid_box_sort=group.boxes.length+1;
+		group.boxes.append(box);
+
+		var html=renderBox(group, box);
+		return {html:html, box:box};
+	}
+
+	$document.on( 'click', '.grid-add-box', function( event ) {
+		event.preventDefault();
+
+		var grid_group    = getClosestGridGroup( $( this ) );
+		var grid_group_id = getGridGroupID( grid_group );
+  		var group=getGroupById(grid_group_id);
+		var newBox=createBox(group);
+		var grid_group_boxes_container = $( '.grid-boxes', grid_group );
+
+		grid_group_boxes_container.append(newBox.html);
+ 
+		sortGridBoxes();
+		zForceChildEqualHeights();
+
+		console.log(newBox);
+
+		showModalBoxForm(newBox.box);
+ 
+
+		return false;
+
+		var layout_id    = prompt( "[TEMP] Enter layout ID (4-7):" );
+
+		if ( layout_id < 4 ) {
+			alert( 'Not Yet Implemented' );
+			return;
+		}
+
+		var box_width = prompt( "[TEMP] Enter box width (i.e. '1of3' = z-1of3):" );
+   
+   		
+		var group=getGroupById(1);
+		var box=getBoxById(group, 1);
+		var new_box_html=renderBox(group, box);
+ 
+
+		return false;
+	} );
+
+
+	$document.on( 'click', '.grid-box-copy', function( event ) {
+		event.preventDefault();
+
+		var grid_box = getClosestGridBox( $( this ) );
+		var grid_group    = getClosestGridGroup( $( this ) );
+
+		grid_box.addClass( 'grid-box-new' );
+
+		var box_html = grid_box.get( 0 ).outerHTML;
+
+		grid_box.removeClass( 'grid-box-new' );
+		grid_box.after( box_html );
+
+		var new_box = $( '.grid-box-new', grid_group );
+
+		$( '.grid-box-overlay', new_box ).remove();
+
+		return false;
+	} );
+
+
+	$document.on( 'click', '.grid-box-delete', function( event ) {
+		event.preventDefault();
+
+		if(window.confirm("Are you sure you want to delete this box?")){
+
+			var grid_box = getClosestGridBox( $( this ) );
+
+			grid_box.remove();
+
+			zForceChildEqualHeights();
+		}
+		return false;
+	} );
+
+	$document.on( 'click', '.grid-delete-group', function( event ) {
+		event.preventDefault();
+
+		if(window.confirm("Are you sure you want to delete this group?")){
+
+			var groupId = $(this).attr("data-group-id");
+			$("#grid-group-"+groupId).remove();
+
+		}
+		return false;
+	} );
+
+
+	function createGroup(){
+
+		var group={
+			settings:jQuery.extend(true, {}, groupSettings),
+			clientSettings:{
+				id:getUniqueId()
+			},
+			boxes:[]
+		};
+		group.settings.grid_group_sort=gridData.groups.length+1;
+		group.settings.grid_group_id=0;
+
+		var html=renderGroupStart(group)&renderGroupEnd(group);
+
+		return {html:html, group:group};
+	}
+	$document.on( 'click', '#grid-add-group a', function( event ) {
+		event.preventDefault();
+ 
+		var newGroup=createGroup();
+		var grid_group_boxes_container=$('#grid-groups');
+
+		grid_group_boxes_container.append(newGroup.html);
+ 		
+ 		sortGridGroups();
+		sortGridBoxes();
+		zForceChildEqualHeights();
+
+		console.log(newGroup);
+
+		//showModalBoxForm(newGroup.group);
+  
+		/*
+
+		var new_group_html = gridGroupTemplate;
+		var total_groups   = $( '.grid-group', grid_groups ).length;
+		var new_group_id   = ( total_groups + 1 );
+
+		new_group_html = replaceTemplateVars( new_group_html, {
+			'grid_group_id': new_group_id
+		} );
+
+		$( '#grid-groups' ).append( new_group_html );
+
+		var new_group = $( '#grid-group-' + new_group_id );
+
+		sortGridGroups();
+		sortGridBoxes();
+
+
+		zForceChildEqualHeights();
+
+		return false;*/
+	} ); 
+}
+var grid_editor_interface = $( '#grid-editor-interface' );
+var grid_groups             = $( '#grid-groups', grid_editor_interface );
+
+zArrDeferredFunctions.push( function() {
+
+	registerEvents();
+
+	sortGridGroups();
+	sortGridBoxes();
+
+	zForceChildEqualHeights();
+	setTimeout(function(){
+		zForceChildEqualHeights();
+
+	}, 500);
+
+
+
 	$(".gridSaveButton").bind("click", saveGrid);
 
 	var tempObj={};
@@ -615,7 +1079,7 @@ zArrDeferredFunctions.push(function(){
 		
 	};
 	tempObj.cache=false;
-	zAjax(tempObj); 
+	zAjax(tempObj);  
 });
  
 })(jQuery, window, document, "undefined"); 
