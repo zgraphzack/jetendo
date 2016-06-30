@@ -107,7 +107,9 @@ tinymce.init({
   toolbar2: 'print preview media | forecolor backcolor emoticons',
   image_advtab: true, 
   content_css: [ 
-    "#this.config.EditorAreaCSS#"
+  	"/z/stylesheets/zOS.css?zversion="+Math.random(),
+	"/z/stylesheets/css-framework.css?zversion="+Math.random(),
+    "#this.config.EditorAreaCSS#?zversion="+Math.random()
   ]
  }); 
 });

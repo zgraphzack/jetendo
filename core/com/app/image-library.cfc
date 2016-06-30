@@ -1393,9 +1393,9 @@ application.zcore.imageLibraryCom.displayImages(ts);
 		</cfscript>
 		<cfloop query="qImages" startrow="1" endrow="1">
 			<cfif arguments.ss.layoutType EQ "thumbnail-right-and-other-photos">
-				<div class="zImageLibraryImageRight" style="width:#thumbnailWidth/2#px;">
+				<div class="zImageLibraryImageRight" style="width:#thumbnailWidth/1.5#px;">
 			<cfelse>
-				<div class="zImageLibraryImageLeft" style="width:#thumbnailWidth/2#px;">
+				<div class="zImageLibraryImageLeft" style="width:#thumbnailWidth/1.5#px;">
 			</cfif>
 				<cfscript>
 				caption=qImages.image_caption;

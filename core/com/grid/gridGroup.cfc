@@ -191,7 +191,7 @@
 			<td>
 				<select size="1" name="grid_group_box_layout" id="grid_group_box_layout"> 
 					<option value="1">Vertical - Image / Heading / Heading 2 / Summary / Button</option>
-					<option value="2">Vertical - Heading / Image / Heading 2 / Summary / Button</option>
+					<!--- <option value="2">Vertical - Heading / Image / Heading 2 / Summary / Button</option> --->
 					<option value="3">Vertical - Heading / Heading 2 / Image / Summary / Button</option> 
 					<option value="4">Left: Image | Right: Heading / Heading 2 / Summary / Button</option>
 					<option value="5">Left: Heading / Heading 2 / Summary / Button | Right: Image</option>

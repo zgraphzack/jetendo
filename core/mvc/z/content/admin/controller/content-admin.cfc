@@ -2602,8 +2602,8 @@ writedump(arrChildren);abort;
 	if(qContent.recordcount EQ 0){
 		application.zcore.status.setStatus(request.zsid, "Invalid id", form, true);
 		application.zcore.functions.zRedirect("/z/content/admin/content-admin/index?zsid=#request.zsid#");
-	}
-	if(qContent.grid_id NEQ "" and qContent.grid_id NEQ 0){
+	} 
+	if(qContent.grid_id EQ "" or qContent.grid_id EQ 0){
 
 		// get new grid_id
 		rs=application.zcore.grid.getGridById(0, true);
